@@ -2,8 +2,8 @@ import http from "http";
 import express, { Express } from "express";
 import morgan from "morgan";
 import apicache from "apicache";
-import routes from "./routes/exchange-routing";
-import { cacheTtlInMillis } from "./services/utils/resources";
+import routes from "./routes/social-network-routing";
+import { cacheTtlInMillis } from "./services/utils/Resources";
 
 const router: Express = express();
 
