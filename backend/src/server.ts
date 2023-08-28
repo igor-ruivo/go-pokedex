@@ -4,8 +4,11 @@ import morgan from "morgan";
 import apicache from "apicache";
 import routes from "./routes/social-network-routing";
 import { cacheTtlInMillis } from "./services/utils/Resources";
+import { initializeDatabase } from "./services/database/db";
 
 const router: Express = express();
+
+initializeDatabase();
 
 router.use(morgan("dev"));
 const cache = apicache.middleware;
