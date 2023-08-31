@@ -1,53 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import PokemonCard from './PokemonCard';
+import { useCallback, useEffect, useState } from 'react';
 import IPokemon from '../DTOs/IPokemon';
-import Spinner from './Spinner';
-import ImageBatchLoader from '../hooks/useImageBatchLoader';
-import useImageBatchLoader from '../hooks/useImageBatchLoader';
+import { Buffer } from 'buffer';
+import axios from 'axios';
 
 interface IPokemonGridProps {
     pokemonInfoList: IPokemon[]
 }
 
 const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
-    console.log("mega length: " + pokemonInfoList.length);
     const batchSize = 12;
     const [lastSeenIndex, setLastSeenIndex] = useState(0);
-    const [imgData, loading] = useImageBatchLoader(pokemonInfoList.map(p => p.imageUrl), lastSeenIndex, Math.min(pokemonInfoList.length, lastSeenIndex + batchSize));
     const [globalImgData, setGlobalImgData] = useState<string[]>([]);
-    const handleScroll = () => {
-        if (
+
+    const handleScrollCallback = useCallback(() => {
+        if (globalImgData.length >= lastSeenIndex + batchSize &&
             window.innerHeight + window.scrollY >=
             document.body.offsetHeight - 200 // Adjust this value as needed
         ) {
-            console.log("setting up next batch");
-            setLastSeenIndex((prevIndex) =>
-            Math.min(prevIndex + batchSize, pokemonInfoList.length)
-        );
+            setLastSeenIndex(previous => previous + batchSize);
         }
-    };
-
+    }, [globalImgData, lastSeenIndex]);
+    
     useEffect(() => {
-        if (imgData) {
-            setGlobalImgData(prevGlobalImgData => [
-                ...prevGlobalImgData,
-                ...imgData
-            ]);
-        }
-    }, [imgData]);
-
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", handleScrollCallback);
         return () => {
-            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("scroll", handleScrollCallback);
         };
-    }, []);
+    }, [handleScrollCallback]);
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const promises = pokemonInfoList.slice(lastSeenIndex, lastSeenIndex + batchSize).map(async pokemon => {
+                const response = await axios.get(pokemon.imageUrl, { responseType: 'arraybuffer' });
+                const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+                return base64Image;
+            });
+            const results = await Promise.all(promises);
+            setGlobalImgData(previous => [...previous, ...results]);
+        }
+        fetchData();
+    }, [lastSeenIndex]);
 
     return (
         <div>
             <div>
-                {pokemonInfoList.slice(0, lastSeenIndex + Math.min(pokemonInfoList.length, lastSeenIndex + batchSize)).map((p, i) => <img key={p.number} src={`data:image/jpeg;base64,${globalImgData[i]}`}/>)}
+                {pokemonInfoList.slice(0, lastSeenIndex).map((p, i) => <img key={p.number} src={`data:image/jpeg;base64,${globalImgData[i]}`}/>)}
             </div>
+            <button onClick = {() => setLastSeenIndex(previous => previous + batchSize)}>Render more</button>
         </div>
     );
 };
