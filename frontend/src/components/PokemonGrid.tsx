@@ -9,17 +9,54 @@ interface IPokemonGridProps {
 
 const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     const batchSize = 12;
-    const [lastSeenIndex, setLastSeenIndex] = useState(0);
+    const [loadingFirstBatch, setLoadingFirstBatch] = useState(true);
+    const [batchIteration, setBatchIteration] = useState(0);
     const [globalImgData, setGlobalImgData] = useState<string[]>([]);
 
     const handleScrollCallback = useCallback(() => {
-        if (globalImgData.length >= lastSeenIndex + batchSize &&
+        if (!loadingFirstBatch && globalImgData.length >= (batchIteration + 2) * batchSize &&
             window.innerHeight + window.scrollY >=
-            document.body.offsetHeight - 200 // Adjust this value as needed
+            document.body.offsetHeight - 200
         ) {
-            setLastSeenIndex(previous => previous + batchSize);
+            setBatchIteration(previous => previous + 1);
         }
-    }, [globalImgData, lastSeenIndex]);
+    }, [loadingFirstBatch, globalImgData, batchIteration]);
+
+    useEffect(() => {
+        handleScrollCallback();
+    }, [loadingFirstBatch, globalImgData, batchIteration]);
+
+    const fetchPokemonBinaryImage = async (startIndex: number, endIndex: number, abortSignal: AbortSignal, callbackFinishAction?: () => void) => {
+        const promises = pokemonInfoList
+            .slice(startIndex, endIndex)
+            .map(async pokemon => {
+                const response = await axios.get(pokemon.imageUrl, { responseType: 'arraybuffer', signal: abortSignal });
+                const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+                return base64Image;
+            });
+        const results = await Promise.all(promises);
+        setGlobalImgData(previous => [...previous, ...results]);
+        callbackFinishAction?.();
+    };
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const isFirstBatch = batchIteration === 0;
+
+        const startIndex = isFirstBatch ? 0 : (batchIteration + 1) * batchSize;
+        const endIndex = isFirstBatch ? 2 * batchSize : (batchIteration + 2) * batchSize;
+
+        fetchPokemonBinaryImage(
+            startIndex,
+            endIndex,
+            controller.signal,
+            isFirstBatch ? () => setLoadingFirstBatch(false) : undefined
+        );
+
+        return () => {
+            controller.abort("Request canceled by cleanup.");
+        }
+    }, [batchIteration]);
     
     useEffect(() => {
         window.addEventListener("scroll", handleScrollCallback);
@@ -28,26 +65,18 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         };
     }, [handleScrollCallback]);
 
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const promises = pokemonInfoList.slice(lastSeenIndex, lastSeenIndex + batchSize).map(async pokemon => {
-                const response = await axios.get(pokemon.imageUrl, { responseType: 'arraybuffer' });
-                const base64Image = Buffer.from(response.data, 'binary').toString('base64');
-                return base64Image;
-            });
-            const results = await Promise.all(promises);
-            setGlobalImgData(previous => [...previous, ...results]);
-        }
-        fetchData();
-    }, [lastSeenIndex]);
+    console.log(globalImgData.length + " ready");
+    console.log(batchIteration + " batchIteration");
 
     return (
         <div>
-            <div>
-                {pokemonInfoList.slice(0, lastSeenIndex).map((p, i) => <img key={p.number} src={`data:image/jpeg;base64,${globalImgData[i]}`}/>)}
-            </div>
-            <button onClick = {() => setLastSeenIndex(previous => previous + batchSize)}>Render more</button>
+            {globalImgData.length >= batchSize ?
+                <div>
+                    {pokemonInfoList.slice(0, (batchIteration + 1) * batchSize).map(p => <img key={p.number} src={`data:image/jpeg;base64,${globalImgData[p.number - 1]}`}/>)}
+                </div> :
+                <div>
+                    Loading...
+                </div>}
         </div>
     );
 };
