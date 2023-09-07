@@ -8,7 +8,7 @@ interface IPokemonGridProps {
 }
 
 const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
-    const batchSize = 500;
+    const batchSize = 12;
     const scrollHeightLimit = 200;
 
     const [loadingFirstBatch, setLoadingFirstBatch] = useState(true);
@@ -43,27 +43,41 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         // Triggering the scroll callback whenever any dep in the dependencies array changes.
         // That's because the user might have reached the scroll threshold of the page when the next batch wasn't ready.
         handleScrollCallback();
-    }, [loadingFirstBatch, globalImgData, lastShownIndex, pokemonInfoList]);
+    }, [loadingFirstBatch, globalImgData]);
 
     const fetchPokemonBinaryImage = async (startIndex: number, endIndex: number, abortSignal: AbortSignal, callbackFinishAction?: () => void) => {
-        const promises = pokemonInfoList
+        try {
+            const promises = pokemonInfoList
             .slice(startIndex, endIndex)
             .map(async pokemon => {
                 const response = await axios.get(pokemon.imageUrl || pokemon.shinyUrl, { responseType: 'arraybuffer', signal: abortSignal });
                 const base64Image = Buffer.from(response.data, 'binary').toString('base64');
                 return base64Image;
             });
-        const results = await Promise.all(promises);
-        setGlobalImgData(previous => [...previous, ...results]);
-        callbackFinishAction?.();
+            const results = await Promise.all(promises);
+            setGlobalImgData(previous => [...previous, ...results]);
+        }
+        catch (err) {
+            console.log(JSON.stringify(err));
+        }
+        finally {
+            callbackFinishAction?.();
+        }
     };
 
     useEffect(() => {
         const controller = new AbortController();
+
+        if (globalImgData.length >= pokemonInfoList.length) {
+            console.log("tried to fetch more pokémon");
+            // No more pokémon to fetch.
+            return;
+        }
+
         const isFirstBatch = lastShownIndex === 0;
 
         const startIndex = lastShownIndex;
-        const endIndex = lastShownIndex + batchSize;
+        const endIndex = Math.min(lastShownIndex + batchSize, pokemonInfoList.length);
 
         fetchPokemonBinaryImage(
             startIndex,
@@ -86,12 +100,13 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
 
     console.log(globalImgData.length + " pokemon ready to be shown");
     console.log(lastShownIndex + " lastShown pokemon");
+    console.log(pokemonInfoList.length + " total pokemon")
 
     return (
         <div>
             {globalImgData.length >= batchSize ?
                 <div>
-                    {pokemonInfoList.slice(0, lastShownIndex).map((p, i) => <img key={p.number} src={`data:image/jpeg;base64,${globalImgData[i]}`}/>)}
+                    {pokemonInfoList.slice(0, lastShownIndex).map((p, i) => <img key={i} src={`data:image/jpeg;base64,${globalImgData[i]}`}/>)}
                 </div> :
                 <div>
                     Loading...
