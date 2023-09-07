@@ -62,7 +62,7 @@ const Pokedex = () => {
                 errorLoadingPokemons ?
                     <div>{errorLoadingPokemons}</div> :
                     !loadingPokemons ?
-                        <PokemonGrid pokemonInfoList={pokemonInfoList} /> :
+                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl)} /> :
                         <div>A carregar...</div>
             }
         </>

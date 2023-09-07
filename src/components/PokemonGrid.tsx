@@ -8,29 +8,48 @@ interface IPokemonGridProps {
 }
 
 const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
-    const batchSize = 12;
+    const batchSize = 500;
+    const scrollHeightLimit = 200;
+
     const [loadingFirstBatch, setLoadingFirstBatch] = useState(true);
-    const [batchIteration, setBatchIteration] = useState(0);
+    const [lastShownIndex, setLastShownIndex] = useState(0);
     const [globalImgData, setGlobalImgData] = useState<string[]>([]);
 
     const handleScrollCallback = useCallback(() => {
-        if (!loadingFirstBatch && globalImgData.length >= (batchIteration + 2) * batchSize &&
-            window.innerHeight + window.scrollY >=
-            document.body.offsetHeight - 200
-        ) {
-            setBatchIteration(previous => previous + 1);
+        if (loadingFirstBatch) {
+            // Haven't finished loading the first batch. Too soon to handle scroll callbacks.
+            return;
         }
-    }, [loadingFirstBatch, globalImgData, batchIteration]);
+
+        if (lastShownIndex >= pokemonInfoList.length) {
+            // Already showing all pokemon available.
+            return;
+        }
+        
+        if (globalImgData.length < Math.min(pokemonInfoList.length, lastShownIndex + batchSize)) {
+            // Next batch to show isn't ready yet.
+            return;
+        }
+
+        if (window.innerHeight + window.scrollY >=
+            document.body.offsetHeight - scrollHeightLimit
+        ) {
+            // Show next batch of pokemon if window scroll is less than scrollHeightLimit pixels from reaching the bottom of the page
+            setLastShownIndex(previous => Math.min(previous + batchSize, pokemonInfoList.length));
+        }
+    }, [loadingFirstBatch, globalImgData, lastShownIndex, pokemonInfoList]);
 
     useEffect(() => {
+        // Triggering the scroll callback whenever any dep in the dependencies array changes.
+        // That's because the user might have reached the scroll threshold of the page when the next batch wasn't ready.
         handleScrollCallback();
-    }, [loadingFirstBatch, globalImgData, batchIteration]);
+    }, [loadingFirstBatch, globalImgData, lastShownIndex, pokemonInfoList]);
 
     const fetchPokemonBinaryImage = async (startIndex: number, endIndex: number, abortSignal: AbortSignal, callbackFinishAction?: () => void) => {
         const promises = pokemonInfoList
             .slice(startIndex, endIndex)
             .map(async pokemon => {
-                const response = await axios.get(pokemon.imageUrl, { responseType: 'arraybuffer', signal: abortSignal });
+                const response = await axios.get(pokemon.imageUrl || pokemon.shinyUrl, { responseType: 'arraybuffer', signal: abortSignal });
                 const base64Image = Buffer.from(response.data, 'binary').toString('base64');
                 return base64Image;
             });
@@ -41,10 +60,10 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
 
     useEffect(() => {
         const controller = new AbortController();
-        const isFirstBatch = batchIteration === 0;
+        const isFirstBatch = lastShownIndex === 0;
 
-        const startIndex = isFirstBatch ? 0 : (batchIteration + 1) * batchSize;
-        const endIndex = isFirstBatch ? 2 * batchSize : (batchIteration + 2) * batchSize;
+        const startIndex = lastShownIndex;
+        const endIndex = lastShownIndex + batchSize;
 
         fetchPokemonBinaryImage(
             startIndex,
@@ -56,7 +75,7 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [batchIteration]);
+    }, [lastShownIndex]);
     
     useEffect(() => {
         window.addEventListener("scroll", handleScrollCallback);
@@ -65,14 +84,14 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         };
     }, [handleScrollCallback]);
 
-    console.log(globalImgData.length + " ready");
-    console.log(batchIteration + " batchIteration");
+    console.log(globalImgData.length + " pokemon ready to be shown");
+    console.log(lastShownIndex + " lastShown pokemon");
 
     return (
         <div>
             {globalImgData.length >= batchSize ?
                 <div>
-                    {pokemonInfoList.slice(0, (batchIteration + 1) * batchSize).map(p => <img key={p.number} src={`data:image/jpeg;base64,${globalImgData[p.number - 1]}`}/>)}
+                    {pokemonInfoList.slice(0, lastShownIndex).map((p, i) => <img key={p.number} src={`data:image/jpeg;base64,${globalImgData[i]}`}/>)}
                 </div> :
                 <div>
                     Loading...

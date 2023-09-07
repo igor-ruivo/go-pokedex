@@ -3,7 +3,7 @@ import { PokemonTypes } from "./PokemonTypes";
 export default interface IPokemon {
     name: string;
     imageUrl: string;
-    quizzUrl: string;
+    shinyUrl: string;
     attacks: string[];
     hp: number;
     attack: number;

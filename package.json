@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "go-pokedex",
   "version": "0.1.0",
   "jest": {
     "watchPathIgnorePatterns": [

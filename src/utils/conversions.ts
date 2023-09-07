@@ -6,7 +6,7 @@ export const mapPokemonData: (data: any) => IPokemon = (data: any) => {
         number: data.id,
         name: data.name,
         imageUrl: data.sprites.other["official-artwork"].front_default,
-        quizzUrl: data.sprites.versions["generation-i"]["red-blue"].back_gray,
+        shinyUrl: data.sprites.other["official-artwork"].front_shiny,
         hp: data.stats[0].base_stat,
         attack: data.stats[1].base_stat,
         defense: data.stats[2].base_stat,
