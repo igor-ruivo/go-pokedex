@@ -16,6 +16,7 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     const [globalImgData, setGlobalImgData] = useState(new Map<number, string>());
 
     const previousPokemonInfoList = useRef<IPokemon[]>();
+    const fetchedBatchIndexes = useRef<Map<number, number>>(new Map<number, number>());
 
     const handleScrollCallback = useCallback(() => {
         if (lastShownIndex >= pokemonInfoList.length) {
@@ -60,7 +61,7 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
                 results.forEach(entry => newGlobalData.set(entry.pokemonNumber, entry.image));
                 return newGlobalData;
             });
-            console.log("done!");
+            console.log("done fetching " + pokemonBatch.map(p => p.number).join(", ") + "!");
         }
         catch (err) {
             console.error(JSON.stringify(err));
@@ -146,8 +147,13 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         const startIndex = pokemonInfoList
                 .findIndex(pokemon => !globalImgData.has(pokemon.number)) as number;
         const endIndex = Math.min(startIndex + batchSize, pokemonInfoList.length);
-
-        fetchPokemonBinaryImage(pokemonInfoList.slice(startIndex, endIndex));
+        
+        if(!fetchedBatchIndexes.current.has(startIndex)) {
+            fetchedBatchIndexes.current.set(startIndex, startIndex);
+            fetchPokemonBinaryImage(pokemonInfoList.slice(startIndex, endIndex));
+        } else {
+            console.log("Already fetching the following batch");
+        }
     }, [lastShownIndex, globalImgData, pokemonInfoList]);
     
     useEffect(() => {
