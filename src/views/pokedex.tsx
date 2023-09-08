@@ -62,8 +62,14 @@ const Pokedex = () => {
                 errorLoadingPokemons ?
                     <div>{errorLoadingPokemons}</div> :
                     !loadingPokemons ?
-                    <div><button onClick={() => setPokemonInfoList(p => [p.at(0) as IPokemon, ...p])}>Add Pkm</button>
-                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl)} /></div>
+                    <div>
+                        <button onClick={() => setPokemonInfoList(p => {
+                            const copy = [...p.filter(g => g.number % 25 !== 0)];
+                            return copy;
+                        })}>delete some</button>
+                        <button onClick={() => setPokemonInfoList(p => [...p, {...p.at(0) as IPokemon, number: -1 * p.length + 1}])}>Add Pkm to the start</button>
+                        <button onClick={() => setPokemonInfoList(p => [...p, {...p.at(0) as IPokemon, number: p.length * 10 }])}>Add Pkm to the end</button>
+                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl).sort((a, b) => a.number - b.number)} /></div>
                          :
                         <div>A carregar...</div>
             }
