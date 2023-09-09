@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import IPokemon from '../DTOs/IPokemon';
 import { Buffer } from 'buffer';
-import axios from 'axios';
+import { fetchUrls } from '../utils/network';
 
 interface IPokemonGridProps {
     pokemonInfoList: IPokemon[]
@@ -49,22 +49,23 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     const fetchPokemonBinaryImage = async (pokemonBatch: IPokemon[]) => {
         try {
             console.log("Fetching " + pokemonBatch.map(p => p.number).join(", "));
-            const promises = pokemonBatch
-            .map(async pokemon => {
-                const response = await axios.get(pokemon.imageUrl || pokemon.shinyUrl, { responseType: 'arraybuffer' });
-                const base64Image = Buffer.from(response.data, 'binary').toString('base64');
-                return { pokemonNumber: pokemon.number, image: base64Image };
-            });
-            const results = await Promise.all(promises);
+
+            const response: string[] = await fetchUrls(
+                pokemonBatch.map(pokemon => pokemon.imageUrl || pokemon.shinyUrl),
+                false,
+                { responseType: 'arraybuffer' },
+                (response) => Buffer.from(response, 'binary').toString('base64')
+            );
+            
             setGlobalImgData(previous => {
                 var newGlobalData = new Map(previous);
-                results.forEach(entry => newGlobalData.set(entry.pokemonNumber, entry.image));
+                response.forEach((imageData, index) => newGlobalData.set(pokemonBatch[index].number, imageData));
                 return newGlobalData;
             });
             console.log("done fetching " + pokemonBatch.map(p => p.number).join(", ") + "!");
         }
         catch (err) {
-            console.error(JSON.stringify(err));
+            console.error(err?.toString());
         }
     }
 
@@ -171,7 +172,7 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         <div>
             {globalImgData.size >= batchSize ?
                 <div>
-                    {pokemonInfoList.slice(0, lastShownIndex).map(p => globalImgData.has(p.number) && <img key={p.number} src={`data:image/jpeg;base64,${globalImgData.get(p.number)}`}/>)}
+                    {pokemonInfoList.slice(0, lastShownIndex).map(p => globalImgData.has(p.number) && <img key={p.number} alt={p.name} src={`data:image/jpeg;base64,${globalImgData.get(p.number)}`}/>)}
                 </div> :
                 <div>
                     Loading...
