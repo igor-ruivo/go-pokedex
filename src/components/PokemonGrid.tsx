@@ -87,7 +87,7 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
                 return false;
             }
     
-            return (previousPokemon.imageUrl || previousPokemon.shinyUrl) != (currentPokemon.imageUrl || currentPokemon.shinyUrl);
+            return (previousPokemon.imageUrl || previousPokemon.shinyUrl) !== (currentPokemon.imageUrl || currentPokemon.shinyUrl);
         }
 
         if (previousPokemonInfoList.current) {

@@ -1,83 +1,49 @@
-import { useEffect, useState } from 'react';
-import IPokemon from "../DTOs/IPokemon";
-import { useFetchData } from "../hooks/useFetchData"
-import { cacheTtlInMillis, pokemonApiUrl } from "../utils/Resources";
-import { readEntry, writeEntry } from '../utils/localStorage-handler';
+import { useEffect } from 'react';
+import { useFetchUrls } from "../hooks/useFetchUrls"
+import { pokemonApiUrl } from "../utils/Resources";
 import PokemonGrid from '../components/PokemonGrid';
 import IPokedexResponse from '../DTOs/IPokedexResponse';
-import axios from 'axios';
+import { AxiosRequestConfig } from 'axios';
+import IPokemon from '../DTOs/IPokemon';
 import { mapPokemonData } from '../utils/conversions';
 
-const Pokedex = () => {
-    const [pokemonList, loadingData, errorLoadingData]: [IPokedexResponse, boolean, string] = useFetchData(pokemonApiUrl);
-    const [pokemonInfoList, setPokemonInfoList] = useState<IPokemon[]>([]);
-    const [loadingPokemons, setLoadingPokemons] = useState(true);
-    const [errorLoadingPokemons, setErrorLoadingPokemons] = useState("");
-
+const useFetchAllData: () => [IPokemon[], boolean, string] = () => {
+    const [pokemonList, fetchPokemonListCallback, pokemonListFetchCompleted, errorLoadingPokemonListData]: [IPokedexResponse[], (urls: string[], axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any) => any) => Promise<void>, boolean, string] = useFetchUrls(false);
+    const [pokemonInfoList, fetchPokemonInfoListCallback, pokemonInfoListFetchCompleted, errorLoadingPokemonInfoListData]: [IPokemon[], (urls: string[], axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any) => any) => Promise<void>, boolean, string] = useFetchUrls(false);
+    
     useEffect(() => {
         const controller = new AbortController();
-
-        const fetchData = async () => {
-            if (loadingData || errorLoadingData) {
-                return;
-            }
-
-            try {
-                const promises = pokemonList.results.map(p => new Promise(async (resolve: (value: IPokemon) => void) => {
-                    const cachedData = readEntry<IPokemon>(p.url);
-                    if (cachedData) {
-                        resolve(cachedData);
-                    } else {
-                        const response = await axios.get(p.url, {
-                            signal: controller.signal
-                        });
-
-                        const typedResponseData = mapPokemonData(response.data);
-                        
-                        writeEntry(p.url, typedResponseData, cacheTtlInMillis);
-                        resolve(typedResponseData);
-                    }
-                }));
-                const promiseValues = await Promise.all<IPokemon>(promises);
-                setPokemonInfoList(promiseValues);
-            }
-            catch(error) {
-                setErrorLoadingPokemons(JSON.stringify(error));
-            }
-            finally {
-                setLoadingPokemons(false);
-            }
+        if (!pokemonListFetchCompleted) {
+            fetchPokemonListCallback([pokemonApiUrl], {signal: controller.signal});
         }
-        fetchData();
 
+        if (!pokemonListFetchCompleted || errorLoadingPokemonListData) {
+            return;
+        }
+        
+        fetchPokemonInfoListCallback(pokemonList[0].results.map(p => p.url), {signal: controller.signal}, mapPokemonData);
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [loadingData]);
+    }, [pokemonListFetchCompleted]);
+
+    return [pokemonInfoList, pokemonInfoListFetchCompleted, errorLoadingPokemonListData + errorLoadingPokemonInfoListData];
+}
+
+const Pokedex = () => {
+    const [pokemonInfoList, pokemonInfoListFetchCompleted, errors]: [IPokemon[], boolean, string] = useFetchAllData();
 
     return (
         <>
-            {errorLoadingData ?
-                <div>{errorLoadingData}</div> :
-                errorLoadingPokemons ?
-                    <div>{errorLoadingPokemons}</div> :
-                    !loadingPokemons ?
+            {errors ?
+                <div>{errors}</div> :
+                pokemonInfoListFetchCompleted ?
                     <div>
-                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl).sort((a, b) => a.number - b.number)} /></div>
-                         :
-                        <div>A carregar...</div>
+                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl).sort((a, b) => a.number - b.number)} />
+                    </div> :
+                    <div>Loading...</div>
             }
         </>
     );
 }
 export default Pokedex;
-
-/*
-<button onClick={() => setPokemonInfoList(p => {
-                            const copy = [...p.filter(g => g.number % 25 !== 0)];
-                            return copy;
-                        })}>delete some</button>
-                        <button onClick={() => setPokemonInfoList(p => [...p, {...p.at(0) as IPokemon, number: -1 * p.length + 1}])}>Add Pkm to the start</button>
-                        <button onClick={() => setPokemonInfoList(p => [...p, {...p.at(0) as IPokemon, number: p.length * 10 }])}>Add Pkm to the end</button>
-                        
-*/
