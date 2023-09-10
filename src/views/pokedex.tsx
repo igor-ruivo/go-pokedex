@@ -6,6 +6,8 @@ import IPokedexResponse from '../DTOs/IPokedexResponse';
 import { AxiosRequestConfig } from 'axios';
 import IPokemon from '../DTOs/IPokemon';
 import { mapPokemonData } from '../utils/conversions';
+import './pokedex.css';
+import ControlPanel from '../components/ControlPanel';
 
 const useFetchAllData: () => [IPokemon[], boolean, string] = () => {
     const [pokemonList, fetchPokemonListCallback, pokemonListFetchCompleted, errorLoadingPokemonListData]: [IPokedexResponse[], (urls: string[], axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any) => any) => Promise<void>, boolean, string] = useFetchUrls(false);
@@ -38,9 +40,14 @@ const Pokedex = () => {
             {errors ?
                 <div>{errors}</div> :
                 pokemonInfoListFetchCompleted ?
-                    <div>
-                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl).sort((a, b) => a.number - b.number)} />
-                    </div> :
+                    <>
+                        <div>
+                            <ControlPanel/>
+                        </div>
+                        <div>
+                            <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl).sort((a, b) => a.number - b.number)} />
+                        </div>
+                    </> :
                     <div>Loading...</div>
             }
         </>

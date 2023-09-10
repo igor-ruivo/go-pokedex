@@ -1,0 +1,13 @@
+@import '../styles/theme-variables.scss';
+.top-pane {
+    border-color: #c9c9c9;
+    border-radius: 25px;
+    border-style: solid;
+    min-height: 250px;
+    position: fixed;
+    width: 100%;
+    @include themify($themes) {
+        background: themed("headerFooterBackground");
+        color: themed("textColor");
+    }
+}

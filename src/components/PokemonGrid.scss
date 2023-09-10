@@ -1,0 +1,9 @@
+@import '../styles/theme-variables.scss';
+
+.body {
+    padding-top: 250px;
+    @include themify($themes) {
+        background: themed("bodyBackgroundColor");
+        color: themed("textColor");
+    }
+}

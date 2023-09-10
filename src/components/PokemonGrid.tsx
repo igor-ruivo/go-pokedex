@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import IPokemon from '../DTOs/IPokemon';
 import { Buffer } from 'buffer';
 import { fetchUrls } from '../utils/network';
+import "./PokemonGrid.scss"
 
 interface IPokemonGridProps {
     pokemonInfoList: IPokemon[]
@@ -169,15 +170,16 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     console.log(pokemonInfoList.length + " total pokemon")
 
     return (
-        <div>
+        <body className="body">
             {globalImgData.size >= batchSize ?
                 <div>
                     {pokemonInfoList.slice(0, lastShownIndex).map(p => globalImgData.has(p.number) && <img key={p.number} alt={p.name} src={`data:image/jpeg;base64,${globalImgData.get(p.number)}`}/>)}
                 </div> :
                 <div>
                     Loading...
-                </div>}
-        </div>
+                </div>
+            }
+        </body>
     );
 };
 
