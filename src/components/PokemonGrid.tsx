@@ -65,8 +65,8 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
             });
             console.log("done fetching " + pokemonBatch.map(p => p.number).join(", ") + "!");
         }
-        catch (err) {
-            console.error(err?.toString());
+        catch (error) {
+            console.error(error?.toString());
         }
     }
 

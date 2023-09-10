@@ -1,4 +1,6 @@
+import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import IPokemon from "../DTOs/IPokemon";
+import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 
 export const mapPokemonData: (data: any) => IPokemon = (data: any) => {
@@ -18,4 +20,49 @@ export const mapPokemonData: (data: any) => IPokemon = (data: any) => {
         types: Array.from<any>(data.types).map(t => t.type.name as PokemonTypes),
         attacks: Array.from<any>(data.moves).map(m => m.move.name)
     };
+}
+
+export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (data: any) => {
+    return (Array.from(data) as any[])
+        .filter(pokemon => pokemon.released)
+        .map(pokemon => {
+            const isShadow = pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
+
+            return {
+                dex: pokemon.dex,
+                speciesId: pokemon.speciesId,
+                atk: pokemon.baseStats.atk,
+                def: pokemon.baseStats.def,
+                hp: pokemon.baseStats.hp,
+                fastMoves: pokemon.fastMoves,
+                chargedMoves: pokemon.chargedMoves,
+                eliteMoves: pokemon.eliteMoves ?? [],
+                isShadow: isShadow,
+                isShadowEligible: isShadow ? undefined : pokemon.tags ? Array.from(pokemon.tags).includes("shadoweligible") : false,
+                isMega: pokemon.tags ? Array.from(pokemon.tags).includes("mega") : false,
+                familyId: pokemon.family?.id,
+                parent: pokemon.family?.parent,
+                evolutions: pokemon.family ? pokemon.family.evolutions : []
+            }
+        }
+    );
+}
+
+export const mapRankedPokemon: (data: any) => IRankedPokemon[] = (data: any) => {
+    return (Array.from(data) as any[])
+        .map(pokemon => {
+            return {
+                speciesId: pokemon.speciesId,
+                rating: pokemon.rating,
+                moveset: pokemon.moveset,
+                lead: pokemon.scores[0],
+                switch: pokemon.scores[2],
+                charger: pokemon.scores[3],
+                closer: pokemon.scores[1],
+                consistency: pokemon.scores[5],
+                attacker: pokemon.scores[4],
+                score: pokemon.score
+            }
+        }
+    );
 }
