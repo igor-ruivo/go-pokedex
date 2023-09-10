@@ -1,7 +1,6 @@
-@import '../styles/theme-variables.scss';
+@import './styles/theme-variables.scss';
 
-.grid {
-    padding-top: 250px;
+.main {
     margin: 0;
     @include themify($themes) {
         background: themed("bodyBackgroundColor");

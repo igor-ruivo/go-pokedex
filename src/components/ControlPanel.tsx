@@ -4,13 +4,18 @@ import {
     FormControlLabel,
     FormGroup,
     Stack,
-    Switch
+    Switch,
+    TextField
 } from "@mui/material";
 import '../styles/theme-variables.scss';
 import { useContext } from "react";
 import ThemeContext from "../contexts/theme-context";
 
-const ControlPanel = () => {
+interface IControlPanelProps {
+    onSearchInputChange: React.Dispatch<React.SetStateAction<string>>
+}
+
+const ControlPanel = ({onSearchInputChange}: IControlPanelProps) => {
     const { theme, setTheme } = useContext(ThemeContext);
 
     const handleThemeChange = () => {
@@ -32,7 +37,6 @@ const ControlPanel = () => {
                     control={
                         <Switch
                             color="default"
-                            className="toggle-switch"
                             checked={theme === "dark"}
                             onChange={handleThemeChange}
                             inputProps={{ "aria-label": "controlled" }}
@@ -53,11 +57,11 @@ const ControlPanel = () => {
                     label={"Only released in Pokémon GO"}
                 />
             </FormGroup>
-            <Button
-                variant="contained"
-            >
-                {"z"}
-            </Button>
+            <TextField
+                id="outlined-basic"
+                onChange={e => onSearchInputChange(e.target.value)}
+                label="Search Pokémon"
+                variant="outlined" />
             <Button
                 variant="contained"
             >

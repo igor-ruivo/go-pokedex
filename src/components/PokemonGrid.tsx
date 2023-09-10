@@ -94,24 +94,14 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
 
         if (previousPokemonInfoList.current) {
             console.log("noticed a change of props");
-
-            // Deleting deprecated image data from pokemon that may have ceased to exist.
-            const deprecatedPokemonNumbers = Array.from(globalImgData.keys())
-                .filter(storedPokemonNumber => !pokemonInfoList.find(currentPokemon => currentPokemon.number === storedPokemonNumber));
-            if (deprecatedPokemonNumbers.length) {
-                setGlobalImgData(previous => {
-                    const newGlobalImgData = new Map(previous);
-                    deprecatedPokemonNumbers
-                        .forEach(pokemonNumber => newGlobalImgData.delete(pokemonNumber));
-                    return newGlobalImgData;
-                });
-            }
+            let anythingChanged = false;
 
             // Fetching missing new pokemon that should already be visible by now.
             const missingPokemon = pokemonInfoList
                 .slice(0, lastShownIndex)
                 .filter(pokemon => !globalImgData.has(pokemon.number));
             if (missingPokemon.length) {
+                anythingChanged = true;
                 fetchPokemonBinaryImage(missingPokemon);
             }
 
@@ -120,7 +110,12 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
                 .filter(storedPokemonNumber => pokemonHasDifferentImage(storedPokemonNumber))
                 .map(outdatedPokemonNumber => pokemonInfoList.find(pokemon => pokemon.number === outdatedPokemonNumber) as IPokemon);
             if (outdatedPokemon.length) {
+                anythingChanged = true;
                 fetchPokemonBinaryImage(outdatedPokemon);
+            }
+
+            if (anythingChanged) {
+                //setLastShownIndex(p => Math.min(p, pokemonInfoList.length));
             }
         }
         console.log("changing props");
@@ -170,8 +165,8 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     console.log(pokemonInfoList.length + " total pokemon")
 
     return (
-        <body className="body">
-            {globalImgData.size >= batchSize ?
+        <div className="grid">
+            {pokemonInfoList.slice(0, lastShownIndex).every(pokemon => globalImgData.has(pokemon.number)) ?
                 <div>
                     {pokemonInfoList.slice(0, lastShownIndex).map(p => globalImgData.has(p.number) && <img key={p.number} alt={p.name} src={`data:image/jpeg;base64,${globalImgData.get(p.number)}`}/>)}
                 </div> :
@@ -179,7 +174,7 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
                     Loading...
                 </div>
             }
-        </body>
+        </div>
     );
 };
 

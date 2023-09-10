@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import Pokedex from './views/pokedex';
 import ThemeContext from './contexts/theme-context';
 import { useState } from 'react';
@@ -14,7 +14,7 @@ const App = () => {
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      <div className={`theme-${theme}`}>
+      <div className={`theme-${theme} main`}>
         <Pokedex/>
       </div>
       </ThemeContext.Provider>

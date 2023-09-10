@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useFetchUrls } from "../hooks/useFetchUrls"
 import { pokemonApiUrl } from "../utils/Resources";
 import PokemonGrid from '../components/PokemonGrid';
@@ -34,6 +34,8 @@ const useFetchAllData: () => [IPokemon[], boolean, string] = () => {
 
 const Pokedex = () => {
     const [pokemonInfoList, pokemonInfoListFetchCompleted, errors]: [IPokemon[], boolean, string] = useFetchAllData();
+    const [filterGo, setFilterGo] = useState(false);
+    const [inputText, setInputText] = useState("");
 
     return (
         <>
@@ -42,11 +44,9 @@ const Pokedex = () => {
                 pokemonInfoListFetchCompleted ?
                     <>
                         <div>
-                            <ControlPanel/>
+                            <ControlPanel onSearchInputChange={setInputText}/>
                         </div>
-                        <div>
-                            <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.imageUrl || p.shinyUrl).sort((a, b) => a.number - b.number)} />
-                        </div>
+                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.name.includes(inputText.toLowerCase()) && (p.imageUrl || p.shinyUrl)).sort((a, b) => a.number - b.number)} />
                     </> :
                     <div>Loading...</div>
             }
