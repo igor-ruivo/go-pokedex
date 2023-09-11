@@ -1,8 +1,16 @@
 @import '../styles/theme-variables.scss';
 
+.grid-container {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    @include themify($themes) {
+        background: themed("bodyBackgroundColor");
+        color: themed("textColor");
+    }
+}
 .grid {
     padding-top: 250px;
-    margin: 0;
     @include themify($themes) {
         background: themed("bodyBackgroundColor");
         color: themed("textColor");

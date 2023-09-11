@@ -5,7 +5,7 @@ import PokemonGrid from '../components/PokemonGrid';
 import IPokedexResponse from '../DTOs/IPokedexResponse';
 import IPokemon from '../DTOs/IPokemon';
 import { mapGamemasterPokemonData, mapPokemonData, mapRankedPokemon } from '../utils/conversions';
-import './pokedex.css';
+import './pokedex.scss';
 import ControlPanel from '../components/ControlPanel';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
@@ -56,7 +56,7 @@ const Pokedex = () => {
     const [inputText, setInputText] = useState("");
 
     return (
-        <>
+        <div className="pokedex">
             {errors ?
                 <div>{errors}</div> :
                 pokemonInfoListFetchCompleted ?
@@ -68,7 +68,7 @@ const Pokedex = () => {
                     </> :
                     <div>Loading...</div>
             }
-        </>
+        </div>
     );
 }
 export default Pokedex;
