@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import IPokemon from '../DTOs/IPokemon';
 import { Buffer } from 'buffer';
 import { fetchUrls } from '../utils/network';
@@ -17,7 +17,6 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     const [globalImgData, setGlobalImgData] = useState(new Map<number, string>());
 
     const shownPokemonSlice = pokemonInfoList.slice(0, lastShownIndex);
-    const previousPokemonInfoList = useRef<IPokemon[]>();
 
     const handleScrollCallback = useCallback(() => {
         if (lastShownIndex >= pokemonInfoList.length) {
@@ -41,8 +40,10 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     }, [globalImgData, lastShownIndex, pokemonInfoList]);
 
     useEffect(() => {
-        // Triggering the scroll callback whenever any dep in the dependencies array changes.
+        // Triggering the scroll callback whenever globalImgData or lastShownIndex changes.
         // That's because the user might have reached the scroll threshold of the page when the next batch wasn't ready.
+        // Or because props may have changed, which means the scrolling has reset, and that it needs to trigger the scrolling callback
+        // in order to show the initial batch again.
         handleScrollCallback();
     }, [globalImgData]);
 
@@ -70,55 +71,13 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     }
 
     useEffect(() => {
-        // Sync data in case of a prop change
-
-        const pokemonHasDifferentImage = (pokemonNumber: number): boolean => {
-            if (!previousPokemonInfoList.current) {
-                return false;
-            }
-    
-            const previousPokemon = previousPokemonInfoList.current.find(pokemon => pokemon.number === pokemonNumber);
-            const currentPokemon = pokemonInfoList.find(pokemon => pokemon.number === pokemonNumber);
-    
-            if (!previousPokemon) {
-                return false;
-            }
-    
-            if (!currentPokemon) {
-                return false;
-            }
-    
-            return (previousPokemon.imageUrl || previousPokemon.shinyUrl) !== (currentPokemon.imageUrl || currentPokemon.shinyUrl);
-        }
-
-        if (previousPokemonInfoList.current) {
-            console.log("noticed a change of props");
-
-            // Fetching missing new pokemon that should already be visible by now.
-            // TODO: set scroll to 0 again and remove this missing pokemon fallback
-            const missingPokemon = shownPokemonSlice.filter(pokemon => !globalImgData.has(pokemon.number));
-            if (missingPokemon.length > 0) {
-                fetchPokemonBinaryImage(missingPokemon);
-            }
-
-            // Updating image urls that have changed in the meantime
-            const pokemonWithDifferentImages = Array.from(globalImgData.keys())
-                .filter(pokemonHasDifferentImage)
-                .map(outdatedPokemonNumber => pokemonInfoList.find(pokemon => pokemon.number === outdatedPokemonNumber) as IPokemon);
-
-            if (pokemonWithDifferentImages.length > 0) {
-                fetchPokemonBinaryImage(pokemonWithDifferentImages);
-            }
-        }
-        console.log("changing props");
-        previousPokemonInfoList.current = pokemonInfoList;
+        // Whenever the props change, let's reset the scrolling and the shown pokemon.
+        setLastShownIndex(0);
     }, [pokemonInfoList]);
 
     useEffect(() => {
         // Not using an AbortController because it's ok to let previous axios requests finish.
         // If anything, they will always contribute to the completeness of the globalImgData map.
-
-        // Filling the buffer, if needed...
         const pokemonBatch: IPokemon[] = [];
 
         // In the first render, let's show Pokemon as soon as we have batchSize. 
@@ -132,10 +91,11 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         if (pokemonBatch.length > 0) {
             fetchPokemonBinaryImage(pokemonBatch);
         } else {
+            handleScrollCallback();
             console.log("Nothing added to the buffer.");
         }
 
-    }, [lastShownIndex]);
+    }, [lastShownIndex, pokemonInfoList]);
     
     useEffect(() => {
         window.addEventListener("scroll", handleScrollCallback);
