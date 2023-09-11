@@ -16,8 +16,8 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     const [lastShownIndex, setLastShownIndex] = useState(0);
     const [globalImgData, setGlobalImgData] = useState(new Map<number, string>());
 
+    const shownPokemonSlice = pokemonInfoList.slice(0, lastShownIndex);
     const previousPokemonInfoList = useRef<IPokemon[]>();
-    const fetchedBatchIndexes = useRef<Map<number, number>>(new Map<number, number>());
 
     const handleScrollCallback = useCallback(() => {
         if (lastShownIndex >= pokemonInfoList.length) {
@@ -27,8 +27,7 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
 
         if (pokemonInfoList
             .slice(lastShownIndex, Math.min(pokemonInfoList.length, lastShownIndex + batchSize))
-            .filter(pokemon => !globalImgData.has(pokemon.number))
-            .length) {
+            .some(pokemon => !globalImgData.has(pokemon.number))) {
             // Next batch to show isn't ready yet.
             return;
         }
@@ -94,28 +93,21 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
 
         if (previousPokemonInfoList.current) {
             console.log("noticed a change of props");
-            let anythingChanged = false;
 
             // Fetching missing new pokemon that should already be visible by now.
-            const missingPokemon = pokemonInfoList
-                .slice(0, lastShownIndex)
-                .filter(pokemon => !globalImgData.has(pokemon.number));
-            if (missingPokemon.length) {
-                anythingChanged = true;
+            // TODO: set scroll to 0 again and remove this missing pokemon fallback
+            const missingPokemon = shownPokemonSlice.filter(pokemon => !globalImgData.has(pokemon.number));
+            if (missingPokemon.length > 0) {
                 fetchPokemonBinaryImage(missingPokemon);
             }
 
             // Updating image urls that have changed in the meantime
-            const outdatedPokemon = Array.from(globalImgData.keys())
-                .filter(storedPokemonNumber => pokemonHasDifferentImage(storedPokemonNumber))
+            const pokemonWithDifferentImages = Array.from(globalImgData.keys())
+                .filter(pokemonHasDifferentImage)
                 .map(outdatedPokemonNumber => pokemonInfoList.find(pokemon => pokemon.number === outdatedPokemonNumber) as IPokemon);
-            if (outdatedPokemon.length) {
-                anythingChanged = true;
-                fetchPokemonBinaryImage(outdatedPokemon);
-            }
 
-            if (anythingChanged) {
-                //setLastShownIndex(p => Math.min(p, pokemonInfoList.length));
+            if (pokemonWithDifferentImages.length > 0) {
+                fetchPokemonBinaryImage(pokemonWithDifferentImages);
             }
         }
         console.log("changing props");
@@ -126,32 +118,24 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
         // Not using an AbortController because it's ok to let previous axios requests finish.
         // If anything, they will always contribute to the completeness of the globalImgData map.
 
-        if (globalImgData.size >= pokemonInfoList.length && pokemonInfoList.every(pokemon => globalImgData.has(pokemon.number))) {
-            console.log("tried to fetch more pokémon");
-            // No more pokémon to fetch.
-            return;
-        }
+        // Filling the buffer, if needed...
+        const pokemonBatch: IPokemon[] = [];
 
-        if (globalImgData.size >= lastShownIndex + bufferSize &&
-            pokemonInfoList
-                .slice(lastShownIndex, Math.min(lastShownIndex + bufferSize, pokemonInfoList.length))
-                .every(pokemon => globalImgData.has(pokemon.number))) {
-            console.log("Too soon to fetch more images");
-            // Too soon to fetch more images.
-            return;
+        // In the first render, let's show Pokemon as soon as we have batchSize. 
+        const targetIndex = Math.min(lastShownIndex === 0 ? batchSize : lastShownIndex + bufferSize, pokemonInfoList.length);
+        for (let i = lastShownIndex; i < targetIndex; i++) {
+            if (globalImgData.has(pokemonInfoList[i].number)) {
+                continue;
+            }
+            pokemonBatch.push(pokemonInfoList[i]);
         }
-
-        const startIndex = pokemonInfoList
-                .findIndex(pokemon => !globalImgData.has(pokemon.number)) as number;
-        const endIndex = Math.min(startIndex + batchSize, pokemonInfoList.length);
-        
-        if(!fetchedBatchIndexes.current.has(startIndex)) {
-            fetchedBatchIndexes.current.set(startIndex, startIndex);
-            fetchPokemonBinaryImage(pokemonInfoList.slice(startIndex, endIndex));
+        if (pokemonBatch.length > 0) {
+            fetchPokemonBinaryImage(pokemonBatch);
         } else {
-            console.log("Already fetching the following batch");
+            console.log("Nothing added to the buffer.");
         }
-    }, [lastShownIndex, globalImgData, pokemonInfoList]);
+
+    }, [lastShownIndex]);
     
     useEffect(() => {
         window.addEventListener("scroll", handleScrollCallback);
@@ -163,12 +147,12 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
     console.log(pokemonInfoList.filter(p => globalImgData.has(p.number)).length + " pokemon ready to be shown");
     console.log(lastShownIndex + " lastShown pokemon");
     console.log(pokemonInfoList.length + " total pokemon")
-
+    console.log(globalImgData.size, " metadata length")
     return (
         <div className="grid">
-            {pokemonInfoList.slice(0, lastShownIndex).every(pokemon => globalImgData.has(pokemon.number)) ?
+            {shownPokemonSlice.every(pokemon => globalImgData.has(pokemon.number)) ?
                 <div>
-                    {pokemonInfoList.slice(0, lastShownIndex).map(p => globalImgData.has(p.number) && <img key={p.number} alt={p.name} src={`data:image/jpeg;base64,${globalImgData.get(p.number)}`}/>)}
+                    {shownPokemonSlice.map(p => globalImgData.has(p.number) && <img key={p.number} alt={p.name} src={`data:image/jpeg;base64,${globalImgData.get(p.number)}`}/>)}
                 </div> :
                 <div>
                     Loading...
