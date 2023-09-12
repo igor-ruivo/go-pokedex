@@ -6,11 +6,11 @@ import IPokedexResponse from '../DTOs/IPokedexResponse';
 import IPokemon from '../DTOs/IPokemon';
 import { mapGamemasterPokemonData, mapPokemonData, mapRankedPokemon } from '../utils/conversions';
 import './pokedex.scss';
-import ControlPanel from '../components/ControlPanel';
+import ControlPanel, { ListType } from '../components/ControlPanel';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 
-const useFetchAllData: () => [IPokemon[], boolean, string] = () => {
+const useFetchAllData: () => [IPokemon[], IGamemasterPokemon[], IRankedPokemon[], IRankedPokemon[], IRankedPokemon[], boolean, string] = () => {
     const [pokemonList, fetchPokemonListCallback, pokemonListFetchCompleted, errorLoadingPokemonListData]: FetchData<IPokedexResponse> = useFetchUrls();
     const [pokemonInfoList, fetchPokemonInfoListCallback, pokemonInfoListFetchCompleted, errorLoadingPokemonInfoListData]: FetchData<IPokemon> = useFetchUrls();
     const [gamemasterPokemonList, fetchGamemasterPokemonList, gememasterPokemonListFetchCompleted, errorLoadingGamemasterPokemonListData]: FetchData<IGamemasterPokemon[]> = useFetchUrls();
@@ -47,13 +47,57 @@ const useFetchAllData: () => [IPokemon[], boolean, string] = () => {
         }
     }, [pokemonListFetchCompleted]);
 
-    return [pokemonInfoList, pokemonInfoListFetchCompleted, buildErrorMessage([errorLoadingPokemonListData, errorLoadingPokemonInfoListData, errorLoadingGamemasterPokemonListData, errorLoadingGreatLeagueListData, errorLoadingUltraLeagueListData, errorLoadingMasterLeagueListData])];
+    return [pokemonInfoList, gamemasterPokemonList[0], greatLeagueList[0], ultraLeagueList[0], masterLeagueList[0], pokemonInfoListFetchCompleted, buildErrorMessage([errorLoadingPokemonListData, errorLoadingPokemonInfoListData, errorLoadingGamemasterPokemonListData, errorLoadingGreatLeagueListData, errorLoadingUltraLeagueListData, errorLoadingMasterLeagueListData])];
 }
 
 const Pokedex = () => {
-    const [pokemonInfoList, pokemonInfoListFetchCompleted, errors]: [IPokemon[], boolean, string] = useFetchAllData();
+    const [pokemonInfoList, gamemasterPokemonList, greatLeagueList, ultraLeagueList, masterLeagueList, pokemonInfoListFetchCompleted, errors]: [IPokemon[], IGamemasterPokemon[], IRankedPokemon[], IRankedPokemon[], IRankedPokemon[], boolean, string] = useFetchAllData();
     const [filterGo, setFilterGo] = useState(false);
     const [inputText, setInputText] = useState("");
+    const [listType, setListType] = useState(ListType.POKEDEX);
+    const [showFamilyTree, setShowFamilyTree] = useState(true);
+
+    let processedList: IPokemon[] = [];
+
+    const mapper = (r: IRankedPokemon): IPokemon => ({
+        name: r.speciesId,
+        imageUrl: pokemonInfoList.find(p => p.name.split("_")[0] === r.speciesId)?.imageUrl ?? "",
+        shinyUrl: pokemonInfoList.find(p => p.name.split("_")[0] === r.speciesId)?.shinyUrl ?? "",
+        attacks: [],
+        hp: 0,
+        attack: 0,
+        defense: 0,
+        specialAttack: 0,
+        specialDefense: 0,
+        speed: 0,
+        types: [],
+        height: 0,
+        weight: 0,
+        number: gamemasterPokemonList.find(p => p.speciesId === r.speciesId)?.dex ?? 0
+    });
+
+    switch (listType) {
+        case ListType.POKEDEX:
+            processedList = pokemonInfoList
+                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl) && (!filterGo || gamemasterPokemonList.some(gm => gm.speciesId === p.name)))
+                .sort((a, b) => a.number - b.number);
+                break;
+        case ListType.GREAT_LEAGUE:
+            processedList = greatLeagueList
+                .map(mapper)
+                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
+            break;
+        case ListType.ULTRA_LEAGUE:
+            processedList = ultraLeagueList
+                .map(mapper)
+                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
+            break;
+        case ListType.MASTER_LEAGUE:
+            processedList = masterLeagueList
+                .map(mapper)
+                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
+            break;
+    }
 
     return (
         <div className="pokedex">
@@ -62,9 +106,9 @@ const Pokedex = () => {
                 pokemonInfoListFetchCompleted ?
                     <>
                         <div>
-                            <ControlPanel onSearchInputChange={setInputText}/>
+                            <ControlPanel onSearchInputChange={setInputText} filterGo={filterGo} onFilterGo={setFilterGo} listType={listType} onChangeListType={setListType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
                         </div>
-                        <PokemonGrid pokemonInfoList={pokemonInfoList.filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl)).sort((a, b) => a.number - b.number)} />
+                        <PokemonGrid pokemonInfoList={processedList} />
                     </> :
                     <div>Loading...</div>
             }
