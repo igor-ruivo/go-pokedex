@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import IPokemon from '../DTOs/IPokemon';
 import { Buffer } from 'buffer';
 import { fetchUrls } from '../utils/network';
@@ -8,7 +8,7 @@ interface IPokemonGridProps {
     pokemonInfoList: IPokemon[]
 }
 
-const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
+const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const batchSize = 12;
     const bufferSize = 3 * batchSize;
     const scrollHeightLimit = 200;
@@ -119,6 +119,6 @@ const PokemonGrid = ({pokemonInfoList}: IPokemonGridProps) => {
             </div>
         </div>
     );
-};
+});
 
 export default PokemonGrid;

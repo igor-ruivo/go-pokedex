@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FetchData, useFetchUrls } from "../hooks/useFetchUrls"
 import { gamemasterPokemonUrl, pokemonApiUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from "../utils/Resources";
 import PokemonGrid from '../components/PokemonGrid';
@@ -57,47 +57,53 @@ const Pokedex = () => {
     const [listType, setListType] = useState(ListType.POKEDEX);
     const [showFamilyTree, setShowFamilyTree] = useState(true);
 
-    let processedList: IPokemon[] = [];
+    const prepareData = () => {
+        let processedList: IPokemon[] = [];
 
-    const mapper = (r: IRankedPokemon): IPokemon => ({
-        name: r.speciesId,
-        imageUrl: pokemonInfoList.find(p => p.name.split("_")[0] === r.speciesId)?.imageUrl ?? "",
-        shinyUrl: pokemonInfoList.find(p => p.name.split("_")[0] === r.speciesId)?.shinyUrl ?? "",
-        attacks: [],
-        hp: 0,
-        attack: 0,
-        defense: 0,
-        specialAttack: 0,
-        specialDefense: 0,
-        speed: 0,
-        types: [],
-        height: 0,
-        weight: 0,
-        number: gamemasterPokemonList.find(p => p.speciesId === r.speciesId)?.dex ?? 0
-    });
+        const mapper = (r: IRankedPokemon): IPokemon => ({
+            name: r.speciesId,
+            imageUrl: pokemonInfoList.find(p => p.name.split("_")[0] === r.speciesId)?.imageUrl ?? "",
+            shinyUrl: pokemonInfoList.find(p => p.name.split("_")[0] === r.speciesId)?.shinyUrl ?? "",
+            attacks: [],
+            hp: 0,
+            attack: 0,
+            defense: 0,
+            specialAttack: 0,
+            specialDefense: 0,
+            speed: 0,
+            types: [],
+            height: 0,
+            weight: 0,
+            number: gamemasterPokemonList.find(p => p.speciesId === r.speciesId)?.dex ?? 0
+        });
 
-    switch (listType) {
-        case ListType.POKEDEX:
-            processedList = pokemonInfoList
-                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl) && (!filterGo || gamemasterPokemonList.some(gm => gm.speciesId === p.name)))
-                .sort((a, b) => a.number - b.number);
+        switch (listType) {
+            case ListType.POKEDEX:
+                processedList = pokemonInfoList
+                    .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl) && (!filterGo || gamemasterPokemonList.some(gm => gm.speciesId === p.name)))
+                    .sort((a, b) => a.number - b.number);
+                    break;
+            case ListType.GREAT_LEAGUE:
+                processedList = greatLeagueList
+                    .map(mapper)
+                    .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
                 break;
-        case ListType.GREAT_LEAGUE:
-            processedList = greatLeagueList
-                .map(mapper)
-                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
-            break;
-        case ListType.ULTRA_LEAGUE:
-            processedList = ultraLeagueList
-                .map(mapper)
-                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
-            break;
-        case ListType.MASTER_LEAGUE:
-            processedList = masterLeagueList
-                .map(mapper)
-                .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
-            break;
+            case ListType.ULTRA_LEAGUE:
+                processedList = ultraLeagueList
+                    .map(mapper)
+                    .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
+                break;
+            case ListType.MASTER_LEAGUE:
+                processedList = masterLeagueList
+                    .map(mapper)
+                    .filter(p => p.name.includes(inputText.toLowerCase().trim()) && (p.imageUrl || p.shinyUrl));
+                break;
+        }
+
+        return processedList;
     }
+
+    const data = useMemo(prepareData, [pokemonInfoList, gamemasterPokemonList, listType, inputText, filterGo, greatLeagueList, ultraLeagueList, masterLeagueList]);
 
     return (
         <div className="pokedex">
@@ -108,7 +114,7 @@ const Pokedex = () => {
                         <div>
                             <ControlPanel onSearchInputChange={setInputText} filterGo={filterGo} onFilterGo={setFilterGo} listType={listType} onChangeListType={setListType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
                         </div>
-                        <PokemonGrid pokemonInfoList={processedList} />
+                        <PokemonGrid pokemonInfoList={data} />
                     </> :
                     <div>Loading...</div>
             }

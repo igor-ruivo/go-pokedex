@@ -1,9 +1,0 @@
-@import './styles/theme-variables.scss';
-
-.main {
-    margin: 0;
-    @include themify($themes) {
-        background: themed("bodyBackgroundColor");
-        color: themed("textColor");
-    }
-}

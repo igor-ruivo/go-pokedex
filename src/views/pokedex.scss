@@ -1,6 +1,8 @@
 @import '../styles/theme-variables.scss';
 
 .pokedex {
+    height: 100%;
+    width: 100%;
     @include themify($themes) {
         background: themed("headerFooterBackground");
         color: themed("textColor");
