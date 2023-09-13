@@ -12,9 +12,9 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const scrollHeightLimit = 200;
 
     const [lastShownIndex, setLastShownIndex] = useState(0);
-    const [globalImgData, setGlobalImgData] = useState(new Map<string, boolean>());
+    const [readyImages, setReadyImages] = useState(new Set<string>());
 
-    const pokemonImagesAlreadyFetched = useRef(new Set<string>());
+    const fetchedImages = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);
 
     const shownPokemonSlice = pokemonInfoList.slice(0, lastShownIndex);
@@ -32,7 +32,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
 
         if (pokemonInfoList
             .slice(lastShownIndex, Math.min(pokemonInfoList.length, lastShownIndex + batchSize))
-            .some(pokemon => !globalImgData.get(pokemon.speciesId))) {
+            .some(pokemon => !readyImages.has(pokemon.speciesId))) {
             // Next batch to show isn't ready yet.
             return;
         }
@@ -43,14 +43,14 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             // Show next batch of pokemon if window scroll is less than scrollHeightLimit pixels from reaching the bottom of the page
             setLastShownIndex(previous => Math.min(previous + batchSize, pokemonInfoList.length));
         }
-    }, [globalImgData, lastShownIndex, pokemonInfoList]);
+    }, [readyImages, lastShownIndex, pokemonInfoList]);
 
     const fetchPokemonBinaryImage = async (pokemonBatch: IGamemasterPokemon[]) => {
         try {
-            const promises = pokemonBatch.map(pokemon => new Promise<true>(async (resolve, reject) => {
+            const promises = pokemonBatch.map(pokemon => new Promise<string>(async (resolve, reject) => {
                 try {
                     const image = new Image();
-                    image.onload = () => resolve(true);
+                    image.onload = () => resolve(pokemon.speciesId);
                     image.onerror = () => reject(`Failed to load image ${pokemon.imageUrl}.`);
                     image.src = pokemon.imageUrl;
                 }
@@ -61,9 +61,9 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
 
             const answers = await Promise.all(promises);
 
-            setGlobalImgData(previous => {
-                var newGlobalData = new Map(previous);
-                answers.forEach((imageData, index) => newGlobalData.set(pokemonBatch[index].speciesId, imageData));
+            setReadyImages(previous => {
+                var newGlobalData = new Set(previous);
+                answers.forEach(pokemonId => newGlobalData.add(pokemonId));
                 return newGlobalData;
             });
         
@@ -74,14 +74,12 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     }
 
     useEffect(() => {
-        // Not using an AbortController because it's ok to let previous axios requests finish.
-        // If anything, they will always contribute to the completeness of the globalImgData map.
         const pokemonBatch: IGamemasterPokemon[] = [];
         const targetIndex = Math.min(pokemonInfoList.length, lastShownIndex + bufferSize);
 
         for (let i = lastShownIndex; i < targetIndex && pokemonBatch.length < batchSize; i++) {
             const pokemonId = pokemonInfoList[i].speciesId;
-            if (globalImgData.has(pokemonId) || pokemonImagesAlreadyFetched.current.has(pokemonId)) {
+            if (readyImages.has(pokemonId) || fetchedImages.current.has(pokemonId)) {
                 continue;
             }
             pokemonBatch.push(pokemonInfoList[i]);
@@ -91,7 +89,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             fetchPokemonBinaryImage(pokemonBatch);
         }
 
-    }, [lastShownIndex, pokemonInfoList, globalImgData]);
+    }, [lastShownIndex, pokemonInfoList, readyImages]);
 
     useEffect(() => {
         // Triggering the scroll callback whenever state or props changes.
@@ -99,7 +97,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         // Or because props may have changed, which means the scrolling has reset, and that it needs to trigger the scrolling callback
         // in order to show the initial batch again.
         handleScrollCallback();
-    }, [globalImgData, pokemonInfoList, lastShownIndex]);
+    }, [readyImages, pokemonInfoList, lastShownIndex]);
     
     useEffect(() => {
         window.addEventListener("scroll", handleScrollCallback);
@@ -114,7 +112,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
                 {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
                 {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                     <div>
-                        {shownPokemonSlice.map(p => globalImgData.has(p.speciesId) && <img key={p.speciesId} alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>)}
+                        {shownPokemonSlice.map(p => readyImages.has(p.speciesId) && <img key={p.speciesId} alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>)}
                     </div> :
                     pokemonInfoList.length > 0 && <div>
                         Loading...
