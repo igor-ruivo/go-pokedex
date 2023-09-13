@@ -39,41 +39,43 @@ const Pokedex = () => {
 
         // TODO: improve with a Map<speciesID, IGamemasterPokemon>
         const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon.find(p => p.speciesId === r.speciesId) as IGamemasterPokemon;
-        const inputFilter = (p: IGamemasterPokemon) => {
-            const baseFilter = (name: string) => name.toLowerCase().includes(inputText.toLowerCase().trim());
-            
+        
+        const inputFilter = (p: IGamemasterPokemon, extraConditions?: ((pokemon: IGamemasterPokemon) => boolean)[]) => {
+            if (extraConditions && extraConditions.some(condition => !condition(p))) {
+                return false;
+            }
+
             if (!p.familyId || !showFamilyTree) {
-                return baseFilter(p.speciesName);
+                return baseFilter(p);
             }
 
             const wholeFamilyNames = gamemasterPokemon
-                .filter(pokemon => pokemon.familyId === p.familyId)
-                .map(pokemon => pokemon.speciesName);
+                .filter(pokemon => pokemon.familyId === p.familyId && (!extraConditions || extraConditions.every(condition => condition(pokemon))));
 
-            console.log(wholeFamilyNames);
-
-            return wholeFamilyNames.some(name => baseFilter(name));
+            return wholeFamilyNames.some(baseFilter);
         }
+
+        const baseFilter = (p: IGamemasterPokemon) => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim());
 
         switch (listType) {
             case ListType.POKEDEX:
                 processedList = gamemasterPokemon
-                    .filter(p => !p.isShadow && inputFilter(p));
+                    .filter(p => inputFilter(p, [(pokemon) => !pokemon.isShadow]));
                 break;
             case ListType.GREAT_LEAGUE:
                 processedList = rankLists[0]
                     .map(mapper)
-                    .filter(inputFilter);
+                    .filter(p => inputFilter(p));
                 break;
             case ListType.ULTRA_LEAGUE:
                 processedList = rankLists[1]
                     .map(mapper)
-                    .filter(inputFilter);
+                    .filter(p => inputFilter(p));
                 break;
             case ListType.MASTER_LEAGUE:
                 processedList = rankLists[2]
                     .map(mapper)
-                    .filter(inputFilter);
+                    .filter(p => inputFilter(p));
                 break;
         }
 
