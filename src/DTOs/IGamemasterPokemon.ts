@@ -1,6 +1,11 @@
+import { PokemonTypes } from "./PokemonTypes";
+
 export interface IGamemasterPokemon {
     dex: number,
     speciesId: string,
+    speciesName: string,
+    types: PokemonTypes[],
+    imageUrl: string,
     atk: number,
     def: number,
     hp: number,

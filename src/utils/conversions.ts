@@ -1,26 +1,7 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import IPokemon from "../DTOs/IPokemon";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
-
-export const mapPokemonData: (data: any) => IPokemon = (data: any) => {
-    return {
-        number: data.id,
-        name: data.name,
-        imageUrl: data.sprites.other["official-artwork"].front_default,
-        shinyUrl: data.sprites.other["official-artwork"].front_shiny,
-        hp: data.stats[0].base_stat,
-        attack: data.stats[1].base_stat,
-        defense: data.stats[2].base_stat,
-        specialAttack: data.stats[3].base_stat,
-        specialDefense: data.stats[4].base_stat,
-        speed: data.stats[5].base_stat,
-        height: data.height,
-        weight: data.weight,
-        types: Array.from<any>(data.types).map(t => t.type.name as PokemonTypes),
-        attacks: Array.from<any>(data.moves).map(m => m.move.name)
-    };
-}
+import { buildPokemonImageUrl } from "./Resources";
 
 export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (data: any) => {
     return (Array.from(data) as any[])
@@ -28,9 +9,22 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
         .map(pokemon => {
             const isShadow = pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
 
+            let urlDex = "" + pokemon.dex;
+            const zerosToAddToUrl = 3 - urlDex.length;
+            
+            if (zerosToAddToUrl > 0) {
+                for (let i = 0; i < zerosToAddToUrl; i++) {
+                    urlDex = "0" + urlDex;
+                }
+            }
+            //const form = (pokemon.speciesId as string)
+
             return {
                 dex: pokemon.dex,
                 speciesId: pokemon.speciesId,
+                speciesName: pokemon.speciesName,
+                imageUrl: buildPokemonImageUrl(urlDex),
+                types: Array.from(pokemon.types).map(t => t as PokemonTypes),
                 atk: pokemon.baseStats.atk,
                 def: pokemon.baseStats.def,
                 hp: pokemon.baseStats.hp,

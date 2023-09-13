@@ -22,9 +22,6 @@ export enum ListType {
 
 interface IControlPanelProps {
     onSearchInputChange: React.Dispatch<React.SetStateAction<string>>,
-    filterGo: boolean,
-    onFilterGo: React.Dispatch<React.SetStateAction<boolean>>,
-    listType: ListType,
     onChangeListType: React.Dispatch<React.SetStateAction<ListType>>,
     showFamilyTree: boolean,
     onShowFamilyTree: React.Dispatch<React.SetStateAction<boolean>>
@@ -170,7 +167,7 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     <style>
         {`
             .CustomInputIntroduction {
-                width: 320px;
+                min-width: 220px;
                 font-family: IBM Plex Sans, sans-serif;
                 font-size: 0.875rem;
                 font-weight: 400;
@@ -199,7 +196,7 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     </style>
 );
 
-const ControlPanel = ({onSearchInputChange, filterGo, onFilterGo, listType, onChangeListType, showFamilyTree, onShowFamilyTree}: IControlPanelProps) => {
+const ControlPanel = ({onSearchInputChange, onChangeListType, showFamilyTree, onShowFamilyTree}: IControlPanelProps) => {
     const { theme, setTheme } = useContext(ThemeContext);
     const [ inputText, setInputText ] = useState("");
     const isCurrentDark = theme === "dark";
@@ -288,18 +285,6 @@ const ControlPanel = ({onSearchInputChange, filterGo, onFilterGo, listType, onCh
                     </Select>
                     <DropdownStyles isDarkMode = {isCurrentDark}/>
                 </React.Fragment>
-                {listType === ListType.POKEDEX && <FormControlLabel
-                    control={
-                        <Switch
-                            color="default"
-                            className="toggle-switch"
-                            checked={filterGo}
-                            onChange={_e => onFilterGo(previousFilter => !previousFilter)}
-                            inputProps={{ "aria-label": "controlled" }}
-                        />
-                    }
-                    label={"Only released in Pokémon GO"}
-                />}
             </Stack>
         </div>
     );

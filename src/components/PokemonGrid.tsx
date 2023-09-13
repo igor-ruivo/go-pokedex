@@ -1,11 +1,11 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import IPokemon from '../DTOs/IPokemon';
 import { Buffer } from 'buffer';
 import { fetchUrls } from '../utils/network';
 import "./PokemonGrid.scss"
+import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 
 interface IPokemonGridProps {
-    pokemonInfoList: IPokemon[]
+    pokemonInfoList: IGamemasterPokemon[]
 }
 
 const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
@@ -14,9 +14,9 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const scrollHeightLimit = 200;
 
     const [lastShownIndex, setLastShownIndex] = useState(0);
-    const [globalImgData, setGlobalImgData] = useState(new Map<number, string>());
+    const [globalImgData, setGlobalImgData] = useState(new Map<string, string>());
 
-    const pokemonImagesAlreadyFetched = useRef(new Set<number>());
+    const pokemonImagesAlreadyFetched = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);
 
     const shownPokemonSlice = pokemonInfoList.slice(0, lastShownIndex);
@@ -34,7 +34,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
 
         if (pokemonInfoList
             .slice(lastShownIndex, Math.min(pokemonInfoList.length, lastShownIndex + batchSize))
-            .some(pokemon => !globalImgData.has(pokemon.number))) {
+            .some(pokemon => !globalImgData.has(pokemon.speciesId))) {
             // Next batch to show isn't ready yet.
             return;
         }
@@ -47,14 +47,14 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         }
     }, [globalImgData, lastShownIndex, pokemonInfoList]);
 
-    const fetchPokemonBinaryImage = async (pokemonBatch: IPokemon[]) => {
+    const fetchPokemonBinaryImage = async (pokemonBatch: IGamemasterPokemon[]) => {
         try {
             pokemonBatch
-                .map(pokemon => pokemon.number)
-                .forEach(pokemonNumber => pokemonImagesAlreadyFetched.current.add(pokemonNumber));
+                .map(pokemon => pokemon.speciesId)
+                .forEach(id => pokemonImagesAlreadyFetched.current.add(id));
 
             const response: string[] = await fetchUrls(
-                pokemonBatch.map(pokemon => pokemon.imageUrl || pokemon.shinyUrl),
+                pokemonBatch.map(pokemon => pokemon.imageUrl),
                 false,
                 { responseType: 'arraybuffer' },
                 (response) => Buffer.from(response, 'binary').toString('base64')
@@ -62,7 +62,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             
             setGlobalImgData(previous => {
                 var newGlobalData = new Map(previous);
-                response.forEach((imageData, index) => newGlobalData.set(pokemonBatch[index].number, imageData));
+                response.forEach((imageData, index) => newGlobalData.set(pokemonBatch[index].speciesId, imageData));
                 return newGlobalData;
             });
         }
@@ -74,12 +74,12 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     useEffect(() => {
         // Not using an AbortController because it's ok to let previous axios requests finish.
         // If anything, they will always contribute to the completeness of the globalImgData map.
-        const pokemonBatch: IPokemon[] = [];
+        const pokemonBatch: IGamemasterPokemon[] = [];
         const targetIndex = Math.min(pokemonInfoList.length, lastShownIndex + bufferSize);
 
         for (let i = lastShownIndex; i < targetIndex && pokemonBatch.length < batchSize; i++) {
-            const pokemonNumber = pokemonInfoList[i].number;
-            if (globalImgData.has(pokemonNumber) || pokemonImagesAlreadyFetched.current.has(pokemonNumber)) {
+            const pokemonId = pokemonInfoList[i].speciesId;
+            if (globalImgData.has(pokemonId) || pokemonImagesAlreadyFetched.current.has(pokemonId)) {
                 continue;
             }
             pokemonBatch.push(pokemonInfoList[i]);
@@ -108,9 +108,9 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     return (
         <div className="grid-container">
             <div className="grid" ref={renderDivRef}>
-                {shownPokemonSlice.every(pokemon => globalImgData.has(pokemon.number)) ?
+                {shownPokemonSlice.every(pokemon => globalImgData.has(pokemon.speciesId)) ?
                     <div>
-                        {shownPokemonSlice.map(p => globalImgData.has(p.number) && <img key={p.number} alt={p.name} src={`data:image/jpeg;base64,${globalImgData.get(p.number)}`}/>)}
+                        {shownPokemonSlice.map(p => globalImgData.has(p.speciesId) && <img key={p.speciesId} alt={p.speciesName} src={`data:image/jpeg;base64,${globalImgData.get(p.speciesId)}`}/>)}
                     </div> :
                     <div>
                         Loading...
