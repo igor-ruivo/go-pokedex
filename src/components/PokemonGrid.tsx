@@ -1,6 +1,4 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { Buffer } from 'buffer';
-import { fetchUrls } from '../utils/network';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 
@@ -14,7 +12,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const scrollHeightLimit = 200;
 
     const [lastShownIndex, setLastShownIndex] = useState(0);
-    const [globalImgData, setGlobalImgData] = useState(new Map<string, string>());
+    const [globalImgData, setGlobalImgData] = useState(new Map<string, boolean>());
 
     const pokemonImagesAlreadyFetched = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);
@@ -49,22 +47,26 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
 
     const fetchPokemonBinaryImage = async (pokemonBatch: IGamemasterPokemon[]) => {
         try {
-            pokemonBatch
-                .map(pokemon => pokemon.speciesId)
-                .forEach(id => pokemonImagesAlreadyFetched.current.add(id));
+            const promises = pokemonBatch.map(pokemon => new Promise<boolean>(async (resolve, reject) => {
+                try {
+                    const image = new Image();
+                    image.src = pokemon.imageUrl;
+                    image.onload = () => resolve(true);
+                    image.onerror = () => reject(`Image failed to load: ${pokemon.imageUrl}`);
+                }
+                catch (error) {
+                    reject(error);
+                }
+            }));
 
-            const response: string[] = await fetchUrls(
-                pokemonBatch.map(pokemon => pokemon.imageUrl),
-                false,
-                { responseType: 'arraybuffer' },
-                (response) => Buffer.from(response, 'binary').toString('base64')
-            );
-            
+            const answers = await Promise.all(promises);
+
             setGlobalImgData(previous => {
                 var newGlobalData = new Map(previous);
-                response.forEach((imageData, index) => newGlobalData.set(pokemonBatch[index].speciesId, imageData));
+                answers.forEach((imageData, index) => newGlobalData.set(pokemonBatch[index].speciesId, imageData));
                 return newGlobalData;
             });
+        
         }
         catch (error) {
             console.error(error?.toString());
@@ -84,6 +86,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             }
             pokemonBatch.push(pokemonInfoList[i]);
         }
+        
         if (pokemonBatch.length > 0) {
             fetchPokemonBinaryImage(pokemonBatch);
         }
@@ -110,7 +113,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             <div className="grid" ref={renderDivRef}>
                 {shownPokemonSlice.every(pokemon => globalImgData.has(pokemon.speciesId)) ?
                     <div>
-                        {shownPokemonSlice.map(p => globalImgData.has(p.speciesId) && <img key={p.speciesId} alt={p.speciesName} src={`data:image/jpeg;base64,${globalImgData.get(p.speciesId)}`}/>)}
+                        {shownPokemonSlice.map(p => globalImgData.has(p.speciesId) && <img key={p.speciesId} alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>)}
                     </div> :
                     <div>
                         Loading...
