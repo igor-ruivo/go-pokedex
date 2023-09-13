@@ -23,6 +23,7 @@ export enum ListType {
 interface IControlPanelProps {
     onSearchInputChange: React.Dispatch<React.SetStateAction<string>>,
     onChangeListType: React.Dispatch<React.SetStateAction<ListType>>,
+    listType: ListType,
     showFamilyTree: boolean,
     onShowFamilyTree: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -118,7 +119,7 @@ const DropdownStyles = ({isDarkMode}: IMuiStyleProps) => (
             }
 
             .CustomSelect-popper {
-                z-index: 1;
+                z-index: 2;
             }
 
             .CustomSelect-option {
@@ -196,7 +197,7 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     </style>
 );
 
-const ControlPanel = ({onSearchInputChange, onChangeListType, showFamilyTree, onShowFamilyTree}: IControlPanelProps) => {
+const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFamilyTree, onShowFamilyTree}: IControlPanelProps) => {
     const { theme, setTheme } = useContext(ThemeContext);
     const [ inputText, setInputText ] = useState("");
     const isCurrentDark = theme === "dark";
@@ -250,6 +251,7 @@ const ControlPanel = ({onSearchInputChange, onChangeListType, showFamilyTree, on
                     <FormControlLabel
                         control={
                             <Switch
+                                disabled={listType !== ListType.POKEDEX && !inputText} 
                                 color="default"
                                 className="toggle-switch"
                                 checked={showFamilyTree}

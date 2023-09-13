@@ -87,7 +87,7 @@ const Pokedex = () => {
                 fetchCompleted ?
                     <>
                         <div>
-                            <ControlPanel onSearchInputChange={setInputText} onChangeListType={setListType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
+                            <ControlPanel onSearchInputChange={setInputText} onChangeListType={setListType} listType={listType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
                         </div>
                         <PokemonGrid pokemonInfoList={data} />
                     </> :

@@ -6,6 +6,7 @@
     min-height: 180px;
     position: fixed;
     width: 100%;
+    z-index: 2;
     @include themify($themes) {
         background: themed("headerFooterBackground");
         color: themed("textColor");
