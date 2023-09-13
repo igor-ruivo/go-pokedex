@@ -28,7 +28,7 @@ const Pokedex = () => {
     const [gamemasterPokemon, rankLists, fetchCompleted, errors]: [IGamemasterPokemon[], IRankedPokemon[][], boolean, string] = useFetchAllData();
     const [inputText, setInputText] = useState("");
     const [listType, setListType] = useState(ListType.POKEDEX);
-    const [showFamilyTree, setShowFamilyTree] = useState(true);
+    const [showFamilyTree, setShowFamilyTree] = useState(false);
 
     const prepareData = () => {
         if (!fetchCompleted) {
@@ -37,11 +37,22 @@ const Pokedex = () => {
 
         let processedList: IGamemasterPokemon[] = [];
 
-        // TODO: use a ref with a Map<speciesID, IGamemasterPokemon>
+        // TODO: improve with a Map<speciesID, IGamemasterPokemon>
         const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon.find(p => p.speciesId === r.speciesId) as IGamemasterPokemon;
-        const inputFilter = (p: IGamemasterPokemon) => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim());
+        const inputFilter = (p: IGamemasterPokemon) => {
+            const baseFilter = (name: string) => name.toLowerCase().includes(inputText.toLowerCase().trim());
+            
+            if (!p.familyId || !showFamilyTree) {
+                return baseFilter(p.speciesName);
+            }
 
-        // TODO: list shadows in rankings
+            const wholeFamilyNames = gamemasterPokemon
+                .filter(pokemon => pokemon.familyId === p.familyId)
+                .map(pokemon => pokemon.speciesName);
+
+            return wholeFamilyNames.some(name => baseFilter(name));
+        }
+
         switch (listType) {
             case ListType.POKEDEX:
                 processedList = gamemasterPokemon
@@ -67,7 +78,7 @@ const Pokedex = () => {
         return processedList;
     }
 
-    const data = useMemo(prepareData, [gamemasterPokemon, listType, inputText, rankLists, fetchCompleted]);
+    const data = useMemo(prepareData, [gamemasterPokemon, listType, inputText, rankLists, fetchCompleted, showFamilyTree]);
 
     return (
         <div className="pokedex">

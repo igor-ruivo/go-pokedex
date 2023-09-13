@@ -8,11 +8,14 @@
         background: themed("bodyBackgroundColor");
         color: themed("textColor");
     }
-}
-.grid {
-    padding-top: 250px;
-    @include themify($themes) {
-        background: themed("bodyBackgroundColor");
-        color: themed("textColor");
+    .grid {
+        padding-top: 250px;
+        @include themify($themes) {
+            background: themed("bodyBackgroundColor");
+            color: themed("textColor");
+        }
+        .shadow-pokemon {
+            background-image: url("https://i.imgur.com/viaOP9R.png");
+        }
     }
 }

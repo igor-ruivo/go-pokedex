@@ -112,7 +112,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
                 {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
                 {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                     <div>
-                        {shownPokemonSlice.map(p => readyImages.has(p.speciesId) && <img key={p.speciesId} alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>)}
+                        {shownPokemonSlice.map(p => readyImages.has(p.speciesId) && <img className={p.isShadow ? "shadow-pokemon" : ""} key={p.speciesId} alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>)}
                     </div> :
                     pokemonInfoList.length > 0 && <div>
                         Loading...

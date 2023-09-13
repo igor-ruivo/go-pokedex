@@ -8,5 +8,6 @@ export interface IRankedPokemon {
     closer: number,
     consistency: number,
     attacker: number,
-    score: number
+    score: number,
+    rank: number
 }

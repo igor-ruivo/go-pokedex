@@ -3,18 +3,17 @@ import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { buildPokemonImageUrl } from "./Resources";
 
+const blacklistedSpecieIds = [
+    "pikachu_5th_anniversary",
+    "pikachu_flying",
+    "pikachu_kariyushi",
+    "pikachu_libre",
+    "pikachu_pop_star",
+    "pikachu_rock_star",
+    "pikachu_shaymin"
+];
+
 export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (data: any) => {
-
-    const blacklistedSpecieIds = [
-        "pikachu_5th_anniversary",
-        "pikachu_flying",
-        "pikachu_kariyushi",
-        "pikachu_libre",
-        "pikachu_pop_star",
-        "pikachu_rock_star",
-        "pikachu_shaymin"
-    ];
-
     const overrideMappings = new Map<string, string>();
     overrideMappings.set("slowbro_mega", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/080_f2.png");
     overrideMappings.set("slowbro_galarian", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/080_f3.png");
@@ -91,7 +90,8 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
 
 export const mapRankedPokemon: (data: any) => IRankedPokemon[] = (data: any) => {
     return (Array.from(data) as any[])
-        .map(pokemon => {
+        .filter(pokemon => !blacklistedSpecieIds.includes(pokemon.speciesId))
+        .map((pokemon, index) => {
             return {
                 speciesId: pokemon.speciesId,
                 rating: pokemon.rating,
@@ -102,7 +102,8 @@ export const mapRankedPokemon: (data: any) => IRankedPokemon[] = (data: any) => 
                 closer: pokemon.scores[1],
                 consistency: pokemon.scores[5],
                 attacker: pokemon.scores[4],
-                score: pokemon.score
+                score: pokemon.score,
+                rank: index + 1
             }
         }
     );
