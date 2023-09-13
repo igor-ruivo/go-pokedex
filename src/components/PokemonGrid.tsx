@@ -1,6 +1,11 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { experimentalStyled as styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import ThemeContext from '../contexts/theme-context';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[]
@@ -18,6 +23,9 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const renderDivRef = useRef<HTMLDivElement>(null);
 
     const shownPokemonSlice = pokemonInfoList.slice(0, lastShownIndex);
+
+    const { theme } = useContext(ThemeContext);
+    const isCurrentDark = theme === "dark";
 
     useEffect(() => {
         // Whenever the props change, let's reset the scrolling and the shown pokemon.
@@ -106,24 +114,40 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         };
     }, [handleScrollCallback]);
 
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: isCurrentDark ? '#24292f' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    }));
+
     return (
-        <div className="grid-container">
-            <div className="grid" ref={renderDivRef}>
-                {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
-                {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
-                    <>
-                        {shownPokemonSlice.map(p => readyImages.has(p.speciesId) && 
-                            <div className="image-container" key={p.speciesId}>
-                                <img alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>
-                                {p.isShadow && <img className='shadow-overlay' src="https://i.imgur.com/4FYNAqX.png" alt={p.speciesName} height={475} width={475} />}
-                            </div>
-                        )}
-                    </> :
-                    pokemonInfoList.length > 0 && <div>
-                        Loading...
-                    </div>
-                }
-            </div>
+        <div className="grid" ref={renderDivRef}>
+            {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
+            {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
+                <>
+                    <Box sx={{ flexGrow: 1 }}>
+                        <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                            {shownPokemonSlice.map(p => (
+                                <Grid xs={2} sm={4} md={4} key={p.speciesId}>
+                                    {readyImages.has(p.speciesId) &&
+                                    <Item>
+                                        <div className="images_container" key={p.speciesId}>
+                                            <img className="image" alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>
+                                            {p.isShadow && <img className='image shadow-overlay' src="https://i.imgur.com/4FYNAqX.png" alt={p.speciesName} height={475} width={475} />}
+                                        </div>
+                                    </Item>}
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Box>
+                </> 
+                :
+                pokemonInfoList.length > 0 && <div>
+                    Loading...
+                </div>
+            }
         </div>
     );
 });

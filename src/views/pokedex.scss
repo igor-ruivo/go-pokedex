@@ -4,7 +4,7 @@
     height: 100%;
     width: 100%;
     @include themify($themes) {
-        background: themed("headerFooterBackground");
+        background: themed("footerBackground");
         color: themed("textColor");
     }
 }

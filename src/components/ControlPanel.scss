@@ -8,7 +8,7 @@
     width: 100%;
     z-index: 2;
     @include themify($themes) {
-        background: themed("headerFooterBackground");
+        background: themed("headerBackground");
         color: themed("textColor");
     }
 }

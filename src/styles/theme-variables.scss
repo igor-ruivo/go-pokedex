@@ -1,12 +1,14 @@
 $themes: (
     light: (
         bodyBackgroundColor: #f8f8fa,
-        headerFooterBackground: #fff,
+        headerBackground: #fff,
+        footerBackground: #fff,
         textColor: #000,
     ),
     dark: (
-        bodyBackgroundColor: #222736,
-        headerFooterBackground: #36394c,
+        bodyBackgroundColor: #202023,
+        headerBackground: #48494f,
+        footerBackground: #202023,
         textColor: #eff2f7,
     ),
 );

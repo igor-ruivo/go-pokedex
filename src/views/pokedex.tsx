@@ -50,6 +50,8 @@ const Pokedex = () => {
                 .filter(pokemon => pokemon.familyId === p.familyId)
                 .map(pokemon => pokemon.speciesName);
 
+            console.log(wholeFamilyNames);
+
             return wholeFamilyNames.some(name => baseFilter(name));
         }
 

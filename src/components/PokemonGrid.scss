@@ -1,29 +1,29 @@
 @import '../styles/theme-variables.scss';
 
-.grid-container {
-    margin: 0;
-    height: 100%;
-    width: 100%;
+.grid {
+    padding-top: 200px;
     @include themify($themes) {
         background: themed("bodyBackgroundColor");
         color: themed("textColor");
     }
-    .grid {
-        padding-top: 200px;
-        @include themify($themes) {
-            background: themed("bodyBackgroundColor");
-            color: themed("textColor");
-        }
 
-        .image-container {
-            position: relative;
-            display: inline-block;
-        }
+    .images_container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .shadow-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    .image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .shadow-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
     }
 }

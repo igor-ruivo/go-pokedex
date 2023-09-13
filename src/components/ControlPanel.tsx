@@ -168,7 +168,7 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     <style>
         {`
             .CustomInputIntroduction {
-                min-width: 220px;
+                min-width: 180px;
                 font-family: IBM Plex Sans, sans-serif;
                 font-size: 0.875rem;
                 font-weight: 400;
@@ -178,15 +178,15 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
                 color: ${isDarkMode ? grey[300] : grey[900]};
                 background: ${isDarkMode ? grey[900] : '#fff'};
                 border: 1px solid ${isDarkMode ? grey[700] : grey[200]};
-                box-shadow: 0px 2px 24px ${isDarkMode ? cyan[800] : cyan[100]};
+                box-shadow: 0px 2px 24px ${isDarkMode ? grey[800] : grey[100]};
                 
                 &:hover {
-                    border-color: ${cyan[400]};
+                    border-color: ${grey[400]};
                 }
 
                 &:focus {
-                    border-color: ${cyan[400]};
-                    box-shadow: 0 0 0 3px ${isDarkMode ? cyan[600] : cyan[200]};
+                    border-color: ${grey[400]};
+                    box-shadow: 0 0 0 3px ${isDarkMode ? grey[600] : grey[200]};
                 }
 
                 &:focus-visible {
@@ -251,7 +251,7 @@ const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFami
                     <FormControlLabel
                         control={
                             <Switch
-                                disabled={listType !== ListType.POKEDEX && !inputText} 
+                                disabled={!inputText} 
                                 color="default"
                                 className="toggle-switch"
                                 checked={showFamilyTree}
