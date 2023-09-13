@@ -111,9 +111,14 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             <div className="grid" ref={renderDivRef}>
                 {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
                 {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
-                    <div>
-                        {shownPokemonSlice.map(p => readyImages.has(p.speciesId) && <img className={p.isShadow ? "shadow-pokemon" : ""} key={p.speciesId} alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>)}
-                    </div> :
+                    <>
+                        {shownPokemonSlice.map(p => readyImages.has(p.speciesId) && 
+                            <div className="image-container" key={p.speciesId}>
+                                <img alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>
+                                {p.isShadow && <img className='shadow-overlay' src="https://i.imgur.com/4FYNAqX.png" alt={p.speciesName} height={475} width={475} />}
+                            </div>
+                        )}
+                    </> :
                     pokemonInfoList.length > 0 && <div>
                         Loading...
                     </div>
