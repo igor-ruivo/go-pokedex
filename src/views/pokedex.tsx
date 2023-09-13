@@ -49,17 +49,17 @@ const Pokedex = () => {
             case ListType.GREAT_LEAGUE:
                 processedList = rankLists[0]
                     .map(mapper)
-                    .filter(p => !p.isShadow && p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
+                    .filter(p => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
                 break;
             case ListType.ULTRA_LEAGUE:
                 processedList = rankLists[1]
                     .map(mapper)
-                    .filter(p => !p.isShadow && p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
+                    .filter(p => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
                 break;
             case ListType.MASTER_LEAGUE:
                 processedList = rankLists[2]
                     .map(mapper)
-                    .filter(p => !p.isShadow && p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
+                    .filter(p => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
                 break;
         }
 

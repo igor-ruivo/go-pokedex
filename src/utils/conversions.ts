@@ -37,10 +37,13 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
     overrideMappings.set("oricorio_pau", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/741_f3.png");
     overrideMappings.set("oricorio_pom_pom", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/741_f2.png");
 
+    const baseDataFilter = (pokemon: any) => pokemon.released && !blacklistedSpecieIds.includes(pokemon.speciesId);
+    const isShadowConditionFilter = (pokemon: any) => pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
+
     return (Array.from(data) as any[])
-        .filter(pokemon => pokemon.released && !blacklistedSpecieIds.includes(pokemon.speciesId))
+        .filter(baseDataFilter)
         .map(pokemon => {
-            const isShadow = pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
+            const isShadow = isShadowConditionFilter(pokemon);
 
             let urlDex = "" + pokemon.dex;
             const zerosToAddToUrl = 3 - urlDex.length;
@@ -51,9 +54,17 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 }
             }
 
-            const repeatedDexs = (data as any[]).filter(p => p.released && !blacklistedSpecieIds.includes(p.speciesId) && p.dex === pokemon.dex && !(p.tags ? Array.from(p.tags).includes("shadow") : false));
-            const currentIndex = repeatedDexs.findIndex(p => p.speciesId === pokemon.speciesId);
-            const form = currentIndex === 0 ? undefined : "" + (currentIndex + 1);
+            const idForIndexCalc = pokemon.speciesId.replace("_shadow", "");
+
+            let form = "";
+            const repeatedDexs = (data as any[]).filter(p => baseDataFilter(p) && p.dex === pokemon.dex && !isShadowConditionFilter(p));
+            const currentIndex = repeatedDexs.findIndex(p => p.speciesId === idForIndexCalc);
+            if (currentIndex === -1) {
+                throw new Error("Couldn't find matching species id.");
+            }
+            if (currentIndex > 0) {
+                form = "" + (currentIndex + 1);
+            }
 
             return {
                 dex: pokemon.dex,
