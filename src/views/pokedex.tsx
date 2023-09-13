@@ -14,7 +14,7 @@ const useFetchAllData: () => [IGamemasterPokemon[], IRankedPokemon[][], boolean,
 
     useEffect(() => {
         const controller = new AbortController();
-        fetchGamemasterPokemon([gamemasterPokemonUrl], false, {signal: controller.signal}, mapGamemasterPokemonData);
+        fetchGamemasterPokemon([gamemasterPokemonUrl], true, {signal: controller.signal}, mapGamemasterPokemonData);
         fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], true, {signal: controller.signal}, mapRankedPokemon);
         return () => {
             controller.abort("Request canceled by cleanup.");
@@ -39,27 +39,28 @@ const Pokedex = () => {
 
         // TODO: use a ref with a Map<speciesID, IGamemasterPokemon>
         const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon.find(p => p.speciesId === r.speciesId) as IGamemasterPokemon;
+        const inputFilter = (p: IGamemasterPokemon) => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim());
 
         // TODO: list shadows in rankings
         switch (listType) {
             case ListType.POKEDEX:
                 processedList = gamemasterPokemon
-                    .filter(p => !p.isShadow && p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
+                    .filter(p => !p.isShadow && inputFilter(p));
                 break;
             case ListType.GREAT_LEAGUE:
                 processedList = rankLists[0]
                     .map(mapper)
-                    .filter(p => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
+                    .filter(inputFilter);
                 break;
             case ListType.ULTRA_LEAGUE:
                 processedList = rankLists[1]
                     .map(mapper)
-                    .filter(p => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
+                    .filter(inputFilter);
                 break;
             case ListType.MASTER_LEAGUE:
                 processedList = rankLists[2]
                     .map(mapper)
-                    .filter(p => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim()));
+                    .filter(inputFilter);
                 break;
         }
 

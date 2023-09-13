@@ -32,7 +32,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
 
         if (pokemonInfoList
             .slice(lastShownIndex, Math.min(pokemonInfoList.length, lastShownIndex + batchSize))
-            .some(pokemon => !globalImgData.has(pokemon.speciesId))) {
+            .some(pokemon => !globalImgData.get(pokemon.speciesId))) {
             // Next batch to show isn't ready yet.
             return;
         }
@@ -47,12 +47,12 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
 
     const fetchPokemonBinaryImage = async (pokemonBatch: IGamemasterPokemon[]) => {
         try {
-            const promises = pokemonBatch.map(pokemon => new Promise<boolean>(async (resolve, reject) => {
+            const promises = pokemonBatch.map(pokemon => new Promise<true>(async (resolve, reject) => {
                 try {
                     const image = new Image();
-                    image.src = pokemon.imageUrl;
                     image.onload = () => resolve(true);
-                    image.onerror = () => reject(`Image failed to load: ${pokemon.imageUrl}`);
+                    image.onerror = () => reject(`Failed to load image ${pokemon.imageUrl}.`);
+                    image.src = pokemon.imageUrl;
                 }
                 catch (error) {
                     reject(error);
@@ -111,11 +111,12 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     return (
         <div className="grid-container">
             <div className="grid" ref={renderDivRef}>
-                {shownPokemonSlice.every(pokemon => globalImgData.has(pokemon.speciesId)) ?
+                {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
+                {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                     <div>
                         {shownPokemonSlice.map(p => globalImgData.has(p.speciesId) && <img key={p.speciesId} alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>)}
                     </div> :
-                    <div>
+                    pokemonInfoList.length > 0 && <div>
                         Loading...
                     </div>
                 }
