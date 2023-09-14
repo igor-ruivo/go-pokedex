@@ -12,8 +12,8 @@ interface IPokemonGridProps {
 }
 
 const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
-    const batchSize = 12;
-    const bufferSize = 3 * batchSize;
+    const batchSize = 24;
+    const bufferSize = 5 * batchSize;
     const scrollHeightLimit = 200;
 
     const [lastShownIndex, setLastShownIndex] = useState(0);
@@ -94,6 +94,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         }
         
         if (pokemonBatch.length > 0) {
+            pokemonBatch.forEach(p => fetchedImages.current.add(p.speciesId));
             fetchPokemonBinaryImage(pokemonBatch);
         }
 
@@ -128,9 +129,9 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                 <>
                     <Box sx={{ flexGrow: 1 }}>
-                        <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                        <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
                             {shownPokemonSlice.map(p => (
-                                <Grid xs={2} sm={4} md={4} key={p.speciesId}>
+                                <Grid xs={4} sm={3} md={3} key={p.speciesId}>
                                     {readyImages.has(p.speciesId) &&
                                     <Item>
                                         <div className="images_container" key={p.speciesId}>

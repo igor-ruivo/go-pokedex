@@ -13,28 +13,31 @@ const blacklistedSpecieIds = [
     "pikachu_shaymin"
 ];
 
+const type = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i) ? "detail" : "full";
+
 export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (data: any) => {
     const overrideMappings = new Map<string, string>();
-    overrideMappings.set("slowbro_mega", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/080_f2.png");
-    overrideMappings.set("slowbro_galarian", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/080_f3.png");
+    overrideMappings.set("slowbro_mega", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/080_f2.png`);
+    overrideMappings.set("slowbro_galarian", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/080_f3.png`);
     overrideMappings.set("mewtwo_armored", "https://i.imgur.com/Vwhh8KW.png");
     overrideMappings.set("castform_sunny", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10013.png");
     overrideMappings.set("castform_rainy", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10014.png");
     overrideMappings.set("castform_snowy", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10015.png");
-    overrideMappings.set("rotom_frost", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/479_f4.png");
-    overrideMappings.set("rotom_mow", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/479_f6.png");
-    overrideMappings.set("rotom_wash", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/479_f3.png");
-    overrideMappings.set("darmanitan_galarian_standard", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/555_f2.png");
-    overrideMappings.set("darmanitan_standard", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/555.png");
-    overrideMappings.set("genesect_burn", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/649.png");
-    overrideMappings.set("genesect_chill", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/649.png");
-    overrideMappings.set("genesect_douse", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/649.png");
-    overrideMappings.set("genesect_shock", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/649.png");
-    overrideMappings.set("zygarde_10", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/718_f2.png");
-    overrideMappings.set("zygarde", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/718.png");
-    overrideMappings.set("zygarde_complete", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/718_f3.png");
-    overrideMappings.set("oricorio_pau", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/741_f3.png");
-    overrideMappings.set("oricorio_pom_pom", "https://assets.pokemon.com/assets/cms2/img/pokedex/full/741_f2.png");
+    overrideMappings.set("rotom_frost", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/479_f4.png`);
+    overrideMappings.set("rotom_mow", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/479_f6.png`);
+    overrideMappings.set("rotom_wash", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/479_f3.png`);
+    overrideMappings.set("darmanitan_galarian_standard", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/555_f2.png`);
+    overrideMappings.set("darmanitan_standard", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/555.png`);
+    overrideMappings.set("genesect_burn", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/649.png`);
+    overrideMappings.set("genesect_chill", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/649.png`);
+    overrideMappings.set("genesect_douse", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/649.png`);
+    overrideMappings.set("genesect_shock", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/649.png`);
+    overrideMappings.set("zygarde_10", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/718_f2.png`);
+    overrideMappings.set("zygarde", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/718.png`);
+    overrideMappings.set("zygarde_complete", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/718_f3.png`);
+    overrideMappings.set("oricorio_pau", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/741_f3.png`);
+    overrideMappings.set("oricorio_pom_pom", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/741_f2.png`);
+    overrideMappings.set("pumpkaboo_small", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/710.png`);
 
     const baseDataFilter = (pokemon: any) => pokemon.released && !blacklistedSpecieIds.includes(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
@@ -69,7 +72,7 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 dex: pokemon.dex,
                 speciesId: pokemon.speciesId,
                 speciesName: pokemon.speciesName,
-                imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, form),
+                imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
                 types: Array.from(pokemon.types).map(t => t as PokemonTypes),
                 atk: pokemon.baseStats.atk,
                 def: pokemon.baseStats.def,
