@@ -241,6 +241,8 @@ const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFami
                     alignItems="center"
                 >
                     <Input
+                        spellCheck="false"
+                        autoCorrect="off"
                         slotProps={{ input: { className: 'CustomInputIntroduction' } }}
                         aria-label="Search Pokémon…"
                         placeholder="Search Pokémon…"
