@@ -1,10 +1,7 @@
 @import '../styles/theme-variables.scss';
-
-.grid {
-    padding-top: 200px;
-    a {
-      text-decoration: none;
-    }
+.loading_renderer {
+    height: 100%;
+    width: 100%;
     @include themify($themes) {
         background: themed("bodyBackgroundColor");
         color: themed("textColor");

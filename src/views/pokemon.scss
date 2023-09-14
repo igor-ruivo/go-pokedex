@@ -1,9 +1,8 @@
 @import '../styles/theme-variables.scss';
 
-.pokemon_card {
-  white-space: nowrap;
-  font-size: calc(4px + .5vw);
+.pokemon {
   @include themify($themes) {
+    background: themed("bodyBackgroundColor");
     color: themed("textColor");
   }
 }

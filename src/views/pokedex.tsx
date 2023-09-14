@@ -1,31 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
-import { FetchData, useFetchUrls } from "../hooks/useFetchUrls"
-import { gamemasterPokemonUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from "../utils/Resources";
+import { useContext, useMemo, useState } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
-import { mapGamemasterPokemonData, mapRankedPokemon } from '../utils/conversions';
 import './pokedex.scss';
 import ControlPanel, { ListType } from '../components/ControlPanel';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
-
-const useFetchAllData: () => [IGamemasterPokemon[], IRankedPokemon[][], boolean, string] = () => {
-    const [gamemasterPokemon, fetchGamemasterPokemon, gememasterPokemonFetchCompleted, errorLoadingGamemasterData]: FetchData<IGamemasterPokemon[]> = useFetchUrls();
-    const [rankLists, fetchRankLists, rankListsFetchCompleted, errorLoadingRankListsData]: FetchData<IRankedPokemon[]> = useFetchUrls();
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchGamemasterPokemon([gamemasterPokemonUrl], true, {signal: controller.signal}, mapGamemasterPokemonData);
-        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], true, {signal: controller.signal}, mapRankedPokemon);
-        return () => {
-            controller.abort("Request canceled by cleanup.");
-        }
-    }, []);
-
-    return [gamemasterPokemon[0], rankLists, gememasterPokemonFetchCompleted && rankListsFetchCompleted, errorLoadingGamemasterData + errorLoadingRankListsData];
-}
+import PokemonContext from '../contexts/pokemon-context';
+import LoadingRenderer from '../components/LoadingRenderer';
 
 const Pokedex = () => {
-    const [gamemasterPokemon, rankLists, fetchCompleted, errors]: [IGamemasterPokemon[], IRankedPokemon[][], boolean, string] = useFetchAllData();
+    const { gamemasterPokemon, rankLists, fetchCompleted, errors} = useContext(PokemonContext);
     const [inputText, setInputText] = useState("");
     const [listType, setListType] = useState(ListType.POKEDEX);
     const [showFamilyTree, setShowFamilyTree] = useState(false);
@@ -52,7 +35,9 @@ const Pokedex = () => {
         }
 
         const baseFilter = (p: IGamemasterPokemon) => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim());
-
+        
+        const rankingsFamilyPokemonPool = gamemasterPokemon.filter(p => !p.isMega);
+        
         switch (listType) {
             case ListType.POKEDEX:
                 const pokedexPool = gamemasterPokemon.filter(p => !p.isShadow);
@@ -60,20 +45,13 @@ const Pokedex = () => {
                     .filter(p => inputFilter(p, pokedexPool));
                 break;
             case ListType.GREAT_LEAGUE:
-                const greatLeaguePool = rankLists[0].map(mapper);
-                processedList = greatLeaguePool
-                    .filter(p => inputFilter(p, greatLeaguePool));
-                break;
             case ListType.ULTRA_LEAGUE:
-                const ultraLeaguePool = rankLists[1].map(mapper);
-                processedList = ultraLeaguePool
-                    .filter(p => inputFilter(p, ultraLeaguePool));
-                break;
             case ListType.MASTER_LEAGUE:
-                const masterLeaguePool = rankLists[2].map(mapper);
-                processedList = masterLeaguePool
-                    .filter(p => inputFilter(p, masterLeaguePool));
+                const leaguePool = rankLists[listType - 1].map(mapper);
+                processedList = leaguePool.filter(p => inputFilter(p, rankingsFamilyPokemonPool));
                 break;
+            default:
+                throw new Error(`Missing case in switch for ${listType}`);
         }
 
         return processedList;
@@ -83,17 +61,14 @@ const Pokedex = () => {
 
     return (
         <div className="pokedex">
-            {errors ?
-                <div>{errors}</div> :
-                fetchCompleted ?
-                    <>
-                        <div>
-                            <ControlPanel onSearchInputChange={setInputText} onChangeListType={setListType} listType={listType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
-                        </div>
-                        <PokemonGrid pokemonInfoList={data} />
-                    </> :
-                    <div>Loading...</div>
-            }
+            <LoadingRenderer errors={errors} completed={fetchCompleted}>
+                <>
+                    <div>
+                        <ControlPanel onSearchInputChange={setInputText} onChangeListType={setListType} listType={listType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
+                    </div>
+                    <PokemonGrid pokemonInfoList={data} />
+                </>
+            </LoadingRenderer>
         </div>
     );
 }

@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import "./PokemonCard.scss"
+import PokemonImage from "./PokemonImage";
 
 const pokemonNumberGenerator = (dex: number): string => {
   let urlDex = "" + dex;
@@ -14,15 +16,19 @@ const pokemonNumberGenerator = (dex: number): string => {
   return urlDex;
 }
 
-const PokemonCard = ({dex, speciesName, imageUrl, types, isShadow} : Partial<IGamemasterPokemon>) => {
+interface IPokemonCardProps {
+  pokemon: IGamemasterPokemon
+}
+
+const PokemonCard = ({pokemon}: IPokemonCardProps) => {
+  const link = `/pokemon/${pokemon.speciesId}`;
     return (
-      <div className="pokemon_card">
-        <div className="images_container">
-          <img className="image" alt={speciesName} height={475} width={475} src={imageUrl}/>
-          {isShadow && <img className='image shadow-overlay' src="https://i.imgur.com/4FYNAqX.png" alt={speciesName} height={475} width={475} />}
+      <Link to={link}>
+        <div className="pokemon_card">
+          <PokemonImage pokemon={pokemon} />
+          #{pokemonNumberGenerator(pokemon.dex as number)} {pokemon.speciesName}
         </div>
-        #{pokemonNumberGenerator(dex as number)} {speciesName}
-      </div>
+      </Link>
     );
 }
 

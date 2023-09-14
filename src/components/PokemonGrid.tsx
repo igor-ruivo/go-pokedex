@@ -128,20 +128,18 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         <div className="grid" ref={renderDivRef}>
             {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
             {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
-                <>
-                    <Box sx={{ flexGrow: 1 }}>
-                        <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
-                            {shownPokemonSlice.map(p => (
-                                <Grid xs={4} sm={3} md={3} key={p.speciesId}>
-                                    {readyImages.has(p.speciesId) &&
-                                    <Item>
-                                        <PokemonCard speciesName={p.speciesName} dex={p.dex} isShadow={p.isShadow} types={p.types} imageUrl={p.imageUrl}/>
-                                    </Item>}
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Box>
-                </> 
+                <Box sx={{ flexGrow: 1 }}>
+                    <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
+                        {shownPokemonSlice.map(p => (
+                            <Grid xs={4} sm={3} md={3} key={p.speciesId}>
+                                {readyImages.has(p.speciesId) &&
+                                <Item>
+                                    <PokemonCard pokemon={p}/>
+                                </Item>}
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
                 :
                 pokemonInfoList.length > 0 && <div>
                     Loading...
