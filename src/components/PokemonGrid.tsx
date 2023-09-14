@@ -6,6 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import ThemeContext from '../contexts/theme-context';
+import PokemonCard from './PokemonCard';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[]
@@ -85,7 +86,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         const pokemonBatch: IGamemasterPokemon[] = [];
         const targetIndex = Math.min(pokemonInfoList.length, lastShownIndex + bufferSize);
 
-        for (let i = lastShownIndex; i < targetIndex && pokemonBatch.length < batchSize; i++) {
+        for (let i = 0; i < targetIndex && pokemonBatch.length < batchSize; i++) {
             const pokemonId = pokemonInfoList[i].speciesId;
             if (readyImages.has(pokemonId) || fetchedImages.current.has(pokemonId)) {
                 continue;
@@ -134,10 +135,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
                                 <Grid xs={4} sm={3} md={3} key={p.speciesId}>
                                     {readyImages.has(p.speciesId) &&
                                     <Item>
-                                        <div className="images_container" key={p.speciesId}>
-                                            <img className="image" alt={p.speciesName} height={475} width={475} src={p.imageUrl}/>
-                                            {p.isShadow && <img className='image shadow-overlay' src="https://i.imgur.com/4FYNAqX.png" alt={p.speciesName} height={475} width={475} />}
-                                        </div>
+                                        <PokemonCard speciesName={p.speciesName} dex={p.dex} isShadow={p.isShadow} types={p.types} imageUrl={p.imageUrl}/>
                                     </Item>}
                                 </Grid>
                             ))}

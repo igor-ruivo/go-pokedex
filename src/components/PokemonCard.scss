@@ -1,0 +1,14 @@
+@import '../styles/theme-variables.scss';
+
+.pokemon_card {
+  @include themify($themes) {
+    color: themed("textColor");
+    white-space: nowrap;
+    font-size: calc(4px + .5vw);
+    align-content: center;
+  }
+}
+
+span {
+  padding-left: -20;
+}
