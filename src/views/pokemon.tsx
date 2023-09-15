@@ -27,11 +27,6 @@ const grey = {
 };
 
 const Pokemon = () => {
-    const [touchStart, setTouchStart] = useState(0);
-    const [touchEnd, setTouchEnd] = useState(0);
-    const [currentTabIndex, setCurrentTabIndex] = useState(0);
-    const minSwipeDistance = 50;
-
     const {theme, setTheme} = useContext(ThemeContext);
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
     const navigate = useNavigate();
@@ -101,36 +96,15 @@ const Pokemon = () => {
         `,
     );
 
-    const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(0);
-        setTouchStart(e.targetTouches[0].clientX);
-    }
-
-    const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
-
-    const onTouchEnd = () => {
-        console.log("ended")
-        if (!touchStart || !touchEnd) {
-            return;
-        }
-
-        const distance = touchStart - touchEnd;
-        console.log("distance");
-        console.log(distance);
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe || isRightSwipe) {
-            console.log("hit");
-            const tabElements = tabsListRef.current!.children;
+    const onChangeTab = (nextTab: boolean) => {
+        const tabElements = tabsListRef.current!.children;
             
-            const currentIndex = Array.from(tabElements).findIndex(t => t.getAttribute("aria-selected") === "true");
-            const nextIndex = currentIndex + (isLeftSwipe ? 1 : -1);
-            
-            const moduloResult = ((nextIndex % tabElements.length) + tabElements.length) % tabElements.length;
-            const nextTabElement = tabElements[moduloResult] as HTMLElement;
-            nextTabElement.click();
-        }
+        const currentIndex = Array.from(tabElements).findIndex(t => t.getAttribute("aria-selected") === "true");
+        const nextIndex = currentIndex + (nextTab ? 1 : -1);
+        
+        const moduloResult = ((nextIndex % tabElements.length) + tabElements.length) % tabElements.length;
+        const nextTabElement = tabElements[moduloResult] as HTMLElement;
+        nextTabElement.click();
     }
 
     return (
@@ -170,12 +144,18 @@ const Pokemon = () => {
                         />
                     </FormGroup>
                 </div>
-                {[...Array(tabsListRef.current?.children.length).keys()]
-                    .map(v => <StyledTabPanel key={v} value={v}>
-                            <League pokemon={pokemon} leagueIndex={v} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}/>
-                        </StyledTabPanel>
-                    )
-                }
+                <StyledTabPanel value={0}>
+                    <League pokemon={pokemon} leagueIndex={0} changeTab={onChangeTab}/>
+                </StyledTabPanel>
+                <StyledTabPanel value={1}>
+                    <League pokemon={pokemon} leagueIndex={1} changeTab={onChangeTab}/>
+                </StyledTabPanel>
+                <StyledTabPanel value={2}>
+                    <League pokemon={pokemon} leagueIndex={2} changeTab={onChangeTab}/>
+                </StyledTabPanel>
+                <StyledTabPanel value={3}>
+                    <League pokemon={pokemon} leagueIndex={3} changeTab={onChangeTab}/>
+                </StyledTabPanel>
             </Tabs>
         </div>
 /*
@@ -196,16 +176,58 @@ const Pokemon = () => {
 interface ILeagueProps {
     pokemon: IGamemasterPokemon,
     leagueIndex: number,
-    onTouchStart: (e: React.TouchEvent) => void,
-    onTouchMove: (e: React.TouchEvent) => void,
-    onTouchEnd: () => void
+    changeTab: (nextTab: boolean) => void
 }
 
-const League = ({pokemon, leagueIndex, onTouchStart, onTouchMove, onTouchEnd}: ILeagueProps) => {
+const League = ({pokemon, leagueIndex, changeTab}: ILeagueProps) => {
+    const minSwipeDistance = 50;
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
+
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(0);
+        setTouchStart(e.targetTouches[0].clientX);
+    }
+
+    const onKeyDown = (e: React.KeyboardEvent) => {
+        switch (e.code) {
+            case "ArrowRight":
+                changeTab(true);
+                break;
+            case "ArrowLeft":
+                changeTab(false);
+                break;
+        }
+    }
+
+    const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) {
+            return;
+        }
+
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe || isRightSwipe) {
+            changeTab(isLeftSwipe);
+            /*const tabElements = tabsListRef.current!.children;
+            
+            const currentIndex = Array.from(tabElements).findIndex(t => t.getAttribute("aria-selected") === "true");
+            const nextIndex = currentIndex + (isLeftSwipe ? 1 : -1);
+            
+            const moduloResult = ((nextIndex % tabElements.length) + tabElements.length) % tabElements.length;
+            const nextTabElement = tabElements[moduloResult] as HTMLElement;
+            nextTabElement.click();*/
+        }
+    }
+
     const convertImgUrl = (imageUrl: string) => imageUrl.replace("/detail/", "/full/");
     
-    return pokemon && <div className="tab_panel_container images_container" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-        <img className="image" src={convertImgUrl(pokemon.imageUrl)} width={475} height={475} alt={pokemon.speciesName}/>
+    return pokemon && <div className="tab_panel_container images_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+        <img className="image" onKeyDown={onKeyDown} src={convertImgUrl(pokemon.imageUrl)} width={475} height={475} alt={pokemon.speciesName}/>
     </div>
 }
 
