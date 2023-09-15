@@ -1,8 +1,10 @@
 @import '../styles/theme-variables.scss';
 .top-pane {
+    border: 1px;
     border-color: #c9c9c9;
     border-radius: 25px;
     border-style: solid;
+    box-sizing: border-box;
     min-height: 180px;
     position: fixed;
     width: 100%;

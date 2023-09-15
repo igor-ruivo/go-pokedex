@@ -71,7 +71,6 @@ const Pokemon = () => {
 
     const StyledTabsList = styled(TabsList)(
         ({ }) => `
-            min-width: 400px;
             background-color: ${isDarkMode ? grey[900] : "white"};
             border-radius: 12px;
             margin-bottom: 16px;
