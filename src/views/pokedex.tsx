@@ -66,7 +66,7 @@ const Pokedex = () => {
                     <div>
                         <ControlPanel onSearchInputChange={setInputText} onChangeListType={setListType} listType={listType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
                     </div>
-                    <PokemonGrid pokemonInfoList={data} />
+                    <PokemonGrid pokemonInfoList={data} listType={listType} />
                 </>
             </LoadingRenderer>
         </div>

@@ -7,12 +7,14 @@ import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import ThemeContext from '../contexts/theme-context';
 import PokemonCard from './PokemonCard';
+import { ListType } from './ControlPanel';
 
 interface IPokemonGridProps {
-    pokemonInfoList: IGamemasterPokemon[]
+    pokemonInfoList: IGamemasterPokemon[],
+    listType: ListType
 }
 
-const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
+const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     const batchSize = 24;
     const bufferSize = 5 * batchSize;
     const scrollHeightLimit = 200;
@@ -134,7 +136,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
                             <Grid xs={4} sm={3} md={3} key={p.speciesId}>
                                 {readyImages.has(p.speciesId) &&
                                 <Item>
-                                    <PokemonCard pokemon={p}/>
+                                    <PokemonCard pokemon={p} type={listType} />
                                 </Item>}
                             </Grid>
                         ))}
