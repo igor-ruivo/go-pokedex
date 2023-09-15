@@ -24,60 +24,60 @@ const grey = {
     900: '#24292f',
 };
 
-const StyledTab = styled(Tab)`
-    font-family: 'IBM Plex Sans', sans-serif;
-    color: white;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: bold;
-    background-color: transparent;
-    width: 100%;
-    padding: 12px;
-    margin: 6px;
-    border: none;
-    border-radius: 7px;
-    display: flex;
-    justify-content: center;
-
-    &:hover {
-        background-color: ${grey[400]};
-    }
-
-    &:focus {
-        color: #fff;
-        outline: 3px solid ${grey[200]};
-    }
-
-    &.${tabClasses.selected} {
-        background-color: #fff;
-        color: ${grey[600]};
-    }
-
-    &.${buttonClasses.disabled} {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-`;
-
-const StyledTabsList = styled(TabsList)(
-    ({ }) => `
-    min-width: 400px;
-    background-color: ${grey[500]};
-    border-radius: 12px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-content: space-between;
-    `,
-);
-
 const Pokemon = () => {
     const isDarkMode = useContext(ThemeContext).theme === "dark";
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
     const { speciesId } = useParams();
     const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
     
+    const StyledTab = styled(Tab)`
+        font-family: 'IBM Plex Sans', sans-serif;
+        color: ${isDarkMode ? "white" : "black"};
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: bold;
+        background-color: ${isDarkMode ? grey[800] : grey[100]};
+        width: 100%;
+        padding: 12px;
+        margin: 6px;
+        border: none;
+        border-radius: 7px;
+        display: flex;
+        justify-content: center;
+
+        &:hover {
+            background-color: ${isDarkMode ? grey[400] : grey[200]};
+        }
+
+        &:focus {
+            color: ${isDarkMode ? "#fff" : "black"};
+            outline: 3px solid ${isDarkMode ? grey[200] : grey[200]};
+        }
+
+        &.${tabClasses.selected} {
+            background-color: ${isDarkMode ? grey[200] : grey[200]};
+            color: ${isDarkMode ? grey[600] : "black"};
+        }
+
+        &.${buttonClasses.disabled} {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    `;
+
+    const StyledTabsList = styled(TabsList)(
+        ({ }) => `
+        min-width: 400px;
+        background-color: ${isDarkMode ? grey[900] : "white"};
+        border-radius: 12px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-content: space-between;
+        `,
+    );
+
     const StyledTabPanel = styled(TabPanel)(
         ({ }) => `
         font-family: IBM Plex Sans, sans-serif;
@@ -88,7 +88,7 @@ const Pokemon = () => {
         border-radius: 12px;
         opacity: 0.6;
         `,
-      );
+    );
 
     return (
         <div className="pokemon">
