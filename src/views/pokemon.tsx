@@ -32,7 +32,7 @@ const Pokemon = () => {
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
     const { speciesId } = useParams();
     const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
-    
+
     const StyledTab = styled(Tab)`
         font-family: 'IBM Plex Sans', sans-serif;
         color: ${isDarkMode ? "white" : "black"};
@@ -54,12 +54,13 @@ const Pokemon = () => {
 
         &:focus {
             color: ${isDarkMode ? "#fff" : "black"};
-            outline: 3px solid ${isDarkMode ? grey[200] : grey[200]};
+            outline: 1px solid ${isDarkMode ? grey[900] : "black"};
         }
 
         &.${tabClasses.selected} {
             background-color: ${isDarkMode ? grey[200] : grey[200]};
             color: ${isDarkMode ? grey[600] : "black"};
+            outline: 1px solid ${isDarkMode ? grey[900] : "black"};
         }
 
         &.${buttonClasses.disabled} {
@@ -70,26 +71,25 @@ const Pokemon = () => {
 
     const StyledTabsList = styled(TabsList)(
         ({ }) => `
-        min-width: 400px;
-        background-color: ${isDarkMode ? grey[900] : "white"};
-        border-radius: 12px;
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        align-content: space-between;
+            min-width: 400px;
+            background-color: ${isDarkMode ? grey[900] : "white"};
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-content: space-between;
         `,
     );
 
     const StyledTabPanel = styled(TabPanel)(
         ({ }) => `
-        font-family: IBM Plex Sans, sans-serif;
-        font-size: 0.875rem;
-        padding: 20px 12px;
-        background: ${isDarkMode ? grey[900] : '#fff'};
-        border: 1px solid ${isDarkMode ? grey[700] : grey[200]};
-        border-radius: 12px;
-        opacity: 0.6;
+            font-family: IBM Plex Sans, sans-serif;
+            font-size: 0.875rem;
+            padding: 20px 12px;
+            background: ${isDarkMode ? grey[900] : '#fff'};
+            border: 1px solid ${isDarkMode ? grey[700] : grey[200]};
+            border-radius: 12px;
         `,
     );
 
