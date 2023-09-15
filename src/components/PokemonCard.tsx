@@ -4,7 +4,7 @@ import "./PokemonCard.scss"
 import PokemonImage from "./PokemonImage";
 import { useContext } from "react";
 import PokemonContext from "../contexts/pokemon-context";
-import { ListType } from "./ControlPanel";
+import ControlPanelContext, { ListType } from "../contexts/control-panel-context";
 
 const pokemonNumberGenerator = (dex: number): string => {
   let urlDex = "" + dex;
@@ -20,14 +20,14 @@ const pokemonNumberGenerator = (dex: number): string => {
 }
 
 interface IPokemonCardProps {
-  pokemon: IGamemasterPokemon,
-  type: ListType
+  pokemon: IGamemasterPokemon
 }
 
-const PokemonCard = ({pokemon, type}: IPokemonCardProps) => {
+const PokemonCard = ({pokemon}: IPokemonCardProps) => {
   const {rankLists} = useContext(PokemonContext);
+  const {listType} = useContext(ControlPanelContext);
   const fetchPokemonRank = (): string => {
-    const rank = rankLists[type - 1].find(p => p.speciesId === pokemon.speciesId)!.rank;
+    const rank = rankLists[listType - 1].find(p => p.speciesId === pokemon.speciesId)!.rank;
     switch (rank) {
       case 1:
         return "🥇" + rank + "º";
@@ -45,7 +45,7 @@ const PokemonCard = ({pokemon, type}: IPokemonCardProps) => {
       <Link to={link}>
         <div className="pokemon_card">
           <PokemonImage pokemon={pokemon} />
-          {type === ListType.POKEDEX ? "#" + pokemonNumberGenerator(pokemon.dex as number) : fetchPokemonRank()} {pokemon.speciesName}
+          {listType === ListType.POKEDEX ? "#" + pokemonNumberGenerator(pokemon.dex as number) : fetchPokemonRank()} {pokemon.speciesName}
         </div>
       </Link>
     );

@@ -12,21 +12,8 @@ import { Input } from '@mui/base/Input';
 import { Select, selectClasses } from '@mui/base/Select';
 import { Option, optionClasses } from '@mui/base/Option';
 import React from "react";
-
-export enum ListType {
-    POKEDEX,
-    GREAT_LEAGUE,
-    ULTRA_LEAGUE,
-    MASTER_LEAGUE
-}
-
-interface IControlPanelProps {
-    onSearchInputChange: React.Dispatch<React.SetStateAction<string>>,
-    onChangeListType: React.Dispatch<React.SetStateAction<ListType>>,
-    listType: ListType,
-    showFamilyTree: boolean,
-    onShowFamilyTree: React.Dispatch<React.SetStateAction<boolean>>
-}
+import { familyTreeStorageKey, inputTextStorageKey, listTypeStorageKey } from "../utils/Resources";
+import ControlPanelContext, { ListType } from "../contexts/control-panel-context";
 
 const cyan = {
     50: '#E9F8FC',
@@ -197,9 +184,10 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     </style>
 );
 
-const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFamilyTree, onShowFamilyTree}: IControlPanelProps) => {
+const ControlPanel = () => {
+    const {listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree} = useContext(ControlPanelContext);
     const { theme, setTheme } = useContext(ThemeContext);
-    const [ inputText, setInputText ] = useState("");
+    const [ debouncingInputText, setDebouncingInputText ] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
     const isCurrentDark = theme === "dark";
 
     const handleThemeChange = () => {
@@ -208,9 +196,12 @@ const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFami
     };
 
     useEffect(() => {
-        const timeoutId = setTimeout(() => onSearchInputChange(inputText), 500);
+        const timeoutId = setTimeout(() => {
+            setInputText(debouncingInputText);
+            sessionStorage.setItem(inputTextStorageKey, debouncingInputText);
+        }, 500);
         return () => clearTimeout(timeoutId);
-    }, [inputText]);
+    }, [debouncingInputText]);
 
     return (
         <div className="top-pane">
@@ -247,18 +238,24 @@ const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFami
                         slotProps={{ input: { className: 'CustomInputIntroduction' } }}
                         aria-label="Search Pokémon…"
                         placeholder="Search Pokémon…"
-                        value={inputText}
-                        onChange={e => setInputText(e.target.value)}
+                        value={debouncingInputText}
+                        onChange={e => setDebouncingInputText(e.target.value)}
                     />
                     <InputStyles isDarkMode = {isCurrentDark}/>
                     <FormControlLabel
                         control={
                             <Switch
-                                disabled={!inputText} 
+                                disabled={!debouncingInputText} 
                                 color="default"
                                 className="toggle-switch"
                                 checked={showFamilyTree}
-                                onChange={_e => onShowFamilyTree(previousFilter => !previousFilter)}
+                                onChange={_e => 
+                                    setShowFamilyTree(previousFilter => {
+                                        const newValue = !previousFilter;
+                                        localStorage.setItem(familyTreeStorageKey, newValue.toString());
+                                        return newValue;
+                                    })
+                                }
                                 inputProps={{ "aria-label": "controlled" }}
                             />
                         }
@@ -272,8 +269,11 @@ const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFami
                             listbox: { className: 'CustomSelect-listbox' },
                             popper: { className: 'CustomSelect-popper' },
                         }}
-                        defaultValue={ListType.POKEDEX}
-                        onChange={(_e, name) => onChangeListType(name as ListType)}
+                        defaultValue={listType}
+                        onChange={(_e, name) => {
+                            setListType(name as ListType);
+                            sessionStorage.setItem(listTypeStorageKey, JSON.stringify(name as ListType));
+                        }}
                     >
                         <Option className="CustomSelect-option" value={ListType.POKEDEX}>
                             Pokédex

@@ -7,32 +7,37 @@ import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import ThemeContext from '../contexts/theme-context';
 import PokemonCard from './PokemonCard';
-import { ListType } from './ControlPanel';
+import { lastShownIndexStorageKey, readyImagesStorageKey } from '../utils/Resources';
+import SessionContext from '../contexts/session-context';
 
 interface IPokemonGridProps {
-    pokemonInfoList: IGamemasterPokemon[],
-    listType: ListType
+    pokemonInfoList: IGamemasterPokemon[]
 }
 
-const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
+const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const batchSize = 24;
     const bufferSize = 5 * batchSize;
     const scrollHeightLimit = 200;
 
-    const [lastShownIndex, setLastShownIndex] = useState(0);
-    const [readyImages, setReadyImages] = useState(new Set<string>());
+    const {lastShownIndex, setLastShownIndex, readyImages, setReadyImages} = useContext(SessionContext);
+    const { theme } = useContext(ThemeContext);
+    const isCurrentDark = theme === "dark";
 
     const fetchedImages = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);
 
     const shownPokemonSlice = pokemonInfoList.slice(0, lastShownIndex);
 
-    const { theme } = useContext(ThemeContext);
-    const isCurrentDark = theme === "dark";
+    const initialPropsSet = useRef(false);
 
     useEffect(() => {
         // Whenever the props change, let's reset the scrolling and the shown pokemon.
-        setLastShownIndex(0);
+        if (initialPropsSet.current) {
+            setLastShownIndex(0);
+            sessionStorage.setItem(lastShownIndexStorageKey, "0");
+        } else {
+            initialPropsSet.current = true;
+        }
     }, [pokemonInfoList]);
 
     const handleScrollCallback = useCallback(() => {
@@ -43,7 +48,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
 
         if (pokemonInfoList
             .slice(lastShownIndex, Math.min(pokemonInfoList.length, lastShownIndex + batchSize))
-            .some(pokemon => !readyImages.has(pokemon.speciesId))) {
+            .some(pokemon => !readyImages.hasOwnProperty(pokemon.speciesId))) {
             // Next batch to show isn't ready yet.
             return;
         }
@@ -73,8 +78,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
             const answers = await Promise.all(promises);
 
             setReadyImages(previous => {
-                var newGlobalData = new Set(previous);
-                answers.forEach(pokemonId => newGlobalData.add(pokemonId));
+                var newGlobalData = { ...previous };
+                answers.forEach(pokemonId => newGlobalData[pokemonId] = "");
+                sessionStorage.setItem(readyImagesStorageKey, JSON.stringify(newGlobalData));
                 return newGlobalData;
             });
         
@@ -90,7 +96,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
 
         for (let i = 0; i < targetIndex && pokemonBatch.length < batchSize; i++) {
             const pokemonId = pokemonInfoList[i].speciesId;
-            if (readyImages.has(pokemonId) || fetchedImages.current.has(pokemonId)) {
+            if (readyImages.hasOwnProperty(pokemonId) || fetchedImages.current.has(pokemonId)) {
                 continue;
             }
             pokemonBatch.push(pokemonInfoList[i]);
@@ -134,9 +140,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
                     <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
                         {shownPokemonSlice.map(p => (
                             <Grid xs={4} sm={3} md={3} key={p.speciesId}>
-                                {readyImages.has(p.speciesId) &&
+                                {readyImages.hasOwnProperty(p.speciesId) &&
                                 <Item>
-                                    <PokemonCard pokemon={p} type={listType} />
+                                    <PokemonCard pokemon={p} />
                                 </Item>}
                             </Grid>
                         ))}

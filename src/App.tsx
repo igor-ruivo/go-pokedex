@@ -6,10 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FetchData, useFetchUrls } from './hooks/useFetchUrls';
 import { IGamemasterPokemon } from './DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from './DTOs/IRankedPokemon';
-import { gamemasterPokemonUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from './utils/Resources';
+import { familyTreeStorageKey, gamemasterPokemonUrl, inputTextStorageKey, lastShownIndexStorageKey, listTypeStorageKey, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, readyImagesStorageKey } from './utils/Resources';
 import { mapGamemasterPokemonData, mapRankedPokemon } from './utils/conversions';
 import Pokemon from './views/pokemon';
 import PokemonContext from './contexts/pokemon-context';
+import SessionContext from './contexts/session-context';
+import Dictionary from './utils/Dictionary';
+import ControlPanelContext, { ListType } from './contexts/control-panel-context';
 
 const App = () => {
   const useFetchAllData: () => [IGamemasterPokemon[], IRankedPokemon[][], boolean, string] = () => {
@@ -36,20 +39,38 @@ const App = () => {
     const browserDefault = isBrowserDefaulDark() ? 'dark' : 'light';
     return localStorageTheme || browserDefault;
   };
+
+  const getDefaultReadyImages = (): Dictionary<string> => {
+    const storedInfo = sessionStorage.getItem(readyImagesStorageKey);
+    if (storedInfo) {
+      return JSON.parse(storedInfo);
+    }
+      return {};
+  }
+  
+  const [lastShownIndex, setLastShownIndex] = useState(+(sessionStorage.getItem(lastShownIndexStorageKey) ?? "0"));
   const [theme, setTheme] = useState(getDefaultTheme());
+  const [readyImages, setReadyImages] = useState<Dictionary<string>>(getDefaultReadyImages());
+  const [listType, setListType] = useState((+(sessionStorage.getItem(listTypeStorageKey) ?? ListType.POKEDEX)) as ListType);
+  const [inputText, setInputText] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
+  const [showFamilyTree, setShowFamilyTree] = useState(localStorage.getItem(familyTreeStorageKey) === "true");
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <div className={`theme-${theme} main`}>
-        <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
-            <BrowserRouter>
-              <Routes>
-                  <Route index element={<Pokedex />}/>
-                  <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
-                  <Route path="/*" element={<div>Route not found.</div>} />
-              </Routes>
-            </BrowserRouter>
-        </PokemonContext.Provider>
+        <SessionContext.Provider value={{lastShownIndex, setLastShownIndex, readyImages, setReadyImages}}>
+          <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree}}>
+            <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
+                <BrowserRouter>
+                  <Routes>
+                      <Route index element={<Pokedex />}/>
+                      <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
+                      <Route path="/*" element={<div>Route not found.</div>} />
+                  </Routes>
+                </BrowserRouter>
+            </PokemonContext.Provider>
+          </ControlPanelContext.Provider>
+        </SessionContext.Provider>
       </div>
     </ThemeContext.Provider>
   );

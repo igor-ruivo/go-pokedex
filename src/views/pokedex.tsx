@@ -1,17 +1,16 @@
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
-import ControlPanel, { ListType } from '../components/ControlPanel';
+import ControlPanel from '../components/ControlPanel';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import PokemonContext from '../contexts/pokemon-context';
 import LoadingRenderer from '../components/LoadingRenderer';
+import ControlPanelContext, { ListType } from '../contexts/control-panel-context';
 
 const Pokedex = () => {
-    const { gamemasterPokemon, rankLists, fetchCompleted, errors} = useContext(PokemonContext);
-    const [inputText, setInputText] = useState("");
-    const [listType, setListType] = useState(ListType.POKEDEX);
-    const [showFamilyTree, setShowFamilyTree] = useState(false);
+    const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
+    const { listType, inputText, showFamilyTree } = useContext(ControlPanelContext);
 
     const prepareData = () => {
         if (!fetchCompleted) {
@@ -64,9 +63,9 @@ const Pokedex = () => {
             <LoadingRenderer errors={errors} completed={fetchCompleted}>
                 <>
                     <div>
-                        <ControlPanel onSearchInputChange={setInputText} onChangeListType={setListType} listType={listType} showFamilyTree={showFamilyTree} onShowFamilyTree={setShowFamilyTree}/>
+                        <ControlPanel />
                     </div>
-                    <PokemonGrid pokemonInfoList={data} listType={listType} />
+                    <PokemonGrid pokemonInfoList={data} />
                 </>
             </LoadingRenderer>
         </div>
