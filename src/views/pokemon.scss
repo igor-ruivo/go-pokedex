@@ -1,10 +1,7 @@
 @import '../styles/theme-variables.scss';
 
 .pokemon {
-    width: 100%;
-    height: 100%;
   @include themify($themes) {
-    background: themed("bodyBackgroundColor");
     color: themed("textColor");
   }
 }
@@ -18,7 +15,8 @@
   margin-bottom: 20px;
 }
 
-.pokemon_tab {
-    width:100%;
-    height:100%
+.tab_panel_container {
+  word-wrap: break-word;
+  //touch-action: none;
+  //height: 60vh;
 }

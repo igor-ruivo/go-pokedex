@@ -55,23 +55,33 @@ const App = () => {
   const [inputText, setInputText] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
   const [showFamilyTree, setShowFamilyTree] = useState(localStorage.getItem(familyTreeStorageKey) === "true");
 
+  useEffect(() => {
+    if (theme === "dark") {
+      document.body.style.background = "#202023"
+      document.body.classList.remove("theme-light");
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.style.background = "#f8f8fa"
+      document.body.classList.remove("theme-dark");
+      document.body.classList.add("theme-light");
+    }
+  }, [theme]);
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      <div className={`theme-${theme} main`}>
-        <SessionContext.Provider value={{lastShownIndex, setLastShownIndex, readyImages, setReadyImages}}>
-          <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree}}>
-            <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
-                <BrowserRouter>
-                  <Routes>
-                      <Route index element={<Pokedex />}/>
-                      <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
-                      <Route path="/*" element={<div>Route not found.</div>} />
-                  </Routes>
-                </BrowserRouter>
-            </PokemonContext.Provider>
-          </ControlPanelContext.Provider>
-        </SessionContext.Provider>
-      </div>
+      <SessionContext.Provider value={{lastShownIndex, setLastShownIndex, readyImages, setReadyImages}}>
+        <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree}}>
+          <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
+              <BrowserRouter>
+                <Routes>
+                    <Route index element={<Pokedex />}/>
+                    <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
+                    <Route path="/*" element={<div>Route not found.</div>} />
+                </Routes>
+              </BrowserRouter>
+          </PokemonContext.Provider>
+        </ControlPanelContext.Provider>
+      </SessionContext.Provider>
     </ThemeContext.Provider>
   );
 }

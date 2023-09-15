@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useRef, useState } from 'react';
 import './pokemon.scss';
+import '../components/PokemonImage.css';
 import PokemonContext from '../contexts/pokemon-context';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -26,11 +27,19 @@ const grey = {
 };
 
 const Pokemon = () => {
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
+    const [currentTabIndex, setCurrentTabIndex] = useState(0);
+    const minSwipeDistance = 50;
+
     const {theme, setTheme} = useContext(ThemeContext);
-    const navigate = useNavigate();
-    const isDarkMode = theme === "dark";
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
+    const navigate = useNavigate();
     const { speciesId } = useParams();
+
+    const tabsListRef = useRef<HTMLElement>(null);
+
+    const isDarkMode = theme === "dark";
     const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
 
     const StyledTab = styled(Tab)`
@@ -92,6 +101,38 @@ const Pokemon = () => {
         `,
     );
 
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(0);
+        setTouchStart(e.targetTouches[0].clientX);
+    }
+
+    const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+
+    const onTouchEnd = () => {
+        console.log("ended")
+        if (!touchStart || !touchEnd) {
+            return;
+        }
+
+        const distance = touchStart - touchEnd;
+        console.log("distance");
+        console.log(distance);
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe || isRightSwipe) {
+            console.log("hit");
+            const tabElements = tabsListRef.current!.children;
+            
+            const currentIndex = Array.from(tabElements).findIndex(t => t.getAttribute("aria-selected") === "true");
+            const nextIndex = currentIndex + (isLeftSwipe ? 1 : -1);
+            
+            const moduloResult = ((nextIndex % tabElements.length) + tabElements.length) % tabElements.length;
+            const nextTabElement = tabElements[moduloResult] as HTMLElement;
+            nextTabElement.click();
+        }
+    }
+
     return (
         <div className="pokemon">
             <Tabs
@@ -100,7 +141,7 @@ const Pokemon = () => {
                 selectionFollowsFocus
                 className="pokemon_tab"
             >
-                <StyledTabsList>
+                <StyledTabsList ref={tabsListRef}>
                     <StyledTab value={0}>Pokémon</StyledTab>
                     <StyledTab value={1}>Great</StyledTab>
                     <StyledTab value={2}>Ultra</StyledTab>
@@ -129,10 +170,12 @@ const Pokemon = () => {
                         />
                     </FormGroup>
                 </div>
-                <StyledTabPanel value={0}>Pokémon</StyledTabPanel>
-                <StyledTabPanel value={1}>Great League</StyledTabPanel>
-                <StyledTabPanel value={2}>Ultra League</StyledTabPanel>
-                <StyledTabPanel value={3}>Master League</StyledTabPanel>
+                {[...Array(tabsListRef.current?.children.length).keys()]
+                    .map(v => <StyledTabPanel key={v} value={v}>
+                            <League pokemon={pokemon} leagueIndex={v} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}/>
+                        </StyledTabPanel>
+                    )
+                }
             </Tabs>
         </div>
 /*
@@ -148,6 +191,22 @@ const Pokemon = () => {
             </LoadingRenderer>
         </div>*/
     );
+}
+
+interface ILeagueProps {
+    pokemon: IGamemasterPokemon,
+    leagueIndex: number,
+    onTouchStart: (e: React.TouchEvent) => void,
+    onTouchMove: (e: React.TouchEvent) => void,
+    onTouchEnd: () => void
+}
+
+const League = ({pokemon, leagueIndex, onTouchStart, onTouchMove, onTouchEnd}: ILeagueProps) => {
+    const convertImgUrl = (imageUrl: string) => imageUrl.replace("/detail/", "/full/");
+    
+    return pokemon && <div className="tab_panel_container images_container" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+        <img className="image" src={convertImgUrl(pokemon.imageUrl)} width={475} height={475} alt={pokemon.speciesName}/>
+    </div>
 }
 
 

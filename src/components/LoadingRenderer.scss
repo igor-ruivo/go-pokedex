@@ -1,7 +1,5 @@
 @import '../styles/theme-variables.scss';
 .loading_renderer {
-    height: 100%;
-    width: 100%;
     @include themify($themes) {
         background: themed("bodyBackgroundColor");
         color: themed("textColor");
