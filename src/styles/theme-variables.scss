@@ -4,12 +4,14 @@ $themes: (
         headerBackground: #fff,
         footerBackground: #fff,
         textColor: #000,
+        disabledTextColor: rgba(0, 0, 0, 0.5)
     ),
     dark: (
         bodyBackgroundColor: #202023,
-        headerBackground: #48494f,
+        headerBackground: #24292f,
         footerBackground: #202023,
         textColor: #eff2f7,
+        disabledTextColor: rgba(239,242,247, 0.5)
     ),
 );
 

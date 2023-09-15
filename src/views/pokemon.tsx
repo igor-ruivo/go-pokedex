@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import './pokemon.scss';
 import PokemonContext from '../contexts/pokemon-context';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { styled } from '@mui/material/styles';
 import { buttonClasses } from '@mui/base/Button';
@@ -10,6 +10,7 @@ import { Tab, tabClasses } from '@mui/base/Tab';
 import { TabsList } from '@mui/base/TabsList';
 import { TabPanel } from '@mui/base/TabPanel';
 import ThemeContext from '../contexts/theme-context';
+import { FormGroup, FormControlLabel, Switch, Button } from '@mui/material';
 
 const grey = {
     50: '#f6f8fa',
@@ -25,7 +26,9 @@ const grey = {
 };
 
 const Pokemon = () => {
-    const isDarkMode = useContext(ThemeContext).theme === "dark";
+    const {theme, setTheme} = useContext(ThemeContext);
+    const navigate = useNavigate();
+    const isDarkMode = theme === "dark";
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
     const { speciesId } = useParams();
     const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
@@ -100,10 +103,33 @@ const Pokemon = () => {
             >
                 <StyledTabsList>
                     <StyledTab value={0}>Pokémon</StyledTab>
-                    <StyledTab value={1}>Great League</StyledTab>
-                    <StyledTab value={2}>Ultra League</StyledTab>
-                    <StyledTab value={3}>Master League</StyledTab>
+                    <StyledTab value={1}>Great</StyledTab>
+                    <StyledTab value={2}>Ultra</StyledTab>
+                    <StyledTab value={3}>Master</StyledTab>
                 </StyledTabsList>
+                <div className="control_panel">
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => navigate(-1)}
+                    >
+                        Back
+                    </Button>
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    className="dark_mode_switch"
+                                    color="default"
+                                    checked={theme === "dark"}
+                                    onChange={() => setTheme(isDarkMode ? "light" : "dark")}
+                                    inputProps={{ "aria-label": "controlled" }}
+                                />
+                            }
+                            label={"Dark mode"}
+                        />
+                    </FormGroup>
+                </div>
                 <StyledTabPanel value={0}>Pokémon</StyledTabPanel>
                 <StyledTabPanel value={1}>Great League</StyledTabPanel>
                 <StyledTabPanel value={2}>Ultra League</StyledTabPanel>

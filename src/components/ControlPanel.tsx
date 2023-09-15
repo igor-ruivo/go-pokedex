@@ -222,6 +222,7 @@ const ControlPanel = ({onSearchInputChange, onChangeListType, listType, showFami
             >
                 <FormGroup>
                     <FormControlLabel
+                        className="disabled_label"
                         control={
                             <Switch
                                 color="default"
