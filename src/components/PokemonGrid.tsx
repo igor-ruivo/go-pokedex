@@ -135,17 +135,17 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         color: theme.palette.text.secondary,
     }));
 
-    let gridClassName = "grid";
-    gridClassName += ` ${collapsed ? "collapsed_top_pane" : "expanded_top_pane"}`
+    let gridContainerClassName = "grid_container";
+    gridContainerClassName += ` ${collapsed ? "collapsed_top_pane" : "expanded_top_pane"}`;
 
     return (
-        <div className={gridClassName} ref={renderDivRef}>
+        <div className={gridContainerClassName} ref={renderDivRef}>
             {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
             {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                 <Box sx={{ flexGrow: 1 }}>
                     <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
                         {shownPokemonSlice.map(p => (
-                            <Grid xs={4} sm={3} md={3} key={p.speciesId}>
+                            <Grid xs={4} sm={3} md={3} key={p.speciesId} className="grid">
                                 {readyImages.hasOwnProperty(p.speciesId) &&
                                 <Item>
                                     <PokemonCard pokemon={p} />

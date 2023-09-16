@@ -1,7 +1,7 @@
-.grid {
-    a {
-      text-decoration: none;
-    }
+.grid_container {
+  a {
+    text-decoration: none;
+  }
 }
 
 .expanded_top_pane {
@@ -10,4 +10,8 @@
 
 .collapsed_top_pane {
   padding-top: 16px;
+}
+
+.grid > div{
+  padding: 5px;
 }
