@@ -18,7 +18,7 @@
     min-width: 200px;
 }
 
-@keyframes example {
+@keyframes toggle_collapse {
     from {top: 112.6px;}
     to {top: 8px;}
 }
@@ -50,7 +50,11 @@
 
 .collapsed_toggle {
     top: 8px;
-    animation-name: example;
+}
+
+.collapsing_toggle {
+    top: 8px;
+    animation-name: toggle_collapse;
     animation-duration: 0.5s;
 }
 

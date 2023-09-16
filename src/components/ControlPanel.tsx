@@ -10,7 +10,7 @@ import {
     TextField
 } from "@mui/material";
 import '../styles/theme-variables.scss';
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import ThemeContext from "../contexts/theme-context";
 import { Input } from '@mui/base/Input';
 import { Select, selectClasses } from '@mui/base/Select';
@@ -197,6 +197,7 @@ const ControlPanel = () => {
     const { theme, setTheme } = useContext(ThemeContext);
     const { gamemasterPokemon } = useContext(PokemonContext);
     const [ debouncingInputText, setDebouncingInputText ] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
+    const expandCollapseDivRef = useRef<HTMLDivElement>(null);
     const isCurrentDark = theme === "dark";
 
     const handleThemeChange = () => {
@@ -336,27 +337,48 @@ const ControlPanel = () => {
                 </Stack>
             </div>
         }
-        <ExpandCollapseToggle collapsed={collapsed} onExpandCollapseClick={onExpandCollapseClick} />
+        <ExpandCollapseToggle collapsed={collapsed} expandCollapseDivRef={expandCollapseDivRef} onExpandCollapseClick={onExpandCollapseClick} />
     </>
     );
 }
 
 interface ExpandCollapseToggleProps {
     collapsed: boolean,
-    onExpandCollapseClick: () => void
+    onExpandCollapseClick: () => void,
+    expandCollapseDivRef: React.RefObject<HTMLDivElement>
 }
 
-const ExpandCollapseToggle = ({collapsed, onExpandCollapseClick}: ExpandCollapseToggleProps) => {
+const ExpandCollapseToggle = ({collapsed, onExpandCollapseClick, expandCollapseDivRef}: ExpandCollapseToggleProps) => {
     let className = "top_pane expand_collapse_toggle"
-    if (collapsed) {
+    
+    if (collapsed && !expandCollapseDivRef.current?.classList.contains("collapsing_toggle")) {
         className += " collapsed_toggle"
     }
 
-    return <div className={className}>
-    <IconButton onClick={onExpandCollapseClick} size="large">
-        {collapsed ? <ExpandMoreIcon color="primary" fontSize="large"/> : <ExpandLessIcon color="primary" fontSize="large"/>}
-    </IconButton>
-</div>
+    const handleOnClick = () => {
+        onExpandCollapseClick();
+        const divRef = expandCollapseDivRef.current;
+        if (!divRef) {
+            return;
+        }
+
+        if (collapsed) {
+            divRef.classList.remove("collapsed_toggle");
+            return;
+        }
+        
+        divRef.classList.add("collapsing_toggle");
+        setTimeout(() => {
+            divRef.classList.add("collapsed_toggle");
+            divRef.classList.remove("collapsing_toggle");
+        }, 500);
+    };
+
+    return <div ref={expandCollapseDivRef} className={className}>
+        <IconButton onClick={handleOnClick} size="large">
+            {collapsed ? <ExpandMoreIcon color="primary" fontSize="large"/> : <ExpandLessIcon color="primary" fontSize="large"/>}
+        </IconButton>
+    </div>
 }
 
 export default ControlPanel
