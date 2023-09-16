@@ -2,7 +2,6 @@
 
 .top_pane {
     border: 1px;
-    border-color: #c9c9c9;
     border-radius: 25px;
     border-style: solid;
     box-sizing: border-box;
@@ -11,17 +10,33 @@
     @include themify($themes) {
         background: themed("headerBackground");
         color: themed("textColor");
+        border-color: themed("borderColor")
     }
 }
 
+.auto_complete_input {
+    min-width: 200px;
+}
+
+@keyframes example {
+    from {top: 112.6px;}
+    to {top: 8px;}
+}
+
 .expand_collapse_toggle {
+    /*
     @include themify($themes) {
         background: themed("toggleBackground");
     }
     opacity: 0.9;
+    */
     left: 50%;
     transform: translateX(-50%);
-    top: 8px;
+    top: 112.6px;
+    button {
+        width:50px;
+        height:10px;
+    }
 }
 
 .expanded_pane {
@@ -30,11 +45,13 @@
     min-width: 390px;
     left: 50%;
     transform: translateX(-50%);
-    min-height: 112.6px;
+    min-height: 126.2px;
 }
 
-.expanded_toggle {
-    top: 112.6px;
+.collapsed_toggle {
+    top: 8px;
+    animation-name: example;
+    animation-duration: 0.5s;
 }
 
 .fas {
@@ -78,6 +95,7 @@
         background: themed("headerBackground");
         color: themed("disabledTextColor");
     }
+    outline-color: #c9c9c9;
 }
 
 .checkbox {

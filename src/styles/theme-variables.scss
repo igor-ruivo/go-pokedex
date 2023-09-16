@@ -6,7 +6,8 @@ $themes: (
         switchBackground: #ccc9c9,
         toggleBackground: #e9e4e4,
         textColor: #000,
-        disabledTextColor: rgba(0, 0, 0, 0.5)
+        disabledTextColor: rgba(0, 0, 0, 0.5),
+        borderColor: #c9c9c9
     ),
     dark: (
         bodyBackgroundColor: #202023,
@@ -15,7 +16,8 @@ $themes: (
         switchBackground: #111417,
         toggleBackground: #111417,
         textColor: #eff2f7,
-        disabledTextColor: rgba(239,242,247, 0.5)
+        disabledTextColor: rgba(239,242,247, 0.5),
+        borderColor: #424a53
     ),
 );
 

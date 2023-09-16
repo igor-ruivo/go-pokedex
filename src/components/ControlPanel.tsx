@@ -1,10 +1,13 @@
 import "./ControlPanel.scss";
 import {
+    Autocomplete,
+    AutocompleteChangeReason,
     FormControlLabel,
     FormGroup,
     IconButton,
     Stack,
-    Switch
+    Switch,
+    TextField
 } from "@mui/material";
 import '../styles/theme-variables.scss';
 import { useContext, useEffect, useState } from "react";
@@ -17,6 +20,7 @@ import { collapsedStorageKey, familyTreeStorageKey, inputTextStorageKey, listTyp
 import ControlPanelContext, { ListType } from "../contexts/control-panel-context";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import PokemonContext from "../contexts/pokemon-context";
 
 const cyan = {
     50: '#E9F8FC',
@@ -191,6 +195,7 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
 const ControlPanel = () => {
     const {listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed} = useContext(ControlPanelContext);
     const { theme, setTheme } = useContext(ThemeContext);
+    const { gamemasterPokemon } = useContext(PokemonContext);
     const [ debouncingInputText, setDebouncingInputText ] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
     const isCurrentDark = theme === "dark";
 
@@ -200,6 +205,12 @@ const ControlPanel = () => {
     };
 
     useEffect(() => {
+        if (!debouncingInputText) {
+            setInputText("");
+            sessionStorage.setItem(inputTextStorageKey, "");
+            return;
+        }
+
         const timeoutId = setTimeout(() => {
             setInputText(debouncingInputText);
             sessionStorage.setItem(inputTextStorageKey, debouncingInputText);
@@ -214,6 +225,10 @@ const ControlPanel = () => {
             return toggledValue;
         });
     }
+
+    const pokemonList = gamemasterPokemon
+        //.filter(p => p.speciesName.toLowerCase().includes(debouncingInputText.toLocaleLowerCase()))
+        .map(p => p.speciesName);
 
     const withDisabledClass = (className: string) => className + (!debouncingInputText ? " disabled" : "");
 
@@ -232,14 +247,33 @@ const ControlPanel = () => {
                         justifyContent="center"
                         alignItems="center"
                     >
-                        <Input
-                            spellCheck="false"
-                            autoCorrect="off"
-                            slotProps={{ input: { className: 'CustomInputIntroduction' } }}
-                            aria-label="Search Pokémon…"
-                            placeholder="Search Pokémon…"
-                            value={debouncingInputText}
-                            onChange={e => setDebouncingInputText(e.target.value)}
+                        <Autocomplete
+                            size="small"
+                            className="auto_complete_input"
+                            inputValue={debouncingInputText}
+                            /*onChange={(e, value, reason, details) => {
+                                console.log(e);
+                                console.log(reason);
+                                console.log(details);
+                                if (reason === "selectOption") {
+                                    setDebouncingInputText(value ?? "");
+                                }
+                                if (reason === "clear") {
+                                    setDebouncingInputText("");
+                                    setInputText("");
+                                }
+                            }} */
+                            onInputChange={(e, newInputValue, reason) => setDebouncingInputText(newInputValue)}
+                            isOptionEqualToValue={(option, value) => option.toLowerCase().includes(value.toLocaleLowerCase())}
+                            options={pokemonList}
+                            //autoComplete
+                            freeSolo
+                            //autoSelect
+                            clearOnEscape
+                            getOptionLabel={(option) => option}
+                            renderInput={(params) => (
+                                <TextField {...params} className="auto_complete_input" label="Search…" placeholder="Pokémon name" />
+                            )} 
                         />
                         <InputStyles isDarkMode = {isCurrentDark}/>
                         <React.Fragment>
@@ -314,8 +348,8 @@ interface ExpandCollapseToggleProps {
 
 const ExpandCollapseToggle = ({collapsed, onExpandCollapseClick}: ExpandCollapseToggleProps) => {
     let className = "top_pane expand_collapse_toggle"
-    if (!collapsed) {
-        className += " expanded_toggle"
+    if (collapsed) {
+        className += " collapsed_toggle"
     }
 
     return <div className={className}>
