@@ -1,0 +1,99 @@
+#calculator .appraisal .stat {
+    max-width: 80%;
+    margin: 0 auto 16px
+}
+
+#calculator .appraisal .stat h4 {
+    font-weight: 400;
+    margin: 0 0 3px;
+    font-size: 17px
+}
+
+#calculator .appraisal .stat h4 {
+    display: flex;
+    justify-content: space-between
+}
+
+#calculator .appraisal .stat h4 span {
+    color: #ccc
+}
+
+#calculator .appraisal .stat-bar {
+    display: flex;
+    background: rgba(0,0,0,.08);
+    border-radius: 9px
+}
+
+#calculator .appraisal .stat-bar .bar {
+    height: 18px;
+    flex: 1 1 40px;
+    border-right: 1px solid rgba(255,255,255,.3);
+    cursor: pointer
+}
+
+#calculator .appraisal .stat-bar .bar.hover {
+    background: #f5bf78
+}
+
+#calculator .appraisal .stat-bar .bar.active {
+    background: #ee9219
+}
+
+#calculator .appraisal .stat-bar .bar.end {
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px
+}
+
+#calculator .appraisal .stat-bar .bar:nth-child(5n+1) {
+    border-left: 4px solid #fff
+}
+
+#calculator .appraisal .stat-bar .bar:first-child {
+    border-left: none;
+    border-top-left-radius: 9px;
+    border-bottom-left-radius: 9px
+}
+
+#calculator .appraisal .stat-bar.max .bar.active {
+    background: #e18079
+}
+
+@media all and (max-width: 400px) {
+    #calculator .data-grid {
+        max-width:100%;
+        margin: 10px 10px 20px
+    }
+
+    #calculator .appraisal .stat {
+        max-width: 100%;
+        margin: 0 10px 10px
+    }
+
+    #calculator .appraisal .stat h4 {
+        font-size: 14px
+    }
+}
+
+#result .preview .stat-split .stat {
+    text-align: center;
+    flex: 1 1 50%;
+    padding: 2px 0
+}
+
+#result .preview .stat-split .stat:last-child {
+    border-left: 1px solid rgba(0,0,0,.1)
+}
+
+#result .preview .stat-split .stat span {
+    font-size: 32px;
+    margin-bottom: 8px
+}
+
+#result .preview .stat-split .stat p {
+    font-size: 15px;
+    color: rgba(0,0,0,.54)
+}
+
+#result .preview .stat-split .stat:first-child span {
+    color: #38a169
+}
