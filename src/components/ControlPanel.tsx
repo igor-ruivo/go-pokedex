@@ -228,7 +228,6 @@ const ControlPanel = () => {
     }
 
     const pokemonList = gamemasterPokemon
-        //.filter(p => p.speciesName.toLowerCase().includes(debouncingInputText.toLocaleLowerCase()))
         .map(p => p.speciesName);
 
     const withDisabledClass = (className: string) => className + (!debouncingInputText ? " disabled" : "");
@@ -250,28 +249,24 @@ const ControlPanel = () => {
                     >
                         <Autocomplete
                             size="small"
+                            classes={{
+                                root: 'autoComplete-root',
+                                option: 'autoComplete-component',
+                                focused: 'autoComplete-component',
+                                inputFocused:'autoComplete-component',
+                                input: 'autoComplete-component',
+                                inputRoot: 'autoComplete-component',
+                                clearIndicator: 'autoComplete-component'
+                            }}
                             className="auto_complete_input"
                             inputValue={debouncingInputText}
-                            /*onChange={(e, value, reason, details) => {
-                                console.log(e);
-                                console.log(reason);
-                                console.log(details);
-                                if (reason === "selectOption") {
-                                    setDebouncingInputText(value ?? "");
-                                }
-                                if (reason === "clear") {
-                                    setDebouncingInputText("");
-                                    setInputText("");
-                                }
-                            }} */
-                            onInputChange={(e, newInputValue, reason) => setDebouncingInputText(newInputValue)}
+                            onInputChange={(_e, newInputValue, _reason) => setDebouncingInputText(newInputValue)}
                             isOptionEqualToValue={(option, value) => option.toLowerCase().includes(value.toLocaleLowerCase())}
                             options={pokemonList}
-                            //autoComplete
+                            autoComplete
                             freeSolo
-                            //autoSelect
+                            autoHighlight
                             clearOnEscape
-                            getOptionLabel={(option) => option}
                             renderInput={(params) => (
                                 <TextField {...params} className="auto_complete_input" label="Search…" placeholder="Pokémon name" />
                             )} 

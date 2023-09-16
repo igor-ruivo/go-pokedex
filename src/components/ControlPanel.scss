@@ -14,22 +14,70 @@
     }
 }
 
-.auto_complete_input {
-    min-width: 200px;
-}
-
 @keyframes toggle_collapse {
     from {top: 112.6px;}
     to {top: 8px;}
 }
 
-.expand_collapse_toggle {
-    /*
+.autoComplete-root {
+    min-width: 200px;
     @include themify($themes) {
-        background: themed("toggleBackground");
+        background-color: themed("headerBackground");
+        color: themed("textColor");
+        border-color: themed("borderColor");
+        outline-color: themed("borderColor");
     }
-    opacity: 0.9;
-    */
+}
+
+.MuiAutocomplete-paper {
+    @include themify($themes) {
+        background-color: themed("selectedItemBackground");
+    }
+}
+
+.MuiFormLabel-root {
+    @include themify($themes) {
+        background-color: themed("headerBackground");
+        color: themed("textColor");
+        border-color: themed("borderColor");
+        outline-color: themed("borderColor");
+    }
+}
+
+.MuiOutlinedInput-notchedOutline {
+    @include themify($themes) {
+        border-color: themed("borderColor");
+        outline-color: themed("borderColor");
+    }
+    &hover {
+        @include themify($themes) {
+            border-color: themed("borderColor");
+            outline-color: themed("borderColor");
+        }
+    }
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    @include themify($themes) {
+        border-color: themed("borderColor");
+        outline-color: themed("borderColor");
+    }
+}
+
+ul.MuiAutocomplete-listbox {
+    padding: 0;
+}
+
+.autoComplete-component {
+    @include themify($themes) {
+        background: themed("headerBackground");
+        color: themed("textColor");
+        border-color: themed("borderColor");
+        outline-color: themed("borderColor");
+    }
+}
+
+.expand_collapse_toggle {
     left: 50%;
     transform: translateX(-50%);
     top: 112.6px;
