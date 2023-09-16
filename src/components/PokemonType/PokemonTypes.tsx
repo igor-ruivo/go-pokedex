@@ -8,7 +8,10 @@ type IPokemonTypesProps = {
 const PokemonTypes = ({ types }: IPokemonTypesProps) => {
   return (
       <div className="pokemon_types">
-      {`${types[0].toString().substring(0, 1)} ${types[1].toString().substring(0, 1)}`}
+        {types.map(t => {
+          const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${t}.png`;
+          return <img className="type-icon" key={t} src={url} alt={t.toString()} width="20" height="20"/>
+        })}
       </div>
   );
 }
