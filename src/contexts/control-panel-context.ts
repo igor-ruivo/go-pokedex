@@ -14,6 +14,8 @@ const ControlPanelContext = createContext({
   setInputText: (_: React.SetStateAction<string>) => {},
   showFamilyTree: false,
   setShowFamilyTree: (_: React.SetStateAction<boolean>) => {},
+  collapsed: false,
+  setCollapsed: (_: React.SetStateAction<boolean>) => {}
 });
 
 export default ControlPanelContext;

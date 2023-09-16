@@ -11,7 +11,7 @@ import { Tab, tabClasses } from '@mui/base/Tab';
 import { TabsList } from '@mui/base/TabsList';
 import { TabPanel } from '@mui/base/TabPanel';
 import ThemeContext from '../contexts/theme-context';
-import { FormGroup, FormControlLabel, Switch, Button } from '@mui/material';
+import { Button } from '@mui/material';
 
 const grey = {
     50: '#f6f8fa',
@@ -96,6 +96,11 @@ const Pokemon = () => {
         `,
     );
 
+    const handleThemeChange = () => {
+        setTheme(isDarkMode ? "light" : "dark");
+        localStorage.setItem('default-theme', isDarkMode ? "light" : "dark");
+    };
+
     const onChangeTab = (nextTab: boolean) => {
         const tabElements = tabsListRef.current!.children;
             
@@ -129,20 +134,14 @@ const Pokemon = () => {
                     >
                         Back
                     </Button>
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    className="dark_mode_switch"
-                                    color="default"
-                                    checked={theme === "dark"}
-                                    onChange={() => setTheme(isDarkMode ? "light" : "dark")}
-                                    inputProps={{ "aria-label": "controlled" }}
-                                />
-                            }
-                            label={"Dark mode"}
-                        />
-                    </FormGroup>
+                    <div className="dark_mode_switch">
+                        <input type="checkbox" className="checkbox" id="checkbox" checked={theme === "dark"} onChange={handleThemeChange}/>
+                        <label htmlFor="checkbox" className="checkbox-label">
+                            <i className="fas fa-moon"></i>
+                            <i className="fas fa-sun"></i>
+                            <span className="ball"></span>
+                        </label>
+                    </div>
                 </div>
                 <StyledTabPanel value={0}>
                     <League pokemon={pokemon} leagueIndex={0} changeTab={onChangeTab}/>
@@ -213,14 +212,6 @@ const League = ({pokemon, leagueIndex, changeTab}: ILeagueProps) => {
 
         if (isLeftSwipe || isRightSwipe) {
             changeTab(isLeftSwipe);
-            /*const tabElements = tabsListRef.current!.children;
-            
-            const currentIndex = Array.from(tabElements).findIndex(t => t.getAttribute("aria-selected") === "true");
-            const nextIndex = currentIndex + (isLeftSwipe ? 1 : -1);
-            
-            const moduloResult = ((nextIndex % tabElements.length) + tabElements.length) % tabElements.length;
-            const nextTabElement = tabElements[moduloResult] as HTMLElement;
-            nextTabElement.click();*/
         }
     }
 

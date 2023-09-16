@@ -1,15 +1,19 @@
 $themes: (
     light: (
         bodyBackgroundColor: #f8f8fa,
-        headerBackground: #fff,
+        headerBackground: rgba(255, 255, 255, 0.975),
         footerBackground: #fff,
+        switchBackground: #ccc9c9,
+        toggleBackground: #e9e4e4,
         textColor: #000,
         disabledTextColor: rgba(0, 0, 0, 0.5)
     ),
     dark: (
         bodyBackgroundColor: #202023,
-        headerBackground: #24292f,
+        headerBackground: rgba(36, 41, 47, 0.975),
         footerBackground: #202023,
+        switchBackground: #111417,
+        toggleBackground: #111417,
         textColor: #eff2f7,
         disabledTextColor: rgba(239,242,247, 0.5)
     ),

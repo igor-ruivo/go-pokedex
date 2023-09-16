@@ -9,6 +9,8 @@ import ThemeContext from '../contexts/theme-context';
 import PokemonCard from './PokemonCard';
 import { lastShownIndexStorageKey, readyImagesStorageKey } from '../utils/Resources';
 import SessionContext from '../contexts/session-context';
+import ControlPanel from './ControlPanel';
+import ControlPanelContext from '../contexts/control-panel-context';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[]
@@ -20,6 +22,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const scrollHeightLimit = 200;
 
     const {lastShownIndex, setLastShownIndex, readyImages, setReadyImages} = useContext(SessionContext);
+    const {collapsed} = useContext(ControlPanelContext);
     const { theme } = useContext(ThemeContext);
     const isCurrentDark = theme === "dark";
 
@@ -132,8 +135,11 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         color: theme.palette.text.secondary,
     }));
 
+    let gridClassName = "grid";
+    gridClassName += ` ${collapsed ? "collapsed_top_pane" : "expanded_top_pane"}`
+
     return (
-        <div className="grid" ref={renderDivRef}>
+        <div className={gridClassName} ref={renderDivRef}>
             {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
             {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                 <Box sx={{ flexGrow: 1 }}>

@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FetchData, useFetchUrls } from './hooks/useFetchUrls';
 import { IGamemasterPokemon } from './DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from './DTOs/IRankedPokemon';
-import { familyTreeStorageKey, gamemasterPokemonUrl, inputTextStorageKey, lastShownIndexStorageKey, listTypeStorageKey, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, readyImagesStorageKey } from './utils/Resources';
+import { collapsedStorageKey, familyTreeStorageKey, gamemasterPokemonUrl, inputTextStorageKey, lastShownIndexStorageKey, listTypeStorageKey, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, readyImagesStorageKey } from './utils/Resources';
 import { mapGamemasterPokemonData, mapRankedPokemon } from './utils/conversions';
 import Pokemon from './views/pokemon';
 import PokemonContext from './contexts/pokemon-context';
@@ -54,6 +54,7 @@ const App = () => {
   const [listType, setListType] = useState((+(sessionStorage.getItem(listTypeStorageKey) ?? ListType.POKEDEX)) as ListType);
   const [inputText, setInputText] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
   const [showFamilyTree, setShowFamilyTree] = useState(localStorage.getItem(familyTreeStorageKey) === "true");
+  const [collapsed, setCollapsed] = useState(sessionStorage.getItem(collapsedStorageKey) === "true");
 
   useEffect(() => {
     if (theme === "dark") {
@@ -70,7 +71,7 @@ const App = () => {
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <SessionContext.Provider value={{lastShownIndex, setLastShownIndex, readyImages, setReadyImages}}>
-        <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree}}>
+        <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed}}>
           <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
               <BrowserRouter>
                 <Routes>

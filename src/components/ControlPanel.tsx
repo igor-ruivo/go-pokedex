@@ -2,6 +2,7 @@ import "./ControlPanel.scss";
 import {
     FormControlLabel,
     FormGroup,
+    IconButton,
     Stack,
     Switch
 } from "@mui/material";
@@ -12,8 +13,10 @@ import { Input } from '@mui/base/Input';
 import { Select, selectClasses } from '@mui/base/Select';
 import { Option, optionClasses } from '@mui/base/Option';
 import React from "react";
-import { familyTreeStorageKey, inputTextStorageKey, listTypeStorageKey } from "../utils/Resources";
+import { collapsedStorageKey, familyTreeStorageKey, inputTextStorageKey, listTypeStorageKey } from "../utils/Resources";
 import ControlPanelContext, { ListType } from "../contexts/control-panel-context";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const cyan = {
     50: '#E9F8FC',
@@ -48,7 +51,7 @@ const DropdownStyles = ({isDarkMode}: IMuiStyleProps) => (
                 font-family: IBM Plex Sans, sans-serif;
                 font-size: 0.875rem;
                 box-sizing: border-box;
-                min-width: 320px;
+                min-width: 150px;
                 padding: 8px 12px;
                 border-radius: 8px;
                 text-align: left;
@@ -93,7 +96,7 @@ const DropdownStyles = ({isDarkMode}: IMuiStyleProps) => (
                 box-sizing: border-box;
                 padding: 6px;
                 margin: 12px 0;
-                min-width: 320px;
+                min-width: 150px;
                 border-radius: 12px;
                 overflow: auto;
                 outline: 0px;
@@ -155,7 +158,8 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     <style>
         {`
             .CustomInputIntroduction {
-                min-width: 180px;
+                min-width: 150px;
+                width: 150px;
                 font-family: IBM Plex Sans, sans-serif;
                 font-size: 0.875rem;
                 font-weight: 400;
@@ -185,7 +189,7 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
 );
 
 const ControlPanel = () => {
-    const {listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree} = useContext(ControlPanelContext);
+    const {listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed} = useContext(ControlPanelContext);
     const { theme, setTheme } = useContext(ThemeContext);
     const [ debouncingInputText, setDebouncingInputText ] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
     const isCurrentDark = theme === "dark";
@@ -203,96 +207,122 @@ const ControlPanel = () => {
         return () => clearTimeout(timeoutId);
     }, [debouncingInputText]);
 
-    return (
-        <div className="top-pane">
-            <Stack
-                direction="column"
-                spacing={2}
-                justifyContent="center"
-                alignItems="center"
-            >
-                <FormGroup>
-                    <FormControlLabel
-                        className="disabled_label"
-                        control={
-                            <Switch
-                                color="default"
-                                checked={theme === "dark"}
-                                onChange={handleThemeChange}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        }
-                        label={"Dark mode"}
-                    />
-                </FormGroup>
-                
+    const onExpandCollapseClick = () => {
+        setCollapsed(isCollapsed => {
+            const toggledValue = !isCollapsed;
+            sessionStorage.setItem(collapsedStorageKey, toggledValue.toString());
+            return toggledValue;
+        });
+    }
+
+    const withDisabledClass = (className: string) => className + (!debouncingInputText ? " disabled" : "");
+
+    return (<>
+        {!collapsed &&
+            <div className="top_pane expanded_pane">
                 <Stack
-                    direction="row"
+                    direction="column"
                     spacing={2}
                     justifyContent="center"
                     alignItems="center"
                 >
-                    <Input
-                        spellCheck="false"
-                        autoCorrect="off"
-                        slotProps={{ input: { className: 'CustomInputIntroduction' } }}
-                        aria-label="Search Pokémon…"
-                        placeholder="Search Pokémon…"
-                        value={debouncingInputText}
-                        onChange={e => setDebouncingInputText(e.target.value)}
-                    />
-                    <InputStyles isDarkMode = {isCurrentDark}/>
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                disabled={!debouncingInputText} 
-                                color="default"
-                                className="toggle-switch"
-                                checked={showFamilyTree}
-                                onChange={_e => 
-                                    setShowFamilyTree(previousFilter => {
-                                        const newValue = !previousFilter;
-                                        localStorage.setItem(familyTreeStorageKey, newValue.toString());
-                                        return newValue;
-                                    })
-                                }
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        }
-                        label={"Family tree"}
-                    />
-                </Stack>
-                <React.Fragment>
-                    <Select
-                        className="CustomSelect"
-                        slotProps={{
-                            listbox: { className: 'CustomSelect-listbox' },
-                            popper: { className: 'CustomSelect-popper' },
-                        }}
-                        defaultValue={listType}
-                        onChange={(_e, name) => {
-                            setListType(name as ListType);
-                            sessionStorage.setItem(listTypeStorageKey, JSON.stringify(name as ListType));
-                        }}
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        justifyContent="center"
+                        alignItems="center"
                     >
-                        <Option className="CustomSelect-option" value={ListType.POKEDEX}>
-                            Pokédex
-                        </Option>
-                        <Option className="CustomSelect-option" value={ListType.GREAT_LEAGUE}>
-                            Great League
-                        </Option>
-                        <Option className="CustomSelect-option" value={ListType.ULTRA_LEAGUE}>
-                            Ultra League
-                        </Option>
-                        <Option className="CustomSelect-option" value={ListType.MASTER_LEAGUE}>
-                            Master League
-                        </Option>
-                    </Select>
-                    <DropdownStyles isDarkMode = {isCurrentDark}/>
-                </React.Fragment>
-            </Stack>
-        </div>
+                        <Input
+                            spellCheck="false"
+                            autoCorrect="off"
+                            slotProps={{ input: { className: 'CustomInputIntroduction' } }}
+                            aria-label="Search Pokémon…"
+                            placeholder="Search Pokémon…"
+                            value={debouncingInputText}
+                            onChange={e => setDebouncingInputText(e.target.value)}
+                        />
+                        <InputStyles isDarkMode = {isCurrentDark}/>
+                        <React.Fragment>
+                            <Select
+                                className="CustomSelect"
+                                slotProps={{
+                                    listbox: { className: 'CustomSelect-listbox' },
+                                    popper: { className: 'CustomSelect-popper' },
+                                }}
+                                defaultValue={listType}
+                                onChange={(_e, name) => {
+                                    setListType(name as ListType);
+                                    sessionStorage.setItem(listTypeStorageKey, JSON.stringify(name as ListType));
+                                }}
+                            >
+                                <Option className="CustomSelect-option" value={ListType.POKEDEX}>
+                                    Pokédex
+                                </Option>
+                                <Option className="CustomSelect-option" value={ListType.GREAT_LEAGUE}>
+                                    Great League
+                                </Option>
+                                <Option className="CustomSelect-option" value={ListType.ULTRA_LEAGUE}>
+                                    Ultra League
+                                </Option>
+                                <Option className="CustomSelect-option" value={ListType.MASTER_LEAGUE}>
+                                    Master League
+                                </Option>
+                            </Select>
+                            <DropdownStyles isDarkMode = {isCurrentDark}/>
+                        </React.Fragment>
+                    </Stack>
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        justifyContent="center"
+                        alignItems="center"
+                    >
+                        <div>
+                            <input type="checkbox" className="checkbox" id="checkbox" checked={theme === "dark"} onChange={handleThemeChange}/>
+                            <label htmlFor="checkbox" className="checkbox-label">
+                                <i className="fas fa-moon"></i>
+                                <i className="fas fa-sun"></i>
+                                <span className="ball"></span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="checkbox" disabled={!debouncingInputText} className="checkbox" id="checkbox2" checked={showFamilyTree} onChange={_e => 
+                                        setShowFamilyTree(previousFilter => {
+                                            const newValue = !previousFilter;
+                                            localStorage.setItem(familyTreeStorageKey, newValue.toString());
+                                            return newValue;
+                                        })}/>
+                            <label htmlFor="checkbox2" className={withDisabledClass("checkbox-label")}>
+                                <i className={withDisabledClass("fas fa-ontree")}></i>
+                                <i className="fas fa-offtree"></i>
+                                <span className="ball"></span>
+                            </label>
+                        </div>
+                    </Stack>
+                </Stack>
+            </div>
+        }
+        <ExpandCollapseToggle collapsed={collapsed} onExpandCollapseClick={onExpandCollapseClick} />
+    </>
     );
+}
+
+interface ExpandCollapseToggleProps {
+    collapsed: boolean,
+    onExpandCollapseClick: () => void
+}
+
+const ExpandCollapseToggle = ({collapsed, onExpandCollapseClick}: ExpandCollapseToggleProps) => {
+    let className = "top_pane expand_collapse_toggle"
+    if (!collapsed) {
+        className += " expanded_toggle"
+    }
+
+    return <div className={className}>
+    <IconButton onClick={onExpandCollapseClick} size="large">
+        {collapsed ? <ExpandMoreIcon color="primary" fontSize="large"/> : <ExpandLessIcon color="primary" fontSize="large"/>}
+    </IconButton>
+</div>
 }
 
 export default ControlPanel

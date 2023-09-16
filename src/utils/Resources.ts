@@ -4,6 +4,7 @@ export const readyImagesStorageKey = "readyImagesKey";
 export const listTypeStorageKey = "listType";
 export const inputTextStorageKey = "inputTextStorageKey";
 export const familyTreeStorageKey = "familyTreeStorageKey";
+export const collapsedStorageKey = "collapsedStorageKey";
 export const buildPokemonImageUrl = (dex: string, type: string, form?: string) => `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/${dex}${form ? "_f" + form : ""}.png`;
 export const gamemasterPokemonUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/gamemaster/pokemon.json";
 export const pvpokeRankings1500Url = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/all/overall/rankings-1500.json";
