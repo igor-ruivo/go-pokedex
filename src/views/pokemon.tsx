@@ -12,6 +12,8 @@ import { TabsList } from '@mui/base/TabsList';
 import { TabPanel } from '@mui/base/TabPanel';
 import ThemeContext from '../contexts/theme-context';
 import { Button } from '@mui/material';
+import useSwipe from '../hooks/useSwipe';
+import AppraisalBar from '../components/AppraisalBar';
 
 const grey = {
     50: '#f6f8fa',
@@ -144,7 +146,7 @@ const Pokemon = () => {
                     </div>
                 </div>
                 <StyledTabPanel value={0}>
-                    <League pokemon={pokemon} leagueIndex={0} changeTab={onChangeTab}/>
+                    <PokemonInfo pokemon={pokemon} changeTab={onChangeTab}/>
                 </StyledTabPanel>
                 <StyledTabPanel value={1}>
                     <League pokemon={pokemon} leagueIndex={1} changeTab={onChangeTab}/>
@@ -172,21 +174,19 @@ const Pokemon = () => {
     );
 }
 
+interface IPokemonInfoProps {
+    pokemon: IGamemasterPokemon,
+    changeTab: (nextTab: boolean) => void
+}
+
 interface ILeagueProps {
     pokemon: IGamemasterPokemon,
     leagueIndex: number,
     changeTab: (nextTab: boolean) => void
 }
 
-const League = ({pokemon, leagueIndex, changeTab}: ILeagueProps) => {
-    const minSwipeDistance = 50;
-    const [touchStart, setTouchStart] = useState(0);
-    const [touchEnd, setTouchEnd] = useState(0);
-
-    const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(0);
-        setTouchStart(e.targetTouches[0].clientX);
-    }
+const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
+    const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         switch (e.code) {
@@ -199,27 +199,35 @@ const League = ({pokemon, leagueIndex, changeTab}: ILeagueProps) => {
         }
     }
 
-    const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+    const convertImgUrl = (imageUrl: string) => imageUrl.replace("/detail/", "/full/");
+    
+    return (
+        <div>
+            {pokemon && <div className="tab_panel_container images_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+                <img className="image" onKeyDown={onKeyDown} src={convertImgUrl(pokemon.imageUrl)} width={475} height={475} alt={pokemon.speciesName}/>
+            </div>}
+            <AppraisalBar/>
+        </div>
+    );
+}
 
-    const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) {
-            return;
-        }
-
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe || isRightSwipe) {
-            changeTab(isLeftSwipe);
+const League = ({pokemon, leagueIndex, changeTab}: ILeagueProps) => {
+    const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
+    
+    const onKeyDown = (e: React.KeyboardEvent) => {
+        switch (e.code) {
+            case "ArrowRight":
+                changeTab(true);
+                break;
+            case "ArrowLeft":
+                changeTab(false);
+                break;
         }
     }
 
-    const convertImgUrl = (imageUrl: string) => imageUrl.replace("/detail/", "/full/");
-    
-    return pokemon && <div className="tab_panel_container images_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-        <img className="image" onKeyDown={onKeyDown} src={convertImgUrl(pokemon.imageUrl)} width={475} height={475} alt={pokemon.speciesName}/>
-    </div>
+    return <div onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+        League {leagueIndex}
+    </div>;
 }
 
 

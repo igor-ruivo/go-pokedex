@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useEffect, useState } from "react";
 import "./AppraisalBar.css";
 
 enum Stat {
@@ -7,49 +7,117 @@ enum Stat {
     HP
 }
 
-const AppraisalBar = () => {
+const AppraisalBar = memo(() => {
     const [attack, setAttack] = useState(0);
     const [defense, setDefense] = useState(0);
     const [hp, setHP] = useState(0);
 
+    useEffect(() => {
+        console.log("mounting");
+        return () => {
+            console.log("unmountingf")
+        };
+    }, []);
+
     const handleCellClick = (stat: Stat, cellIndex: number) => {
         switch (stat) {
             case Stat.Attack:
-                setAttack(cellIndex + 1);
+                setAttack(previousIndex => previousIndex === cellIndex + 1 ? 0 : cellIndex + 1);
                 break;
             case Stat.Defense:
-                setDefense(cellIndex + 1);
+                setDefense(previousIndex => previousIndex === cellIndex + 1 ? 0 : cellIndex + 1);
                 break;
             case Stat.HP:
-                setHP(cellIndex + 1);
+                setHP(previousIndex => previousIndex === cellIndex + 1 ? 0 : cellIndex + 1);
                 break;
         }
     };
 
+    const handleMouseEnter = (stat: Stat, cellIndex: number) => {
+        const statBarElement = document.getElementsByClassName("stat-bar")[stat];
+        const cells = Array.from(statBarElement.children);
+
+        if (cellIndex < 14) {
+            statBarElement.classList.remove("max");
+        }
+
+        cells.forEach((cell, index) => {
+            if (index === cellIndex) {
+                cell.classList.add("end");
+            }
+            if (index <= cellIndex) {
+                if (index < cellIndex) {
+                    cell.classList.remove("end");
+                }
+                cell.classList.add("hover");
+            } else {
+                if (!cell.classList.contains("active")) {
+                    cell.classList.remove("hover");
+                    cell.classList.remove("end");
+                }
+                cell.classList.remove("active");
+            }
+        });
+    }
+    
+    const handleMouseLeave = (stat: Stat) => {
+        const statBarElement = document.getElementsByClassName("stat-bar")[stat];
+        const cells = Array.from(statBarElement.children);
+
+        let statValue = 0;
+        switch (stat) {
+            case Stat.Attack:
+                statValue = attack;
+                break;
+            case Stat.Defense:
+                statValue = defense;
+                break;
+            case Stat.HP:
+                statValue = hp;
+                break;
+        }
+
+        if (statValue === 15) {
+            statBarElement.classList.add("max");
+        }
+
+        cells.forEach((cell, index) => {
+            const isActive = index < statValue;
+            const isEnd = index === statValue - 1;
+
+            cell.classList.toggle("active", isActive);
+            cell.classList.toggle("hover", isActive);
+            cell.classList.toggle("end", isEnd);
+        });
+    }
+
     const renderStatBar = (stat: Stat, value: number) => {
         const cells = [];
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < 15; i++) {
             const isActive = i < value;
-            const isEnd = i === 15;
+            const isEnd = i === value - 1;
         
-            const barClasses = ['bar', isActive && 'active', isEnd && 'end'].filter(Boolean).join(' ');
+            const cellClass = ['bar', isActive && 'active hover', isEnd && 'end'].filter(Boolean).join(' ');
         
             cells.push(
                 <div
                     key={i}
-                    className={barClasses}
+                    className={cellClass}
                     onClick={() => handleCellClick(stat, i)}
-                    onMouseEnter={() => handleCellClick(stat, i)}
+                    onMouseEnter={() => handleMouseEnter(stat, i)}
+                    onMouseLeave={() => handleMouseLeave(stat)}
                 ></div>
             );
         }
 
+        const statBarClass = value === 15 ? 'stat-bar max' : 'stat-bar';
+
         return (
             <div className="stat">
-                <h4>{stat}
+                <h4>{Stat[stat]}
                     <span>{value}</span>
                 </h4>
-                <div className="stat-bar max">{cells}</div>
+                <div className={statBarClass}>{cells}</div>
             </div>
         );
     }
@@ -61,75 +129,6 @@ const AppraisalBar = () => {
             {renderStatBar(Stat.HP, hp)}
         </div>
     );
-/*
-    return (
-        <div className="appraisal">
-            <div className="stat">
-                <h4>Attack
-                    <span>13</span>
-                </h4>
-                <div className="stat-bar">
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover end"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                </div>
-            </div>
-            <div className="stat">
-                <h4>Defense
-                    <span>7</span>
-                </h4>
-                <div className="stat-bar">
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover end"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                    <div className="bar"></div>
-                </div>
-            </div>
-            <div className="stat">
-                <h4>HP
-                    <span>15</span>
-                </h4>
-                <div className="stat-bar max">
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover"></div>
-                    <div className="bar active hover end"></div>
-                </div>
-            </div>
-        </div>
-    );*/
-}
+});
+
+export default AppraisalBar;

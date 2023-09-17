@@ -9,7 +9,6 @@ import ThemeContext from '../contexts/theme-context';
 import PokemonCard from './PokemonCard';
 import { lastShownIndexStorageKey, readyImagesStorageKey } from '../utils/Resources';
 import SessionContext from '../contexts/session-context';
-import ControlPanel from './ControlPanel';
 import ControlPanelContext from '../contexts/control-panel-context';
 
 interface IPokemonGridProps {
