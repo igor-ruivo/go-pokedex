@@ -37,6 +37,11 @@ const AppraisalBar = memo(() => {
         const statBarElement = document.getElementsByClassName("stat-bar")[stat];
         const cells = Array.from(statBarElement.children);
 
+        if (cellIndex === 14 && !cells[cellIndex].classList.contains("active")) {
+            statBarElement.classList.add("max-hover");
+            cells[cellIndex].classList.add("end");
+        }
+
         if (cellIndex < 14) {
             statBarElement.classList.remove("max");
         }
@@ -54,6 +59,10 @@ const AppraisalBar = memo(() => {
                 if (!cell.classList.contains("active")) {
                     cell.classList.remove("hover");
                     cell.classList.remove("end");
+                } else {
+                    if (cellIndex === 14) {
+                        cell.classList.add("max-hover");
+                    }
                 }
                 cell.classList.remove("active");
             }
@@ -77,11 +86,15 @@ const AppraisalBar = memo(() => {
                 break;
         }
 
+        statBarElement.classList.remove("max-hover");
+
         if (statValue === 15) {
             statBarElement.classList.add("max");
         }
 
         cells.forEach((cell, index) => {
+            cell.classList.remove("max-hover");
+
             const isActive = index < statValue;
             const isEnd = index === statValue - 1;
 

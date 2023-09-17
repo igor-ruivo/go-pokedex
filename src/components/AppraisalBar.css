@@ -58,6 +58,14 @@
     background: #e18079
 }
 
+.appraisal .stat-bar.max-hover .bar {
+    background: #dea39f
+}
+
+.appraisal .stat-bar .bar.hover.max-hover {
+    background: #dea39f
+}
+
 @media all and (max-width: 400px) {
     .data-grid {
         max-width:100%;
