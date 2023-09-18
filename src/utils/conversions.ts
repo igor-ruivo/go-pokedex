@@ -73,7 +73,7 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 speciesId: pokemon.speciesId,
                 speciesName: pokemon.speciesName,
                 imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
-                types: Array.from(pokemon.types).filter(t => t != "none").map(t => t as PokemonTypes),
+                types: Array.from(pokemon.types).filter(t => t !== "none").map(t => t as PokemonTypes),
                 atk: pokemon.baseStats.atk,
                 def: pokemon.baseStats.def,
                 hp: pokemon.baseStats.hp,

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import './pokemon.scss';
 import '../components/PokemonImage.css';
 import PokemonContext from '../contexts/pokemon-context';
@@ -14,6 +14,8 @@ import ThemeContext from '../contexts/theme-context';
 import { Button } from '@mui/material';
 import useSwipe from '../hooks/useSwipe';
 import AppraisalBar from '../components/AppraisalBar';
+import Dictionary from '../utils/Dictionary';
+import { computeBestIVs } from '../utils/pokemonIv';
 
 const grey = {
     50: '#f6f8fa',
@@ -186,8 +188,48 @@ interface ILeagueProps {
 }
 
 const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
+    interface IIvPercents {
+        greatLeaguePercent: number,
+        ultraLeaguePercent: number,
+        masterLeaguePercent: number
+    }
     const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
+    const [ivPercents, setIvPercents] = useState<IIvPercents>({
+        greatLeaguePercent: 0,
+        ultraLeaguePercent: 0,
+        masterLeaguePercent: 0
+    });
 
+    useEffect(() => {
+        console.log("mounting pokemon");
+        return () => {
+            console.log("unmounting pokemon")
+        };
+    }, []);
+
+    const onInputChanged = (attack: number, defense: number, hp: number) => {
+        if (!pokemon) {
+            return;
+        }
+        const resGL = computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, 1500);
+        const resUL = computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, 2500);
+        const resML = computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, Number.MAX_VALUE);
+
+        const flatGLResult = Object.values(resGL).flat();
+        const flatULResult = Object.values(resUL).flat();
+        const flatMLResult = Object.values(resML).flat();
+
+        const rankGL = flatGLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+        const rankUL = flatULResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+        const rankML = flatMLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+
+        setIvPercents({
+            greatLeaguePercent: Math.round(((1 - (rankGL / 4095)) * 100 + Number.EPSILON) * 100) / 100,
+            ultraLeaguePercent: Math.round(((1 - (rankUL / 4095)) * 100 + Number.EPSILON) * 100) / 100,
+            masterLeaguePercent: Math.round(((1 - (rankML / 4095)) * 100 + Number.EPSILON) * 100) / 100
+        });
+    }
+    
     const onKeyDown = (e: React.KeyboardEvent) => {
         switch (e.code) {
             case "ArrowRight":
@@ -206,7 +248,10 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
             {pokemon && <div className="tab_panel_container images_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
                 <img className="image" onKeyDown={onKeyDown} src={convertImgUrl(pokemon.imageUrl)} width={475} height={475} alt={pokemon.speciesName}/>
             </div>}
-            <AppraisalBar/>
+            <div className='rankings'>
+                <img height="32" width="32" src="https://www.stadiumgaming.gg/frontend/assets/img/great.png"/>{ivPercents.greatLeaguePercent}% <img height="32" width="32" src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png"/>{ivPercents.ultraLeaguePercent}% <img height="32" width="32" src="https://www.stadiumgaming.gg/frontend/assets/img/master.png"/>{ivPercents.masterLeaguePercent}%
+            </div>
+            <AppraisalBar inputChangedCallback={onInputChanged}/>
         </div>
     );
 }
@@ -224,6 +269,13 @@ const League = ({pokemon, leagueIndex, changeTab}: ILeagueProps) => {
                 break;
         }
     }
+    
+    useEffect(() => {
+        console.log("mounting " + leagueIndex);
+        return () => {
+            console.log("unmounting " + leagueIndex)
+        };
+    }, []);
 
     return <div onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
         League {leagueIndex}

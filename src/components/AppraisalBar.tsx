@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./AppraisalBar.css";
 
 enum Stat {
@@ -7,17 +7,18 @@ enum Stat {
     HP
 }
 
-const AppraisalBar = memo(() => {
+interface IAppraisalBarProps {
+    inputChangedCallback: (attack: number, defense: number, hp: number) => void;
+}
+
+const AppraisalBar = ({inputChangedCallback}: IAppraisalBarProps) => {
     const [attack, setAttack] = useState(0);
     const [defense, setDefense] = useState(0);
     const [hp, setHP] = useState(0);
 
     useEffect(() => {
-        console.log("mounting");
-        return () => {
-            console.log("unmountingf")
-        };
-    }, []);
+        inputChangedCallback(attack, defense, hp);
+    }, [attack, defense, hp]);
 
     const handleCellClick = (stat: Stat, cellIndex: number) => {
         switch (stat) {
@@ -142,6 +143,6 @@ const AppraisalBar = memo(() => {
             {renderStatBar(Stat.HP, hp)}
         </div>
     );
-});
+};
 
 export default AppraisalBar;
