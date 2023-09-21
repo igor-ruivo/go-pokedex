@@ -4,9 +4,9 @@ import './pokedex.scss';
 import ControlPanel from '../components/ControlPanel';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
-import PokemonContext from '../contexts/pokemon-context';
 import LoadingRenderer from '../components/LoadingRenderer';
 import { ConfigKeys, readPersistentValue, readSessionValue } from '../utils/persistent-configs-handler';
+import { usePokemon } from '../contexts/pokemon-context';
 
 export enum ListType {
     POKEDEX,
@@ -35,7 +35,7 @@ const Pokedex = () => {
     const [listType, setListType] = useState(getDefaultListType());
     const [inputText, setInputText] = useState(getDefaultInputText());
     const [controlPanelCollapsed, setControlPanelCollapsed] = useState(getDefaultControlPanelCollapsed());
-    const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
+    const { gamemasterPokemon, rankLists, fetchCompleted, errors } = usePokemon();
 
     const prepareData = () => {
         if (!fetchCompleted) {

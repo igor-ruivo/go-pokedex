@@ -6,13 +6,13 @@ import {
     TextField
 } from "@mui/material";
 import '../styles/theme-variables.scss';
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Select, selectClasses } from '@mui/base/Select';
 import { Option, optionClasses } from '@mui/base/Option';
 import React from "react";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import PokemonContext from "../contexts/pokemon-context";
+import { usePokemon } from "../contexts/pokemon-context";
 import { Theme, useTheme } from "../contexts/theme-context";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import { ListType } from "../views/pokedex";
@@ -203,7 +203,7 @@ const ControlPanel = ({getDefaultInputText, setInputText, controlPanelCollapsed,
 
     const { theme, toggleTheme } = useTheme();
     const isCurrentDark = theme === Theme.Dark;
-    const { gamemasterPokemon } = useContext(PokemonContext);
+    const { gamemasterPokemon } = usePokemon();
     
     const expandCollapseDivRef = useRef<HTMLDivElement>(null);
 

@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import './pokemon.scss';
 import '../components/PokemonImage.css';
-import PokemonContext from '../contexts/pokemon-context';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { styled } from '@mui/material/styles';
@@ -19,6 +18,7 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import PokemonInfoCard from '../components/PokemonInfo/PokemonInfoCard';
 import { Theme, useTheme } from '../contexts/theme-context';
+import { usePokemon } from '../contexts/pokemon-context';
 
 const grey = {
     50: '#f6f8fa',
@@ -35,7 +35,7 @@ const grey = {
 
 const Pokemon = () => {
     const {theme, toggleTheme} = useTheme();
-    const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
+    const { gamemasterPokemon, rankLists, fetchCompleted, errors } = usePokemon();
     const navigate = useNavigate();
     const { speciesId } = useParams();
 
@@ -204,11 +204,11 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
 
     const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
     const [ivPercents, setIvPercents] = useState<IIvPercents[]>([]);
-    const {gamemasterPokemon} = useContext(PokemonContext);
+    const {gamemasterPokemon} = usePokemon();
     const {theme} = useTheme();
     const isDarkMode = theme === Theme.Dark;
 
-    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isMega && !p.isShadow) : [pokemon];
+    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isMega && !p.isShadow).reverse() : [pokemon];
 
     useEffect(() => {
         console.log("mounting pokemon");

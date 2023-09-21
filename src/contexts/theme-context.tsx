@@ -21,9 +21,7 @@ export const useTheme = (): ThemeContextType => {
     return context;
 };
 
-interface IThemeProviderProps {};
-
-export const ThemeProvider = (props: React.PropsWithChildren<IThemeProviderProps>) => {
+export const ThemeProvider = (props: React.PropsWithChildren<{}>) => {
     const isBrowserDefaulDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
     const getDefaultTheme = (): Theme => {
         const cachedTheme = readPersistentValue(ConfigKeys.DefaultTheme);
