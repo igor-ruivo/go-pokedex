@@ -26,7 +26,7 @@ export const ThemeProvider = (props: React.PropsWithChildren<{}>) => {
     const getDefaultTheme = (): Theme => {
         const cachedTheme = readPersistentValue(ConfigKeys.DefaultTheme);
         if (cachedTheme) {
-            return Theme[cachedTheme as keyof typeof Theme];
+            return +cachedTheme;
         }
         const browserDefault = isBrowserDefaulDark() ? Theme.Dark : Theme.Light;
         return browserDefault;

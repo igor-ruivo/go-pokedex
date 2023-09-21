@@ -14,7 +14,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { usePokemon } from "../contexts/pokemon-context";
 import { Theme, useTheme } from "../contexts/theme-context";
-import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
+import { ConfigKeys, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import { ListType } from "../views/pokedex";
 
 const cyan = {
