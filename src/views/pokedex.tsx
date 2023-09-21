@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
 import ControlPanel from '../components/ControlPanel';
@@ -6,11 +6,36 @@ import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import PokemonContext from '../contexts/pokemon-context';
 import LoadingRenderer from '../components/LoadingRenderer';
-import ControlPanelContext, { ListType } from '../contexts/control-panel-context';
+import { ConfigKeys, readPersistentValue, readSessionValue } from '../utils/persistent-configs-handler';
+
+export enum ListType {
+    POKEDEX,
+    GREAT_LEAGUE,
+    ULTRA_LEAGUE,
+    MASTER_LEAGUE
+}
+
+const getDefaultShowFamilyTree = () => readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
+
+const getDefaultListType = () => {
+    const cachedValue = readSessionValue(ConfigKeys.ListType);
+    if (!cachedValue) {
+        return ListType.POKEDEX;
+    }
+
+    return +cachedValue as ListType;
+}
+
+const getDefaultInputText = () => readSessionValue(ConfigKeys.SearchInputText) ?? "";
+
+const getDefaultControlPanelCollapsed = () => readSessionValue(ConfigKeys.ControlPanelCollapsed) === "true";
 
 const Pokedex = () => {
+    const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
+    const [listType, setListType] = useState(getDefaultListType());
+    const [inputText, setInputText] = useState(getDefaultInputText());
+    const [controlPanelCollapsed, setControlPanelCollapsed] = useState(getDefaultControlPanelCollapsed());
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
-    const { listType, inputText, showFamilyTree } = useContext(ControlPanelContext);
 
     const prepareData = () => {
         if (!fetchCompleted) {
@@ -63,9 +88,18 @@ const Pokedex = () => {
             <LoadingRenderer errors={errors} completed={fetchCompleted}>
                 <>
                     <div>
-                        <ControlPanel />
+                        <ControlPanel
+                            getDefaultInputText={getDefaultInputText}
+                            setInputText={setInputText}
+                            controlPanelCollapsed={controlPanelCollapsed}
+                            setControlPanelCollapsed={setControlPanelCollapsed}
+                            listType={listType}
+                            setListType={setListType}
+                            showFamilyTree={showFamilyTree}
+                            setShowFamilyTree={setShowFamilyTree}
+                        />
                     </div>
-                    <PokemonGrid pokemonInfoList={data} />
+                    <PokemonGrid pokemonInfoList={data} controlPanelCollapsed={controlPanelCollapsed} listType={listType} />
                 </>
             </LoadingRenderer>
         </div>

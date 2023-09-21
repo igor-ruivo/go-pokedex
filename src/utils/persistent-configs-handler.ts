@@ -2,7 +2,11 @@
 export enum ConfigKeys {
     DefaultTheme,
     LastShownImageIndex,
-    BrowserCachedImages
+    BrowserCachedImages,
+    ListType,
+    SearchInputText,
+    ShowFamilyTree,
+    ControlPanelCollapsed
 }
 
 // avoids collision with other website's cache.

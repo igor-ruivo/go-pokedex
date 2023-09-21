@@ -10,12 +10,12 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Select, selectClasses } from '@mui/base/Select';
 import { Option, optionClasses } from '@mui/base/Option';
 import React from "react";
-import { collapsedStorageKey, familyTreeStorageKey, inputTextStorageKey, listTypeStorageKey } from "../utils/Resources";
-import ControlPanelContext, { ListType } from "../contexts/control-panel-context";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import PokemonContext from "../contexts/pokemon-context";
 import { Theme, useTheme } from "../contexts/theme-context";
+import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
+import { ListType } from "../views/pokedex";
 
 const cyan = {
     50: '#E9F8FC',
@@ -187,13 +187,25 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     </style>
 );
 
-const ControlPanel = () => {
-    const {listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed} = useContext(ControlPanelContext);
+interface IControlPanel {
+    getDefaultInputText: () => string,
+    setInputText: (_: React.SetStateAction<string>) => void,
+    controlPanelCollapsed: boolean,
+    setControlPanelCollapsed: (_: React.SetStateAction<boolean>) => void,
+    listType: ListType,
+    setListType: (_: React.SetStateAction<ListType>) => void,
+    showFamilyTree: boolean,
+    setShowFamilyTree: (_: React.SetStateAction<boolean>) => void
+}
+
+const ControlPanel = ({getDefaultInputText, setInputText, controlPanelCollapsed, setControlPanelCollapsed, listType, setListType, showFamilyTree, setShowFamilyTree}: IControlPanel) => {
+    const [debouncingInputText, setDebouncingInputText] = useState(getDefaultInputText());
+
     const { theme, toggleTheme } = useTheme();
-    const { gamemasterPokemon } = useContext(PokemonContext);
-    const [ debouncingInputText, setDebouncingInputText ] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
-    const expandCollapseDivRef = useRef<HTMLDivElement>(null);
     const isCurrentDark = theme === Theme.Dark;
+    const { gamemasterPokemon } = useContext(PokemonContext);
+    
+    const expandCollapseDivRef = useRef<HTMLDivElement>(null);
 
     const handleThemeChange = () => {
         toggleTheme();
@@ -202,21 +214,21 @@ const ControlPanel = () => {
     useEffect(() => {
         if (!debouncingInputText) {
             setInputText("");
-            sessionStorage.setItem(inputTextStorageKey, "");
+            writeSessionValue(ConfigKeys.SearchInputText, "");
             return;
         }
 
         const timeoutId = setTimeout(() => {
             setInputText(debouncingInputText);
-            sessionStorage.setItem(inputTextStorageKey, debouncingInputText);
+            writeSessionValue(ConfigKeys.SearchInputText, debouncingInputText);
         }, 500);
         return () => clearTimeout(timeoutId);
     }, [debouncingInputText]);
 
     const onExpandCollapseClick = () => {
-        setCollapsed(isCollapsed => {
+        setControlPanelCollapsed(isCollapsed => {
             const toggledValue = !isCollapsed;
-            sessionStorage.setItem(collapsedStorageKey, toggledValue.toString());
+            writeSessionValue(ConfigKeys.ControlPanelCollapsed, toggledValue.toString());
             return toggledValue;
         });
     }
@@ -227,7 +239,7 @@ const ControlPanel = () => {
     const withDisabledClass = (className: string) => className + (!debouncingInputText ? " disabled" : "");
 
     return (<>
-        {!collapsed &&
+        {!controlPanelCollapsed &&
             <div className="top_pane expanded_pane">
                 <Stack
                     direction="column"
@@ -276,7 +288,7 @@ const ControlPanel = () => {
                                 defaultValue={listType}
                                 onChange={(_e, name) => {
                                     setListType(name as ListType);
-                                    sessionStorage.setItem(listTypeStorageKey, JSON.stringify(name as ListType));
+                                    writeSessionValue(ConfigKeys.ListType, JSON.stringify(name as ListType));
                                 }}
                             >
                                 <Option className="CustomSelect-option" value={ListType.POKEDEX}>
@@ -313,7 +325,7 @@ const ControlPanel = () => {
                             <input type="checkbox" disabled={!debouncingInputText} className="checkbox" id="checkbox2" checked={showFamilyTree} onChange={_e => 
                                         setShowFamilyTree(previousFilter => {
                                             const newValue = !previousFilter;
-                                            localStorage.setItem(familyTreeStorageKey, newValue.toString());
+                                            writePersistentValue(ConfigKeys.ShowFamilyTree, newValue.toString());
                                             return newValue;
                                         })}/>
                             <label htmlFor="checkbox2" className={withDisabledClass("checkbox-label")}>
@@ -326,7 +338,7 @@ const ControlPanel = () => {
                 </Stack>
             </div>
         }
-        <ExpandCollapseToggle collapsed={collapsed} expandCollapseDivRef={expandCollapseDivRef} onExpandCollapseClick={onExpandCollapseClick} />
+        <ExpandCollapseToggle collapsed={controlPanelCollapsed} expandCollapseDivRef={expandCollapseDivRef} onExpandCollapseClick={onExpandCollapseClick} />
     </>
     );
 }

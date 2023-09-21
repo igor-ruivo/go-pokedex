@@ -4,19 +4,21 @@ import "./PokemonCard.scss"
 import PokemonImage from "./PokemonImage";
 import PokemonNumber from "./PokemonNumber/PokemonNumber";
 import PokemonTypes from "./PokemonType/PokemonTypes";
+import { ListType } from "../views/pokedex";
 
 interface IPokemonCardProps {
-  pokemon: IGamemasterPokemon
+  pokemon: IGamemasterPokemon,
+  listType: ListType
 }
 
-const PokemonCard = ({pokemon}: IPokemonCardProps) => {
+const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
   const link = `/pokemon/${pokemon.speciesId}`;
 
     return (
       <Link to={link}>
         <div className="pokemon_card">
           <div className="header_container">
-            <PokemonNumber dex={pokemon.dex} speciesId={pokemon.speciesId} />
+            <PokemonNumber dex={pokemon.dex} speciesId={pokemon.speciesId} listType={listType} />
             <PokemonTypes types={pokemon.types} />
           </div>
           <PokemonImage pokemon={pokemon} />

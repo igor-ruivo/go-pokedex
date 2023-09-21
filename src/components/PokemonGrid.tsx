@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -6,13 +6,15 @@ import Grid from '@mui/material/Unstable_Grid2';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import PokemonCard from './PokemonCard';
-import ControlPanelContext from '../contexts/control-panel-context';
 import { Theme, useTheme } from '../contexts/theme-context';
 import Dictionary from '../utils/Dictionary';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
+import { ListType } from '../views/pokedex';
 
 interface IPokemonGridProps {
-    pokemonInfoList: IGamemasterPokemon[]
+    pokemonInfoList: IGamemasterPokemon[],
+    controlPanelCollapsed: boolean,
+    listType: ListType
 }
 
 const getDefaultLastShownIndex = () => +(readSessionValue(ConfigKeys.LastShownImageIndex) ?? "0");
@@ -25,15 +27,14 @@ const getDefaultReadyImages = (): Dictionary<string> => {
     return {};
 }
 
-const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
+const PokemonGrid = memo(({pokemonInfoList, controlPanelCollapsed, listType}: IPokemonGridProps) => {
     const batchSize = 24;
     const bufferSize = 5 * batchSize;
     const scrollHeightLimit = 200;
 
     const [lastShownIndex, setLastShownIndex] = useState(getDefaultLastShownIndex());
     const [readyImages, setReadyImages] = useState<Dictionary<string>>(getDefaultReadyImages());
-
-    const {collapsed} = useContext(ControlPanelContext);
+    
     const { theme } = useTheme();
     const isCurrentDark = theme === Theme.Dark;
 
@@ -45,7 +46,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const initialPropsSet = useRef(false);
 
     useEffect(() => {
-        // Whenever the props change, let's reset the scrolling and the shown pokemon.
+        // Whenever the pokemonInfoList prop changes, let's reset the scrolling and the shown pokemon.
         if (initialPropsSet.current) {
             setLastShownIndex(0);
             writeSessionValue(ConfigKeys.LastShownImageIndex, "0");
@@ -151,7 +152,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     }));
 
     let gridContainerClassName = "grid_container";
-    gridContainerClassName += ` ${collapsed ? "collapsed_top_pane" : "expanded_top_pane"}`;
+    gridContainerClassName += ` ${controlPanelCollapsed ? "collapsed_top_pane" : "expanded_top_pane"}`;
 
     return (
         <div className={gridContainerClassName} ref={renderDivRef}>
@@ -163,7 +164,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
                             <Grid xs={4} sm={3} md={3} key={p.speciesId} className="grid">
                                 {readyImages.hasOwnProperty(p.speciesId) &&
                                 <Item>
-                                    <PokemonCard pokemon={p} />
+                                    <PokemonCard pokemon={p} listType={listType} />
                                 </Item>}
                             </Grid>
                         ))}

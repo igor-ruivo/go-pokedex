@@ -1,16 +1,16 @@
 import { useContext } from "react";
-import ControlPanelContext, { ListType } from "../../contexts/control-panel-context";
 import "./PokemonNumber.scss";
 import PokemonContext from "../../contexts/pokemon-context";
+import { ListType } from "../../views/pokedex";
 
 type IPokemonNumberProps = {
     dex: number,
     speciesId: string,
+    listType: ListType
   }  
 
-const PokemonNumber = ({ dex, speciesId }: IPokemonNumberProps) => {
+const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
     const {rankLists} = useContext(PokemonContext);
-    const {listType} = useContext(ControlPanelContext);
 
     const pokemonNumberGenerator = (dex: number): string => {
         let urlDex = "" + dex;
