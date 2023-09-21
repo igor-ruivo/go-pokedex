@@ -6,13 +6,23 @@ import Grid from '@mui/material/Unstable_Grid2';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import PokemonCard from './PokemonCard';
-import { lastShownIndexStorageKey, readyImagesStorageKey } from '../utils/Resources';
-import SessionContext from '../contexts/session-context';
 import ControlPanelContext from '../contexts/control-panel-context';
 import { Theme, useTheme } from '../contexts/theme-context';
+import Dictionary from '../utils/Dictionary';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[]
+}
+
+const getDefaultLastShownIndex = () => +(readSessionValue(ConfigKeys.LastShownImageIndex) ?? "0");
+
+const getDefaultReadyImages = (): Dictionary<string> => {
+    const storedInfo = readSessionValue(ConfigKeys.BrowserCachedImages);
+    if (storedInfo) {
+        return JSON.parse(storedInfo);
+    }
+    return {};
 }
 
 const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
@@ -20,7 +30,9 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
     const bufferSize = 5 * batchSize;
     const scrollHeightLimit = 200;
 
-    const {lastShownIndex, setLastShownIndex, readyImages, setReadyImages} = useContext(SessionContext);
+    const [lastShownIndex, setLastShownIndex] = useState(getDefaultLastShownIndex());
+    const [readyImages, setReadyImages] = useState<Dictionary<string>>(getDefaultReadyImages());
+
     const {collapsed} = useContext(ControlPanelContext);
     const { theme } = useTheme();
     const isCurrentDark = theme === Theme.Dark;
@@ -36,7 +48,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
         // Whenever the props change, let's reset the scrolling and the shown pokemon.
         if (initialPropsSet.current) {
             setLastShownIndex(0);
-            sessionStorage.setItem(lastShownIndexStorageKey, "0");
+            writeSessionValue(ConfigKeys.LastShownImageIndex, "0");
         } else {
             initialPropsSet.current = true;
         }
@@ -59,7 +71,11 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             renderDivRef.current!.offsetHeight - scrollHeightLimit
         ) {
             // Show next batch of pokemon if window scroll is less than scrollHeightLimit pixels from reaching the bottom of the page
-            setLastShownIndex(previous => Math.min(previous + batchSize, pokemonInfoList.length));
+            setLastShownIndex(previous => {
+                const newIndex = Math.min(previous + batchSize, pokemonInfoList.length);
+                writeSessionValue(ConfigKeys.LastShownImageIndex, newIndex.toString());
+                return newIndex;
+            });
         }
     }, [readyImages, lastShownIndex, pokemonInfoList]);
 
@@ -82,7 +98,7 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
             setReadyImages(previous => {
                 var newGlobalData = { ...previous };
                 answers.forEach(pokemonId => newGlobalData[pokemonId] = "");
-                sessionStorage.setItem(readyImagesStorageKey, JSON.stringify(newGlobalData));
+                writeSessionValue(ConfigKeys.BrowserCachedImages, JSON.stringify(newGlobalData));
                 return newGlobalData;
             });
         

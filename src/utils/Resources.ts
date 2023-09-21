@@ -1,6 +1,4 @@
 export const cacheTtlInMillis = 60 * 60 * 1000;
-export const lastShownIndexStorageKey = "lastShownIndex";
-export const readyImagesStorageKey = "readyImagesKey";
 export const listTypeStorageKey = "listType";
 export const inputTextStorageKey = "inputTextStorageKey";
 export const familyTreeStorageKey = "familyTreeStorageKey";
