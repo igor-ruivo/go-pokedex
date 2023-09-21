@@ -23,6 +23,14 @@
 .tab_panel_container {
   word-wrap: break-word;
   //touch-action: none;
-  max-height: 60vh; //temporary
-  max-width: 60vh; //temporary
+}
+
+.grid_container {
+  a {
+    text-decoration: none;
+  }
+}
+
+.grid > div {
+  padding: 5px;
 }

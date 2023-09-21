@@ -69,21 +69,23 @@ const App = () => {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      <SessionContext.Provider value={{lastShownIndex, setLastShownIndex, readyImages, setReadyImages}}>
-        <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed}}>
-          <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
-              <BrowserRouter>
-                <Routes>
-                    <Route index element={<Pokedex />}/>
-                    <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
-                    <Route path="/*" element={<div>Route not found.</div>} />
-                </Routes>
-              </BrowserRouter>
-          </PokemonContext.Provider>
-        </ControlPanelContext.Provider>
-      </SessionContext.Provider>
-    </ThemeContext.Provider>
+    <div className="container">
+      <ThemeContext.Provider value={{ theme, setTheme }}>
+        <SessionContext.Provider value={{lastShownIndex, setLastShownIndex, readyImages, setReadyImages}}>
+          <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed}}>
+            <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
+                <BrowserRouter>
+                  <Routes>
+                      <Route index element={<Pokedex />}/>
+                      <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
+                      <Route path="/*" element={<div>Route not found.</div>} />
+                  </Routes>
+                </BrowserRouter>
+            </PokemonContext.Provider>
+          </ControlPanelContext.Provider>
+        </SessionContext.Provider>
+      </ThemeContext.Provider>
+    </div>
   );
 }
 

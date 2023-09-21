@@ -14,8 +14,11 @@ import ThemeContext from '../contexts/theme-context';
 import { Button } from '@mui/material';
 import useSwipe from '../hooks/useSwipe';
 import AppraisalBar from '../components/AppraisalBar';
-import Dictionary from '../utils/Dictionary';
 import { computeBestIVs } from '../utils/pokemonIv';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
+import PokemonInfoCard from '../components/PokemonInfo/PokemonInfoCard';
 
 const grey = {
     50: '#f6f8fa',
@@ -189,16 +192,24 @@ interface ILeagueProps {
 
 const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
     interface IIvPercents {
-        greatLeaguePercent: number,
-        ultraLeaguePercent: number,
-        masterLeaguePercent: number
+        greatLeagueRank: number,
+        greatLeagueLvl: number,
+        greatLeagueCP: number,
+        ultraLeagueRank: number,
+        ultraLeagueLvl: number,
+        ultraLeagueCP: number,
+        masterLeagueRank: number,
+        masterLeagueLvl: number,
+        masterLeagueCP: number
     }
+
     const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
-    const [ivPercents, setIvPercents] = useState<IIvPercents>({
-        greatLeaguePercent: 0,
-        ultraLeaguePercent: 0,
-        masterLeaguePercent: 0
-    });
+    const [ivPercents, setIvPercents] = useState<IIvPercents[]>([]);
+    const {gamemasterPokemon} = useContext(PokemonContext);
+    const {theme} = useContext(ThemeContext);
+    const isDarkMode = theme === "dark";
+
+    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isMega && !p.isShadow) : [pokemon];
 
     useEffect(() => {
         console.log("mounting pokemon");
@@ -211,23 +222,36 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
         if (!pokemon) {
             return;
         }
-        const resGL = computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, 1500);
-        const resUL = computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, 2500);
-        const resML = computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, Number.MAX_VALUE);
 
-        const flatGLResult = Object.values(resGL).flat();
-        const flatULResult = Object.values(resUL).flat();
-        const flatMLResult = Object.values(resML).flat();
+        const familyIvPercents: IIvPercents[] = [];
 
-        const rankGL = flatGLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
-        const rankUL = flatULResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
-        const rankML = flatMLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+        familyTree.forEach(p => {
+            const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
+            const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
+            const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE);
 
-        setIvPercents({
-            greatLeaguePercent: Math.round(((1 - (rankGL / 4095)) * 100 + Number.EPSILON) * 100) / 100,
-            ultraLeaguePercent: Math.round(((1 - (rankUL / 4095)) * 100 + Number.EPSILON) * 100) / 100,
-            masterLeaguePercent: Math.round(((1 - (rankML / 4095)) * 100 + Number.EPSILON) * 100) / 100
+            const flatGLResult = Object.values(resGL).flat();
+            const flatULResult = Object.values(resUL).flat();
+            const flatMLResult = Object.values(resML).flat();
+
+            const rankGLIndex = flatGLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+            const rankULIndex = flatULResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+            const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+
+            familyIvPercents.push({
+                greatLeagueRank: rankGLIndex,
+                greatLeagueLvl: flatGLResult[rankGLIndex].L,
+                greatLeagueCP: flatGLResult[rankGLIndex].CP,
+                ultraLeagueRank: rankULIndex,
+                ultraLeagueLvl: flatULResult[rankULIndex].L,
+                ultraLeagueCP: flatULResult[rankULIndex].CP,
+                masterLeagueRank: rankMLIndex,
+                masterLeagueLvl: flatMLResult[rankMLIndex].L,
+                masterLeagueCP: flatMLResult[rankMLIndex].CP
+            });
         });
+        
+        setIvPercents(familyIvPercents);
     }
     
     const onKeyDown = (e: React.KeyboardEvent) => {
@@ -240,18 +264,34 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
                 break;
         }
     }
+    
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: isDarkMode ? '#24292f' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    }));
 
     const convertImgUrl = (imageUrl: string) => imageUrl.replace("/detail/", "/full/");
     
     return (
         <div>
-            {pokemon && <div className="tab_panel_container images_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-                <img className="image" onKeyDown={onKeyDown} src={convertImgUrl(pokemon.imageUrl)} width={475} height={475} alt={pokemon.speciesName}/>
-            </div>}
-            <div className='rankings'>
-                <img height="32" width="32" src="https://www.stadiumgaming.gg/frontend/assets/img/great.png"/>{ivPercents.greatLeaguePercent}% <img height="32" width="32" src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png"/>{ivPercents.ultraLeaguePercent}% <img height="32" width="32" src="https://www.stadiumgaming.gg/frontend/assets/img/master.png"/>{ivPercents.masterLeaguePercent}%
-            </div>
             <AppraisalBar inputChangedCallback={onInputChanged}/>
+            {pokemon && <div className="tab_panel_container images_container grid_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+            <Box sx={{ flexGrow: 1 }}>
+                    <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
+                        {familyTree.map((p, index) => (
+                            <Grid xs={12} sm={12} md={12} key={p.speciesId} className="grid">
+                                <Item>
+                                    <PokemonInfoCard pokemon={p} ivPercents={ivPercents[index]} />
+                                </Item>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+            </div>}
+            
         </div>
     );
 }

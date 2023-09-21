@@ -1,0 +1,32 @@
+@import '../../styles/theme-variables.scss';
+
+.pokemon_card {
+  white-space: nowrap;
+  font-size: calc(10px + .5vw);
+  @include themify($themes) {
+    color: themed("textColor");
+  }
+}
+
+.header_container {
+  display: flex;
+  align-items: flex-start;
+  padding: 5px 10px 0px 10px;
+  flex-direction: row;
+}
+
+.header_footer {
+  padding-bottom: 5px;
+}
+
+.type-icon {
+  margin-left: 2px;
+}
+
+.ivs-table {
+  width: 100%
+}
+
+td {
+  text-align: center
+}
