@@ -10,7 +10,6 @@ import { Tabs } from '@mui/base/Tabs';
 import { Tab, tabClasses } from '@mui/base/Tab';
 import { TabsList } from '@mui/base/TabsList';
 import { TabPanel } from '@mui/base/TabPanel';
-import ThemeContext from '../contexts/theme-context';
 import { Button } from '@mui/material';
 import useSwipe from '../hooks/useSwipe';
 import AppraisalBar from '../components/AppraisalBar';
@@ -19,6 +18,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import PokemonInfoCard from '../components/PokemonInfo/PokemonInfoCard';
+import { Theme, useTheme } from '../contexts/theme-context';
 
 const grey = {
     50: '#f6f8fa',
@@ -34,14 +34,14 @@ const grey = {
 };
 
 const Pokemon = () => {
-    const {theme, setTheme} = useContext(ThemeContext);
+    const {theme, toggleTheme} = useTheme();
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = useContext(PokemonContext);
     const navigate = useNavigate();
     const { speciesId } = useParams();
 
     const tabsListRef = useRef<HTMLElement>(null);
 
-    const isDarkMode = theme === "dark";
+    const isDarkMode = theme === Theme.Dark;
     const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
 
     const StyledTab = styled(Tab)`
@@ -104,8 +104,7 @@ const Pokemon = () => {
     );
 
     const handleThemeChange = () => {
-        setTheme(isDarkMode ? "light" : "dark");
-        localStorage.setItem('default-theme', isDarkMode ? "light" : "dark");
+        toggleTheme();
     };
 
     const onChangeTab = (nextTab: boolean) => {
@@ -142,7 +141,7 @@ const Pokemon = () => {
                         Back
                     </Button>
                     <div className="dark_mode_switch">
-                        <input type="checkbox" className="checkbox" id="checkbox" checked={theme === "dark"} onChange={handleThemeChange}/>
+                        <input type="checkbox" className="checkbox" id="checkbox" checked={theme === Theme.Dark} onChange={handleThemeChange}/>
                         <label htmlFor="checkbox" className="checkbox-label">
                             <i className="fas fa-moon"></i>
                             <i className="fas fa-sun"></i>
@@ -206,8 +205,8 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
     const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
     const [ivPercents, setIvPercents] = useState<IIvPercents[]>([]);
     const {gamemasterPokemon} = useContext(PokemonContext);
-    const {theme} = useContext(ThemeContext);
-    const isDarkMode = theme === "dark";
+    const {theme} = useTheme();
+    const isDarkMode = theme === Theme.Dark;
 
     const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isMega && !p.isShadow) : [pokemon];
 

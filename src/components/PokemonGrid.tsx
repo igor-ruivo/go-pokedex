@@ -5,11 +5,11 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import ThemeContext from '../contexts/theme-context';
 import PokemonCard from './PokemonCard';
 import { lastShownIndexStorageKey, readyImagesStorageKey } from '../utils/Resources';
 import SessionContext from '../contexts/session-context';
 import ControlPanelContext from '../contexts/control-panel-context';
+import { Theme, useTheme } from '../contexts/theme-context';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[]
@@ -22,8 +22,8 @@ const PokemonGrid = memo(({pokemonInfoList}: IPokemonGridProps) => {
 
     const {lastShownIndex, setLastShownIndex, readyImages, setReadyImages} = useContext(SessionContext);
     const {collapsed} = useContext(ControlPanelContext);
-    const { theme } = useContext(ThemeContext);
-    const isCurrentDark = theme === "dark";
+    const { theme } = useTheme();
+    const isCurrentDark = theme === Theme.Dark;
 
     const fetchedImages = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);

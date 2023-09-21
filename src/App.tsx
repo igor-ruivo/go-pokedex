@@ -1,6 +1,6 @@
 import './App.scss';
 import Pokedex from './views/pokedex';
-import ThemeContext from './contexts/theme-context';
+import { Theme, ThemeProvider, useTheme } from './contexts/theme-context';
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FetchData, useFetchUrls } from './hooks/useFetchUrls';
@@ -33,13 +33,6 @@ const App = () => {
 
   const [gamemasterPokemon, rankLists, fetchCompleted, errors]: [IGamemasterPokemon[], IRankedPokemon[][], boolean, string] = useFetchAllData();
   
-  const isBrowserDefaulDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const getDefaultTheme = (): string => {
-    const localStorageTheme = localStorage.getItem('default-theme');
-    const browserDefault = isBrowserDefaulDark() ? 'dark' : 'light';
-    return localStorageTheme || browserDefault;
-  };
-
   const getDefaultReadyImages = (): Dictionary<string> => {
     const storedInfo = sessionStorage.getItem(readyImagesStorageKey);
     if (storedInfo) {
@@ -49,28 +42,16 @@ const App = () => {
   }
   
   const [lastShownIndex, setLastShownIndex] = useState(+(sessionStorage.getItem(lastShownIndexStorageKey) ?? "0"));
-  const [theme, setTheme] = useState(getDefaultTheme());
+  
   const [readyImages, setReadyImages] = useState<Dictionary<string>>(getDefaultReadyImages());
   const [listType, setListType] = useState((+(sessionStorage.getItem(listTypeStorageKey) ?? ListType.POKEDEX)) as ListType);
   const [inputText, setInputText] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
   const [showFamilyTree, setShowFamilyTree] = useState(localStorage.getItem(familyTreeStorageKey) === "true");
   const [collapsed, setCollapsed] = useState(sessionStorage.getItem(collapsedStorageKey) === "true");
 
-  useEffect(() => {
-    if (theme === "dark") {
-      document.body.style.background = "#202023"
-      document.body.classList.remove("theme-light");
-      document.body.classList.add("theme-dark");
-    } else {
-      document.body.style.background = "#f8f8fa"
-      document.body.classList.remove("theme-dark");
-      document.body.classList.add("theme-light");
-    }
-  }, [theme]);
-
   return (
     <div className="container">
-      <ThemeContext.Provider value={{ theme, setTheme }}>
+      <ThemeProvider>
         <SessionContext.Provider value={{lastShownIndex, setLastShownIndex, readyImages, setReadyImages}}>
           <ControlPanelContext.Provider value={{listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed}}>
             <PokemonContext.Provider value={{gamemasterPokemon, rankLists, fetchCompleted, errors}}>
@@ -84,7 +65,7 @@ const App = () => {
             </PokemonContext.Provider>
           </ControlPanelContext.Provider>
         </SessionContext.Provider>
-      </ThemeContext.Provider>
+      </ThemeProvider>
     </div>
   );
 }

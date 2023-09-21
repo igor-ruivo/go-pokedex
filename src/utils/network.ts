@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { cacheTtlInMillis } from "./Resources";
-import { readEntry, writeEntry } from "./localStorage-handler";
+import { readEntry, writeEntry } from "./resource-cache";
 
 export const fetchUrls = async(urls: string[], useCache: boolean = false, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any) => any): Promise<any[]> => {
     const axiosInstance = axios.create();

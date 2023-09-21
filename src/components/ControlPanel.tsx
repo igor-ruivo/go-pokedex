@@ -1,18 +1,12 @@
 import "./ControlPanel.scss";
 import {
     Autocomplete,
-    AutocompleteChangeReason,
-    FormControlLabel,
-    FormGroup,
     IconButton,
     Stack,
-    Switch,
     TextField
 } from "@mui/material";
 import '../styles/theme-variables.scss';
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import ThemeContext from "../contexts/theme-context";
-import { Input } from '@mui/base/Input';
+import { useContext, useEffect, useRef, useState } from "react";
 import { Select, selectClasses } from '@mui/base/Select';
 import { Option, optionClasses } from '@mui/base/Option';
 import React from "react";
@@ -21,6 +15,7 @@ import ControlPanelContext, { ListType } from "../contexts/control-panel-context
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import PokemonContext from "../contexts/pokemon-context";
+import { Theme, useTheme } from "../contexts/theme-context";
 
 const cyan = {
     50: '#E9F8FC',
@@ -194,15 +189,14 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
 
 const ControlPanel = () => {
     const {listType, setListType, inputText, setInputText, showFamilyTree, setShowFamilyTree, collapsed, setCollapsed} = useContext(ControlPanelContext);
-    const { theme, setTheme } = useContext(ThemeContext);
+    const { theme, toggleTheme } = useTheme();
     const { gamemasterPokemon } = useContext(PokemonContext);
     const [ debouncingInputText, setDebouncingInputText ] = useState(sessionStorage.getItem(inputTextStorageKey) ?? "");
     const expandCollapseDivRef = useRef<HTMLDivElement>(null);
-    const isCurrentDark = theme === "dark";
+    const isCurrentDark = theme === Theme.Dark;
 
     const handleThemeChange = () => {
-        setTheme(isCurrentDark ? "light" : "dark");
-        localStorage.setItem('default-theme', isCurrentDark ? "light" : "dark");
+        toggleTheme();
     };
 
     useEffect(() => {
@@ -308,7 +302,7 @@ const ControlPanel = () => {
                         alignItems="center"
                     >
                         <div>
-                            <input type="checkbox" className="checkbox" id="checkbox" checked={theme === "dark"} onChange={handleThemeChange}/>
+                            <input type="checkbox" className="checkbox" id="checkbox" checked={theme === Theme.Dark} onChange={handleThemeChange}/>
                             <label htmlFor="checkbox" className="checkbox-label">
                                 <i className="fas fa-moon"></i>
                                 <i className="fas fa-sun"></i>
