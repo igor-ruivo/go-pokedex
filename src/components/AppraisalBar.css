@@ -1,6 +1,34 @@
+.appraisal {
+    margin-bottom: 32px;
+    max-width: 400px;
+    margin-left: 10px;
+}
+
+.data-grid {
+    margin: 10px 10px 20px;
+}
+
 .appraisal .stat {
-    max-width: 80%;
-    margin: 0 auto 16px
+    margin: 0 10px 10px
+}
+
+.appraisal .stat h4 {
+    font-size: 14px
+}
+
+@media (max-width: 768px) {
+    .appraisal {
+        max-width: 100%;
+        margin-left: 0;
+    }
+
+    .data-grid {
+        max-width: 100%;
+    }
+
+    .appraisal .stat {
+        max-width: 100%;
+    }
 }
 
 .appraisal .stat h4 {
@@ -64,22 +92,6 @@
 
 .appraisal .stat-bar .bar.hover.max-hover {
     background: #dea39f
-}
-
-@media all and (max-width: 400px) {
-    .data-grid {
-        max-width:100%;
-        margin: 10px 10px 20px
-    }
-
-    .appraisal .stat {
-        max-width: 100%;
-        margin: 0 10px 10px
-    }
-
-    .appraisal .stat h4 {
-        font-size: 14px
-    }
 }
 
 #result .preview .stat-split .stat {

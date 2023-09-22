@@ -8,18 +8,15 @@ enum Stat {
 }
 
 interface IAppraisalBarProps {
-    inputChangedCallback: (attack: number, defense: number, hp: number) => void;
+    attack: number,
+    setAttack: (_: React.SetStateAction<number>) => void,
+    defense: number,
+    setDefense: (_: React.SetStateAction<number>) => void,
+    hp: number,
+    setHP: (_: React.SetStateAction<number>) => void,
 }
 
-const AppraisalBar = ({inputChangedCallback}: IAppraisalBarProps) => {
-    const [attack, setAttack] = useState(0);
-    const [defense, setDefense] = useState(0);
-    const [hp, setHP] = useState(0);
-
-    useEffect(() => {
-        inputChangedCallback(attack, defense, hp);
-    }, [attack, defense, hp]);
-
+const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppraisalBarProps) => {
     const handleCellClick = (stat: Stat, cellIndex: number) => {
         switch (stat) {
             case Stat.Attack:

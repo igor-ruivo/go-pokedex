@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { ChangeEventHandler, useEffect, useRef, useState } from 'react';
 import './pokemon.scss';
 import '../components/PokemonImage.css';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -19,6 +19,8 @@ import Grid from '@mui/material/Unstable_Grid2';
 import PokemonInfoCard from '../components/PokemonInfo/PokemonInfoCard';
 import { Theme, useTheme } from '../contexts/theme-context';
 import { usePokemon } from '../contexts/pokemon-context';
+import LevelSlider from '../components/LevelSlider';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 
 const grey = {
     50: '#f6f8fa',
@@ -202,7 +204,20 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
         masterLeagueCP: number
     }
 
+    const parseCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
+        const cachedValue = readSessionValue(key);
+        if (!cachedValue) {
+            return defaultValue;
+        }
+        return +cachedValue;
+    }
+
     const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
+    const [attackIV, setAttackIV] = useState(parseCachedNumberValue(ConfigKeys.AttackIV, 0));
+    const [defenseIV, setDefenseIV] = useState(parseCachedNumberValue(ConfigKeys.DefenseIV, 0));
+    const [hpIV, setHPIV] = useState(parseCachedNumberValue(ConfigKeys.HPIV, 0));
+    const [levelCap, setLevelCap] = useState<number>(parseCachedNumberValue(ConfigKeys.LevelCap, 51));
+
     const [ivPercents, setIvPercents] = useState<IIvPercents[]>([]);
     const {gamemasterPokemon} = usePokemon();
     const {theme} = useTheme();
@@ -217,7 +232,15 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
         };
     }, []);
 
-    const onInputChanged = (attack: number, defense: number, hp: number) => {
+    useEffect(() => {
+        writeSessionValue(ConfigKeys.AttackIV, attackIV.toString());
+        writeSessionValue(ConfigKeys.DefenseIV, defenseIV.toString());
+        writeSessionValue(ConfigKeys.HPIV, hpIV.toString());
+        writeSessionValue(ConfigKeys.LevelCap, levelCap.toString());
+        computeIVs();
+    }, [attackIV, defenseIV, hpIV, levelCap]);
+
+    const computeIVs = () => {
         if (!pokemon) {
             return;
         }
@@ -225,17 +248,17 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
         const familyIvPercents: IIvPercents[] = [];
 
         familyTree.forEach(p => {
-            const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
-            const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
-            const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE);
+            const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
+            const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500, levelCap);
+            const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE, levelCap);
 
             const flatGLResult = Object.values(resGL).flat();
             const flatULResult = Object.values(resUL).flat();
             const flatMLResult = Object.values(resML).flat();
 
-            const rankGLIndex = flatGLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
-            const rankULIndex = flatULResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
-            const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === attack && r.IVs.D === defense && r.IVs.S === hp);
+            const rankGLIndex = flatGLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
+            const rankULIndex = flatULResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
+            const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
 
             familyIvPercents.push({
                 greatLeagueRank: rankGLIndex,
@@ -271,12 +294,21 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
         textAlign: 'center',
         color: theme.palette.text.secondary,
     }));
-
-    const convertImgUrl = (imageUrl: string) => imageUrl.replace("/detail/", "/full/");
     
     return (
         <div>
-            <AppraisalBar inputChangedCallback={onInputChanged}/>
+            <AppraisalBar
+                attack = {attackIV}
+                setAttack={setAttackIV}
+                defense={defenseIV}
+                setDefense={setDefenseIV}
+                hp={hpIV}
+                setHP={setHPIV}
+            />
+            <LevelSlider
+                levelCap={levelCap}
+                setLevelCap={setLevelCap}
+            />
             {pokemon && <div className="tab_panel_container images_container grid_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
             <Box sx={{ flexGrow: 1 }}>
                     <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
@@ -290,7 +322,6 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
                     </Grid>
                 </Box>
             </div>}
-            
         </div>
     );
 }

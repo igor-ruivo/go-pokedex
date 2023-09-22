@@ -15,6 +15,7 @@ export interface IGamemasterPokemon {
     isShadow: boolean,
     isShadowEligible?: boolean,
     isMega: boolean,
+    isUntradeable: boolean,
     familyId?: string,
     parent?: string,
     evolutions: string[]

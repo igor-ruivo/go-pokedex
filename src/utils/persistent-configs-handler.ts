@@ -6,7 +6,11 @@ export enum ConfigKeys {
     ListType,
     SearchInputText,
     ShowFamilyTree,
-    ControlPanelCollapsed
+    ControlPanelCollapsed,
+    AttackIV,
+    DefenseIV,
+    HPIV,
+    LevelCap
 }
 
 // avoids collision with other website's cache.

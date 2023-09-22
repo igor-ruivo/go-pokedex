@@ -24,7 +24,13 @@
 }
 
 .ivs-table {
-  width: 100%
+  width: 50%
+}
+
+@media (max-width: 768px) {
+  .ivs-table {
+    width: 75%
+  }
 }
 
 td {
