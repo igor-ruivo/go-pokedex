@@ -200,18 +200,21 @@ export interface IIvPercents {
     greatLeagueAttack: number,
     greatLeagueDefense: number,
     greatLeagueHP: number,
+    greatLeaguePerfect: any,
     ultraLeagueRank: number,
     ultraLeagueLvl: number,
     ultraLeagueCP: number,
     ultraLeagueAttack: number,
     ultraLeagueDefense: number,
     ultraLeagueHP: number,
+    ultraLeaguePerfect: any,
     masterLeagueRank: number,
     masterLeagueLvl: number,
     masterLeagueCP: number,
     masterLeagueAttack: number,
     masterLeagueDefense: number,
     masterLeagueHP: number,
+    masterLeaguePerfect: any
 }
 
 const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
@@ -271,18 +274,21 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
                 greatLeagueAttack: flatGLResult[rankGLIndex].battle.A,
                 greatLeagueDefense: flatGLResult[rankGLIndex].battle.D,
                 greatLeagueHP: flatGLResult[rankGLIndex].battle.S,
+                greatLeaguePerfect: flatGLResult[0].IVs,
                 ultraLeagueRank: rankULIndex,
                 ultraLeagueLvl: flatULResult[rankULIndex].L,
                 ultraLeagueCP: flatULResult[rankULIndex].CP,
                 ultraLeagueAttack: flatULResult[rankULIndex].battle.A,
                 ultraLeagueDefense: flatULResult[rankULIndex].battle.D,
                 ultraLeagueHP: flatULResult[rankULIndex].battle.S,
+                ultraLeaguePerfect: flatULResult[0].IVs,
                 masterLeagueRank: rankMLIndex,
                 masterLeagueLvl: flatMLResult[rankMLIndex].L,
                 masterLeagueCP: flatMLResult[rankMLIndex].CP,
                 masterLeagueAttack: flatMLResult[rankMLIndex].battle.A,
                 masterLeagueDefense: flatMLResult[rankMLIndex].battle.D,
                 masterLeagueHP: flatMLResult[rankMLIndex].battle.S,
+                masterLeaguePerfect: flatMLResult[0].IVs
             };
         });
         

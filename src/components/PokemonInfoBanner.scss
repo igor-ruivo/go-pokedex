@@ -1,3 +1,5 @@
+@import '../styles/theme-variables.scss';
+
 .stat {
     margin-right: 8px;
 }
@@ -5,6 +7,7 @@
 .stats-container {
     display: flex;
     flex-direction: row;
+    margin-top: 24px;
 }
 
 .img-container {
@@ -19,7 +22,9 @@
 }
 
 .img-selected-container {
-    border: 4px solid white;
+    @include themify($themes) {
+        border: 4px solid themed("bannerBorderColor");
+    }
     border-radius: 50%;
     width: 100px;
     height: 100px;
@@ -28,7 +33,9 @@
 }
 
 .img-family-container {
-    border: 2px solid white;
+    @include themify($themes) {
+        border: 2px solid themed("bannerBorderColor");
+    }
     border-radius: 50%;
     width: 32px;
     height: 32px;
@@ -47,4 +54,14 @@
 hr.solid {
     border-top: 3px solid #bbb;
     margin-bottom: 16px;
+}
+
+table {
+    table-layout: fixed;
+    width: 180px;
+}
+
+.league-ranks {
+    table-layout: fixed;
+    width: 360px;
 }

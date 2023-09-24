@@ -12,7 +12,7 @@ interface IPokemonCardProps {
 }
 
 const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
-  const link = `/pokemon/${pokemon.speciesId}`;
+  const link = `/pokemon/${pokemon.speciesId.replace("_shadow", "")}`;
 
     return (
       <Link to={link}>

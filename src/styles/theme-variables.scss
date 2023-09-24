@@ -8,7 +8,8 @@ $themes: (
         textColor: #000,
         disabledTextColor: rgba(0, 0, 0, 0.5),
         borderColor: #c9c9c9,
-        selectedItemBackground: #e9e4e4
+        selectedItemBackground: #e9e4e4,
+        bannerBorderColor: #eeeeee
     ),
     dark: (
         bodyBackgroundColor: #202023,
@@ -19,7 +20,8 @@ $themes: (
         textColor: #eff2f7,
         disabledTextColor: rgba(239,242,247, 0.5),
         borderColor: #424a53,
-        selectedItemBackground: #424a53
+        selectedItemBackground: #424a53,
+        bannerBorderColor: #eff2f7
     ),
 );
 
