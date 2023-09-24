@@ -1,0 +1,50 @@
+.stat {
+    margin-right: 8px;
+}
+
+.stats-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.img-container {
+    display: flex;
+}
+
+.img-family {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.img-selected-container {
+    border: 4px solid white;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    box-shadow: 2px 2px 2px black;
+    padding: 16px;
+}
+
+.img-family-container {
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    box-shadow: 2px 2px 2px black;
+    padding: 8px;
+    margin: 2px;
+}
+
+.img-name-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+
+hr.solid {
+    border-top: 3px solid #bbb;
+    margin-bottom: 16px;
+}

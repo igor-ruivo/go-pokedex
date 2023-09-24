@@ -30,7 +30,7 @@ const PokemonInfoCard = ({pokemon, ivPercents}: IPokemonCardProps) => {
           </div>
           
           {pokemon.speciesName}
-          <PokemonInfoImage pokemon={pokemon} />
+          <PokemonInfoImage pokemon={pokemon} height={64} width={64} />
           <div className="header_footer">
             {ivPercents && <div className='rankings'>
               <center>

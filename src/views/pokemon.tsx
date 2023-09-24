@@ -21,6 +21,8 @@ import { Theme, useTheme } from '../contexts/theme-context';
 import { usePokemon } from '../contexts/pokemon-context';
 import LevelSlider from '../components/LevelSlider';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
+import PokemonInfoBanner from '../components/PokemonInfoBanner';
+import Dictionary from '../utils/Dictionary';
 
 const grey = {
     50: '#f6f8fa',
@@ -191,19 +193,28 @@ interface ILeagueProps {
     changeTab: (nextTab: boolean) => void
 }
 
-const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
-    interface IIvPercents {
-        greatLeagueRank: number,
-        greatLeagueLvl: number,
-        greatLeagueCP: number,
-        ultraLeagueRank: number,
-        ultraLeagueLvl: number,
-        ultraLeagueCP: number,
-        masterLeagueRank: number,
-        masterLeagueLvl: number,
-        masterLeagueCP: number
-    }
+export interface IIvPercents {
+    greatLeagueRank: number,
+    greatLeagueLvl: number,
+    greatLeagueCP: number,
+    greatLeagueAttack: number,
+    greatLeagueDefense: number,
+    greatLeagueHP: number,
+    ultraLeagueRank: number,
+    ultraLeagueLvl: number,
+    ultraLeagueCP: number,
+    ultraLeagueAttack: number,
+    ultraLeagueDefense: number,
+    ultraLeagueHP: number,
+    masterLeagueRank: number,
+    masterLeagueLvl: number,
+    masterLeagueCP: number,
+    masterLeagueAttack: number,
+    masterLeagueDefense: number,
+    masterLeagueHP: number,
+}
 
+const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
     const parseCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
         const cachedValue = readSessionValue(key);
         if (!cachedValue) {
@@ -218,19 +229,12 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
     const [hpIV, setHPIV] = useState(parseCachedNumberValue(ConfigKeys.HPIV, 0));
     const [levelCap, setLevelCap] = useState<number>(parseCachedNumberValue(ConfigKeys.LevelCap, 51));
 
-    const [ivPercents, setIvPercents] = useState<IIvPercents[]>([]);
+    const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
     const {gamemasterPokemon} = usePokemon();
     const {theme} = useTheme();
     const isDarkMode = theme === Theme.Dark;
 
-    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isMega && !p.isShadow).reverse() : [pokemon];
-
-    useEffect(() => {
-        console.log("mounting pokemon");
-        return () => {
-            console.log("unmounting pokemon")
-        };
-    }, []);
+    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
 
     useEffect(() => {
         writeSessionValue(ConfigKeys.AttackIV, attackIV.toString());
@@ -245,7 +249,7 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
             return;
         }
 
-        const familyIvPercents: IIvPercents[] = [];
+        const familyIvPercents: Dictionary<IIvPercents> = {};
 
         familyTree.forEach(p => {
             const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
@@ -260,17 +264,26 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
             const rankULIndex = flatULResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
             const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
 
-            familyIvPercents.push({
+            familyIvPercents[p.speciesId] = {
                 greatLeagueRank: rankGLIndex,
                 greatLeagueLvl: flatGLResult[rankGLIndex].L,
                 greatLeagueCP: flatGLResult[rankGLIndex].CP,
+                greatLeagueAttack: flatGLResult[rankGLIndex].battle.A,
+                greatLeagueDefense: flatGLResult[rankGLIndex].battle.D,
+                greatLeagueHP: flatGLResult[rankGLIndex].battle.S,
                 ultraLeagueRank: rankULIndex,
                 ultraLeagueLvl: flatULResult[rankULIndex].L,
                 ultraLeagueCP: flatULResult[rankULIndex].CP,
+                ultraLeagueAttack: flatULResult[rankULIndex].battle.A,
+                ultraLeagueDefense: flatULResult[rankULIndex].battle.D,
+                ultraLeagueHP: flatULResult[rankULIndex].battle.S,
                 masterLeagueRank: rankMLIndex,
                 masterLeagueLvl: flatMLResult[rankMLIndex].L,
-                masterLeagueCP: flatMLResult[rankMLIndex].CP
-            });
+                masterLeagueCP: flatMLResult[rankMLIndex].CP,
+                masterLeagueAttack: flatMLResult[rankMLIndex].battle.A,
+                masterLeagueDefense: flatMLResult[rankMLIndex].battle.D,
+                masterLeagueHP: flatMLResult[rankMLIndex].battle.S,
+            };
         });
         
         setIvPercents(familyIvPercents);
@@ -297,6 +310,10 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
     
     return (
         <div>
+            <PokemonInfoBanner
+                pokemon={pokemon}
+                ivPercents={ivPercents}
+            />
             <AppraisalBar
                 attack = {attackIV}
                 setAttack={setAttackIV}
@@ -312,10 +329,10 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
             {pokemon && <div className="tab_panel_container images_container grid_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
             <Box sx={{ flexGrow: 1 }}>
                     <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
-                        {familyTree.map((p, index) => (
+                        {familyTree.map(p => (
                             <Grid xs={12} sm={12} md={12} key={p.speciesId} className="grid">
                                 <Item>
-                                    <PokemonInfoCard pokemon={p} ivPercents={ivPercents[index]} />
+                                    <PokemonInfoCard pokemon={p} ivPercents={ivPercents[p.speciesId]} />
                                 </Item>
                             </Grid>
                         ))}

@@ -35,9 +35,11 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
         const statBarElement = document.getElementsByClassName("stat-bar")[stat];
         const cells = Array.from(statBarElement.children);
 
-        if (cellIndex === 14 && !cells[cellIndex].classList.contains("active")) {
-            statBarElement.classList.add("max-hover");
+        if (cellIndex === 14) {
             cells[cellIndex].classList.add("end");
+            if (!cells[cellIndex].classList.contains("active")) {
+                statBarElement.classList.add("max-hover");
+            }
         }
 
         if (cellIndex < 14) {
@@ -56,7 +58,9 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
             } else {
                 if (!cell.classList.contains("active")) {
                     cell.classList.remove("hover");
-                    cell.classList.remove("end");
+                    if (index !== 14) {
+                        cell.classList.remove("end");
+                    }
                 } else {
                     if (cellIndex === 14) {
                         cell.classList.add("max-hover");
@@ -94,7 +98,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
             cell.classList.remove("max-hover");
 
             const isActive = index < statValue;
-            const isEnd = index === statValue - 1;
+            const isEnd = index === statValue - 1 || index === 14;
 
             cell.classList.toggle("active", isActive);
             cell.classList.toggle("hover", isActive);
@@ -106,7 +110,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
         const cells = [];
         for (let i = 0; i < 15; i++) {
             const isActive = i < value;
-            const isEnd = i === value - 1;
+            const isEnd = i === value - 1 || i === 14;
         
             const cellClass = ['bar', isActive && 'active hover', isEnd && 'end'].filter(Boolean).join(' ');
         
