@@ -25,12 +25,8 @@ interface IPokemonCardProps {
 const PokemonInfoCard = ({pokemon, ivPercents}: IPokemonCardProps) => {
     return (
         <div className="pokemon_card">
-          <div className="header_container">
-            <PokemonTypes types={pokemon.types} />
-          </div>
-          
-          {pokemon.speciesName}
           <PokemonInfoImage pokemon={pokemon} height={64} width={64} />
+          <b>{pokemon.speciesName}</b>
           <div className="header_footer">
             {ivPercents && <div className='rankings'>
               <center>

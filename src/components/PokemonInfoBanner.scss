@@ -44,6 +44,17 @@
     margin: 2px;
 }
 
+.name-types {
+    display: flex;
+    flex-direction: row;
+    
+  align-items: center;
+}
+
+.types {
+    margin-left: 8px;
+}
+
 .img-name-container {
     display: flex;
     flex-direction: column;
@@ -53,7 +64,7 @@
 
 hr.solid {
     border-top: 3px solid #bbb;
-    margin-bottom: 16px;
+    margin-bottom: 32px;
 }
 
 table {

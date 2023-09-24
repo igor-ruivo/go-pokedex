@@ -23,7 +23,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
           </div>
           <PokemonImage pokemon={pokemon} />
           <div className="header_footer">
-            {pokemon.speciesName}
+            {pokemon.speciesName.replace("(Alolan)", "(A)").replace("(Galarian)", "(G)").replace("(Mega)", "(M)").replace("(Shadow)", "(S)").replace("(Complete Forme)", "(CF)").replace("(50% Forme)", "(50% F)").replace("(10% Forme)", "(10% F)").replace("(Hisuian)", "(H)").replace("(Standard)", "(Std.)").replace("(Incarnate)", "(Inc.)").replace("(Average)", "(Avg.)")}
           </div>
         </div>
       </Link>

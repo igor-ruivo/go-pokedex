@@ -22,13 +22,13 @@ export const useTheme = (): ThemeContextType => {
 };
 
 export const ThemeProvider = (props: React.PropsWithChildren<{}>) => {
-    const isBrowserDefaulDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isBrowserDefaultLight = () => window.matchMedia("(prefers-color-scheme: light)").matches;
     const getDefaultTheme = (): Theme => {
         const cachedTheme = readPersistentValue(ConfigKeys.DefaultTheme);
         if (cachedTheme) {
             return +cachedTheme;
         }
-        const browserDefault = isBrowserDefaulDark() ? Theme.Dark : Theme.Light;
+        const browserDefault = isBrowserDefaultLight() ? Theme.Light : Theme.Dark;
         return browserDefault;
     }
 

@@ -60,7 +60,15 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
                 ))}
             </div>
         </div>
-        <h1>{pokemon.speciesName}</h1>
+        <div className="name-types">
+            <h1>{pokemon.speciesName}</h1>
+            <div className="types">
+                {pokemon.types.map(t => {
+                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${t}.png`;
+                return <img className="type-icon" key={t} src={url} alt={t.toString()} width="20" height="20"/>
+                })}
+            </div>
+        </div>
         <table className="league-ranks">
             <tbody>
                 <tr>

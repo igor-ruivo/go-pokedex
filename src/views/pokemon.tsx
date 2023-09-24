@@ -1,18 +1,10 @@
-import { ChangeEventHandler, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './pokemon.scss';
 import '../components/PokemonImage.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { styled } from '@mui/material/styles';
-import { buttonClasses } from '@mui/base/Button';
-import { Tabs } from '@mui/base/Tabs';
-import { Tab, tabClasses } from '@mui/base/Tab';
-import { TabsList } from '@mui/base/TabsList';
-import { TabPanel } from '@mui/base/TabPanel';
-import { Button } from '@mui/material';
-import useSwipe from '../hooks/useSwipe';
 import AppraisalBar from '../components/AppraisalBar';
-import { computeBestIVs } from '../utils/pokemonIv';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -22,175 +14,34 @@ import { usePokemon } from '../contexts/pokemon-context';
 import LevelSlider from '../components/LevelSlider';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import PokemonInfoBanner from '../components/PokemonInfoBanner';
-import Dictionary from '../utils/Dictionary';
-
-const grey = {
-    50: '#f6f8fa',
-    100: '#eaeef2',
-    200: '#d0d7de',
-    300: '#afb8c1',
-    400: '#8c959f',
-    500: '#6e7781',
-    600: '#57606a',
-    700: '#424a53',
-    800: '#32383f',
-    900: '#24292f',
-};
+import LoadingRenderer from '../components/LoadingRenderer';
+import PokemonInfoControlPanel from '../components/PokemonInfoControlPanel';
+import useComputeIVs from '../hooks/useComputeIVs';
 
 const Pokemon = () => {
-    const {theme, toggleTheme} = useTheme();
-    const { gamemasterPokemon, rankLists, fetchCompleted, errors } = usePokemon();
-    const navigate = useNavigate();
+    const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { speciesId } = useParams();
-
-    const tabsListRef = useRef<HTMLElement>(null);
-
-    const isDarkMode = theme === Theme.Dark;
     const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
 
-    const StyledTab = styled(Tab)`
-        font-family: 'IBM Plex Sans', sans-serif;
-        color: ${isDarkMode ? "white" : "black"};
-        cursor: pointer;
-        font-size: 0.875rem;
-        font-weight: bold;
-        background-color: ${isDarkMode ? grey[800] : grey[100]};
-        width: 100%;
-        padding: 12px;
-        margin: 6px;
-        border: none;
-        border-radius: 7px;
-        display: flex;
-        justify-content: center;
-
-        &:hover {
-            background-color: ${isDarkMode ? grey[400] : grey[200]};
-        }
-
-        &:focus {
-            color: ${isDarkMode ? "#fff" : "black"};
-            outline: 1px solid ${isDarkMode ? grey[900] : "black"};
-        }
-
-        &.${tabClasses.selected} {
-            background-color: ${isDarkMode ? grey[200] : grey[200]};
-            color: ${isDarkMode ? grey[600] : "black"};
-            outline: 1px solid ${isDarkMode ? grey[900] : "black"};
-        }
-
-        &.${buttonClasses.disabled} {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    `;
-
-    const StyledTabsList = styled(TabsList)(
-        ({ }) => `
-            background-color: ${isDarkMode ? grey[900] : "white"};
-            border-radius: 12px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            align-content: space-between;
-        `,
-    );
-
-    const StyledTabPanel = styled(TabPanel)(
-        ({ }) => `
-            font-family: IBM Plex Sans, sans-serif;
-            font-size: 0.875rem;
-            padding: 20px 12px;
-            background: ${isDarkMode ? grey[900] : '#fff'};
-            border: 1px solid ${isDarkMode ? grey[700] : grey[200]};
-            border-radius: 12px;
-        `,
-    );
-
-    const handleThemeChange = () => {
-        toggleTheme();
-    };
-
-    const onChangeTab = (nextTab: boolean) => {
-        const tabElements = tabsListRef.current!.children;
-            
-        const currentIndex = Array.from(tabElements).findIndex(t => t.getAttribute("aria-selected") === "true");
-        const nextIndex = currentIndex + (nextTab ? 1 : -1);
-        
-        const moduloResult = ((nextIndex % tabElements.length) + tabElements.length) % tabElements.length;
-        const nextTabElement = tabElements[moduloResult] as HTMLElement;
-        nextTabElement.click();
-    }
-
     return (
-        <div className="pokemon">
-            <Tabs
-                defaultValue={0}
-                aria-label="Tab"
-                selectionFollowsFocus
-                className="pokemon_tab"
-            >
-                <StyledTabsList ref={tabsListRef}>
-                    <StyledTab value={0}>Pokémon</StyledTab>
-                    <StyledTab value={1}>Great</StyledTab>
-                    <StyledTab value={2}>Ultra</StyledTab>
-                    <StyledTab value={3}>Master</StyledTab>
-                </StyledTabsList>
-                <div className="control_panel">
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() => navigate(-1)}
-                    >
-                        Back
-                    </Button>
-                    <div className="dark_mode_switch">
-                        <input type="checkbox" className="checkbox" id="checkbox" checked={theme === Theme.Dark} onChange={handleThemeChange}/>
-                        <label htmlFor="checkbox" className="checkbox-label">
-                            <i className="fas fa-moon"></i>
-                            <i className="fas fa-sun"></i>
-                            <span className="ball"></span>
-                        </label>
-                    </div>
-                </div>
-                <StyledTabPanel value={0}>
-                    <PokemonInfo pokemon={pokemon} changeTab={onChangeTab}/>
-                </StyledTabPanel>
-                <StyledTabPanel value={1}>
-                    <League pokemon={pokemon} leagueIndex={1} changeTab={onChangeTab}/>
-                </StyledTabPanel>
-                <StyledTabPanel value={2}>
-                    <League pokemon={pokemon} leagueIndex={2} changeTab={onChangeTab}/>
-                </StyledTabPanel>
-                <StyledTabPanel value={3}>
-                    <League pokemon={pokemon} leagueIndex={3} changeTab={onChangeTab}/>
-                </StyledTabPanel>
-            </Tabs>
-        </div>
-/*
         <div className="pokemon">
             <LoadingRenderer errors={errors} completed={fetchCompleted}>
                 <>
                     {
                         !pokemon ?
                             <div>Pokémon not found</div> :
-                            <PokemonImage pokemon={pokemon} />
+                            <div className="pokemon">
+                                <PokemonInfo pokemon={pokemon}/>
+                            </div>
                     }
                 </>
             </LoadingRenderer>
-        </div>*/
+        </div>
     );
 }
 
 interface IPokemonInfoProps {
-    pokemon: IGamemasterPokemon,
-    changeTab: (nextTab: boolean) => void
-}
-
-interface ILeagueProps {
-    pokemon: IGamemasterPokemon,
-    leagueIndex: number,
-    changeTab: (nextTab: boolean) => void
+    pokemon: IGamemasterPokemon
 }
 
 export interface IIvPercents {
@@ -217,7 +68,9 @@ export interface IIvPercents {
     masterLeaguePerfect: any
 }
 
-const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
+const getDefaultControlPanelCollapsed = () => readSessionValue(ConfigKeys.ControlPanelCollapsed) === "true";
+
+const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     const parseCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
         const cachedValue = readSessionValue(key);
         if (!cachedValue) {
@@ -226,85 +79,24 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
         return +cachedValue;
     }
 
-    const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
     const [attackIV, setAttackIV] = useState(parseCachedNumberValue(ConfigKeys.AttackIV, 0));
     const [defenseIV, setDefenseIV] = useState(parseCachedNumberValue(ConfigKeys.DefenseIV, 0));
     const [hpIV, setHPIV] = useState(parseCachedNumberValue(ConfigKeys.HPIV, 0));
     const [levelCap, setLevelCap] = useState<number>(parseCachedNumberValue(ConfigKeys.LevelCap, 51));
 
-    const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
+    const [controlPanelCollapsed, setControlPanelCollapsed] = useState(getDefaultControlPanelCollapsed());
     const {gamemasterPokemon} = usePokemon();
     const {theme} = useTheme();
     const isDarkMode = theme === Theme.Dark;
 
-    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
+    const [ivPercents, loading] = useComputeIVs({pokemon, levelCap, attackIV, defenseIV, hpIV});
 
     useEffect(() => {
         writeSessionValue(ConfigKeys.AttackIV, attackIV.toString());
         writeSessionValue(ConfigKeys.DefenseIV, defenseIV.toString());
         writeSessionValue(ConfigKeys.HPIV, hpIV.toString());
         writeSessionValue(ConfigKeys.LevelCap, levelCap.toString());
-        computeIVs();
     }, [attackIV, defenseIV, hpIV, levelCap]);
-
-    const computeIVs = () => {
-        if (!pokemon) {
-            return;
-        }
-
-        const familyIvPercents: Dictionary<IIvPercents> = {};
-
-        familyTree.forEach(p => {
-            const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
-            const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500, levelCap);
-            const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE, levelCap);
-
-            const flatGLResult = Object.values(resGL).flat();
-            const flatULResult = Object.values(resUL).flat();
-            const flatMLResult = Object.values(resML).flat();
-
-            const rankGLIndex = flatGLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
-            const rankULIndex = flatULResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
-            const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
-
-            familyIvPercents[p.speciesId] = {
-                greatLeagueRank: rankGLIndex,
-                greatLeagueLvl: flatGLResult[rankGLIndex].L,
-                greatLeagueCP: flatGLResult[rankGLIndex].CP,
-                greatLeagueAttack: flatGLResult[rankGLIndex].battle.A,
-                greatLeagueDefense: flatGLResult[rankGLIndex].battle.D,
-                greatLeagueHP: flatGLResult[rankGLIndex].battle.S,
-                greatLeaguePerfect: flatGLResult[0].IVs,
-                ultraLeagueRank: rankULIndex,
-                ultraLeagueLvl: flatULResult[rankULIndex].L,
-                ultraLeagueCP: flatULResult[rankULIndex].CP,
-                ultraLeagueAttack: flatULResult[rankULIndex].battle.A,
-                ultraLeagueDefense: flatULResult[rankULIndex].battle.D,
-                ultraLeagueHP: flatULResult[rankULIndex].battle.S,
-                ultraLeaguePerfect: flatULResult[0].IVs,
-                masterLeagueRank: rankMLIndex,
-                masterLeagueLvl: flatMLResult[rankMLIndex].L,
-                masterLeagueCP: flatMLResult[rankMLIndex].CP,
-                masterLeagueAttack: flatMLResult[rankMLIndex].battle.A,
-                masterLeagueDefense: flatMLResult[rankMLIndex].battle.D,
-                masterLeagueHP: flatMLResult[rankMLIndex].battle.S,
-                masterLeaguePerfect: flatMLResult[0].IVs
-            };
-        });
-        
-        setIvPercents(familyIvPercents);
-    }
-    
-    const onKeyDown = (e: React.KeyboardEvent) => {
-        switch (e.code) {
-            case "ArrowRight":
-                changeTab(true);
-                break;
-            case "ArrowLeft":
-                changeTab(false);
-                break;
-        }
-    }
     
     const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: isDarkMode ? '#24292f' : '#fff',
@@ -313,69 +105,52 @@ const PokemonInfo = ({pokemon, changeTab}: IPokemonInfoProps) => {
         textAlign: 'center',
         color: theme.palette.text.secondary,
     }));
+
+    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
     
+    const gridContainerClassName = `${controlPanelCollapsed ? "collapsed_top_pane" : "expanded_top_pane"}`;
+
     return (
-        <div>
-            <PokemonInfoBanner
-                pokemon={pokemon}
-                ivPercents={ivPercents}
-            />
-            <AppraisalBar
-                attack = {attackIV}
-                setAttack={setAttackIV}
-                defense={defenseIV}
-                setDefense={setDefenseIV}
-                hp={hpIV}
-                setHP={setHPIV}
-            />
-            <LevelSlider
-                levelCap={levelCap}
-                setLevelCap={setLevelCap}
-            />
-            {pokemon && <div className="tab_panel_container images_container grid_container" tabIndex={0} onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-            <Box sx={{ flexGrow: 1 }}>
-                    <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
-                        {familyTree.map(p => (
-                            <Grid xs={12} sm={12} md={12} key={p.speciesId} className="grid">
-                                <Item>
-                                    <PokemonInfoCard pokemon={p} ivPercents={ivPercents[p.speciesId]} />
-                                </Item>
+        <div className="pokemon-content">
+            <LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
+                <PokemonInfoControlPanel
+                    controlPanelCollapsed={controlPanelCollapsed}
+                    setControlPanelCollapsed={setControlPanelCollapsed}
+                />
+                <div className={gridContainerClassName}>
+                    <PokemonInfoBanner
+                        pokemon={pokemon}
+                        ivPercents={ivPercents}
+                    />
+                    <AppraisalBar
+                        attack = {attackIV}
+                        setAttack={setAttackIV}
+                        defense={defenseIV}
+                        setDefense={setDefenseIV}
+                        hp={hpIV}
+                        setHP={setHPIV}
+                    />
+                    <LevelSlider
+                        levelCap={levelCap}
+                        setLevelCap={setLevelCap}
+                    />
+                    {pokemon && <div className="tab_panel_container images_container grid_container">
+                    <Box sx={{ flexGrow: 1 }}>
+                            <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
+                                {familyTree.map(p => (
+                                    <Grid xs={12} sm={12} md={12} key={p.speciesId} className="grid">
+                                        <Item>
+                                            <PokemonInfoCard pokemon={p} ivPercents={ivPercents[p.speciesId]} />
+                                        </Item>
+                                    </Grid>
+                                ))}
                             </Grid>
-                        ))}
-                    </Grid>
-                </Box>
-            </div>}
+                        </Box>
+                    </div>}
+                </div>
+            </LoadingRenderer>
         </div>
     );
 }
-
-const League = ({pokemon, leagueIndex, changeTab}: ILeagueProps) => {
-    const [onTouchStart, onTouchMove, onTouchEnd] = useSwipe({swipeLeftCallback: () => changeTab(true), swipeRightCallback: () => changeTab(false), minSwipeDistance: 50});
-    
-    const onKeyDown = (e: React.KeyboardEvent) => {
-        switch (e.code) {
-            case "ArrowRight":
-                changeTab(true);
-                break;
-            case "ArrowLeft":
-                changeTab(false);
-                break;
-        }
-    }
-    
-    useEffect(() => {
-        console.log("mounting " + leagueIndex);
-        return () => {
-            console.log("unmounting " + leagueIndex)
-        };
-    }, []);
-
-    return <div onKeyDown={onKeyDown} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-        League {leagueIndex}
-    </div>;
-}
-
-
-
 
 export default Pokemon;
