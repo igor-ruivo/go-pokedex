@@ -2,16 +2,14 @@ import { IGamemasterPokemon } from "../../DTOs/IGamemasterPokemon";
 import "./PokemonInfoImage.css";
 
 interface IPokemonImage {
-    pokemon: IGamemasterPokemon,
-    height: number,
-    width: number
+    pokemon: IGamemasterPokemon
 }
 
-const PokemonImage = ({pokemon, height, width}: IPokemonImage) => {
+const PokemonImage = ({pokemon}: IPokemonImage) => {
     return (
-        <div className="images_container">
-            <img alt={pokemon.speciesName} height={height} width={width} src={pokemon.imageUrl}/>
-            {pokemon.isShadow && <img className='image shadow-overlay' src="https://i.imgur.com/iQGDV5T.png" alt={pokemon.speciesName} height={height} width={width} />}
+        <div className="images_info_container">
+            <img alt={pokemon.speciesName} src={pokemon.imageUrl} width="100%" height="100%"/>
+            {pokemon.isShadow && <img className='image shadow-overlay' width="100%" height="100%" src="https://i.imgur.com/iQGDV5T.png" alt={pokemon.speciesName} />}
         </div>
     );
 }

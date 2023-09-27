@@ -48,13 +48,13 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
     return <div>
         <div className="img-container">
             <div className="img-selected-container">
-                <PokemonInfoImage pokemon={pokemon} height={100} width={100}/>
+                <PokemonInfoImage pokemon={pokemon}/* height={100} width={100}*//>
             </div>
             <div className="img-family">
                 {familyTreeExceptSelf.map(p => (
                     <div key = {p.speciesId} className="img-family-container">
                         <Link to={`/pokemon/${p.speciesId}`}>
-                            <PokemonInfoImage pokemon={p} height={32} width={32}/>
+                            <PokemonInfoImage pokemon={p}/* height={32} width={32}*//>
                         </Link>
                     </div>
                 ))}

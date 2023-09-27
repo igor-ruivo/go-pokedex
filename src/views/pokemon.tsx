@@ -135,7 +135,7 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
                         setLevelCap={setLevelCap}
                     />
                     {pokemon && <div className="tab_panel_container images_container grid_container">
-                    <Box sx={{ flexGrow: 1 }}>
+                        <Box sx={{ flexGrow: 1 }}>
                             <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
                                 {familyTree.map(p => (
                                     <Grid xs={12} sm={12} md={12} key={p.speciesId} className="grid">
