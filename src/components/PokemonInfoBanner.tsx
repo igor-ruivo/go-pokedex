@@ -45,6 +45,20 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
         return number + suffix;
     }
 
+    const normalizeAttack = (attack: string) => {
+        if (!attack) {
+            return "";
+        }
+        
+        const words = attack.split("_");
+
+        for (let i = 0; i < words.length; i++) {
+            words[i] = words[i][0].toLocaleUpperCase() + words[i].substring(1).toLocaleLowerCase();
+        }
+
+        return words.join(' ');
+    }
+
     return <div className="content">
         <div className="img-container">
             <div className="img-selected-container">
@@ -88,6 +102,33 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
                     <td>{ivPercents[pokemon.speciesId].greatLeaguePerfect.A + " / " + ivPercents[pokemon.speciesId].greatLeaguePerfect.D + " / " + ivPercents[pokemon.speciesId].greatLeaguePerfect.S}</td>
                     <td>{ivPercents[pokemon.speciesId].ultraLeaguePerfect.A + " / " + ivPercents[pokemon.speciesId].ultraLeaguePerfect.D + " / " + ivPercents[pokemon.speciesId].ultraLeaguePerfect.S}</td>
                     <td>{ivPercents[pokemon.speciesId].masterLeaguePerfect.A + " / " + ivPercents[pokemon.speciesId].masterLeaguePerfect.D + " / " + ivPercents[pokemon.speciesId].masterLeaguePerfect.S}</td>
+                </tr>
+            </tbody>
+
+            <tbody>
+                <tr>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                    <th>-</th>
+                </tr>
+                <tr>
+                    <td>Fast Atk</td>
+                    <td>{normalizeAttack(rankLists[0].find(p => p.speciesId === pokemon.speciesId)?.moveset[0] ?? "")}</td>
+                    <td>{normalizeAttack(rankLists[1].find(p => p.speciesId === pokemon.speciesId)?.moveset[0] ?? "")}</td>
+                    <td>{normalizeAttack(rankLists[2].find(p => p.speciesId === pokemon.speciesId)?.moveset[0] ?? "")}</td>
+                </tr>
+                <tr>
+                    <td>Charged #1</td>
+                    <td>{normalizeAttack(rankLists[0].find(p => p.speciesId === pokemon.speciesId)?.moveset[1] ?? "")}</td>
+                    <td>{normalizeAttack(rankLists[1].find(p => p.speciesId === pokemon.speciesId)?.moveset[1] ?? "")}</td>
+                    <td>{normalizeAttack(rankLists[2].find(p => p.speciesId === pokemon.speciesId)?.moveset[1] ?? "")}</td>
+                </tr>
+                <tr>
+                    <td>Charged #2</td>
+                    <td>{normalizeAttack(rankLists[0].find(p => p.speciesId === pokemon.speciesId)?.moveset[2] ?? "")}</td>
+                    <td>{normalizeAttack(rankLists[1].find(p => p.speciesId === pokemon.speciesId)?.moveset[2] ?? "")}</td>
+                    <td>{normalizeAttack(rankLists[2].find(p => p.speciesId === pokemon.speciesId)?.moveset[2] ?? "")}</td>
                 </tr>
             </tbody>
         </table>
