@@ -82,7 +82,7 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     const [attackIV, setAttackIV] = useState(parseCachedNumberValue(ConfigKeys.AttackIV, 0));
     const [defenseIV, setDefenseIV] = useState(parseCachedNumberValue(ConfigKeys.DefenseIV, 0));
     const [hpIV, setHPIV] = useState(parseCachedNumberValue(ConfigKeys.HPIV, 0));
-    const [levelCap, setLevelCap] = useState<number>(parseCachedNumberValue(ConfigKeys.LevelCap, 51));
+    const [levelCap, setLevelCap] = useState<number>(parseCachedNumberValue(ConfigKeys.LevelCap, 40));
 
     const [controlPanelCollapsed, setControlPanelCollapsed] = useState(getDefaultControlPanelCollapsed());
     const {gamemasterPokemon} = usePokemon();

@@ -19,7 +19,7 @@
     to {top: 8px;}
 }
 
-.autoComplete-root {
+.autoComplete-root-info {
     min-width: 200px;
     @include themify($themes) {
         background-color: themed("headerBackground");
@@ -87,13 +87,26 @@ ul.MuiAutocomplete-listbox {
     }
 }
 
-.expanded_pane {
-    width: 50%;
-    padding-top: 16px;
-    min-width: 390px;
-    left: 50%;
-    transform: translateX(-50%);
-    min-height: 126.2px;
+@media (max-width: 500px) {
+    .expanded_info_pane {
+        width: 50%;
+        padding-top: 16px;
+        min-width: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-height: 126.2px;
+    }
+}
+
+@media (min-width: 501px) {
+    .expanded_info_pane {
+        width: 50%;
+        padding-top: 16px;
+        min-width: 390px;
+        left: 50%;
+        transform: translateX(-50%);
+        min-height: 126.2px;
+    }
 }
 
 .collapsed_toggle {

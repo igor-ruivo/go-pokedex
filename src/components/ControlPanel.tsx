@@ -50,7 +50,7 @@ const DropdownStyles = ({isDarkMode}: IMuiStyleProps) => (
                 font-family: IBM Plex Sans, sans-serif;
                 font-size: 0.875rem;
                 box-sizing: border-box;
-                min-width: 150px;
+                min-width: 120px;
                 padding: 8px 12px;
                 border-radius: 8px;
                 text-align: left;
@@ -95,7 +95,7 @@ const DropdownStyles = ({isDarkMode}: IMuiStyleProps) => (
                 box-sizing: border-box;
                 padding: 6px;
                 margin: 12px 0;
-                min-width: 150px;
+                min-width: 120px;
                 border-radius: 12px;
                 overflow: auto;
                 outline: 0px;

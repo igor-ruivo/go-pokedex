@@ -1,4 +1,5 @@
 import "./ControlPanel.scss";
+import "./ControlPanelPokemonInfo.scss";
 import {
     Autocomplete,
     AutocompleteChangeReason,
@@ -37,8 +38,8 @@ const InputStyles = ({isDarkMode}: IMuiStyleProps) => (
     <style>
         {`
             .CustomInputIntroduction {
-                min-width: 150px;
-                width: 150px;
+                min-width: 200px;
+                width: 200px;
                 font-family: IBM Plex Sans, sans-serif;
                 font-size: 0.875rem;
                 font-weight: 400;
@@ -102,7 +103,7 @@ const ControlPanel = ({controlPanelCollapsed, setControlPanelCollapsed}: IContro
 
     return (<>
         {!controlPanelCollapsed &&
-            <div className="top_pane expanded_pane">
+            <div className="top_pane expanded_info_pane">
                 <Stack
                     direction="column"
                     spacing={2}
@@ -118,7 +119,7 @@ const ControlPanel = ({controlPanelCollapsed, setControlPanelCollapsed}: IContro
                         <Autocomplete
                             size="small"
                             classes={{
-                                root: 'autoComplete-root',
+                                root: 'autoComplete-root-info',
                                 option: 'autoComplete-component',
                                 focused: 'autoComplete-component',
                                 inputFocused:'autoComplete-component',
