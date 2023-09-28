@@ -15,7 +15,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { usePokemon } from "../contexts/pokemon-context";
 import { Theme, useTheme } from "../contexts/theme-context";
 import { ConfigKeys, writeSessionValue } from "../utils/persistent-configs-handler";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
   
 const grey = {
     50: '#f6f8fa',
@@ -151,6 +151,7 @@ const ControlPanel = ({controlPanelCollapsed, setControlPanelCollapsed}: IContro
                         justifyContent="center"
                         alignItems="center"
                     >
+                        <Link to="/">&#60; Pokédex</Link>
                         <div>
                             <input type="checkbox" className="checkbox" id="checkbox" checked={theme === Theme.Dark} onChange={handleThemeChange}/>
                             <label htmlFor="checkbox" className="checkbox-label">

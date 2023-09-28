@@ -8,7 +8,7 @@ interface ILevelSlider {
 }
 
 const LevelSlider = ({levelCap, setLevelCap}: ILevelSlider) => {
-    return <Box className = "levelCapInput">
+    return <div className = "levelCapInput"><Box>
                 <Slider
                     aria-label="Pokémon level cap"
                     onChange={(_event, newValue) => setLevelCap(newValue as number)}
@@ -22,7 +22,7 @@ const LevelSlider = ({levelCap, setLevelCap}: ILevelSlider) => {
                 Pokémon level cap
             </Typography>
             
-            </Box>;
+            </Box></div>;
 }
 
 export default LevelSlider;

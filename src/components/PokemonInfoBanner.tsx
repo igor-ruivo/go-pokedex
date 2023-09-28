@@ -45,7 +45,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
         return number + suffix;
     }
 
-    return <div>
+    return <div className="content">
         <div className="img-container">
             <div className="img-selected-container">
                 <PokemonInfoImage pokemon={pokemon}/* height={100} width={100}*//>
@@ -96,7 +96,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
             <div className="stat">Defense: {pokemon.def}</div>
             <div className="stat">HP: {pokemon.hp}</div>
         </div>
-        <hr className="solid"></hr>
     </div>;
 }
 

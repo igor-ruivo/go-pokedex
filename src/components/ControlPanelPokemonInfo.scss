@@ -12,6 +12,10 @@
         color: themed("textColor");
         border-color: themed("borderColor")
     }
+    a {
+        text-decoration: none;
+        color: unset;
+    }
 }
 
 @keyframes toggle_collapse {

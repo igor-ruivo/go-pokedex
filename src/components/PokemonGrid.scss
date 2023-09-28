@@ -1,3 +1,5 @@
+@import '../styles/theme-variables.scss';
+
 .grid_container {
   a {
     text-decoration: none;
@@ -14,4 +16,7 @@
 
 .grid > div {
   padding: 5px;
+  @include themify($themes) {
+    border: 1px solid themed("borderColor");
+  }
 }

@@ -1,8 +1,9 @@
 .appraisal {
     margin-top: 16px;
     margin-bottom: 32px;
-    max-width: 400px;
-    margin-left: 10px;
+    max-width: 67%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .data-grid {
@@ -17,7 +18,7 @@
     font-size: 14px
 }
 
-@media (max-width: 768px) {
+@media (max-width: 500px) {
     .appraisal {
         max-width: 100%;
         margin-left: 0;

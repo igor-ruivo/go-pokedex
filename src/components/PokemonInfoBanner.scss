@@ -29,9 +29,9 @@
             border: 2px solid themed("bannerBorderColor");
         }
         border-radius: 50%;
-        width: calc(25px + 7 * calc(100vw - 320px) / 180);
-        height: calc(25px + 7 * calc(100vw - 320px) / 180);
-        box-shadow: 2px 2px 2px black;
+        width: calc(22.5px + 9.5 * calc(100vw - 320px) / 180);
+        height: calc(22.5px + 9.5 * calc(100vw - 320px) / 180);
+        //box-shadow: 2px 2px 2px black;
         padding: 8px;
         margin: 2px;
     }
@@ -42,7 +42,7 @@
         }
         border-radius: 50%;
         width: 33%;
-        box-shadow: 2px 2px 2px black;
+        //box-shadow: 2px 2px 2px black;
     }
 
     .img-family {
@@ -82,7 +82,7 @@
         border-radius: 50%;
         width: calc(32px + 32 * calc(100vw - 500px) / (1920 - 500));
         height: calc(32px + 32 * calc(100vw - 500px) / (1920 - 500));
-        box-shadow: 2px 2px 2px black;
+        //box-shadow: 2px 2px 2px black;
         padding: 8px;
         margin: 2px;
     }
@@ -94,7 +94,7 @@
         border-radius: 50%;
         width: calc(100px + 100 * calc(100vw - 500px) / (1920 - 500));
         height: calc(100px + 100 * calc(100vw - 500px) / (1920 - 500));
-        box-shadow: 2px 2px 2px black;
+        //box-shadow: 2px 2px 2px black;
         padding: 16px;
     }
 
@@ -121,19 +121,27 @@
     margin-left: 8px;
 }
 
-hr.solid {
-    border-top: 3px solid #bbb;
-    margin-bottom: 32px;
-}
-
 table {
     table-layout: fixed;
     width: 180px;
 }
 
 .league-ranks {
+    font-size: clamp(8px, calc(8px + 6 * ((100vw - 320px) / 180)), 14px);
     table-layout: fixed;
-    width: 360px;
+    width: calc(285px + 65 * ((100vw - 320px) / 180));
     margin-left: auto; 
     margin-right: auto;
+}
+
+.content {
+    padding: 5px;
+    border-radius: 4%;
+    border: 1px;
+    border-style: solid;
+    margin-bottom: 16px;
+    @include themify($themes) {
+        background: themed("contentBackground");
+        border-color: themed("borderColor");
+    }
 }

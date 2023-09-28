@@ -35,8 +35,8 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
               .replace("(Standard)", "(Std.)")
               .replace("(Incarnate)", "(Inc.)")
               .replace("(Average)", "(Avg.)")
-              .replace("(Male)", "(♂)")
-              .replace("(Female)", "(♀)")}
+              .replace("Male", "♂")
+              .replace("Female", "♀")}
           </div>
         </div>
       </Link>

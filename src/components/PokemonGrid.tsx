@@ -163,7 +163,7 @@ const PokemonGrid = memo(({pokemonInfoList, controlPanelCollapsed, listType}: IP
                         {shownPokemonSlice.map(p => (
                             <Grid xs={4} sm={3} md={3} key={p.speciesId} className="grid">
                                 {readyImages.hasOwnProperty(p.speciesId) &&
-                                <Item>
+                                <Item className="grid-item">
                                     <PokemonCard pokemon={p} listType={listType} />
                                 </Item>}
                             </Grid>
