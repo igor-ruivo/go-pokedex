@@ -32,6 +32,7 @@
         width: calc(22.5px + 9.5 * calc(100vw - 320px) / 180);
         height: calc(22.5px + 9.5 * calc(100vw - 320px) / 180);
         //box-shadow: 2px 2px 2px black;
+        box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
         padding: 8px;
         margin: 2px;
     }
@@ -43,6 +44,7 @@
         border-radius: 50%;
         width: 33%;
         //box-shadow: 2px 2px 2px black;
+        box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
     }
 
     .img-family {
@@ -82,7 +84,7 @@
         border-radius: 50%;
         width: calc(32px + 32 * calc(100vw - 500px) / (1920 - 500));
         height: calc(32px + 32 * calc(100vw - 500px) / (1920 - 500));
-        //box-shadow: 2px 2px 2px black;
+        box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), inset 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), inset 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12), inset 0px 1px 3px 0px rgba(0,0,0,0.12);
         padding: 8px;
         margin: 2px;
     }
@@ -94,7 +96,7 @@
         border-radius: 50%;
         width: calc(100px + 100 * calc(100vw - 500px) / (1920 - 500));
         height: calc(100px + 100 * calc(100vw - 500px) / (1920 - 500));
-        //box-shadow: 2px 2px 2px black;
+        box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), inset 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), inset 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12), inset 0px 1px 3px 0px rgba(0,0,0,0.12);
         padding: 16px;
     }
 
@@ -136,9 +138,10 @@ table {
 
 .content {
     padding: 5px;
-    border-radius: 4%;
+    border-radius: 4px;
     border: 1px;
     border-style: solid;
+    box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
     margin-bottom: 16px;
     @include themify($themes) {
         background: themed("contentBackground");

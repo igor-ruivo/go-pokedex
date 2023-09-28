@@ -12,7 +12,7 @@ import PokemonInfoCard from '../components/PokemonInfo/PokemonInfoCard';
 import { Theme, useTheme } from '../contexts/theme-context';
 import { usePokemon } from '../contexts/pokemon-context';
 import LevelSlider from '../components/LevelSlider';
-import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
+import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import PokemonInfoBanner from '../components/PokemonInfoBanner';
 import LoadingRenderer from '../components/LoadingRenderer';
 import PokemonInfoControlPanel from '../components/PokemonInfoControlPanel';
@@ -71,7 +71,15 @@ export interface IIvPercents {
 const getDefaultControlPanelCollapsed = () => readSessionValue(ConfigKeys.ControlPanelCollapsed) === "true";
 
 const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
-    const parseCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
+    const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
+        const cachedValue = readPersistentValue(key);
+        if (!cachedValue) {
+            return defaultValue;
+        }
+        return +cachedValue;
+    }
+
+    const parseSessionCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
         const cachedValue = readSessionValue(key);
         if (!cachedValue) {
             return defaultValue;
@@ -79,10 +87,10 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
         return +cachedValue;
     }
 
-    const [attackIV, setAttackIV] = useState(parseCachedNumberValue(ConfigKeys.AttackIV, 0));
-    const [defenseIV, setDefenseIV] = useState(parseCachedNumberValue(ConfigKeys.DefenseIV, 0));
-    const [hpIV, setHPIV] = useState(parseCachedNumberValue(ConfigKeys.HPIV, 0));
-    const [levelCap, setLevelCap] = useState<number>(parseCachedNumberValue(ConfigKeys.LevelCap, 40));
+    const [attackIV, setAttackIV] = useState(parseSessionCachedNumberValue(ConfigKeys.AttackIV, 0));
+    const [defenseIV, setDefenseIV] = useState(parseSessionCachedNumberValue(ConfigKeys.DefenseIV, 0));
+    const [hpIV, setHPIV] = useState(parseSessionCachedNumberValue(ConfigKeys.HPIV, 0));
+    const [levelCap, setLevelCap] = useState<number>(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
 
     const [controlPanelCollapsed, setControlPanelCollapsed] = useState(getDefaultControlPanelCollapsed());
     const {gamemasterPokemon} = usePokemon();
@@ -95,7 +103,7 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
         writeSessionValue(ConfigKeys.AttackIV, attackIV.toString());
         writeSessionValue(ConfigKeys.DefenseIV, defenseIV.toString());
         writeSessionValue(ConfigKeys.HPIV, hpIV.toString());
-        writeSessionValue(ConfigKeys.LevelCap, levelCap.toString());
+        writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
     }, [attackIV, defenseIV, hpIV, levelCap]);
     
     const Item = styled(Paper)(({ theme }) => ({

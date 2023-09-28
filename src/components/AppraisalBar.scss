@@ -1,3 +1,5 @@
+@import '../styles/theme-variables.scss';
+
 .appraisal {
     margin-top: 16px;
     margin-bottom: 32px;
@@ -45,7 +47,9 @@
 }
 
 .appraisal .stat h4 span {
-    color: #ccc
+    @include themify($themes) {
+        color: themed("textColor");
+    }
 }
 
 .appraisal .stat-bar {
@@ -58,7 +62,10 @@
     height: 18px;
     flex: 1 1 40px;
     border-right: 1px solid rgba(255,255,255,.3);
-    cursor: pointer
+    cursor: pointer;
+    @include themify($themes) {
+        border: 1px solid themed("borderColor");
+    }
 }
 
 .appraisal .stat-bar .bar.hover {

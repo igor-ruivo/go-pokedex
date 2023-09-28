@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./AppraisalBar.css";
+import "./AppraisalBar.scss";
 
 enum Stat {
     Attack,

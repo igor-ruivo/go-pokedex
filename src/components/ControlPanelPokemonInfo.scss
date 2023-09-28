@@ -68,6 +68,12 @@
     }
 }
 
+.MuiAutocomplete-option {
+    @include themify($themes) {
+        border: 1px solid themed("borderColor");
+    }
+}
+
 ul.MuiAutocomplete-listbox {
     padding: 0;
 }
@@ -78,6 +84,14 @@ ul.MuiAutocomplete-listbox {
         color: themed("textColor");
         border-color: themed("borderColor");
         outline-color: themed("borderColor");
+    }
+}
+
+.MuiAutocomplete-noOptions{
+    @include themify($themes) {
+        color: themed("textColor");
+        background: themed("contentBackground");
+        border: 1px solid themed("borderColor");
     }
 }
 
