@@ -1,5 +1,24 @@
 @import '../styles/theme-variables.scss';
 
+.appraisal-container {
+    position: relative;
+}
+
+.appraisal-slider {
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    opacity: 0;
+}
+
+.appraisal-component {
+    position: relative;
+}
+
 .appraisal {
     margin-top: 16px;
     margin-bottom: 32px;
@@ -22,16 +41,17 @@
 
 @media (max-width: 500px) {
     .appraisal {
-        max-width: 100%;
-        margin-left: 0;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .data-grid {
-        max-width: 100%;
+        max-width: 90%;
     }
 
     .appraisal .stat {
-        max-width: 100%;
+        max-width: 90%;
     }
 }
 

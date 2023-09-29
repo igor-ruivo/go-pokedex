@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./AppraisalBar.scss";
+import { Slider } from "@mui/material";
 
 enum Stat {
     Attack,
@@ -17,16 +18,41 @@ interface IAppraisalBarProps {
 }
 
 const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppraisalBarProps) => {
+    const [debouncingAttack, setDebouncingAttack] = useState(attack);
+    const [debouncingDefense, setDebouncingDefense] = useState(defense);
+    const [debouncingHP, setDebouncingHP] = useState(hp);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setAttack(Math.ceil(debouncingAttack));
+        }, 200);
+        return () => clearTimeout(timeoutId);
+    }, [debouncingAttack]);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setDefense(Math.ceil(debouncingDefense));
+        }, 200);
+        return () => clearTimeout(timeoutId);
+    }, [debouncingDefense]);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setHP(Math.ceil(debouncingHP));
+        }, 200);
+        return () => clearTimeout(timeoutId);
+    }, [debouncingHP]);
+
     const handleCellClick = (stat: Stat, cellIndex: number) => {
         switch (stat) {
             case Stat.Attack:
-                setAttack(previousIndex => previousIndex === cellIndex + 1 ? 0 : cellIndex + 1);
+                setDebouncingAttack(cellIndex);
                 break;
             case Stat.Defense:
-                setDefense(previousIndex => previousIndex === cellIndex + 1 ? 0 : cellIndex + 1);
+                setDebouncingDefense(cellIndex);
                 break;
             case Stat.HP:
-                setHP(previousIndex => previousIndex === cellIndex + 1 ? 0 : cellIndex + 1);
+                setDebouncingHP(cellIndex);
                 break;
         }
     };
@@ -78,13 +104,13 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
         let statValue = 0;
         switch (stat) {
             case Stat.Attack:
-                statValue = attack;
+                statValue = debouncingAttack;
                 break;
             case Stat.Defense:
-                statValue = defense;
+                statValue = debouncingDefense;
                 break;
             case Stat.HP:
-                statValue = hp;
+                statValue = debouncingHP;
                 break;
         }
 
@@ -125,23 +151,38 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
             );
         }
 
-        const statBarClass = value === 15 ? 'stat-bar max' : 'stat-bar';
+        const statBarClass = Math.ceil(value) === 15 ? 'stat-bar max' : 'stat-bar';
 
         return (
             <div className="stat">
                 <h4>{Stat[stat]}
-                    <span>{value}</span>
+                    <span>{Math.ceil(value)}</span>
                 </h4>
-                <div className={statBarClass}>{cells}</div>
+                <div className="appraisal-container">
+                    <div className="appraisal-slider">
+                        <Slider
+                            size="small"
+                            aria-label={Stat[stat] + "-slider"}
+                            onChange={(_event, newValue) => handleCellClick(stat, newValue as number)}
+                            min={0}
+                            max={15}
+                            step={0.01}
+                            value={value}
+                        />
+                    </div>
+                    <div className="appraisal-component">
+                        <div className={statBarClass}>{cells}</div>
+                    </div>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="appraisal">
-            {renderStatBar(Stat.Attack, attack)}
-            {renderStatBar(Stat.Defense, defense)}
-            {renderStatBar(Stat.HP, hp)}
+            {renderStatBar(Stat.Attack, debouncingAttack)}
+            {renderStatBar(Stat.Defense, debouncingDefense)}
+            {renderStatBar(Stat.HP, debouncingHP)}
         </div>
     );
 };
