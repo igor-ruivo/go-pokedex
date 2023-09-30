@@ -10,6 +10,7 @@ import { Theme, useTheme } from '../contexts/theme-context';
 import Dictionary from '../utils/Dictionary';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import { ListType } from '../views/pokedex';
+import { useLocation } from 'react-router-dom';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[],
@@ -26,6 +27,15 @@ const getDefaultReadyImages = (): Dictionary<string> => {
         return JSON.parse(storedInfo);
     }
     return {};
+}
+
+const getDefaultListType = () => {
+    const cachedValue = readSessionValue(ConfigKeys.LastListType);
+    if (!cachedValue) {
+        return undefined;
+    }
+
+    return +cachedValue as ListType;
 }
 
 const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
@@ -45,16 +55,38 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     const shownPokemonSlice = pokemonInfoList.slice(0, lastShownIndex);
 
     const initialPropsSet = useRef(false);
+    
+    const location = useLocation();
+    const currentRank = location.pathname.substring(1);
+    let typedCurrentRank = ListType.POKEDEX;
+
+    switch (currentRank) {
+        case "great":
+            typedCurrentRank = ListType.GREAT_LEAGUE;
+            break;
+        case "ultra":
+            typedCurrentRank = ListType.ULTRA_LEAGUE;
+            break;
+        case "master":
+            typedCurrentRank = ListType.MASTER_LEAGUE;
+            break;
+    }
 
     useEffect(() => {
-        window.scrollTo(0, getDefaultScrollY());
+        if (typedCurrentRank === getDefaultListType()) {
+            window.scrollTo(0, getDefaultScrollY());
+        }
     }, []);
 
     useEffect(() => {
         // Whenever the pokemonInfoList prop changes, let's reset the scrolling and the shown pokemon.
+
+        writeSessionValue(ConfigKeys.LastListType, JSON.stringify(typedCurrentRank));
+
         if (initialPropsSet.current) {
             setLastShownIndex(0);
             writeSessionValue(ConfigKeys.LastShownImageIndex, "0");
+            writeSessionValue(ConfigKeys.GridScrollY, "0");
         } else {
             initialPropsSet.current = true;
         }
@@ -62,7 +94,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
 
     const handleScrollCallback = useCallback(() => {
         writeSessionValue(ConfigKeys.GridScrollY, window.scrollY.toString());
-        
+
         if (lastShownIndex >= pokemonInfoList.length) {
             // Already showing all pokemon available.
             return;

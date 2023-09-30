@@ -3,7 +3,7 @@ export enum ConfigKeys {
     DefaultTheme,
     LastShownImageIndex,
     BrowserCachedImages,
-    ListType,
+    LastListType,
     SearchInputText,
     ShowFamilyTree,
     ControlPanelCollapsed,
