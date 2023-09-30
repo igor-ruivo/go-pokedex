@@ -1,12 +1,13 @@
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
-import ControlPanel from '../components/ControlPanel';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import LoadingRenderer from '../components/LoadingRenderer';
-import { ConfigKeys, readPersistentValue, readSessionValue } from '../utils/persistent-configs-handler';
+import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
 import { usePokemon } from '../contexts/pokemon-context';
+import { useNavbarSearchInput } from '../contexts/navbar-search-context';
+import { useParams } from 'react-router-dom';
 
 export enum ListType {
     POKEDEX,
@@ -17,25 +18,28 @@ export enum ListType {
 
 const getDefaultShowFamilyTree = () => readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
 
-const getDefaultListType = () => {
-    const cachedValue = readSessionValue(ConfigKeys.ListType);
-    if (!cachedValue) {
-        return ListType.POKEDEX;
-    }
-
-    return +cachedValue as ListType;
-}
-
-const getDefaultInputText = () => readSessionValue(ConfigKeys.SearchInputText) ?? "";
-
-const getDefaultControlPanelCollapsed = () => readSessionValue(ConfigKeys.ControlPanelCollapsed) === "true";
-
 const Pokedex = () => {
     const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
-    const [listType, setListType] = useState(getDefaultListType());
-    const [inputText, setInputText] = useState(getDefaultInputText());
-    const [controlPanelCollapsed, setControlPanelCollapsed] = useState(getDefaultControlPanelCollapsed());
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = usePokemon();
+    const { inputText } = useNavbarSearchInput();
+
+    let listType = ListType.POKEDEX;
+    const { listTypeArg } = useParams();
+
+    switch (listTypeArg) {
+        case "great":
+            listType = ListType.GREAT_LEAGUE;
+            break;
+        case "ultra":
+            listType = ListType.ULTRA_LEAGUE;
+            break;
+        case "master":
+            listType = ListType.MASTER_LEAGUE;
+            break;
+        default:
+            listType = ListType.POKEDEX;
+            break;
+    }
 
     const prepareData = () => {
         if (!fetchCompleted) {
@@ -81,28 +85,38 @@ const Pokedex = () => {
         return processedList;
     }
 
-    const data = useMemo(prepareData, [gamemasterPokemon, listType, inputText, rankLists, fetchCompleted, showFamilyTree]);
+    const data = useMemo(prepareData, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, showFamilyTree]);
 
     return (
-        <div className="pokedex">
-            <LoadingRenderer errors={errors} completed={fetchCompleted}>
-                <>
-                    <div>
-                        <ControlPanel
-                            getDefaultInputText={getDefaultInputText}
-                            setInputText={setInputText}
-                            controlPanelCollapsed={controlPanelCollapsed}
-                            setControlPanelCollapsed={setControlPanelCollapsed}
-                            listType={listType}
-                            setListType={setListType}
-                            showFamilyTree={showFamilyTree}
-                            setShowFamilyTree={setShowFamilyTree}
-                        />
-                    </div>
-                    <PokemonGrid pokemonInfoList={data} controlPanelCollapsed={controlPanelCollapsed} listType={listType} />
-                </>
-            </LoadingRenderer>
-        </div>
+        <main className="pokedex-layout">
+            <nav className="navigation-header">
+                <ul>
+                    <li>
+                        <a href="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
+                            <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/great.png"/>
+                            <span>Great</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ultra" className={"header-tab " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
+                            <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png"/>
+                            <span>Ultra</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/master" className={"header-tab " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
+                            <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/master.png"/>
+                            <span>Master</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div className="pokedex">
+                <LoadingRenderer errors={errors} completed={fetchCompleted}>
+                    <PokemonGrid pokemonInfoList={data} listType={listType} />
+                </LoadingRenderer>
+            </div>
+        </main>
     );
 }
 export default Pokedex;

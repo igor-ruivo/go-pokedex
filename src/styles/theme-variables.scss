@@ -10,7 +10,11 @@ $themes: (
         borderColor: #c9c9c9,
         selectedItemBackground: #e9e4e4,
         bannerBorderColor: #eeeeee,
-        contentBackground: #fff
+        contentBackground: #fff,
+        buttonsBackground: #ededed,
+        dropdownOptionBlurred: #fff,
+        dropdownOptionFocused: #f6f6f6,
+        buttonsTextColor: #24292f
     ),
     dark: (
         bodyBackgroundColor: #202023,
@@ -23,7 +27,11 @@ $themes: (
         borderColor: #424a53,
         selectedItemBackground: #424a53,
         bannerBorderColor: #d0d0d0,
-        contentBackground: #24292f
+        contentBackground: #24292f,
+        buttonsBackground: #384049,
+        dropdownOptionBlurred: #2b3138,
+        dropdownOptionFocused: #384049,
+        buttonsTextColor: #ebf4ed
     ),
 );
 

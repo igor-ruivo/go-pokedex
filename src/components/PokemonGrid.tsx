@@ -13,7 +13,6 @@ import { ListType } from '../views/pokedex';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[],
-    controlPanelCollapsed: boolean,
     listType: ListType
 }
 
@@ -27,7 +26,7 @@ const getDefaultReadyImages = (): Dictionary<string> => {
     return {};
 }
 
-const PokemonGrid = memo(({pokemonInfoList, controlPanelCollapsed, listType}: IPokemonGridProps) => {
+const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     const batchSize = 24;
     const bufferSize = 5 * batchSize;
     const scrollHeightLimit = 200;
@@ -151,11 +150,8 @@ const PokemonGrid = memo(({pokemonInfoList, controlPanelCollapsed, listType}: IP
         color: theme.palette.text.secondary,
     }));
 
-    let gridContainerClassName = "grid_container";
-    gridContainerClassName += ` ${controlPanelCollapsed ? "collapsed_top_pane" : "expanded_top_pane"}`;
-
     return (
-        <div className={gridContainerClassName} ref={renderDivRef}>
+        <div className="grid_container" ref={renderDivRef}>
             {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
             {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                 <Box sx={{ flexGrow: 1 }}>

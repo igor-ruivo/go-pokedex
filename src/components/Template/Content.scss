@@ -1,0 +1,23 @@
+.main-content {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1240px;
+}
+
+@media (max-width: 1600px) {
+    .main-content {
+        max-width: 1024px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .main-content {
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        max-width: 100%;
+    }
+}

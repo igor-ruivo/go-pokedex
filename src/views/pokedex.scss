@@ -1,0 +1,76 @@
+@import '../styles/theme-variables.scss';
+
+.pokedex-layout{
+    width: 100%;
+    max-width: 1300px;
+    margin: 12px auto;
+    padding: 9px;
+}
+
+.navigation-header {
+    top: 0;
+    margin: 0;
+    padding: 0 24px 0 9px;
+    z-index: 5;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    @include themify($themes) {
+        background-color: themed("bodyBackgroundColor");
+    }
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+ul {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0 0 18px;
+    gap: 6px;
+    list-style: none;
+}
+
+.header-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    cursor: pointer;
+    padding: 3px 12px;
+    @include themify($themes) {
+        color: themed("buttonsTextColor");
+        background-color: themed("buttonsBackground");
+        border: 1px solid themed("borderColor");
+    }
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 15px;
+    height: 50px;
+    white-space: nowrap;
+    box-shadow: 0px 0px 0px rgba(3,7,18,.1),0px 1px 1px rgba(3,7,18,.08),0px 1px 1px rgba(3,7,18,.06),0px 3px 3px rgba(3,7,18,.04),0px 4px 4px rgba(3,7,18,.02);
+}
+
+.selected {
+    @include themify($themes) {
+        background-color: themed("contentBackground");
+    }
+}
+
+@media (max-width: 500px) {
+    .pokedex-layout{
+        margin: 0px auto;
+        padding: 0px;
+    }
+
+    ul {
+        margin: 9px 0;
+    }
+
+    .navigation-header {
+        justify-content: center;
+    }
+}

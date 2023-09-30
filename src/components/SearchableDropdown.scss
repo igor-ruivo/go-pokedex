@@ -1,0 +1,32 @@
+@import '../styles/theme-variables.scss';
+
+.dropdown-control-focused,
+.dropdown-option-focused,
+.dropdown-noOptions {
+    @include themify($themes) {
+        background-color: themed("dropdownOptionFocused") !important;
+    }
+}
+
+.dropdown-control-blurred,
+.dropdown-option-blurred {
+    @include themify($themes) {
+        background-color: themed("dropdownOptionBlurred") !important;
+    }
+}
+
+.dropdown-indicator,
+.dropdown-clear-indicator,
+.dropdown-placeholder,
+.dropdown-singleValue,
+.dropdown-input,
+.dropdown-noOptions,
+.dropdown-loading {
+    color: unset !important;
+}
+
+.dropdown-menuList {
+    @include themify($themes) {
+        background-color: themed("headerBackground") !important;
+    }
+}

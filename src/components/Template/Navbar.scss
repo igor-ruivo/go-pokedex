@@ -1,0 +1,100 @@
+@import '../../styles/theme-variables.scss';
+
+.navbar {
+    height: 75px;
+    @include themify($themes) {
+        background-color: themed("headerBackground");
+        color: themed("textColor");
+    }
+    padding: 6px;
+    display: flex;
+}
+
+.navbar-section {
+    display: grid;
+    grid-template-columns: 90px 100px 1fr;
+    align-items: center;
+    justify-content: space-between;
+    grid-gap: 18px;
+    gap: 18px;
+    max-width: 1300px;
+    margin: auto;
+    width: 100%;
+}
+
+.navbar-logo {
+    position: relative;
+    width: 90px;
+    height: 40px;
+    display: flex;
+}
+
+.navbar-logo-image {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    color: transparent;
+}
+
+button {
+    @include themify($themes) {
+        color: themed("buttonsTextColor");
+    }
+    border-radius: 12px;
+    border: none;
+    font-size: inherit;
+}
+
+.navbar-menu {
+    display: flex;
+    height: 42px;
+    padding: 9px;
+    gap: 9px;
+    align-items: center;
+    justify-content: center;
+    @include themify($themes) {
+        background-color: themed("buttonsBackground");
+    }
+    cursor: pointer;
+}
+
+.navbar-menu-img {
+    color: transparent;
+}
+
+.search-wrapper {
+    position: relative;
+}
+
+@media (max-width: 500px) {
+    .navbar {
+        height: 65px;
+    }
+
+    .navbar-menu {
+        order: 3;
+        height: 48px;
+        
+        span {
+            display: none;
+        }
+    }
+
+    .navbar-section {
+        gap: 6px;
+        grid-template-columns: 80px 1fr 45px;
+    }
+
+    .navbar-logo {
+        width: 80px;
+        height: 32px;
+    }
+
+    .search-wrapper {
+        position: static;
+    }
+}

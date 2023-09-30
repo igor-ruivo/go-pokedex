@@ -15,7 +15,6 @@ import LevelSlider from '../components/LevelSlider';
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import PokemonInfoBanner from '../components/PokemonInfoBanner';
 import LoadingRenderer from '../components/LoadingRenderer';
-import PokemonInfoControlPanel from '../components/PokemonInfoControlPanel';
 import useComputeIVs from '../hooks/useComputeIVs';
 
 const Pokemon = () => {
@@ -68,8 +67,6 @@ export interface IIvPercents {
     masterLeaguePerfect: any
 }
 
-const getDefaultControlPanelCollapsed = () => readSessionValue(ConfigKeys.ControlPanelCollapsed) === "true";
-
 const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
         const cachedValue = readPersistentValue(key);
@@ -92,7 +89,6 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     const [hpIV, setHPIV] = useState(parseSessionCachedNumberValue(ConfigKeys.HPIV, 0));
     const [levelCap, setLevelCap] = useState<number>(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
 
-    const [controlPanelCollapsed, setControlPanelCollapsed] = useState(getDefaultControlPanelCollapsed());
     const {gamemasterPokemon} = usePokemon();
     const {theme} = useTheme();
     const isDarkMode = theme === Theme.Dark;
@@ -116,16 +112,10 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
 
     const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
     
-    const gridContainerClassName = `${controlPanelCollapsed ? "collapsed_top_pane" : "expanded_top_pane"}`;
-
     return (
         <div className="pokemon-content">
             <LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
-                <PokemonInfoControlPanel
-                    controlPanelCollapsed={controlPanelCollapsed}
-                    setControlPanelCollapsed={setControlPanelCollapsed}
-                />
-                <div className={gridContainerClassName}>
+                <>
                     <PokemonInfoBanner
                         pokemon={pokemon}
                         ivPercents={ivPercents}
@@ -157,7 +147,7 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
                             </Grid>
                         </Box>
                     </div>}
-                </div>
+                </>
             </LoadingRenderer>
         </div>
     );
