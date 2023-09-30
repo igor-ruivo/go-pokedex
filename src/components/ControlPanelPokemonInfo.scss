@@ -53,12 +53,6 @@
         border-color: themed("borderColor");
         outline-color: themed("borderColor");
     }
-    &hover {
-        @include themify($themes) {
-            border-color: themed("borderColor");
-            outline-color: themed("borderColor");
-        }
-    }
 }
 
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {

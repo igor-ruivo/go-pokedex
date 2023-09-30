@@ -14,7 +14,8 @@ $themes: (
         buttonsBackground: #ededed,
         dropdownOptionBlurred: #fff,
         dropdownOptionFocused: #f6f6f6,
-        buttonsTextColor: #24292f
+        buttonsTextColor: #24292f,
+        buttonsBorderColor: #eeeeee
     ),
     dark: (
         bodyBackgroundColor: #202023,
@@ -31,7 +32,8 @@ $themes: (
         buttonsBackground: #384049,
         dropdownOptionBlurred: #2b3138,
         dropdownOptionFocused: #384049,
-        buttonsTextColor: #ebf4ed
+        buttonsTextColor: #ebf4ed,
+        buttonsBorderColor: #848484
     ),
 );
 

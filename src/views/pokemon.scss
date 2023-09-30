@@ -14,9 +14,7 @@
   padding-bottom: 20px;
   @include themify($themes) {
     background: themed("bodyBackgroundColor"); //{isDarkMode ? grey[900] : '#fff'};
-    border: 1px solid themed("borderColor"); //${isDarkMode ? grey[700] : grey[200]};
   }
-  border-radius: 12px;
 }
 
 .dark_mode_switch {
@@ -57,5 +55,12 @@
   padding: 5px;
   @include themify($themes) {
     border: 1px solid themed("borderColor");
+  }
+}
+
+@media (max-width: 500px) {
+  .pokemon-content {
+    padding-right: 0px;
+    padding-left: 0px;
   }
 }

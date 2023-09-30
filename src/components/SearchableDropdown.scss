@@ -27,17 +27,9 @@ ul.MuiAutocomplete-listbox {
     }
 }
 
-.MuiOutlinedInput-notchedOutline {
-    &hover {
-        @include themify($themes) {
-            border-color: themed("borderColor") !important;
-        }
-    }
-}
-
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
     @include themify($themes) {
-        border-color: themed("borderColor");
+        border-color: themed("buttonsBorderColor") !important;
     }
 }
 

@@ -60,6 +60,11 @@ button {
         background-color: themed("buttonsBackground");
     }
     cursor: pointer;
+    &:hover {
+        @include themify($themes) {
+            border: 1px solid themed("buttonsBorderColor");
+        }
+    }
 }
 
 .navbar-menu-img {
