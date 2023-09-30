@@ -19,4 +19,9 @@
   @include themify($themes) {
     border: 1px solid themed("borderColor");
   }
+  &:hover {
+    @include themify($themes) {
+      border: 1px solid themed("buttonsBorderColor");
+    }
+  }
 }
