@@ -22,6 +22,10 @@ const Pokemon = () => {
     const { speciesId } = useParams();
     const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <div className="pokemon">
             <LoadingRenderer errors={errors} completed={fetchCompleted}>

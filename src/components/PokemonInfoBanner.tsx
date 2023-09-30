@@ -6,6 +6,7 @@ import { IIvPercents } from "../views/pokemon";
 import PokemonInfoImage from "./PokemonInfo/PokemonInfoImage";
 import "./PokemonInfoBanner.scss";
 import { useEffect } from "react";
+import LeaguePanels from "./LeaguePanels";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -83,6 +84,28 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
                 })}
             </div>
         </div>
+
+        <LeaguePanels
+            greatLeagueAtk={ivPercents[pokemon.speciesId].greatLeaguePerfect.A}
+            greatLeagueDef={ivPercents[pokemon.speciesId].greatLeaguePerfect.D}
+            greatLeagueSta={ivPercents[pokemon.speciesId].greatLeaguePerfect.S}
+            greatLeagueCp={ivPercents[pokemon.speciesId].greatLeagueCP}
+            greatLeagueLvl={ivPercents[pokemon.speciesId].greatLeagueLvl}
+            greatLeagueRank={ordinal(rankLists[0].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
+            ultraLeagueAtk={ivPercents[pokemon.speciesId].ultraLeaguePerfect.A}
+            ultraLeagueDef={ivPercents[pokemon.speciesId].ultraLeaguePerfect.D}
+            ultraLeagueSta={ivPercents[pokemon.speciesId].ultraLeaguePerfect.S}
+            ultraLeagueCp={ivPercents[pokemon.speciesId].ultraLeagueCP}
+            ultraLeagueLvl={ivPercents[pokemon.speciesId].ultraLeagueLvl}
+            ultraLeagueRank={ordinal(rankLists[1].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
+            masterLeagueAtk={ivPercents[pokemon.speciesId].masterLeaguePerfect.A}
+            masterLeagueDef={ivPercents[pokemon.speciesId].masterLeaguePerfect.D}
+            masterLeagueSta={ivPercents[pokemon.speciesId].masterLeaguePerfect.S}
+            masterLeagueCp={ivPercents[pokemon.speciesId].masterLeagueCP}
+            masterLeagueLvl={ivPercents[pokemon.speciesId].masterLeagueLvl}
+            masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
+        />
+
         <table className="league-ranks">
             <tbody>
                 <tr>

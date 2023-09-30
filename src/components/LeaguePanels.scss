@@ -1,0 +1,111 @@
+@import '../styles/theme-variables.scss';
+
+.pvp-leagues {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 12px;
+    gap: 12px;
+    margin: 12px calc(-1 * 12px);
+    padding: 0 12px;
+    overflow-x: auto;
+    text-align: center;
+}
+
+.pvp-stats {
+    @include themify($themes) {
+        border: 1px solid themed("buttonsBorderColor");
+    }
+    border-radius: 12px;
+    padding: 9px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 6px;
+    gap: 6px;
+    align-items: center;
+    color: #fff;
+    text-shadow: 1px 5px 5px rgba(0,0,0,.25);
+}
+
+.pvp-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    h3 {
+        margin: 0;
+    }
+}
+
+.pvp-img {
+    color: transparent;
+}
+
+.pvp-stats-display {
+    border-radius: 12px;
+    background-color: rgba(0,0,0,.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 9px;
+}
+
+.pvp-ivs {
+    font-size: 28px;
+}
+
+.pokemon-ivs {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pokemon-ivs-item {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-weight: 700;
+    line-height: 1.2;
+    border-radius: 12px;
+}
+
+.pokemon-ivs-label {
+    font-size: small;
+    font-weight: 400;
+}
+
+.great {
+    background: linear-gradient(45deg,#374aaa,#589cd8);
+}
+
+.ultra {
+    background: linear-gradient(45deg,#2d3031,#6f7678);
+}
+
+.master {
+    background: linear-gradient(45deg,#230945,#9b6bda);
+}
+
+@media (max-width: 500px) {
+    .pvp-leagues {
+        grid-template-columns: 1fr;
+    }
+
+    .pvp-stats {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pvp-title {
+        padding: 9px;
+    }
+
+    .pvp-stats {
+        width: 100%
+    }
+}
