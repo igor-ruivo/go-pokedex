@@ -7,7 +7,7 @@ import LoadingRenderer from '../components/LoadingRenderer';
 import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
 import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 export enum ListType {
     POKEDEX,
@@ -92,22 +92,22 @@ const Pokedex = () => {
             <nav className="navigation-header">
                 <ul>
                     <li>
-                        <a href="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
+                        <Link to="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/great.png"/>
                             <span>Great</span>
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="/ultra" className={"header-tab " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
+                        <Link to="/ultra" className={"header-tab " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png"/>
                             <span>Ultra</span>
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="/master" className={"header-tab " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
+                        <Link to="/master" className={"header-tab " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/master.png"/>
                             <span>Master</span>
-                        </a>
+                        </Link>
                     </li>
                 </ul>
             </nav>

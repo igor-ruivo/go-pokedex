@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePokemon } from "../../contexts/pokemon-context";
 import { Theme, useTheme } from "../../contexts/theme-context";
 import SearchableDropdown from "../SearchableDropdown";
@@ -17,9 +17,9 @@ const Navbar = () => {
 
     return <nav className="navbar">
         <section className="navbar-section">
-            <a className="navbar-logo" href="/">
+            <Link to="/" className="navbar-logo">
                 <img className="navbar-logo-image" alt="GO-Pokedéx logo" loading="lazy" decoding="async" data-nimg="fill" src="https://i.imgur.com/eBscnsv.png"/>  
-            </a>
+            </Link>
             <button className="navbar-menu">
                 <img className="navbar-menu-img" data-invertondarkmode="true" alt="Menu toggle" loading="lazy" width="24" height="20" decoding="async" data-nimg="1" src={theme === Theme.Light ? "https://i.imgur.com/QeLejTs.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
                 <span>Menu</span>
