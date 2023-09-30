@@ -12,7 +12,7 @@
 
 .navbar-section {
     display: grid;
-    grid-template-columns: 90px 100px 1fr;
+    grid-template-columns: 40px 100px 1fr;
     align-items: center;
     justify-content: space-between;
     grid-gap: 18px;
@@ -24,7 +24,7 @@
 
 .navbar-logo {
     position: relative;
-    width: 90px;
+    width: 40px;
     height: 40px;
     display: flex;
 }
@@ -70,9 +70,15 @@ button {
     position: relative;
 }
 
+.MuiAutocomplete-popper * {
+    display: block;
+}
+
 @media (max-width: 500px) {
     .navbar {
         height: 65px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .navbar-menu {
@@ -85,12 +91,12 @@ button {
     }
 
     .navbar-section {
-        gap: 6px;
-        grid-template-columns: 80px 1fr 45px;
+        gap: 16px;
+        grid-template-columns: 32px 1fr 45px;
     }
 
     .navbar-logo {
-        width: 80px;
+        width: 32px;
         height: 32px;
     }
 

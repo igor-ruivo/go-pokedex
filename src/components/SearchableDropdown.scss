@@ -1,32 +1,73 @@
 @import '../styles/theme-variables.scss';
 
-.dropdown-control-focused,
-.dropdown-option-focused,
-.dropdown-noOptions {
+.autoComplete-root {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    border-radius: 8px;
+    @include themify($themes) {
+        background-color: themed("buttonsBackground");
+        color: themed("textColor");
+    }
+}
+
+.MuiInputBase-input {
+    @include themify($themes) {
+        color: themed("textColor");
+    }
+}
+
+ul.MuiAutocomplete-listbox {
+    padding: 0;
+}
+
+.MuiAutocomplete-option[aria-selected="true"] {
+    @include themify($themes) {
+        background-color: themed("buttonsBackground") !important;
+    }
+}
+
+.MuiOutlinedInput-notchedOutline {
+    &hover {
+        @include themify($themes) {
+            border-color: themed("borderColor") !important;
+        }
+    }
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    @include themify($themes) {
+        border-color: themed("borderColor");
+    }
+}
+
+.autoComplete-option {
+    @include themify($themes) {
+        background-color: themed("dropdownOptionBlurred");
+        color: themed("textColor");
+    }
+}
+
+label.MuiFormLabel-root.MuiInputLabel-root {
+    background-color: unset !important;
+}
+
+.Mui-disabled {
+    @include themify($themes) {
+        color: themed("textColor") !important;
+        opacity: 50%;
+    }
+}
+
+.Mui-focused {
     @include themify($themes) {
         background-color: themed("dropdownOptionFocused") !important;
+        color: themed("textColor") !important;
     }
 }
 
-.dropdown-control-blurred,
-.dropdown-option-blurred {
+.MuiFormLabel-root {
     @include themify($themes) {
-        background-color: themed("dropdownOptionBlurred") !important;
-    }
-}
-
-.dropdown-indicator,
-.dropdown-clear-indicator,
-.dropdown-placeholder,
-.dropdown-singleValue,
-.dropdown-input,
-.dropdown-noOptions,
-.dropdown-loading {
-    color: unset !important;
-}
-
-.dropdown-menuList {
-    @include themify($themes) {
-        background-color: themed("headerBackground") !important;
+        color: themed("textColor");
     }
 }

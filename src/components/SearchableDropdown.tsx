@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./SearchableDropdown.scss";
-import Select from 'react-select';
 import { useNavbarSearchInput } from "../contexts/navbar-search-context";
+import { Autocomplete, TextField } from "@mui/material";
 
 interface ISearchableDropdownProps {
     options: any[];
@@ -24,40 +24,28 @@ const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdo
         }, 500);
         return () => clearTimeout(timeoutId);
     }, [debouncingInputText]);
-
-    return <Select
-        className="basic-single"
-        classNamePrefix="select"
-        classNames={{
-            control: (state) => state.isFocused ? "dropdown-control-focused" : "dropdown-control-blurred",
-            option: (state) => state.isFocused ? "dropdown-option-focused" :  "dropdown-option-blurred",
-            placeholder: _ => "dropdown-placeholder",
-            clearIndicator: _ => "dropdown-clear-indicator",
-            dropdownIndicator: _ => "dropdown-indicator",
-            singleValue: _ => "dropdown-singleValue",
-            input: _ => "dropdown-input",
-            noOptionsMessage: _ => "dropdown-noOptions",
-            menuList: _ => "dropdown-menuList",
-            loadingIndicator: _ => "dropdown-loading"
+    
+    return <Autocomplete
+        size="small"
+        classes={{
+            root: 'autoComplete-root',
+            option: 'autoComplete-option'
         }}
-        isDisabled={isLoading}
-        isLoading={isLoading}
-        isClearable={true}
-        isRtl={false}
-        isSearchable={true}
-        blurInputOnSelect
-        name="pokemon"
-        options={options}
+        className="auto_complete_input"
         inputValue={debouncingInputText}
-        onInputChange={(newValue, actionMeta) => (actionMeta.action === "input-change" || actionMeta.action === "set-value") && setDebouncingInputText(newValue)}
-        onChange={newValue => {
-            if (!newValue?.value) {
-                return;
-            }
-
-            updateInputText(newValue.label)
-            onSelection(newValue)}
-        }
+        onInputChange={(_e, newInputValue, _reason) => setDebouncingInputText(newInputValue)}
+        onChange={(_event, value, reason, _details) => reason === "selectOption" && onSelection(value)}
+        isOptionEqualToValue={(option, value) => option.label.toLowerCase().includes(value.label.toLocaleLowerCase())}
+        options={options}
+        autoComplete
+        freeSolo
+        autoHighlight
+        loading={isLoading}
+        loadingText="Loading pokémons..."
+        clearOnEscape
+        renderInput={(params) => (
+            <TextField {...params} className="auto_complete_input" label="Search…" placeholder="Pokémon name" />
+        )} 
     />
 }
 

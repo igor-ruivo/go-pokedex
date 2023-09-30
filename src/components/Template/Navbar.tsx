@@ -8,7 +8,7 @@ const Navbar = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {theme} = useTheme();
     const navigate = useNavigate();
-    const location = useLocation()
+    const {pathname} = useLocation()
 
     type EntryType = {
         value: string,
@@ -18,7 +18,7 @@ const Navbar = () => {
     return <nav className="navbar">
         <section className="navbar-section">
             <a className="navbar-logo" href="/">
-                <img className="navbar-logo-image" alt="GO-Pokedéx logo" loading="lazy" decoding="async" data-nimg="fill" src={theme === Theme.Light ? "https://i.imgur.com/4ULFMLR.png" : "https://i.imgur.com/1PR6U3Q.png"}/>  
+                <img className="navbar-logo-image" alt="GO-Pokedéx logo" loading="lazy" decoding="async" data-nimg="fill" src="https://i.imgur.com/eBscnsv.png"/>  
             </a>
             <button className="navbar-menu">
                 <img className="navbar-menu-img" data-invertondarkmode="true" alt="Menu toggle" loading="lazy" width="24" height="20" decoding="async" data-nimg="1" src={theme === Theme.Light ? "https://i.imgur.com/QeLejTs.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
@@ -28,7 +28,7 @@ const Navbar = () => {
                 <SearchableDropdown
                     options={gamemasterPokemon?.filter(p => !p.isShadow).map(p => ({value: p.speciesId, label: p.speciesName} as EntryType)) ?? []}
                     isLoading={!fetchCompleted}
-                    onSelection={(selectedEntry: EntryType) => navigate(`/pokemon/${selectedEntry.value.replace("_shadow", "")}`)}
+                    onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value.replace("_shadow", "")}`)}
                 />
             </div>
         </section>
