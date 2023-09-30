@@ -112,7 +112,8 @@
 }
 
 .stats-container {
-    display: flex;
+    display: none;
+    //display: flex;
     flex-direction: row;
     justify-content: center;
     margin-top: 24px;
@@ -128,6 +129,7 @@ table {
 }
 
 .league-ranks {
+    display: none;
     font-size: clamp(8px, calc(8px + 6 * ((100vw - 320px) / 180)), 14px);
     table-layout: fixed;
     width: calc(285px + 65 * ((100vw - 320px) / 180));
