@@ -10,7 +10,8 @@ export enum ConfigKeys {
     AttackIV,
     DefenseIV,
     HPIV,
-    LevelCap
+    LevelCap,
+    GridScrollY
 }
 
 // avoids collision with other website's cache.

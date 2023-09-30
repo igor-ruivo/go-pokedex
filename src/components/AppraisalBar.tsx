@@ -151,12 +151,12 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
             );
         }
 
-        const statBarClass = Math.ceil(value) === 15 ? 'stat-bar max' : 'stat-bar';
+        const statBarClass = value === 15 ? 'stat-bar max' : 'stat-bar';
 
         return (
             <div className="stat">
                 <h4>{Stat[stat]}
-                    <span>{Math.ceil(value)}</span>
+                    <span>{value}</span>
                 </h4>
                 <div className="appraisal-container">
                     <div className="appraisal-slider">
@@ -180,9 +180,9 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
 
     return (
         <div className="appraisal">
-            {renderStatBar(Stat.Attack, debouncingAttack)}
-            {renderStatBar(Stat.Defense, debouncingDefense)}
-            {renderStatBar(Stat.HP, debouncingHP)}
+            {renderStatBar(Stat.Attack, Math.ceil(debouncingAttack))}
+            {renderStatBar(Stat.Defense, Math.ceil(debouncingDefense))}
+            {renderStatBar(Stat.HP, Math.ceil(debouncingHP))}
         </div>
     );
 };

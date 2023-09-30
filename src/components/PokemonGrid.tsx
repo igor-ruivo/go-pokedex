@@ -18,6 +18,8 @@ interface IPokemonGridProps {
 
 const getDefaultLastShownIndex = () => +(readSessionValue(ConfigKeys.LastShownImageIndex) ?? "0");
 
+const getDefaultScrollY = () => +(readSessionValue(ConfigKeys.GridScrollY) ?? "0");
+
 const getDefaultReadyImages = (): Dictionary<string> => {
     const storedInfo = readSessionValue(ConfigKeys.BrowserCachedImages);
     if (storedInfo) {
@@ -45,6 +47,10 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     const initialPropsSet = useRef(false);
 
     useEffect(() => {
+        window.scrollTo(0, getDefaultScrollY());
+    }, []);
+
+    useEffect(() => {
         // Whenever the pokemonInfoList prop changes, let's reset the scrolling and the shown pokemon.
         if (initialPropsSet.current) {
             setLastShownIndex(0);
@@ -55,6 +61,8 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     }, [pokemonInfoList]);
 
     const handleScrollCallback = useCallback(() => {
+        writeSessionValue(ConfigKeys.GridScrollY, window.scrollY.toString());
+        
         if (lastShownIndex >= pokemonInfoList.length) {
             // Already showing all pokemon available.
             return;
