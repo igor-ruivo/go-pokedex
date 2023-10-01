@@ -5,12 +5,6 @@
         font-size: clamp(18px, 5vw, 28px);
     }
 
-    .name-types {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
-
     .img-name-container {
         display: flex;
         flex-direction: column;
@@ -19,6 +13,7 @@
     }
 
     .img-container {
+        padding-top: 12px;
         display: flex;
         align-items: center;
     }
@@ -56,13 +51,6 @@
 }
 
 @media (min-width: 501px) {
-    .name-types {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-    }
-
     .img-name-container {
         display: flex;
         flex-direction: column;
@@ -70,7 +58,8 @@
         align-items: center;
     }
 
-    .img-container {
+    .img-container { 
+        padding-top: 12px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -120,7 +109,33 @@
 }
 
 .types {
-    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.types-container{
+    position: relative;
+    flex-direction: row;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.types-bg {
+    @include themify($themes) {
+        color: themed("textColor");
+    }
+    text-shadow: 0 0 10px rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.5);
+    font-weight: 500;
+    display: block;
+    border-radius: 12px;
+    padding: 6px 12px;
 }
 
 table {

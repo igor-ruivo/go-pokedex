@@ -1,0 +1,54 @@
+@import '../styles/theme-variables.scss';
+
+:root {
+    --type-bug: #85b430;
+    --type-dark: #4f4c5f;
+    --type-dragon: #035094;
+    --type-electric: #c09b2d;
+    --type-fairy: #c966bf;
+    --type-fighting: #a02c3b;
+    --type-fire: #be7510;
+    --type-flying: #7188b0;
+    --type-ghost: #574e87;
+    --type-grass: #248b46;
+    --type-ground: #aa6641;
+    --type-ice: #6ea19f;
+    --type-normal: #727475;
+    --type-poison: #b03a9a;
+    --type-psychic: #cc595d;
+    --type-rock: #9f9052;
+    --type-steel: #548a9e;
+    --type-water: #3f7dba;
+}
+
+.pokemonheader-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    padding: 18px;
+    margin: calc(-1 * 5px);
+    margin-bottom: auto;
+    border-radius: 4px 4px 0 0;
+    text-shadow: 0 0 10px rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.5);
+    border-bottom: 1px;
+}
+
+.pokemonheader-name {
+    @include themify($themes) {
+        color: themed("textColor");
+    }
+    margin: 0;
+    padding: 0;
+    font-size: 36px;
+}
+
+@media (max-width: 500px) {
+    .pokemonheader-name {
+        font-size: 32px;
+    }
+
+    .pokemonheader-header {
+        border-radius: 0;
+    }
+}

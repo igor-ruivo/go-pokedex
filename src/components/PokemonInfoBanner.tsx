@@ -7,6 +7,7 @@ import PokemonInfoImage from "./PokemonInfo/PokemonInfoImage";
 import "./PokemonInfoBanner.scss";
 import { useEffect } from "react";
 import LeaguePanels from "./LeaguePanels";
+import PokemonHeader from "./PokemonHeader";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -61,6 +62,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
     }
 
     return <div className="content">
+        <PokemonHeader
+            pokemonName={pokemon.speciesName}
+            type1={pokemon.types[0]}
+            type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
+        />
         <div className="img-container">
             <div className="img-selected-container">
                 <PokemonInfoImage pokemon={pokemon}/* height={100} width={100}*//>
@@ -75,16 +81,16 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
                 ))}
             </div>
         </div>
-        <div className="name-types">
-            <h1>{pokemon.speciesName}</h1>
+        <div className="types-container">
             <div className="types">
-                {pokemon.types.map(t => {
-                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${t}.png`;
-                return <img className="type-icon" key={t} src={url} alt={t.toString()} width="20" height="20"/>
-                })}
+                <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[0]})`}}>
+                    {pokemon.types[0].toString().charAt(0).toUpperCase() + pokemon.types[0].toString().slice(1)}
+                </span>
+                {pokemon.types[1] && <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[1]})`}}>
+                    {pokemon.types[1].toString().charAt(0).toUpperCase() + pokemon.types[1].toString().slice(1)}
+                </span>}
             </div>
         </div>
-
         <LeaguePanels
             greatLeagueAtk={ivPercents[pokemon.speciesId].greatLeaguePerfect.A}
             greatLeagueDef={ivPercents[pokemon.speciesId].greatLeaguePerfect.D}
