@@ -12,23 +12,17 @@
         align-items: center;
     }
 
-    .img-container {
-        padding-top: 12px;
-        display: flex;
-        align-items: center;
-    }
-
     .img-family-container {
         @include themify($themes) {
-            border: 2px solid themed("bannerBorderColor");
+            border: 1px solid themed("bannerBorderColor");
         }
         border-radius: 50%;
-        width: calc(47px + 6.5 * calc(100vw - 320px) / 180);
-        height: calc(47px + 6.5 * calc(100vw - 320px) / 180);
+        width: calc(36px + 23 * calc(100vw - 320px) / 180);
+        height: calc(36px + 23 * calc(100vw - 320px) / 180);
         //box-shadow: 2px 2px 2px black;
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
-        padding: 5px;
-        margin: 2px;
+        padding: 4px;
+        margin: 1px;
     }
 
     .img-selected-container {
@@ -40,14 +34,6 @@
         //box-shadow: 2px 2px 2px black;
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
     }
-
-    .img-family {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        width: 67%;
-    }
 }
 
 @media (min-width: 501px) {
@@ -58,23 +44,17 @@
         align-items: center;
     }
 
-    .img-container { 
-        padding-top: 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
     .img-family-container {
         @include themify($themes) {
-            border: 2px solid themed("bannerBorderColor");
+            border: 1px solid themed("bannerBorderColor");
         }
         border-radius: 50%;
-        width: calc(32px + 32 * calc(100vw - 500px) / (1920 - 500));
-        height: calc(32px + 32 * calc(100vw - 500px) / (1920 - 500));
-        box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), inset 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), inset 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12), inset 0px 1px 3px 0px rgba(0,0,0,0.12);
-        padding: 8px;
-        margin: 2px;
+        width: calc(36px + 7 * calc(100vw - 320px) / 180);
+        height: calc(36px + 7 * calc(100vw - 320px) / 180);
+        //box-shadow: 2px 2px 2px black;
+        box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
+        padding: 4px;
+        margin: 1px;
     }
 
     .img-selected-container {
@@ -86,13 +66,6 @@
         height: calc(100px + 100 * calc(100vw - 500px) / (1920 - 500));
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), inset 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), inset 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12), inset 0px 1px 3px 0px rgba(0,0,0,0.12);
         padding: 16px;
-    }
-
-    .img-family {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
     }
 }
 
@@ -164,4 +137,57 @@ table {
         background: themed("contentBackground");
         border-color: themed("borderColor");
     }
+}
+
+.lvl-input-with-image {
+    position: relative;
+}
+
+.lvl-input {
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: absolute;
+}
+
+.lvl-img-container {
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    padding-top: 48px;
+}
+
+.lvl-img-selected-container {
+    width: calc(140px + 100 * calc(100vw - 500px) / (1920 - 500));
+    height: calc(140px + 100 * calc(100vw - 500px) / (1920 - 500));
+}
+
+.img-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.img-family {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.level-cp {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.base-stats {
+    font-size: x-small;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 12px;
 }

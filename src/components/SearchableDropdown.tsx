@@ -43,6 +43,7 @@ const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdo
         loading={isLoading}
         loadingText="Loading pokémons..."
         clearOnEscape
+        selectOnFocus
         renderInput={(params) => (
             <TextField {...params} className="auto_complete_input" label="Search…" placeholder="Pokémon name" />
         )} 

@@ -123,9 +123,8 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
                     <PokemonInfoBanner
                         pokemon={pokemon}
                         ivPercents={ivPercents}
-                    />
-                    <div className="content">
-                    <AppraisalBar
+                        levelCap={levelCap}
+                        setLevelCap={setLevelCap}
                         attack = {attackIV}
                         setAttack={setAttackIV}
                         defense={defenseIV}
@@ -133,11 +132,6 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
                         hp={hpIV}
                         setHP={setHPIV}
                     />
-                    <LevelSlider
-                        levelCap={levelCap}
-                        setLevelCap={setLevelCap}
-                    />
-                    </div>
                     {pokemon && <div className="tab_panel_container images_container grid_container">
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>

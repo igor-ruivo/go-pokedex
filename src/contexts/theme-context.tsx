@@ -29,7 +29,8 @@ export const ThemeProvider = (props: React.PropsWithChildren<{}>) => {
             return +cachedTheme;
         }
         const browserDefault = isBrowserDefaultLight() ? Theme.Light : Theme.Dark;
-        return browserDefault;
+        //return browserDefault;
+        return Theme.Dark; //TODO: only release light mode with ready
     }
 
     const [theme, setTheme] = useState(getDefaultTheme());

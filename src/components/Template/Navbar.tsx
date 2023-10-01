@@ -20,7 +20,7 @@ const Navbar = () => {
     const getDestination = () => {
         let destinationPath = "";
         const previousRankType = readSessionValue(ConfigKeys.LastListType);
-        if (previousRankType === null) {
+        if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master")) {
             return "/";
         }
 

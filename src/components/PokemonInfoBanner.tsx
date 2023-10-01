@@ -5,17 +5,29 @@ import Dictionary from "../utils/Dictionary";
 import { IIvPercents } from "../views/pokemon";
 import PokemonInfoImage from "./PokemonInfo/PokemonInfoImage";
 import "./PokemonInfoBanner.scss";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import LeaguePanels from "./LeaguePanels";
 import PokemonHeader from "./PokemonHeader";
+import CircularSliderInput from "./CircularSliderInput";
+import React from "react";
+import AppraisalBar from "./AppraisalBar";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
     ivPercents: Dictionary<IIvPercents>;
+    levelCap: number;
+    setLevelCap: React.Dispatch<React.SetStateAction<number>>;
+    attack: number,
+    setAttack: (_: React.SetStateAction<number>) => void,
+    defense: number,
+    setDefense: (_: React.SetStateAction<number>) => void,
+    hp: number,
+    setHP: (_: React.SetStateAction<number>) => void,
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
+const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
     const navigate = useNavigate();
+    const selectedImageRef = React.createRef<HTMLImageElement>();
     
     useEffect(() => {
         if (pokemon?.isShadow) {
@@ -60,6 +72,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
 
         return words.join(' ');
     }
+    
+    const valueToLevel = (value: number) => {
+        return value / 2 + 0.5
+    }
 
     return <div className="content">
         <PokemonHeader
@@ -67,20 +83,40 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
             type1={pokemon.types[0]}
             type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
         />
-        <div className="img-container">
-            <div className="img-selected-container">
-                <PokemonInfoImage pokemon={pokemon}/* height={100} width={100}*//>
+        <div className="lvl-input-with-image">
+            <div className="lvl-input">
+                <CircularSliderInput
+                    handleColor={getComputedStyle(document.body).getPropertyValue(`--type-${pokemon.types[0]}`)}
+                    value={levelCap}
+                    setValue={setLevelCap}
+                />
             </div>
-            <div className="img-family">
-                {familyTreeExceptSelf.map(p => (
-                    <div key = {p.speciesId} className="img-family-container">
-                        <Link to={`/pokemon/${p.speciesId}`}>
-                            <PokemonInfoImage pokemon={p}/* height={32} width={32}*//>
-                        </Link>
-                    </div>
-                ))}
+            <div className="lvl-img-container">
+                <div className="lvl-img-selected-container">
+                    <PokemonInfoImage pokemon={pokemon} ref={selectedImageRef}/* height={100} width={100}*//>
+                </div>
             </div>
         </div>
+        <span className="level-cp">
+            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
+            @ LVL {levelCap}
+        </span>
+
+        <strong className="base-stats">
+            <span>
+                {Math.round(10 * ivPercents[pokemon.speciesId].masterLeagueAttack) / 10}
+            </span>
+            <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+            <span>
+                {Math.round(10 * ivPercents[pokemon.speciesId].masterLeagueDefense) / 10}
+            </span>
+            <img src="https://i.imgur.com/D2SX4kq.png" width={14} height={14}/>
+            <span>
+                {Math.round(10 * ivPercents[pokemon.speciesId].masterLeagueHP) / 10}
+            </span>
+            <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
+        </strong>
+
         <div className="types-container">
             <div className="types">
                 <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[0]})`}}>
@@ -89,6 +125,18 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
                 {pokemon.types[1] && <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[1]})`}}>
                     {pokemon.types[1].toString().charAt(0).toUpperCase() + pokemon.types[1].toString().slice(1)}
                 </span>}
+            </div>
+        </div>
+        
+        <div className="img-container">
+            <div className="img-family">
+                {familyTreeExceptSelf.map(p => (
+                    <div key = {p.speciesId} className="img-family-container">
+                        <Link to={`/pokemon/${p.speciesId}`}>
+                            <PokemonInfoImage pokemon={p}/* height={32} width={32}*//>
+                        </Link>
+                    </div>
+                ))}
             </div>
         </div>
         <LeaguePanels
@@ -110,6 +158,15 @@ const PokemonInfoBanner = ({pokemon, ivPercents}: IPokemonInfoBanner) => {
             masterLeagueCp={ivPercents[pokemon.speciesId].masterLeagueCP}
             masterLeagueLvl={ivPercents[pokemon.speciesId].masterLeagueLvl}
             masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
+        />
+
+        <AppraisalBar
+            attack = {attack}
+            setAttack={setAttack}
+            defense={defense}
+            setDefense={setDefense}
+            hp={hp}
+            setHP={setHP}
         />
 
         <table className="league-ranks">
