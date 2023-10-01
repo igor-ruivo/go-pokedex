@@ -38,6 +38,8 @@
 
 .pvp-img {
     color: transparent;
+    width: 64px;
+    height: 64px;
 }
 
 .pvp-stats-display {
@@ -93,19 +95,43 @@
 
 @media (max-width: 500px) {
     .pvp-leagues {
-        grid-template-columns: 1fr;
+        margin: 0;
+        padding: 0;
+        grid-gap: 3px;
+        gap: 3px;
     }
 
     .pvp-stats {
         display: flex;
         flex-direction: column;
+        padding: 6px;
     }
 
     .pvp-title {
-        padding: 9px;
+        //padding: 9px;
+        h3 {
+            font-size: x-small;
+        }
     }
 
     .pvp-stats-display {
         width: 100%
+    }
+
+    .pvp-img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .pokemon-ivs-item {
+        font-size: x-small;
+    }
+
+    .pokemon-ivs-label {
+        font-size: xx-small;
+    }
+
+    .pokemon-ivs-ranked {
+        font-size: x-small;
     }
 }

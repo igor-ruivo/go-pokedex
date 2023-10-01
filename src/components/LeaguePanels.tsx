@@ -52,7 +52,7 @@ const LeaguePanels = ({
     return <div className="pvp-leagues">
         <div className="pvp-stats great">
             <section className="pvp-title">
-                <img src="https://www.stadiumgaming.gg/frontend/assets/img/great.png" alt="Great League icon" loading="lazy" width={64} height={64} decoding="async" data-nimg="1" className="pvp-img"/>
+                <img src="https://www.stadiumgaming.gg/frontend/assets/img/great.png" alt="Great League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
                 <h3>Great League</h3>
             </section>
             <section className="pvp-stats-display">
@@ -79,7 +79,7 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <strong>
+                    <strong className="pokemon-ivs-ranked">
                         {buildRankString(greatLeagueRank)}
                     </strong>
                 </section>
@@ -87,7 +87,7 @@ const LeaguePanels = ({
         </div>
         <div className="pvp-stats ultra">
             <section className="pvp-title">
-                <img src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png" alt="Ultra League icon" loading="lazy" width={64} height={64} decoding="async" data-nimg="1" className="pvp-img"/>
+                <img src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png" alt="Ultra League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
                 <h3>Ultra League</h3>
             </section>
             <section className="pvp-stats-display">
@@ -114,7 +114,7 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <strong>
+                    <strong className="pokemon-ivs-ranked">
                     {buildRankString(ultraLeagueRank)}
                     </strong>
                 </section>
@@ -122,7 +122,7 @@ const LeaguePanels = ({
         </div>
         <div className="pvp-stats master">
             <section className="pvp-title">
-                <img src="https://www.stadiumgaming.gg/frontend/assets/img/master.png" alt="Master League icon" loading="lazy" width={64} height={64} decoding="async" data-nimg="1" className="pvp-img"/>
+                <img src="https://www.stadiumgaming.gg/frontend/assets/img/master.png" alt="Master League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
                 <h3>Master League</h3>
             </section>
             <section className="pvp-stats-display">
@@ -149,7 +149,7 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <strong>
+                    <strong className="pokemon-ivs-ranked">
                     {buildRankString(masterLeagueRank)}
                     </strong>
                 </section>
