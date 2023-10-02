@@ -56,82 +56,6 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
                 break;
         }
     };
-
-    const handleMouseEnter = (stat: Stat, cellIndex: number) => {
-        const statBarElement = document.getElementsByClassName("stat-bar")[stat];
-        const cells = Array.from(statBarElement.children);
-
-        if (cellIndex === 14) {
-            cells[cellIndex].classList.add("end");
-            if (!cells[cellIndex].classList.contains("active")) {
-                statBarElement.classList.add("max-hover");
-            }
-        }
-
-        if (cellIndex < 14) {
-            statBarElement.classList.remove("max");
-        }
-
-        cells.forEach((cell, index) => {
-            if (index === cellIndex) {
-                cell.classList.add("end");
-            }
-            if (index <= cellIndex) {
-                if (index < cellIndex) {
-                    cell.classList.remove("end");
-                }
-                cell.classList.add("hover");
-            } else {
-                if (!cell.classList.contains("active")) {
-                    cell.classList.remove("hover");
-                    if (index !== 14) {
-                        cell.classList.remove("end");
-                    }
-                } else {
-                    if (cellIndex === 14) {
-                        cell.classList.add("max-hover");
-                    }
-                }
-                cell.classList.remove("active");
-            }
-        });
-    }
-    
-    const handleMouseLeave = (stat: Stat) => {
-        const statBarElement = document.getElementsByClassName("stat-bar")[stat];
-        const cells = Array.from(statBarElement.children);
-
-        let statValue = 0;
-        switch (stat) {
-            case Stat.Attack:
-                statValue = debouncingAttack;
-                break;
-            case Stat.Defense:
-                statValue = debouncingDefense;
-                break;
-            case Stat.HP:
-                statValue = debouncingHP;
-                break;
-        }
-
-        statBarElement.classList.remove("max-hover");
-
-        if (statValue === 15) {
-            statBarElement.classList.add("max");
-        }
-
-        cells.forEach((cell, index) => {
-            cell.classList.remove("max-hover");
-
-            const isActive = index < statValue;
-            const isEnd = index === statValue - 1 || index === 14;
-
-            cell.classList.toggle("active", isActive);
-            cell.classList.toggle("hover", isActive);
-            cell.classList.toggle("end", isEnd);
-        });
-    }
-
     const renderStatBar = (stat: Stat, value: number) => {
         const cells = [];
         for (let i = 0; i < 15; i++) {
@@ -145,18 +69,37 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
                     key={i}
                     className={cellClass}
                     onClick={() => handleCellClick(stat, i)}
-                    onMouseEnter={() => handleMouseEnter(stat, i)}
-                    onMouseLeave={() => handleMouseLeave(stat)}
                 ></div>
             );
         }
 
         const statBarClass = value === 15 ? 'stat-bar max' : 'stat-bar';
 
+        const setGenericStatValue = (stat: Stat, value: number) => {
+            switch (stat) {
+                case Stat.Attack:
+                    setDebouncingAttack(value);
+                    break;
+                case Stat.Defense:
+                    setDebouncingDefense(value);
+                    break;
+                case Stat.HP:
+                    setDebouncingHP(value);
+                    break;
+            }
+        }
+
         return (
             <div className="stat">
                 <h4>{Stat[stat]}
-                    <span>{value}</span>
+                    <span>
+                        {
+                            <select value={value} onChange={e => setGenericStatValue(stat, +e.target.value)} className="select-level">
+                                {Array.from({length: 16}, (_x, i) => i)
+                                .map(e => (<option key={e} value={e}>{e}</option>))}
+                            </select>
+                        }
+                    </span>
                 </h4>
                 <div className="appraisal-container">
                     <div className="appraisal-slider">

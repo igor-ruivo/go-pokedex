@@ -4,6 +4,20 @@
     position: relative;
 }
 
+.MuiSlider-root {
+    padding: 0 !important;
+    height: 100% !important;
+}
+
+.MuiSlider-thumb {
+    height: 0px !important;
+    width: 0px !important;
+    &::after {
+        height: 0px !important;
+        width: 0px !important;
+    }
+}
+
 .appraisal-slider {
     position: absolute;
     z-index: 3;
