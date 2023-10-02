@@ -102,20 +102,20 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
 
         <strong className="base-stats">
             <span>
-                {Math.round(10 * ivPercents[pokemon.speciesId].masterLeagueAttack) / 10}
+                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
             </span>
             <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
             <span>
-                {Math.round(10 * ivPercents[pokemon.speciesId].masterLeagueDefense) / 10}
+                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
             </span>
             <img src="https://i.imgur.com/D2SX4kq.png" width={14} height={14}/>
             <span>
-                {Math.round(10 * ivPercents[pokemon.speciesId].masterLeagueHP) / 10}
+                {ivPercents[pokemon.speciesId].masterLeagueHP}
             </span>
             <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
         </strong>
 
-        
+
         <span className="level-cp">
             <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
             @ LVL {<select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
