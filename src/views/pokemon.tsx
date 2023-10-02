@@ -132,7 +132,7 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
                         hp={hpIV}
                         setHP={setHPIV}
                     />
-                    {pokemon && <div className="tab_panel_container images_container grid_container">
+                    {false && pokemon && <div className="tab_panel_container images_container grid_container">
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
                                 {familyTree.map(p => (

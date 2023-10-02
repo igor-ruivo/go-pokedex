@@ -1,5 +1,23 @@
 @import '../styles/theme-variables.scss';
 
+.main-banner-content {
+    margin-top: 12px;
+    display: flex;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.banner-left-side {
+    width: 47vw;
+}
+
+.banner-right-side {
+    display: flex;
+    align-items: center;
+    width: 53vw;
+    align-self: center;
+}
+
 @media (max-width: 500px) {
     h1 {
         font-size: clamp(18px, 5vw, 28px);
@@ -56,6 +74,7 @@
     }
 
     .base-stats {
+        margin-top: 36px;
         font-size: x-small;
         display: flex;
         justify-content: center;
@@ -123,6 +142,7 @@
     }
 
     .base-stats {
+        margin-top: 36px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -135,14 +155,6 @@
 
 .stat {
     margin-right: 8px;
-}
-
-.stats-container {
-    display: none;
-    //display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 24px;
 }
 
 .types {
@@ -224,8 +236,8 @@ table {
 }
 
 .lvl-img-selected-container {
-    width: calc(140px + 100 * calc(100vw - 500px) / (1920 - 500));
-    height: calc(140px + 100 * calc(100vw - 500px) / (1920 - 500));
+    width: min(calc(140px + 100 * calc(100vw - 500px) / (1920 - 500)), (100vw - 0) / 2 * 0.5);
+    height: min(calc(140px + 100 * calc(100vw - 500px) / (1920 - 500)), (100vw - 0) / 2 * 0.5);
 }
 
 .img-container {

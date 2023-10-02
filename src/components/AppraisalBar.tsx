@@ -97,10 +97,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
                     </div>
                     <span>
                         {
-                            <select value={value} onChange={e => setGenericStatValue(stat, +e.target.value)} className="select-ivs">
-                                {Array.from({length: 16}, (_x, i) => i)
-                                .map(e => (<option key={e} value={e}>{e}</option>))}
-                            </select>
+                            value
                         }
                     </span>
                 </h4>

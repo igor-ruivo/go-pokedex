@@ -34,9 +34,8 @@
 }
 
 .appraisal {
-    margin-top: 16px;
-    margin-bottom: 32px;
-    max-width: 67%;
+    width: 100%;
+    max-width: 350px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -155,17 +154,17 @@
 
 @media (max-width: 500px) {
     .appraisal {
-        max-width: 67%;
+        width: 100%;
         margin-left: auto;
         margin-right: auto;
     }
 
     .data-grid {
-        max-width: 90%;
+        max-width: 100%;
     }
 
     .appraisal .stat {
-        max-width: 90%;
+        max-width: 100%;
     }
 
     .appraisal .stat h4 {
@@ -173,7 +172,7 @@
     }
 
     .appraisal .stat-bar .bar {
-        height: 14px;
+        height: 12px;
     }
 
     .stat-current-value {
@@ -184,15 +183,12 @@
         color-scheme: dark;
         font-size: small;
         padding-top: 1px;
-        margin-left: 4px;
         @include themify($themes) {
             background: themed("contentBackground");
             color: themed("textColor");
-    
             border: 0px;
             outline: 1px solid themed("buttonsBorderColor");
         }
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
-        margin-bottom: 6px;
     }
 }

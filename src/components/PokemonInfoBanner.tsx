@@ -84,46 +84,63 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             type1={pokemon.types[0]}
             type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
         />
-        <div className="lvl-input-with-image">
-            <div className="lvl-input">
-                <CircularSliderInput
-                    handleColor={getComputedStyle(document.body).getPropertyValue(`--type-${pokemon.types[0]}`)}
-                    value={levelCap}
-                    setValue={setLevelCap}
-                />
-            </div>
-            <div className="lvl-img-container">
-                <div className="lvl-img-selected-container">
-                    <PokemonInfoImage pokemon={pokemon} ref={selectedImageRef}/* height={100} width={100}*//>
+        <div className="main-banner-content">
+            <div className="banner-left-side">
+                <div className="lvl-input-with-image">
+                    <div className="lvl-input">
+                        <CircularSliderInput
+                            handleColor={getComputedStyle(document.body).getPropertyValue(`--type-${pokemon.types[0]}`)}
+                            value={levelCap}
+                            setValue={setLevelCap}
+                        />
+                    </div>
+                    <div className="lvl-img-container">
+                        <div className="lvl-img-selected-container">
+                            <PokemonInfoImage pokemon={pokemon} ref={selectedImageRef}/* height={100} width={100}*//>
+                        </div>
+                    </div>
                 </div>
+
+                
+            </div>
+
+            <div className="banner-right-side">
+                <AppraisalBar
+                    attack = {attack}
+                    setAttack={setAttack}
+                    defense={defense}
+                    setDefense={setDefense}
+                    hp={hp}
+                    setHP={setHP}
+                />
             </div>
         </div>
 
-        
+
 
         <strong className="base-stats">
-            <span>
-                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
-            </span>
-            <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-            <span>
-                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
-            </span>
-            <img src="https://i.imgur.com/D2SX4kq.png" width={14} height={14}/>
-            <span>
-                {ivPercents[pokemon.speciesId].masterLeagueHP}
-            </span>
-            <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
-        </strong>
+                    <span>
+                        {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
+                    </span>
+                    <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                    <span>
+                        {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
+                    </span>
+                    <img src="https://i.imgur.com/D2SX4kq.png" width={14} height={14}/>
+                    <span>
+                        {ivPercents[pokemon.speciesId].masterLeagueHP}
+                    </span>
+                    <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
+                </strong>
 
 
-        <span className="level-cp">
-            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
-            @ LVL {<select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
-                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                    .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>}
-        </span>
+                <span className="level-cp">
+                    <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
+                    @ LVL {<select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
+                            {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                        </select>}
+                </span>
 
         <div className="types-container">
             <div className="types">
@@ -166,15 +183,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             masterLeagueCp={ivPercents[pokemon.speciesId].masterLeagueCP}
             masterLeagueLvl={ivPercents[pokemon.speciesId].masterLeagueLvl}
             masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
-        />
-
-        <AppraisalBar
-            attack = {attack}
-            setAttack={setAttack}
-            defense={defense}
-            setDefense={setDefense}
-            hp={hp}
-            setHP={setHP}
         />
 
         <table className="league-ranks">
@@ -226,11 +234,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 </tr>
             </tbody>
         </table>
-        <div className="stats-container">
-            <div className="stat">Attack: {pokemon.atk}</div>
-            <div className="stat">Defense: {pokemon.def}</div>
-            <div className="stat">HP: {pokemon.hp}</div>
-        </div>
     </div>;
 }
 
