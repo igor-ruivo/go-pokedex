@@ -31,7 +31,7 @@ const CircularSliderInput = ({handleColor, value, setValue}: ICircularSliderInpu
     const computeCurrentSize = () => {
         // should follow the same formula as the corresponding image
         // calc(140px + 100 * calc(100vw - 500px) / (1920 - 500));
-        return 60 + 140 + 100 * (windowSize - 500) / (1920 - 500);
+        return 80 + 140 + 100 * (windowSize - 500) / (1920 - 500);
     }
 
     return (
