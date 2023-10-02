@@ -97,10 +97,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 </div>
             </div>
         </div>
-        <span className="level-cp">
-            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
-            @ LVL {levelCap}
-        </span>
+
+        
 
         <strong className="base-stats">
             <span>
@@ -116,6 +114,15 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             </span>
             <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
         </strong>
+
+        
+        <span className="level-cp">
+            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
+            @ LVL {<select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
+                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                    .map(e => (<option key={e} value={e}>{e}</option>))}
+                </select>}
+        </span>
 
         <div className="types-container">
             <div className="types">

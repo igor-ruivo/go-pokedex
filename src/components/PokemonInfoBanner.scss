@@ -34,6 +34,16 @@
         //box-shadow: 2px 2px 2px black;
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
     }
+
+    .select-level {
+        margin-left: 4px;
+        @include themify($themes) {
+            background: themed("contentBackground");
+            color: themed("textColor");
+            border: 0px;
+            outline: 1px solid themed("buttonsBorderColor");
+        }
+    }
 }
 
 @media (min-width: 501px) {
@@ -66,6 +76,18 @@
         height: calc(100px + 100 * calc(100vw - 500px) / (1920 - 500));
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), inset 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), inset 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12), inset 0px 1px 3px 0px rgba(0,0,0,0.12);
         padding: 16px;
+    }
+
+    .select-level {
+        font-size: small;
+        padding-top: 1px;
+        margin-left: 4px;
+        @include themify($themes) {
+            background: themed("contentBackground");
+            color: themed("textColor");
+            border: 0px;
+            outline: 1px solid themed("buttonsBorderColor");
+        }
     }
 }
 
@@ -181,6 +203,7 @@ table {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 3px;
 }
 
 .base-stats {
@@ -190,4 +213,12 @@ table {
     align-items: center;
     gap: 6px;
     padding: 3px 12px;
+}
+
+.select-level option {
+    @include themify($themes) {
+        background: themed("contentBackground");
+        color: themed("textColor");
+    }
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
