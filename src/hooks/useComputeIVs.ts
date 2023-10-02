@@ -17,7 +17,7 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV}: IUseCompu
     const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
     const [loading, setLoading] = useState(true);
     const {gamemasterPokemon} = usePokemon();
-    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
+    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
 
     useEffect(() => {
         setLoading(true);

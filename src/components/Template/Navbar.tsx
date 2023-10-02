@@ -49,9 +49,14 @@ const Navbar = () => {
             </button>
             <div className="search-wrapper">
                 <SearchableDropdown
-                    options={gamemasterPokemon?.filter(p => !p.isShadow).map(p => ({value: p.speciesId, label: p.speciesName} as EntryType)) ?? []}
+                    options={gamemasterPokemon?.filter(p => {
+                        if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master") || pathname.startsWith("/pokemon")) {
+                            return true;
+                        }
+                        return !p.isShadow;
+                    }).map(p => ({value: p.speciesId, label: p.speciesName} as EntryType)) ?? []}
                     isLoading={!fetchCompleted}
-                    onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value.replace("_shadow", "")}`)}
+                    onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}`)}
                 />
             </div>
         </section>

@@ -28,16 +28,17 @@ interface IPokemonInfoBanner {
 const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
     const navigate = useNavigate();
     const selectedImageRef = React.createRef<HTMLImageElement>();
-    
+    /*
     useEffect(() => {
         if (pokemon?.isShadow) {
             navigate(`/pokemon/${pokemon.speciesId.replace("_shadow", "")}`);
         }
     }, [pokemon]);
+    */
 
     const {gamemasterPokemon, rankLists} = usePokemon();
 
-    if (!pokemon || pokemon.isShadow || !gamemasterPokemon || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
+    if (!pokemon || /*pokemon.isShadow || */!gamemasterPokemon || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
         return <></>;
     }
 

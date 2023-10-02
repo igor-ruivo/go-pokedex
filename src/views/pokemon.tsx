@@ -98,6 +98,7 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     const isDarkMode = theme === Theme.Dark;
 
     const [ivPercents, loading] = useComputeIVs({pokemon, levelCap, attackIV, defenseIV, hpIV});
+    console.log(ivPercents);
 
     useEffect(() => {
         writeSessionValue(ConfigKeys.AttackIV, attackIV.toString());
