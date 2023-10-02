@@ -31,8 +31,11 @@
     flex-direction: column;
     align-items: center;
     gap: 6px;
-    h3 {
+    h3, h4 {
         margin: 0;
+    }
+    h4 {
+        font-size: smaller;
     }
 }
 
@@ -114,6 +117,10 @@
         //padding: 9px;
         h3 {
             font-size: x-small;
+        }
+
+        h4 {
+            font-size: xx-small;
         }
     }
 

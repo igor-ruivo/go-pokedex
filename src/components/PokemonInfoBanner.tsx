@@ -42,7 +42,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         return <></>;
     }
 
-    const familyTreeExceptSelf = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && !p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [];
+    const familyTreeExceptSelf = pokemon.familyId ? gamemasterPokemon.filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [];
     const english_ordinal_rules = new Intl.PluralRules("en", {type: "ordinal"});
     const suffixes: Dictionary<string> = {
         one: "st",
@@ -77,6 +77,44 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     const valueToLevel = (value: number) => {
         return value / 2 + 0.5
     }
+
+    let bestInFamilyForGreatLeague = pokemon;
+    let bestInFamilyForGreatLeagueRank = Number.MAX_VALUE;
+    let bestInFamilyForUltraLeague = pokemon;
+    let bestInFamilyForUltraLeagueRank = Number.MAX_VALUE;
+    let bestInFamilyForMasterLeague = pokemon;
+    let bestInFamilyForMasterLeagueRank = Number.MAX_VALUE;
+
+    const reachablePokemons: IGamemasterPokemon[] = [];
+    const queue = [pokemon];
+    while (queue.length > 0) {
+        const currentPokemon = queue.shift() as IGamemasterPokemon;
+        reachablePokemons.push(currentPokemon);
+        if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
+            continue;
+        }
+        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon.find(pk => pk.speciesId === id)).filter(pk => pk) as IGamemasterPokemon[]);
+    }
+
+    console.log(reachablePokemons.map(e => e.speciesId));
+
+    reachablePokemons.forEach(member => {
+        const rankInGreat = rankLists[0].findIndex(p => p.speciesId === member.speciesId);
+        const rankInUltra = rankLists[1].findIndex(p => p.speciesId === member.speciesId);
+        const rankInMaster = rankLists[2].findIndex(p => p.speciesId === member.speciesId);
+        if (rankInGreat !== -1 && rankInGreat < bestInFamilyForGreatLeagueRank) {
+            bestInFamilyForGreatLeagueRank = rankInGreat;
+            bestInFamilyForGreatLeague = member;
+        }
+        if (rankInUltra !== -1 && rankInUltra < bestInFamilyForUltraLeagueRank) {
+            bestInFamilyForUltraLeagueRank = rankInUltra;
+            bestInFamilyForUltraLeague = member;
+        }
+        if (rankInMaster !== -1 && rankInMaster < bestInFamilyForMasterLeagueRank) {
+            bestInFamilyForMasterLeagueRank = rankInMaster;
+            bestInFamilyForMasterLeague = member;
+        }
+    });
 
     return <div className="content">
         <PokemonHeader
@@ -165,24 +203,21 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             </div>
         </div>
         <LeaguePanels
-            greatLeagueAtk={ivPercents[pokemon.speciesId].greatLeaguePerfect.A}
-            greatLeagueDef={ivPercents[pokemon.speciesId].greatLeaguePerfect.D}
-            greatLeagueSta={ivPercents[pokemon.speciesId].greatLeaguePerfect.S}
-            greatLeagueCp={ivPercents[pokemon.speciesId].greatLeagueCP}
-            greatLeagueLvl={ivPercents[pokemon.speciesId].greatLeagueLvl}
-            greatLeagueRank={ordinal(rankLists[0].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
-            ultraLeagueAtk={ivPercents[pokemon.speciesId].ultraLeaguePerfect.A}
-            ultraLeagueDef={ivPercents[pokemon.speciesId].ultraLeaguePerfect.D}
-            ultraLeagueSta={ivPercents[pokemon.speciesId].ultraLeaguePerfect.S}
-            ultraLeagueCp={ivPercents[pokemon.speciesId].ultraLeagueCP}
-            ultraLeagueLvl={ivPercents[pokemon.speciesId].ultraLeagueLvl}
-            ultraLeagueRank={ordinal(rankLists[1].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
-            masterLeagueAtk={ivPercents[pokemon.speciesId].masterLeaguePerfect.A}
-            masterLeagueDef={ivPercents[pokemon.speciesId].masterLeaguePerfect.D}
-            masterLeagueSta={ivPercents[pokemon.speciesId].masterLeaguePerfect.S}
-            masterLeagueCp={ivPercents[pokemon.speciesId].masterLeagueCP}
-            masterLeagueLvl={ivPercents[pokemon.speciesId].masterLeagueLvl}
-            masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}
+            greatLeagueAtk={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.A}
+            greatLeagueDef={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.D}
+            greatLeagueSta={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.S}
+            greatLeagueRank={ordinal(rankLists[0].findIndex(p => p.speciesId === bestInFamilyForGreatLeague.speciesId) + 1) ?? "-"}
+            greatLeagueBestFamilyMemberName={bestInFamilyForGreatLeague.speciesName}
+            ultraLeagueAtk={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.A}
+            ultraLeagueDef={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.D}
+            ultraLeagueSta={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.S}
+            ultraLeagueRank={ordinal(rankLists[1].findIndex(p => p.speciesId === bestInFamilyForUltraLeague.speciesId) + 1) ?? "-"}
+            ultraLeagueBestFamilyMemberName={bestInFamilyForUltraLeague.speciesName}
+            masterLeagueAtk={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.A}
+            masterLeagueDef={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.D}
+            masterLeagueSta={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.S}
+            masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === bestInFamilyForMasterLeague.speciesId) + 1) ?? "-"}
+            masterLeagueBestFamilyMemberName={bestInFamilyForMasterLeague.speciesName}
         />
 
         <table className="league-ranks">
