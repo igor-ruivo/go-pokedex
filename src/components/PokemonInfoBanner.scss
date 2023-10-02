@@ -44,6 +44,22 @@
             outline: 1px solid themed("buttonsBorderColor");
         }
     }
+
+    .level-cp {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 3px;
+    }
+
+    .base-stats {
+        font-size: x-small;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 12px;
+    }
 }
 
 @media (min-width: 501px) {
@@ -88,6 +104,22 @@
             border: 0px;
             outline: 1px solid themed("buttonsBorderColor");
         }
+    }
+
+    .level-cp {
+        font-size: medium;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 3px;
+    }
+    
+    .base-stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 12px;
     }
 }
 
@@ -197,22 +229,6 @@ table {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-}
-
-.level-cp {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 3px;
-}
-
-.base-stats {
-    font-size: x-small;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 12px;
 }
 
 .select-level option {

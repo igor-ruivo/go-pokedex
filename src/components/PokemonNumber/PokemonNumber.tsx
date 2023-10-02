@@ -2,6 +2,7 @@ import { useContext } from "react";
 import "./PokemonNumber.scss";
 import { ListType } from "../../views/pokedex";
 import { usePokemon } from "../../contexts/pokemon-context";
+import Dictionary from "../../utils/Dictionary";
 
 type IPokemonNumberProps = {
     dex: number,
@@ -25,17 +26,34 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
         return urlDex;
     }
 
+    const english_ordinal_rules = new Intl.PluralRules("en", {type: "ordinal"});
+    const suffixes: Dictionary<string> = {
+        one: "st",
+        two: "nd",
+        few: "rd",
+        other: "th"
+    };
+
+    const ordinal = (number: number) => {
+        if (number < 1) {
+            return undefined;
+        }
+        const category = english_ordinal_rules.select(number);
+        const suffix = suffixes[category];
+        return number + suffix;
+    }
+
     const fetchPokemonRank = (): string => {
         const rank = rankLists[listType - 1].find(p => p.speciesId === speciesId)!.rank;
         switch (rank) {
           case 1:
-            return "🥇" + rank + "º";
+            return "🥇" + ordinal(rank);
           case 2:
-            return "🥈" + rank + "º";
+            return "🥈" + ordinal(rank);
           case 3:
-            return "🥉" + rank + "º";
+            return "🥉" + ordinal(rank);
           default:
-            return rank + "º";
+            return ordinal(rank) as string;
         }
       }
 
