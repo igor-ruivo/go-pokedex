@@ -16,7 +16,7 @@ export enum ListType {
     MASTER_LEAGUE
 }
 
-const getDefaultShowFamilyTree = () => readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
+const getDefaultShowFamilyTree = () => true;// TODO: implement toggle later readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
 
 const Pokedex = () => {
     const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
