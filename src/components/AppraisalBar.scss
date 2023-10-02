@@ -138,6 +138,21 @@
     color: #38a169
 }
 
+.select-ivs {
+    color-scheme: dark;
+    font-size: small;
+    padding-top: 1px;
+    margin-left: 4px;
+    @include themify($themes) {
+        background: themed("contentBackground");
+        color: themed("textColor");
+
+        border: 0px;
+        outline: 1px solid themed("buttonsBorderColor");
+    }
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
 @media (max-width: 500px) {
     .appraisal {
         max-width: 67%;
@@ -159,5 +174,25 @@
 
     .appraisal .stat-bar .bar {
         height: 14px;
+    }
+
+    .stat-current-value {
+        align-self: center;
+    }
+
+    .select-ivs {
+        color-scheme: dark;
+        font-size: small;
+        padding-top: 1px;
+        margin-left: 4px;
+        @include themify($themes) {
+            background: themed("contentBackground");
+            color: themed("textColor");
+    
+            border: 0px;
+            outline: 1px solid themed("buttonsBorderColor");
+        }
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+        margin-bottom: 6px;
     }
 }

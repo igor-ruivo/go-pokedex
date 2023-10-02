@@ -23,7 +23,6 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV}: IUseCompu
         setLoading(true);
         const computeIvs = async () => {
             const familyIvPercents: Dictionary<IIvPercents> = {};
-            console.log("computing ivs for " + pokemon.speciesId);
 
             familyTree.forEach(p => {
                 const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
@@ -64,7 +63,6 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV}: IUseCompu
             });
             setIvPercents(familyIvPercents);
             setLoading(false);
-            console.log("ivs ready");
         }
         computeIvs();
     }, [pokemon, levelCap, attackIV, defenseIV, hpIV]);
