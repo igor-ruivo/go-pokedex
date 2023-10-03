@@ -11,6 +11,14 @@
     text-align: center;
 }
 
+.unranked {
+    opacity: 0.67;
+}
+
+.pokemon-attack {
+    font-size: smaller;
+}
+
 .percentile {
     opacity: 0.67;
     font-size: xx-small;
@@ -112,6 +120,10 @@
         gap: 3px;
     }
 
+    .pokemon-attack {
+        font-size: xx-small;
+    }
+
     .pvp-stats {
         display: flex;
         flex-direction: column;
@@ -134,8 +146,8 @@
     }
 
     .pvp-img {
-        width: 48px;
-        height: 48px;
+        width: 24px;
+        height: 24px;
     }
 
     .pokemon-ivs-item {

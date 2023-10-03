@@ -231,6 +231,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             greatLeaguePercentile={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueRank + 1}
             greatLeagueRank={ordinal(rankLists[0].findIndex(p => p.speciesId === bestInFamilyForGreatLeague.speciesId) + 1) ?? "-"}
             greatLeagueBestFamilyMemberName={simplifyName(bestInFamilyForGreatLeague.speciesName)}
+            greatLeagueFastAttack={normalizeAttack(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[0] ?? "")}
+            greatLeagueCharged1={normalizeAttack(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[1] ?? "")}
+            greatLeagueCharged2={normalizeAttack(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[2] ?? "")}
             ultraLeagueAtk={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.A}
             ultraLeagueDef={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.D}
             ultraLeagueSta={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.S}
@@ -238,6 +241,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             ultraLeaguePercentile={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueRank + 1}
             ultraLeagueRank={ordinal(rankLists[1].findIndex(p => p.speciesId === bestInFamilyForUltraLeague.speciesId) + 1) ?? "-"}
             ultraLeagueBestFamilyMemberName={simplifyName(bestInFamilyForUltraLeague.speciesName)}
+            ultraLeagueFastAttack={normalizeAttack(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[0] ?? "")}
+            ultraLeagueCharged1={normalizeAttack(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[1] ?? "")}
+            ultraLeagueCharged2={normalizeAttack(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[2] ?? "")}
             masterLeagueAtk={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.A}
             masterLeagueDef={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.D}
             masterLeagueSta={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.S}
@@ -245,6 +251,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             masterLeaguePercentile={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueRank + 1}
             masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === bestInFamilyForMasterLeague.speciesId) + 1) ?? "-"}
             masterLeagueBestFamilyMemberName={simplifyName(bestInFamilyForMasterLeague.speciesName)}
+            masterLeagueFastAttack={normalizeAttack(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[0] ?? "")}
+            masterLeagueCharged1={normalizeAttack(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[1] ?? "")}
+            masterLeagueCharged2={normalizeAttack(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[2] ?? "")}
         />
     </div>;
 }

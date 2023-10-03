@@ -8,6 +8,9 @@ interface ILeaguePanelsProps {
     greatLeaguePercentile: number,
     greatLeagueRank: string,
     greatLeagueBestFamilyMemberName: string,
+    greatLeagueFastAttack: string,
+    greatLeagueCharged1: string,
+    greatLeagueCharged2: string,
     ultraLeagueAtk: number,
     ultraLeagueDef: number,
     ultraLeagueSta: number,
@@ -15,6 +18,9 @@ interface ILeaguePanelsProps {
     ultraLeagueBestFamilyMemberName: string,
     ultraLeaguePercent: number,
     ultraLeaguePercentile: number,
+    ultraLeagueFastAttack: string,
+    ultraLeagueCharged1: string,
+    ultraLeagueCharged2: string,
     masterLeagueAtk: number,
     masterLeagueDef: number,
     masterLeagueSta: number,
@@ -22,6 +28,9 @@ interface ILeaguePanelsProps {
     masterLeagueBestFamilyMemberName: string,
     masterLeaguePercent: number,
     masterLeaguePercentile: number,
+    masterLeagueFastAttack: string,
+    masterLeagueCharged1: string,
+    masterLeagueCharged2: string,
 }
 
 const LeaguePanels = ({
@@ -32,6 +41,9 @@ const LeaguePanels = ({
     greatLeaguePercentile,
     greatLeagueRank,
     greatLeagueBestFamilyMemberName,
+    greatLeagueFastAttack,
+    greatLeagueCharged1,
+    greatLeagueCharged2,
     ultraLeagueAtk,
     ultraLeagueDef,
     ultraLeagueSta,
@@ -39,13 +51,19 @@ const LeaguePanels = ({
     ultraLeaguePercentile,
     ultraLeagueRank,
     ultraLeagueBestFamilyMemberName,
+    ultraLeagueFastAttack,
+    ultraLeagueCharged1,
+    ultraLeagueCharged2,
     masterLeagueAtk,
     masterLeagueDef,
     masterLeagueSta,
     masterLeaguePercent,
     masterLeaguePercentile,
     masterLeagueRank,
-    masterLeagueBestFamilyMemberName
+    masterLeagueBestFamilyMemberName,
+    masterLeagueFastAttack,
+    masterLeagueCharged1,
+    masterLeagueCharged2
 }: ILeaguePanelsProps) => {
 
     const buildRankString = (rank: string) => {
@@ -55,6 +73,9 @@ const LeaguePanels = ({
 
         return `Ranked ${rank}`;
     }
+
+    const greatLeagueRankClass = (rank: string) => "pokemon-ivs-ranked" + (rank === "-" ? " unranked" : "");
+
     return <div className="pvp-leagues">
         <div className="pvp-stats great">
             <section className="pvp-title">
@@ -88,10 +109,15 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <strong className="pokemon-ivs-ranked">
+                    <strong className={greatLeagueRankClass(greatLeagueRank)}>
                         {buildRankString(greatLeagueRank)}
                     </strong>
                 </section>
+                <strong className="pokemon-attack">
+                    <div>{greatLeagueFastAttack}</div>
+                    <div>{greatLeagueCharged1}</div>
+                    <div>{greatLeagueCharged2}</div>
+                </strong>
             </section>
         </div>
         <div className="pvp-stats ultra">
@@ -126,9 +152,16 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <strong className="pokemon-ivs-ranked">
-                    {buildRankString(ultraLeagueRank)}
+                    <strong className={greatLeagueRankClass(ultraLeagueRank)}>
+                        {buildRankString(ultraLeagueRank)}
                     </strong>
+                </section>
+                <section>
+                <strong className="pokemon-attack">
+                    <div>{ultraLeagueFastAttack}</div>
+                    <div>{ultraLeagueCharged1}</div>
+                    <div>{ultraLeagueCharged2}</div>
+                </strong>
                 </section>
             </section>
         </div>
@@ -164,10 +197,15 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <strong className="pokemon-ivs-ranked">
-                    {buildRankString(masterLeagueRank)}
+                    <strong className={greatLeagueRankClass(masterLeagueRank)}>
+                        {buildRankString(masterLeagueRank)}
                     </strong>
                 </section>
+                <strong className="pokemon-attack">
+                    <div>{masterLeagueFastAttack}</div>
+                    <div>{masterLeagueCharged1}</div>
+                    <div>{masterLeagueCharged2}</div>
+                </strong>
             </section>
         </div>
     </div>;
