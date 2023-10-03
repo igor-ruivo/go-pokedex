@@ -1,14 +1,26 @@
 import './CircularSliderInput.scss';
 import CircularSlider from 'react-circular-slider-svg';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 interface ICircularSliderInput {
     handleColor: string;
+    displayValue: number;
+    setDisplayValue: React.Dispatch<React.SetStateAction<number>>;
     value: number;
     setValue: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const CircularSliderInput = ({handleColor, value, setValue}: ICircularSliderInput) => {
+const CircularSliderInput = ({handleColor, displayValue, setDisplayValue, value, setValue}: ICircularSliderInput) => {
+    const [debouncingValue, setDebouncingValue] = useState(value);
+
+    useEffect(() => {
+        setDisplayValue(debouncingValue);
+        const timeoutId = setTimeout(() => {
+            setValue(debouncingValue);
+        }, 200);
+        return () => clearTimeout(timeoutId);
+    }, [debouncingValue]);
+
     const levelToValue = (level: number) => {
         return (level - 0.5) * 2;
     }
@@ -41,8 +53,8 @@ const CircularSliderInput = ({handleColor, value, setValue}: ICircularSliderInpu
         <CircularSlider
             size={computeCurrentSize()}
             handle1={{
-                value: levelToValue(value),
-                onChange: v => setValue(valueToLevel(Math.round(v)))
+                value: levelToValue(displayValue),
+                onChange: v => setDebouncingValue(valueToLevel(Math.round(v)))
             }}
             minValue={1}
             maxValue={101}

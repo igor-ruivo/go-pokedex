@@ -17,15 +17,16 @@ interface IPokemonInfoBanner {
     ivPercents: Dictionary<IIvPercents>;
     levelCap: number;
     setLevelCap: React.Dispatch<React.SetStateAction<number>>;
-    attack: number,
-    setAttack: (_: React.SetStateAction<number>) => void,
-    defense: number,
-    setDefense: (_: React.SetStateAction<number>) => void,
-    hp: number,
-    setHP: (_: React.SetStateAction<number>) => void,
+    attack: number;
+    setAttack: (_: React.SetStateAction<number>) => void;
+    defense: number;
+    setDefense: (_: React.SetStateAction<number>) => void;
+    hp: number;
+    setHP: (_: React.SetStateAction<number>) => void;
 }
 
 const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
+    const [displayLevel, setDisplayLevel] = useState(levelCap);
     const navigate = useNavigate();
     const selectedImageRef = React.createRef<HTMLImageElement>();
     /*
@@ -116,6 +117,24 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         }
     });
 
+    const simplifyName = (name: string) => {
+        return name
+            /*.replace("(Alolan)", "(A)")
+            .replace("(Galarian)", "(G)")
+            .replace("(Mega)", "(M)")
+            .replace("(Shadow)", "(S)")
+            .replace("(Complete Forme)", "(CF)")
+            .replace("(50% Forme)", "(50% F)")
+            .replace("(10% Forme)", "(10% F)")
+            .replace("(Hisuian)", "(H)")
+            .replace("(Standard)", "(Std.)")
+            .replace("(Incarnate)", "(Inc.)")
+            .replace("(Average)", "(Avg.)")
+            .replace("Male", "♂")
+            .replace("Female", "♀")*/;
+    }
+
+
     return <div className="content">
         <PokemonHeader
             pokemonName={pokemon.speciesName}
@@ -129,6 +148,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                         <CircularSliderInput
                             handleColor={getComputedStyle(document.body).getPropertyValue(`--type-${pokemon.types[0]}`)}
                             value={levelCap}
+                            displayValue={displayLevel}
+                            setDisplayValue={setDisplayLevel}
                             setValue={setLevelCap}
                         />
                     </div>
@@ -174,7 +195,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
 
                 <span className="level-cp">
                     <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
-                    @ LVL {<select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
+                    @ LVL {<select value={displayLevel} onChange={e => {setLevelCap(+e.target.value); setDisplayLevel(+e.target.value);}} className="select-level">
                             {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                             .map(e => (<option key={e} value={e}>{e}</option>))}
                         </select>}
@@ -206,69 +227,25 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             greatLeagueAtk={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.A}
             greatLeagueDef={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.D}
             greatLeagueSta={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.S}
+            greatLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
+            greatLeaguePercentile={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueRank + 1}
             greatLeagueRank={ordinal(rankLists[0].findIndex(p => p.speciesId === bestInFamilyForGreatLeague.speciesId) + 1) ?? "-"}
-            greatLeagueBestFamilyMemberName={bestInFamilyForGreatLeague.speciesName}
+            greatLeagueBestFamilyMemberName={simplifyName(bestInFamilyForGreatLeague.speciesName)}
             ultraLeagueAtk={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.A}
             ultraLeagueDef={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.D}
             ultraLeagueSta={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.S}
+            ultraLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
+            ultraLeaguePercentile={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueRank + 1}
             ultraLeagueRank={ordinal(rankLists[1].findIndex(p => p.speciesId === bestInFamilyForUltraLeague.speciesId) + 1) ?? "-"}
-            ultraLeagueBestFamilyMemberName={bestInFamilyForUltraLeague.speciesName}
+            ultraLeagueBestFamilyMemberName={simplifyName(bestInFamilyForUltraLeague.speciesName)}
             masterLeagueAtk={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.A}
             masterLeagueDef={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.D}
             masterLeagueSta={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.S}
+            masterLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
+            masterLeaguePercentile={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueRank + 1}
             masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === bestInFamilyForMasterLeague.speciesId) + 1) ?? "-"}
-            masterLeagueBestFamilyMemberName={bestInFamilyForMasterLeague.speciesName}
+            masterLeagueBestFamilyMemberName={simplifyName(bestInFamilyForMasterLeague.speciesName)}
         />
-
-        <table className="league-ranks">
-            <tbody>
-                <tr>
-                    <th></th>
-                    <th><img height="16" width="16" src="https://www.stadiumgaming.gg/frontend/assets/img/great.png"/></th>
-                    <th><img height="16" width="16" src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png"/></th>
-                    <th><img height="16" width="16" src="https://www.stadiumgaming.gg/frontend/assets/img/master.png"/></th>
-                </tr>
-                <tr>
-                    <td>Rank</td>
-                    <td>{ordinal(rankLists[0].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}</td>
-                    <td>{ordinal(rankLists[1].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}</td>
-                    <td>{ordinal(rankLists[2].findIndex(p => p.speciesId === pokemon.speciesId) + 1) ?? "-"}</td>
-                </tr>
-                <tr>
-                    <td>Perfect IVs</td>
-                    <td>{ivPercents[pokemon.speciesId].greatLeaguePerfect.A + " / " + ivPercents[pokemon.speciesId].greatLeaguePerfect.D + " / " + ivPercents[pokemon.speciesId].greatLeaguePerfect.S}</td>
-                    <td>{ivPercents[pokemon.speciesId].ultraLeaguePerfect.A + " / " + ivPercents[pokemon.speciesId].ultraLeaguePerfect.D + " / " + ivPercents[pokemon.speciesId].ultraLeaguePerfect.S}</td>
-                    <td>{ivPercents[pokemon.speciesId].masterLeaguePerfect.A + " / " + ivPercents[pokemon.speciesId].masterLeaguePerfect.D + " / " + ivPercents[pokemon.speciesId].masterLeaguePerfect.S}</td>
-                </tr>
-            </tbody>
-
-            <tbody>
-                <tr>
-                    <th>-</th>
-                    <th>-</th>
-                    <th>-</th>
-                    <th>-</th>
-                </tr>
-                <tr>
-                    <td>Fast Atk</td>
-                    <td>{normalizeAttack(rankLists[0].find(p => p.speciesId === pokemon.speciesId)?.moveset[0] ?? "")}</td>
-                    <td>{normalizeAttack(rankLists[1].find(p => p.speciesId === pokemon.speciesId)?.moveset[0] ?? "")}</td>
-                    <td>{normalizeAttack(rankLists[2].find(p => p.speciesId === pokemon.speciesId)?.moveset[0] ?? "")}</td>
-                </tr>
-                <tr>
-                    <td>Charged #1</td>
-                    <td>{normalizeAttack(rankLists[0].find(p => p.speciesId === pokemon.speciesId)?.moveset[1] ?? "")}</td>
-                    <td>{normalizeAttack(rankLists[1].find(p => p.speciesId === pokemon.speciesId)?.moveset[1] ?? "")}</td>
-                    <td>{normalizeAttack(rankLists[2].find(p => p.speciesId === pokemon.speciesId)?.moveset[1] ?? "")}</td>
-                </tr>
-                <tr>
-                    <td>Charged #2</td>
-                    <td>{normalizeAttack(rankLists[0].find(p => p.speciesId === pokemon.speciesId)?.moveset[2] ?? "")}</td>
-                    <td>{normalizeAttack(rankLists[1].find(p => p.speciesId === pokemon.speciesId)?.moveset[2] ?? "")}</td>
-                    <td>{normalizeAttack(rankLists[2].find(p => p.speciesId === pokemon.speciesId)?.moveset[2] ?? "")}</td>
-                </tr>
-            </tbody>
-        </table>
     </div>;
 }
 

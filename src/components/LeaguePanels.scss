@@ -11,6 +11,11 @@
     text-align: center;
 }
 
+.percentile {
+    opacity: 0.67;
+    font-size: xx-small;
+}
+
 .pvp-stats {
     @include themify($themes) {
         border: 1px solid themed("buttonsBorderColor");
@@ -35,7 +40,7 @@
         margin: 0;
     }
     h4 {
-        font-size: smaller;
+        font-size: xx-small;
     }
 }
 
@@ -120,7 +125,7 @@
         }
 
         h4 {
-            font-size: xx-small;
+            font-size: clamp(6.167px, 1.72vw, 9px);
         }
     }
 

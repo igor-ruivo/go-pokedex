@@ -4,6 +4,8 @@ interface ILeaguePanelsProps {
     greatLeagueAtk: number,
     greatLeagueDef: number,
     greatLeagueSta: number,
+    greatLeaguePercent: number,
+    greatLeaguePercentile: number,
     greatLeagueRank: string,
     greatLeagueBestFamilyMemberName: string,
     ultraLeagueAtk: number,
@@ -11,27 +13,37 @@ interface ILeaguePanelsProps {
     ultraLeagueSta: number,
     ultraLeagueRank: string,
     ultraLeagueBestFamilyMemberName: string,
+    ultraLeaguePercent: number,
+    ultraLeaguePercentile: number,
     masterLeagueAtk: number,
     masterLeagueDef: number,
     masterLeagueSta: number,
     masterLeagueRank: string
     masterLeagueBestFamilyMemberName: string,
+    masterLeaguePercent: number,
+    masterLeaguePercentile: number,
 }
 
 const LeaguePanels = ({
     greatLeagueAtk,
     greatLeagueDef,
     greatLeagueSta,
+    greatLeaguePercent,
+    greatLeaguePercentile,
     greatLeagueRank,
     greatLeagueBestFamilyMemberName,
     ultraLeagueAtk,
     ultraLeagueDef,
     ultraLeagueSta,
+    ultraLeaguePercent,
+    ultraLeaguePercentile,
     ultraLeagueRank,
     ultraLeagueBestFamilyMemberName,
     masterLeagueAtk,
     masterLeagueDef,
     masterLeagueSta,
+    masterLeaguePercent,
+    masterLeaguePercentile,
     masterLeagueRank,
     masterLeagueBestFamilyMemberName
 }: ILeaguePanelsProps) => {
@@ -47,7 +59,9 @@ const LeaguePanels = ({
         <div className="pvp-stats great">
             <section className="pvp-title">
                 <img src="https://www.stadiumgaming.gg/frontend/assets/img/great.png" alt="Great League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
-                <h3>Great League</h3>
+                <h3>
+                    {greatLeaguePercent}% <span className="percentile">(#{greatLeaguePercentile})</span>
+                </h3>
                 {greatLeagueBestFamilyMemberName && <h4>({greatLeagueBestFamilyMemberName})</h4>}
             </section>
             <section className="pvp-stats-display">
@@ -83,7 +97,9 @@ const LeaguePanels = ({
         <div className="pvp-stats ultra">
             <section className="pvp-title">
                 <img src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png" alt="Ultra League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
-                <h3>Ultra League</h3>
+                <h3>
+                    {ultraLeaguePercent}% <span className="percentile">(#{ultraLeaguePercentile})</span>
+                </h3>
                 {ultraLeagueBestFamilyMemberName && <h4>({ultraLeagueBestFamilyMemberName})</h4>}
             </section>
             <section className="pvp-stats-display">
@@ -119,7 +135,9 @@ const LeaguePanels = ({
         <div className="pvp-stats master">
             <section className="pvp-title">
                 <img src="https://www.stadiumgaming.gg/frontend/assets/img/master.png" alt="Master League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
-                <h3>Master League</h3>
+                <h3>
+                    {masterLeaguePercent}% <span className="percentile">(#{masterLeaguePercentile})</span>
+                </h3>
                 {masterLeagueBestFamilyMemberName && <h4>({masterLeagueBestFamilyMemberName})</h4>}
             </section>
             <section className="pvp-stats-display">
