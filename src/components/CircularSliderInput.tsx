@@ -45,7 +45,6 @@ const CircularSliderInput = ({handleColor, displayValue, setDisplayValue, value,
         // calc(140px + 100 * calc(100vw - 500px) / (1920 - 500));
         //const calc = Math.min(80 + 140 + 100 * (windowSize - 500) / (1920 - 500), ((windowSize - 0) / 2));
         const calc = Math.min(275, (11 / 7) * Math.min(140 + 100 * (windowSize - 500) / (1920 - 500), (windowSize - 0) / 2 * 0.6));
-        console.log(calc);
         return calc; //subtracting padding
     }
 

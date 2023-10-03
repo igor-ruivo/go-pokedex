@@ -1,4 +1,5 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
+import { IMove } from "../DTOs/IMove";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { buildPokemonImageUrl } from "./Resources";
@@ -108,6 +109,18 @@ export const mapRankedPokemon: (data: any) => IRankedPokemon[] = (data: any) => 
                 attacker: pokemon.scores[4],
                 score: pokemon.score,
                 rank: index + 1
+            }
+        }
+    );
+}
+
+export const mapMoves: (data: any) => IMove[] = (data: any) => {
+    return (Array.from(data) as any[])
+        .map(move => {
+            return {
+                moveId: move.moveId,
+                name: move.name,
+                type: move.type
             }
         }
     );

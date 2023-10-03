@@ -9,8 +9,14 @@ interface ILeaguePanelsProps {
     greatLeagueRank: string,
     greatLeagueBestFamilyMemberName: string,
     greatLeagueFastAttack: string,
+    greatLeagueFastAttackIsLegacy: boolean,
+    greatLeagueFastAttackType: string,
     greatLeagueCharged1: string,
+    greatLeagueCharged1IsLegacy: boolean,
+    greatLeagueCharged1Type: string,
     greatLeagueCharged2: string,
+    greatLeagueCharged2IsLegacy: boolean,
+    greatLeagueCharged2Type: string,
     ultraLeagueAtk: number,
     ultraLeagueDef: number,
     ultraLeagueSta: number,
@@ -19,8 +25,14 @@ interface ILeaguePanelsProps {
     ultraLeaguePercent: number,
     ultraLeaguePercentile: number,
     ultraLeagueFastAttack: string,
+    ultraLeagueFastAttackIsLegacy: boolean,
+    ultraLeagueFastAttackType: string,
     ultraLeagueCharged1: string,
+    ultraLeagueCharged1IsLegacy: boolean,
+    ultraLeagueCharged1Type: string,
     ultraLeagueCharged2: string,
+    ultraLeagueCharged2IsLegacy: boolean,
+    ultraLeagueCharged2Type: string,
     masterLeagueAtk: number,
     masterLeagueDef: number,
     masterLeagueSta: number,
@@ -29,8 +41,14 @@ interface ILeaguePanelsProps {
     masterLeaguePercent: number,
     masterLeaguePercentile: number,
     masterLeagueFastAttack: string,
+    masterLeagueFastAttackIsLegacy: boolean,
+    masterLeagueFastAttackType: string,
     masterLeagueCharged1: string,
+    masterLeagueCharged1IsLegacy: boolean,
+    masterLeagueCharged1Type: string,
     masterLeagueCharged2: string,
+    masterLeagueCharged2IsLegacy: boolean,
+    masterLeagueCharged2Type: string,
 }
 
 const LeaguePanels = ({
@@ -42,8 +60,14 @@ const LeaguePanels = ({
     greatLeagueRank,
     greatLeagueBestFamilyMemberName,
     greatLeagueFastAttack,
+    greatLeagueFastAttackIsLegacy,
+    greatLeagueFastAttackType,
     greatLeagueCharged1,
+    greatLeagueCharged1IsLegacy,
+    greatLeagueCharged1Type,
     greatLeagueCharged2,
+    greatLeagueCharged2IsLegacy,
+    greatLeagueCharged2Type,
     ultraLeagueAtk,
     ultraLeagueDef,
     ultraLeagueSta,
@@ -52,8 +76,14 @@ const LeaguePanels = ({
     ultraLeagueRank,
     ultraLeagueBestFamilyMemberName,
     ultraLeagueFastAttack,
+    ultraLeagueFastAttackIsLegacy,
+    ultraLeagueFastAttackType,
     ultraLeagueCharged1,
+    ultraLeagueCharged1IsLegacy,
+    ultraLeagueCharged1Type,
     ultraLeagueCharged2,
+    ultraLeagueCharged2IsLegacy,
+    ultraLeagueCharged2Type,
     masterLeagueAtk,
     masterLeagueDef,
     masterLeagueSta,
@@ -62,8 +92,14 @@ const LeaguePanels = ({
     masterLeagueRank,
     masterLeagueBestFamilyMemberName,
     masterLeagueFastAttack,
+    masterLeagueFastAttackIsLegacy,
+    masterLeagueFastAttackType,
     masterLeagueCharged1,
-    masterLeagueCharged2
+    masterLeagueCharged1IsLegacy,
+    masterLeagueCharged1Type,
+    masterLeagueCharged2,
+    masterLeagueCharged2IsLegacy,
+    masterLeagueCharged2Type
 }: ILeaguePanelsProps) => {
 
     const buildRankString = (rank: string) => {
@@ -75,6 +111,16 @@ const LeaguePanels = ({
     }
 
     const greatLeagueRankClass = (rank: string) => "pokemon-ivs-ranked" + (rank === "-" ? " unranked" : "");
+
+    const greatLeagueFastAttackUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueFastAttackType}.png`;
+    const greatLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueCharged1Type}.png`;
+    const greatLeagueCharged2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueCharged2Type}.png`;
+    const ultraLeagueFastAttackUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${ultraLeagueFastAttackType}.png`;
+    const ultraLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${ultraLeagueCharged1Type}.png`;
+    const ultraLeagueCharged2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${ultraLeagueCharged2Type}.png`;
+    const masterLeagueFastAttackUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueFastAttackType}.png`;
+    const masterLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueCharged1Type}.png`;
+    const masterLeagueCharged2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueCharged2Type}.png`;
 
     return <div className="pvp-leagues">
         <div className="pvp-stats great">
@@ -114,9 +160,9 @@ const LeaguePanels = ({
                     </strong>
                 </section>
                 <strong className="pokemon-attack">
-                    <div>{greatLeagueFastAttack}</div>
-                    <div>{greatLeagueCharged1}</div>
-                    <div>{greatLeagueCharged2}</div>
+                    <div className="type-attack">{greatLeagueFastAttack && <img src={greatLeagueFastAttackUrl}/>}{greatLeagueFastAttack}{greatLeagueFastAttackIsLegacy && "*"}</div>
+                    <div className="type-attack">{greatLeagueCharged1 && <img src={greatLeagueCharged1Url}/>}{greatLeagueCharged1}{greatLeagueCharged1IsLegacy && "*"}</div>
+                    <div className="type-attack">{greatLeagueCharged2 && <img src={greatLeagueCharged2Url}/>}{greatLeagueCharged2}{greatLeagueCharged2IsLegacy && "*"}</div>
                 </strong>
             </section>
         </div>
@@ -158,9 +204,9 @@ const LeaguePanels = ({
                 </section>
                 <section>
                 <strong className="pokemon-attack">
-                    <div>{ultraLeagueFastAttack}</div>
-                    <div>{ultraLeagueCharged1}</div>
-                    <div>{ultraLeagueCharged2}</div>
+                    <div className="type-attack">{ultraLeagueFastAttack && <img src={ultraLeagueFastAttackUrl}/>}{ultraLeagueFastAttack}{ultraLeagueFastAttackIsLegacy && "*"}</div>
+                    <div className="type-attack">{ultraLeagueCharged1 && <img src={ultraLeagueCharged1Url}/>}{ultraLeagueCharged1}{ultraLeagueCharged1IsLegacy && "*"}</div>
+                    <div className="type-attack">{ultraLeagueCharged2 && <img src={ultraLeagueCharged2Url}/>}{ultraLeagueCharged2}{ultraLeagueCharged2IsLegacy && "*"}</div>
                 </strong>
                 </section>
             </section>
@@ -202,9 +248,9 @@ const LeaguePanels = ({
                     </strong>
                 </section>
                 <strong className="pokemon-attack">
-                    <div>{masterLeagueFastAttack}</div>
-                    <div>{masterLeagueCharged1}</div>
-                    <div>{masterLeagueCharged2}</div>
+                    <div className="type-attack">{masterLeagueFastAttack && <img src={masterLeagueFastAttackUrl}/>}{masterLeagueFastAttack}{masterLeagueFastAttackIsLegacy && "*"}</div>
+                    <div className="type-attack">{masterLeagueCharged1 && <img src={masterLeagueCharged1Url}/>}{masterLeagueCharged1}{masterLeagueCharged1IsLegacy && "*"}</div>
+                    <div className="type-attack">{masterLeagueCharged2 && <img src={masterLeagueCharged2Url}/>}{masterLeagueCharged2}{masterLeagueCharged2IsLegacy && "*"}</div>
                 </strong>
             </section>
         </div>
