@@ -17,14 +17,24 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV}: IUseCompu
     const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
     const [loading, setLoading] = useState(true);
     const {gamemasterPokemon} = usePokemon();
-    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
 
+    const reachablePokemons: IGamemasterPokemon[] = [];
+    const queue = [pokemon];
+    while (queue.length > 0) {
+        const currentPokemon = queue.shift() as IGamemasterPokemon;
+        reachablePokemons.push(currentPokemon);
+        if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
+            continue;
+        }
+        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon?.find(pk => pk.speciesId === id)).filter(pk => pk) as IGamemasterPokemon[]);
+    }
+    
     useEffect(() => {
         setLoading(true);
         const computeIvs = async () => {
             const familyIvPercents: Dictionary<IIvPercents> = {};
 
-            familyTree.forEach(p => {
+            reachablePokemons.forEach(p => {
                 const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
                 const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500, levelCap);
                 const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE, levelCap);

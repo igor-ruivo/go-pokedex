@@ -7,13 +7,6 @@
     margin-right: -5px;
 }
 
-.img-family {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
 .lvl-img-container {
     pointer-events: none;
     display: flex;
@@ -35,10 +28,6 @@
 }
 
 @media (max-width: 500px) {
-    .img-family {
-        margin-left: 15%;
-        margin-right: 15%;
-    }
 
     .main-banner-content {
         margin-top: 0px;
@@ -267,6 +256,13 @@ table {
 .img-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
+}
+
+.img-family {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
 }
 

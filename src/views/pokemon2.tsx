@@ -3,9 +3,17 @@ import './pokemon.scss';
 import '../components/PokemonImage.css';
 import { useParams } from 'react-router-dom';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { styled } from '@mui/material/styles';
+import AppraisalBar from '../components/AppraisalBar';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
+import PokemonInfoCard from '../components/PokemonInfo/PokemonInfoCard';
+import { Theme, useTheme } from '../contexts/theme-context';
 import { usePokemon } from '../contexts/pokemon-context';
+import LevelSlider from '../components/LevelSlider';
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from '../utils/persistent-configs-handler';
-import PokemonInfoBanner from '../components/PokemonInfoBanner';
+import PokemonInfoBanner2 from '../components/PokemonInfoBanner2';
 import LoadingRenderer from '../components/LoadingRenderer';
 import useComputeIVs from '../hooks/useComputeIVs';
 
@@ -85,6 +93,10 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     const [hpIV, setHPIV] = useState(parseSessionCachedNumberValue(ConfigKeys.HPIV, 0));
     const [levelCap, setLevelCap] = useState<number>(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
 
+    const {gamemasterPokemon} = usePokemon();
+    const {theme} = useTheme();
+    const isDarkMode = theme === Theme.Dark;
+
     const [ivPercents, loading] = useComputeIVs({pokemon, levelCap, attackIV, defenseIV, hpIV});
 
     useEffect(() => {
@@ -94,11 +106,21 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
         writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
     }, [attackIV, defenseIV, hpIV, levelCap]);
     
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: isDarkMode ? '#24292f' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    }));
+
+    const familyTree = !gamemasterPokemon ? [] : pokemon.familyId ? gamemasterPokemon.filter(p => p.familyId === pokemon.familyId && !p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [pokemon];
+    
     return (
         <div className="pokemon-content">
             <LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
                 <>
-                    <PokemonInfoBanner
+                    <PokemonInfoBanner2
                         pokemon={pokemon}
                         ivPercents={ivPercents}
                         levelCap={levelCap}
@@ -110,6 +132,19 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
                         hp={hpIV}
                         setHP={setHPIV}
                     />
+                    {false && pokemon && <div className="tab_panel_container images_container grid_container">
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
+                                {familyTree.map(p => (
+                                    <Grid xs={12} sm={12} md={12} key={p.speciesId} className="grid">
+                                        <Item>
+                                            <PokemonInfoCard pokemon={p} ivPercents={ivPercents[p.speciesId]} />
+                                        </Item>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
+                    </div>}
                 </>
             </LoadingRenderer>
         </div>

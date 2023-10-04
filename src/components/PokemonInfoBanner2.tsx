@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { usePokemon } from "../contexts/pokemon-context";
 import Dictionary from "../utils/Dictionary";
 import { IIvPercents } from "../views/pokemon";
 import PokemonInfoImage from "./PokemonInfo/PokemonInfoImage";
-import "./PokemonInfoBanner.scss";
-import { useState } from "react";
+import "./PokemonInfoBanner2.scss";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LeaguePanels from "./LeaguePanels";
 import PokemonHeader from "./PokemonHeader";
 import CircularSliderInput from "./CircularSliderInput";
@@ -25,17 +25,25 @@ interface IPokemonInfoBanner {
     setHP: (_: React.SetStateAction<number>) => void;
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
+const PokemonInfoBanner2 = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
+    const navigate = useNavigate();
     const selectedImageRef = React.createRef<HTMLImageElement>();
+    /*
+    useEffect(() => {
+        if (pokemon?.isShadow) {
+            navigate(`/pokemon/${pokemon.speciesId.replace("_shadow", "")}`);
+        }
+    }, [pokemon]);
+    */
 
     const {gamemasterPokemon, rankLists, moves} = usePokemon();
 
-    if (!pokemon || !gamemasterPokemon || !moves || moves.length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
+    if (!pokemon || /*pokemon.isShadow || */!gamemasterPokemon || !moves || moves.length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
         return <></>;
     }
 
-    const familyTreeExceptSelf = new Set(pokemon.familyId ? gamemasterPokemon.filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow) : []);
+    const familyTreeExceptSelf = pokemon.familyId ? gamemasterPokemon.filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp) : [];
     const english_ordinal_rules = new Intl.PluralRules("en", {type: "ordinal"});
     const suffixes: Dictionary<string> = {
         one: "st",
@@ -51,6 +59,20 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         const category = english_ordinal_rules.select(number);
         const suffix = suffixes[category];
         return number + suffix;
+    }
+
+    const normalizeAttack = (attack: string) => {
+        if (!attack) {
+            return "";
+        }
+        
+        const words = attack.split("_");
+
+        for (let i = 0; i < words.length; i++) {
+            words[i] = words[i][0].toLocaleUpperCase() + words[i].substring(1).toLocaleLowerCase();
+        }
+
+        return words.join(' ');
     }
     
     const valueToLevel = (value: number) => {
@@ -76,7 +98,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     }
 
     reachablePokemons.forEach(member => {
-        familyTreeExceptSelf.add(member);
         const rankInGreat = rankLists[0].findIndex(p => p.speciesId === member.speciesId);
         const rankInUltra = rankLists[1].findIndex(p => p.speciesId === member.speciesId);
         const rankInMaster = rankLists[2].findIndex(p => p.speciesId === member.speciesId);
@@ -111,6 +132,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             .replace("Female", "♀");
     }
 
+    console.log(selectedImageRef.current?.getBoundingClientRect().width);
+
     return <div className="content">
         <PokemonHeader
             pokemonName={pokemon.speciesName}
@@ -131,11 +154,14 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     </div>
                     <div className="lvl-img-container">
                         <div className="lvl-img-selected-container">
-                            <PokemonInfoImage pokemon={pokemon} ref={selectedImageRef}/>
+                            <PokemonInfoImage pokemon={pokemon} ref={selectedImageRef}/* height={100} width={100}*//>
                         </div>
                     </div>
                 </div>
+
+                
             </div>
+
             <div className="banner-right-side">
                 <AppraisalBar
                     attack = {attack}
@@ -147,27 +173,33 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 />
             </div>
         </div>
+
+
+
         <strong className="base-stats">
-            <span>
-                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
-            </span>
-            <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-            <span>
-                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
-            </span>
-            <img src="https://i.imgur.com/D2SX4kq.png" width={14} height={14}/>
-            <span>
-                {ivPercents[pokemon.speciesId].masterLeagueHP}
-            </span>
-            <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
-        </strong>
-        <span className="level-cp">
-            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
-            @ LVL {<select value={displayLevel} onChange={e => {setDisplayLevel(+e.target.value); setLevelCap(+e.target.value);}} className="select-level">
-                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                    .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>}
-        </span>
+                    <span>
+                        {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
+                    </span>
+                    <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                    <span>
+                        {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
+                    </span>
+                    <img src="https://i.imgur.com/D2SX4kq.png" width={14} height={14}/>
+                    <span>
+                        {ivPercents[pokemon.speciesId].masterLeagueHP}
+                    </span>
+                    <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
+                </strong>
+
+
+                <span className="level-cp">
+                    <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
+                    @ LVL {<select value={displayLevel} onChange={e => {setLevelCap(+e.target.value); setDisplayLevel(+e.target.value);}} className="select-level">
+                            {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                        </select>}
+                </span>
+
         <div className="types-container">
             <div className="types">
                 <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[0]})`}}>
@@ -178,12 +210,13 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 </span>}
             </div>
         </div>
+        
         <div className="img-container">
             <div className="img-family">
-                {Array.from(familyTreeExceptSelf).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp).map(p => (
+                {familyTreeExceptSelf.map(p => (
                     <div key = {p.speciesId} className="img-family-container">
                         <Link to={`/pokemon/${p.speciesId}`}>
-                            <PokemonInfoImage pokemon={p}/>
+                            <PokemonInfoImage pokemon={p}/* height={32} width={32}*//>
                         </Link>
                     </div>
                 ))}
@@ -248,4 +281,4 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     </div>;
 }
 
-export default PokemonInfoBanner;
+export default PokemonInfoBanner2;

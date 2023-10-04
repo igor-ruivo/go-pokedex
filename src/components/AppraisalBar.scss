@@ -36,7 +36,7 @@
 .appraisal {
     width: 100%;
     margin-top: 20px;
-    max-width: 350px;
+    max-width: 55%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -156,6 +156,7 @@
 @media (max-width: 500px) {
     .appraisal {
         width: 100%;
+        max-width: 100%;
         margin-left: auto;
         margin-right: 6px;
     }
