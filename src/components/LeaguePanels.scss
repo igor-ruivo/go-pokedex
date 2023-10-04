@@ -15,6 +15,11 @@
     opacity: 0.67;
 }
 
+.cp-and-level {
+    font-size: x-small;
+    opacity: 0.9;
+}
+
 .type-attack {
     display: flex;
     flex-direction: row;
@@ -63,7 +68,7 @@
         margin: 0;
     }
     h4 {
-        font-size: xx-small;
+        font-size: x-small;
     }
 }
 
@@ -142,7 +147,7 @@
     .pvp-stats {
         display: flex;
         flex-direction: column;
-        padding: 6px;
+        padding: 2px;
     }
 
     .pvp-title {
@@ -152,12 +157,17 @@
         }
 
         h4 {
-            font-size: clamp(6.167px, 1.72vw, 9px);
+            font-size: 8px;//xx-small;//clamp(6.167px, 1.72vw, 9px);
         }
     }
 
+    .cp-and-level {
+        font-size: xx-small;
+    }
+
     .pvp-stats-display {
-        width: 100%
+        width: 100%;
+        padding: 3px;
     }
 
     .pvp-img {

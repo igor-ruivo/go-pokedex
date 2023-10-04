@@ -17,6 +17,8 @@ interface ILeaguePanelsProps {
     greatLeagueCharged2: string,
     greatLeagueCharged2IsLegacy: boolean,
     greatLeagueCharged2Type: string,
+    greatLeagueCP: number,
+    greatLeagueLVL: number,
     ultraLeagueAtk: number,
     ultraLeagueDef: number,
     ultraLeagueSta: number,
@@ -33,6 +35,8 @@ interface ILeaguePanelsProps {
     ultraLeagueCharged2: string,
     ultraLeagueCharged2IsLegacy: boolean,
     ultraLeagueCharged2Type: string,
+    ultraLeagueCP: number,
+    ultraLeagueLVL: number,
     masterLeagueAtk: number,
     masterLeagueDef: number,
     masterLeagueSta: number,
@@ -49,6 +53,8 @@ interface ILeaguePanelsProps {
     masterLeagueCharged2: string,
     masterLeagueCharged2IsLegacy: boolean,
     masterLeagueCharged2Type: string,
+    masterLeagueCP: number,
+    masterLeagueLVL: number
 }
 
 const LeaguePanels = ({
@@ -68,6 +74,8 @@ const LeaguePanels = ({
     greatLeagueCharged2,
     greatLeagueCharged2IsLegacy,
     greatLeagueCharged2Type,
+    greatLeagueCP,
+    greatLeagueLVL,
     ultraLeagueAtk,
     ultraLeagueDef,
     ultraLeagueSta,
@@ -84,6 +92,8 @@ const LeaguePanels = ({
     ultraLeagueCharged2,
     ultraLeagueCharged2IsLegacy,
     ultraLeagueCharged2Type,
+    ultraLeagueCP,
+    ultraLeagueLVL,
     masterLeagueAtk,
     masterLeagueDef,
     masterLeagueSta,
@@ -99,7 +109,9 @@ const LeaguePanels = ({
     masterLeagueCharged1Type,
     masterLeagueCharged2,
     masterLeagueCharged2IsLegacy,
-    masterLeagueCharged2Type
+    masterLeagueCharged2Type,
+    masterLeagueCP,
+    masterLeagueLVL
 }: ILeaguePanelsProps) => {
 
     const buildRankString = (rank: string) => {
@@ -110,7 +122,7 @@ const LeaguePanels = ({
         return `Ranked ${rank}`;
     }
 
-    const greatLeagueRankClass = (rank: string) => "pokemon-ivs-ranked" + (rank === "-" ? " unranked" : "");
+    const rankClass = (rank: string) => "pokemon-ivs-ranked" + (rank === "-" ? " unranked" : "");
 
     const greatLeagueFastAttackUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueFastAttackType}.png`;
     const greatLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueCharged1Type}.png`;
@@ -127,9 +139,15 @@ const LeaguePanels = ({
             <section className="pvp-title">
                 <img src="https://www.stadiumgaming.gg/frontend/assets/img/great.png" alt="Great League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
                 <h3>
-                    {greatLeaguePercent}% <span className="percentile">(#{greatLeaguePercentile})</span>
+                    <div>{greatLeaguePercent}% <span className="percentile">(#{greatLeaguePercentile})</span></div>
+                    <div className="cp-and-level">{greatLeagueCP} CP @ LVL {greatLeagueLVL}</div>
                 </h3>
                 {greatLeagueBestFamilyMemberName && <h4>({greatLeagueBestFamilyMemberName})</h4>}
+                <section>
+                    <strong className={rankClass(greatLeagueRank)}>
+                        {buildRankString(greatLeagueRank)}
+                    </strong>
+                </section>
             </section>
             <section className="pvp-stats-display">
                 <section className="pvp-ivs">
@@ -154,11 +172,6 @@ const LeaguePanels = ({
                         </li>
                     </ul>
                 </section>
-                <section>
-                    <strong className={greatLeagueRankClass(greatLeagueRank)}>
-                        {buildRankString(greatLeagueRank)}
-                    </strong>
-                </section>
                 <strong className="pokemon-attack">
                     <div className="type-attack">{greatLeagueFastAttack && <img src={greatLeagueFastAttackUrl}/>}{greatLeagueFastAttack}{greatLeagueFastAttackIsLegacy && "*"}</div>
                     <div className="type-attack">{greatLeagueCharged1 && <img src={greatLeagueCharged1Url}/>}{greatLeagueCharged1}{greatLeagueCharged1IsLegacy && "*"}</div>
@@ -170,9 +183,16 @@ const LeaguePanels = ({
             <section className="pvp-title">
                 <img src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png" alt="Ultra League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
                 <h3>
-                    {ultraLeaguePercent}% <span className="percentile">(#{ultraLeaguePercentile})</span>
+                    <div>{ultraLeaguePercent}% <span className="percentile">(#{ultraLeaguePercentile})</span></div>
+                    <div className="cp-and-level">{ultraLeagueCP} CP @ LVL {ultraLeagueLVL}</div>
                 </h3>
                 {ultraLeagueBestFamilyMemberName && <h4>({ultraLeagueBestFamilyMemberName})</h4>}
+                
+                <section>
+                    <strong className={rankClass(ultraLeagueRank)}>
+                        {buildRankString(ultraLeagueRank)}
+                    </strong>
+                </section>
             </section>
             <section className="pvp-stats-display">
                 <section className="pvp-ivs">
@@ -198,11 +218,6 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <strong className={greatLeagueRankClass(ultraLeagueRank)}>
-                        {buildRankString(ultraLeagueRank)}
-                    </strong>
-                </section>
-                <section>
                 <strong className="pokemon-attack">
                     <div className="type-attack">{ultraLeagueFastAttack && <img src={ultraLeagueFastAttackUrl}/>}{ultraLeagueFastAttack}{ultraLeagueFastAttackIsLegacy && "*"}</div>
                     <div className="type-attack">{ultraLeagueCharged1 && <img src={ultraLeagueCharged1Url}/>}{ultraLeagueCharged1}{ultraLeagueCharged1IsLegacy && "*"}</div>
@@ -215,9 +230,16 @@ const LeaguePanels = ({
             <section className="pvp-title">
                 <img src="https://www.stadiumgaming.gg/frontend/assets/img/master.png" alt="Master League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
                 <h3>
-                    {masterLeaguePercent}% <span className="percentile">(#{masterLeaguePercentile})</span>
+                    <div>{masterLeaguePercent}% <span className="percentile">(#{masterLeaguePercentile})</span></div>
+                    <div className="cp-and-level">{masterLeagueCP} CP @ LVL {masterLeagueLVL}</div>
                 </h3>
                 {masterLeagueBestFamilyMemberName && <h4>({masterLeagueBestFamilyMemberName})</h4>}
+                
+                <section>
+                    <strong className={rankClass(masterLeagueRank)}>
+                        {buildRankString(masterLeagueRank)}
+                    </strong>
+                </section>
             </section>
             <section className="pvp-stats-display">
                 <section className="pvp-ivs">
@@ -241,11 +263,6 @@ const LeaguePanels = ({
                             </span>
                         </li>
                     </ul>
-                </section>
-                <section>
-                    <strong className={greatLeagueRankClass(masterLeagueRank)}>
-                        {buildRankString(masterLeagueRank)}
-                    </strong>
                 </section>
                 <strong className="pokemon-attack">
                     <div className="type-attack">{masterLeagueFastAttack && <img src={masterLeagueFastAttackUrl}/>}{masterLeagueFastAttack}{masterLeagueFastAttackIsLegacy && "*"}</div>
