@@ -105,8 +105,10 @@ const CircularSliderInput = ({handleColor, displayValue, setDisplayValue, value,
             coerceToInt={true}
             minValue={displayValue <= 40 ? 1 : 80}
             maxValue={displayValue <= 40 ? 79 : 101}
-            arcColor={handleColor}
-            arcBackgroundColor='#eeeeee'
+            arcColor={displayValue <= 40 ? handleColor : "#B78700"}
+            arcBackgroundColor={displayValue <= 40 ? '#eeeeee' : handleColor}
+            startAngle={40}
+            endAngle={320}
         />
   );
 }

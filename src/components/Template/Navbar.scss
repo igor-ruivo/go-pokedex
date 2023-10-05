@@ -17,7 +17,7 @@
     justify-content: space-between;
     grid-gap: 18px;
     gap: 18px;
-    max-width: 1300px;
+    max-width: 65%;
     margin: auto;
     width: 100%;
 }
@@ -79,6 +79,12 @@ button {
     display: block;
 }
 
+@media (max-width: 800px) {
+    .navbar-section {
+        max-width: 100%;
+    }
+}
+
 @media (max-width: 500px) {
     .navbar {
         height: 65px;
@@ -97,6 +103,7 @@ button {
 
     .navbar-section {
         gap: 16px;
+        max-width: 100%;
         grid-template-columns: 32px 1fr 45px;
     }
 
