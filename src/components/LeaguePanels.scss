@@ -5,7 +5,7 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 12px;
     gap: 12px;
-    margin: 12px calc(-1 * 12px);
+    margin: 0px calc(-1 * 12px);
     padding: 0 12px;
     overflow-x: auto;
     text-align: center;
@@ -131,7 +131,6 @@
 
 @media (max-width: 530px) {
     .pvp-leagues {
-        margin-top: 12px;
         margin-bottom: 0px;
         margin-left: 0px;
         margin-right: 0px;

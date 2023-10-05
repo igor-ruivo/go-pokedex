@@ -64,11 +64,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     let bestInFamilyForMasterLeague = pokemon;
     let bestInFamilyForMasterLeagueRank = Number.MAX_VALUE;
 
-    const reachablePokemons: IGamemasterPokemon[] = [];
+    const reachablePokemons = new Set<IGamemasterPokemon>();
     const queue = [pokemon];
     while (queue.length > 0) {
         const currentPokemon = queue.shift() as IGamemasterPokemon;
-        reachablePokemons.push(currentPokemon);
+        reachablePokemons.add(currentPokemon);
         if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
             continue;
         }
@@ -93,6 +93,20 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             bestInFamilyForMasterLeague = member;
         }
     });
+
+    const queue2 = Array.from(familyTreeExceptSelf);
+    while (queue2.length > 0) {
+        const currentPokemon = queue2.shift() as IGamemasterPokemon;
+        familyTreeExceptSelf.add(currentPokemon);
+        if (!currentPokemon.parent) {
+            continue;
+        }
+        const parentRef = gamemasterPokemon.find(p => p.speciesId === currentPokemon.parent);
+        if (!parentRef) {
+            continue;
+        }
+        queue2.push(parentRef);
+    }
 
     const simplifyName = (name: string) => {
         return name
@@ -180,7 +194,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 </span>}
             </div>
         </div>
-        <div className="img-container">
+        {familyTreeExceptSelf.size > 1 && <div className="img-container">
             <div className="img-family">
                 {Array.from(familyTreeExceptSelf).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp).map(p => (
                     <div key = {p.speciesId} className="img-family-container">
@@ -190,7 +204,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     </div>
                 ))}
             </div>
-        </div>
+        </div>}
         <LeaguePanels
             greatLeagueAtk={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.A}
             greatLeagueDef={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.D}
