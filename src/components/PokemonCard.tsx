@@ -5,7 +5,6 @@ import PokemonImage from "./PokemonImage";
 import PokemonNumber from "./PokemonNumber/PokemonNumber";
 import PokemonTypes from "./PokemonType/PokemonTypes";
 import { ListType } from "../views/pokedex";
-import useComputeIVs from "../hooks/useComputeIVs";
 
 interface IPokemonCardProps {
   pokemon: IGamemasterPokemon,
@@ -14,17 +13,12 @@ interface IPokemonCardProps {
 
 const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
   const link = `/pokemon/${pokemon.speciesId}`;
+  var cp = Math.floor(((pokemon.atk + 15) * Math.pow(pokemon.def + 15, 0.5) * Math.pow(pokemon.hp + 15, 0.5) * Math.pow(0.795300006866455, 2) ) / 10);
 
-  const pokemonNeedsToSurpassLevel = (level: number) => {
-    if (loading) {
-      return false;
-    }
-    return listType === ListType.GREAT_LEAGUE && ivPercents[pokemon.speciesId].greatLeagueLvl > level || listType === ListType.ULTRA_LEAGUE && ivPercents[pokemon.speciesId].ultraLeagueLvl > level;
-  }
-
-  const [ivPercents, loading] = useComputeIVs({pokemon: pokemon, levelCap: 51, attackIV: 15, defenseIV: 15, hpIV: 15})
-  const showXL = pokemonNeedsToSurpassLevel(40);
-  const showBuddy = pokemonNeedsToSurpassLevel(50);
+  // too expensive
+  //const [ivPercents, loading] = useComputeIVs({pokemon: pokemon, levelCap: 51, attackIV: 15, defenseIV: 15, hpIV: 15, justForSelf: true})
+  const showXL = listType === ListType.GREAT_LEAGUE && cp < 1500 + 150 || listType === ListType.ULTRA_LEAGUE && cp < 2500 + 150;
+  
   return (
       <Link to={link}>
         <div className="pokemon_card">
@@ -32,7 +26,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
             <PokemonNumber dex={pokemon.dex} speciesId={pokemon.speciesId} listType={listType} />
             <PokemonTypes types={pokemon.types} />
           </div>
-          <PokemonImage pokemon={pokemon} xl={showXL} buddy={showBuddy}/>
+          <PokemonImage pokemon={pokemon} xl={showXL}/>
           <div className="header_footer">
             {pokemon.speciesName
               .replace("(Alolan)", "(A)")

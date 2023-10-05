@@ -47,6 +47,7 @@ export interface IIvPercents {
     greatLeagueDefense: number,
     greatLeagueHP: number,
     greatLeaguePerfect: any,
+    greatLeaguePerfectLevel: number,
     ultraLeagueRank: number,
     ultraLeagueLvl: number,
     ultraLeagueCP: number,
@@ -54,13 +55,15 @@ export interface IIvPercents {
     ultraLeagueDefense: number,
     ultraLeagueHP: number,
     ultraLeaguePerfect: any,
+    ultraLeaguePerfectLevel: number,
     masterLeagueRank: number,
     masterLeagueLvl: number,
     masterLeagueCP: number,
     masterLeagueAttack: number,
     masterLeagueDefense: number,
     masterLeagueHP: number,
-    masterLeaguePerfect: any
+    masterLeaguePerfect: any,
+    masterLeaguePerfectLevel: number
 }
 
 const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {

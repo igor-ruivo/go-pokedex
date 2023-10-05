@@ -18,8 +18,8 @@
 .xl-overlay {
     opacity: 1;
     position: absolute;
-    top: 100%;
-    left: 40%;
+    top: 85%;
+    right: 10%;
     width: 12%;
     height: 12%;
     z-index: 2;
@@ -28,8 +28,8 @@
 .buddy-overlay {
     opacity: 1;
     position: absolute;
-    top: 100%;
-    left: 55%;
+    top: 85%;
+    right: 25%;
     width: 12%;
     height: 12%;
     z-index: 2;

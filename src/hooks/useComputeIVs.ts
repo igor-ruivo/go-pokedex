@@ -11,22 +11,27 @@ interface IUseComputeIVsProps {
     attackIV: number;
     defenseIV: number;
     hpIV: number;
+    justForSelf?: boolean;
 }
 
-const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV}: IUseComputeIVsProps) => {
+const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSelf = false}: IUseComputeIVsProps) => {
     const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
     const [loading, setLoading] = useState(true);
     const {gamemasterPokemon} = usePokemon();
 
     const reachablePokemons: IGamemasterPokemon[] = [];
-    const queue = [pokemon];
-    while (queue.length > 0) {
-        const currentPokemon = queue.shift() as IGamemasterPokemon;
-        reachablePokemons.push(currentPokemon);
-        if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
-            continue;
+    if (!justForSelf) {
+        const queue = [pokemon];
+        while (queue.length > 0) {
+            const currentPokemon = queue.shift() as IGamemasterPokemon;
+            reachablePokemons.push(currentPokemon);
+            if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
+                continue;
+            }
+            queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon?.find(pk => pk.speciesId === id)).filter(pk => pk) as IGamemasterPokemon[]);
         }
-        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon?.find(pk => pk.speciesId === id)).filter(pk => pk) as IGamemasterPokemon[]);
+    } else {
+        reachablePokemons.push(pokemon);
     }
     
     useEffect(() => {
@@ -55,6 +60,7 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV}: IUseCompu
                     greatLeagueDefense: flatGLResult[rankGLIndex].battle.D,
                     greatLeagueHP: flatGLResult[rankGLIndex].battle.S,
                     greatLeaguePerfect: flatGLResult[0].IVs,
+                    greatLeaguePerfectLevel: flatGLResult[0].L,
                     ultraLeagueRank: rankULIndex,
                     ultraLeagueLvl: flatULResult[rankULIndex].L,
                     ultraLeagueCP: flatULResult[rankULIndex].CP,
@@ -62,13 +68,15 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV}: IUseCompu
                     ultraLeagueDefense: flatULResult[rankULIndex].battle.D,
                     ultraLeagueHP: flatULResult[rankULIndex].battle.S,
                     ultraLeaguePerfect: flatULResult[0].IVs,
+                    ultraLeaguePerfectLevel: flatULResult[0].L,
                     masterLeagueRank: rankMLIndex,
                     masterLeagueLvl: flatMLResult[rankMLIndex].L,
                     masterLeagueCP: flatMLResult[rankMLIndex].CP,
                     masterLeagueAttack: flatMLResult[rankMLIndex].battle.A,
                     masterLeagueDefense: flatMLResult[rankMLIndex].battle.D,
                     masterLeagueHP: flatMLResult[rankMLIndex].battle.S,
-                    masterLeaguePerfect: flatMLResult[0].IVs
+                    masterLeaguePerfect: flatMLResult[0].IVs,
+                    masterLeaguePerfectLevel: flatMLResult[0].L
                 };
             });
             setIvPercents(familyIvPercents);

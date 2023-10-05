@@ -167,6 +167,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                     .map(e => (<option key={e} value={e}>{e}</option>))}
                 </select>}
+                &nbsp;&nbsp;{displayLevel > 40 && <img src="https://i.imgur.com/NTtZq10.png" width={14} height={14}/>}
+                &nbsp;{displayLevel > 50 && <img src="https://i.imgur.com/MGCXGl0.png" width={14} height={14}/>}
         </span>
         <div className="types-container">
             <div className="types">
