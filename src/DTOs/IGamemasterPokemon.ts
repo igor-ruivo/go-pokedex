@@ -12,6 +12,7 @@ export interface IGamemasterPokemon {
     fastMoves: string[],
     chargedMoves: string[],
     eliteMoves: string[],
+    legacyMoves: string[],
     isShadow: boolean,
     isShadowEligible?: boolean,
     isMega: boolean,

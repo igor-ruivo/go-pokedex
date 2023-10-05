@@ -81,6 +81,7 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 fastMoves: pokemon.fastMoves,
                 chargedMoves: pokemon.chargedMoves,
                 eliteMoves: pokemon.eliteMoves ?? [],
+                legacyMoves: pokemon.legacyMoves ?? [],
                 isShadow: isShadow,
                 isShadowEligible: isShadow ? undefined : pokemon.tags ? Array.from(pokemon.tags).includes("shadoweligible") : false,
                 isMega: pokemon.tags ? Array.from(pokemon.tags).includes("mega") : false,
