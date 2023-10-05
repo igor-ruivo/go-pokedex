@@ -19,3 +19,23 @@
     height: 24%;
     z-index: 2;
 }
+
+.xl-overlay {
+    opacity: 1;
+    position: absolute;
+    top: 67%;
+    right: 25%;
+    width: 12%;
+    height: 12%;
+    z-index: 2;
+}
+
+.buddy-overlay {
+    opacity: 1;
+    position: absolute;
+    top: 67%;
+    right: 10%;
+    width: 12%;
+    height: 12%;
+    z-index: 2;
+}
