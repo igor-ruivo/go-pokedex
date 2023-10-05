@@ -20,6 +20,14 @@
     opacity: 0.9;
 }
 
+.custom-pokemon {
+    width: 100%;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.15);
+    padding-top: 2px;
+    padding-bottom: 4px;
+}
+
 .type-attack {
     display: flex;
     flex-direction: row;
@@ -64,8 +72,10 @@
     flex-direction: column;
     align-items: center;
     gap: 6px;
+    width: 100%;
     h3, h4 {
         margin: 0;
+        width: 100%;
     }
     h4 {
         font-size: x-small;

@@ -61,6 +61,7 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
                     greatLeagueHP: flatGLResult[rankGLIndex].battle.S,
                     greatLeaguePerfect: flatGLResult[0].IVs,
                     greatLeaguePerfectLevel: flatGLResult[0].L,
+                    greatLeaguePerfectCP: flatGLResult[0].CP,
                     ultraLeagueRank: rankULIndex,
                     ultraLeagueLvl: flatULResult[rankULIndex].L,
                     ultraLeagueCP: flatULResult[rankULIndex].CP,
@@ -69,6 +70,7 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
                     ultraLeagueHP: flatULResult[rankULIndex].battle.S,
                     ultraLeaguePerfect: flatULResult[0].IVs,
                     ultraLeaguePerfectLevel: flatULResult[0].L,
+                    ultraLeaguePerfectCP: flatULResult[0].CP,
                     masterLeagueRank: rankMLIndex,
                     masterLeagueLvl: flatMLResult[rankMLIndex].L,
                     masterLeagueCP: flatMLResult[rankMLIndex].CP,
@@ -76,7 +78,8 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
                     masterLeagueDefense: flatMLResult[rankMLIndex].battle.D,
                     masterLeagueHP: flatMLResult[rankMLIndex].battle.S,
                     masterLeaguePerfect: flatMLResult[0].IVs,
-                    masterLeaguePerfectLevel: flatMLResult[0].L
+                    masterLeaguePerfectLevel: flatMLResult[0].L,
+                    masterLeaguePerfectCP: flatMLResult[0].CP
                 };
             });
             setIvPercents(familyIvPercents);
