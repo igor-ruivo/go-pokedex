@@ -172,13 +172,14 @@ const LeaguePanels = ({
                     <strong className={rankClass(greatLeagueRank)}>
                         {buildRankString(greatLeagueRank)}
                     </strong>
-                    <div className="custom-pokemon">
-                        <h3>
-                            <div>{greatLeaguePercent}% <span className="percentile">(#{greatLeaguePercentile})</span></div>
-                        </h3>
-                        <div className="cp-and-level">{greatLeagueCP} CP @ LVL {greatLeagueLVL}</div>
-                    </div>
+                        <div className="custom-pokemon">
+                            <h3>
+                                <div>{greatLeaguePercent}% <span className="percentile">(#{greatLeaguePercentile})</span></div>
+                            </h3>
+                            <div className="cp-and-level">{greatLeagueCP} CP @ LVL {greatLeagueLVL}</div>
+                        </div>
             </section>
+            
             <section className="pvp-stats-display">
                 <section className="pvp-ivs">
                     <ul className="pokemon-ivs">
@@ -203,7 +204,7 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <div className="cp-and-level">{greatLeagueBestCP} CP @ LVL {greatLeagueBestLVL}</div>
+                    <div className="cp-and-level-recommended"><strong>{greatLeagueBestCP} CP @ LVL {greatLeagueBestLVL}</strong></div>
                 </section>
                 {greatLeagueFastAttack && <strong className="pokemon-attack">
                     <div className="type-attack">{greatLeagueFastAttack && <img src={greatLeagueFastAttackUrl}/>}{greatLeagueFastAttack}{greatLeagueFastAttackIsElite ? "*" : greatLeagueFastAttackIsLegacy ? <sup>†</sup> : <></>}</div>
@@ -211,6 +212,7 @@ const LeaguePanels = ({
                     <div className="type-attack">{greatLeagueCharged2 && <img src={greatLeagueCharged2Url}/>}{greatLeagueCharged2}{greatLeagueCharged2IsElite ? "*" : greatLeagueCharged2IsLegacy ? <sup>†</sup> : <></>}</div>
                 </strong>}
             </section>
+            
         </div>
         <div className="pvp-stats ultra">
             <section className="pvp-title">
@@ -250,7 +252,7 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <div className="cp-and-level">{ultraLeagueBestCP} CP @ LVL {ultraLeagueBestLVL}</div>
+                    <div className="cp-and-level-recommended"><strong>{ultraLeagueBestCP} CP @ LVL {ultraLeagueBestLVL}</strong></div>
                 </section>
                 {ultraLeagueFastAttack && <strong className="pokemon-attack">
                     <div className="type-attack">{ultraLeagueFastAttack && <img src={ultraLeagueFastAttackUrl}/>}{ultraLeagueFastAttack}{ultraLeagueFastAttackIsElite ? "*" : ultraLeagueFastAttackIsLegacy ? <sup>†</sup> : <></>}</div>
@@ -297,7 +299,7 @@ const LeaguePanels = ({
                     </ul>
                 </section>
                 <section>
-                    <div className="cp-and-level">{masterLeagueBestCP} CP @ LVL {masterLeagueBestLVL}</div>
+                    <div className="cp-and-level-recommended"><strong>{masterLeagueBestCP} CP @ LVL {masterLeagueBestLVL}</strong></div>
                 </section>
                 {masterLeagueFastAttack && <strong className="pokemon-attack">
                     <div className="type-attack">{masterLeagueFastAttack && <img src={masterLeagueFastAttackUrl}/>}{masterLeagueFastAttack}{masterLeagueFastAttackIsElite ? "*" : masterLeagueFastAttackIsLegacy ? <sup>†</sup> : <></>}</div>

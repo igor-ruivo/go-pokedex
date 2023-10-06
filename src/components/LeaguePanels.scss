@@ -20,6 +20,10 @@
     opacity: 0.9;
 }
 
+.cp-and-level-recommended {
+    font-size: small;
+}
+
 .custom-pokemon {
     width: 100%;
     border-radius: 12px;
@@ -147,6 +151,10 @@
         padding: 0;
         grid-gap: 3px;
         gap: 3px;
+    }
+
+    .cp-and-level-recommended {
+        font-size: xx-small;
     }
 
     .pokemon-attack {
