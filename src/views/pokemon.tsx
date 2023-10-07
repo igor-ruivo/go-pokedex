@@ -12,7 +12,7 @@ import useComputeIVs from '../hooks/useComputeIVs';
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { speciesId } = useParams();
-    const pokemon = gamemasterPokemon?.find(p => p.speciesId === speciesId) as IGamemasterPokemon;
+    const pokemon = fetchCompleted ? gamemasterPokemon[speciesId ?? ""] : undefined;
 
     useEffect(() => {
         window.scrollTo(0, 0);

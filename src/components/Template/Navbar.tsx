@@ -1,6 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePokemon } from "../../contexts/pokemon-context";
-import { Theme, useTheme } from "../../contexts/theme-context";
 import SearchableDropdown from "../SearchableDropdown";
 import "./Navbar.scss";
 import { ConfigKeys, readSessionValue } from "../../utils/persistent-configs-handler";
@@ -8,7 +7,6 @@ import { ListType } from "../../views/pokedex";
 
 const Navbar = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {theme} = useTheme();
     const navigate = useNavigate();
     const {pathname} = useLocation()
 
@@ -44,17 +42,17 @@ const Navbar = () => {
                 <img className="navbar-logo-image" alt="GO-Pokedéx logo" loading="lazy" decoding="async" data-nimg="fill" src="https://i.imgur.com/eBscnsv.png"/>  
             </Link>
             <button className="navbar-menu">
-                <img className="navbar-menu-img" data-invertondarkmode="true" alt="Menu toggle" loading="lazy" width="24" height="20" decoding="async" data-nimg="1" src={theme === Theme.Light ? "https://i.imgur.com/QeLejTs.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
+                <img className="navbar-menu-img" data-invertondarkmode="true" alt="Menu toggle" loading="lazy" width="24" height="20" decoding="async" data-nimg="1" src={"https://i.imgur.com/NEVZ0qK.png"}/>
                 <span>Menu</span>
             </button>
             <div className="search-wrapper">
                 <SearchableDropdown
-                    options={gamemasterPokemon?.filter(p => {
+                    options={!fetchCompleted ? [] : Object.values(gamemasterPokemon).filter(p => {
                         if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master") || pathname.startsWith("/pokemon")) {
                             return true;
                         }
                         return !p.isShadow;
-                    }).map(p => ({value: p.speciesId, label: p.speciesName} as EntryType)) ?? []}
+                    }).map(p => ({value: p.speciesId, label: p.speciesName} as EntryType))}
                     isLoading={!fetchCompleted}
                     onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}`)}
                 />

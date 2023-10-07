@@ -11,7 +11,7 @@ type IPokemonNumberProps = {
   }  
 
 const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
-    const {rankLists} = usePokemon();
+    const {rankLists, fetchCompleted} = usePokemon();
 
     const pokemonNumberGenerator = (dex: number): string => {
         let urlDex = "" + dex;
@@ -44,7 +44,7 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
     }
 
     const fetchPokemonRank = (): string => {
-        const rank = rankLists[listType - 1].find(p => p.speciesId === speciesId)!.rank;
+        const rank = fetchCompleted ? rankLists[listType - 1][speciesId].rank : 0;
         switch (rank) {
           case 1:
             return "🥇" + ordinal(rank);

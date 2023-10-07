@@ -4,7 +4,6 @@ import './pokedex.scss';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import LoadingRenderer from '../components/LoadingRenderer';
-import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
 import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
@@ -16,7 +15,7 @@ export enum ListType {
     MASTER_LEAGUE
 }
 
-const getDefaultShowFamilyTree = () => true;// TODO: implement toggle later readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
+const getDefaultShowFamilyTree = () => true; // TODO: implement toggle later readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
 
 const Pokedex = () => {
     const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
@@ -41,15 +40,14 @@ const Pokedex = () => {
             break;
     }
 
-    const prepareData = () => {
+    const data = useMemo(() => {
         if (!fetchCompleted) {
             return [];
         }
 
         let processedList: IGamemasterPokemon[] = [];
 
-        // TODO: improve with a Map<speciesID, IGamemasterPokemon>
-        const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon.find(p => p.speciesId === r.speciesId) as IGamemasterPokemon;
+        const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon[r.speciesId];
         
         const inputFilter = (p: IGamemasterPokemon, targetPokemon: IGamemasterPokemon[]) => {
             if (!p.familyId || !showFamilyTree) {
@@ -64,18 +62,18 @@ const Pokedex = () => {
 
         const baseFilter = (p: IGamemasterPokemon) => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim());
         
-        const rankingsFamilyPokemonPool = gamemasterPokemon.filter(p => !p.isMega);
+        const rankingsFamilyPokemonPool = Object.values(gamemasterPokemon).filter(p => !p.isMega);
         
         switch (listType) {
             case ListType.POKEDEX:
-                const pokedexPool = gamemasterPokemon.filter(p => !p.isShadow);
+                const pokedexPool = Object.values(gamemasterPokemon).filter(p => !p.isShadow);
                 processedList = pokedexPool
                     .filter(p => inputFilter(p, pokedexPool));
                 break;
             case ListType.GREAT_LEAGUE:
             case ListType.ULTRA_LEAGUE:
             case ListType.MASTER_LEAGUE:
-                const leaguePool = rankLists[listType - 1].map(mapper);
+                const leaguePool = Object.values(rankLists[listType - 1]).map(mapper);
                 processedList = leaguePool.filter(p => inputFilter(p, rankingsFamilyPokemonPool));
                 break;
             default:
@@ -83,9 +81,7 @@ const Pokedex = () => {
         }
 
         return processedList;
-    }
-
-    const data = useMemo(prepareData, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, showFamilyTree]);
+    }, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, showFamilyTree]);
 
     return (
         <main className="pokedex-layout">
@@ -93,19 +89,19 @@ const Pokedex = () => {
                 <ul>
                     <li>
                         <Link to="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
-                            <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/great.png"/>
+                            <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
                             <span>Great</span>
                         </Link>
                     </li>
                     <li>
                         <Link to="/ultra" className={"header-tab " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
-                            <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png"/>
+                            <img height="24" width="24" src="https://i.imgur.com/jtA6QiL.png" alt="Ultra League"/>
                             <span>Ultra</span>
                         </Link>
                     </li>
                     <li>
                         <Link to="/master" className={"header-tab " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
-                            <img height="24" width="24" src="https://www.stadiumgaming.gg/frontend/assets/img/master.png"/>
+                            <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
                             <span>Master</span>
                         </Link>
                     </li>

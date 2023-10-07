@@ -6,7 +6,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import PokemonCard from './PokemonCard';
-import { Theme, useTheme } from '../contexts/theme-context';
 import Dictionary from '../utils/Dictionary';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import { ListType } from '../views/pokedex';
@@ -45,9 +44,6 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
 
     const [lastShownIndex, setLastShownIndex] = useState(getDefaultLastShownIndex());
     const [readyImages, setReadyImages] = useState<Dictionary<string>>(getDefaultReadyImages());
-    
-    const { theme } = useTheme();
-    const isCurrentDark = theme === Theme.Dark;
 
     const fetchedImages = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);
@@ -183,7 +179,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     }, [handleScrollCallback]);
 
     const Item = styled(Paper)(({ theme }) => ({
-        backgroundColor: isCurrentDark ? '#24292f' : '#fff',
+        backgroundColor: '#24292f',
         ...theme.typography.body2,
         padding: theme.spacing(2),
         textAlign: 'center',

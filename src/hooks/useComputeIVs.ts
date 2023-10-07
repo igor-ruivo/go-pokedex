@@ -17,10 +17,10 @@ interface IUseComputeIVsProps {
 const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSelf = false}: IUseComputeIVsProps) => {
     const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
     const [loading, setLoading] = useState(true);
-    const {gamemasterPokemon} = usePokemon();
+    const {gamemasterPokemon, fetchCompleted} = usePokemon();
 
     const reachablePokemons: IGamemasterPokemon[] = [];
-    if (!justForSelf) {
+    if (!justForSelf && fetchCompleted) {
         const queue = [pokemon];
         while (queue.length > 0) {
             const currentPokemon = queue.shift() as IGamemasterPokemon;
@@ -28,7 +28,7 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
             if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
                 continue;
             }
-            queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon?.find(pk => pk.speciesId === id)).filter(pk => pk) as IGamemasterPokemon[]);
+            queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk) as IGamemasterPokemon[]);
         }
     } else {
         reachablePokemons.push(pokemon);

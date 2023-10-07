@@ -5,11 +5,12 @@ import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
 import { gamemasterPokemonUrl, movesUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Resources';
 import { mapGamemasterPokemonData, mapMoves, mapRankedPokemon } from '../utils/conversions';
 import { IMove } from '../DTOs/IMove';
+import Dictionary from '../utils/Dictionary';
 
 interface PokemonContextType {
-    gamemasterPokemon: IGamemasterPokemon[];
-    rankLists: IRankedPokemon[][];
-    moves: IMove[];
+    gamemasterPokemon: Dictionary<IGamemasterPokemon>;
+    rankLists: Dictionary<IRankedPokemon>[];
+    moves: Dictionary<IMove>;
     fetchCompleted: boolean;
     errors: string
 }
@@ -46,7 +47,25 @@ export const PokemonProvider = (props: React.PropsWithChildren<{}>) => {
     const [gamemasterPokemon, rankLists, moves, fetchCompleted, errors]: [IGamemasterPokemon[], IRankedPokemon[][], IMove[], boolean, string] = useFetchAllData();
 
     return (
-        <PokemonContext.Provider value={{ gamemasterPokemon, rankLists, moves, fetchCompleted, errors }}>
+        <PokemonContext.Provider value={{
+            gamemasterPokemon: gamemasterPokemon?.reduce((acc: Dictionary<IGamemasterPokemon>, obj: IGamemasterPokemon) => {
+                acc[obj.speciesId] = obj;
+                return acc;
+            }, {}),
+
+            rankLists: rankLists?.map(r => r.reduce((acc: Dictionary<IRankedPokemon>, obj: IRankedPokemon) => {
+                acc[obj.speciesId] = obj;
+                return acc;
+            }, {})),
+
+            moves: moves?.reduce((acc: Dictionary<IMove>, obj: IMove) => {
+                acc[obj.moveId] = obj;
+                return acc;
+            }, {}),
+
+            fetchCompleted,
+            errors }}
+        >
             {props.children}
         </PokemonContext.Provider>
     );

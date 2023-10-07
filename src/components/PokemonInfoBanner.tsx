@@ -29,13 +29,13 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     const [displayLevel, setDisplayLevel] = useState(levelCap);
     const selectedImageRef = React.createRef<HTMLImageElement>();
 
-    const {gamemasterPokemon, rankLists, moves} = usePokemon();
+    const {gamemasterPokemon, rankLists, moves, fetchCompleted} = usePokemon();
 
-    if (!pokemon || !gamemasterPokemon || !moves || moves.length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
+    if (!fetchCompleted || !pokemon || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
         return <></>;
     }
 
-    const familyTreeExceptSelf = new Set(pokemon.familyId ? gamemasterPokemon.filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow) : []);
+    const familyTreeExceptSelf = new Set(pokemon.familyId ? Object.values(gamemasterPokemon).filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow) : []);
     const english_ordinal_rules = new Intl.PluralRules("en", {type: "ordinal"});
     const suffixes: Dictionary<string> = {
         one: "st",
@@ -45,7 +45,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     };
 
     const ordinal = (number: number) => {
-        if (number < 1) {
+        if (!number) {
             return undefined;
         }
         const category = english_ordinal_rules.select(number);
@@ -72,23 +72,23 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
             continue;
         }
-        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon.find(pk => pk.speciesId === id)).filter(pk => pk) as IGamemasterPokemon[]);
+        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk) as IGamemasterPokemon[]);
     }
 
     reachablePokemons.forEach(member => {
         familyTreeExceptSelf.add(member);
-        const rankInGreat = rankLists[0].findIndex(p => p.speciesId === member.speciesId);
-        const rankInUltra = rankLists[1].findIndex(p => p.speciesId === member.speciesId);
-        const rankInMaster = rankLists[2].findIndex(p => p.speciesId === member.speciesId);
-        if (rankInGreat !== -1 && rankInGreat < bestInFamilyForGreatLeagueRank) {
+        const rankInGreat = rankLists[0][member.speciesId]?.rank;
+        const rankInUltra = rankLists[1][member.speciesId]?.rank;
+        const rankInMaster = rankLists[2][member.speciesId]?.rank;
+        if (!isNaN(rankInGreat) && rankInGreat < bestInFamilyForGreatLeagueRank) {
             bestInFamilyForGreatLeagueRank = rankInGreat;
             bestInFamilyForGreatLeague = member;
         }
-        if (rankInUltra !== -1 && rankInUltra < bestInFamilyForUltraLeagueRank) {
+        if (!isNaN(rankInUltra) && rankInUltra < bestInFamilyForUltraLeagueRank) {
             bestInFamilyForUltraLeagueRank = rankInUltra;
             bestInFamilyForUltraLeague = member;
         }
-        if (rankInMaster !== -1 && rankInMaster < bestInFamilyForMasterLeagueRank) {
+        if (!isNaN(rankInMaster) && rankInMaster < bestInFamilyForMasterLeagueRank) {
             bestInFamilyForMasterLeagueRank = rankInMaster;
             bestInFamilyForMasterLeague = member;
         }
@@ -101,7 +101,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         if (!currentPokemon.parent) {
             continue;
         }
-        const parentRef = gamemasterPokemon.find(p => p.speciesId === currentPokemon.parent);
+        const parentRef = gamemasterPokemon[currentPokemon.parent];
         if (!parentRef) {
             continue;
         }
@@ -211,20 +211,20 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             greatLeagueSta={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.S}
             greatLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
             greatLeaguePercentile={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueRank + 1}
-            greatLeagueRank={ordinal(rankLists[0].findIndex(p => p.speciesId === bestInFamilyForGreatLeague.speciesId) + 1) ?? "-"}
+            greatLeagueRank={ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank) ?? "-"}
             greatLeagueBestFamilyMemberName={simplifyName(bestInFamilyForGreatLeague.speciesName)}
-            greatLeagueFastAttack={moves.find(m => m.moveId === rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[0] ?? "")?.name ?? ""}
-            greatLeagueFastAttackIsElite={bestInFamilyForGreatLeague.eliteMoves.includes(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[0] ?? "")}
-            greatLeagueFastAttackIsLegacy={bestInFamilyForGreatLeague.legacyMoves.includes(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[0] ?? "")}
-            greatLeagueFastAttackType={moves.find(m => m.moveId === rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[0] ?? "")?.type ?? ""}
-            greatLeagueCharged1={moves.find(m => m.moveId === rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[1] ?? "")?.name ?? ""}
-            greatLeagueCharged1IsElite={bestInFamilyForGreatLeague.eliteMoves.includes(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[1] ?? "")}
-            greatLeagueCharged1IsLegacy={bestInFamilyForGreatLeague.legacyMoves.includes(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[1] ?? "")}
-            greatLeagueCharged1Type={moves.find(m => m.moveId === rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[1] ?? "")?.type ?? ""}
-            greatLeagueCharged2={moves.find(m => m.moveId === rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[2] ?? "")?.name ?? ""}
-            greatLeagueCharged2IsElite={bestInFamilyForGreatLeague.eliteMoves.includes(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[2] ?? "")}
-            greatLeagueCharged2IsLegacy={bestInFamilyForGreatLeague.legacyMoves.includes(rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[2] ?? "")}
-            greatLeagueCharged2Type={moves.find(m => m.moveId === rankLists[0].find(p => p.speciesId === bestInFamilyForGreatLeague.speciesId)?.moveset[2] ?? "")?.type ?? ""}
+            greatLeagueFastAttack={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[0] ?? ""]?.name ?? ""}
+            greatLeagueFastAttackIsElite={bestInFamilyForGreatLeague.eliteMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[0] ?? "")}
+            greatLeagueFastAttackIsLegacy={bestInFamilyForGreatLeague.legacyMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[0] ?? "")}
+            greatLeagueFastAttackType={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[0] ?? ""]?.type ?? ""}
+            greatLeagueCharged1={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[1] ?? ""]?.name ?? ""}
+            greatLeagueCharged1IsElite={bestInFamilyForGreatLeague.eliteMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[1] ?? "")}
+            greatLeagueCharged1IsLegacy={bestInFamilyForGreatLeague.legacyMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[1] ?? "")}
+            greatLeagueCharged1Type={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[1] ?? ""]?.type ?? ""}
+            greatLeagueCharged2={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[2] ?? ""]?.name ?? ""}
+            greatLeagueCharged2IsElite={bestInFamilyForGreatLeague.eliteMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[2] ?? "")}
+            greatLeagueCharged2IsLegacy={bestInFamilyForGreatLeague.legacyMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[2] ?? "")}
+            greatLeagueCharged2Type={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[2] ?? ""]?.type ?? ""}
             greatLeagueCP={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueCP}
             greatLeagueLVL={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueLvl}
             greatLeagueBestCP={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfectCP}
@@ -234,20 +234,20 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             ultraLeagueSta={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.S}
             ultraLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
             ultraLeaguePercentile={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueRank + 1}
-            ultraLeagueRank={ordinal(rankLists[1].findIndex(p => p.speciesId === bestInFamilyForUltraLeague.speciesId) + 1) ?? "-"}
+            ultraLeagueRank={ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank) ?? "-"}
             ultraLeagueBestFamilyMemberName={simplifyName(bestInFamilyForUltraLeague.speciesName)}
-            ultraLeagueFastAttack={moves.find(m => m.moveId === rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[0] ?? "")?.name ?? ""}
-            ultraLeagueFastAttackIsElite={bestInFamilyForUltraLeague.eliteMoves.includes(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[0] ?? "")}
-            ultraLeagueFastAttackIsLegacy={bestInFamilyForUltraLeague.legacyMoves.includes(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[0] ?? "")}
-            ultraLeagueFastAttackType={moves.find(m => m.moveId === rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[0] ?? "")?.type ?? ""}
-            ultraLeagueCharged1={moves.find(m => m.moveId === rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[1] ?? "")?.name ?? ""}
-            ultraLeagueCharged1IsElite={bestInFamilyForUltraLeague.eliteMoves.includes(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[1] ?? "")}
-            ultraLeagueCharged1IsLegacy={bestInFamilyForUltraLeague.legacyMoves.includes(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[1] ?? "")}
-            ultraLeagueCharged1Type={moves.find(m => m.moveId === rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[1] ?? "")?.type ?? ""}
-            ultraLeagueCharged2={moves.find(m => m.moveId === rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[2] ?? "")?.name ?? ""}
-            ultraLeagueCharged2IsElite={bestInFamilyForUltraLeague.eliteMoves.includes(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[2] ?? "")}
-            ultraLeagueCharged2IsLegacy={bestInFamilyForUltraLeague.legacyMoves.includes(rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[2] ?? "")}
-            ultraLeagueCharged2Type={moves.find(m => m.moveId === rankLists[1].find(p => p.speciesId === bestInFamilyForUltraLeague.speciesId)?.moveset[2] ?? "")?.type ?? ""}
+            ultraLeagueFastAttack={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[0] ?? ""]?.name ?? ""}
+            ultraLeagueFastAttackIsElite={bestInFamilyForUltraLeague.eliteMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[0] ?? "")}
+            ultraLeagueFastAttackIsLegacy={bestInFamilyForUltraLeague.legacyMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[0] ?? "")}
+            ultraLeagueFastAttackType={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[0] ?? ""]?.type ?? ""}
+            ultraLeagueCharged1={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[1] ?? ""]?.name ?? ""}
+            ultraLeagueCharged1IsElite={bestInFamilyForUltraLeague.eliteMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[1] ?? "")}
+            ultraLeagueCharged1IsLegacy={bestInFamilyForUltraLeague.legacyMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[1] ?? "")}
+            ultraLeagueCharged1Type={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[1] ?? ""]?.type ?? ""}
+            ultraLeagueCharged2={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[2] ?? ""]?.name ?? ""}
+            ultraLeagueCharged2IsElite={bestInFamilyForUltraLeague.eliteMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[2] ?? "")}
+            ultraLeagueCharged2IsLegacy={bestInFamilyForUltraLeague.legacyMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[2] ?? "")}
+            ultraLeagueCharged2Type={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[2] ?? ""]?.type ?? ""}
             ultraLeagueCP={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueCP}
             ultraLeagueLVL={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueLvl}
             ultraLeagueBestCP={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfectCP}
@@ -257,20 +257,20 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             masterLeagueSta={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.S}
             masterLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
             masterLeaguePercentile={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueRank + 1}
-            masterLeagueRank={ordinal(rankLists[2].findIndex(p => p.speciesId === bestInFamilyForMasterLeague.speciesId) + 1) ?? "-"}
+            masterLeagueRank={ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank) ?? "-"}
             masterLeagueBestFamilyMemberName={simplifyName(bestInFamilyForMasterLeague.speciesName)}
-            masterLeagueFastAttack={moves.find(m => m.moveId === rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[0] ?? "")?.name ?? ""}
-            masterLeagueFastAttackIsElite={bestInFamilyForMasterLeague.eliteMoves.includes(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[0] ?? "")}
-            masterLeagueFastAttackIsLegacy={bestInFamilyForMasterLeague.legacyMoves.includes(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[0] ?? "")}
-            masterLeagueFastAttackType={moves.find(m => m.moveId === rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[0] ?? "")?.type ?? ""}
-            masterLeagueCharged1={moves.find(m => m.moveId === rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[1] ?? "")?.name ?? ""}
-            masterLeagueCharged1IsElite={bestInFamilyForMasterLeague.eliteMoves.includes(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[1] ?? "")}
-            masterLeagueCharged1IsLegacy={bestInFamilyForMasterLeague.legacyMoves.includes(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[1] ?? "")}
-            masterLeagueCharged1Type={moves.find(m => m.moveId === rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[1] ?? "")?.type ?? ""}
-            masterLeagueCharged2={moves.find(m => m.moveId === rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[2] ?? "")?.name ?? ""}
-            masterLeagueCharged2IsElite={bestInFamilyForMasterLeague.eliteMoves.includes(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[2] ?? "")}
-            masterLeagueCharged2IsLegacy={bestInFamilyForMasterLeague.legacyMoves.includes(rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[2] ?? "")}
-            masterLeagueCharged2Type={moves.find(m => m.moveId === rankLists[2].find(p => p.speciesId === bestInFamilyForMasterLeague.speciesId)?.moveset[2] ?? "")?.type ?? ""}
+            masterLeagueFastAttack={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[0] ?? ""]?.name ?? ""}
+            masterLeagueFastAttackIsElite={bestInFamilyForMasterLeague.eliteMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[0] ?? "")}
+            masterLeagueFastAttackIsLegacy={bestInFamilyForMasterLeague.legacyMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[0] ?? "")}
+            masterLeagueFastAttackType={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[0] ?? ""]?.type ?? ""}
+            masterLeagueCharged1={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[1] ?? ""]?.name ?? ""}
+            masterLeagueCharged1IsElite={bestInFamilyForMasterLeague.eliteMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[1] ?? "")}
+            masterLeagueCharged1IsLegacy={bestInFamilyForMasterLeague.legacyMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[1] ?? "")}
+            masterLeagueCharged1Type={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[1] ?? ""]?.type ?? ""}
+            masterLeagueCharged2={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[2] ?? ""]?.name ?? ""}
+            masterLeagueCharged2IsElite={bestInFamilyForMasterLeague.eliteMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[2] ?? "")}
+            masterLeagueCharged2IsLegacy={bestInFamilyForMasterLeague.legacyMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[2] ?? "")}
+            masterLeagueCharged2Type={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[2] ?? ""]?.type ?? ""}
             masterLeagueCP={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueCP}
             masterLeagueLVL={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueLvl}
             masterLeagueBestCP={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfectCP}
