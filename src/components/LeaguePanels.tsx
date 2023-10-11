@@ -93,10 +93,10 @@ const LeaguePanels = ({
                     <section>
                         <div className="cp-and-level-recommended"><strong>{leagueStat.bestCP} CP @ LVL {leagueStat.bestLevel}</strong></div>
                     </section>
-                    {leagueStat.fastAttack && <strong className="pokemon-attack">
-                        <div className="type-attack">{leagueStat.fastAttack && <img src={typeSrc(leagueStat.fastAttack.type)}/>}{leagueStat.fastAttack.moveName}{leagueStat.fastAttack.isElite ? "*" : leagueStat.fastAttack.isLegacy ? <sup>†</sup> : <></>}</div>
-                        <div className="type-attack">{leagueStat.chargedAttack1 && <img src={typeSrc(leagueStat.chargedAttack1.type)}/>}{leagueStat.chargedAttack1.moveName}{leagueStat.chargedAttack1.isElite ? "*" : leagueStat.chargedAttack1.isLegacy ? <sup>†</sup> : <></>}</div>
-                        <div className="type-attack">{leagueStat.chargedAttack2 && <img src={typeSrc(leagueStat.chargedAttack2.type)}/>}{leagueStat.chargedAttack2.moveName}{leagueStat.chargedAttack2.isElite ? "*" : leagueStat.chargedAttack2.isLegacy ? <sup>†</sup> : <></>}</div>
+                    {leagueStat.fastAttack.moveName && <strong className="pokemon-attack">
+                        <div className="type-attack">{leagueStat.fastAttack.moveName && <img src={typeSrc(leagueStat.fastAttack.type)}/>}{leagueStat.fastAttack.moveName}{leagueStat.fastAttack.isElite ? "*" : leagueStat.fastAttack.isLegacy ? <sup>†</sup> : <></>}</div>
+                        <div className="type-attack">{leagueStat.chargedAttack1.moveName && <img src={typeSrc(leagueStat.chargedAttack1.type)}/>}{leagueStat.chargedAttack1.moveName}{leagueStat.chargedAttack1.isElite ? "*" : leagueStat.chargedAttack1.isLegacy ? <sup>†</sup> : <></>}</div>
+                        <div className="type-attack">{leagueStat.chargedAttack2.moveName && <img src={typeSrc(leagueStat.chargedAttack2.type)}/>}{leagueStat.chargedAttack2.moveName}{leagueStat.chargedAttack2.isElite ? "*" : leagueStat.chargedAttack2.isLegacy ? <sup>†</sup> : <></>}</div>
                     </strong>}
                 </section>
             </div>
