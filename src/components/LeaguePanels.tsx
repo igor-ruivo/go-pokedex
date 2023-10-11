@@ -1,194 +1,51 @@
 import "./LeaguePanels.scss";
 
+interface PokemonLeagueMove {
+    moveName: string,
+    type: string,
+    isElite: boolean,
+    isLegacy: boolean
+}
+
+interface LeagueStat {
+    leagueTitle: string,
+    bestReachablePokemonName: string,
+    pokemonRankInLeague: string | undefined,
+    pokemonLeaguePercentage: number,
+    pokemonLeaguePercentile: number,
+    pokemonCP: number,
+    pokemonLevel: number,
+    atk: number,
+    def: number,
+    hp: number,
+    bestCP: number,
+    bestLevel: number,
+    fastAttack: PokemonLeagueMove,
+    chargedAttack1: PokemonLeagueMove,
+    chargedAttack2: PokemonLeagueMove,
+}
+
 interface ILeaguePanelsProps {
-    greatLeagueAtk: number,
-    greatLeagueDef: number,
-    greatLeagueSta: number,
-    greatLeaguePercent: number,
-    greatLeaguePercentile: number,
-    greatLeagueRank: string,
-    greatLeagueBestFamilyMemberName: string,
-    greatLeagueFastAttack: string,
-    greatLeagueFastAttackIsLegacy: boolean,
-    greatLeagueFastAttackIsElite: boolean,
-    greatLeagueFastAttackType: string,
-    greatLeagueCharged1: string,
-    greatLeagueCharged1IsLegacy: boolean,
-    greatLeagueCharged1IsElite: boolean,
-    greatLeagueCharged1Type: string,
-    greatLeagueCharged2: string,
-    greatLeagueCharged2IsLegacy: boolean,
-    greatLeagueCharged2IsElite: boolean,
-    greatLeagueCharged2Type: string,
-    greatLeagueCP: number,
-    greatLeagueLVL: number,
-    greatLeagueBestCP: number,
-    greatLeagueBestLVL: number,
-    ultraLeagueAtk: number,
-    ultraLeagueDef: number,
-    ultraLeagueSta: number,
-    ultraLeagueRank: string,
-    ultraLeagueBestFamilyMemberName: string,
-    ultraLeaguePercent: number,
-    ultraLeaguePercentile: number,
-    ultraLeagueFastAttack: string,
-    ultraLeagueFastAttackIsLegacy: boolean,
-    ultraLeagueFastAttackIsElite: boolean,
-    ultraLeagueFastAttackType: string,
-    ultraLeagueCharged1: string,
-    ultraLeagueCharged1IsLegacy: boolean,
-    ultraLeagueCharged1IsElite: boolean,
-    ultraLeagueCharged1Type: string,
-    ultraLeagueCharged2: string,
-    ultraLeagueCharged2IsLegacy: boolean,
-    ultraLeagueCharged2IsElite: boolean,
-    ultraLeagueCharged2Type: string,
-    ultraLeagueCP: number,
-    ultraLeagueLVL: number,
-    ultraLeagueBestCP: number,
-    ultraLeagueBestLVL: number,
-    masterLeagueAtk: number,
-    masterLeagueDef: number,
-    masterLeagueSta: number,
-    masterLeagueRank: string
-    masterLeagueBestFamilyMemberName: string,
-    masterLeaguePercent: number,
-    masterLeaguePercentile: number,
-    masterLeagueFastAttack: string,
-    masterLeagueFastAttackIsLegacy: boolean,
-    masterLeagueFastAttackIsElite: boolean,
-    masterLeagueFastAttackType: string,
-    masterLeagueCharged1: string,
-    masterLeagueCharged1IsLegacy: boolean,
-    masterLeagueCharged1IsElite: boolean,
-    masterLeagueCharged1Type: string,
-    masterLeagueCharged2: string,
-    masterLeagueCharged2IsLegacy: boolean,
-    masterLeagueCharged2IsElite: boolean,
-    masterLeagueCharged2Type: string,
-    masterLeagueCP: number,
-    masterLeagueLVL: number,
-    masterLeagueBestCP: number,
-    masterLeagueBestLVL: number
+    greatLeagueStats: LeagueStat,
+    ultraLeagueStats: LeagueStat,
+    masterLeagueStats: LeagueStat
 }
 
 const LeaguePanels = ({
-    greatLeagueAtk,
-    greatLeagueDef,
-    greatLeagueSta,
-    greatLeaguePercent,
-    greatLeaguePercentile,
-    greatLeagueRank,
-    greatLeagueBestFamilyMemberName,
-    greatLeagueFastAttack,
-    greatLeagueFastAttackIsLegacy,
-    greatLeagueFastAttackIsElite,
-    greatLeagueFastAttackType,
-    greatLeagueCharged1,
-    greatLeagueCharged1IsLegacy,
-    greatLeagueCharged1IsElite,
-    greatLeagueCharged1Type,
-    greatLeagueCharged2,
-    greatLeagueCharged2IsLegacy,
-    greatLeagueCharged2IsElite,
-    greatLeagueCharged2Type,
-    greatLeagueCP,
-    greatLeagueLVL,
-    greatLeagueBestCP,
-    greatLeagueBestLVL,
-    ultraLeagueAtk,
-    ultraLeagueDef,
-    ultraLeagueSta,
-    ultraLeaguePercent,
-    ultraLeaguePercentile,
-    ultraLeagueRank,
-    ultraLeagueBestFamilyMemberName,
-    ultraLeagueFastAttack,
-    ultraLeagueFastAttackIsLegacy,
-    ultraLeagueFastAttackIsElite,
-    ultraLeagueFastAttackType,
-    ultraLeagueCharged1,
-    ultraLeagueCharged1IsLegacy,
-    ultraLeagueCharged1IsElite,
-    ultraLeagueCharged1Type,
-    ultraLeagueCharged2,
-    ultraLeagueCharged2IsLegacy,
-    ultraLeagueCharged2IsElite,
-    ultraLeagueCharged2Type,
-    ultraLeagueCP,
-    ultraLeagueLVL,
-    ultraLeagueBestCP,
-    ultraLeagueBestLVL,
-    masterLeagueAtk,
-    masterLeagueDef,
-    masterLeagueSta,
-    masterLeaguePercent,
-    masterLeaguePercentile,
-    masterLeagueRank,
-    masterLeagueBestFamilyMemberName,
-    masterLeagueFastAttack,
-    masterLeagueFastAttackIsLegacy,
-    masterLeagueFastAttackIsElite,
-    masterLeagueFastAttackType,
-    masterLeagueCharged1,
-    masterLeagueCharged1IsLegacy,
-    masterLeagueCharged1IsElite,
-    masterLeagueCharged1Type,
-    masterLeagueCharged2,
-    masterLeagueCharged2IsLegacy,
-    masterLeagueCharged2IsElite,
-    masterLeagueCharged2Type,
-    masterLeagueCP,
-    masterLeagueLVL,
-    masterLeagueBestCP,
-    masterLeagueBestLVL
+    greatLeagueStats,
+    ultraLeagueStats,
+    masterLeagueStats
 }: ILeaguePanelsProps) => {
 
-    const buildRankString = (rank: string) => {
-        if (rank === "-") {
+    const buildRankString = (rank: string|undefined) => {
+        if (!rank) {
             return "Unranked";
         }
 
         return `Ranked ${rank}`;
     }
 
-    const rankClass = (rank: string) => "pokemon-ivs-ranked" + (rank === "-" ? " unranked" : "");
-
-    const greatLeagueFastAttackUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueFastAttackType}.png`;
-    const greatLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueCharged1Type}.png`;
-    const greatLeagueCharged2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${greatLeagueCharged2Type}.png`;
-    const ultraLeagueFastAttackUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${ultraLeagueFastAttackType}.png`;
-    const ultraLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${ultraLeagueCharged1Type}.png`;
-    const ultraLeagueCharged2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${ultraLeagueCharged2Type}.png`;
-    const masterLeagueFastAttackUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueFastAttackType}.png`;
-    const masterLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueCharged1Type}.png`;
-    const masterLeagueCharged2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueCharged2Type}.png`;
-
-    interface PokemonLeagueMove {
-        moveName: string,
-        type: string,
-        typeImgUrl: string,
-        isElite: boolean,
-        isLegacy: boolean
-    }
-
-    interface LeagueStat {
-        leagueTitle: string,
-        bestReachablePokemonName: string,
-        pokemonRankInLeague: string,
-        pokemonLeaguePercentage: number,
-        pokemonLeaguePercentile: number,
-        pokemonCP: number,
-        pokemonLevel: number,
-        atk: number,
-        def: number,
-        hp: number,
-        bestCP: number,
-        bestLevel: number,
-        fastAttack: PokemonLeagueMove,
-        chargedAttack1: PokemonLeagueMove,
-        chargedAttack2: PokemonLeagueMove,
-    }
+    const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked" + (!rank ? " unranked" : "");
 
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats ${leagueStat.leagueTitle}`;
@@ -247,111 +104,9 @@ const LeaguePanels = ({
     }
 
     return <div className="pvp-leagues">
-        {renderPanel({
-            leagueTitle: "great",
-            bestReachablePokemonName: greatLeagueBestFamilyMemberName,
-            pokemonRankInLeague: greatLeagueRank,
-            pokemonLeaguePercentage: greatLeaguePercent,
-            pokemonLeaguePercentile: greatLeaguePercentile,
-            pokemonCP: greatLeagueCP,
-            pokemonLevel: greatLeagueLVL,
-            atk: greatLeagueAtk,
-            def: greatLeagueDef,
-            hp: greatLeagueSta,
-            bestCP: greatLeagueBestCP,
-            bestLevel: greatLeagueBestLVL,
-            fastAttack: {
-                moveName: greatLeagueFastAttack,
-                type: greatLeagueFastAttackType,
-                typeImgUrl: greatLeagueFastAttackUrl,
-                isElite: greatLeagueFastAttackIsElite,
-                isLegacy: greatLeagueFastAttackIsLegacy
-            },
-            chargedAttack1: {
-                moveName: greatLeagueCharged1,
-                type: greatLeagueCharged1Type,
-                typeImgUrl: greatLeagueCharged1Url,
-                isElite: greatLeagueCharged1IsElite,
-                isLegacy: greatLeagueCharged1IsLegacy
-            },
-            chargedAttack2: {
-                moveName: greatLeagueCharged2,
-                type: greatLeagueCharged2Type,
-                typeImgUrl: greatLeagueCharged2Url,
-                isElite: greatLeagueCharged2IsElite,
-                isLegacy: greatLeagueCharged2IsLegacy
-            }
-        })}
-        {renderPanel({
-            leagueTitle: "ultra",
-            bestReachablePokemonName: ultraLeagueBestFamilyMemberName,
-            pokemonRankInLeague: ultraLeagueRank,
-            pokemonLeaguePercentage: ultraLeaguePercent,
-            pokemonLeaguePercentile: ultraLeaguePercentile,
-            pokemonCP: ultraLeagueCP,
-            pokemonLevel: ultraLeagueLVL,
-            atk: ultraLeagueAtk,
-            def: ultraLeagueDef,
-            hp: ultraLeagueSta,
-            bestCP: ultraLeagueBestCP,
-            bestLevel: ultraLeagueBestLVL,
-            fastAttack: {
-                moveName: ultraLeagueFastAttack,
-                type: ultraLeagueFastAttackType,
-                typeImgUrl: ultraLeagueFastAttackUrl,
-                isElite: ultraLeagueFastAttackIsElite,
-                isLegacy: ultraLeagueFastAttackIsLegacy
-            },
-            chargedAttack1: {
-                moveName: ultraLeagueCharged1,
-                type: ultraLeagueCharged1Type,
-                typeImgUrl: ultraLeagueCharged1Url,
-                isElite: ultraLeagueCharged1IsElite,
-                isLegacy: ultraLeagueCharged1IsLegacy
-            },
-            chargedAttack2: {
-                moveName: ultraLeagueCharged2,
-                type: ultraLeagueCharged2Type,
-                typeImgUrl: ultraLeagueCharged2Url,
-                isElite: ultraLeagueCharged2IsElite,
-                isLegacy: ultraLeagueCharged2IsLegacy
-            }
-        })}
-        {renderPanel({
-            leagueTitle: "master",
-            bestReachablePokemonName: masterLeagueBestFamilyMemberName,
-            pokemonRankInLeague: masterLeagueRank,
-            pokemonLeaguePercentage: masterLeaguePercent,
-            pokemonLeaguePercentile: masterLeaguePercentile,
-            pokemonCP: masterLeagueCP,
-            pokemonLevel: masterLeagueLVL,
-            atk: masterLeagueAtk,
-            def: masterLeagueDef,
-            hp: masterLeagueSta,
-            bestCP: masterLeagueBestCP,
-            bestLevel: masterLeagueBestLVL,
-            fastAttack: {
-                moveName: masterLeagueFastAttack,
-                type: masterLeagueFastAttackType,
-                typeImgUrl: masterLeagueFastAttackUrl,
-                isElite: masterLeagueFastAttackIsElite,
-                isLegacy: masterLeagueFastAttackIsLegacy
-            },
-            chargedAttack1: {
-                moveName: masterLeagueCharged1,
-                type: masterLeagueCharged1Type,
-                typeImgUrl: masterLeagueCharged1Url,
-                isElite: masterLeagueCharged1IsElite,
-                isLegacy: masterLeagueCharged1IsLegacy
-            },
-            chargedAttack2: {
-                moveName: masterLeagueCharged2,
-                type: masterLeagueCharged2Type,
-                typeImgUrl: masterLeagueCharged2Url,
-                isElite: masterLeagueCharged2IsElite,
-                isLegacy: masterLeagueCharged2IsLegacy
-            }
-        })}
+        {renderPanel(greatLeagueStats)}
+        {renderPanel(ultraLeagueStats)}
+        {renderPanel(masterLeagueStats)}
     </div>;
 }
 
