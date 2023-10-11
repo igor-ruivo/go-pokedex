@@ -3,7 +3,7 @@ import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { usePokemon } from "../contexts/pokemon-context";
 import Dictionary from "../utils/Dictionary";
 import { IIvPercents } from "../views/pokemon";
-import PokemonInfoImage from "./PokemonInfo/PokemonInfoImage";
+import PokemonImage from "./PokemonImage";
 import "./PokemonInfoBanner.scss";
 import { useState } from "react";
 import LeaguePanels from "./LeaguePanels";
@@ -11,6 +11,7 @@ import PokemonHeader from "./PokemonHeader";
 import CircularSliderInput from "./CircularSliderInput";
 import React from "react";
 import AppraisalBar from "./AppraisalBar";
+import { ordinal } from "../utils/conversions";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -36,22 +37,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     }
 
     const familyTreeExceptSelf = new Set(pokemon.familyId ? Object.values(gamemasterPokemon).filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow) : []);
-    const english_ordinal_rules = new Intl.PluralRules("en", {type: "ordinal"});
-    const suffixes: Dictionary<string> = {
-        one: "st",
-        two: "nd",
-        few: "rd",
-        other: "th"
-    };
-
-    const ordinal = (number: number) => {
-        if (!number) {
-            return undefined;
-        }
-        const category = english_ordinal_rules.select(number);
-        const suffix = suffixes[category];
-        return number + suffix;
-    }
     
     const valueToLevel = (value: number) => {
         return value / 2 + 0.5
@@ -125,6 +110,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             .replace("Female", "♀");
     }
 
+    const bestReachableGreatLeagueIvs = ivPercents[bestInFamilyForGreatLeague.speciesId];
+    const bestReachableUltraLeagueIvs = ivPercents[bestInFamilyForUltraLeague.speciesId];
+    const bestReachableMasterLeagueIvs = ivPercents[bestInFamilyForMasterLeague.speciesId];
+
+    const getRankPercentage = (rank: number) => Math.round(((1 - (rank / 4095)) * 100 + Number.EPSILON) * 100) / 100;
+
     return <div className="content">
         <PokemonHeader
             pokemonName={pokemon.speciesName}
@@ -145,7 +136,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     </div>
                     <div className="lvl-img-container">
                         <div className="lvl-img-selected-container">
-                            <PokemonInfoImage pokemon={pokemon} ref={selectedImageRef}/>
+                            <PokemonImage pokemon={pokemon} ref={selectedImageRef}/>
                         </div>
                     </div>
                 </div>
@@ -199,18 +190,18 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 {Array.from(familyTreeExceptSelf).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp).map(p => (
                     <div key = {p.speciesId} className="img-family-container">
                         <Link to={`/pokemon/${p.speciesId}`}>
-                            <PokemonInfoImage pokemon={p}/>
+                            <PokemonImage pokemon={p}/>
                         </Link>
                     </div>
                 ))}
             </div>
         </div>}
         <LeaguePanels
-            greatLeagueAtk={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.A}
-            greatLeagueDef={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.D}
-            greatLeagueSta={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfect.S}
-            greatLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
-            greatLeaguePercentile={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueRank + 1}
+            greatLeagueAtk={bestReachableGreatLeagueIvs.greatLeaguePerfect.A}
+            greatLeagueDef={bestReachableGreatLeagueIvs.greatLeaguePerfect.D}
+            greatLeagueSta={bestReachableGreatLeagueIvs.greatLeaguePerfect.S}
+            greatLeaguePercent={getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank)}
+            greatLeaguePercentile={bestReachableGreatLeagueIvs.greatLeagueRank + 1}
             greatLeagueRank={ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank) ?? "-"}
             greatLeagueBestFamilyMemberName={simplifyName(bestInFamilyForGreatLeague.speciesName)}
             greatLeagueFastAttack={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[0] ?? ""]?.name ?? ""}
@@ -225,15 +216,15 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             greatLeagueCharged2IsElite={bestInFamilyForGreatLeague.eliteMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[2] ?? "")}
             greatLeagueCharged2IsLegacy={bestInFamilyForGreatLeague.legacyMoves.includes(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[2] ?? "")}
             greatLeagueCharged2Type={moves[rankLists[0][bestInFamilyForGreatLeague.speciesId]?.moveset[2] ?? ""]?.type ?? ""}
-            greatLeagueCP={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueCP}
-            greatLeagueLVL={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeagueLvl}
-            greatLeagueBestCP={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfectCP}
-            greatLeagueBestLVL={ivPercents[bestInFamilyForGreatLeague.speciesId].greatLeaguePerfectLevel}
-            ultraLeagueAtk={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.A}
-            ultraLeagueDef={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.D}
-            ultraLeagueSta={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfect.S}
-            ultraLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
-            ultraLeaguePercentile={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueRank + 1}
+            greatLeagueCP={bestReachableGreatLeagueIvs.greatLeagueCP}
+            greatLeagueLVL={bestReachableGreatLeagueIvs.greatLeagueLvl}
+            greatLeagueBestCP={bestReachableGreatLeagueIvs.greatLeaguePerfectCP}
+            greatLeagueBestLVL={bestReachableGreatLeagueIvs.greatLeaguePerfectLevel}
+            ultraLeagueAtk={bestReachableUltraLeagueIvs.ultraLeaguePerfect.A}
+            ultraLeagueDef={bestReachableUltraLeagueIvs.ultraLeaguePerfect.D}
+            ultraLeagueSta={bestReachableUltraLeagueIvs.ultraLeaguePerfect.S}
+            ultraLeaguePercent={getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank)}
+            ultraLeaguePercentile={bestReachableUltraLeagueIvs.ultraLeagueRank + 1}
             ultraLeagueRank={ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank) ?? "-"}
             ultraLeagueBestFamilyMemberName={simplifyName(bestInFamilyForUltraLeague.speciesName)}
             ultraLeagueFastAttack={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[0] ?? ""]?.name ?? ""}
@@ -248,15 +239,15 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             ultraLeagueCharged2IsElite={bestInFamilyForUltraLeague.eliteMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[2] ?? "")}
             ultraLeagueCharged2IsLegacy={bestInFamilyForUltraLeague.legacyMoves.includes(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[2] ?? "")}
             ultraLeagueCharged2Type={moves[rankLists[1][bestInFamilyForUltraLeague.speciesId]?.moveset[2] ?? ""]?.type ?? ""}
-            ultraLeagueCP={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueCP}
-            ultraLeagueLVL={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeagueLvl}
-            ultraLeagueBestCP={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfectCP}
-            ultraLeagueBestLVL={ivPercents[bestInFamilyForUltraLeague.speciesId].ultraLeaguePerfectLevel}
-            masterLeagueAtk={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.A}
-            masterLeagueDef={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.D}
-            masterLeagueSta={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfect.S}
-            masterLeaguePercent={Math.round(((1 - (ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueRank / 4095)) * 100 + Number.EPSILON) * 100) / 100}
-            masterLeaguePercentile={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueRank + 1}
+            ultraLeagueCP={bestReachableUltraLeagueIvs.ultraLeagueCP}
+            ultraLeagueLVL={bestReachableUltraLeagueIvs.ultraLeagueLvl}
+            ultraLeagueBestCP={bestReachableUltraLeagueIvs.ultraLeaguePerfectCP}
+            ultraLeagueBestLVL={bestReachableUltraLeagueIvs.ultraLeaguePerfectLevel}
+            masterLeagueAtk={bestReachableMasterLeagueIvs.masterLeaguePerfect.A}
+            masterLeagueDef={bestReachableMasterLeagueIvs.masterLeaguePerfect.D}
+            masterLeagueSta={bestReachableMasterLeagueIvs.masterLeaguePerfect.S}
+            masterLeaguePercent={getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank)}
+            masterLeaguePercentile={bestReachableMasterLeagueIvs.masterLeagueRank + 1}
             masterLeagueRank={ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank) ?? "-"}
             masterLeagueBestFamilyMemberName={simplifyName(bestInFamilyForMasterLeague.speciesName)}
             masterLeagueFastAttack={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[0] ?? ""]?.name ?? ""}
@@ -271,10 +262,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             masterLeagueCharged2IsElite={bestInFamilyForMasterLeague.eliteMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[2] ?? "")}
             masterLeagueCharged2IsLegacy={bestInFamilyForMasterLeague.legacyMoves.includes(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[2] ?? "")}
             masterLeagueCharged2Type={moves[rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset[2] ?? ""]?.type ?? ""}
-            masterLeagueCP={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueCP}
-            masterLeagueLVL={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeagueLvl}
-            masterLeagueBestCP={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfectCP}
-            masterLeagueBestLVL={ivPercents[bestInFamilyForMasterLeague.speciesId].masterLeaguePerfectLevel}
+            masterLeagueCP={bestReachableMasterLeagueIvs.masterLeagueCP}
+            masterLeagueLVL={bestReachableMasterLeagueIvs.masterLeagueLvl}
+            masterLeagueBestCP={bestReachableMasterLeagueIvs.masterLeaguePerfectCP}
+            masterLeagueBestLVL={bestReachableMasterLeagueIvs.masterLeaguePerfectLevel}
         />
     </div>;
 }

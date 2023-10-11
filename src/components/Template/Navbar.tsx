@@ -39,10 +39,10 @@ const Navbar = () => {
     return <nav className="navbar">
         <section className="navbar-section">
             <Link to={getDestination()} className="navbar-logo">
-                <img className="navbar-logo-image" alt="GO-Pokedéx logo" loading="lazy" decoding="async" data-nimg="fill" src="https://i.imgur.com/eBscnsv.png"/>  
+                <img className="navbar-logo-image" alt="GO-Pokedéx logo" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
             </Link>
             <button className="navbar-menu">
-                <img className="navbar-menu-img" data-invertondarkmode="true" alt="Menu toggle" loading="lazy" width="24" height="20" decoding="async" data-nimg="1" src={"https://i.imgur.com/NEVZ0qK.png"}/>
+                <img className="navbar-menu-img" alt="Menu toggle" loading="lazy" width="24" height="20" decoding="async" src={"https://i.imgur.com/NEVZ0qK.png"}/>
                 <span>Menu</span>
             </button>
             <div className="search-wrapper">

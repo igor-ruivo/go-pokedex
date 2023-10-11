@@ -56,6 +56,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
                 break;
         }
     };
+    
     const renderStatBar = (stat: Stat, value: number) => {
         const cells = [];
         for (let i = 0; i < 15; i++) {
@@ -74,20 +75,6 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
         }
 
         const statBarClass = value === 15 ? 'stat-bar max' : 'stat-bar';
-
-        const setGenericStatValue = (stat: Stat, value: number) => {
-            switch (stat) {
-                case Stat.Attack:
-                    setDebouncingAttack(value);
-                    break;
-                case Stat.Defense:
-                    setDebouncingDefense(value);
-                    break;
-                case Stat.HP:
-                    setDebouncingHP(value);
-                    break;
-            }
-        }
 
         return (
             <div className="stat">

@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import "./PokemonCard.scss"
 import PokemonImage from "./PokemonImage";
-import PokemonNumber from "./PokemonNumber/PokemonNumber";
-import PokemonTypes from "./PokemonType/PokemonTypes";
+import PokemonNumber from "./PokemonNumber";
+import PokemonTypes from "./PokemonTypes";
 import { ListType } from "../views/pokedex";
 
 interface IPokemonCardProps {

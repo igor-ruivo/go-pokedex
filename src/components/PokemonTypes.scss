@@ -1,0 +1,17 @@
+.pokemon_types {
+    display: flex;
+    justify-content: end;
+    width: 20px;
+    height: 20px;
+}
+
+.type-icon {
+    margin-left: 2px;
+}
+
+@media (max-width: 500px) {
+    .pokemon_types {
+        width: calc(12px + 8 * ((100vw - 320px) / 180));
+        height: calc(12px + 8 * ((100vw - 320px) / 180));
+    }
+}

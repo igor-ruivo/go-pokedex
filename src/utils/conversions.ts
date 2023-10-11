@@ -2,6 +2,7 @@ import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { IMove } from "../DTOs/IMove";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
+import Dictionary from "./Dictionary";
 import { buildPokemonImageUrl } from "./Resources";
 
 const blacklistedSpecieIds = [
@@ -129,4 +130,22 @@ export const mapMoves: (data: any) => IMove[] = (data: any) => {
             }
         }
     );
+}
+
+export const ordinal = (number: number) => {
+    if (!number) {
+        return undefined;
+    }
+
+    const english_ordinal_rules = new Intl.PluralRules("en", {type: "ordinal"});
+    const suffixes: Dictionary<string> = {
+        one: "st",
+        two: "nd",
+        few: "rd",
+        other: "th"
+    };
+    
+    const category = english_ordinal_rules.select(number);
+    const suffix = suffixes[category];
+    return number + suffix;
 }

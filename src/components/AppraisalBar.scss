@@ -40,10 +40,6 @@
     margin-right: 10%;
 }
 
-.data-grid {
-    margin: 10px 10px 20px;
-}
-
 .appraisal .stat {
     margin: 0 10px 10px
 }
@@ -113,30 +109,6 @@
     background: #dea39f
 }
 
-#result .preview .stat-split .stat {
-    text-align: center;
-    flex: 1 1 50%;
-    padding: 2px 0
-}
-
-#result .preview .stat-split .stat:last-child {
-    border-left: 1px solid rgba(0,0,0,.1)
-}
-
-#result .preview .stat-split .stat span {
-    font-size: 32px;
-    margin-bottom: 8px
-}
-
-#result .preview .stat-split .stat p {
-    font-size: 15px;
-    color: rgba(0,0,0,.54)
-}
-
-#result .preview .stat-split .stat:first-child span {
-    color: #38a169
-}
-
 .select-ivs {
     color-scheme: dark;
     font-size: small;
@@ -162,10 +134,6 @@
 }
 
 @media (max-width: 500px) {
-
-    .data-grid {
-        max-width: 100%;
-    }
 
     .appraisal .stat {
         max-width: 100%;

@@ -164,150 +164,194 @@ const LeaguePanels = ({
     const masterLeagueCharged1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueCharged1Type}.png`;
     const masterLeagueCharged2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${masterLeagueCharged2Type}.png`;
 
+    interface PokemonLeagueMove {
+        moveName: string,
+        type: string,
+        typeImgUrl: string,
+        isElite: boolean,
+        isLegacy: boolean
+    }
+
+    interface LeagueStat {
+        leagueTitle: string,
+        bestReachablePokemonName: string,
+        pokemonRankInLeague: string,
+        pokemonLeaguePercentage: number,
+        pokemonLeaguePercentile: number,
+        pokemonCP: number,
+        pokemonLevel: number,
+        atk: number,
+        def: number,
+        hp: number,
+        bestCP: number,
+        bestLevel: number,
+        fastAttack: PokemonLeagueMove,
+        chargedAttack1: PokemonLeagueMove,
+        chargedAttack2: PokemonLeagueMove,
+    }
+
+    const renderPanel = (leagueStat: LeagueStat) => {
+        const pvpStatsClassName = `pvp-stats ${leagueStat.leagueTitle}`;
+        const logoSrc = `https://www.stadiumgaming.gg/frontend/assets/img/${leagueStat.leagueTitle}.png`;
+        const typeSrc = (type: string) => `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${type}.png`;
+
+        return (
+            <div className={pvpStatsClassName}>
+                <section className="pvp-title">
+                    <img src={logoSrc} alt="League icon" loading="lazy" decoding="async" className="pvp-img"/>
+                        {leagueStat.bestReachablePokemonName && <h4>({leagueStat.bestReachablePokemonName})</h4>}
+                        <strong className={rankClass(leagueStat.pokemonRankInLeague)}>
+                            {buildRankString(leagueStat.pokemonRankInLeague)}
+                        </strong>
+                            <div className="custom-pokemon">
+                                <h3>
+                                    <div>{leagueStat.pokemonLeaguePercentage}% <span className="percentile">(#{leagueStat.pokemonLeaguePercentile})</span></div>
+                                </h3>
+                                <div className="cp-and-level">{leagueStat.pokemonCP} CP @ LVL {leagueStat.pokemonLevel}</div>
+                            </div>
+                </section>
+                <section className="pvp-stats-display">
+                    <section className="pvp-ivs">
+                        <ul className="pokemon-ivs">
+                            <li>
+                                <span className="pokemon-ivs-item">
+                                    <span>{leagueStat.atk}</span>
+                                    <strong className="pokemon-ivs-label">ATK</strong>
+                                </span>
+                            </li>
+                            <li>
+                                <span className="pokemon-ivs-item">
+                                    <span>{leagueStat.def}</span>
+                                    <strong className="pokemon-ivs-label">DEF</strong>
+                                </span>
+                            </li>
+                            <li>
+                                <span className="pokemon-ivs-item">
+                                    <span>{leagueStat.hp}</span>
+                                    <strong className="pokemon-ivs-label">STA</strong>
+                                </span>
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <div className="cp-and-level-recommended"><strong>{leagueStat.bestCP} CP @ LVL {leagueStat.bestLevel}</strong></div>
+                    </section>
+                    {leagueStat.fastAttack && <strong className="pokemon-attack">
+                        <div className="type-attack">{leagueStat.fastAttack && <img src={typeSrc(leagueStat.fastAttack.type)}/>}{leagueStat.fastAttack.moveName}{leagueStat.fastAttack.isElite ? "*" : leagueStat.fastAttack.isLegacy ? <sup>†</sup> : <></>}</div>
+                        <div className="type-attack">{leagueStat.chargedAttack1 && <img src={typeSrc(leagueStat.chargedAttack1.type)}/>}{leagueStat.chargedAttack1.moveName}{leagueStat.chargedAttack1.isElite ? "*" : leagueStat.chargedAttack1.isLegacy ? <sup>†</sup> : <></>}</div>
+                        <div className="type-attack">{leagueStat.chargedAttack2 && <img src={typeSrc(leagueStat.chargedAttack2.type)}/>}{leagueStat.chargedAttack2.moveName}{leagueStat.chargedAttack2.isElite ? "*" : leagueStat.chargedAttack2.isLegacy ? <sup>†</sup> : <></>}</div>
+                    </strong>}
+                </section>
+            </div>
+        );
+    }
+
     return <div className="pvp-leagues">
-        <div className="pvp-stats great">
-            <section className="pvp-title">
-                <img src="https://www.stadiumgaming.gg/frontend/assets/img/great.png" alt="Great League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
-                    {greatLeagueBestFamilyMemberName && <h4>({greatLeagueBestFamilyMemberName})</h4>}
-                    <strong className={rankClass(greatLeagueRank)}>
-                        {buildRankString(greatLeagueRank)}
-                    </strong>
-                        <div className="custom-pokemon">
-                            <h3>
-                                <div>{greatLeaguePercent}% <span className="percentile">(#{greatLeaguePercentile})</span></div>
-                            </h3>
-                            <div className="cp-and-level">{greatLeagueCP} CP @ LVL {greatLeagueLVL}</div>
-                        </div>
-            </section>
-            
-            <section className="pvp-stats-display">
-                <section className="pvp-ivs">
-                    <ul className="pokemon-ivs">
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{greatLeagueAtk}</span>
-                                <strong className="pokemon-ivs-label">ATK</strong>
-                            </span>
-                        </li>
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{greatLeagueDef}</span>
-                                <strong className="pokemon-ivs-label">DEF</strong>
-                            </span>
-                        </li>
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{greatLeagueSta}</span>
-                                <strong className="pokemon-ivs-label">STA</strong>
-                            </span>
-                        </li>
-                    </ul>
-                </section>
-                <section>
-                    <div className="cp-and-level-recommended"><strong>{greatLeagueBestCP} CP @ LVL {greatLeagueBestLVL}</strong></div>
-                </section>
-                {greatLeagueFastAttack && <strong className="pokemon-attack">
-                    <div className="type-attack">{greatLeagueFastAttack && <img src={greatLeagueFastAttackUrl}/>}{greatLeagueFastAttack}{greatLeagueFastAttackIsElite ? "*" : greatLeagueFastAttackIsLegacy ? <sup>†</sup> : <></>}</div>
-                    <div className="type-attack">{greatLeagueCharged1 && <img src={greatLeagueCharged1Url}/>}{greatLeagueCharged1}{greatLeagueCharged1IsElite ? "*" : greatLeagueCharged1IsLegacy ? <sup>†</sup> : <></>}</div>
-                    <div className="type-attack">{greatLeagueCharged2 && <img src={greatLeagueCharged2Url}/>}{greatLeagueCharged2}{greatLeagueCharged2IsElite ? "*" : greatLeagueCharged2IsLegacy ? <sup>†</sup> : <></>}</div>
-                </strong>}
-            </section>
-            
-        </div>
-        <div className="pvp-stats ultra">
-            <section className="pvp-title">
-                <img src="https://www.stadiumgaming.gg/frontend/assets/img/ultra.png" alt="Ultra League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
-                    {ultraLeagueBestFamilyMemberName && <h4>({ultraLeagueBestFamilyMemberName})</h4>}
-                    <strong className={rankClass(ultraLeagueRank)}>
-                        {buildRankString(ultraLeagueRank)}
-                    </strong>
-                    <div className="custom-pokemon">
-                        <h3>
-                            <div>{ultraLeaguePercent}% <span className="percentile">(#{ultraLeaguePercentile})</span></div>     
-                        </h3>
-                        <div className="cp-and-level">{ultraLeagueCP} CP @ LVL {ultraLeagueLVL}</div>
-                    </div>
-            </section>
-            <section className="pvp-stats-display">
-                <section className="pvp-ivs">
-                    <ul className="pokemon-ivs">
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{ultraLeagueAtk}</span>
-                                <strong className="pokemon-ivs-label">ATK</strong>
-                            </span>
-                        </li>
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{ultraLeagueDef}</span>
-                                <strong className="pokemon-ivs-label">DEF</strong>
-                            </span>
-                        </li>
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{ultraLeagueSta}</span>
-                                <strong className="pokemon-ivs-label">STA</strong>
-                            </span>
-                        </li>
-                    </ul>
-                </section>
-                <section>
-                    <div className="cp-and-level-recommended"><strong>{ultraLeagueBestCP} CP @ LVL {ultraLeagueBestLVL}</strong></div>
-                </section>
-                {ultraLeagueFastAttack && <strong className="pokemon-attack">
-                    <div className="type-attack">{ultraLeagueFastAttack && <img src={ultraLeagueFastAttackUrl}/>}{ultraLeagueFastAttack}{ultraLeagueFastAttackIsElite ? "*" : ultraLeagueFastAttackIsLegacy ? <sup>†</sup> : <></>}</div>
-                    <div className="type-attack">{ultraLeagueCharged1 && <img src={ultraLeagueCharged1Url}/>}{ultraLeagueCharged1}{ultraLeagueCharged1IsElite ? "*" : ultraLeagueCharged1IsLegacy ? <sup>†</sup> : <></>}</div>
-                    <div className="type-attack">{ultraLeagueCharged2 && <img src={ultraLeagueCharged2Url}/>}{ultraLeagueCharged2}{ultraLeagueCharged2IsElite ? "*" : ultraLeagueCharged2IsLegacy ? <sup>†</sup> : <></>}</div>
-                </strong>}
-            </section>
-        </div>
-        <div className="pvp-stats master">
-            <section className="pvp-title">
-                <img src="https://www.stadiumgaming.gg/frontend/assets/img/master.png" alt="Master League icon" loading="lazy" decoding="async" data-nimg="1" className="pvp-img"/>
-                    {masterLeagueBestFamilyMemberName && <h4>({masterLeagueBestFamilyMemberName})</h4>}
-                    <strong className={rankClass(masterLeagueRank)}>
-                        {buildRankString(masterLeagueRank)}
-                    </strong>
-                    <div className="custom-pokemon">
-                        <h3>
-                            <div>{masterLeaguePercent}% <span className="percentile">(#{masterLeaguePercentile})</span></div>
-                        </h3>
-                        <div className="cp-and-level">{masterLeagueCP} CP @ LVL {masterLeagueLVL}</div>
-                    </div>
-            </section>
-            <section className="pvp-stats-display">
-                <section className="pvp-ivs">
-                    <ul className="pokemon-ivs">
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{masterLeagueAtk}</span>
-                                <strong className="pokemon-ivs-label">ATK</strong>
-                            </span>
-                        </li>
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{masterLeagueDef}</span>
-                                <strong className="pokemon-ivs-label">DEF</strong>
-                            </span>
-                        </li>
-                        <li>
-                            <span className="pokemon-ivs-item">
-                                <span>{masterLeagueSta}</span>
-                                <strong className="pokemon-ivs-label">STA</strong>
-                            </span>
-                        </li>
-                    </ul>
-                </section>
-                <section>
-                    <div className="cp-and-level-recommended"><strong>{masterLeagueBestCP} CP @ LVL {masterLeagueBestLVL}</strong></div>
-                </section>
-                {masterLeagueFastAttack && <strong className="pokemon-attack">
-                    <div className="type-attack">{masterLeagueFastAttack && <img src={masterLeagueFastAttackUrl}/>}{masterLeagueFastAttack}{masterLeagueFastAttackIsElite ? "*" : masterLeagueFastAttackIsLegacy ? <sup>†</sup> : <></>}</div>
-                    <div className="type-attack">{masterLeagueCharged1 && <img src={masterLeagueCharged1Url}/>}{masterLeagueCharged1}{masterLeagueCharged1IsElite ? "*" : masterLeagueCharged1IsLegacy ? <sup>†</sup> : <></>}</div>
-                    <div className="type-attack">{masterLeagueCharged2 && <img src={masterLeagueCharged2Url}/>}{masterLeagueCharged2}{masterLeagueCharged2IsElite ? "*" : masterLeagueCharged2IsLegacy ? <sup>†</sup> : <></>}</div>
-                </strong>}
-            </section>
-        </div>
+        {renderPanel({
+            leagueTitle: "great",
+            bestReachablePokemonName: greatLeagueBestFamilyMemberName,
+            pokemonRankInLeague: greatLeagueRank,
+            pokemonLeaguePercentage: greatLeaguePercent,
+            pokemonLeaguePercentile: greatLeaguePercentile,
+            pokemonCP: greatLeagueCP,
+            pokemonLevel: greatLeagueLVL,
+            atk: greatLeagueAtk,
+            def: greatLeagueDef,
+            hp: greatLeagueSta,
+            bestCP: greatLeagueBestCP,
+            bestLevel: greatLeagueBestLVL,
+            fastAttack: {
+                moveName: greatLeagueFastAttack,
+                type: greatLeagueFastAttackType,
+                typeImgUrl: greatLeagueFastAttackType,
+                isElite: greatLeagueFastAttackIsElite,
+                isLegacy: greatLeagueFastAttackIsLegacy
+            },
+            chargedAttack1: {
+                moveName: greatLeagueCharged1,
+                type: greatLeagueCharged1Type,
+                typeImgUrl: greatLeagueCharged1Url,
+                isElite: greatLeagueCharged1IsElite,
+                isLegacy: greatLeagueCharged1IsLegacy
+            },
+            chargedAttack2: {
+                moveName: greatLeagueCharged2,
+                type: greatLeagueCharged2Type,
+                typeImgUrl: greatLeagueCharged2Url,
+                isElite: greatLeagueCharged2IsElite,
+                isLegacy: greatLeagueCharged2IsLegacy
+            }
+        })}
+        {renderPanel({
+            leagueTitle: "ultra",
+            bestReachablePokemonName: ultraLeagueBestFamilyMemberName,
+            pokemonRankInLeague: ultraLeagueRank,
+            pokemonLeaguePercentage: ultraLeaguePercent,
+            pokemonLeaguePercentile: ultraLeaguePercentile,
+            pokemonCP: ultraLeagueCP,
+            pokemonLevel: ultraLeagueLVL,
+            atk: ultraLeagueAtk,
+            def: ultraLeagueDef,
+            hp: ultraLeagueSta,
+            bestCP: ultraLeagueBestCP,
+            bestLevel: ultraLeagueBestLVL,
+            fastAttack: {
+                moveName: ultraLeagueFastAttack,
+                type: ultraLeagueFastAttackType,
+                typeImgUrl: ultraLeagueFastAttackType,
+                isElite: ultraLeagueFastAttackIsElite,
+                isLegacy: ultraLeagueFastAttackIsLegacy
+            },
+            chargedAttack1: {
+                moveName: ultraLeagueCharged1,
+                type: ultraLeagueCharged1Type,
+                typeImgUrl: ultraLeagueCharged1Url,
+                isElite: ultraLeagueCharged1IsElite,
+                isLegacy: ultraLeagueCharged1IsLegacy
+            },
+            chargedAttack2: {
+                moveName: ultraLeagueCharged2,
+                type: ultraLeagueCharged2Type,
+                typeImgUrl: ultraLeagueCharged2Url,
+                isElite: ultraLeagueCharged2IsElite,
+                isLegacy: ultraLeagueCharged2IsLegacy
+            }
+        })}
+        {renderPanel({
+            leagueTitle: "master",
+            bestReachablePokemonName: masterLeagueBestFamilyMemberName,
+            pokemonRankInLeague: masterLeagueRank,
+            pokemonLeaguePercentage: masterLeaguePercent,
+            pokemonLeaguePercentile: masterLeaguePercentile,
+            pokemonCP: masterLeagueCP,
+            pokemonLevel: masterLeagueLVL,
+            atk: masterLeagueAtk,
+            def: masterLeagueDef,
+            hp: masterLeagueSta,
+            bestCP: masterLeagueBestCP,
+            bestLevel: masterLeagueBestLVL,
+            fastAttack: {
+                moveName: masterLeagueFastAttack,
+                type: masterLeagueFastAttackType,
+                typeImgUrl: masterLeagueFastAttackType,
+                isElite: masterLeagueFastAttackIsElite,
+                isLegacy: masterLeagueFastAttackIsLegacy
+            },
+            chargedAttack1: {
+                moveName: masterLeagueCharged1,
+                type: masterLeagueCharged1Type,
+                typeImgUrl: masterLeagueCharged1Url,
+                isElite: masterLeagueCharged1IsElite,
+                isLegacy: masterLeagueCharged1IsLegacy
+            },
+            chargedAttack2: {
+                moveName: masterLeagueCharged2,
+                type: masterLeagueCharged2Type,
+                typeImgUrl: masterLeagueCharged2Url,
+                isElite: masterLeagueCharged2IsElite,
+                isLegacy: masterLeagueCharged2IsLegacy
+            }
+        })}
     </div>;
 }
 
