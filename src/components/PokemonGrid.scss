@@ -1,4 +1,4 @@
-@import '../styles/theme-variables.scss';
+@import "../index";
 
 .grid_container {
     a {
@@ -16,12 +16,8 @@
 
 .grid > div {
     padding: 5px;
-    @include themify($themes) {
-        border: 1px solid themed("borderColor");
-    }
+    border: 1px solid $borderColor;
     &:hover {
-        @include themify($themes) {
-            border: 1px solid themed("buttonsBorderColor");
-        }
+        border: 1px solid $buttonsBorderColor;
     }
 }

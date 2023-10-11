@@ -1,11 +1,9 @@
-@import '../../styles/theme-variables.scss';
+@import "../../index";
 
 .navbar {
     height: 75px;
-    @include themify($themes) {
-        background-color: themed("headerBackground");
-        color: themed("textColor");
-    }
+    background-color: $headerBackground;
+    color: $textColor;
     padding: 6px;
     display: flex;
 }
@@ -41,9 +39,7 @@
 }
 
 button {
-    @include themify($themes) {
-        color: themed("buttonsTextColor");
-    }
+    color: $buttonsTextColor;
     border-radius: 12px;
     border: none;
     font-size: inherit;
@@ -56,14 +52,10 @@ button {
     gap: 9px;
     align-items: center;
     justify-content: center;
-    @include themify($themes) {
-        background-color: themed("buttonsBackground");
-    }
+    background-color: $buttonsBackground;
     cursor: pointer;
     &:hover {
-        @include themify($themes) {
-            border: 1px solid themed("buttonsBorderColor");
-        }
+        border: 1px solid $buttonsBorderColor;
     }
 }
 

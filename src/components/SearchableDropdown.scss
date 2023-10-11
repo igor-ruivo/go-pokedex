@@ -1,20 +1,18 @@
-@import '../styles/theme-variables.scss';
+@import "../index";
 
 .autoComplete-root {
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.5;
     border-radius: 8px;
-    @include themify($themes) {
-        background-color: themed("buttonsBackground");
-        color: themed("textColor");
-    }
+    background-color: $buttonsBackground;
+    color: $textColor;
 }
 
-.MuiInputBase-input {
-    @include themify($themes) {
-        color: themed("textColor");
-    }
+.MuiInputBase-input,
+.MuiFormLabel-root,
+.MuiSvgIcon-root {
+    color: $textColor !important;
 }
 
 ul.MuiAutocomplete-listbox {
@@ -22,22 +20,16 @@ ul.MuiAutocomplete-listbox {
 }
 
 .MuiAutocomplete-option[aria-selected="true"] {
-    @include themify($themes) {
-        background-color: themed("buttonsBackground") !important;
-    }
+    background-color: $buttonsBackground !important;
 }
 
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    @include themify($themes) {
-        border-color: themed("buttonsBorderColor") !important;
-    }
+    border-color: $buttonsBorderColor !important;
 }
 
 .autoComplete-option {
-    @include themify($themes) {
-        background-color: themed("dropdownOptionBlurred");
-        color: themed("textColor");
-    }
+    background-color: $dropdownOptionBlurred;
+    color: $textColor;
 }
 
 label.MuiFormLabel-root.MuiInputLabel-root {
@@ -45,21 +37,11 @@ label.MuiFormLabel-root.MuiInputLabel-root {
 }
 
 .Mui-disabled {
-    @include themify($themes) {
-        color: themed("textColor") !important;
-        opacity: 50%;
-    }
+    color: $textColor !important;
+    opacity: 50%;
 }
 
 .Mui-focused {
-    @include themify($themes) {
-        background-color: themed("dropdownOptionFocused") !important;
-        color: themed("textColor") !important;
-    }
-}
-
-.MuiFormLabel-root {
-    @include themify($themes) {
-        color: themed("textColor");
-    }
+    background-color: $dropdownOptionFocused !important;
+    color: $textColor !important;
 }

@@ -4,6 +4,7 @@ export interface IGamemasterPokemon {
     dex: number,
     speciesId: string,
     speciesName: string,
+    speciesShortName: string,
     types: PokemonTypes[],
     imageUrl: string,
     atk: number,

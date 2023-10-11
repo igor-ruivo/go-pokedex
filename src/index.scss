@@ -13,3 +13,41 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
         monospace;
 }
+
+:root {
+    --type-bug: #85b430;
+    --type-dark: #4f4c5f;
+    --type-dragon: #035094;
+    --type-electric: #c09b2d;
+    --type-fairy: #c966bf;
+    --type-fighting: #a02c3b;
+    --type-fire: #be7510;
+    --type-flying: #7188b0;
+    --type-ghost: #574e87;
+    --type-grass: #248b46;
+    --type-ground: #aa6641;
+    --type-ice: #6ea19f;
+    --type-normal: #727475;
+    --type-poison: #b03a9a;
+    --type-psychic: #cc595d;
+    --type-rock: #9f9052;
+    --type-steel: #548a9e;
+    --type-water: #3f7dba;
+}
+
+$bodyBackgroundColor: #202023;
+$headerBackground: rgba(36, 41, 47, 0.975);
+$footerBackground: #202023;
+$switchBackground: #111417;
+$toggleBackground: #111417;
+$textColor: #eff2f7;
+$disabledTextColor: rgba(239,242,247, 0.5);
+$borderColor: #424a53;
+$selectedItemBackground: #424a53;
+$bannerBorderColor: #d0d0d0;
+$contentBackground: #24292f;
+$buttonsBackground: #384049;
+$dropdownOptionBlurred: #2b3138;
+$dropdownOptionFocused: #384049;
+$buttonsTextColor: #ebf4ed;
+$buttonsBorderColor: #848484;

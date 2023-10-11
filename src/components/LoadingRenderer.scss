@@ -1,8 +1,6 @@
-@import '../styles/theme-variables.scss';
+@import "../index";
 
 .loading_renderer {
-    @include themify($themes) {
-        background: themed("bodyBackgroundColor");
-        color: themed("textColor");
-    }
+    background: $bodyBackgroundColor;
+    color: $textColor;
 }

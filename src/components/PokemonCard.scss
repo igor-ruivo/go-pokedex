@@ -1,11 +1,9 @@
-@import '../styles/theme-variables.scss';
+@import "../index";
 
 .pokemon_card {
     white-space: nowrap;
     font-size: calc(10px + .5vw);
-    @include themify($themes) {
-        color: themed("textColor");
-    }
+    color: $textColor;
 }
 
 .header_container {

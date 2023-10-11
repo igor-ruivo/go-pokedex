@@ -77,7 +77,8 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
             return {
                 dex: pokemon.dex,
                 speciesId: pokemon.speciesId,
-                speciesName: pokemon.speciesName,
+                speciesName: sexConverter(pokemon.speciesName),
+                speciesShortName: shortName(pokemon.speciesName),
                 imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
                 types: Array.from(pokemon.types).filter(t => t !== "none").map(t => t as PokemonTypes),
                 atk: pokemon.baseStats.atk,
@@ -148,4 +149,27 @@ export const ordinal = (number: number) => {
     const category = english_ordinal_rules.select(number);
     const suffix = suffixes[category];
     return number + suffix;
+}
+
+const shortName = (name: string) => {
+    return name
+        .replace("(Alolan)", "(A)")
+        .replace("(Galarian)", "(G)")
+        .replace("(Mega)", "(M)")
+        .replace("(Shadow)", "(S)")
+        .replace("(Complete Forme)", "(CF)")
+        .replace("(50% Forme)", "(50% F)")
+        .replace("(10% Forme)", "(10% F)")
+        .replace("(Hisuian)", "(H)")
+        .replace("(Standard)", "(Std.)")
+        .replace("(Incarnate)", "(Inc.)")
+        .replace("(Average)", "(Avg.)")
+        .replace("Male", "♂")
+        .replace("Female", "♀");
+}
+
+const sexConverter = (name: string) => {
+    return name
+        .replace("Male", "♂")
+        .replace("Female", "♀");
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import Dictionary from "../utils/Dictionary";
-import { computeBestIVs } from "../utils/pokemonIv";
+import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 import { IIvPercents } from "../views/pokemon";
 import { usePokemon } from "../contexts/pokemon-context";
 
@@ -19,19 +19,11 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
     const [loading, setLoading] = useState(true);
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
 
-    const reachablePokemons: IGamemasterPokemon[] = [];
+    let reachablePokemons = new Set<IGamemasterPokemon>();
     if (!justForSelf && fetchCompleted) {
-        const queue = [pokemon];
-        while (queue.length > 0) {
-            const currentPokemon = queue.shift() as IGamemasterPokemon;
-            reachablePokemons.push(currentPokemon);
-            if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
-                continue;
-            }
-            queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk) as IGamemasterPokemon[]);
-        }
+        reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
     } else {
-        reachablePokemons.push(pokemon);
+        reachablePokemons.add(pokemon);
     }
     
     useEffect(() => {

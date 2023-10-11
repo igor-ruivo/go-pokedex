@@ -1,20 +1,15 @@
-@import '../styles/theme-variables.scss';
+@import "../index";
 
 .pokemon {
-    @include themify($themes) {
-        color: themed("textColor");
-    }
+    color: $textColor;
 }
 
 .pokemon-content {
-    //font-family: IBM Plex Sans, sans-serif;
     font-size: 0.875rem;
     padding-right: 12px;
     padding-left: 12px;
     padding-bottom: 20px;
-    @include themify($themes) {
-        background: themed("bodyBackgroundColor"); //{isDarkMode ? grey[900] : '#fff'};
-    }
+    background: $bodyBackgroundColor;
 }
 
 .dark_mode_switch {
@@ -53,9 +48,7 @@
 
 .grid > div {
     padding: 5px;
-    @include themify($themes) {
-        border: 1px solid themed("borderColor");
-    }
+    border: 1px solid $borderColor;
 }
 
 @media (max-width: 500px) {

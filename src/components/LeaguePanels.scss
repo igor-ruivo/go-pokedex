@@ -1,4 +1,4 @@
-@import '../styles/theme-variables.scss';
+@import "../index";
 
 .pvp-leagues {
     display: grid;
@@ -57,9 +57,7 @@
 }
 
 .pvp-stats {
-    @include themify($themes) {
-        border: 1px solid themed("buttonsBorderColor");
-    }
+    border: 1px solid $buttonsBorderColor;
     border-radius: 12px;
     padding: 9px;
     display: grid;

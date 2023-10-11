@@ -1,4 +1,4 @@
-@import '../styles/theme-variables.scss';
+@import "../index";
 
 .appraisal-container {
     position: relative;
@@ -53,9 +53,7 @@
 }
 
 .appraisal .stat h4 span {
-    @include themify($themes) {
-        color: themed("textColor");
-    }
+    color: $textColor;
 }
 
 .appraisal .stat-bar {
@@ -69,9 +67,7 @@
     flex: 1 1 40px;
     border-right: 1px solid rgba(255,255,255,.3);
     cursor: pointer;
-    @include themify($themes) {
-        border: 1px solid themed("borderColor");
-    }
+    border: 1px solid $borderColor;
 }
 
 .appraisal .stat-bar .bar.hover {
@@ -114,13 +110,10 @@
     font-size: small;
     padding-top: 1px;
     margin-left: 4px;
-    @include themify($themes) {
-        background: themed("contentBackground");
-        color: themed("textColor");
-
-        border: 0px;
-        outline: 1px solid themed("buttonsBorderColor");
-    }
+    background: $contentBackground;
+    color: $textColor;
+    border: 0px;
+    outline: 1px solid $buttonsBorderColor;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
@@ -155,12 +148,10 @@
         color-scheme: dark;
         font-size: small;
         padding-top: 1px;
-        @include themify($themes) {
-            background: themed("contentBackground");
-            color: themed("textColor");
-            border: 0px;
-            outline: 1px solid themed("buttonsBorderColor");
-        }
+        background: $contentBackground;
+        color: $textColor;
+        border: 0px;
+        outline: 1px solid $buttonsBorderColor;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
     }
 }

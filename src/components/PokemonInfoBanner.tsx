@@ -12,6 +12,7 @@ import CircularSliderInput from "./CircularSliderInput";
 import React from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
+import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -36,7 +37,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         return <></>;
     }
 
-    const familyTreeExceptSelf = new Set(pokemon.familyId ? Object.values(gamemasterPokemon).filter(p => p.speciesId !== pokemon.speciesId && p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow) : []);
+    const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
     
     const valueToLevel = (value: number) => {
         return value / 2 + 0.5
@@ -49,19 +50,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     let bestInFamilyForMasterLeague = pokemon;
     let bestInFamilyForMasterLeagueRank = Number.MAX_VALUE;
 
-    const reachablePokemons = new Set<IGamemasterPokemon>();
-    const queue = [pokemon];
-    while (queue.length > 0) {
-        const currentPokemon = queue.shift() as IGamemasterPokemon;
-        reachablePokemons.add(currentPokemon);
-        if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
-            continue;
-        }
-        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk) as IGamemasterPokemon[]);
-    }
+    const reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
 
     reachablePokemons.forEach(member => {
-        familyTreeExceptSelf.add(member);
         const rankInGreat = rankLists[0][member.speciesId]?.rank;
         const rankInUltra = rankLists[1][member.speciesId]?.rank;
         const rankInMaster = rankLists[2][member.speciesId]?.rank;
@@ -78,37 +69,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             bestInFamilyForMasterLeague = member;
         }
     });
-
-    const queue2 = Array.from(familyTreeExceptSelf);
-    while (queue2.length > 0) {
-        const currentPokemon = queue2.shift() as IGamemasterPokemon;
-        familyTreeExceptSelf.add(currentPokemon);
-        if (!currentPokemon.parent) {
-            continue;
-        }
-        const parentRef = gamemasterPokemon[currentPokemon.parent];
-        if (!parentRef) {
-            continue;
-        }
-        queue2.push(parentRef);
-    }
-
-    const simplifyName = (name: string) => {
-        return name
-            .replace("(Alolan)", "(A)")
-            .replace("(Galarian)", "(G)")
-            .replace("(Mega)", "(M)")
-            .replace("(Shadow)", "(S)")
-            .replace("(Complete Forme)", "(CF)")
-            .replace("(50% Forme)", "(50% F)")
-            .replace("(10% Forme)", "(10% F)")
-            .replace("(Hisuian)", "(H)")
-            .replace("(Standard)", "(Std.)")
-            .replace("(Incarnate)", "(Inc.)")
-            .replace("(Average)", "(Avg.)")
-            .replace("Male", "♂")
-            .replace("Female", "♀");
-    }
 
     const bestReachableGreatLeagueIvs = ivPercents[bestInFamilyForGreatLeague.speciesId];
     const bestReachableUltraLeagueIvs = ivPercents[bestInFamilyForUltraLeague.speciesId];
@@ -189,9 +149,23 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 </span>}
             </div>
         </div>
-        {familyTreeExceptSelf.size > 1 && <div className="img-container">
+        {similarPokemon.size > 1 && <div className="img-container">
             <div className="img-family">
-                {Array.from(familyTreeExceptSelf).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => b.atk * b.def * b.hp - a.atk * a.def * a.hp).map(p => (
+                {Array.from(similarPokemon).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => {
+                    if (b.atk * b.def * b.hp > a.atk * a.def * a.hp) {
+                        return 1;
+                    }
+
+                    if (b.atk * b.def * b.hp < a.atk * a.def * a.hp) {
+                        return -1;
+                    }
+
+                    if (b.speciesName < a.speciesName) {
+                        return 1
+                    }
+
+                    return -1;
+                }).map(p => (
                     <div key = {p.speciesId} className="img-family-container">
                         <Link to={`/pokemon/${p.speciesId}`}>
                             <PokemonImage pokemon={p}/>
@@ -204,7 +178,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             greatLeagueStats={
                 {
                     leagueTitle: "great",
-                    bestReachablePokemonName: simplifyName(bestInFamilyForGreatLeague.speciesName),
+                    bestReachablePokemonName: bestInFamilyForGreatLeague.speciesShortName,
                     pokemonRankInLeague: ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank),
                     pokemonLeaguePercentile: bestReachableGreatLeagueIvs.greatLeagueRank + 1,
@@ -238,7 +212,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             ultraLeagueStats={
                 {
                     leagueTitle: "ultra",
-                    bestReachablePokemonName: simplifyName(bestInFamilyForUltraLeague.speciesName),
+                    bestReachablePokemonName: bestInFamilyForUltraLeague.speciesShortName,
                     pokemonRankInLeague: ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank),
                     pokemonLeaguePercentile: bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
@@ -272,7 +246,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             masterLeagueStats={
                 {
                     leagueTitle: "master",
-                    bestReachablePokemonName: simplifyName(bestInFamilyForMasterLeague.speciesName),
+                    bestReachablePokemonName: bestInFamilyForMasterLeague.speciesShortName,
                     pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank),
                     pokemonLeaguePercentile: bestReachableMasterLeagueIvs.masterLeagueRank + 1,
