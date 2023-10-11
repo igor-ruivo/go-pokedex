@@ -263,7 +263,7 @@ const LeaguePanels = ({
             fastAttack: {
                 moveName: greatLeagueFastAttack,
                 type: greatLeagueFastAttackType,
-                typeImgUrl: greatLeagueFastAttackType,
+                typeImgUrl: greatLeagueFastAttackUrl,
                 isElite: greatLeagueFastAttackIsElite,
                 isLegacy: greatLeagueFastAttackIsLegacy
             },
@@ -298,7 +298,7 @@ const LeaguePanels = ({
             fastAttack: {
                 moveName: ultraLeagueFastAttack,
                 type: ultraLeagueFastAttackType,
-                typeImgUrl: ultraLeagueFastAttackType,
+                typeImgUrl: ultraLeagueFastAttackUrl,
                 isElite: ultraLeagueFastAttackIsElite,
                 isLegacy: ultraLeagueFastAttackIsLegacy
             },
@@ -333,7 +333,7 @@ const LeaguePanels = ({
             fastAttack: {
                 moveName: masterLeagueFastAttack,
                 type: masterLeagueFastAttackType,
-                typeImgUrl: masterLeagueFastAttackType,
+                typeImgUrl: masterLeagueFastAttackUrl,
                 isElite: masterLeagueFastAttackIsElite,
                 isLegacy: masterLeagueFastAttackIsLegacy
             },

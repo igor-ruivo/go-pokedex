@@ -1,4 +1,5 @@
 @import '../styles/theme-variables.scss';
+
 .loading_renderer {
     @include themify($themes) {
         background: themed("bodyBackgroundColor");

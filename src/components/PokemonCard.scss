@@ -1,32 +1,26 @@
 @import '../styles/theme-variables.scss';
 
-@media (max-width: 500px) {
-  .pokemon_card {
-    white-space: nowrap;
-    font-size: calc(7px + .5vw);
-    @include themify($themes) {
-      color: themed("textColor");
-    }
-  }
-}
-
-@media (min-width: 501px) {
-  .pokemon_card {
+.pokemon_card {
     white-space: nowrap;
     font-size: calc(10px + .5vw);
     @include themify($themes) {
-      color: themed("textColor");
+        color: themed("textColor");
     }
-  }
 }
 
-.header_container{
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 10px 0px 10px;
-  flex-direction: row;
+.header_container {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px 0px 10px;
+    flex-direction: row;
 }
 
 .header_footer {
-  padding-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+@media (max-width: 500px) {
+    .pokemon_card {
+        font-size: calc(7px + .5vw);
+    }
 }

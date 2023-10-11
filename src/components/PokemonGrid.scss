@@ -1,27 +1,27 @@
 @import '../styles/theme-variables.scss';
 
 .grid_container {
-  a {
-    text-decoration: none;
-  }
+    a {
+        text-decoration: none;
+    }
 }
 
 .expanded_top_pane {
-  padding-top: 142.2px;
+    padding-top: 142.2px;
 }
 
 .collapsed_top_pane {
-  padding-top: 16px;
+    padding-top: 16px;
 }
 
 .grid > div {
-  padding: 5px;
-  @include themify($themes) {
-    border: 1px solid themed("borderColor");
-  }
-  &:hover {
+    padding: 5px;
     @include themify($themes) {
-      border: 1px solid themed("buttonsBorderColor");
+        border: 1px solid themed("borderColor");
     }
-  }
+    &:hover {
+        @include themify($themes) {
+            border: 1px solid themed("buttonsBorderColor");
+        }
+    }
 }
