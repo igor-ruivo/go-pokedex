@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import Dictionary from "../utils/Dictionary";
 import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
-import { IIvPercents } from "../views/pokemon";
 import { usePokemon } from "../contexts/pokemon-context";
+import { IIvPercents } from "../components/PokemonInfoBanner";
 
 interface IUseComputeIVsProps {
     pokemon: IGamemasterPokemon;

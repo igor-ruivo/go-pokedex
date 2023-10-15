@@ -54,7 +54,7 @@ const Navbar = () => {
                         return !p.isShadow;
                     }).map(p => ({value: p.speciesId, label: p.speciesName} as EntryType))}
                     isLoading={!fetchCompleted}
-                    onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}`)}
+                    onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`)}
                 />
             </div>
         </section>

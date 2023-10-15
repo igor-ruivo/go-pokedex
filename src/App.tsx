@@ -18,6 +18,10 @@ const App = () => {
               <Route index element={<Pokedex />}/>
               <Route path="/:listTypeArg" element={<Pokedex />}/>
               <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
+              <Route path="/pokemon/:speciesId/info" element={<Pokemon />}/>
+              <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
+              <Route path="/pokemon/:speciesId/moves" element={<Pokemon />}/>
+              <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
               <Route path="/*" element={<div>Route not found.</div>} />
             </Routes>
           </Content>

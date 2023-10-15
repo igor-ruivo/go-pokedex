@@ -1,0 +1,32 @@
+@import "../index";
+
+.ivs-table {
+    height: 75vh !important;
+}
+
+.MuiTableContainer-root,
+.MuiTableCell-head {
+    color: $textColor !important;
+    background-color: $tableBackground !important;
+    color-scheme: dark !important;
+}
+
+.MuiTableCell-body {
+    color: $textColor !important;
+}
+
+.MuiButtonBase-root.MuiTableSortLabel-root.Mui-active {
+    color: $tableHeaderSortable;
+}
+
+.MuiTableRow-hover {
+    &:hover {
+        background-color: $tableBackgroundHover !important;
+    }
+}
+
+.MuiTableSortLabel-root {
+    &:hover {
+        color: $tableHeaderSortable !important;
+    }
+}

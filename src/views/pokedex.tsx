@@ -84,7 +84,7 @@ const Pokedex = () => {
     }, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, showFamilyTree]);
 
     return (
-        <main className="pokedex-layout">
+        <main className="layout">
             <nav className="navigation-header">
                 <ul>
                     <li>

@@ -12,7 +12,7 @@ interface IPokemonCardProps {
 }
 
 const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
-  const link = `/pokemon/${pokemon.speciesId}`;
+  const link = `/pokemon/${pokemon.speciesId}/info`;
   var cp = Math.floor(((pokemon.atk + 15) * Math.pow(pokemon.def + 15, 0.5) * Math.pow(pokemon.hp + 15, 0.5) * Math.pow(0.795300006866455, 2) ) / 10);
 
   // too expensive

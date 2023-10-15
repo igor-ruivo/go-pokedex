@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { usePokemon } from "../contexts/pokemon-context";
 import Dictionary from "../utils/Dictionary";
-import { IIvPercents } from "../views/pokemon";
 import PokemonImage from "./PokemonImage";
 import "./PokemonInfoBanner.scss";
 import { useState } from "react";
@@ -25,6 +24,36 @@ interface IPokemonInfoBanner {
     setDefense: (_: React.SetStateAction<number>) => void;
     hp: number;
     setHP: (_: React.SetStateAction<number>) => void;
+}
+
+export interface IIvPercents {
+    greatLeagueRank: number,
+    greatLeagueLvl: number,
+    greatLeagueCP: number,
+    greatLeagueAttack: number,
+    greatLeagueDefense: number,
+    greatLeagueHP: number,
+    greatLeaguePerfect: any,
+    greatLeaguePerfectLevel: number,
+    greatLeaguePerfectCP: number,
+    ultraLeagueRank: number,
+    ultraLeagueLvl: number,
+    ultraLeagueCP: number,
+    ultraLeagueAttack: number,
+    ultraLeagueDefense: number,
+    ultraLeagueHP: number,
+    ultraLeaguePerfect: any,
+    ultraLeaguePerfectLevel: number,
+    ultraLeaguePerfectCP: number,
+    masterLeagueRank: number,
+    masterLeagueLvl: number,
+    masterLeagueCP: number,
+    masterLeagueAttack: number,
+    masterLeagueDefense: number,
+    masterLeagueHP: number,
+    masterLeaguePerfect: any,
+    masterLeaguePerfectLevel: number,
+    masterLeaguePerfectCP: number
 }
 
 const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
@@ -161,13 +190,13 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     }
 
                     if (b.speciesName < a.speciesName) {
-                        return 1
+                        return 1;
                     }
 
                     return -1;
                 }).map(p => (
                     <div key = {p.speciesId} className="img-family-container">
-                        <Link to={`/pokemon/${p.speciesId}`}>
+                        <Link to={`/pokemon/${p.speciesId}/info`}>
                             <PokemonImage pokemon={p}/>
                         </Link>
                     </div>

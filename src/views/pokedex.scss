@@ -1,6 +1,6 @@
 @import "../index";
 
-.pokedex-layout{
+.layout {
     width: 100%;
     max-width: 1300px;
     margin: 12px auto;
@@ -58,7 +58,7 @@ ul {
 }
 
 @media (max-width: 500px) {
-    .pokedex-layout{
+    .layout{
         margin: 0px auto;
         padding: 0px;
     }
