@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { computeBestIVs } from "../utils/pokemon-helper";
+import { computeBestIVs, fetchPokemonFamily } from "../utils/pokemon-helper";
 import "./PokemonIVTables.scss"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { TableComponents, TableVirtuoso } from "react-virtuoso";
 import React from "react";
 import { visuallyHidden } from '@mui/utils';
+import PokemonHeader from "./PokemonHeader";
+import { ListType } from "../views/pokedex";
+import { Link, useLocation } from "react-router-dom";
+import PokemonImage from "./PokemonImage";
+import { usePokemon } from "../contexts/pokemon-context";
+import LoadingRenderer from "./LoadingRenderer";
+import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
@@ -28,6 +35,14 @@ interface ColumnData {
     label: string;
     sortable: boolean;
     width: number;
+}
+
+const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
+    const cachedValue = readPersistentValue(key);
+    if (!cachedValue) {
+        return defaultValue;
+    }
+    return +cachedValue;
 }
 
 const createData = (
@@ -137,22 +152,58 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return stabilizedThis.map((el) => el[0]);
 }
 
+const getDefaultListType = () => {
+    const cachedValue = readSessionValue(ConfigKeys.LastListType);
+    if (!cachedValue) {
+        return undefined;
+    }
+
+    return +cachedValue as ListType;
+}
+
 const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
-    const [levelCap, setLevelCap] = useState(51);
-    const [league, setLeague] = useState("great");
+    const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
+    const [league, setLeague] = useState(getDefaultListType());
     
+    const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
+    const [defSearch, setDefSearch] = useState<number|undefined>(undefined);
+    const [hpSearch, setHpSearch] = useState<number|undefined>(undefined);
+
+    const ivSearchIsSet = atkSearch !== undefined && defSearch !== undefined && hpSearch !== undefined;
+
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('top');
 
-    const resGL = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, 1500, levelCap)).flat();
-    const resUL = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, 2500, levelCap)).flat();
-    const resML = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, Number.MAX_VALUE, levelCap)).flat();    
+    const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
+    const {pathname} = useLocation();
 
-    const highestScoreGL = Math.round(resGL[0].battle.A * resGL[0].battle.D * resGL[0].battle.S);
-    const highestScoreUL = Math.round(resUL[0].battle.A * resUL[0].battle.D * resUL[0].battle.S);
-    const highestScoreML = Math.round(resML[0].battle.A * resML[0].battle.D * resML[0].battle.S);
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
+    }, [levelCap])
 
-    const rows: Data[] = resGL.map((e, index) => {
+    useEffect(() => {
+        writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));
+    }, [league])
+
+    let cpCap = Number.MAX_VALUE;
+
+    switch (league) {
+        case ListType.GREAT_LEAGUE:
+            cpCap = 1500;
+            break;
+        case ListType.ULTRA_LEAGUE:
+            cpCap = 2500;
+            break;
+        case ListType.MASTER_LEAGUE:
+            cpCap = Number.MAX_VALUE;
+            break;
+    }
+
+    const result = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap, levelCap)).flat();  
+
+    const highestScore = Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S);
+
+    const rows: Data[] = result.map((e, index) => {
         return createData (
             index + 1,
             e.IVs.A + " / " + e.IVs.D + " / " + e.IVs.S,
@@ -162,13 +213,19 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
             +(Math.trunc(e.battle.D * 10) / 10).toFixed(1),
             e.battle.S,
             Math.round(e.battle.A * e.battle.D * e.battle.S),
-            (100 * (e.battle.A * e.battle.D * e.battle.S) / highestScoreGL).toFixed(3) + "%"
+            (100 * (e.battle.A * e.battle.D * e.battle.S) / highestScore).toFixed(3) + "%"
         );
     });
 
     const visibleRows = React.useMemo(() => stableSort(rows, getComparator(order, orderBy)),
-        [order, orderBy]
+        [order, orderBy, rows, levelCap, league]
     );
+
+    if (!fetchCompleted || !gamemasterPokemon) {
+        return <></>;
+    }
+
+    const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
 
     const VirtuosoTableComponents: TableComponents<Data> = {
         Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
@@ -178,7 +235,7 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
             <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
         ),
         TableHead,
-        TableRow: ({ item: _item, ...props }) => <TableRow hover {...props} />,
+        TableRow: ({ item: _item, ...props }) => <TableRow hover selected={ivSearchIsSet && props["data-index"] === 0} {...props} />,
         TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
             <TableBody {...props} ref={ref} />
         )),
@@ -234,14 +291,106 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
         );
     }
 
+    const valueToLevel = (value: number) => {
+        return value / 2 + 0.5
+    }
+
     return (
-            <TableVirtuoso
-                className="ivs-table"
-                data={visibleRows}
-                components={VirtuosoTableComponents}
-                fixedHeaderContent={fixedHeaderContent}
-                itemContent={rowContent}
-            />
+        <div className="pokemon-content">
+            <LoadingRenderer errors={errors} completed={fetchCompleted}>
+                <div className="content">
+                    <PokemonHeader
+                        pokemonName={pokemon.speciesName}
+                        type1={pokemon.types[0]}
+                        type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
+                    />
+                        <nav className="navigation-header ivs-nav">
+                            <ul>
+                                <li>
+                                    <div onClick={() => setLeague(ListType.GREAT_LEAGUE)} className={"header-tab " + (league === ListType.GREAT_LEAGUE ? "selected" : "")}>
+                                        <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
+                                        <span>Great</span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div onClick={() => setLeague(ListType.ULTRA_LEAGUE)} className={"header-tab " + (league === ListType.ULTRA_LEAGUE ? "selected" : "")}>
+                                        <img height="24" width="24" src="https://i.imgur.com/jtA6QiL.png" alt="Ultra League"/>
+                                        <span>Ultra</span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div onClick={() => setLeague(ListType.MASTER_LEAGUE)} className={"header-tab " + (league === ListType.MASTER_LEAGUE ? "selected" : "")}>
+                                        <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
+                                        <span>Master</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div className="extra-ivs-options">
+                                    <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
+                                        {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                                            .map(e => (<option key={e} value={e}>Max Lvl {e}</option>))}
+                                    </select>
+                                    &nbsp;&nbsp;&nbsp;Search IVs:
+                                    <select value={atkSearch ?? ""} onChange={e => setAtkSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
+                                        <option key={"unset"} value={undefined}>-</option>
+                                        {Array.from({length: 16}, (_x, i) => i)
+                                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                                    </select>
+                                    <select value={defSearch ?? ""} onChange={e => setDefSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
+                                        <option key={"unset"} value={undefined}>-</option>
+                                        {Array.from({length: 16}, (_x, i) => i)
+                                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                                    </select>
+                                    <select value={hpSearch ?? ""} onChange={e => setHpSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
+                                        <option key={"unset"} value={undefined}>-</option>
+                                        {Array.from({length: 16}, (_x, i) => i)
+                                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                                    </select>
+                                    </div>
+                        {similarPokemon.size > 1 && <div className="img-container">
+                            <div className="img-family">
+                                {Array.from(similarPokemon).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => {
+                                    if (b.atk * b.def * b.hp > a.atk * a.def * a.hp) {
+                                        return 1;
+                                    }
+
+                                    if (b.atk * b.def * b.hp < a.atk * a.def * a.hp) {
+                                        return -1;
+                                    }
+
+                                    if (b.speciesName < a.speciesName) {
+                                        return 1;
+                                    }
+
+                                    return -1;
+                                }).map(p => (
+                                    <div key = {p.speciesId} className="img-family-container">
+                                        <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
+                                            <PokemonImage pokemon={p}/>
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>}
+                    <TableVirtuoso
+                        className="ivs-table"
+                        data={visibleRows.sort((d1: Data, d2: Data) => {
+                            if (ivSearchIsSet && d1.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}`) {
+                                return -1;
+                            }
+                            if (ivSearchIsSet && d1.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}`) {
+                                return 1;
+                            }
+                            return 0;
+                        })}
+                        components={VirtuosoTableComponents}
+                        fixedHeaderContent={fixedHeaderContent}
+                        itemContent={rowContent}
+                    />
+                </div>
+            </LoadingRenderer>
+        </div>
     );
 }
 

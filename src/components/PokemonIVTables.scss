@@ -4,6 +4,24 @@
     height: 75vh !important;
 }
 
+.extra-ivs-options {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.Mui-selected {
+    background-color: $tableRowSelected !important;
+}
+
+.ivs-nav {
+    margin-top: 20px;
+    background-color: unset;
+    justify-content: center;
+}
+
 .MuiTableContainer-root,
 .MuiTableCell-head {
     color: $textColor !important;
@@ -28,5 +46,12 @@
 .MuiTableSortLabel-root {
     &:hover {
         color: $tableHeaderSortable !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .ivs-nav {
+        margin-top: 0px;
+        justify-content: safe center;
     }
 }

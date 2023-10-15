@@ -8,7 +8,7 @@ import { ListType } from "../../views/pokedex";
 const Navbar = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const navigate = useNavigate();
-    const {pathname} = useLocation()
+    const {pathname} = useLocation();
 
     type EntryType = {
         value: string,

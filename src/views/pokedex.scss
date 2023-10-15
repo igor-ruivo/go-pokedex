@@ -21,15 +21,14 @@
     background-color: $bodyBackgroundColor;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-}
-
-ul {
-    display: flex;
-    align-items: center;
-    padding: 0;
-    margin: 0 0 18px;
-    gap: 6px;
-    list-style: none;
+    ul {
+        display: flex;
+        align-items: center;
+        padding: 0;
+        margin: 0 0 18px;
+        gap: 6px;
+        list-style: none;
+    }
 }
 
 .header-tab {
@@ -63,12 +62,12 @@ ul {
         padding: 0px;
     }
 
-    ul {
-        margin: 9px 0;
-    }
-
     .navigation-header {
-        justify-content: center;
+        justify-content: safe center;
         padding: 0px;
+
+        ul {
+            margin: 9px 0;
+        }
     }
 }
