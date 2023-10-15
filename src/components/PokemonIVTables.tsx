@@ -158,12 +158,14 @@ const getDefaultListType = () => {
         return undefined;
     }
 
-    return +cachedValue as ListType;
+    const typedValue = +cachedValue as ListType;
+
+    return typedValue === ListType.POKEDEX ? ListType.GREAT_LEAGUE : typedValue;
 }
 
 const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
-    const [league, setLeague] = useState(getDefaultListType());
+    const [league, setLeague] = useState(getDefaultListType() ?? ListType.GREAT_LEAGUE);
     
     const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
     const [defSearch, setDefSearch] = useState<number|undefined>(undefined);
