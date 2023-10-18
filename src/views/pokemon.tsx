@@ -6,6 +6,7 @@ import { usePokemon } from '../contexts/pokemon-context';
 import LoadingRenderer from '../components/LoadingRenderer';
 import PokemonInfo from '../components/PokemonInfo';
 import PokemonIVTables from '../components/PokemonIVTables';
+import PokemonSearchStrings from '../components/PokemonSearchStrings';
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
@@ -14,8 +15,6 @@ const Pokemon = () => {
     const { pathname } = useLocation();
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
-
-    console.log(tab);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -56,6 +55,7 @@ const Pokemon = () => {
                                 <div className="pokemon">
                                     {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
                                     {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon}/>}
+                                    {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon}/>}
                                 </div>
                         }
                     </>

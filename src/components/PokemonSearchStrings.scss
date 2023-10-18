@@ -1,0 +1,33 @@
+@import "../index";
+
+.extra-ivs-options {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.ivs-nav {
+    margin-top: 20px;
+    background-color: unset;
+    justify-content: center;
+}
+
+.search-strings-container {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+}
+
+@media (max-width: 500px) {
+    .ivs-nav {
+        margin-top: 0px;
+        justify-content: safe center;
+    }
+
+    .search-strings-container {
+        width: 100%;
+    }
+}

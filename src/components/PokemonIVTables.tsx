@@ -201,7 +201,7 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
             break;
     }
 
-    const result = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap, levelCap)).flat();  
+    const result = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap, levelCap)).flat();
 
     const highestScore = Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S);
 
