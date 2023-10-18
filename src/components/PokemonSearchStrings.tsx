@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { calculateCP, calculateHP, computeBestIVs, fetchPokemonFamily } from "../utils/pokemon-helper";
+import { calculateCP, calculateHP, computeBestIVs, fetchPokemonFamily, fetchPredecessorPokemonIncludingSelf, sortPokemonByBattlePowerAsc, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 import "./PokemonSearchStrings.scss"
 import PokemonHeader from "./PokemonHeader";
 import { ListType } from "../views/pokedex";
@@ -9,6 +9,7 @@ import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
 import LoadingRenderer from "./LoadingRenderer";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
+import Dictionary from "../utils/Dictionary";
 
 interface PokemonSearchStrings {
     pokemon: IGamemasterPokemon;
@@ -37,19 +38,41 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
     const [league, setLeague] = useState(getDefaultListType() ?? ListType.GREAT_LEAGUE);
     const [top, setTop] = useState(10);
-
-    const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const [trash, setTrash] = useState(false);
 
     const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
     const {pathname} = useLocation();
 
+    const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);
+    const predecessorPokemonArray = Array.from(predecessorPokemon);
+
     useEffect(() => {
         writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
-    }, [levelCap])
+    }, [levelCap]);
 
     useEffect(() => {
         writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));
-    }, [league])
+    }, [league]);
+
+    useEffect(() => {
+        const textAreas = predecessorPokemonArray.map(p => document.getElementById(p.speciesId + "-textarea")).filter(e => e) as HTMLTextAreaElement[];
+        
+        const eventListener = async (event: any) => {
+            event.target.select();
+            document.execCommand("copy");
+            alert("Copied to clipboard.");
+        };
+
+        textAreas.forEach(t => {
+            t.addEventListener("click", eventListener);
+        });
+
+        return () => {
+            textAreas.forEach(t => {
+                t.removeEventListener("click", eventListener);
+            });
+        }
+    }, [pokemon]);
 
     let cpCap = Number.MAX_VALUE;
 
@@ -138,12 +161,19 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
         return list.substr(1);
     }
 
-    const computeSearchString = () => {
-        let predecessorPokemon = pokemon;
-        while (predecessorPokemon.parent) {
-            predecessorPokemon = gamemasterPokemon[predecessorPokemon.parent];
+    const trashFlip = (cps: Set<number>, maxCP: number, attr: boolean) => {
+        for (let i = attr ? 0 : 10; i <= maxCP; i++) {
+            if (cps.has(i)) {
+                cps.delete(i);
+            } else {
+                cps.add(i);
+            }
         }
 
+        return cps;
+    }
+
+    const computeSearchString = (predecessorPokemon: IGamemasterPokemon) => {
         const cps = [];
         const hps = [];
         const atkivs = [];
@@ -158,14 +188,13 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
             hpivs[i] = new Set<number>();
         }
 
+        const maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
+
         const topIVCombinations = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap, levelCap)).flat();
 
         for (let i = 0; i < top; i++) {
             const topIVCombination = topIVCombinations[i];
             const maxLevel = topIVCombination.L;
-
-            console.log(`top ${i + 1} ${pokemon.speciesId} ivs for ${league}: ${topIVCombination.IVs.A} / ${topIVCombination.IVs.D} / ${topIVCombination.IVs.S}`);
-            console.log(`max lvl ${maxLevel}`);
 
             const atkBucket = topIVCombination.IVs.A === 15 ? 4 : Math.ceil(topIVCombination.IVs.A / 5);
             const defBucket = topIVCombination.IVs.D === 15 ? 4 : Math.ceil(topIVCombination.IVs.D / 5);
@@ -177,7 +206,7 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
             const basedef = predecessorPokemon.def;
             const basesta = predecessorPokemon.hp;
 
-            for (let j = 0; j <= (Math.min(35, maxLevel) - 1) * 2; j++) {
+            for (let j = 0; j <= (Math.min(35, maxLevel) - 1) * 2; j += 2) {
                 const cp = calculateCP(baseatk, topIVCombination.IVs.A, basedef, topIVCombination.IVs.D, basesta, topIVCombination.IVs.S, j);
                 const hp = calculateHP(basesta, topIVCombination.IVs.S, j);
                 cps[star].add(cp);
@@ -185,38 +214,82 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
                 atkivs[star].add(atkBucket);
                 defivs[star].add(defBucket);
                 hpivs[star].add(hpBucket);
+
+                if (maxCP[star] < cp) {
+                    maxCP[star] = cp;
+                }
+
+                if (maxHP[star] < hp) {
+                    maxHP[star] = hp;
+                }
             }
         }
 
+        if (trash) {
+            maxCP.fill(Math.max(...maxCP));
+            maxHP.fill(Math.max(...maxHP));
+        }
+
         let result = predecessorPokemon.dex.toString();
+
+        if (trash) {
+            for (let i = 0; i < atkivs.length; i++) {
+                atkivs[i] = trashFlip(atkivs[i], 4, true);
+                defivs[i] = trashFlip(defivs[i], 4, true);
+                hpivs[i] = trashFlip(hpivs[i], 4, true);
+            }
+        }
+
         let emptyBuf = "";
 
         for (let i = 0; i < 4; i++) {
             if ((cps[i] as Set<number>).size > 0) {
+
+                if (trash) {
+                    cps[i] = trashFlip(cps[i] as Set<number>, maxCP[i], false);
+                    
+                    /* skip empty hps */
+                    if ((hps[i] as Set<number>).size > 0) {
+                        hps[i] = trashFlip(hps[i] as Set<number>, maxHP[i], false);
+                    }
+                }
+
                 cps[i] = Array.from(cps[i]);
                 (cps[i] as number[]).sort((a, b) => a - b);
                 result += '&!' + i + '*' + groupAttr(atkivs[i], "attack");
-                result += '&!' + i + '*';
+                if (!trash) {
+                    result += '&!' + i + '*';
+                }
                 result += groupAttr(defivs[i], "defense");
-                result += '&!' + i + '*';
+                if (!trash) {
+                    result += '&!' + i + '*';
+                }
                 result += groupAttr(hpivs[i], "hp");
-                result += '&!' + i + '*';
+                if (!trash) {
+                    result += '&!' + i + '*';
+                }
                 result += "," + get_matching_string(cps[i] as number[], "cp");
-                result += '&!' + i + '*';
+                if (!trash) {
+                    result += '&!' + i + '*';
+                }
                 if ((hps[i] as Set<number>).size > 0) {
                     hps[i] = Array.from(hps[i]);
                     (hps[i] as number[]).sort((a, b) => a - b);
                     result += ',' + get_matching_string(hps[i] as number[], "hp");
                 }
-            } else {
+            } else if (!trash) {
                 emptyBuf += '&!' + i + '*';
             }
         }
 
         result += emptyBuf;
 
-        if ((cps[4] as Set<number>).size > 0) {
-            result += ',4*';
+        if (trash) {
+            result += '&!4*';
+        } else {
+            if ((cps[4] as Set<number>).size > 0) {
+                result += ',4*';
+            }
         }
 
         return result;
@@ -258,24 +331,13 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
                                         {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                                             .map(e => (<option key={e} value={e}>Max Lvl {e}</option>))}
                                     </select>
+                                    &nbsp;&nbsp;&nbsp;Find Top <input className="select-level" type="number" value={top} onChange={e => {const value = +e.target.value; Number.isInteger(value) && value >= 1 && value <= 4096 && setTop(+e.target.value)}} min={1} max={4096}/>
+                                    &nbsp;&nbsp;&nbsp;Trash string <input type="checkbox" checked={trash} onChange={_ => setTrash(previous => !previous)}/>
                                     </div>
+                                    
                         {similarPokemon.size > 1 && <div className="img-container">
                             <div className="img-family">
-                                {Array.from(similarPokemon).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => {
-                                    if (b.atk * b.def * b.hp > a.atk * a.def * a.hp) {
-                                        return 1;
-                                    }
-
-                                    if (b.atk * b.def * b.hp < a.atk * a.def * a.hp) {
-                                        return -1;
-                                    }
-
-                                    if (b.speciesName < a.speciesName) {
-                                        return 1;
-                                    }
-
-                                    return -1;
-                                }).map(p => (
+                                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                                     <div key = {p.speciesId} className="img-family-container">
                                         <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
                                             <PokemonImage pokemon={p}/>
@@ -284,12 +346,11 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
                                 ))}
                             </div>
                         </div>}
-                        <textarea className="search-strings-container"
-                            ref={textAreaRef}
-                            value={computeSearchString()}
+                        {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label">{p.speciesId === pokemon.speciesId ? `Find ${!trash ? "" : "all except "} top ${top} wild caught unpowered ${p.speciesName} for ${league === 1 ? "Great League" : league === 2 ? "Ultra League" : "Master League"}, up to level ${levelCap}` : `Find wild caught unpowered ${p.speciesName} that result in ${!trash ? "" : "all except "} top ${top} ${pokemon.speciesName} for ${league === 1 ? "Great League" : league === 2 ? "Ultra League" : "Master League"}, up to level ${levelCap}`}<textarea id={p.speciesId + "-textarea"} className="search-strings-container"
+                            value={computeSearchString(p)}
                             readOnly
-                            onClick={() => {textAreaRef.current && textAreaRef.current.select(); document.execCommand("copy"); alert("Copied to clipboard.");}}
-                        />
+                        /></div>)}
+                        
                 </div>
             </LoadingRenderer>
         </div>

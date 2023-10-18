@@ -11,7 +11,7 @@ import CircularSliderInput from "./CircularSliderInput";
 import React from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
-import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
+import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -180,21 +180,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         </div>
         {similarPokemon.size > 1 && <div className="img-container">
             <div className="img-family">
-                {Array.from(similarPokemon).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => {
-                    if (b.atk * b.def * b.hp > a.atk * a.def * a.hp) {
-                        return 1;
-                    }
-
-                    if (b.atk * b.def * b.hp < a.atk * a.def * a.hp) {
-                        return -1;
-                    }
-
-                    if (b.speciesName < a.speciesName) {
-                        return 1;
-                    }
-
-                    return -1;
-                }).map(p => (
+                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                     <div key = {p.speciesId} className="img-family-container">
                         <Link to={`/pokemon/${p.speciesId}/info`}>
                             <PokemonImage pokemon={p}/>

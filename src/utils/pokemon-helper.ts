@@ -17,6 +17,56 @@ export const fetchReachablePokemonIncludingSelf = (pokemon: IGamemasterPokemon, 
     return reachablePokemons;
 }
 
+const sortPokemonByBattlePower = (a: IGamemasterPokemon, b: IGamemasterPokemon, asc: boolean) => {
+    const sortScalar = asc ? -1 : 1;
+
+    if (b.atk * b.def * b.hp > a.atk * a.def * a.hp) {
+        return 1 * sortScalar;
+    }
+
+    if (b.atk * b.def * b.hp < a.atk * a.def * a.hp) {
+        return -1 * sortScalar;
+    }
+
+    if (b.speciesName < a.speciesName) {
+        return 1 * sortScalar;
+    }
+
+    return -1 * sortScalar;
+
+}
+
+export const sortPokemonByBattlePowerDesc = (a: IGamemasterPokemon, b: IGamemasterPokemon) => {
+    return sortPokemonByBattlePower(a, b, false);
+}
+
+export const sortPokemonByBattlePowerAsc = (a: IGamemasterPokemon, b: IGamemasterPokemon) => {
+    return sortPokemonByBattlePower(a, b, true);
+}
+
+export const fetchPredecessorPokemonIncludingSelf = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const predecessorPokemons = new Set<IGamemasterPokemon>();
+    const queue = [pokemon];
+
+    while (queue.length > 0) {
+        const currentPokemon = queue.shift() as IGamemasterPokemon;
+        predecessorPokemons.add(currentPokemon);
+        
+        if (!currentPokemon.parent) {
+            continue;
+        }
+
+        const parentRef = gamemasterPokemon[currentPokemon.parent];
+        if (!parentRef) {
+            continue;
+        }
+
+        queue.push(parentRef);
+    }
+
+    return predecessorPokemons;
+}
+
 export const fetchPokemonFamily = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>)  => {
     const family = new Set(pokemon.familyId ? Object.values(gamemasterPokemon).filter(p => p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow) : []);
     const reachableFromFamily = new Set(family);

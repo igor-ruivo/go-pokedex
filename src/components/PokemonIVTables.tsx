@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { computeBestIVs, fetchPokemonFamily } from "../utils/pokemon-helper";
+import { computeBestIVs, fetchPokemonFamily, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 import "./PokemonIVTables.scss"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { TableComponents, TableVirtuoso } from "react-virtuoso";
@@ -352,21 +352,7 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
                                     </div>
                         {similarPokemon.size > 1 && <div className="img-container">
                             <div className="img-family">
-                                {Array.from(similarPokemon).sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => {
-                                    if (b.atk * b.def * b.hp > a.atk * a.def * a.hp) {
-                                        return 1;
-                                    }
-
-                                    if (b.atk * b.def * b.hp < a.atk * a.def * a.hp) {
-                                        return -1;
-                                    }
-
-                                    if (b.speciesName < a.speciesName) {
-                                        return 1;
-                                    }
-
-                                    return -1;
-                                }).map(p => (
+                                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                                     <div key = {p.speciesId} className="img-family-container">
                                         <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
                                             <PokemonImage pokemon={p}/>
