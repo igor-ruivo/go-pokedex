@@ -271,11 +271,16 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
                 result += "," + get_matching_string(cps[i] as number[], "cp");
                 if (!trash) {
                     result += '&!' + i + '*';
+                } else {
+                    result += ',cp' + (maxCP[i] + 1) + "-";
                 }
                 if ((hps[i] as Set<number>).size > 0) {
                     hps[i] = Array.from(hps[i]);
                     (hps[i] as number[]).sort((a, b) => a - b);
                     result += ',' + get_matching_string(hps[i] as number[], "hp");
+                    if (trash) {
+                        result += ',hp' + (maxHP[i] + 1) + "-";
+                    }
                 }
             } else if (!trash) {
                 emptyBuf += '&!' + i + '*';
