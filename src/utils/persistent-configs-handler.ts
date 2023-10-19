@@ -11,7 +11,9 @@ export enum ConfigKeys {
     DefenseIV,
     HPIV,
     LevelCap,
-    GridScrollY
+    GridScrollY,
+    TopPokemonInSearchString,
+    TrashString
 }
 
 // avoids collision with other website's cache.

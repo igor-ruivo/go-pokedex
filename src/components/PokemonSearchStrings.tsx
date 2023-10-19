@@ -34,11 +34,19 @@ const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number)
     return +cachedValue;
 }
 
+const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) => {
+    const cachedValue = readPersistentValue(key);
+    if (cachedValue === null) {
+        return defaultValue;
+    }
+    return cachedValue === "true";
+}
+
 const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
     const [league, setLeague] = useState(getDefaultListType() ?? ListType.GREAT_LEAGUE);
-    const [top, setTop] = useState(10);
-    const [trash, setTrash] = useState(false);
+    const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10));
+    const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
     const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
     const {pathname} = useLocation();
@@ -53,6 +61,14 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     useEffect(() => {
         writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));
     }, [league]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.TopPokemonInSearchString, top.toString());
+    }, [top]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.TrashString, trash.toString());
+    }, [trash]);
 
     useEffect(() => {
         const textAreas = predecessorPokemonArray.map(p => document.getElementById(p.speciesId + "-textarea")).filter(e => e) as HTMLTextAreaElement[];
@@ -336,7 +352,10 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
                                         {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                                             .map(e => (<option key={e} value={e}>Max Lvl {e}</option>))}
                                     </select>
-                                    &nbsp;&nbsp;&nbsp;Find Top <input className="select-level" type="number" value={top} onChange={e => {const value = +e.target.value; Number.isInteger(value) && value >= 1 && value <= 4096 && setTop(+e.target.value)}} min={1} max={4096}/>
+                                    &nbsp;&nbsp;&nbsp;Find Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
+                                        {Array.from({length: 4096}, (_x, i) => i + 1)
+                                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                                    </select>
                                     &nbsp;&nbsp;&nbsp;Trash string <input type="checkbox" checked={trash} onChange={_ => setTrash(previous => !previous)}/>
                                     </div>
                                     
