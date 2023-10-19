@@ -241,11 +241,6 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
             }
         }
 
-        if (trash) {
-            maxCP.fill(Math.max(...maxCP));
-            maxHP.fill(Math.max(...maxHP));
-        }
-
         let result = predecessorPokemon.dex.toString();
 
         if (trash) {
