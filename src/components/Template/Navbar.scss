@@ -8,6 +8,61 @@
     display: flex;
 }
 
+.options-menu {
+    top: 75px;
+    background: $headerBackground;
+    color: $textColor;
+    position: absolute;
+    z-index: 200;
+    width: 100%;
+    box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
+}
+
+.option-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px;
+    line-height: 1.25;
+    color: inherit;
+}
+
+.options-li {
+    width: 100%
+}
+
+.options-ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    list-style: none;
+    padding-left: 0;
+    grid-gap: 6px;
+    gap: 6px;
+}
+
+.strong-underline {
+    display: block;
+    padding: 6px 0;
+    border-bottom: 1px solid hsla(0,0%,100%,.25); 
+}
+
+.options-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 24px 12px 72px;
+    margin: auto;
+    gap: 36px;
+    max-width: 1300px;
+}
+
+.options-menu.visible {
+    display: block;
+}
+
+.options-menu.hidden {
+    display: none;
+}
+
 .navbar-section {
     display: grid;
     grid-template-columns: 40px 100px 1fr;
@@ -38,6 +93,15 @@
     color: transparent;
 }
 
+.navbar-dropdown {
+    width: 80%;
+    font-size: smaller;
+    * {
+        color: white !important;
+        background: $buttonsBackground !important;
+    }
+}
+
 button {
     color: $buttonsTextColor;
     border-radius: 12px;
@@ -45,11 +109,16 @@ button {
     font-size: inherit;
 }
 
-.navbar-menu {
+.flag-container {
     display: flex;
+    gap: 9px;
+}
+
+.navbar-menu {
+    display: grid;
+    grid-template-columns: 30% 70%;
     height: 42px;
     padding: 9px;
-    gap: 9px;
     align-items: center;
     justify-content: center;
     background-color: $buttonsBackground;
@@ -60,7 +129,11 @@ button {
 }
 
 .navbar-menu-img {
-    color: transparent;
+    justify-self: center;
+    &.cross {
+        width: 16px;
+        height: 16px;
+    }
 }
 
 .search-wrapper {
@@ -84,10 +157,14 @@ button {
         padding-right: 16px;
     }
 
+    .options-nav {
+        gap: 24px;
+    }
+
     .navbar-menu {
+        display: flex;
         order: 3;
         height: 48px;
-        
         span {
             display: none;
         }
@@ -106,5 +183,24 @@ button {
 
     .search-wrapper {
         position: static;
+    }
+
+    .options-menu {
+        top: 65px;
+    }
+
+    .navbar-dropdown {
+        font-size: 12px;
+        width: 100%;
+    }
+
+    .flag-container {
+        gap: 5px;
+    }
+}
+
+@media (max-width: 380px) {
+    .country-flag {
+        display: none;
     }
 }
