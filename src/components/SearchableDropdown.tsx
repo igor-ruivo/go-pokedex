@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./SearchableDropdown.scss";
 import { useNavbarSearchInput } from "../contexts/navbar-search-context";
 import { Autocomplete, TextField } from "@mui/material";
+import translator, { TranslatorKeys } from "../utils/Translator";
+import { useLanguage } from "../contexts/language-context";
 
 interface ISearchableDropdownProps {
     options: any[];
@@ -12,6 +14,7 @@ interface ISearchableDropdownProps {
 const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdownProps) => {
     const {inputText, updateInputText} = useNavbarSearchInput();
     const [debouncingInputText, setDebouncingInputText] = useState(inputText);
+    const {currentLanguage} = useLanguage();
 
     useEffect(() => {
         if (!debouncingInputText) {
@@ -41,11 +44,11 @@ const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdo
         freeSolo
         autoHighlight
         loading={isLoading}
-        loadingText="Loading pokémons..."
+        loadingText={translator(TranslatorKeys.Loading, currentLanguage)}
         clearOnEscape
         selectOnFocus
         renderInput={(params) => (
-            <TextField {...params} className="auto_complete_input" label="Search…" placeholder="Pokémon name" />
+            <TextField {...params} className="auto_complete_input" label={translator(TranslatorKeys.Search, currentLanguage)} placeholder={translator(TranslatorKeys.Name, currentLanguage)} />
         )} 
     />
 }

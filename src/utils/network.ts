@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { cacheTtlInMillis } from "./Resources";
+import { cacheTtlInMillis } from "./Configs";
 import { readEntry, writeEntry } from "./resource-cache";
 
 export const fetchUrls = async(urls: string[], useCache: boolean = false, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any) => any): Promise<any[]> => {

@@ -3,7 +3,7 @@ import { IMove } from "../DTOs/IMove";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
-import { buildPokemonImageUrl } from "./Resources";
+import { buildPokemonImageUrl } from "./Configs";
 
 const blacklistedSpecieIds = [
     "pikachu_5th_anniversary",
@@ -80,7 +80,7 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 speciesName: sexConverter(pokemon.speciesName),
                 speciesShortName: shortName(pokemon.speciesName),
                 imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
-                types: Array.from(pokemon.types).filter(t => t !== "none").map(t => t as PokemonTypes),
+                types: Array.from(pokemon.types).filter(t => t !== "none").map((t: any) => ((t.substring(0, 1).toLocaleUpperCase() + t.substring(1)) as PokemonTypes)),
                 atk: pokemon.baseStats.atk,
                 def: pokemon.baseStats.def,
                 hp: pokemon.baseStats.hp,

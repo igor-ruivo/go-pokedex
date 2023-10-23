@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect } from 'react';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { gamemasterPokemonUrl, movesUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Resources';
+import { gamemasterPokemonUrl, movesUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Configs';
 import { mapGamemasterPokemonData, mapMoves, mapRankedPokemon } from '../utils/conversions';
 import { IMove } from '../DTOs/IMove';
 import Dictionary from '../utils/Dictionary';

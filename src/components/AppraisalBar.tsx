@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./AppraisalBar.scss";
 import { Slider } from "@mui/material";
+import translator, { TranslatorKeys } from "../utils/Translator";
+import { useLanguage } from "../contexts/language-context";
 
 enum Stat {
     Attack,
@@ -21,6 +23,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
     const [debouncingAttack, setDebouncingAttack] = useState(attack);
     const [debouncingDefense, setDebouncingDefense] = useState(defense);
     const [debouncingHP, setDebouncingHP] = useState(hp);
+    const {currentLanguage} = useLanguage();
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -76,11 +79,22 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
 
         const statBarClass = value === 15 ? 'stat-bar max' : 'stat-bar';
 
+        const statToLang = (stat: Stat) => {
+            switch(stat) {
+                case Stat.Attack:
+                    return translator(TranslatorKeys.Attack, currentLanguage);
+                case Stat.Defense:
+                    return translator(TranslatorKeys.Defense, currentLanguage);
+                case Stat.HP:
+                    return translator(TranslatorKeys.HP, currentLanguage);
+            }
+        }
+
         return (
             <div className="stat">
                 <h4>
                     <div className="stat-current-value">
-                        {Stat[stat]}
+                        {statToLang(stat)}
                     </div>
                     <span>
                         {

@@ -7,6 +7,7 @@ import { ListType } from "../../views/pokedex";
 import { useState } from "react";
 import { Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select"
+import translator, { TranslatorKeys } from "../../utils/Translator";
 
 const Navbar = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
@@ -54,7 +55,7 @@ const Navbar = () => {
             flag: "https://i.imgur.com/PTjbo6O.png"
         },
         {
-            label: "Portuguese",
+            label: "Português",
             value: Language.Portuguese,
             flag: "https://i.imgur.com/PoMTq6R.png"
         }
@@ -64,13 +65,13 @@ const Navbar = () => {
         <header className="navbar">
             <section className="navbar-section">
                 <Link to={getDestination()} className="navbar-logo">
-                    <img className="navbar-logo-image" alt="GO-Pokedéx logo" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
+                    <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
                 </Link>
                 <button
                     className="navbar-menu"
                     onClick={() => setOptionsOpened(previous => !previous)}
                 >
-                    <img className={"navbar-menu-img" + (optionsOpened ? " cross" : "")} alt="Menu toggle" loading="lazy" width="24" height="20" decoding="async" src={optionsOpened ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
+                    <img className={"navbar-menu-img" + (optionsOpened ? " cross" : "")} alt="Menu" loading="lazy" width="24" height="20" decoding="async" src={optionsOpened ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
                     <span>Menu</span>
                 </button>
                 <div className="search-wrapper">
@@ -92,14 +93,14 @@ const Navbar = () => {
                 <section>
                     <strong>
                         <span className="strong-underline">
-                            Settings
+                            {translator(TranslatorKeys.Settings, currentLanguage)}
                         </span>
                     </strong>
                     <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
                                 <span>
-                                    Language
+                                    {translator(TranslatorKeys.Language, currentLanguage)}
                                 </span>
                                 <Select
                                     className="navbar-dropdown"

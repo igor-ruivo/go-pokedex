@@ -12,6 +12,9 @@ import React from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
 import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
+import translator, { TranslatorKeys } from "../utils/Translator";
+import { useLanguage } from "../contexts/language-context";
+import { PokemonTypes } from "../DTOs/PokemonTypes";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -58,6 +61,7 @@ export interface IIvPercents {
 
 const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
+    const {currentLanguage} = useLanguage();
     const selectedImageRef = React.createRef<HTMLImageElement>();
 
     const {gamemasterPokemon, rankLists, moves, fetchCompleted} = usePokemon();
@@ -108,6 +112,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     const masterLeagueMoveset = rankLists[2][bestInFamilyForMasterLeague.speciesId]?.moveset ?? [];
 
     const getRankPercentage = (rank: number) => Math.round(((1 - (rank / 4095)) * 100 + Number.EPSILON) * 100) / 100;
+
+    const translatedType = (type: PokemonTypes) => {
+        const translatorKey = TranslatorKeys[type];
+        return translator(translatorKey as any, currentLanguage)
+    }
 
     return <div className="content">
         <PokemonHeader
@@ -160,8 +169,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
         </strong>
         <span className="level-cp">
-            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} CP&nbsp;</strong>
-            @ LVL {<select value={displayLevel} onChange={e => {setDisplayLevel(+e.target.value); setLevelCap(+e.target.value);}} className="select-level">
+            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} {translator(TranslatorKeys.CP, currentLanguage)}&nbsp;</strong>
+            @ {translator(TranslatorKeys.LVL, currentLanguage)} {<select value={displayLevel} onChange={e => {setDisplayLevel(+e.target.value); setLevelCap(+e.target.value);}} className="select-level">
                     {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                     .map(e => (<option key={e} value={e}>{e}</option>))}
                 </select>}
@@ -170,11 +179,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         </span>
         <div className="types-container">
             <div className="types">
-                <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[0]})`}}>
-                    {pokemon.types[0].toString().charAt(0).toUpperCase() + pokemon.types[0].toString().slice(1)}
-                </span>
+                {pokemon.types[0] && <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[0]})`}}>
+                    {translatedType(pokemon.types[0])}
+                </span>}
                 {pokemon.types[1] && <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[1]})`}}>
-                    {pokemon.types[1].toString().charAt(0).toUpperCase() + pokemon.types[1].toString().slice(1)}
+                    {translatedType(pokemon.types[1])}
                 </span>}
             </div>
         </div>

@@ -7,6 +7,8 @@ import LoadingRenderer from '../components/LoadingRenderer';
 import PokemonInfo from '../components/PokemonInfo';
 import PokemonIVTables from '../components/PokemonIVTables';
 import PokemonSearchStrings from '../components/PokemonSearchStrings';
+import translator, { TranslatorKeys } from '../utils/Translator';
+import { useLanguage } from '../contexts/language-context';
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
@@ -15,6 +17,7 @@ const Pokemon = () => {
     const { pathname } = useLocation();
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
+    const {currentLanguage} = useLanguage();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -26,22 +29,17 @@ const Pokemon = () => {
                 <ul>
                     <li>
                         <Link to={pokemonBasePath + "/info"} className={"header-tab " + (tab.endsWith("/info") ? "selected" : "")}>
-                            <span>Info</span>
+                            <span>Pokémon</span>
                         </Link>
                     </li>
                     <li>
                         <Link to={pokemonBasePath + "/tables"} className={"header-tab " + (tab.endsWith("/tables") ? "selected" : "")}>
-                            <span>IV Tables</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to={pokemonBasePath + "/moves"} className={"header-tab " + (tab.endsWith("/moves") ? "selected" : "")}>
-                            <span>Moves</span>
+                            <span>{translator(TranslatorKeys.IVTables, currentLanguage)}</span>
                         </Link>
                     </li>
                     <li>
                         <Link to={pokemonBasePath + "/strings"} className={"header-tab " + (tab.endsWith("/strings") ? "selected" : "")}>
-                            <span>Search Strings</span>
+                            <span>{translator(TranslatorKeys.SearchStrings, currentLanguage)}</span>
                         </Link>
                     </li>
                 </ul>
