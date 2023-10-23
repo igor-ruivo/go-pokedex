@@ -13,6 +13,8 @@ import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
 import LoadingRenderer from "./LoadingRenderer";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
+import translator, { TranslatorKeys } from "../utils/Translator";
+import { useLanguage } from "../contexts/language-context";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
@@ -58,63 +60,6 @@ const createData = (
 ): Data => {
     return { top, ivs, cp, lvl, attack, defense, hp, product, productPercentage };
 }
-
-const columns: ColumnData[] = [
-    {
-      width: 70,
-      label: '#',
-      dataKey: 'top',
-      sortable: true
-    },
-    {
-      width: 120,
-      label: 'IVs',
-      dataKey: 'ivs',
-      sortable: false
-    },
-    {
-      width: 70,
-      label: 'CP',
-      dataKey: 'cp',
-      sortable: true
-    },
-    {
-      width: 60,
-      label: 'LVL',
-      dataKey: 'lvl',
-      sortable: true
-    },
-    {
-      width: 60,
-      label: 'Atk',
-      dataKey: 'attack',
-      sortable: true
-    },
-    {
-      width: 60,
-      label: 'Def',
-      dataKey: 'defense',
-      sortable: true
-    },
-    {
-      width: 60,
-      label: 'HP',
-      dataKey: 'hp',
-      sortable: true
-    },
-    {
-      width: 100,
-      label: 'Score',
-      dataKey: 'product',
-      sortable: true
-    },
-    {
-      width: 100,
-      label: '%',
-      dataKey: 'productPercentage',
-      sortable: false
-    }
-];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -166,6 +111,8 @@ const getDefaultListType = () => {
 const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
     const [league, setLeague] = useState(getDefaultListType() ?? ListType.GREAT_LEAGUE);
+
+    const {currentLanguage} = useLanguage();
     
     const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
     const [defSearch, setDefSearch] = useState<number|undefined>(undefined);
@@ -181,11 +128,68 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
 
     useEffect(() => {
         writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
-    }, [levelCap])
+    }, [levelCap]);
 
     useEffect(() => {
         writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));
-    }, [league])
+    }, [league]);
+
+    const columns: ColumnData[] = [
+        {
+        width: 70,
+        label: '#',
+        dataKey: 'top',
+        sortable: true
+        },
+        {
+        width: 120,
+        label: translator(TranslatorKeys.IVs, currentLanguage),
+        dataKey: 'ivs',
+        sortable: false
+        },
+        {
+        width: 70,
+        label: translator(TranslatorKeys.CP, currentLanguage),
+        dataKey: 'cp',
+        sortable: true
+        },
+        {
+        width: 60,
+        label: translator(TranslatorKeys.LVL, currentLanguage),
+        dataKey: 'lvl',
+        sortable: true
+        },
+        {
+        width: 60,
+        label: translator(TranslatorKeys.ATK, currentLanguage),
+        dataKey: 'attack',
+        sortable: true
+        },
+        {
+        width: 60,
+        label: 'Def',
+        dataKey: 'defense',
+        sortable: true
+        },
+        {
+        width: 60,
+        label: translator(TranslatorKeys.HP, currentLanguage),
+        dataKey: 'hp',
+        sortable: true
+        },
+        {
+        width: 100,
+        label: translator(TranslatorKeys.Score, currentLanguage),
+        dataKey: 'product',
+        sortable: true
+        },
+        {
+        width: 100,
+        label: '%',
+        dataKey: 'productPercentage',
+        sortable: false
+        }
+    ];
 
     let cpCap = Number.MAX_VALUE;
 
@@ -215,7 +219,7 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
             +(Math.trunc(e.battle.D * 10) / 10).toFixed(1),
             e.battle.S,
             Math.round(e.battle.A * e.battle.D * e.battle.S),
-            (100 * (e.battle.A * e.battle.D * e.battle.S) / highestScore).toFixed(3) + "%"
+            +(100 * (e.battle.A * e.battle.D * e.battle.S) / highestScore).toFixed(3) + "%"
         );
     });
 
@@ -311,7 +315,7 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
                                 <li>
                                     <div onClick={() => setLeague(ListType.GREAT_LEAGUE)} className={"header-tab " + (league === ListType.GREAT_LEAGUE ? "selected" : "")}>
                                         <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                                        <span>Great</span>
+                                        <span>{translator(TranslatorKeys.Great, currentLanguage)}</span>
                                     </div>
                                 </li>
                                 <li>
@@ -323,7 +327,7 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
                                 <li>
                                     <div onClick={() => setLeague(ListType.MASTER_LEAGUE)} className={"header-tab " + (league === ListType.MASTER_LEAGUE ? "selected" : "")}>
                                         <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
-                                        <span>Master</span>
+                                        <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
                                     </div>
                                 </li>
                             </ul>
@@ -331,9 +335,9 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
                         <div className="extra-ivs-options">
                                     <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
                                         {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                                            .map(e => (<option key={e} value={e}>Max Lvl {e}</option>))}
+                                            .map(e => (<option key={e} value={e}>{translator(TranslatorKeys.MaxLvl, currentLanguage)} {e}</option>))}
                                     </select>
-                                    &nbsp;&nbsp;&nbsp;Search IVs:
+                                    &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.SearchIVs, currentLanguage)}:
                                     <select value={atkSearch ?? ""} onChange={e => setAtkSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
                                         <option key={"unset"} value={undefined}>-</option>
                                         {Array.from({length: 16}, (_x, i) => i)

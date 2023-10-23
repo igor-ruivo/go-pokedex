@@ -1,3 +1,5 @@
+import { Language, useLanguage } from "../contexts/language-context";
+import translator, { TranslatorKeys } from "../utils/Translator";
 import "./LeaguePanels.scss";
 
 interface PokemonLeagueMove {
@@ -37,12 +39,15 @@ const LeaguePanels = ({
     masterLeagueStats
 }: ILeaguePanelsProps) => {
 
+    const {currentLanguage} = useLanguage();
+
     const buildRankString = (rank: string|undefined) => {
         if (!rank) {
-            return "Unranked";
+            return translator(TranslatorKeys.Unranked, currentLanguage);
         }
 
-        return `Ranked ${rank}`;
+        const ranked = translator(TranslatorKeys.Ranked, currentLanguage);
+        return currentLanguage === Language.Portuguese ? `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")} ${ranked}` :  `Ranked ${rank}`;
     }
 
     const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked" + (!rank ? " unranked" : "");
@@ -64,7 +69,7 @@ const LeaguePanels = ({
                                 <h3>
                                     <div>{leagueStat.pokemonLeaguePercentage}% <span className="percentile">(#{leagueStat.pokemonLeaguePercentile})</span></div>
                                 </h3>
-                                <div className="cp-and-level">{leagueStat.pokemonCP} CP @ LVL {leagueStat.pokemonLevel}</div>
+                                <div className="cp-and-level">{leagueStat.pokemonCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}</div>
                             </div>
                 </section>
                 <section className="pvp-stats-display">
@@ -73,7 +78,7 @@ const LeaguePanels = ({
                             <li>
                                 <span className="pokemon-ivs-item">
                                     <span>{leagueStat.atk}</span>
-                                    <strong className="pokemon-ivs-label">ATK</strong>
+                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.ATK, currentLanguage)}</strong>
                                 </span>
                             </li>
                             <li>
@@ -85,13 +90,13 @@ const LeaguePanels = ({
                             <li>
                                 <span className="pokemon-ivs-item">
                                     <span>{leagueStat.hp}</span>
-                                    <strong className="pokemon-ivs-label">STA</strong>
+                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.STA, currentLanguage)}</strong>
                                 </span>
                             </li>
                         </ul>
                     </section>
                     <section>
-                        <div className="cp-and-level-recommended"><strong>{leagueStat.bestCP} CP @ LVL {leagueStat.bestLevel}</strong></div>
+                        <div className="cp-and-level-recommended"><strong>{leagueStat.bestCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}</strong></div>
                     </section>
                     {leagueStat.fastAttack.moveName && <strong className="pokemon-attack">
                         <div className="type-attack">{leagueStat.fastAttack.moveName && <img src={typeSrc(leagueStat.fastAttack.type)}/>}{leagueStat.fastAttack.moveName}{leagueStat.fastAttack.isElite ? "*" : leagueStat.fastAttack.isLegacy ? <sup>†</sup> : <></>}</div>

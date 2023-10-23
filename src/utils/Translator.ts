@@ -30,7 +30,32 @@ export enum TranslatorKeys {
     Grass,
     Electric,
     Poison,
-    Bug
+    Bug,
+    Unranked,
+    Ranked,
+    ATK,
+    STA,
+    SearchIVs,
+    MaxLvl,
+    IVs,
+    Score,
+    TrashString,
+    Find,
+    WildUnpowered,
+    ThatResultIn,
+    FindTop,
+    ForLeague,
+    Great,
+    Master,
+    GreatLeague,
+    UltraLeague,
+    MasterLeague,
+    UpToLevel,
+    AllExcept,
+    AttackSearch,
+    DefenseSearch,
+    HPSearch,
+    CPSearch
 }
 
 const settings = new Map<Language, string>([
@@ -183,6 +208,131 @@ const bug = new Map<Language, string>([
     [Language.Portuguese, "Inseto"]
 ]);
 
+const unranked = new Map<Language, string>([
+    [Language.English, "Unranked"],
+    [Language.Portuguese, "Não classificado"]
+]);
+
+const ranked = new Map<Language, string>([
+    [Language.English, "Ranked"],
+    [Language.Portuguese, "Lugar"]
+]);
+
+const atk = new Map<Language, string>([
+    [Language.English, "ATK"],
+    [Language.Portuguese, "ATA"]
+]);
+
+const sta = new Map<Language, string>([
+    [Language.English, "STA"],
+    [Language.Portuguese, "PS"]
+]);
+
+const searchIVs = new Map<Language, string>([
+    [Language.English, "Search IVs"],
+    [Language.Portuguese, "Pesquisar"]
+]);
+
+const maxLvl = new Map<Language, string>([
+    [Language.English, "Max Lvl"],
+    [Language.Portuguese, "Nível Máx"]
+]);
+
+const ivs = new Map<Language, string>([
+    [Language.English, "IVs"],
+    [Language.Portuguese, "Atributos"]
+]);
+
+const score = new Map<Language, string>([
+    [Language.English, "Score"],
+    [Language.Portuguese, "Pontos"]
+]);
+
+const trashString = new Map<Language, string>([
+    [Language.English, "Worst"],
+    [Language.Portuguese, "Piores"]
+]);
+
+const find = new Map<Language, string>([
+    [Language.English, "Find"],
+    [Language.Portuguese, "Encontrar"]
+]);
+
+const wildUnpowered = new Map<Language, string>([
+    [Language.English, "wild caught and still unpowered"],
+    [Language.Portuguese, "selvagens e ainda não evoluídos"]
+]);
+
+const thatResultIn = new Map<Language, string>([
+    [Language.English, "that evolve to"],
+    [Language.Portuguese, "que evoluem para"]
+]);
+
+const findTop = new Map<Language, string>([
+    [Language.English, "top"],
+    [Language.Portuguese, "os top"]
+]);
+
+const forLeague = new Map<Language, string>([
+    [Language.English, "for"],
+    [Language.Portuguese, "da"]
+]);
+
+const great = new Map<Language, string>([
+    [Language.English, "Great"],
+    [Language.Portuguese, "Grande"]
+]);
+
+const master = new Map<Language, string>([
+    [Language.English, "Master"],
+    [Language.Portuguese, "Mestra"]
+]);
+
+const greatLeague = new Map<Language, string>([
+    [Language.English, "Great League"],
+    [Language.Portuguese, "Grande Liga"]
+]);
+
+const ultraLeague = new Map<Language, string>([
+    [Language.English, "Ultra League"],
+    [Language.Portuguese, "Ultra-liga"]
+]);
+
+const masterLeague = new Map<Language, string>([
+    [Language.English, "Master League"],
+    [Language.Portuguese, "Liga Mestra"]
+]);
+
+const upToLevel = new Map<Language, string>([
+    [Language.English, "up to level"],
+    [Language.Portuguese, "até nível"]
+]);
+
+const allExcept = new Map<Language, string>([
+    [Language.English, "all except"],
+    [Language.Portuguese, "todos exceto"]
+]);
+
+const attackSearch = new Map<Language, string>([
+    [Language.English, "attack"],
+    [Language.Portuguese, "ataque"]
+]);
+
+const defenseSearch = new Map<Language, string>([
+    [Language.English, "defense"],
+    [Language.Portuguese, "defesa"]
+]);
+
+const hpSearch = new Map<Language, string>([
+    [Language.English, "hp"],
+    [Language.Portuguese, "ps"]
+]);
+
+const cpSearch = new Map<Language, string>([
+    [Language.English, "cp"],
+    [Language.Portuguese, "pc"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -213,7 +363,32 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Grass, grass],
     [TranslatorKeys.Electric, electric],
     [TranslatorKeys.Poison, poison],
-    [TranslatorKeys.Bug, bug]
+    [TranslatorKeys.Bug, bug],
+    [TranslatorKeys.Unranked, unranked],
+    [TranslatorKeys.Ranked, ranked],
+    [TranslatorKeys.ATK, atk],
+    [TranslatorKeys.STA, sta],
+    [TranslatorKeys.SearchIVs, searchIVs],
+    [TranslatorKeys.MaxLvl, maxLvl],
+    [TranslatorKeys.IVs, ivs],
+    [TranslatorKeys.Score, score],
+    [TranslatorKeys.TrashString, trashString],
+    [TranslatorKeys.Find, find],
+    [TranslatorKeys.WildUnpowered, wildUnpowered],
+    [TranslatorKeys.ThatResultIn, thatResultIn],
+    [TranslatorKeys.FindTop, findTop],
+    [TranslatorKeys.ForLeague, forLeague],
+    [TranslatorKeys.Great, great],
+    [TranslatorKeys.Master, master],
+    [TranslatorKeys.GreatLeague, greatLeague],
+    [TranslatorKeys.UltraLeague, ultraLeague],
+    [TranslatorKeys.MasterLeague, masterLeague],
+    [TranslatorKeys.UpToLevel, upToLevel],
+    [TranslatorKeys.AllExcept, allExcept],
+    [TranslatorKeys.AttackSearch, attackSearch],
+    [TranslatorKeys.DefenseSearch, defenseSearch],
+    [TranslatorKeys.HPSearch, hpSearch],
+    [TranslatorKeys.CPSearch, cpSearch]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();
