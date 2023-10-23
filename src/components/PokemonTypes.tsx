@@ -9,7 +9,7 @@ const PokemonTypes = ({ types }: IPokemonTypesProps) => {
     return (
         <div className="pokemon_types">
             {types.map(t => {
-                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${t}.png`;
+                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${t.toString().toLocaleLowerCase()}.png`;
                 return <img className="type-icon" key={t} src={url} alt={t.toString()} width="100%" height="100%"/>
             })}
         </div>

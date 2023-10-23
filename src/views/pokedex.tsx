@@ -7,6 +7,8 @@ import LoadingRenderer from '../components/LoadingRenderer';
 import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
+import translator, { TranslatorKeys } from '../utils/Translator';
+import { useLanguage } from '../contexts/language-context';
 
 export enum ListType {
     POKEDEX,
@@ -21,6 +23,7 @@ const Pokedex = () => {
     const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
     const { gamemasterPokemon, rankLists, fetchCompleted, errors } = usePokemon();
     const { inputText } = useNavbarSearchInput();
+    const {currentLanguage} = useLanguage();
 
     let listType = ListType.POKEDEX;
     const { listTypeArg } = useParams();
@@ -90,7 +93,7 @@ const Pokedex = () => {
                     <li>
                         <Link to="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                            <span>Great</span>
+                            <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
                         </Link>
                     </li>
                     <li>
@@ -102,7 +105,7 @@ const Pokedex = () => {
                     <li>
                         <Link to="/master" className={"header-tab " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
-                            <span>Master</span>
+                            <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
                         </Link>
                     </li>
                 </ul>
