@@ -18,13 +18,12 @@ const App = () => {
                         <Content>
                             <Routes>
                                 <Route index element={<Pokedex />}/>
-                                <Route path="/:listTypeArg" element={<Pokedex />}/>
-                                <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
-                                <Route path="/pokemon/:speciesId/info" element={<Pokemon />}/>
-                                <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
-                                <Route path="/pokemon/:speciesId/moves" element={<Pokemon />}/>
-                                <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
-                                <Route path="/*" element={<div>404 not found!</div>} />
+                                <Route path="/go-pokedex/:listTypeArg" element={<Pokedex />}/>
+                                <Route path="/go-pokedex/pokemon/:speciesId" element={<Pokemon />}/>
+                                <Route path="/go-pokedex/pokemon/:speciesId/info" element={<Pokemon />}/>
+                                <Route path="/go-pokedex/pokemon/:speciesId/tables" element={<Pokemon />}/>
+                                <Route path="/go-pokedex/pokemon/:speciesId/strings" element={<Pokemon />}/>
+                                <Route path="/go-pokedex/*" element={<div>404 not found!</div>} />
                             </Routes>
                         </Content>
                     </BrowserRouter>
