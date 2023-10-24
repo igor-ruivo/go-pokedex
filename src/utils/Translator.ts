@@ -311,8 +311,8 @@ const upToLevel = new Map<Language, string>([
 ]);
 
 const allExcept = new Map<Language, string>([
-    [Language.English, "all except"],
-    [Language.Portuguese, "todos exceto"]
+    [Language.English, "any except the"],
+    [Language.Portuguese, "quaisquer exceto"]
 ]);
 
 const attackSearch = new Map<Language, string>([
