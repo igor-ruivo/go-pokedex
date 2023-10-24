@@ -10,6 +10,8 @@ import Dictionary from '../utils/Dictionary';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import { ListType } from '../views/pokedex';
 import { useLocation } from 'react-router-dom';
+import translator, { TranslatorKeys } from '../utils/Translator';
+import { useLanguage } from '../contexts/language-context';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[],
@@ -44,6 +46,8 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
 
     const [lastShownIndex, setLastShownIndex] = useState(getDefaultLastShownIndex());
     const [readyImages, setReadyImages] = useState<Dictionary<string>>(getDefaultReadyImages());
+
+    const {currentLanguage} = useLanguage();
 
     const fetchedImages = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);
@@ -188,10 +192,10 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
 
     return (
         <div className="grid_container" ref={renderDivRef}>
-            {pokemonInfoList.length === 0 && <div>No Pokémon matched your search!</div>}
+            {pokemonInfoList.length === 0 && <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div>}
             {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                 <Box sx={{ flexGrow: 1 }}>
-                    <Grid container disableEqualOverflow spacing={{ xs: 2, md: 3 }}>
+                    <Grid container disableEqualOverflow spacing={{ xs: 1, md: 2 }}>
                         {shownPokemonSlice.map(p => (
                             <Grid xs={4} sm={3} md={3} key={p.speciesId} className="grid">
                                 {readyImages.hasOwnProperty(p.speciesId) &&
@@ -204,7 +208,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
                 </Box>
                 :
                 pokemonInfoList.length > 0 && <div>
-                    Loading...
+                    {translator(TranslatorKeys.Loading, currentLanguage)}
                 </div>
             }
         </div>

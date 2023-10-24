@@ -120,7 +120,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
 
     return <div className="content">
         <PokemonHeader
-            pokemonName={pokemon.speciesName}
+            pokemonName={pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))}
             type1={pokemon.types[0]}
             type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
         />
@@ -138,7 +138,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     </div>
                     <div className="lvl-img-container">
                         <div className="lvl-img-selected-container">
-                            <PokemonImage pokemon={pokemon} ref={selectedImageRef}/>
+                            <PokemonImage pokemon={pokemon} ref={selectedImageRef} withName={false}/>
                         </div>
                     </div>
                 </div>
@@ -192,7 +192,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                     <div key = {p.speciesId} className="img-family-container">
                         <Link to={`/pokemon/${p.speciesId}/info`}>
-                            <PokemonImage pokemon={p}/>
+                            <PokemonImage pokemon={p} withName={false}/>
                         </Link>
                     </div>
                 ))}

@@ -55,7 +55,9 @@ export enum TranslatorKeys {
     AttackSearch,
     DefenseSearch,
     HPSearch,
-    CPSearch
+    CPSearch,
+    Shadow,
+    PokemonNotFound
 }
 
 const settings = new Map<Language, string>([
@@ -219,12 +221,12 @@ const ranked = new Map<Language, string>([
 ]);
 
 const atk = new Map<Language, string>([
-    [Language.English, "ATK"],
-    [Language.Portuguese, "ATA"]
+    [Language.English, "Atk"],
+    [Language.Portuguese, "Ata"]
 ]);
 
 const sta = new Map<Language, string>([
-    [Language.English, "STA"],
+    [Language.English, "Sta"],
     [Language.Portuguese, "PS"]
 ]);
 
@@ -249,8 +251,8 @@ const score = new Map<Language, string>([
 ]);
 
 const trashString = new Map<Language, string>([
-    [Language.English, "Worst"],
-    [Language.Portuguese, "Piores"]
+    [Language.English, "Inverse"],
+    [Language.Portuguese, "Inverso"]
 ]);
 
 const find = new Map<Language, string>([
@@ -333,6 +335,16 @@ const cpSearch = new Map<Language, string>([
     [Language.Portuguese, "pc"]
 ]);
 
+const shadow = new Map<Language, string>([
+    [Language.English, "Shadow"],
+    [Language.Portuguese, "Sombroso"]
+]);
+
+const pokemonNotFound = new Map<Language, string>([
+    [Language.English, "No Pokémon matched your search!"],
+    [Language.Portuguese, "Não foi encontrado nenhum Pokémon com base nos filtros aplicados!"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -388,7 +400,9 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.AttackSearch, attackSearch],
     [TranslatorKeys.DefenseSearch, defenseSearch],
     [TranslatorKeys.HPSearch, hpSearch],
-    [TranslatorKeys.CPSearch, cpSearch]
+    [TranslatorKeys.CPSearch, cpSearch],
+    [TranslatorKeys.Shadow, shadow],
+    [TranslatorKeys.PokemonNotFound, pokemonNotFound]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

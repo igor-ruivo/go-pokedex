@@ -49,7 +49,7 @@ const Pokemon = () => {
                     <>
                         {
                             !pokemon ?
-                                <div>Pokémon not found</div> :
+                                <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div> :
                                 <div className="pokemon">
                                     {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
                                     {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon}/>}

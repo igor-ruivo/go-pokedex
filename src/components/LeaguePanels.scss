@@ -153,6 +153,9 @@
 
     .cp-and-level-recommended {
         font-size: xx-small;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .pokemon-attack {

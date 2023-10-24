@@ -1,28 +1,36 @@
-.images_container {
+.images-container {
     position: relative;
+    flex-direction: column;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+}
+
+.mega-container {
+    position: absolute;
+    bottom: 7.5%;
+    right: 0;
+    width: clamp(18px, 3vw, 24px);
+    height: clamp(18px, 3vw, 24px);
 }
 
 .shadow-overlay {
     opacity: 1;
     position: absolute;
-    top: 67%;
+    bottom: 7.5%;
     left: 10%;
-    width: 24%;
-    height: 24%;
+    width: clamp(20px, 3vw, 24px);
+    height: clamp(20px, 3vw, 24px);
     z-index: 2;
 }
 
 .xl-overlay {
     opacity: 1;
     position: absolute;
-    top: 85%;
-    right: 10%;
-    width: 12%;
-    height: 12%;
-    z-index: 2;
+    bottom: 7.5%;
+    right: 0;
+    width: clamp(14px, 3vw, 20px);
+    height: clamp(14px, 3vw, 20px);
 }
 
 .buddy-overlay {

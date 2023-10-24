@@ -17,12 +17,12 @@
     color: $textColor;
     margin: 0;
     padding: 0;
-    font-size: clamp(31.5px, 5vw, 36px);
+    font-size: clamp(28.2px, 5vw, 36px);
 }
 
 @media (max-width: 500px) {
     .pokemonheader-name {
-        font-size: clamp(20px, 6vw, 32px);
+        font-size: clamp(18.9px, 5vw, 32px);
     }
 
     .pokemonheader-header {

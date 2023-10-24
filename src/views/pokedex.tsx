@@ -63,7 +63,7 @@ const Pokedex = () => {
             return wholeFamilyNames.some(baseFilter);
         }
 
-        const baseFilter = (p: IGamemasterPokemon) => p.speciesName.toLowerCase().includes(inputText.toLowerCase().trim());
+        const baseFilter = (p: IGamemasterPokemon) => p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)).toLowerCase().includes(inputText.toLowerCase().trim());
         
         const rankingsFamilyPokemonPool = Object.values(gamemasterPokemon).filter(p => !p.isMega);
         
@@ -93,7 +93,7 @@ const Pokedex = () => {
                     <li>
                         <Link to="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                            <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
+                            <span>{translator(TranslatorKeys.Great, currentLanguage)}</span>
                         </Link>
                     </li>
                     <li>

@@ -78,7 +78,7 @@ const LeaguePanels = ({
                             <li>
                                 <span className="pokemon-ivs-item">
                                     <span>{leagueStat.atk}</span>
-                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.ATK, currentLanguage)}</strong>
+                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.ATK, currentLanguage).toLocaleUpperCase()}</strong>
                                 </span>
                             </li>
                             <li>
@@ -90,7 +90,7 @@ const LeaguePanels = ({
                             <li>
                                 <span className="pokemon-ivs-item">
                                     <span>{leagueStat.hp}</span>
-                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.STA, currentLanguage)}</strong>
+                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.STA, currentLanguage).toLocaleUpperCase()}</strong>
                                 </span>
                             </li>
                         </ul>

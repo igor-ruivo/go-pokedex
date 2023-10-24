@@ -1,17 +1,7 @@
-.pokemon_types {
+.pokemon-types {
     display: flex;
     justify-content: end;
-    width: 20px;
-    height: 20px;
-}
-
-.type-icon {
-    margin-left: 2px;
-}
-
-@media (max-width: 500px) {
-    .pokemon_types {
-        width: calc(12px + 8 * ((100vw - 320px) / 180));
-        height: calc(12px + 8 * ((100vw - 320px) / 180));
-    }
+    gap: 4px;
+    width: clamp(18px, 3vw, 24px);
+    height: clamp(18px, 3vw, 24px);
 }

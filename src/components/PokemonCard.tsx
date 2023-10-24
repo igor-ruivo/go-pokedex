@@ -5,33 +5,39 @@ import PokemonImage from "./PokemonImage";
 import PokemonNumber from "./PokemonNumber";
 import PokemonTypes from "./PokemonTypes";
 import { ListType } from "../views/pokedex";
+import { calculateCP } from "../utils/pokemon-helper";
+import translator, { TranslatorKeys } from "../utils/Translator";
+import { useLanguage } from "../contexts/language-context";
 
 interface IPokemonCardProps {
-  pokemon: IGamemasterPokemon,
-  listType: ListType
+    pokemon: IGamemasterPokemon,
+    listType: ListType
 }
 
 const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
-  const link = `/pokemon/${pokemon.speciesId}/info`;
-  var cp = Math.floor(((pokemon.atk + 15) * Math.pow(pokemon.def + 15, 0.5) * Math.pow(pokemon.hp + 15, 0.5) * Math.pow(0.795300006866455, 2) ) / 10);
+    const {currentLanguage} = useLanguage();
+    const link = `/pokemon/${pokemon.speciesId}/info`;
+    var cp = Math.floor(((pokemon.atk + 15) * Math.pow(pokemon.def + 15, 0.5) * Math.pow(pokemon.hp + 15, 0.5) * Math.pow(0.795300006866455, 2) ) / 10);
 
-  // too expensive
-  //const [ivPercents, loading] = useComputeIVs({pokemon: pokemon, levelCap: 51, attackIV: 15, defenseIV: 15, hpIV: 15, justForSelf: true})
-  const showXL = listType === ListType.GREAT_LEAGUE && cp < 1500 + 150 || listType === ListType.ULTRA_LEAGUE && cp < 2500 + 150;
+    const showXL = listType === ListType.GREAT_LEAGUE && cp < 1500 + 150 || listType === ListType.ULTRA_LEAGUE && cp < 2500 + 150;
   
-  return (
-      <Link to={link}>
-        <div className="pokemon_card">
-          <div className="header_container">
-            <PokemonNumber dex={pokemon.dex} speciesId={pokemon.speciesId} listType={listType} />
-            <PokemonTypes types={pokemon.types} />
-          </div>
-          <PokemonImage pokemon={pokemon} xl={showXL}/>
-          <div className="header_footer">
-            {pokemon.speciesShortName}
-          </div>
-        </div>
-      </Link>
+    return (
+        <Link to={link}>
+            <div className="pokemon-card">
+                <span className="header-container">
+                    <PokemonNumber dex={pokemon.dex} speciesId={pokemon.speciesId} listType={listType} />
+                    <PokemonTypes types={pokemon.types} />
+                </span>
+                <span className="card-content">
+                    <PokemonImage pokemon={pokemon} xl={showXL} withName />
+                </span>
+                <span className="header-footer">
+                    <strong className="cp-container">
+                        {calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100)} {translator(TranslatorKeys.CP, currentLanguage).toLocaleUpperCase()}
+                    </strong>
+                </span>
+            </div>
+        </Link>
     );
 }
 

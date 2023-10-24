@@ -1,24 +1,60 @@
 @import "../index";
 
-.pokemon_card {
+.pokemon-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex-wrap: nowrap;
+    text-decoration: none;
+    font-weight: 700;
+    line-height: 1.25;
+    overflow: hidden;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
     white-space: nowrap;
+    text-overflow: ellipsis;
     font-size: calc(10px + .5vw);
     color: $textColor;
 }
 
-.header_container {
+.header-container {
+    width: 100%;
     display: flex;
+    gap: 6px;
+    align-items: center;
     justify-content: space-between;
-    padding: 5px 10px 0px 10px;
-    flex-direction: row;
 }
 
-.header_footer {
-    padding-bottom: 5px;
+.card-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-direction: column;
+    text-align: center;
+    .images-container {
+        .main-image-container {
+            width: calc(80px + 64 * calc(100vw - 500px) / (1920 - 500));
+            height: calc(80px + 64 * calc(100vw - 500px) / (1920 - 500));
+        }
+    }
+}
+
+.header-footer {
+    width: 100%;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+.cp-container {
+    color: #B78700;
 }
 
 @media (max-width: 500px) {
-    .pokemon_card {
+    .pokemon-card {
         font-size: calc(7px + .5vw);
     }
 }
