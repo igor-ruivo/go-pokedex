@@ -1,6 +1,6 @@
 import './App.scss';
 import Pokedex from './views/pokedex';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, HashRouter } from "react-router-dom";
 import Pokemon from './views/pokemon';
 import { PokemonProvider } from './contexts/pokemon-context';
 import Navbar from './components/Template/Navbar';
@@ -13,20 +13,20 @@ const App = () => {
         <PokemonProvider>
             <LanguageProvider>
                 <NavbarSearchProvider>
-                    <BrowserRouter>
+                    <HashRouter>
                         <Navbar/>
                         <Content>
                             <Routes>
                                 <Route index element={<Pokedex />}/>
-                                <Route path="/go-pokedex/:listTypeArg" element={<Pokedex />}/>
-                                <Route path="/go-pokedex/pokemon/:speciesId" element={<Pokemon />}/>
-                                <Route path="/go-pokedex/pokemon/:speciesId/info" element={<Pokemon />}/>
-                                <Route path="/go-pokedex/pokemon/:speciesId/tables" element={<Pokemon />}/>
-                                <Route path="/go-pokedex/pokemon/:speciesId/strings" element={<Pokemon />}/>
-                                <Route path="/go-pokedex/*" element={<div>404 not found!</div>} />
+                                <Route path="/:listTypeArg" element={<Pokedex />}/>
+                                <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
+                                <Route path="/pokemon/:speciesId/info" element={<Pokemon />}/>
+                                <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
+                                <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
+                                <Route path="/*" element={<div>404 not found!</div>} />
                             </Routes>
                         </Content>
-                    </BrowserRouter>
+                    </HashRouter>
                 </NavbarSearchProvider>
             </LanguageProvider>
         </PokemonProvider>
