@@ -57,7 +57,10 @@ export enum TranslatorKeys {
     HPSearch,
     CPSearch,
     Shadow,
-    PokemonNotFound
+    PokemonNotFound,
+    Moves,
+    FastMoves,
+    ChargedMoves
 }
 
 const settings = new Map<Language, string>([
@@ -345,6 +348,21 @@ const pokemonNotFound = new Map<Language, string>([
     [Language.Portuguese, "Não foi encontrado nenhum Pokémon com base nos filtros aplicados!"]
 ]);
 
+const moves = new Map<Language, string>([
+    [Language.English, "Moves"],
+    [Language.Portuguese, "Ataques"]
+]);
+
+const fastMoves = new Map<Language, string>([
+    [Language.English, "Fast Moves"],
+    [Language.Portuguese, "Ataques Ágeis"]
+]);
+
+const chargedMoves = new Map<Language, string>([
+    [Language.English, "Charged Moves"],
+    [Language.Portuguese, "Ataques Carregados"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -402,7 +420,10 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.HPSearch, hpSearch],
     [TranslatorKeys.CPSearch, cpSearch],
     [TranslatorKeys.Shadow, shadow],
-    [TranslatorKeys.PokemonNotFound, pokemonNotFound]
+    [TranslatorKeys.PokemonNotFound, pokemonNotFound],
+    [TranslatorKeys.Moves, moves],
+    [TranslatorKeys.FastMoves, fastMoves],
+    [TranslatorKeys.ChargedMoves, chargedMoves]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

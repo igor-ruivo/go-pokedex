@@ -52,7 +52,6 @@ table {
 }
 
 .main-banner-content {
-    margin-top: 12px;
     display: flex;
     margin-left: -5px;
     margin-right: -5px;
@@ -82,7 +81,6 @@ table {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    margin-bottom: 12px;
 }
 
 .banner-left-side {
@@ -151,10 +149,6 @@ table {
     .img-family {
         margin-left: 15%;
         margin-right: 15%;
-    }
-
-    .main-banner-content {
-        margin-top: 0px;
     }
 
     .lvl-img-container {

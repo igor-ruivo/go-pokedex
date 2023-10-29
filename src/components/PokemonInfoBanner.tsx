@@ -15,6 +15,7 @@ import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf, sortPokemonByBa
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
+import movesTranslator, { MovesTranslatorKeys } from "../utils/MovesTranslator";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -118,6 +119,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         return translator(translatorKey as any, currentLanguage)
     }
 
+    const translatedMove = (move: string) => {
+        const translatorKey = MovesTranslatorKeys[move as keyof typeof MovesTranslatorKeys];
+        return movesTranslator(translatorKey ?? move, currentLanguage);
+    }
+
     return <div className="content">
         <PokemonHeader
             pokemonName={pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))}
@@ -214,19 +220,19 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     bestCP: bestReachableGreatLeagueIvs.greatLeaguePerfectCP,
                     bestLevel: bestReachableGreatLeagueIvs.greatLeaguePerfectLevel,
                     fastAttack: {
-                        moveName: moves[greatLeagueMoveset[0]]?.name,
+                        moveName: translatedMove(moves[greatLeagueMoveset[0]]?.moveId),
                         type: moves[greatLeagueMoveset[0]]?.type,
                         isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[0]),
                         isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[0])
                     },
                     chargedAttack1: {
-                        moveName: moves[greatLeagueMoveset[1]]?.name,
+                        moveName: translatedMove(moves[greatLeagueMoveset[1]]?.moveId),
                         type: moves[greatLeagueMoveset[1]]?.type,
                         isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[1]),
                         isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[1])
                     },
                     chargedAttack2: {
-                        moveName: moves[greatLeagueMoveset[2]]?.name,
+                        moveName: translatedMove(moves[greatLeagueMoveset[2]]?.moveId),
                         type: moves[greatLeagueMoveset[2]]?.type,
                         isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[2]),
                         isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[2])
@@ -248,19 +254,19 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     bestCP: bestReachableUltraLeagueIvs.ultraLeaguePerfectCP,
                     bestLevel: bestReachableUltraLeagueIvs.ultraLeaguePerfectLevel,
                     fastAttack: {
-                        moveName: moves[ultraLeagueMoveset[0]]?.name,
+                        moveName: translatedMove(moves[ultraLeagueMoveset[0]]?.moveId),
                         type: moves[ultraLeagueMoveset[0]]?.type,
                         isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[0]),
                         isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[0])
                     },
                     chargedAttack1: {
-                        moveName: moves[ultraLeagueMoveset[1]]?.name,
+                        moveName: translatedMove(moves[ultraLeagueMoveset[1]]?.moveId),
                         type: moves[ultraLeagueMoveset[1]]?.type,
                         isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[1]),
                         isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[1])
                     },
                     chargedAttack2: {
-                        moveName: moves[ultraLeagueMoveset[2]]?.name,
+                        moveName: translatedMove(moves[ultraLeagueMoveset[2]]?.moveId),
                         type: moves[ultraLeagueMoveset[2]]?.type,
                         isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[2]),
                         isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[2])
@@ -282,19 +288,19 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     bestCP: bestReachableMasterLeagueIvs.masterLeaguePerfectCP,
                     bestLevel: bestReachableMasterLeagueIvs.masterLeaguePerfectLevel,
                     fastAttack: {
-                        moveName: moves[masterLeagueMoveset[0]]?.name,
+                        moveName: translatedMove(moves[masterLeagueMoveset[0]]?.moveId),
                         type: moves[masterLeagueMoveset[0]]?.type,
                         isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[0]),
                         isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[0])
                     },
                     chargedAttack1: {
-                        moveName: moves[masterLeagueMoveset[1]]?.name,
+                        moveName: translatedMove(moves[masterLeagueMoveset[1]]?.moveId),
                         type: moves[masterLeagueMoveset[1]]?.type,
                         isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[1]),
                         isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[1])
                     },
                     chargedAttack2: {
-                        moveName: moves[masterLeagueMoveset[2]]?.name,
+                        moveName: translatedMove(moves[masterLeagueMoveset[2]]?.moveId),
                         type: moves[masterLeagueMoveset[2]]?.type,
                         isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[2]),
                         isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[2])

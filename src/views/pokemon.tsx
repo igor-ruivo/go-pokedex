@@ -9,6 +9,7 @@ import PokemonIVTables from '../components/PokemonIVTables';
 import PokemonSearchStrings from '../components/PokemonSearchStrings';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
+import PokemonMoves from '../components/PokemonMoves';
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
@@ -33,6 +34,11 @@ const Pokemon = () => {
                         </Link>
                     </li>
                     <li>
+                        <Link to={pokemonBasePath + "/moves"} className={"header-tab " + (tab.endsWith("/moves") ? "selected" : "")}>
+                            <span>{translator(TranslatorKeys.Moves, currentLanguage)}</span>
+                        </Link>
+                    </li>
+                    <li>
                         <Link to={pokemonBasePath + "/tables"} className={"header-tab " + (tab.endsWith("/tables") ? "selected" : "")}>
                             <span>{translator(TranslatorKeys.IVTables, currentLanguage)}</span>
                         </Link>
@@ -52,6 +58,7 @@ const Pokemon = () => {
                                 <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div> :
                                 <div className="pokemon">
                                     {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
+                                    {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon}/>}
                                     {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon}/>}
                                     {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon}/>}
                                 </div>

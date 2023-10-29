@@ -127,7 +127,11 @@ export const mapMoves: (data: any) => IMove[] = (data: any) => {
             return {
                 moveId: move.moveId,
                 name: move.name,
-                type: move.type
+                type: move.type,
+                power: move.power,
+                energy: move.energy,
+                energyGain: move.energyGain,
+                cooldown: move.cooldown
             }
         }
     );
