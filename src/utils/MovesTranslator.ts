@@ -12,6 +12,10 @@ export enum MovesTranslatorKeys {
     HYPER_BEAM,
     WRAP,
     //TODO: PRESENT,
+    //TODO: HORN_ATTACK,
+    STOMP,
+    POUND,
+    SWIFT,
 
     //grass
     VINE_WHIP,
@@ -22,6 +26,10 @@ export enum MovesTranslatorKeys {
     POWER_WHIP,
     SOLAR_BEAM,
     GRASS_KNOT,
+    BULLET_SEED,
+    MAGICAL_LEAF,
+    LEAF_BLADE,
+    TRAILBLAZE,
 
     //fire
     EMBER,
@@ -34,6 +42,8 @@ export enum MovesTranslatorKeys {
     FIRE_BLAST,
     OVERHEAT,
     BLAST_BURN,
+    WEATHER_BALL_FIRE,
+    HEAT_WAVE,
     
     //poison
     SLUDGE_BOMB,
@@ -44,12 +54,14 @@ export enum MovesTranslatorKeys {
     POISON_FANG,
     SLUDGE_WAVE,
     ACID_SPRAY,
+    CROSS_POISON,
 
     //dragon
     DRAGON_BREATH,
     DRAGON_CLAW,
     TWISTER,
     DRAGON_TAIL,
+    BREAKING_SWIPE,
 
     //flying
     WING_ATTACK,
@@ -73,18 +85,34 @@ export enum MovesTranslatorKeys {
     HYDRO_CANNON,
     HYDRO_PUMP,
     SURF,
+    BUBBLE_BEAM,
+    LIQUIDATION,
 
     //dark
     BITE,
     CRUNCH,
     DARK_PULSE,
+    NIGHT_SLASH,
+    FEINT_ATTACK,
+    SUCKER_PUNCH,
+    FOUL_PLAY,
+    PAYBACK,
 
     //steel
     FLASH_CANNON,
     STEEL_WING,
+    METAL_CLAW,
+    GYRO_BALL,
+    IRON_TAIL,
+    METEOR_MASH,
+    IRON_HEAD,
 
     //ice
     ICE_BEAM,
+    POWDER_SNOW,
+    BLIZZARD,
+    ICE_PUNCH,
+    WEATHER_BALL_ICE,
 
     //bug
     BUG_BITE,
@@ -94,19 +122,34 @@ export enum MovesTranslatorKeys {
     INFESTATION,
     X_SCISSOR,
     FELL_STINGER,
+    MEGAHORN,
+    FURY_CUTTER,
+    //TODO: SILVER_WIND,
 
     //psychic
     CONFUSION,
     PSYCHIC,
+    ZEN_HEADBUTT,
+    PSYSHOCK,
+    PSYBEAM,
+    SYNCHRONOISE,
 
     //ground
     DRILL_RUN,
     DIG,
     MUD_SHOT,
     SAND_TOMB,
+    BULLDOZE,
+    EARTHQUAKE,
+    SCORCHING_SANDS,
+    EARTH_POWER,
+    MUD_SLAP,
+    MUD_BOMB,
 
     //ghost
     SHADOW_BALL,
+    SHADOW_CLAW,
+    OMINOUS_WIND,
 
     //electric
     THUNDER_SHOCK,
@@ -117,17 +160,36 @@ export enum MovesTranslatorKeys {
     THUNDER_PUNCH,
     SPARK,
     VOLT_SWITCH,
+    CHARGE_BEAM,
 
     //fairy
     DISARMING_VOICE,
     CHARM,
+    MOONBLAST,
+    FAIRY_WIND,
+    DAZZLING_GLEAM,
+    PLAY_ROUGH,
 
     //fighting
     BRICK_BREAK,
+    ROCK_SMASH,
+    SUPER_POWER,
+    DOUBLE_KICK,
+    CLOSE_COMBAT,
+    CROSS_CHOP,
+    KARATE_CHOP,
+    LOW_SWEEP,
+    COUNTER,
+    LOW_KICK,
 
     //rock
     ROCK_SLIDE,
-    ROCK_TOMB
+    ROCK_TOMB,
+    STONE_EDGE,
+    SMACK_DOWN,
+    ROCK_WRECKER,
+    ANCIENT_POWER,
+    POWER_GEM
 }
 
 const vineWhip = new Map<Language, string>([
@@ -565,6 +627,301 @@ const rockTomb = new Map<Language, string>([
     [Language.Portuguese, "Tumba de Rochas"]
 ]);
 
+const metalClaw = new Map<Language, string>([
+    [Language.English, "Metal Claw"],
+    [Language.Portuguese, "Garra de Metal"]
+]);
+
+const powderSnow = new Map<Language, string>([
+    [Language.English, "Powder Snow"],
+    [Language.Portuguese, "Neve em Pó"]
+]);
+
+const blizzard = new Map<Language, string>([
+    [Language.English, "Blizzard"],
+    [Language.Portuguese, "Nevasca"]
+]);
+
+const gyroBall = new Map<Language, string>([
+    [Language.English, "Gyro Ball"],
+    [Language.Portuguese, "Girobola"]
+]);
+
+const nightSlash = new Map<Language, string>([
+    [Language.English, "Night Slash"],
+    [Language.Portuguese, "Talho Noturno"]
+]);
+
+const bulldoze = new Map<Language, string>([
+    [Language.English, "Bulldoze"],
+    [Language.Portuguese, "Tremor"]
+]);
+
+const earthquake = new Map<Language, string>([
+    [Language.English, "Earthquake"],
+    [Language.Portuguese, "Terremoto"]
+]);
+
+const scorchingSands = new Map<Language, string>([
+    [Language.English, "Scorching Sands"],
+    [Language.Portuguese, "Areias Ardentes"]
+]);
+
+const shadowClaw = new Map<Language, string>([
+    [Language.English, "Shadow Claw"],
+    [Language.Portuguese, "Garra Sombria"]
+]);
+
+const icePunch = new Map<Language, string>([
+    [Language.English, "Ice Punch"],
+    [Language.Portuguese, "Soco de Gelo"]
+]);
+
+const stoneEdge = new Map<Language, string>([
+    [Language.English, "Stone Edge"],
+    [Language.Portuguese, "Gume de Pedra"]
+]);
+
+const earthPower = new Map<Language, string>([
+    [Language.English, "Earth Power"],
+    [Language.Portuguese, "Poder da Terra"]
+]);
+
+const stomp = new Map<Language, string>([
+    [Language.English, "Stomp"],
+    [Language.Portuguese, "Pisotear"]
+]);
+
+const mudSlap = new Map<Language, string>([
+    [Language.English, "Mud Slap"],
+    [Language.Portuguese, "Tapa de Lama"]
+]);
+
+const rockSmash = new Map<Language, string>([
+    [Language.English, "Rock Smash"],
+    [Language.Portuguese, "Esmagamento de Pedras"]
+]);
+
+const megahorn = new Map<Language, string>([
+    [Language.English, "Megahorn"],
+    [Language.Portuguese, "Megachifre"]
+]);
+
+const breakingSwipe = new Map<Language, string>([
+    [Language.English, "Breaking Swipe"],
+    [Language.Portuguese, "Golpe Deslizante"]
+]);
+
+const smackDown = new Map<Language, string>([
+    [Language.English, "Smack Down"],
+    [Language.Portuguese, "Derrubada"]
+]);
+
+const superPower = new Map<Language, string>([
+    [Language.English, "Super Power"],
+    [Language.Portuguese, "Superpoder"]
+]);
+
+const rockWrecker = new Map<Language, string>([
+    [Language.English, "Rock Wrecker"],
+    [Language.Portuguese, "Demolidor de Pedras"]
+]);
+
+const furyCutter = new Map<Language, string>([
+    [Language.English, "Fury Cutter"],
+    [Language.Portuguese, "Cortador de Fúria"]
+]);
+
+const ironTail = new Map<Language, string>([
+    [Language.English, "Iron Tail"],
+    [Language.Portuguese, "Cauda de Ferro"]
+]);
+
+const doubleKick = new Map<Language, string>([
+    [Language.English, "Double Kick"],
+    [Language.Portuguese, "Chute Duplo"]
+]);
+
+const pound = new Map<Language, string>([
+    [Language.English, "Pound"],
+    [Language.Portuguese, "Pancada"]
+]);
+
+const zenHeadbutt = new Map<Language, string>([
+    [Language.English, "Zen Headbutt"],
+    [Language.Portuguese, "Cabeçada Zen"]
+]);
+
+const moonblast = new Map<Language, string>([
+    [Language.English, "Moonblast"],
+    [Language.Portuguese, "Explosão Lunar"]
+]);
+
+const psyshock = new Map<Language, string>([
+    [Language.English, "Psyshock"],
+    [Language.Portuguese, "Choque Psíquico"]
+]);
+
+const chargeBeam = new Map<Language, string>([
+    [Language.English, "Charge Beam"],
+    [Language.Portuguese, "Carga de Raio"]
+]);
+
+const fairyWind = new Map<Language, string>([
+    [Language.English, "Fairy Wind"],
+    [Language.Portuguese, "Vento de Fada"]
+]);
+
+const dazzlingGleam = new Map<Language, string>([
+    [Language.English, "Dazzling Gleam"],
+    [Language.Portuguese, "Clarão Deslumbrante"]
+]);
+
+const meteorMash = new Map<Language, string>([
+    [Language.English, "Meteor Mash"],
+    [Language.Portuguese, "Meteoro Esmagador"]
+]);
+
+const weatherBall = new Map<Language, string>([
+    [Language.English, "Weather Ball"],
+    [Language.Portuguese, "Esfera Climática"]
+]);
+
+const feintAttack = new Map<Language, string>([
+    [Language.English, "Feint Attack"],
+    [Language.Portuguese, "Ataque Dissimulado"]
+]);
+
+const heatWave = new Map<Language, string>([
+    [Language.English, "Heat Wave"],
+    [Language.Portuguese, "Onda de Calor"]
+]);
+
+const ancientPower = new Map<Language, string>([
+    [Language.English, "Ancient Power"],
+    [Language.Portuguese, "Poder Ancestral"]
+]);
+
+const playRough = new Map<Language, string>([
+    [Language.English, "Play Rough"],
+    [Language.Portuguese, "Jogo Duro"]
+]);
+
+const swift = new Map<Language, string>([
+    [Language.English, "Swift"],
+    [Language.Portuguese, "Ataque Veloz"]
+]);
+
+const ominousWind = new Map<Language, string>([
+    [Language.English, "Ominous Wind"],
+    [Language.Portuguese, "Vento Ominoso"]
+]);
+
+const crossPoison = new Map<Language, string>([
+    [Language.English, "Cross Poison"],
+    [Language.Portuguese, "Corte-veneno"]
+]);
+
+const bulletSeed = new Map<Language, string>([
+    [Language.English, "Bullet Seed"],
+    [Language.Portuguese, "Projétil de Semente"]
+]);
+
+const magicalLeaf = new Map<Language, string>([
+    [Language.English, "Magical Leaf"],
+    [Language.Portuguese, "Folha Mágica"]
+]);
+
+const leafBlade = new Map<Language, string>([
+    [Language.English, "Leaf Blade"],
+    [Language.Portuguese, "Lâmina de Folha"]
+]);
+
+const psybeam = new Map<Language, string>([
+    [Language.English, "Psybeam"],
+    [Language.Portuguese, "Feixe Psíquico"]
+]);
+
+const mudBomb = new Map<Language, string>([
+    [Language.English, "Mud Bomb"],
+    [Language.Portuguese, "Bomba de Lama"]
+]);
+
+const suckerPunch = new Map<Language, string>([
+    [Language.English, "Sucker Punch"],
+    [Language.Portuguese, "Soco Enganador"]
+]);
+
+const ironHead = new Map<Language, string>([
+    [Language.English, "Iron Head"],
+    [Language.Portuguese, "Cabeça de Ferro"]
+]);
+
+const foulPlay = new Map<Language, string>([
+    [Language.English, "Foul Play"],
+    [Language.Portuguese, "Jogo Sujo"]
+]);
+
+const trailblaze = new Map<Language, string>([
+    [Language.English, "Trailblaze"],
+    [Language.Portuguese, "Desbravar"]
+]);
+
+const powerGem = new Map<Language, string>([
+    [Language.English, "Power Gem"],
+    [Language.Portuguese, "Gema Poderosa"]
+]);
+
+const payback = new Map<Language, string>([
+    [Language.English, "Payback"],
+    [Language.Portuguese, "Revide"]
+]);
+
+const closeCombat = new Map<Language, string>([
+    [Language.English, "Close Combat"],
+    [Language.Portuguese, "Corpo-a-corpo"]
+]);
+
+const crossChop = new Map<Language, string>([
+    [Language.English, "Cross Chop"],
+    [Language.Portuguese, "Golpe Cruzado"]
+]);
+
+const bubbleBeam = new Map<Language, string>([
+    [Language.English, "Bubble Beam"],
+    [Language.Portuguese, "Jato de Bolhas"]
+]);
+
+const liquidation = new Map<Language, string>([
+    [Language.English, "Liquidation"],
+    [Language.Portuguese, "Aquaríete"]
+]);
+
+const synchronoise = new Map<Language, string>([
+    [Language.English, "Synchronoise"],
+    [Language.Portuguese, "Barulho Sincronizado"]
+]);
+
+const karateChop = new Map<Language, string>([
+    [Language.English, "Karate Chop"],
+    [Language.Portuguese, "Golpe de Caratê"]
+]);
+
+const lowSweep = new Map<Language, string>([
+    [Language.English, "Low Sweep"],
+    [Language.Portuguese, "Movimento Baixo"]
+]);
+
+const counter = new Map<Language, string>([
+    [Language.English, "Counter"],
+    [Language.Portuguese, "Contra-atacar"]
+]);
+
+const lowKick = new Map<Language, string>([
+    [Language.English, "Low Kick"],
+    [Language.Portuguese, "Rasteira"]
+]);
+
 const translations = new Map<MovesTranslatorKeys, Map<Language, string>>([
     [MovesTranslatorKeys.VINE_WHIP, vineWhip],
     [MovesTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -653,6 +1010,66 @@ const translations = new Map<MovesTranslatorKeys, Map<Language, string>>([
     [MovesTranslatorKeys.SAND_TOMB, sandTomb],
     [MovesTranslatorKeys.ROCK_SLIDE, rockSlide],
     [MovesTranslatorKeys.ROCK_TOMB, rockTomb],
+    [MovesTranslatorKeys.METAL_CLAW, metalClaw],
+    [MovesTranslatorKeys.POWDER_SNOW, powderSnow],
+    [MovesTranslatorKeys.BLIZZARD, blizzard],
+    [MovesTranslatorKeys.GYRO_BALL, gyroBall],
+    [MovesTranslatorKeys.NIGHT_SLASH, nightSlash],
+    [MovesTranslatorKeys.BULLDOZE, bulldoze],
+    [MovesTranslatorKeys.EARTHQUAKE, earthquake],
+    [MovesTranslatorKeys.SCORCHING_SANDS, scorchingSands],
+    [MovesTranslatorKeys.SHADOW_CLAW, shadowClaw],
+    [MovesTranslatorKeys.ICE_PUNCH, icePunch],
+    [MovesTranslatorKeys.STONE_EDGE, stoneEdge],
+    [MovesTranslatorKeys.EARTH_POWER, earthPower],
+    [MovesTranslatorKeys.STOMP, stomp],
+    [MovesTranslatorKeys.MUD_SLAP, mudSlap],
+    [MovesTranslatorKeys.ROCK_SMASH, rockSmash],
+    [MovesTranslatorKeys.MEGAHORN, megahorn],
+    [MovesTranslatorKeys.BREAKING_SWIPE, breakingSwipe],
+    [MovesTranslatorKeys.SMACK_DOWN, smackDown],
+    [MovesTranslatorKeys.SUPER_POWER, superPower],
+    [MovesTranslatorKeys.ROCK_WRECKER, rockWrecker],
+    [MovesTranslatorKeys.FURY_CUTTER, furyCutter],
+    [MovesTranslatorKeys.IRON_TAIL, ironTail],
+    [MovesTranslatorKeys.DOUBLE_KICK, doubleKick],
+    [MovesTranslatorKeys.POUND, pound],
+    [MovesTranslatorKeys.ZEN_HEADBUTT, zenHeadbutt],
+    [MovesTranslatorKeys.MOONBLAST, moonblast],
+    [MovesTranslatorKeys.PSYSHOCK, psyshock],
+    [MovesTranslatorKeys.CHARGE_BEAM, chargeBeam],
+    [MovesTranslatorKeys.FAIRY_WIND, fairyWind],
+    [MovesTranslatorKeys.DAZZLING_GLEAM, dazzlingGleam],
+    [MovesTranslatorKeys.METEOR_MASH, meteorMash],
+    [MovesTranslatorKeys.WEATHER_BALL_FIRE, weatherBall],
+    [MovesTranslatorKeys.WEATHER_BALL_ICE, weatherBall],
+    [MovesTranslatorKeys.FEINT_ATTACK, feintAttack],
+    [MovesTranslatorKeys.HEAT_WAVE, heatWave],
+    [MovesTranslatorKeys.ANCIENT_POWER, ancientPower],
+    [MovesTranslatorKeys.PLAY_ROUGH, playRough],
+    [MovesTranslatorKeys.SWIFT, swift],
+    [MovesTranslatorKeys.OMINOUS_WIND, ominousWind],
+    [MovesTranslatorKeys.CROSS_POISON, crossPoison],
+    [MovesTranslatorKeys.BULLET_SEED, bulletSeed],
+    [MovesTranslatorKeys.MAGICAL_LEAF, magicalLeaf],
+    [MovesTranslatorKeys.LEAF_BLADE, leafBlade],
+    [MovesTranslatorKeys.PSYBEAM, psybeam],
+    [MovesTranslatorKeys.MUD_BOMB, mudBomb],
+    [MovesTranslatorKeys.SUCKER_PUNCH, suckerPunch],
+    [MovesTranslatorKeys.IRON_HEAD, ironHead],
+    [MovesTranslatorKeys.FOUL_PLAY, foulPlay],
+    [MovesTranslatorKeys.TRAILBLAZE, trailblaze],
+    [MovesTranslatorKeys.POWER_GEM, powerGem],
+    [MovesTranslatorKeys.PAYBACK, payback],
+    [MovesTranslatorKeys.CLOSE_COMBAT, closeCombat],
+    [MovesTranslatorKeys.CROSS_CHOP, crossChop],
+    [MovesTranslatorKeys.BUBBLE_BEAM, bubbleBeam],
+    [MovesTranslatorKeys.LIQUIDATION, liquidation],
+    [MovesTranslatorKeys.SYNCHRONOISE, synchronoise],
+    [MovesTranslatorKeys.KARATE_CHOP, karateChop],
+    [MovesTranslatorKeys.LOW_SWEEP, lowSweep],
+    [MovesTranslatorKeys.COUNTER, counter],
+    [MovesTranslatorKeys.LOW_KICK, lowKick],
 ]);
 
 const movesTranslator = (key: MovesTranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? (MovesTranslatorKeys[key] ? MovesTranslatorKeys[key].toString() : key?.toString());
