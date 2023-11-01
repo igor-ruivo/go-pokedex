@@ -8,7 +8,8 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
-import { useLanguage } from '../contexts/language-context';
+import { Language, useLanguage } from '../contexts/language-context';
+import movesTranslator, { MovesTranslatorKeys, isTranslated } from '../utils/MovesTranslator';
 
 export enum ListType {
     POKEDEX,
@@ -21,9 +22,33 @@ const getDefaultShowFamilyTree = () => true; // TODO: implement toggle later rea
 
 const Pokedex = () => {
     const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
-    const { gamemasterPokemon, rankLists, fetchCompleted, errors } = usePokemon();
+    const { gamemasterPokemon, rankLists, fetchCompleted, errors, moves } = usePokemon();
     const { inputText } = useNavbarSearchInput();
     const {currentLanguage} = useLanguage();
+
+    // TEMP DEBUG
+    if (gamemasterPokemon && Object.keys(gamemasterPokemon).length) {
+        
+        const movesSet = new Set<string>();
+        
+        Object.values(gamemasterPokemon).map(p => p.fastMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
+        Object.values(gamemasterPokemon).map(p => p.chargedMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
+        Object.values(gamemasterPokemon).map(p => p.eliteMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
+        Object.values(gamemasterPokemon).map(p => p.legacyMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
+
+            movesSet.forEach(m => {
+                const moveKey = MovesTranslatorKeys[m as keyof typeof MovesTranslatorKeys];
+                if (!isTranslated(moveKey)) {
+                    console.log(m);
+                } else {
+                    const move = moves[m];
+                    const engMove = move.name;
+                    if (engMove !== movesTranslator(moveKey, Language.English)) {
+                        console.error(m);
+                    }
+                }
+            });
+    }
 
     let listType = ListType.POKEDEX;
     const { listTypeArg } = useParams();

@@ -21,6 +21,13 @@ export enum MovesTranslatorKeys {
     TRANSFORM,
     LAST_RESORT,
     YAWN,
+    //TODO: LOCK_ON,
+    TAKE_DOWN,
+    TRI_ATTACK,
+    //TODO: GIGA_IMPACT,
+    //TODO: TECHNO_BLAST_NORMAL,
+    //TODO: BOOMBURST,
+    //TODO: WEATHER_BALL_NORMAL,
 
     //grass
     VINE_WHIP,
@@ -38,6 +45,9 @@ export enum MovesTranslatorKeys {
     LEAF_TORNADO,
     ENERGY_BALL,
     HIDDEN_POWER_GRASS,
+    //TODO: LEAFAGE,
+    LEAF_STORM,
+    SEED_FLARE,
 
     //fire
     EMBER,
@@ -56,6 +66,12 @@ export enum MovesTranslatorKeys {
     INCINERATE,
     BLAZE_KICK,
     HIDDEN_POWER_FIRE,
+    //TODO: TECHNO_BLAST_BURN,
+    V_CREATE,
+    SACRED_FIRE,
+    MYSTICAL_FIRE,
+    MAGMA_STORM,
+    //TODO: FUSION_FLARE,
     
     //poison
     SLUDGE_BOMB,
@@ -94,6 +110,11 @@ export enum MovesTranslatorKeys {
     DRILL_PECK,
     SKY_ATTACK,
     HIDDEN_POWER_FLYING,
+    //TODO: ACROBATICS,
+    //TODO: AEROBLAST,
+    //TODO: FLY,
+    //TODO: DRAGON_ASCENT,
+    //TODO: OBLIVION_WING,
 
     //water
     BUBBLE,
@@ -115,6 +136,10 @@ export enum MovesTranslatorKeys {
     HIDDEN_POWER_WATER,
     SPLASH,
     BRINE,
+    //TODO: WATER_SHURIKEN,
+    MUDDY_WATER,
+    //TODO: TECHNO_BLAST_DOUSE,
+    //TODO: ORIGIN_PULSE,
 
     //dark
     BITE,
@@ -128,6 +153,7 @@ export enum MovesTranslatorKeys {
     SNARL,
     BRUTAL_SWING,
     HIDDEN_POWER_DARK,
+    OBSTRUCT,
 
     //steel
     FLASH_CANNON,
@@ -142,6 +168,8 @@ export enum MovesTranslatorKeys {
     //TODO: MAGNET_BOMB,
     //TODO: MIRROR_SHOT,
     HIDDEN_POWER_STEEL,
+    //TODO: DOOM_DESIRE,
+    //TODO: DOUBLE_IRON_BASH,
 
     //ice
     ICE_BEAM,
@@ -156,6 +184,10 @@ export enum MovesTranslatorKeys {
     AVALANCHE,
     TRIPLE_AXEL,
     HIDDEN_POWER_ICE,
+    //TODO: ICE_FANG,
+    //TODO: TECHNO_BLAST_CHILL,
+    ICICLE_SPEAR,
+    //TODO: GLACIATE,
 
     //bug
     BUG_BITE,
@@ -169,6 +201,7 @@ export enum MovesTranslatorKeys {
     FURY_CUTTER,
     //TODO: SILVER_WIND,
     HIDDEN_POWER_BUG,
+    //TODO: LUNGE,
 
     //psychic
     CONFUSION,
@@ -183,6 +216,10 @@ export enum MovesTranslatorKeys {
     EXTRASENSORY,
     HIDDEN_POWER_PSYCHIC,
     //TODO: PSYSTRIKE,
+    MIRROR_COAT,
+    //TODO: PSYCHO_BOOST,
+    //TODO: MIST_BALL,
+    //TODO: LUSTER_PURGE,
 
     //ground
     DRILL_RUN,
@@ -198,6 +235,7 @@ export enum MovesTranslatorKeys {
     HIGH_HORSEPOWER,
     //TODO: BONE_CLUB,
     HIDDEN_POWER_GROUND,
+    //TODO: PRECIPICE_BLADES,
 
     //ghost
     SHADOW_BALL,
@@ -210,6 +248,9 @@ export enum MovesTranslatorKeys {
     SHADOW_PUNCH,
     //TODO: SHADOW_BONE,
     HIDDEN_POWER_GHOST,
+    SHADOW_SNEAK,
+    //TODO: POLTERGEIST,
+    //TODO: SHADOW_FORCE,
 
     //electric
     THUNDER_SHOCK,
@@ -224,6 +265,9 @@ export enum MovesTranslatorKeys {
     //TODO: THUNDER_FANG,
     ZAP_CANNON,
     HIDDEN_POWER_ELECTRIC,
+    //TODO: TECHNO_BLAST_SHOCK,
+    //TODO: FUSION_BOLT,
+    //TODO: PARABOLIC_CHARGE,
 
     //fairy
     DISARMING_VOICE,
@@ -233,6 +277,7 @@ export enum MovesTranslatorKeys {
     DAZZLING_GLEAM,
     PLAY_ROUGH,
     //TODO: DRAINING_KISS,
+    GEOMANCY,
 
     //fighting
     BRICK_BREAK,
@@ -250,6 +295,10 @@ export enum MovesTranslatorKeys {
     POWER_UP_PUNCH,
     FOCUS_BLAST,
     HIDDEN_POWER_FIGHTING,
+    //TODO: SACRED_SWORD,
+    //TODO: FLYING_PRESS,
+    AURA_SPHERE,
+    //TODO: DRAIN_PUNCH,
 
     //rock
     ROCK_SLIDE,
@@ -263,6 +312,8 @@ export enum MovesTranslatorKeys {
     ROCK_BLAST,
     //TODO: ROLLOUT,
     HIDDEN_POWER_ROCK,
+    METEOR_BEAM,
+    WEATHER_BALL_ROCK,
 }
 
 const vineWhip = new Map<Language, string>([
@@ -791,7 +842,7 @@ const smackDown = new Map<Language, string>([
 ]);
 
 const superPower = new Map<Language, string>([
-    [Language.English, "Super Power"],
+    [Language.English, "Superpower"],
     [Language.Portuguese, "Superpoder"]
 ]);
 
@@ -1140,8 +1191,8 @@ const shadowPunch = new Map<Language, string>([
     [Language.Portuguese, "Soco Sombrio"]
 ]);
 
-const viceGrip = new Map<Language, string>([
-    [Language.English, "Vice Grip"],
+const viseGrip = new Map<Language, string>([
+    [Language.English, "Vise Grip"],
     [Language.Portuguese, "Agarramento Compressor"]
 ]);
 
@@ -1166,7 +1217,7 @@ const dracoMeteor = new Map<Language, string>([
 ]);
 
 const blazeKick = new Map<Language, string>([
-    [Language.English, "blazeKick"],
+    [Language.English, "Blaze Kick"],
     [Language.Portuguese, "Chute Labareda"]
 ]);
 
@@ -1223,6 +1274,86 @@ const brine = new Map<Language, string>([
 const yawn = new Map<Language, string>([
     [Language.English, "Yawn"],
     [Language.Portuguese, "Bocejo"]
+]);
+
+const takeDown = new Map<Language, string>([
+    [Language.English, "Take Down"],
+    [Language.Portuguese, "Desmantelar"]
+]);
+
+const geomancy = new Map<Language, string>([
+    [Language.English, "Geomancy"],
+    [Language.Portuguese, "Geomancia"]
+]);
+
+const shadowSneak = new Map<Language, string>([
+    [Language.English, "Shadow Sneak"],
+    [Language.Portuguese, "Furtividade nas Sombras"]
+]);
+
+const meteorBeam = new Map<Language, string>([
+    [Language.English, "Meteor Beam"],
+    [Language.Portuguese, "Raio Meteórico"]
+]);
+
+const leafStorm = new Map<Language, string>([
+    [Language.English, "Leaf Storm"],
+    [Language.Portuguese, "Tempestade de Folhas"]
+]);
+
+const mirrorCoat = new Map<Language, string>([
+    [Language.English, "Mirror Coat"],
+    [Language.Portuguese, "Casaco Espelhado"]
+]);
+
+const triAttack = new Map<Language, string>([
+    [Language.English, "Tri Attack"],
+    [Language.Portuguese, "Triataque"]
+]);
+
+const muddyWater = new Map<Language, string>([
+    [Language.English, "Muddy Water"],
+    [Language.Portuguese, "Água Barrenta"]
+]);
+
+const auraSphere = new Map<Language, string>([
+    [Language.English, "Aura Sphere"],
+    [Language.Portuguese, "Aura Esférica"]
+]);
+
+const VCreate = new Map<Language, string>([
+    [Language.English, "V-Create"],
+    [Language.Portuguese, "Criação V"]
+]);
+
+const sacredFire = new Map<Language, string>([
+    [Language.English, "Sacred Fire"],
+    [Language.Portuguese, "Fogo Sagrado"]
+]);
+
+const icicleSpear = new Map<Language, string>([
+    [Language.English, "Icicle Spear"],
+    [Language.Portuguese, "Lança Congelada"]
+]);
+
+const mysticalFire = new Map<Language, string>([
+    [Language.English, "Mystical Fire"],
+    [Language.Portuguese, "Fogo Místico"]
+]);
+
+const magmaStorm = new Map<Language, string>([
+    [Language.English, "Magma Storm"],
+    [Language.Portuguese, "Tempestade de Magma"]
+]);
+
+const seedFlare = new Map<Language, string>([
+    [Language.English, "Seed Flare"],
+    [Language.Portuguese, "Semente Ofuscante"]
+]);
+
+const obstruct = new Map<Language, string>([
+    [Language.English, "Obstruct"],
+    [Language.Portuguese, "Obstruir"]
 ]);
 
 const translations = new Map<MovesTranslatorKeys, Map<Language, string>>([
@@ -1403,7 +1534,7 @@ const translations = new Map<MovesTranslatorKeys, Map<Language, string>>([
     [MovesTranslatorKeys.AVALANCHE, avalanche],
     [MovesTranslatorKeys.NIGHT_SHADE, nightShade],
     [MovesTranslatorKeys.SHADOW_PUNCH, shadowPunch],
-    [MovesTranslatorKeys.VICE_GRIP, viceGrip],
+    [MovesTranslatorKeys.VICE_GRIP, viseGrip],
     [MovesTranslatorKeys.ENERGY_BALL, energyBall],
     [MovesTranslatorKeys.EXTRASENSORY, extrasensory],
     [MovesTranslatorKeys.DRAGON_PULSE, dragonPulse],
@@ -1435,8 +1566,26 @@ const translations = new Map<MovesTranslatorKeys, Map<Language, string>>([
     [MovesTranslatorKeys.LAST_RESORT, lastResort],
     [MovesTranslatorKeys.BRINE, brine],
     [MovesTranslatorKeys.YAWN, yawn],
+    [MovesTranslatorKeys.TAKE_DOWN, takeDown],
+    [MovesTranslatorKeys.GEOMANCY, geomancy],
+    [MovesTranslatorKeys.SHADOW_SNEAK, shadowSneak],
+    [MovesTranslatorKeys.METEOR_BEAM, meteorBeam],
+    [MovesTranslatorKeys.LEAF_STORM, leafStorm],
+    [MovesTranslatorKeys.MIRROR_COAT, mirrorCoat],
+    [MovesTranslatorKeys.TRI_ATTACK, triAttack],
+    [MovesTranslatorKeys.WEATHER_BALL_ROCK, weatherBall],
+    [MovesTranslatorKeys.MUDDY_WATER, muddyWater],
+    [MovesTranslatorKeys.AURA_SPHERE, auraSphere],
+    [MovesTranslatorKeys.V_CREATE, VCreate],
+    [MovesTranslatorKeys.SACRED_FIRE, sacredFire],
+    [MovesTranslatorKeys.ICICLE_SPEAR, icicleSpear],
+    [MovesTranslatorKeys.MYSTICAL_FIRE, mysticalFire],
+    [MovesTranslatorKeys.MAGMA_STORM, magmaStorm],
+    [MovesTranslatorKeys.SEED_FLARE, seedFlare],
+    [MovesTranslatorKeys.OBSTRUCT, obstruct],
 ]);
 
 const movesTranslator = (key: MovesTranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? (MovesTranslatorKeys[key] ? MovesTranslatorKeys[key].toString() : key?.toString());
+export const isTranslated = (key: MovesTranslatorKeys) => translations.has(key);
 
 export default movesTranslator;
