@@ -1,0 +1,60 @@
+@import "../index.scss";
+
+.pokemon_main_info {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    background-color: $popup-background-color;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+    border-radius: 12px;
+    border: 1px solid $borderColor;
+}
+
+.image_placeholder {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.pokemon_metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.pokemon_number {
+    font-size: 60px;
+    line-height: 1;
+    display: block;
+    opacity: .25;
+    font-weight: 700;
+}
+
+.pokemon_types {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.pokemon_type_bg {
+    border-radius: 12px;
+    padding: 6px 12px;
+    text-shadow: 0 0 10px rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.5);
+    font-weight: 500;
+    display: block;
+}
+
+.pokemon_stats {
+    display: flex;
+    gap: 9px;
+}
+
+.level_slider {
+    width: 100%;
+}

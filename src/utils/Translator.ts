@@ -61,7 +61,8 @@ export enum TranslatorKeys {
     Moves,
     FastMoves,
     ChargedMoves,
-    Stats
+    Stats,
+    Level
 }
 
 const settings = new Map<Language, string>([
@@ -121,6 +122,11 @@ const cp = new Map<Language, string>([
 
 const lvl = new Map<Language, string>([
     [Language.English, "LVL"],
+    [Language.Portuguese, "Nív."]
+]);
+
+const level = new Map<Language, string>([
+    [Language.English, "Level"],
     [Language.Portuguese, "Nível"]
 ]);
 
@@ -430,7 +436,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Moves, moves],
     [TranslatorKeys.FastMoves, fastMoves],
     [TranslatorKeys.ChargedMoves, chargedMoves],
-    [TranslatorKeys.Stats, stats]
+    [TranslatorKeys.Stats, stats],
+    [TranslatorKeys.Level, level]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

@@ -15,6 +15,7 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import movesTranslator, { MovesTranslatorKeys } from "../utils/MovesTranslator";
+import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -124,69 +125,24 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     }
 
     return <>
-        <div className="main-banner-content">
-            <div className="banner-left-side">
-                <div className="lvl-input-with-image">
-                    <div className="lvl-input">
-                        <CircularSliderInput
-                            handleColor={getComputedStyle(document.body).getPropertyValue(`--type-${pokemon.types[0]}`)}
-                            value={levelCap}
-                            displayValue={displayLevel}
-                            setDisplayValue={setDisplayLevel}
-                            setValue={setLevelCap}
-                        />
-                    </div>
-                    <div className="lvl-img-container">
-                        <div className="lvl-img-selected-container">
-                            <PokemonImage pokemon={pokemon} ref={selectedImageRef} withName={false}/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="banner-right-side">
-                <AppraisalBar
-                    attack = {attack}
-                    setAttack={setAttack}
-                    defense={defense}
-                    setDefense={setDefense}
-                    hp={hp}
-                    setHP={setHP}
-                />
-            </div>
-        </div>
-        <strong className="base-stats">
-            <span>
-                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
-            </span>
-            <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-            <span>
-                {(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
-            </span>
-            <img src="https://i.imgur.com/D2SX4kq.png" width={14} height={14}/>
-            <span>
-                {ivPercents[pokemon.speciesId].masterLeagueHP}
-            </span>
-            <img src="https://i.imgur.com/jft7ZzO.png" width={14} height={14}/>
-        </strong>
-        <span className="level-cp">
-            <strong>{ivPercents[pokemon.speciesId].masterLeagueCP} {translator(TranslatorKeys.CP, currentLanguage)}&nbsp;</strong>
-            @ {translator(TranslatorKeys.LVL, currentLanguage)} {<select value={displayLevel} onChange={e => {setDisplayLevel(+e.target.value); setLevelCap(+e.target.value);}} className="select-level">
-                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                    .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>}
-                &nbsp;&nbsp;{displayLevel > 40 && <img src="https://i.imgur.com/NTtZq10.png" width={14} height={14}/>}
-                &nbsp;{displayLevel > 50 && <img src="https://i.imgur.com/MGCXGl0.png" width={14} height={14}/>}
-        </span>
-        <div className="types-container">
-            <div className="types">
-                {pokemon.types[0] && <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[0]})`}}>
-                    {translatedType(pokemon.types[0])}
-                </span>}
-                {pokemon.types[1] && <span className="types-bg" style={{backgroundColor: `var(--type-${pokemon.types[1]})`}}>
-                    {translatedType(pokemon.types[1])}
-                </span>}
-            </div>
-        </div>
+        <PokemonInfoImagePlaceholder
+            pokemon={pokemon}
+            computedCP={ivPercents[pokemon.speciesId].masterLeagueCP}
+            computedAtk={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
+            computedDef={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
+            computedHP={ivPercents[pokemon.speciesId].masterLeagueHP}
+            displayLevel={displayLevel}
+            setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
+            imageRef={selectedImageRef}
+        />
+        <AppraisalBar
+            attack = {attack}
+            setAttack={setAttack}
+            defense={defense}
+            setDefense={setDefense}
+            hp={hp}
+            setHP={setHP}
+        />
         {similarPokemon.size > 1 && <div className="img-container">
             <div className="img-family">
                 {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import './pokemon.scss';
 import '../components/PokemonImage.css';
 import { Link, useLocation, useParams } from 'react-router-dom';
@@ -24,10 +23,6 @@ const Pokemon = () => {
     const pokemon = fetchCompleted ? gamemasterPokemon[speciesId ?? ""] : undefined;
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
-
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
 
     return (
         <main className="layout">
