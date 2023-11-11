@@ -6,18 +6,17 @@ import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import { TableComponents, TableVirtuoso } from "react-virtuoso";
 import React from "react";
 import { visuallyHidden } from '@mui/utils';
-import PokemonHeader from "./PokemonHeader";
 import { ListType } from "../views/pokedex";
 import { Link, useLocation } from "react-router-dom";
 import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
-import LoadingRenderer from "./LoadingRenderer";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
+    league: ListType,
 }
 
 interface Data {
@@ -97,20 +96,8 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return stabilizedThis.map((el) => el[0]);
 }
 
-const getDefaultListType = () => {
-    const cachedValue = readSessionValue(ConfigKeys.LastListType);
-    if (!cachedValue) {
-        return undefined;
-    }
-
-    const typedValue = +cachedValue as ListType;
-
-    return typedValue === ListType.POKEDEX ? ListType.GREAT_LEAGUE : typedValue;
-}
-
-const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
+const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
-    const [league, setLeague] = useState(getDefaultListType() ?? ListType.GREAT_LEAGUE);
 
     const {currentLanguage} = useLanguage();
     
@@ -302,87 +289,56 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
     }
 
     return (
-        <div className="pokemon-content">
-            <LoadingRenderer errors={errors} completed={fetchCompleted}>
-                <div className="content">
-                    <PokemonHeader
-                        pokemonName={pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))}
-                        type1={pokemon.types[0]}
-                        type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
-                    />
-                        <nav className="navigation-header ivs-nav">
-                            <ul>
-                                <li>
-                                    <div onClick={() => setLeague(ListType.GREAT_LEAGUE)} className={"header-tab " + (league === ListType.GREAT_LEAGUE ? "selected" : "")}>
-                                        <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                                        <span>{translator(TranslatorKeys.Great, currentLanguage)}</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div onClick={() => setLeague(ListType.ULTRA_LEAGUE)} className={"header-tab " + (league === ListType.ULTRA_LEAGUE ? "selected" : "")}>
-                                        <img height="24" width="24" src="https://i.imgur.com/jtA6QiL.png" alt="Ultra League"/>
-                                        <span>Ultra</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div onClick={() => setLeague(ListType.MASTER_LEAGUE)} className={"header-tab " + (league === ListType.MASTER_LEAGUE ? "selected" : "")}>
-                                        <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
-                                        <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </nav>
-                        <div className="extra-ivs-options">
-                                    <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
-                                        {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                                            .map(e => (<option key={e} value={e}>{translator(TranslatorKeys.MaxLvl, currentLanguage)} {e}</option>))}
-                                    </select>
-                                    &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.SearchIVs, currentLanguage)}:
-                                    <select value={atkSearch ?? ""} onChange={e => setAtkSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
-                                        <option key={"unset"} value={undefined}>-</option>
-                                        {Array.from({length: 16}, (_x, i) => i)
-                                            .map(e => (<option key={e} value={e}>{e}</option>))}
-                                    </select>
-                                    <select value={defSearch ?? ""} onChange={e => setDefSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
-                                        <option key={"unset"} value={undefined}>-</option>
-                                        {Array.from({length: 16}, (_x, i) => i)
-                                            .map(e => (<option key={e} value={e}>{e}</option>))}
-                                    </select>
-                                    <select value={hpSearch ?? ""} onChange={e => setHpSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
-                                        <option key={"unset"} value={undefined}>-</option>
-                                        {Array.from({length: 16}, (_x, i) => i)
-                                            .map(e => (<option key={e} value={e}>{e}</option>))}
-                                    </select>
-                                    </div>
-                        {similarPokemon.size > 1 && <div className="img-container">
-                            <div className="img-family">
-                                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                                    <div key = {p.speciesId} className="img-family-container">
-                                        <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
-                                            <PokemonImage pokemon={p} withName={false}/>
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>}
-                    <TableVirtuoso
-                        className="ivs-table"
-                        data={visibleRows.sort((d1: Data, d2: Data) => {
-                            if (ivSearchIsSet && d1.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}`) {
-                                return -1;
-                            }
-                            if (ivSearchIsSet && d1.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}`) {
-                                return 1;
-                            }
-                            return 0;
-                        })}
-                        components={VirtuosoTableComponents}
-                        fixedHeaderContent={fixedHeaderContent}
-                        itemContent={rowContent}
-                    />
+        <>
+            <div className="extra-ivs-options">
+                <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
+                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                        .map(e => (<option key={e} value={e}>{translator(TranslatorKeys.MaxLvl, currentLanguage)} {e}</option>))}
+                </select>
+                &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.SearchIVs, currentLanguage)}:
+                <select value={atkSearch ?? ""} onChange={e => setAtkSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
+                    <option key={"unset"} value={undefined}>-</option>
+                    {Array.from({length: 16}, (_x, i) => i)
+                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                </select>
+                <select value={defSearch ?? ""} onChange={e => setDefSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
+                    <option key={"unset"} value={undefined}>-</option>
+                    {Array.from({length: 16}, (_x, i) => i)
+                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                </select>
+                <select value={hpSearch ?? ""} onChange={e => setHpSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
+                    <option key={"unset"} value={undefined}>-</option>
+                    {Array.from({length: 16}, (_x, i) => i)
+                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                </select>
+            </div>
+            {similarPokemon.size > 1 && <div className="img-container">
+                <div className="img-family">
+                    {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
+                        <div key = {p.speciesId} className="img-family-container">
+                            <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
+                                <PokemonImage pokemon={p} withName={false}/>
+                            </Link>
+                        </div>
+                    ))}
                 </div>
-            </LoadingRenderer>
-        </div>
+            </div>}
+            <TableVirtuoso
+                className="ivs-table"
+                data={visibleRows.sort((d1: Data, d2: Data) => {
+                    if (ivSearchIsSet && d1.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}`) {
+                        return -1;
+                    }
+                    if (ivSearchIsSet && d1.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}`) {
+                        return 1;
+                    }
+                    return 0;
+                })}
+                components={VirtuosoTableComponents}
+                fixedHeaderContent={fixedHeaderContent}
+                itemContent={rowContent}
+            />
+        </>
     );
 }
 

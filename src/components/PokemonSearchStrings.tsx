@@ -1,31 +1,18 @@
-import { createRef, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { calculateCP, calculateHP, computeBestIVs, fetchPokemonFamily, fetchPredecessorPokemonIncludingSelf, sortPokemonByBattlePowerAsc, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 import "./PokemonSearchStrings.scss"
-import PokemonHeader from "./PokemonHeader";
 import { ListType } from "../views/pokedex";
 import { Link, useLocation } from "react-router-dom";
 import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
-import LoadingRenderer from "./LoadingRenderer";
-import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
-import Dictionary from "../utils/Dictionary";
+import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 
 interface PokemonSearchStrings {
     pokemon: IGamemasterPokemon;
-}
-
-const getDefaultListType = () => {
-    const cachedValue = readSessionValue(ConfigKeys.LastListType);
-    if (!cachedValue) {
-        return undefined;
-    }
-
-    const typedValue = +cachedValue as ListType;
-
-    return typedValue === ListType.POKEDEX ? ListType.GREAT_LEAGUE : typedValue;
+    league: ListType;
 }
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
@@ -44,13 +31,12 @@ const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolea
     return cachedValue === "true";
 }
 
-const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
+const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
-    const [league, setLeague] = useState(getDefaultListType() ?? ListType.GREAT_LEAGUE);
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10));
     const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
-    const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
+    const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {pathname} = useLocation();
 
     const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);
@@ -61,10 +47,6 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     useEffect(() => {
         writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
     }, [levelCap]);
-
-    useEffect(() => {
-        writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));
-    }, [league]);
 
     useEffect(() => {
         writePersistentValue(ConfigKeys.TopPokemonInSearchString, top.toString());
@@ -316,69 +298,37 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     }
 
     return (
-        <div className="pokemon-content">
-            <LoadingRenderer errors={errors} completed={fetchCompleted}>
-                <div className="content">
-                    <PokemonHeader
-                        pokemonName={pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))}
-                        type1={pokemon.types[0]}
-                        type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
-                    />
-                        <nav className="navigation-header ivs-nav">
-                            <ul>
-                                <li>
-                                    <div onClick={() => setLeague(ListType.GREAT_LEAGUE)} className={"header-tab " + (league === ListType.GREAT_LEAGUE ? "selected" : "")}>
-                                        <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                                        <span>{translator(TranslatorKeys.Great, currentLanguage)}</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div onClick={() => setLeague(ListType.ULTRA_LEAGUE)} className={"header-tab " + (league === ListType.ULTRA_LEAGUE ? "selected" : "")}>
-                                        <img height="24" width="24" src="https://i.imgur.com/jtA6QiL.png" alt="Ultra League"/>
-                                        <span>Ultra</span>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div onClick={() => setLeague(ListType.MASTER_LEAGUE)} className={"header-tab " + (league === ListType.MASTER_LEAGUE ? "selected" : "")}>
-                                        <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
-                                        <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </nav>
-                        <div className="extra-ivs-options">
-                                    <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
-                                        {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                                            .map(e => (<option key={e} value={e}>{translator(TranslatorKeys.MaxLvl, currentLanguage)} {e}</option>))}
-                                    </select>
-                                    &nbsp;&nbsp;&nbsp;Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
-                                        {Array.from({length: 4096}, (_x, i) => i + 1)
-                                            .map(e => (<option key={e} value={e}>{e}</option>))}
-                                    </select>
-                                    &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.TrashString, currentLanguage)} <input type="checkbox" checked={trash} onChange={_ => setTrash(previous => !previous)}/>
-                                    </div>
-                                    
-                        {similarPokemon.size > 1 && <div className="img-container">
-                            <div className="img-family">
-                                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                                    <div key = {p.speciesId} className="img-family-container">
-                                        <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
-                                            <PokemonImage pokemon={p} withName={false}/>
-                                        </Link>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>}
-                        {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label">{p.speciesId === pokemon.speciesId ?
-                        `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? translator(TranslatorKeys.GreatLeague, currentLanguage) : league === 2 ? translator(TranslatorKeys.UltraLeague, currentLanguage) : translator(TranslatorKeys.MasterLeague, currentLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
-                        `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? translator(TranslatorKeys.GreatLeague, currentLanguage) : league === 2 ? translator(TranslatorKeys.UltraLeague, currentLanguage) : translator(TranslatorKeys.MasterLeague, currentLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}<textarea id={p.speciesId + "-textarea"} className="search-strings-container"
-                            value={computeSearchString(p)}
-                            readOnly
-                        /></div>)}
+        <>
+            <div className="extra-ivs-options">
+                <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
+                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                        .map(e => (<option key={e} value={e}>{translator(TranslatorKeys.MaxLvl, currentLanguage)} {e}</option>))}
+                </select>
+                &nbsp;&nbsp;&nbsp;Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
+                    {Array.from({length: 4096}, (_x, i) => i + 1)
+                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                </select>
+                &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.TrashString, currentLanguage)} <input type="checkbox" checked={trash} onChange={_ => setTrash(previous => !previous)}/>
+            </div>
                         
+            {similarPokemon.size > 1 && <div className="img-container">
+                <div className="img-family">
+                    {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
+                        <div key = {p.speciesId} className="img-family-container">
+                            <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
+                                <PokemonImage pokemon={p} withName={false}/>
+                            </Link>
+                        </div>
+                    ))}
                 </div>
-            </LoadingRenderer>
-        </div>
+            </div>}
+            {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label">{p.speciesId === pokemon.speciesId ?
+            `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? translator(TranslatorKeys.GreatLeague, currentLanguage) : league === 2 ? translator(TranslatorKeys.UltraLeague, currentLanguage) : translator(TranslatorKeys.MasterLeague, currentLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
+            `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? translator(TranslatorKeys.GreatLeague, currentLanguage) : league === 2 ? translator(TranslatorKeys.UltraLeague, currentLanguage) : translator(TranslatorKeys.MasterLeague, currentLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}<textarea id={p.speciesId + "-textarea"} className="search-strings-container"
+                value={computeSearchString(p)}
+                readOnly
+            /></div>)}
+        </>
     );
 }
 

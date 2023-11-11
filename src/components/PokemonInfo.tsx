@@ -42,24 +42,22 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     }, [attackIV, defenseIV, hpIV, levelCap]);
     
     return (
-        <div className="pokemon-content">
-            <LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
-                <>
-                    <PokemonInfoBanner
-                        pokemon={pokemon}
-                        ivPercents={ivPercents}
-                        levelCap={levelCap}
-                        setLevelCap={setLevelCap}
-                        attack = {attackIV}
-                        setAttack={setAttackIV}
-                        defense={defenseIV}
-                        setDefense={setDefenseIV}
-                        hp={hpIV}
-                        setHP={setHPIV}
-                    />
-                </>
-            </LoadingRenderer>
-        </div>
+        <LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
+            <>
+                <PokemonInfoBanner
+                    pokemon={pokemon}
+                    ivPercents={ivPercents}
+                    levelCap={levelCap}
+                    setLevelCap={setLevelCap}
+                    attack = {attackIV}
+                    setAttack={setAttackIV}
+                    defense={defenseIV}
+                    setDefense={setDefenseIV}
+                    hp={hpIV}
+                    setHP={setHPIV}
+                />
+            </>
+        </LoadingRenderer>
     );
 }
 

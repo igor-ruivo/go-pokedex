@@ -60,7 +60,8 @@ export enum TranslatorKeys {
     PokemonNotFound,
     Moves,
     FastMoves,
-    ChargedMoves
+    ChargedMoves,
+    Stats
 }
 
 const settings = new Map<Language, string>([
@@ -363,6 +364,11 @@ const chargedMoves = new Map<Language, string>([
     [Language.Portuguese, "Ataques Carregados"]
 ]);
 
+const stats = new Map<Language, string>([
+    [Language.English, "Stats"],
+    [Language.Portuguese, "Status"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -423,7 +429,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.PokemonNotFound, pokemonNotFound],
     [TranslatorKeys.Moves, moves],
     [TranslatorKeys.FastMoves, fastMoves],
-    [TranslatorKeys.ChargedMoves, chargedMoves]
+    [TranslatorKeys.ChargedMoves, chargedMoves],
+    [TranslatorKeys.Stats, stats]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

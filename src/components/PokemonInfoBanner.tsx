@@ -6,7 +6,6 @@ import PokemonImage from "./PokemonImage";
 import "./PokemonInfoBanner.scss";
 import { useState } from "react";
 import LeaguePanels from "./LeaguePanels";
-import PokemonHeader from "./PokemonHeader";
 import CircularSliderInput from "./CircularSliderInput";
 import React from "react";
 import AppraisalBar from "./AppraisalBar";
@@ -124,12 +123,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         return movesTranslator(translatorKey ?? move, currentLanguage);
     }
 
-    return <div className="content">
-        <PokemonHeader
-            pokemonName={pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))}
-            type1={pokemon.types[0]}
-            type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
-        />
+    return <>
         <div className="main-banner-content">
             <div className="banner-left-side">
                 <div className="lvl-input-with-image">
@@ -308,7 +302,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 }
             }
         />
-    </div>;
+    </>;
 }
 
 export default PokemonInfoBanner;

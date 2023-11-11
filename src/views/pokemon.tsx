@@ -10,15 +10,20 @@ import PokemonSearchStrings from '../components/PokemonSearchStrings';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
 import PokemonMoves from '../components/PokemonMoves';
+import LeaguePicker from '../components/LeaguePicker';
+import PokemonHeader from '../components/PokemonHeader';
+import useLeague from '../hooks/useLeague';
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
+    const [league, handleSetLeague] = useLeague();
+    const {currentLanguage} = useLanguage();
     const { speciesId } = useParams();
-    const pokemon = fetchCompleted ? gamemasterPokemon[speciesId ?? ""] : undefined;
     const { pathname } = useLocation();
+
+    const pokemon = fetchCompleted ? gamemasterPokemon[speciesId ?? ""] : undefined;
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
-    const {currentLanguage} = useLanguage();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -30,7 +35,7 @@ const Pokemon = () => {
                 <ul>
                     <li>
                         <Link to={pokemonBasePath + "/info"} className={"header-tab " + (tab.endsWith("/info") ? "selected" : "")}>
-                            <span>Pokémon</span>
+                            <span>{translator(TranslatorKeys.Stats, currentLanguage)}</span>
                         </Link>
                     </li>
                     <li>
@@ -51,20 +56,28 @@ const Pokemon = () => {
                 </ul>
             </nav>
             <div className="pokemon">
-                <LoadingRenderer errors={errors} completed={fetchCompleted}>
-                    <>
+                <div className="pokemon-content">
+                    <LoadingRenderer errors={errors} completed={fetchCompleted}>
                         {
                             !pokemon ?
-                                <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div> :
-                                <div className="pokemon">
-                                    {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
-                                    {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon}/>}
-                                    {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon}/>}
-                                    {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon}/>}
+                                <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div> :        
+                                <div className="content">
+                                    <PokemonHeader
+                                        pokemonName={pokemon!.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))}
+                                        type1={pokemon!.types[0]}
+                                        type2={pokemon!.types.length > 1 ? pokemon!.types[1] : undefined}
+                                    />
+                                    <div className="pokemon">
+                                        <LeaguePicker league={league} handleSetLeague={handleSetLeague}/>
+                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
+                                        {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon}/>}
+                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}
+                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}
+                                    </div>
                                 </div>
                         }
-                    </>
-                </LoadingRenderer>
+                    </LoadingRenderer>
+                </div>
             </div>
         </main>
     );
