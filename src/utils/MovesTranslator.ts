@@ -16,7 +16,7 @@ export enum MovesTranslatorKeys {
     STOMP,
     POUND,
     SWIFT,
-    //TODO: CUT,
+    CUT,
     VICE_GRIP,
     TRANSFORM,
     LAST_RESORT,
@@ -1356,6 +1356,11 @@ const obstruct = new Map<Language, string>([
     [Language.Portuguese, "Obstruir"]
 ]);
 
+const cut = new Map<Language, string>([
+    [Language.English, "Cut"],
+    [Language.Portuguese, "Cortar"]
+]);
+
 const translations = new Map<MovesTranslatorKeys, Map<Language, string>>([
     [MovesTranslatorKeys.VINE_WHIP, vineWhip],
     [MovesTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -1583,6 +1588,7 @@ const translations = new Map<MovesTranslatorKeys, Map<Language, string>>([
     [MovesTranslatorKeys.MAGMA_STORM, magmaStorm],
     [MovesTranslatorKeys.SEED_FLARE, seedFlare],
     [MovesTranslatorKeys.OBSTRUCT, obstruct],
+    [MovesTranslatorKeys.CUT, cut],
 ]);
 
 const movesTranslator = (key: MovesTranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? (MovesTranslatorKeys[key] ? MovesTranslatorKeys[key].toString() : key?.toString());

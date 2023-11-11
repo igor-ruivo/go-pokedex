@@ -269,7 +269,7 @@ const wildUnpowered = new Map<Language, string>([
 ]);
 
 const thatResultIn = new Map<Language, string>([
-    [Language.English, "that evolve to"],
+    [Language.English, "that evolve to the"],
     [Language.Portuguese, "que evoluem para"]
 ]);
 
