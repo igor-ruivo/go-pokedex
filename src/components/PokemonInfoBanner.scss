@@ -77,10 +77,18 @@ table {
 }
 
 .img-family {
+    background-color: $popup-background-color;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid $borderColor;
+    margin-top: 15px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
+    width: 100%;
 }
 
 .banner-left-side {
@@ -143,6 +151,45 @@ table {
     justify-content: center;
     position: relative;
     padding-top: 48px;
+}
+
+.pokemon_with_ivs {
+    display: flex;
+    flex-direction: row;
+    gap: 9px;
+}
+
+.appraisal_with_moves {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 9px;
+}
+
+.moves_main_panel {
+    background-color: $popup-background-color;
+    border-radius: 12px;
+    border: 1px solid $borderColor;
+    width: 100%;
+    padding: 12px;
+}
+
+.moves_list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.unavailable_moves {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+@media (max-width: 800px) {
+    .pokemon_with_ivs {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 500px) {

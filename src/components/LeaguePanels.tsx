@@ -1,5 +1,6 @@
 import { Language, useLanguage } from "../contexts/language-context";
 import translator, { TranslatorKeys } from "../utils/Translator";
+import { ListType } from "../views/pokedex";
 import "./LeaguePanels.scss";
 
 interface PokemonLeagueMove {
@@ -30,13 +31,15 @@ interface LeagueStat {
 interface ILeaguePanelsProps {
     greatLeagueStats: LeagueStat,
     ultraLeagueStats: LeagueStat,
-    masterLeagueStats: LeagueStat
+    masterLeagueStats: LeagueStat,
+    league: ListType
 }
 
 const LeaguePanels = ({
     greatLeagueStats,
     ultraLeagueStats,
-    masterLeagueStats
+    masterLeagueStats,
+    league
 }: ILeaguePanelsProps) => {
 
     const {currentLanguage} = useLanguage();
@@ -61,10 +64,8 @@ const LeaguePanels = ({
             <div className={pvpStatsClassName}>
                 <section className="pvp-title">
                     <img src={logoSrc} alt="League icon" loading="lazy" decoding="async" className="pvp-img"/>
-                        {leagueStat.bestReachablePokemonName && <h4>({leagueStat.bestReachablePokemonName})</h4>}
-                        <strong className={rankClass(leagueStat.pokemonRankInLeague)}>
-                            {buildRankString(leagueStat.pokemonRankInLeague)}
-                        </strong>
+                    
+                    {leagueStat.bestReachablePokemonName && <h4>({leagueStat.bestReachablePokemonName})</h4>}
                             <div className="custom-pokemon">
                                 <h3>
                                     <div>{leagueStat.pokemonLeaguePercentage}% <span className="percentile">(#{leagueStat.pokemonLeaguePercentile})</span></div>
@@ -98,20 +99,15 @@ const LeaguePanels = ({
                     <section>
                         <div className="cp-and-level-recommended"><strong>{leagueStat.bestCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}</strong></div>
                     </section>
-                    {leagueStat.fastAttack.moveName && <strong className="pokemon-attack">
-                        <div className="type-attack">{leagueStat.fastAttack.moveName && <img src={typeSrc(leagueStat.fastAttack.type)}/>}{leagueStat.fastAttack.moveName}{leagueStat.fastAttack.isElite ? "*" : leagueStat.fastAttack.isLegacy ? <sup>†</sup> : <></>}</div>
-                        <div className="type-attack">{leagueStat.chargedAttack1.moveName && <img src={typeSrc(leagueStat.chargedAttack1.type)}/>}{leagueStat.chargedAttack1.moveName}{leagueStat.chargedAttack1.isElite ? "*" : leagueStat.chargedAttack1.isLegacy ? <sup>†</sup> : <></>}</div>
-                        <div className="type-attack">{leagueStat.chargedAttack2.moveName && <img src={typeSrc(leagueStat.chargedAttack2.type)}/>}{leagueStat.chargedAttack2.moveName}{leagueStat.chargedAttack2.isElite ? "*" : leagueStat.chargedAttack2.isLegacy ? <sup>†</sup> : <></>}</div>
-                    </strong>}
                 </section>
             </div>
         );
     }
 
     return <div className="pvp-leagues">
-        {renderPanel(greatLeagueStats)}
-        {renderPanel(ultraLeagueStats)}
-        {renderPanel(masterLeagueStats)}
+        {league === ListType.GREAT_LEAGUE && renderPanel(greatLeagueStats)}
+        {league === ListType.ULTRA_LEAGUE && renderPanel(ultraLeagueStats)}
+        {league === ListType.MASTER_LEAGUE && renderPanel(masterLeagueStats)}
     </div>;
 }
 

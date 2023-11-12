@@ -2,7 +2,6 @@
 
 .pvp-leagues {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 12px;
     gap: 12px;
     margin: 0px calc(-1 * 12px);
@@ -17,12 +16,10 @@
 }
 
 .cp-and-level {
-    font-size: x-small;
     opacity: 0.9;
 }
 
 .cp-and-level-recommended {
-    font-size: small;
 }
 
 .custom-pokemon {
@@ -44,7 +41,6 @@
 }
 
 .pokemon-attack {
-    font-size: smaller;
     img {
         align-self: center;
         width: 10px;
@@ -54,7 +50,6 @@
 
 .percentile {
     opacity: 0.67;
-    font-size: xx-small;
 }
 
 .pvp-stats {
@@ -81,7 +76,6 @@
         width: 100%;
     }
     h4 {
-        font-size: x-small;
     }
 }
 
@@ -103,7 +97,6 @@
 }
 
 .pvp-ivs {
-    font-size: 28px;
 }
 
 .pokemon-ivs {
@@ -126,7 +119,6 @@
 }
 
 .pokemon-ivs-label {
-    font-size: small;
     font-weight: 400;
 }
 
@@ -153,14 +145,12 @@
     }
 
     .cp-and-level-recommended {
-        font-size: xx-small;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .pokemon-attack {
-        font-size: xx-small;
     }
 
     .pvp-stats {
@@ -172,16 +162,13 @@
     .pvp-title {
         //padding: 9px;
         h3 {
-            font-size: x-small;
         }
 
         h4 {
-            font-size: 8px;//xx-small;//clamp(6.167px, 1.72vw, 9px);
         }
     }
 
     .cp-and-level {
-        font-size: xx-small;
     }
 
     .pvp-stats-display {
@@ -195,14 +182,11 @@
     }
 
     .pokemon-ivs-item {
-        font-size: x-small;
     }
 
     .pokemon-ivs-label {
-        font-size: xx-small;
     }
 
     .pokemon-ivs-ranked {
-        font-size: x-small;
     }
 }

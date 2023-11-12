@@ -63,7 +63,7 @@ const Pokemon = () => {
                                         type2={pokemon!.types.length > 1 ? pokemon!.types[1] : undefined}
                                     />
                                     <div className="pokemon">
-                                        <LeaguePicker league={league} handleSetLeague={handleSetLeague}/>
+                                        {!tab.endsWith("/moves") && <LeaguePicker league={league} handleSetLeague={handleSetLeague}/>}
                                         {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon}/>}
                                         {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}
