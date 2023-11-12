@@ -15,14 +15,16 @@ interface ILeaguePanelsProps {
     greatLeagueStats: LeagueStat,
     ultraLeagueStats: LeagueStat,
     masterLeagueStats: LeagueStat,
-    currentLeague: ListType
+    currentLeague: ListType,
+    setLeague: (newLeague: ListType) => void
 }
 
 const LeagueRanks = ({
     greatLeagueStats,
     ultraLeagueStats,
     masterLeagueStats,
-    currentLeague
+    currentLeague,
+    setLeague
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
 
@@ -48,13 +50,26 @@ const LeagueRanks = ({
         }
     }
 
+    const getLeagueType = (league: string) => {
+        switch (league) {
+            case "great":
+                return ListType.GREAT_LEAGUE;
+            case "ultra":
+                return ListType.ULTRA_LEAGUE;
+            case "master":
+                return ListType.MASTER_LEAGUE;
+            default:
+                throw new Error("Missing case for switch: " + league);
+        }
+    }
+
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-2 ${leagueStat.leagueTitle} ` + (getLeagueName(currentLeague) === leagueStat.leagueTitle ? "selected" : "");
         const logoSrc = `https://www.stadiumgaming.gg/frontend/assets/img/${leagueStat.leagueTitle}.png`;
 
         return (
             <div className={pvpStatsClassName}>
-                <section className="pvp-title-2">
+                <section className="pvp-title-2" onClick={() => setLeague(getLeagueType(leagueStat.leagueTitle))}>
                     <img src={logoSrc} alt="League icon" loading="lazy" decoding="async" className="pvp-title-item-small pvp-img-2" height="100%" width="100%"/>
                     <div className="pvp-title-item">
                         {leagueStat.bestReachablePokemon && <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false}/>}

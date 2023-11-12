@@ -31,6 +31,7 @@ interface IPokemonInfoBanner {
     hp: number;
     setHP: (_: React.SetStateAction<number>) => void;
     league: ListType;
+    setLeague: (newLeague: ListType) => void;
 }
 
 export interface IIvPercents {
@@ -63,7 +64,7 @@ export interface IIvPercents {
     masterLeaguePerfectCP: number
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league}: IPokemonInfoBanner) => {
+const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league, setLeague}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
     const {currentLanguage} = useLanguage();
     const selectedImageRef = React.createRef<HTMLImageElement>();
@@ -180,6 +181,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                         }
                     }
                     currentLeague={league}
+                    setLeague={setLeague}
                 />
             </PokemonInfoImagePlaceholder>
             <div className="appraisal_with_moves">
@@ -219,21 +221,17 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                             <div className={chargedMove1ClassName}>
                                 <div className="move-card-content">
                                     <strong className="move-detail move-name">
-                                        <img title={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} alt={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} height="32" width="32" src={chargedMove1Url}/>
-                                        {movesTranslator(chargedMove1TranslatorKey ?? relevantMoveSet[0], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
+                                        <img title={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} alt={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} height="32" width="32" src={chargedMove1Url}/>
+                                        {movesTranslator(chargedMove1TranslatorKey ?? relevantMoveSet[1], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[1]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[1]) ? " †" : "")}
                                     </strong>
                                     <strong className="move-detail move-stats">
                                         <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].power}
+                                            {moves[relevantMoveSet[1]].power}
                                             <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                         </span>
                                         <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].energyGain}
+                                            {moves[relevantMoveSet[1]].energy}
                                             <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                        </span>
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].cooldown}
-                                            <img src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                         </span>
                                     </strong>
                                 </div>
@@ -241,21 +239,17 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                             <div className={chargedMove2ClassName}>
                                 <div className="move-card-content">
                                     <strong className="move-detail move-name">
-                                        <img title={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} alt={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} height="32" width="32" src={chargedMove2Url}/>
-                                        {movesTranslator(chargedMove2TranslatorKey ?? relevantMoveSet[0], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
+                                        <img title={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} alt={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} height="32" width="32" src={chargedMove2Url}/>
+                                        {movesTranslator(chargedMove2TranslatorKey ?? relevantMoveSet[2], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[2]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[2]) ? " †" : "")}
                                     </strong>
                                     <strong className="move-detail move-stats">
                                         <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].power}
+                                            {moves[relevantMoveSet[2]].power}
                                             <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                         </span>
                                         <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].energyGain}
+                                            {moves[relevantMoveSet[2]].energy}
                                             <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                        </span>
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].cooldown}
-                                            <img src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                         </span>
                                     </strong>
                                 </div>
