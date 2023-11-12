@@ -64,7 +64,7 @@ const Pokemon = () => {
                                     />
                                     <div className="pokemon">
                                         <LeaguePicker league={league} handleSetLeague={handleSetLeague}/>
-                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
+                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon}/>}
                                         {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}

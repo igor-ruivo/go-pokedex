@@ -5,12 +5,14 @@ import useComputeIVs from "../hooks/useComputeIVs";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import LoadingRenderer from "./LoadingRenderer";
 import PokemonInfoBanner from "./PokemonInfoBanner";
+import { ListType } from "../views/pokedex";
 
 interface IPokemonInfoProps {
     pokemon: IGamemasterPokemon;
+    league: ListType
 }
 
-const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
+const PokemonInfo = ({pokemon, league}: IPokemonInfoProps) => {
     const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
         const cachedValue = readPersistentValue(key);
         if (!cachedValue) {
@@ -55,6 +57,7 @@ const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
                     setDefense={setDefenseIV}
                     hp={hpIV}
                     setHP={setHPIV}
+                    league={league}
                 />
             </>
         </LoadingRenderer>

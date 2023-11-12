@@ -1,0 +1,56 @@
+@import "../index.scss";
+
+.pvp-leagues-2 {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: center;
+}
+
+.pvp-stats-2 {
+    opacity: 45%;
+    border: 1px solid $buttonsBorderColor;
+    border-radius: 12px;
+    padding-right: 3px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 6px;
+    gap: 6px;
+    align-items: center;
+    color: #fff;
+    text-shadow: 1px 5px 5px rgba(0,0,0,.25);
+    &.selected {
+        opacity: 100%;
+    }
+}
+
+.pvp-title-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 3fr;
+    align-items: center;
+    gap: 6px;
+    width: max-content;
+    h3, h4 {
+        margin: 0;
+        width: 100%;
+    }
+}
+
+.pvp-title-item {
+    place-self: center;
+    width: 30px;
+    height: 30px;
+}
+
+.pvp-title-item-small {
+    place-self: center;
+    width: 20px;
+    height: 20px;
+}
+
+.pvp-img-2 {
+    color: transparent;
+}
+
+@media (max-width: 530px) {
+}

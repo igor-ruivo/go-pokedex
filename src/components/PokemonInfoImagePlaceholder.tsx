@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { useLanguage } from "../contexts/language-context";
@@ -16,7 +17,7 @@ interface IPokemonInfoImagePlaceholderProps {
     imageRef?: React.RefObject<HTMLImageElement>
 }
 
-const PokemonInfoImagePlaceholder = ({pokemon, computedCP, computedAtk, computedDef, computedHP, displayLevel, setDisplayLevel, imageRef}: IPokemonInfoImagePlaceholderProps) => {
+const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
     const {currentLanguage} = useLanguage();
 
     const translatedType = (type: PokemonTypes) => {
@@ -31,41 +32,49 @@ const PokemonInfoImagePlaceholder = ({pokemon, computedCP, computedAtk, computed
     return <>
         <div className="pokemon_main_info">
             <div className="image_placeholder">
-                <PokemonImage ref={imageRef} pokemon={pokemon} withName={false}/>
+                <PokemonImage ref={props.imageRef} pokemon={props.pokemon} withName={false}/>
                 <span className="pokemon_metadata">
                     <span className="pokemon_number">
                         #
-                        {pokemon.dex}
+                        {props.pokemon.dex}
                     </span>
                     <span className="pokemon_types">
-                        {pokemon.types[0] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${pokemon.types[0]})`}}>
-                            {translatedType(pokemon.types[0])}
+                        {props.pokemon.types[0] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[0]})`}}>
+                            {translatedType(props.pokemon.types[0])}
                         </span>}
-                        {pokemon.types[1] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${pokemon.types[1]})`}}>
-                            {translatedType(pokemon.types[1])}
+                        {props.pokemon.types[1] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[1]})`}}>
+                            {translatedType(props.pokemon.types[1])}
                         </span>}
                     </span>
                 </span>
             </div>
-            <span>
-                <strong className="cp-container">{computedCP} {translator(TranslatorKeys.CP, currentLanguage)}</strong>
-                &nbsp;@ {translator(TranslatorKeys.Level, currentLanguage)} {<select value={displayLevel} onChange={e => setDisplayLevel(+e.target.value)} className="select-level">
-                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                    .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>}
-            </span>
-            <div>
-                <strong className="pokemon_stats">
-                    <span>
-                        {computedAtk} {translator(TranslatorKeys.ATK, currentLanguage).toLocaleUpperCase()}
+            <div className="stats_ranks">
+                <div className="cp_stats">
+                    <span className="cp-level">
+                        <strong className="cp-container">{props.computedCP} {translator(TranslatorKeys.CP, currentLanguage)}</strong>
+                        <div><span className="at_separator">&nbsp;@</span> {translator(TranslatorKeys.Level, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level">
+                            {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                        </select>}</div>
                     </span>
-                    <span>
-                        {computedDef} DEF
-                    </span>
-                    <span>
-                        {computedHP} {translator(TranslatorKeys.HP, currentLanguage).toLocaleUpperCase()}
-                    </span>
-                </strong>
+                    <div>
+                        <strong className="pokemon_stats">
+                            <span className="pvp_stat">
+                                <span>{props.computedAtk}</span>
+                                <span>{translator(TranslatorKeys.ATK, currentLanguage).toLocaleUpperCase()}</span>
+                            </span>
+                            <span className="pvp_stat">
+                                <span>{props.computedDef}</span>
+                                <span>DEF</span>
+                            </span>
+                            <span className="pvp_stat">
+                                <span>{props.computedHP}</span>
+                                <span>{translator(TranslatorKeys.HP, currentLanguage).toLocaleUpperCase()}</span>
+                            </span>
+                        </strong>
+                    </div>
+                </div>
+                {props.children}
             </div>
         </div>
     </>;

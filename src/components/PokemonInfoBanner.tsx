@@ -16,6 +16,8 @@ import { useLanguage } from "../contexts/language-context";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import movesTranslator, { MovesTranslatorKeys } from "../utils/MovesTranslator";
 import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
+import LeagueRanks from "./LeagueRanks";
+import { ListType } from "../views/pokedex";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -28,6 +30,7 @@ interface IPokemonInfoBanner {
     setDefense: (_: React.SetStateAction<number>) => void;
     hp: number;
     setHP: (_: React.SetStateAction<number>) => void;
+    league: ListType;
 }
 
 export interface IIvPercents {
@@ -60,7 +63,7 @@ export interface IIvPercents {
     masterLeaguePerfectCP: number
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
+const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
     const {currentLanguage} = useLanguage();
     const selectedImageRef = React.createRef<HTMLImageElement>();
@@ -134,7 +137,32 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             displayLevel={displayLevel}
             setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
             imageRef={selectedImageRef}
-        />
+        >
+            <LeagueRanks
+                greatLeagueStats={
+                    {
+                        leagueTitle: "great",
+                        bestReachablePokemon: bestInFamilyForGreatLeague,
+                        pokemonRankInLeague: ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank)
+                    }
+                }
+                ultraLeagueStats={
+                    {
+                        leagueTitle: "ultra",
+                        bestReachablePokemon: bestInFamilyForUltraLeague,
+                        pokemonRankInLeague: ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank)
+                    }
+                }
+                masterLeagueStats={
+                    {
+                        leagueTitle: "master",
+                        bestReachablePokemon: bestInFamilyForMasterLeague,
+                        pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank)
+                    }
+                }
+                currentLeague={league}
+            />
+        </PokemonInfoImagePlaceholder>
         <AppraisalBar
             attack = {attack}
             setAttack={setAttack}

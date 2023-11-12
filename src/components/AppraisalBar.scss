@@ -35,9 +35,12 @@
 
 .appraisal {
     width: 100%;
-    margin-top: 20px;
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-top: 9px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: $popup-background-color;
+    border-radius: 12px;
+    border: 1px solid $borderColor;
 }
 
 .appraisal .stat {
@@ -47,7 +50,6 @@
 .appraisal .stat h4 {
     font-weight: 400;
     margin: 0 0 3px;
-    font-size: 17px;
     display: flex;
     justify-content: space-between
 }
@@ -107,7 +109,6 @@
 
 .select-ivs {
     color-scheme: dark;
-    font-size: small;
     padding-top: 1px;
     margin-left: 4px;
     background: $contentBackground;
@@ -132,10 +133,6 @@
         max-width: 100%;
     }
 
-    .appraisal .stat h4 {
-        font-size: 12px
-    }
-
     .appraisal .stat-bar .bar {
         height: 13.5px;
     }
@@ -146,7 +143,6 @@
 
     .select-ivs {
         color-scheme: dark;
-        font-size: small;
         padding-top: 1px;
         background: $contentBackground;
         color: $textColor;

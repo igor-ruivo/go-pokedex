@@ -6,12 +6,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 9px;
     background-color: $popup-background-color;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-bottom: 6px;
-    padding-top: 6px;
+    padding: 6px;
     border-radius: 12px;
     border: 1px solid $borderColor;
 }
@@ -55,6 +51,43 @@
     gap: 9px;
 }
 
-.level_slider {
-    width: 100%;
+.stats_ranks {
+    align-items: center;
+    gap: 9px;
+    display: flex;
+    flex-direction: row;
+}
+
+.cp_stats {
+    align-self: end;
+    align-items: center;
+    gap: 9px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cp-level,
+.pvp_stat {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.pvp_stat {
+    gap: 3px;
+}
+
+@media (max-width: 400px) {
+    .cp-level,
+    .pvp_stat {
+        flex-direction: column;
+    }
+
+    .at_separator {
+        display: none;
+    }
+
+    .pvp_stat {
+        gap: 0px;
+    }
 }
