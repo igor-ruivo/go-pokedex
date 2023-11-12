@@ -289,7 +289,7 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     }
 
     return (
-        <>
+        <div className="banner_layout">
             <div className="extra-ivs-options">
                 <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
                     {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
@@ -338,7 +338,7 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
                 fixedHeaderContent={fixedHeaderContent}
                 itemContent={rowContent}
             />
-        </>
+        </div>
     );
 }
 

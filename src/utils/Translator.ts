@@ -64,7 +64,8 @@ export enum TranslatorKeys {
     Stats,
     Level,
     UnrankedPokemonForLeague,
-    RecommendedMovesUnavailable
+    RecommendedMovesUnavailable,
+    RecommendedMoves
 }
 
 const settings = new Map<Language, string>([
@@ -387,6 +388,11 @@ const recommendedMovesUnavailable = new Map<Language, string>([
     [Language.Portuguese, "Os ataques recomendados não estão disponíveis:"]
 ]);
 
+const recommendedMoves = new Map<Language, string>([
+    [Language.English, "Recommended Moves"],
+    [Language.Portuguese, "Ataques Recomendados"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -451,7 +457,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Stats, stats],
     [TranslatorKeys.Level, level],
     [TranslatorKeys.UnrankedPokemonForLeague, unrankedPokemonForLeague],
-    [TranslatorKeys.RecommendedMovesUnavailable, recommendedMovesUnavailable]
+    [TranslatorKeys.RecommendedMovesUnavailable, recommendedMovesUnavailable],
+    [TranslatorKeys.RecommendedMoves, recommendedMoves]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

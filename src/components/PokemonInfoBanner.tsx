@@ -146,7 +146,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     const chargedMove1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[1]]?.type}.png`;
     const chargedMove2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[2]]?.type}.png`;
 
-    return <>
+    return <div className="banner_layout">
         <div className="pokemon_with_ivs">
             <PokemonInfoImagePlaceholder
                 pokemon={pokemon}
@@ -194,87 +194,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     setHP={setHP}
                 />
                 <div className="moves_main_panel">
-                    {rankLists[(league as number) - 1][pokemon.speciesId] ? 
-                        <div className="moves_list">
-                            <div className={fastMoveClassName}>
-                                <div className="move-card-content">
-                                    <strong className="move-detail move-name">
-                                        <img title={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} alt={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} height="32" width="32" src={fastMoveUrl}/>
-                                        {movesTranslator(fastMoveTranslatorKey ?? relevantMoveSet[0], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
-                                    </strong>
-                                    <strong className="move-detail move-stats">
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].power}
-                                            <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                        </span>
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].energyGain}
-                                            <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                        </span>
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[0]].cooldown}
-                                            <img src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
-                                        </span>
-                                    </strong>
-                                </div>
-                            </div>
-                            <div className={chargedMove1ClassName}>
-                                <div className="move-card-content">
-                                    <strong className="move-detail move-name">
-                                        <img title={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} alt={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} height="32" width="32" src={chargedMove1Url}/>
-                                        {movesTranslator(chargedMove1TranslatorKey ?? relevantMoveSet[1], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[1]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[1]) ? " †" : "")}
-                                    </strong>
-                                    <strong className="move-detail move-stats">
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[1]].power}
-                                            <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                        </span>
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[1]].energy}
-                                            <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                        </span>
-                                    </strong>
-                                </div>
-                            </div>
-                            <div className={chargedMove2ClassName}>
-                                <div className="move-card-content">
-                                    <strong className="move-detail move-name">
-                                        <img title={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} alt={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} height="32" width="32" src={chargedMove2Url}/>
-                                        {movesTranslator(chargedMove2TranslatorKey ?? relevantMoveSet[2], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[2]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[2]) ? " †" : "")}
-                                    </strong>
-                                    <strong className="move-detail move-stats">
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[2]].power}
-                                            <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                        </span>
-                                        <span className="move-stats-content">
-                                            {moves[relevantMoveSet[2]].energy}
-                                            <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                        </span>
-                                    </strong>
-                                </div>
-                            </div>
-                        </div> :
-                        <span className="unavailable_moves">
-                            {translator(TranslatorKeys.RecommendedMovesUnavailable, currentLanguage)}<br></br>
-                            {pokemon.speciesName} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {translator(league === ListType.GREAT_LEAGUE ? TranslatorKeys.GreatLeague : league === ListType.ULTRA_LEAGUE ? TranslatorKeys.UltraLeague : TranslatorKeys.MasterLeague, currentLanguage)}
-                        </span>
-                    }
-                </div>
-            </div>
-        </div>
-        {similarPokemon.size > 1 && <div className="img-container">
-            <div className="img-family">
-                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                    <div key = {p.speciesId} className="img-family-container">
-                        <Link to={`/pokemon/${p.speciesId}/info`}>
-                            <PokemonImage pokemon={p} withName={false}/>
-                        </Link>
-                    </div>
-                ))}
-            </div>
-        </div>}
-        <LeaguePanels
+                <LeaguePanels
             league={league}
             greatLeagueStats={
                 {
@@ -379,7 +299,21 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 }
             }
         />
-    </>;
+    </div>
+            </div>
+        </div>
+        {similarPokemon.size > 1 && <div className="img-container">
+            <div className="img-family">
+                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
+                    <div key = {p.speciesId} className="img-family-container">
+                        <Link to={`/pokemon/${p.speciesId}/info`}>
+                            <PokemonImage pokemon={p} withName={false}/>
+                        </Link>
+                    </div>
+                ))}
+            </div>
+        </div>}
+    </div>;
 }
 
 export default PokemonInfoBanner;
