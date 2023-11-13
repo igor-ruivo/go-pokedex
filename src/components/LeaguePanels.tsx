@@ -32,14 +32,20 @@ interface ILeaguePanelsProps {
     greatLeagueStats: LeagueStat,
     ultraLeagueStats: LeagueStat,
     masterLeagueStats: LeagueStat,
-    league: ListType
+    league: ListType,
+    atk: number,
+    def: number,
+    hp: number
 }
 
 const LeaguePanels = ({
     greatLeagueStats,
     ultraLeagueStats,
     masterLeagueStats,
-    league
+    league,
+    atk,
+    def,
+    hp
 }: ILeaguePanelsProps) => {
 
     const {currentLanguage} = useLanguage();
@@ -62,49 +68,56 @@ const LeaguePanels = ({
 
         return (
             <div className={pvpStatsClassName}>
-                <section className="pvp-title">
-                    <img src={logoSrc} alt="League icon" loading="lazy" decoding="async" className="pvp-img"/>
-                    
-                    {leagueStat.bestReachablePokemonName && <h4>({leagueStat.bestReachablePokemonName})</h4>}
-                            <div className="custom-pokemon">
-                                <h3>
-                                    <div>{leagueStat.pokemonLeaguePercentage}% <span className="percentile">(#{leagueStat.pokemonLeaguePercentile})</span></div>
-                                </h3>
-                                <div className="cp-and-level">{leagueStat.pokemonCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}</div>
-                            </div>
-                </section>
-                <section className="pvp-stats-display">
-                    <section className="pvp-ivs">
-                        <ul className="pokemon-ivs">
-                            <li>
-                                <span className="pokemon-ivs-item">
-                                    <span>{leagueStat.atk}</span>
-                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.ATK, currentLanguage).toLocaleUpperCase()}</strong>
-                                </span>
-                            </li>
-                            <li>
-                                <span className="pokemon-ivs-item">
-                                    <span>{leagueStat.def}</span>
-                                    <strong className="pokemon-ivs-label">DEF</strong>
-                                </span>
-                            </li>
-                            <li>
-                                <span className="pokemon-ivs-item">
-                                    <span>{leagueStat.hp}</span>
-                                    <strong className="pokemon-ivs-label">{translator(TranslatorKeys.STA, currentLanguage).toLocaleUpperCase()}</strong>
-                                </span>
-                            </li>
-                        </ul>
-                    </section>
-                    <section>
-                        <div className="cp-and-level-recommended"><strong>{leagueStat.bestCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}</strong></div>
-                    </section>
-                </section>
+                <div className="pvp-labels">
+                    <header>
+                        Config:
+                    </header>
+                    <div className="pvp-entry smooth">
+                        <div className="pvp-entry-content">
+                            Current
+                        </div>
+                    </div>
+                    <div className="pvp-entry smooth">
+                        <div className="pvp-entry-content">
+                            Best
+                        </div>
+                    </div>
+                </div>
+                <div className="pvp-labels">
+                    <header>
+                        IVs:
+                    </header>
+                    <div className="pvp-entry">
+                        <div className="pvp-entry-content">
+                            {atk} / {def} / {hp}
+                        </div>
+                    </div>
+                    <div className="pvp-entry">
+                        <div className="pvp-entry-content">
+                            {leagueStat.atk} / {leagueStat.def} / {leagueStat.hp}
+                        </div>
+                    </div>
+                </div>
+                <div className="pvp-labels">
+                    <header>
+                        Peaks at:
+                    </header>
+                    <div className="pvp-entry">
+                        <div className="pvp-entry-content">
+                            {leagueStat.pokemonCP} CP @ LVL {leagueStat.pokemonLevel}
+                        </div>
+                    </div>
+                    <div className="pvp-entry">
+                        <div className="pvp-entry-content">
+                            {leagueStat.bestCP} CP @ LVL {leagueStat.bestLevel}
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
 
-    return <div className="pvp-leagues">
+    return <div>
         {league === ListType.GREAT_LEAGUE && renderPanel(greatLeagueStats)}
         {league === ListType.ULTRA_LEAGUE && renderPanel(ultraLeagueStats)}
         {league === ListType.MASTER_LEAGUE && renderPanel(masterLeagueStats)}

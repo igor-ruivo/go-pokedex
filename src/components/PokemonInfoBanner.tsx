@@ -196,6 +196,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 <div className="moves_main_panel">
                 <LeaguePanels
             league={league}
+            atk={attack}
+            def={defense}
+            hp={hp}
             greatLeagueStats={
                 {
                     leagueTitle: "great",

@@ -74,9 +74,9 @@ const LeagueRanks = ({
                     <div className="pvp-title-item">
                         {leagueStat.bestReachablePokemon && <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} withMetadata={false}/>}
                     </div>
-                    <strong className={rankClass(leagueStat.pokemonRankInLeague)}>
+                    <div className={rankClass(leagueStat.pokemonRankInLeague)}>
                         {buildRankString(leagueStat.pokemonRankInLeague)}
-                    </strong>
+                    </div>
                 </section>
             </div>
         );
