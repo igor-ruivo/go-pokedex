@@ -3,6 +3,12 @@
 .pokemon_main_info {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    justify-self: center;
+    align-self: center;
+}
+
+.left-panel {
+    display: grid;
     background-color: $popup-background-color;
     padding: 6px;
     border-radius: 12px;

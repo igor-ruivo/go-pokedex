@@ -57,7 +57,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
         </div>
     }
 
-    return <>
+    return <div className="left-panel">
         <div className="pokemon_main_info">
             <div className="left-container">
                         <PokemonImage
@@ -89,7 +89,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 </div>
             </div>
         </div>
-    </>;
+    </div>;
 }
 
 export default PokemonInfoImagePlaceholder;
