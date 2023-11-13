@@ -1,27 +1,27 @@
 @import "../index.scss";
 
 .pokemon_main_info {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
     background-color: $popup-background-color;
     padding: 6px;
     border-radius: 12px;
     border: 1px solid $borderColor;
 }
 
-.image_placeholder {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.pokemon_main_info > span:first-child {
+    align-items: end;
+    width: 256px;
+    height: 256px;
+    width: 100%;
 }
 
 .pokemon_metadata {
     display: flex;
     flex-direction: column;
     gap: 9px;
+    justify-content: center;
 }
 
 .pokemon_number {
@@ -70,28 +70,9 @@
 .pvp_stat {
     align-items: center;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
-.pvp_stat {
-    gap: 3px;
-}
-
-@media (max-width: 400px) {
-    .cp-level,
-    .pvp_stat {
-        flex-direction: column;
-    }
-
-    .cp-level {
-        gap: 5px;
-    }
-
-    .at_separator {
-        display: none;
-    }
-
-    .pvp_stat {
-        gap: 0px;
-    }
+.cp-level {
+    gap: 5px;
 }
