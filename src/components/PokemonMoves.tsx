@@ -56,7 +56,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                         <div key = {p.speciesId} className="img-family-container">
                             <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
-                                <PokemonImage pokemon={p} withName={false}/>
+                                <PokemonImage pokemon={p} withName={false} withMetadata={false}/>
                             </Link>
                         </div>
                     ))}

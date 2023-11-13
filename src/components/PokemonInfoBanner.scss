@@ -153,8 +153,8 @@ table {
 }
 
 .pokemon_with_ivs {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 55fr 45fr;
     gap: 9px;
 }
 
@@ -195,9 +195,9 @@ table {
     margin-top: 15px;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 700px) {
     .pokemon_with_ivs {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
 }
 

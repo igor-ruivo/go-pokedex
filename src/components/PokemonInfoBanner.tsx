@@ -307,7 +307,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                     <div key = {p.speciesId} className="img-family-container">
                         <Link to={`/pokemon/${p.speciesId}/info`}>
-                            <PokemonImage pokemon={p} withName={false}/>
+                            <PokemonImage pokemon={p} withName={false} withMetadata={false}/>
                         </Link>
                     </div>
                 ))}

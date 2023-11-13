@@ -34,7 +34,7 @@ const LeagueRanks = ({
         }
 
         const ranked = translator(TranslatorKeys.Ranked, currentLanguage);
-        return currentLanguage === Language.Portuguese ? `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")} ${ranked}` :  `Ranked ${rank}`;
+        return currentLanguage === Language.Portuguese ? `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")} ${ranked}` : `Ranked ${rank}`;
     }
 
     const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked-2" + (!rank ? " unranked" : "");
@@ -72,7 +72,7 @@ const LeagueRanks = ({
                 <section className="pvp-title-2" onClick={() => setLeague(getLeagueType(leagueStat.leagueTitle))}>
                     <img src={logoSrc} alt="League icon" loading="lazy" decoding="async" className="pvp-title-item-small pvp-img-2" height="100%" width="100%"/>
                     <div className="pvp-title-item">
-                        {leagueStat.bestReachablePokemon && <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false}/>}
+                        {leagueStat.bestReachablePokemon && <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} withMetadata={false}/>}
                     </div>
                     <strong className={rankClass(leagueStat.pokemonRankInLeague)}>
                         {buildRankString(leagueStat.pokemonRankInLeague)}

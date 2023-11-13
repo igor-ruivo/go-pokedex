@@ -26,10 +26,10 @@
 
 .pvp-title-2 {
     display: grid;
-    grid-template-columns: 1fr 1fr 3fr;
+    grid-template-columns: 1fr 1fr 5fr;
     align-items: center;
-    gap: 6px;
-    width: max-content;
+    gap: 5px;
+    width: 100%;
     h3, h4 {
         margin: 0;
         width: 100%;

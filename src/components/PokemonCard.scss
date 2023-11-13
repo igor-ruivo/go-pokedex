@@ -41,6 +41,11 @@
     }
 }
 
+.pokemon_main_info .main-image-container {
+    display: flex;
+    flex-direction: row;
+}
+
 .header-footer {
     width: 100%;
     display: flex;
