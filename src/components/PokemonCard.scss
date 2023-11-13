@@ -44,6 +44,8 @@
 .pokemon_main_info .main-image-container {
     display: flex;
     flex-direction: row;
+    max-width: 215px;
+    max-height: 215px;
 }
 
 .header-footer {
