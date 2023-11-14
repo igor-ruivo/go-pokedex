@@ -39,8 +39,8 @@
     width: 100%;
     padding-top: 12px;
     padding-bottom: 12px;
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 12px;
+    padding-right: 12px;
     background-color: $popup-background-color;
     border-radius: 12px;
     border: 1px solid $borderColor;
@@ -121,13 +121,6 @@
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
-@media (max-width: 1200px) {
-    .appraisal {
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-}
-
 @media (max-width: 700px) {
     .appraisal {
         width: 100%;
@@ -150,10 +143,6 @@
 
     .appraisal .stat {
         max-width: 100%;
-    }
-
-    .appraisal .stat-bar .bar {
-        height: 13.5px;
     }
 
     .stat-current-value {
