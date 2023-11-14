@@ -39,7 +39,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 </select>}</div>
             </span>
             <div>
-                <strong className="pokemon_stats">
+                <div className="pokemon_stats">
                     <span className="pvp_stat">
                         <span>{props.computedAtk}</span>
                         <span>{translator(TranslatorKeys.ATK, currentLanguage).toLocaleUpperCase()}</span>
@@ -52,7 +52,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                         <span>{props.computedHP}</span>
                         <span>{translator(TranslatorKeys.HP, currentLanguage).toLocaleUpperCase()}</span>
                     </span>
-                </strong>
+                </div>
             </div>
         </div>
     }
@@ -60,13 +60,13 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     return <div className="left-panel">
         <div className="pokemon_main_info">
             <div className="left-container">
-                        <PokemonImage
-                        ref={props.imageRef}
-                        pokemon={props.pokemon}
-                        withName={false}
-                        withMetadata
-                        descriptionComponent={renderImageDescriptionComponent()}
-                        />
+                <PokemonImage
+                ref={props.imageRef}
+                pokemon={props.pokemon}
+                withName={false}
+                withMetadata
+                descriptionComponent={renderImageDescriptionComponent()}
+            />
                             
             </div>
             <div className="right-container">

@@ -65,7 +65,13 @@ export enum TranslatorKeys {
     Level,
     UnrankedPokemonForLeague,
     RecommendedMovesUnavailable,
-    RecommendedMoves
+    RecommendedMoves,
+    Perfection,
+    Config,
+    Peaks,
+    As,
+    Current,
+    Best
 }
 
 const settings = new Map<Language, string>([
@@ -393,6 +399,36 @@ const recommendedMoves = new Map<Language, string>([
     [Language.Portuguese, "Ataques Recomendados"]
 ]);
 
+const perfection = new Map<Language, string>([
+    [Language.English, "Perfection"],
+    [Language.Portuguese, "Perfeição"]
+]);
+
+const config = new Map<Language, string>([
+    [Language.English, "Config."],
+    [Language.Portuguese, "Config."]
+]);
+
+const peaks = new Map<Language, string>([
+    [Language.English, "Peaks at"],
+    [Language.Portuguese, "Potencial"]
+]);
+
+const as = new Map<Language, string>([
+    [Language.English, "as"],
+    [Language.Portuguese, "como"]
+]);
+
+const current = new Map<Language, string>([
+    [Language.English, "Current"],
+    [Language.Portuguese, "Atual"]
+]);
+
+const best = new Map<Language, string>([
+    [Language.English, "Best"],
+    [Language.Portuguese, "Melhor"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -458,7 +494,13 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Level, level],
     [TranslatorKeys.UnrankedPokemonForLeague, unrankedPokemonForLeague],
     [TranslatorKeys.RecommendedMovesUnavailable, recommendedMovesUnavailable],
-    [TranslatorKeys.RecommendedMoves, recommendedMoves]
+    [TranslatorKeys.RecommendedMoves, recommendedMoves],
+    [TranslatorKeys.Perfection, perfection],
+    [TranslatorKeys.Config, config],
+    [TranslatorKeys.Peaks, peaks],
+    [TranslatorKeys.As, as],
+    [TranslatorKeys.Current, current],
+    [TranslatorKeys.Best, best]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

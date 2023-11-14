@@ -19,8 +19,8 @@
     position: absolute;
     bottom: 7.5%;
     left: 10%;
-    width: clamp(20px, 3vw, 24px);
-    height: clamp(20px, 3vw, 24px);
+    width: clamp(20%, 3vw, 24%);
+    height: clamp(20%, 3vw, 24%);
     z-index: 2;
 }
 

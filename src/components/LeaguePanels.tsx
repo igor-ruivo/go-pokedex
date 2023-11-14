@@ -71,23 +71,23 @@ const LeaguePanels = ({
                 <div>
                     <div className="pvp-entry rank-title">
                         <div className="pvp-entry-content">
-                            Perfection: {leagueStat.pokemonLeaguePercentage}% <sub>(#{leagueStat.pokemonLeaguePercentile})</sub>
+                            {translator(TranslatorKeys.Perfection, currentLanguage)}: {leagueStat.pokemonLeaguePercentage}% <sub>(#{leagueStat.pokemonLeaguePercentile})</sub>
                         </div>
                     </div>
                 </div>
                 <div className="pvp-stats">
                     <div className="pvp-labels">
                         <header>
-                            Config:
+                            {translator(TranslatorKeys.Config, currentLanguage)}:
                         </header>
                         <div className="pvp-entry smooth">
                             <div className="pvp-entry-content">
-                                Current
+                                {translator(TranslatorKeys.Current, currentLanguage)}
                             </div>
                         </div>
                         <div className="pvp-entry smooth">
                             <div className="pvp-entry-content">
-                                Best
+                                {translator(TranslatorKeys.Best, currentLanguage)}
                             </div>
                         </div>
                     </div>
@@ -108,21 +108,21 @@ const LeaguePanels = ({
                     </div>
                     <div className="pvp-labels">
                         <header>
-                            Peaks at:
+                            {translator(TranslatorKeys.Peaks, currentLanguage)}:
                         </header>
                         <div className="pvp-entry">
                             <div className="pvp-entry-content">
-                                {leagueStat.pokemonCP} CP @ LVL {leagueStat.pokemonLevel}
+                                {leagueStat.pokemonCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}
                             </div>
                         </div>
                         <div className="pvp-entry">
                             <div className="pvp-entry-content">
-                                {leagueStat.bestCP} CP @ LVL {leagueStat.bestLevel}
+                                {leagueStat.bestCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="centered-text">... as {leagueStat.bestReachablePokemonName}</div>
+                <div className="centered-text">... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}</div>
             </div>
         );
     }
