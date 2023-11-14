@@ -10,7 +10,7 @@ import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import useLeague from "../hooks/useLeague";
+import useLeague, { LeagueType } from "../hooks/useLeague";
 
 interface PokemonSearchStrings {
     pokemon: IGamemasterPokemon;
@@ -38,7 +38,7 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const [league] = useLeague();
+    const {league} = useLeague();
     const {pathname} = useLocation();
 
     const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);
@@ -81,14 +81,13 @@ const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     let cpCap = Number.MAX_VALUE;
 
     switch (league) {
-        case ListType.POKEDEX:
-        case ListType.GREAT_LEAGUE:
+        case LeagueType.GREAT_LEAGUE:
             cpCap = 1500;
             break;
-        case ListType.ULTRA_LEAGUE:
+        case LeagueType.ULTRA_LEAGUE:
             cpCap = 2500;
             break;
-        case ListType.MASTER_LEAGUE:
+        case LeagueType.MASTER_LEAGUE:
             cpCap = Number.MAX_VALUE;
             break;
     }

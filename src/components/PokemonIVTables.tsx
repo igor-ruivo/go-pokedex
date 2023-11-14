@@ -6,14 +6,13 @@ import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import { TableComponents, TableVirtuoso } from "react-virtuoso";
 import React from "react";
 import { visuallyHidden } from '@mui/utils';
-import { ListType } from "../views/pokedex";
 import { Link, useLocation } from "react-router-dom";
 import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
-import useLeague from "../hooks/useLeague";
+import useLeague, { LeagueType } from "../hooks/useLeague";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
@@ -100,7 +99,7 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
 
     const {currentLanguage} = useLanguage();
-    const [league] = useLeague();
+    const {league} = useLeague();
     
     const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
     const [defSearch, setDefSearch] = useState<number|undefined>(undefined);
@@ -182,14 +181,13 @@ const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
     let cpCap = Number.MAX_VALUE;
 
     switch (league) {
-        case ListType.GREAT_LEAGUE:
-        case ListType.POKEDEX:
+        case LeagueType.GREAT_LEAGUE:
             cpCap = 1500;
             break;
-        case ListType.ULTRA_LEAGUE:
+        case LeagueType.ULTRA_LEAGUE:
             cpCap = 2500;
             break;
-        case ListType.MASTER_LEAGUE:
+        case LeagueType.MASTER_LEAGUE:
             cpCap = Number.MAX_VALUE;
             break;
     }

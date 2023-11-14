@@ -17,7 +17,7 @@ const App = () => {
                         <Navbar/>
                         <Content>
                             <Routes>
-                                <Route index element={<Pokedex />}/>
+                                <Route index path="/" element={<Pokedex />}/>
                                 <Route path="/:listTypeArg" element={<Pokedex />}/>
                                 <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
                                 <Route path="/pokemon/:speciesId/info" element={<Pokemon />}/>

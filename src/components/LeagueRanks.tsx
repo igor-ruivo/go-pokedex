@@ -1,7 +1,7 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { Language, useLanguage } from "../contexts/language-context";
+import useLeague, { LeagueType } from "../hooks/useLeague";
 import translator, { TranslatorKeys } from "../utils/Translator";
-import { ListType } from "../views/pokedex";
 import "./LeagueRanks.scss"
 import PokemonImage from "./PokemonImage";
 
@@ -15,18 +15,15 @@ interface ILeaguePanelsProps {
     greatLeagueStats: LeagueStat,
     ultraLeagueStats: LeagueStat,
     masterLeagueStats: LeagueStat,
-    currentLeague: ListType,
-    setLeague: (newLeague: ListType) => void
 }
 
 const LeagueRanks = ({
     greatLeagueStats,
     ultraLeagueStats,
-    masterLeagueStats,
-    currentLeague,
-    setLeague
+    masterLeagueStats
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
+    const {league, handleSetLeague} = useLeague();
 
     const buildRankString = (rank: string|undefined) => {
         if (!rank) {
@@ -43,14 +40,13 @@ const LeagueRanks = ({
 
     const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked-2" + (!rank ? " unranked" : "");
 
-    const getLeagueName = (league: ListType) => {
+    const getLeagueName = (league: LeagueType) => {
         switch (league) {
-            case ListType.POKEDEX:
-            case ListType.GREAT_LEAGUE:
+            case LeagueType.GREAT_LEAGUE:
                 return "great";
-            case ListType.ULTRA_LEAGUE:
+            case LeagueType.ULTRA_LEAGUE:
                 return "ultra";
-            case ListType.MASTER_LEAGUE:
+            case LeagueType.MASTER_LEAGUE:
                 return "master";
         }
     }
@@ -58,23 +54,23 @@ const LeagueRanks = ({
     const getLeagueType = (league: string) => {
         switch (league) {
             case "great":
-                return ListType.GREAT_LEAGUE;
+                return LeagueType.GREAT_LEAGUE;
             case "ultra":
-                return ListType.ULTRA_LEAGUE;
+                return LeagueType.ULTRA_LEAGUE;
             case "master":
-                return ListType.MASTER_LEAGUE;
+                return LeagueType.MASTER_LEAGUE;
             default:
                 throw new Error("Missing case for switch: " + league);
         }
     }
 
     const renderPanel = (leagueStat: LeagueStat) => {
-        const pvpStatsClassName = `pvp-stats-2 ${leagueStat.leagueTitle} ` + (getLeagueName(currentLeague) === leagueStat.leagueTitle ? "selected" : "");
+        const pvpStatsClassName = `pvp-stats-2 ${leagueStat.leagueTitle} ` + (getLeagueName(league) === leagueStat.leagueTitle ? "selected" : "");
         const logoSrc = `https://www.stadiumgaming.gg/frontend/assets/img/${leagueStat.leagueTitle}.png`;
 
         return (
             <div className={pvpStatsClassName}>
-                <section className="pvp-title-2" onClick={() => setLeague(getLeagueType(leagueStat.leagueTitle))}>
+                <section className="pvp-title-2" onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}>
                     <img src={logoSrc} alt="League icon" loading="lazy" decoding="async" className="pvp-title-item-small pvp-img-2" height="100%" width="100%"/>
                     <div className="pvp-title-item">
                         {leagueStat.bestReachablePokemon && <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} withMetadata={false}/>}

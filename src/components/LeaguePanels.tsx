@@ -1,6 +1,6 @@
 import { Language, useLanguage } from "../contexts/language-context";
+import useLeague, { LeagueType } from "../hooks/useLeague";
 import translator, { TranslatorKeys } from "../utils/Translator";
-import { ListType } from "../views/pokedex";
 import "./LeaguePanels.scss";
 
 interface PokemonLeagueMove {
@@ -32,7 +32,6 @@ interface ILeaguePanelsProps {
     greatLeagueStats: LeagueStat,
     ultraLeagueStats: LeagueStat,
     masterLeagueStats: LeagueStat,
-    league: ListType,
     atk: number,
     def: number,
     hp: number
@@ -42,13 +41,13 @@ const LeaguePanels = ({
     greatLeagueStats,
     ultraLeagueStats,
     masterLeagueStats,
-    league,
     atk,
     def,
     hp
 }: ILeaguePanelsProps) => {
 
     const {currentLanguage} = useLanguage();
+    const {league} = useLeague();
 
     const buildRankString = (rank: string|undefined) => {
         if (!rank) {
@@ -128,9 +127,9 @@ const LeaguePanels = ({
     }
 
     return <div>
-        {(league === ListType.GREAT_LEAGUE || league === ListType.POKEDEX) && renderPanel(greatLeagueStats)}
-        {league === ListType.ULTRA_LEAGUE && renderPanel(ultraLeagueStats)}
-        {league === ListType.MASTER_LEAGUE && renderPanel(masterLeagueStats)}
+        {league === LeagueType.GREAT_LEAGUE && renderPanel(greatLeagueStats)}
+        {league === LeagueType.ULTRA_LEAGUE && renderPanel(ultraLeagueStats)}
+        {league === LeagueType.MASTER_LEAGUE && renderPanel(masterLeagueStats)}
     </div>;
 }
 

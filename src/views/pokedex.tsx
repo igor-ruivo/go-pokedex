@@ -54,6 +54,9 @@ const Pokedex = () => {
     const { listTypeArg } = useParams();
 
     switch (listTypeArg) {
+        case undefined:
+            listType = ListType.POKEDEX;
+            break;
         case "great":
             listType = ListType.GREAT_LEAGUE;
             break;
@@ -64,8 +67,7 @@ const Pokedex = () => {
             listType = ListType.MASTER_LEAGUE;
             break;
         default:
-            listType = ListType.POKEDEX;
-            break;
+            throw Error("404 not found!");
     }
 
     const data = useMemo(() => {

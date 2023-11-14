@@ -1,32 +1,38 @@
 import { useEffect, useState } from "react";
-import { ListType } from "../views/pokedex";
 import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 
-const getDefaultListType = () => {
-    const cachedValue = readSessionValue(ConfigKeys.LastListType);
+export enum LeagueType {
+    GREAT_LEAGUE,
+    ULTRA_LEAGUE,
+    MASTER_LEAGUE
+}
+
+const getDefaultLeagueType = () => {
+    const cachedValue = readSessionValue(ConfigKeys.LastLeague);
     if (!cachedValue) {
         return undefined;
     }
 
-    const typedValue = +cachedValue as ListType;
+    const typedValue = +cachedValue as LeagueType;
 
     return typedValue;
 }
 
 const useLeague = () => {
-    const initialValue = getDefaultListType();
-    const [league, setLeague] = useState<ListType>(initialValue === undefined ? ListType.GREAT_LEAGUE : initialValue);
+    const [league, setLeague] = useState<LeagueType>(getDefaultLeagueType() ?? LeagueType.GREAT_LEAGUE);
 
     useEffect(() => {
-        writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));
+        writeSessionValue(ConfigKeys.LastLeague, JSON.stringify(league));
     }, [league]);
 
-    const handleSetLeague = (newLeague: ListType) => {
+    const handleSetLeague = (newLeague: LeagueType) => {
         setLeague(newLeague);
     }
 
-    const result: [ListType, (newLeague: ListType) => void] = [league, handleSetLeague];
-    return result;
+    return {
+        league,
+        handleSetLeague
+    };
 }
 
 export default useLeague;

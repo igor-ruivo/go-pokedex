@@ -15,7 +15,8 @@ export enum ConfigKeys {
     TopPokemonInSearchString,
     TrashString,
     Language,
-    GameLanguage
+    GameLanguage,
+    LastLeague
 }
 
 // avoids collision with other website's cache.

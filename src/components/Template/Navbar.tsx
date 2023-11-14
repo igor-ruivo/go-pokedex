@@ -12,7 +12,6 @@ import useLeague from "../../hooks/useLeague";
 
 const Navbar = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const [league, handleSetLeague] = useLeague();
     const navigate = useNavigate();
     const {pathname} = useLocation();
     const [optionsOpened, setOptionsOpened] = useState(false);
@@ -24,31 +23,27 @@ const Navbar = () => {
     }
 
     const getDestination = () => {
+        if (pathname === "/") {
+            return "/";
+        }
         let destinationPath = "";
         const previousRankType = readSessionValue(ConfigKeys.LastListType);
         if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master")) {    
-            handleSetLeague(ListType.POKEDEX);
             return "/";
         }
 
         switch (+previousRankType as ListType) {
             case ListType.GREAT_LEAGUE:
                 destinationPath = "great";
-                handleSetLeague(ListType.GREAT_LEAGUE);
                 break;
             case ListType.ULTRA_LEAGUE:
                 destinationPath = "ultra";
-                handleSetLeague(ListType.ULTRA_LEAGUE);
                 break;
             case ListType.MASTER_LEAGUE:
                 destinationPath = "master";
-                handleSetLeague(ListType.MASTER_LEAGUE);
                 break;
         }
 
-        if (!destinationPath) {
-            handleSetLeague(ListType.POKEDEX);
-        }
         return `/${destinationPath}`;
     }
 
@@ -88,13 +83,32 @@ const Navbar = () => {
             flag: "https://i.imgur.com/YUXHN0U.png"
         }
     ];
+/*
+    const cacheLeague = () => {
+        if (destination.includes("great")) {
+            handleSetLeague(ListType.GREAT_LEAGUE);
+            return;
+        }
+
+        if (destination.includes("ultra")) {
+            handleSetLeague(ListType.ULTRA_LEAGUE);
+            return;
+        }
+
+        if (destination.includes("master")) {
+            handleSetLeague(ListType.MASTER_LEAGUE);
+            return;
+        }
+
+        handleSetLeague(ListType.POKEDEX);
+    }*/
 
     return <>
         <header className="navbar">
             <section className="navbar-section">
-                <div onClick={() => window.location.href = "/#" + getDestination()} className="navbar-logo">
+                <Link /*onClick={cacheLeague}*/ to={getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
-                </div>
+                </Link>
                 <button
                     className="navbar-menu"
                     onClick={() => setOptionsOpened(previous => !previous)}

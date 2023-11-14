@@ -17,7 +17,7 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
 import LeagueRanks from "./LeagueRanks";
 import { ListType } from "../views/pokedex";
-import useLeague from "../hooks/useLeague";
+import useLeague, { LeagueType } from "../hooks/useLeague";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -65,7 +65,6 @@ export interface IIvPercents {
 const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
     const {currentLanguage, currentGameLanguage} = useLanguage();
-    const [league, handleSetLeague] = useLeague();
     const selectedImageRef = React.createRef<HTMLImageElement>();
 
     const {gamemasterPokemon, rankLists, moves, fetchCompleted} = usePokemon();
@@ -117,33 +116,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
 
     const getRankPercentage = (rank: number) => Math.round(((1 - (rank / 4095)) * 100 + Number.EPSILON) * 100) / 100;
 
-    const translatedType = (type: PokemonTypes) => {
-        const translatorKey = TranslatorKeys[type];
-        return translator(translatorKey as any, currentLanguage)
-    }
-
     const translatedMove = (move: string) => {
         const translatorKey = GameTranslatorKeys[move as keyof typeof GameTranslatorKeys];
         return gameTranslator(translatorKey ?? move, currentGameLanguage);
     }
-
-    const relevantMoveSet = (league === ListType.GREAT_LEAGUE || league === ListType.POKEDEX) ? greatLeagueMoveset : league === ListType.ULTRA_LEAGUE ? ultraLeagueMoveset : masterLeagueMoveset;
-    
-    const fastMoveClassName = `move-card background-${moves[relevantMoveSet[0]]?.type}`;
-    const chargedMove1ClassName = `move-card background-${moves[relevantMoveSet[1]]?.type}`;
-    const chargedMove2ClassName = `move-card background-${moves[relevantMoveSet[2]]?.type}`;
-    
-    const fastMoveTranslatorKey = GameTranslatorKeys[relevantMoveSet[0] as keyof typeof GameTranslatorKeys];
-    const chargedMove1TranslatorKey = GameTranslatorKeys[relevantMoveSet[1] as keyof typeof GameTranslatorKeys];
-    const chargedMove2TranslatorKey = GameTranslatorKeys[relevantMoveSet[2] as keyof typeof GameTranslatorKeys];
-
-    const fastMoveTypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[0]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[0]]?.type.substring(1)) as keyof typeof TranslatorKeys];
-    const chargedMove1TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[1]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[1]]?.type.substring(1)) as keyof typeof TranslatorKeys];
-    const chargedMove2TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[2]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[2]]?.type.substring(1)) as keyof typeof TranslatorKeys];
-                    
-    const fastMoveUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[0]]?.type}.png`;
-    const chargedMove1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[1]]?.type}.png`;
-    const chargedMove2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[2]]?.type}.png`;
 
     return <div className="banner_layout">
         <div className="pokemon_with_ivs">
@@ -179,8 +155,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                             pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank)
                         }
                     }
-                    currentLeague={league}
-                    setLeague={handleSetLeague}
                 />
             </PokemonInfoImagePlaceholder>
             <div className="appraisal_with_moves">
@@ -194,7 +168,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 />
                 <div className="moves_main_panel">
                 <LeaguePanels
-            league={league}
             atk={attack}
             def={defense}
             hp={hp}
