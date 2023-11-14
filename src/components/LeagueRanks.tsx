@@ -1,6 +1,6 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { Language, useLanguage } from "../contexts/language-context";
-import useLeague, { LeagueType } from "../hooks/useLeague";
+import { LeagueType } from "../hooks/useLeague";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import "./LeagueRanks.scss"
 import PokemonImage from "./PokemonImage";
@@ -12,18 +12,21 @@ interface LeagueStat {
 }
 
 interface ILeaguePanelsProps {
-    greatLeagueStats: LeagueStat,
-    ultraLeagueStats: LeagueStat,
-    masterLeagueStats: LeagueStat,
+    greatLeagueStats: LeagueStat;
+    ultraLeagueStats: LeagueStat;
+    masterLeagueStats: LeagueStat;
+    league: LeagueType;
+    handleSetLeague: (newLeague: LeagueType) => void;
 }
 
 const LeagueRanks = ({
     greatLeagueStats,
     ultraLeagueStats,
-    masterLeagueStats
+    masterLeagueStats,
+    league,
+    handleSetLeague
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
-    const {league, handleSetLeague} = useLeague();
 
     const buildRankString = (rank: string|undefined) => {
         if (!rank) {

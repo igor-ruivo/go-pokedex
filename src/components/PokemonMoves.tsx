@@ -7,16 +7,15 @@ import { Link, useLocation } from "react-router-dom";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import PokemonImage from "./PokemonImage";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import { ListType } from "../views/pokedex";
-import useLeague, { LeagueType } from "../hooks/useLeague";
+import { LeagueType } from "../hooks/useLeague";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
+    league: LeagueType;
 }
 
-const PokemonMoves = ({pokemon}: IPokemonMoves) => {
+const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
-    const {league} = useLeague();
 
     const {gamemasterPokemon, moves, fetchCompleted, rankLists} = usePokemon();
     const {pathname} = useLocation();

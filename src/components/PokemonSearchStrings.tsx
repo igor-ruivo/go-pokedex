@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { calculateCP, calculateHP, computeBestIVs, fetchPokemonFamily, fetchPredecessorPokemonIncludingSelf, sortPokemonByBattlePowerAsc, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 import "./PokemonSearchStrings.scss"
-import { ListType } from "../views/pokedex";
 import { Link, useLocation } from "react-router-dom";
 import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
@@ -10,10 +9,11 @@ import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import useLeague, { LeagueType } from "../hooks/useLeague";
+import { LeagueType } from "../hooks/useLeague";
 
 interface PokemonSearchStrings {
     pokemon: IGamemasterPokemon;
+    league: LeagueType;
 }
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
@@ -32,13 +32,12 @@ const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolea
     return cachedValue === "true";
 }
 
-const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
+const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10));
     const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {league} = useLeague();
     const {pathname} = useLocation();
 
     const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);

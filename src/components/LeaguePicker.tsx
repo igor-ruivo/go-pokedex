@@ -1,10 +1,14 @@
 import "./LeaguePicker.scss";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import useLeague, { LeagueType } from "../hooks/useLeague";
+import { LeagueType } from "../hooks/useLeague";
 
-const LeaguePicker = () => {
-    const {league, handleSetLeague} = useLeague();
+interface ILeaguePickerProps {
+    league: LeagueType;
+    handleSetLeague: (newLeague: LeagueType) => void;
+}
+
+const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
     const {currentGameLanguage} = useLanguage();
 
     return <nav className="navigation-header ivs-nav">

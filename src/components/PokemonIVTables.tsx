@@ -12,10 +12,11 @@ import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
-import useLeague, { LeagueType } from "../hooks/useLeague";
+import { LeagueType } from "../hooks/useLeague";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
+    league: LeagueType;
 }
 
 interface Data {
@@ -95,11 +96,10 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return stabilizedThis.map((el) => el[0]);
 }
 
-const PokemonIVTables = ({pokemon}: IPokemonIVTables) => {
+const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
 
     const {currentLanguage} = useLanguage();
-    const {league} = useLeague();
     
     const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
     const [defSearch, setDefSearch] = useState<number|undefined>(undefined);

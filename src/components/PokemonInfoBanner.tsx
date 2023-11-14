@@ -12,12 +12,10 @@ import { ordinal } from "../utils/conversions";
 import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
-import { PokemonTypes } from "../DTOs/PokemonTypes";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
 import LeagueRanks from "./LeagueRanks";
-import { ListType } from "../views/pokedex";
-import useLeague, { LeagueType } from "../hooks/useLeague";
+import { LeagueType } from "../hooks/useLeague";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -30,6 +28,8 @@ interface IPokemonInfoBanner {
     setDefense: (_: React.SetStateAction<number>) => void;
     hp: number;
     setHP: (_: React.SetStateAction<number>) => void;
+    league: LeagueType;
+    handleSetLeague: (newLeague: LeagueType) => void;
 }
 
 export interface IIvPercents {
@@ -62,7 +62,7 @@ export interface IIvPercents {
     masterLeaguePerfectCP: number
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
+const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const selectedImageRef = React.createRef<HTMLImageElement>();
@@ -155,6 +155,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                             pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank)
                         }
                     }
+                    league={league}
+                    handleSetLeague={handleSetLeague}
                 />
             </PokemonInfoImagePlaceholder>
             <div className="appraisal_with_moves">
@@ -167,114 +169,115 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     setHP={setHP}
                 />
                 <div className="moves_main_panel">
-                <LeaguePanels
-            atk={attack}
-            def={defense}
-            hp={hp}
-            greatLeagueStats={
-                {
-                    leagueTitle: "great",
-                    bestReachablePokemonName: bestInFamilyForGreatLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
-                    pokemonRankInLeague: ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank),
-                    pokemonLeaguePercentage: getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank),
-                    pokemonLeaguePercentile: bestReachableGreatLeagueIvs.greatLeagueRank + 1,
-                    pokemonCP: bestReachableGreatLeagueIvs.greatLeagueCP,
-                    pokemonLevel: bestReachableGreatLeagueIvs.greatLeagueLvl,
-                    atk: bestReachableGreatLeagueIvs.greatLeaguePerfect.A,
-                    def: bestReachableGreatLeagueIvs.greatLeaguePerfect.D,
-                    hp: bestReachableGreatLeagueIvs.greatLeaguePerfect.S,
-                    bestCP: bestReachableGreatLeagueIvs.greatLeaguePerfectCP,
-                    bestLevel: bestReachableGreatLeagueIvs.greatLeaguePerfectLevel,
-                    fastAttack: {
-                        moveName: translatedMove(moves[greatLeagueMoveset[0]]?.moveId),
-                        type: moves[greatLeagueMoveset[0]]?.type,
-                        isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[0]),
-                        isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[0])
-                    },
-                    chargedAttack1: {
-                        moveName: translatedMove(moves[greatLeagueMoveset[1]]?.moveId),
-                        type: moves[greatLeagueMoveset[1]]?.type,
-                        isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[1]),
-                        isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[1])
-                    },
-                    chargedAttack2: {
-                        moveName: translatedMove(moves[greatLeagueMoveset[2]]?.moveId),
-                        type: moves[greatLeagueMoveset[2]]?.type,
-                        isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[2]),
-                        isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[2])
-                    }
-                }
-            }
-            ultraLeagueStats={
-                {
-                    leagueTitle: "ultra",
-                    bestReachablePokemonName: bestInFamilyForUltraLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
-                    pokemonRankInLeague: ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank),
-                    pokemonLeaguePercentage: getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank),
-                    pokemonLeaguePercentile: bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
-                    pokemonCP: bestReachableUltraLeagueIvs.ultraLeagueCP,
-                    pokemonLevel: bestReachableUltraLeagueIvs.ultraLeagueLvl,
-                    atk: bestReachableUltraLeagueIvs.ultraLeaguePerfect.A,
-                    def: bestReachableUltraLeagueIvs.ultraLeaguePerfect.D,
-                    hp: bestReachableUltraLeagueIvs.ultraLeaguePerfect.S,
-                    bestCP: bestReachableUltraLeagueIvs.ultraLeaguePerfectCP,
-                    bestLevel: bestReachableUltraLeagueIvs.ultraLeaguePerfectLevel,
-                    fastAttack: {
-                        moveName: translatedMove(moves[ultraLeagueMoveset[0]]?.moveId),
-                        type: moves[ultraLeagueMoveset[0]]?.type,
-                        isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[0]),
-                        isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[0])
-                    },
-                    chargedAttack1: {
-                        moveName: translatedMove(moves[ultraLeagueMoveset[1]]?.moveId),
-                        type: moves[ultraLeagueMoveset[1]]?.type,
-                        isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[1]),
-                        isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[1])
-                    },
-                    chargedAttack2: {
-                        moveName: translatedMove(moves[ultraLeagueMoveset[2]]?.moveId),
-                        type: moves[ultraLeagueMoveset[2]]?.type,
-                        isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[2]),
-                        isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[2])
-                    }
-                }
-            }
-            masterLeagueStats={
-                {
-                    leagueTitle: "master",
-                    bestReachablePokemonName: bestInFamilyForMasterLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
-                    pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank),
-                    pokemonLeaguePercentage: getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank),
-                    pokemonLeaguePercentile: bestReachableMasterLeagueIvs.masterLeagueRank + 1,
-                    pokemonCP: bestReachableMasterLeagueIvs.masterLeagueCP,
-                    pokemonLevel: bestReachableMasterLeagueIvs.masterLeagueLvl,
-                    atk: bestReachableMasterLeagueIvs.masterLeaguePerfect.A,
-                    def: bestReachableMasterLeagueIvs.masterLeaguePerfect.D,
-                    hp: bestReachableMasterLeagueIvs.masterLeaguePerfect.S,
-                    bestCP: bestReachableMasterLeagueIvs.masterLeaguePerfectCP,
-                    bestLevel: bestReachableMasterLeagueIvs.masterLeaguePerfectLevel,
-                    fastAttack: {
-                        moveName: translatedMove(moves[masterLeagueMoveset[0]]?.moveId),
-                        type: moves[masterLeagueMoveset[0]]?.type,
-                        isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[0]),
-                        isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[0])
-                    },
-                    chargedAttack1: {
-                        moveName: translatedMove(moves[masterLeagueMoveset[1]]?.moveId),
-                        type: moves[masterLeagueMoveset[1]]?.type,
-                        isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[1]),
-                        isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[1])
-                    },
-                    chargedAttack2: {
-                        moveName: translatedMove(moves[masterLeagueMoveset[2]]?.moveId),
-                        type: moves[masterLeagueMoveset[2]]?.type,
-                        isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[2]),
-                        isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[2])
-                    }
-                }
-            }
-        />
-    </div>
+                    <LeaguePanels
+                        league={league}
+                        atk={attack}
+                        def={defense}
+                        hp={hp}
+                        greatLeagueStats={
+                            {
+                                leagueTitle: "great",
+                                bestReachablePokemonName: bestInFamilyForGreatLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
+                                pokemonRankInLeague: ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank),
+                                pokemonLeaguePercentage: getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank),
+                                pokemonLeaguePercentile: bestReachableGreatLeagueIvs.greatLeagueRank + 1,
+                                pokemonCP: bestReachableGreatLeagueIvs.greatLeagueCP,
+                                pokemonLevel: bestReachableGreatLeagueIvs.greatLeagueLvl,
+                                atk: bestReachableGreatLeagueIvs.greatLeaguePerfect.A,
+                                def: bestReachableGreatLeagueIvs.greatLeaguePerfect.D,
+                                hp: bestReachableGreatLeagueIvs.greatLeaguePerfect.S,
+                                bestCP: bestReachableGreatLeagueIvs.greatLeaguePerfectCP,
+                                bestLevel: bestReachableGreatLeagueIvs.greatLeaguePerfectLevel,
+                                fastAttack: {
+                                    moveName: translatedMove(moves[greatLeagueMoveset[0]]?.moveId),
+                                    type: moves[greatLeagueMoveset[0]]?.type,
+                                    isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[0]),
+                                    isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[0])
+                                },
+                                chargedAttack1: {
+                                    moveName: translatedMove(moves[greatLeagueMoveset[1]]?.moveId),
+                                    type: moves[greatLeagueMoveset[1]]?.type,
+                                    isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[1]),
+                                    isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[1])
+                                },
+                                chargedAttack2: {
+                                    moveName: translatedMove(moves[greatLeagueMoveset[2]]?.moveId),
+                                    type: moves[greatLeagueMoveset[2]]?.type,
+                                    isElite: bestInFamilyForGreatLeague.eliteMoves.includes(greatLeagueMoveset[2]),
+                                    isLegacy: bestInFamilyForGreatLeague.legacyMoves.includes(greatLeagueMoveset[2])
+                                }
+                            }
+                        }
+                        ultraLeagueStats={
+                            {
+                                leagueTitle: "ultra",
+                                bestReachablePokemonName: bestInFamilyForUltraLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
+                                pokemonRankInLeague: ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank),
+                                pokemonLeaguePercentage: getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank),
+                                pokemonLeaguePercentile: bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
+                                pokemonCP: bestReachableUltraLeagueIvs.ultraLeagueCP,
+                                pokemonLevel: bestReachableUltraLeagueIvs.ultraLeagueLvl,
+                                atk: bestReachableUltraLeagueIvs.ultraLeaguePerfect.A,
+                                def: bestReachableUltraLeagueIvs.ultraLeaguePerfect.D,
+                                hp: bestReachableUltraLeagueIvs.ultraLeaguePerfect.S,
+                                bestCP: bestReachableUltraLeagueIvs.ultraLeaguePerfectCP,
+                                bestLevel: bestReachableUltraLeagueIvs.ultraLeaguePerfectLevel,
+                                fastAttack: {
+                                    moveName: translatedMove(moves[ultraLeagueMoveset[0]]?.moveId),
+                                    type: moves[ultraLeagueMoveset[0]]?.type,
+                                    isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[0]),
+                                    isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[0])
+                                },
+                                chargedAttack1: {
+                                    moveName: translatedMove(moves[ultraLeagueMoveset[1]]?.moveId),
+                                    type: moves[ultraLeagueMoveset[1]]?.type,
+                                    isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[1]),
+                                    isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[1])
+                                },
+                                chargedAttack2: {
+                                    moveName: translatedMove(moves[ultraLeagueMoveset[2]]?.moveId),
+                                    type: moves[ultraLeagueMoveset[2]]?.type,
+                                    isElite: bestInFamilyForUltraLeague.eliteMoves.includes(ultraLeagueMoveset[2]),
+                                    isLegacy: bestInFamilyForUltraLeague.legacyMoves.includes(ultraLeagueMoveset[2])
+                                }
+                            }
+                        }
+                        masterLeagueStats={
+                            {
+                                leagueTitle: "master",
+                                bestReachablePokemonName: bestInFamilyForMasterLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
+                                pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank),
+                                pokemonLeaguePercentage: getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank),
+                                pokemonLeaguePercentile: bestReachableMasterLeagueIvs.masterLeagueRank + 1,
+                                pokemonCP: bestReachableMasterLeagueIvs.masterLeagueCP,
+                                pokemonLevel: bestReachableMasterLeagueIvs.masterLeagueLvl,
+                                atk: bestReachableMasterLeagueIvs.masterLeaguePerfect.A,
+                                def: bestReachableMasterLeagueIvs.masterLeaguePerfect.D,
+                                hp: bestReachableMasterLeagueIvs.masterLeaguePerfect.S,
+                                bestCP: bestReachableMasterLeagueIvs.masterLeaguePerfectCP,
+                                bestLevel: bestReachableMasterLeagueIvs.masterLeaguePerfectLevel,
+                                fastAttack: {
+                                    moveName: translatedMove(moves[masterLeagueMoveset[0]]?.moveId),
+                                    type: moves[masterLeagueMoveset[0]]?.type,
+                                    isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[0]),
+                                    isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[0])
+                                },
+                                chargedAttack1: {
+                                    moveName: translatedMove(moves[masterLeagueMoveset[1]]?.moveId),
+                                    type: moves[masterLeagueMoveset[1]]?.type,
+                                    isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[1]),
+                                    isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[1])
+                                },
+                                chargedAttack2: {
+                                    moveName: translatedMove(moves[masterLeagueMoveset[2]]?.moveId),
+                                    type: moves[masterLeagueMoveset[2]]?.type,
+                                    isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[2]),
+                                    isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[2])
+                                }
+                            }
+                        }
+                    />
+                </div>
             </div>
         </div>
         {similarPokemon.size > 1 && <div className="img-container">

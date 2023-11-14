@@ -1,5 +1,5 @@
-import { Language, useLanguage } from "../contexts/language-context";
-import useLeague, { LeagueType } from "../hooks/useLeague";
+import { useLanguage } from "../contexts/language-context";
+import { LeagueType } from "../hooks/useLeague";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import "./LeaguePanels.scss";
 
@@ -34,7 +34,8 @@ interface ILeaguePanelsProps {
     masterLeagueStats: LeagueStat,
     atk: number,
     def: number,
-    hp: number
+    hp: number,
+    league: LeagueType
 }
 
 const LeaguePanels = ({
@@ -43,27 +44,14 @@ const LeaguePanels = ({
     masterLeagueStats,
     atk,
     def,
-    hp
+    hp,
+    league
 }: ILeaguePanelsProps) => {
 
     const {currentLanguage} = useLanguage();
-    const {league} = useLeague();
-
-    const buildRankString = (rank: string|undefined) => {
-        if (!rank) {
-            return translator(TranslatorKeys.Unranked, currentLanguage);
-        }
-
-        const ranked = translator(TranslatorKeys.Ranked, currentLanguage);
-        return currentLanguage === Language.Portuguese ? `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")} ${ranked}` :  `Ranked ${rank}`;
-    }
-
-    const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked" + (!rank ? " unranked" : "");
 
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-column ${leagueStat.leagueTitle}`;
-        const logoSrc = `https://www.stadiumgaming.gg/frontend/assets/img/${leagueStat.leagueTitle}.png`;
-        const typeSrc = (type: string) => `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${type}.png`;
 
         return (
             <div className={pvpStatsClassName}>

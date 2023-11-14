@@ -8,7 +8,6 @@ import { useState } from "react";
 import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select"
 import translator, { TranslatorKeys } from "../../utils/Translator";
-import useLeague from "../../hooks/useLeague";
 
 const Navbar = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();

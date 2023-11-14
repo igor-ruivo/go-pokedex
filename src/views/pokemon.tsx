@@ -18,6 +18,7 @@ const Pokemon = () => {
     const {currentLanguage} = useLanguage();
     const { speciesId } = useParams();
     const { pathname } = useLocation();
+    const {league, handleSetLeague} = useLeague();
 
     const pokemon = fetchCompleted ? gamemasterPokemon[speciesId ?? ""] : undefined;
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
@@ -62,11 +63,14 @@ const Pokemon = () => {
                                         type2={pokemon!.types.length > 1 ? pokemon!.types[1] : undefined}
                                     />
                                     <div className="pokemon">
-                                        <LeaguePicker/>
-                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
-                                        {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon}/>}
-                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon}/>}
-                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon}/>}
+                                        <LeaguePicker
+                                            league={league}
+                                            handleSetLeague={handleSetLeague}
+                                        />
+                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon} league={league} handleSetLeague={handleSetLeague}/>}
+                                        {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
+                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}
+                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}
                                     </div>
                                 </div>
                         }
