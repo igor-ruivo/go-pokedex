@@ -9,11 +9,9 @@ import { ListType } from "../views/pokedex";
 
 interface IPokemonInfoProps {
     pokemon: IGamemasterPokemon;
-    league: ListType;
-    setLeague: (newLeague: ListType) => void;
 }
 
-const PokemonInfo = ({pokemon, league, setLeague}: IPokemonInfoProps) => {
+const PokemonInfo = ({pokemon}: IPokemonInfoProps) => {
     const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
         const cachedValue = readPersistentValue(key);
         if (!cachedValue) {
@@ -58,8 +56,6 @@ const PokemonInfo = ({pokemon, league, setLeague}: IPokemonInfoProps) => {
                     setDefense={setDefenseIV}
                     hp={hpIV}
                     setHP={setHPIV}
-                    league={league}
-                    setLeague={setLeague}
                 />
             </>
         </LoadingRenderer>

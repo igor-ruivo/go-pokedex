@@ -8,19 +8,22 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import PokemonImage from "./PokemonImage";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { ListType } from "../views/pokedex";
+import useLeague from "../hooks/useLeague";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
-    league: ListType;
 }
 
-const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
+const PokemonMoves = ({pokemon}: IPokemonMoves) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
+    const [league] = useLeague();
+
+    const leagueValue = league === ListType.POKEDEX ? ListType.GREAT_LEAGUE : league;
 
     const {gamemasterPokemon, moves, fetchCompleted, rankLists} = usePokemon();
     const {pathname} = useLocation();
     
-    if (!fetchCompleted || !gamemasterPokemon) {
+    if (!fetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
     }
 
@@ -28,7 +31,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const ultraLeagueMoveset = rankLists[1][pokemon.speciesId]?.moveset ?? [];
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
 
-    const relevantMoveSet = league === ListType.GREAT_LEAGUE ? greatLeagueMoveset : league === ListType.ULTRA_LEAGUE ? ultraLeagueMoveset : masterLeagueMoveset;
+    const relevantMoveSet = leagueValue === ListType.GREAT_LEAGUE ? greatLeagueMoveset : leagueValue === ListType.ULTRA_LEAGUE ? ultraLeagueMoveset : masterLeagueMoveset;
     
     const fastMoveClassName = `move-card background-${moves[relevantMoveSet[0]]?.type}`;
     const chargedMove1ClassName = `move-card background-${moves[relevantMoveSet[1]]?.type}`;
@@ -66,7 +69,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 {translator(TranslatorKeys.RecommendedMoves, currentLanguage)}
             </h3>
             <ul className="moves-list">
-                {rankLists[(league as number) - 1][pokemon.speciesId] ? 
+                {rankLists[(leagueValue as number) - 1][pokemon.speciesId] ? 
                     <div className="moves-list">
                         <div className={fastMoveClassName}>
                             <div className="move-card-content">
@@ -129,7 +132,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </div> :
                     <span className="unavailable_moves">
                         {translator(TranslatorKeys.RecommendedMovesUnavailable, currentLanguage)}<br></br>
-                        {pokemon.speciesName} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                        {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(leagueValue === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : leagueValue === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                     </span>
                 }
             </ul>

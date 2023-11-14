@@ -2,19 +2,16 @@ import "./LeaguePicker.scss";
 import { useLanguage } from "../contexts/language-context";
 import { ListType } from "../views/pokedex";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import useLeague from "../hooks/useLeague";
 
-interface ILeaguePickerProps {
-    league: ListType;
-    handleSetLeague: (newLeague: ListType) => void;
-}
-
-const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
+const LeaguePicker = () => {
+    const [league, handleSetLeague] = useLeague();
     const {currentGameLanguage} = useLanguage();
 
     return <nav className="navigation-header ivs-nav">
         <ul>
             <li>
-                <div onClick={() => handleSetLeague(ListType.GREAT_LEAGUE)} className={"header-tab " + (league === ListType.GREAT_LEAGUE ? "selected" : "")}>
+                <div onClick={() => handleSetLeague(ListType.GREAT_LEAGUE)} className={"header-tab " + (league === ListType.GREAT_LEAGUE || league === ListType.POKEDEX ? "selected" : "")}>
                     <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
                     <span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>
                 </div>

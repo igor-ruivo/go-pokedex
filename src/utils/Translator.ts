@@ -37,14 +37,12 @@ export enum TranslatorKeys {
     DEF,
     SearchIVs,
     MaxLvl,
-    IVs,
     Score,
     TrashString,
     Find,
     WildUnpowered,
     ThatResultIn,
     FindTop,
-    FindTopInverse,
     ForLeague,
     UpToLevel,
     AllExcept,
@@ -296,12 +294,6 @@ const maxLvl = new Map<Language, string>([
     [Language.Bosnian, "Maks. Nivo"]
 ]);
 
-const ivs = new Map<Language, string>([
-    [Language.English, "IVs"],
-    [Language.Portuguese, "Atributos"],
-    [Language.Bosnian, "Karakteristike"]
-]);
-
 const score = new Map<Language, string>([
     [Language.English, "Score"],
     [Language.Portuguese, "Pontos"],
@@ -322,26 +314,20 @@ const find = new Map<Language, string>([
 
 const wildUnpowered = new Map<Language, string>([
     [Language.English, "wild caught and still unpowered"],
-    [Language.Portuguese, "selvagens e ainda não evoluídos"],
-    [Language.Bosnian, "divlje uhvaćenog i još uvijek nejačeg"]
+    [Language.Portuguese, "selvagens e ainda não melhorados"],
+    [Language.Bosnian, "divlje uhvaćene i koje još nisu unaprijeđene"]
 ]);
 
 const thatResultIn = new Map<Language, string>([
     [Language.English, "that evolve to the"],
     [Language.Portuguese, "que evoluem para"],
-    [Language.Bosnian, "koji evoluira do"]
+    [Language.Bosnian, "koje evoluiraju do"]
 ]);
 
 const findTop = new Map<Language, string>([
     [Language.English, "top"],
     [Language.Portuguese, "os top"],
     [Language.Bosnian, "top"]
-]);
-
-const findTopInverse = new Map<Language, string>([
-    [Language.English, "top"],
-    [Language.Portuguese, "os top"],
-    [Language.Bosnian, ""]
 ]);
 
 const forLeague = new Map<Language, string>([
@@ -353,13 +339,13 @@ const forLeague = new Map<Language, string>([
 const upToLevel = new Map<Language, string>([
     [Language.English, "up to level"],
     [Language.Portuguese, "até nível"],
-    [Language.Bosnian, "do razine"]
+    [Language.Bosnian, "do nivoa"]
 ]);
 
 const allExcept = new Map<Language, string>([
     [Language.English, "all except the"],
     [Language.Portuguese, "todos exceto"],
-    [Language.Bosnian, "svih osim prvih"]
+    [Language.Bosnian, "svih osim"]
 ]);
 
 const shadow = new Map<Language, string>([
@@ -389,7 +375,7 @@ const fastMoves = new Map<Language, string>([
 const chargedMoves = new Map<Language, string>([
     [Language.English, "Charged Moves"],
     [Language.Portuguese, "Ataques Carregados"],
-    [Language.Bosnian, "Punjeni Napadi"]
+    [Language.Bosnian, "Posebni napadi"]
 ]);
 
 const stats = new Map<Language, string>([
@@ -443,7 +429,7 @@ const as = new Map<Language, string>([
 const current = new Map<Language, string>([
     [Language.English, "Current"],
     [Language.Portuguese, "Atual"],
-    [Language.Bosnian, "Prilagođena"]
+    [Language.Bosnian, "Trenutna"]
 ]);
 
 const best = new Map<Language, string>([
@@ -495,14 +481,12 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.DEF, def],
     [TranslatorKeys.SearchIVs, searchIVs],
     [TranslatorKeys.MaxLvl, maxLvl],
-    [TranslatorKeys.IVs, ivs],
     [TranslatorKeys.Score, score],
     [TranslatorKeys.TrashString, trashString],
     [TranslatorKeys.Find, find],
     [TranslatorKeys.WildUnpowered, wildUnpowered],
     [TranslatorKeys.ThatResultIn, thatResultIn],
     [TranslatorKeys.FindTop, findTop],
-    [TranslatorKeys.FindTopInverse, findTopInverse],
     [TranslatorKeys.ForLeague, forLeague],
     [TranslatorKeys.UpToLevel, upToLevel],
     [TranslatorKeys.AllExcept, allExcept],

@@ -10,10 +10,10 @@ import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import useLeague from "../hooks/useLeague";
 
 interface PokemonSearchStrings {
     pokemon: IGamemasterPokemon;
-    league: ListType;
 }
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
@@ -32,12 +32,13 @@ const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolea
     return cachedValue === "true";
 }
 
-const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
+const PokemonSearchStrings = ({pokemon}: PokemonSearchStrings) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10));
     const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
+    const [league] = useLeague();
     const {pathname} = useLocation();
 
     const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);
@@ -80,6 +81,7 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
     let cpCap = Number.MAX_VALUE;
 
     switch (league) {
+        case ListType.POKEDEX:
         case ListType.GREAT_LEAGUE:
             cpCap = 1500;
             break;
@@ -324,8 +326,8 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
                 </div>
             </div>}
             {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label">{p.speciesId === pokemon.speciesId ?
-            `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(trash ? TranslatorKeys.FindTopInverse : TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 2 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
-            `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(trash ? TranslatorKeys.FindTopInverse : TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 2 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}<textarea id={p.speciesId + "-textarea"} className="search-strings-container"
+            `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${(league === 0 || league === 1) ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 2 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
+            `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${(league === 0 || league === 1) ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 2 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}<textarea id={p.speciesId + "-textarea"} className="search-strings-container"
                 value={computeSearchString(p)}
                 readOnly
             /></div>)}

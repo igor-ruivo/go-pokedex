@@ -235,3 +235,13 @@
     .pokemon-ivs-ranked {
     }
 }
+
+@media (max-width: 335px) {
+    .pvp-entry-content {
+        font-weight: 370;
+    }
+
+    .rank-title .pvp-entry-content{
+        font-weight: 500;
+    }
+}

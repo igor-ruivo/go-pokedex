@@ -17,6 +17,7 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
 import LeagueRanks from "./LeagueRanks";
 import { ListType } from "../views/pokedex";
+import useLeague from "../hooks/useLeague";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -29,8 +30,6 @@ interface IPokemonInfoBanner {
     setDefense: (_: React.SetStateAction<number>) => void;
     hp: number;
     setHP: (_: React.SetStateAction<number>) => void;
-    league: ListType;
-    setLeague: (newLeague: ListType) => void;
 }
 
 export interface IIvPercents {
@@ -63,9 +62,10 @@ export interface IIvPercents {
     masterLeaguePerfectCP: number
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league, setLeague}: IPokemonInfoBanner) => {
+const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
     const {currentLanguage, currentGameLanguage} = useLanguage();
+    const [league, handleSetLeague] = useLeague();
     const selectedImageRef = React.createRef<HTMLImageElement>();
 
     const {gamemasterPokemon, rankLists, moves, fetchCompleted} = usePokemon();
@@ -127,7 +127,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         return gameTranslator(translatorKey ?? move, currentGameLanguage);
     }
 
-    const relevantMoveSet = league === ListType.GREAT_LEAGUE ? greatLeagueMoveset : league === ListType.ULTRA_LEAGUE ? ultraLeagueMoveset : masterLeagueMoveset;
+    const relevantMoveSet = (league === ListType.GREAT_LEAGUE || league === ListType.POKEDEX) ? greatLeagueMoveset : league === ListType.ULTRA_LEAGUE ? ultraLeagueMoveset : masterLeagueMoveset;
     
     const fastMoveClassName = `move-card background-${moves[relevantMoveSet[0]]?.type}`;
     const chargedMove1ClassName = `move-card background-${moves[relevantMoveSet[1]]?.type}`;
@@ -180,7 +180,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                         }
                     }
                     currentLeague={league}
-                    setLeague={setLeague}
+                    setLeague={handleSetLeague}
                 />
             </PokemonInfoImagePlaceholder>
             <div className="appraisal_with_moves">
@@ -201,7 +201,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             greatLeagueStats={
                 {
                     leagueTitle: "great",
-                    bestReachablePokemonName: bestInFamilyForGreatLeague.speciesName,
+                    bestReachablePokemonName: bestInFamilyForGreatLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
                     pokemonRankInLeague: ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank),
                     pokemonLeaguePercentile: bestReachableGreatLeagueIvs.greatLeagueRank + 1,
@@ -235,7 +235,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             ultraLeagueStats={
                 {
                     leagueTitle: "ultra",
-                    bestReachablePokemonName: bestInFamilyForUltraLeague.speciesName,
+                    bestReachablePokemonName: bestInFamilyForUltraLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
                     pokemonRankInLeague: ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank),
                     pokemonLeaguePercentile: bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
@@ -269,7 +269,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             masterLeagueStats={
                 {
                     leagueTitle: "master",
-                    bestReachablePokemonName: bestInFamilyForMasterLeague.speciesName,
+                    bestReachablePokemonName: bestInFamilyForMasterLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
                     pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank),
                     pokemonLeaguePercentile: bestReachableMasterLeagueIvs.masterLeagueRank + 1,

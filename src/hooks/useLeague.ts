@@ -10,11 +10,12 @@ const getDefaultListType = () => {
 
     const typedValue = +cachedValue as ListType;
 
-    return typedValue === ListType.POKEDEX ? ListType.GREAT_LEAGUE : typedValue;
+    return typedValue;
 }
 
 const useLeague = () => {
-    const [league, setLeague] = useState<ListType>(getDefaultListType() ?? ListType.GREAT_LEAGUE);
+    const initialValue = getDefaultListType();
+    const [league, setLeague] = useState<ListType>(initialValue === undefined ? ListType.GREAT_LEAGUE : initialValue);
 
     useEffect(() => {
         writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));

@@ -15,7 +15,6 @@ import useLeague from '../hooks/useLeague';
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const [league, handleSetLeague] = useLeague();
     const {currentLanguage} = useLanguage();
     const { speciesId } = useParams();
     const { pathname } = useLocation();
@@ -63,11 +62,11 @@ const Pokemon = () => {
                                         type2={pokemon!.types.length > 1 ? pokemon!.types[1] : undefined}
                                     />
                                     <div className="pokemon">
-                                        <LeaguePicker league={league} handleSetLeague={handleSetLeague}/>
-                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon} league={league} setLeague={handleSetLeague}/>}
-                                        {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
-                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}
-                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}
+                                        <LeaguePicker/>
+                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon}/>}
+                                        {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon}/>}
+                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon}/>}
+                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon}/>}
                                     </div>
                                 </div>
                         }

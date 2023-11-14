@@ -75,6 +75,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     useEffect(() => {
         if (typedCurrentRank === getDefaultListType()) {
             window.scrollTo(0, getDefaultScrollY());
+            console.log("scroll restored");
         }
     }, []);
 

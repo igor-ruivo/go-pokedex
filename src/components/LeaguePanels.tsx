@@ -128,7 +128,7 @@ const LeaguePanels = ({
     }
 
     return <div>
-        {league === ListType.GREAT_LEAGUE && renderPanel(greatLeagueStats)}
+        {(league === ListType.GREAT_LEAGUE || league === ListType.POKEDEX) && renderPanel(greatLeagueStats)}
         {league === ListType.ULTRA_LEAGUE && renderPanel(ultraLeagueStats)}
         {league === ListType.MASTER_LEAGUE && renderPanel(masterLeagueStats)}
     </div>;

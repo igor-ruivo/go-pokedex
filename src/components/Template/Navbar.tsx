@@ -8,9 +8,11 @@ import { useState } from "react";
 import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select"
 import translator, { TranslatorKeys } from "../../utils/Translator";
+import useLeague from "../../hooks/useLeague";
 
 const Navbar = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
+    const [league, handleSetLeague] = useLeague();
     const navigate = useNavigate();
     const {pathname} = useLocation();
     const [optionsOpened, setOptionsOpened] = useState(false);
@@ -24,20 +26,28 @@ const Navbar = () => {
     const getDestination = () => {
         let destinationPath = "";
         const previousRankType = readSessionValue(ConfigKeys.LastListType);
-        if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master")) {
+        if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master")) {    
+            handleSetLeague(ListType.POKEDEX);
             return "/";
         }
 
         switch (+previousRankType as ListType) {
             case ListType.GREAT_LEAGUE:
                 destinationPath = "great";
+                handleSetLeague(ListType.GREAT_LEAGUE);
                 break;
             case ListType.ULTRA_LEAGUE:
                 destinationPath = "ultra";
+                handleSetLeague(ListType.ULTRA_LEAGUE);
                 break;
             case ListType.MASTER_LEAGUE:
                 destinationPath = "master";
+                handleSetLeague(ListType.MASTER_LEAGUE);
                 break;
+        }
+
+        if (!destinationPath) {
+            handleSetLeague(ListType.POKEDEX);
         }
         return `/${destinationPath}`;
     }
@@ -82,9 +92,9 @@ const Navbar = () => {
     return <>
         <header className="navbar">
             <section className="navbar-section">
-                <Link to={getDestination()} className="navbar-logo">
+                <div onClick={() => window.location.href = "/#" + getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
-                </Link>
+                </div>
                 <button
                     className="navbar-menu"
                     onClick={() => setOptionsOpened(previous => !previous)}

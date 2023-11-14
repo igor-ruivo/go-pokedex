@@ -45,6 +45,7 @@ const LeagueRanks = ({
 
     const getLeagueName = (league: ListType) => {
         switch (league) {
+            case ListType.POKEDEX:
             case ListType.GREAT_LEAGUE:
                 return "great";
             case ListType.ULTRA_LEAGUE:
