@@ -202,7 +202,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             greatLeagueStats={
                 {
                     leagueTitle: "great",
-                    bestReachablePokemonName: bestInFamilyForGreatLeague.speciesShortName,
+                    bestReachablePokemonName: bestInFamilyForGreatLeague.speciesName,
                     pokemonRankInLeague: ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank),
                     pokemonLeaguePercentile: bestReachableGreatLeagueIvs.greatLeagueRank + 1,
@@ -236,7 +236,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             ultraLeagueStats={
                 {
                     leagueTitle: "ultra",
-                    bestReachablePokemonName: bestInFamilyForUltraLeague.speciesShortName,
+                    bestReachablePokemonName: bestInFamilyForUltraLeague.speciesName,
                     pokemonRankInLeague: ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank),
                     pokemonLeaguePercentile: bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
@@ -270,7 +270,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             masterLeagueStats={
                 {
                     leagueTitle: "master",
-                    bestReachablePokemonName: bestInFamilyForMasterLeague.speciesShortName,
+                    bestReachablePokemonName: bestInFamilyForMasterLeague.speciesName,
                     pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank),
                     pokemonLeaguePercentage: getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank),
                     pokemonLeaguePercentile: bestReachableMasterLeagueIvs.masterLeagueRank + 1,

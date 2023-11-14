@@ -68,7 +68,7 @@
 }
 
 .appraisal .stat-bar .bar {
-    height: 18px;
+    height: 13.5px;
     flex: 1 1 40px;
     border-right: 1px solid rgba(255,255,255,.3);
     cursor: pointer;
@@ -123,8 +123,8 @@
 
 @media (max-width: 1200px) {
     .appraisal {
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 }
 
@@ -144,8 +144,8 @@
         max-width: unset;
         padding-top: 6px;
         padding-bottom: 6px;
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .appraisal .stat {

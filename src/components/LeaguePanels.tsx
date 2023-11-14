@@ -62,57 +62,67 @@ const LeaguePanels = ({
     const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked" + (!rank ? " unranked" : "");
 
     const renderPanel = (leagueStat: LeagueStat) => {
-        const pvpStatsClassName = `pvp-stats ${leagueStat.leagueTitle}`;
+        const pvpStatsClassName = `pvp-stats-column ${leagueStat.leagueTitle}`;
         const logoSrc = `https://www.stadiumgaming.gg/frontend/assets/img/${leagueStat.leagueTitle}.png`;
         const typeSrc = (type: string) => `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${type}.png`;
 
         return (
             <div className={pvpStatsClassName}>
-                <div className="pvp-labels">
-                    <header>
-                        Config:
-                    </header>
-                    <div className="pvp-entry smooth">
+                <div>
+                    <div className="pvp-entry rank-title">
                         <div className="pvp-entry-content">
-                            Current
-                        </div>
-                    </div>
-                    <div className="pvp-entry smooth">
-                        <div className="pvp-entry-content">
-                            Best
+                            Perfection: {leagueStat.pokemonLeaguePercentage}% <sub>(#{leagueStat.pokemonLeaguePercentile})</sub>
                         </div>
                     </div>
                 </div>
-                <div className="pvp-labels">
-                    <header>
-                        IVs:
-                    </header>
-                    <div className="pvp-entry">
-                        <div className="pvp-entry-content">
-                            {atk} / {def} / {hp}
+                <div className="pvp-stats">
+                    <div className="pvp-labels">
+                        <header>
+                            Config:
+                        </header>
+                        <div className="pvp-entry smooth">
+                            <div className="pvp-entry-content">
+                                Current
+                            </div>
+                        </div>
+                        <div className="pvp-entry smooth">
+                            <div className="pvp-entry-content">
+                                Best
+                            </div>
                         </div>
                     </div>
-                    <div className="pvp-entry">
-                        <div className="pvp-entry-content">
-                            {leagueStat.atk} / {leagueStat.def} / {leagueStat.hp}
+                    <div className="pvp-labels">
+                        <header>
+                            IVs:
+                        </header>
+                        <div className="pvp-entry">
+                            <div className="pvp-entry-content">
+                                {atk} / {def} / {hp}
+                            </div>
+                        </div>
+                        <div className="pvp-entry">
+                            <div className="pvp-entry-content">
+                                {leagueStat.atk} / {leagueStat.def} / {leagueStat.hp}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="pvp-labels">
+                        <header>
+                            Peaks at:
+                        </header>
+                        <div className="pvp-entry">
+                            <div className="pvp-entry-content">
+                                {leagueStat.pokemonCP} CP @ LVL {leagueStat.pokemonLevel}
+                            </div>
+                        </div>
+                        <div className="pvp-entry">
+                            <div className="pvp-entry-content">
+                                {leagueStat.bestCP} CP @ LVL {leagueStat.bestLevel}
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="pvp-labels">
-                    <header>
-                        Peaks at:
-                    </header>
-                    <div className="pvp-entry">
-                        <div className="pvp-entry-content">
-                            {leagueStat.pokemonCP} CP @ LVL {leagueStat.pokemonLevel}
-                        </div>
-                    </div>
-                    <div className="pvp-entry">
-                        <div className="pvp-entry-content">
-                            {leagueStat.bestCP} CP @ LVL {leagueStat.bestLevel}
-                        </div>
-                    </div>
-                </div>
+                <div className="centered-text">... as {leagueStat.bestReachablePokemonName}</div>
             </div>
         );
     }
