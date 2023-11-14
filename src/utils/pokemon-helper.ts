@@ -68,7 +68,10 @@ export const fetchPredecessorPokemonIncludingSelf = (pokemon: IGamemasterPokemon
 }
 
 export const fetchPokemonFamily = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>)  => {
-    const family = new Set(pokemon.familyId ? Object.values(gamemasterPokemon).filter(p => p.familyId === pokemon.familyId && pokemon.isShadow === p.isShadow) : []);
+    const family = new Set(pokemon.familyId ?
+        Object.values(gamemasterPokemon).filter(p => (p.familyId === pokemon.familyId || p.dex === pokemon.dex) && pokemon.isShadow === p.isShadow) :
+        Object.values(gamemasterPokemon).filter(p => p.dex === pokemon.dex && pokemon.isShadow === p.isShadow));
+        
     const reachableFromFamily = new Set(family);
 
     family.forEach(f => {
