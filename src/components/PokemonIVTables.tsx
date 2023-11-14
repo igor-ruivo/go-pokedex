@@ -154,7 +154,7 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
         },
         {
         width: 60,
-        label: 'Def',
+        label: translator(TranslatorKeys.DEF, currentLanguage),
         dataKey: 'defense',
         sortable: true
         },

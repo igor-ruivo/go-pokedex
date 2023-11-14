@@ -90,7 +90,7 @@ const Navbar = () => {
                     onClick={() => setOptionsOpened(previous => !previous)}
                 >
                     <img className={"navbar-menu-img" + (optionsOpened ? " cross" : "")} alt="Menu" loading="lazy" width="24" height="20" decoding="async" src={optionsOpened ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
-                    <span>Menu</span>
+                    <span>{translator(TranslatorKeys.Menu, currentLanguage)}</span>
                 </button>
                 <div className="search-wrapper">
                     <SearchableDropdown

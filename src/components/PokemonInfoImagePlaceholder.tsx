@@ -46,7 +46,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     </span>
                     <span className="pvp_stat">
                         <span>{props.computedDef}</span>
-                        <span>DEF</span>
+                        <span>{translator(TranslatorKeys.DEF, currentLanguage).toLocaleUpperCase()}</span>
                     </span>
                     <span className="pvp_stat">
                         <span>{props.computedHP}</span>

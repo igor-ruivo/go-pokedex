@@ -34,7 +34,11 @@ const LeagueRanks = ({
         }
 
         const ranked = translator(TranslatorKeys.Ranked, currentLanguage);
-        return currentLanguage === Language.Portuguese ? `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")} ${ranked}` : `Ranked ${rank}`;
+        return currentLanguage === Language.Portuguese ?
+            `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")} ${ranked}` :
+            currentLanguage === Language.Bosnian ?
+            `${rank.replace("st", ".").replace("nd", ".").replace("rd", ".").replace("th", ".")} ${ranked}` :
+            `Ranked ${rank}`;
     }
 
     const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked-2" + (!rank ? " unranked" : "");

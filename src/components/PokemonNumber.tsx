@@ -29,6 +29,14 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
                 .replace("th", "º");
         }
 
+        if (currentLanguage === Language.Bosnian) {
+            ordinalRank = ordinalRank
+                .replace("st", ".")
+                .replace("nd", ".")
+                .replace("rd", ".")
+                .replace("th", ".");
+        }
+
         switch (rank) {
             case 1:
                 return "🥇" + ordinalRank;
