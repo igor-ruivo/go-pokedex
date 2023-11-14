@@ -9,6 +9,7 @@ import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 
 interface PokemonSearchStrings {
     pokemon: IGamemasterPokemon;
@@ -42,7 +43,7 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
     const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);
     const predecessorPokemonArray = Array.from(predecessorPokemon);
 
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
 
     useEffect(() => {
         writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
@@ -253,30 +254,30 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
 
                 cps[i] = Array.from(cps[i]);
                 (cps[i] as number[]).sort((a, b) => a - b);
-                result += '&!' + i + '*' + groupAttr(atkivs[i], translator(TranslatorKeys.AttackSearch, currentLanguage));
+                result += '&!' + i + '*' + groupAttr(atkivs[i], gameTranslator(GameTranslatorKeys.AttackSearch, currentGameLanguage));
                 if (!trash) {
                     result += '&!' + i + '*';
                 }
-                result += groupAttr(defivs[i], translator(TranslatorKeys.DefenseSearch, currentLanguage));
+                result += groupAttr(defivs[i], gameTranslator(GameTranslatorKeys.DefenseSearch, currentGameLanguage));
                 if (!trash) {
                     result += '&!' + i + '*';
                 }
-                result += groupAttr(hpivs[i], translator(TranslatorKeys.HPSearch, currentLanguage));
+                result += groupAttr(hpivs[i], gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage));
                 if (!trash) {
                     result += '&!' + i + '*';
                 }
-                result += "," + get_matching_string(cps[i] as number[], translator(TranslatorKeys.CPSearch, currentLanguage));
+                result += "," + get_matching_string(cps[i] as number[], gameTranslator(GameTranslatorKeys.CPSearch, currentGameLanguage));
                 if (!trash) {
                     result += '&!' + i + '*';
                 } else {
-                    result += ',' + translator(TranslatorKeys.CPSearch, currentLanguage) + (maxCP[i] + 1) + "-";
+                    result += ',' + gameTranslator(GameTranslatorKeys.CPSearch, currentGameLanguage) + (maxCP[i] + 1) + "-";
                 }
                 if ((hps[i] as Set<number>).size > 0) {
                     hps[i] = Array.from(hps[i]);
                     (hps[i] as number[]).sort((a, b) => a - b);
-                    result += ',' + get_matching_string(hps[i] as number[], translator(TranslatorKeys.HPSearch, currentLanguage));
+                    result += ',' + get_matching_string(hps[i] as number[], gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage));
                     if (trash) {
-                        result += ',' + translator(TranslatorKeys.HPSearch, currentLanguage) + (maxHP[i] + 1) + "-";
+                        result += ',' + gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage) + (maxHP[i] + 1) + "-";
                     }
                 }
             } else if (!trash) {
@@ -323,8 +324,8 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
                 </div>
             </div>}
             {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label">{p.speciesId === pokemon.speciesId ?
-            `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? translator(TranslatorKeys.GreatLeague, currentLanguage) : league === 2 ? translator(TranslatorKeys.UltraLeague, currentLanguage) : translator(TranslatorKeys.MasterLeague, currentLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
-            `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? translator(TranslatorKeys.GreatLeague, currentLanguage) : league === 2 ? translator(TranslatorKeys.UltraLeague, currentLanguage) : translator(TranslatorKeys.MasterLeague, currentLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}<textarea id={p.speciesId + "-textarea"} className="search-strings-container"
+            `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 2 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
+            `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 1 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 2 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}<textarea id={p.speciesId + "-textarea"} className="search-strings-container"
                 value={computeSearchString(p)}
                 readOnly
             /></div>)}

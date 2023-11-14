@@ -45,17 +45,8 @@ export enum TranslatorKeys {
     ThatResultIn,
     FindTop,
     ForLeague,
-    Great,
-    Master,
-    GreatLeague,
-    UltraLeague,
-    MasterLeague,
     UpToLevel,
     AllExcept,
-    AttackSearch,
-    DefenseSearch,
-    HPSearch,
-    CPSearch,
     Shadow,
     PokemonNotFound,
     Moves,
@@ -71,7 +62,8 @@ export enum TranslatorKeys {
     Peaks,
     As,
     Current,
-    Best
+    Best,
+    GameLanguage
 }
 
 const settings = new Map<Language, string>([
@@ -80,8 +72,13 @@ const settings = new Map<Language, string>([
 ]);
 
 const language = new Map<Language, string>([
-    [Language.English, "Language"],
-    [Language.Portuguese, "Idioma"]
+    [Language.English, "Website language"],
+    [Language.Portuguese, "Idioma do site"]
+]);
+
+const gameLanguage = new Map<Language, string>([
+    [Language.English, "Game language"],
+    [Language.Portuguese, "Idioma do jogo"]
 ]);
 
 const search = new Map<Language, string>([
@@ -299,31 +296,6 @@ const forLeague = new Map<Language, string>([
     [Language.Portuguese, "da"]
 ]);
 
-const great = new Map<Language, string>([
-    [Language.English, "Great"],
-    [Language.Portuguese, "Grande"]
-]);
-
-const master = new Map<Language, string>([
-    [Language.English, "Master"],
-    [Language.Portuguese, "Mestra"]
-]);
-
-const greatLeague = new Map<Language, string>([
-    [Language.English, "Great League"],
-    [Language.Portuguese, "Grande Liga"]
-]);
-
-const ultraLeague = new Map<Language, string>([
-    [Language.English, "Ultra League"],
-    [Language.Portuguese, "Ultra-liga"]
-]);
-
-const masterLeague = new Map<Language, string>([
-    [Language.English, "Master League"],
-    [Language.Portuguese, "Liga Mestra"]
-]);
-
 const upToLevel = new Map<Language, string>([
     [Language.English, "up to level"],
     [Language.Portuguese, "até nível"]
@@ -332,26 +304,6 @@ const upToLevel = new Map<Language, string>([
 const allExcept = new Map<Language, string>([
     [Language.English, "all except the"],
     [Language.Portuguese, "todos exceto"]
-]);
-
-const attackSearch = new Map<Language, string>([
-    [Language.English, "attack"],
-    [Language.Portuguese, "ataque"]
-]);
-
-const defenseSearch = new Map<Language, string>([
-    [Language.English, "defense"],
-    [Language.Portuguese, "defesa"]
-]);
-
-const hpSearch = new Map<Language, string>([
-    [Language.English, "hp"],
-    [Language.Portuguese, "ps"]
-]);
-
-const cpSearch = new Map<Language, string>([
-    [Language.English, "cp"],
-    [Language.Portuguese, "pc"]
 ]);
 
 const shadow = new Map<Language, string>([
@@ -474,17 +426,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.ThatResultIn, thatResultIn],
     [TranslatorKeys.FindTop, findTop],
     [TranslatorKeys.ForLeague, forLeague],
-    [TranslatorKeys.Great, great],
-    [TranslatorKeys.Master, master],
-    [TranslatorKeys.GreatLeague, greatLeague],
-    [TranslatorKeys.UltraLeague, ultraLeague],
-    [TranslatorKeys.MasterLeague, masterLeague],
     [TranslatorKeys.UpToLevel, upToLevel],
     [TranslatorKeys.AllExcept, allExcept],
-    [TranslatorKeys.AttackSearch, attackSearch],
-    [TranslatorKeys.DefenseSearch, defenseSearch],
-    [TranslatorKeys.HPSearch, hpSearch],
-    [TranslatorKeys.CPSearch, cpSearch],
     [TranslatorKeys.Shadow, shadow],
     [TranslatorKeys.PokemonNotFound, pokemonNotFound],
     [TranslatorKeys.Moves, moves],
@@ -500,7 +443,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Peaks, peaks],
     [TranslatorKeys.As, as],
     [TranslatorKeys.Current, current],
-    [TranslatorKeys.Best, best]
+    [TranslatorKeys.Best, best],
+    [TranslatorKeys.GameLanguage, gameLanguage]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

@@ -14,7 +14,8 @@ export enum ConfigKeys {
     GridScrollY,
     TopPokemonInSearchString,
     TrashString,
-    Language
+    Language,
+    GameLanguage
 }
 
 // avoids collision with other website's cache.

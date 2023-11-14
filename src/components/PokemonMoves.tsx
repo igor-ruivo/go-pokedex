@@ -6,7 +6,7 @@ import { usePokemon } from "../contexts/pokemon-context";
 import { Link, useLocation } from "react-router-dom";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import PokemonImage from "./PokemonImage";
-import movesTranslator, { MovesTranslatorKeys } from "../utils/MovesTranslator";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { ListType } from "../views/pokedex";
 
 interface IPokemonMoves {
@@ -15,7 +15,7 @@ interface IPokemonMoves {
 }
 
 const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const {gamemasterPokemon, moves, fetchCompleted, rankLists} = usePokemon();
     const {pathname} = useLocation();
@@ -34,9 +34,9 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const chargedMove1ClassName = `move-card background-${moves[relevantMoveSet[1]]?.type}`;
     const chargedMove2ClassName = `move-card background-${moves[relevantMoveSet[2]]?.type}`;
     
-    const fastMoveTranslatorKey = MovesTranslatorKeys[relevantMoveSet[0] as keyof typeof MovesTranslatorKeys];
-    const chargedMove1TranslatorKey = MovesTranslatorKeys[relevantMoveSet[1] as keyof typeof MovesTranslatorKeys];
-    const chargedMove2TranslatorKey = MovesTranslatorKeys[relevantMoveSet[2] as keyof typeof MovesTranslatorKeys];
+    const fastMoveTranslatorKey = GameTranslatorKeys[relevantMoveSet[0] as keyof typeof GameTranslatorKeys];
+    const chargedMove1TranslatorKey = GameTranslatorKeys[relevantMoveSet[1] as keyof typeof GameTranslatorKeys];
+    const chargedMove2TranslatorKey = GameTranslatorKeys[relevantMoveSet[2] as keyof typeof GameTranslatorKeys];
 
     const fastMoveTypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[0]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[0]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove1TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[1]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[1]]?.type.substring(1)) as keyof typeof TranslatorKeys];
@@ -72,7 +72,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             <div className="move-card-content">
                                 <strong className="move-detail move-name">
                                     <img title={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} alt={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} height="32" width="32" src={fastMoveUrl}/>
-                                    {movesTranslator(fastMoveTranslatorKey ?? relevantMoveSet[0], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
+                                    {gameTranslator(fastMoveTranslatorKey ?? relevantMoveSet[0], currentGameLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
                                 </strong>
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
@@ -94,7 +94,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             <div className="move-card-content">
                                 <strong className="move-detail move-name">
                                     <img title={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} alt={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} height="32" width="32" src={chargedMove1Url}/>
-                                    {movesTranslator(chargedMove1TranslatorKey ?? relevantMoveSet[1], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[1]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[1]) ? " †" : "")}
+                                    {gameTranslator(chargedMove1TranslatorKey ?? relevantMoveSet[1], currentGameLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[1]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[1]) ? " †" : "")}
                                 </strong>
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
@@ -112,7 +112,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             <div className="move-card-content">
                                 <strong className="move-detail move-name">
                                     <img title={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} alt={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} height="32" width="32" src={chargedMove2Url}/>
-                                    {movesTranslator(chargedMove2TranslatorKey ?? relevantMoveSet[2], currentLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[2]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[2]) ? " †" : "")}
+                                    {gameTranslator(chargedMove2TranslatorKey ?? relevantMoveSet[2], currentGameLanguage) + (pokemon.eliteMoves.includes(relevantMoveSet[2]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[2]) ? " †" : "")}
                                 </strong>
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
@@ -129,7 +129,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </div> :
                     <span className="unavailable_moves">
                         {translator(TranslatorKeys.RecommendedMovesUnavailable, currentLanguage)}<br></br>
-                        {pokemon.speciesName} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {translator(league === ListType.GREAT_LEAGUE ? TranslatorKeys.GreatLeague : league === ListType.ULTRA_LEAGUE ? TranslatorKeys.UltraLeague : TranslatorKeys.MasterLeague, currentLanguage)}
+                        {pokemon.speciesName} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                     </span>
                 }
             </ul>
@@ -140,7 +140,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 {
                     pokemon.fastMoves.map(m => {
                         const className = `move-card background-${moves[m].type}`;
-                        const movesTranslatorKey = MovesTranslatorKeys[m as keyof typeof MovesTranslatorKeys];
+                        const movesTranslatorKey = GameTranslatorKeys[m as keyof typeof GameTranslatorKeys];
                         const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                         const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
 
@@ -150,7 +150,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                     <div className="move-card-content">
                                         <strong className="move-detail move-name">
                                             <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
-                                            {movesTranslator(movesTranslatorKey ?? m, currentLanguage) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
+                                            {gameTranslator(movesTranslatorKey ?? m, currentGameLanguage) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
                                         </strong>
                                         <strong className="move-detail move-stats">
                                             <span className="move-stats-content">
@@ -181,7 +181,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 {
                     pokemon.chargedMoves.map(m => {
                         const className = `move-card background-${moves[m].type}`;
-                        const movesTranslatorKey = MovesTranslatorKeys[m as keyof typeof MovesTranslatorKeys];
+                        const movesTranslatorKey = GameTranslatorKeys[m as keyof typeof GameTranslatorKeys];
                         const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                         const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
 
@@ -191,7 +191,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                     <div className="move-card-content">
                                         <strong className="move-detail move-name">
                                             <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
-                                            {movesTranslator(movesTranslatorKey ?? m, currentLanguage) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
+                                            {gameTranslator(movesTranslatorKey ?? m, currentGameLanguage) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
                                         </strong>
                                         <strong className="move-detail move-stats">
                                             <span className="move-stats-content">

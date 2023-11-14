@@ -8,8 +8,8 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
-import { Language, useLanguage } from '../contexts/language-context';
-import movesTranslator, { MovesTranslatorKeys, isTranslated } from '../utils/MovesTranslator';
+import { GameLanguage, useLanguage } from '../contexts/language-context';
+import gameTranslator, { GameTranslatorKeys, isTranslated } from '../utils/GameTranslator';
 
 export enum ListType {
     POKEDEX,
@@ -24,7 +24,7 @@ const Pokedex = () => {
     const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
     const { gamemasterPokemon, rankLists, fetchCompleted, errors, moves } = usePokemon();
     const { inputText } = useNavbarSearchInput();
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
 
     // TEMP DEBUG
     if (gamemasterPokemon && Object.keys(gamemasterPokemon).length) {
@@ -37,13 +37,13 @@ const Pokedex = () => {
         Object.values(gamemasterPokemon).map(p => p.legacyMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
 
             movesSet.forEach(m => {
-                const moveKey = MovesTranslatorKeys[m as keyof typeof MovesTranslatorKeys];
+                const moveKey = GameTranslatorKeys[m as keyof typeof GameTranslatorKeys];
                 if (!isTranslated(moveKey)) {
                     console.log(m);
                 } else {
                     const move = moves[m];
                     const engMove = move.name;
-                    if (engMove !== movesTranslator(moveKey, Language.English)) {
+                    if (engMove !== gameTranslator(moveKey, GameLanguage.English)) {
                         console.error(m);
                     }
                 }
@@ -118,7 +118,7 @@ const Pokedex = () => {
                     <li>
                         <Link to="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                            <span>{translator(TranslatorKeys.Great, currentLanguage)}</span>
+                            <span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>
                         </Link>
                     </li>
                     <li>
@@ -130,7 +130,7 @@ const Pokedex = () => {
                     <li>
                         <Link to="/master" className={"header-tab " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
                             <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
-                            <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
+                            <span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>
                         </Link>
                     </li>
                 </ul>

@@ -5,7 +5,7 @@ import "./Navbar.scss";
 import { ConfigKeys, readSessionValue } from "../../utils/persistent-configs-handler";
 import { ListType } from "../../views/pokedex";
 import { useState } from "react";
-import { Language, useLanguage } from "../../contexts/language-context";
+import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select"
 import translator, { TranslatorKeys } from "../../utils/Translator";
 
@@ -14,7 +14,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const {pathname} = useLocation();
     const [optionsOpened, setOptionsOpened] = useState(false);
-    const {currentLanguage, updateCurrentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage} = useLanguage();
 
     type EntryType = {
         value: string,
@@ -42,22 +42,40 @@ const Navbar = () => {
         return `/${destinationPath}`;
     }
 
-    type Entry = {
+    type Entry<T> = {
         label: string,
-        value: Language,
+        value: T,
         flag: string
     }
 
-    const languageOptions: Entry[] = [
+    const languageOptions: Entry<Language>[] = [
         {
             label: "English",
             value: Language.English,
-            flag: "https://i.imgur.com/PTjbo6O.png"
+            flag: "https://i.imgur.com/9gMorO5.png"
         },
         {
             label: "Português",
             value: Language.Portuguese,
-            flag: "https://i.imgur.com/PoMTq6R.png"
+            flag: "https://i.imgur.com/YUXHN0U.png"
+        },
+        {
+            label: "Bosanski",
+            value: Language.Bosnian,
+            flag: "https://i.imgur.com/kn0M3hW.png"
+        }
+    ];
+
+    const gameLanguageOptions: Entry<GameLanguage>[] = [
+        {
+            label: "English",
+            value: GameLanguage.English,
+            flag: "https://i.imgur.com/9gMorO5.png"
+        },
+        {
+            label: "Português",
+            value: GameLanguage.Portuguese,
+            flag: "https://i.imgur.com/YUXHN0U.png"
         }
     ];
 
@@ -108,7 +126,22 @@ const Navbar = () => {
                                     options={languageOptions}
                                     value={languageOptions.find(l => l.value === currentLanguage)}
                                     onChange={v => updateCurrentLanguage(v!.value)}
-                                    formatOptionLabel={(data, _) => <div className="flag-container"><img className="country-flag" src={data.flag} width={40} height={17} /><span>{data.label}</span></div>}
+                                    formatOptionLabel={(data, _) => <div className="flag-container"><img className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
+                                />
+                            </div>
+                        </li>
+                        <li className="options-li">
+                            <div className="option-entry">
+                                <span>
+                                    {translator(TranslatorKeys.GameLanguage, currentLanguage)}
+                                </span>
+                                <Select
+                                    className="navbar-dropdown"
+                                    isSearchable={false}
+                                    options={gameLanguageOptions}
+                                    value={gameLanguageOptions.find(l => l.value === currentGameLanguage)}
+                                    onChange={v => updateCurrentGameLanguage(v!.value)}
+                                    formatOptionLabel={(data, _) => <div className="flag-container"><img className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
                                 />
                             </div>
                         </li>

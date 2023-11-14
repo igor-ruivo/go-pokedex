@@ -6,7 +6,7 @@ import { PokemonProvider } from './contexts/pokemon-context';
 import Navbar from './components/Template/Navbar';
 import Content from './components/Template/Content';
 import { NavbarSearchProvider } from './contexts/navbar-search-context';
-import { LanguageProvider, useLanguage } from './contexts/language-context';
+import { LanguageProvider } from './contexts/language-context';
 
 const App = () => {
     return (

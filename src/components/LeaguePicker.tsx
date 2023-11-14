@@ -1,7 +1,7 @@
 import "./LeaguePicker.scss";
-import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { ListType } from "../views/pokedex";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 
 interface ILeaguePickerProps {
     league: ListType;
@@ -9,14 +9,14 @@ interface ILeaguePickerProps {
 }
 
 const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
-    const {currentLanguage} = useLanguage();
+    const {currentGameLanguage} = useLanguage();
 
     return <nav className="navigation-header ivs-nav">
         <ul>
             <li>
                 <div onClick={() => handleSetLeague(ListType.GREAT_LEAGUE)} className={"header-tab " + (league === ListType.GREAT_LEAGUE ? "selected" : "")}>
                     <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                    <span>{translator(TranslatorKeys.Great, currentLanguage)}</span>
+                    <span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>
                 </div>
             </li>
             <li>
@@ -28,7 +28,7 @@ const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
             <li>
                 <div onClick={() => handleSetLeague(ListType.MASTER_LEAGUE)} className={"header-tab " + (league === ListType.MASTER_LEAGUE ? "selected" : "")}>
                     <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
-                    <span>{translator(TranslatorKeys.Master, currentLanguage)}</span>
+                    <span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>
                 </div>
             </li>
         </ul>

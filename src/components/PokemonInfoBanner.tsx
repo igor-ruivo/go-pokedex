@@ -6,7 +6,6 @@ import PokemonImage from "./PokemonImage";
 import "./PokemonInfoBanner.scss";
 import { useState } from "react";
 import LeaguePanels from "./LeaguePanels";
-import CircularSliderInput from "./CircularSliderInput";
 import React from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
@@ -14,7 +13,7 @@ import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf, sortPokemonByBa
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
-import movesTranslator, { MovesTranslatorKeys } from "../utils/MovesTranslator";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
 import LeagueRanks from "./LeagueRanks";
 import { ListType } from "../views/pokedex";
@@ -66,7 +65,7 @@ export interface IIvPercents {
 
 const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league, setLeague}: IPokemonInfoBanner) => {
     const [displayLevel, setDisplayLevel] = useState(levelCap);
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
     const selectedImageRef = React.createRef<HTMLImageElement>();
 
     const {gamemasterPokemon, rankLists, moves, fetchCompleted} = usePokemon();
@@ -124,8 +123,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     }
 
     const translatedMove = (move: string) => {
-        const translatorKey = MovesTranslatorKeys[move as keyof typeof MovesTranslatorKeys];
-        return movesTranslator(translatorKey ?? move, currentLanguage);
+        const translatorKey = GameTranslatorKeys[move as keyof typeof GameTranslatorKeys];
+        return gameTranslator(translatorKey ?? move, currentGameLanguage);
     }
 
     const relevantMoveSet = league === ListType.GREAT_LEAGUE ? greatLeagueMoveset : league === ListType.ULTRA_LEAGUE ? ultraLeagueMoveset : masterLeagueMoveset;
@@ -134,9 +133,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     const chargedMove1ClassName = `move-card background-${moves[relevantMoveSet[1]]?.type}`;
     const chargedMove2ClassName = `move-card background-${moves[relevantMoveSet[2]]?.type}`;
     
-    const fastMoveTranslatorKey = MovesTranslatorKeys[relevantMoveSet[0] as keyof typeof MovesTranslatorKeys];
-    const chargedMove1TranslatorKey = MovesTranslatorKeys[relevantMoveSet[1] as keyof typeof MovesTranslatorKeys];
-    const chargedMove2TranslatorKey = MovesTranslatorKeys[relevantMoveSet[2] as keyof typeof MovesTranslatorKeys];
+    const fastMoveTranslatorKey = GameTranslatorKeys[relevantMoveSet[0] as keyof typeof GameTranslatorKeys];
+    const chargedMove1TranslatorKey = GameTranslatorKeys[relevantMoveSet[1] as keyof typeof GameTranslatorKeys];
+    const chargedMove2TranslatorKey = GameTranslatorKeys[relevantMoveSet[2] as keyof typeof GameTranslatorKeys];
 
     const fastMoveTypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[0]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[0]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove1TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[1]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[1]]?.type.substring(1)) as keyof typeof TranslatorKeys];
