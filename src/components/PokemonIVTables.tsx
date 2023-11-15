@@ -119,7 +119,7 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     }, [levelCap]);
 
     useEffect(() => {
-        writeSessionValue(ConfigKeys.LastListType, JSON.stringify(league));
+        writeSessionValue(ConfigKeys.LastLeague, JSON.stringify(league));
     }, [league]);
 
     const columns: ColumnData[] = [
