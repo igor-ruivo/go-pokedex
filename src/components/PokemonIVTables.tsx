@@ -9,10 +9,11 @@ import { visuallyHidden } from '@mui/utils';
 import { Link, useLocation } from "react-router-dom";
 import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
-import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
+import { ConfigKeys, readPersistentValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
@@ -99,7 +100,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
 
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
     
     const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
     const [defSearch, setDefSearch] = useState<number|undefined>(undefined);
@@ -110,7 +111,7 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('top');
 
-    const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
+    const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {pathname} = useLocation();
 
     useEffect(() => {
@@ -136,7 +137,7 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
         },
         {
         width: 70,
-        label: translator(TranslatorKeys.CP, currentLanguage),
+        label: gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase(),
         dataKey: 'cp',
         sortable: true
         },
@@ -211,7 +212,7 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     });
 
     const visibleRows = React.useMemo(() => stableSort(rows, getComparator(order, orderBy)),
-        [order, orderBy, rows, levelCap, league]
+        [order, orderBy, rows]
     );
 
     if (!fetchCompleted || !gamemasterPokemon) {

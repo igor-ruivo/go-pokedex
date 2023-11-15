@@ -6,8 +6,8 @@ import PokemonNumber from "./PokemonNumber";
 import PokemonTypes from "./PokemonTypes";
 import { ListType } from "../views/pokedex";
 import { calculateCP } from "../utils/pokemon-helper";
-import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 
 interface IPokemonCardProps {
     pokemon: IGamemasterPokemon,
@@ -15,11 +15,11 @@ interface IPokemonCardProps {
 }
 
 const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
-    const {currentLanguage} = useLanguage();
+    const {currentGameLanguage} = useLanguage();
     const link = `/pokemon/${pokemon.speciesId}/info`;
     var cp = Math.floor(((pokemon.atk + 15) * Math.pow(pokemon.def + 15, 0.5) * Math.pow(pokemon.hp + 15, 0.5) * Math.pow(0.795300006866455, 2) ) / 10);
 
-    const showXL = listType === ListType.GREAT_LEAGUE && cp < 1500 + 150 || listType === ListType.ULTRA_LEAGUE && cp < 2500 + 150;
+    const showXL = (listType === ListType.GREAT_LEAGUE && cp < 1500 + 150) || (listType === ListType.ULTRA_LEAGUE && cp < 2500 + 150);
   
     return (
         <Link to={link}>
@@ -33,7 +33,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container">
-                        {calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100)} {translator(TranslatorKeys.CP, currentLanguage).toLocaleUpperCase()}
+                        {calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100)} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
                     </strong>
                 </span>
             </div>

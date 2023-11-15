@@ -11,7 +11,6 @@ export enum TranslatorKeys {
     Attack,
     Defense,
     HP,
-    CP,
     LVL,
     Water,
     Fire,
@@ -130,12 +129,6 @@ const hp = new Map<Language, string>([
     [Language.English, "HP"],
     [Language.Portuguese, "PS"],
     [Language.Bosnian, "Život"]
-]);
-
-const cp = new Map<Language, string>([
-    [Language.English, "CP"],
-    [Language.Portuguese, "PC"],
-    [Language.Bosnian, "CP"]
 ]);
 
 const lvl = new Map<Language, string>([
@@ -455,7 +448,6 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Attack, attack],
     [TranslatorKeys.Defense, defense],
     [TranslatorKeys.HP, hp],
-    [TranslatorKeys.CP, cp],
     [TranslatorKeys.LVL, lvl],
     [TranslatorKeys.Water, water],
     [TranslatorKeys.Fire, fire],

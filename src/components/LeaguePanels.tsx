@@ -1,5 +1,6 @@
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import "./LeaguePanels.scss";
 
@@ -48,7 +49,7 @@ const LeaguePanels = ({
     league
 }: ILeaguePanelsProps) => {
 
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-column ${leagueStat.leagueTitle}`;
@@ -99,12 +100,12 @@ const LeaguePanels = ({
                         </header>
                         <div className="pvp-entry">
                             <div className="pvp-entry-content">
-                                {leagueStat.pokemonCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}
+                                {leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}
                             </div>
                         </div>
                         <div className="pvp-entry">
                             <div className="pvp-entry-content">
-                                {leagueStat.bestCP} {translator(TranslatorKeys.CP, currentLanguage)} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}
+                                {leagueStat.bestCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}
                             </div>
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-import { GameLanguage, Language } from "../contexts/language-context";
+import { GameLanguage } from "../contexts/language-context";
 
 export enum GameTranslatorKeys {
     //moves:
@@ -318,10 +318,10 @@ export enum GameTranslatorKeys {
 
     //other
     HP,
+    CP,
     AttackSearch,
     DefenseSearch,
     HPSearch,
-    CPSearch,
     Great,
     Master,
     GreatLeague,
@@ -1379,6 +1379,11 @@ const hp = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "PS"]
 ]);
 
+const cp = new Map<GameLanguage, string>([
+    [GameLanguage.English, "cp"],
+    [GameLanguage.Portuguese, "pc"]
+]);
+
 const attackSearch = new Map<GameLanguage, string>([
     [GameLanguage.English, "attack"],
     [GameLanguage.Portuguese, "ataque"]
@@ -1392,11 +1397,6 @@ const defenseSearch = new Map<GameLanguage, string>([
 const hpSearch = new Map<GameLanguage, string>([
     [GameLanguage.English, "hp"],
     [GameLanguage.Portuguese, "ps"]
-]);
-
-const cpSearch = new Map<GameLanguage, string>([
-    [GameLanguage.English, "cp"],
-    [GameLanguage.Portuguese, "pc"]
 ]);
 
 const great = new Map<GameLanguage, string>([
@@ -1656,7 +1656,7 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.AttackSearch, attackSearch],
     [GameTranslatorKeys.DefenseSearch, defenseSearch],
     [GameTranslatorKeys.HPSearch, hpSearch],
-    [GameTranslatorKeys.CPSearch, cpSearch],
+    [GameTranslatorKeys.CP, cp],
     [GameTranslatorKeys.Great, great],
     [GameTranslatorKeys.Master, master],
     [GameTranslatorKeys.GreatLeague, greatLeague],

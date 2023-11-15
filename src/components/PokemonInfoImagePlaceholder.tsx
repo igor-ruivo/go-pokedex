@@ -5,6 +5,7 @@ import { useLanguage } from "../contexts/language-context";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import PokemonImage from "./PokemonImage";
 import "./PokemonInfoImagePlaceholder.scss";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 
 interface IPokemonInfoImagePlaceholderProps {
     pokemon: IGamemasterPokemon;
@@ -18,7 +19,7 @@ interface IPokemonInfoImagePlaceholderProps {
 }
 
 const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const translatedType = (type: PokemonTypes) => {
         const translatorKey = TranslatorKeys[type];
@@ -32,7 +33,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     const renderImageDescriptionComponent = () => {
         return <div className="cp-stats-container">
             <span className="cp-level">
-                <strong className="cp-container">{props.computedCP} {translator(TranslatorKeys.CP, currentLanguage)}</strong>
+                <strong className="cp-container">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong>
                 <div className="weighted-font">{translator(TranslatorKeys.Level, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level">
                     {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                     .map(e => (<option key={e} value={e}>{e}</option>))}

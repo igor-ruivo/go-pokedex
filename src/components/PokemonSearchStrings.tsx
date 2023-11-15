@@ -11,7 +11,7 @@ import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
 
-interface PokemonSearchStrings {
+interface IPokemonSearchStringsProps {
     pokemon: IGamemasterPokemon;
     league: LeagueType;
 }
@@ -32,7 +32,7 @@ const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolea
     return cachedValue === "true";
 }
 
-const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
+const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => {
     const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10));
     const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
@@ -75,7 +75,7 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
                 t.removeEventListener("click", eventListener);
             });
         }
-    }, [pokemon]);
+    }, [pokemon, predecessorPokemonArray]);
 
     let cpCap = Number.MAX_VALUE;
 
@@ -149,7 +149,7 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
                 list += '-';
                 last = a[i];
                 while (++i < a.length) {
-                    if (a[i] != last + 1)
+                    if (a[i] !== last + 1)
                         break;
                     last = a[i];
                 }
@@ -266,11 +266,11 @@ const PokemonSearchStrings = ({pokemon, league}: PokemonSearchStrings) => {
                 if (!trash) {
                     result += '&!' + i + '*';
                 }
-                result += "," + get_matching_string(cps[i] as number[], gameTranslator(GameTranslatorKeys.CPSearch, currentGameLanguage));
+                result += "," + get_matching_string(cps[i] as number[], gameTranslator(GameTranslatorKeys.CP, currentGameLanguage));
                 if (!trash) {
                     result += '&!' + i + '*';
                 } else {
-                    result += ',' + gameTranslator(GameTranslatorKeys.CPSearch, currentGameLanguage) + (maxCP[i] + 1) + "-";
+                    result += ',' + gameTranslator(GameTranslatorKeys.CP, currentGameLanguage) + (maxCP[i] + 1) + "-";
                 }
                 if ((hps[i] as Set<number>).size > 0) {
                     hps[i] = Array.from(hps[i]);
