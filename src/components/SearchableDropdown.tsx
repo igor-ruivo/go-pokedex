@@ -26,7 +26,7 @@ const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdo
             updateInputText(debouncingInputText);
         }, 500);
         return () => clearTimeout(timeoutId);
-    }, [debouncingInputText]);
+    }, [debouncingInputText, updateInputText]);
     
     return <Autocomplete
         size="small"

@@ -149,7 +149,7 @@ const Navbar = () => {
                                     options={languageOptions}
                                     value={languageOptions.find(l => l.value === currentLanguage)}
                                     onChange={v => updateCurrentLanguage(v!.value)}
-                                    formatOptionLabel={(data, _) => <div className="flag-container"><img className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
+                                    formatOptionLabel={(data, _) => <div className="flag-container"><img alt="flag" className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
                                 />
                             </div>
                         </li>
@@ -164,7 +164,7 @@ const Navbar = () => {
                                     options={gameLanguageOptions}
                                     value={gameLanguageOptions.find(l => l.value === currentGameLanguage)}
                                     onChange={v => updateCurrentGameLanguage(v!.value)}
-                                    formatOptionLabel={(data, _) => <div className="flag-container"><img className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
+                                    formatOptionLabel={(data, _) => <div className="flag-container"><img alt="flag" className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
                                 />
                             </div>
                         </li>

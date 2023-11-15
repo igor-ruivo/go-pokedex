@@ -41,7 +41,7 @@ const getDefaultListType = () => {
 
 const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     const batchSize = 24;
-    const bufferSize = 5 * batchSize;
+    const bufferSize = 120;
     const scrollHeightLimit = 200;
 
     const [lastShownIndex, setLastShownIndex] = useState(getDefaultLastShownIndex());
@@ -77,7 +77,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
             window.scrollTo(0, getDefaultScrollY());
             console.log("scroll restored");
         }
-    }, []);
+    }, [typedCurrentRank]);
 
     useEffect(() => {
         // Whenever the pokemonInfoList prop changes, let's reset the scrolling and the shown pokemon.
@@ -91,7 +91,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
         } else {
             initialPropsSet.current = true;
         }
-    }, [pokemonInfoList]);
+    }, [pokemonInfoList, typedCurrentRank]);
 
     const handleScrollCallback = useCallback(() => {
         writeSessionValue(ConfigKeys.GridScrollY, window.scrollY.toString());
@@ -174,7 +174,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
         // Or because props may have changed, which means the scrolling has reset, and that it needs to trigger the scrolling callback
         // in order to show the initial batch again.
         handleScrollCallback();
-    }, [readyImages, pokemonInfoList, lastShownIndex]);
+    }, [handleScrollCallback]);
     
     useEffect(() => {
         window.addEventListener("scroll", handleScrollCallback);

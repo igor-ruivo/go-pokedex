@@ -21,7 +21,7 @@ export enum ListType {
 const getDefaultShowFamilyTree = () => true; // TODO: implement toggle later readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
 
 const Pokedex = () => {
-    const [showFamilyTree, setShowFamilyTree] = useState(getDefaultShowFamilyTree());
+    const [showFamilyTree] = useState(getDefaultShowFamilyTree());
     const { gamemasterPokemon, rankLists, fetchCompleted, errors, moves } = usePokemon();
     const { inputText } = useNavbarSearchInput();
     const {currentLanguage, currentGameLanguage} = useLanguage();
@@ -111,7 +111,7 @@ const Pokedex = () => {
         }
 
         return processedList;
-    }, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, showFamilyTree]);
+    }, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, showFamilyTree, currentLanguage]);
 
     return (
         <main className="layout">

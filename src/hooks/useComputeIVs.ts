@@ -18,18 +18,18 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
     const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
     const [loading, setLoading] = useState(true);
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-
-    let reachablePokemons = new Set<IGamemasterPokemon>();
-    if (!justForSelf && fetchCompleted) {
-        reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
-    } else {
-        reachablePokemons.add(pokemon);
-    }
     
     useEffect(() => {
         setLoading(true);
         const computeIvs = async () => {
             const familyIvPercents: Dictionary<IIvPercents> = {};
+            
+            let reachablePokemons = new Set<IGamemasterPokemon>();
+            if (!justForSelf && fetchCompleted) {
+                reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
+            } else {
+                reachablePokemons.add(pokemon);
+            }
 
             reachablePokemons.forEach(p => {
                 const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
@@ -78,7 +78,7 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
             setLoading(false);
         }
         computeIvs();
-    }, [pokemon, levelCap, attackIV, defenseIV, hpIV]);
+    }, [pokemon, levelCap, attackIV, defenseIV, hpIV, justForSelf, gamemasterPokemon, fetchCompleted]);
 
     const result: [Dictionary<IIvPercents>, boolean] = [ivPercents, loading];
 

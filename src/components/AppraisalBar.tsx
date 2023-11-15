@@ -30,21 +30,21 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
             setAttack(Math.ceil(debouncingAttack));
         }, 200);
         return () => clearTimeout(timeoutId);
-    }, [debouncingAttack]);
+    }, [debouncingAttack, setAttack]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             setDefense(Math.ceil(debouncingDefense));
         }, 200);
         return () => clearTimeout(timeoutId);
-    }, [debouncingDefense]);
+    }, [debouncingDefense, setDefense]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             setHP(Math.ceil(debouncingHP));
         }, 200);
         return () => clearTimeout(timeoutId);
-    }, [debouncingHP]);
+    }, [debouncingHP, setHP]);
 
     const handleCellClick = (stat: Stat, cellIndex: number) => {
         switch (stat) {

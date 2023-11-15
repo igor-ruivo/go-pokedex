@@ -77,15 +77,15 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
                                         {moves[relevantMoveSet[0]].power}
-                                        <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                     </span>
                                     <span className="move-stats-content">
                                         {moves[relevantMoveSet[0]].energyGain}
-                                        <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                        <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                     </span>
                                     <span className="move-stats-content">
                                         {moves[relevantMoveSet[0]].cooldown}
-                                        <img src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
+                                        <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                     </span>
                                 </strong>
                             </div>
@@ -99,11 +99,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
                                         {moves[relevantMoveSet[1]].power}
-                                        <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                     </span>
                                     <span className="move-stats-content">
                                         {moves[relevantMoveSet[1]].energy}
-                                        <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                        <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                     </span>
                                 </strong>
                             </div>
@@ -117,11 +117,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
                                         {moves[relevantMoveSet[2]].power}
-                                        <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                     </span>
                                     <span className="move-stats-content">
                                         {moves[relevantMoveSet[2]].energy}
-                                        <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                        <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                     </span>
                                 </strong>
                             </div>
@@ -155,15 +155,15 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                         <strong className="move-detail move-stats">
                                             <span className="move-stats-content">
                                                 {moves[m].power}
-                                                <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                                <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                             </span>
                                             <span className="move-stats-content">
                                                 {moves[m].energyGain}
-                                                <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                                <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                             </span>
                                             <span className="move-stats-content">
                                                 {moves[m].cooldown}
-                                                <img src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
+                                                <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                             </span>
                                         </strong>
                                     </div>
@@ -196,11 +196,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                         <strong className="move-detail move-stats">
                                             <span className="move-stats-content">
                                                 {moves[m].power}
-                                                <img src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                                <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                             </span>
                                             <span className="move-stats-content">
                                                 {moves[m].energy}
-                                                <img src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                                <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                             </span>
                                         </strong>
                                     </div>

@@ -75,10 +75,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
 
     const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
     
-    const valueToLevel = (value: number) => {
-        return value / 2 + 0.5
-    }
-
     let bestInFamilyForGreatLeague = pokemon;
     let bestInFamilyForGreatLeagueRank = Number.MAX_VALUE;
     let bestInFamilyForUltraLeague = pokemon;
