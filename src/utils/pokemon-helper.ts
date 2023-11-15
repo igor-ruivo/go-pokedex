@@ -7,6 +7,11 @@ export const fetchReachablePokemonIncludingSelf = (pokemon: IGamemasterPokemon, 
 
     while (queue.length > 0) {
         const currentPokemon = queue.shift() as IGamemasterPokemon;
+
+        if (reachablePokemons.has(currentPokemon)) {
+            continue;
+        }
+
         reachablePokemons.add(currentPokemon);
         if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
             continue;
@@ -50,6 +55,11 @@ export const fetchPredecessorPokemonIncludingSelf = (pokemon: IGamemasterPokemon
 
     while (queue.length > 0) {
         const currentPokemon = queue.shift() as IGamemasterPokemon;
+
+        if (predecessorPokemons.has(currentPokemon)) {
+            continue;
+        }
+
         predecessorPokemons.add(currentPokemon);
         
         if (!currentPokemon.parent) {
@@ -67,42 +77,35 @@ export const fetchPredecessorPokemonIncludingSelf = (pokemon: IGamemasterPokemon
     return predecessorPokemons;
 }
 
-export const fetchPokemonFamily = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>)  => {
-    const family = new Set(pokemon.familyId ?
-        Object.values(gamemasterPokemon).filter(p => (p.familyId === pokemon.familyId || p.dex === pokemon.dex) && pokemon.isShadow === p.isShadow) :
-        Object.values(gamemasterPokemon).filter(p => p.dex === pokemon.dex && pokemon.isShadow === p.isShadow));
-        
-    const reachableFromFamily = new Set(family);
-
-    family.forEach(f => {
-        const reachable = fetchReachablePokemonIncludingSelf(f, gamemasterPokemon);
-        reachable.forEach(r => reachableFromFamily.add(r));
-    });
-
-    const queue = Array.from(reachableFromFamily);
-    const queueSet = new Set(reachableFromFamily);
+export const fetchPokemonFamily = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const queue = [pokemon];
+    const family = new Set<IGamemasterPokemon>();
 
     while (queue.length > 0) {
         const currentPokemon = queue.shift() as IGamemasterPokemon;
-        queueSet.delete(currentPokemon);
 
-        reachableFromFamily.add(currentPokemon);
-        if (!currentPokemon.parent) {
+        if (family.has(currentPokemon)) {
             continue;
         }
 
-        const parentRef = gamemasterPokemon[currentPokemon.parent];
-        if (!parentRef) {
-            continue;
-        }
+        family.add(currentPokemon);
 
-        if (!queueSet.has(parentRef)) {
-            queueSet.add(parentRef);
-            queue.push(parentRef);
-        }
+        const sameDex = Object.values(gamemasterPokemon).filter(p => p.dex === currentPokemon.dex && p.isShadow === currentPokemon.isShadow);
+        const sameFamily = currentPokemon.familyId ? Object.values(gamemasterPokemon).filter(p => p.familyId === currentPokemon.familyId && p.isShadow === currentPokemon.isShadow) : [];
+        const predecessorPokemons = fetchPredecessorPokemonIncludingSelf(currentPokemon, gamemasterPokemon);
+        const reachablePokemons = fetchReachablePokemonIncludingSelf(currentPokemon, gamemasterPokemon);
+
+        const newBatch = new Set([
+            ...sameDex,
+            ...sameFamily,
+            ...predecessorPokemons,
+            ...reachablePokemons
+        ].filter(p => !family.has(p)));
+
+        queue.push(...newBatch);
     }
 
-    return reachableFromFamily;
+    return family;
 }
 
 export const calculateCP = (baseAtk: number, atkIV: number, baseDef: number, defIV: number, baseHP: number, hpIV: number, level: number) => Math.max(10, Math.floor((baseAtk + atkIV) * Math.sqrt(baseDef + defIV) * Math.sqrt(baseHP + hpIV) * cpm[level] * cpm[level] / 10));
