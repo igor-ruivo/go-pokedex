@@ -84,7 +84,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                         <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                     </span>
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[0]].cooldown}
+                                        {moves[relevantMoveSet[0]].cooldown}s
                                         <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                     </span>
                                 </strong>
@@ -162,7 +162,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                                 <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                             </span>
                                             <span className="move-stats-content">
-                                                {moves[m].cooldown}
+                                                {moves[m].cooldown}s
                                                 <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                             </span>
                                         </strong>

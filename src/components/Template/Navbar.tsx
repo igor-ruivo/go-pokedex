@@ -9,31 +9,46 @@ import { GameLanguage, Language, useLanguage } from "../../contexts/language-con
 import Select from "react-select"
 import translator, { TranslatorKeys } from "../../utils/Translator";
 
-enum Theme {
+enum ThemeValues {
     Light,
     Dark
+}
+
+enum ThemeOptions {
+    Light,
+    Dark,
+    SystemDefault
 }
 
 const Navbar = () => {
     const getSystemThemePreference = () => {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return Theme.Dark;
+            return ThemeValues.Dark;
         }
-        return Theme.Light;
+        return ThemeValues.Light;
     }
 
-    const [systemDefaultTheme, setSystemDefaultTheme] = useState<Theme>(getSystemThemePreference());
+    const [systemDefaultTheme, setSystemDefaultTheme] = useState<ThemeValues>(getSystemThemePreference());
 
     const getDefaultTheme = () => {
         const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
         if (!currentTheme) {
+            return ThemeOptions.SystemDefault;
+        }
+
+        return +currentTheme as ThemeOptions;
+    }
+
+    const getComputedTheme = () => {
+        const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
+        if (!currentTheme || currentTheme === ThemeOptions.SystemDefault.toString()) {
             return systemDefaultTheme;
         }
 
-        return +currentTheme as Theme;
+        return +currentTheme as ThemeValues;
     }
 
-    const [theme, setTheme] = useState<Theme>(getDefaultTheme());
+    const [theme, setTheme] = useState<ThemeOptions>(getDefaultTheme());
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const navigate = useNavigate();
     const {pathname} = useLocation();
@@ -43,7 +58,7 @@ const Navbar = () => {
     useEffect(() => {
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
         const themeHandlerFunc = (event: MediaQueryListEvent) => {
-            const newColorScheme = event.matches ? Theme.Dark : Theme.Light;
+            const newColorScheme = event.matches ? ThemeValues.Dark : ThemeValues.Light;
             setSystemDefaultTheme(newColorScheme);
         }
 
@@ -53,12 +68,12 @@ const Navbar = () => {
     }, []);
 
     useEffect(() => {
-        switch (getDefaultTheme()) {
-            case Theme.Light:
+        switch (getComputedTheme()) {
+            case ThemeValues.Light:
                 document.body.classList.add('theme-light');
                 document.body.classList.remove('theme-dark');
                 break;
-            case Theme.Dark:
+            case ThemeValues.Dark:
                 document.body.classList.add('theme-dark');
                 document.body.classList.remove('theme-light');
                 break;
@@ -70,7 +85,7 @@ const Navbar = () => {
         label: string
     }
 
-    const handleThemeToggle = (newTheme: Theme) => {
+    const handleThemeToggle = (newTheme: ThemeOptions) => {
         writePersistentValue(ConfigKeys.DefaultTheme, JSON.stringify(newTheme));
         setTheme(newTheme);
     }
@@ -124,25 +139,30 @@ const Navbar = () => {
         }
     ];
 
-    const themeToHint = (theme: Theme) => {
+    const themeToHint = (theme: ThemeValues) => {
         switch (theme) {
-            case Theme.Light:
+            case ThemeValues.Light:
                 return "🔆";
-            case Theme.Dark:
+            case ThemeValues.Dark:
                 return "🌙";
         }
     }
 
-    const themeOptions: Entry<Theme>[] = [
+    const themeOptions: Entry<ThemeOptions>[] = [
         {
-            hint: themeToHint(Theme.Light),
-            label: "Light",
-            value: Theme.Light
+            hint: themeToHint(systemDefaultTheme),
+            label: translator(TranslatorKeys.SystemDefault, currentLanguage),
+            value: ThemeOptions.SystemDefault
         },
         {
-            hint: themeToHint(Theme.Dark),
-            label: "Dark",
-            value: Theme.Dark
+            hint: themeToHint(ThemeValues.Light),
+            label: translator(TranslatorKeys.LightTheme, currentLanguage),
+            value: ThemeOptions.Light
+        },
+        {
+            hint: themeToHint(ThemeValues.Dark),
+            label: translator(TranslatorKeys.DarkTheme, currentLanguage),
+            value: ThemeOptions.Dark
         }
     ];
 

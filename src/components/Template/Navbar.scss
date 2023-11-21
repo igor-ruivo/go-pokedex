@@ -105,6 +105,11 @@ div[tabIndex="-1"]:hover:has(> div.hint-container) {
 .navbar-dropdown {
     width: 80%;
     font-size: smaller;
+    
+    >* {
+        border: 1px solid var(--borderColor2);
+    }
+
     * {
         color: var(--textColor) !important;
         background: var(--buttonsBackground) !important;

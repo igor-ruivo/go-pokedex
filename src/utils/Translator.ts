@@ -63,7 +63,10 @@ export enum TranslatorKeys {
     Best,
     GameLanguage,
     Menu,
-    Theme
+    Theme,
+    DarkTheme,
+    LightTheme,
+    SystemDefault
 }
 
 const settings = new Map<Language, string>([
@@ -444,6 +447,24 @@ const theme = new Map<Language, string>([
     [Language.Bosnian, "Tema"]
 ]);
 
+const lightTheme = new Map<Language, string>([
+    [Language.English, "Light"],
+    [Language.Portuguese, "Claro"],
+    [Language.Bosnian, "Svijetli"]
+]);
+
+const darkTheme = new Map<Language, string>([
+    [Language.English, "Dark"],
+    [Language.Portuguese, "Escuro"],
+    [Language.Bosnian, "Tamni"]
+]);
+
+const systemDefault = new Map<Language, string>([
+    [Language.English, "System Default"],
+    [Language.Portuguese, "Padrão do Sistema"],
+    [Language.Bosnian, "Sistemski zadani"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -507,7 +528,10 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Best, best],
     [TranslatorKeys.GameLanguage, gameLanguage],
     [TranslatorKeys.Menu, menu],
-    [TranslatorKeys.Theme, theme]
+    [TranslatorKeys.Theme, theme],
+    [TranslatorKeys.LightTheme, lightTheme],
+    [TranslatorKeys.DarkTheme, darkTheme],
+    [TranslatorKeys.SystemDefault, systemDefault]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

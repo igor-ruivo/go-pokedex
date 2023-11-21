@@ -131,7 +131,7 @@ export const mapMoves: (data: any) => IMove[] = (data: any) => {
                 power: move.power,
                 energy: move.energy,
                 energyGain: move.energyGain,
-                cooldown: move.cooldown
+                cooldown: +move.cooldown / 1000
             }
         }
     );
