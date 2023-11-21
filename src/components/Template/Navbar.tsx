@@ -4,7 +4,7 @@ import SearchableDropdown from "../SearchableDropdown";
 import "./Navbar.scss";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue } from "../../utils/persistent-configs-handler";
 import { ListType } from "../../views/pokedex";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select"
 import translator, { TranslatorKeys } from "../../utils/Translator";
@@ -39,14 +39,14 @@ const Navbar = () => {
         return +currentTheme as ThemeOptions;
     }
 
-    const getComputedTheme = () => {
+    const getComputedTheme = useCallback(() => {
         const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
         if (!currentTheme || currentTheme === ThemeOptions.SystemDefault.toString()) {
             return systemDefaultTheme;
         }
 
         return +currentTheme as ThemeValues;
-    }
+    }, [systemDefaultTheme]);
 
     const [theme, setTheme] = useState<ThemeOptions>(getDefaultTheme());
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
@@ -78,7 +78,7 @@ const Navbar = () => {
                 document.body.classList.remove('theme-light');
                 break;
         }
-    }, [systemDefaultTheme, theme]);
+    }, [getComputedTheme, theme]);
     
     type EntryType = {
         value: string,
