@@ -5,14 +5,14 @@
     font-weight: 400;
     line-height: 1.5;
     border-radius: 8px;
-    background-color: $buttonsBackground;
-    color: $textColor;
+    background-color: var(--buttonsBackground);
+    color: var(--textColor);
 }
 
 .MuiInputBase-input,
 .MuiFormLabel-root,
 .MuiSvgIcon-root {
-    color: $textColor !important;
+    color: var(--textColor) !important;
 }
 
 ul.MuiAutocomplete-listbox {
@@ -20,16 +20,16 @@ ul.MuiAutocomplete-listbox {
 }
 
 .MuiAutocomplete-option[aria-selected="true"] {
-    background-color: $buttonsBackground !important;
+    background-color: var(--buttonsBackground) !important;
 }
 
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: $buttonsBorderColor !important;
+    border-color: var(--buttonsBorderColor) !important;
 }
 
 .autoComplete-option {
-    background-color: $dropdownOptionBlurred;
-    color: $textColor;
+    background-color: var(--dropdownOptionBlurred);
+    color: var(--textColor);
 }
 
 label.MuiFormLabel-root.MuiInputLabel-root {
@@ -37,11 +37,11 @@ label.MuiFormLabel-root.MuiInputLabel-root {
 }
 
 .Mui-disabled {
-    color: $textColor !important;
+    color: var(--textColor) !important;
     opacity: 50%;
 }
 
 .Mui-focused {
-    background-color: $dropdownOptionFocused !important;
-    color: $textColor !important;
+    background-color: var(--dropdownOptionFocused) !important;
+    color: var(--textColor) !important;
 }

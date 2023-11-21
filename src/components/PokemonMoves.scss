@@ -3,8 +3,8 @@
 .moves-title {
     padding: 9px;
     border-radius: 12px;
-    border: 1px solid $borderColor;
-    background-color: $buttonsBackground;
+    border: 1px solid var(--borderColor2);
+    background-color: var(--buttonsBackground);
 }
 
 .charged-attacks {
@@ -22,8 +22,8 @@
 }
 
 .move-card {
+    color: var(--titleTextColor);
     border-radius: 12px;
-    border: 1px solid hsla(0,0%, 100%, .25);
 }
 
 .move-card-content {
@@ -37,7 +37,7 @@
 
 .move-detail {
     border-radius: 12px;
-    background-color: rgba(0, 0, 0, .5);
+    background-color: rgba(0, 0, 0, .3);
     box-shadow: 0 0 2px hsla(0,21%,90%,.158),0 12px 11px #00000009;
     display: flex;
     justify-content: center;

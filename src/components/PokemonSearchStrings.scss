@@ -13,6 +13,8 @@
 }
 
 .search-strings-container {
+    background: var(--popup-background-color);
+    color-scheme: var(--colorScheme);
     display: flex;
     margin-left: auto;
     margin-right: auto;

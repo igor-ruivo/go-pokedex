@@ -315,7 +315,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             {similarPokemon.size > 1 && <div className="img-container">
                 <div className="img-family">
                     {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                        <div key = {p.speciesId} className="img-family-container">
+                        <div key = {p.speciesId} className={`img-family-container ${p.speciesId === pokemon.speciesId ? "selected" : ""}`}>
                             <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
                                 <PokemonImage pokemon={p} withName={false} withMetadata={false}/>
                             </Link>

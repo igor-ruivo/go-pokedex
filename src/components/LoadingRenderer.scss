@@ -1,5 +1,5 @@
 @import "../index";
 
 .loading_renderer {
-    color: $textColor;
+    color: var(--textColor);
 }

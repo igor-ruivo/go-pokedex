@@ -2,23 +2,77 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePokemon } from "../../contexts/pokemon-context";
 import SearchableDropdown from "../SearchableDropdown";
 import "./Navbar.scss";
-import { ConfigKeys, readSessionValue } from "../../utils/persistent-configs-handler";
+import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue } from "../../utils/persistent-configs-handler";
 import { ListType } from "../../views/pokedex";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select"
 import translator, { TranslatorKeys } from "../../utils/Translator";
 
+enum Theme {
+    Light,
+    Dark
+}
+
 const Navbar = () => {
+    const getSystemThemePreference = () => {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return Theme.Dark;
+        }
+        return Theme.Light;
+    }
+
+    const [systemDefaultTheme, setSystemDefaultTheme] = useState<Theme>(getSystemThemePreference());
+
+    const getDefaultTheme = () => {
+        const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
+        if (!currentTheme) {
+            return systemDefaultTheme;
+        }
+
+        return +currentTheme as Theme;
+    }
+
+    const [theme, setTheme] = useState<Theme>(getDefaultTheme());
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const navigate = useNavigate();
     const {pathname} = useLocation();
     const [optionsOpened, setOptionsOpened] = useState(false);
     const {currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage} = useLanguage();
 
+    useEffect(() => {
+        const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+        const themeHandlerFunc = (event: MediaQueryListEvent) => {
+            const newColorScheme = event.matches ? Theme.Dark : Theme.Light;
+            setSystemDefaultTheme(newColorScheme);
+        }
+
+        mediaQueryList.addEventListener('change', themeHandlerFunc);
+
+        return () => mediaQueryList.removeEventListener('change', themeHandlerFunc);
+    }, []);
+
+    useEffect(() => {
+        switch (getDefaultTheme()) {
+            case Theme.Light:
+                document.body.classList.add('theme-light');
+                document.body.classList.remove('theme-dark');
+                break;
+            case Theme.Dark:
+                document.body.classList.add('theme-dark');
+                document.body.classList.remove('theme-light');
+                break;
+        }
+    }, [systemDefaultTheme, theme]);
+    
     type EntryType = {
         value: string,
         label: string
+    }
+
+    const handleThemeToggle = (newTheme: Theme) => {
+        writePersistentValue(ConfigKeys.DefaultTheme, JSON.stringify(newTheme));
+        setTheme(newTheme);
     }
 
     const getDestination = () => {
@@ -49,24 +103,46 @@ const Navbar = () => {
     type Entry<T> = {
         label: string,
         value: T,
-        flag: string
+        hint: string
     }
 
     const languageOptions: Entry<Language>[] = [
         {
             label: "English",
             value: Language.English,
-            flag: "https://i.imgur.com/9gMorO5.png"
+            hint: "https://i.imgur.com/9gMorO5.png"
         },
         {
             label: "Português",
             value: Language.Portuguese,
-            flag: "https://i.imgur.com/YUXHN0U.png"
+            hint: "https://i.imgur.com/YUXHN0U.png"
         },
         {
             label: "Bosanski",
             value: Language.Bosnian,
-            flag: "https://i.imgur.com/kn0M3hW.png"
+            hint: "https://i.imgur.com/kn0M3hW.png"
+        }
+    ];
+
+    const themeToHint = (theme: Theme) => {
+        switch (theme) {
+            case Theme.Light:
+                return "🔆";
+            case Theme.Dark:
+                return "🌙";
+        }
+    }
+
+    const themeOptions: Entry<Theme>[] = [
+        {
+            hint: themeToHint(Theme.Light),
+            label: "Light",
+            value: Theme.Light
+        },
+        {
+            hint: themeToHint(Theme.Dark),
+            label: "Dark",
+            value: Theme.Dark
         }
     ];
 
@@ -74,38 +150,19 @@ const Navbar = () => {
         {
             label: "English",
             value: GameLanguage.English,
-            flag: "https://i.imgur.com/9gMorO5.png"
+            hint: "https://i.imgur.com/9gMorO5.png"
         },
         {
             label: "Português",
             value: GameLanguage.Portuguese,
-            flag: "https://i.imgur.com/YUXHN0U.png"
+            hint: "https://i.imgur.com/YUXHN0U.png"
         }
     ];
-/*
-    const cacheLeague = () => {
-        if (destination.includes("great")) {
-            handleSetLeague(ListType.GREAT_LEAGUE);
-            return;
-        }
-
-        if (destination.includes("ultra")) {
-            handleSetLeague(ListType.ULTRA_LEAGUE);
-            return;
-        }
-
-        if (destination.includes("master")) {
-            handleSetLeague(ListType.MASTER_LEAGUE);
-            return;
-        }
-
-        handleSetLeague(ListType.POKEDEX);
-    }*/
 
     return <>
         <header className="navbar">
             <section className="navbar-section">
-                <Link /*onClick={cacheLeague}*/ to={getDestination()} className="navbar-logo">
+                <Link to={getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
                 </Link>
                 <button
@@ -149,7 +206,7 @@ const Navbar = () => {
                                     options={languageOptions}
                                     value={languageOptions.find(l => l.value === currentLanguage)}
                                     onChange={v => updateCurrentLanguage(v!.value)}
-                                    formatOptionLabel={(data, _) => <div className="flag-container"><img alt="flag" className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
+                                    formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className="country-flag" src={data.hint} height={17} /><span>{data.label}</span></div>}
                                 />
                             </div>
                         </li>
@@ -164,7 +221,22 @@ const Navbar = () => {
                                     options={gameLanguageOptions}
                                     value={gameLanguageOptions.find(l => l.value === currentGameLanguage)}
                                     onChange={v => updateCurrentGameLanguage(v!.value)}
-                                    formatOptionLabel={(data, _) => <div className="flag-container"><img alt="flag" className="country-flag" src={data.flag} height={17} /><span>{data.label}</span></div>}
+                                    formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className="country-flag" src={data.hint} height={17} /><span>{data.label}</span></div>}
+                                />
+                            </div>
+                        </li>
+                        <li className="options-li">
+                            <div className="option-entry">
+                                <span>
+                                    {translator(TranslatorKeys.Theme, currentLanguage)}
+                                </span>
+                                <Select
+                                    className="navbar-dropdown"
+                                    isSearchable={false}
+                                    options={themeOptions}
+                                    value={themeOptions.find(l => l.value === getDefaultTheme())}
+                                    onChange={v => handleThemeToggle(v!.value)}
+                                    formatOptionLabel={(data, _) => <div className="hint-container"><span>{data.hint} {data.label}</span></div>}
                                 />
                             </div>
                         </li>

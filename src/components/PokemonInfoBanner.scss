@@ -33,12 +33,12 @@ table {
     border: 1px;
     border-style: solid;
     box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-    background: $contentBackground;
-    border-color: $borderColor;
+    background: var(--contentBackground);
+    border-color: var(--borderColor2);
 }
 
 .types-bg {
-    color: $textColor;
+    color: var(--textColor);
     text-shadow: 0 0 10px rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.5);
     font-weight: 500;
     display: block;
@@ -77,12 +77,12 @@ table {
 }
 
 .img-family {
-    background-color: $popup-background-color;
+    background-color: var(--popup-background-color);
     padding-top: 6px;
     padding-bottom: 6px;
     justify-content: center;
     border-radius: 12px;
-    border: 1px solid $borderColor;
+    border: 1px solid var(--borderColor2);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -115,24 +115,27 @@ table {
 }
 
 .img-family-container {
-    border: 1px solid $bannerBorderColor;
+    border: 1px solid var(--bannerBorderColor);
     border-radius: 50%;
     width: calc(36px + 7 * calc(100vw - 320px) / 180);
     height: calc(36px + 7 * calc(100vw - 320px) / 180);
     box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
     padding: 4px;
     margin: 1px;
+    &:hover {
+        border: 1px solid var(--buttonsBorderColor);
+    }
 }
 
 .select-level {
-    color-scheme: dark;
+    color-scheme: var(--colorScheme);
     font-size: small;
     padding-top: 1px;
     margin-left: 4px;
-    background: $contentBackground;
-    color: $textColor;
+    background: var(--contentBackground);
+    color: var(--textColor);
     border: 0px;
-    outline: 1px solid $buttonsBorderColor;
+    outline: 1px solid var(--buttonsBorderColor);
 }
 
 .level-cp {
@@ -168,9 +171,9 @@ table {
 
 .moves_main_panel {
     height: 100%;
-    background-color: $popup-background-color;
+    background-color: var(--popup-background-color);
     border-radius: 12px;
-    border: 1px solid $borderColor;
+    border: 1px solid var(--borderColor2);
     width: 100%;
     padding: 5px;
 }

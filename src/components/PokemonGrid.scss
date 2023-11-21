@@ -8,8 +8,9 @@
 
 .grid > div {
     padding: 5px;
-    border: 1px solid $borderColor;
+    background-color: var(--gridItemsBackgroundColor) !important;
+    border: 1px solid var(--borderColor2);
     &:hover {
-        border: 1px solid $buttonsBorderColor;
+        border: 1px solid var(--buttonsBorderColor);
     }
 }

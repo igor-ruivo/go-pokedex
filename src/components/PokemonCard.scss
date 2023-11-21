@@ -16,7 +16,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     font-size: calc(10px + .5vw);
-    color: $textColor;
+    color: var(--textColor);
 }
 
 .header-container {

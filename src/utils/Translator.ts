@@ -62,7 +62,8 @@ export enum TranslatorKeys {
     Current,
     Best,
     GameLanguage,
-    Menu
+    Menu,
+    Theme
 }
 
 const settings = new Map<Language, string>([
@@ -368,7 +369,7 @@ const fastMoves = new Map<Language, string>([
 const chargedMoves = new Map<Language, string>([
     [Language.English, "Charged Moves"],
     [Language.Portuguese, "Ataques Carregados"],
-    [Language.Bosnian, "Posebni napadi"]
+    [Language.Bosnian, "Posebni Napadi"]
 ]);
 
 const stats = new Map<Language, string>([
@@ -437,6 +438,12 @@ const menu = new Map<Language, string>([
     [Language.Bosnian, "Meni"]
 ]);
 
+const theme = new Map<Language, string>([
+    [Language.English, "Theme"],
+    [Language.Portuguese, "Tema"],
+    [Language.Bosnian, "Tema"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -500,6 +507,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Best, best],
     [TranslatorKeys.GameLanguage, gameLanguage],
     [TranslatorKeys.Menu, menu],
+    [TranslatorKeys.Theme, theme]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();

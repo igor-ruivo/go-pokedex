@@ -6,7 +6,7 @@
     border: 1px;
     border-style: solid;
     box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-    border-color: $borderColor;
+    border-color: var(--borderColor2);
     overscroll-behavior: none !important;
     margin-top: 12px;
 }
@@ -19,7 +19,7 @@
 }
 
 .Mui-selected {
-    background-color: $tableRowSelected !important;
+    background-color: var(--tableRowSelected) !important;
 }
 
 .ivs-nav {
@@ -29,28 +29,28 @@
 
 .MuiTableContainer-root,
 .MuiTableCell-head {
-    color: $textColor !important;
-    background-color: $tableBackground !important;
-    color-scheme: dark !important;
+    color: var(--textColor) !important;
+    background-color: var(--tableBackground) !important;
+    color-scheme: var(--colorScheme) !important;
 }
 
 .MuiTableCell-body {
-    color: $textColor !important;
+    color: var(--textColor) !important;
 }
 
 .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active {
-    color: $tableHeaderSortable;
+    color: var(--tableHeaderSortable);
 }
 
 .MuiTableRow-hover {
     &:hover {
-        background-color: $tableBackgroundHover !important;
+        background-color: var(--tableBackgroundHover) !important;
     }
 }
 
 .MuiTableSortLabel-root {
     &:hover {
-        color: $tableHeaderSortable !important;
+        color: var(--tableHeaderSortable) !important;
     }
 }
 

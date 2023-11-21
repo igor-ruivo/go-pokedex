@@ -1,7 +1,7 @@
 body {
     padding: 0;
     margin: 0;
-    background: #202023;
+    background: var(--bodyBackgroundColor);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
@@ -35,24 +35,54 @@ code {
     --type-Water: #3f7dba;
 }
 
-$bodyBackgroundColor: #202023;
-$headerBackground: rgba(36, 41, 47, 0.975);
-$footerBackground: #202023;
-$switchBackground: #111417;
-$toggleBackground: #111417;
-$textColor: #eff2f7;
-$disabledTextColor: rgba(239,242,247, 0.5);
-$borderColor: #424a53;
-$selectedItemBackground: #424a53;
-$bannerBorderColor: #d0d0d0;
-$contentBackground: #24292f;
-$buttonsBackground: #384049;
-$dropdownOptionBlurred: #2b3138;
-$dropdownOptionFocused: #384049;
-$buttonsTextColor: #ebf4ed;
-$buttonsBorderColor: #848484;
-$tableBackground: rgba(36, 41, 47);
-$tableBackgroundHover: rgba(54, 61, 70);
-$tableHeaderSortable: rgb(198, 198, 199);
-$tableRowSelected: rgba(25, 118, 210, 0.18);
-$popup-background-color: #26313b;
+.theme-dark {
+    --bodyBackgroundColor: #202023;
+    --gridItemsBackgroundColor: rgb(36, 41, 47);
+    --selectionHover: #464f59;
+    --headerBackground: rgb(36, 41, 47);
+    --headerBackgroundSide: rgba(40, 45, 51, 0.975);
+    --textColor: #eff2f7;
+    --titleTextColor: #eff2f7;
+    --borderColor: #424a53;
+    --borderColor2: #424a53;
+    --bannerBorderColor: #d0d0d0;
+    --contentBackground: #24292f;
+    --buttonsBackground: #384049;
+    --dropdownOptionBlurred: #2b3138;
+    --dropdownOptionFocused: #384049;
+    --buttonsTextColor: #ebf4ed;
+    --buttonsBorderColor: #848484;
+    --tableBackground: rgba(36, 41, 47);
+    --tableBackgroundHover: rgba(54, 61, 70);
+    --tableHeaderSortable: rgb(198, 198, 199);
+    --tableRowSelected: rgba(25, 118, 210, 0.18);
+    --popup-background-color: #26313b;
+    --underlineDivision: rgba(255, 255, 255, 0.25);
+    --colorScheme: dark;
+}
+
+.theme-light {
+    --bodyBackgroundColor: #f0f0e5;
+    --gridItemsBackgroundColor: rgb(240, 240, 240);
+    --selectionHover: rgb(210, 210, 210);
+    --headerBackground: rgb(240, 240, 240);
+    --headerBackgroundSide: rgba(243, 245, 245, 0.975);
+    --textColor: #202122;
+    --titleTextColor: #eff2f7;
+    --borderColor: #424a53;
+    --borderColor2: rgb(204, 204, 204);
+    --bannerBorderColor: #d0d0d0;
+    --contentBackground: #fff;
+    --buttonsBackground: rgb(227, 227, 227);
+    --dropdownOptionBlurred: #2b3138;
+    --dropdownOptionFocused: rgb(227, 227, 227);
+    --buttonsTextColor: #202122;
+    --buttonsBorderColor: #848484;
+    --tableBackground: #f0f0f0;
+    --tableBackgroundHover: #dcdcdc;
+    --tableHeaderSortable: rgb(130, 130, 130);
+    --tableRowSelected: rgba(25, 118, 210, 0.18);
+    --popup-background-color: #f0f0f0;
+    --underlineDivision: rgba(40, 40, 40, 0.25);
+    --colorScheme: light;
+}

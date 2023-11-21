@@ -27,7 +27,7 @@ const Pokedex = () => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
     // TEMP DEBUG
-    if (gamemasterPokemon && Object.keys(gamemasterPokemon).length) {
+    if (fetchCompleted && gamemasterPokemon && Object.keys(gamemasterPokemon).length) {
         
         const movesSet = new Set<string>();
         

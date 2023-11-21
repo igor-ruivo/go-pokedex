@@ -3,6 +3,7 @@
 .pokemon-number {
     border-radius: 12px;
     padding: clamp(3px, 1.72vw, 6px) clamp(6px, 1.72vw, 12px);
-    background-color: $buttonsBackground;
+    background-color: var(--buttonsBackground);
     font-size: clamp(9px, 1.72vw, 14px);
+    border: 1px solid var(--borderColor2);
 }

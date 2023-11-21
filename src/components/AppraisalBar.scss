@@ -41,9 +41,9 @@
     padding-bottom: 12px;
     padding-left: 12px;
     padding-right: 12px;
-    background-color: $popup-background-color;
+    background-color: var(--popup-background-color);
     border-radius: 12px;
-    border: 1px solid $borderColor;
+    border: 1px solid var(--borderColor2);
 }
 
 .appraisal .stat {
@@ -58,7 +58,7 @@
 }
 
 .appraisal .stat h4 span {
-    color: $textColor;
+    color: var(--textColor);
 }
 
 .appraisal .stat-bar {
@@ -72,7 +72,7 @@
     flex: 1 1 40px;
     border-right: 1px solid rgba(255,255,255,.3);
     cursor: pointer;
-    border: 1px solid $borderColor;
+    border: 1px solid var(--borderColor2);
 }
 
 .appraisal .stat-bar .bar.hover {
@@ -111,13 +111,13 @@
 }
 
 .select-ivs {
-    color-scheme: dark;
+    color-scheme: var(--colorScheme);
     padding-top: 1px;
     margin-left: 4px;
-    background: $contentBackground;
-    color: $textColor;
+    background: var(--contentBackground);
+    color: var(--textColor);
     border: 0px;
-    outline: 1px solid $buttonsBorderColor;
+    outline: 1px solid var(--buttonsBorderColor);
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
@@ -147,15 +147,5 @@
 
     .stat-current-value {
         align-self: center;
-    }
-
-    .select-ivs {
-        color-scheme: dark;
-        padding-top: 1px;
-        background: $contentBackground;
-        color: $textColor;
-        border: 0px;
-        outline: 1px solid $buttonsBorderColor;
-        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
     }
 }
