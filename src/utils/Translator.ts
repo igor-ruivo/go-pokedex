@@ -460,9 +460,9 @@ const darkTheme = new Map<Language, string>([
 ]);
 
 const systemDefault = new Map<Language, string>([
-    [Language.English, "System Default"],
-    [Language.Portuguese, "Padrão do Sistema"],
-    [Language.Bosnian, "Sistemski zadani"]
+    [Language.English, "System"],
+    [Language.Portuguese, "Sistema"],
+    [Language.Bosnian, "Sistemski"]
 ]);
 
 const translations = new Map<TranslatorKeys, Map<Language, string>>([

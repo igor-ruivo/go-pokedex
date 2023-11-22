@@ -10,6 +10,8 @@ import { Link, useParams } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import gameTranslator, { GameTranslatorKeys, isTranslated } from '../utils/GameTranslator';
+import { fetchPokemonFamily } from '../utils/pokemon-helper';
+import Dictionary from '../utils/Dictionary';
 
 export enum ListType {
     POKEDEX,
@@ -78,16 +80,22 @@ const Pokedex = () => {
         let processedList: IGamemasterPokemon[] = [];
 
         const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon[r.speciesId];
+
+        const arrayToDictionary = (array: IGamemasterPokemon[]) => {
+            const dictionary: Dictionary<IGamemasterPokemon> = {};
+        
+            array.forEach(i => dictionary[i.speciesId] = i);
+        
+            return dictionary;
+        }
         
         const inputFilter = (p: IGamemasterPokemon, targetPokemon: IGamemasterPokemon[]) => {
-            if (!p.familyId || !showFamilyTree) {
+            if (!showFamilyTree) {
                 return baseFilter(p);
             }
-
-            const wholeFamilyNames = targetPokemon
-                .filter(pokemon => pokemon.familyId === p.familyId);
-
-            return wholeFamilyNames.some(baseFilter);
+            
+            const family = fetchPokemonFamily(p, arrayToDictionary(targetPokemon));
+            return Array.from(family).some(baseFilter);
         }
 
         const baseFilter = (p: IGamemasterPokemon) => p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)).toLowerCase().includes(inputText.toLowerCase().trim());
