@@ -14,27 +14,6 @@ code {
         monospace;
 }
 
-:root {
-    --type-Bug: #85b430;
-    --type-Dark: #4f4c5f;
-    --type-Dragon: #035094;
-    --type-Electric: #c09b2d;
-    --type-Fairy: #c966bf;
-    --type-Fighting: #a02c3b;
-    --type-Fire: #be7510;
-    --type-Flying: #7188b0;
-    --type-Ghost: #574e87;
-    --type-Grass: #248b46;
-    --type-Ground: #aa6641;
-    --type-Ice: #6ea19f;
-    --type-Normal: #727475;
-    --type-Poison: #b03a9a;
-    --type-Psychic: #cc595d;
-    --type-Rock: #9f9052;
-    --type-Steel: #548a9e;
-    --type-Water: #3f7dba;
-}
-
 .theme-dark {
     --bodyBackgroundColor: #202023;
     --gridItemsBackgroundColor: rgb(36, 41, 47);
@@ -59,30 +38,68 @@ code {
     --popup-background-color: #26313b;
     --underlineDivision: rgba(255, 255, 255, 0.25);
     --colorScheme: dark;
+    
+    --type-Bug: #85b430;
+    --type-Dark: #4f4c5f;
+    --type-Dragon: #035094;
+    --type-Electric: #c09b2d;
+    --type-Fairy: #c966bf;
+    --type-Fighting: #a02c3b;
+    --type-Fire: #be7510;
+    --type-Flying: #7188b0;
+    --type-Ghost: #574e87;
+    --type-Grass: #248b46;
+    --type-Ground: #aa6641;
+    --type-Ice: #6ea19f;
+    --type-Normal: #727475;
+    --type-Poison: #b03a9a;
+    --type-Psychic: #cc595d;
+    --type-Rock: #9f9052;
+    --type-Steel: #548a9e;
+    --type-Water: #3f7dba;
 }
 
 .theme-light {
     --bodyBackgroundColor: #f0f0e5;
     --gridItemsBackgroundColor: rgb(240, 240, 240);
-    --selectionHover: rgb(210, 210, 210);
-    --headerBackground: rgb(240, 240, 240);
-    --headerBackgroundSide: rgba(243, 245, 245, 0.975);
+    --selectionHover: rgb(205, 205, 205);
+    --headerBackground: rgb(244, 244, 244);
+    --headerBackgroundSide: rgba(247, 249, 249, 0.975);
     --textColor: #202122;
     --titleTextColor: #eff2f7;
     --borderColor: #424a53;
     --borderColor2: rgb(204, 204, 204);
     --bannerBorderColor: #d0d0d0;
     --contentBackground: #fff;
-    --buttonsBackground: rgb(227, 227, 227);
-    --dropdownOptionBlurred: #2b3138;
-    --dropdownOptionFocused: rgb(227, 227, 227);
+    --buttonsBackground: rgb(235, 235, 235);
+    --dropdownOptionBlurred: rgb(235, 235, 235);
+    --dropdownOptionFocused: rgb(223, 223, 223);
     --buttonsTextColor: #202122;
     --buttonsBorderColor: #848484;
-    --tableBackground: #f0f0f0;
+    --tableBackground: #f6f6f6;
     --tableBackgroundHover: #dcdcdc;
-    --tableHeaderSortable: rgb(130, 130, 130);
+    --tableHeaderSortable: rgb(140, 140, 140);
     --tableRowSelected: rgba(25, 118, 210, 0.18);
-    --popup-background-color: #f0f0f0;
+    --popup-background-color: #f6f6f6;
     --underlineDivision: rgba(40, 40, 40, 0.25);
     --colorScheme: light;
+    
+    --type-Bug: #92c92b;
+    --type-Dark: #575467;
+    --type-Dragon: #0566bc;
+    --type-Electric: #ffce3e;
+    --type-Fairy: #eb8ee2;
+    --type-Fighting: #d23c50;
+    --type-Fire: #f09516;
+    --type-Flying: #90aadc;
+    --type-Ghost: #776bb6;
+    --type-Grass: #35ab5d;
+    --type-Ground: #d97845;
+    --type-Ice: #96d9d6;
+    --type-Normal: #9d9fa0;
+    --type-Poison: #d24fbb;
+    --type-Psychic: #f76e73;
+    --type-Rock: #cdba6c;
+    --type-Steel: #538b9f;
+    --type-Water: #5092d5;
 }

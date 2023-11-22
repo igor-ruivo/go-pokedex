@@ -17,6 +17,7 @@
 
 ul.MuiAutocomplete-listbox {
     padding: 0;
+    color-scheme: var(--colorScheme);
 }
 
 .MuiAutocomplete-option[aria-selected="true"] {
