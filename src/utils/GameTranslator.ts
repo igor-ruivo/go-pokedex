@@ -22,13 +22,13 @@ export enum GameTranslatorKeys {
     TRANSFORM,
     LAST_RESORT,
     YAWN,
-    //TODO: LOCK_ON,
+    LOCK_ON,
     TAKE_DOWN,
     TRI_ATTACK,
     //TODO: GIGA_IMPACT,
     //TODO: TECHNO_BLAST_NORMAL,
     //TODO: BOOMBURST,
-    //TODO: WEATHER_BALL_NORMAL,
+    WEATHER_BALL_NORMAL,
 
     //grass
     VINE_WHIP,
@@ -46,7 +46,7 @@ export enum GameTranslatorKeys {
     LEAF_TORNADO,
     ENERGY_BALL,
     HIDDEN_POWER_GRASS,
-    //TODO: LEAFAGE,
+    LEAFAGE,
     LEAF_STORM,
     SEED_FLARE,
 
@@ -72,13 +72,13 @@ export enum GameTranslatorKeys {
     SACRED_FIRE,
     MYSTICAL_FIRE,
     MAGMA_STORM,
-    //TODO: FUSION_FLARE,
+    FUSION_FLARE,
     
     //poison
     SLUDGE_BOMB,
     POISON_STING,
     POISON_JAB,
-    //TODO: ACID,
+    ACID,
     GUNK_SHOT,
     POISON_FANG,
     SLUDGE_WAVE,
@@ -103,7 +103,7 @@ export enum GameTranslatorKeys {
     AIR_SLASH,
     AERIAL_ACE,
     AIR_CUTTER,
-    //TODO: GUST
+    GUST,
     BRAVE_BIRD,
     HURRICANE,
     FEATHER_DANCE,
@@ -113,7 +113,7 @@ export enum GameTranslatorKeys {
     HIDDEN_POWER_FLYING,
     //TODO: ACROBATICS,
     //TODO: AEROBLAST,
-    //TODO: FLY,
+    FLY,
     //TODO: DRAGON_ASCENT,
     //TODO: OBLIVION_WING,
 
@@ -131,7 +131,7 @@ export enum GameTranslatorKeys {
     SCALD,
     WEATHER_BALL_WATER,
     RAZOR_SHELL,
-    //TODO: CRABHAMMER,
+    CRABHAMMER,
     WATERFALL,
     //TODO: OCTAZOOKA,
     HIDDEN_POWER_WATER,
@@ -185,7 +185,7 @@ export enum GameTranslatorKeys {
     AVALANCHE,
     TRIPLE_AXEL,
     HIDDEN_POWER_ICE,
-    //TODO: ICE_FANG,
+    ICE_FANG,
     //TODO: TECHNO_BLAST_CHILL,
     ICICLE_SPEAR,
     //TODO: GLACIATE,
@@ -194,7 +194,7 @@ export enum GameTranslatorKeys {
     BUG_BITE,
     STRUGGLE_BUG,
     BUG_BUZZ,
-    //TODO: SIGNAL_BEAM
+    SIGNAL_BEAM,
     INFESTATION,
     X_SCISSOR,
     FELL_STINGER,
@@ -263,7 +263,7 @@ export enum GameTranslatorKeys {
     SPARK,
     VOLT_SWITCH,
     CHARGE_BEAM,
-    //TODO: THUNDER_FANG,
+    THUNDER_FANG,
     ZAP_CANNON,
     HIDDEN_POWER_ELECTRIC,
     //TODO: TECHNO_BLAST_SHOCK,
@@ -1424,6 +1424,56 @@ const masterLeague = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "Liga Mestra"]
 ]);
 
+const lockOn = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Lock On"],
+    [GameLanguage.Portuguese, "Mirar"]
+]);
+
+const leafage = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Leafage"],
+    [GameLanguage.Portuguese, "Folhagem"]
+]);
+
+const fusionFlare = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Fusion Flare"],
+    [GameLanguage.Portuguese, "Chama da Fusão"]
+]);
+
+const acid = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Acid"],
+    [GameLanguage.Portuguese, "Ácido"]
+]);
+
+const gust = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Gust"],
+    [GameLanguage.Portuguese, "Lufada de Vento"]
+]);
+
+const fly = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Fly"],
+    [GameLanguage.Portuguese, "Voar"]
+]);
+
+const crabhammer = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Crabhammer"],
+    [GameLanguage.Portuguese, "Martelo Caranguejo"]
+]);
+
+const iceFang = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Ice Fang"],
+    [GameLanguage.Portuguese, "Presa de Gelo"]
+]);
+
+const signalBeam = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Signal Beam"],
+    [GameLanguage.Portuguese, "Feixe Sinalizador"]
+]);
+
+const thunderFang = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Thunder Fang"],
+    [GameLanguage.Portuguese, "Presa Trovejante"]
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.VINE_WHIP, vineWhip],
     [GameTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -1662,6 +1712,17 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.GreatLeague, greatLeague],
     [GameTranslatorKeys.UltraLeague, ultraLeague],
     [GameTranslatorKeys.MasterLeague, masterLeague],
+    [GameTranslatorKeys.LOCK_ON, lockOn],
+    [GameTranslatorKeys.WEATHER_BALL_NORMAL, weatherBall],
+    [GameTranslatorKeys.LEAFAGE, leafage],
+    [GameTranslatorKeys.FUSION_FLARE, fusionFlare],
+    [GameTranslatorKeys.ACID, acid],
+    [GameTranslatorKeys.GUST, gust],
+    [GameTranslatorKeys.FLY, fly],
+    [GameTranslatorKeys.CRABHAMMER, crabhammer],
+    [GameTranslatorKeys.ICE_FANG, iceFang],
+    [GameTranslatorKeys.SIGNAL_BEAM, signalBeam],
+    [GameTranslatorKeys.THUNDER_FANG, thunderFang],
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());
