@@ -27,8 +27,8 @@ const useFetchAllData: () => [IRankedPokemon[][], IMove[], boolean, string] = ()
         }
 
         const controller = new AbortController();
-        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], false, {signal: controller.signal}, (data: any) => mapRankedPokemon(data, gamemasterPokemon));
-        fetchMoves([movesUrl], false, {signal: controller.signal}, mapMoves);
+        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], true, {signal: controller.signal}, (data: any) => mapRankedPokemon(data, gamemasterPokemon));
+        fetchMoves([movesUrl], true, {signal: controller.signal}, mapMoves);
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
