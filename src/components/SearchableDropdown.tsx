@@ -39,7 +39,7 @@ const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdo
         inputValue={debouncingInputText}
         onInputChange={(_e, newInputValue, _reason) => setDebouncingInputText(newInputValue)}
         onChange={(_event, value, reason, _details) => reason === "selectOption" && onSelection(value)}
-        isOptionEqualToValue={(option, value) => option.label.toLowerCase().includes(value.label.toLocaleLowerCase())}
+        isOptionEqualToValue={(option, value) => option.label?.toLocaleLowerCase().includes(value.label?.toLocaleLowerCase() ?? "") ?? false}
         options={options}
         autoComplete
         freeSolo

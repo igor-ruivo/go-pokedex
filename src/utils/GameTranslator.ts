@@ -9,7 +9,7 @@ export enum GameTranslatorKeys {
     STRUGGLE,
     QUICK_ATTACK,
     BODY_SLAM,
-    //TODO: HYPER_FANG,
+    HYPER_FANG,
     HYPER_BEAM,
     WRAP,
     //TODO: PRESENT,
@@ -1474,6 +1474,11 @@ const thunderFang = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "Presa Trovejante"]
 ]);
 
+const hyperFang = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Hyper Fang"],
+    [GameLanguage.Portuguese, "Hiperpresa"]
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.VINE_WHIP, vineWhip],
     [GameTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -1723,6 +1728,7 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.ICE_FANG, iceFang],
     [GameTranslatorKeys.SIGNAL_BEAM, signalBeam],
     [GameTranslatorKeys.THUNDER_FANG, thunderFang],
+    [GameTranslatorKeys.HYPER_FANG, hyperFang]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());
