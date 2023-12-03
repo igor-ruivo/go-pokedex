@@ -1,6 +1,5 @@
 import "./PokemonNumber.scss";
 import { ListType } from "../views/pokedex";
-import { usePokemon } from "../contexts/pokemon-context";
 import { ordinal } from "../utils/conversions";
 import { Language, useLanguage } from "../contexts/language-context";
 import { usePvp } from "../contexts/pvp-context";
