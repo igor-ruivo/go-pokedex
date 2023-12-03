@@ -250,7 +250,7 @@ export enum GameTranslatorKeys {
     //TODO: SHADOW_BONE,
     HIDDEN_POWER_GHOST,
     SHADOW_SNEAK,
-    //TODO: POLTERGEIST,
+    POLTERGEIST,
     //TODO: SHADOW_FORCE,
 
     //electric
@@ -277,7 +277,7 @@ export enum GameTranslatorKeys {
     FAIRY_WIND,
     DAZZLING_GLEAM,
     PLAY_ROUGH,
-    //TODO: DRAINING_KISS,
+    DRAINING_KISS,
     GEOMANCY,
 
     //fighting
@@ -1479,6 +1479,16 @@ const hyperFang = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "Hiperpresa"]
 ]);
 
+const drainingKiss = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Draining Kiss"],
+    [GameLanguage.Portuguese, "Beijo Drenante"]
+]);
+
+const poltergeist = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Poltergeist"],
+    [GameLanguage.Portuguese, "Poltergeist"]
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.VINE_WHIP, vineWhip],
     [GameTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -1728,7 +1738,9 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.ICE_FANG, iceFang],
     [GameTranslatorKeys.SIGNAL_BEAM, signalBeam],
     [GameTranslatorKeys.THUNDER_FANG, thunderFang],
-    [GameTranslatorKeys.HYPER_FANG, hyperFang]
+    [GameTranslatorKeys.HYPER_FANG, hyperFang],
+    [GameTranslatorKeys.DRAINING_KISS, drainingKiss],
+    [GameTranslatorKeys.POLTERGEIST, poltergeist]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());
