@@ -1,5 +1,11 @@
 @import "../index";
 
+a:hover,
+button:hover,
+.selectable:hover {
+    filter: saturate(1.1) brightness(1.1);
+}
+
 .grid_container {
     a {
         text-decoration: none;

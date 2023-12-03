@@ -68,7 +68,7 @@ const LeagueRanks = ({
     }
 
     const renderPanel = (leagueStat: LeagueStat) => {
-        const pvpStatsClassName = `pvp-stats-2 ${leagueStat.leagueTitle} ` + (getLeagueName(league) === leagueStat.leagueTitle ? "selected" : "");
+        const pvpStatsClassName = `pvp-stats-2 selectable ${leagueStat.leagueTitle} ` + (getLeagueName(league) === leagueStat.leagueTitle ? "selected" : "");
         const logoSrc = `https://www.stadiumgaming.gg/frontend/assets/img/${leagueStat.leagueTitle}.png`;
 
         return (
