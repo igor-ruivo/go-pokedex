@@ -8,6 +8,7 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import PokemonImage from "./PokemonImage";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
+import { usePvp } from "../contexts/pvp-context";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -17,10 +18,11 @@ interface IPokemonMoves {
 const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
-    const {gamemasterPokemon, moves, fetchCompleted, rankLists} = usePokemon();
+    const {gamemasterPokemon, fetchCompleted} = usePokemon();
+    const {rankLists, moves, pvpFetchCompleted} = usePvp();
     const {pathname} = useLocation();
     
-    if (!fetchCompleted || !gamemasterPokemon || !pokemon) {
+    if (!fetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
     }
 

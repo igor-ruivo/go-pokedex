@@ -20,7 +20,7 @@ const Pokemon = () => {
     const { pathname } = useLocation();
     const {league, handleSetLeague} = useLeague();
 
-    const pokemon = fetchCompleted ? gamemasterPokemon[speciesId ?? ""] : undefined;
+    const pokemon = fetchCompleted && !gamemasterPokemon[speciesId ?? ""]?.aliasId ? gamemasterPokemon[speciesId ?? ""] : undefined;
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
 

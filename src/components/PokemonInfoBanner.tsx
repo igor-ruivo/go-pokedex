@@ -16,6 +16,7 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
 import LeagueRanks from "./LeagueRanks";
 import { LeagueType } from "../hooks/useLeague";
+import { usePvp } from "../contexts/pvp-context";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -67,7 +68,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const selectedImageRef = React.createRef<HTMLImageElement>();
 
-    const {gamemasterPokemon, rankLists, moves, fetchCompleted} = usePokemon();
+    const {gamemasterPokemon, fetchCompleted} = usePokemon();
+    const {rankLists, moves} = usePvp();
 
     if (!fetchCompleted || !pokemon || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
         return <></>;

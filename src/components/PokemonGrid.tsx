@@ -75,7 +75,6 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     useEffect(() => {
         if (typedCurrentRank === getDefaultListType()) {
             window.scrollTo(0, getDefaultScrollY());
-            console.log("scroll restored");
         }
     }, [typedCurrentRank]);
 
@@ -126,7 +125,10 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
                 try {
                     const image = new Image();
                     image.onload = () => resolve(pokemon.speciesId);
-                    image.onerror = () => reject(`Failed to load image ${pokemon.imageUrl}.`);
+                    image.onerror = () => {
+                        console.error(`Failed to load ${pokemon.imageUrl}`);
+                        resolve(pokemon.speciesId);
+                    };
                     image.src = pokemon.imageUrl;
                 }
                 catch (error) {

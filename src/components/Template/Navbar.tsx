@@ -6,7 +6,7 @@ import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue
 import { ListType } from "../../views/pokedex";
 import { useCallback, useEffect, useState } from "react";
 import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
-import Select from "react-select"
+import Select from "react-select";
 import translator, { TranslatorKeys } from "../../utils/Translator";
 
 enum ThemeValues {
@@ -18,6 +18,11 @@ enum ThemeOptions {
     Light,
     Dark,
     SystemDefault
+}
+    
+export type EntryType = {
+    value: string,
+    label: string
 }
 
 const Navbar = () => {
@@ -79,11 +84,6 @@ const Navbar = () => {
                 break;
         }
     }, [getComputedTheme, theme]);
-    
-    type EntryType = {
-        value: string,
-        label: string
-    }
 
     const handleThemeToggle = (newTheme: ThemeOptions) => {
         writePersistentValue(ConfigKeys.DefaultTheme, JSON.stringify(newTheme));
@@ -195,10 +195,15 @@ const Navbar = () => {
                 <div className="search-wrapper">
                     <SearchableDropdown
                         options={!fetchCompleted ? [] : Object.values(gamemasterPokemon).filter(p => {
-                            if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master") || pathname.startsWith("/pokemon")) {
-                                return true;
+                            if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master")) {
+                                return !p.isMega && !p.aliasId;
                             }
-                            return !p.isShadow;
+
+                            if (pathname.startsWith("/pokemon")) {
+                                return !p.aliasId;
+                            }
+
+                            return !p.isShadow && !p.aliasId;
                         }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} as EntryType))}
                         isLoading={!fetchCompleted}
                         onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`)}

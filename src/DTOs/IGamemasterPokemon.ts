@@ -20,5 +20,6 @@ export interface IGamemasterPokemon {
     isUntradeable: boolean,
     familyId?: string,
     parent?: string,
-    evolutions: string[]
+    evolutions: string[],
+    aliasId?: string
 }

@@ -4,9 +4,10 @@ import { useNavbarSearchInput } from "../contexts/navbar-search-context";
 import { Autocomplete, TextField } from "@mui/material";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
+import { EntryType } from "./Template/Navbar";
 
 interface ISearchableDropdownProps {
-    options: any[];
+    options: EntryType[];
     isLoading: boolean;
     onSelection: (selectedEntry: any) => void;
 }
@@ -47,6 +48,7 @@ const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdo
         loadingText={translator(TranslatorKeys.Loading, currentLanguage)}
         clearOnEscape
         selectOnFocus
+        getOptionKey={(option) => (option as EntryType).value}
         renderInput={(params) => (
             <TextField {...params} className="auto_complete_input" label={translator(TranslatorKeys.Search, currentLanguage)} placeholder={translator(TranslatorKeys.Name, currentLanguage)} />
         )} 

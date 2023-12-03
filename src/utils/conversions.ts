@@ -5,7 +5,7 @@ import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
 import { buildPokemonImageUrl } from "./Configs";
 
-const blacklistedSpecieIds = [
+const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
     "pikachu_flying",
     "pikachu_kariyushi",
@@ -13,14 +13,15 @@ const blacklistedSpecieIds = [
     "pikachu_pop_star",
     "pikachu_rock_star",
     "pikachu_shaymin"
-];
+]);
 
 const type = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i) ? "detail" : "full";
 
 export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (data: any) => {
-    const releasedOverride = new Set<string>();
-    releasedOverride.add("cosmog");
-    releasedOverride.add("cosmoem");
+    const releasedOverride = new Set<string>([
+        "cosmog",
+        "cosmoem"
+    ]);    
 
     const overrideMappings = new Map<string, string>();
     overrideMappings.set("slowbro_mega", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/080_f2.png`);
@@ -44,9 +45,8 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
     overrideMappings.set("oricorio_pau", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/741_f3.png`);
     overrideMappings.set("oricorio_pom_pom", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/741_f2.png`);
     overrideMappings.set("pumpkaboo_small", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/710.png`);
-    overrideMappings.set("lanturnw", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/171.png`);
 
-    const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.includes(pokemon.speciesId);
+    const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
 
     return (Array.from(data) as any[])
@@ -66,10 +66,10 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
             const idForIndexCalc = pokemon.speciesId.replace("_shadow", "");
 
             let form = "";
-            const repeatedDexs = (data as any[]).filter(p => baseDataFilter(p) && p.dex === pokemon.dex && !isShadowConditionFilter(p));
+            const repeatedDexs = (data as any[]).filter(p => baseDataFilter(p) && p.dex === pokemon.dex && !isShadowConditionFilter(p) && !p.aliasId);
             const currentIndex = repeatedDexs.findIndex(p => p.speciesId === idForIndexCalc);
             if (currentIndex === -1) {
-                throw new Error("Couldn't find matching species id.");
+                console.log(`Couldn't find matching species id for ${pokemon.speciesId} (alias: ${pokemon.aliasId})`);
             }
             if (currentIndex > 0) {
                 form = "" + (currentIndex + 1);
@@ -95,18 +95,34 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 isUntradeable: pokemon.tags ? Array.from(pokemon.tags).includes("untradeable") : false,
                 familyId: pokemon.family?.id,
                 parent: pokemon.family?.parent,
-                evolutions: pokemon.family ? pokemon.family.evolutions : []
+                evolutions: pokemon.family ? pokemon.family.evolutions : [],
+                aliasId: pokemon.aliasId
             }
         }
     );
 }
 
-export const mapRankedPokemon: (data: any) => IRankedPokemon[] = (data: any) => {
+export const mapRankedPokemon: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRankedPokemon[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const observedPokemon = new Set<string>();
+
     return (Array.from(data) as any[])
-        .filter(pokemon => !blacklistedSpecieIds.includes(pokemon.speciesId))
+        .filter(pokemon => !blacklistedSpecieIds.has(pokemon.speciesId))
+        .filter(pokemon => {
+            const p = gamemasterPokemon[pokemon.speciesId];
+            const computedId = p.aliasId ?? p.speciesId;
+            if (observedPokemon.has(computedId)) {
+                console.log(`Detected alias: ${computedId}`);
+                return false;
+            } else {
+                observedPokemon.add(computedId);
+                return true;
+            }
+        })
         .map((pokemon, index) => {
+            const p = gamemasterPokemon[pokemon.speciesId];
+            const computedId = p.aliasId ?? p.speciesId;
             return {
-                speciesId: pokemon.speciesId,
+                speciesId: computedId,
                 rating: pokemon.rating,
                 moveset: pokemon.moveset,
                 lead: pokemon.scores[0],

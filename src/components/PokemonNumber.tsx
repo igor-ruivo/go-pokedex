@@ -3,6 +3,7 @@ import { ListType } from "../views/pokedex";
 import { usePokemon } from "../contexts/pokemon-context";
 import { ordinal } from "../utils/conversions";
 import { Language, useLanguage } from "../contexts/language-context";
+import { usePvp } from "../contexts/pvp-context";
 
 type IPokemonNumberProps = {
     dex: number,
@@ -11,11 +12,11 @@ type IPokemonNumberProps = {
 }  
 
 const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
-    const {rankLists, fetchCompleted} = usePokemon();
+    const {rankLists, pvpFetchCompleted} = usePvp();
     const {currentLanguage} = useLanguage();
 
     const fetchPokemonRank = (): string => {
-        const rank = fetchCompleted ? rankLists[listType - 1][speciesId].rank : 0;
+        const rank = pvpFetchCompleted ? rankLists[listType - 1][speciesId].rank : 0;
         let ordinalRank = ordinal(rank);
         if (!ordinalRank) {
             return "";
