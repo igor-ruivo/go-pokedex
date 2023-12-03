@@ -16,7 +16,7 @@ export const fetchReachablePokemonIncludingSelf = (pokemon: IGamemasterPokemon, 
         if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
             continue;
         }
-        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk && (!domainFilter || domainFilter(pk))) as IGamemasterPokemon[]);
+        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk && pk.isShadow === pokemon.isShadow && (!domainFilter || domainFilter(pk))) as IGamemasterPokemon[]);
     }
 
     return reachablePokemons;
@@ -67,7 +67,7 @@ export const fetchPredecessorPokemonIncludingSelf = (pokemon: IGamemasterPokemon
         }
 
         const parentRef = gamemasterPokemon[currentPokemon.parent];
-        if (!parentRef || (domainFilter && !domainFilter(parentRef))) {
+        if (!parentRef || parentRef.isShadow !== pokemon.isShadow || (domainFilter && !domainFilter(parentRef))) {
             continue;
         }
 
