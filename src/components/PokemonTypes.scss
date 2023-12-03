@@ -1,6 +1,6 @@
 .pokemon-types {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     gap: 4px;
     width: clamp(18px, 3vw, 24px);
     height: clamp(18px, 3vw, 24px);

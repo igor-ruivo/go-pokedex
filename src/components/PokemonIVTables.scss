@@ -53,9 +53,3 @@
         color: var(--tableHeaderSortable) !important;
     }
 }
-
-@media (max-width: 500px) {
-    .ivs-nav {
-        justify-content: safe center;
-    }
-}

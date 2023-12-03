@@ -15,6 +15,7 @@ interface ILeaguePanelsProps {
     greatLeagueStats: LeagueStat;
     ultraLeagueStats: LeagueStat;
     masterLeagueStats: LeagueStat;
+    customLeagueStats: LeagueStat;
     league: LeagueType;
     handleSetLeague: (newLeague: LeagueType) => void;
 }
@@ -23,6 +24,7 @@ const LeagueRanks = ({
     greatLeagueStats,
     ultraLeagueStats,
     masterLeagueStats,
+    customLeagueStats,
     league,
     handleSetLeague
 }: ILeaguePanelsProps) => {
@@ -51,6 +53,8 @@ const LeagueRanks = ({
                 return "ultra";
             case LeagueType.MASTER_LEAGUE:
                 return "master";
+            case LeagueType.CUSTOM_CUP:
+                return "custom";
         }
     }
 
@@ -62,6 +66,8 @@ const LeagueRanks = ({
                 return LeagueType.ULTRA_LEAGUE;
             case "master":
                 return LeagueType.MASTER_LEAGUE;
+            case "custom":
+                return LeagueType.CUSTOM_CUP;
             default:
                 throw new Error("Missing case for switch: " + league);
         }
@@ -69,7 +75,22 @@ const LeagueRanks = ({
 
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-2 selectable ${leagueStat.leagueTitle} ` + (getLeagueName(league) === leagueStat.leagueTitle ? "selected" : "");
-        const logoSrc = `https://www.stadiumgaming.gg/frontend/assets/img/${leagueStat.leagueTitle}.png`;
+        
+        let logoSrc = "";
+        switch (leagueStat.leagueTitle) {
+            case "great":
+                logoSrc = "https://i.imgur.com/JFlzLTU.png";
+                break;
+            case "ultra":
+                logoSrc = "https://i.imgur.com/jtA6QiL.png";
+                break;
+            case "master":
+                logoSrc = "https://i.imgur.com/vJOBwfH.png";
+                break;
+            case "custom":
+                logoSrc = "https://i.imgur.com/tkaS5cs.png";
+                break;
+        }
 
         return (
             <div className={pvpStatsClassName}>
@@ -90,6 +111,7 @@ const LeagueRanks = ({
         {renderPanel(greatLeagueStats)}
         {renderPanel(ultraLeagueStats)}
         {renderPanel(masterLeagueStats)}
+        {renderPanel(customLeagueStats)}
     </div>;
 }
 

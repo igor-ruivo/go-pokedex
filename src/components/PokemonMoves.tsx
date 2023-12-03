@@ -29,8 +29,9 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const greatLeagueMoveset = rankLists[0][pokemon.speciesId]?.moveset ?? [];
     const ultraLeagueMoveset = rankLists[1][pokemon.speciesId]?.moveset ?? [];
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
+    const customLeagueMoveset = rankLists[3][pokemon.speciesId]?.moveset ?? [];
 
-    const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : masterLeagueMoveset;
+    const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : masterLeagueMoveset;
     
     const fastMoveClassName = `move-card background-${moves[relevantMoveSet[0]]?.type}`;
     const chargedMove1ClassName = `move-card background-${moves[relevantMoveSet[1]]?.type}`;
@@ -131,7 +132,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </div> :
                     <span className="unavailable_moves">
                         {translator(TranslatorKeys.RecommendedMovesUnavailable, currentLanguage)}<br></br>
-                        {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                        {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.RetroCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                     </span>
                 }
             </ul>

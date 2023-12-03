@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { movesUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Configs';
+import { movesUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsRetroUrl, pvpokeRankingsUrl } from '../utils/Configs';
 import { mapMoves, mapRankedPokemon } from '../utils/conversions';
 import { IMove } from '../DTOs/IMove';
 import Dictionary from '../utils/Dictionary';
@@ -27,7 +27,7 @@ const useFetchAllData: () => [IRankedPokemon[][], IMove[], boolean, string] = ()
         }
 
         const controller = new AbortController();
-        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], true, {signal: controller.signal}, (data: any) => mapRankedPokemon(data, gamemasterPokemon));
+        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, pvpokeRankingsRetroUrl], true, {signal: controller.signal}, (data: any) => mapRankedPokemon(data, gamemasterPokemon));
         fetchMoves([movesUrl], true, {signal: controller.signal}, mapMoves);
         return () => {
             controller.abort("Request canceled by cleanup.");

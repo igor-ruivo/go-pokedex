@@ -26,6 +26,16 @@
     }
 }
 
+.navigation-header.leagues {
+    justify-content: center;
+}
+
+.navigation-header.extra-gap {
+    ul {
+        gap: 12px;
+    }
+}
+
 .header-tab {
     display: flex;
     align-items: center;
@@ -45,6 +55,12 @@
     &:hover {
         border: 1px solid var(--buttonsBorderColor);
     }
+
+    &.league-picker {
+        padding: 6px;
+        border-radius: 50%;
+        height: unset;
+    }
 }
 
 .selected {
@@ -54,7 +70,6 @@
 @media (max-width: 500px) {
 
     .navigation-header {
-        justify-content: safe center;
         padding: 0px;
 
         ul {

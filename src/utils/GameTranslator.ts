@@ -268,7 +268,7 @@ export enum GameTranslatorKeys {
     HIDDEN_POWER_ELECTRIC,
     //TODO: TECHNO_BLAST_SHOCK,
     //TODO: FUSION_BOLT,
-    //TODO: PARABOLIC_CHARGE,
+    PARABOLIC_CHARGE,
 
     //fairy
     DISARMING_VOICE,
@@ -324,9 +324,11 @@ export enum GameTranslatorKeys {
     HPSearch,
     Great,
     Master,
+    Retro,
     GreatLeague,
     UltraLeague,
     MasterLeague,
+    RetroCup
 }
 
 const vineWhip = new Map<GameLanguage, string>([
@@ -1489,6 +1491,21 @@ const poltergeist = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "Poltergeist"]
 ]);
 
+const parabolicCharge = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Parabolic Charge"],
+    [GameLanguage.Portuguese, "Ataque Parabólico"]
+]);
+
+const retro = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Retro"],
+    [GameLanguage.Portuguese, "Retrô"]
+]);
+
+const retroCup = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Retro Cup"],
+    [GameLanguage.Portuguese, "Copa Retrô"]
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.VINE_WHIP, vineWhip],
     [GameTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -1740,7 +1757,10 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.THUNDER_FANG, thunderFang],
     [GameTranslatorKeys.HYPER_FANG, hyperFang],
     [GameTranslatorKeys.DRAINING_KISS, drainingKiss],
-    [GameTranslatorKeys.POLTERGEIST, poltergeist]
+    [GameTranslatorKeys.POLTERGEIST, poltergeist],
+    [GameTranslatorKeys.PARABOLIC_CHARGE, parabolicCharge],
+    [GameTranslatorKeys.Retro, retro],
+    [GameTranslatorKeys.RetroCup, retroCup]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());

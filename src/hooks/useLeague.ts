@@ -4,7 +4,8 @@ import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persis
 export enum LeagueType {
     GREAT_LEAGUE,
     ULTRA_LEAGUE,
-    MASTER_LEAGUE
+    MASTER_LEAGUE,
+    CUSTOM_CUP
 }
 
 const getDefaultLeagueType = () => {

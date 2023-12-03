@@ -96,7 +96,7 @@ const Navbar = () => {
         }
         let destinationPath = "";
         const previousRankType = readSessionValue(ConfigKeys.LastListType);
-        if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master")) {    
+        if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom")) {    
             return "/";
         }
 
@@ -109,6 +109,9 @@ const Navbar = () => {
                 break;
             case ListType.MASTER_LEAGUE:
                 destinationPath = "master";
+                break;
+            case ListType.CUSTOM_CUP:
+                destinationPath = "custom";
                 break;
         }
 
@@ -195,7 +198,7 @@ const Navbar = () => {
                 <div className="search-wrapper">
                     <SearchableDropdown
                         options={!fetchCompleted ? [] : Object.values(gamemasterPokemon).filter(p => {
-                            if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master")) {
+                            if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master") || pathname.startsWith("/custom")) {
                                 return !p.isMega && !p.aliasId;
                             }
 

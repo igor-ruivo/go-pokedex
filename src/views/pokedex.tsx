@@ -9,7 +9,6 @@ import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
-import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { fetchPokemonFamily } from '../utils/pokemon-helper';
 import Dictionary from '../utils/Dictionary';
 import { usePvp } from '../contexts/pvp-context';
@@ -18,7 +17,8 @@ export enum ListType {
     POKEDEX,
     GREAT_LEAGUE,
     ULTRA_LEAGUE,
-    MASTER_LEAGUE
+    MASTER_LEAGUE,
+    CUSTOM_CUP
 }
 
 const getDefaultShowFamilyTree = () => true; // TODO: implement toggle later readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
@@ -28,7 +28,7 @@ const Pokedex = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
     const { inputText } = useNavbarSearchInput();
-    const {currentLanguage, currentGameLanguage} = useLanguage();
+    const {currentLanguage} = useLanguage();
 
     // TEMP DEBUG
     /*
@@ -71,6 +71,9 @@ const Pokedex = () => {
             break;
         case "master":
             listType = ListType.MASTER_LEAGUE;
+            break;
+        case "custom":
+            listType = ListType.CUSTOM_CUP;
             break;
         default:
             throw Error("404 not found!");
@@ -152,6 +155,7 @@ const Pokedex = () => {
             case ListType.GREAT_LEAGUE:
             case ListType.ULTRA_LEAGUE:
             case ListType.MASTER_LEAGUE:
+            case ListType.CUSTOM_CUP:
                 const leaguePool = Object.values(rankLists[listType - 1]).map(mapper);
                 processedList = leaguePool.filter(p => inputFilter(p, (pokemon: IGamemasterPokemon) => !pokemon.isMega && !pokemon.aliasId));
                 break;
@@ -164,24 +168,26 @@ const Pokedex = () => {
 
     return (
         <main className="layout">
-            <nav className="navigation-header">
+            <nav className="navigation-header extra-gap leagues">
                 <ul>
                     <li>
-                        <Link to="/great" className={"header-tab " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
-                            <img height="24" width="24" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
-                            <span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>
+                        <Link to="/great" className={"header-tab league-picker " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
+                            <img height="32" width="32" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
                         </Link>
                     </li>
                     <li>
-                        <Link to="/ultra" className={"header-tab " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
-                            <img height="24" width="24" src="https://i.imgur.com/jtA6QiL.png" alt="Ultra League"/>
-                            <span>Ultra</span>
+                        <Link to="/ultra" className={"header-tab league-picker " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
+                            <img height="32" width="32" src="https://i.imgur.com/jtA6QiL.png" alt="Ultra League"/>
                         </Link>
                     </li>
                     <li>
-                        <Link to="/master" className={"header-tab " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
-                            <img height="24" width="24" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
-                            <span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>
+                        <Link to="/master" className={"header-tab league-picker " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
+                            <img height="32" width="32" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/custom" className={"header-tab league-picker " + (listType === ListType.CUSTOM_CUP ? "selected" : "")}>
+                            <img height="32" width="32" src="https://i.imgur.com/tkaS5cs.png" alt="Retro Cup"/>
                         </Link>
                     </li>
                 </ul>

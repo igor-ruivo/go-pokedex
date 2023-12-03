@@ -70,6 +70,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
         case "master":
             typedCurrentRank = ListType.MASTER_LEAGUE;
             break;
+        case "custom":
+            typedCurrentRank = ListType.CUSTOM_CUP;
+            break;
     }
 
     useEffect(() => {

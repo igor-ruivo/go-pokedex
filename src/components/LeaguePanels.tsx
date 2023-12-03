@@ -33,6 +33,7 @@ interface ILeaguePanelsProps {
     greatLeagueStats: LeagueStat,
     ultraLeagueStats: LeagueStat,
     masterLeagueStats: LeagueStat,
+    customLeagueStats: LeagueStat,
     atk: number,
     def: number,
     hp: number,
@@ -43,6 +44,7 @@ const LeaguePanels = ({
     greatLeagueStats,
     ultraLeagueStats,
     masterLeagueStats,
+    customLeagueStats,
     atk,
     def,
     hp,
@@ -119,6 +121,7 @@ const LeaguePanels = ({
         {league === LeagueType.GREAT_LEAGUE && renderPanel(greatLeagueStats)}
         {league === LeagueType.ULTRA_LEAGUE && renderPanel(ultraLeagueStats)}
         {league === LeagueType.MASTER_LEAGUE && renderPanel(masterLeagueStats)}
+        {league === LeagueType.CUSTOM_CUP && renderPanel(customLeagueStats)}
     </div>;
 }
 

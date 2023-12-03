@@ -191,6 +191,9 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
         case LeagueType.MASTER_LEAGUE:
             cpCap = Number.MAX_VALUE;
             break;
+        case LeagueType.CUSTOM_CUP:
+            cpCap = 1500;
+            break;
     }
 
     const result = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap, levelCap)).flat();

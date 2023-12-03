@@ -18,10 +18,11 @@
 .left-container {
     display: flex;
     flex-direction: column;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .right-container {
+    gap: 12px;
     display: flex;
     padding-top: 20%;
     flex-direction: column;

@@ -60,7 +60,16 @@ export interface IIvPercents {
     masterLeagueHP: number,
     masterLeaguePerfect: any,
     masterLeaguePerfectLevel: number,
-    masterLeaguePerfectCP: number
+    masterLeaguePerfectCP: number,
+    customLeagueRank: number,
+    customLeagueLvl: number,
+    customLeagueCP: number,
+    customLeagueAttack: number,
+    customLeagueDefense: number,
+    customLeagueHP: number,
+    customLeaguePerfect: any,
+    customLeaguePerfectLevel: number,
+    customLeaguePerfectCP: number
 }
 
 const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague}: IPokemonInfoBanner) => {
@@ -83,6 +92,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     let bestInFamilyForUltraLeagueRank = Number.MAX_VALUE;
     let bestInFamilyForMasterLeague = pokemon;
     let bestInFamilyForMasterLeagueRank = Number.MAX_VALUE;
+    let bestInFamilyForCustomLeague = pokemon;
+    let bestInFamilyForCustomLeagueRank = Number.MAX_VALUE;
 
     const reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
 
@@ -90,6 +101,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
         const rankInGreat = rankLists[0][member.speciesId]?.rank;
         const rankInUltra = rankLists[1][member.speciesId]?.rank;
         const rankInMaster = rankLists[2][member.speciesId]?.rank;
+        const rankInCustom = rankLists[3][member.speciesId]?.rank;
         if (!isNaN(rankInGreat) && rankInGreat < bestInFamilyForGreatLeagueRank) {
             bestInFamilyForGreatLeagueRank = rankInGreat;
             bestInFamilyForGreatLeague = member;
@@ -102,15 +114,21 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
             bestInFamilyForMasterLeagueRank = rankInMaster;
             bestInFamilyForMasterLeague = member;
         }
+        if (!isNaN(rankInCustom) && rankInCustom < bestInFamilyForCustomLeagueRank) {
+            bestInFamilyForCustomLeagueRank = rankInCustom;
+            bestInFamilyForCustomLeague = member;
+        }
     });
 
     const bestReachableGreatLeagueIvs = ivPercents[bestInFamilyForGreatLeague.speciesId];
     const bestReachableUltraLeagueIvs = ivPercents[bestInFamilyForUltraLeague.speciesId];
     const bestReachableMasterLeagueIvs = ivPercents[bestInFamilyForMasterLeague.speciesId];
+    const bestReachableCustomLeagueIvs = ivPercents[bestInFamilyForCustomLeague.speciesId];
 
     const greatLeagueMoveset = rankLists[0][pokemon.speciesId]?.moveset ?? [];
     const ultraLeagueMoveset = rankLists[1][pokemon.speciesId]?.moveset ?? [];
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
+    const customLeagueMoveset = rankLists[3][pokemon.speciesId]?.moveset ?? [];
 
     const getRankPercentage = (rank: number) => Math.round(((1 - (rank / 4095)) * 100 + Number.EPSILON) * 100) / 100;
 
@@ -151,6 +169,13 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                             leagueTitle: "master",
                             bestReachablePokemon: bestInFamilyForMasterLeague,
                             pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank)
+                        }
+                    }
+                    customLeagueStats={
+                        {
+                            leagueTitle: "custom",
+                            bestReachablePokemon: bestInFamilyForCustomLeague,
+                            pokemonRankInLeague: ordinal(rankLists[3][bestInFamilyForCustomLeague.speciesId]?.rank)
                         }
                     }
                     league={league}
@@ -271,6 +296,40 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                                     type: moves[masterLeagueMoveset[2]]?.type,
                                     isElite: bestInFamilyForMasterLeague.eliteMoves.includes(masterLeagueMoveset[2]),
                                     isLegacy: bestInFamilyForMasterLeague.legacyMoves.includes(masterLeagueMoveset[2])
+                                }
+                            }
+                        }
+                        customLeagueStats={
+                            {
+                                leagueTitle: "custom",
+                                bestReachablePokemonName: bestInFamilyForCustomLeague.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
+                                pokemonRankInLeague: ordinal(rankLists[3][bestInFamilyForCustomLeague.speciesId]?.rank),
+                                pokemonLeaguePercentage: getRankPercentage(bestReachableCustomLeagueIvs.customLeagueRank),
+                                pokemonLeaguePercentile: bestReachableCustomLeagueIvs.customLeagueRank + 1,
+                                pokemonCP: bestReachableCustomLeagueIvs.customLeagueCP,
+                                pokemonLevel: bestReachableCustomLeagueIvs.customLeagueLvl,
+                                atk: bestReachableCustomLeagueIvs.customLeaguePerfect.A,
+                                def: bestReachableCustomLeagueIvs.customLeaguePerfect.D,
+                                hp: bestReachableCustomLeagueIvs.customLeaguePerfect.S,
+                                bestCP: bestReachableCustomLeagueIvs.customLeaguePerfectCP,
+                                bestLevel: bestReachableCustomLeagueIvs.customLeaguePerfectLevel,
+                                fastAttack: {
+                                    moveName: translatedMove(moves[customLeagueMoveset[0]]?.moveId),
+                                    type: moves[customLeagueMoveset[0]]?.type,
+                                    isElite: bestInFamilyForCustomLeague.eliteMoves.includes(customLeagueMoveset[0]),
+                                    isLegacy: bestInFamilyForCustomLeague.legacyMoves.includes(customLeagueMoveset[0])
+                                },
+                                chargedAttack1: {
+                                    moveName: translatedMove(moves[customLeagueMoveset[1]]?.moveId),
+                                    type: moves[customLeagueMoveset[1]]?.type,
+                                    isElite: bestInFamilyForCustomLeague.eliteMoves.includes(customLeagueMoveset[1]),
+                                    isLegacy: bestInFamilyForCustomLeague.legacyMoves.includes(customLeagueMoveset[1])
+                                },
+                                chargedAttack2: {
+                                    moveName: translatedMove(moves[customLeagueMoveset[2]]?.moveId),
+                                    type: moves[customLeagueMoveset[2]]?.type,
+                                    isElite: bestInFamilyForCustomLeague.eliteMoves.includes(customLeagueMoveset[2]),
+                                    isLegacy: bestInFamilyForCustomLeague.legacyMoves.includes(customLeagueMoveset[2])
                                 }
                             }
                         }
