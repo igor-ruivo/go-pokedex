@@ -200,7 +200,7 @@ export enum GameTranslatorKeys {
     FELL_STINGER,
     MEGAHORN,
     FURY_CUTTER,
-    //TODO: SILVER_WIND,
+    SILVER_WIND,
     HIDDEN_POWER_BUG,
     //TODO: LUNGE,
 
@@ -1506,6 +1506,11 @@ const retroCup = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "Copa Retrô"]
 ]);
 
+const silverWind = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Silver Wind"],
+    [GameLanguage.Portuguese, "Vento Prateado"]
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.VINE_WHIP, vineWhip],
     [GameTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -1760,7 +1765,8 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.POLTERGEIST, poltergeist],
     [GameTranslatorKeys.PARABOLIC_CHARGE, parabolicCharge],
     [GameTranslatorKeys.Retro, retro],
-    [GameTranslatorKeys.RetroCup, retroCup]
+    [GameTranslatorKeys.RetroCup, retroCup],
+    [GameTranslatorKeys.SILVER_WIND, silverWind]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());

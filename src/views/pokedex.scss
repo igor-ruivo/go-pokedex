@@ -56,7 +56,7 @@
         border: 1px solid var(--buttonsBorderColor);
     }
 
-    &.league-picker {
+    &.league-picker:not(.selected) {
         padding: 6px;
         border-radius: 50%;
         height: unset;
