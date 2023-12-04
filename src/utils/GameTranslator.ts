@@ -12,7 +12,7 @@ export enum GameTranslatorKeys {
     HYPER_FANG,
     HYPER_BEAM,
     WRAP,
-    //TODO: PRESENT,
+    PRESENT,
     HORN_ATTACK,
     STOMP,
     POUND,
@@ -25,10 +25,11 @@ export enum GameTranslatorKeys {
     LOCK_ON,
     TAKE_DOWN,
     TRI_ATTACK,
-    //TODO: GIGA_IMPACT,
-    //TODO: TECHNO_BLAST_NORMAL,
-    //TODO: BOOMBURST,
+    GIGA_IMPACT,
+    TECHNO_BLAST_NORMAL,
+    BOOMBURST,
     WEATHER_BALL_NORMAL,
+    RETURN,
 
     //grass
     VINE_WHIP,
@@ -63,11 +64,11 @@ export enum GameTranslatorKeys {
     BLAST_BURN,
     WEATHER_BALL_FIRE,
     HEAT_WAVE,
-    //TODO: FLAME_WHEEL,
+    FLAME_WHEEL,
     INCINERATE,
     BLAZE_KICK,
     HIDDEN_POWER_FIRE,
-    //TODO: TECHNO_BLAST_BURN,
+    TECHNO_BLAST_BURN,
     V_CREATE,
     SACRED_FIRE,
     MYSTICAL_FIRE,
@@ -111,11 +112,11 @@ export enum GameTranslatorKeys {
     DRILL_PECK,
     SKY_ATTACK,
     HIDDEN_POWER_FLYING,
-    //TODO: ACROBATICS,
-    //TODO: AEROBLAST,
+    ACROBATICS,
+    AEROBLAST,
     FLY,
-    //TODO: DRAGON_ASCENT,
-    //TODO: OBLIVION_WING,
+    DRAGON_ASCENT,
+    OBLIVION_WING,
 
     //water
     BUBBLE,
@@ -133,14 +134,14 @@ export enum GameTranslatorKeys {
     RAZOR_SHELL,
     CRABHAMMER,
     WATERFALL,
-    //TODO: OCTAZOOKA,
+    OCTAZOOKA,
     HIDDEN_POWER_WATER,
     SPLASH,
     BRINE,
-    //TODO: WATER_SHURIKEN,
+    WATER_SHURIKEN,
     MUDDY_WATER,
-    //TODO: TECHNO_BLAST_DOUSE,
-    //TODO: ORIGIN_PULSE,
+    TECHNO_BLAST_DOUSE,
+    ORIGIN_PULSE,
 
     //dark
     BITE,
@@ -166,11 +167,11 @@ export enum GameTranslatorKeys {
     IRON_HEAD,
     BULLET_PUNCH,
     HEAVY_SLAM,
-    //TODO: MAGNET_BOMB,
-    //TODO: MIRROR_SHOT,
+    MAGNET_BOMB,
+    MIRROR_SHOT,
     HIDDEN_POWER_STEEL,
-    //TODO: DOOM_DESIRE,
-    //TODO: DOUBLE_IRON_BASH,
+    DOOM_DESIRE,
+    DOUBLE_IRON_BASH,
 
     //ice
     ICE_BEAM,
@@ -186,9 +187,9 @@ export enum GameTranslatorKeys {
     TRIPLE_AXEL,
     HIDDEN_POWER_ICE,
     ICE_FANG,
-    //TODO: TECHNO_BLAST_CHILL,
+    TECHNO_BLAST_CHILL,
     ICICLE_SPEAR,
-    //TODO: GLACIATE,
+    GLACIATE,
 
     //bug
     BUG_BITE,
@@ -202,7 +203,7 @@ export enum GameTranslatorKeys {
     FURY_CUTTER,
     SILVER_WIND,
     HIDDEN_POWER_BUG,
-    //TODO: LUNGE,
+    LUNGE,
 
     //psychic
     CONFUSION,
@@ -216,11 +217,11 @@ export enum GameTranslatorKeys {
     FUTURE_SIGHT,
     EXTRASENSORY,
     HIDDEN_POWER_PSYCHIC,
-    //TODO: PSYSTRIKE,
+    PSYSTRIKE,
     MIRROR_COAT,
-    //TODO: PSYCHO_BOOST,
-    //TODO: MIST_BALL,
-    //TODO: LUSTER_PURGE,
+    PSYCHO_BOOST,
+    MIST_BALL,
+    LUSTER_PURGE,
 
     //ground
     DRILL_RUN,
@@ -234,9 +235,9 @@ export enum GameTranslatorKeys {
     MUD_SLAP,
     MUD_BOMB,
     HIGH_HORSEPOWER,
-    //TODO: BONE_CLUB,
+    BONE_CLUB,
     HIDDEN_POWER_GROUND,
-    //TODO: PRECIPICE_BLADES,
+    PRECIPICE_BLADES,
 
     //ghost
     SHADOW_BALL,
@@ -247,11 +248,11 @@ export enum GameTranslatorKeys {
     ASTONISH,
     NIGHT_SHADE,
     SHADOW_PUNCH,
-    //TODO: SHADOW_BONE,
+    SHADOW_BONE,
     HIDDEN_POWER_GHOST,
     SHADOW_SNEAK,
     POLTERGEIST,
-    //TODO: SHADOW_FORCE,
+    SHADOW_FORCE,
 
     //electric
     THUNDER_SHOCK,
@@ -266,8 +267,8 @@ export enum GameTranslatorKeys {
     THUNDER_FANG,
     ZAP_CANNON,
     HIDDEN_POWER_ELECTRIC,
-    //TODO: TECHNO_BLAST_SHOCK,
-    //TODO: FUSION_BOLT,
+    TECHNO_BLAST_SHOCK,
+    FUSION_BOLT,
     PARABOLIC_CHARGE,
 
     //fairy
@@ -296,10 +297,10 @@ export enum GameTranslatorKeys {
     POWER_UP_PUNCH,
     FOCUS_BLAST,
     HIDDEN_POWER_FIGHTING,
-    //TODO: SACRED_SWORD,
-    //TODO: FLYING_PRESS,
+    SACRED_SWORD,
+    FLYING_PRESS,
     AURA_SPHERE,
-    //TODO: DRAIN_PUNCH,
+    DRAIN_PUNCH,
 
     //rock
     ROCK_SLIDE,
@@ -311,7 +312,7 @@ export enum GameTranslatorKeys {
     POWER_GEM,
     ROCK_THROW,
     ROCK_BLAST,
-    //TODO: ROLLOUT,
+    ROLLOUT,
     HIDDEN_POWER_ROCK,
     METEOR_BEAM,
     WEATHER_BALL_ROCK,
@@ -1511,6 +1512,166 @@ const silverWind = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "Vento Prateado"]
 ]);
 
+const present = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Present"],
+    [GameLanguage.Portuguese, "Presente"]
+]);
+
+const returnMove = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Return"],
+    [GameLanguage.Portuguese, "Retorno"]
+]);
+
+const gigaImpact = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Giga Impact"],
+    [GameLanguage.Portuguese, "Gigaimpacto"]
+]);
+
+const technoBlast = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Techno Blast"],
+    [GameLanguage.Portuguese, "Rajada Tecnológica"]
+]);
+
+const boomburst = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Boomburst"],
+    [GameLanguage.Portuguese, "Rajada Explosiva"]
+]);
+
+const flameWheel = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Flame Wheel"],
+    [GameLanguage.Portuguese, "Roda de Fogo"]
+]);
+
+const acrobatics = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Acrobatics"],
+    [GameLanguage.Portuguese, "Acrobático"]
+]);
+
+const aeroblast = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Aeroblast"],
+    [GameLanguage.Portuguese, "Explosão Aérea"]
+]);
+
+const dragonAscent = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Dragon Ascent"],
+    [GameLanguage.Portuguese, "Ascenção do Dragão"]
+]);
+
+const oblivionWing = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Oblivion Wing"],
+    [GameLanguage.Portuguese, "Asa do Esquecimento"]
+]);
+
+const octazooka = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Octazooka"],
+    [GameLanguage.Portuguese, "Polvo-canhão"]
+]);
+
+const waterShuriken = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Water Shuriken"],
+    [GameLanguage.Portuguese, "Estrela Ninja de Água"]
+]);
+
+const originPulse = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Origin Pulse"],
+    [GameLanguage.Portuguese, "Pulso Original"]
+]);
+
+const magnetBomb = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Magnet Bomb"],
+    [GameLanguage.Portuguese, "Bomba Ímã"]
+]);
+
+const mirrorShot = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Mirror Shot"],
+    [GameLanguage.Portuguese, "Tiro no Espelho"]
+]);
+
+const doomDesire = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Doom Desire"],
+    [GameLanguage.Portuguese, "Desejo Cruel"]
+]);
+
+const doubleIronBash = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Double Iron Bash"],
+    [GameLanguage.Portuguese, "Pancada de Ferro Dupla"]
+]);
+
+const glaciate = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Glaciate"],
+    [GameLanguage.Portuguese, "Glaciar"]
+]);
+
+const lunge = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Lunge"],
+    [GameLanguage.Portuguese, "Estocada"]
+]);
+
+const psystrike = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Psystrike"],
+    [GameLanguage.Portuguese, "Golpe Psíquico"]
+]);
+
+const psychoBoost = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Psycho Boost"],
+    [GameLanguage.Portuguese, "Impulso Psíquico"]
+]);
+
+const mistBall = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Mist Ball"],
+    [GameLanguage.Portuguese, "Bola de Névoa"]
+]);
+
+const lusterPurge = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Luster Purge"],
+    [GameLanguage.Portuguese, "Purga de Esplendor"]
+]);
+
+const boneClub = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Bone Club"],
+    [GameLanguage.Portuguese, "Bastão de Osso"]
+]);
+
+const precipiceBlades = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Precipice Blades"],
+    [GameLanguage.Portuguese, "Lâmina Abissal"]
+]);
+
+const shadowBone = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Shadow Bone"],
+    [GameLanguage.Portuguese, "Osso Sombrio"]
+]);
+
+const shadowForce = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Shadow Force"],
+    [GameLanguage.Portuguese, "Força das Sombras"]
+]);
+
+const fusionBolt = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Fusion Bolt"],
+    [GameLanguage.Portuguese, "Raio de Fusão"]
+]);
+
+const sacredSword = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Sacred Sword"],
+    [GameLanguage.Portuguese, "Espada Sagrada"]
+]);
+
+const flyingPress = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Flying Press"],
+    [GameLanguage.Portuguese, "Aperto Voador"]
+]);
+
+const drainPunch = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Drain Punch"],
+    [GameLanguage.Portuguese, "Soco Dreno"]
+]);
+
+const rollout = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Rollout"],
+    [GameLanguage.Portuguese, "Rolagem"]
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.VINE_WHIP, vineWhip],
     [GameTranslatorKeys.FRENZY_PLANT, franzyPlant],
@@ -1766,7 +1927,43 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.PARABOLIC_CHARGE, parabolicCharge],
     [GameTranslatorKeys.Retro, retro],
     [GameTranslatorKeys.RetroCup, retroCup],
-    [GameTranslatorKeys.SILVER_WIND, silverWind]
+    [GameTranslatorKeys.SILVER_WIND, silverWind],
+    [GameTranslatorKeys.PRESENT, present],
+    [GameTranslatorKeys.RETURN, returnMove],
+    [GameTranslatorKeys.GIGA_IMPACT, gigaImpact],
+    [GameTranslatorKeys.TECHNO_BLAST_NORMAL, technoBlast],
+    [GameTranslatorKeys.TECHNO_BLAST_BURN, technoBlast],
+    [GameTranslatorKeys.TECHNO_BLAST_CHILL, technoBlast],
+    [GameTranslatorKeys.TECHNO_BLAST_DOUSE, technoBlast],
+    [GameTranslatorKeys.TECHNO_BLAST_SHOCK, technoBlast],
+    [GameTranslatorKeys.BOOMBURST, boomburst],
+    [GameTranslatorKeys.FLAME_WHEEL, flameWheel],
+    [GameTranslatorKeys.ACROBATICS, acrobatics],
+    [GameTranslatorKeys.AEROBLAST, aeroblast],
+    [GameTranslatorKeys.DRAGON_ASCENT, dragonAscent],
+    [GameTranslatorKeys.OBLIVION_WING, oblivionWing],
+    [GameTranslatorKeys.OCTAZOOKA, octazooka],
+    [GameTranslatorKeys.WATER_SHURIKEN, waterShuriken],
+    [GameTranslatorKeys.ORIGIN_PULSE, originPulse],
+    [GameTranslatorKeys.MAGNET_BOMB, magnetBomb],
+    [GameTranslatorKeys.MIRROR_SHOT, mirrorShot],
+    [GameTranslatorKeys.DOOM_DESIRE, doomDesire],
+    [GameTranslatorKeys.DOUBLE_IRON_BASH, doubleIronBash],
+    [GameTranslatorKeys.GLACIATE, glaciate],
+    [GameTranslatorKeys.LUNGE, lunge],
+    [GameTranslatorKeys.PSYSTRIKE, psystrike],
+    [GameTranslatorKeys.PSYCHO_BOOST, psychoBoost],
+    [GameTranslatorKeys.MIST_BALL, mistBall],
+    [GameTranslatorKeys.LUSTER_PURGE, lusterPurge],
+    [GameTranslatorKeys.BONE_CLUB, boneClub],
+    [GameTranslatorKeys.PRECIPICE_BLADES, precipiceBlades],
+    [GameTranslatorKeys.SHADOW_BONE, shadowBone],
+    [GameTranslatorKeys.SHADOW_FORCE, shadowForce],
+    [GameTranslatorKeys.FUSION_BOLT, fusionBolt],
+    [GameTranslatorKeys.SACRED_SWORD, sacredSword],
+    [GameTranslatorKeys.FLYING_PRESS, flyingPress],
+    [GameTranslatorKeys.DRAIN_PUNCH, drainPunch],
+    [GameTranslatorKeys.ROLLOUT, rollout]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());
