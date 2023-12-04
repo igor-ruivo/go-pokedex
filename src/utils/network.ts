@@ -2,13 +2,13 @@ import axios, { AxiosRequestConfig } from "axios";
 import { cacheTtlInMillis } from "./Configs";
 import { readEntry, writeEntry } from "./resource-cache";
 
-export const fetchUrls = async(urls: string[], useCache: boolean = false, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any) => any): Promise<any[]> => {
+export const fetchUrls = async(urls: string[], useCache: boolean = false, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => any): Promise<any[]> => {
     const axiosInstance = axios.create();
 
     if (dataTransformer) {
         axiosInstance.interceptors.response.use(
             (response) => {
-                response.data = dataTransformer(response.data);
+                response.data = dataTransformer(response.data, response.request);
                 return response;
             },
             (error) => {

@@ -7,3 +7,25 @@
     font-size: clamp(9px, 1.72vw, 14px);
     border: 1px solid var(--borderColor2);
 }
+
+.rank-change {
+    font-size: clamp(7px, 1.52vw, 12px);
+}
+
+.buffed {
+    color: rgb(14, 153, 14);
+}
+
+.nerfed {
+    color: rgb(180, 22, 22);
+}
+
+.break-line {
+    display: none;
+}
+
+@media (max-width: 355px) {
+    .break-line {
+        display: unset;
+    }
+}

@@ -20,3 +20,9 @@ button:hover,
         border: 1px solid var(--buttonsBorderColor);
     }
 }
+
+@media (max-width: 360px) {
+    .grid > div {
+        padding: 1px;
+    }
+}

@@ -3,7 +3,9 @@ import { IMove } from "../DTOs/IMove";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
-import { buildPokemonImageUrl } from "./Configs";
+import { buildPokemonImageUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsRetroUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
+import { wrapStorageKey } from "./persistent-configs-handler";
+import { readEntry, writeEntry } from "./resource-cache";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -102,7 +104,7 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
     );
 }
 
-export const mapRankedPokemon: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRankedPokemon[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRankedPokemon[] = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const observedPokemon = new Set<string>();
 
     return (Array.from(data) as any[])
@@ -121,6 +123,56 @@ export const mapRankedPokemon: (data: any, gamemasterPokemon: Dictionary<IGamema
         .map((pokemon, index) => {
             const p = gamemasterPokemon[pokemon.speciesId];
             const computedId = p.aliasId ?? p.speciesId;
+            const computedRank = index + 1;
+
+            let rankId = "";
+            switch (request.responseURL) {
+                case pvpokeRankings1500Url:
+                    rankId = "great";
+                    break;
+                case pvpokeRankings2500Url:
+                    rankId = "ultra";
+                    break;
+                case pvpokeRankingsUrl:
+                    rankId = "master";
+                    break;
+                case pvpokeRankingsRetroUrl:
+                    rankId = "retro";
+                    break;
+                default:
+                    console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
+            }
+
+            const computedKey = wrapStorageKey(`${computedId}${rankId}`);
+            const computedRankChange = readEntry<number[]>(computedKey);
+
+            let parsedRankChange = 0;
+
+            if (computedRankChange) {
+                if (!computedRankChange[0]) {
+                    computedRankChange[0] = computedRank;
+                    writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                } else {
+                    const latestValue = computedRankChange[1];
+                    if (latestValue) {
+                        if (latestValue !== computedRank) {
+                            computedRankChange[0] = computedRankChange[1];
+                            computedRankChange[1] = computedRank;
+                            writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                        }
+                        parsedRankChange = computedRankChange[0] - computedRank;
+                    } else {
+                        if (computedRank !== computedRankChange[0]) {
+                            computedRankChange[1] = computedRank;
+                            parsedRankChange = computedRankChange[0] - computedRank;
+                            writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                        }
+                    }
+                }
+            } else {
+                writeEntry(computedKey, JSON.stringify([computedRank]), rankChangesCacheTtlInMillis);
+            }
+
             return {
                 speciesId: computedId,
                 rating: pokemon.rating,
@@ -132,7 +184,8 @@ export const mapRankedPokemon: (data: any, gamemasterPokemon: Dictionary<IGamema
                 consistency: pokemon.scores[5],
                 attacker: pokemon.scores[4],
                 score: pokemon.score,
-                rank: index + 1
+                rank: computedRank,
+                rankChange: parsedRankChange
             }
         }
     );

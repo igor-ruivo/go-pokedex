@@ -9,5 +9,6 @@ export interface IRankedPokemon {
     consistency: number,
     attacker: number,
     score: number,
-    rank: number
+    rank: number,
+    rankChange: number
 }
