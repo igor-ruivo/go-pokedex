@@ -157,26 +157,26 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
                 if (computedRankChange) {
                     if (!computedRankChange[0]) {
                         computedRankChange[0] = computedRank;
-                        writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                        writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
                     } else {
                         const latestValue = computedRankChange[1];
                         if (latestValue) {
                             if (latestValue !== computedRank) {
                                 computedRankChange[0] = computedRankChange[1];
                                 computedRankChange[1] = computedRank;
-                                writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                                writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
                             }
                             parsedRankChange = computedRankChange[0] - computedRank;
                         } else {
                             if (computedRank !== computedRankChange[0]) {
                                 computedRankChange[1] = computedRank;
                                 parsedRankChange = computedRankChange[0] - computedRank;
-                                writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                                writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
                             }
                         }
                     }
                 } else {
-                    writeEntry(computedKey, JSON.stringify([computedRank]), rankChangesCacheTtlInMillis);
+                    writeEntry(computedKey, [computedRank], rankChangesCacheTtlInMillis);
                 }
             }
             catch (error) {
