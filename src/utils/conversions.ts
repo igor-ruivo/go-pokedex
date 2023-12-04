@@ -107,6 +107,24 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRankedPokemon[] = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const observedPokemon = new Set<string>();
 
+    let rankId = "";
+    switch (request.responseURL) {
+        case pvpokeRankings1500Url:
+            rankId = "great";
+            break;
+        case pvpokeRankings2500Url:
+            rankId = "ultra";
+            break;
+        case pvpokeRankingsUrl:
+            rankId = "master";
+            break;
+        case pvpokeRankingsRetroUrl:
+            rankId = "retro";
+            break;
+        default:
+            console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
+    }
+
     return (Array.from(data) as any[])
         .filter(pokemon => !blacklistedSpecieIds.has(pokemon.speciesId))
         .filter(pokemon => {
@@ -128,24 +146,6 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
             let parsedRankChange = 0;
 
             try {
-                let rankId = "";
-                switch (request.responseURL) {
-                    case pvpokeRankings1500Url:
-                        rankId = "great";
-                        break;
-                    case pvpokeRankings2500Url:
-                        rankId = "ultra";
-                        break;
-                    case pvpokeRankingsUrl:
-                        rankId = "master";
-                        break;
-                    case pvpokeRankingsRetroUrl:
-                        rankId = "retro";
-                        break;
-                    default:
-                        console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
-                }
-
                 const computedKey = wrapStorageKey(`${computedId}${rankId}`);
                 const computedRankChange = readEntry<number[]>(computedKey, (data: number[]) => {
                     if (data && data[1]) {
