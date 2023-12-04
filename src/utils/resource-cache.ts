@@ -29,7 +29,7 @@ export const writeEntry = (key: string, value: any, ttl: number) => {
  * @returns null if the key wasn't found or if its ttl has expired,
  * or the original value otherwise.
  */
-export const readEntry = <T>(key: string) => {
+export const readEntry = <T>(key: string, customCacheExpirationAction?: (data: T) => void) => {
     const item = localStorage.getItem(key);
     if (!item) {
         return null;
@@ -38,6 +38,10 @@ export const readEntry = <T>(key: string) => {
     const entryObj: localStorageItem = JSON.parse(item);
 
     if (Date.now() > entryObj.expiry) {
+        if (customCacheExpirationAction) {
+            customCacheExpirationAction(entryObj.value);
+            return entryObj.value as T;
+        }
         deleteEntry(key);
         return null;
     }

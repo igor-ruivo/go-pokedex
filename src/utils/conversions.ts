@@ -125,52 +125,62 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
             const computedId = p.aliasId ?? p.speciesId;
             const computedRank = index + 1;
 
-            let rankId = "";
-            switch (request.responseURL) {
-                case pvpokeRankings1500Url:
-                    rankId = "great";
-                    break;
-                case pvpokeRankings2500Url:
-                    rankId = "ultra";
-                    break;
-                case pvpokeRankingsUrl:
-                    rankId = "master";
-                    break;
-                case pvpokeRankingsRetroUrl:
-                    rankId = "retro";
-                    break;
-                default:
-                    console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
-            }
-
-            const computedKey = wrapStorageKey(`${computedId}${rankId}`);
-            const computedRankChange = readEntry<number[]>(computedKey);
-
             let parsedRankChange = 0;
 
-            if (computedRankChange) {
-                if (!computedRankChange[0]) {
-                    computedRankChange[0] = computedRank;
-                    writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
-                } else {
-                    const latestValue = computedRankChange[1];
-                    if (latestValue) {
-                        if (latestValue !== computedRank) {
-                            computedRankChange[0] = computedRankChange[1];
-                            computedRankChange[1] = computedRank;
-                            writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
-                        }
-                        parsedRankChange = computedRankChange[0] - computedRank;
+            try {
+                let rankId = "";
+                switch (request.responseURL) {
+                    case pvpokeRankings1500Url:
+                        rankId = "great";
+                        break;
+                    case pvpokeRankings2500Url:
+                        rankId = "ultra";
+                        break;
+                    case pvpokeRankingsUrl:
+                        rankId = "master";
+                        break;
+                    case pvpokeRankingsRetroUrl:
+                        rankId = "retro";
+                        break;
+                    default:
+                        console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
+                }
+
+                const computedKey = wrapStorageKey(`${computedId}${rankId}`);
+                const computedRankChange = readEntry<number[]>(computedKey, (data: number[]) => {
+                    if (data && data[1]) {
+                        data[0] = data[1];
+                        delete data[1];
+                    }
+                });
+
+                if (computedRankChange) {
+                    if (!computedRankChange[0]) {
+                        computedRankChange[0] = computedRank;
+                        writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
                     } else {
-                        if (computedRank !== computedRankChange[0]) {
-                            computedRankChange[1] = computedRank;
+                        const latestValue = computedRankChange[1];
+                        if (latestValue) {
+                            if (latestValue !== computedRank) {
+                                computedRankChange[0] = computedRankChange[1];
+                                computedRankChange[1] = computedRank;
+                                writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                            }
                             parsedRankChange = computedRankChange[0] - computedRank;
-                            writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                        } else {
+                            if (computedRank !== computedRankChange[0]) {
+                                computedRankChange[1] = computedRank;
+                                parsedRankChange = computedRankChange[0] - computedRank;
+                                writeEntry(computedKey, JSON.stringify(computedRankChange), rankChangesCacheTtlInMillis);
+                            }
                         }
                     }
+                } else {
+                    writeEntry(computedKey, JSON.stringify([computedRank]), rankChangesCacheTtlInMillis);
                 }
-            } else {
-                writeEntry(computedKey, JSON.stringify([computedRank]), rankChangesCacheTtlInMillis);
+            }
+            catch (error) {
+                console.error(error);
             }
 
             return {
