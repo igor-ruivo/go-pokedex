@@ -180,6 +180,9 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
                 }
             }
             catch (error) {
+                Object.keys(localStorage)
+                    .filter(k => k.startsWith("go!pokedex") && k.endsWith("go!pokedex"))
+                    .forEach(k => localStorage.removeItem(k));
                 console.error(error);
             }
 
