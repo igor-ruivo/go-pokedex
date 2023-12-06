@@ -191,45 +191,37 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
 
             let parsedRankChange = 0;
 
-            try {
-                const computedKey = `${computedId}${rankId}`;
-                const computedRankChange = readEntry<number[]>(computedKey, (data: number[]) => {
-                    if (data && data[1]) {
-                        data[0] = data[1];
-                        delete data[1];
-                    }
-                });
+            const computedKey = `${computedId}${rankId}`;
+            const computedRankChange = readEntry<number[]>(computedKey, (data: number[]) => {
+                if (data && data[1]) {
+                    data[0] = data[1];
+                    delete data[1];
+                }
+            });
 
-                if (computedRankChange) {
-                    if (!computedRankChange[0]) {
-                        computedRankChange[0] = computedRank;
-                        writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
+            if (computedRankChange) {
+                if (!computedRankChange[0]) {
+                    computedRankChange[0] = computedRank;
+                    writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
+                } else {
+                    const latestValue = computedRankChange[1];
+                    if (latestValue) {
+                        if (latestValue !== computedRank) {
+                            computedRankChange[0] = computedRankChange[1];
+                            computedRankChange[1] = computedRank;
+                            writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
+                        }
+                        parsedRankChange = computedRankChange[0] - computedRank;
                     } else {
-                        const latestValue = computedRankChange[1];
-                        if (latestValue) {
-                            if (latestValue !== computedRank) {
-                                computedRankChange[0] = computedRankChange[1];
-                                computedRankChange[1] = computedRank;
-                                writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
-                            }
+                        if (computedRank !== computedRankChange[0]) {
+                            computedRankChange[1] = computedRank;
                             parsedRankChange = computedRankChange[0] - computedRank;
-                        } else {
-                            if (computedRank !== computedRankChange[0]) {
-                                computedRankChange[1] = computedRank;
-                                parsedRankChange = computedRankChange[0] - computedRank;
-                                writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
-                            }
+                            writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
                         }
                     }
-                } else {
-                    writeEntry(computedKey, [computedRank], rankChangesCacheTtlInMillis);
                 }
-            }
-            catch (error) {
-                Object.keys(localStorage)
-                    .filter(k => k.startsWith("go!pokedex") && k.endsWith("go!pokedex"))
-                    .forEach(k => localStorage.removeItem(k));
-                console.error(error);
+            } else {
+                writeEntry(computedKey, [computedRank], rankChangesCacheTtlInMillis);
             }
 
             rankedPokemonDictionary[computedId] = {
