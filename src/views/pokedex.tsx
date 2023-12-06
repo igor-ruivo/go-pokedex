@@ -31,32 +31,6 @@ const Pokedex = () => {
     const { inputText } = useNavbarSearchInput();
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
-    // TEMP DEBUG
-    /*
-    if (fetchCompleted && gamemasterPokemon && Object.keys(gamemasterPokemon).length) {
-        
-        const movesSet = new Set<string>();
-        
-        Object.values(gamemasterPokemon).map(p => p.fastMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
-        Object.values(gamemasterPokemon).map(p => p.chargedMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
-        Object.values(gamemasterPokemon).map(p => p.eliteMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
-        Object.values(gamemasterPokemon).map(p => p.legacyMoves).forEach(v => v.forEach(vv => movesSet.add(vv)));
-
-            movesSet.forEach(m => {
-                const moveKey = GameTranslatorKeys[m as keyof typeof GameTranslatorKeys];
-                if (!isTranslated(moveKey)) {
-                    console.log(m);
-                } else {
-                    const move = moves[m];
-                    const engMove = move.name;
-                    if (engMove !== gameTranslator(moveKey, GameLanguage.English)) {
-                        console.error(m);
-                    }
-                }
-            });
-    }
-    */
-
     let listType = ListType.POKEDEX;
     const { listTypeArg } = useParams();
 

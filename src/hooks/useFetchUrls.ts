@@ -26,7 +26,7 @@ export const useFetchUrls = (): FetchData<any> => {
             console.error(error?.toString());
             setErrorLoadingData(error?.toString() ?? "");
         }
-        finally{
+        finally {
             setFetchCompleted(true);
         }
     };

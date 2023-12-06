@@ -7,3 +7,4 @@ export const pvpokeRankings2500Url = "https://raw.githubusercontent.com/pvpoke/p
 export const pvpokeRankingsUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/all/overall/rankings-10000.json";
 export const pvpokeRankingsRetroUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/retro/overall/rankings-1500.json";
 export const movesUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/gamemaster/moves.json";
+export const gameMasterUrl = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json";

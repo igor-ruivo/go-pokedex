@@ -30,6 +30,7 @@ export enum GameTranslatorKeys {
     BOOMBURST,
     WEATHER_BALL_NORMAL,
     RETURN,
+    HIDDEN_POWER,
 
     //grass
     VINE_WHIP,
@@ -1963,7 +1964,8 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.SACRED_SWORD, sacredSword],
     [GameTranslatorKeys.FLYING_PRESS, flyingPress],
     [GameTranslatorKeys.DRAIN_PUNCH, drainPunch],
-    [GameTranslatorKeys.ROLLOUT, rollout]
+    [GameTranslatorKeys.ROLLOUT, rollout],
+    [GameTranslatorKeys.HIDDEN_POWER, hiddenPower]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());

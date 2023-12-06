@@ -1,11 +1,11 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { IMove } from "../DTOs/IMove";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
 import { buildPokemonImageUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsRetroUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
 import { wrapStorageKey } from "./persistent-configs-handler";
 import { readEntry, writeEntry } from "./resource-cache";
+import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -17,9 +17,28 @@ const blacklistedSpecieIds = new Set<string>([
     "pikachu_shaymin"
 ]);
 
+const hiddenPowers = new Set<string>([
+    "HIDDEN_POWER_BUG",
+    "HIDDEN_POWER_DARK",
+    "HIDDEN_POWER_DRAGON",
+    "HIDDEN_POWER_ELECTRIC",
+    "HIDDEN_POWER_FIGHTING",
+    "HIDDEN_POWER_FIRE",
+    "HIDDEN_POWER_FLYING",
+    "HIDDEN_POWER_GHOST",
+    "HIDDEN_POWER_GRASS",
+    "HIDDEN_POWER_GROUND",
+    "HIDDEN_POWER_ICE",
+    "HIDDEN_POWER_POISON",
+    "HIDDEN_POWER_PSYCHIC",
+    "HIDDEN_POWER_ROCK",
+    "HIDDEN_POWER_STEEL",
+    "HIDDEN_POWER_WATER"
+]);
+
 const type = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i) ? "detail" : "full";
 
-export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (data: any) => {
+export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPokemon> = (data: any) => {
     const releasedOverride = new Set<string>([
         "cosmog",
         "cosmoem"
@@ -51,9 +70,13 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
 
-    return (Array.from(data) as any[])
+    const pokemonDictionary: Dictionary<IGamemasterPokemon> = {};
+
+    const cleanHiddenPowers = (moves: string[]) => moves?.some((move: string) => hiddenPowers.has(move)) ? [...moves.filter((move: string) => !hiddenPowers.has(move)), "HIDDEN_POWER"] : moves;
+
+    (Array.from(data) as any[])
         .filter(baseDataFilter)
-        .map(pokemon => {
+        .forEach(pokemon => {
             const isShadow = isShadowConditionFilter(pokemon);
 
             let urlDex = "" + pokemon.dex;
@@ -77,7 +100,7 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 form = "" + (currentIndex + 1);
             }
 
-            return {
+            pokemonDictionary[pokemon.speciesId] = {
                 dex: pokemon.dex,
                 speciesId: pokemon.speciesId,
                 speciesName: sexConverter(pokemon.speciesName),
@@ -87,10 +110,10 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
                 atk: pokemon.baseStats.atk,
                 def: pokemon.baseStats.def,
                 hp: pokemon.baseStats.hp,
-                fastMoves: pokemon.fastMoves,
-                chargedMoves: pokemon.chargedMoves,
-                eliteMoves: pokemon.eliteMoves ?? [],
-                legacyMoves: pokemon.legacyMoves ?? [],
+                fastMoves: cleanHiddenPowers(pokemon.fastMoves),
+                chargedMoves: cleanHiddenPowers(pokemon.chargedMoves),
+                eliteMoves: (cleanHiddenPowers(pokemon.eliteMoves)) ?? [],
+                legacyMoves: (cleanHiddenPowers(pokemon.legacyMoves)) ?? [],
                 isShadow: isShadow,
                 isShadowEligible: isShadow ? undefined : pokemon.tags ? Array.from(pokemon.tags).includes("shadoweligible") : false,
                 isMega: pokemon.tags ? Array.from(pokemon.tags).includes("mega") : false,
@@ -102,9 +125,11 @@ export const mapGamemasterPokemonData: (data: any) => IGamemasterPokemon[] = (da
             }
         }
     );
+
+    return pokemonDictionary;
 }
 
-export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRankedPokemon[] = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const observedPokemon = new Set<string>();
 
     let rankId = "";
@@ -125,7 +150,9 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
             console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
     }
 
-    return (Array.from(data) as any[])
+    const rankedPokemonDictionary: Dictionary<IRankedPokemon> = {};
+
+    (Array.from(data) as any[])
         .filter(pokemon => !blacklistedSpecieIds.has(pokemon.speciesId))
         .filter(pokemon => {
             const p = gamemasterPokemon[pokemon.speciesId];
@@ -138,7 +165,7 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
                 return true;
             }
         })
-        .map((pokemon, index) => {
+        .forEach((pokemon, index) => {
             const p = gamemasterPokemon[pokemon.speciesId];
             const computedId = p.aliasId ?? p.speciesId;
             const computedRank = index + 1;
@@ -186,7 +213,7 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
                 console.error(error);
             }
 
-            return {
+            rankedPokemonDictionary[computedId] = {
                 speciesId: computedId,
                 rating: pokemon.rating,
                 moveset: pokemon.moveset,
@@ -202,22 +229,131 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
             }
         }
     );
+
+    return rankedPokemonDictionary;
 }
 
-export const mapMoves: (data: any) => IMove[] = (data: any) => {
-    return (Array.from(data) as any[])
-        .map(move => {
-            return {
-                moveId: move.moveId,
-                name: move.name,
-                type: move.type,
-                power: move.power,
-                energy: move.energy,
-                energyGain: move.energyGain,
-                cooldown: +move.cooldown / 1000
+export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: any) => {
+    type PvPMove = {
+        moveId: string,
+        type: string,
+        isFast: boolean,
+        pvpPower: number,
+        pvpEnergy: number,
+        pvpCooldown: number,
+        buffs: any
+    };
+
+    type PvEMove = {
+        moveId: string,
+        type: string,
+        isFast: boolean,
+        pvePower: number,
+        pveEnergy: number,
+        pveCooldown: number
+    };
+
+    const pvpMoves: Dictionary<PvPMove> = {};
+    const pveMoves: Dictionary<PvEMove> = {};
+
+    const renamedMoveIds: Dictionary<string> = {
+        "FUTURESIGHT": "FUTURE_SIGHT",
+        "TECHNO_BLAST_WATER": "TECHNO_BLAST_DOUSE"
+    };
+
+    (Array.from(data) as any[])
+        .filter(entry => entry.data?.moveSettings || entry.data.combatMove)
+        .forEach(entry => {
+            const isPvP = !!entry.data.combatMove;
+            const dataPointer = entry.data.moveSettings || entry.data.combatMove;
+            const moveIdPointer = dataPointer.movementId || dataPointer.uniqueId;
+            const typePointer = dataPointer.pokemonType || dataPointer.type;
+
+            const id = moveIdPointer.endsWith("_FAST") ? moveIdPointer.substring(0, moveIdPointer.lastIndexOf("_FAST")) : moveIdPointer
+            const isFast = moveIdPointer.endsWith("_FAST");
+
+            if (isPvP) {
+                pvpMoves[id] = {
+                    moveId: id,
+                    type: typePointer.split("POKEMON_TYPE_")[1].toLocaleLowerCase(),
+                    isFast: isFast,
+                    pvpPower: dataPointer.power,
+                    pvpEnergy: dataPointer.energyDelta,
+                    pvpCooldown: isFast ? (+(dataPointer.durationTurns ?? 0) + 1) / 2 : 0,
+                    buffs: dataPointer.buffs
+                }
+            } else {
+                pveMoves[id] = {
+                    moveId: id,
+                    type: typePointer.split("POKEMON_TYPE_")[1].toLocaleLowerCase(),
+                    isFast: isFast,
+                    pvePower: dataPointer.power,
+                    pveEnergy: dataPointer.energyDelta,
+                    pveCooldown: +dataPointer.durationMs / 1000,
+                }
             }
         }
     );
+
+    const movesDictionary: Dictionary<IGameMasterMove> = {}
+
+    Object.values(pvpMoves)
+        .forEach(move => {
+            if (!move.moveId) {
+                return;
+            }
+
+            if (!move.type) {
+                console.error(`missing type for move ${move.moveId}`);
+            }
+
+            const pveCounterpart = pveMoves[move.moveId];
+
+            const translatedId = renamedMoveIds[move.moveId] ?? move.moveId;
+
+            movesDictionary[translatedId] = {
+                moveId: translatedId,
+                type: move.type,
+                isFast: move.isFast,
+                pvpPower: move.pvpPower ?? 0,
+                pvePower: pveCounterpart?.pvePower ?? 0,
+                pvpEnergyDelta: move.pvpEnergy ?? 0,
+                pveEnergyDelta: pveCounterpart?.pveEnergy ?? 0,
+                pvpDuration: move.pvpCooldown ?? 0,
+                pveDuration: pveCounterpart?.pveCooldown ?? 0,
+                pvpBuffs: move.buffs ?? {}
+            }
+        });
+
+    Object.values(pveMoves)
+    .forEach(move => {
+        if (!move.moveId) {
+            return;
+        }
+
+        if (!move.type) {
+            console.error(`missing type for move ${move.moveId}`);
+        }
+
+        const pvpCounterpart = pvpMoves[move.moveId];
+
+        const translatedId = renamedMoveIds[move.moveId] ?? move.moveId;
+
+        movesDictionary[translatedId] = {
+            moveId: translatedId,
+            type: move.type,
+            isFast: move.isFast,
+            pvpPower: pvpCounterpart?.pvpPower ?? 0,
+            pvePower: move.pvePower ?? 0,
+            pvpEnergyDelta: pvpCounterpart?.pvpEnergy ?? 0,
+            pveEnergyDelta: move.pveEnergy ?? 0,
+            pvpDuration: pvpCounterpart?.pvpCooldown ?? 0,
+            pveDuration: move.pveCooldown ?? 0,
+            pvpBuffs: pvpCounterpart?.buffs ?? {}
+        }
+    });
+    
+    return movesDictionary;
 }
 
 export const ordinal = (number: number) => {

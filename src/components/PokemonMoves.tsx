@@ -9,6 +9,7 @@ import PokemonImage from "./PokemonImage";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
+import { useMoves } from "../contexts/moves-context";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -19,10 +20,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {rankLists, moves, pvpFetchCompleted} = usePvp();
+    const {rankLists, pvpFetchCompleted} = usePvp();
+    const {moves, movesFetchCompleted} = useMoves();
     const {pathname} = useLocation();
     
-    if (!fetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon) {
+    if (!fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
     }
 
@@ -79,15 +81,15 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 </strong>
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[0]].power}
+                                        {moves[relevantMoveSet[0]].pvpPower}
                                         <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                     </span>
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[0]].energyGain}
+                                        {moves[relevantMoveSet[0]].pvpEnergyDelta}
                                         <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                     </span>
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[0]].cooldown}s
+                                        {moves[relevantMoveSet[0]].pvpDuration}s
                                         <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                     </span>
                                 </strong>
@@ -101,11 +103,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 </strong>
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[1]].power}
+                                        {moves[relevantMoveSet[1]].pvpPower}
                                         <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                     </span>
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[1]].energy}
+                                        {moves[relevantMoveSet[1]].pvpEnergyDelta * -1}
                                         <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                     </span>
                                 </strong>
@@ -119,11 +121,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 </strong>
                                 <strong className="move-detail move-stats">
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[2]].power}
+                                        {moves[relevantMoveSet[2]].pvpPower}
                                         <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                     </span>
                                     <span className="move-stats-content">
-                                        {moves[relevantMoveSet[2]].energy}
+                                        {moves[relevantMoveSet[2]].pvpEnergyDelta * -1}
                                         <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                     </span>
                                 </strong>
@@ -157,15 +159,15 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                         </strong>
                                         <strong className="move-detail move-stats">
                                             <span className="move-stats-content">
-                                                {moves[m].power}
+                                                {moves[m].pvpPower}
                                                 <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                             </span>
                                             <span className="move-stats-content">
-                                                {moves[m].energyGain}
+                                                {moves[m].pvpEnergyDelta}
                                                 <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                             </span>
                                             <span className="move-stats-content">
-                                                {moves[m].cooldown}s
+                                                {moves[m].pvpDuration}s
                                                 <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                             </span>
                                         </strong>
@@ -198,11 +200,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                         </strong>
                                         <strong className="move-detail move-stats">
                                             <span className="move-stats-content">
-                                                {moves[m].power}
+                                                {moves[m].pvpPower}
                                                 <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                             </span>
                                             <span className="move-stats-content">
-                                                {moves[m].energy}
+                                                {moves[m].pvpEnergyDelta * -1}
                                                 <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                             </span>
                                         </strong>

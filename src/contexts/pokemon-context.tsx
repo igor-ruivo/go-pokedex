@@ -13,8 +13,8 @@ interface PokemonContextType {
 
 const PokemonContext = createContext<PokemonContextType | undefined>(undefined);
 
-const useFetchAllData: () => [IGamemasterPokemon[], boolean, string] = () => {
-    const [gamemasterPokemon, fetchGamemasterPokemon, gememasterPokemonFetchCompleted, errorLoadingGamemasterData]: FetchData<IGamemasterPokemon[]> = useFetchUrls();
+const useFetchAllData: () => [Dictionary<IGamemasterPokemon>, boolean, string] = () => {
+    const [gamemasterPokemon, fetchGamemasterPokemon, gememasterPokemonFetchCompleted, errorLoadingGamemasterData]: FetchData<Dictionary<IGamemasterPokemon>> = useFetchUrls();
 
     useEffect(() => {
         const controller = new AbortController();
@@ -36,15 +36,11 @@ export const usePokemon = (): PokemonContextType => {
 };
 
 export const PokemonProvider = (props: React.PropsWithChildren<{}>) => {
-    const [gamemasterPokemon, fetchCompleted, errors]: [IGamemasterPokemon[], boolean, string] = useFetchAllData();
+    const [gamemasterPokemon, fetchCompleted, errors]: [Dictionary<IGamemasterPokemon>, boolean, string] = useFetchAllData();
 
     return (
         <PokemonContext.Provider value={{
-            gamemasterPokemon: gamemasterPokemon?.reduce((acc: Dictionary<IGamemasterPokemon>, obj: IGamemasterPokemon) => {
-                acc[obj.speciesId] = obj;
-                return acc;
-            }, {}),
-
+            gamemasterPokemon: gamemasterPokemon,
             fetchCompleted,
             errors }}
         >
