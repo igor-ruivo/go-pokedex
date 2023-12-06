@@ -3,7 +3,6 @@ import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
 import { buildPokemonImageUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsRetroUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
-import { wrapStorageKey } from "./persistent-configs-handler";
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
@@ -193,7 +192,7 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
             let parsedRankChange = 0;
 
             try {
-                const computedKey = wrapStorageKey(`${computedId}${rankId}`);
+                const computedKey = `${computedId}${rankId}`;
                 const computedRankChange = readEntry<number[]>(computedKey, (data: number[]) => {
                     if (data && data[1]) {
                         data[0] = data[1];

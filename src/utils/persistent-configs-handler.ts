@@ -19,31 +19,26 @@ export enum ConfigKeys {
     LastLeague
 }
 
-// avoids collision with other website's cache.
-const wrapperString = "go!";
-
-export const wrapStorageKey = (key: string) => `${wrapperString}${key}${wrapperString}`;
-
 export const readSessionValue = (key: ConfigKeys) => {
-    return sessionStorage.getItem(wrapStorageKey(key.toString()));
+    return sessionStorage.getItem(key.toString());
 }
 
 export const readPersistentValue = (key: ConfigKeys) => {
-    return localStorage.getItem(wrapStorageKey(key.toString()));
+    return localStorage.getItem(key.toString());
 }
 
 export const writeSessionValue = (key: ConfigKeys, value: string) => {
-    sessionStorage.setItem(wrapStorageKey(key.toString()), value);
+    sessionStorage.setItem(key.toString(), value);
 }
 
 export const writePersistentValue = (key: ConfigKeys, value: string) => {
-    localStorage.setItem(wrapStorageKey(key.toString()), value);
+    localStorage.setItem(key.toString(), value);
 }
 
 export const writePersistentCostumKeyValue = (customKey: string, value: string) => {
-    localStorage.setItem(wrapStorageKey(customKey), value);
+    localStorage.setItem(customKey, value);
 }
 
 export const readPersistentCostumKeyValue = (customKey: string) => {
-    return localStorage.getItem(wrapStorageKey(customKey));
+    return localStorage.getItem(customKey);
 }
