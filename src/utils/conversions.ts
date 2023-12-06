@@ -6,6 +6,7 @@ import { buildPokemonImageUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvp
 import { wrapStorageKey } from "./persistent-configs-handler";
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
+import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -115,9 +116,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 eliteMoves: (cleanHiddenPowers(pokemon.eliteMoves)) ?? [],
                 legacyMoves: (cleanHiddenPowers(pokemon.legacyMoves)) ?? [],
                 isShadow: isShadow,
-                isShadowEligible: isShadow ? undefined : pokemon.tags ? Array.from(pokemon.tags).includes("shadoweligible") : false,
                 isMega: pokemon.tags ? Array.from(pokemon.tags).includes("mega") : false,
-                isUntradeable: pokemon.tags ? Array.from(pokemon.tags).includes("untradeable") : false,
                 familyId: pokemon.family?.id,
                 parent: pokemon.family?.parent,
                 evolutions: pokemon.family ? pokemon.family.evolutions : [],
@@ -127,6 +126,27 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     );
 
     return pokemonDictionary;
+}
+
+export const mapTranslatedMoves: (data: any) => Dictionary<ITranslatedMove> = (data: any) => {
+    const translatedMovesDictionary: Dictionary<ITranslatedMove> = {};
+    const term = "move_name_";
+
+    (Array.from(data.data) as any[])
+        .forEach((t: string, index: number) => {
+            if (!t.startsWith(term)) {
+                return;
+            }
+
+            const vid = t.substring(term.length);
+            const moveName = Array.from(data.data)[index + 1];
+            translatedMovesDictionary[vid] = {
+                vId: vid,
+                name: moveName as string
+            }
+        });
+
+    return translatedMovesDictionary;
 }
 
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
@@ -236,6 +256,7 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
 export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: any) => {
     type PvPMove = {
         moveId: string,
+        vId: string,
         type: string,
         isFast: boolean,
         pvpPower: number,
@@ -246,6 +267,7 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
 
     type PvEMove = {
         moveId: string,
+        vId: string,
         type: string,
         isFast: boolean,
         pvePower: number,
@@ -273,8 +295,11 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             const isFast = moveIdPointer.endsWith("_FAST");
 
             if (isPvP) {
+                const term = "COMBAT_V";
+                const vidSubstring = entry.templateId.substring(entry.templateId.indexOf(term) + term.length);
                 pvpMoves[id] = {
                     moveId: id,
+                    vId: vidSubstring.substring(0, vidSubstring.indexOf("_")),
                     type: typePointer.split("POKEMON_TYPE_")[1].toLocaleLowerCase(),
                     isFast: isFast,
                     pvpPower: dataPointer.power,
@@ -285,6 +310,7 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             } else {
                 pveMoves[id] = {
                     moveId: id,
+                    vId: entry.templateId.substring(1, entry.templateId.indexOf("_")),
                     type: typePointer.split("POKEMON_TYPE_")[1].toLocaleLowerCase(),
                     isFast: isFast,
                     pvePower: dataPointer.power,
@@ -313,6 +339,7 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
 
             movesDictionary[translatedId] = {
                 moveId: translatedId,
+                vId: move.vId,
                 type: move.type,
                 isFast: move.isFast,
                 pvpPower: move.pvpPower ?? 0,
@@ -341,6 +368,7 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
 
         movesDictionary[translatedId] = {
             moveId: translatedId,
+            vId: move.vId,
             type: move.type,
             isFast: move.isFast,
             pvpPower: pvpCounterpart?.pvpPower ?? 0,

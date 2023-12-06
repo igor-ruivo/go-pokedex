@@ -178,7 +178,7 @@ const Navbar = () => {
         {
             label: "Português",
             value: GameLanguage.Portuguese,
-            hint: "https://i.imgur.com/YUXHN0U.png"
+            hint: "https://i.imgur.com/AEOlghs.png"
         }
     ];
 

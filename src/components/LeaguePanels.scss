@@ -5,7 +5,6 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 6px;
     gap: 6px;
-    //min-width: 250px;
 }
 
 .pvp-stats-column {
@@ -13,7 +12,6 @@
     flex-direction: column;
     grid-gap: 6px;
     gap: 6px;
-    //min-width: 250px;
     padding: 5px;
     color: #fff;
     text-shadow: 1px 5px 5px rgba(0,0,0,.25);
@@ -38,7 +36,6 @@
     flex-direction: column;
     justify-content: space-evenly;
     padding: 6px;
-
     border-radius: 12px;
     background-color: rgba(0,0,0,.5);
     -webkit-backdrop-filter: blur(25px);
@@ -52,7 +49,6 @@
     backdrop-filter: blur(25px);
     display: flex;
     justify-content: center;
-
     flex-grow: 1;
     padding: 4px 6px 4px 6px;
 }
@@ -90,9 +86,6 @@
 
 .cp-and-level {
     opacity: 0.9;
-}
-
-.cp-and-level-recommended {
 }
 
 .custom-pokemon {
@@ -135,8 +128,6 @@
         margin: 0;
         width: 100%;
     }
-    h4 {
-    }
 }
 
 .pvp-img {
@@ -154,9 +145,6 @@
     justify-content: center;
     gap: 9px;
     padding: 9px;
-}
-
-.pvp-ivs {
 }
 
 .pokemon-ivs {
@@ -187,7 +175,7 @@
 }
 
 .ultra {
-    background: linear-gradient(45deg,#777151,#3b3838);
+    background: linear-gradient(45deg,#777151,rgb(111, 101, 81));
 }
 
 .master {
@@ -205,21 +193,6 @@
         text-overflow: ellipsis;
     }
 
-    .pokemon-attack {
-    }
-
-    .pvp-title {
-        //padding: 9px;
-        h3 {
-        }
-
-        h4 {
-        }
-    }
-
-    .cp-and-level {
-    }
-
     .pvp-stats-display {
         width: 100%;
         padding: 3px;
@@ -228,15 +201,6 @@
     .pvp-img {
         width: 24px;
         height: 24px;
-    }
-
-    .pokemon-ivs-item {
-    }
-
-    .pokemon-ivs-label {
-    }
-
-    .pokemon-ivs-ranked {
     }
 }
 

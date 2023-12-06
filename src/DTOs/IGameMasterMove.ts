@@ -1,5 +1,6 @@
 export interface IGameMasterMove {
     moveId: string,
+    vId: string,
     type: string,
     isFast: boolean,
     pvpPower: number,

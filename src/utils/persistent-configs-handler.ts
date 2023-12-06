@@ -20,7 +20,7 @@ export enum ConfigKeys {
 }
 
 // avoids collision with other website's cache.
-const wrapperString = "go!pokedex";
+const wrapperString = "go!";
 
 export const wrapStorageKey = (key: string) => `${wrapperString}${key}${wrapperString}`;
 
