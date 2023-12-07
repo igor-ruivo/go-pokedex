@@ -54,8 +54,9 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const chargedMove1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[1]]?.type}.png`;
     const chargedMove2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[2]]?.type}.png`;
 
-
     const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
+
+    const leagueName = gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.RetroCup, currentGameLanguage);
 
     return (
         <div className="banner_layout">
@@ -70,152 +71,167 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     ))}
                 </div>
             </div>}
-            <h3 className="moves-title">
-                {translator(TranslatorKeys.RecommendedMoves, currentLanguage)}
-            </h3>
-            <ul className="moves-list">
-                {rankLists[league as number][pokemon.speciesId] ? 
-                    <div className="moves-list">
-                        <div className={fastMoveClassName}>
-                            <div className="move-card-content">
-                                <strong className="move-detail move-name">
-                                    <img title={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} alt={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} height="32" width="32" src={fastMoveUrl}/>
-                                    {translateMoveFromMoveId(relevantMoveSet[0]) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
-                                </strong>
-                                <strong className="move-detail move-stats">
-                                    <span className="move-stats-content">
-                                        {moves[relevantMoveSet[0]].pvpPower}
-                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                    </span>
-                                    <span className="move-stats-content">
-                                        {moves[relevantMoveSet[0]].pvpEnergyDelta}
-                                        <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                    </span>
-                                    <span className="move-stats-content">
-                                        {moves[relevantMoveSet[0]].pvpDuration}s
-                                        <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
-                                    </span>
-                                </strong>
-                            </div>
-                        </div>
-                        <div className={chargedMove1ClassName}>
-                            <div className="move-card-content">
-                                <strong className="move-detail move-name">
-                                    <img title={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} alt={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} height="32" width="32" src={chargedMove1Url}/>
-                                    {translateMoveFromMoveId(relevantMoveSet[1]) + (pokemon.eliteMoves.includes(relevantMoveSet[1]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[1]) ? " †" : "")}
-                                </strong>
-                                <strong className="move-detail move-stats">
-                                    <span className="move-stats-content">
-                                        {moves[relevantMoveSet[1]].pvpPower}
-                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                    </span>
-                                    <span className="move-stats-content">
-                                        {moves[relevantMoveSet[1]].pvpEnergyDelta * -1}
-                                        <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                    </span>
-                                </strong>
-                            </div>
-                        </div>
-                        <div className={chargedMove2ClassName}>
-                            <div className="move-card-content">
-                                <strong className="move-detail move-name">
-                                    <img title={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} alt={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} height="32" width="32" src={chargedMove2Url}/>
-                                    {translateMoveFromMoveId(relevantMoveSet[2]) + (pokemon.eliteMoves.includes(relevantMoveSet[2]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[2]) ? " †" : "")}
-                                </strong>
-                                <strong className="move-detail move-stats">
-                                    <span className="move-stats-content">
-                                        {moves[relevantMoveSet[2]].pvpPower}
-                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                    </span>
-                                    <span className="move-stats-content">
-                                        {moves[relevantMoveSet[2]].pvpEnergyDelta * -1}
-                                        <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                    </span>
-                                </strong>
-                            </div>
-                        </div>
-                    </div> :
-                    <span className="unavailable_moves">
-                        {translator(TranslatorKeys.RecommendedMovesUnavailable, currentLanguage)}<br></br>
-                        {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.RetroCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
-                    </span>
-                }
-            </ul>
-            <h3 className="moves-title">
-                {translator(TranslatorKeys.FastMoves, currentLanguage)}
-            </h3>
-            <ul className="moves-list">
-                {
-                    pokemon.fastMoves.map(m => {
-                        const className = `move-card background-${moves[m].type}`;
-                        const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                        const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
-
-                        return (
-                            <li key={m}>
-                                <div className={className}>
+            <div className="recommended-moves">
+                <div className="recommended-moves-content menu-item">
+                    <h3 className="moves-title">
+                        {`${translator(TranslatorKeys.RecommendedMoves, currentLanguage)} (${leagueName})`}
+                    </h3>
+                    <ul className="moves-list">
+                        {rankLists[league as number][pokemon.speciesId] ? 
+                            <div className="moves-list">
+                            <p>
+                                {translator(TranslatorKeys.RecommendedMovesInfo1, currentLanguage)} {pokemon.speciesName} {translator(TranslatorKeys.RecommendedMovesInfo2, currentLanguage)} {leagueName}.
+                            </p>
+                            <div className="menu-item">
+                                <div className={fastMoveClassName}>
                                     <div className="move-card-content">
                                         <strong className="move-detail move-name">
-                                            <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
-                                            {translateMoveFromMoveId(m) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
+                                            <img title={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} alt={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} height="32" width="32" src={fastMoveUrl}/>
+                                            {translateMoveFromMoveId(relevantMoveSet[0]) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
                                         </strong>
                                         <strong className="move-detail move-stats">
                                             <span className="move-stats-content">
-                                                {moves[m].pvpPower}
+                                                {moves[relevantMoveSet[0]].pvpPower}
                                                 <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                                             </span>
                                             <span className="move-stats-content">
-                                                {moves[m].pvpEnergyDelta}
+                                                {moves[relevantMoveSet[0]].pvpEnergyDelta}
                                                 <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                                             </span>
                                             <span className="move-stats-content">
-                                                {moves[m].pvpDuration}s
+                                                {moves[relevantMoveSet[0]].pvpDuration}s
                                                 <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                                             </span>
                                         </strong>
                                     </div>
                                 </div>
-                            </li>
-                        )
-                    })
-                }
-                
-            </ul>
-            <h3 className="moves-title charged-attacks">
-                {translator(TranslatorKeys.ChargedMoves, currentLanguage)}
-            </h3>
-            <ul className="moves-list">
-                {
-                    pokemon.chargedMoves.map(m => {
-                        const className = `move-card background-${moves[m].type}`;
-                        const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                        const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
-
-                        return (
-                            <li key={m}>
-                                <div className={className}>
-                                    <div className="move-card-content">
-                                        <strong className="move-detail move-name">
-                                            <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
-                                            {translateMoveFromMoveId(m) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
-                                        </strong>
-                                        <strong className="move-detail move-stats">
-                                            <span className="move-stats-content">
-                                                {moves[m].pvpPower}
-                                                <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                            </span>
-                                            <span className="move-stats-content">
-                                                {moves[m].pvpEnergyDelta * -1}
-                                                <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                            </span>
-                                        </strong>
+                                </div>
+                                <div className="recommended-charged-moves menu-item">
+                                    <div className={chargedMove1ClassName}>
+                                        <div className="move-card-content">
+                                            <strong className="move-detail move-name">
+                                                <img title={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} alt={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} height="32" width="32" src={chargedMove1Url}/>
+                                                {translateMoveFromMoveId(relevantMoveSet[1]) + (pokemon.eliteMoves.includes(relevantMoveSet[1]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[1]) ? " †" : "")}
+                                            </strong>
+                                            <strong className="move-detail move-stats">
+                                                <span className="move-stats-content">
+                                                    {moves[relevantMoveSet[1]].pvpPower}
+                                                    <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                                </span>
+                                                <span className="move-stats-content">
+                                                    {moves[relevantMoveSet[1]].pvpEnergyDelta * -1}
+                                                    <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                                </span>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div className={chargedMove2ClassName}>
+                                        <div className="move-card-content">
+                                            <strong className="move-detail move-name">
+                                                <img title={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} alt={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} height="32" width="32" src={chargedMove2Url}/>
+                                                {translateMoveFromMoveId(relevantMoveSet[2]) + (pokemon.eliteMoves.includes(relevantMoveSet[2]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[2]) ? " †" : "")}
+                                            </strong>
+                                            <strong className="move-detail move-stats">
+                                                <span className="move-stats-content">
+                                                    {moves[relevantMoveSet[2]].pvpPower}
+                                                    <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                                </span>
+                                                <span className="move-stats-content">
+                                                    {moves[relevantMoveSet[2]].pvpEnergyDelta * -1}
+                                                    <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                                </span>
+                                            </strong>
+                                        </div>
                                     </div>
                                 </div>
-                            </li>
-                        )
-                    })
-                }
-            </ul>
+                            </div> :
+                            <span className="unavailable_moves">
+                                {translator(TranslatorKeys.RecommendedMovesUnavailable, currentLanguage)}<br></br>
+                                {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.RetroCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                            </span>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div className="moves-display-layout">
+                <div className="fast-moves-section menu-item">
+                    <h3 className="moves-title">
+                        {translator(TranslatorKeys.FastMoves, currentLanguage)}
+                    </h3>
+                    <ul className="moves-list">
+                        {
+                            pokemon.fastMoves.map(m => {
+                                const className = `move-card background-${moves[m].type}`;
+                                const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
+                                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
+                                return (
+                                    <li key={m}>
+                                        <div className={className}>
+                                            <div className="move-card-content">
+                                                <strong className="move-detail move-name">
+                                                    <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
+                                                    {translateMoveFromMoveId(m) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
+                                                </strong>
+                                                <strong className="move-detail move-stats">
+                                                    <span className="move-stats-content">
+                                                        {moves[m].pvpPower}
+                                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                                    </span>
+                                                    <span className="move-stats-content">
+                                                        {moves[m].pvpEnergyDelta}
+                                                        <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                                    </span>
+                                                    <span className="move-stats-content">
+                                                        {moves[m].pvpDuration}s
+                                                        <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
+                            })
+                        }
+                    </ul>
+                </div>
+                <div className="charged-moves-section menu-item">
+                    <h3 className="moves-title">
+                        {translator(TranslatorKeys.ChargedMoves, currentLanguage)}
+                    </h3>
+                    <ul className="moves-list">
+                        {
+                            pokemon.chargedMoves.map(m => {
+                                const className = `move-card background-${moves[m].type}`;
+                                const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
+                                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
+
+                                return (
+                                    <li key={m}>
+                                        <div className={className}>
+                                            <div className="move-card-content">
+                                                <strong className="move-detail move-name">
+                                                    <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
+                                                    {translateMoveFromMoveId(m) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
+                                                </strong>
+                                                <strong className="move-detail move-stats">
+                                                    <span className="move-stats-content">
+                                                        {moves[m].pvpPower}
+                                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                                                    </span>
+                                                    <span className="move-stats-content">
+                                                        {moves[m].pvpEnergyDelta * -1}
+                                                        <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                                                    </span>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
+                            })
+                        }
+                    </ul>
+                </div>
+            </div>
         </div>
     );
 }

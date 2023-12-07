@@ -31,7 +31,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     }
 
     const renderImageDescriptionComponent = () => {
-        return <div className="cp-stats-container">
+        return <div className="cp-stats-container menu-item less-bright">
             <span className="cp-level">
                 <strong className="cp-container">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong>
                 <div className="weighted-font">{translator(TranslatorKeys.Level, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level">

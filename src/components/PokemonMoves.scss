@@ -1,12 +1,38 @@
+.menu-item {
+    background-color: var(--popup-background-color);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--borderColor2);
+}
+
+.recommended-moves-content {
+    width: 100%;
+}
+
+.recommended-charged-moves {
+    flex-direction: column;
+    display: flex;
+    gap: 3px;
+}
+
+.moves-display-layout {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    gap: 9px;
+}
+
+.recommended-moves {
+    display: flex;
+    justify-content: center;
+}
+
 .moves-title {
+    margin-top: 0px;
     padding: 9px;
     border-radius: 12px;
     border: 1px solid var(--borderColor2);
     background-color: var(--buttonsBackground);
-}
-
-.charged-attacks {
-    margin-top: 24px;
 }
 
 .moves-list {
@@ -131,4 +157,20 @@
 
 .background-ice {
     background-color: var(--type-Ice);
+}
+
+@media (min-width: 750px) {
+    .moves-display-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+    
+    .recommended-moves-content {
+        width: 50%;
+    }
+
+    .moves-display-layout {
+        margin-top: 32px;
+    }
 }

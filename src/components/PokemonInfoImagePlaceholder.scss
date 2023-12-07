@@ -5,6 +5,10 @@
     align-self: center;
 }
 
+.less-bright {
+    filter: brightness(0.96);
+}
+
 .left-panel {
     display: grid;
     background-color: var(--popup-background-color);
