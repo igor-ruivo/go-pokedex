@@ -12,7 +12,44 @@
 .recommended-charged-moves {
     flex-direction: column;
     display: flex;
+    gap: 9px;
+}
+
+.buffs-placeholder {
+    display: flex;
     gap: 3px;
+    flex-direction: row;
+}
+
+.buff-panel {
+    padding: 3px 9px;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.1);
+    max-width: -moz-fit-content;
+    height: fit-content;
+    max-width: fit-content;
+
+    summary {
+        cursor: pointer;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        height: 20px;
+        line-height: 18px;
+    }
+
+    p {
+        margin-top: 3px;
+        padding-top: 3px;
+        margin-bottom: 0;
+    }
+}
+
+.buff-panel-buff {
+    list-style: square;
+    padding: 3px;
+    margin: 0 18px;
 }
 
 .moves-display-layout {

@@ -11,6 +11,7 @@ import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
+import React from "react";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -58,6 +59,58 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
 
     const leagueName = gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.RetroCup, currentGameLanguage);
 
+    const isStabMove = (moveId: string) => pokemon.types.map(t => { const stringVal = t.toString(); return stringVal.toLocaleLowerCase() }).includes(moves[moveId].type.toLocaleLowerCase());
+    const hasBuffs = (moveId: string) => !!moves[moveId].pvpBuffs;
+
+    const renderMove = (moveId: string, typeTranslatorKey: TranslatorKeys, moveUrl: string, className: string, isChargedMove: boolean) => {
+        return <li>
+            <div className={className}>
+                <div className="move-card-content">
+                    <strong className="move-detail move-name">
+                        <img title={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} height="32" width="32" src={moveUrl}/>
+                        {translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : "")}
+                    </strong>
+                    <strong className="move-detail move-stats">
+                        <span className="move-stats-content">
+                            {moves[moveId].pvpPower}
+                            <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                        </span>
+                        <span className="move-stats-content">
+                            {moves[moveId].pvpEnergyDelta * (isChargedMove ? -1 : 1)}
+                            <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                        </span>
+                        {!isChargedMove && <span className="move-stats-content">
+                            {moves[moveId].pvpDuration}s
+                            <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
+                        </span>}
+                    </strong>
+                </div>
+            </div>
+            <div className="buffs-placeholder">
+                {hasBuffs(moveId) && <details className="buff-panel">
+                    <summary>
+                        <img alt="Special effects" loading="lazy" width="10" height="10" decoding="async" src="https://db.pokemongohub.net/vectors/magic.svg"/>
+                        <strong>Special</strong>
+                    </summary>
+                    <p>
+                        <strong>{translateMoveFromMoveId(moveId)}</strong> has a <strong>100.0% chance</strong> to:
+                    </p>
+                    <ul className="buff-panel-buff">
+                        <li>Decrease User's Attack by 33.3%</li>
+                    </ul>
+                </details>}
+                {isStabMove(moveId) && <details className="buff-panel">
+                    <summary>
+                        <strong>STAB</strong>
+                    </summary>
+                        <p>
+                            <i>"<b>S</b>ame <b>T</b>ype <b>A</b>ttack <b>B</b>onus"</i> - grants your move an additional 20% damage!
+                        </p>
+                </details>}
+            </div>
+        </li>
+    }
+
     return (
         <div className="banner_layout">
             {similarPokemon.size > 1 && <div className="img-container">
@@ -83,66 +136,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 {translator(TranslatorKeys.RecommendedMovesInfo1, currentLanguage)} {pokemon.speciesName} {translator(TranslatorKeys.RecommendedMovesInfo2, currentLanguage)} {leagueName}.
                             </p>
                             <div className="menu-item">
-                                <div className={fastMoveClassName}>
-                                    <div className="move-card-content">
-                                        <strong className="move-detail move-name">
-                                            <img title={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} alt={translator(fastMoveTypeTranslatorKey ?? moves[relevantMoveSet[0]].type, currentLanguage)} height="32" width="32" src={fastMoveUrl}/>
-                                            {translateMoveFromMoveId(relevantMoveSet[0]) + (pokemon.eliteMoves.includes(relevantMoveSet[0]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[0]) ? " †" : "")}
-                                        </strong>
-                                        <strong className="move-detail move-stats">
-                                            <span className="move-stats-content">
-                                                {moves[relevantMoveSet[0]].pvpPower}
-                                                <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                            </span>
-                                            <span className="move-stats-content">
-                                                {moves[relevantMoveSet[0]].pvpEnergyDelta}
-                                                <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                            </span>
-                                            <span className="move-stats-content">
-                                                {moves[relevantMoveSet[0]].pvpDuration}s
-                                                <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
-                                            </span>
-                                        </strong>
-                                    </div>
-                                </div>
-                                </div>
+                                {renderMove(relevantMoveSet[0], fastMoveTypeTranslatorKey, fastMoveUrl, fastMoveClassName, false)}
+                            </div>
                                 <div className="recommended-charged-moves menu-item">
-                                    <div className={chargedMove1ClassName}>
-                                        <div className="move-card-content">
-                                            <strong className="move-detail move-name">
-                                                <img title={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} alt={translator(chargedMove1TypeTranslatorKey ?? moves[relevantMoveSet[1]].type, currentLanguage)} height="32" width="32" src={chargedMove1Url}/>
-                                                {translateMoveFromMoveId(relevantMoveSet[1]) + (pokemon.eliteMoves.includes(relevantMoveSet[1]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[1]) ? " †" : "")}
-                                            </strong>
-                                            <strong className="move-detail move-stats">
-                                                <span className="move-stats-content">
-                                                    {moves[relevantMoveSet[1]].pvpPower}
-                                                    <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                                </span>
-                                                <span className="move-stats-content">
-                                                    {moves[relevantMoveSet[1]].pvpEnergyDelta * -1}
-                                                    <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                                </span>
-                                            </strong>
-                                        </div>
-                                    </div>
-                                    <div className={chargedMove2ClassName}>
-                                        <div className="move-card-content">
-                                            <strong className="move-detail move-name">
-                                                <img title={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} alt={translator(chargedMove2TypeTranslatorKey ?? moves[relevantMoveSet[2]].type, currentLanguage)} height="32" width="32" src={chargedMove2Url}/>
-                                                {translateMoveFromMoveId(relevantMoveSet[2]) + (pokemon.eliteMoves.includes(relevantMoveSet[2]) ? " *" : pokemon.legacyMoves.includes(relevantMoveSet[2]) ? " †" : "")}
-                                            </strong>
-                                            <strong className="move-detail move-stats">
-                                                <span className="move-stats-content">
-                                                    {moves[relevantMoveSet[2]].pvpPower}
-                                                    <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                                </span>
-                                                <span className="move-stats-content">
-                                                    {moves[relevantMoveSet[2]].pvpEnergyDelta * -1}
-                                                    <img alt="energy cost" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                                </span>
-                                            </strong>
-                                        </div>
-                                    </div>
+                                    {renderMove(relevantMoveSet[1], chargedMove1TypeTranslatorKey, chargedMove1Url, chargedMove1ClassName, true)}
+                                    {renderMove(relevantMoveSet[2], chargedMove2TypeTranslatorKey, chargedMove2Url, chargedMove2ClassName, true)}
                                 </div>
                             </div> :
                             <span className="unavailable_moves">
@@ -160,35 +158,32 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </h3>
                     <ul className="moves-list">
                         {
-                            pokemon.fastMoves.map(m => {
+                            pokemon.fastMoves
+                            .sort((m1: string, m2: string) => {
+                                const move1 = moves[m1];
+                                const move2 = moves[m2];
+                                if (isStabMove(m1) && !isStabMove(m2)) {
+                                    return -1;
+                                }
+                                if (hasBuffs(m1) && !hasBuffs(m2)) {
+                                    return -1;
+                                }
+                                if (isStabMove(m2) && !isStabMove(m1)) {
+                                    return 1;
+                                }
+                                if (hasBuffs(m2) && !hasBuffs(m1)) {
+                                    return 1;
+                                }
+                                return (move1.type.localeCompare(move2.type));
+                            })
+                            .map(m => {
                                 const className = `move-card background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
                                 return (
-                                    <li key={m}>
-                                        <div className={className}>
-                                            <div className="move-card-content">
-                                                <strong className="move-detail move-name">
-                                                    <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
-                                                    {translateMoveFromMoveId(m) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
-                                                </strong>
-                                                <strong className="move-detail move-stats">
-                                                    <span className="move-stats-content">
-                                                        {moves[m].pvpPower}
-                                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                                    </span>
-                                                    <span className="move-stats-content">
-                                                        {moves[m].pvpEnergyDelta}
-                                                        <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                                    </span>
-                                                    <span className="move-stats-content">
-                                                        {moves[m].pvpDuration}s
-                                                        <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
-                                                    </span>
-                                                </strong>
-                                            </div>
-                                        </div>
-                                    </li>
+                                    <React.Fragment key={m}>
+                                        {renderMove(m, typeTranslatorKey, url, className, false)}
+                                    </React.Fragment>
                                 )
                             })
                         }
@@ -200,32 +195,32 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </h3>
                     <ul className="moves-list">
                         {
-                            pokemon.chargedMoves.map(m => {
+                            pokemon.chargedMoves
+                            .sort((m1: string, m2: string) => {
+                                const move1 = moves[m1];
+                                const move2 = moves[m2];
+                                if (isStabMove(m1) && !isStabMove(m2)) {
+                                    return -1;
+                                }
+                                if (hasBuffs(m1) && !hasBuffs(m2)) {
+                                    return -1;
+                                }
+                                if (isStabMove(m2) && !isStabMove(m1)) {
+                                    return 1;
+                                }
+                                if (hasBuffs(m2) && !hasBuffs(m1)) {
+                                    return 1;
+                                }
+                                return (move1.type.localeCompare(move2.type));
+                            })
+                            .map(m => {
                                 const className = `move-card background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
-
                                 return (
-                                    <li key={m}>
-                                        <div className={className}>
-                                            <div className="move-card-content">
-                                                <strong className="move-detail move-name">
-                                                    <img title={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[m].type, currentLanguage)} height="32" width="32" src={url}/>
-                                                    {translateMoveFromMoveId(m) + (pokemon.eliteMoves.includes(m) ? " *" : pokemon.legacyMoves.includes(m) ? " †" : "")}
-                                                </strong>
-                                                <strong className="move-detail move-stats">
-                                                    <span className="move-stats-content">
-                                                        {moves[m].pvpPower}
-                                                        <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
-                                                    </span>
-                                                    <span className="move-stats-content">
-                                                        {moves[m].pvpEnergyDelta * -1}
-                                                        <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
-                                                    </span>
-                                                </strong>
-                                            </div>
-                                        </div>
-                                    </li>
+                                    <React.Fragment key={m}>
+                                        {renderMove(m, typeTranslatorKey, url, className, true)}
+                                    </React.Fragment>
                                 )
                             })
                         }

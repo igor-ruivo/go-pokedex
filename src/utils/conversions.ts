@@ -339,7 +339,10 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
                 pveEnergyDelta: pveCounterpart?.pveEnergy ?? 0,
                 pvpDuration: move.pvpCooldown ?? 0,
                 pveDuration: pveCounterpart?.pveCooldown ?? 0,
-                pvpBuffs: move.buffs ?? {}
+                pvpBuffs: move.buffs ? {
+                    chance: move.buffs.buffActivationChance,
+                    buff: move.buffs[0]
+                } : undefined
             }
         });
 
@@ -368,7 +371,10 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             pveEnergyDelta: move.pveEnergy ?? 0,
             pvpDuration: pvpCounterpart?.pvpCooldown ?? 0,
             pveDuration: move.pveCooldown ?? 0,
-            pvpBuffs: pvpCounterpart?.buffs ?? {}
+            pvpBuffs: pvpCounterpart.buffs ? {
+                chance: pvpCounterpart.buffs.buffActivationChance,
+                buff: pvpCounterpart.buffs[0]
+            } : undefined
         }
     });
     

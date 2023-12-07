@@ -9,5 +9,10 @@ export interface IGameMasterMove {
     pveDuration: number,
     pvpEnergyDelta: number,
     pveEnergyDelta: number,
-    pvpBuffs: any
+    pvpBuffs?: BuffEntry
+}
+
+interface BuffEntry {
+    chance: number
+    buff: string
 }

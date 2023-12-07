@@ -18,7 +18,7 @@ const useFetchAllData: () => [Dictionary<IGameMasterMove>, boolean, string] = ()
 
     useEffect(() => {
         const controller = new AbortController();
-        fetchMoves([gameMasterUrl], true, {signal: controller.signal}, mapGameMaster);
+        fetchMoves([gameMasterUrl], false, {signal: controller.signal}, mapGameMaster);
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
