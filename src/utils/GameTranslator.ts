@@ -12,7 +12,8 @@ export enum GameTranslatorKeys {
     GreatLeague,
     UltraLeague,
     MasterLeague,
-    RetroCup
+    RetroCup,
+    EliteTM
 }
 
 const hp = new Map<GameLanguage, string>([
@@ -75,6 +76,11 @@ const retroCup = new Map<GameLanguage, string>([
     [GameLanguage.Portuguese, "Copa Retrô"]
 ]);
 
+const eliteTM = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Elite TM"],
+    [GameLanguage.Portuguese, "MT Elite"]
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.HP, hp],
     [GameTranslatorKeys.AttackSearch, attackSearch],
@@ -87,7 +93,8 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.UltraLeague, ultraLeague],
     [GameTranslatorKeys.MasterLeague, masterLeague],
     [GameTranslatorKeys.Retro, retro],
-    [GameTranslatorKeys.RetroCup, retroCup]
+    [GameTranslatorKeys.RetroCup, retroCup],
+    [GameTranslatorKeys.EliteTM, eliteTM]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());

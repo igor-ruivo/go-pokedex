@@ -68,7 +68,24 @@ export enum TranslatorKeys {
     LightTheme,
     SystemDefault,
     RecommendedMovesInfo1,
-    RecommendedMovesInfo2
+    RecommendedMovesInfo2,
+    targetAttackStatStageChange,
+    targetDefenseStatStageChange,
+    attackerAttackStatStageChange,
+    attackerDefenseStatStageChange,
+    Lower,
+    Increase,
+    STAB,
+    Special,
+    Has,
+    Chance,
+    To,
+    Stage,
+    Stages,
+    Elite,
+    Legacy,
+    EliteMove,
+    LegacyMove
 }
 
 const settings = new Map<Language, string>([
@@ -479,6 +496,108 @@ const recommendedMovesInfo2 = new Map<Language, string>([
     [Language.Bosnian, "za"]
 ]);
 
+const targetAttack = new Map<Language, string>([
+    [Language.English, "enemy's Attack Damage by"],
+    [Language.Portuguese, "o Valor de Ataque do inimigo em"],
+    [Language.Bosnian, "Vrednost Napada neprijatelja za"]
+]);
+
+const targetDefense = new Map<Language, string>([
+    [Language.English, "enemy's Defense by"],
+    [Language.Portuguese, "a Defesa do inimigo em"],
+    [Language.Bosnian, "Odbranu neprijatelja za"]
+]);
+
+const ownAttack = new Map<Language, string>([
+    [Language.English, "the user's Attack Damage by"],
+    [Language.Portuguese, "o próprio Valor de Ataque em"],
+    [Language.Bosnian, "vlastitu Vrednost Napada za"]
+]);
+
+const ownDefense = new Map<Language, string>([
+    [Language.English, "the user's Defense by"],
+    [Language.Portuguese, "a própria Defesa em"],
+    [Language.Bosnian, "vlastitu Odbranu za"]
+]);
+
+const lower = new Map<Language, string>([
+    [Language.English, "Lower"],
+    [Language.Portuguese, "Reduzir"],
+    [Language.Bosnian, "Smanjiti"]
+]);
+
+const increase = new Map<Language, string>([
+    [Language.English, "Increase"],
+    [Language.Portuguese, "Aumentar"],
+    [Language.Bosnian, "Poveća"]
+]);
+
+const stab = new Map<Language, string>([
+    [Language.English, "the attack type matches this Pokémon's type, so it will deal 20% extra damage!"],
+    [Language.Portuguese, "o tipo do ataque é compatível com o tipo deste Pokémon, por isso, vai causar 20% de dano extra!"],
+    [Language.Bosnian, "vrsta napada se podudara s vrstom ovog Pokémona, tako da će prouzrokovati dodatnih 20% štete!"]
+]);
+
+const special = new Map<Language, string>([
+    [Language.English, "Special"],
+    [Language.Portuguese, "Bónus"],
+    [Language.Bosnian, "Bonus"]
+]);
+
+const has = new Map<Language, string>([
+    [Language.English, "has a"],
+    [Language.Portuguese, "tem"],
+    [Language.Bosnian, "ima"]
+]);
+
+const chance = new Map<Language, string>([
+    [Language.English, "chance"],
+    [Language.Portuguese, "de chances"],
+    [Language.Bosnian, "šanse"]
+]);
+
+const to = new Map<Language, string>([
+    [Language.English, "to"],
+    [Language.Portuguese, "de"],
+    [Language.Bosnian, "da"]
+]);
+
+const stage = new Map<Language, string>([
+    [Language.English, "stage"],
+    [Language.Portuguese, "nível"],
+    [Language.Bosnian, "nivo"]
+]);
+
+const stages = new Map<Language, string>([
+    [Language.English, "stages"],
+    [Language.Portuguese, "níveis"],
+    [Language.Bosnian, "nivoi"]
+]);
+
+const elite = new Map<Language, string>([
+    [Language.English, "This is an Elite Move for this Pokémon. It can only be learned during special in-game events or using an"],
+    [Language.Portuguese, "Este é um Ataque Elite para este Pokémon. Pode ser aprendido apenas durante eventos especiais no jogo ou utilizando um"],
+    [Language.Bosnian, "Ovo je Elitni Napad za ovog Pokémona. Može se naučiti samo tokom posebnih događanja unutar igre ili korištenjem"]
+]);
+
+const legacy = new Map<Language, string>([
+    [Language.English, "This is a Legacy Move for this Pokémon. It is no longer able to learn it by any means."],
+    [Language.Portuguese, "Este é um Ataque Descontinuado para este Pokémon. Já não é possível aprendê-lo de forma alguma."],
+    [Language.Bosnian, "Ovo je Napad koji je obustavljen za ovog Pokémona. Više nije moguće naučiti ga ni na koji način."]
+]);
+
+const eliteMove = new Map<Language, string>([
+    [Language.English, "Elite"],
+    [Language.Portuguese, "Elite"],
+    [Language.Bosnian, "Elitni"]
+]);
+
+const legacyMove = new Map<Language, string>([
+    [Language.English, "Legacy"],
+    [Language.Portuguese, "Descontinuado"],
+    [Language.Bosnian, "Obustavljen"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -547,9 +666,26 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.DarkTheme, darkTheme],
     [TranslatorKeys.SystemDefault, systemDefault],
     [TranslatorKeys.RecommendedMovesInfo1, recommendedMovesInfo1],
-    [TranslatorKeys.RecommendedMovesInfo2, recommendedMovesInfo2]
+    [TranslatorKeys.RecommendedMovesInfo2, recommendedMovesInfo2],
+    [TranslatorKeys.targetAttackStatStageChange, targetAttack],
+    [TranslatorKeys.targetDefenseStatStageChange, targetDefense],
+    [TranslatorKeys.attackerAttackStatStageChange, ownAttack],
+    [TranslatorKeys.attackerDefenseStatStageChange, ownDefense],
+    [TranslatorKeys.Lower, lower],
+    [TranslatorKeys.Increase, increase],
+    [TranslatorKeys.STAB, stab],
+    [TranslatorKeys.Special, special],
+    [TranslatorKeys.Has, has],
+    [TranslatorKeys.Chance, chance],
+    [TranslatorKeys.To, to],
+    [TranslatorKeys.Stage, stage],
+    [TranslatorKeys.Stages, stages],
+    [TranslatorKeys.Elite, elite],
+    [TranslatorKeys.Legacy, legacy],
+    [TranslatorKeys.EliteMove, eliteMove],
+    [TranslatorKeys.LegacyMove, legacyMove]
 ]);
 
-const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key].toString();
+const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();
 
 export default translator;

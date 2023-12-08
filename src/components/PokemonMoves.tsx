@@ -47,13 +47,44 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
         return gameTranslation[vid].name;
     }
 
+    const movesSorter = (m1: string, m2: string) => {
+        const move1 = moves[m1];
+        const move2 = moves[m2];
+        if (isStabMove(m1) && !isStabMove(m2)) {
+            return -1;
+        }
+        if (hasBuffs(m1) && !hasBuffs(m2)) {
+            return -1;
+        }
+        if (isStabMove(m2) && !isStabMove(m1)) {
+            return 1;
+        }
+        if (hasBuffs(m2) && !hasBuffs(m1)) {
+            return 1;
+        }
+        if (pokemon.eliteMoves.includes(m1) && !pokemon.eliteMoves.includes(m2)) {
+            return -1;
+        }
+        if (pokemon.eliteMoves.includes(m2) && !pokemon.eliteMoves.includes(m1)) {
+            return 1;
+        }
+        if (pokemon.legacyMoves.includes(m1) && !pokemon.legacyMoves.includes(m2)) {
+            return -1;
+        }
+        if (pokemon.legacyMoves.includes(m2) && !pokemon.legacyMoves.includes(m1)) {
+            return 1;
+        }
+
+        return (move1.type.localeCompare(move2.type));
+    }
+
     const fastMoveTypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[0]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[0]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove1TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[1]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[1]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove2TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[2]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[2]]?.type.substring(1)) as keyof typeof TranslatorKeys];
                     
-    const fastMoveUrl = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[0]]?.type}.png`;
-    const chargedMove1Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[1]]?.type}.png`;
-    const chargedMove2Url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[relevantMoveSet[2]]?.type}.png`;
+    const fastMoveUrl = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[0]]?.type}.webp`;
+    const chargedMove1Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[1]]?.type}.webp`;
+    const chargedMove2Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[2]]?.type}.webp`;
 
     const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
 
@@ -67,21 +98,21 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             <div className={className}>
                 <div className="move-card-content">
                     <strong className="move-detail move-name">
-                        <img title={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} height="32" width="32" src={moveUrl}/>
+                        <img title={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} height="36" width="36" src={moveUrl}/>
                         {translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : "")}
                     </strong>
                     <strong className="move-detail move-stats">
                         <span className="move-stats-content">
-                            {moves[moveId].pvpPower}
-                            <img alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                            {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * 10) / 10}
+                            <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
                         </span>
                         <span className="move-stats-content">
                             {moves[moveId].pvpEnergyDelta * (isChargedMove ? -1 : 1)}
-                            <img alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                            <img className="invert-light-mode" alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
                         </span>
                         {!isChargedMove && <span className="move-stats-content">
                             {moves[moveId].pvpDuration}s
-                            <img alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
+                            <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
                         </span>}
                     </strong>
                 </div>
@@ -89,22 +120,38 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             <div className="buffs-placeholder">
                 {hasBuffs(moveId) && <details className="buff-panel">
                     <summary>
-                        <img alt="Special effects" loading="lazy" width="10" height="10" decoding="async" src="https://db.pokemongohub.net/vectors/magic.svg"/>
-                        <strong>Special</strong>
+                        <img className="invert-dark-mode" alt="Special effects" loading="lazy" width="10" height="10" decoding="async" src="https://db.pokemongohub.net/vectors/magic.svg"/>
+                        {translator(TranslatorKeys.Special, currentLanguage)}
                     </summary>
                     <p>
-                        <strong>{translateMoveFromMoveId(moveId)}</strong> has a <strong>100.0% chance</strong> to:
+                        <strong>{translateMoveFromMoveId(moveId)}</strong> {translator(TranslatorKeys.Has, currentLanguage)} <strong>{moves[moveId].pvpBuffs!.chance * 100}% {translator(TranslatorKeys.Chance, currentLanguage)}</strong> {translator(TranslatorKeys.To, currentLanguage)}:
                     </p>
                     <ul className="buff-panel-buff">
-                        <li>Decrease User's Attack by 33.3%</li>
+                        {moves[moveId].pvpBuffs!.buffs.map(b => <li key={b.buff}>{translator(b.quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)} {translator(TranslatorKeys[b.buff as keyof typeof TranslatorKeys], currentLanguage)} {(b.quantity > 0 ? (((b.quantity + 4) / 4) - 1) * 100 + "%" : b.quantity * -1 + " " + translator(b.quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage))}</li>)}
                     </ul>
                 </details>}
                 {isStabMove(moveId) && <details className="buff-panel">
                     <summary>
-                        <strong>STAB</strong>
+                        STAB
                     </summary>
                         <p>
-                            <i>"<b>S</b>ame <b>T</b>ype <b>A</b>ttack <b>B</b>onus"</i> - grants your move an additional 20% damage!
+                            <i>"<b>S</b>ame <b>T</b>ype <b>A</b>ttack <b>B</b>onus"</i> - {translator(TranslatorKeys.STAB, currentLanguage)}
+                        </p>
+                </details>}
+                {pokemon.eliteMoves.includes(moveId) && <details className="buff-panel">
+                    <summary>
+                        {translator(TranslatorKeys.EliteMove, currentLanguage)}
+                    </summary>
+                        <p>
+                            {translator(TranslatorKeys.Elite, currentLanguage)} {gameTranslator(GameTranslatorKeys.EliteTM, currentGameLanguage)}.
+                        </p>
+                </details>}
+                {!pokemon.eliteMoves.includes(moveId) && pokemon.legacyMoves.includes(moveId) && <details className="buff-panel">
+                    <summary>
+                        {translator(TranslatorKeys.LegacyMove, currentLanguage)}
+                    </summary>
+                        <p>
+                            {translator(TranslatorKeys.Legacy, currentLanguage)}
                         </p>
                 </details>}
             </div>
@@ -159,27 +206,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <ul className="moves-list">
                         {
                             pokemon.fastMoves
-                            .sort((m1: string, m2: string) => {
-                                const move1 = moves[m1];
-                                const move2 = moves[m2];
-                                if (isStabMove(m1) && !isStabMove(m2)) {
-                                    return -1;
-                                }
-                                if (hasBuffs(m1) && !hasBuffs(m2)) {
-                                    return -1;
-                                }
-                                if (isStabMove(m2) && !isStabMove(m1)) {
-                                    return 1;
-                                }
-                                if (hasBuffs(m2) && !hasBuffs(m1)) {
-                                    return 1;
-                                }
-                                return (move1.type.localeCompare(move2.type));
-                            })
+                            .sort(movesSorter)
                             .map(m => {
                                 const className = `move-card background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
+                                const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
                                 return (
                                     <React.Fragment key={m}>
                                         {renderMove(m, typeTranslatorKey, url, className, false)}
@@ -196,27 +227,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <ul className="moves-list">
                         {
                             pokemon.chargedMoves
-                            .sort((m1: string, m2: string) => {
-                                const move1 = moves[m1];
-                                const move2 = moves[m2];
-                                if (isStabMove(m1) && !isStabMove(m2)) {
-                                    return -1;
-                                }
-                                if (hasBuffs(m1) && !hasBuffs(m2)) {
-                                    return -1;
-                                }
-                                if (isStabMove(m2) && !isStabMove(m1)) {
-                                    return 1;
-                                }
-                                if (hasBuffs(m2) && !hasBuffs(m1)) {
-                                    return 1;
-                                }
-                                return (move1.type.localeCompare(move2.type));
-                            })
+                            .sort(movesSorter)
                             .map(m => {
                                 const className = `move-card background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                                const url = `https://storage.googleapis.com/nianticweb-media/pokemongo/types/${moves[m].type}.png`;
+                                const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
                                 return (
                                     <React.Fragment key={m}>
                                         {renderMove(m, typeTranslatorKey, url, className, true)}

@@ -13,6 +13,11 @@ export interface IGameMasterMove {
 }
 
 interface BuffEntry {
-    chance: number
-    buff: string
+    chance: number,
+    buffs: Buff[]
+}
+
+export interface Buff {
+    buff: string,
+    quantity: number
 }

@@ -39,7 +39,10 @@ code {
     --underlineDivision: rgba(255, 255, 255, 0.25);
     --titleMoveTextColor: #eff2f7;
     --colorScheme: dark;
-    
+    --filter: invert(1);
+    --filter-inverse: none;
+    --background-shadow: rgba(0, 0, 0, .5);
+    --buffBackground: rgba(0, 0, 0, 0.2);
     --type-Bug: #85b430;
     --type-Dark: #4f4c5f;
     --type-Dragon: #035094;
@@ -85,7 +88,10 @@ code {
     --underlineDivision: rgba(40, 40, 40, 0.25);
     --titleMoveTextColor: #fff;
     --colorScheme: light;
-    
+    --filter: none;
+    --filter-inverse: invert(1);
+    --background-shadow: hsla(0,0%,100%,.8);
+    --buffBackground: rgba(0, 0, 0, 0.1);
     --type-Bug: #92c92b;
     --type-Dark: #575467;
     --type-Dragon: #0566bc;

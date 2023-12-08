@@ -339,9 +339,12 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
                 pveEnergyDelta: pveCounterpart?.pveEnergy ?? 0,
                 pvpDuration: move.pvpCooldown ?? 0,
                 pveDuration: pveCounterpart?.pveCooldown ?? 0,
-                pvpBuffs: move.buffs ? {
-                    chance: move.buffs.buffActivationChance,
-                    buff: move.buffs[0]
+                pvpBuffs: move?.buffs ? {
+                    chance: move.buffs.buffActivationChance as number,
+                    buffs: Object.entries(move.buffs).filter(e => e[0] !== "buffActivationChance").map(e => ({
+                        buff: e[0],
+                        quantity: e[1] as number
+                    })),
                 } : undefined
             }
         });
@@ -371,9 +374,12 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             pveEnergyDelta: move.pveEnergy ?? 0,
             pvpDuration: pvpCounterpart?.pvpCooldown ?? 0,
             pveDuration: move.pveCooldown ?? 0,
-            pvpBuffs: pvpCounterpart.buffs ? {
-                chance: pvpCounterpart.buffs.buffActivationChance,
-                buff: pvpCounterpart.buffs[0]
+            pvpBuffs: pvpCounterpart?.buffs ? {
+                chance: pvpCounterpart.buffs.buffActivationChance as number,
+                buffs: Object.entries(pvpCounterpart.buffs).filter(e => e[0] !== "buffActivationChance").map(e => ({
+                    buff: e[0],
+                    quantity: e[1] as number
+                })),
             } : undefined
         }
     });
