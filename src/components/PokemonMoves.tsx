@@ -104,15 +104,15 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <strong className="move-detail move-stats">
                         <span className="move-stats-content">
                             {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * 10) / 10}
-                            <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={14}/>
+                            <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={16}/>
                         </span>
                         <span className="move-stats-content">
                             {moves[moveId].pvpEnergyDelta * (isChargedMove ? -1 : 1)}
-                            <img className="invert-light-mode" alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={10} height={15}/>
+                            <img className="invert-light-mode" alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={11} height={16}/>
                         </span>
                         {!isChargedMove && <span className="move-stats-content">
                             {moves[moveId].pvpDuration}s
-                            <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={10} height={15}/>
+                            <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={11} height={16}/>
                         </span>}
                     </strong>
                 </div>

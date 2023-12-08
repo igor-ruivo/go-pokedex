@@ -102,6 +102,10 @@ details[open] {
     border-radius: 12px;
 }
 
+summary::-webkit-details-marker {
+    display: none;
+}
+
 .move-card-content {
     display: flex;
     flex-wrap: nowrap;
@@ -128,7 +132,7 @@ details[open] {
 
 .move-stats {
     gap: 6px;
-    padding: 6px;
+    padding: 9px;
 }
 
 .move-stats-content {
