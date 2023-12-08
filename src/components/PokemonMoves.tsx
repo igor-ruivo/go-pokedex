@@ -50,32 +50,33 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const movesSorter = (m1: string, m2: string) => {
         const move1 = moves[m1];
         const move2 = moves[m2];
-        if (isStabMove(m1) && !isStabMove(m2)) {
-            return -1;
-        }
-        if (hasBuffs(m1) && !hasBuffs(m2)) {
-            return -1;
-        }
-        if (isStabMove(m2) && !isStabMove(m1)) {
-            return 1;
-        }
-        if (hasBuffs(m2) && !hasBuffs(m1)) {
-            return 1;
-        }
-        if (pokemon.eliteMoves.includes(m1) && !pokemon.eliteMoves.includes(m2)) {
-            return -1;
-        }
-        if (pokemon.eliteMoves.includes(m2) && !pokemon.eliteMoves.includes(m1)) {
-            return 1;
-        }
-        if (pokemon.legacyMoves.includes(m1) && !pokemon.legacyMoves.includes(m2)) {
-            return -1;
-        }
-        if (pokemon.legacyMoves.includes(m2) && !pokemon.legacyMoves.includes(m1)) {
-            return 1;
+
+        const specialComparison = (hasBuffs(m2) ? 1 : 0) - (hasBuffs(m1) ? 1 : 0);
+        if (specialComparison !== 0) {
+            return specialComparison;
         }
 
-        return (move1.type.localeCompare(move2.type));
+        const eliteComparison = (pokemon.eliteMoves.includes(m2) ? 1 : 0) - (pokemon.eliteMoves.includes(m1) ? 1 : 0);
+        if (eliteComparison !== 0) {
+            return eliteComparison;
+        }
+
+        const legacyComparison = (pokemon.legacyMoves.includes(m2) ? 1 : 0) - (pokemon.legacyMoves.includes(m1) ? 1 : 0);
+        if (legacyComparison !== 0) {
+            return legacyComparison;
+        }
+
+        const stabComparison = (isStabMove(m2) ? 1 : 0) - (isStabMove(m1) ? 1 : 0);
+        if (stabComparison !== 0) {
+            return stabComparison;
+        }
+
+        const typeComparison = (move1.type.localeCompare(move2.type));
+        if (typeComparison !== 0) {
+            return typeComparison;
+        }
+
+        return translateMoveFromMoveId(m1).localeCompare(translateMoveFromMoveId(m2));
     }
 
     const fastMoveTypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[0]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[0]]?.type.substring(1)) as keyof typeof TranslatorKeys];
@@ -130,14 +131,6 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                         {moves[moveId].pvpBuffs!.buffs.map(b => <li key={b.buff}>{translator(b.quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)} {translator(TranslatorKeys[b.buff as keyof typeof TranslatorKeys], currentLanguage)} {(b.quantity > 0 ? (((b.quantity + 4) / 4) - 1) * 100 + "%" : b.quantity * -1 + " " + translator(b.quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage))}</li>)}
                     </ul>
                 </details>}
-                {isStabMove(moveId) && <details className="buff-panel">
-                    <summary>
-                        STAB
-                    </summary>
-                        <p>
-                            <i>"<b>S</b>ame <b>T</b>ype <b>A</b>ttack <b>B</b>onus"</i> - {translator(TranslatorKeys.STAB, currentLanguage)}
-                        </p>
-                </details>}
                 {pokemon.eliteMoves.includes(moveId) && <details className="buff-panel">
                     <summary>
                         {translator(TranslatorKeys.EliteMove, currentLanguage)}
@@ -152,6 +145,14 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </summary>
                         <p>
                             {translator(TranslatorKeys.Legacy, currentLanguage)}
+                        </p>
+                </details>}
+                {isStabMove(moveId) && <details className="buff-panel">
+                    <summary>
+                        STAB
+                    </summary>
+                        <p>
+                            <i>"<b>S</b>ame <b>T</b>ype <b>A</b>ttack <b>B</b>onus"</i> - {translator(TranslatorKeys.STAB, currentLanguage)}
                         </p>
                 </details>}
             </div>
