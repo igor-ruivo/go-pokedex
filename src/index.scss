@@ -42,6 +42,7 @@ code {
     --filter: invert(1);
     --filter-inverse: none;
     --background-shadow: rgba(0, 0, 0, .5);
+    --background-shadow-soft: rgba(0, 0, 0, .25);
     --buffBackground: rgba(0, 0, 0, 0.2);
     --type-Bug: #85b430;
     --type-Dark: #4f4c5f;
@@ -91,6 +92,7 @@ code {
     --filter: none;
     --filter-inverse: invert(1);
     --background-shadow: hsla(0,0%,100%,.8);
+    --background-shadow-soft: hsla(0,0%,100%,.8);
     --buffBackground: rgba(0, 0, 0, 0.1);
     --type-Bug: #92c92b;
     --type-Dark: #575467;
