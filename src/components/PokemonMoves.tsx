@@ -11,7 +11,7 @@ import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
-import React from "react";
+import React, { MouseEventHandler } from "react";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -82,7 +82,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const fastMoveTypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[0]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[0]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove1TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[1]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[1]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove2TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[2]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[2]]?.type.substring(1)) as keyof typeof TranslatorKeys];
-                    
+    
     const fastMoveUrl = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[0]]?.type}.webp`;
     const chargedMove1Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[1]]?.type}.webp`;
     const chargedMove2Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[2]]?.type}.webp`;
@@ -94,7 +94,18 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const isStabMove = (moveId: string) => pokemon.types.map(t => { const stringVal = t.toString(); return stringVal.toLocaleLowerCase() }).includes(moves[moveId].type.toLocaleLowerCase());
     const hasBuffs = (moveId: string) => !!moves[moveId].pvpBuffs;
 
-    const renderMove = (moveId: string, typeTranslatorKey: TranslatorKeys, moveUrl: string, className: string, isChargedMove: boolean) => {
+    const renderMove = (moveId: string, typeTranslatorKey: TranslatorKeys, moveUrl: string, className: string, isChargedMove: boolean, isRecommended: boolean) => {
+        const idAttr = `details-${moveId}-${isRecommended ? "recommended" : "other"}`;
+
+        const detailsClickHandler = (e: MouseEvent, elementId: string) => {
+            const details = document.getElementById(elementId) as HTMLDetailsElement;
+            if (details) {
+                details.open = !details.open;
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }
+
         return <li>
             <div className={className}>
                 <div className="move-card-content">
@@ -119,7 +130,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 </div>
             </div>
             <div className="buffs-placeholder">
-                {hasBuffs(moveId) && <details className="buff-panel">
+                {hasBuffs(moveId) && <details id={`${idAttr}-buff`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-buff`)} className="buff-panel">
                     <summary>
                         <img className="invert-dark-mode" alt="Special effects" loading="lazy" width="10" height="10" decoding="async" src="https://db.pokemongohub.net/vectors/magic.svg"/>
                         {translator(TranslatorKeys.Special, currentLanguage)}
@@ -131,7 +142,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                         {moves[moveId].pvpBuffs!.buffs.map(b => <li key={b.buff}>{translator(b.quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)} {translator(TranslatorKeys[b.buff as keyof typeof TranslatorKeys], currentLanguage)} {(b.quantity > 0 ? (((b.quantity + 4) / 4) - 1) * 100 + "%" : b.quantity * -1 + " " + translator(b.quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage))}</li>)}
                     </ul>
                 </details>}
-                {pokemon.eliteMoves.includes(moveId) && <details className="buff-panel">
+                {pokemon.eliteMoves.includes(moveId) && <details id={`${idAttr}-elite`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-elite`)} className="buff-panel">
                     <summary>
                         {translator(TranslatorKeys.EliteMove, currentLanguage)}
                     </summary>
@@ -139,7 +150,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             {translator(TranslatorKeys.Elite, currentLanguage)} {gameTranslator(GameTranslatorKeys.EliteTM, currentGameLanguage)}.
                         </p>
                 </details>}
-                {!pokemon.eliteMoves.includes(moveId) && pokemon.legacyMoves.includes(moveId) && <details className="buff-panel">
+                {!pokemon.eliteMoves.includes(moveId) && pokemon.legacyMoves.includes(moveId) && <details id={`${idAttr}-legacy`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-legacy`)} className="buff-panel">
                     <summary>
                         {translator(TranslatorKeys.LegacyMove, currentLanguage)}
                     </summary>
@@ -147,7 +158,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             {translator(TranslatorKeys.Legacy, currentLanguage)}
                         </p>
                 </details>}
-                {isStabMove(moveId) && <details className="buff-panel">
+                {isStabMove(moveId) && <details id={`${idAttr}-stab`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-stab`)} className="buff-panel">
                     <summary>
                         STAB
                     </summary>
@@ -184,11 +195,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 {translator(TranslatorKeys.RecommendedMovesInfo1, currentLanguage)} {pokemon.speciesName} {translator(TranslatorKeys.RecommendedMovesInfo2, currentLanguage)} {leagueName}.
                             </p>
                             <div className="menu-item">
-                                {renderMove(relevantMoveSet[0], fastMoveTypeTranslatorKey, fastMoveUrl, fastMoveClassName, false)}
+                                {renderMove(relevantMoveSet[0], fastMoveTypeTranslatorKey, fastMoveUrl, fastMoveClassName, false, true)}
                             </div>
                                 <div className="recommended-charged-moves menu-item">
-                                    {renderMove(relevantMoveSet[1], chargedMove1TypeTranslatorKey, chargedMove1Url, chargedMove1ClassName, true)}
-                                    {renderMove(relevantMoveSet[2], chargedMove2TypeTranslatorKey, chargedMove2Url, chargedMove2ClassName, true)}
+                                    {renderMove(relevantMoveSet[1], chargedMove1TypeTranslatorKey, chargedMove1Url, chargedMove1ClassName, true, true)}
+                                    {renderMove(relevantMoveSet[2], chargedMove2TypeTranslatorKey, chargedMove2Url, chargedMove2ClassName, true, true)}
                                 </div>
                             </div> :
                             <span className="unavailable_moves">
@@ -214,7 +225,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
                                 return (
                                     <React.Fragment key={m}>
-                                        {renderMove(m, typeTranslatorKey, url, className, false)}
+                                        {renderMove(m, typeTranslatorKey, url, className, false, false)}
                                     </React.Fragment>
                                 )
                             })
@@ -235,7 +246,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
                                 return (
                                     <React.Fragment key={m}>
-                                        {renderMove(m, typeTranslatorKey, url, className, true)}
+                                        {renderMove(m, typeTranslatorKey, url, className, true, false)}
                                     </React.Fragment>
                                 )
                             })

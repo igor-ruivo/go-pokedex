@@ -21,6 +21,10 @@
     flex-direction: row;
 }
 
+details {
+    cursor: pointer;
+}
+
 details[open] {
     padding: 3px 9px;
 }
@@ -36,7 +40,6 @@ details[open] {
     max-width: fit-content;
 
     summary {
-        cursor: pointer;
         font-size: small;
         font-weight: 500;
         display: flex;
