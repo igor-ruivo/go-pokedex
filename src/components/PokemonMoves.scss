@@ -92,7 +92,6 @@ details[open] {
 }
 
 .chevron {
-    cursor: pointer;
     height: fit-content;
     padding: 6px;
     margin: 0;
@@ -178,6 +177,7 @@ summary::-webkit-details-marker {
 
 .fast-moves-section,
 .charged-moves-section {
+    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;

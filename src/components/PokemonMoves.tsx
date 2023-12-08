@@ -220,11 +220,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             </div>
             <div className="moves-display-layout">
                 <div className="menu-item">
-                    <div className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
+                    <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
                         <h3>
                             {translator(TranslatorKeys.FastMoves, currentLanguage)}
                         </h3>
-                        <figure className="chevron move-card" onClick={() => {setFastMovesCollapsed(c => !c)}}>
+                        <figure className="chevron move-card">
                             <img className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${fastMovesCollapsed ? "down" : "up"}.svg`} />
                         </figure>
                     </div>
@@ -246,11 +246,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </ul>
                 </div>
                 <div className="menu-item">
-                    <div className={`moves-title ${chargedMovesCollapsed ? "hidden" : ""} all-moves charged-moves-section`}>
+                    <div onClick={() => {setChargedMovesCollapsed(c => !c)}} className={`moves-title ${chargedMovesCollapsed ? "hidden" : ""} all-moves charged-moves-section`}>
                         <h3>
                             {translator(TranslatorKeys.ChargedMoves, currentLanguage)}
                         </h3>
-                        <figure className="chevron move-card" onClick={() => {setChargedMovesCollapsed(c => !c)}}>
+                        <figure className="chevron move-card">
                             <img className="invert-dark-mode" alt="All available Charged Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${chargedMovesCollapsed ? "down" : "up"}.svg`} />
                         </figure>
                     </div>
