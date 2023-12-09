@@ -104,18 +104,44 @@ details[open] {
     box-shadow: 0 0 2px hsla(0,21%,90%,.158),0 12px 11px #00000009;
 }
 
+.no-padding {
+    padding: 0;
+}
+
 .moves-list {
     list-style: none;
-    padding: 0;
     margin: 0;
     display: grid;
     grid-template-columns: 1fr;
-    grid-gap: 9px;
-    gap: 9px;
 
     &.hidden {
         display: none;
     }
+}
+
+.slim-content {
+    padding: 3px;
+}
+
+.slim-padding {
+    padding-left: 6px;
+    padding-right: 12px;
+    padding-top: 1.2px;
+    padding-bottom: 1.2px;
+}
+
+.sparse-content {
+    padding: 6px;
+}
+
+.sparse-list {
+    grid-gap: 9px;
+    gap: 9px;
+}
+
+.slim-list {
+    grid-gap: 5px;
+    gap: 5px;
 }
 
 .invert-dark-mode {
@@ -141,31 +167,38 @@ summary::-webkit-details-marker {
     align-items: center;
     text-align: left;
     gap: 3px 9px;
-    padding: 6px;
+}
+
+.move-main-info {
+    margin-right: auto;
+    display: flex;
 }
 
 .move-detail {
-    border-radius: 12px;
-    background-color: var(--background-shadow);
-    box-shadow: 0 0 2px hsla(0,21%,90%,.158),0 12px 11px #00000009;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 3px;
+    &.with-shadow {
+        border-radius: 12px;
+        background-color: var(--background-shadow);
+        box-shadow: 0 0 2px hsla(0,21%,90%,.158),0 12px 11px #00000009;
+    }
+    padding-right: 12px;
 }
 
 .all-moves {
     width: 100%
 }
 
-.move-name {
-    margin-right: auto;
-    padding-right: 12px;
-}
-
 .move-stats {
     gap: 6px;
     padding: 9px;
+}
+
+.move-stats-slim {
+    gap: 6px;
+    padding: 6px;
 }
 
 .move-stats-content {

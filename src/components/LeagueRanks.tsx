@@ -1,8 +1,11 @@
+import React from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { Language, useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
 import translator, { TranslatorKeys } from "../utils/Translator";
+import Pokemon from "../views/pokemon";
 import "./LeagueRanks.scss"
+import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
 
 interface LeagueStat {
@@ -79,35 +82,45 @@ const LeagueRanks = ({
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
             case "great":
-                logoSrc = "https://i.imgur.com/JFlzLTU.png";
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/great.png`;
                 break;
             case "ultra":
-                logoSrc = "https://i.imgur.com/jtA6QiL.png";
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/ultra.png`;
                 break;
             case "master":
-                logoSrc = "https://i.imgur.com/vJOBwfH.png";
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master.png`;
                 break;
             case "custom":
-                logoSrc = "https://i.imgur.com/tkaS5cs.png";
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/retro.png`;
                 break;
         }
 
         return (
-            <div className={pvpStatsClassName}>
-                <section className="pvp-title-2" onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}>
-                    <img src={logoSrc} alt="League icon" loading="lazy" decoding="async" className="pvp-title-item-small pvp-img-2" height="100%" width="100%"/>
-                    <div className="pvp-title-item">
-                        {leagueStat.bestReachablePokemon && <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} withMetadata={false}/>}
-                    </div>
-                    <div className={rankClass(leagueStat.pokemonRankInLeague)}>
-                        {buildRankString(leagueStat.pokemonRankInLeague)}
-                    </div>
-                </section>
-            </div>
+            <ListEntry
+                mainIcon={{
+                    imageDescription: leagueStat.leagueTitle,
+                    image: <img height={28} width={28} src={logoSrc} alt={leagueStat.leagueTitle}/>,
+                    withBackground: false
+                }}
+                extraIcons={[
+                    {
+                        imageDescription: "Most relevant Pokémon",
+                        image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} withMetadata={false} specificWidth={28} specificHeight={28}/>,
+                        imageSideText: leagueStat.bestReachablePokemon.speciesShortName,
+                        withBackground: true
+                    }
+                ]}
+                backgroundColorClassName={leagueStat.leagueTitle}
+                onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
+                secondaryContent={[
+                    <React.Fragment key={leagueStat.leagueTitle}>{buildRankString(leagueStat.pokemonRankInLeague)}</React.Fragment>
+                ]}
+                slim
+            />
         );
     }
 
-    return <div className="pvp-leagues-2">
+    return <div className="default-padding pvp-leagues-2 moves-list slim-list">
         {renderPanel(greatLeagueStats)}
         {renderPanel(ultraLeagueStats)}
         {renderPanel(masterLeagueStats)}

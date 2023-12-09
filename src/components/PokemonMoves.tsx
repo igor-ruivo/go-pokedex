@@ -197,10 +197,15 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
 
     const renderMove = (moveId: string, typeTranslatorKey: TranslatorKeys, moveUrl: string, className: string, isChargedMove: boolean, isRecommended: boolean) => {
         return <ListEntry
-            imageDescription={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}
-            imageUrl={moveUrl}
+            mainIcon={
+                {
+                    imageDescription: translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage),
+                    image: <img height={36} width={36} src={moveUrl} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}/>,
+                    imageSideText: translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : ""),
+                    withBackground: true
+                }
+            }
             backgroundColorClassName={className}
-            mainText={translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : "")}
             secondaryContent={[
                 <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-atk`}>
                     {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * 10) / 10}
@@ -216,6 +221,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 </React.Fragment>
             ]}
             details={renderDetails(moveId, isRecommended)}
+            slim={false}
         />
     }
 
@@ -237,9 +243,9 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <h3 className="moves-title">
                         {`${translator(TranslatorKeys.RecommendedMoves, currentLanguage)} (${leagueName})`}
                     </h3>
-                    <ul className="moves-list">
+                    <ul className="moves-list no-padding sparse-list">
                         {rankLists[league as number][pokemon.speciesId] ? 
-                            <div className="moves-list">
+                            <div className="moves-list no-padding sparse-list">
                             <p>
                                 {translator(TranslatorKeys.RecommendedMovesInfo1, currentLanguage)} {pokemon.speciesName} {translator(TranslatorKeys.RecommendedMovesInfo2, currentLanguage)} {leagueName}.
                             </p>
@@ -269,7 +275,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             <img className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${fastMovesCollapsed ? "down" : "up"}.svg`} />
                         </figure>
                     </div>
-                    <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""}`}>
+                    <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
                         {
                             pokemon.fastMoves
                             .sort(movesSorter)
@@ -295,7 +301,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             <img className="invert-dark-mode" alt="All available Charged Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${chargedMovesCollapsed ? "down" : "up"}.svg`} />
                         </figure>
                     </div>
-                    <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""}`}>
+                    <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
                         {
                             pokemon.chargedMoves
                             .sort(movesSorter)

@@ -1,4 +1,8 @@
 .pokemon_main_info {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-self: center;
@@ -105,7 +109,6 @@
     flex-direction: row;
 }
 
-.cp-level,
 .pvp_stat {
     align-items: center;
     display: flex;
@@ -113,5 +116,49 @@
 }
 
 .cp-level {
+    margin-top: 16px;
+    align-items: center;
+    display: flex;
     gap: 5px;
+}
+
+.big {
+    font-size: clamp(15px, 7vw, 18px);
+    font-weight: 700;
+}
+
+.very-big {
+    font-weight: 700;
+    font-size: clamp(15px, 7vw, 30px);
+    line-height: 1;
+}
+
+@media (max-width: 1200px) {
+    .big {
+        font-size: clamp(13px, 7vw, 14px);
+    }
+
+    .very-big {
+        font-size: clamp(15px, 7vw, 17.5px);
+    }
+}
+
+@media (max-width: 700px) {
+    .big {
+        font-size: clamp(15px, 7vw, 17px);
+    }
+
+    .very-big {
+        font-size: clamp(15px, 7vw, 28px);
+    }
+}
+
+@media (max-width: 500px) {
+    .big {
+        font-size: clamp(10px, 3.5vw, 17px);
+    }
+
+    .very-big {
+        font-size: clamp(14px, 4.5vw, 20px);
+    }
 }

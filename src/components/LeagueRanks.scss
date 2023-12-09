@@ -1,7 +1,15 @@
 .pvp-leagues-2 {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 2px;
+}
+
+.default-padding {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
 }
 
 .pvp-stats-2 {

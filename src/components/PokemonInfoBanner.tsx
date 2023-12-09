@@ -165,7 +165,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 displayLevel={displayLevel}
                 setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
                 imageRef={selectedImageRef}
-            >
+            />
+            <div className="item aligned">
                 <LeagueRanks
                     greatLeagueStats={
                         {
@@ -198,8 +199,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     league={league}
                     handleSetLeague={handleSetLeague}
                 />
-            </PokemonInfoImagePlaceholder>
-            <div className="appraisal_with_moves">
+            </div>
                 <AppraisalBar
                     attack = {attack}
                     setAttack={setAttack}
@@ -353,7 +353,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     />
                 </div>
             </div>
-        </div>
         {similarPokemon.size > 1 && <div className="img-container">
             <div className="img-family">
                 {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (

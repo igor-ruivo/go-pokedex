@@ -4,6 +4,10 @@ button:hover,
     filter: saturate(1.1) brightness(1.1);
 }
 
+.selectable {
+    cursor: pointer;
+}
+
 .grid_container {
     a {
         text-decoration: none;

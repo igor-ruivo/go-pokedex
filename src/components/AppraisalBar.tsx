@@ -91,7 +91,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
         }
 
         return (
-            <div className="stat">
+            <div className={`stat ${stat !== Stat.HP ? "not-last-stat" : ""}`}>
                 <h4>
                     <div className="stat-current-value">
                         {statToLang(stat)}
@@ -123,7 +123,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
     }
 
     return (
-        <div className="appraisal">
+        <div className="appraisal item">
             {renderStatBar(Stat.Attack, Math.ceil(debouncingAttack))}
             {renderStatBar(Stat.Defense, Math.ceil(debouncingDefense))}
             {renderStatBar(Stat.HP, Math.ceil(debouncingHP))}

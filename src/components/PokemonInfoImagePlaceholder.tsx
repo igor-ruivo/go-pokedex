@@ -18,6 +18,10 @@ interface IPokemonInfoImagePlaceholderProps {
     imageRef?: React.RefObject<HTMLImageElement>
 }
 
+const valueToLevel = (value: number) => {
+    return value / 2 + 0.5
+}
+
 const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
@@ -26,52 +30,14 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
         return translator(translatorKey as any, currentLanguage)
     }
 
-    const valueToLevel = (value: number) => {
-        return value / 2 + 0.5
-    }
-
-    const renderImageDescriptionComponent = () => {
-        return <div className="cp-stats-container menu-item less-bright">
-            <span className="cp-level">
-                <strong className="cp-container">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong>
-                <div className="weighted-font">{translator(TranslatorKeys.Level, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level">
-                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                    .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>}</div>
-            </span>
-            <div>
-                <div className="pokemon_stats">
-                    <span className="pvp_stat">
-                        <span>{props.computedAtk}</span>
-                        <span>{translator(TranslatorKeys.ATK, currentLanguage).toLocaleUpperCase()}</span>
-                    </span>
-                    <span className="pvp_stat">
-                        <span>{props.computedDef}</span>
-                        <span>{translator(TranslatorKeys.DEF, currentLanguage).toLocaleUpperCase()}</span>
-                    </span>
-                    <span className="pvp_stat">
-                        <span>{props.computedHP}</span>
-                        <span>{translator(TranslatorKeys.HP, currentLanguage).toLocaleUpperCase()}</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-    }
-
-    return <div className="left-panel">
-        <div className="pokemon_main_info">
-            <div className="left-container">
+    return <div className="pokemon_main_info item">
                 <PokemonImage
-                ref={props.imageRef}
-                pokemon={props.pokemon}
-                withName={false}
-                withMetadata
-                descriptionComponent={renderImageDescriptionComponent()}
-            />
-                            
-            </div>
-            <div className="right-container">
-                <span className="top-right">
+                    ref={props.imageRef}
+                    pokemon={props.pokemon}
+                    withName={false}
+                    withMetadata
+                />
+                <div>
                     <span className="pokemon_number">
                         #
                         {props.pokemon.dex}
@@ -84,13 +50,15 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                             {translatedType(props.pokemon.types[1])}
                         </span>}
                     </span>
+                <span className="cp-level big">
+                    <strong className="cp-container very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> @
+                    <div className="weighted-font">{translator(TranslatorKeys.LVL, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level big">
+                        {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
+                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>}</div>
                 </span>
-                <div className="bottom-right">
-                    {props.children}
-                </div>
             </div>
-        </div>
-    </div>;
+        </div>;
 }
 
 export default PokemonInfoImagePlaceholder;

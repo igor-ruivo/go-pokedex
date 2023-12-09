@@ -2,12 +2,20 @@ import React from "react";
 import { ReactNode } from "react"
 
 interface IListEntryProps {
-    imageDescription: string;
-    imageUrl: string;
+    mainIcon: EntryImage;
+    extraIcons?: EntryImage[];
     backgroundColorClassName: string;
-    mainText: string;
     secondaryContent: ReactNode[];
+    onClick?: (event: any) => void;
     details?: EntryDetails[];
+    slim: boolean;
+}
+
+interface EntryImage {
+    imageDescription: string;
+    image: ReactNode;
+    imageSideText?: string;
+    withBackground: boolean;
 }
 
 interface EntryDetails {
@@ -18,22 +26,30 @@ interface EntryDetails {
 }
 
 const ListEntry = ({
-    imageDescription,
-    imageUrl,
+    mainIcon,
+    extraIcons,
     backgroundColorClassName,
-    mainText,
     secondaryContent,
-    details
+    onClick,
+    details,
+    slim
 }: IListEntryProps) => {
     return(
         <li>
-            <div className={`move-card ${backgroundColorClassName}`}>
-                <div className="move-card-content">
-                    <strong className="move-detail move-name">
-                        <img title={imageDescription} alt={imageDescription} height="36" width="36" src={imageUrl}/>
-                        {mainText}
-                    </strong>
-                    <strong className="move-detail move-stats">
+            <div className={`move-card ${backgroundColorClassName} ${onClick ? "selectable" : ""}`} onClick={onClick}>
+                <div className={`move-card-content ${slim ? "slim-content" : "sparse-content"}`}>
+                    <div className="move-main-info">
+                        <strong className={`move-detail ${mainIcon.withBackground ? "with-shadow": ""} ${slim ? "slim-padding" : ""}`}>
+                            {mainIcon.image}
+                            {!!mainIcon.imageSideText && mainIcon.imageSideText}
+                        </strong>
+                        {extraIcons?.map(i => <strong key={i.imageDescription} className={`move-detail ${i.withBackground ? "with-shadow": ""}  ${slim ? "slim-padding" : ""}`}>
+                            {i.image}
+                            {!!i.imageSideText && i.imageSideText}
+                        </strong>
+                        )}
+                    </div>
+                    <strong className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"}`}>
                         {secondaryContent.map(content => 
                             (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
                                 {content}

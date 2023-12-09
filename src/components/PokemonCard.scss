@@ -39,12 +39,20 @@
     }
 }
 
+.main-image-container {
+    display: flex;
+}
+
 .pokemon_main_info .main-image-container {
     display: flex;
     flex-direction: row;
     position: relative;
     max-width: 215px;
     max-height: 215px;
+}
+
+.pokemon_main_info .images-container {
+    justify-self: flex-end;
 }
 
 .header-footer {

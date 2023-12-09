@@ -127,8 +127,9 @@ table {
 
 .select-level {
     color-scheme: var(--colorScheme);
-    font-size: small;
-    padding-top: 1px;
+    border-radius: 12px;
+    //font-size: small;
+    //padding-top: 1px;
     margin-left: 4px;
     background: var(--contentBackground);
     color: var(--textColor);
@@ -222,11 +223,6 @@ table {
     .img-family-container {
         width: calc(40px + 23 * calc(100vw - 320px) / 180);
         height: calc(40px + 23 * calc(100vw - 320px) / 180);
-    }
-
-    .select-level {
-        font-size: unset;
-        padding-top: unset;
     }
 
     .level-cp {

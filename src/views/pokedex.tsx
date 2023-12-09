@@ -147,25 +147,25 @@ const Pokedex = () => {
                 <ul>
                     <li>
                         <Link to="/great" className={"header-tab league-picker " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
-                            <img height="32" width="32" src="https://i.imgur.com/JFlzLTU.png" alt="Great League"/>
+                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/great.png`} alt="Great League"/>
                             {listType === ListType.GREAT_LEAGUE && <span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>}
                         </Link>
                     </li>
                     <li>
                         <Link to="/ultra" className={"header-tab league-picker " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
-                            <img height="32" width="32" src="https://i.imgur.com/jtA6QiL.png" alt="Ultra League"/>
+                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`} alt="Ultra League"/>
                             {listType === ListType.ULTRA_LEAGUE && <span>Ultra</span>}
                         </Link>
                     </li>
                     <li>
                         <Link to="/master" className={"header-tab league-picker " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
-                            <img height="32" width="32" src="https://i.imgur.com/vJOBwfH.png" alt="Master League"/>
+                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/master.png`} alt="Master League"/>
                             {listType === ListType.MASTER_LEAGUE && <span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>}
                         </Link>
                     </li>
                     <li>
                         <Link to="/custom" className={"header-tab league-picker " + (listType === ListType.CUSTOM_CUP ? "selected" : "")}>
-                            <img height="32" width="32" src="https://i.imgur.com/tkaS5cs.png" alt="Retro Cup"/>
+                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/retro.png`} alt="Retro Cup"/>
                             {listType === ListType.CUSTOM_CUP && <span>{gameTranslator(GameTranslatorKeys.Retro, currentGameLanguage)}</span>}
                         </Link>
                     </li>
