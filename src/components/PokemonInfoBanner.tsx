@@ -352,7 +352,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                         }
                     />
                 </div>
-            </div>
+                
             {similarPokemon.size > 1 && <div className="img-container">
             <div className="img-family">
                 {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
@@ -367,6 +367,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                 ))}
             </div>
         </div>}
+            </div>
     </div>;
 }
 

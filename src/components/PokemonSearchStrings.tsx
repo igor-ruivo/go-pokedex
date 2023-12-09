@@ -319,7 +319,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             <div className="img-family">
                 {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                     <div key = {p.speciesId}>
-                        <Link to={`/pokemon/${p.speciesId}/info`}>
+                        <Link to={`/pokemon/${p.speciesId}/strings`}>
                             <strong className={`move-detail with-shadow normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
                                 <PokemonImage pokemon={p} withName={false} withMetadata={false} specificHeight={28} specificWidth={28}/>
                                 {p.speciesId === pokemon.speciesId && p.speciesShortName}
