@@ -353,12 +353,15 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
                     />
                 </div>
             </div>
-        {similarPokemon.size > 1 && <div className="img-container">
+            {similarPokemon.size > 1 && <div className="img-container">
             <div className="img-family">
                 {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                    <div key = {p.speciesId} className={`img-family-container ${p.speciesId === pokemon.speciesId ? "selected" : ""}`}>
+                    <div key = {p.speciesId}>
                         <Link to={`/pokemon/${p.speciesId}/info`}>
-                            <PokemonImage pokemon={p} withName={false} withMetadata={false}/>
+                            <strong className={`move-detail with-shadow normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
+                                <PokemonImage pokemon={p} withName={false} withMetadata={false} specificHeight={28} specificWidth={28}/>
+                                {p.speciesId === pokemon.speciesId && p.speciesShortName}
+                            </strong>
                         </Link>
                     </div>
                 ))}

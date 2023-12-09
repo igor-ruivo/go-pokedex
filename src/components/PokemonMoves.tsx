@@ -228,16 +228,19 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     return (
         <div className="banner_layout">
             {similarPokemon.size > 1 && <div className="img-container">
-                <div className="img-family">
-                    {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                        <div key = {p.speciesId} className={`img-family-container ${p.speciesId === pokemon.speciesId ? "selected" : ""}`}>
-                            <Link to={`/pokemon/${p.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`}>
-                                <PokemonImage pokemon={p} withName={false} withMetadata={false}/>
-                            </Link>
-                        </div>
-                    ))}
-                </div>
-            </div>}
+            <div className="img-family">
+                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
+                    <div key = {p.speciesId}>
+                        <Link to={`/pokemon/${p.speciesId}/info`}>
+                            <strong className={`move-detail with-shadow normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
+                                <PokemonImage pokemon={p} withName={false} withMetadata={false} specificHeight={28} specificWidth={28}/>
+                                {p.speciesId === pokemon.speciesId && p.speciesShortName}
+                            </strong>
+                        </Link>
+                    </div>
+                ))}
+            </div>
+        </div>}
             <div className="recommended-moves">
                 <div className="recommended-moves-content menu-item">
                     <h3 className="moves-title">
