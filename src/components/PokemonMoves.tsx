@@ -12,6 +12,7 @@ import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useEffect, useState } from "react";
+import ListEntry from "./ListEntry";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -45,9 +46,9 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
 
     const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : masterLeagueMoveset;
     
-    const fastMoveClassName = `move-card background-${moves[relevantMoveSet[0]]?.type}`;
-    const chargedMove1ClassName = `move-card background-${moves[relevantMoveSet[1]]?.type}`;
-    const chargedMove2ClassName = `move-card background-${moves[relevantMoveSet[2]]?.type}`;
+    const fastMoveClassName = `background-${moves[relevantMoveSet[0]]?.type}`;
+    const chargedMove1ClassName = `background-${moves[relevantMoveSet[1]]?.type}`;
+    const chargedMove2ClassName = `background-${moves[relevantMoveSet[2]]?.type}`;
 
     const translateMoveFromMoveId = (moveId: string) => {
         const typedMove = moves[moveId];
@@ -101,81 +102,121 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
 
     const isStabMove = (moveId: string) => pokemon.types.map(t => { const stringVal = t.toString(); return stringVal.toLocaleLowerCase() }).includes(moves[moveId].type.toLocaleLowerCase());
     const hasBuffs = (moveId: string) => !!moves[moveId].pvpBuffs;
+    
+    const computeIdAttr = (moveId: string, isRecommended: boolean) => `details-${moveId}-${isRecommended ? "rec" : "all"}`;
 
-    const renderMove = (moveId: string, typeTranslatorKey: TranslatorKeys, moveUrl: string, className: string, isChargedMove: boolean, isRecommended: boolean) => {
-        const idAttr = `details-${moveId}-${isRecommended ? "recommended" : "other"}`;
+    const detailsClickHandler = (e: MouseEvent, elementId: string) => {
+        const details = document.getElementById(elementId) as HTMLDetailsElement;
+        if (details) {
+            details.open = !details.open;
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    }
 
-        const detailsClickHandler = (e: MouseEvent, elementId: string) => {
-            const details = document.getElementById(elementId) as HTMLDetailsElement;
-            if (details) {
-                details.open = !details.open;
-                e.stopPropagation();
-                e.preventDefault();
-            }
+    const renderBuffDetailItem = (moveId: string, isRecommended: boolean) => {
+        const idAttr = computeIdAttr(moveId, isRecommended);
+
+        return {
+            detailId: `${idAttr}-buff`,
+            onClick: (event: any) => detailsClickHandler(event, `${idAttr}-buff`),
+            summary: <>
+                <img className="invert-dark-mode" alt="Special effects" loading="lazy" width="10" height="10" decoding="async" src="https://db.pokemongohub.net/vectors/magic.svg"/>
+                {translator(TranslatorKeys.Special, currentLanguage)}
+            </>,
+            content: <>
+                <p>
+                    <strong>{translateMoveFromMoveId(moveId)}</strong> {translator(TranslatorKeys.Has, currentLanguage)} <strong>{moves[moveId].pvpBuffs!.chance * 100}% {translator(TranslatorKeys.Chance, currentLanguage)}</strong> {translator(TranslatorKeys.To, currentLanguage)}:
+                </p>
+                <ul className="buff-panel-buff">
+                    {moves[moveId].pvpBuffs!.buffs
+                        .map(b => <li key={b.buff}>
+                            {translator(b.quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)} {translator(TranslatorKeys[b.buff as keyof typeof TranslatorKeys], currentLanguage)} {(b.quantity > 0 ? (((b.quantity + 4) / 4) - 1) * 100 + "%" : b.quantity * -1 + " " + translator(b.quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage))} {translator(TranslatorKeys.BaseValue, currentLanguage)}
+                        </li>)
+                    }
+                </ul>
+            </>
+        }
+    }
+
+    const renderEliteDetailItem = (moveId: string, isRecommended: boolean, isLegacy: boolean) => {
+        const idAttr = computeIdAttr(moveId, isRecommended);
+
+        return {
+            detailId: `${idAttr}-${isLegacy ? "legacy" : "elite"}`,
+            onClick: (event: any) => detailsClickHandler(event, `${idAttr}-${isLegacy ? "legacy" : "elite"}`),
+            summary: <>
+                {translator(isLegacy ? TranslatorKeys.LegacyMove : TranslatorKeys.EliteMove, currentLanguage)}
+            </>,
+            content: <>
+                <p>
+                    {translator(isLegacy ? TranslatorKeys.Legacy : TranslatorKeys.Elite, currentLanguage)} {!isLegacy && gameTranslator(GameTranslatorKeys.EliteTM, currentGameLanguage)}{!isLegacy && `.`}
+                </p>
+            </>
+        }
+    }
+
+    const renderStabDetailItem = (moveId: string, isRecommended: boolean) => {
+        const idAttr = computeIdAttr(moveId, isRecommended);
+
+        return {
+            detailId: `${idAttr}-stab`,
+            onClick: (event: any) => detailsClickHandler(event, `${idAttr}-stab`),
+            summary: <>
+                STAB
+            </>,
+            content: <>
+                <p>
+                    <i>"<b>S</b>ame <b>T</b>ype <b>A</b>ttack <b>B</b>onus"</i> - {translator(TranslatorKeys.STAB, currentLanguage)}
+                </p>
+            </>
+        }
+    }
+
+    const renderDetails = (moveId: string, isRecommended: boolean) => {
+        const details = [];
+
+        if (hasBuffs(moveId)) {
+            details.push(renderBuffDetailItem(moveId, isRecommended));
         }
 
-        return <li>
-            <div className={className}>
-                <div className="move-card-content">
-                    <strong className="move-detail move-name">
-                        <img title={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)} height="36" width="36" src={moveUrl}/>
-                        {translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : "")}
-                    </strong>
-                    <strong className="move-detail move-stats">
-                        <span className="move-stats-content">
-                            {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * 10) / 10}
-                            <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={16}/>
-                        </span>
-                        <span className="move-stats-content">
-                            {moves[moveId].pvpEnergyDelta * (isChargedMove ? -1 : 1)}
-                            <img className="invert-light-mode" alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={11} height={16}/>
-                        </span>
-                        {!isChargedMove && <span className="move-stats-content">
-                            {moves[moveId].pvpDuration}s
-                            <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={11} height={16}/>
-                        </span>}
-                    </strong>
-                </div>
-            </div>
-            <div className="buffs-placeholder">
-                {hasBuffs(moveId) && <details id={`${idAttr}-buff`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-buff`)} className="buff-panel">
-                    <summary>
-                        <img className="invert-dark-mode" alt="Special effects" loading="lazy" width="10" height="10" decoding="async" src="https://db.pokemongohub.net/vectors/magic.svg"/>
-                        {translator(TranslatorKeys.Special, currentLanguage)}
-                    </summary>
-                    <p>
-                        <strong>{translateMoveFromMoveId(moveId)}</strong> {translator(TranslatorKeys.Has, currentLanguage)} <strong>{moves[moveId].pvpBuffs!.chance * 100}% {translator(TranslatorKeys.Chance, currentLanguage)}</strong> {translator(TranslatorKeys.To, currentLanguage)}:
-                    </p>
-                    <ul className="buff-panel-buff">
-                        {moves[moveId].pvpBuffs!.buffs.map(b => <li key={b.buff}>{translator(b.quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)} {translator(TranslatorKeys[b.buff as keyof typeof TranslatorKeys], currentLanguage)} {(b.quantity > 0 ? (((b.quantity + 4) / 4) - 1) * 100 + "%" : b.quantity * -1 + " " + translator(b.quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage))}</li>)}
-                    </ul>
-                </details>}
-                {pokemon.eliteMoves.includes(moveId) && <details id={`${idAttr}-elite`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-elite`)} className="buff-panel">
-                    <summary>
-                        {translator(TranslatorKeys.EliteMove, currentLanguage)}
-                    </summary>
-                        <p>
-                            {translator(TranslatorKeys.Elite, currentLanguage)} {gameTranslator(GameTranslatorKeys.EliteTM, currentGameLanguage)}.
-                        </p>
-                </details>}
-                {!pokemon.eliteMoves.includes(moveId) && pokemon.legacyMoves.includes(moveId) && <details id={`${idAttr}-legacy`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-legacy`)} className="buff-panel">
-                    <summary>
-                        {translator(TranslatorKeys.LegacyMove, currentLanguage)}
-                    </summary>
-                        <p>
-                            {translator(TranslatorKeys.Legacy, currentLanguage)}
-                        </p>
-                </details>}
-                {isStabMove(moveId) && <details id={`${idAttr}-stab`} onClick={(event: any) => detailsClickHandler(event, `${idAttr}-stab`)} className="buff-panel">
-                    <summary>
-                        STAB
-                    </summary>
-                        <p>
-                            <i>"<b>S</b>ame <b>T</b>ype <b>A</b>ttack <b>B</b>onus"</i> - {translator(TranslatorKeys.STAB, currentLanguage)}
-                        </p>
-                </details>}
-            </div>
-        </li>
+        if (pokemon.eliteMoves.includes(moveId)) {
+            details.push(renderEliteDetailItem(moveId, isRecommended, false))
+        }
+
+        if (!pokemon.eliteMoves.includes(moveId) && pokemon.legacyMoves.includes(moveId)) {
+            details.push(renderEliteDetailItem(moveId, isRecommended, true))
+        }
+
+        if (isStabMove(moveId)) {
+            details.push(renderStabDetailItem(moveId, isRecommended))
+        }
+
+        return details;
+    }
+
+    const renderMove = (moveId: string, typeTranslatorKey: TranslatorKeys, moveUrl: string, className: string, isChargedMove: boolean, isRecommended: boolean) => {
+        return <ListEntry
+            imageDescription={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}
+            imageUrl={moveUrl}
+            backgroundColorClassName={className}
+            mainText={translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : "")}
+            secondaryContent={[
+                <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-atk`}>
+                    {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * 10) / 10}
+                    <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={16}/>
+                </React.Fragment>,
+                <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-eng`}>
+                    {moves[moveId].pvpEnergyDelta * (isChargedMove ? -1 : 1)}
+                    <img className="invert-light-mode" alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={11} height={16}/>
+                </React.Fragment>,
+                !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-cd`}>
+                    {moves[moveId].pvpDuration}s
+                    <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={11} height={16}/>
+                </React.Fragment>
+            ]}
+            details={renderDetails(moveId, isRecommended)}
+        />
     }
 
     return (
@@ -233,7 +274,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             pokemon.fastMoves
                             .sort(movesSorter)
                             .map(m => {
-                                const className = `move-card background-${moves[m].type}`;
+                                const className = `background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
                                 return (
@@ -259,7 +300,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             pokemon.chargedMoves
                             .sort(movesSorter)
                             .map(m => {
-                                const className = `move-card background-${moves[m].type}`;
+                                const className = `background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
                                 return (

@@ -85,7 +85,8 @@ export enum TranslatorKeys {
     Elite,
     Legacy,
     EliteMove,
-    LegacyMove
+    LegacyMove,
+    BaseValue
 }
 
 const settings = new Map<Language, string>([
@@ -520,6 +521,12 @@ const ownDefense = new Map<Language, string>([
     [Language.Bosnian, "vlastitu Odbranu za"]
 ]);
 
+const baseValue = new Map<Language, string>([
+    [Language.English, "of the base value"],
+    [Language.Portuguese, "do valor base"],
+    [Language.Bosnian, "osnovne vrijednosti"]
+]);
+
 const lower = new Map<Language, string>([
     [Language.English, "Lower"],
     [Language.Portuguese, "Reduzir"],
@@ -533,9 +540,9 @@ const increase = new Map<Language, string>([
 ]);
 
 const stab = new Map<Language, string>([
-    [Language.English, "the attack type matches this Pokémon's type, so it will deal 20% extra damage!"],
-    [Language.Portuguese, "o tipo do ataque é compatível com o tipo deste Pokémon, por isso, vai causar 20% de dano extra!"],
-    [Language.Bosnian, "vrsta napada se podudara s vrstom ovog Pokémona, tako da će prouzrokovati dodatnih 20% štete!"]
+    [Language.English, "the attack type matches this Pokémon's type, so it has a 20% extra damage bonus!"],
+    [Language.Portuguese, "o tipo do ataque é compatível com o tipo deste Pokémon, por isso, tem um bónus de 20% de dano extra!"],
+    [Language.Bosnian, "vrsta napada se podudara s vrstom ovog Pokémona, pa ima dodatni bonus od 20% na štetu!"]
 ]);
 
 const special = new Map<Language, string>([
@@ -683,7 +690,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Elite, elite],
     [TranslatorKeys.Legacy, legacy],
     [TranslatorKeys.EliteMove, eliteMove],
-    [TranslatorKeys.LegacyMove, legacyMove]
+    [TranslatorKeys.LegacyMove, legacyMove],
+    [TranslatorKeys.BaseValue, baseValue]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();
