@@ -12,6 +12,10 @@ import PokemonMoves from '../components/PokemonMoves';
 import LeaguePicker from '../components/LeaguePicker';
 import PokemonHeader from '../components/PokemonHeader';
 import useLeague from '../hooks/useLeague';
+import PokemonFamily from '../components/PokemonFamily';
+import { fetchPokemonFamily } from '../utils/pokemon-helper';
+import { useMemo } from 'react';
+import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
@@ -23,6 +27,8 @@ const Pokemon = () => {
     const pokemon = fetchCompleted && !gamemasterPokemon[speciesId ?? ""]?.aliasId ? gamemasterPokemon[speciesId ?? ""] : undefined;
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
+
+    const computedPokemonFamily = useMemo(() => fetchCompleted ? fetchPokemonFamily(pokemon as IGamemasterPokemon, gamemasterPokemon) : undefined, [pokemon, fetchCompleted]);
 
     return (
         <main className="layout">
@@ -67,6 +73,13 @@ const Pokemon = () => {
                                             league={league}
                                             handleSetLeague={handleSetLeague}
                                         />
+                                        
+                                        {fetchCompleted && computedPokemonFamily && <PokemonFamily
+                                            pokemon={pokemon}
+                                            similarPokemon={computedPokemonFamily}
+                                            getClickDestination={(speciesId: string) => `/pokemon/${speciesId}/${tab.substring(tab.lastIndexOf("/") + 1)}`}
+                                        />}
+                                        
                                         {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon} league={league} handleSetLeague={handleSetLeague}/>}
                                         {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}

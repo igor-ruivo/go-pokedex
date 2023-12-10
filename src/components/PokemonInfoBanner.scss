@@ -1,6 +1,7 @@
 .img-container {
     display: flex;
     flex-direction: column;
+    margin-bottom: 14px;
     align-items: center;
 }
 
@@ -207,6 +208,10 @@ table {
 }
 
 @media (max-width: 500px) {
+    .img-container {
+        margin-bottom: 9px;
+    }
+
     .img-family {
         margin-left: 15%;
         margin-right: 15%;

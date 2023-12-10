@@ -14,6 +14,7 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import PokemonFamily from "./PokemonFamily";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
@@ -316,20 +317,6 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
                         .map(e => (<option key={e} value={e}>{e}</option>))}
                 </select>
             </div>
-            {similarPokemon.size > 1 && <div className="img-container">
-            <div className="img-family">
-                {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                    <div key = {p.speciesId}>
-                        <Link to={`/pokemon/${p.speciesId}/tables`}>
-                            <strong className={`move-detail with-shadow normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
-                                <PokemonImage pokemon={p} withName={false} withMetadata={false} specificHeight={28} specificWidth={28}/>
-                                {p.speciesId === pokemon.speciesId && p.speciesShortName}
-                            </strong>
-                        </Link>
-                    </div>
-                ))}
-            </div>
-        </div>}
             <TableVirtuoso
                 className="ivs-table"
                 data={visibleRows.sort((d1: Data, d2: Data) => {
