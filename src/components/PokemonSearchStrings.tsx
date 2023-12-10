@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { calculateCP, calculateHP, computeBestIVs, fetchPokemonFamily, fetchPredecessorPokemonIncludingSelf, sortPokemonByBattlePowerAsc, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
+import { calculateCP, calculateHP, computeBestIVs, fetchPredecessorPokemonIncludingSelf, sortPokemonByBattlePowerAsc } from "../utils/pokemon-helper";
 import "./PokemonSearchStrings.scss"
-import { Link, useLocation } from "react-router-dom";
-import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
-import PokemonFamily from "./PokemonFamily";
 
 interface IPokemonSearchStringsProps {
     pokemon: IGamemasterPokemon;
@@ -39,7 +36,6 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
     const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {pathname} = useLocation();
 
     const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);
     const predecessorPokemonArray = Array.from(predecessorPokemon);
@@ -98,8 +94,6 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
     if (!fetchCompleted || !gamemasterPokemon) {
         return <></>;
     }
-
-    const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
 
     const valueToLevel = (value: number) => {
         return value / 2 + 0.5;

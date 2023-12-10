@@ -1,11 +1,8 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { useLanguage } from "../contexts/language-context";
 import "./PokemonMoves.scss"
-import { fetchPokemonFamily, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 import { usePokemon } from "../contexts/pokemon-context";
-import { Link, useLocation } from "react-router-dom";
 import translator, { TranslatorKeys } from "../utils/Translator";
-import PokemonImage from "./PokemonImage";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
@@ -13,7 +10,6 @@ import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useEffect, useState } from "react";
 import ListEntry from "./ListEntry";
-import PokemonFamily from "./PokemonFamily";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -26,7 +22,6 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {moves, movesFetchCompleted} = useMoves();
-    const {pathname} = useLocation();
     const [fastMovesCollapsed, setFastMovesCollapsed] = useState(true);
     const [chargedMovesCollapsed, setChargedMovesCollapsed] = useState(true);
     
@@ -97,8 +92,6 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const chargedMove1Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[1]]?.type}.webp`;
     const chargedMove2Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[2]]?.type}.webp`;
 
-    const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
-
     const leagueName = gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.RetroCup, currentGameLanguage);
 
     const isStabMove = (moveId: string) => pokemon.types.map(t => { const stringVal = t.toString(); return stringVal.toLocaleLowerCase() }).includes(moves[moveId].type.toLocaleLowerCase());
@@ -132,7 +125,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 <ul className="buff-panel-buff">
                     {moves[moveId].pvpBuffs!.buffs
                         .map(b => <li key={b.buff}>
-                            {translator(b.quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)} {translator(TranslatorKeys[b.buff as keyof typeof TranslatorKeys], currentLanguage)} {(b.quantity > 0 ? (((b.quantity + 4) / 4) - 1) * 100 + "%" + " " + translator(TranslatorKeys.BaseValue, currentLanguage) : b.quantity * -1 + " " + translator(b.quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage))}
+                            {translator(b.quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)} {translator(TranslatorKeys[b.buff as keyof typeof TranslatorKeys], currentLanguage)} {(b.quantity > 0 ? (((b.quantity + 4) / 4) - 1) * 100 + "% " + translator(TranslatorKeys.BaseValue, currentLanguage) : b.quantity * -1 + " " + translator(b.quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage))}
                         </li>)
                     }
                 </ul>

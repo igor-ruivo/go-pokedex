@@ -3,7 +3,6 @@ import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { Language, useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
 import translator, { TranslatorKeys } from "../utils/Translator";
-import Pokemon from "../views/pokemon";
 import "./LeagueRanks.scss"
 import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
@@ -46,21 +45,6 @@ const LeagueRanks = ({
             `Ranked ${rank}`;
     }
 
-    const rankClass = (rank: string|undefined) => "pokemon-ivs-ranked-2" + (!rank ? " unranked" : "");
-
-    const getLeagueName = (league: LeagueType) => {
-        switch (league) {
-            case LeagueType.GREAT_LEAGUE:
-                return "great";
-            case LeagueType.ULTRA_LEAGUE:
-                return "ultra";
-            case LeagueType.MASTER_LEAGUE:
-                return "master";
-            case LeagueType.CUSTOM_CUP:
-                return "custom";
-        }
-    }
-
     const getLeagueType = (league: string) => {
         switch (league) {
             case "great":
@@ -77,8 +61,6 @@ const LeagueRanks = ({
     }
 
     const renderPanel = (leagueStat: LeagueStat) => {
-        const pvpStatsClassName = `pvp-stats-2 selectable ${leagueStat.leagueTitle} ` + (getLeagueName(league) === leagueStat.leagueTitle ? "selected" : "");
-        
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
             case "great":
@@ -105,7 +87,7 @@ const LeagueRanks = ({
                 extraIcons={[
                     {
                         imageDescription: "Most relevant Pokémon",
-                        image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} withMetadata={false} specificWidth={28} specificHeight={28}/>,
+                        image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} specificWidth={28} specificHeight={28}/>,
                         imageSideText: leagueStat.bestReachablePokemon.speciesShortName,
                         withBackground: true
                     }

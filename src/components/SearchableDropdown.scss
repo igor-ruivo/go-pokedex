@@ -29,6 +29,9 @@ ul.MuiAutocomplete-listbox {
 .autoComplete-option {
     background-color: var(--dropdownOptionBlurred);
     color: var(--textColor);
+    min-height: unset !important;
+    border: 1px solid var(--borderColorSearchBar);
+    gap: 3px;
 }
 
 label.MuiFormLabel-root.MuiInputLabel-root {

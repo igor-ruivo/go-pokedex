@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { computeBestIVs, fetchPokemonFamily, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
+import { computeBestIVs } from "../utils/pokemon-helper";
 import "./PokemonIVTables.scss"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { TableComponents, TableVirtuoso } from "react-virtuoso";
 import React from "react";
 import { visuallyHidden } from '@mui/utils';
-import { Link, useLocation } from "react-router-dom";
-import PokemonImage from "./PokemonImage";
 import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readPersistentValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import PokemonFamily from "./PokemonFamily";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
@@ -113,7 +110,6 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     const [orderBy, setOrderBy] = React.useState<keyof Data>('top');
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {pathname} = useLocation();
 
     useEffect(() => {
         writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
@@ -222,8 +218,6 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     if (!fetchCompleted || !gamemasterPokemon) {
         return <></>;
     }
-
-    const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
 
     const VirtuosoTableComponents: TableComponents<Data> = {
         Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (

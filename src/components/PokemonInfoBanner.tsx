@@ -1,15 +1,13 @@
-import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { usePokemon } from "../contexts/pokemon-context";
 import Dictionary from "../utils/Dictionary";
-import PokemonImage from "./PokemonImage";
 import "./PokemonInfoBanner.scss";
 import { useState } from "react";
 import LeaguePanels from "./LeaguePanels";
 import React from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
-import { fetchPokemonFamily, fetchReachablePokemonIncludingSelf, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
+import { fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import PokemonInfoImagePlaceholder from "./PokemonInfoImagePlaceholder";
@@ -19,7 +17,6 @@ import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
-import PokemonFamily from "./PokemonFamily";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -88,8 +85,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
     if (!fetchCompleted || !pokemon || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0) {
         return <></>;
     }
-
-    const similarPokemon = fetchPokemonFamily(pokemon, gamemasterPokemon);
     
     let bestInFamilyForGreatLeague = pokemon;
     let bestInFamilyForGreatLeagueRank = Number.MAX_VALUE;

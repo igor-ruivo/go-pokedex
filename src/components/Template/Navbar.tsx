@@ -8,6 +8,8 @@ import { useCallback, useEffect, useState } from "react";
 import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select";
 import translator, { TranslatorKeys } from "../../utils/Translator";
+import { Box } from "@mui/material";
+import PokemonImage from "../PokemonImage";
 
 enum ThemeValues {
     Light,
@@ -210,6 +212,18 @@ const Navbar = () => {
                         }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} as EntryType))}
                         isLoading={!fetchCompleted}
                         onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`)}
+                        renderOption={(props: any, option: EntryType) => (
+                            <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                              <PokemonImage
+                                pokemon={gamemasterPokemon[option.value]}
+                                lazy
+                                withName={false}
+                                specificHeight={28}
+                                specificWidth={28}
+                              />
+                              {option.label}
+                            </Box>
+                          )}
                     />
                 </div>
             </section>

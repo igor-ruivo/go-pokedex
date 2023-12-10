@@ -29,7 +29,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
                     <PokemonTypes types={pokemon.types} />
                 </span>
                 <span className="card-content">
-                    <PokemonImage pokemon={pokemon} xl={showXL} withName  withMetadata={false}/>
+                    <PokemonImage pokemon={pokemon} xl={showXL} withName/>
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container">

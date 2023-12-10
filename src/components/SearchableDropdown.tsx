@@ -10,9 +10,10 @@ interface ISearchableDropdownProps {
     options: EntryType[];
     isLoading: boolean;
     onSelection: (selectedEntry: any) => void;
+    renderOption?: (props: any, option: EntryType) => any;
 }
 
-const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdownProps) => {
+const SearchableDropdown = ({options, isLoading, onSelection, renderOption}: ISearchableDropdownProps) => {
     const {inputText, updateInputText} = useNavbarSearchInput();
     const [debouncingInputText, setDebouncingInputText] = useState(inputText);
     const {currentLanguage} = useLanguage();
@@ -51,7 +52,8 @@ const SearchableDropdown = ({options, isLoading, onSelection}: ISearchableDropdo
         getOptionKey={(option) => (option as EntryType).value}
         renderInput={(params) => (
             <TextField {...params} className="auto_complete_input" label={translator(TranslatorKeys.Search, currentLanguage)} placeholder={translator(TranslatorKeys.Name, currentLanguage)} />
-        )} 
+        )}
+        renderOption={renderOption}
     />
 }
 

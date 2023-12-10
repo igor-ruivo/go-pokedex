@@ -28,7 +28,7 @@ const Pokemon = () => {
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
 
-    const computedPokemonFamily = useMemo(() => fetchCompleted ? fetchPokemonFamily(pokemon as IGamemasterPokemon, gamemasterPokemon) : undefined, [pokemon, fetchCompleted]);
+    const computedPokemonFamily = useMemo(() => fetchCompleted ? fetchPokemonFamily(pokemon as IGamemasterPokemon, gamemasterPokemon) : undefined, [pokemon, fetchCompleted, gamemasterPokemon]);
 
     return (
         <main className="layout">

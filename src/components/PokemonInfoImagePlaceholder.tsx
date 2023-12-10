@@ -35,7 +35,6 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     ref={props.imageRef}
                     pokemon={props.pokemon}
                     withName={false}
-                    withMetadata
                 />
                 <div>
                     <span className="pokemon_number">
