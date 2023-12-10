@@ -63,7 +63,20 @@
     background-color: var(--contentBackground);
 }
 
+.pokedex {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: calc(100vh - 148px);
+    padding-top: 8px;
+    border-top: 1px solid var(--borderColor2);
+    box-shadow: inset 0px -2px 0px -2px rgba(0,0,0,0.2);
+}
+
 @media (max-width: 500px) {
+    .pokedex {
+        max-height: calc(100vh - 124px);
+    }
+
     .navigation-header.extra-gap {
         ul {
             gap: 6px;

@@ -1,5 +1,20 @@
 * {
     box-sizing: border-box;
+    @media (min-width: 501px) {
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--scroll-background); /* Color of the thumb (the draggable part) */
+            border-radius: 4px;
+        }
+        &::-webkit-scrollbar-button {
+            display: none;
+        }
+        &::-webkit-scrollbar-corner {
+            background-color: #fff;
+        }
+    }
 }
 
 a {

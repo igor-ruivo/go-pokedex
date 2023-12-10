@@ -15,7 +15,8 @@ import { useLanguage } from '../contexts/language-context';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[],
-    listType: ListType
+    listType: ListType,
+    containerRef: React.RefObject<HTMLDivElement>
 }
 
 const getDefaultLastShownIndex = () => +(readSessionValue(ConfigKeys.LastShownImageIndex) ?? "0");
@@ -39,9 +40,9 @@ const getDefaultListType = () => {
     return +cachedValue as ListType;
 }
 
-const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
-    const batchSize = 24;
-    const bufferSize = 120;
+const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGridProps) => {
+    const batchSize = 30;
+    const bufferSize = 150;
     const scrollHeightLimit = 200;
 
     const [lastShownIndex, setLastShownIndex] = useState(getDefaultLastShownIndex());
@@ -77,9 +78,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
 
     useEffect(() => {
         if (typedCurrentRank === getDefaultListType()) {
-            window.scrollTo(0, getDefaultScrollY());
+            containerRef.current?.scrollTo(0, getDefaultScrollY());
         }
-    }, [typedCurrentRank]);
+    }, [typedCurrentRank, containerRef]);
 
     useEffect(() => {
         // Whenever the pokemonInfoList prop changes, let's reset the scrolling and the shown pokemon.
@@ -96,7 +97,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     }, [pokemonInfoList, typedCurrentRank]);
 
     const handleScrollCallback = useCallback(() => {
-        writeSessionValue(ConfigKeys.GridScrollY, window.scrollY.toString());
+        writeSessionValue(ConfigKeys.GridScrollY, containerRef.current?.scrollTop.toString() ?? "0");
 
         if (lastShownIndex >= pokemonInfoList.length) {
             // Already showing all pokemon available.
@@ -110,9 +111,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
             return;
         }
 
-        if (window.innerHeight + window.scrollY >=
-            renderDivRef.current!.offsetHeight - scrollHeightLimit
-        ) {
+        if (containerRef.current!.clientHeight + containerRef.current!.scrollTop + scrollHeightLimit >= renderDivRef.current!.offsetHeight) {
             // Show next batch of pokemon if window scroll is less than scrollHeightLimit pixels from reaching the bottom of the page
             setLastShownIndex(previous => {
                 const newIndex = Math.min(previous + batchSize, pokemonInfoList.length);
@@ -120,7 +119,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
                 return newIndex;
             });
         }
-    }, [readyImages, lastShownIndex, pokemonInfoList]);
+    }, [readyImages, lastShownIndex, pokemonInfoList, containerRef]);
 
     const fetchPokemonBinaryImage = async (pokemonBatch: IGamemasterPokemon[]) => {
         try {
@@ -182,11 +181,12 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
     }, [handleScrollCallback]);
     
     useEffect(() => {
-        window.addEventListener("scroll", handleScrollCallback);
+        const container = containerRef.current;
+        container?.addEventListener("scroll", handleScrollCallback);
         return () => {
-            window.removeEventListener("scroll", handleScrollCallback);
+            container?.removeEventListener("scroll", handleScrollCallback);
         };
-    }, [handleScrollCallback]);
+    }, [handleScrollCallback, containerRef]);
 
     const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: '#24292f',
@@ -201,9 +201,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType}: IPokemonGridProps) => {
             {pokemonInfoList.length === 0 && <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div>}
             {pokemonInfoList.length > 0 && lastShownIndex >= Math.min(batchSize, pokemonInfoList.length) ?
                 <Box sx={{ flexGrow: 1 }}>
-                    <Grid container disableEqualOverflow spacing={{ xs: 1, md: 2 }}>
+                    <Grid container disableEqualOverflow spacing={{ xs: 1, md: 1 }}>
                         {shownPokemonSlice.map(p => (
-                            <Grid xs={4} sm={3} md={3} key={p.speciesId} className="grid">
+                            <Grid xs={4} sm={3} md={2.4} key={p.speciesId} className="grid">
                                 {readyImages.hasOwnProperty(p.speciesId) &&
                                 <Item className="grid-item">
                                     <PokemonCard pokemon={p} listType={listType} />

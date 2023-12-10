@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -30,6 +30,7 @@ const Pokedex = () => {
     const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
     const { inputText } = useNavbarSearchInput();
     const {currentLanguage, currentGameLanguage} = useLanguage();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     let listType = ListType.POKEDEX;
     const { listTypeArg } = useParams();
@@ -171,9 +172,9 @@ const Pokedex = () => {
                     </li>
                 </ul>
             </nav>
-            <div className="pokedex">
+            <div className="pokedex" ref={containerRef}>
                 <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted}>
-                    <PokemonGrid pokemonInfoList={data} listType={listType} />
+                    <PokemonGrid pokemonInfoList={data} listType={listType} containerRef={containerRef}/>
                 </LoadingRenderer>
             </div>
         </main>

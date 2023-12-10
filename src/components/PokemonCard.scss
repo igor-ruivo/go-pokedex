@@ -13,7 +13,7 @@
     padding: 3px;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: calc(10px + .5vw);
+    font-size: clamp(0px, calc(10px + .5vw), 15.4px);
     color: var(--textColor);
 }
 
@@ -33,8 +33,8 @@
     text-align: center;
     .images-container {
         .main-image-container {
-            width: calc(80px + 64 * calc(100vw - 500px) / (1920 - 500));
-            height: calc(80px + 64 * calc(100vw - 500px) / (1920 - 500));
+            width: clamp(0px, calc(80px + 64 * calc(100vw - 500px) / (1920 - 500)), 110px);
+            height: clamp(0px, calc(80px + 64 * calc(100vw - 500px) / (1920 - 500)), 110px);
         }
     }
 }
@@ -69,6 +69,6 @@
 
 @media (max-width: 500px) {
     .pokemon-card {
-        font-size: calc(7px + .5vw);
+        font-size: clamp(0px, calc(7px + .5vw), 15.4px);
     }
 }
