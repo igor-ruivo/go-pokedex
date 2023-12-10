@@ -17,7 +17,7 @@ const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonF
                     {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                         <div key = {p.speciesId}>
                             <Link to={getClickDestination(p.speciesId)}>
-                                <strong className={`move-detail with-shadow normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
+                                <strong className={`move-detail with-shadow soft normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
                                     <PokemonImage pokemon={p} withName={false} specificHeight={28} specificWidth={28}/>
                                     {p.speciesId === pokemon.speciesId && p.speciesShortName}
                                 </strong>

@@ -192,6 +192,9 @@ summary::-webkit-details-marker {
         background-color: var(--background-shadow);
         box-shadow: 0 0 2px hsla(0,21%,90%,.158),0 12px 11px #00000009;
     }
+    &.soft {
+        background-color: var(--background-shadow-soft);
+    }
     padding-right: 12px;
 }
 
