@@ -202,7 +202,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             backgroundColorClassName={className}
             secondaryContent={[
                 <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-atk`}>
-                    {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * 10) / 10}
+                    {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) * 10) / 10}
                     <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={16}/>
                 </React.Fragment>,
                 <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-eng`}>
