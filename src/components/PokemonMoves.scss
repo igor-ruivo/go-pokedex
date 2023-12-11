@@ -89,6 +89,13 @@ details[open] {
     gap: 9px;
 }
 
+.counters-display-layout {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+    gap: 9px;
+}
+
 .recommended-moves {
     display: flex;
     justify-content: center;
@@ -320,6 +327,12 @@ summary::-webkit-details-marker {
         grid-template-columns: 1fr 1fr;
         gap: 9px;
         margin-top: 32px;
+    }
+
+    .counters-display-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
     }
     
     .recommended-moves-content {

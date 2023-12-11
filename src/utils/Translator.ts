@@ -87,7 +87,9 @@ export enum TranslatorKeys {
     Legacy,
     EliteMove,
     LegacyMove,
-    BaseValue
+    BaseValue,
+    WeakAgainst,
+    StrongAgainst
 }
 
 const settings = new Map<Language, string>([
@@ -612,6 +614,18 @@ const counters = new Map<Language, string>([
     [Language.Bosnian, "Sukobi"]
 ]);
 
+const weakAgainst = new Map<Language, string>([
+    [Language.English, "is weak against"],
+    [Language.Portuguese, "é fraco contra"],
+    [Language.Bosnian, "je slab protiv"]
+]);
+
+const strongAgainst = new Map<Language, string>([
+    [Language.English, "is strong against"],
+    [Language.Portuguese, "é forte contra"],
+    [Language.Bosnian, "je jak protiv"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -699,7 +713,9 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.EliteMove, eliteMove],
     [TranslatorKeys.LegacyMove, legacyMove],
     [TranslatorKeys.BaseValue, baseValue],
-    [TranslatorKeys.Counters, counters]
+    [TranslatorKeys.Counters, counters],
+    [TranslatorKeys.WeakAgainst, weakAgainst],
+    [TranslatorKeys.StrongAgainst, strongAgainst]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

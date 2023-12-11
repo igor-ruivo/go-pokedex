@@ -10,6 +10,7 @@ interface IListEntryProps {
     onClick?: (event: any) => void;
     details?: EntryDetails[];
     slim: boolean;
+    specificBackgroundStyle?: string;
 }
 
 interface EntryImage {
@@ -34,14 +35,15 @@ const ListEntry = ({
     toggledContent,
     onClick,
     details,
-    slim
+    slim,
+    specificBackgroundStyle
 }: IListEntryProps) => {
     const [toggled, setToggled] = useState(false);
     const secondaryContentToBeRendered = toggled ? toggledContent : secondaryContent;
 
     return(
         <li>
-            <div className={`move-card ${backgroundColorClassName} ${onClick ? "selectable" : ""}`} onClick={onClick}>
+            <div style={specificBackgroundStyle ? {background: specificBackgroundStyle} : undefined} className={`move-card ${!specificBackgroundStyle ? backgroundColorClassName : ""} ${onClick ? "selectable" : ""}`} onClick={onClick}>
                 <div className={`move-card-content ${slim ? "slim-content" : "sparse-content"}`}>
                     <div className="move-main-info">
                         <strong className={`move-detail ${mainIcon.withBackground ? "with-shadow": ""} ${slim ? "slim-padding" : ""}`}>
