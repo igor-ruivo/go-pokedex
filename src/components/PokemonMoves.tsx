@@ -223,19 +223,16 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
         <div className="banner_layout">
             <div className="recommended-moves">
                 <div className="recommended-moves-content menu-item">
-                    <h3 className="moves-title">
+                    <h3 className="moves-title recommended-title">
                         {`${translator(TranslatorKeys.RecommendedMoves, currentLanguage)} (${leagueName})`}
                     </h3>
                     <ul className="moves-list no-padding sparse-list">
                         {rankLists[league as number][pokemon.speciesId] ? 
                             <div className="moves-list no-padding sparse-list">
-                            <p>
-                                {translator(TranslatorKeys.RecommendedMovesInfo1, currentLanguage)} {pokemon.speciesName} {translator(TranslatorKeys.RecommendedMovesInfo2, currentLanguage)} {leagueName}.
-                            </p>
-                            <div className="menu-item">
-                                {renderMove(relevantMoveSet[0], fastMoveTypeTranslatorKey, fastMoveUrl, fastMoveClassName, false, true)}
-                            </div>
-                                <div className="recommended-charged-moves menu-item">
+                                <div className="with-bottom-border">
+                                    {renderMove(relevantMoveSet[0], fastMoveTypeTranslatorKey, fastMoveUrl, fastMoveClassName, false, true)}
+                                </div>
+                                <div className="recommended-charged-moves">
                                     {renderMove(relevantMoveSet[1], chargedMove1TypeTranslatorKey, chargedMove1Url, chargedMove1ClassName, true, true)}
                                     {renderMove(relevantMoveSet[2], chargedMove2TypeTranslatorKey, chargedMove2Url, chargedMove2ClassName, true, true)}
                                 </div>

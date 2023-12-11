@@ -10,7 +10,17 @@
     width: 100%;
 }
 
+.recommended-title {
+    margin-bottom: 9px;
+}
+
+.with-bottom-border {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--borderColor2);
+}
+
 .recommended-charged-moves {
+    margin-top: 9px;
     flex-direction: column;
     display: flex;
     gap: 9px;
