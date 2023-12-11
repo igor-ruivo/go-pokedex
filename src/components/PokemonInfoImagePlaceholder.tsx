@@ -30,25 +30,26 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
         return translator(translatorKey as any, currentLanguage)
     }
 
-    return <div className="pokemon_main_info item">
-                <PokemonImage
-                    ref={props.imageRef}
-                    pokemon={props.pokemon}
-                    withName={false}
-                />
-                <div>
-                    <span className="pokemon_number">
-                        #
-                        {props.pokemon.dex}
-                    </span>
-                    <span className="pokemon_types">
-                        {props.pokemon.types[0] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[0]})`}}>
-                            {translatedType(props.pokemon.types[0])}
-                        </span>}
-                        {props.pokemon.types[1] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[1]})`}}>
-                            {translatedType(props.pokemon.types[1])}
-                        </span>}
-                    </span>
+    return <div>
+        <div className="pokemon_main_info item">
+            <PokemonImage
+                ref={props.imageRef}
+                pokemon={props.pokemon}
+                withName={false}
+            />
+            <div>
+                <span className="pokemon_number">
+                    #
+                    {props.pokemon.dex}
+                </span>
+                <span className="pokemon_types">
+                    {props.pokemon.types[0] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[0]})`}}>
+                        {translatedType(props.pokemon.types[0])}
+                    </span>}
+                    {props.pokemon.types[1] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[1]})`}}>
+                        {translatedType(props.pokemon.types[1])}
+                    </span>}
+                </span>
                 <span className="cp-level big">
                     <strong className="cp-container very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> @
                     <div className="weighted-font">{translator(TranslatorKeys.LVL, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level big">
@@ -57,7 +58,8 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     </select>}</div>
                 </span>
             </div>
-        </div>;
+        </div>
+    </div>;
 }
 
 export default PokemonInfoImagePlaceholder;
