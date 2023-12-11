@@ -236,7 +236,15 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
                 attacker: pokemon.scores[4],
                 score: pokemon.score,
                 rank: computedRank,
-                rankChange: parsedRankChange
+                rankChange: parsedRankChange,
+                matchups: Array.from(pokemon.matchups).map((m: any) => ({
+                    speciesId: m.opponent,
+                    rating: m.rating
+                })),
+                counters: Array.from(pokemon.counters).map((m: any) => ({
+                    speciesId: m.opponent,
+                    rating: m.rating
+                }))
             }
         }
     );

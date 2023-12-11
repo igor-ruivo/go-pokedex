@@ -11,25 +11,17 @@ import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useEffect, useState } from "react";
 import ListEntry from "./ListEntry";
 
-interface IPokemonMoves {
+interface IPokemonCounters {
     pokemon: IGamemasterPokemon;
     league: LeagueType;
 }
 
-const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
+const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const {gameTranslation, gameTranslationFetchCompleted} = useGameTranslation();
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {moves, movesFetchCompleted} = useMoves();
-    const [fastMovesCollapsed, setFastMovesCollapsed] = useState(true);
-    const [chargedMovesCollapsed, setChargedMovesCollapsed] = useState(true);
-    
-    useEffect(() => {
-        if (!fastMovesCollapsed || !chargedMovesCollapsed) {
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-    }, [fastMovesCollapsed, chargedMovesCollapsed]);
 
     if (!fetchCompleted || !gameTranslationFetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
@@ -258,15 +250,12 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             </div>
             <div className="moves-display-layout">
                 <div className="menu-item">
-                    <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
+                    <div className={`moves-title all-moves fast-moves-section`}>
                         <h3>
                             {translator(TranslatorKeys.FastMoves, currentLanguage)}
                         </h3>
-                        <figure className="chevron move-card hidden-in-big-screens">
-                            <img className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${fastMovesCollapsed ? "down" : "up"}.svg`} />
-                        </figure>
                     </div>
-                    <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
+                    <ul className={`moves-list no-padding sparse-list`}>
                         {
                             pokemon.fastMoves
                             .sort(movesSorter)
@@ -284,15 +273,12 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </ul>
                 </div>
                 <div className="menu-item">
-                    <div onClick={() => {setChargedMovesCollapsed(c => !c)}} className={`moves-title ${chargedMovesCollapsed ? "hidden" : ""} all-moves charged-moves-section`}>
+                    <div className={`moves-title all-moves charged-moves-section`}>
                         <h3>
                             {translator(TranslatorKeys.ChargedMoves, currentLanguage)}
                         </h3>
-                        <figure className="chevron move-card hidden-in-big-screens">
-                            <img className="invert-dark-mode" alt="All available Charged Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${chargedMovesCollapsed ? "down" : "up"}.svg`} />
-                        </figure>
                     </div>
-                    <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
+                    <ul className={`moves-list no-padding sparse-list`}>
                         {
                             pokemon.chargedMoves
                             .sort(movesSorter)
@@ -314,4 +300,4 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     );
 }
 
-export default PokemonMoves;
+export default PokemonCounters;

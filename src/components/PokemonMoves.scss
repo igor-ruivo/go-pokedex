@@ -100,10 +100,6 @@ details[open] {
     border-radius: 12px;
     border: 1px solid var(--borderColor2);
     background-color: var(--buttonsBackground);
-    
-    &.hidden {
-        margin-bottom: 0px;
-    }
 
     h3 {
         margin: 0px;
@@ -132,10 +128,6 @@ details[open] {
     margin: 0;
     display: grid;
     grid-template-columns: 1fr;
-
-    &.hidden {
-        display: none;
-    }
 }
 
 .slim-content {
@@ -240,13 +232,10 @@ summary::-webkit-details-marker {
 
 .fast-moves-section,
 .charged-moves-section {
-    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    &:not(.hidden) {
-        margin-bottom: 9px;
-    }
+    margin-bottom: 9px;
 }
 
 .background-dragon {
@@ -321,6 +310,10 @@ summary::-webkit-details-marker {
     background-color: var(--type-Ice);
 }
 
+.hidden-in-big-screens {
+    display: none;
+}
+
 @media (min-width: 750px) {
     .moves-display-layout {
         display: grid;
@@ -331,6 +324,37 @@ summary::-webkit-details-marker {
     
     .recommended-moves-content {
         width: 70%;
+    }
+
+    .fast-moves-section,
+    .charged-moves-section {
+        pointer-events: none;
+    }
+}
+
+@media (max-width: 750px) {
+    .hidden-in-big-screens {
+        display: unset;
+    }
+
+    .moves-title {
+        &.hidden {
+            margin-bottom: 0px;
+        }
+    }
+
+    .moves-list {
+        &.hidden {
+            display: none;
+        }
+    }
+
+    .fast-moves-section,
+    .charged-moves-section {
+        cursor: pointer;
+        &.hidden {
+            margin-bottom: 0px;
+        }
     }
 }
 

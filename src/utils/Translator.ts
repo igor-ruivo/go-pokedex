@@ -6,6 +6,7 @@ export enum TranslatorKeys {
     Search,
     Loading,
     Name,
+    Counters,
     IVTables,
     SearchStrings,
     Attack,
@@ -605,6 +606,12 @@ const legacyMove = new Map<Language, string>([
     [Language.Bosnian, "Obustavljen"]
 ]);
 
+const counters = new Map<Language, string>([
+    [Language.English, "Counters"],
+    [Language.Portuguese, "Confrontos"],
+    [Language.Bosnian, "Sukobi"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Settings, settings],
     [TranslatorKeys.Language, language],
@@ -691,7 +698,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Legacy, legacy],
     [TranslatorKeys.EliteMove, eliteMove],
     [TranslatorKeys.LegacyMove, legacyMove],
-    [TranslatorKeys.BaseValue, baseValue]
+    [TranslatorKeys.BaseValue, baseValue],
+    [TranslatorKeys.Counters, counters]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

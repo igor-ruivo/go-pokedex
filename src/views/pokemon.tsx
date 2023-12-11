@@ -16,6 +16,7 @@ import PokemonFamily from '../components/PokemonFamily';
 import { fetchPokemonFamily } from '../utils/pokemon-helper';
 import { useMemo } from 'react';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import PokemonCounters from '../components/PokemonCounters';
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
@@ -42,6 +43,11 @@ const Pokemon = () => {
                     <li>
                         <Link to={pokemonBasePath + "/moves"} className={"header-tab " + (tab.endsWith("/moves") ? "selected" : "")}>
                             <span>{translator(TranslatorKeys.Moves, currentLanguage)}</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to={pokemonBasePath + "/counters"} className={"header-tab " + (tab.endsWith("/counters") ? "selected" : "")}>
+                            <span>{translator(TranslatorKeys.Counters, currentLanguage)}</span>
                         </Link>
                     </li>
                     <li>
@@ -82,6 +88,7 @@ const Pokemon = () => {
                                         
                                         {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon} league={league} handleSetLeague={handleSetLeague}/>}
                                         {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
+                                        {tab.endsWith("/counters") && <PokemonCounters pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}
                                     </div>
