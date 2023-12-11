@@ -214,6 +214,17 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={11} height={16}/>
                 </React.Fragment>
             ]}
+            toggledContent={[
+                !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-dps`}>
+                    {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / moves[moveId].pvpDuration * 100) / 100} DPS
+                </React.Fragment>,
+                !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-eps`}>
+                {Math.round(moves[moveId].pvpEnergyDelta / moves[moveId].pvpDuration * 100) / 100} EPS
+                </React.Fragment>,
+                isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-dpe`}>
+                {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / moves[moveId].pvpEnergyDelta * -1 * 100) / 100} DPE
+                </React.Fragment>
+            ]}
             details={renderDetails(moveId, isRecommended)}
             slim={false}
         />

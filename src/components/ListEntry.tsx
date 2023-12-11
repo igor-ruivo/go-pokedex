@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ReactNode } from "react"
 
 interface IListEntryProps {
@@ -6,6 +6,7 @@ interface IListEntryProps {
     extraIcons?: EntryImage[];
     backgroundColorClassName: string;
     secondaryContent: ReactNode[];
+    toggledContent?: ReactNode[];
     onClick?: (event: any) => void;
     details?: EntryDetails[];
     slim: boolean;
@@ -30,10 +31,14 @@ const ListEntry = ({
     extraIcons,
     backgroundColorClassName,
     secondaryContent,
+    toggledContent,
     onClick,
     details,
     slim
 }: IListEntryProps) => {
+    const [toggled, setToggled] = useState(false);
+    const secondaryContentToBeRendered = toggled ? toggledContent : secondaryContent;
+
     return(
         <li>
             <div className={`move-card ${backgroundColorClassName} ${onClick ? "selectable" : ""}`} onClick={onClick}>
@@ -49,8 +54,8 @@ const ListEntry = ({
                         </strong>
                         )}
                     </div>
-                    <strong className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"}`}>
-                        {secondaryContent.map(content => 
+                    <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"} ${toggledContent ? "clickable" : ""}`}>
+                        {secondaryContentToBeRendered?.map(content => 
                             (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
                                 {content}
                             </span>)
