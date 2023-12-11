@@ -6,6 +6,7 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import "./LeagueRanks.scss"
 import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
+import { usePvp } from "../contexts/pvp-context";
 
 interface LeagueStat {
     leagueTitle: string,
@@ -27,10 +28,10 @@ const LeagueRanks = ({
     ultraLeagueStats,
     masterLeagueStats,
     customLeagueStats,
-    league,
     handleSetLeague
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
+    const {rankLists, pvpFetchCompleted} = usePvp();
 
     const buildRankString = (rank: string|undefined) => {
         if (!rank) {
@@ -60,6 +61,17 @@ const LeagueRanks = ({
         }
     }
 
+    const computeRankChange = (speciesId: string, leagueTitle: string) => {
+        if (!pvpFetchCompleted) {
+            return "";
+        }
+
+        return ` ${(!rankLists[getLeagueType(leagueTitle)][speciesId] || rankLists[getLeagueType(leagueTitle)][speciesId].rankChange === 0) ? "" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange < 0 ? "▾" + rankLists[getLeagueType(leagueTitle)][speciesId].rankChange * -1 : "▴" + rankLists[getLeagueType(leagueTitle)][speciesId].rankChange}`;
+    }
+
+    const rankChangeClassName = (speciesId: string, leagueTitle: string) => (!pvpFetchCompleted || !rankLists[getLeagueType(leagueTitle)][speciesId]) ? "" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange === 0 ? "neutral" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange < 0 ? "nerfed" : "buffed";
+
+
     const renderPanel = (leagueStat: LeagueStat) => {
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
@@ -78,27 +90,30 @@ const LeagueRanks = ({
         }
 
         return (
-            <ListEntry
-                mainIcon={{
-                    imageDescription: leagueStat.leagueTitle,
-                    image: <img height={28} width={28} src={logoSrc} alt={leagueStat.leagueTitle}/>,
-                    withBackground: false
-                }}
-                extraIcons={[
-                    {
-                        imageDescription: "Most relevant Pokémon",
-                        image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} specificWidth={28} specificHeight={28}/>,
-                        imageSideText: leagueStat.bestReachablePokemon.speciesShortName,
-                        withBackground: true
-                    }
-                ]}
-                backgroundColorClassName={leagueStat.leagueTitle}
-                onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
-                secondaryContent={[
-                    <React.Fragment key={leagueStat.leagueTitle}>{buildRankString(leagueStat.pokemonRankInLeague)}</React.Fragment>
-                ]}
-                slim
-            />
+                <ListEntry
+                    mainIcon={{
+                        imageDescription: leagueStat.leagueTitle,
+                        image: <img height={28} width={28} src={logoSrc} alt={leagueStat.leagueTitle}/>,
+                        withBackground: false
+                    }}
+                    extraIcons={[
+                        {
+                            imageDescription: "Most relevant Pokémon",
+                            image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} specificWidth={28} specificHeight={28}/>,
+                            imageSideText: leagueStat.bestReachablePokemon.speciesShortName,
+                            withBackground: true
+                        }
+                    ]}
+                    backgroundColorClassName={leagueStat.leagueTitle}
+                    onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
+                    secondaryContent={[
+                        <React.Fragment key={leagueStat.leagueTitle}>
+                            {buildRankString(leagueStat.pokemonRankInLeague)}
+                            <span className={`rank-change with-brightness ${rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
+                        </React.Fragment>
+                    ]}
+                    slim
+                />
         );
     }
 

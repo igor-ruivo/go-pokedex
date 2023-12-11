@@ -15,7 +15,7 @@
 }
 
 .nerfed {
-    color: rgb(192, 53, 53);
+    color: rgb(205, 30, 30);
 }
 
 .break-line {
@@ -23,7 +23,7 @@
 }
 
 @media (max-width: 355px) {
-    .break-line {
-        display: unset;
+    .pokemon-number {
+        padding: 3px;
     }
 }

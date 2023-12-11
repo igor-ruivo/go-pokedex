@@ -64,7 +64,7 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
 
     return (
         <div className="pokemon-number">
-            {listType === ListType.POKEDEX ? <span>#{dex}</span> : <><span>{fetchPokemonRank()}</span><br className="break-line"/><span className={`rank-change ${rankChangeClassName}`}>{computeRankChange()}</span></>}
+            {listType === ListType.POKEDEX ? <span>#{dex}</span> : <><span>{fetchPokemonRank()}</span><br className="break-line"/><span className={`rank-change with-brightness ${rankChangeClassName}`}>{computeRankChange()}</span></>}
         </div>
     );
 }

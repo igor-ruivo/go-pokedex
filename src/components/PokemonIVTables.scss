@@ -7,6 +7,9 @@
     border-color: var(--borderColor2);
     overscroll-behavior: none !important;
     margin-top: 12px;
+    th {
+        font-weight: 700;
+    }
 }
 
 .extra-ivs-options {

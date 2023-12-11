@@ -56,6 +56,22 @@ const LeaguePanels = ({
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-column ${leagueStat.leagueTitle}`;
 
+        let logoSrc = "";
+        switch (leagueStat.leagueTitle) {
+            case "great":
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/great.png`;
+                break;
+            case "ultra":
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/ultra.png`;
+                break;
+            case "master":
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master.png`;
+                break;
+            case "custom":
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/retro.png`;
+                break;
+        }
+
         return (
             <div className={pvpStatsClassName}>
                 <div>
@@ -113,6 +129,7 @@ const LeaguePanels = ({
                     </div>
                 </div>
                 <div className="centered-text">... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}</div>
+                <img className='background-absolute-img' width="100%" height="100%" src={logoSrc} alt={leagueStat.leagueTitle} />
             </div>
         );
     }

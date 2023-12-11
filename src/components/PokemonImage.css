@@ -28,6 +28,13 @@
     z-index: 2;
 }
 
+.background-absolute-img {
+    object-fit: contain;
+    position: absolute;
+    z-index: 0 !important;
+    opacity: 25%;
+}
+
 .xl-overlay {
     opacity: 1;
     position: absolute;

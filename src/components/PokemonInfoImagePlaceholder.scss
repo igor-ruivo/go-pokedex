@@ -117,13 +117,13 @@
 
 .cp-level {
     margin-top: 16px;
-    align-items: center;
+    align-items: flex-end;
     display: flex;
     gap: 5px;
 }
 
 .big {
-    font-size: clamp(15px, 7vw, 18px);
+    font-size: 15px;
     font-weight: 700;
 }
 

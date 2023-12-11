@@ -15,6 +15,7 @@ code {
 }
 
 .theme-dark {
+    --extra-brightness: brightness(1.4);
     --scroll-background: #55585b;
     --bodyBackgroundColor: #202023;
     --gridItemsBackgroundColor: rgb(36, 41, 47);
@@ -67,6 +68,7 @@ code {
 }
 
 .theme-light {
+    --extra-brightness: none;
     --scroll-background: #e1e1e9;
     --bodyBackgroundColor: #f0f0e5;
     --gridItemsBackgroundColor: rgb(240, 240, 240);

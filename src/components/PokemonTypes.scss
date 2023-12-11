@@ -5,3 +5,9 @@
     width: clamp(18px, 3vw, 24px);
     height: clamp(18px, 3vw, 24px);
 }
+
+@media (max-width: 500px) {
+    .pokemon-types {
+        gap: 0px;
+    }
+}
