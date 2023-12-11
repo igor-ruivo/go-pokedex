@@ -86,12 +86,12 @@ const LeaguePanels = ({
                         <header>
                             {translator(TranslatorKeys.Config, currentLanguage)}:
                         </header>
-                        <div className="pvp-entry smooth">
+                        <div className="pvp-entry smooth with-shadow">
                             <div className="pvp-entry-content">
                                 {translator(TranslatorKeys.Current, currentLanguage)}:
                             </div>
                         </div>
-                        <div className="pvp-entry smooth">
+                        <div className="pvp-entry smooth with-shadow">
                             <div className="pvp-entry-content">
                                 {translator(TranslatorKeys.Best, currentLanguage)}:
                             </div>

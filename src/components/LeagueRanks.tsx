@@ -109,7 +109,7 @@ const LeagueRanks = ({
                     secondaryContent={[
                         <React.Fragment key={leagueStat.leagueTitle}>
                             {buildRankString(leagueStat.pokemonRankInLeague)}
-                            <span className={`rank-change with-brightness ${rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
+                            <span className={`larger-rank-change with-brightness ${rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
                         </React.Fragment>
                     ]}
                     slim

@@ -1,8 +1,9 @@
 * {
     box-sizing: border-box;
+    overscroll-behavior: none !important;
     @media (min-width: 501px) {
         &::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         &::-webkit-scrollbar-thumb {
             background-color: var(--scroll-background); /* Color of the thumb (the draggable part) */

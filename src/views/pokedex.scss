@@ -65,6 +65,7 @@
 }
 
 .pokedex {
+    overscroll-behavior: unset !important;
     overflow-x: hidden;
     overflow-y: scroll;
     max-height: calc(100vh - 148px);
