@@ -25,13 +25,13 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
             const familyIvPercents: Dictionary<IIvPercents> = {};
             
             let reachablePokemons = new Set<IGamemasterPokemon>();
-            if (!justForSelf && fetchCompleted) {
+            if (!justForSelf && fetchCompleted && pokemon) {
                 reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
             } else {
                 reachablePokemons.add(pokemon);
             }
 
-            reachablePokemons.forEach(p => {
+            Array.from(reachablePokemons).filter(p => p).forEach(p => {
                 const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
                 const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500, levelCap);
                 const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE, levelCap);

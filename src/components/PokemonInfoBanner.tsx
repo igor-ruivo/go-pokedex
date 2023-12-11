@@ -21,8 +21,6 @@ import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
     ivPercents: Dictionary<IIvPercents>;
-    levelCap: number;
-    setLevelCap: React.Dispatch<React.SetStateAction<number>>;
     attack: number;
     setAttack: (_: React.SetStateAction<number>) => void;
     defense: number;
@@ -72,11 +70,9 @@ export interface IIvPercents {
     customLeaguePerfectCP: number
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague}: IPokemonInfoBanner) => {
-    const [displayLevel, setDisplayLevel] = useState(levelCap);
+const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague}: IPokemonInfoBanner) => {
     const {currentLanguage} = useLanguage();
     const {gameTranslation, gameTranslationFetchCompleted} = useGameTranslation();
-    const selectedImageRef = React.createRef<HTMLImageElement>();
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists} = usePvp();
@@ -152,16 +148,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, levelCap, setLevelCap, attack, 
 
     return <div className="banner_layout">
         <div className="pokemon_with_ivs">
-            <PokemonInfoImagePlaceholder
-                pokemon={pokemon}
-                computedCP={ivPercents[pokemon.speciesId].masterLeagueCP}
-                computedAtk={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
-                computedDef={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
-                computedHP={ivPercents[pokemon.speciesId].masterLeagueHP}
-                displayLevel={displayLevel}
-                setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
-                imageRef={selectedImageRef}
-            />
             <div className="item aligned">
                 <LeagueRanks
                     greatLeagueStats={

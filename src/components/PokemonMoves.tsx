@@ -237,9 +237,9 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <h3 className="moves-title recommended-title">
                         {`${translator(TranslatorKeys.RecommendedMoves, currentLanguage)} (${leagueName})`}
                     </h3>
-                    <ul className="moves-list no-padding sparse-list">
+                    <ul className="moves-list extra-padding sparse-list">
                         {rankLists[league as number][pokemon.speciesId] ? 
-                            <div className="moves-list no-padding sparse-list">
+                            <div className="moves-list extra-padding sparse-list">
                                 <div className="with-bottom-border">
                                     {renderMove(relevantMoveSet[0], fastMoveTypeTranslatorKey, fastMoveUrl, fastMoveClassName, false, true)}
                                 </div>

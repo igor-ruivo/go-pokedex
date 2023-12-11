@@ -15,7 +15,6 @@ interface IPokemonInfoImagePlaceholderProps {
     computedHP: number;
     displayLevel: number;
     setDisplayLevel: (newLevel: number) => void;
-    imageRef?: React.RefObject<HTMLImageElement>
 }
 
 const valueToLevel = (value: number) => {
@@ -30,10 +29,9 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
         return translator(translatorKey as any, currentLanguage)
     }
 
-    return <div>
+    return <div className="with-margin-bottom">
         <div className="pokemon_main_info item">
             <PokemonImage
-                ref={props.imageRef}
                 pokemon={props.pokemon}
                 withName={false}
             />

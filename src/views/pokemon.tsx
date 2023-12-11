@@ -14,9 +14,28 @@ import PokemonHeader from '../components/PokemonHeader';
 import useLeague from '../hooks/useLeague';
 import PokemonFamily from '../components/PokemonFamily';
 import { fetchPokemonFamily } from '../utils/pokemon-helper';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import PokemonCounters from '../components/PokemonCounters';
+import PokemonInfoImagePlaceholder from '../components/PokemonInfoImagePlaceholder';
+import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from '../utils/persistent-configs-handler';
+import useComputeIVs from '../hooks/useComputeIVs';
+
+const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
+    const cachedValue = readPersistentValue(key);
+    if (!cachedValue) {
+        return defaultValue;
+    }
+    return +cachedValue;
+}
+
+const parseSessionCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
+    const cachedValue = readSessionValue(key);
+    if (!cachedValue) {
+        return defaultValue;
+    }
+    return +cachedValue;
+}
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
@@ -25,7 +44,25 @@ const Pokemon = () => {
     const { pathname } = useLocation();
     const {league, handleSetLeague} = useLeague();
 
+    const [attackIV, setAttackIV] = useState(parseSessionCachedNumberValue(ConfigKeys.AttackIV, 0));
+    const [defenseIV, setDefenseIV] = useState(parseSessionCachedNumberValue(ConfigKeys.DefenseIV, 0));
+    const [hpIV, setHPIV] = useState(parseSessionCachedNumberValue(ConfigKeys.HPIV, 0));
+    
+    const [levelCap, setLevelCap] = useState<number>(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
+
+    useEffect(() => {
+        writeSessionValue(ConfigKeys.AttackIV, attackIV.toString());
+        writeSessionValue(ConfigKeys.DefenseIV, defenseIV.toString());
+        writeSessionValue(ConfigKeys.HPIV, hpIV.toString());
+        writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
+    }, [attackIV, defenseIV, hpIV, levelCap]);
+
+    const [displayLevel, setDisplayLevel] = useState(levelCap);
+
     const pokemon = fetchCompleted && !gamemasterPokemon[speciesId ?? ""]?.aliasId ? gamemasterPokemon[speciesId ?? ""] : undefined;
+    
+    const [ivPercents, loading] = useComputeIVs({pokemon: pokemon as IGamemasterPokemon, levelCap, attackIV, defenseIV, hpIV});
+
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
 
@@ -64,7 +101,7 @@ const Pokemon = () => {
             </nav>
             <div className="pokemon">
                 <div className="pokemon-content">
-                    <LoadingRenderer errors={errors} completed={fetchCompleted}>
+                    <LoadingRenderer errors={errors} completed={fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId)}>
                         {
                             !pokemon ?
                                 <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div> :        
@@ -85,8 +122,30 @@ const Pokemon = () => {
                                             similarPokemon={computedPokemonFamily}
                                             getClickDestination={(speciesId: string) => `/pokemon/${speciesId}/${tab.substring(tab.lastIndexOf("/") + 1)}`}
                                         />}
+
+                                        {fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId) && <PokemonInfoImagePlaceholder
+                                            pokemon={pokemon}
+                                            computedCP={ivPercents[pokemon.speciesId].masterLeagueCP}
+                                            computedAtk={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
+                                            computedDef={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
+                                            computedHP={ivPercents[pokemon.speciesId].masterLeagueHP}
+                                            displayLevel={displayLevel}
+                                            setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
+                                        />}
                                         
-                                        {tab.endsWith("/info") && <PokemonInfo pokemon={pokemon} league={league} handleSetLeague={handleSetLeague}/>}
+                                        {tab.endsWith("/info") && <PokemonInfo
+                                            pokemon={pokemon}
+                                            league={league}
+                                            handleSetLeague={handleSetLeague}
+                                            loading={loading}
+                                            ivPercents={ivPercents}
+                                            attackIV={attackIV}
+                                            setAttackIV={setAttackIV}
+                                            defenseIV={defenseIV}
+                                            setDefenseIV={setDefenseIV}
+                                            hpIV={hpIV}
+                                            setHPIV={setHPIV}
+                                        />}
                                         {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/counters") && <PokemonCounters pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}

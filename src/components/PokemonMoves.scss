@@ -85,14 +85,12 @@ details[open] {
 .moves-display-layout {
     display: flex;
     flex-direction: column;
-    margin-top: 8px;
     gap: 9px;
 }
 
 .counters-display-layout {
     display: flex;
     flex-direction: column;
-    margin-top: 8px;
     gap: 9px;
 }
 
@@ -143,6 +141,10 @@ details[open] {
 
 .normal-padding {
     padding: 0px 12px;
+}
+
+.extra-padding {
+    padding: 0px 48px;
 }
 
 .extra-padding-right {
@@ -326,17 +328,12 @@ summary::-webkit-details-marker {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 9px;
-        margin-top: 32px;
     }
 
     .counters-display-layout {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 9px;
-    }
-    
-    .recommended-moves-content {
-        width: 70%;
     }
 
     .fast-moves-section,
@@ -346,6 +343,10 @@ summary::-webkit-details-marker {
 }
 
 @media (max-width: 750px) {
+    .extra-padding {
+        padding: 0;
+    }
+
     .hidden-in-big-screens {
         display: unset;
     }
