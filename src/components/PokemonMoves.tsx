@@ -88,9 +88,9 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const chargedMove1TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[1]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[1]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove2TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[2]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[2]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     
-    const fastMoveUrl = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[0]]?.type}.webp`;
-    const chargedMove1Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[1]]?.type}.webp`;
-    const chargedMove2Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[2]]?.type}.webp`;
+    const fastMoveUrl = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[0]]?.type}.png`;
+    const chargedMove1Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[1]]?.type}.png`;
+    const chargedMove2Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[2]]?.type}.png`;
 
     const leagueName = gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.RetroCup, currentGameLanguage);
 
@@ -194,7 +194,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             mainIcon={
                 {
                     imageDescription: translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage),
-                    image: <img height={36} width={36} src={moveUrl} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}/>,
+                    image: <div className="img-padding"><img height={28} width={28} src={moveUrl} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}/></div>,
                     imageSideText: translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : ""),
                     withBackground: true
                 }
@@ -262,7 +262,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             .map(m => {
                                 const className = `background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                                const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
+                                const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
                                 return (
                                     <React.Fragment key={m}>
                                         {renderMove(m, typeTranslatorKey, url, className, false, false)}
@@ -288,7 +288,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             .map(m => {
                                 const className = `background-${moves[m].type}`;
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                                const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.webp`;
+                                const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
                                 return (
                                     <React.Fragment key={m}>
                                         {renderMove(m, typeTranslatorKey, url, className, true, false)}

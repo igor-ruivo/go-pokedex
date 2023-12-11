@@ -2,8 +2,8 @@
     display: flex;
     justify-content: flex-end;
     gap: 4px;
-    width: clamp(18px, 3vw, 24px);
-    height: clamp(18px, 3vw, 24px);
+    width: clamp(16px, 3vw, 22px);
+    height: clamp(16px, 3vw, 22px);
 }
 
 @media (max-width: 500px) {
