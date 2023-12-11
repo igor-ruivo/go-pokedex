@@ -76,8 +76,8 @@ const LeaguePanels = ({
             <div className={pvpStatsClassName}>
                 <div>
                     <div className="pvp-entry rank-title">
-                        <div className="pvp-entry-content">
-                            {translator(TranslatorKeys.Perfection, currentLanguage)}: {leagueStat.pokemonLeaguePercentage}% <sub>(#{leagueStat.pokemonLeaguePercentile})</sub>
+                        <div className="pvp-entry-content potential">
+                            <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> <strong className="cp-container with-brightness">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub>
                         </div>
                     </div>
                 </div>
@@ -88,12 +88,12 @@ const LeaguePanels = ({
                         </header>
                         <div className="pvp-entry smooth">
                             <div className="pvp-entry-content">
-                                {translator(TranslatorKeys.Current, currentLanguage)}
+                                {translator(TranslatorKeys.Current, currentLanguage)}:
                             </div>
                         </div>
                         <div className="pvp-entry smooth">
                             <div className="pvp-entry-content">
-                                {translator(TranslatorKeys.Best, currentLanguage)}
+                                {translator(TranslatorKeys.Best, currentLanguage)}:
                             </div>
                         </div>
                     </div>
@@ -117,13 +117,13 @@ const LeaguePanels = ({
                             {translator(TranslatorKeys.Peaks, currentLanguage)}:
                         </header>
                         <div className="pvp-entry">
-                            <div className="pvp-entry-content">
-                                {leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}
+                            <div className="pvp-entry-content potential">
+                            <strong className="cp-container with-brightness">{leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}</div>
                             </div>
                         </div>
                         <div className="pvp-entry">
-                            <div className="pvp-entry-content">
-                                {leagueStat.bestCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()} @ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}
+                            <div className="pvp-entry-content potential">
+                                <strong className="cp-container with-brightness">{leagueStat.bestCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}</div>
                             </div>
                         </div>
                     </div>

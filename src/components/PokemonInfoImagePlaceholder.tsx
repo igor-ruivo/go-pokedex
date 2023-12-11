@@ -51,7 +51,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     </span>}
                 </span>
                 <span className="cp-level big">
-                    <strong className="cp-container very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> @
+                    <strong className="cp-container with-brightness very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> @
                     <div className="weighted-font">{translator(TranslatorKeys.LVL, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level big">
                         {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                         .map(e => (<option key={e} value={e}>{e}</option>))}

@@ -128,6 +128,12 @@
     vertical-align: bottom;
 }
 
+.contained-big {
+    font-size: 12px;
+    font-weight: 700;
+    vertical-align: bottom;
+}
+
 .very-big {
     font-weight: 700;
     font-size: clamp(15px, 7vw, 30px);
@@ -161,5 +167,9 @@
 
     .very-big {
         font-size: clamp(14px, 4.5vw, 20px);
+    }
+    
+    .contained-big {
+        font-size: 11px;
     }
 }

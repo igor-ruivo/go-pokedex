@@ -32,7 +32,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
                     <PokemonImage pokemon={pokemon} xl={showXL} withName/>
                 </span>
                 <span className="header-footer">
-                    <strong className="cp-container">
+                    <strong className="cp-container with-brightness">
                         {calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100)} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
                     </strong>
                 </span>
