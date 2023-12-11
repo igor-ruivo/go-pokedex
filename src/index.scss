@@ -7,6 +7,9 @@ body {
         sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    &:has(.pokedex) {
+        overflow: hidden;
+    }
 }
 
 code {
@@ -15,6 +18,7 @@ code {
 }
 
 .theme-dark {
+    --text-shadow: -1px 0 #00000040, 0 1px #00000040, 1px 0 #00000040, 0 -1px #00000040;
     --extra-brightness: brightness(1.4);
     --scroll-background: #55585b;
     --bodyBackgroundColor: #202023;
@@ -68,6 +72,7 @@ code {
 }
 
 .theme-light {
+    --text-shadow: none;
     --extra-brightness: none;
     --scroll-background: #b3b3b3;
     --bodyBackgroundColor: #f0f0e5;
