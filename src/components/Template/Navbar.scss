@@ -187,7 +187,7 @@ button {
     .navbar-menu {
         display: flex;
         order: 3;
-        height: 48px;
+        height: 40px;
         span {
             display: none;
         }
@@ -197,11 +197,6 @@ button {
         gap: 16px;
         max-width: 100%;
         grid-template-columns: 32px 1fr 45px;
-    }
-
-    .navbar-logo {
-        width: 32px;
-        height: 32px;
     }
 
     .search-wrapper {

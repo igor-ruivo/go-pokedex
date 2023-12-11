@@ -76,18 +76,19 @@ table {
 }
 
 .img-family {
+    white-space: nowrap;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: scroll;
     background-color: var(--popup-background-color);
-    padding-top: 6px;
-    padding-bottom: 6px;
-    justify-content: center;
+    padding: 6px;
     border-radius: 12px;
     border: 1px solid var(--borderColor2);
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     align-items: center;
     width: 100%;
-    gap: 9px;
+    gap: 5px;
     a {   
         color: inherit;
         text-decoration: none;
@@ -201,6 +202,13 @@ table {
     margin-top: 15px;
 }
 
+@media (min-width: 615px) {
+    .img-family {
+        overflow: hidden;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 700px) {
     .pokemon_with_ivs {
         grid-template-columns: 1fr;
@@ -237,5 +245,11 @@ table {
     .base-stats {
         margin-top: 26px;
         font-size: x-small;
+    }
+}
+
+@media (max-width: 360px) {
+    .img-family {
+        font-size: 12px;
     }
 }

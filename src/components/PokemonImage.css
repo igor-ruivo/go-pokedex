@@ -12,8 +12,8 @@
     right: 10%;
     width: 18%;
     height: 18%;
-    min-height: 10px;
-    min-width: 10px;
+    min-height: 14px;
+    min-width: 14px;
 }
 
 .shadow-overlay {
@@ -23,8 +23,8 @@
     left: 10%;
     width: 20%;
     height: 20%;
-    min-height: 10px;
-    min-width: 10px;
+    min-height: 13px;
+    min-width: 13px;
     z-index: 2;
 }
 

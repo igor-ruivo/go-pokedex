@@ -277,7 +277,7 @@ const bug = new Map<Language, string>([
 
 const unranked = new Map<Language, string>([
     [Language.English, "Unranked"],
-    [Language.Portuguese, "Não classificado"],
+    [Language.Portuguese, "Sem rank"],
     [Language.Bosnian, "Bez ranga"]
 ]);
 

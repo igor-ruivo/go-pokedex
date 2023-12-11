@@ -1,7 +1,7 @@
 * {
     box-sizing: border-box;
     overscroll-behavior: none !important;
-    @media (min-width: 501px) {
+    @media (min-width: 615px) {
         &::-webkit-scrollbar {
             width: 6px;
         }

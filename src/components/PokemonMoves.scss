@@ -314,3 +314,9 @@ summary::-webkit-details-marker {
         width: 70%;
     }
 }
+
+@media (max-width: 360px) {
+    .move-card-content {
+        font-size: 12px;
+    }
+}

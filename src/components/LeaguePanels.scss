@@ -223,3 +223,9 @@
         height: 24px;
     }
 }
+
+@media (max-width: 360px) {
+    .pvp-stats-column {
+        font-size: 12px;
+    }
+}

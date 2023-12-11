@@ -171,4 +171,10 @@
         margin-left: 10px;
         margin-bottom: 10px;
     }
+}   
+
+@media (max-width: 360px) {
+    .appraisal .stat {
+        font-size: 12px;
+    }
 }
