@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { computeBestIVs } from "../utils/pokemon-helper";
 import "./PokemonIVTables.scss"
