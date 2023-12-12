@@ -52,14 +52,15 @@ details {
 
 details[open] {
     padding: 3px 9px;
+    border: 1px solid var(--borderColor2);
 }
 
 .buff-panel {
-    margin-top: 1px;
+    margin-top: -4px;
     padding: 0px 9px;
     border-radius: 12px;
     background-color: var(--buffBackground);
-    border: 1px solid var(--borderColor2);
+    border: var(--buff-panel-border);
     max-width: -moz-fit-content;
     height: fit-content;
     max-width: fit-content;
