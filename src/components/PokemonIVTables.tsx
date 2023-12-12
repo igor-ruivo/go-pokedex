@@ -16,6 +16,12 @@ interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
     league: LeagueType;
     levelCap: number;
+    attackIV: number;
+    setAttackIV: React.Dispatch<React.SetStateAction<number>>;
+    defenseIV: number;
+    setDefenseIV: React.Dispatch<React.SetStateAction<number>>;
+    hpIV: number;
+    setHPIV: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface Data {
@@ -87,15 +93,8 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return stabilizedThis.map((el) => el[0]);
 }
 
-const PokemonIVTables = ({pokemon, league, levelCap}: IPokemonIVTables) => {
+const PokemonIVTables = ({pokemon, league, levelCap, attackIV, setAttackIV, defenseIV, setDefenseIV, hpIV, setHPIV}: IPokemonIVTables) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
-    
-    const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
-    const [defSearch, setDefSearch] = useState<number|undefined>(undefined);
-    const [hpSearch, setHpSearch] = useState<number|undefined>(undefined);
-
-    const ivSearchIsSet = atkSearch !== undefined && defSearch !== undefined && hpSearch !== undefined;
-
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('top');
 
@@ -209,7 +208,7 @@ const PokemonIVTables = ({pokemon, league, levelCap}: IPokemonIVTables) => {
             <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
         ),
         TableHead,
-        TableRow: ({ item: _item, ...props }) => <TableRow hover selected={ivSearchIsSet && props["data-index"] === 0} {...props} />,
+        TableRow: ({ item: _item, ...props }) => <TableRow hover selected={props["data-index"] === 0} {...props} />,
         TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
             <TableBody {...props} ref={ref} />
         )),
@@ -269,18 +268,15 @@ const PokemonIVTables = ({pokemon, league, levelCap}: IPokemonIVTables) => {
         <div className="banner_layout">
             <div className="extra-ivs-options item default-padding">
                 {translator(TranslatorKeys.SearchIVs, currentLanguage)}:
-                <select value={atkSearch ?? ""} onChange={e => setAtkSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
-                    <option key={"unset"} value={undefined}>-</option>
+                <select value={attackIV} onChange={e => setAttackIV(+e.target.value)} className="select-level">
                     {Array.from({length: 16}, (_x, i) => i)
                         .map(e => (<option key={e} value={e}>{e}</option>))}
                 </select>
-                <select value={defSearch ?? ""} onChange={e => setDefSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
-                    <option key={"unset"} value={undefined}>-</option>
+                <select value={defenseIV} onChange={e => setDefenseIV(+e.target.value)} className="select-level">
                     {Array.from({length: 16}, (_x, i) => i)
                         .map(e => (<option key={e} value={e}>{e}</option>))}
                 </select>
-                <select value={hpSearch ?? ""} onChange={e => setHpSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
-                    <option key={"unset"} value={undefined}>-</option>
+                <select value={hpIV} onChange={e => setHPIV(+e.target.value)} className="select-level">
                     {Array.from({length: 16}, (_x, i) => i)
                         .map(e => (<option key={e} value={e}>{e}</option>))}
                 </select>
@@ -288,10 +284,10 @@ const PokemonIVTables = ({pokemon, league, levelCap}: IPokemonIVTables) => {
             <TableVirtuoso
                 className="ivs-table item"
                 data={visibleRows.sort((d1: Data, d2: Data) => {
-                    if (ivSearchIsSet && d1.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}`) {
+                    if (d1.ivs === `${attackIV} / ${defenseIV} / ${hpIV}` && d2.ivs !== `${attackIV} / ${defenseIV} / ${hpIV}`) {
                         return -1;
                     }
-                    if (ivSearchIsSet && d1.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}`) {
+                    if (d1.ivs !== `${attackIV} / ${defenseIV} / ${hpIV}` && d2.ivs === `${attackIV} / ${defenseIV} / ${hpIV}`) {
                         return 1;
                     }
                     return 0;

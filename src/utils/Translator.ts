@@ -304,8 +304,8 @@ const def = new Map<Language, string>([
 
 const searchIVs = new Map<Language, string>([
     [Language.English, "Search IVs"],
-    [Language.Portuguese, "Pesquisar"],
-    [Language.Bosnian, "Pretraži"]
+    [Language.Portuguese, "Pesquisar IVs"],
+    [Language.Bosnian, "Pretraži IVs"]
 ]);
 
 const maxLvl = new Map<Language, string>([
