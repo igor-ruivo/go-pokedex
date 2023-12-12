@@ -64,7 +64,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             ]}
             slim={false}
             onClick={() => navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`)}
-            specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 80%, var(--type-${type2 ??  type1}) 80%)`}
+            specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 72%, var(--type-${type2 ??  type1}) 72%)`}
         />
     }
 
