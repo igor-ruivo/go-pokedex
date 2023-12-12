@@ -267,7 +267,7 @@ const PokemonIVTables = ({pokemon, league, levelCap}: IPokemonIVTables) => {
 
     return (
         <div className="banner_layout">
-            <div className="extra-ivs-options">
+            <div className="extra-ivs-options item default-padding">
                 {translator(TranslatorKeys.SearchIVs, currentLanguage)}:
                 <select value={atkSearch ?? ""} onChange={e => setAtkSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
                     <option key={"unset"} value={undefined}>-</option>
@@ -286,7 +286,7 @@ const PokemonIVTables = ({pokemon, league, levelCap}: IPokemonIVTables) => {
                 </select>
             </div>
             <TableVirtuoso
-                className="ivs-table"
+                className="ivs-table item"
                 data={visibleRows.sort((d1: Data, d2: Data) => {
                     if (ivSearchIsSet && d1.ivs === `${atkSearch} / ${defSearch} / ${hpSearch}` && d2.ivs !== `${atkSearch} / ${defSearch} / ${hpSearch}`) {
                         return -1;
