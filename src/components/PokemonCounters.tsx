@@ -59,7 +59,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             backgroundColorClassName={className}
             secondaryContent={[
                 <React.Fragment key={pokemon.speciesId}>
-                    {score / 10}%
+                    {score >= 500 ? <span className="win with-shadow with-brightness">{score / 10}%</span> : <span className="lose with-shadow with-brightness">{score / 10}%</span>}
                 </React.Fragment>
             ]}
             slim={false}

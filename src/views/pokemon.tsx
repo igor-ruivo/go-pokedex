@@ -148,8 +148,8 @@ const Pokemon = () => {
                                         />}
                                         {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/counters") && <PokemonCounters pokemon={pokemon} league={league}/>}
-                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league}/>}
-                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}
+                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league} levelCap={levelCap} />}
+                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league} levelCap={levelCap} />}
                                     </div>
                                 </div>
                         }

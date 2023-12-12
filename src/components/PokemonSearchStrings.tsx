@@ -12,6 +12,7 @@ import { LeagueType } from "../hooks/useLeague";
 interface IPokemonSearchStringsProps {
     pokemon: IGamemasterPokemon;
     league: LeagueType;
+    levelCap: number;
 }
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
@@ -30,8 +31,7 @@ const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolea
     return cachedValue === "true";
 }
 
-const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => {
-    const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
+const PokemonSearchStrings = ({pokemon, league, levelCap}: IPokemonSearchStringsProps) => {
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10));
     const [trash, setTrash] = useState(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
@@ -41,10 +41,6 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
     const predecessorPokemonArray = Array.from(predecessorPokemon);
 
     const {currentLanguage, currentGameLanguage} = useLanguage();
-
-    useEffect(() => {
-        writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
-    }, [levelCap]);
 
     useEffect(() => {
         writePersistentValue(ConfigKeys.TopPokemonInSearchString, top.toString());
@@ -93,10 +89,6 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
 
     if (!fetchCompleted || !gamemasterPokemon) {
         return <></>;
-    }
-
-    const valueToLevel = (value: number) => {
-        return value / 2 + 0.5;
     }
 
     const getRanges = (array: any[]) => {
@@ -299,11 +291,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
     return (
         <div className="banner_layout">
             <div className="extra-ivs-options">
-                <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
-                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                        .map(e => (<option key={e} value={e}>{translator(TranslatorKeys.MaxLvl, currentLanguage)} {e}</option>))}
-                </select>
-                &nbsp;&nbsp;&nbsp;Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
+                Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
                     {Array.from({length: 4096}, (_x, i) => i + 1)
                         .map(e => (<option key={e} value={e}>{e}</option>))}
                 </select>

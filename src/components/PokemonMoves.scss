@@ -323,6 +323,14 @@ summary::-webkit-details-marker {
     display: none;
 }
 
+.win {
+    color: #5480db;
+}
+
+.lose {
+    color: #c1002d;
+}
+
 @media (min-width: 750px) {
     .moves-display-layout {
         display: grid;

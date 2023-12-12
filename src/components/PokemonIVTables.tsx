@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { computeBestIVs } from "../utils/pokemon-helper";
 import "./PokemonIVTables.scss"
@@ -7,7 +7,6 @@ import { TableComponents, TableVirtuoso } from "react-virtuoso";
 import React from "react";
 import { visuallyHidden } from '@mui/utils';
 import { usePokemon } from "../contexts/pokemon-context";
-import { ConfigKeys, readPersistentValue, writePersistentValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
@@ -16,6 +15,7 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
     league: LeagueType;
+    levelCap: number;
 }
 
 interface Data {
@@ -35,14 +35,6 @@ interface ColumnData {
     label: string;
     sortable: boolean;
     width: number;
-}
-
-const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
-    const cachedValue = readPersistentValue(key);
-    if (!cachedValue) {
-        return defaultValue;
-    }
-    return +cachedValue;
 }
 
 const createData = (
@@ -95,9 +87,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return stabilizedThis.map((el) => el[0]);
 }
 
-const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
-    const [levelCap, setLevelCap] = useState(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 40));
-
+const PokemonIVTables = ({pokemon, league, levelCap}: IPokemonIVTables) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
     
     const [atkSearch, setAtkSearch] = useState<number|undefined>(undefined);
@@ -110,14 +100,6 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
     const [orderBy, setOrderBy] = React.useState<keyof Data>('top');
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-
-    useEffect(() => {
-        writePersistentValue(ConfigKeys.LevelCap, levelCap.toString());
-    }, [levelCap]);
-
-    useEffect(() => {
-        writeSessionValue(ConfigKeys.LastLeague, JSON.stringify(league));
-    }, [league]);
 
     const columns: ColumnData[] = [
         {
@@ -283,18 +265,10 @@ const PokemonIVTables = ({pokemon, league}: IPokemonIVTables) => {
         );
     }
 
-    const valueToLevel = (value: number) => {
-        return value / 2 + 0.5
-    }
-
     return (
         <div className="banner_layout">
             <div className="extra-ivs-options">
-                <select value={levelCap} onChange={e => setLevelCap(+e.target.value)} className="select-level">
-                    {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                        .map(e => (<option key={e} value={e}>{translator(TranslatorKeys.MaxLvl, currentLanguage)} {e}</option>))}
-                </select>
-                &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.SearchIVs, currentLanguage)}:
+                {translator(TranslatorKeys.SearchIVs, currentLanguage)}:
                 <select value={atkSearch ?? ""} onChange={e => setAtkSearch(e.target.value === "-" ? undefined : +e.target.value)} className="select-level">
                     <option key={"unset"} value={undefined}>-</option>
                     {Array.from({length: 16}, (_x, i) => i)
