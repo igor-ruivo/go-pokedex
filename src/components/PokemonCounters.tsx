@@ -9,7 +9,7 @@ import { usePvp } from "../contexts/pvp-context";
 import React from "react";
 import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface IPokemonCounters {
     pokemon: IGamemasterPokemon;
@@ -22,8 +22,6 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const {rankLists, pvpFetchCompleted} = usePvp();
     const { pathname } = useLocation();
     const navigate = useNavigate();
-
-    const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
 
     if (!fetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
@@ -51,7 +49,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             mainIcon={
                 {
                     imageDescription: pokemon.speciesName,
-                    image: <div className="img-padding"><PokemonImage pokemon={pokemon} specificHeight={28} specificWidth={28} withName={false}/></div>,
+                    image: <div className="img-small-padding"><PokemonImage pokemon={pokemon} specificHeight={32} specificWidth={32} withName={false}/></div>,
                     imageSideText: pokemon.speciesShortName,
                     withBackground: true
                 }
