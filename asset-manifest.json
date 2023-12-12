@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/go-pokedex/static/css/main.be0b71c8.css",
+    "main.css": "/go-pokedex/static/css/main.fabed131.css",
     "main.js": "/go-pokedex/static/js/main.3369983f.js",
     "static/js/787.4f3012c6.chunk.js": "/go-pokedex/static/js/787.4f3012c6.chunk.js",
     "index.html": "/go-pokedex/index.html",
-    "main.be0b71c8.css.map": "/go-pokedex/static/css/main.be0b71c8.css.map",
+    "main.fabed131.css.map": "/go-pokedex/static/css/main.fabed131.css.map",
     "main.3369983f.js.map": "/go-pokedex/static/js/main.3369983f.js.map",
     "787.4f3012c6.chunk.js.map": "/go-pokedex/static/js/787.4f3012c6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.be0b71c8.css",
+    "static/css/main.fabed131.css",
     "static/js/main.3369983f.js"
   ]
 }
