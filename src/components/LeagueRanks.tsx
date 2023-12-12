@@ -28,6 +28,7 @@ const LeagueRanks = ({
     ultraLeagueStats,
     masterLeagueStats,
     customLeagueStats,
+    league,
     handleSetLeague
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
@@ -89,7 +90,21 @@ const LeagueRanks = ({
                 break;
         }
 
+        const leagueToLeagueName = (league: LeagueType) => {
+            switch (league) {
+                case LeagueType.GREAT_LEAGUE:
+                    return "great";
+                case LeagueType.ULTRA_LEAGUE:
+                    return "ultra";
+                case LeagueType.MASTER_LEAGUE:
+                    return "master";
+                case LeagueType.CUSTOM_CUP:
+                    return "custom";
+            }
+        }
+
         return (
+            <div className={leagueToLeagueName(league) !== leagueStat.leagueTitle ? "not-selected" : ""}>
                 <ListEntry
                     mainIcon={{
                         imageDescription: leagueStat.leagueTitle,
@@ -114,6 +129,7 @@ const LeagueRanks = ({
                     ]}
                     slim
                 />
+            </div>
         );
     }
 

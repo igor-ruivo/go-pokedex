@@ -8,6 +8,7 @@ import { ListType } from "../views/pokedex";
 import { calculateCP } from "../utils/pokemon-helper";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import { usePvp } from "../contexts/pvp-context";
 
 interface IPokemonCardProps {
     pokemon: IGamemasterPokemon,
@@ -16,6 +17,8 @@ interface IPokemonCardProps {
 
 const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
     const {currentGameLanguage} = useLanguage();
+    const {rankLists} = usePvp();
+
     const link = `/pokemon/${pokemon.speciesId}/info`;
     var cp = Math.floor(((pokemon.atk + 15) * Math.pow(pokemon.def + 15, 0.5) * Math.pow(pokemon.hp + 15, 0.5) * Math.pow(0.795300006866455, 2) ) / 10);
 
@@ -33,7 +36,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container with-brightness">
-                        {calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100)} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
+                        {listType === ListType.POKEDEX ? calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100) : rankLists[listType - 1][pokemon.speciesId].score}{listType !== ListType.POKEDEX && "%"} {listType === ListType.POKEDEX && gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
                     </strong>
                 </span>
             </div>

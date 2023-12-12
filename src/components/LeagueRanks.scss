@@ -45,6 +45,10 @@
     }
 }
 
+.not-selected {
+    filter: brightness(0.6);
+}
+
 .pvp-title-item {
     place-self: center;
     width: 30px;
