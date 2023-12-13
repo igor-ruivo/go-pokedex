@@ -126,7 +126,8 @@ const Navbar = () => {
     type Entry<T> = {
         label: string,
         value: T,
-        hint: string
+        hint: string,
+        invertOnDarkMode?: boolean
     }
 
     const languageOptions: Entry<Language>[] = [
@@ -176,18 +177,19 @@ const Navbar = () => {
 
     const sourceOptions: Entry<ImageSource>[] = [
         {
-            hint: themeToHint(systemDefaultTheme),
+            hint: "https://i.imgur.com/nPnjxcq.png",
             label: translator(TranslatorKeys.Official, currentLanguage),
             value: ImageSource.Official
         },
         {
-            hint: themeToHint(ThemeValues.Light),
+            hint: "https://i.imgur.com/72hP089.png",
             label: "Pokémon GO",
             value: ImageSource.GO
         },
         {
-            hint: themeToHint(ThemeValues.Dark),
-            label: `Pokémon GO (${gameTranslator(GameTranslatorKeys.Shiny, currentGameLanguage)})`,
+            hint: `${process.env.PUBLIC_URL}/vectors/shiny.svg`,
+            invertOnDarkMode: true,
+            label: gameTranslator(GameTranslatorKeys.Shiny, currentGameLanguage),
             value: ImageSource.Shiny
         }
     ];
@@ -321,7 +323,7 @@ const Navbar = () => {
                                     options={sourceOptions}
                                     value={sourceOptions.find(l => l.value === imageSource)}
                                     onChange={v => updateImageSource(v!.value)}
-                                    formatOptionLabel={(data, _) => <div className="hint-container"><span>{data.hint} {data.label}</span></div>}
+                                    formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className={`${data.invertOnDarkMode ? "invert-dark-mode" : ""} country-flag`} src={data.hint} height={17} /><span>{data.label}</span></div>}
                                 />
                             </div>
                         </li>

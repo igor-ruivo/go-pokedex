@@ -7,6 +7,7 @@
     grid-template-columns: 1fr 1fr;
     justify-self: center;
     align-self: center;
+    min-height: 215px;
 }
 
 .with-margin-bottom {
@@ -175,5 +176,11 @@
     
     .contained-big {
         font-size: 11px;
+    }
+}
+
+@media (max-width: 440px) {
+    .pokemon_main_info {
+        min-height: 155px;
     }
 }

@@ -9,8 +9,10 @@ interface IListEntryProps {
     toggledContent?: ReactNode[];
     onClick?: (event: any) => void;
     details?: EntryDetails[];
-    slim: boolean;
+    slim?: boolean;
+    soft?: boolean;
     specificBackgroundStyle?: string;
+    defaultBackgroundStyle?: string;
 }
 
 interface EntryImage {
@@ -36,7 +38,9 @@ const ListEntry = ({
     onClick,
     details,
     slim,
-    specificBackgroundStyle
+    soft,
+    specificBackgroundStyle,
+    defaultBackgroundStyle
 }: IListEntryProps) => {
     const [toggled, setToggled] = useState(false);
     const secondaryContentToBeRendered = toggled ? toggledContent : secondaryContent;
@@ -50,13 +54,13 @@ const ListEntry = ({
                             {mainIcon.image}
                             {!!mainIcon.imageSideText && mainIcon.imageSideText}
                         </strong>
-                        {extraIcons?.map(i => <strong key={i.imageDescription} className={`move-detail ${i.withBackground ? "with-shadow": ""}  ${slim ? "slim-padding" : ""}`}>
+                        {extraIcons?.map(i => <strong key={i.imageDescription} className={`move-detail ${i.withBackground ? "with-shadow": ""} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
                             {i.image}
                             {!!i.imageSideText && i.imageSideText}
                         </strong>
                         )}
                     </div>
-                    <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"} ${toggledContent ? "clickable" : ""}`}>
+                    <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${toggledContent ? "clickable" : ""}`}>
                         {secondaryContentToBeRendered?.map(content => 
                             (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
                                 {content}

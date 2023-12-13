@@ -45,8 +45,8 @@
     }
 }
 
-.not-selected {
-    filter: brightness(0.8);
+.normal-entry {
+    background: var(--empty-entry);
 }
 
 .pvp-title-item {

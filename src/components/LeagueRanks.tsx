@@ -103,8 +103,10 @@ const LeagueRanks = ({
             }
         }
 
+        const defaultBackgroundStyle = "normal-entry";
+
         return (
-            <div className={leagueToLeagueName(league) !== leagueStat.leagueTitle ? "not-selected" : ""}>
+            <div className="with-border">
                 <ListEntry
                     mainIcon={{
                         imageDescription: leagueStat.leagueTitle,
@@ -119,7 +121,7 @@ const LeagueRanks = ({
                             withBackground: true
                         }
                     ]}
-                    backgroundColorClassName={leagueStat.leagueTitle}
+                    backgroundColorClassName={leagueToLeagueName(league) === leagueStat.leagueTitle ? leagueStat.leagueTitle : defaultBackgroundStyle}
                     onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
                     secondaryContent={[
                         <React.Fragment key={leagueStat.leagueTitle}>
@@ -128,6 +130,8 @@ const LeagueRanks = ({
                         </React.Fragment>
                     ]}
                     slim
+                    soft
+                    defaultBackgroundStyle={defaultBackgroundStyle}
                 />
             </div>
         );

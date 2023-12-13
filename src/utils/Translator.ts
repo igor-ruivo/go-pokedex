@@ -102,15 +102,15 @@ const languageSettings = new Map<Language, string>([
 ]);
 
 const official = new Map<Language, string>([
-    [Language.English, "Official Artwork"],
-    [Language.Portuguese, "Imagens Oficiais"],
-    [Language.Bosnian, "Službene Slike"]
+    [Language.English, "Official"],
+    [Language.Portuguese, "Oficiais"],
+    [Language.Bosnian, "Službene"]
 ]);
 
 const source = new Map<Language, string>([
-    [Language.English, "Pokémon Image Type"],
-    [Language.Portuguese, "Tipo de Imagem do Pokémon"],
-    [Language.Bosnian, "Vrsta slike Pokémona"]
+    [Language.English, "Pokémon Images"],
+    [Language.Portuguese, "Imagens"],
+    [Language.Bosnian, "Slike Pokémona"]
 ]);
 
 const visualSettings = new Map<Language, string>([

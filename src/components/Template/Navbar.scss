@@ -117,6 +117,10 @@ button {
 .hint-container {
     display: flex;
     gap: 9px;
+
+    img {
+        background: unset !important;
+    }
 }
 
 .navbar-menu {

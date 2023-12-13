@@ -18,6 +18,8 @@ code {
 }
 
 .theme-dark {
+    --entry-background-shadow: rgba(0, 0, 0, .25);
+    --empty-entry: rgb(36,41,47)//#26313b;
     --hover-brightness: saturate(1.1) brightness(1.2);
     --buff-panel-border: 3px solid var(--popup-background-color);
     --text-shadow: -1px 0 #00000040, 0 1px #00000040, 1px 0 #00000040, 0 -1px #00000040;
@@ -75,6 +77,8 @@ code {
 }
 
 .theme-light {
+    --entry-background-shadow: hsla(0,0%,100%,.8);
+    --empty-entry: rgb(235, 235, 235);
     --hover-brightness: saturate(1.1) brightness(1.05);
     --buff-panel-border: 1px solid var(--borderColor2);
     --text-shadow: none;

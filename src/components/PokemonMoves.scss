@@ -14,6 +14,14 @@
     cursor: pointer;
 }
 
+@media (min-width: 500px) {
+    .clickable {
+        &:hover {
+            filter: var(--hover-brightness);
+        }
+    }
+}
+
 .img-padding {
     display: flex;
     padding: 4px;
@@ -26,6 +34,11 @@
 
 .recommended-title {
     margin-bottom: 9px;
+}
+
+.with-border {
+    border: 1px solid var(--borderColor2);
+    border-radius: 12px;
 }
 
 .with-bottom-border {

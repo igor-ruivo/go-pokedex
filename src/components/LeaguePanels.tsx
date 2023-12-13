@@ -59,16 +59,16 @@ const LeaguePanels = ({
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
             case "great":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/great.png`;
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/great-big.webp`;
                 break;
             case "ultra":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/ultra.png`;
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/ultra-big.webp`;
                 break;
             case "master":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master.png`;
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master-big.webp`;
                 break;
             case "custom":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/retro.png`;
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/retro-big.webp`;
                 break;
         }
 

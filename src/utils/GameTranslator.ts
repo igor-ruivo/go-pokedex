@@ -23,8 +23,8 @@ const hp = new Map<GameLanguage, string>([
 ]);
 
 const shiny = new Map<GameLanguage, string>([
-    [GameLanguage.English, "Shiny"],
-    [GameLanguage.Portuguese, "Brilhante"]
+    [GameLanguage.English, "Shinies"],
+    [GameLanguage.Portuguese, "Brilhantes"]
 ]);
 
 const cp = new Map<GameLanguage, string>([

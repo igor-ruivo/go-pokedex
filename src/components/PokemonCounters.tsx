@@ -10,6 +10,7 @@ import React from "react";
 import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ImageSource, useImageSource } from "../contexts/language-context copy";
 
 interface IPokemonCounters {
     pokemon: IGamemasterPokemon;
@@ -22,6 +23,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const {rankLists, pvpFetchCompleted} = usePvp();
     const { pathname } = useLocation();
     const navigate = useNavigate();
+    const {imageSource} = useImageSource();
 
     if (!fetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
@@ -49,7 +51,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             mainIcon={
                 {
                     imageDescription: pokemon.speciesName,
-                    image: <div className="img-small-padding"><PokemonImage pokemon={pokemon} specificHeight={32} specificWidth={32} withName={false}/></div>,
+                    image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 36 : 32} specificWidth={imageSource !== ImageSource.Official ? 36 : 32} withName={false}/></div>,
                     imageSideText: pokemon.speciesShortName,
                     withBackground: true
                 }
@@ -60,7 +62,6 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     {score >= 500 ? <span className="win with-shadow with-brightness">{score / 10}%</span> : <span className="lose with-shadow with-brightness">{score / 10}%</span>}
                 </React.Fragment>
             ]}
-            slim={false}
             onClick={() => navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`)}
             specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 72%, var(--type-${type2 ??  type1}) 72%)`}
         />

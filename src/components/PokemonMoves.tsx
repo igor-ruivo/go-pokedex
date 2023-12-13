@@ -226,7 +226,6 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 </React.Fragment>
             ]}
             details={renderDetails(moveId, isRecommended)}
-            slim={false}
         />
     }
 

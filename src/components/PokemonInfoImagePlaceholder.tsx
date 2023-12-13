@@ -34,6 +34,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
             <PokemonImage
                 pokemon={props.pokemon}
                 withName={false}
+                galleryToggle
             />
             <div>
                 <span className="pokemon_number">
