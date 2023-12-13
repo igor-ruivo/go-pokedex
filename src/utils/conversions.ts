@@ -82,24 +82,12 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
             return "ALOLA";
         }
 
-        if (pokemonName.includes("(Galarian)")) {
-            return "GALARIAN";
-        }
-
-        if (pokemonName.includes("(Mega)")) {
-            return "MEGA";
-        }
-
         if (pokemonName.includes("(Mega X)")) {
             return "MEGA_X";
         }
 
         if (pokemonName.includes("(Mega Y)")) {
             return "MEGA_Y";
-        }
-
-        if (pokemonName.includes("(Hisuian)")) {
-            return "HISUIAN";
         }
 
         if (pokemonName.includes("(Armored)")) {
@@ -110,120 +98,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
             return "PALDEA";
         }
 
-        if (pokemonName.includes("(Rainy)")) {
-            return "RAINY";
-        }
-
-        if (pokemonName.includes("(Snowy)")) {
-            return "SNOWY";
-        }
-
-        if (pokemonName.includes("(Sunny)")) {
-            return "SUNNY";
-        }
-
-        if (pokemonName.includes("(Speed)")) {
-            return "SPEED";
-        }
-
-        if (pokemonName.includes("(Attack)")) {
-            return "ATTACK";
-        }
-
-        if (pokemonName.includes("(Defense)")) {
-            return "DEFENSE";
-        }
-
-        if (pokemonName.includes("(Overcast)")) {
-            return "OVERCAST";
-        }
-
         if (pokemonName.includes("(Sunshine)")) {
             return "SUNNY";
-        }
-
-        if (pokemonName.includes("(Frost)")) {
-            return "FROST";
-        }
-
-        if (pokemonName.includes("(Mow)")) {
-            return "MOW";
-        }
-
-        if (pokemonName.includes("(Wash)")) {
-            return "WASH";
-        }
-
-        if (pokemonName.includes("(Fan)")) {
-            return "FAN";
-        }
-
-        if (pokemonName.includes("(Heat)")) {
-            return "HEAT";
-        }
-
-        if (pokemonName.includes("(Origin)")) {
-            return "ORIGIN";
-        }
-
-        if (pokemonName.includes("(Altered)")) {
-            return "ALTERED";
-        }
-
-        if (pokemonName.includes("(Sky)")) {
-            return "SKY";
-        }
-
-        if (pokemonName.includes("(Land)")) {
-            return "LAND";
-        }
-
-        if (pokemonName.includes("(Standard)")) {
-            return "STANDARD";
-        }
-
-        if (pokemonName.includes("(Therian)")) {
-            return "THERIAN";
-        }
-
-        if (pokemonName.includes("(Incarnate)")) {
-            return "INCARNATE";
-        }
-
-        if (pokemonName.includes("(Ordinary)")) {
-            return "ORDINARY";
-        }
-
-        if (pokemonName.includes("(Burn)")) {
-            return "BURN";
-        }
-
-        if (pokemonName.includes("(Chill)")) {
-            return "CHILL";
-        }
-
-        if (pokemonName.includes("(Douse)")) {
-            return "DOUSE";
-        }
-
-        if (pokemonName.includes("(Shock)")) {
-            return "SHOCK";
-        }
-
-        if (pokemonName.includes("(Small)")) {
-            return "SMALL";
-        }
-
-        if (pokemonName.includes("(Average)")) {
-            return "AVERAGE";
-        }
-
-        if (pokemonName.includes("(Large)")) {
-            return "LARGE";
-        }
-
-        if (pokemonName.includes("(Super)")) {
-            return "SUPER";
         }
 
         if (pokemonName.includes("(10% Forme)")) {
@@ -242,48 +118,18 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
             return "PAU";
         }
 
-        if (pokemonName.includes("(Baile)")) {
-            return "BAILE";
-        }
-
-        if (pokemonName.includes("(Sensu)")) {
-            return "SENSU";
-        }
-
         if (pokemonName.includes("(Pom-Pom)")) {
             return "POMPOM";
         }
 
-        if (pokemonName.includes("(Midday)")) {
-            return "MIDDAY";
+        if ((pokemonName.length - pokemonName.replaceAll("(", "").length === 1) && !pokemonName.includes("Shadow") && !pokemonName.includes("Jr")) {
+            const form = pokemonName.substring(pokemonName.indexOf("(") + 1, pokemonName.indexOf(")"));
+            return form.toLocaleUpperCase();
         }
 
-        if (pokemonName.includes("(Midnight)")) {
-            return "MIDNIGHT";
+        if (pokemonName.includes("(") && !pokemonName.includes("Shadow") && !pokemonName.includes("Jr")) {
+            console.log("Missing form conversion for pokémon go asset " + pokemonName);
         }
-
-        if (pokemonName.includes("(Hero)")) {
-            return "HERO";
-        }
-
-        if (pokemonName.includes("(Aria)")) {
-            return "ARIA";
-        }
-
-        if (pokemonName.includes("(Unbound)")) {
-            return "UNBOUND";
-        }
-
-        if (pokemonName.includes("(Male)")) {
-            return "MALE";
-        }
-
-        if (pokemonName.includes("(Female)")) {
-            return "FEMALE";
-        }
-
-        if (pokemonName.includes("(") && !pokemonName.includes("Shadow") && !pokemonName.includes("Jr"))
-        console.log("form:" + pokemonName);
 
         return "";
     };
