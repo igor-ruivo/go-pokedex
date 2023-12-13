@@ -2,7 +2,7 @@ import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
-import { buildPokemonImageUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsRetroUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
+import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsRetroUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
@@ -74,8 +74,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
 
     const cleanHiddenPowers = (moves: string[]) => moves?.some((move: string) => hiddenPowers.has(move)) ? [...moves.filter((move: string) => !hiddenPowers.has(move)), "HIDDEN_POWER"] : moves;
 
-    const buildPokemonGoImageUrl = (dex: string, form: string) => `https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets/pm${dex}${form ? ".f" + form : ""}.icon.png`;
-    const buildPokemonGoShinyImageUrl = (dex: string, form: string) => `https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets/pm${dex}${form ? ".f" + form : ""}.s.icon.png`;
+    const buildPokemonGoImageUrl = (dex: string, form: string) => `${goBaseUrl}${dex}${form ? ".f" + form : ""}.icon.png`;
+    const buildPokemonGoShinyImageUrl = (dex: string, form: string) => `${goBaseUrl}${dex}${form ? ".f" + form : ""}.s.icon.png`;
 
     const getGoForm = (pokemonName: string) => {
         if (pokemonName.includes("(Alolan)")) {
@@ -186,6 +186,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     shinyGoOverrideMappings.set("furfrou", buildPokemonGoShinyImageUrl("676", "NATURAL"));
     shinyGoOverrideMappings.set("meowstic", buildPokemonGoShinyImageUrl("678", ""));
 
+    const computeGoShortUrl = (url: string) => url.split(goBaseUrl)[1];
+
     (Array.from(data) as any[])
         .filter(baseDataFilter)
         .forEach(pokemon => {
@@ -218,8 +220,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 speciesName: sexConverter(pokemon.speciesName),
                 speciesShortName: shortName(pokemon.speciesName),
                 imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
-                goImageUrl: goOverrideMappings.has(pokemon.speciesId) ? goOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoImageUrl(pokemon.dex, getGoForm(pokemon.speciesName)),
-                shinyGoImageUrl: shinyGoOverrideMappings.has(pokemon.speciesId) ? shinyGoOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoShinyImageUrl(pokemon.dex, getGoForm(pokemon.speciesName)),
+                goImageUrl: computeGoShortUrl(goOverrideMappings.has(pokemon.speciesId) ? goOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoImageUrl(pokemon.dex, getGoForm(pokemon.speciesName))),
+                shinyGoImageUrl: computeGoShortUrl(shinyGoOverrideMappings.has(pokemon.speciesId) ? shinyGoOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoShinyImageUrl(pokemon.dex, getGoForm(pokemon.speciesName))),
                 types: Array.from(pokemon.types).filter(t => t !== "none").map((t: any) => ((t.substring(0, 1).toLocaleUpperCase() + t.substring(1)) as PokemonTypes)),
                 atk: pokemon.baseStats.atk,
                 def: pokemon.baseStats.def,

@@ -4,6 +4,7 @@ import "./PokemonImage.css";
 import { useLanguage } from "../contexts/language-context";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { ImageSource, useImageSource } from "../contexts/language-context copy";
+import { goBaseUrl } from "../utils/Configs";
 
 interface IPokemonImage {
     pokemon: IGamemasterPokemon;
@@ -26,9 +27,9 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, with
             case ImageSource.Official:
                 return pokemon.imageUrl;
             case ImageSource.GO:
-                return pokemon.goImageUrl;
+                return goBaseUrl + pokemon.goImageUrl;
             case ImageSource.Shiny:
-                return pokemon.shinyGoImageUrl;
+                return goBaseUrl + pokemon.shinyGoImageUrl;
         }
     }
 

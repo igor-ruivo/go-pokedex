@@ -13,6 +13,7 @@ import { useLocation } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
 import { ImageSource, useImageSource } from '../contexts/language-context copy';
+import { goBaseUrl } from '../utils/Configs';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[],
@@ -128,9 +129,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
             case ImageSource.Official:
                 return pokemon.imageUrl;
             case ImageSource.GO:
-                return pokemon.goImageUrl;
+                return goBaseUrl + pokemon.goImageUrl;
             case ImageSource.Shiny:
-                return pokemon.shinyGoImageUrl;
+                return goBaseUrl + pokemon.shinyGoImageUrl;
         }
     }, []);
 
