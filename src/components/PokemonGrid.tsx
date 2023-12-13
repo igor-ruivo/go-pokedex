@@ -12,6 +12,7 @@ import { ListType } from '../views/pokedex';
 import { useLocation } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
+import { ImageSource, useImageSource } from '../contexts/language-context copy';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[],
@@ -49,6 +50,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
     const [readyImages, setReadyImages] = useState<Dictionary<string>>(getDefaultReadyImages());
 
     const {currentLanguage} = useLanguage();
+    const {imageSource} = useImageSource();
 
     const fetchedImages = useRef(new Set<string>());
     const renderDivRef = useRef<HTMLDivElement>(null);
@@ -121,17 +123,49 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
         }
     }, [readyImages, lastShownIndex, pokemonInfoList, containerRef]);
 
-    const fetchPokemonBinaryImage = async (pokemonBatch: IGamemasterPokemon[]) => {
+    const getSpecificPokemonUrl = useCallback((pokemon: IGamemasterPokemon, urlKind: ImageSource) => {
+        switch (urlKind) {
+            case ImageSource.Official:
+                return pokemon.imageUrl;
+            case ImageSource.GO:
+                return pokemon.goImageUrl;
+            case ImageSource.Shiny:
+                return pokemon.shinyGoImageUrl;
+        }
+    }, []);
+
+    const tryLoadImage = useCallback((resolve: (value: string | PromiseLike<string>) => void, pokemon: IGamemasterPokemon, urlKind: ImageSource) => {
+        const image = new Image();
+        const url = getSpecificPokemonUrl(pokemon, urlKind);
+        image.onerror = (e: any) => {
+            console.error(`Failed to load resource ${url} (${ImageSource[urlKind]})`);
+            switch (urlKind) {
+                case ImageSource.Official:
+                    resolve(pokemon.speciesId);
+                    return;
+                case ImageSource.GO:
+                    console.log(`Trying Official...`);
+                    const goResourceTarget = e.target as HTMLImageElement;
+                    goResourceTarget.onerror = null;
+                    tryLoadImage(resolve, pokemon, ImageSource.Official);
+                    return;
+                case ImageSource.Shiny:
+                    console.log(`Trying GO resource...`);
+                    const shinyGoResourceTarget = e.target as HTMLImageElement;
+                    shinyGoResourceTarget.onerror = null;
+                    tryLoadImage(resolve, pokemon, ImageSource.GO);
+                    return;
+            }
+        };
+        image.onload = () => resolve(pokemon.speciesId);
+        image.src = url;
+    }, [getSpecificPokemonUrl]);
+
+    const fetchPokemonBinaryImage = useCallback(async (pokemonBatch: IGamemasterPokemon[]) => {
         try {
             const promises = pokemonBatch.map(pokemon => new Promise<string>(async (resolve, reject) => {
                 try {
-                    const image = new Image();
-                    image.onload = () => resolve(pokemon.speciesId);
-                    image.onerror = () => {
-                        console.error(`Failed to load ${pokemon.goImageUrl}`);
-                        resolve(pokemon.speciesId);
-                    };
-                    image.src = pokemon.goImageUrl;
+                    tryLoadImage(resolve, pokemon, imageSource);
                 }
                 catch (error) {
                     reject(error);
@@ -151,7 +185,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
         catch (error) {
             console.error(error?.toString());
         }
-    }
+    }, [imageSource, setReadyImages, tryLoadImage]);
 
     useEffect(() => {
         const pokemonBatch: IGamemasterPokemon[] = [];
@@ -170,7 +204,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
             fetchPokemonBinaryImage(pokemonBatch);
         }
 
-    }, [lastShownIndex, pokemonInfoList, readyImages]);
+    }, [lastShownIndex, pokemonInfoList, readyImages, fetchPokemonBinaryImage]);
 
     useEffect(() => {
         // Triggering the scroll callback whenever state or props changes.

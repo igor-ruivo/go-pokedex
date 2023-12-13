@@ -3,6 +3,7 @@ import { GameLanguage } from "../contexts/language-context";
 export enum GameTranslatorKeys {
     HP,
     CP,
+    Shiny,
     AttackSearch,
     DefenseSearch,
     HPSearch,
@@ -19,6 +20,11 @@ export enum GameTranslatorKeys {
 const hp = new Map<GameLanguage, string>([
     [GameLanguage.English, "HP"],
     [GameLanguage.Portuguese, "PS"]
+]);
+
+const shiny = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Shiny"],
+    [GameLanguage.Portuguese, "Brilhante"]
 ]);
 
 const cp = new Map<GameLanguage, string>([
@@ -84,6 +90,7 @@ const eliteTM = new Map<GameLanguage, string>([
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.HP, hp],
     [GameTranslatorKeys.AttackSearch, attackSearch],
+    [GameTranslatorKeys.Shiny, shiny],
     [GameTranslatorKeys.DefenseSearch, defenseSearch],
     [GameTranslatorKeys.HPSearch, hpSearch],
     [GameTranslatorKeys.CP, cp],

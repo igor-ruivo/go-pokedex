@@ -10,6 +10,8 @@ import Select from "react-select";
 import translator, { TranslatorKeys } from "../../utils/Translator";
 import { Box } from "@mui/material";
 import PokemonImage from "../PokemonImage";
+import { ImageSource, useImageSource } from "../../contexts/language-context copy";
+import gameTranslator, { GameTranslatorKeys } from "../../utils/GameTranslator";
 
 enum ThemeValues {
     Light,
@@ -61,6 +63,7 @@ const Navbar = () => {
     const {pathname} = useLocation();
     const [optionsOpened, setOptionsOpened] = useState(false);
     const {currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage} = useLanguage();
+    const {imageSource, updateImageSource} = useImageSource();
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -171,6 +174,24 @@ const Navbar = () => {
         }
     ];
 
+    const sourceOptions: Entry<ImageSource>[] = [
+        {
+            hint: themeToHint(systemDefaultTheme),
+            label: translator(TranslatorKeys.Official, currentLanguage),
+            value: ImageSource.Official
+        },
+        {
+            hint: themeToHint(ThemeValues.Light),
+            label: "Pokémon GO",
+            value: ImageSource.GO
+        },
+        {
+            hint: themeToHint(ThemeValues.Dark),
+            label: `Pokémon GO (${gameTranslator(GameTranslatorKeys.Shiny, currentGameLanguage)})`,
+            value: ImageSource.Shiny
+        }
+    ];
+
     const gameLanguageOptions: Entry<GameLanguage>[] = [
         {
             label: "English",
@@ -233,7 +254,7 @@ const Navbar = () => {
                 <section>
                     <strong>
                         <span className="strong-underline">
-                            {translator(TranslatorKeys.Settings, currentLanguage)}
+                            {translator(TranslatorKeys.LanguageSettings, currentLanguage)}
                         </span>
                     </strong>
                     <ul className="options-ul">
@@ -267,6 +288,13 @@ const Navbar = () => {
                                 />
                             </div>
                         </li>
+                    </ul>
+                    <strong>
+                        <span className="strong-underline">
+                            {translator(TranslatorKeys.VisualSettings, currentLanguage)}
+                        </span>
+                    </strong>
+                    <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
                                 <span>
@@ -278,6 +306,21 @@ const Navbar = () => {
                                     options={themeOptions}
                                     value={themeOptions.find(l => l.value === getDefaultTheme())}
                                     onChange={v => handleThemeToggle(v!.value)}
+                                    formatOptionLabel={(data, _) => <div className="hint-container"><span>{data.hint} {data.label}</span></div>}
+                                />
+                            </div>
+                        </li>
+                        <li className="options-li">
+                            <div className="option-entry">
+                                <span>
+                                    {translator(TranslatorKeys.Source, currentLanguage)}
+                                </span>
+                                <Select
+                                    className="navbar-dropdown"
+                                    isSearchable={false}
+                                    options={sourceOptions}
+                                    value={sourceOptions.find(l => l.value === imageSource)}
+                                    onChange={v => updateImageSource(v!.value)}
                                     formatOptionLabel={(data, _) => <div className="hint-container"><span>{data.hint} {data.label}</span></div>}
                                 />
                             </div>

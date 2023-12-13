@@ -1,8 +1,11 @@
 import { Language } from "../contexts/language-context";
 
 export enum TranslatorKeys {
-    Settings,
+    LanguageSettings,
+    VisualSettings,
+    Official,
     Language,
+    Source,
     Search,
     Loading,
     Name,
@@ -92,10 +95,28 @@ export enum TranslatorKeys {
     StrongAgainst
 }
 
-const settings = new Map<Language, string>([
-    [Language.English, "Settings"],
-    [Language.Portuguese, "Opções"],
-    [Language.Bosnian, "Postavke"]
+const languageSettings = new Map<Language, string>([
+    [Language.English, "Language Settings"],
+    [Language.Portuguese, "Opções de Idioma"],
+    [Language.Bosnian, "Jezičke Postavke"]
+]);
+
+const official = new Map<Language, string>([
+    [Language.English, "Official Artwork"],
+    [Language.Portuguese, "Imagens Oficiais"],
+    [Language.Bosnian, "Službene Slike"]
+]);
+
+const source = new Map<Language, string>([
+    [Language.English, "Pokémon Image Type"],
+    [Language.Portuguese, "Tipo de Imagem do Pokémon"],
+    [Language.Bosnian, "Vrsta slike Pokémona"]
+]);
+
+const visualSettings = new Map<Language, string>([
+    [Language.English, "Visual Settings"],
+    [Language.Portuguese, "Opções Visuais"],
+    [Language.Bosnian, "Vizualna podešavanja"]
 ]);
 
 const language = new Map<Language, string>([
@@ -627,7 +648,10 @@ const strongAgainst = new Map<Language, string>([
 ]);
 
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
-    [TranslatorKeys.Settings, settings],
+    [TranslatorKeys.Source, source],
+    [TranslatorKeys.LanguageSettings, languageSettings],
+    [TranslatorKeys.VisualSettings, visualSettings],
+    [TranslatorKeys.Official, official],
     [TranslatorKeys.Language, language],
     [TranslatorKeys.Search, search],
     [TranslatorKeys.Loading, loading],
