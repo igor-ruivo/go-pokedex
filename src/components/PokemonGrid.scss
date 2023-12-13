@@ -1,9 +1,3 @@
-a:hover,
-button:hover,
-.selectable:hover {
-    filter: saturate(1.1) brightness(1.1);
-}
-
 .selectable {
     cursor: pointer;
 }
@@ -20,6 +14,14 @@ button:hover,
     border: 1px solid var(--borderColor2);
     &:hover {
         border: 1px solid var(--buttonsBorderColor);
+    }
+}
+
+@media (min-width: 500px) {
+    a:hover,
+    button:hover,
+    .selectable:hover {
+        filter: var(--hover-brightness);
     }
 }
 

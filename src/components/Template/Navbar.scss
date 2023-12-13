@@ -93,13 +93,6 @@
     color: transparent;
 }
 
-div[tabIndex="-1"]:hover:has(> div.hint-container) {
-    background: var(--selectionHover) !important;
-    * {
-        background: var(--selectionHover) !important;
-    }
-}
-
 .navbar-dropdown {
     width: 80%;
     font-size: smaller;
@@ -220,5 +213,14 @@ button {
 @media (max-width: 351px) {
     .country-flag {
         display: none;
+    }
+}
+
+@media (min-width: 500px) {
+    div[tabIndex="-1"]:hover:has(> div.hint-container) {
+        background: var(--selectionHover) !important;
+        * {
+            background: var(--selectionHover) !important;
+        }
     }
 }
