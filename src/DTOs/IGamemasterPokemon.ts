@@ -7,6 +7,8 @@ export interface IGamemasterPokemon {
     speciesShortName: string,
     types: PokemonTypes[],
     imageUrl: string,
+    goImageUrl: string,
+    shinyGoImageUrl: string,
     atk: number,
     def: number,
     hp: number,

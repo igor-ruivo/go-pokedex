@@ -74,6 +74,272 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
 
     const cleanHiddenPowers = (moves: string[]) => moves?.some((move: string) => hiddenPowers.has(move)) ? [...moves.filter((move: string) => !hiddenPowers.has(move)), "HIDDEN_POWER"] : moves;
 
+    const buildPokemonGoImageUrl = (dex: string, form: string) => `https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets/pm${dex}${form ? ".f" + form : ""}.icon.png`;
+    const buildPokemonGoShinyImageUrl = (dex: string, form: string) => `https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets/pm${dex}${form ? ".f" + form : ""}.s.icon.png`;
+
+    const getGoForm = (pokemonName: string) => {
+        if (pokemonName.includes("(Alolan)")) {
+            return "ALOLA";
+        }
+
+        if (pokemonName.includes("(Galarian)")) {
+            return "GALARIAN";
+        }
+
+        if (pokemonName.includes("(Mega)")) {
+            return "MEGA";
+        }
+
+        if (pokemonName.includes("(Mega X)")) {
+            return "MEGA_X";
+        }
+
+        if (pokemonName.includes("(Mega Y)")) {
+            return "MEGA_Y";
+        }
+
+        if (pokemonName.includes("(Hisuian)")) {
+            return "HISUIAN";
+        }
+
+        if (pokemonName.includes("(Armored)")) {
+            return "A";
+        }
+
+        if (pokemonName.includes("(Paldean)")) {
+            return "PALDEA";
+        }
+
+        if (pokemonName.includes("(Rainy)")) {
+            return "RAINY";
+        }
+
+        if (pokemonName.includes("(Snowy)")) {
+            return "SNOWY";
+        }
+
+        if (pokemonName.includes("(Sunny)")) {
+            return "SUNNY";
+        }
+
+        if (pokemonName.includes("(Speed)")) {
+            return "SPEED";
+        }
+
+        if (pokemonName.includes("(Attack)")) {
+            return "ATTACK";
+        }
+
+        if (pokemonName.includes("(Defense)")) {
+            return "DEFENSE";
+        }
+
+        if (pokemonName.includes("(Overcast)")) {
+            return "OVERCAST";
+        }
+
+        if (pokemonName.includes("(Sunshine)")) {
+            return "SUNNY";
+        }
+
+        if (pokemonName.includes("(Frost)")) {
+            return "FROST";
+        }
+
+        if (pokemonName.includes("(Mow)")) {
+            return "MOW";
+        }
+
+        if (pokemonName.includes("(Wash)")) {
+            return "WASH";
+        }
+
+        if (pokemonName.includes("(Fan)")) {
+            return "FAN";
+        }
+
+        if (pokemonName.includes("(Heat)")) {
+            return "HEAT";
+        }
+
+        if (pokemonName.includes("(Origin)")) {
+            return "ORIGIN";
+        }
+
+        if (pokemonName.includes("(Altered)")) {
+            return "ALTERED";
+        }
+
+        if (pokemonName.includes("(Sky)")) {
+            return "SKY";
+        }
+
+        if (pokemonName.includes("(Land)")) {
+            return "LAND";
+        }
+
+        if (pokemonName.includes("(Standard)")) {
+            return "STANDARD";
+        }
+
+        if (pokemonName.includes("(Therian)")) {
+            return "THERIAN";
+        }
+
+        if (pokemonName.includes("(Incarnate)")) {
+            return "INCARNATE";
+        }
+
+        if (pokemonName.includes("(Ordinary)")) {
+            return "ORDINARY";
+        }
+
+        if (pokemonName.includes("(Burn)")) {
+            return "BURN";
+        }
+
+        if (pokemonName.includes("(Chill)")) {
+            return "CHILL";
+        }
+
+        if (pokemonName.includes("(Douse)")) {
+            return "DOUSE";
+        }
+
+        if (pokemonName.includes("(Shock)")) {
+            return "SHOCK";
+        }
+
+        if (pokemonName.includes("(Small)")) {
+            return "SMALL";
+        }
+
+        if (pokemonName.includes("(Average)")) {
+            return "AVERAGE";
+        }
+
+        if (pokemonName.includes("(Large)")) {
+            return "LARGE";
+        }
+
+        if (pokemonName.includes("(Super)")) {
+            return "SUPER";
+        }
+
+        if (pokemonName.includes("(10% Forme)")) {
+            return "TEN_PERCENT";
+        }
+
+        if (pokemonName.includes("(50% Forme)")) {
+            return "FIFTY_PERCENT";
+        }
+
+        if (pokemonName.includes("(Complete Forme)")) {
+            return "COMPLETE";
+        }
+
+        if (pokemonName.includes("(Pa'u)")) {
+            return "PAU";
+        }
+
+        if (pokemonName.includes("(Baile)")) {
+            return "BAILE";
+        }
+
+        if (pokemonName.includes("(Sensu)")) {
+            return "SENSU";
+        }
+
+        if (pokemonName.includes("(Pom-Pom)")) {
+            return "POMPOM";
+        }
+
+        if (pokemonName.includes("(Midday)")) {
+            return "MIDDAY";
+        }
+
+        if (pokemonName.includes("(Midnight)")) {
+            return "MIDNIGHT";
+        }
+
+        if (pokemonName.includes("(Hero)")) {
+            return "HERO";
+        }
+
+        if (pokemonName.includes("(Aria)")) {
+            return "ARIA";
+        }
+
+        if (pokemonName.includes("(Unbound)")) {
+            return "UNBOUND";
+        }
+
+        if (pokemonName.includes("(Male)")) {
+            return "MALE";
+        }
+
+        if (pokemonName.includes("(Female)")) {
+            return "FEMALE";
+        }
+
+        if (pokemonName.includes("(") && !pokemonName.includes("Shadow") && !pokemonName.includes("Jr"))
+        console.log("form:" + pokemonName);
+
+        return "";
+    };
+
+    const goOverrideMappings = new Map<string, string>();
+    goOverrideMappings.set("unown", buildPokemonGoImageUrl("201", "UNOWN_F"));
+    goOverrideMappings.set("spinda", buildPokemonGoImageUrl("327", "00"));
+    goOverrideMappings.set("kyogre_primal", buildPokemonGoImageUrl("382", "PRIMAL"));
+    goOverrideMappings.set("groudon_primal", buildPokemonGoImageUrl("383", "PRIMAL"));
+    goOverrideMappings.set("burmy_plant", buildPokemonGoImageUrl("412", "BURMY_PLANT"));
+    goOverrideMappings.set("burmy_sandy", buildPokemonGoImageUrl("412", "BURMY_SANDY"));
+    goOverrideMappings.set("burmy_trash", buildPokemonGoImageUrl("412", "BURMY_TRASH"));
+    goOverrideMappings.set("wormadam_plant", buildPokemonGoImageUrl("413", "WORMADAM_PLANT"));
+    goOverrideMappings.set("wormadam_sandy", buildPokemonGoImageUrl("413", "WORMADAM_SANDY"));
+    goOverrideMappings.set("wormadam_trash", buildPokemonGoImageUrl("413", "WORMADAM_TRASH"));
+    goOverrideMappings.set("shellos", buildPokemonGoImageUrl("422", "WEST_SEA"));
+    goOverrideMappings.set("gastrodon", buildPokemonGoImageUrl("423", "WEST_SEA"));
+    goOverrideMappings.set("basculin", buildPokemonGoImageUrl("550", "RED_STRIPED"));
+    goOverrideMappings.set("darmanitan_galarian_standard", buildPokemonGoImageUrl("555", "GALARIAN_STANDARD"));
+    goOverrideMappings.set("deerling", buildPokemonGoImageUrl("585", "SPRING"));
+    goOverrideMappings.set("sawsbuck", buildPokemonGoImageUrl("586", "SPRING"));
+    goOverrideMappings.set("kyurem", buildPokemonGoImageUrl("646", "NORMAL"));
+    goOverrideMappings.set("genesect", buildPokemonGoImageUrl("649", "NORMAL"));
+    goOverrideMappings.set("vivillon", buildPokemonGoImageUrl("666", "MEADOW"));
+    goOverrideMappings.set("flabebe", buildPokemonGoImageUrl("669", "RED"));
+    goOverrideMappings.set("floette", buildPokemonGoImageUrl("670", "RED"));
+    goOverrideMappings.set("florges", buildPokemonGoImageUrl("671", "RED"));
+    goOverrideMappings.set("furfrou", buildPokemonGoImageUrl("676", "NATURAL"));
+    goOverrideMappings.set("meowstic", buildPokemonGoImageUrl("678", ""));
+
+    const shinyGoOverrideMappings = new Map<string, string>();
+    shinyGoOverrideMappings.set("unown", buildPokemonGoShinyImageUrl("201", "UNOWN_F"));
+    shinyGoOverrideMappings.set("spinda", buildPokemonGoShinyImageUrl("327", "00"));
+    shinyGoOverrideMappings.set("kyogre_primal", buildPokemonGoShinyImageUrl("382", "PRIMAL"));
+    shinyGoOverrideMappings.set("groudon_primal", buildPokemonGoShinyImageUrl("383", "PRIMAL"));
+    shinyGoOverrideMappings.set("burmy_plant", buildPokemonGoShinyImageUrl("412", "BURMY_PLANT"));
+    shinyGoOverrideMappings.set("burmy_sandy", buildPokemonGoShinyImageUrl("412", "BURMY_SANDY"));
+    shinyGoOverrideMappings.set("burmy_trash", buildPokemonGoShinyImageUrl("412", "BURMY_TRASH"));
+    shinyGoOverrideMappings.set("wormadam_plant", buildPokemonGoShinyImageUrl("413", "WORMADAM_PLANT"));
+    shinyGoOverrideMappings.set("wormadam_sandy", buildPokemonGoShinyImageUrl("413", "WORMADAM_SANDY"));
+    shinyGoOverrideMappings.set("wormadam_trash", buildPokemonGoShinyImageUrl("413", "WORMADAM_TRASH"));
+    shinyGoOverrideMappings.set("shellos", buildPokemonGoShinyImageUrl("422", "WEST_SEA"));
+    shinyGoOverrideMappings.set("gastrodon", buildPokemonGoShinyImageUrl("423", "WEST_SEA"));
+    shinyGoOverrideMappings.set("basculin", buildPokemonGoShinyImageUrl("550", "RED_STRIPED"));
+    shinyGoOverrideMappings.set("darmanitan_galarian_standard", buildPokemonGoShinyImageUrl("555", "GALARIAN_STANDARD"));
+    shinyGoOverrideMappings.set("deerling", buildPokemonGoShinyImageUrl("585", "SPRING"));
+    shinyGoOverrideMappings.set("sawsbuck", buildPokemonGoShinyImageUrl("586", "SPRING"));
+    shinyGoOverrideMappings.set("kyurem", buildPokemonGoShinyImageUrl("646", "NORMAL"));
+    shinyGoOverrideMappings.set("genesect", buildPokemonGoShinyImageUrl("649", "NORMAL"));
+    shinyGoOverrideMappings.set("vivillon", buildPokemonGoShinyImageUrl("666", "MEADOW"));
+    shinyGoOverrideMappings.set("flabebe", buildPokemonGoShinyImageUrl("669", "RED"));
+    shinyGoOverrideMappings.set("floette", buildPokemonGoShinyImageUrl("670", "RED"));
+    shinyGoOverrideMappings.set("florges", buildPokemonGoShinyImageUrl("671", "RED"));
+    shinyGoOverrideMappings.set("furfrou", buildPokemonGoShinyImageUrl("676", "NATURAL"));
+    shinyGoOverrideMappings.set("meowstic", buildPokemonGoShinyImageUrl("678", ""));
+
     (Array.from(data) as any[])
         .filter(baseDataFilter)
         .forEach(pokemon => {
@@ -106,6 +372,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 speciesName: sexConverter(pokemon.speciesName),
                 speciesShortName: shortName(pokemon.speciesName),
                 imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
+                goImageUrl: goOverrideMappings.has(pokemon.speciesId) ? goOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoImageUrl(pokemon.dex, getGoForm(pokemon.speciesName)),
+                shinyGoImageUrl: shinyGoOverrideMappings.has(pokemon.speciesId) ? shinyGoOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoShinyImageUrl(pokemon.dex, getGoForm(pokemon.speciesName)),
                 types: Array.from(pokemon.types).filter(t => t !== "none").map((t: any) => ((t.substring(0, 1).toLocaleUpperCase() + t.substring(1)) as PokemonTypes)),
                 atk: pokemon.baseStats.atk,
                 def: pokemon.baseStats.def,
@@ -417,6 +685,7 @@ const shortName = (name: string) => {
     return name
         .replace("(Alolan)", "(A)")
         .replace("(Galarian)", "(G)")
+        .replace("(Paldean)", "(P)")
         .replace("(Mega)", "(M)")
         .replace("(Shadow)", "(S)")
         .replace("(Complete Forme)", "(CF)")

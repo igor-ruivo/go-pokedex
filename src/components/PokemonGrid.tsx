@@ -128,10 +128,10 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
                     const image = new Image();
                     image.onload = () => resolve(pokemon.speciesId);
                     image.onerror = () => {
-                        console.error(`Failed to load ${pokemon.imageUrl}`);
+                        console.error(`Failed to load ${pokemon.goImageUrl}`);
                         resolve(pokemon.speciesId);
                     };
-                    image.src = pokemon.imageUrl;
+                    image.src = pokemon.goImageUrl;
                 }
                 catch (error) {
                     reject(error);

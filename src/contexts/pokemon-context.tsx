@@ -18,7 +18,7 @@ const useFetchAllData: () => [Dictionary<IGamemasterPokemon>, boolean, string] =
 
     useEffect(() => {
         const controller = new AbortController();
-        fetchGamemasterPokemon([gamemasterPokemonUrl], true, {signal: controller.signal}, mapGamemasterPokemonData);
+        fetchGamemasterPokemon([gamemasterPokemonUrl], false, {signal: controller.signal}, mapGamemasterPokemonData);
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
