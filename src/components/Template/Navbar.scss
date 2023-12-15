@@ -223,7 +223,7 @@ button {
 @media (min-width: 500px) {
     div[tabIndex="-1"]:hover:has(> div.hint-container) {
         background: var(--selectionHover) !important;
-        * {
+        *:not(img) {
             background: var(--selectionHover) !important;
         }
     }
