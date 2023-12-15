@@ -4,6 +4,7 @@
 }
 
 .MuiSlider-root {
+    bottom: 2px;
     padding: 0 !important;
     height: 100% !important;
 }
@@ -82,7 +83,6 @@
 .appraisal .stat-bar .bar {
     height: 13.5px;
     flex: 1 1 40px;
-    border-right: 1px solid rgba(255,255,255,.3);
     cursor: pointer;
     border: 1px solid var(--borderColor2);
 }
@@ -101,7 +101,7 @@
 }
 
 .appraisal .stat-bar .bar:nth-child(5n+1) {
-    border-left: 4px solid #fff
+    border-left: 4px solid #fff;
 }
 
 .appraisal .stat-bar .bar:first-child {
