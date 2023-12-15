@@ -86,7 +86,7 @@ const LeagueRanks = ({
                 logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master.png`;
                 break;
             case "custom":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/retro.png`;
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/holiday.png`;
                 break;
         }
 

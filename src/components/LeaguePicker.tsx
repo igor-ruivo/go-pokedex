@@ -33,8 +33,8 @@ const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
             </li>
             <li>
                 <div onClick={() => handleSetLeague(LeagueType.CUSTOM_CUP)} className={"header-tab league-picker selectable " + (league === LeagueType.CUSTOM_CUP ? "selected" : "")}>
-                    <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/retro.png`} alt="Retro Cup"/>
-                    {league === LeagueType.CUSTOM_CUP && <span className="league-tooltip">{gameTranslator(GameTranslatorKeys.Retro, currentGameLanguage)}</span>}
+                    <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/holiday.png`} alt="Holiday Cup"/>
+                    {league === LeagueType.CUSTOM_CUP && <span className="league-tooltip">{gameTranslator(GameTranslatorKeys.Holiday, currentGameLanguage)}</span>}
                 </div>
             </li>
         </ul>

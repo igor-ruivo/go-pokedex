@@ -10,16 +10,28 @@ export enum GameTranslatorKeys {
     Great,
     Master,
     Retro,
+    Holiday,
     GreatLeague,
     UltraLeague,
     MasterLeague,
     RetroCup,
+    HolidayCup,
     EliteTM
 }
 
 const hp = new Map<GameLanguage, string>([
     [GameLanguage.English, "HP"],
     [GameLanguage.Portuguese, "PS"]
+]);
+
+const holidayCup = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Holiday Cup"],
+    [GameLanguage.Portuguese, "Copa Festiva"]
+]);
+
+const holiday = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Holiday"],
+    [GameLanguage.Portuguese, "Festiva"]
 ]);
 
 const shiny = new Map<GameLanguage, string>([
@@ -101,7 +113,9 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.MasterLeague, masterLeague],
     [GameTranslatorKeys.Retro, retro],
     [GameTranslatorKeys.RetroCup, retroCup],
-    [GameTranslatorKeys.EliteTM, eliteTM]
+    [GameTranslatorKeys.EliteTM, eliteTM],
+    [GameTranslatorKeys.Holiday, holiday],
+    [GameTranslatorKeys.HolidayCup, holidayCup]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());

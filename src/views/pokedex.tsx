@@ -166,8 +166,8 @@ const Pokedex = () => {
                     </li>
                     <li>
                         <Link to="/custom" className={"header-tab league-picker " + (listType === ListType.CUSTOM_CUP ? "selected" : "")}>
-                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/retro.png`} alt="Retro Cup"/>
-                            {listType === ListType.CUSTOM_CUP && <span>{gameTranslator(GameTranslatorKeys.Retro, currentGameLanguage)}</span>}
+                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/holiday.png`} alt="Holiday Cup"/>
+                            {listType === ListType.CUSTOM_CUP && <span>{gameTranslator(GameTranslatorKeys.Holiday, currentGameLanguage)}</span>}
                         </Link>
                     </li>
                 </ul>
