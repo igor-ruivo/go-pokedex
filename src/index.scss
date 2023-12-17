@@ -74,6 +74,7 @@ code {
     --type-Rock: #9f9052;
     --type-Steel: #548a9e;
     --type-Water: #3f7dba;
+    --contrastFilter: none;
 }
 
 .theme-light {
@@ -133,4 +134,5 @@ code {
     --type-Rock: #cdba6c;
     --type-Steel: #538b9f;
     --type-Water: #5092d5;
+    --contrastFilter: brightness(0.8);
 }

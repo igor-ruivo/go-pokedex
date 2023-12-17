@@ -15,6 +15,7 @@ import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
+import RaidPanel from "./RaidPanel";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -27,6 +28,7 @@ interface IPokemonInfoBanner {
     setHP: (_: React.SetStateAction<number>) => void;
     league: LeagueType;
     handleSetLeague: (newLeague: LeagueType) => void;
+    level: number;
 }
 
 export interface IIvPercents {
@@ -68,7 +70,7 @@ export interface IIvPercents {
     customLeaguePerfectCP: number
 }
 
-const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague}: IPokemonInfoBanner) => {
+const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague, level}: IPokemonInfoBanner) => {
     const {currentLanguage} = useLanguage();
     const {gameTranslation, gameTranslationFetchCompleted} = useGameTranslation();
 
@@ -329,6 +331,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                 }
                             }
                         }
+                    />
+                    <RaidPanel
+                        pokemon={pokemon}
+                        level={level}
+                        atkIV={attack}
                     />
             </div>
     </div>;

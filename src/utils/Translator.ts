@@ -444,9 +444,9 @@ const recommendedMoves = new Map<Language, string>([
 ]);
 
 const perfection = new Map<Language, string>([
-    [Language.English, "Perfection"],
-    [Language.Portuguese, "Perfeição"],
-    [Language.Bosnian, "Perfekcija"]
+    [Language.English, "PvP Perfection"],
+    [Language.Portuguese, "Perfeição PvP"],
+    [Language.Bosnian, "Perfekcija PvP"]
 ]);
 
 const config = new Map<Language, string>([

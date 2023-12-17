@@ -1,4 +1,6 @@
 .appraisal-container {
+    border: 1px solid var(--borderColor2);
+    border-radius: 12px;
     position: relative;
     touch-action: none;
 }

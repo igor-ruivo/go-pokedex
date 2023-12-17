@@ -1,6 +1,34 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import Dictionary from "./Dictionary";
 
+/**
+ * Computes the effective damage of a move, assuming the target pokemon has 200 defense with 15 defense IV.
+ * @param baseAtk - The attacker pokémon's base attack.
+ * @param moveDamage - The raw move damage.
+ * @param stab - A boolean field indicating whether the move has STAB bonus for the pokémon or not.
+ * @param effectiveness - The effectiveness scalar used. Depends on the target.
+ * @returns 
+ */
+
+export enum Effectiveness {
+    DoubleResistance = 0.390625,
+    Resistance = 0.625,
+    Normal = 1,
+    Effective = 1.6,
+    DoubleEffective = 2.56
+}
+
+export const calculateDamage = (baseAtk: number, moveDamage: number, stab: boolean, shadow: boolean, effectiveness: Effectiveness = Effectiveness.Effective, attackIV = 15, level = 100) => Math.floor(0.5 * moveDamage * (((baseAtk + attackIV) * cpm[level]) / ((200 + 15) * cpm[78])) * (stab ? 1.2 : 1) * (shadow ? 1.2 : 1) * effectiveness) + 1;
+
+export const pveDPS = (chargedMoveDamage: number, fastMoveDamage: number, fastMoveCooldown: number, chargedMoveRequiredEnergy: number, fastMoveEnergy: number, chargedMoveAnimationDuration: number) => {
+    const fastMoveDPS = fastMoveDamage / fastMoveCooldown;
+    const secondsNeededToLoadChargedMove = chargedMoveRequiredEnergy / fastMoveEnergy * fastMoveCooldown;
+
+    const chargedMoveUsageDPS = (chargedMoveDamage + fastMoveDPS * secondsNeededToLoadChargedMove) / (secondsNeededToLoadChargedMove + chargedMoveAnimationDuration);
+    
+    return Math.max(chargedMoveUsageDPS, fastMoveDPS);
+}
+
 export const fetchReachablePokemonIncludingSelf = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>, domainFilter?: (p: IGamemasterPokemon) => boolean) => {
     const reachablePokemons = new Set<IGamemasterPokemon>();
     const queue = [pokemon];

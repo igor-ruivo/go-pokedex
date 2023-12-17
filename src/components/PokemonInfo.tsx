@@ -17,9 +17,10 @@ interface IPokemonInfoProps {
     setDefenseIV: (_: React.SetStateAction<number>) => void;
     hpIV: number;
     setHPIV: (_: React.SetStateAction<number>) => void;
+    level: number;
 }
 
-const PokemonInfo = ({pokemon, league, handleSetLeague, loading, ivPercents, attackIV, setAttackIV, defenseIV, setDefenseIV, hpIV, setHPIV}: IPokemonInfoProps) => {
+const PokemonInfo = ({pokemon, league, handleSetLeague, loading, ivPercents, attackIV, setAttackIV, defenseIV, setDefenseIV, hpIV, setHPIV, level}: IPokemonInfoProps) => {
     
     return (
         <LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
@@ -35,6 +36,7 @@ const PokemonInfo = ({pokemon, league, handleSetLeague, loading, ivPercents, att
                     setHP={setHPIV}
                     league={league}
                     handleSetLeague={handleSetLeague}
+                    level={level}
                 />
             </>
         </LoadingRenderer>
