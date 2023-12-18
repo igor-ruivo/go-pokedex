@@ -23,6 +23,19 @@ interface ILeaguePanelsProps {
     handleSetLeague: (newLeague: LeagueType) => void;
 }
 
+export const buildRankString = (rank: string|undefined, language: Language) => {
+    if (!rank) {
+        return undefined;
+    }
+
+    const ranked = translator(TranslatorKeys.Ranked, language);
+    return language === Language.Portuguese ?
+        `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")}` :
+        language === Language.Bosnian ?
+        `${rank.replace("st", ".").replace("nd", ".").replace("rd", ".").replace("th", ".")}` :
+        `${rank}`;
+}
+
 const LeagueRanks = ({
     greatLeagueStats,
     ultraLeagueStats,
@@ -33,19 +46,6 @@ const LeagueRanks = ({
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
     const {rankLists, pvpFetchCompleted} = usePvp();
-
-    const buildRankString = (rank: string|undefined) => {
-        if (!rank) {
-            return translator(TranslatorKeys.Unranked, currentLanguage);
-        }
-
-        const ranked = translator(TranslatorKeys.Ranked, currentLanguage);
-        return currentLanguage === Language.Portuguese ?
-            `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")} ${ranked}` :
-            currentLanguage === Language.Bosnian ?
-            `${rank.replace("st", ".").replace("nd", ".").replace("rd", ".").replace("th", ".")} ${ranked}` :
-            `Ranked ${rank}`;
-    }
 
     const getLeagueType = (league: string) => {
         switch (league) {
@@ -105,6 +105,8 @@ const LeagueRanks = ({
 
         const defaultBackgroundStyle = "normal-entry";
 
+        const rankString = buildRankString(leagueStat.pokemonRankInLeague, currentLanguage);
+        
         return (
             <div className="with-border">
                 <ListEntry
@@ -125,7 +127,8 @@ const LeagueRanks = ({
                     onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
                     secondaryContent={[
                         <React.Fragment key={leagueStat.leagueTitle}>
-                            {buildRankString(leagueStat.pokemonRankInLeague)}
+                            {rankString && <div className="cp-container with-brightness">{rankString}</div>}
+                            {rankString ? translator(TranslatorKeys.Ranked, currentLanguage) : <div className="unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div>}
                             <span className={`larger-rank-change with-brightness ${rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
                         </React.Fragment>
                     ]}

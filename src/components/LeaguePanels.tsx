@@ -128,7 +128,7 @@ const LeaguePanels = ({
                         </div>
                     </div>
                 </div>
-                <div className="centered-text">... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}</div>
+                <div className="centered-text white-text">... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}</div>
                 <img className='background-absolute-img' width="100%" height="100%" src={logoSrc} alt={leagueStat.leagueTitle} />
             </div>
         );

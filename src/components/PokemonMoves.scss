@@ -258,6 +258,10 @@ summary::-webkit-details-marker {
     gap: 3px;
 }
 
+.unranked {
+    opacity: 0.6;
+}
+
 .fast-moves-section,
 .charged-moves-section {
     display: flex;

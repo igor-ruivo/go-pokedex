@@ -16,16 +16,17 @@ interface IPokemonImage {
     specificWidth?: number;
     specificHeight?: number;
     galleryToggle?: boolean;
+    lowRes?: boolean;
 }
 
-const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, withName, lazy, descriptionComponent, xl, buddy, specificWidth, specificHeight, galleryToggle}: IPokemonImage, ref) => {
+const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, withName, lazy, descriptionComponent, xl, buddy, specificWidth, specificHeight, galleryToggle, lowRes}: IPokemonImage, ref) => {
     const {currentLanguage} = useLanguage();
     const {imageSource} = useImageSource();
 
     const fetchSrc: (urlKind: ImageSource) => string = (urlKind: ImageSource) => {
         switch (urlKind) {
             case ImageSource.Official:
-                return pokemon.imageUrl;
+                return lowRes ? pokemon.imageUrl.replace("full", "detail") : pokemon.imageUrl;
             case ImageSource.GO:
                 return goBaseUrl + pokemon.goImageUrl;
             case ImageSource.Shiny:

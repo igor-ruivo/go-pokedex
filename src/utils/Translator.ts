@@ -6,6 +6,8 @@ export enum TranslatorKeys {
     Official,
     Language,
     Source,
+    Types1,
+    Types2,
     Search,
     Loading,
     Name,
@@ -13,6 +15,7 @@ export enum TranslatorKeys {
     IVTables,
     SearchStrings,
     Attack,
+    In,
     Defense,
     HP,
     LVL,
@@ -306,7 +309,7 @@ const unranked = new Map<Language, string>([
 ]);
 
 const ranked = new Map<Language, string>([
-    [Language.English, "Ranked"],
+    [Language.English, "Place"],
     [Language.Portuguese, "Lugar"],
     [Language.Bosnian, "Mjesto"]
 ]);
@@ -647,6 +650,24 @@ const strongAgainst = new Map<Language, string>([
     [Language.Bosnian, "je jak protiv"]
 ]);
 
+const inKey = new Map<Language, string>([
+    [Language.English, "in"],
+    [Language.Portuguese, "em"],
+    [Language.Bosnian, "za"]
+]);
+
+const types1 = new Map<Language, string>([
+    [Language.English, "among"],
+    [Language.Portuguese, "nos tipos"],
+    [Language.Bosnian, "među tipovima"]
+]);
+
+const types2 = new Map<Language, string>([
+    [Language.English, "types"],
+    [Language.Portuguese, ""],
+    [Language.Bosnian, ""]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.LanguageSettings, languageSettings],
@@ -739,7 +760,10 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.BaseValue, baseValue],
     [TranslatorKeys.Counters, counters],
     [TranslatorKeys.WeakAgainst, weakAgainst],
-    [TranslatorKeys.StrongAgainst, strongAgainst]
+    [TranslatorKeys.StrongAgainst, strongAgainst],
+    [TranslatorKeys.In, inKey],
+    [TranslatorKeys.Types1, types1],
+    [TranslatorKeys.Types2, types2]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

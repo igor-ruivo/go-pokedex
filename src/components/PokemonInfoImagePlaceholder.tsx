@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
-import { useLanguage } from "../contexts/language-context";
+import { Language, useLanguage } from "../contexts/language-context";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import PokemonImage from "./PokemonImage";
 import "./PokemonInfoImagePlaceholder.scss";
@@ -21,13 +21,13 @@ const valueToLevel = (value: number) => {
     return value / 2 + 0.5
 }
 
+export const translatedType = (type: PokemonTypes, language: Language) => {
+    const translatorKey = TranslatorKeys[type];
+    return translator(translatorKey as any, language)
+}
+
 const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
-
-    const translatedType = (type: PokemonTypes) => {
-        const translatorKey = TranslatorKeys[type];
-        return translator(translatorKey as any, currentLanguage)
-    }
 
     return <div className="with-margin-bottom">
         <div className="pokemon_main_info item">
@@ -43,10 +43,10 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 </span>
                 <span className="pokemon_types">
                     {props.pokemon.types[0] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[0]})`}}>
-                        {translatedType(props.pokemon.types[0])}
+                        {translatedType(props.pokemon.types[0], currentLanguage)}
                     </span>}
                     {props.pokemon.types[1] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[1]})`}}>
-                        {translatedType(props.pokemon.types[1])}
+                        {translatedType(props.pokemon.types[1], currentLanguage)}
                     </span>}
                 </span>
                 <span className="cp-level big">

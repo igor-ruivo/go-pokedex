@@ -243,10 +243,11 @@ const Navbar = () => {
                                 withName={false}
                                 specificHeight={28}
                                 specificWidth={28}
+                                lowRes
                               />
                               {option.label}
                             </Box>
-                          )}
+                        )}
                     />
                 </div>
             </section>

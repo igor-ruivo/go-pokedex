@@ -41,7 +41,8 @@ const type = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(
 export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPokemon> = (data: any) => {
     const releasedOverride = new Set<string>([
         "cosmog",
-        "cosmoem"
+        "cosmoem",
+        "rayquaza_mega"
     ]);    
 
     const overrideMappings = new Map<string, string>();
