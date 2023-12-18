@@ -28,7 +28,6 @@ export const buildRankString = (rank: string|undefined, language: Language) => {
         return undefined;
     }
 
-    const ranked = translator(TranslatorKeys.Ranked, language);
     return language === Language.Portuguese ?
         `${rank.replace("st", "º").replace("nd", "º").replace("rd", "º").replace("th", "º")}` :
         language === Language.Bosnian ?
