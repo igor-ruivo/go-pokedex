@@ -23,7 +23,7 @@
 @media (min-width: 500px) {
     .img-clickable {
         &:hover&.with-img-dropShadow {
-            filter: var(--hover-brightness) drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
+            filter: var(--hover-brightness) drop-shadow(0 1px 0 rgba(0,0,0,.15)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.15)) drop-shadow(0 -1px 0 rgba(0,0,0,.15))
         }
         &:hover {
             filter: var(--hover-brightness)
@@ -32,7 +32,7 @@
 }
 
 .with-img-dropShadow {
-    filter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,.15)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.15)) drop-shadow(0 -1px 0 rgba(0,0,0,.15))
 }
 
 .shadow-overlay {
