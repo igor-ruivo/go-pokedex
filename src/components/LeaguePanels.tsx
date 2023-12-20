@@ -163,8 +163,8 @@ const LeaguePanels = ({
                 </div>
                 <div className="raid-stats">
                     {
-                        raidStat.typeRanks.map(r => (
-                            <div key={r.type} className="pvp-labels">
+                        raidStat.typeRanks.map((r, i) => (
+                            <div key={!r.type ? "undefined-second-type-" + i : r.type} className="pvp-labels">
                                  <RaidCard
                                     type={r.type}
                                     rank={r.rank}

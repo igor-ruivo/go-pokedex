@@ -14,6 +14,7 @@ export enum TranslatorKeys {
     Name,
     Counters,
     IVTables,
+    WIP,
     SearchStrings,
     PickIVs,
     FastMove,
@@ -696,6 +697,12 @@ const pickIVs = new Map<Language, string>([
     [Language.Bosnian, "Unesite IV vrijednosti vašeg Pokémona:"]
 ]);
 
+const wip = new Map<Language, string>([
+    [Language.English, "Work in progress. Stay tuned!"],
+    [Language.Portuguese, "Indisponível. Tenta mais tarde!"],
+    [Language.Bosnian, "Rad u tijeku. Ostanite u tijeku!"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.LanguageSettings, languageSettings],
@@ -795,7 +802,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Types2, types2],
     [TranslatorKeys.FastMove, fastMove],
     [TranslatorKeys.ChargedMove, chargedMove],
-    [TranslatorKeys.NotAvailableForRaids, notAvailableForRaids]
+    [TranslatorKeys.NotAvailableForRaids, notAvailableForRaids],
+    [TranslatorKeys.WIP, wip]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

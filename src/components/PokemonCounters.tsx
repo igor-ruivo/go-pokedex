@@ -25,6 +25,12 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const navigate = useNavigate();
     const {imageSource} = useImageSource();
 
+    if (league === LeagueType.RAID) {
+        return <div className="item default-padding">
+            {translator(TranslatorKeys.WIP, currentLanguage)}
+        </div>
+    }
+
     if (!fetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
     }
