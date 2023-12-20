@@ -37,6 +37,12 @@ const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
                     {league === LeagueType.CUSTOM_CUP && <span className="league-tooltip">{gameTranslator(GameTranslatorKeys.Holiday, currentGameLanguage)}</span>}
                 </div>
             </li>
+            <li>
+                <div onClick={() => handleSetLeague(LeagueType.RAID)} className={"header-tab league-picker selectable " + (league === LeagueType.RAID ? "selected" : "")}>
+                    <img className="raid-img-with-contrast" height="32" width="32" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="Raids"/>
+                    {league === LeagueType.RAID && <span className="league-tooltip">{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>}
+                </div>
+            </li>
         </ul>
     </nav>;
 }

@@ -74,7 +74,8 @@ code {
     --type-Rock: #9f9052;
     --type-Steel: #548a9e;
     --type-Water: #3f7dba;
-    --contrastFilter: none;
+    --contrastFilter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
+    --raid-wrapper-shadow: rgba(0, 0, 0, .38);
 }
 
 .theme-light {
@@ -134,5 +135,6 @@ code {
     --type-Rock: #cdba6c;
     --type-Steel: #538b9f;
     --type-Water: #5092d5;
-    --contrastFilter: brightness(0.8);
+    --contrastFilter: brightness(0.33);
+    --raid-wrapper-shadow: rgba(0, 0, 0, .18);
 }

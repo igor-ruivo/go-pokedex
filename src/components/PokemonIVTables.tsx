@@ -168,6 +168,9 @@ const PokemonIVTables = ({pokemon, league, levelCap, attackIV, setAttackIV, defe
         case LeagueType.MASTER_LEAGUE:
             cpCap = Number.MAX_VALUE;
             break;
+        case LeagueType.RAID:
+            cpCap = Number.MAX_VALUE;
+            break;
         case LeagueType.CUSTOM_CUP:
             cpCap = 1500;
             break;
@@ -263,39 +266,44 @@ const PokemonIVTables = ({pokemon, league, levelCap, attackIV, setAttackIV, defe
         );
     }
 
-    return (
-        <div className="banner_layout">
-            <div className="extra-ivs-options item default-padding">
-                {translator(TranslatorKeys.SearchIVs, currentLanguage)}:
-                <select value={attackIV} onChange={e => setAttackIV(+e.target.value)} className="select-level">
-                    {Array.from({length: 16}, (_x, i) => i)
-                        .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>
-                <select value={defenseIV} onChange={e => setDefenseIV(+e.target.value)} className="select-level">
-                    {Array.from({length: 16}, (_x, i) => i)
-                        .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>
-                <select value={hpIV} onChange={e => setHPIV(+e.target.value)} className="select-level">
-                    {Array.from({length: 16}, (_x, i) => i)
-                        .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>
-            </div>
-            <TableVirtuoso
-                className="ivs-table item"
-                data={visibleRows.sort((d1: Data, d2: Data) => {
-                    if (d1.ivs === `${attackIV} / ${defenseIV} / ${hpIV}` && d2.ivs !== `${attackIV} / ${defenseIV} / ${hpIV}`) {
-                        return -1;
-                    }
-                    if (d1.ivs !== `${attackIV} / ${defenseIV} / ${hpIV}` && d2.ivs === `${attackIV} / ${defenseIV} / ${hpIV}`) {
-                        return 1;
-                    }
-                    return 0;
-                })}
-                components={VirtuosoTableComponents}
-                fixedHeaderContent={fixedHeaderContent}
-                itemContent={rowContent}
-            />
-        </div>
+    return (<>
+        {league !== LeagueType.RAID ?
+            <div className="banner_layout">
+                <div className="extra-ivs-options item default-padding">
+                    {translator(TranslatorKeys.SearchIVs, currentLanguage)}:
+                    <select value={attackIV} onChange={e => setAttackIV(+e.target.value)} className="select-level">
+                        {Array.from({length: 16}, (_x, i) => i)
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                    <select value={defenseIV} onChange={e => setDefenseIV(+e.target.value)} className="select-level">
+                        {Array.from({length: 16}, (_x, i) => i)
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                    <select value={hpIV} onChange={e => setHPIV(+e.target.value)} className="select-level">
+                        {Array.from({length: 16}, (_x, i) => i)
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                </div>
+                <TableVirtuoso
+                    className="ivs-table item"
+                    data={visibleRows.sort((d1: Data, d2: Data) => {
+                        if (d1.ivs === `${attackIV} / ${defenseIV} / ${hpIV}` && d2.ivs !== `${attackIV} / ${defenseIV} / ${hpIV}`) {
+                            return -1;
+                        }
+                        if (d1.ivs !== `${attackIV} / ${defenseIV} / ${hpIV}` && d2.ivs === `${attackIV} / ${defenseIV} / ${hpIV}`) {
+                            return 1;
+                        }
+                        return 0;
+                    })}
+                    components={VirtuosoTableComponents}
+                    fixedHeaderContent={fixedHeaderContent}
+                    itemContent={rowContent}
+                />
+            </div> : <div>
+                    Not available for Raids.
+                </div>
+            }
+        </>
     );
 }
 

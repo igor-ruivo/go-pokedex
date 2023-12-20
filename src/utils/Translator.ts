@@ -14,6 +14,8 @@ export enum TranslatorKeys {
     Counters,
     IVTables,
     SearchStrings,
+    FastMove,
+    ChargedMove,
     Attack,
     In,
     Defense,
@@ -422,6 +424,18 @@ const chargedMoves = new Map<Language, string>([
     [Language.Bosnian, "Posebni Napadi"]
 ]);
 
+const fastMove = new Map<Language, string>([
+    [Language.English, "Fast Move"],
+    [Language.Portuguese, "Ataque Ágil"],
+    [Language.Bosnian, "Brzi Napad"]
+]);
+
+const chargedMove = new Map<Language, string>([
+    [Language.English, "Charged Move"],
+    [Language.Portuguese, "Ataque Carregado"],
+    [Language.Bosnian, "Posebni Napad"]
+]);
+
 const stats = new Map<Language, string>([
     [Language.English, "Stats"],
     [Language.Portuguese, "Status"],
@@ -763,7 +777,9 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.StrongAgainst, strongAgainst],
     [TranslatorKeys.In, inKey],
     [TranslatorKeys.Types1, types1],
-    [TranslatorKeys.Types2, types2]
+    [TranslatorKeys.Types2, types2],
+    [TranslatorKeys.FastMove, fastMove],
+    [TranslatorKeys.ChargedMove, chargedMove]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

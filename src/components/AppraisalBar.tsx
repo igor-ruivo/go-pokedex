@@ -91,7 +91,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
         }
 
         return (
-            <div className={`stat ${stat !== Stat.HP ? "not-last-stat" : ""}`}>
+            <div className="stat">
                 <h4>
                     <div className="stat-current-value">
                         {statToLang(stat)}

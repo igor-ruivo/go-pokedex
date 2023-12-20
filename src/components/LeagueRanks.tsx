@@ -19,6 +19,7 @@ interface ILeaguePanelsProps {
     ultraLeagueStats: LeagueStat;
     masterLeagueStats: LeagueStat;
     customLeagueStats: LeagueStat;
+    raidsStats: LeagueStat;
     league: LeagueType;
     handleSetLeague: (newLeague: LeagueType) => void;
 }
@@ -40,6 +41,7 @@ const LeagueRanks = ({
     ultraLeagueStats,
     masterLeagueStats,
     customLeagueStats,
+    raidsStats,
     league,
     handleSetLeague
 }: ILeaguePanelsProps) => {
@@ -56,13 +58,15 @@ const LeagueRanks = ({
                 return LeagueType.MASTER_LEAGUE;
             case "custom":
                 return LeagueType.CUSTOM_CUP;
+            case "raid":
+                return LeagueType.RAID;
             default:
                 throw new Error("Missing case for switch: " + league);
         }
     }
 
     const computeRankChange = (speciesId: string, leagueTitle: string) => {
-        if (!pvpFetchCompleted) {
+        if (!pvpFetchCompleted || leagueTitle === "raid") {
             return "";
         }
 
@@ -87,6 +91,9 @@ const LeagueRanks = ({
             case "custom":
                 logoSrc = `${process.env.PUBLIC_URL}/images/leagues/holiday.png`;
                 break;
+            case "raid":
+                logoSrc = `${process.env.PUBLIC_URL}/images/raid.webp`;
+                break;
         }
 
         const leagueToLeagueName = (league: LeagueType) => {
@@ -99,6 +106,8 @@ const LeagueRanks = ({
                     return "master";
                 case LeagueType.CUSTOM_CUP:
                     return "custom";
+                case LeagueType.RAID:
+                    return "raid";
             }
         }
 
@@ -111,7 +120,7 @@ const LeagueRanks = ({
                 <ListEntry
                     mainIcon={{
                         imageDescription: leagueStat.leagueTitle,
-                        image: <img height={28} width={28} src={logoSrc} alt={leagueStat.leagueTitle}/>,
+                        image: <div className={leagueStat.leagueTitle === "raid" ? "img-padding" : ""}><img className={leagueStat.leagueTitle === "raid" ? "raid-img" : ""} height={leagueStat.leagueTitle === "raid" ? 20 : 28} width={leagueStat.leagueTitle === "raid" ? 20 : 28} src={logoSrc} alt={leagueStat.leagueTitle}/></div>,
                         withBackground: false
                     }}
                     extraIcons={[
@@ -128,7 +137,7 @@ const LeagueRanks = ({
                         <React.Fragment key={leagueStat.leagueTitle}>
                             {rankString && <div className="cp-container with-brightness">{rankString}</div>}
                             {rankString ? translator(TranslatorKeys.Ranked, currentLanguage) : <div className="unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div>}
-                            <span className={`larger-rank-change with-brightness ${rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
+                            <span className={`larger-rank-change with-brightness ${leagueStat.leagueTitle !== "raid" && rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
                         </React.Fragment>
                     ]}
                     slim
@@ -144,6 +153,7 @@ const LeagueRanks = ({
         {renderPanel(ultraLeagueStats)}
         {renderPanel(masterLeagueStats)}
         {renderPanel(customLeagueStats)}
+        {renderPanel(raidsStats)}
     </div>;
 }
 

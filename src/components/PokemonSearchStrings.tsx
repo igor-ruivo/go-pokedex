@@ -82,6 +82,9 @@ const PokemonSearchStrings = ({pokemon, league, levelCap}: IPokemonSearchStrings
         case LeagueType.MASTER_LEAGUE:
             cpCap = Number.MAX_VALUE;
             break;
+        case LeagueType.RAID:
+            cpCap = Number.MAX_VALUE;
+            break;
         case LeagueType.CUSTOM_CUP:
             cpCap = 1500;
             break;
@@ -289,22 +292,28 @@ const PokemonSearchStrings = ({pokemon, league, levelCap}: IPokemonSearchStrings
     }
 
     return (
-        <div className="banner_layout">
-            <div className="extra-ivs-options item default-padding">
-                Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
-                    {Array.from({length: 4096}, (_x, i) => i + 1)
-                        .map(e => (<option key={e} value={e}>{e}</option>))}
-                </select>
-                &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.TrashString, currentLanguage)} <input type="checkbox" checked={trash} onChange={_ => setTrash(previous => !previous)}/>
-            </div>
+        <>
+            {league !== LeagueType.RAID ?
+                <div className="banner_layout">
+                    <div className="extra-ivs-options item default-padding">
+                        Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
+                            {Array.from({length: 4096}, (_x, i) => i + 1)
+                                .map(e => (<option key={e} value={e}>{e}</option>))}
+                        </select>
+                        &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.TrashString, currentLanguage)} <input type="checkbox" checked={trash} onChange={_ => setTrash(previous => !previous)}/>
+                    </div>
 
-            {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label item default-padding"><span>{p.speciesId === pokemon.speciesId ?
-            `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 0 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 1 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === 3 ? gameTranslator(GameTranslatorKeys.HolidayCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
-            `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 0 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 1 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === 3 ? gameTranslator(GameTranslatorKeys.HolidayCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}</span><textarea id={p.speciesId + "-textarea"} className="search-strings-container"
-                value={computeSearchString(p)}
-                readOnly
-            /></div>)}
-        </div>
+                    {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label item default-padding"><span>{p.speciesId === pokemon.speciesId ?
+                    `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 0 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 1 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === 3 ? gameTranslator(GameTranslatorKeys.HolidayCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}` :
+                    `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 0 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 1 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === 3 ? gameTranslator(GameTranslatorKeys.HolidayCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.UpToLevel, currentLanguage)} ${levelCap}`}</span><textarea id={p.speciesId + "-textarea"} className="search-strings-container"
+                        value={computeSearchString(p)}
+                        readOnly
+                    /></div>)}
+                </div> : <div>
+                    Not available for Raids.
+                </div>
+            }
+        </>
     );
 }
 

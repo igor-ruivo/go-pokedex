@@ -7,6 +7,13 @@
     gap: 6px;
 }
 
+.raid-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 6px;
+    gap: 6px;
+}
+
 .pvp-stats-column {
     display: flex;
     position: relative;
@@ -207,6 +214,10 @@
 
 .custom {
     background: #54aa77;
+}
+
+.raid {
+    background: rgb(205, 165, 148);
 }
 
 @media (max-width: 530px) {

@@ -3,7 +3,7 @@
 }
 
 .raid-wrapper {
-    padding-top: 5px;
+    padding-top: 7px;
     height: 100%;
     width: 100%;
     flex-direction: column;
@@ -16,13 +16,17 @@
     gap: 5px;
     border-radius: 12px;
     list-style: none;
-    max-width: 230px;
     place-self: center;
-    padding-bottom: 5px;
+    padding-bottom: 8px;
+    background-color: var(--raid-wrapper-shadow);
 }
 
 .raid-img-with-contrast {
-    filter: var(--contrastFilter) drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
+    filter: var(--contrastFilter);
+}
+
+.raid-img {
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
 }
 
 .raid-rank-types {

@@ -48,6 +48,7 @@
 
 .appraisal {
     width: 100%;
+    align-content: space-evenly;
     padding-top: 12px;
     padding-bottom: 12px;
     padding-left: 12px;
@@ -59,10 +60,6 @@
     margin-top: 0px;
     margin-right: 10px;
     margin-left: 10px;
-}
-
-.not-last-stat {
-    margin-bottom: 10px;
 }
 
 .appraisal .stat h4 {
@@ -161,10 +158,6 @@
 
     .stat-current-value {
         align-self: center;
-    }
-    
-    .not-last-stat {
-        margin-bottom: 0px;
     }
     
     .appraisal .stat {

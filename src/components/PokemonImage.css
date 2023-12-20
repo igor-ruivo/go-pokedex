@@ -56,6 +56,16 @@
     left: 0;
 }
 
+.background-absolute-img-raid {
+    object-fit: contain;
+    position: absolute;
+    z-index: 0 !important;
+    opacity: 35%;
+    top: 0;
+    left: 0;
+    padding: 20px;
+}
+
 .xl-overlay {
     opacity: 1;
     position: absolute;

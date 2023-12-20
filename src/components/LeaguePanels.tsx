@@ -1,20 +1,16 @@
+import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import translator, { TranslatorKeys } from "../utils/Translator";
+import { ordinal } from "../utils/conversions";
 import "./LeaguePanels.scss";
-
-interface PokemonLeagueMove {
-    moveName: string,
-    type: string,
-    isElite: boolean,
-    isLegacy: boolean
-}
+import { buildRankString } from "./LeagueRanks";
+import RaidCard from "./RaidCard";
 
 interface LeagueStat {
     leagueTitle: string,
     bestReachablePokemonName: string,
-    pokemonRankInLeague: string | undefined,
     pokemonLeaguePercentage: number,
     pokemonLeaguePercentile: number,
     pokemonCP: number,
@@ -24,9 +20,19 @@ interface LeagueStat {
     hp: number,
     bestCP: number,
     bestLevel: number,
-    fastAttack: PokemonLeagueMove,
-    chargedAttack1: PokemonLeagueMove,
-    chargedAttack2: PokemonLeagueMove,
+}
+
+interface TypeRank {
+    type: PokemonTypes,
+    rank: number
+}
+
+interface RaidStat {
+    bestReachablePokemonName: string,
+    rank: number,
+    dps: number,
+    typeRanks: TypeRank[]
+    
 }
 
 interface ILeaguePanelsProps {
@@ -34,6 +40,7 @@ interface ILeaguePanelsProps {
     ultraLeagueStats: LeagueStat,
     masterLeagueStats: LeagueStat,
     customLeagueStats: LeagueStat,
+    raidStats: RaidStat,
     atk: number,
     def: number,
     hp: number,
@@ -45,6 +52,7 @@ const LeaguePanels = ({
     ultraLeagueStats,
     masterLeagueStats,
     customLeagueStats,
+    raidStats,
     atk,
     def,
     hp,
@@ -128,8 +136,45 @@ const LeaguePanels = ({
                         </div>
                     </div>
                 </div>
-                <div className="centered-text white-text">... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}</div>
+                <div className="centered-text pvp-entry">... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}</div>
                 <img className='background-absolute-img' width="100%" height="100%" src={logoSrc} alt={leagueStat.leagueTitle} />
+            </div>
+        );
+    }
+
+    const renderRaidPanel = (raidStat: RaidStat) => {
+        return (
+            <div className="pvp-stats-column raid">
+                <div>
+                    <div className="pvp-entry rank-title">
+                        <div className="pvp-entry-content potential">
+                            <strong className="cp-container with-brightness">
+                            {buildRankString(ordinal(raidStat.rank), currentLanguage)}&nbsp;
+                            </strong>
+                            <strong>
+                                {translator(TranslatorKeys.Ranked, currentLanguage)}
+                            </strong>
+                            <strong>
+                                {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}
+                            </strong>
+                            <sub className="contained-big weighted-font">{`(${Math.round(raidStat.dps * 100) / 100} DPS)`}</sub>
+                        </div>
+                    </div>
+                </div>
+                <div className="raid-stats">
+                    {
+                        raidStat.typeRanks.map(r => (
+                            <div key={r.type} className="pvp-labels">
+                                 <RaidCard
+                                    type={r.type}
+                                    rank={r.rank}
+                                />
+                            </div>
+                        ))
+                    }
+                </div>
+                <div className="centered-text pvp-entry">... {translator(TranslatorKeys.As, currentLanguage)} {raidStat.bestReachablePokemonName}</div>
+                <img className='background-absolute-img-raid' width="100%" height="100%" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="raid" />
             </div>
         );
     }
@@ -139,6 +184,7 @@ const LeaguePanels = ({
         {league === LeagueType.ULTRA_LEAGUE && renderPanel(ultraLeagueStats)}
         {league === LeagueType.MASTER_LEAGUE && renderPanel(masterLeagueStats)}
         {league === LeagueType.CUSTOM_CUP && renderPanel(customLeagueStats)}
+        {league === LeagueType.RAID && renderRaidPanel(raidStats)}
     </div>;
 }
 

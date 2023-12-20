@@ -10,6 +10,7 @@ import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useEffect, useState } from "react";
 import ListEntry from "./ListEntry";
+import { Effectiveness, calculateDamage, pveDPS } from "../utils/pokemon-helper";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -35,16 +36,58 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
         return <></>;
     }
 
+    const getAllFastMoves = (p: IGamemasterPokemon) => {
+        return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast))));
+    }
+
+    const getAllChargedMoves = (p: IGamemasterPokemon) => {
+        return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast))));
+    }
+
+    const computeDPSEntry = (p: IGamemasterPokemon, attackIV = 15, level = 100, forcedType = "") => {
+        const fastMoves = getAllFastMoves(p);
+        const chargedMoves = getAllChargedMoves(p);
+        let higherDPS = 0;
+        let higherFast = "";
+        let higherCharged = "";
+        for(let i = 0; i < fastMoves.length; i++) {
+            for(let j = 0; j < chargedMoves.length; j++) {
+                const fastMove = moves[fastMoves[i]];
+                const chargedMove = moves[chargedMoves[j]];
+                if (forcedType && chargedMove.type !== forcedType) {
+                    continue;
+                }
+                const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level);
+                const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, Effectiveness.Effective, attackIV, level);
+                const dps = pveDPS(chargedMoveDmg, fastMoveDmg, fastMove.pveDuration, chargedMove.pveEnergyDelta * -1, fastMove.pveEnergyDelta, chargedMove.pveDuration);
+                if (dps > higherDPS) {
+                    higherDPS = dps;
+                    higherFast = fastMove.moveId;
+                    higherCharged = chargedMove.moveId;
+                }
+            }
+        }
+        return {
+            fastMoveId: higherFast,
+            chargedMoveId: higherCharged,
+            dps: higherDPS,
+            speciesId: p.speciesId
+        };
+    }
+
     const greatLeagueMoveset = rankLists[0][pokemon.speciesId]?.moveset ?? [];
     const ultraLeagueMoveset = rankLists[1][pokemon.speciesId]?.moveset ?? [];
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
     const customLeagueMoveset = rankLists[3][pokemon.speciesId]?.moveset ?? [];
 
-    const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : masterLeagueMoveset;
+    const raidComputation = computeDPSEntry(pokemon);
+    const raidMoveset = [raidComputation.fastMoveId, raidComputation.chargedMoveId];
+
+    const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : league === LeagueType.MASTER_LEAGUE ? masterLeagueMoveset : raidMoveset;
     
     const fastMoveClassName = `background-${moves[relevantMoveSet[0]]?.type}`;
     const chargedMove1ClassName = `background-${moves[relevantMoveSet[1]]?.type}`;
-    const chargedMove2ClassName = `background-${moves[relevantMoveSet[2]]?.type}`;
+    const chargedMove2ClassName = relevantMoveSet[2] ? `background-${moves[relevantMoveSet[2]]?.type}` : "";
 
     const translateMoveFromMoveId = (moveId: string) => {
         const typedMove = moves[moveId];
@@ -86,16 +129,16 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
 
     const fastMoveTypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[0]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[0]]?.type.substring(1)) as keyof typeof TranslatorKeys];
     const chargedMove1TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[1]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[1]]?.type.substring(1)) as keyof typeof TranslatorKeys];
-    const chargedMove2TypeTranslatorKey = TranslatorKeys[(moves[relevantMoveSet[2]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[2]]?.type.substring(1)) as keyof typeof TranslatorKeys];
+    const chargedMove2TypeTranslatorKey = relevantMoveSet[2] ? TranslatorKeys[(moves[relevantMoveSet[2]]?.type.substring(0, 1).toLocaleUpperCase() + moves[relevantMoveSet[2]]?.type.substring(1)) as keyof typeof TranslatorKeys] : TranslatorKeys.Normal;
     
     const fastMoveUrl = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[0]]?.type}.png`;
     const chargedMove1Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[1]]?.type}.png`;
-    const chargedMove2Url = `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[2]]?.type}.png`;
+    const chargedMove2Url = relevantMoveSet[2] ? `${process.env.PUBLIC_URL}/images/types/${moves[relevantMoveSet[2]]?.type}.png` : "";
 
-    const leagueName = gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.HolidayCup, currentGameLanguage);
+    const leagueName = gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.Raids, currentGameLanguage);
 
     const isStabMove = (moveId: string) => pokemon.types.map(t => { const stringVal = t.toString(); return stringVal.toLocaleLowerCase() }).includes(moves[moveId].type.toLocaleLowerCase());
-    const hasBuffs = (moveId: string) => !!moves[moveId].pvpBuffs;
+    const hasBuffs = (moveId: string) => league !== LeagueType.RAID && !!moves[moveId].pvpBuffs;
     
     const computeIdAttr = (moveId: string, isRecommended: boolean) => `details-${moveId}-${isRecommended ? "rec" : "all"}`;
 
@@ -189,6 +232,33 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
         return details;
     }
 
+    const relevantMovePower = (moveId: string) => {
+        switch (league) {
+            case LeagueType.RAID:
+                return moves[moveId].pvePower;
+            default:
+                return moves[moveId].pvpPower;
+        }
+    };
+
+    const relevantMoveEnergy = (moveId: string) => {
+        switch (league) {
+            case LeagueType.RAID:
+                return moves[moveId].pveEnergyDelta;
+            default:
+                return moves[moveId].pvpEnergyDelta;
+        }
+    };
+
+    const relevantMoveDuration = (moveId: string) => {
+        switch (league) {
+            case LeagueType.RAID:
+                return moves[moveId].pveDuration;
+            default:
+                return moves[moveId].pvpDuration;
+        }
+    };
+
     const renderMove = (moveId: string, typeTranslatorKey: TranslatorKeys, moveUrl: string, className: string, isChargedMove: boolean, isRecommended: boolean) => {
         return <ListEntry
             mainIcon={
@@ -202,27 +272,27 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             backgroundColorClassName={className}
             secondaryContent={[
                 <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-atk`}>
-                    {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) * 10) / 10}
+                    {Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) * 10) / 10}
                     <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={16}/>
                 </React.Fragment>,
                 <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-eng`}>
-                    {moves[moveId].pvpEnergyDelta * (isChargedMove ? -1 : 1)}
+                    {relevantMoveEnergy(moveId) * (isChargedMove ? -1 : 1)}
                     <img className="invert-light-mode" alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={11} height={16}/>
                 </React.Fragment>,
-                !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-cd`}>
-                    {moves[moveId].pvpDuration}s
+                (!isChargedMove || league === LeagueType.RAID) && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-cd`}>
+                    {relevantMoveDuration(moveId)}s
                     <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={11} height={16}/>
                 </React.Fragment>
             ]}
             toggledContent={[
                 !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-dps`}>
-                    {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / moves[moveId].pvpDuration * 100) / 100} DPS
+                    {Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / relevantMoveDuration(moveId) * 100) / 100} DPS
                 </React.Fragment>,
                 !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-eps`}>
-                {Math.round(moves[moveId].pvpEnergyDelta / moves[moveId].pvpDuration * 100) / 100} EPS
+                {Math.round(relevantMoveEnergy(moveId) / relevantMoveDuration(moveId) * 100) / 100} EPS
                 </React.Fragment>,
                 isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-dpe`}>
-                {Math.round(moves[moveId].pvpPower * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / moves[moveId].pvpEnergyDelta * -1 * 100) / 100} DPE
+                {Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / relevantMoveEnergy(moveId) * -1 * 100) / 100} DPE
                 </React.Fragment>
             ]}
             details={renderDetails(moveId, isRecommended)}
@@ -237,19 +307,19 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                         {`${translator(TranslatorKeys.RecommendedMoves, currentLanguage)} (${leagueName})`}
                     </h3>
                     <ul className="moves-list extra-padding sparse-list">
-                        {rankLists[league as number][pokemon.speciesId] ? 
+                        {league === LeagueType.RAID || rankLists[league as number][pokemon.speciesId] ? 
                             <div className="moves-list extra-padding sparse-list">
                                 <div className="with-bottom-border">
                                     {renderMove(relevantMoveSet[0], fastMoveTypeTranslatorKey, fastMoveUrl, fastMoveClassName, false, true)}
                                 </div>
                                 <div className="recommended-charged-moves">
                                     {renderMove(relevantMoveSet[1], chargedMove1TypeTranslatorKey, chargedMove1Url, chargedMove1ClassName, true, true)}
-                                    {renderMove(relevantMoveSet[2], chargedMove2TypeTranslatorKey, chargedMove2Url, chargedMove2ClassName, true, true)}
+                                    {relevantMoveSet[2] && renderMove(relevantMoveSet[2], chargedMove2TypeTranslatorKey, chargedMove2Url, chargedMove2ClassName, true, true)}
                                 </div>
                             </div> :
                             <span className="unavailable_moves">
                                 {translator(TranslatorKeys.RecommendedMovesUnavailable, currentLanguage)}<br></br>
-                                {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                                {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.Raids, currentGameLanguage)}
                             </span>
                         }
                     </ul>

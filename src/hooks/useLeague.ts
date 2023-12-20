@@ -5,7 +5,8 @@ export enum LeagueType {
     GREAT_LEAGUE,
     ULTRA_LEAGUE,
     MASTER_LEAGUE,
-    CUSTOM_CUP
+    CUSTOM_CUP,
+    RAID
 }
 
 const getDefaultLeagueType = () => {
