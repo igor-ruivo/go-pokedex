@@ -299,8 +299,8 @@ const PokemonIVTables = ({pokemon, league, levelCap, attackIV, setAttackIV, defe
                     fixedHeaderContent={fixedHeaderContent}
                     itemContent={rowContent}
                 />
-            </div> : <div>
-                    Not available for Raids.
+            </div> : <div className="item default-padding">
+                    {translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.
                 </div>
             }
         </>

@@ -123,10 +123,17 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
     }
 
     return (
-        <div className="appraisal item">
-            {renderStatBar(Stat.Attack, Math.ceil(debouncingAttack))}
-            {renderStatBar(Stat.Defense, Math.ceil(debouncingDefense))}
-            {renderStatBar(Stat.HP, Math.ceil(debouncingHP))}
+        <div className="item default-padding appraisal-combo">
+            <div className="pvp-entry with-border fitting-content smooth">
+                <strong>
+                    {translator(TranslatorKeys.PickIVs, currentLanguage)}
+                </strong>
+            </div>
+            <div className="appraisal item vertical-default-padding">
+                {renderStatBar(Stat.Attack, Math.ceil(debouncingAttack))}
+                {renderStatBar(Stat.Defense, Math.ceil(debouncingDefense))}
+                {renderStatBar(Stat.HP, Math.ceil(debouncingHP))}
+            </div>
         </div>
     );
 };

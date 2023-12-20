@@ -6,7 +6,7 @@ import LeaguePanels from "./LeaguePanels";
 import React, { useCallback, useMemo } from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
-import { Effectiveness, calculateDamage, fetchReachablePokemonIncludingSelf, pveDPS } from "../utils/pokemon-helper";
+import { computeDPSEntry, fetchReachablePokemonIncludingSelf, getAllChargedMoves } from "../utils/pokemon-helper";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import LeagueRanks from "./LeagueRanks";
@@ -85,45 +85,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
 
     const rankOnlyFilteredTypePokemon = true; //TODO: connect to settings
 
-    const getAllFastMoves = useCallback((p: IGamemasterPokemon) => {
-        return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast))));
-    }, [moves]);
-
-    const getAllChargedMoves = useCallback((p: IGamemasterPokemon) => {
-        return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast))));
-    }, [moves]);
-
-    const computeDPSEntry = useCallback((p: IGamemasterPokemon, attackIV = 15, level = 100, forcedType = "") => {
-        const fastMoves = getAllFastMoves(p);
-        const chargedMoves = getAllChargedMoves(p);
-        let higherDPS = 0;
-        let higherFast = "";
-        let higherCharged = "";
-        for(let i = 0; i < fastMoves.length; i++) {
-            for(let j = 0; j < chargedMoves.length; j++) {
-                const fastMove = moves[fastMoves[i]];
-                const chargedMove = moves[chargedMoves[j]];
-                if (forcedType && chargedMove.type !== forcedType) {
-                    continue;
-                }
-                const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level);
-                const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, Effectiveness.Effective, attackIV, level);
-                const dps = pveDPS(chargedMoveDmg, fastMoveDmg, fastMove.pveDuration, chargedMove.pveEnergyDelta * -1, fastMove.pveEnergyDelta, chargedMove.pveDuration);
-                if (dps > higherDPS) {
-                    higherDPS = dps;
-                    higherFast = fastMove.moveId;
-                    higherCharged = chargedMove.moveId;
-                }
-            }
-        }
-        return {
-            fastMoveId: higherFast,
-            chargedMoveId: higherCharged,
-            dps: higherDPS,
-            speciesId: p.speciesId
-        };
-    }, [getAllFastMoves, getAllChargedMoves, moves]);
-
     const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
         if (!forcedType) {
             return true;
@@ -135,8 +96,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             }
         }
 
-        return getAllChargedMoves(p).some(m => moves[m].type === forcedType);
-    }, [rankOnlyFilteredTypePokemon, getAllChargedMoves, moves]);
+        return getAllChargedMoves(p, moves).some(m => moves[m].type === forcedType);
+    }, [rankOnlyFilteredTypePokemon, moves]);
 
     const resourcesNotReady = !fetchCompleted || !pokemon || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
 
@@ -148,9 +109,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         const comparisons: dpsEntry[] = [];
         Object.values(gamemasterPokemon)
             .filter(p => !p.aliasId && typeFilter(p, forcedType))
-            .forEach(p => comparisons.push(computeDPSEntry(p, 15, 100, forcedType)));
+            .forEach(p => comparisons.push(computeDPSEntry(p, moves, 15, 100, forcedType)));
         return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
-    }, [gamemasterPokemon, typeFilter, computeDPSEntry, resourcesNotReady]);
+    }, [gamemasterPokemon, typeFilter, resourcesNotReady, moves]);
 
     const getBestReachableVersion = useCallback((comparisons: dpsEntry[]) => {
         const reachableExcludingMega = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
@@ -167,6 +128,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         return sortedPokemon[0].speciesId;
     }, [gamemasterPokemon, pokemon]);
 
+    //TODO: make this an async service or context provider...
     const globalComparisons = useMemo(() => computeComparisons(), [computeComparisons]);
     const bestReachable = useMemo(() => !resourcesNotReady ? gamemasterPokemon[getBestReachableVersion(globalComparisons)] : undefined, [gamemasterPokemon, globalComparisons, getBestReachableVersion, resourcesNotReady]);
 
@@ -179,7 +141,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     
     const ranks = [rank, type1Rank, type2Rank];
 
-    const selfRealDPS = useMemo(() => resourcesNotReady ? {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0} : computeDPSEntry(bestReachable as IGamemasterPokemon, attack, (level - 1) * 2), [bestReachable, attack, level, computeDPSEntry]);
+    const selfRealDPS = useMemo(() => resourcesNotReady ? {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0} : computeDPSEntry(bestReachable as IGamemasterPokemon, moves, attack, (level - 1) * 2), [bestReachable, attack, level, moves, resourcesNotReady]);
 
     if (resourcesNotReady) {
         return <></>;

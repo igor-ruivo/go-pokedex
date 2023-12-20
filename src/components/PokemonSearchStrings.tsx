@@ -309,8 +309,8 @@ const PokemonSearchStrings = ({pokemon, league, levelCap}: IPokemonSearchStrings
                         value={computeSearchString(p)}
                         readOnly
                     /></div>)}
-                </div> : <div>
-                    Not available for Raids.
+                </div> : <div className="item default-padding">
+                    {translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.
                 </div>
             }
         </>

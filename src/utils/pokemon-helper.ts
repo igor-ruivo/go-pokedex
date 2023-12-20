@@ -1,3 +1,4 @@
+import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import Dictionary from "./Dictionary";
 
@@ -16,6 +17,45 @@ export enum Effectiveness {
     Normal = 1,
     Effective = 1.6,
     DoubleEffective = 2.56
+}
+
+export const getAllFastMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>) => {
+    return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast))));
+}
+
+export const getAllChargedMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>) => {
+    return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast))));
+}
+
+export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>, attackIV = 15, level = 100, forcedType = "") => {
+    const fastMoves = getAllFastMoves(p, moves);
+    const chargedMoves = getAllChargedMoves(p, moves);
+    let higherDPS = 0;
+    let higherFast = "";
+    let higherCharged = "";
+    for(let i = 0; i < fastMoves.length; i++) {
+        for(let j = 0; j < chargedMoves.length; j++) {
+            const fastMove = moves[fastMoves[i]];
+            const chargedMove = moves[chargedMoves[j]];
+            if (forcedType && chargedMove.type !== forcedType) {
+                continue;
+            }
+            const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level);
+            const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, Effectiveness.Effective, attackIV, level);
+            const dps = pveDPS(chargedMoveDmg, fastMoveDmg, fastMove.pveDuration, chargedMove.pveEnergyDelta * -1, fastMove.pveEnergyDelta, chargedMove.pveDuration);
+            if (dps > higherDPS) {
+                higherDPS = dps;
+                higherFast = fastMove.moveId;
+                higherCharged = chargedMove.moveId;
+            }
+        }
+    }
+    return {
+        fastMoveId: higherFast,
+        chargedMoveId: higherCharged,
+        dps: higherDPS,
+        speciesId: p.speciesId
+    };
 }
 
 export const calculateDamage = (baseAtk: number, moveDamage: number, stab: boolean, shadow: boolean, effectiveness: Effectiveness = Effectiveness.Effective, attackIV = 15, level = 100) => Math.floor(0.5 * moveDamage * (((baseAtk + attackIV) * cpm[level]) / ((200 + 15) * cpm[78])) * (stab ? 1.2 : 1) * (shadow ? 1.2 : 1) * effectiveness) + 1;

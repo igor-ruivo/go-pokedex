@@ -10,10 +10,12 @@ export enum TranslatorKeys {
     Types2,
     Search,
     Loading,
+    NotAvailableForRaids,
     Name,
     Counters,
     IVTables,
     SearchStrings,
+    PickIVs,
     FastMove,
     ChargedMove,
     Attack,
@@ -682,9 +684,22 @@ const types2 = new Map<Language, string>([
     [Language.Bosnian, ""]
 ]);
 
+const notAvailableForRaids = new Map<Language, string>([
+    [Language.English, "Page not available for"],
+    [Language.Portuguese, "Página não disponível para"],
+    [Language.Bosnian, "Stranica nije dostupna za"]
+]);
+
+const pickIVs = new Map<Language, string>([
+    [Language.English, "Insert your Pokémon's IVs:"],
+    [Language.Portuguese, "Insere os IVs do teu Pokémon:"],
+    [Language.Bosnian, "Unesite IV vrijednosti vašeg Pokémona:"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.LanguageSettings, languageSettings],
+    [TranslatorKeys.PickIVs, pickIVs],
     [TranslatorKeys.VisualSettings, visualSettings],
     [TranslatorKeys.Official, official],
     [TranslatorKeys.Language, language],
@@ -779,7 +794,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Types1, types1],
     [TranslatorKeys.Types2, types2],
     [TranslatorKeys.FastMove, fastMove],
-    [TranslatorKeys.ChargedMove, chargedMove]
+    [TranslatorKeys.ChargedMove, chargedMove],
+    [TranslatorKeys.NotAvailableForRaids, notAvailableForRaids]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

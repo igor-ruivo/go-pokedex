@@ -10,7 +10,7 @@ import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useEffect, useState } from "react";
 import ListEntry from "./ListEntry";
-import { Effectiveness, calculateDamage, pveDPS } from "../utils/pokemon-helper";
+import { computeDPSEntry, getAllChargedMoves, getAllFastMoves, pveDPS } from "../utils/pokemon-helper";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -36,51 +36,12 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
         return <></>;
     }
 
-    const getAllFastMoves = (p: IGamemasterPokemon) => {
-        return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast))));
-    }
-
-    const getAllChargedMoves = (p: IGamemasterPokemon) => {
-        return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast))));
-    }
-
-    const computeDPSEntry = (p: IGamemasterPokemon, attackIV = 15, level = 100, forcedType = "") => {
-        const fastMoves = getAllFastMoves(p);
-        const chargedMoves = getAllChargedMoves(p);
-        let higherDPS = 0;
-        let higherFast = "";
-        let higherCharged = "";
-        for(let i = 0; i < fastMoves.length; i++) {
-            for(let j = 0; j < chargedMoves.length; j++) {
-                const fastMove = moves[fastMoves[i]];
-                const chargedMove = moves[chargedMoves[j]];
-                if (forcedType && chargedMove.type !== forcedType) {
-                    continue;
-                }
-                const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level);
-                const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, Effectiveness.Effective, attackIV, level);
-                const dps = pveDPS(chargedMoveDmg, fastMoveDmg, fastMove.pveDuration, chargedMove.pveEnergyDelta * -1, fastMove.pveEnergyDelta, chargedMove.pveDuration);
-                if (dps > higherDPS) {
-                    higherDPS = dps;
-                    higherFast = fastMove.moveId;
-                    higherCharged = chargedMove.moveId;
-                }
-            }
-        }
-        return {
-            fastMoveId: higherFast,
-            chargedMoveId: higherCharged,
-            dps: higherDPS,
-            speciesId: p.speciesId
-        };
-    }
-
     const greatLeagueMoveset = rankLists[0][pokemon.speciesId]?.moveset ?? [];
     const ultraLeagueMoveset = rankLists[1][pokemon.speciesId]?.moveset ?? [];
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
     const customLeagueMoveset = rankLists[3][pokemon.speciesId]?.moveset ?? [];
 
-    const raidComputation = computeDPSEntry(pokemon);
+    const raidComputation = computeDPSEntry(pokemon, moves);
     const raidMoveset = [raidComputation.fastMoveId, raidComputation.chargedMoveId];
 
     const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : league === LeagueType.MASTER_LEAGUE ? masterLeagueMoveset : raidMoveset;
@@ -337,7 +298,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </div>
                     <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
                         {
-                            pokemon.fastMoves
+                            getAllFastMoves(pokemon, moves)
                             .sort(movesSorter)
                             .map(m => {
                                 const className = `background-${moves[m].type}`;
@@ -363,7 +324,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </div>
                     <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
                         {
-                            pokemon.chargedMoves
+                            getAllChargedMoves(pokemon, moves)
                             .sort(movesSorter)
                             .map(m => {
                                 const className = `background-${moves[m].type}`;
