@@ -1,7 +1,7 @@
 {
   "name": "go-pokedex",
   "version": "0.1.0",
-  "homepage": "https://www.go-pokedex.com",
+  "homepage": "https://go-pokedex.com",
   "jest": {
     "watchPathIgnorePatterns": [
       "src/__tests__/utils.ts"
