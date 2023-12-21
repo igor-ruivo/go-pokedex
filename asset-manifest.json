@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/go-pokedex/static/css/main.d1584951.css",
-    "main.js": "/go-pokedex/static/js/main.10a60751.js",
-    "static/js/787.4f3012c6.chunk.js": "/go-pokedex/static/js/787.4f3012c6.chunk.js",
-    "index.html": "/go-pokedex/index.html",
-    "main.d1584951.css.map": "/go-pokedex/static/css/main.d1584951.css.map",
-    "main.10a60751.js.map": "/go-pokedex/static/js/main.10a60751.js.map",
-    "787.4f3012c6.chunk.js.map": "/go-pokedex/static/js/787.4f3012c6.chunk.js.map"
+    "main.css": "/static/css/main.d1584951.css",
+    "main.js": "/static/js/main.f4e6810d.js",
+    "static/js/787.4f3012c6.chunk.js": "/static/js/787.4f3012c6.chunk.js",
+    "index.html": "/index.html",
+    "main.d1584951.css.map": "/static/css/main.d1584951.css.map",
+    "main.f4e6810d.js.map": "/static/js/main.f4e6810d.js.map",
+    "787.4f3012c6.chunk.js.map": "/static/js/787.4f3012c6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d1584951.css",
-    "static/js/main.10a60751.js"
+    "static/js/main.f4e6810d.js"
   ]
 }
