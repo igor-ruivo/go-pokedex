@@ -428,8 +428,8 @@ export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMa
             if (forcedType && chargedMove.type !== forcedType) {
                 continue;
             }
-            const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, target ? computeMoveEffectiveness(fastMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level, target ? target.def : 200);
-            const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, target ? computeMoveEffectiveness(chargedMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && chargedMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level, target ? target.def : 200);
+            const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(fastMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level, target ? target.def : 200);
+            const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(chargedMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && chargedMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level, target ? target.def : 200);
             const dps = pveDPS(chargedMoveDmg, fastMoveDmg, fastMove.pveDuration, chargedMove.pveEnergyDelta * -1, fastMove.pveEnergyDelta, chargedMove.pveDuration);
             if (dps > higherDPS) {
                 higherDPS = dps;
@@ -450,8 +450,8 @@ export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMa
     };
 }
 
-export const calculateDamage = (baseAtk: number, moveDamage: number, stab: boolean, shadow: boolean, effectiveness: Effectiveness = Effectiveness.Effective, attackIV = 15, level = 100, targetDef = 200) => {
-    return Math.floor(0.5 * moveDamage * (((baseAtk + attackIV) * cpm[level]) / ((targetDef + 15) * cpm[78])) * (stab ? 1.2 : 1) * (shadow ? 1.2 : 1) * effectiveness) + 1;
+export const calculateDamage = (baseAtk: number, moveDamage: number, stab: boolean, selfShadow: boolean, targetShadow = false, effectiveness: Effectiveness = Effectiveness.Effective, attackIV = 15, level = 100, targetDef = 200) => {
+    return Math.floor(0.5 * moveDamage * (((baseAtk + attackIV) * cpm[level] * (selfShadow ? 1.2 : 1)) / ((targetDef + 15) * cpm[78] * (targetShadow ? 0.8333333 : 1))) * (stab ? 1.2 : 1) * effectiveness) + 1;
 }
 
 export const pveDPS = (chargedMoveDamage: number, fastMoveDamage: number, fastMoveCooldown: number, chargedMoveRequiredEnergy: number, fastMoveEnergy: number, chargedMoveAnimationDuration: number) => {

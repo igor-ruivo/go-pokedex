@@ -74,7 +74,6 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     }, [shadow]);
 
     const comparisons = useMemo(() => {
-        console.log("expensive computation...");
         if (resourcesNotReady) {
             return [];
         }
