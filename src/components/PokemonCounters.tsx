@@ -148,7 +148,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             onClick: (event: any) => detailsClickHandler(event, `${moveId}-${speciesId}`),
             summary: <>
                 <img alt="Special effects" loading="lazy" width="14" height="14" decoding="async" src={`${process.env.PUBLIC_URL}/images/types/${moves[moveId].type}.png`}/>
-                {translateMoveFromMoveId(moveId)}
+                <span>{translateMoveFromMoveId(moveId)}</span>
             </>,
             content: <>
                 <p>
