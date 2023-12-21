@@ -20,11 +20,11 @@ export enum Effectiveness {
 }
 
 export const getAllFastMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>) => {
-    return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast))));
+    return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast)).concat(p.legacyMoves.filter(m => moves[m].isFast))));
 }
 
 export const getAllChargedMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>) => {
-    return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast))));
+    return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast)).concat(p.legacyMoves.filter(m => !moves[m].isFast))));
 }
 
 const computeMoveEffectiveness = (ownMoveType: string, targetType1: string, targetType2?: string) => {

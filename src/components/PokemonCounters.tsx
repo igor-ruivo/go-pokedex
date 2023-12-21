@@ -206,7 +206,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                             <option key={20} value={20}>{20}</option>
                             <option key={30} value={30}>{30}</option>
                             <option key={50} value={50}>{50}</option>
-                        </select> &nbsp; {translator(TranslatorKeys.Items, currentLanguage)}
+                        </select>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mega <input type="checkbox" checked={mega} onChange={() => setMega(p => !p)}/>&nbsp;&nbsp;
                         {translator(TranslatorKeys.Shadow, currentLanguage)} <input type="checkbox" checked={shadow} onChange={() => setShadow(p => !p)}/>
                     </div>

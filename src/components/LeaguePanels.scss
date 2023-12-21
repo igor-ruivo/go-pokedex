@@ -9,9 +9,16 @@
 
 .raid-stats {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     grid-gap: 6px;
     gap: 6px;
+}
+
+.double-card {
+    grid-template-columns: 1fr 1fr;
+}
+
+.triple-card {
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
 .pvp-stats-column {

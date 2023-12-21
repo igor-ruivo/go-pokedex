@@ -161,7 +161,7 @@ const LeaguePanels = ({
                         </div>
                     </div>
                 </div>
-                <div className="raid-stats">
+                <div className={`raid-stats ${raidStat.typeRanks.length < 3 ? "double-card" : "triple-card"}`}>
                     {
                         raidStat.typeRanks.map((r, i) => (
                             <div key={!r.type ? "undefined-second-type-" + i : r.type} className="pvp-labels">
@@ -172,6 +172,14 @@ const LeaguePanels = ({
                             </div>
                         ))
                     }
+                    {Array.from({ length: Math.max(0, 2 - raidStats.typeRanks.length) }).map((_, i) => (
+                        <div key={"undefined-second-type-" + i} className="pvp-labels">
+                            <RaidCard
+                                type={PokemonTypes.Normal}
+                                rank={0}
+                            />
+                        </div>
+                    ))}
                 </div>
                 <div className="centered-text pvp-entry">... {translator(TranslatorKeys.As, currentLanguage)} {raidStat.bestReachablePokemonName}</div>
                 <img className='background-absolute-img-raid' width="100%" height="100%" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="raid" />

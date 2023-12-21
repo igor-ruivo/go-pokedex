@@ -14,6 +14,7 @@ import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
+import PokemonTypes from "./PokemonTypes";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -83,7 +84,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const {rankLists} = usePvp();
     const {moves} = useMoves();
 
-    const rankOnlyFilteredTypePokemon = true; //TODO: connect to settings
+    const rankOnlyFilteredTypePokemon = false; //TODO: connect to settings
 
     const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
         if (!forcedType) {
@@ -132,15 +133,35 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const globalComparisons = useMemo(() => computeComparisons(), [computeComparisons]);
     const bestReachable = useMemo(() => !resourcesNotReady ? gamemasterPokemon[getBestReachableVersion(globalComparisons)] : undefined, [gamemasterPokemon, globalComparisons, getBestReachableVersion, resourcesNotReady]);
 
-    const rank1Comparisons = useMemo(() => resourcesNotReady ? [] : computeComparisons(bestReachable!.types[0].toString().toLocaleLowerCase()), [computeComparisons, bestReachable, resourcesNotReady]);
-    const rank2Comparisons = useMemo(() => !resourcesNotReady && bestReachable!.types.length > 1 ? computeComparisons(bestReachable!.types[1].toString().toLocaleLowerCase()) : [], [bestReachable, computeComparisons, resourcesNotReady]);
-
-    const rank = useMemo(() => resourcesNotReady ? 0 : globalComparisons.findIndex(c => c.speciesId === bestReachable!.speciesId) + 1, [globalComparisons, bestReachable, resourcesNotReady]);
-    const type1Rank = useMemo(() => resourcesNotReady ? 0 : rank1Comparisons.findIndex(c => c.speciesId === bestReachable!.speciesId) + 1, [rank1Comparisons, bestReachable, resourcesNotReady]);
-    const type2Rank = useMemo(() => resourcesNotReady ? 0 : bestReachable!.types.length > 1 ? rank2Comparisons.findIndex(c => c.speciesId === bestReachable!.speciesId) + 1 : 0, [bestReachable, rank2Comparisons, resourcesNotReady]);
+    const allChargedMoveTypes = useMemo(() => resourcesNotReady ? [] : Array.from(new Set(getAllChargedMoves(bestReachable as IGamemasterPokemon, moves).map(m => moves[m].type))), [bestReachable, moves, resourcesNotReady]);
     
-    const ranks = [rank, type1Rank, type2Rank];
+    const ranksComputation = useMemo(() => {
+        if (resourcesNotReady) {
+            return {};
+        }
 
+        const ranksDic: Dictionary<number> = {};
+    
+        allChargedMoveTypes.forEach(t => ranksDic[t] = computeComparisons(t).findIndex(c => c.speciesId === bestReachable!.speciesId) + 1);
+
+        return ranksDic;
+    }, [allChargedMoveTypes, computeComparisons, bestReachable, resourcesNotReady]);
+
+    const mostRelevantType = Object.entries(ranksComputation)
+        .sort(([typeA, rankA], [typeB, rankB]) => {
+            if (typeA === "normal") {
+                return 1;
+            }
+            if (typeB === "normal") {
+                return -1;
+            }
+            return rankA - rankB;
+        })
+        .slice(0, 3)
+        .map(([type, rank]) => ({type: type, rank: rank}));
+    
+    const rank = useMemo(() => resourcesNotReady ? 0 : globalComparisons.findIndex(c => c.speciesId === bestReachable!.speciesId) + 1, [globalComparisons, bestReachable, resourcesNotReady]);
+    
     const selfRealDPS = useMemo(() => resourcesNotReady ? {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0} : computeDPSEntry(bestReachable as IGamemasterPokemon, moves, attack, (level - 1) * 2), [bestReachable, attack, level, moves, resourcesNotReady]);
 
     if (resourcesNotReady) {
@@ -309,16 +330,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                 bestReachablePokemonName: (bestReachable as IGamemasterPokemon).speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)),
                                 rank: rank,
                                 dps: selfRealDPS.dps,
-                                typeRanks: [
-                                    {
-                                        type: pokemon.types[0],
-                                        rank: ranks[1]
-                                    },
-                                    {
-                                        type: pokemon.types[1],
-                                        rank: ranks[2]
-                                    }
-                                ],
+                                typeRanks: mostRelevantType.map(t => ({
+                                    type: (t.type.substring(0, 1).toLocaleUpperCase() + t.type.substring(1)) as keyof typeof PokemonTypes,
+                                    rank: t.rank
+                                }))
                             }
                         }
                     />
