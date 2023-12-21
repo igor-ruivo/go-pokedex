@@ -17,7 +17,10 @@ export enum ConfigKeys {
     Language,
     GameLanguage,
     LastLeague,
-    ImageSource
+    ImageSource,
+    ShowEntries,
+    Shadow,
+    Mega
 }
 
 export const readSessionValue = (key: ConfigKeys) => {

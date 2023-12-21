@@ -10,8 +10,14 @@ export enum TranslatorKeys {
     Types2,
     Search,
     Loading,
+    MegaPokemon,
+    ShadowPokemon,
     NotAvailableForRaids,
+    TopKeyCountersIntro,
     Name,
+    Show,
+    RaidsIntro,
+    Items,
     Counters,
     IVTables,
     WIP,
@@ -703,9 +709,46 @@ const wip = new Map<Language, string>([
     [Language.Bosnian, "Rad u tijeku. Ostanite u tijeku!"]
 ]);
 
+const megaPokemon = new Map<Language, string>([
+    [Language.English, "Mega Pokémon"],
+    [Language.Portuguese, "Pokémons Mega"],
+    [Language.Bosnian, "Mega Pokémona"]
+]);
+
+const shadowPokemon = new Map<Language, string>([
+    [Language.English, "Shadow Pokémon"],
+    [Language.Portuguese, "Pokémons Sombrosos"],
+    [Language.Bosnian, "Sjenoviti Pokémona"]
+]);
+
+const show = new Map<Language, string>([
+    [Language.English, "Show"],
+    [Language.Portuguese, "Mostrar"],
+    [Language.Bosnian, "Prikaži"]
+]);
+
+const items = new Map<Language, string>([
+    [Language.English, "items"],
+    [Language.Portuguese, "itens"],
+    [Language.Bosnian, "zapisa"]
+]);
+
+const raidsIntro = new Map<Language, string>([
+    [Language.English, "time is limited - which means Damage per Second (DPS) is crucial! Here are your best options for defeating "],
+    [Language.Portuguese, "o tempo é escasso - o que significa que o Dano por Segundo (DPS) é tudo! Aqui estão as tuas melhores apostas para derrotar o "],
+    [Language.Bosnian, "vrijeme je ograničeno - što znači da je Šteta po Sekundi (DPS) ključna! Evo tvojih najboljih opcija za poraz "]
+]);
+
+const topKeyCountersIntro = new Map<Language, string>([
+    [Language.English, "Here are 5 key wins and losses against meta-relevant Pokémon when using "],
+    [Language.Portuguese, "Aqui estão 5 vitórias e derrotas chave contra Pokémons meta-relevantes ao usar o "],
+    [Language.Bosnian, "Evo 5 ključnih pobjeda i poraza protiv relevantnih Pokémona u meti kada koristite "]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.LanguageSettings, languageSettings],
+    [TranslatorKeys.RaidsIntro, raidsIntro],
     [TranslatorKeys.PickIVs, pickIVs],
     [TranslatorKeys.VisualSettings, visualSettings],
     [TranslatorKeys.Official, official],
@@ -803,7 +846,12 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.FastMove, fastMove],
     [TranslatorKeys.ChargedMove, chargedMove],
     [TranslatorKeys.NotAvailableForRaids, notAvailableForRaids],
-    [TranslatorKeys.WIP, wip]
+    [TranslatorKeys.WIP, wip],
+    [TranslatorKeys.MegaPokemon, megaPokemon],
+    [TranslatorKeys.ShadowPokemon, shadowPokemon],
+    [TranslatorKeys.Show, show],
+    [TranslatorKeys.Items, items],
+    [TranslatorKeys.TopKeyCountersIntro, topKeyCountersIntro]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

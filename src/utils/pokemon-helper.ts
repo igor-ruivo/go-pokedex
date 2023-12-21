@@ -27,12 +27,400 @@ export const getAllChargedMoves = (p: IGamemasterPokemon, moves: Dictionary<IGam
     return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast))));
 }
 
-export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>, attackIV = 15, level = 100, forcedType = "") => {
+const computeMoveEffectiveness = (ownMoveType: string, targetType1: string, targetType2?: string) => {
+    const matrix: Dictionary<number[]> = {};
+    matrix["normal"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.DoubleResistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["fighting"] = [
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.DoubleResistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance
+    ];
+
+    matrix["flying"] = [
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["poison"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.DoubleResistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective
+    ];
+
+    matrix["ground"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.DoubleResistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["rock"] = [
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["bug"] = [
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance
+    ];
+
+    matrix["ghost"] = [
+        Effectiveness.DoubleResistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal
+    ];
+
+    matrix["steel"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective
+    ];
+
+    matrix["fire"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["water"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["grass"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["electric"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.DoubleResistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["psychic"] = [
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.DoubleResistance,
+        Effectiveness.Normal
+    ];
+
+    matrix["ice"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal
+    ];
+
+    matrix["dragon"] = [
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.DoubleResistance
+    ];
+
+    matrix["dark"] = [
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance
+    ];
+
+    matrix["fairy"] = [
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Resistance,
+        Effectiveness.Resistance,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Normal,
+        Effectiveness.Effective,
+        Effectiveness.Effective,
+        Effectiveness.Normal
+    ];
+    
+    const targetType1Index = Object.keys(matrix).indexOf(targetType1);
+    const targetType2Index = targetType2 ? Object.keys(matrix).indexOf(targetType2) : -1;
+
+    return matrix[ownMoveType][targetType1Index] * (targetType2 ? matrix[ownMoveType][targetType2Index] : 1);
+}
+
+export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>, attackIV = 15, level = 100, forcedType = "", target?: IGamemasterPokemon) => {
     const fastMoves = getAllFastMoves(p, moves);
     const chargedMoves = getAllChargedMoves(p, moves);
-    let higherDPS = 0;
+    let higherDPS = Number.MIN_VALUE;
     let higherFast = "";
+    let higherFastDmg = 0;
     let higherCharged = "";
+    let higherChargedDmg = 0;
     for(let i = 0; i < fastMoves.length; i++) {
         for(let j = 0; j < chargedMoves.length; j++) {
             const fastMove = moves[fastMoves[i]];
@@ -40,13 +428,15 @@ export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMa
             if (forcedType && chargedMove.type !== forcedType) {
                 continue;
             }
-            const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level);
-            const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, Effectiveness.Effective, attackIV, level);
+            const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, target ? computeMoveEffectiveness(fastMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && fastMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level, target ? target.def : 200);
+            const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, target ? computeMoveEffectiveness(chargedMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && chargedMove.type !== forcedType) ? Effectiveness.Normal : Effectiveness.Effective, attackIV, level, target ? target.def : 200);
             const dps = pveDPS(chargedMoveDmg, fastMoveDmg, fastMove.pveDuration, chargedMove.pveEnergyDelta * -1, fastMove.pveEnergyDelta, chargedMove.pveDuration);
             if (dps > higherDPS) {
                 higherDPS = dps;
                 higherFast = fastMove.moveId;
+                higherFastDmg = fastMoveDmg;
                 higherCharged = chargedMove.moveId;
+                higherChargedDmg = chargedMoveDmg;
             }
         }
     }
@@ -54,14 +444,23 @@ export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMa
         fastMoveId: higherFast,
         chargedMoveId: higherCharged,
         dps: higherDPS,
-        speciesId: p.speciesId
+        speciesId: p.speciesId,
+        fastMoveDamage: higherFastDmg,
+        chargedMoveDamage: higherChargedDmg
     };
 }
 
-export const calculateDamage = (baseAtk: number, moveDamage: number, stab: boolean, shadow: boolean, effectiveness: Effectiveness = Effectiveness.Effective, attackIV = 15, level = 100) => Math.floor(0.5 * moveDamage * (((baseAtk + attackIV) * cpm[level]) / ((200 + 15) * cpm[78])) * (stab ? 1.2 : 1) * (shadow ? 1.2 : 1) * effectiveness) + 1;
+export const calculateDamage = (baseAtk: number, moveDamage: number, stab: boolean, shadow: boolean, effectiveness: Effectiveness = Effectiveness.Effective, attackIV = 15, level = 100, targetDef = 200) => {
+    return Math.floor(0.5 * moveDamage * (((baseAtk + attackIV) * cpm[level]) / ((targetDef + 15) * cpm[78])) * (stab ? 1.2 : 1) * (shadow ? 1.2 : 1) * effectiveness) + 1;
+}
 
 export const pveDPS = (chargedMoveDamage: number, fastMoveDamage: number, fastMoveCooldown: number, chargedMoveRequiredEnergy: number, fastMoveEnergy: number, chargedMoveAnimationDuration: number) => {
     const fastMoveDPS = fastMoveDamage / fastMoveCooldown;
+
+    if (fastMoveEnergy === 0) {
+        return fastMoveDPS;
+    }
+
     const secondsNeededToLoadChargedMove = chargedMoveRequiredEnergy / fastMoveEnergy * fastMoveCooldown;
 
     const chargedMoveUsageDPS = (chargedMoveDamage + fastMoveDPS * secondsNeededToLoadChargedMove) / (secondsNeededToLoadChargedMove + chargedMoveAnimationDuration);

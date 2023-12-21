@@ -15,7 +15,7 @@ export interface IRankedPokemon {
     rankChange: number;
 }
 
-interface MatchUp {
+export type MatchUp = {
     speciesId: string;
     rating: number;
 }

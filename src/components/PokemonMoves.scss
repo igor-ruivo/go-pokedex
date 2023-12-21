@@ -56,6 +56,7 @@
 .buffs-placeholder {
     display: flex;
     gap: 3px;
+    position: relative;
     flex-direction: row;
 }
 
@@ -107,6 +108,21 @@ details[open] {
     gap: 9px;
 }
 
+.block-column {
+    display: block;
+}
+
+.justified {
+    display: flex;
+    justify-content: center;
+}
+
+.raid-counters-display-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+}
+
 .counters-display-layout {
     display: flex;
     flex-direction: column;
@@ -146,6 +162,10 @@ details[open] {
 
 .no-padding {
     padding: 0;
+}
+
+.no-extra-padding {
+    padding-right: 0 !important;
 }
 
 .moves-list {
