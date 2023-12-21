@@ -10,7 +10,7 @@ import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useEffect, useState } from "react";
 import ListEntry from "./ListEntry";
-import { computeDPSEntry, getAllChargedMoves, getAllFastMoves, pveDPS } from "../utils/pokemon-helper";
+import { computeDPSEntry, getAllChargedMoves, getAllFastMoves } from "../utils/pokemon-helper";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;

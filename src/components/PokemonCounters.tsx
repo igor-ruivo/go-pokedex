@@ -6,7 +6,7 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -73,6 +73,19 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         writePersistentValue(ConfigKeys.Shadow, shadow.toString());
     }, [shadow]);
 
+    const comparisons = useMemo(() => {
+        console.log("expensive computation...");
+        if (resourcesNotReady) {
+            return [];
+        }
+
+        const comparisons: dpsEntry[] = [];
+        Object.values(gamemasterPokemon)
+            .filter(p => !p.aliasId)
+            .forEach(p => comparisons.push(computeDPSEntry(p, moves, 15, 100, "", pokemon)));
+        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
+    }, [resourcesNotReady, gamemasterPokemon, moves, pokemon]);
+
     if (resourcesNotReady) {
         return <></>;
     }
@@ -86,22 +99,8 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const customLeagueMatchUps = rankLists[3][pokemon.speciesId]?.matchups ?? [];
     const customLeagueCounters = rankLists[3][pokemon.speciesId]?.counters ?? [];
 
-    const computeComparisons = () => {
-        if (resourcesNotReady) {
-            return [];
-        }
-
-        const comparisons: dpsEntry[] = [];
-        Object.values(gamemasterPokemon)
-            .filter(p => !p.aliasId)
-            .forEach(p => comparisons.push(computeDPSEntry(p, moves, 15, 100, "", pokemon)));
-        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
-    }
-
     const relevantMatchUps = league === LeagueType.GREAT_LEAGUE ? greatLeagueMatchUps : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMatchUps : league === LeagueType.CUSTOM_CUP ? customLeagueMatchUps : masterLeagueMatchUps;
     const relevantCounters = league === LeagueType.GREAT_LEAGUE ? greatLeagueCounters : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueCounters : league === LeagueType.CUSTOM_CUP ? customLeagueCounters : masterLeagueCounters;
-
-    const raidWeaknesses = league === LeagueType.RAID ? computeComparisons() : [];
 
     const leagueName = gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.Raids, currentGameLanguage);
 
@@ -135,10 +134,19 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         return gameTranslation[vid].name;
     }
 
-    const renderBuffDetailItem = (moveId: string, attack: number) => {
+    const detailsClickHandler = (e: MouseEvent, elementId: string) => {
+        const details = document.getElementById(elementId) as HTMLDetailsElement;
+        if (details) {
+            details.open = !details.open;
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    }
+
+    const renderBuffDetailItem = (moveId: string, attack: number, speciesId: string) => {
         return {
-            detailId: `${moveId}-raid`,
-            onClick: () => {},
+            detailId: `${moveId}-${speciesId}`,
+            onClick: (event: any) => detailsClickHandler(event, `${moveId}-${speciesId}`),
             summary: <>
                 <img alt="Special effects" loading="lazy" width="14" height="14" decoding="async" src={`${process.env.PUBLIC_URL}/images/types/${moves[moveId].type}.png`}/>
                 {translateMoveFromMoveId(moveId)}
@@ -179,7 +187,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             ]}
             onClick={() => navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf("/"))}`)}
             specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 72%, var(--type-${type2 ??  type1}) 72%)`}
-            details={[renderBuffDetailItem(fastMove, fastMoveDamage), renderBuffDetailItem(chargedMove, chargedMoveDamage)]}
+            details={[renderBuffDetailItem(fastMove, fastMoveDamage, pokemon.speciesId), renderBuffDetailItem(chargedMove, chargedMoveDamage, pokemon.speciesId)]}
         />
     }
 
@@ -241,7 +249,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     </div>
                     <ul className={`moves-list no-padding sparse-list`}>
                         {league === LeagueType.RAID ?
-                            raidWeaknesses
+                            comparisons
                             .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))
                             .slice(0, top)
                             .map(m => {
