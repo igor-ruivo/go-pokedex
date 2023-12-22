@@ -7,6 +7,7 @@ import Dictionary from "../utils/Dictionary";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 import "./DeleteTrash.scss"
+import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 
 const DeleteTrash = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
@@ -38,33 +39,45 @@ const DeleteTrash = () => {
     const isBadWithAttack = (p: IGamemasterPokemon) => {
         // here, the pokémon is good for something...
         // find those good for gl and ul that need <5 atk in the first 20 spots, except if rank for great or ultra is <= 20
-        const glLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[0][p.speciesId]?.rank).filter(r => r));
-        const ulLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[1][p.speciesId]?.rank).filter(r => r));
-        const mlLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[2][p.speciesId]?.rank).filter(r => r));
-        
-        const glRankedP = Object.values(rankLists[0]).find(k => k.rank === glLowestRank);
-        const ulRankedP = Object.values(rankLists[1]).find(k => k.rank === ulLowestRank);
+        const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
 
-        const glPokemon = glRankedP ? gamemasterPokemon[glRankedP.speciesId] : undefined;
-        const ulPokemon = ulRankedP ? gamemasterPokemon[ulRankedP.speciesId] : undefined;
+        const findMinRankAndPokemon = (reachablePokemon: IGamemasterPokemon[], rankList: Dictionary<IRankedPokemon>) => {
+            let minRank = Infinity;
+            let minSpeciesId = undefined;
+          
+            for (const p of reachablePokemon) {
+                const rank = rankList[p.speciesId]?.rank;
+          
+                if (rank !== undefined && rank < minRank) {
+                    minRank = rank;
+                    minSpeciesId = p.speciesId;
+                }
+            }
+          
+            return minSpeciesId !== undefined ? { speciesId: minSpeciesId, rank: minRank } : undefined;
+        }
 
-        if (!isBadRank(mlLowestRank, trashMaster) || !isBadRank(glLowestRank, exceptGreat) || !isBadRank(ulLowestRank, exceptUltra)) {
+        const glLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[0]);
+        const ulLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[1]);
+        const mlLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[2]);
+
+        if ((mlLowestRank && !isBadRank(mlLowestRank.rank, trashMaster)) || (glLowestRank && !isBadRank(glLowestRank.rank, exceptGreat)) || (ulLowestRank && !isBadRank(ulLowestRank.rank, exceptUltra))) {
             return false;
         }
 
-        if (!isBadRank(glLowestRank, trashGreat) && glPokemon && !needsLessThanFiveAttack(glPokemon, 0)) {
+        if (glLowestRank && !isBadRank(glLowestRank.rank, trashGreat) && !needsLessThanFiveAttack(gamemasterPokemon[glLowestRank.speciesId], 0)) {
             return false;
         }
 
-        if (!isBadRank(ulLowestRank, trashUltra) && ulPokemon && !needsLessThanFiveAttack(ulPokemon, 1)) {
+        if (ulLowestRank && !isBadRank(ulLowestRank.rank, trashUltra) && !needsLessThanFiveAttack(gamemasterPokemon[ulLowestRank.speciesId], 1)) {
             return false;
         }
 
-        if (!isBadRank(glLowestRank, trashGreat) && glPokemon && needsLessThanFiveAttack(glPokemon, 0)) {
+        if (glLowestRank && !isBadRank(glLowestRank.rank, trashGreat) && needsLessThanFiveAttack(gamemasterPokemon[glLowestRank.speciesId], 0)) {
             return true;
         }
 
-        if (!isBadRank(ulLowestRank, trashUltra) && ulPokemon && needsLessThanFiveAttack(ulPokemon, 1)) {
+        if (ulLowestRank && !isBadRank(ulLowestRank.rank, trashUltra) && needsLessThanFiveAttack(gamemasterPokemon[ulLowestRank.speciesId], 1)) {
             return true;
         }
 
@@ -72,15 +85,16 @@ const DeleteTrash = () => {
     }
 
     const isAlwaysBadPokemon = (p: IGamemasterPokemon) => {
-        const glLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[0][p.speciesId]?.rank).filter(r => r));
-        const ulLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[1][p.speciesId]?.rank).filter(r => r));
-        const mlLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[2][p.speciesId]?.rank).filter(r => r));
+        const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
+        const glLowestRank = Math.min(...reachablePokemon.map(p => rankLists[0][p.speciesId]?.rank).filter(r => r));
+        const ulLowestRank = Math.min(...reachablePokemon.map(p => rankLists[1][p.speciesId]?.rank).filter(r => r));
+        const mlLowestRank = Math.min(...reachablePokemon.map(p => rankLists[2][p.speciesId]?.rank).filter(r => r));
         
         return isBadRank(glLowestRank, trashGreat) && isBadRank(ulLowestRank, trashUltra) && isBadRank(mlLowestRank, trashMaster);
     }
 
     if (!fetchCompleted || !pvpFetchCompleted) {
-        return <span className="white-text">Fetching Pokémon...</span>;
+        return <span className="text-color">Fetching Pokémon...</span>;
     }
 
     type DisambiguatedEntry = {
