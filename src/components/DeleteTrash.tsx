@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { useLanguage } from "../contexts/language-context";
 import { usePokemon } from "../contexts/pokemon-context";
@@ -30,56 +30,56 @@ const DeleteTrash = () => {
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashTop, 20));
     const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
 
-    const target = document.getElementById("tarea") as HTMLTextAreaElement;
+    const targetRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
-        if (target) {
-            target.value = "";
+        if (targetRef.current) {
+            targetRef.current.value = "";
         }
         writePersistentValue(ConfigKeys.TrashGreat, trashGreat.toString());
-    }, [trashGreat, target]);
+    }, [trashGreat, targetRef]);
 
     useEffect(() => {
-        if (target) {
-            target.value = "";
+        if (targetRef.current) {
+            targetRef.current.value = "";
         }
         writePersistentValue(ConfigKeys.TrashUltra, trashUltra.toString());
-    }, [trashUltra, target]);
+    }, [trashUltra, targetRef]);
 
     useEffect(() => {
-        if (target) {
-            target.value = "";
+        if (targetRef.current) {
+            targetRef.current.value = "";
         }
         writePersistentValue(ConfigKeys.TrashMaster, trashMaster.toString());
-    }, [trashMaster, target]);
+    }, [trashMaster, targetRef]);
 
     useEffect(() => {
-        if (target) {
-            target.value = "";
+        if (targetRef.current) {
+            targetRef.current.value = "";
         }
         writePersistentValue(ConfigKeys.ExceptGreat, exceptGreat.toString());
-    }, [exceptGreat, target]);
+    }, [exceptGreat, targetRef]);
 
     useEffect(() => {
-        if (target) {
-            target.value = "";
+        if (targetRef.current) {
+            targetRef.current.value = "";
         }
         writePersistentValue(ConfigKeys.ExceptUltra, exceptUltra.toString());
-    }, [exceptUltra, target]);
+    }, [exceptUltra, targetRef]);
 
     useEffect(() => {
-        if (target) {
-            target.value = "";
+        if (targetRef.current) {
+            targetRef.current.value = "";
         }
         writePersistentValue(ConfigKeys.TrashTop, top.toString());
-    }, [top, target]);
+    }, [top, targetRef]);
 
     useEffect(() => {
-        if (target) {
-            target.value = "";
+        if (targetRef.current) {
+            targetRef.current.value = "";
         }
         writePersistentValue(ConfigKeys.TrashCP, cp.toString());
-    }, [cp, target]);
+    }, [cp, targetRef]);
 
     const isBadRank = (rank: number, rankLimit: number) => {
         return rank === Infinity || rank > rankLimit;
@@ -302,13 +302,17 @@ const DeleteTrash = () => {
                     </div>
                 </div>
                 <button className="dark-text main-btn" onClick={() => {
-                    target.value = "Loading data...";
-                    setTimeout(() => {
-                        target.value = computeStr();
-                    }, 0);
+                    if (targetRef?.current) {
+                        targetRef.current.value = "Loading data...";
+                        setTimeout(() => {
+                            if (targetRef?.current) {
+                                targetRef.current.value = computeStr();
+                            }
+                        }, 0);
+                    }
                 }}>Calculate!</button>
                 <textarea
-                    id="tarea"
+                    ref={targetRef}
                     className="search-strings-container big-height"
                     readOnly
                     onClick={(e: any) => {e.target.select();
