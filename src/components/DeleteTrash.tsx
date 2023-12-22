@@ -37,49 +37,49 @@ const DeleteTrash = () => {
             target.value = "";
         }
         writePersistentValue(ConfigKeys.TrashGreat, trashGreat.toString());
-    }, [trashGreat]);
+    }, [trashGreat, target]);
 
     useEffect(() => {
         if (target) {
             target.value = "";
         }
         writePersistentValue(ConfigKeys.TrashUltra, trashUltra.toString());
-    }, [trashUltra]);
+    }, [trashUltra, target]);
 
     useEffect(() => {
         if (target) {
             target.value = "";
         }
         writePersistentValue(ConfigKeys.TrashMaster, trashMaster.toString());
-    }, [trashMaster]);
+    }, [trashMaster, target]);
 
     useEffect(() => {
         if (target) {
             target.value = "";
         }
         writePersistentValue(ConfigKeys.ExceptGreat, exceptGreat.toString());
-    }, [exceptGreat]);
+    }, [exceptGreat, target]);
 
     useEffect(() => {
         if (target) {
             target.value = "";
         }
         writePersistentValue(ConfigKeys.ExceptUltra, exceptUltra.toString());
-    }, [exceptUltra]);
+    }, [exceptUltra, target]);
 
     useEffect(() => {
         if (target) {
             target.value = "";
         }
         writePersistentValue(ConfigKeys.TrashTop, top.toString());
-    }, [top]);
+    }, [top, target]);
 
     useEffect(() => {
         if (target) {
             target.value = "";
         }
         writePersistentValue(ConfigKeys.TrashCP, cp.toString());
-    }, [cp]);
+    }, [cp, target]);
 
     const isBadRank = (rank: number, rankLimit: number) => {
         return rank === Infinity || rank > rankLimit;
