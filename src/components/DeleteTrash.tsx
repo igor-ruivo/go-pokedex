@@ -84,8 +84,8 @@ const DeleteTrash = () => {
     const dexesWithGoodForms = new Set<number>();
     const potentiallyDeletablePokemon = new Set<number>();
     const pokemonBadWithAttack: Dictionary<DisambiguatedEntry[]> = {};
-    const taggedDexes = new Set<number>();
     const needsDisambiguation = new Set<number>();
+    const alwaysBadSet = new Set<number>();
     Object.values(gamemasterPokemon)
         .filter(p => !p.aliasId && !p.isMega)
         .forEach(p => {
@@ -98,16 +98,14 @@ const DeleteTrash = () => {
                 paldean: p.speciesName.includes("(Paldean)")
             };
 
-            if (taggedDexes.has(p.dex)) {
-                needsDisambiguation.add(p.dex);
-            }
-
             if (isAlwaysBadPokemon(p)) {
-                taggedDexes.add(p.dex);
+                alwaysBadSet.add(p.dex);
                 potentiallyDeletablePokemon.add(p.dex);
             } else {
                 if (isBadWithAttack(p)) {
-                    taggedDexes.add(p.dex);
+                    if (alwaysBadSet.has(p.dex)) {
+                        needsDisambiguation.add(p.dex);
+                    }
                     potentiallyDeletablePokemon.add(p.dex);
                     if (!pokemonBadWithAttack[p.dex]) {
                         pokemonBadWithAttack[p.dex] = [];
@@ -127,30 +125,36 @@ const DeleteTrash = () => {
         const alwaysDeletablePokemon = Array.from(potentiallyDeletablePokemon).filter(d => !dexesWithGoodForms.has(d));
         str += alwaysDeletablePokemon.join(",");
 
+        const terms = new Set<string>();
         alwaysDeletablePokemon.forEach(d => {
             const specificPokemon = pokemonBadWithAttack[d];
             if (specificPokemon) {
                 specificPokemon.forEach(b => {
-                    str += `&!${b.dex}`;
+                    let newStr = `&!${b.dex}`;
                     const pokemonNeedsDisambiguation = needsDisambiguation.has(d);
                     if (pokemonNeedsDisambiguation) {
                         if (b.shadow) {
-                            str += ",!sombroso";
+                            newStr += ",!sombroso";
                         }
                         if (b.hisuian) {
-                            str += ",!hisui";
+                            newStr += ",!hisui";
                         }
                         if (b.alolan) {
-                            str += ",!alola";
+                            newStr += ",!alola";
                         }
                         if (b.galarian) {
-                            str += ",!galar";
+                            newStr += ",!galar";
                         }
                         if (b.paldean) {
-                            str += ",!paldea";
+                            newStr += ",!paldea";
                         }
                     }
-                    str += ",2-4ataque";
+                    newStr += ",2-4ataque";
+                    
+                    if (!terms.has(newStr)) {
+                        str += newStr;
+                        terms.add(newStr);
+                    }
                 });
             }
         });
