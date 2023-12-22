@@ -1,6 +1,7 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { usePokemon } from "../contexts/pokemon-context";
 import { usePvp } from "../contexts/pvp-context";
+import Dictionary from "../utils/Dictionary";
 import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 import "./DeleteTrash.scss"
 
@@ -24,7 +25,6 @@ const DeleteTrash = () => {
     }
 
     const isBadWithAttack = (p: IGamemasterPokemon) => {
-        console.log("analizing " + p.speciesId)
         // here, the pokémon is good for something...
         // find those good for gl and ul that need <5 atk in the first 20 spots, except if rank for great or ultra is <= 20
         const glLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[0][p.speciesId]?.rank).filter(r => r));
@@ -37,7 +37,7 @@ const DeleteTrash = () => {
         const glPokemon = glRankedP ? gamemasterPokemon[glRankedP.speciesId] : undefined;
         const ulPokemon = ulRankedP ? gamemasterPokemon[ulRankedP.speciesId] : undefined;
 
-        if (!isBadRank(mlLowestRank, 200) || !isBadRank(glLowestRank, 20) || !isBadRank(ulLowestRank, 20)) {
+        if (!isBadRank(mlLowestRank, 200) || !isBadRank(glLowestRank, 0) || !isBadRank(ulLowestRank, 0)) {
             return false;
         }
 
@@ -50,12 +50,10 @@ const DeleteTrash = () => {
         }
 
         if (!isBadRank(glLowestRank, 100) && glPokemon && needsLessThanFiveAttack(glPokemon, 0)) {
-            console.log(p.speciesId + " is ok for gl but needs less than 5 atk")
             return true;
         }
 
         if (!isBadRank(ulLowestRank, 100) && ulPokemon && needsLessThanFiveAttack(ulPokemon, 1)) {
-            console.log(p.speciesId + " is ok for ul but needs less than 5 atk")
             return true;
         }
 
@@ -70,36 +68,95 @@ const DeleteTrash = () => {
         return isBadRank(glLowestRank, 100) && isBadRank(ulLowestRank, 100) && isBadRank(mlLowestRank, 200);
     }
 
-    const getBadDexes = () => {
-        const badDexes = new Set<number>();
-        Object.values(gamemasterPokemon).forEach(p => {
-            if (p.aliasId) {
-                return;
+    if (!fetchCompleted || !pvpFetchCompleted) {
+        return <span className="white-text">Fetching Pokémon...</span>;
+    }
+
+    type DisambiguatedEntry = {
+        dex: number,
+        shadow: boolean,
+        alolan: boolean,
+        galarian: boolean,
+        hisuian: boolean,
+        paldean: boolean
+    }
+
+    const dexesWithGoodForms = new Set<number>();
+    const potentiallyDeletablePokemon = new Set<number>();
+    const pokemonBadWithAttack: Dictionary<DisambiguatedEntry[]> = {};
+    const taggedDexes = new Set<number>();
+    const needsDisambiguation = new Set<number>();
+    Object.values(gamemasterPokemon)
+        .filter(p => !p.aliasId && !p.isMega)
+        .forEach(p => {
+            const pEntry: DisambiguatedEntry = {
+                dex: p.dex,
+                shadow: p.isShadow,
+                alolan: p.speciesName.includes("(Alolan)"),
+                galarian: p.speciesName.includes("(Galarian)"),
+                hisuian: p.speciesName.includes("(Hisuian)"),
+                paldean: p.speciesName.includes("(Paldean)")
+            };
+
+            if (taggedDexes.has(p.dex)) {
+                needsDisambiguation.add(p.dex);
             }
 
             if (isAlwaysBadPokemon(p)) {
-                if (Object.values(gamemasterPokemon).filter(pk => pk.dex === p.dex && !pk.isMega && pk.speciesId !== p.speciesId).every(pk => isAlwaysBadPokemon(pk))) {
-                    badDexes.add(p.dex);
+                taggedDexes.add(p.dex);
+                potentiallyDeletablePokemon.add(p.dex);
+            } else {
+                if (isBadWithAttack(p)) {
+                    taggedDexes.add(p.dex);
+                    potentiallyDeletablePokemon.add(p.dex);
+                    if (!pokemonBadWithAttack[p.dex]) {
+                        pokemonBadWithAttack[p.dex] = [];
+                    }
+                    pokemonBadWithAttack[p.dex].push(pEntry);
+                } else {
+                    dexesWithGoodForms.add(p.dex);
                 }
             }
         });
-        return badDexes;
-    }
 
-    const getBadDexesWithAttack = () => {
-        const badDexesWithAttack = new Set<number>();
-        Object.values(gamemasterPokemon).forEach(p => {
-            if (p.aliasId) {
-                return;
-            }
+    const computeStr = () => {
+        let str = "";
 
-            if (!isAlwaysBadPokemon(p)) {
-                if (isBadWithAttack(p) && Object.values(gamemasterPokemon).filter(pk => pk.dex === p.dex && !pk.isMega && pk.speciesId !== p.speciesId).every(pk => isBadWithAttack(pk))) {
-                    badDexesWithAttack.add(p.dex);
-                }
+        // excluding Pokémon that are potentially deletable if they have at least one form that shouldn't be deleted,
+        // because it would be very hard to create an exception in the search string for them.
+        const alwaysDeletablePokemon = Array.from(potentiallyDeletablePokemon).filter(d => !dexesWithGoodForms.has(d));
+        str += alwaysDeletablePokemon.join(",");
+
+        alwaysDeletablePokemon.forEach(d => {
+            const specificPokemon = pokemonBadWithAttack[d];
+            if (specificPokemon) {
+                specificPokemon.forEach(b => {
+                    str += `&!${b.dex}`;
+                    const pokemonNeedsDisambiguation = needsDisambiguation.has(d);
+                    if (pokemonNeedsDisambiguation) {
+                        if (b.shadow) {
+                            str += ",!sombroso";
+                        }
+                        if (b.hisuian) {
+                            str += ",!hisui";
+                        }
+                        if (b.alolan) {
+                            str += ",!alola";
+                        }
+                        if (b.galarian) {
+                            str += ",!galar";
+                        }
+                        if (b.paldean) {
+                            str += ",!paldea";
+                        }
+                    }
+                    str += ",2-4ataque";
+                });
             }
         });
-        return badDexesWithAttack;
+
+        str += "&!4*&!lendário&!mítico&!pc2000-&!favorito";
+        return str;
     }
 
     return (
@@ -109,7 +166,7 @@ const DeleteTrash = () => {
             onClick={(e: any) => {e.target.select();
                 document.execCommand("copy");
                 alert("Copied to clipboard.");}}
-            value={Array.from(new Set([...getBadDexes(), ...getBadDexesWithAttack()])).join(",") + "&!4*" + "&!lendário" + "&!mítico" + "&!pc2000-" + "&!favorito" + Array.from(getBadDexesWithAttack()).map(d => `&!${d},2-4ataque`).join("")}
+            value={computeStr()}
         /> : <span>Fetching Pokémon...</span>
     );
 }
