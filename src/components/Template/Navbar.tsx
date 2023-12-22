@@ -232,7 +232,7 @@ const Navbar = () => {
                             }
 
                             return !p.isShadow && !p.aliasId;
-                        }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} as EntryType))}
+                        }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} as EntryType))}
                         isLoading={!fetchCompleted}
                         onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`)}
                         renderOption={(props: any, option: EntryType) => (

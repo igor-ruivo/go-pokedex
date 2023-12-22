@@ -17,12 +17,66 @@ export enum GameTranslatorKeys {
     MasterLeague,
     RetroCup,
     HolidayCup,
-    EliteTM
+    EliteTM,
+    ShadowSearch,
+    Shadow,
+    HisuianSearch,
+    AlolanSearch,
+    PaldeanSearch,
+    GalarianSearch,
+    Legendary,
+    Mythical,
+    Favorite
 }
 
 const hp = new Map<GameLanguage, string>([
     [GameLanguage.English, "HP"],
     [GameLanguage.Portuguese, "PS"]
+]);
+
+const favorite = new Map<GameLanguage, string>([
+    [GameLanguage.English, "favorite"],
+    [GameLanguage.Portuguese, "favorito"]
+]);
+
+const mythical = new Map<GameLanguage, string>([
+    [GameLanguage.English, "mythical"],
+    [GameLanguage.Portuguese, "mítico"]
+]);
+
+const legendary = new Map<GameLanguage, string>([
+    [GameLanguage.English, "legendary"],
+    [GameLanguage.Portuguese, "lendário"]
+]);
+
+const hisuianSearch = new Map<GameLanguage, string>([
+    [GameLanguage.English, "hisuian"],
+    [GameLanguage.Portuguese, "hisui"]
+]);
+
+const alolanSearch = new Map<GameLanguage, string>([
+    [GameLanguage.English, "alolan"],
+    [GameLanguage.Portuguese, "alola"]
+]);
+
+const paldeanSearch = new Map<GameLanguage, string>([
+    [GameLanguage.English, "paldean"],
+    [GameLanguage.Portuguese, "paldea"]
+]);
+
+const galarianSearch = new Map<GameLanguage, string>([
+    [GameLanguage.English, "galarian"],
+    [GameLanguage.Portuguese, "galar"]
+]);
+
+const shadow = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Shadow"],
+    [GameLanguage.Portuguese, "Sombroso"]
+]);
+
+const shadowSearch = new Map<GameLanguage, string>([
+    [GameLanguage.English, "shadow"],
+    [GameLanguage.Portuguese, "sombroso"]
 ]);
 
 const raids = new Map<GameLanguage, string>([
@@ -122,7 +176,16 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.EliteTM, eliteTM],
     [GameTranslatorKeys.Holiday, holiday],
     [GameTranslatorKeys.HolidayCup, holidayCup],
-    [GameTranslatorKeys.Raids, raids]
+    [GameTranslatorKeys.Raids, raids],
+    [GameTranslatorKeys.Shadow, shadow],
+    [GameTranslatorKeys.ShadowSearch, shadowSearch],
+    [GameTranslatorKeys.GalarianSearch, galarianSearch],
+    [GameTranslatorKeys.PaldeanSearch, paldeanSearch],
+    [GameTranslatorKeys.AlolanSearch, alolanSearch],
+    [GameTranslatorKeys.HisuianSearch, hisuianSearch],
+    [GameTranslatorKeys.Legendary, legendary],
+    [GameTranslatorKeys.Mythical, mythical],
+    [GameTranslatorKeys.Favorite, favorite]
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => translations.get(key)?.get(language) ?? (GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());

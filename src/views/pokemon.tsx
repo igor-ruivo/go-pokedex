@@ -20,6 +20,7 @@ import PokemonCounters from '../components/PokemonCounters';
 import PokemonInfoImagePlaceholder from '../components/PokemonInfoImagePlaceholder';
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import useComputeIVs from '../hooks/useComputeIVs';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
     const cachedValue = readPersistentValue(key);
@@ -39,7 +40,7 @@ const parseSessionCachedNumberValue = (key: ConfigKeys, defaultValue: number) =>
 
 const Pokemon = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
     const { speciesId } = useParams();
     const { pathname } = useLocation();
     const {league, handleSetLeague} = useLeague();
@@ -107,7 +108,7 @@ const Pokemon = () => {
                                 <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div> :        
                                 <div className="content">
                                     <PokemonHeader
-                                        pokemonName={pokemon!.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))}
+                                        pokemonName={pokemon!.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))}
                                         type1={pokemon!.types[0]}
                                         type2={pokemon!.types.length > 1 ? pokemon!.types[1] : undefined}
                                     />

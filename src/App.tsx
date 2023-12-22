@@ -12,7 +12,6 @@ import { MovesProvider } from './contexts/moves-context';
 import { GameTranslationProvider } from './contexts/gameTranslation-context';
 import DeleteTrash from './components/DeleteTrash';
 import { ImageSourceProvider } from './contexts/language-context copy';
-import DeleteUntradeable from './components/DeleteUntradeable';
 
 const App = () => {
     return (
@@ -36,7 +35,6 @@ const App = () => {
                                                 <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
                                                 <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
                                                 <Route path="/igor" element={<DeleteTrash />}/>
-                                                <Route path="/ruivo" element={<DeleteUntradeable />}/>
                                                 <Route path="/*" element={<div>404 not found!</div>} />
                                             </Routes>
                                         </Content>

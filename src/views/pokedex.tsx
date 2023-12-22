@@ -7,7 +7,6 @@ import LoadingRenderer from '../components/LoadingRenderer';
 import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
-import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
 import { fetchPokemonFamily } from '../utils/pokemon-helper';
 import Dictionary from '../utils/Dictionary';
@@ -29,7 +28,7 @@ const Pokedex = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
     const { inputText } = useNavbarSearchInput();
-    const {currentLanguage, currentGameLanguage} = useLanguage();
+    const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
 
     let listType = ListType.POKEDEX;
@@ -121,7 +120,7 @@ const Pokedex = () => {
             return Array.from(family).some(baseFilter);
         }
 
-        const baseFilter = (p: IGamemasterPokemon) => p.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage)).toLowerCase().includes(inputText.toLowerCase().trim());
+        const baseFilter = (p: IGamemasterPokemon) => p.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)).toLowerCase().includes(inputText.toLowerCase().trim());
         
         switch (listType) {
             case ListType.POKEDEX:
@@ -140,7 +139,7 @@ const Pokedex = () => {
         }
 
         return processedList;
-    }, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, pvpFetchCompleted, showFamilyTree, currentLanguage, pokemonByDex, pokemonByFamilyId]);
+    }, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, pvpFetchCompleted, showFamilyTree, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
 
     return (
         <main className="layout">

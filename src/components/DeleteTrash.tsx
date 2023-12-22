@@ -1,13 +1,16 @@
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
+import { useLanguage } from "../contexts/language-context";
 import { usePokemon } from "../contexts/pokemon-context";
 import { usePvp } from "../contexts/pvp-context";
 import Dictionary from "../utils/Dictionary";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 import "./DeleteTrash.scss"
 
 const DeleteTrash = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
+    const {currentGameLanguage} = useLanguage();
 
     const isBadRank = (rank: number, rankLimit: number) => {
         return rank === Infinity || rank > rankLimit;
@@ -134,23 +137,23 @@ const DeleteTrash = () => {
                     const pokemonNeedsDisambiguation = needsDisambiguation.has(d);
                     if (pokemonNeedsDisambiguation) {
                         if (b.shadow) {
-                            newStr += ",!sombroso";
+                            newStr += `,!${gameTranslator(GameTranslatorKeys.ShadowSearch, currentGameLanguage)}`;
                         }
                         if (b.hisuian) {
-                            newStr += ",!hisui";
+                            newStr += `,!${gameTranslator(GameTranslatorKeys.HisuianSearch, currentGameLanguage)}`;
                         }
                         if (b.alolan) {
-                            newStr += ",!alola";
+                            newStr += `,!${gameTranslator(GameTranslatorKeys.AlolanSearch, currentGameLanguage)}`;
                         }
                         if (b.galarian) {
-                            newStr += ",!galar";
+                            newStr += `,!${gameTranslator(GameTranslatorKeys.GalarianSearch, currentGameLanguage)}`;
                         }
                         if (b.paldean) {
-                            newStr += ",!paldea";
+                            newStr += `,!${gameTranslator(GameTranslatorKeys.PaldeanSearch, currentGameLanguage)}`;
                         }
                     }
-                    newStr += ",2-4ataque";
-                    
+                    newStr += `,2-${gameTranslator(GameTranslatorKeys.AttackSearch, currentGameLanguage)}`;
+
                     if (!terms.has(newStr)) {
                         str += newStr;
                         terms.add(newStr);
@@ -159,7 +162,7 @@ const DeleteTrash = () => {
             }
         });
 
-        str += "&!4*&!lendário&!mítico&!pc2000-&!favorito";
+        str += `&!4*&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}2000-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}`;
         return str;
     }
 

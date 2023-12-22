@@ -63,7 +63,6 @@ export enum TranslatorKeys {
     ForLeague,
     UpToLevel,
     AllExcept,
-    Shadow,
     PokemonNotFound,
     Moves,
     FastMoves,
@@ -401,12 +400,6 @@ const allExcept = new Map<Language, string>([
     [Language.English, "all except the"],
     [Language.Portuguese, "todos exceto"],
     [Language.Bosnian, "svih osim"]
-]);
-
-const shadow = new Map<Language, string>([
-    [Language.English, "Shadow"],
-    [Language.Portuguese, "Sombroso"],
-    [Language.Bosnian, "Sjenoviti"]
 ]);
 
 const pokemonNotFound = new Map<Language, string>([
@@ -795,7 +788,6 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.ForLeague, forLeague],
     [TranslatorKeys.UpToLevel, upToLevel],
     [TranslatorKeys.AllExcept, allExcept],
-    [TranslatorKeys.Shadow, shadow],
     [TranslatorKeys.PokemonNotFound, pokemonNotFound],
     [TranslatorKeys.Moves, moves],
     [TranslatorKeys.FastMoves, fastMoves],

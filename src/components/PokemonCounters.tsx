@@ -110,7 +110,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         return <ListEntry
             mainIcon={
                 {
-                    imageDescription: pokemon.speciesName,
+                    imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
                     image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 36 : 32} specificWidth={imageSource !== ImageSource.Official ? 36 : 32} withName={false}/></div>,
                     imageSideText: pokemon.speciesShortName,
                     withBackground: true
@@ -172,7 +172,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         return <ListEntry
             mainIcon={
                 {
-                    imageDescription: pokemon.speciesName,
+                    imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
                     image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 36 : 32} specificWidth={imageSource !== ImageSource.Official ? 36 : 32} withName={false}/></div>,
                     imageSideText: pokemon.speciesShortName,
                     withBackground: true
@@ -195,7 +195,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             {league === LeagueType.RAID &&
                 <div className="extra-ivs-options item default-padding block-column">
                     <span>
-                        {translator(TranslatorKeys.In, currentLanguage).substring(0, 1).toLocaleUpperCase() + translator(TranslatorKeys.In, currentLanguage).substring(1)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}, {translator(TranslatorKeys.RaidsIntro, currentLanguage)} {pokemon.speciesName}:
+                        {translator(TranslatorKeys.In, currentLanguage).substring(0, 1).toLocaleUpperCase() + translator(TranslatorKeys.In, currentLanguage).substring(1)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}, {translator(TranslatorKeys.RaidsIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))}:
                     </span>
                     <br/>
                     <br/>
@@ -208,12 +208,12 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                             <option key={50} value={50}>{50}</option>
                         </select>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mega <input type="checkbox" checked={mega} onChange={() => setMega(p => !p)}/>&nbsp;&nbsp;
-                        {translator(TranslatorKeys.Shadow, currentLanguage)} <input type="checkbox" checked={shadow} onChange={() => setShadow(p => !p)}/>
+                        {gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)} <input type="checkbox" checked={shadow} onChange={() => setShadow(p => !p)}/>
                     </div>
                 </div>
             }
             {league !== LeagueType.RAID && <span className="item default-padding">
-                {translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)} {pokemon.speciesName} {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}:
+                {translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}:
             </span>}
             <div className={`${league !== LeagueType.RAID ? "counters-display-layout" : "raid-counters-display-layout"}`}>
                 {league !== LeagueType.RAID && <div className="menu-item">
@@ -235,7 +235,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                 )
                             }) :
                             <span className="unavailable_moves">
-                                {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                                {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                             </span>
                         }
                     </ul>
@@ -272,7 +272,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                 )
                             }) :
                             <span className="unavailable_moves">
-                                {pokemon.speciesName.replace("Shadow", translator(TranslatorKeys.Shadow, currentLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                                {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                             </span>
                         }
                     </ul>
