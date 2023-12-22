@@ -30,31 +30,54 @@ const DeleteTrash = () => {
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashTop, 20));
     const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
 
+    const target = document.getElementById("tarea") as HTMLTextAreaElement;
+
     useEffect(() => {
+        if (target) {
+            target.value = "";
+        }
         writePersistentValue(ConfigKeys.TrashGreat, trashGreat.toString());
     }, [trashGreat]);
 
     useEffect(() => {
+        if (target) {
+            target.value = "";
+        }
         writePersistentValue(ConfigKeys.TrashUltra, trashUltra.toString());
     }, [trashUltra]);
 
     useEffect(() => {
+        if (target) {
+            target.value = "";
+        }
         writePersistentValue(ConfigKeys.TrashMaster, trashMaster.toString());
     }, [trashMaster]);
 
     useEffect(() => {
+        if (target) {
+            target.value = "";
+        }
         writePersistentValue(ConfigKeys.ExceptGreat, exceptGreat.toString());
     }, [exceptGreat]);
 
     useEffect(() => {
+        if (target) {
+            target.value = "";
+        }
         writePersistentValue(ConfigKeys.ExceptUltra, exceptUltra.toString());
     }, [exceptUltra]);
 
     useEffect(() => {
+        if (target) {
+            target.value = "";
+        }
         writePersistentValue(ConfigKeys.TrashTop, top.toString());
     }, [top]);
 
     useEffect(() => {
+        if (target) {
+            target.value = "";
+        }
         writePersistentValue(ConfigKeys.TrashCP, cp.toString());
     }, [cp]);
 
@@ -143,43 +166,43 @@ const DeleteTrash = () => {
         paldean: boolean
     }
 
-    const dexesWithGoodForms = new Set<number>();
-    const potentiallyDeletablePokemon = new Set<number>();
-    const pokemonBadWithAttack: Dictionary<DisambiguatedEntry[]> = {};
-    const needsDisambiguation = new Set<number>();
-    const alwaysBadSet = new Set<number>();
-    Object.values(gamemasterPokemon)
-        .filter(p => !p.aliasId && !p.isMega)
-        .forEach(p => {
-            const pEntry: DisambiguatedEntry = {
-                dex: p.dex,
-                shadow: p.isShadow,
-                alolan: p.speciesName.includes("(Alolan)"),
-                galarian: p.speciesName.includes("(Galarian)"),
-                hisuian: p.speciesName.includes("(Hisuian)"),
-                paldean: p.speciesName.includes("(Paldean)")
-            };
-
-            if (isAlwaysBadPokemon(p)) {
-                alwaysBadSet.add(p.dex);
-                potentiallyDeletablePokemon.add(p.dex);
-            } else {
-                if (isBadWithAttack(p)) {
-                    if (alwaysBadSet.has(p.dex)) {
-                        needsDisambiguation.add(p.dex);
-                    }
-                    potentiallyDeletablePokemon.add(p.dex);
-                    if (!pokemonBadWithAttack[p.dex]) {
-                        pokemonBadWithAttack[p.dex] = [];
-                    }
-                    pokemonBadWithAttack[p.dex].push(pEntry);
-                } else {
-                    dexesWithGoodForms.add(p.dex);
-                }
-            }
-        });
-
     const computeStr = () => {
+        const dexesWithGoodForms = new Set<number>();
+        const potentiallyDeletablePokemon = new Set<number>();
+        const pokemonBadWithAttack: Dictionary<DisambiguatedEntry[]> = {};
+        const needsDisambiguation = new Set<number>();
+        const alwaysBadSet = new Set<number>();
+        Object.values(gamemasterPokemon)
+            .filter(p => !p.aliasId && !p.isMega)
+            .forEach(p => {
+                const pEntry: DisambiguatedEntry = {
+                    dex: p.dex,
+                    shadow: p.isShadow,
+                    alolan: p.speciesName.includes("(Alolan)"),
+                    galarian: p.speciesName.includes("(Galarian)"),
+                    hisuian: p.speciesName.includes("(Hisuian)"),
+                    paldean: p.speciesName.includes("(Paldean)")
+                };
+
+                if (isAlwaysBadPokemon(p)) {
+                    alwaysBadSet.add(p.dex);
+                    potentiallyDeletablePokemon.add(p.dex);
+                } else {
+                    if (isBadWithAttack(p)) {
+                        if (alwaysBadSet.has(p.dex)) {
+                            needsDisambiguation.add(p.dex);
+                        }
+                        potentiallyDeletablePokemon.add(p.dex);
+                        if (!pokemonBadWithAttack[p.dex]) {
+                            pokemonBadWithAttack[p.dex] = [];
+                        }
+                        pokemonBadWithAttack[p.dex].push(pEntry);
+                    } else {
+                        dexesWithGoodForms.add(p.dex);
+                    }
+                }
+            });
+
         let str = "";
 
         // excluding Pokémon that are potentially deletable if they have at least one form that shouldn't be deleted,
@@ -274,13 +297,19 @@ const DeleteTrash = () => {
                     </select>
                     </div>
                 </div>
+                <button className="dark-text main-btn" onClick={() => {
+                    target.value = "Loading data...";
+                    setTimeout(() => {
+                        target.value = computeStr();
+                    }, 0);
+                }}>Calculate!</button>
                 <textarea
+                    id="tarea"
                     className="search-strings-container big-height"
                     readOnly
                     onClick={(e: any) => {e.target.select();
                         document.execCommand("copy");
                         alert("Copied to clipboard.");}}
-                    value={computeStr()}
                 />
             </div>:
             <span>Fetching Pokémon...</span>}
