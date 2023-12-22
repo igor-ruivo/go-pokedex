@@ -20,7 +20,14 @@ export enum ConfigKeys {
     ImageSource,
     ShowEntries,
     Shadow,
-    Mega
+    Mega,
+    TrashGreat,
+    TrashUltra,
+    TrashMaster,
+    ExceptGreat,
+    ExceptUltra,
+    TrashTop,
+    TrashCP
 }
 
 export const readSessionValue = (key: ConfigKeys) => {

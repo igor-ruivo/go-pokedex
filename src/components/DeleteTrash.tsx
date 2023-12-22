@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { useLanguage } from "../contexts/language-context";
 import { usePokemon } from "../contexts/pokemon-context";
@@ -8,18 +8,55 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 import "./DeleteTrash.scss"
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
+import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
+
+const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
+    const cachedValue = readPersistentValue(key);
+    if (!cachedValue) {
+        return defaultValue;
+    }
+    return +cachedValue;
+}
 
 const DeleteTrash = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {currentGameLanguage} = useLanguage();
-    const [trashGreat, setTrashGreat] = useState(100);
-    const [exceptGreat, setExceptGreat] = useState(0);
-    const [trashUltra, setTrashUltra] = useState(100);
-    const [exceptUltra, setExceptUltra] = useState(0);
-    const [trashMaster, setTrashMaster] = useState(200);
-    const [top, setTop] = useState(20);
-    const [cp, setCP] = useState(2000);
+    const [trashGreat, setTrashGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashGreat, 100));
+    const [exceptGreat, setExceptGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.ExceptGreat, 0));
+    const [trashUltra, setTrashUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 100));
+    const [exceptUltra, setExceptUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.ExceptUltra, 0));
+    const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 200));
+    const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashTop, 20));
+    const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.TrashGreat, trashGreat.toString());
+    }, [trashGreat]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.TrashUltra, trashUltra.toString());
+    }, [trashUltra]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.TrashMaster, trashMaster.toString());
+    }, [trashMaster]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.ExceptGreat, exceptGreat.toString());
+    }, [exceptGreat]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.ExceptUltra, exceptUltra.toString());
+    }, [exceptUltra]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.TrashTop, top.toString());
+    }, [top]);
+
+    useEffect(() => {
+        writePersistentValue(ConfigKeys.TrashCP, cp.toString());
+    }, [cp]);
 
     const isBadRank = (rank: number, rankLimit: number) => {
         return rank === Infinity || rank > rankLimit;
