@@ -1,3 +1,12 @@
 .big-height {
     min-height: 80vh;
 }
+
+.text-color {
+    color: var(--textColor);
+}
+
+.column {
+    flex-direction: column;
+    gap: 6px;
+}

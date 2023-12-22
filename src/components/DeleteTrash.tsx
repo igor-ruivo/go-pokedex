@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { useLanguage } from "../contexts/language-context";
 import { usePokemon } from "../contexts/pokemon-context";
@@ -11,6 +12,13 @@ const DeleteTrash = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {currentGameLanguage} = useLanguage();
+    const [trashGreat, setTrashGreat] = useState(100);
+    const [exceptGreat, setExceptGreat] = useState(0);
+    const [trashUltra, setTrashUltra] = useState(100);
+    const [exceptUltra, setExceptUltra] = useState(0);
+    const [trashMaster, setTrashMaster] = useState(200);
+    const [top, setTop] = useState(20);
+    const [cp, setCP] = useState(2000);
 
     const isBadRank = (rank: number, rankLimit: number) => {
         return rank === Infinity || rank > rankLimit;
@@ -18,7 +26,7 @@ const DeleteTrash = () => {
 
     const needsLessThanFiveAttack = (p: IGamemasterPokemon, leagueIndex: number) => {
         const bestIVs = Object.values(computeBestIVs(p.atk, p.def, p.hp, leagueIndex === 0 ? 1500 : leagueIndex === 1 ? 2500 : Number.MAX_VALUE, 51)).flat();
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < top; i++) {
             const neededAtk = bestIVs[i].IVs.A;
             if (neededAtk >= 5) {
                 return false;
@@ -40,23 +48,23 @@ const DeleteTrash = () => {
         const glPokemon = glRankedP ? gamemasterPokemon[glRankedP.speciesId] : undefined;
         const ulPokemon = ulRankedP ? gamemasterPokemon[ulRankedP.speciesId] : undefined;
 
-        if (!isBadRank(mlLowestRank, 200) || !isBadRank(glLowestRank, 0) || !isBadRank(ulLowestRank, 0)) {
+        if (!isBadRank(mlLowestRank, trashMaster) || !isBadRank(glLowestRank, exceptGreat) || !isBadRank(ulLowestRank, exceptUltra)) {
             return false;
         }
 
-        if (!isBadRank(glLowestRank, 100) && glPokemon && !needsLessThanFiveAttack(glPokemon, 0)) {
+        if (!isBadRank(glLowestRank, trashGreat) && glPokemon && !needsLessThanFiveAttack(glPokemon, 0)) {
             return false;
         }
 
-        if (!isBadRank(ulLowestRank, 100) && ulPokemon && !needsLessThanFiveAttack(ulPokemon, 1)) {
+        if (!isBadRank(ulLowestRank, trashUltra) && ulPokemon && !needsLessThanFiveAttack(ulPokemon, 1)) {
             return false;
         }
 
-        if (!isBadRank(glLowestRank, 100) && glPokemon && needsLessThanFiveAttack(glPokemon, 0)) {
+        if (!isBadRank(glLowestRank, trashGreat) && glPokemon && needsLessThanFiveAttack(glPokemon, 0)) {
             return true;
         }
 
-        if (!isBadRank(ulLowestRank, 100) && ulPokemon && needsLessThanFiveAttack(ulPokemon, 1)) {
+        if (!isBadRank(ulLowestRank, trashUltra) && ulPokemon && needsLessThanFiveAttack(ulPokemon, 1)) {
             return true;
         }
 
@@ -68,7 +76,7 @@ const DeleteTrash = () => {
         const ulLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[1][p.speciesId]?.rank).filter(r => r));
         const mlLowestRank = Math.min(...Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)).map(p => rankLists[2][p.speciesId]?.rank).filter(r => r));
         
-        return isBadRank(glLowestRank, 100) && isBadRank(ulLowestRank, 100) && isBadRank(mlLowestRank, 200);
+        return isBadRank(glLowestRank, trashGreat) && isBadRank(ulLowestRank, trashUltra) && isBadRank(mlLowestRank, trashMaster);
     }
 
     if (!fetchCompleted || !pvpFetchCompleted) {
@@ -162,19 +170,70 @@ const DeleteTrash = () => {
             }
         });
 
-        str += `&!4*&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}2000-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}`;
+        str += `&!4*&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}`;
         return str;
     }
 
     return (
-        pvpFetchCompleted && fetchCompleted ? <textarea
-            className="search-strings-container big-height"
-            readOnly
-            onClick={(e: any) => {e.target.select();
-                document.execCommand("copy");
-                alert("Copied to clipboard.");}}
-            value={computeStr()}
-        /> : <span>Fetching Pokémon...</span>
+        <div className="item default-padding text-color">
+            {pvpFetchCompleted && fetchCompleted ? <div>
+                <div className="extra-ivs-options item default-padding column">
+                    <div>
+                    CP Limit: <select value={cp} onChange={e => setCP(+e.target.value)} className="select-level">
+                        <option key={500} value={500}>{500}</option>
+                        <option key={1000} value={1000}>{1000}</option>
+                        <option key={1500} value={1500}>{1500}</option>
+                        <option key={2000} value={2000}>{2000}</option>
+                        <option key={2500} value={2500}>{2500}</option>
+                        <option key={3000} value={3000}>{3000}</option>
+                        <option key={3500} value={3500}>{3500}</option>
+                        <option key={4000} value={4000}>{4000}</option>
+                    </select>
+                    &nbsp;&nbsp;
+                    Max Perfection rank <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
+                            {Array.from({length: 4096}, (_x, i) => i + 1)
+                                .map(e => (<option key={e} value={e}>{"#" + e}</option>))}
+                    </select>
+                    </div>
+                    <div>
+                    Save top X Great League <select value={trashGreat} onChange={e => setTrashGreat(+e.target.value)} className="select-level">
+                            {Array.from({length: 2000}, (_x, i) => i)
+                                .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                    &nbsp;&nbsp;
+                    Save top X Ultra League <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
+                        {Array.from({length: 2000}, (_x, i) => i)
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                    &nbsp;&nbsp;
+                    Save top X Master League <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
+                        {Array.from({length: 2000}, (_x, i) => i)
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                    </div>
+                    <div>
+                    Except if Great League rank is &lt;= <select value={exceptGreat} onChange={e => setExceptGreat(+e.target.value)} className="select-level">
+                            {Array.from({length: 4096}, (_x, i) => i)
+                                .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                    &nbsp;&nbsp;
+                    Except if Ultra League rank is &lt;= <select value={exceptUltra} onChange={e => setExceptUltra(+e.target.value)} className="select-level">
+                        {Array.from({length: 4096}, (_x, i) => i)
+                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                    </select>
+                    </div>
+                </div>
+                <textarea
+                    className="search-strings-container big-height"
+                    readOnly
+                    onClick={(e: any) => {e.target.select();
+                        document.execCommand("copy");
+                        alert("Copied to clipboard.");}}
+                    value={computeStr()}
+                />
+            </div>:
+            <span>Fetching Pokémon...</span>}
+        </div>
     );
 }
 
