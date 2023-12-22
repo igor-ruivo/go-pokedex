@@ -263,7 +263,8 @@ const DeleteTrash = () => {
                         <option key={3500} value={3500}>{3500}</option>
                         <option key={4000} value={4000}>{4000}</option>
                     </select>
-                    &nbsp;&nbsp;
+                    </div>
+                    <div>
                     Max Perfection rank <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
                             {Array.from({length: 4096}, (_x, i) => i + 1)
                                 .map(e => (<option key={e} value={e}>{"#" + e}</option>))}
@@ -274,12 +275,14 @@ const DeleteTrash = () => {
                             {Array.from({length: 2000}, (_x, i) => i)
                                 .map(e => (<option key={e} value={e}>{e}</option>))}
                     </select>
-                    &nbsp;&nbsp;
+                    </div>
+                    <div>
                     Save top X Ultra League <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
                         {Array.from({length: 2000}, (_x, i) => i)
                             .map(e => (<option key={e} value={e}>{e}</option>))}
                     </select>
-                    &nbsp;&nbsp;
+                    </div>
+                    <div>
                     Save top X Master League <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
                         {Array.from({length: 2000}, (_x, i) => i)
                             .map(e => (<option key={e} value={e}>{e}</option>))}
@@ -290,7 +293,8 @@ const DeleteTrash = () => {
                             {Array.from({length: 4096}, (_x, i) => i)
                                 .map(e => (<option key={e} value={e}>{e}</option>))}
                     </select>
-                    &nbsp;&nbsp;
+                    </div>
+                    <div>
                     Except if Ultra League rank is &lt;= <select value={exceptUltra} onChange={e => setExceptUltra(+e.target.value)} className="select-level">
                         {Array.from({length: 4096}, (_x, i) => i)
                             .map(e => (<option key={e} value={e}>{e}</option>))}
