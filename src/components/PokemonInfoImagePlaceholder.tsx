@@ -10,9 +10,6 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 interface IPokemonInfoImagePlaceholderProps {
     pokemon: IGamemasterPokemon;
     computedCP: number;
-    computedAtk: number;
-    computedDef: number;
-    computedHP: number;
     displayLevel: number;
     setDisplayLevel: (newLevel: number) => void;
 }

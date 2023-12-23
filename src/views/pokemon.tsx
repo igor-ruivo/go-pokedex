@@ -13,7 +13,7 @@ import LeaguePicker from '../components/LeaguePicker';
 import PokemonHeader from '../components/PokemonHeader';
 import useLeague from '../hooks/useLeague';
 import PokemonFamily from '../components/PokemonFamily';
-import { fetchPokemonFamily } from '../utils/pokemon-helper';
+import { calculateCP, fetchPokemonFamily } from '../utils/pokemon-helper';
 import { useEffect, useMemo, useState } from 'react';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import PokemonCounters from '../components/PokemonCounters';
@@ -62,7 +62,7 @@ const Pokemon = () => {
 
     const pokemon = fetchCompleted && !gamemasterPokemon[speciesId ?? ""]?.aliasId ? gamemasterPokemon[speciesId ?? ""] : undefined;
     
-    const [ivPercents, loading] = useComputeIVs({pokemon: pokemon as IGamemasterPokemon, levelCap, attackIV, defenseIV, hpIV});
+    const [ivPercents, loading] = useComputeIVs({pokemon: pokemon as IGamemasterPokemon, levelCap: 51, attackIV, defenseIV, hpIV});
 
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
@@ -126,10 +126,7 @@ const Pokemon = () => {
 
                                         {fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId) && <PokemonInfoImagePlaceholder
                                             pokemon={pokemon}
-                                            computedCP={ivPercents[pokemon.speciesId].masterLeagueCP}
-                                            computedAtk={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueAttack * 10) / 10).toFixed(1)}
-                                            computedDef={+(Math.trunc(ivPercents[pokemon.speciesId].masterLeagueDefense * 10) / 10).toFixed(1)}
-                                            computedHP={ivPercents[pokemon.speciesId].masterLeagueHP}
+                                            computedCP={calculateCP(pokemon.atk, attackIV, pokemon.def, defenseIV, pokemon.hp, hpIV, (displayLevel - 1) * 2)}
                                             displayLevel={displayLevel}
                                             setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
                                         />}

@@ -21,6 +21,10 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
     
     useEffect(() => {
         setLoading(true);
+        if (!fetchCompleted) {
+            return;
+        }
+
         const computeIvs = async () => {
             const familyIvPercents: Dictionary<IIvPercents> = {};
             
