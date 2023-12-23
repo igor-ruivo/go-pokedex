@@ -262,6 +262,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                 />
                     <LeaguePanels
                         league={league}
+                        level={level}
                         atk={attack}
                         def={defense}
                         hp={hp}

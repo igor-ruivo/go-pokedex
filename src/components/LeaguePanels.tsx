@@ -44,7 +44,8 @@ interface ILeaguePanelsProps {
     atk: number,
     def: number,
     hp: number,
-    league: LeagueType
+    league: LeagueType,
+    level: number
 }
 
 const LeaguePanels = ({
@@ -56,7 +57,8 @@ const LeaguePanels = ({
     atk,
     def,
     hp,
-    league
+    league,
+    level
 }: ILeaguePanelsProps) => {
 
     const {currentLanguage, currentGameLanguage} = useLanguage();
@@ -126,12 +128,12 @@ const LeaguePanels = ({
                         </header>
                         <div className="pvp-entry">
                             <div className="pvp-entry-content potential">
-                            <strong className="cp-container with-brightness">{leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.pokemonLevel}</div>
+                            <strong className="cp-container with-brightness">{leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} <strong className={`${level > leagueStat.pokemonLevel ? "higher-level" : "cp-container with-brightness"}`}>{leagueStat.pokemonLevel}</strong></div>
                             </div>
                         </div>
                         <div className="pvp-entry">
                             <div className="pvp-entry-content potential">
-                                <strong className="cp-container with-brightness">{leagueStat.bestCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} {leagueStat.bestLevel}</div>
+                                <strong className="cp-container with-brightness">{leagueStat.bestCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} <strong className="cp-container with-brightness">{leagueStat.bestLevel}</strong></div>
                             </div>
                         </div>
                     </div>
