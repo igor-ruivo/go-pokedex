@@ -2,7 +2,7 @@ import { ReactNode, forwardRef, useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import "./PokemonImage.css";
 import { useLanguage } from "../contexts/language-context";
-import { ImageSource, useImageSource } from "../contexts/language-context copy";
+import { ImageSource, useImageSource } from "../contexts/imageSource-context";
 import { goBaseUrl } from "../utils/Configs";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 

@@ -36,7 +36,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container with-brightness">
-                        {listType === ListType.POKEDEX ? calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100) : rankLists[listType - 1][pokemon.speciesId].score}{listType !== ListType.POKEDEX && "%"} {listType === ListType.POKEDEX && gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
+                        {listType === ListType.POKEDEX ? calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100) : rankLists[listType - 1] ? rankLists[listType - 1][pokemon.speciesId].score : 0}{listType !== ListType.POKEDEX && "%"} {listType === ListType.POKEDEX && gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
                     </strong>
                 </span>
             </div>

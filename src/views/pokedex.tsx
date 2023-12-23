@@ -30,6 +30,7 @@ const Pokedex = () => {
     const { inputText } = useNavbarSearchInput();
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
+    const renderCustom = false;
 
     let listType = ListType.POKEDEX;
     const { listTypeArg } = useParams();
@@ -131,7 +132,7 @@ const Pokedex = () => {
             case ListType.ULTRA_LEAGUE:
             case ListType.MASTER_LEAGUE:
             case ListType.CUSTOM_CUP:
-                const leaguePool = Object.values(rankLists[listType - 1]).map(mapper);
+                const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
                 processedList = leaguePool.filter(p => inputFilter(p, (pokemon: IGamemasterPokemon) => !pokemon.isMega && !pokemon.aliasId));
                 break;
             default:
@@ -163,12 +164,12 @@ const Pokedex = () => {
                             {listType === ListType.MASTER_LEAGUE && <span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>}
                         </Link>
                     </li>
-                    <li>
+                    {renderCustom && <li>
                         <Link to="/custom" className={"header-tab league-picker " + (listType === ListType.CUSTOM_CUP ? "selected" : "")}>
                             <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/holiday.png`} alt="Holiday Cup"/>
                             {listType === ListType.CUSTOM_CUP && <span>{gameTranslator(GameTranslatorKeys.Holiday, currentGameLanguage)}</span>}
                         </Link>
-                    </li>
+                    </li>}
                 </ul>
             </nav>
             <div className="pokedex" ref={containerRef}>

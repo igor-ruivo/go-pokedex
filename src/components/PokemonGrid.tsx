@@ -12,7 +12,7 @@ import { ListType } from '../views/pokedex';
 import { useLocation } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
-import { ImageSource, useImageSource } from '../contexts/language-context copy';
+import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { goBaseUrl } from '../utils/Configs';
 
 interface IPokemonGridProps {

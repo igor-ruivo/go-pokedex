@@ -10,7 +10,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ImageSource, useImageSource } from "../contexts/language-context copy";
+import { ImageSource, useImageSource } from "../contexts/imageSource-context";
 import { computeDPSEntry } from "../utils/pokemon-helper";
 import { useMoves } from "../contexts/moves-context";
 import { MatchUp } from "../DTOs/IRankedPokemon";
@@ -95,8 +95,8 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const ultraLeagueCounters = rankLists[1][pokemon.speciesId]?.counters ?? [];
     const masterLeagueMatchUps = rankLists[2][pokemon.speciesId]?.matchups ?? [];
     const masterLeagueCounters = rankLists[2][pokemon.speciesId]?.counters ?? [];
-    const customLeagueMatchUps = rankLists[3][pokemon.speciesId]?.matchups ?? [];
-    const customLeagueCounters = rankLists[3][pokemon.speciesId]?.counters ?? [];
+    const customLeagueMatchUps = rankLists[3] ? (rankLists[3][pokemon.speciesId]?.matchups ?? []) : [];
+    const customLeagueCounters = rankLists[3] ? (rankLists[3][pokemon.speciesId]?.counters ?? []) : [];
 
     const relevantMatchUps = league === LeagueType.GREAT_LEAGUE ? greatLeagueMatchUps : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMatchUps : league === LeagueType.CUSTOM_CUP ? customLeagueMatchUps : masterLeagueMatchUps;
     const relevantCounters = league === LeagueType.GREAT_LEAGUE ? greatLeagueCounters : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueCounters : league === LeagueType.CUSTOM_CUP ? customLeagueCounters : masterLeagueCounters;

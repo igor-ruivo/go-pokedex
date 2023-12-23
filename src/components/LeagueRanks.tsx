@@ -47,6 +47,7 @@ const LeagueRanks = ({
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
     const {rankLists, pvpFetchCompleted} = usePvp();
+    const renderCustom = false;
 
     const getLeagueType = (league: string) => {
         switch (league) {
@@ -152,7 +153,7 @@ const LeagueRanks = ({
         {renderPanel(greatLeagueStats)}
         {renderPanel(ultraLeagueStats)}
         {renderPanel(masterLeagueStats)}
-        {renderPanel(customLeagueStats)}
+        {renderCustom && renderPanel(customLeagueStats)}
         {renderPanel(raidsStats)}
     </div>;
 }

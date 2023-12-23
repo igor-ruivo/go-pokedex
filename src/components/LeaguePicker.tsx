@@ -10,6 +10,7 @@ interface ILeaguePickerProps {
 
 const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
     const { currentGameLanguage } = useLanguage();
+    const renderCustom = false;
 
     return <nav className="navigation-header ivs-nav extra-gap">
         <ul>
@@ -31,12 +32,12 @@ const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
                     {league === LeagueType.MASTER_LEAGUE && <span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>}
                 </div>
             </li>
-            <li>
+            {renderCustom && <li>
                 <div onClick={() => handleSetLeague(LeagueType.CUSTOM_CUP)} className={"header-tab league-picker selectable " + (league === LeagueType.CUSTOM_CUP ? "selected" : "")}>
                     <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/holiday.png`} alt="Holiday Cup"/>
                     {league === LeagueType.CUSTOM_CUP && <span className="league-tooltip">{gameTranslator(GameTranslatorKeys.Holiday, currentGameLanguage)}</span>}
                 </div>
-            </li>
+            </li>}
             <li>
                 <div onClick={() => handleSetLeague(LeagueType.RAID)} className={"header-tab league-picker selectable " + (league === LeagueType.RAID ? "selected" : "")}>
                     <div className="img-padding"><img className="raid-img-with-contrast" height="24" width="24" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="Raids"/></div>

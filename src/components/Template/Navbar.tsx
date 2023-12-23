@@ -10,7 +10,7 @@ import Select from "react-select";
 import translator, { TranslatorKeys } from "../../utils/Translator";
 import { Box } from "@mui/material";
 import PokemonImage from "../PokemonImage";
-import { ImageSource, useImageSource } from "../../contexts/language-context copy";
+import { ImageSource, useImageSource } from "../../contexts/imageSource-context";
 import gameTranslator, { GameTranslatorKeys } from "../../utils/GameTranslator";
 
 enum ThemeValues {

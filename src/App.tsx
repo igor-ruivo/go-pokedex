@@ -11,7 +11,7 @@ import { PvpProvider } from './contexts/pvp-context';
 import { MovesProvider } from './contexts/moves-context';
 import { GameTranslationProvider } from './contexts/gameTranslation-context';
 import DeleteTrash from './components/DeleteTrash';
-import { ImageSourceProvider } from './contexts/language-context copy';
+import { ImageSourceProvider } from './contexts/imageSource-context';
 
 const App = () => {
     return (

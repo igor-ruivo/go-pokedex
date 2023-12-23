@@ -183,7 +183,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         const rankInGreat = rankLists[0][member.speciesId]?.rank;
         const rankInUltra = rankLists[1][member.speciesId]?.rank;
         const rankInMaster = rankLists[2][member.speciesId]?.rank;
-        const rankInCustom = rankLists[3][member.speciesId]?.rank;
+        const rankInCustom = rankLists[3] ? rankLists[3][member.speciesId]?.rank : 0;
         if (!isNaN(rankInGreat) && rankInGreat < bestInFamilyForGreatLeagueRank) {
             bestInFamilyForGreatLeagueRank = rankInGreat;
             bestInFamilyForGreatLeague = member;
@@ -238,7 +238,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         {
                             leagueTitle: "custom",
                             bestReachablePokemon: bestInFamilyForCustomLeague,
-                            pokemonRankInLeague: ordinal(rankLists[3][bestInFamilyForCustomLeague.speciesId]?.rank)
+                            pokemonRankInLeague: ordinal(rankLists[3] ? rankLists[3][bestInFamilyForCustomLeague.speciesId]?.rank : 0)
                         }
                     }
                     raidsStats={

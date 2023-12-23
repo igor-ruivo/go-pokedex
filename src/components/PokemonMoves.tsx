@@ -39,7 +39,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const greatLeagueMoveset = rankLists[0][pokemon.speciesId]?.moveset ?? [];
     const ultraLeagueMoveset = rankLists[1][pokemon.speciesId]?.moveset ?? [];
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
-    const customLeagueMoveset = rankLists[3][pokemon.speciesId]?.moveset ?? [];
+    const customLeagueMoveset = rankLists[3] ? (rankLists[3][pokemon.speciesId]?.moveset ?? []) : [];
 
     const raidComputation = computeDPSEntry(pokemon, moves);
     const raidMoveset = [raidComputation.fastMoveId, raidComputation.chargedMoveId];

@@ -19,7 +19,7 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
             return "";
         }
 
-        let ordinalRank = ordinal(rankLists[listType - 1][speciesId].rank);
+        let ordinalRank = rankLists[listType - 1] ? ordinal(rankLists[listType - 1][speciesId].rank) : "";
         if (!ordinalRank) {
             return "";
         }
@@ -40,6 +40,10 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
                 .replace("th", ".");
         }
 
+        if (!rankLists[listType - 1]) {
+            return ordinalRank as string;
+        }
+
         switch (rankLists[listType - 1][speciesId].rank) {
             case 1:
                 return "🥇" + ordinalRank;
@@ -53,14 +57,14 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
     }
 
     const computeRankChange = () => {
-        if (!pvpFetchCompleted) {
+        if (!pvpFetchCompleted || !rankLists[listType - 1]) {
             return "";
         }
 
         return ` ${rankLists[listType - 1][speciesId].rankChange === 0 ? "" : rankLists[listType - 1][speciesId].rankChange < 0 ? "▾" + rankLists[listType - 1][speciesId].rankChange * -1 : "▴" + rankLists[listType - 1][speciesId].rankChange}`;
     }
 
-    const rankChangeClassName = (!pvpFetchCompleted || listType === ListType.POKEDEX) ? "" : rankLists[listType - 1][speciesId].rankChange === 0 ? "neutral" : rankLists[listType - 1][speciesId].rankChange < 0 ? "nerfed" : "buffed";
+    const rankChangeClassName = (!pvpFetchCompleted || listType === ListType.POKEDEX || !rankLists[listType - 1]) ? "" : rankLists[listType - 1][speciesId].rankChange === 0 ? "neutral" : rankLists[listType - 1][speciesId].rankChange < 0 ? "nerfed" : "buffed";
 
     return (
         <div className="pokemon-number">
