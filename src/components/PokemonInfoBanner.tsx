@@ -266,6 +266,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         atk={attack}
                         def={defense}
                         hp={hp}
+                        isShadow={pokemon.isShadow}
                         greatLeagueStats={
                             {
                                 leagueTitle: "great",

@@ -19,6 +19,32 @@ export enum Effectiveness {
     DoubleEffective = 2.56
 }
 
+const accumulatedStardustCosts = [0, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3000, 3600, 4200, 4800, 5600, 6400, 7200, 8000, 9000, 10000, 11000, 12000, 13300, 14600, 15900, 17200, 18800, 20400, 22000, 23600, 25500, 27400, 29300, 31200, 33400, 35600, 37800, 40000, 42500, 45000, 47500, 50000, 53000, 56000, 59000, 62000, 65500, 69000, 72500, 76000, 80000, 84000, 88000, 92000, 96500, 101000, 105500, 110000, 115000, 120000, 125000, 130000, 136000, 142000, 146000, 154000, 161000, 168000, 175000, 182000, 190000, 198000, 206000, 214000, 223000, 232000, 241000, 250000, 260000, 270000, 280000, 290000, 301000, 312000, 323000, 334000, 346000, 358000, 370000, 382000, 395000, 408000, 421000, 434000, 448000, 462000, 476000, 490000, 505000, 520000, 520000, 520000];
+const accumulatedCandyCosts = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 63, 60, 69, 72, 75, 78, 81, 84, 87, 90, 94, 98, 102, 106, 110, 114, 118, 122, 126, 130, 136, 142, 148, 154, 162, 170, 178, 186, 196, 206, 216, 226, 238, 250, 262, 274, 289, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304];
+const shadowAccumulatedCandyCosts = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 198, 206, 214, 222, 232, 242, 252, 262, 274, 286, 298, 310, 325, 340, 355, 370, 388, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406, 406];
+const accumulatedXLCandyCosts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 20, 30, 40, 52, 64, 76, 88, 103, 118, 133, 148, 165, 182, 199, 216, 236, 256, 276, 296, 296, 296];
+const shadowAccumulatedXLCandyCosts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 24, 36, 48, 63, 78, 93, 108, 126, 144, 162, 180, 201, 222, 243, 264, 288, 312, 336, 360, 360, 360];
+
+type NeededResources = {
+    stardust: number,
+    candies: number,
+    candiesXL: number
+}
+
+export const levelToLevelIndex = (level: number) => (level - 1) * 2;
+
+export const computeNeededResources: (currentLevel: number, targetLevel: number, isShadow: boolean) => NeededResources = (currentLevel: number, targetLevel: number, isShadow: boolean) => {
+    const neededStardust = (accumulatedStardustCosts[levelToLevelIndex(targetLevel)] - accumulatedStardustCosts[levelToLevelIndex(currentLevel)]) * (isShadow ? 1.2 : 1);
+    const neededCandies = isShadow ? (shadowAccumulatedCandyCosts[levelToLevelIndex(targetLevel)] - shadowAccumulatedCandyCosts[levelToLevelIndex(currentLevel)]) : (accumulatedCandyCosts[levelToLevelIndex(targetLevel)] - accumulatedCandyCosts[levelToLevelIndex(currentLevel)]);
+    const neededXLCandies = isShadow ? (shadowAccumulatedXLCandyCosts[levelToLevelIndex(targetLevel)] - shadowAccumulatedXLCandyCosts[levelToLevelIndex(currentLevel)]) : (accumulatedXLCandyCosts[levelToLevelIndex(targetLevel)] - accumulatedXLCandyCosts[levelToLevelIndex(currentLevel)]);
+
+    return {
+        stardust: neededStardust,
+        candies: neededCandies,
+        candiesXL: neededXLCandies
+    }
+}
+
 export const getAllFastMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>) => {
     return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast)).concat(p.legacyMoves.filter(m => moves[m].isFast))));
 }

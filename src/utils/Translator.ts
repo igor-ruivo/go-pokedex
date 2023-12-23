@@ -13,6 +13,8 @@ export enum TranslatorKeys {
     MegaPokemon,
     ShadowPokemon,
     NotAvailableForRaids,
+    Reached,
+    LevelExceeded,
     TopKeyCountersIntro,
     Name,
     Show,
@@ -738,6 +740,18 @@ const topKeyCountersIntro = new Map<Language, string>([
     [Language.Bosnian, "Evo 5 ključnih pobjeda i poraza protiv relevantnih Pokémona u meti kada koristite "]
 ]);
 
+const reached = new Map<Language, string>([
+    [Language.English, "Reached!"],
+    [Language.Portuguese, "Atingido!"],
+    [Language.Bosnian, "Dosegnuto!"]
+]);
+
+const levelExceeded = new Map<Language, string>([
+    [Language.English, "Level exceeded..."],
+    [Language.Portuguese, "Nível excedido..."],
+    [Language.Bosnian, "Nivo premašen..."]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.LanguageSettings, languageSettings],
@@ -843,7 +857,9 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.ShadowPokemon, shadowPokemon],
     [TranslatorKeys.Show, show],
     [TranslatorKeys.Items, items],
-    [TranslatorKeys.TopKeyCountersIntro, topKeyCountersIntro]
+    [TranslatorKeys.TopKeyCountersIntro, topKeyCountersIntro],
+    [TranslatorKeys.Reached, reached],
+    [TranslatorKeys.LevelExceeded, levelExceeded]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
@@ -7,6 +8,7 @@ import { ordinal } from "../utils/conversions";
 import "./LeaguePanels.scss";
 import { buildRankString } from "./LeagueRanks";
 import RaidCard from "./RaidCard";
+import { computeNeededResources } from "../utils/pokemon-helper";
 
 interface LeagueStat {
     leagueTitle: string,
@@ -45,7 +47,8 @@ interface ILeaguePanelsProps {
     def: number,
     hp: number,
     league: LeagueType,
-    level: number
+    level: number,
+    isShadow: boolean
 }
 
 const LeaguePanels = ({
@@ -58,13 +61,15 @@ const LeaguePanels = ({
     def,
     hp,
     league,
-    level
+    level,
+    isShadow
 }: ILeaguePanelsProps) => {
-
+    const [toggled, setToggled] = useState(false);
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-column ${leagueStat.leagueTitle}`;
+        const neededResources = computeNeededResources(level, leagueStat.pokemonLevel, isShadow);
 
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
@@ -126,9 +131,16 @@ const LeaguePanels = ({
                         <header>
                             {translator(TranslatorKeys.Peaks, currentLanguage)}:
                         </header>
-                        <div className="pvp-entry">
+                        <div className="pvp-entry clickable" onClick={() => setToggled(p => !p)}>
                             <div className="pvp-entry-content potential">
-                            <strong className="cp-container with-brightness">{leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} <strong className={`${level > leagueStat.pokemonLevel ? "higher-level" : "cp-container with-brightness"}`}>{leagueStat.pokemonLevel}</strong></div>
+                                <>
+                                    {!toggled ? <><strong className="cp-container with-brightness">{leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} <strong className={`${level > leagueStat.pokemonLevel ? "higher-level" : "cp-container with-brightness"}`}>{leagueStat.pokemonLevel}</strong></div></> : 
+                                    level > leagueStat.pokemonLevel ? <span className="higher-level contained-big weighted-font">{translator(TranslatorKeys.LevelExceeded, currentLanguage)}</span> : level === leagueStat.pokemonLevel ? <span className="buffed contained-big weighted-font with-brightness">{translator(TranslatorKeys.Reached, currentLanguage)}</span> : <div className="needed-resources">
+                                        <img src={`${process.env.PUBLIC_URL}/images/stardust.png`} alt="stardust" height={16} width={16}/><div className="contained-big weighted-font cp-container with-brightness">{neededResources.stardust > 1000 ? Math.round(Math.round(neededResources.stardust / 1000) * 10) / 10 + "k" : neededResources.stardust}</div>
+                                        {neededResources.candies !== 0 && <><img src={`${process.env.PUBLIC_URL}/images/candy.png`} alt="candy" height={16} width={16}/><div className="contained-big weighted-font cp-container with-brightness">{neededResources.candies}</div></>}
+                                        {neededResources.candiesXL !== 0 && <><img src={`${process.env.PUBLIC_URL}/images/xl-candy.png`} alt="xl-candy" height={16} width={16}/><div className="contained-big weighted-font cp-container with-brightness">{neededResources.candiesXL}</div></>}
+                                    </div>}
+                                </>
                             </div>
                         </div>
                         <div className="pvp-entry">
