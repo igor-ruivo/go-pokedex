@@ -7,14 +7,13 @@ import { IIvPercents } from "../components/PokemonInfoBanner";
 
 interface IUseComputeIVsProps {
     pokemon: IGamemasterPokemon;
-    levelCap: number;
     attackIV: number;
     defenseIV: number;
     hpIV: number;
     justForSelf?: boolean;
 }
 
-const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSelf = false}: IUseComputeIVsProps) => {
+const useComputeIVs = ({pokemon, attackIV, defenseIV, hpIV, justForSelf = false}: IUseComputeIVsProps) => {
     const [ivPercents, setIvPercents] = useState<Dictionary<IIvPercents>>({});
     const [loading, setLoading] = useState(true);
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
@@ -36,9 +35,9 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
             }
 
             Array.from(reachablePokemons).filter(p => p).forEach(p => {
-                const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, levelCap);
-                const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500, levelCap);
-                const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE, levelCap);
+                const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
+                const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
+                const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE);
         
                 const flatGLResult = Object.values(resGL).flat();
                 const flatULResult = Object.values(resUL).flat();
@@ -91,7 +90,7 @@ const useComputeIVs = ({pokemon, levelCap, attackIV, defenseIV, hpIV, justForSel
             setLoading(false);
         }
         computeIvs();
-    }, [pokemon, levelCap, attackIV, defenseIV, hpIV, justForSelf, gamemasterPokemon, fetchCompleted]);
+    }, [pokemon, attackIV, defenseIV, hpIV, justForSelf, gamemasterPokemon, fetchCompleted]);
 
     const result: [Dictionary<IIvPercents>, boolean] = [ivPercents, loading];
 

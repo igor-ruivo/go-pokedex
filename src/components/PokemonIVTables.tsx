@@ -14,7 +14,6 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
     league: LeagueType;
-    levelCap: number;
     attackIV: number;
     setAttackIV: React.Dispatch<React.SetStateAction<number>>;
     defenseIV: number;
@@ -92,7 +91,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
     return stabilizedThis.map((el) => el[0]);
 }
 
-const PokemonIVTables = ({pokemon, league, levelCap, attackIV, setAttackIV, defenseIV, setDefenseIV, hpIV, setHPIV}: IPokemonIVTables) => {
+const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, setDefenseIV, hpIV, setHPIV}: IPokemonIVTables) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('top');
@@ -176,7 +175,7 @@ const PokemonIVTables = ({pokemon, league, levelCap, attackIV, setAttackIV, defe
             break;
     }
 
-    const result = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap, levelCap)).flat();
+    const result = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap)).flat();
 
     const highestScore = Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S);
 

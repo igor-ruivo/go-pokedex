@@ -62,7 +62,7 @@ const Pokemon = () => {
 
     const pokemon = fetchCompleted && !gamemasterPokemon[speciesId ?? ""]?.aliasId ? gamemasterPokemon[speciesId ?? ""] : undefined;
     
-    const [ivPercents, loading] = useComputeIVs({pokemon: pokemon as IGamemasterPokemon, levelCap: 51, attackIV, defenseIV, hpIV});
+    const [ivPercents, loading] = useComputeIVs({pokemon: pokemon as IGamemasterPokemon, attackIV, defenseIV, hpIV});
 
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
@@ -147,8 +147,8 @@ const Pokemon = () => {
                                         />}
                                         {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/counters") && <PokemonCounters pokemon={pokemon} league={league}/>}
-                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league} levelCap={levelCap} attackIV={attackIV} setAttackIV={setAttackIV} defenseIV={defenseIV} setDefenseIV={setDefenseIV} hpIV={hpIV} setHPIV={setHPIV}/>}
-                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league} levelCap={levelCap} />}
+                                        {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league} attackIV={attackIV} setAttackIV={setAttackIV} defenseIV={defenseIV} setDefenseIV={setDefenseIV} hpIV={hpIV} setHPIV={setHPIV}/>}
+                                        {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}
                                     </div>
                                 </div>
                         }

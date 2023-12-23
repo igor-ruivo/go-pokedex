@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsHolidayUrl, pvpokeRankingsUrl } from '../utils/Configs';
+import { pvpokeRankings1500Url, pvpokeRankings2500Url/*, pvpokeRankingsHolidayUrl*/, pvpokeRankingsUrl } from '../utils/Configs';
 import { mapRankedPokemon } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 import { usePokemon } from './pokemon-context';
