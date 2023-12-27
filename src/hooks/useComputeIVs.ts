@@ -35,14 +35,17 @@ const useComputeIVs = ({pokemon, attackIV, defenseIV, hpIV, justForSelf = false}
             }
 
             Array.from(reachablePokemons).filter(p => p).forEach(p => {
+                const resLC = computeBestIVs(p.atk, p.def, p.hp, 500);
                 const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
                 const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
                 const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE);
         
+                const flatLResult = Object.values(resLC).flat();
                 const flatGLResult = Object.values(resGL).flat();
                 const flatULResult = Object.values(resUL).flat();
                 const flatMLResult = Object.values(resML).flat();
         
+                const rankLIndex = flatLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
                 const rankGLIndex = flatGLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
                 const rankULIndex = flatULResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
                 const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
@@ -75,15 +78,15 @@ const useComputeIVs = ({pokemon, attackIV, defenseIV, hpIV, justForSelf = false}
                     masterLeaguePerfect: flatMLResult[0].IVs,
                     masterLeaguePerfectLevel: flatMLResult[0].L,
                     masterLeaguePerfectCP: flatMLResult[0].CP,
-                    customLeagueRank: rankGLIndex,
-                    customLeagueLvl: flatGLResult[rankGLIndex].L,
-                    customLeagueCP: flatGLResult[rankGLIndex].CP,
-                    customLeagueAttack: flatGLResult[rankGLIndex].battle.A,
-                    customLeagueDefense: flatGLResult[rankGLIndex].battle.D,
-                    customLeagueHP: flatGLResult[rankGLIndex].battle.S,
-                    customLeaguePerfect: flatGLResult[0].IVs,
-                    customLeaguePerfectLevel: flatGLResult[0].L,
-                    customLeaguePerfectCP: flatGLResult[0].CP
+                    customLeagueRank: rankLIndex,
+                    customLeagueLvl: flatLResult[rankLIndex].L,
+                    customLeagueCP: flatLResult[rankLIndex].CP,
+                    customLeagueAttack: flatLResult[rankLIndex].battle.A,
+                    customLeagueDefense: flatLResult[rankLIndex].battle.D,
+                    customLeagueHP: flatLResult[rankLIndex].battle.S,
+                    customLeaguePerfect: flatLResult[0].IVs,
+                    customLeaguePerfectLevel: flatLResult[0].L,
+                    customLeaguePerfectCP: flatLResult[0].CP
                 };
             });
             setIvPercents(familyIvPercents);

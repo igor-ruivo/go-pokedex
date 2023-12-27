@@ -10,7 +10,7 @@ interface ILeaguePickerProps {
 
 const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
     const { currentGameLanguage } = useLanguage();
-    const renderCustom = false;
+    const renderCustom = true;
 
     return <nav className="navigation-header ivs-nav extra-gap">
         <ul>

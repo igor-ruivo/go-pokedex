@@ -30,7 +30,7 @@ const Pokedex = () => {
     const { inputText } = useNavbarSearchInput();
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
-    const renderCustom = false;
+    const renderCustom = true;
 
     let listType = ListType.POKEDEX;
     const { listTypeArg } = useParams();

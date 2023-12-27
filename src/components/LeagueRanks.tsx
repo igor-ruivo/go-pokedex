@@ -47,7 +47,7 @@ const LeagueRanks = ({
 }: ILeaguePanelsProps) => {
     const {currentLanguage} = useLanguage();
     const {rankLists, pvpFetchCompleted} = usePvp();
-    const renderCustom = false;
+    const renderCustom = true;
 
     const getLeagueType = (league: string) => {
         switch (league) {

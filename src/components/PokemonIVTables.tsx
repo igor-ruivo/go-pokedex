@@ -171,7 +171,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
             cpCap = Number.MAX_VALUE;
             break;
         case LeagueType.CUSTOM_CUP:
-            cpCap = 1500;
+            cpCap = 500;
             break;
     }
 

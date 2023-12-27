@@ -2,7 +2,7 @@ import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
-import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsHolidayUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
+import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsHolidayLittleUrl, pvpokeRankingsHolidayUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
@@ -281,6 +281,9 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
             break;
         case pvpokeRankingsHolidayUrl:
             rankId = "holiday";
+            break;
+        case pvpokeRankingsHolidayLittleUrl:
+            rankId = "holiday-l";
             break;
         default:
             console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);

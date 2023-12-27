@@ -85,7 +85,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             cpCap = Number.MAX_VALUE;
             break;
         case LeagueType.CUSTOM_CUP:
-            cpCap = 1500;
+            cpCap = 500;
             break;
     }
 
