@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import PokemonCard from './PokemonCard';
@@ -28,16 +28,7 @@ const getDefaultListType = () => {
 }
 
 const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGridProps) => {
-    const [x] = useResize();
-
-    const getOrientation = () => window.screen.orientation.type;
-    const [orientation, setOrientation] = useState(getOrientation());
-    const updateOrientation = () => setOrientation(getOrientation());
-
-    useEffect(() => {
-        window.addEventListener('orientationchange', updateOrientation);
-        return () => window.removeEventListener('orientationchange', updateOrientation);
-    }, []);
+    const {x} = useResize();
 
     const {currentLanguage} = useLanguage();
     const renderDivRef = useRef<HTMLDivElement>(null);

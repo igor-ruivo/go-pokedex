@@ -1,20 +1,38 @@
 import { useLayoutEffect, useState } from 'react';
 
+type Dimensions = {
+    x: number;
+    y: number;
+    orientation: string;
+}
+
 const useResize = () => {
-  const [size, setSize] = useState([0, 0]);
 
-  useLayoutEffect(() => {
-    const updateSize = () => {
-        setSize([window.innerWidth, window.innerHeight]);
-    }
+    const [dimensions, setDimensions] = useState<Dimensions>({
+        x: 0,
+        y: 0,
+        orientation: ""
+    });
 
-    window.addEventListener('resize', updateSize);
-    updateSize();
+    useLayoutEffect(() => {
+        const updateDimensions = () => setDimensions({
+            x: window.innerWidth,
+            y: window.innerHeight,
+            orientation: window.screen.orientation.type.toString()
+        });
 
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
+        window.addEventListener('orientationchange', updateDimensions);
+        window.addEventListener('resize', updateDimensions);
+        
+        updateDimensions();
+
+        return () => {
+            window.removeEventListener('orientationchange', updateDimensions)
+            window.removeEventListener('resize', updateDimensions)
+        };
+    }, []);
   
-  return size;
+    return dimensions;
 }
 
 export default useResize;
