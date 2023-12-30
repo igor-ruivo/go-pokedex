@@ -13,9 +13,12 @@
     color: var(--textColor) !important;
 }
 
-ul.MuiAutocomplete-listbox {
+div.MuiAutocomplete-listbox,
+ul.MuiAutocomplete-listbox,
+.MuiAutocomplete-listbox > .ReactVirtualized__Grid {
     padding: 0;
     color-scheme: var(--colorScheme);
+    background-color: var(--dropdownOptionBlurred);
 }
 
 .MuiAutocomplete-option[aria-selected="true"] {
