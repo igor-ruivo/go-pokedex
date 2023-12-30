@@ -7,7 +7,7 @@ import { ListType } from '../views/pokedex';
 import { useLocation } from 'react-router-dom';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
-import {AutoSizer, Grid, GridCellProps} from 'react-virtualized';
+import {AutoSizer, Grid, GridCellProps, ScrollParams} from 'react-virtualized';
 import useResize from '../hooks/useResize';
 
 interface IPokemonGridProps {
@@ -55,7 +55,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
 
     useEffect(() => {
         if (typedCurrentRank === getDefaultListType()) {
-            containerRef.current?.scrollTo(0, getDefaultScrollY());
+            setTimeout(() => {
+                document.getElementsByClassName("grid")[0]?.scrollTo(0, getDefaultScrollY())
+            }, 0);
         }
     }, [typedCurrentRank, containerRef]);
 
@@ -66,6 +68,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
 
         if (initialPropsSet.current) {
             writeSessionValue(ConfigKeys.GridScrollY, "0");
+            setTimeout(() => {
+                document.getElementsByClassName("grid")[0]?.scrollTo(0, 0);
+            }, 0);
         } else {
             initialPropsSet.current = true;
         }
@@ -90,12 +95,18 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
                                     </div>
                                 </div> : <div key={props.key}/>
                         }}
-                        rowCount={Math.ceil(pokemonInfoList.length / itemsPerRow)}
+                        rowCount={Math.ceil(pokemonInfoList.length / itemsPerRow) + 1}
                         columnCount={itemsPerRow}
                         height={height}
                         width={containerRef.current?.offsetWidth ?? 0}
                         rowHeight={cardDimensions}
                         columnWidth={cardDimensions}
+                        onScroll={(e: ScrollParams) => {
+                            if (e.scrollTop === 0) {
+                                return;
+                            }
+                            writeSessionValue(ConfigKeys.GridScrollY, e.scrollTop.toString() ?? "0");
+                        }}
                     />
                 )}
             </AutoSizer>
