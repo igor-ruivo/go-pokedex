@@ -99,20 +99,6 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
                     />
                 )}
             </AutoSizer>
-/*
-                <Box sx={{ flexGrow: 1 }}>
-                    <Grid container disableEqualOverflow spacing={{ xs: 1, md: 1 }}>
-                        {shownPokemonSlice.map(p => (
-                            <Grid xs={4} sm={3} md={2.4} key={p.speciesId} className="grid">
-                                {readyImages.hasOwnProperty(p.speciesId) &&
-                                <Item className="grid-item">
-                                    <PokemonCard pokemon={p} listType={listType} />
-                                </Item>}
-                            </Grid>
-                        ))}
-                    </Grid>
-                </Box>
-*/
             }
         </div>
     );

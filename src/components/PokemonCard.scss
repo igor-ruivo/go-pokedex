@@ -14,7 +14,7 @@
     padding: 3px;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: clamp(0px, calc(5.656px + 1.23vw), 15.4px);
+    font-size: clamp(0px, calc(4.656px + 1.23vw), 15.4px);
     justify-content: space-around;
     color: var(--textColor);
 }
@@ -90,8 +90,8 @@
         gap: 2px;
         .images-container {
             .main-image-container {
-                width: calc(50px + 50 * calc(100vw - 320px) / (600 - 320));
-                height: calc(50px + 50 * calc(100vw - 320px) / (600 - 320));
+                width: calc(45px + 50 * calc(100vw - 320px) / (600 - 320));
+                height: calc(45px + 50 * calc(100vw - 320px) / (600 - 320));
             }
         }
     }
