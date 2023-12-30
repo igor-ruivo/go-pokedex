@@ -1,4 +1,5 @@
 .layout {
+    height: 100%;
     width: 100%;
     max-width: 1300px;
 }
@@ -65,20 +66,21 @@
 }
 
 .pokedex {
+    height: 100%;
     overscroll-behavior: unset !important;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: overlay;
     max-height: calc(100vh - 133px);
-    padding-top: 8px;
+    //padding-top: 4px;
     border-top: 1px solid var(--borderColor2);
     box-shadow: inset 0px -2px 0px -2px rgba(0,0,0,0.2);
-    padding-bottom: 9px;
+    //padding-bottom: 9px;
 }
 
 @media (max-width: 500px) {
     .pokedex {
-        max-height: calc(100vh - 124px);
-        padding-bottom: 115px; //so that safari/chrome don't crop last row
+        max-height: calc(100vh - 124px); //todo: test this again.
+        //padding-bottom: 115px; //so that safari/chrome don't crop last row. fix by adding extra ghost row
     }
 
     .navigation-header.extra-gap {

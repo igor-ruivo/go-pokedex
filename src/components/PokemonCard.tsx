@@ -32,7 +32,7 @@ const PokemonCard = ({pokemon, listType}: IPokemonCardProps) => {
                     <PokemonTypes types={pokemon.types} />
                 </span>
                 <span className="card-content">
-                    <PokemonImage pokemon={pokemon} xl={showXL} withName/>
+                    <PokemonImage pokemon={pokemon} xl={showXL} withName lazy/>
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container with-brightness">

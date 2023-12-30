@@ -3,18 +3,38 @@
 }
 
 .grid_container {
+    height: 100%;
     a {
         text-decoration: none;
     }
 }
 
-.grid > div {
+.grid {
+    overflow-x: hidden !important;
+    overflow-y: overlay !important;
+}
+
+.card-wrapper {
+    width: 100%;
+    height: 100%;
     padding: 5px;
     background-color: var(--gridItemsBackgroundColor) !important;
     border: 1px solid var(--borderColor2);
+    border-radius: 4px;
     &:hover {
         border: 1px solid var(--buttonsBorderColor);
     }
+}
+
+.card-wrapper-wrapper {
+    padding: 4px;
+}
+
+.card-wrapper-wrapper-edge {
+    padding-left: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-right: 1px;
 }
 
 @media (min-width: 500px) {
@@ -25,8 +45,8 @@
     }
 }
 
-@media (max-width: 360px) {
-    .grid > div {
+@media (max-width: 385px) {
+    .card-wrapper {
         padding: 1px;
     }
 }
