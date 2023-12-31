@@ -90,7 +90,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
                         cellRenderer={(props: GridCellProps) => {
                             const idx = props.rowIndex * itemsPerRow + props.columnIndex;
                             return idx < pokemonInfoList.length ?
-                                <div key={props.key} className={props.columnIndex === itemsPerRow - 1 ? "card-wrapper-wrapper-edge" : "card-wrapper-wrapper"} style={props.style}>
+                                <div key={props.key} className="card-wrapper-padding" style={props.style}>
                                     <div className='card-wrapper'>
                                         <PokemonCard pokemon={pokemonInfoList[idx]} listType={listType} />
                                     </div>
