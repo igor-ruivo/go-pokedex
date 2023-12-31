@@ -14,6 +14,7 @@ import { ImageSource, useImageSource } from "../../contexts/imageSource-context"
 import gameTranslator, { GameTranslatorKeys } from "../../utils/GameTranslator";
 import { PokemonTypes } from "../../DTOs/PokemonTypes";
 import { useNavbarSearchInput } from "../../contexts/navbar-search-context";
+import { translatedType } from "../PokemonInfoImagePlaceholder";
 
 enum ThemeValues {
     Light,
@@ -219,10 +220,10 @@ const Navbar = () => {
         }
     ];
 
-    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: pathname.includes("raid") ? translator(TranslatorKeys.Any, currentLanguage) : translator(TranslatorKeys.None, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => !isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
-        label: k,
+    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: pathname.includes("raid") ? translator(TranslatorKeys.Any, currentLanguage) : translator(TranslatorKeys.None, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
+        label: translatedType(PokemonTypes[k as keyof typeof PokemonTypes], currentLanguage),
         value: PokemonTypes[k as keyof typeof PokemonTypes],
-        hint: `${process.env.PUBLIC_URL}/images/types/${k.toLocaleLowerCase()}.png`
+        hint: `${process.env.PUBLIC_URL}/images/types/${PokemonTypes[k as keyof typeof PokemonTypes].toString().toLocaleLowerCase()}.png`
     }))];
 
     return <>
