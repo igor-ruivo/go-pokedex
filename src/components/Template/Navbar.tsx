@@ -225,6 +225,8 @@ const Navbar = () => {
         value: PokemonTypes[k as keyof typeof PokemonTypes],
         hint: `${process.env.PUBLIC_URL}/images/types/${PokemonTypes[k as keyof typeof PokemonTypes].toString().toLocaleLowerCase()}.png`
     }))];
+console.log("igor");
+    console.log(type1Filter);
 
     return <>
         <header className="navbar">
@@ -395,9 +397,9 @@ const Navbar = () => {
                                 <Select
                                     className="navbar-dropdown"
                                     isSearchable={false}
-                                    options={typesOptions.filter(e => type2Filter === undefined || e.value !== type2Filter)}
+                                    options={typesOptions.filter(e => e.value === undefined || type2Filter === undefined || (pathname.includes("raid") || e.value !== type2Filter))}
                                     value={type1Filter === undefined ? typesOptions[0] : typesOptions.find(l => l.value === type1Filter)}
-                                    onChange={(v) => updateType1(v!.value)}
+                                    onChange={(v) => {console.log("updating:" + v!.value); updateType1(v!.value)}}
                                     formatOptionLabel={(data, _) => <div className="hint-container">{data.hint && <img alt="flag" src={data.hint} height={17} />}<span>{data.label}</span></div>}
                                 />
                             </div>
@@ -408,7 +410,7 @@ const Navbar = () => {
                                 <Select
                                     className="navbar-dropdown"
                                     isSearchable={false}
-                                    options={typesOptions.filter(e => e.value !== type1Filter)}
+                                    options={typesOptions.filter(e => e.value === undefined || e.value !== type1Filter)}
                                     value={type2Filter === undefined ? typesOptions[0] : typesOptions.find(l => l.value === type2Filter)}
                                     onChange={(v) => updateType2(v!.value)}
                                     formatOptionLabel={(data, _) => <div className="hint-container">{data.hint && <img alt="flag" src={data.hint} height={17} />}<span>{data.label}</span></div>}

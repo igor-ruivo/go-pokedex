@@ -14,7 +14,6 @@ import { usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { dpsEntry } from '../components/PokemonInfoBanner';
 import { useMoves } from '../contexts/moves-context';
-import { PokemonTypes } from '../DTOs/PokemonTypes';
 
 export enum ListType {
     POKEDEX,
@@ -142,8 +141,8 @@ const Pokedex = () => {
         if (type1Filter === undefined) {
             return computedComparisons;
         }
-
-        return computeComparisons(PokemonTypes[type1Filter].toString().toLocaleLowerCase());
+        
+        return computeComparisons(type1Filter.toString().toLocaleLowerCase());
     }, [computeComparisons, type1Filter, computedComparisons]);
 
     type DataType = {

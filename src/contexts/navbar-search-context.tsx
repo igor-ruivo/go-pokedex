@@ -47,12 +47,13 @@ const parseSessionCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) 
 
 const getDefaultType = (key: ConfigKeys) => {
     const cachedValue = readSessionValue(key);
-    if (!cachedValue) {
+    if (!cachedValue || cachedValue === "undefined") {
         return undefined;
     }
 
-    const typedValue = +cachedValue as PokemonTypes;
+    const parsed = JSON.parse(cachedValue);
 
+    const typedValue = parsed as PokemonTypes;
     return typedValue;
 }
 
@@ -104,6 +105,10 @@ export const NavbarSearchProvider = (props: React.PropsWithChildren<{}>) => {
         setType1Filter(newType);
         
         if (newType === undefined) {
+            updateType2(undefined);
+        }
+
+        if (newType === type2Filter) {
             updateType2(undefined);
         }
     }
