@@ -47,3 +47,13 @@
         padding: 1px;
     }
 }
+
+@media (max-width: 599.9px) {
+    .card-wrapper-padding {
+        padding: 2px;
+    }
+
+    .ReactVirtualized__Grid__innerScrollContainer {
+        margin-left: 1px;
+    }
+}
