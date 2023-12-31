@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -8,17 +8,20 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/language-context';
-import { fetchPokemonFamily } from '../utils/pokemon-helper';
+import { computeDPSEntry, fetchPokemonFamily, getAllChargedMoves } from '../utils/pokemon-helper';
 import Dictionary from '../utils/Dictionary';
 import { usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
+import { dpsEntry } from '../components/PokemonInfoBanner';
+import { useMoves } from '../contexts/moves-context';
 
 export enum ListType {
     POKEDEX,
     GREAT_LEAGUE,
     ULTRA_LEAGUE,
     MASTER_LEAGUE,
-    CUSTOM_CUP
+    CUSTOM_CUP,
+    RAID
 }
 
 const getDefaultShowFamilyTree = () => true; // TODO: implement toggle later readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
@@ -27,6 +30,7 @@ const Pokedex = () => {
     const [showFamilyTree] = useState(getDefaultShowFamilyTree());
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
+    const { moves, movesFetchCompleted } = useMoves();
     const { inputText } = useNavbarSearchInput();
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -50,6 +54,9 @@ const Pokedex = () => {
             break;
         case "custom":
             listType = ListType.CUSTOM_CUP;
+            break;
+        case "raid":
+            listType = ListType.RAID;
             break;
         default:
             throw Error("404 not found!");
@@ -99,12 +106,54 @@ const Pokedex = () => {
         return dict;
     }, [gamemasterPokemon, fetchCompleted]);
 
-    const data = useMemo(() => {
-        if (!fetchCompleted || !pvpFetchCompleted) {
+    const rankOnlyFilteredTypePokemon = false; //TODO: connect to settings
+
+    const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
+        if (!forcedType) {
+            return true;
+        }
+
+        if (rankOnlyFilteredTypePokemon) {
+            if (!p.types.map(t => t.toString().toLocaleLowerCase()).includes(forcedType.toLocaleLowerCase())) {
+                return false;
+            }
+        }
+
+        return getAllChargedMoves(p, moves).some(m => moves[m].type === forcedType);
+    }, [rankOnlyFilteredTypePokemon, moves]);
+
+    const computeComparisons = useCallback((forcedType = "") => {
+        if (!fetchCompleted || !movesFetchCompleted) {
             return [];
         }
 
+        const comparisons: dpsEntry[] = [];
+        Object.values(gamemasterPokemon)
+            .filter(p => !p.aliasId && typeFilter(p, forcedType))
+            .forEach(p => comparisons.push(computeDPSEntry(p, moves, 15, 100, forcedType)));
+        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
+    }, [gamemasterPokemon, fetchCompleted, movesFetchCompleted, typeFilter, moves]);
+
+    const computedComparisons = useMemo(() => computeComparisons(), [computeComparisons]);
+
+    type DataType = {
+        processedList: IGamemasterPokemon[],
+        cpStringOverrides: Dictionary<string>,
+        rankOverrides: Dictionary<number>
+    }
+
+    const data: DataType = useMemo(() => {
+        if (!fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted) {
+            return {
+                processedList: [],
+                cpStringOverrides: {},
+                rankOverrides: {}
+            };
+        }
+
         let processedList: IGamemasterPokemon[] = [];
+        let cpStringOverrides: Dictionary<string> = {};
+        let rankOverrides: Dictionary<number> = {};
 
         const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon[r.speciesId];
         
@@ -135,12 +184,31 @@ const Pokedex = () => {
                 const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
                 processedList = leaguePool.filter(p => inputFilter(p, (pokemon: IGamemasterPokemon) => !pokemon.isMega && !pokemon.aliasId));
                 break;
+            case ListType.RAID:
+                const preProcessedList: IGamemasterPokemon[] = [];
+
+                computedComparisons.forEach((e, idx) => {
+                    if (!inputFilter(gamemasterPokemon[e.speciesId], (pokemon: IGamemasterPokemon) => !pokemon.aliasId)) {
+                        return;
+                    }
+                    
+                    preProcessedList.push(gamemasterPokemon[e.speciesId]);
+                    cpStringOverrides[e.speciesId] = `${Math.round(e.dps * 100) / 100} DPS`;
+                    rankOverrides[e.speciesId] = idx + 1;
+                });
+
+                processedList = preProcessedList;
+                break;
             default:
                 throw new Error(`Missing case in switch for ${listType}`);
         }
 
-        return processedList;
-    }, [gamemasterPokemon, listType, rankLists, inputText, fetchCompleted, pvpFetchCompleted, showFamilyTree, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
+        return {
+            processedList,
+            cpStringOverrides,
+            rankOverrides
+        };
+    }, [gamemasterPokemon, listType, rankLists, inputText, movesFetchCompleted, computedComparisons, fetchCompleted, pvpFetchCompleted, showFamilyTree, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
 
     return (
         <main className="layout">
@@ -170,11 +238,17 @@ const Pokedex = () => {
                             {listType === ListType.CUSTOM_CUP && <span>{gameTranslator(GameTranslatorKeys.Holiday, currentGameLanguage)}</span>}
                         </Link>
                     </li>}
+                    <li>
+                        <Link to="/raid" className={"header-tab league-picker " + (listType === ListType.RAID ? "selected" : "")}>
+                            <div className="img-padding"><img className="raid-img-with-contrast" height="24" width="24" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="Raids"/></div>
+                            {listType === ListType.RAID && <span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>}
+                        </Link>
+                    </li>
                 </ul>
             </nav>
             <div className="pokedex" ref={containerRef}>
-                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted}>
-                    <PokemonGrid pokemonInfoList={data} listType={listType} containerRef={containerRef}/>
+                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && movesFetchCompleted}>
+                    <PokemonGrid pokemonInfoList={data.processedList} cpStringOverrides={data.cpStringOverrides} rankOverrides={data.rankOverrides} listType={listType} containerRef={containerRef}/>
                 </LoadingRenderer>
             </div>
         </main>

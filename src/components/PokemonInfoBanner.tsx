@@ -69,7 +69,7 @@ export interface IIvPercents {
     customLeaguePerfectCP: number
 }
 
-type dpsEntry = {
+export type dpsEntry = {
     fastMoveId: string;
     chargedMoveId: string;
     dps: number;

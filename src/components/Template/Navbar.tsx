@@ -101,7 +101,7 @@ const Navbar = () => {
         }
         let destinationPath = "";
         const previousRankType = readSessionValue(ConfigKeys.LastListType);
-        if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom")) {    
+        if (previousRankType === null || pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid")) {    
             return "/";
         }
 
@@ -117,6 +117,9 @@ const Navbar = () => {
                 break;
             case ListType.CUSTOM_CUP:
                 destinationPath = "custom";
+                break;
+            case ListType.RAID:
+                destinationPath = "raid";
                 break;
         }
 
@@ -227,7 +230,7 @@ const Navbar = () => {
                                 return !p.isMega && !p.aliasId;
                             }
 
-                            if (pathname.startsWith("/pokemon")) {
+                            if (pathname.startsWith("/pokemon") || pathname.startsWith("/raid")) {
                                 return !p.aliasId;
                             }
 

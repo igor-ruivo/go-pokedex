@@ -675,9 +675,9 @@ const inKey = new Map<Language, string>([
 ]);
 
 const types1 = new Map<Language, string>([
-    [Language.English, "among"],
-    [Language.Portuguese, "nos tipos"],
-    [Language.Bosnian, "među tipovima"]
+    [Language.English, ""],
+    [Language.Portuguese, "tipos"],
+    [Language.Bosnian, "tipovima"]
 ]);
 
 const types2 = new Map<Language, string>([

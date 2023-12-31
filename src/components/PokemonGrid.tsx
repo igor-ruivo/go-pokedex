@@ -9,9 +9,12 @@ import translator, { TranslatorKeys } from '../utils/Translator';
 import { useLanguage } from '../contexts/language-context';
 import {AutoSizer, Grid, GridCellProps, ScrollParams} from 'react-virtualized';
 import useResize from '../hooks/useResize';
+import Dictionary from '../utils/Dictionary';
 
 interface IPokemonGridProps {
     pokemonInfoList: IGamemasterPokemon[],
+    cpStringOverrides: Dictionary<string>,
+    rankOverrides: Dictionary<number>,
     listType: ListType,
     containerRef: React.RefObject<HTMLDivElement>
 }
@@ -27,7 +30,7 @@ const getDefaultListType = () => {
     return +cachedValue as ListType;
 }
 
-const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGridProps) => {
+const PokemonGrid = memo(({pokemonInfoList, cpStringOverrides, rankOverrides, listType, containerRef}: IPokemonGridProps) => {
     const {x} = useResize();
 
     const {currentLanguage} = useLanguage();
@@ -51,6 +54,9 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
             break;
         case "custom":
             typedCurrentRank = ListType.CUSTOM_CUP;
+            break;
+        case "raid":
+            typedCurrentRank = ListType.RAID;
             break;
     }
 
@@ -92,7 +98,7 @@ const PokemonGrid = memo(({pokemonInfoList, listType, containerRef}: IPokemonGri
                             return idx < pokemonInfoList.length ?
                                 <div key={props.key} className="card-wrapper-padding" style={props.style}>
                                     <div className='card-wrapper'>
-                                        <PokemonCard pokemon={pokemonInfoList[idx]} listType={listType} />
+                                        <PokemonCard pokemon={pokemonInfoList[idx]} listType={listType} cpStringOverride={cpStringOverrides[pokemonInfoList[idx].speciesId]} rankOverride={rankOverrides[pokemonInfoList[idx].speciesId]} />
                                     </div>
                                 </div> : <div key={props.key}/>
                         }}

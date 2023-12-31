@@ -7,10 +7,11 @@ import { usePvp } from "../contexts/pvp-context";
 type IPokemonNumberProps = {
     dex: number,
     speciesId: string,
-    listType: ListType
+    listType: ListType,
+    rankOverride?: number
 }  
 
-const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
+const PokemonNumber = ({ dex, speciesId, listType, rankOverride }: IPokemonNumberProps) => {
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {currentLanguage} = useLanguage();
 
@@ -19,7 +20,7 @@ const PokemonNumber = ({ dex, speciesId, listType }: IPokemonNumberProps) => {
             return "";
         }
 
-        let ordinalRank = rankLists[listType - 1] ? ordinal(rankLists[listType - 1][speciesId].rank) : "";
+        let ordinalRank = rankLists[listType - 1] ? ordinal(rankLists[listType - 1][speciesId].rank) : rankOverride ? ordinal(rankOverride) : "";
         if (!ordinalRank) {
             return "";
         }
