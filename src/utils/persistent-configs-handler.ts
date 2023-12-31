@@ -27,7 +27,10 @@ export enum ConfigKeys {
     ExceptGreat,
     ExceptUltra,
     TrashTop,
-    TrashCP
+    TrashCP,
+    ShowMega,
+    ShowShadow,
+    ShowXL
 }
 
 export const readSessionValue = (key: ConfigKeys) => {

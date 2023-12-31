@@ -31,7 +31,7 @@ const SearchableDropdown = ({options, isLoading, onSelection, renderOption}: ISe
                 <div {...other}>
                     <List
                         height={Math.min(6, itemCount) * itemSize}
-                        width={autoCompleteRef.current?.clientWidth ?? 300} //TODO use ref to get client width of autocomplete
+                        width={autoCompleteRef.current?.clientWidth ?? 300}
                         rowHeight={itemSize}
                         overscanCount={5}
                         rowCount={itemCount}

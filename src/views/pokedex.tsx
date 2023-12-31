@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -8,7 +8,7 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/language-context';
-import { computeDPSEntry, fetchPokemonFamily, getAllChargedMoves } from '../utils/pokemon-helper';
+import { computeDPSEntry, fetchPokemonFamily, getAllChargedMoves, needsXLCandy } from '../utils/pokemon-helper';
 import Dictionary from '../utils/Dictionary';
 import { usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
@@ -24,19 +24,17 @@ export enum ListType {
     RAID
 }
 
-const getDefaultShowFamilyTree = () => true; // TODO: implement toggle later readPersistentValue(ConfigKeys.ShowFamilyTree) === "true";
-
 const Pokedex = () => {
-    const [showFamilyTree] = useState(getDefaultShowFamilyTree());
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
     const { moves, movesFetchCompleted } = useMoves();
-    const { inputText } = useNavbarSearchInput();
+    const { inputText, familyTree, showShadow, showMega, showXL } = useNavbarSearchInput();
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const renderCustom = true;
 
     let listType = ListType.POKEDEX;
+    let cpThreshold = 0;
     const { listTypeArg } = useParams();
 
     switch (listTypeArg) {
@@ -45,15 +43,18 @@ const Pokedex = () => {
             break;
         case "great":
             listType = ListType.GREAT_LEAGUE;
+            cpThreshold = 1500;
             break;
         case "ultra":
             listType = ListType.ULTRA_LEAGUE;
+            cpThreshold = 2500;
             break;
         case "master":
             listType = ListType.MASTER_LEAGUE;
             break;
         case "custom":
             listType = ListType.CUSTOM_CUP;
+            cpThreshold = 500;
             break;
         case "raid":
             listType = ListType.RAID;
@@ -162,7 +163,7 @@ const Pokedex = () => {
                 return true;
             }
 
-            if (!showFamilyTree) {
+            if (!familyTree) {
                 return baseFilter(p);
             }
             
@@ -174,24 +175,26 @@ const Pokedex = () => {
         
         switch (listType) {
             case ListType.POKEDEX:
-                const domainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
-                processedList = Object.values(gamemasterPokemon).filter(p => domainFilter(p) && inputFilter(p, domainFilter));
+                const pokedexDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && (showMega || !pokemon.isMega);
+                processedList = Object.values(gamemasterPokemon).filter(p => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilter));
                 break;
             case ListType.GREAT_LEAGUE:
             case ListType.ULTRA_LEAGUE:
             case ListType.MASTER_LEAGUE:
             case ListType.CUSTOM_CUP:
                 const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
-                processedList = leaguePool.filter(p => inputFilter(p, (pokemon: IGamemasterPokemon) => !pokemon.isMega && !pokemon.aliasId));
+                const cupDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega && (showShadow || !pokemon.isShadow) && (showXL || !needsXLCandy(pokemon, cpThreshold));
+                processedList = leaguePool.filter(p => cupDomainFilter(p) && inputFilter(p, cupDomainFilter));
                 break;
             case ListType.RAID:
                 const preProcessedList: IGamemasterPokemon[] = [];
 
                 computedComparisons.forEach((e, idx) => {
-                    if (!inputFilter(gamemasterPokemon[e.speciesId], (pokemon: IGamemasterPokemon) => !pokemon.aliasId)) {
+                    const raidFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && (showMega || !pokemon.isMega) && (showShadow || !pokemon.isShadow);
+                    if (!raidFilter(gamemasterPokemon[e.speciesId]) || !inputFilter(gamemasterPokemon[e.speciesId], raidFilter)) {
                         return;
                     }
-                    
+
                     preProcessedList.push(gamemasterPokemon[e.speciesId]);
                     cpStringOverrides[e.speciesId] = `${Math.round(e.dps * 100) / 100} DPS`;
                     rankOverrides[e.speciesId] = idx + 1;
@@ -208,7 +211,7 @@ const Pokedex = () => {
             cpStringOverrides,
             rankOverrides
         };
-    }, [gamemasterPokemon, listType, rankLists, inputText, movesFetchCompleted, computedComparisons, fetchCompleted, pvpFetchCompleted, showFamilyTree, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
+    }, [gamemasterPokemon, listType, familyTree, showShadow, showMega, showXL, cpThreshold, rankLists, inputText, movesFetchCompleted, computedComparisons, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
 
     return (
         <main className="layout">

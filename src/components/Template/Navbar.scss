@@ -30,7 +30,24 @@
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
 }
 
+.filter-checkbox {
+    margin: 0px 0px 0px 2px;
+    top: 1px;
+    position: relative;
+}
+
 .option-entry-row {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    padding: 6px;
+    line-height: 1.25;
+    color: inherit;
+}
+
+.option-entry-row-filter {
+    margin: 6px 0px;
+    align-items: center;
     display: flex;
     flex-direction: row;
     gap: 6px;
@@ -59,6 +76,10 @@
     padding-left: 0;
     grid-gap: 6px;
     gap: 6px;
+}
+
+.options-ul-filter {
+    align-items: center;
 }
 
 .strong-underline {

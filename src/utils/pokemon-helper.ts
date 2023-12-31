@@ -33,6 +33,15 @@ type NeededResources = {
 
 export const levelToLevelIndex = (level: number) => (level - 1) * 2;
 
+export const needsXLCandy = (pokemon: IGamemasterPokemon, cpThreshold: number) => {
+    if (!cpThreshold) {
+        return false;
+    }
+
+    const cp = calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, levelToLevelIndex(41));
+    return cp < cpThreshold + 150;
+}
+
 export const computeNeededResources: (currentLevel: number, targetLevel: number, isShadow: boolean) => NeededResources = (currentLevel: number, targetLevel: number, isShadow: boolean) => {
     const neededStardust = (accumulatedStardustCosts[levelToLevelIndex(targetLevel)] - accumulatedStardustCosts[levelToLevelIndex(currentLevel)]) * (isShadow ? 1.2 : 1);
     const neededCandies = isShadow ? (shadowAccumulatedCandyCosts[levelToLevelIndex(targetLevel)] - shadowAccumulatedCandyCosts[levelToLevelIndex(currentLevel)]) : (accumulatedCandyCosts[levelToLevelIndex(targetLevel)] - accumulatedCandyCosts[levelToLevelIndex(currentLevel)]);

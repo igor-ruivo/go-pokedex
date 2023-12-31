@@ -13,6 +13,7 @@ import PokemonImage from "../PokemonImage";
 import { ImageSource, useImageSource } from "../../contexts/imageSource-context";
 import gameTranslator, { GameTranslatorKeys } from "../../utils/GameTranslator";
 import { PokemonTypes } from "../../DTOs/PokemonTypes";
+import { useNavbarSearchInput } from "../../contexts/navbar-search-context";
 
 enum ThemeValues {
     Light,
@@ -71,6 +72,7 @@ const Navbar = () => {
     const [optionsOpened, setOptionsOpened] = useState(AvailableOptions.None);
     const {currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage} = useLanguage();
     const {imageSource, updateImageSource} = useImageSource();
+    const {familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL} = useNavbarSearchInput();
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -239,15 +241,23 @@ const Navbar = () => {
                 <div className="search-wrapper">
                     <SearchableDropdown
                         options={!fetchCompleted ? [] : Object.values(gamemasterPokemon).filter(p => {
+                            if (p.aliasId) {
+                                return false;
+                            }
+                            
                             if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master") || pathname.startsWith("/custom")) {
-                                return !p.isMega && !p.aliasId;
+                                return !p.isMega/* && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? 500 : 0))*/;
                             }
 
-                            if (pathname.startsWith("/pokemon") || pathname.startsWith("/raid")) {
-                                return !p.aliasId;
+                            if (pathname.startsWith("/pokemon")) {
+                                return true;
                             }
 
-                            return !p.isShadow && !p.aliasId;
+                            if (pathname.startsWith("/raid")) {
+                                return true/*(showMega || !p.isMega) && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? 500 : 0))*/;
+                            }
+
+                            return !p.isShadow/* && (showMega || !p.isMega)*/;
                         }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} as EntryType))}
                         isLoading={!fetchCompleted}
                         onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`)}
@@ -364,17 +374,17 @@ const Navbar = () => {
                     </strong>
                     <ul className="options-ul options-ul-filter">
                         <li className="options-li">
-                            <div className="option-entry-row">
-                                <input type="checkbox" checked/> Family tree
+                            <div className="option-entry-row-filter">
+                                <input type="checkbox" className="filter-checkbox" checked={familyTree} onChange={toggleFamilyTree}/> Family tree
                             </div>
-                            <div className="option-entry-row">
-                                <input type="checkbox" checked/> Mega Pokémon
+                            <div className="option-entry-row-filter">
+                                <input type="checkbox" className="filter-checkbox" checked={showMega} onChange={toggleShowMega}/> Mega Pokémon
                             </div>
-                            <div className="option-entry-row">
-                                <input type="checkbox" checked/> Shadow Pokémon
+                            <div className="option-entry-row-filter">
+                                <input type="checkbox" className="filter-checkbox" checked={showShadow} onChange={toggleShowShadow}/> Shadow Pokémon
                             </div>
-                            <div className="option-entry-row">
-                                <input type="checkbox" checked/> XL Pokémon
+                            <div className="option-entry-row-filter">
+                                <input type="checkbox" className="filter-checkbox" checked={showXL} onChange={toggleShowXL}/> XL Pokémon
                             </div>
                         </li>
                         <li className="options-li">
