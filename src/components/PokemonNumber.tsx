@@ -41,20 +41,22 @@ const PokemonNumber = ({ dex, speciesId, listType, rankOverride }: IPokemonNumbe
                 .replace("th", ".");
         }
 
-        if (!rankLists[listType - 1]) {
-            return ordinalRank as string;
-        }
+        if (rankOverride ?? rankLists[listType - 1]) {
+            const effectiveRank = rankOverride ?? rankLists[listType - 1][speciesId].rank;
 
-        switch (rankLists[listType - 1][speciesId].rank) {
-            case 1:
-                return "🥇" + ordinalRank;
-            case 2:
-                return "🥈" + ordinalRank;
-            case 3:
-                return "🥉" + ordinalRank;
-            default:
-                return ordinalRank as string;
+            switch (effectiveRank) {
+                case 1:
+                    return "🥇" + ordinalRank;
+                case 2:
+                    return "🥈" + ordinalRank;
+                case 3:
+                    return "🥉" + ordinalRank;
+                default:
+                    return ordinalRank as string;
+            }
         }
+        
+        return ordinalRank as string;        
     }
 
     const computeRankChange = () => {
