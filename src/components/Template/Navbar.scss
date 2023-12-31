@@ -17,6 +17,28 @@
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
 }
 
+.filter-menu {
+    font-size: 12px;
+    top: 75px;
+    background: var(--headerBackground);
+    color: var(--textColor);
+    position: absolute;
+    z-index: 200;
+    width: 33%;
+    min-width: 320px;
+    right: 0;
+    box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
+}
+
+.option-entry-row {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    padding: 6px;
+    line-height: 1.25;
+    color: inherit;
+}
+
 .option-entry {
     display: flex;
     flex-direction: column;
@@ -48,7 +70,7 @@
 .options-nav {
     display: grid;
     grid-template-columns: 1fr;
-    padding: 24px 12px 72px;
+    padding: 24px 12px 24px;
     margin: auto;
     gap: 36px;
     max-width: 1300px;
@@ -60,6 +82,14 @@
 }
 
 .options-menu.hidden {
+    display: none;
+}
+
+.filter-menu.visible {
+    display: block;
+}
+
+.filter-menu.hidden {
     display: none;
 }
 
@@ -94,9 +124,6 @@
 }
 
 .navbar-dropdown {
-    width: 80%;
-    font-size: smaller;
-    
     >* {
         border: 1px solid var(--borderColor2);
     }
@@ -104,8 +131,13 @@
     * {
         color: var(--textColor) !important;
         background: var(--buttonsBackground) !important;
-        overflow: unset !important;
+        //overflow: unset !important;
     }
+}
+
+.navbar-dropdown-menu {
+    width: 80%;
+    font-size: smaller;
 }
 
 button {
@@ -231,11 +263,12 @@ button {
         position: static;
     }
 
-    .options-menu {
+    .options-menu,
+    .filter-menu {
         top: 55px;
     }
 
-    .navbar-dropdown {
+    .navbar-dropdown-menu {
         font-size: 12px;
         width: 100%;
     }

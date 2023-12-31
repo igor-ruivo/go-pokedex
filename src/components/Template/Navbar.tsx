@@ -12,6 +12,7 @@ import { Box } from "@mui/material";
 import PokemonImage from "../PokemonImage";
 import { ImageSource, useImageSource } from "../../contexts/imageSource-context";
 import gameTranslator, { GameTranslatorKeys } from "../../utils/GameTranslator";
+import { PokemonTypes } from "../../DTOs/PokemonTypes";
 
 enum ThemeValues {
     Light,
@@ -57,11 +58,17 @@ const Navbar = () => {
         return +currentTheme as ThemeValues;
     }, [systemDefaultTheme]);
 
+    enum AvailableOptions {
+        None,
+        Menu,
+        Filter
+    }
+
     const [theme, setTheme] = useState<ThemeOptions>(getDefaultTheme());
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const navigate = useNavigate();
     const {pathname} = useLocation();
-    const [optionsOpened, setOptionsOpened] = useState(false);
+    const [optionsOpened, setOptionsOpened] = useState(AvailableOptions.None);
     const {currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage} = useLanguage();
     const {imageSource, updateImageSource} = useImageSource();
 
@@ -210,6 +217,12 @@ const Navbar = () => {
         }
     ];
 
+    const typesOptions: Entry<PokemonTypes>[] = Object.keys(PokemonTypes).filter(key => !isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
+        label: k,
+        value: PokemonTypes[k as keyof typeof PokemonTypes],
+        hint: `${process.env.PUBLIC_URL}/images/types/${k.toLocaleLowerCase()}.png`
+    }));
+
     return <>
         <header className="navbar">
             <section className="navbar-section">
@@ -218,9 +231,9 @@ const Navbar = () => {
                 </Link>
                 <button
                     className="navbar-menu"
-                    onClick={() => setOptionsOpened(previous => !previous)}
+                    onClick={() => setOptionsOpened(p => p === AvailableOptions.Menu ? AvailableOptions.None : AvailableOptions.Menu)}
                 >
-                    <img className={"navbar-menu-img" + (optionsOpened ? " cross" : "")} alt="Menu" loading="lazy" width="24" height="20" decoding="async" src={optionsOpened ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
+                    <img className={"navbar-menu-img" + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="24" height="20" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
                     <span>{translator(TranslatorKeys.Menu, currentLanguage)}</span>
                 </button>
                 <div className="search-wrapper">
@@ -255,13 +268,13 @@ const Navbar = () => {
                 </div>
                 <button
                     className="navbar-filter"
-                    //onClick={() => setOptionsOpened(previous => !previous)}
+                    onClick={() => setOptionsOpened(p => p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter)}
                 >
                     <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="20" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
                 </button>
             </section>
         </header>
-        <aside className={"options-menu" + (!optionsOpened ? " hidden" : " visible")}>
+        <aside className={"options-menu" + (optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible")}>
             <nav className="options-nav">
                 <section>
                     <strong>
@@ -276,7 +289,7 @@ const Navbar = () => {
                                     {translator(TranslatorKeys.Language, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown"
+                                    className="navbar-dropdown navbar-dropdown-menu"
                                     isSearchable={false}
                                     options={languageOptions}
                                     value={languageOptions.find(l => l.value === currentLanguage)}
@@ -291,7 +304,7 @@ const Navbar = () => {
                                     {translator(TranslatorKeys.GameLanguage, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown"
+                                    className="navbar-dropdown navbar-dropdown-menu"
                                     isSearchable={false}
                                     options={gameLanguageOptions}
                                     value={gameLanguageOptions.find(l => l.value === currentGameLanguage)}
@@ -313,7 +326,7 @@ const Navbar = () => {
                                     {translator(TranslatorKeys.Theme, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown"
+                                    className="navbar-dropdown navbar-dropdown-menu"
                                     isSearchable={false}
                                     options={themeOptions}
                                     value={themeOptions.find(l => l.value === getDefaultTheme())}
@@ -328,12 +341,67 @@ const Navbar = () => {
                                     {translator(TranslatorKeys.Source, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown"
+                                    className="navbar-dropdown navbar-dropdown-menu"
                                     isSearchable={false}
                                     options={sourceOptions}
                                     value={sourceOptions.find(l => l.value === imageSource)}
                                     onChange={v => updateImageSource(v!.value)}
                                     formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className={`${data.invertOnDarkMode ? "invert-dark-mode" : ""} country-flag`} src={data.hint} height={17} /><span>{data.label}</span></div>}
+                                />
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </nav>
+        </aside>
+        <aside className={"filter-menu" + (optionsOpened !== AvailableOptions.Filter ? " hidden" : " visible")}>
+            <nav className="options-nav">
+                <section>
+                    <strong>
+                        <span className="strong-underline">
+                            Grid Filtering
+                        </span>
+                    </strong>
+                    <ul className="options-ul options-ul-filter">
+                        <li className="options-li">
+                            <div className="option-entry-row">
+                                <input type="checkbox" checked/> Family tree
+                            </div>
+                            <div className="option-entry-row">
+                                <input type="checkbox" checked/> Mega Pokémon
+                            </div>
+                            <div className="option-entry-row">
+                                <input type="checkbox" checked/> Shadow Pokémon
+                            </div>
+                            <div className="option-entry-row">
+                                <input type="checkbox" checked/> XL Pokémon
+                            </div>
+                        </li>
+                        <li className="options-li">
+                            <div className="option-entry">
+                                <span>
+                                    Type 1 filter
+                                </span>
+                                <Select
+                                    className="navbar-dropdown"
+                                    isSearchable={false}
+                                    options={typesOptions}
+                                    value={typesOptions[8]}
+                                    onChange={() => {}}
+                                    formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className="country-flag" src={data.hint} height={17} /><span>{data.label}</span></div>}
+                                />
+                            </div>
+                            <div className="option-entry">
+                                <span>
+                                    Type 2 filter
+                                </span>
+                                <Select
+                                    className="navbar-dropdown"
+                                    isSearchable={false}
+                                    options={typesOptions}
+                                    value={typesOptions[8]}
+                                    onChange={() => {}}
+                                    formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className="country-flag" src={data.hint} height={17} /><span>{data.label}</span></div>}
                                 />
                             </div>
                         </li>
