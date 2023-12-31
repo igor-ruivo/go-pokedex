@@ -10,8 +10,13 @@ export enum TranslatorKeys {
     Types2,
     Search,
     Loading,
+    FamilyTree,
+    GridFiltering,
     MegaPokemon,
+    RaidType,
+    Type,
     ShadowPokemon,
+    XLPokemon,
     NotAvailableForRaids,
     Reached,
     LevelExceeded,
@@ -19,6 +24,7 @@ export enum TranslatorKeys {
     Name,
     Show,
     RaidsIntro,
+    None,
     Items,
     Counters,
     IVTables,
@@ -69,6 +75,7 @@ export enum TranslatorKeys {
     Moves,
     FastMoves,
     ChargedMoves,
+    Any,
     Stats,
     Level,
     UnrankedPokemonForLeague,
@@ -107,7 +114,8 @@ export enum TranslatorKeys {
     LegacyMove,
     BaseValue,
     WeakAgainst,
-    StrongAgainst
+    StrongAgainst,
+    OrType
 }
 
 const languageSettings = new Map<Language, string>([
@@ -116,10 +124,40 @@ const languageSettings = new Map<Language, string>([
     [Language.Bosnian, "Jezičke Postavke"]
 ]);
 
+const raidType = new Map<Language, string>([
+    [Language.English, "Best Attackers of Type"],
+    [Language.Portuguese, "Melhores Atacantes do Tipo"],
+    [Language.Bosnian, "Najbolji Napadači po Tipu"]
+]);
+
+const type = new Map<Language, string>([
+    [Language.English, "Type Filter"],
+    [Language.Portuguese, "Filtragem por Tipo"],
+    [Language.Bosnian, "Filtriranja po Tipu"]
+]);
+
+const any = new Map<Language, string>([
+    [Language.English, "Any"],
+    [Language.Portuguese, "Qualquer"],
+    [Language.Bosnian, "Bilo koji"]
+]);
+
+const orType = new Map<Language, string>([
+    [Language.English, "...or Type"],
+    [Language.Portuguese, "...ou Tipo"],
+    [Language.Bosnian, "...ili Tipu"]
+]);
+
 const official = new Map<Language, string>([
     [Language.English, "Official"],
     [Language.Portuguese, "Oficiais"],
     [Language.Bosnian, "Službene"]
+]);
+
+const gridFiltering = new Map<Language, string>([
+    [Language.English, "Grid Filtering"],
+    [Language.Portuguese, "Filtragem na Grelha"],
+    [Language.Bosnian, "Filtriranje Mreže"]
 ]);
 
 const source = new Map<Language, string>([
@@ -131,19 +169,19 @@ const source = new Map<Language, string>([
 const visualSettings = new Map<Language, string>([
     [Language.English, "Visual Settings"],
     [Language.Portuguese, "Opções Visuais"],
-    [Language.Bosnian, "Vizualna podešavanja"]
+    [Language.Bosnian, "Vizualna Podešavanja"]
 ]);
 
 const language = new Map<Language, string>([
-    [Language.English, "Website language"],
-    [Language.Portuguese, "Idioma do site"],
-    [Language.Bosnian, "Jezik web stranice"]
+    [Language.English, "Website Language"],
+    [Language.Portuguese, "Idioma do Site"],
+    [Language.Bosnian, "Jezik Web Stranice"]
 ]);
 
 const gameLanguage = new Map<Language, string>([
-    [Language.English, "Game language"],
-    [Language.Portuguese, "Idioma do jogo"],
-    [Language.Bosnian, "Jezik igre"]
+    [Language.English, "Game Language"],
+    [Language.Portuguese, "Idioma do Jogo"],
+    [Language.Bosnian, "Jezik Igre"]
 ]);
 
 const search = new Map<Language, string>([
@@ -716,6 +754,12 @@ const shadowPokemon = new Map<Language, string>([
     [Language.Bosnian, "Sjenoviti Pokémona"]
 ]);
 
+const XLPokemon = new Map<Language, string>([
+    [Language.English, "XL Pokémon"],
+    [Language.Portuguese, "Pokémons XL"],
+    [Language.Bosnian, "XL Pokémona"]
+]);
+
 const show = new Map<Language, string>([
     [Language.English, "Show"],
     [Language.Portuguese, "Mostrar"],
@@ -752,8 +796,24 @@ const levelExceeded = new Map<Language, string>([
     [Language.Bosnian, "Nivo premašen..."]
 ]);
 
+const familyTree = new Map<Language, string>([
+    [Language.English, "Family Tree"],
+    [Language.Portuguese, "Pesquisar Família"],
+    [Language.Bosnian, "Porodično Stablo"]
+]);
+
+const none = new Map<Language, string>([
+    [Language.English, "None"],
+    [Language.Portuguese, "Nenhum"],
+    [Language.Bosnian, "Nijedan"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
+    [TranslatorKeys.GridFiltering, gridFiltering],
+    [TranslatorKeys.Any, any],
+    [TranslatorKeys.None, none],
+    [TranslatorKeys.FamilyTree, familyTree],
     [TranslatorKeys.LanguageSettings, languageSettings],
     [TranslatorKeys.RaidsIntro, raidsIntro],
     [TranslatorKeys.PickIVs, pickIVs],
@@ -772,10 +832,14 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Water, water],
     [TranslatorKeys.Fire, fire],
     [TranslatorKeys.Dragon, dragon],
+    [TranslatorKeys.XLPokemon, XLPokemon],
     [TranslatorKeys.Fairy, fairy],
     [TranslatorKeys.Ice, ice],
     [TranslatorKeys.Ground, ground],
     [TranslatorKeys.Rock, rock],
+    [TranslatorKeys.RaidType, raidType],
+    [TranslatorKeys.Type, type],
+    [TranslatorKeys.OrType, orType],
     [TranslatorKeys.Psychic, psychic],
     [TranslatorKeys.Fighting, fighting],
     [TranslatorKeys.Flying, flying],

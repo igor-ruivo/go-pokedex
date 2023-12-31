@@ -219,7 +219,7 @@ const Navbar = () => {
         }
     ];
 
-    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: pathname.includes("raid") ? "Any" : "None", value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => !isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
+    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: pathname.includes("raid") ? translator(TranslatorKeys.Any, currentLanguage) : translator(TranslatorKeys.None, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => !isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
         label: k,
         value: PokemonTypes[k as keyof typeof PokemonTypes],
         hint: `${process.env.PUBLIC_URL}/images/types/${k.toLocaleLowerCase()}.png`
@@ -368,28 +368,28 @@ const Navbar = () => {
                 <section>
                     <strong>
                         <span className="strong-underline">
-                            Grid Filtering
+                            {translator(TranslatorKeys.GridFiltering, currentLanguage)}
                         </span>
                     </strong>
                     <ul className="options-ul options-ul-filter">
                         <li className="options-li">
                             <div className="option-entry-row-filter">
-                                <input type="checkbox" className="filter-checkbox" checked={familyTree} onChange={toggleFamilyTree}/> Family tree
+                                <input type="checkbox" className="filter-checkbox" checked={familyTree} onChange={toggleFamilyTree}/> {translator(TranslatorKeys.FamilyTree, currentLanguage)}
                             </div>
                             <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") ? "unavailable" : ""}`}>
-                                <input type="checkbox" className="filter-checkbox" checked={showMega} onChange={toggleShowMega}/> Mega Pokémon
+                                <input type="checkbox" className="filter-checkbox" checked={showMega} onChange={toggleShowMega}/> {translator(TranslatorKeys.MegaPokemon, currentLanguage)}
                             </div>
                             <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid") ? "" : "unavailable"}`}>
-                                <input type="checkbox" className="filter-checkbox" checked={showShadow} onChange={toggleShowShadow}/> Shadow Pokémon
+                                <input type="checkbox" className="filter-checkbox" checked={showShadow} onChange={toggleShowShadow}/> {translator(TranslatorKeys.ShadowPokemon, currentLanguage)}
                             </div>
                             <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom") ? "" : "unavailable"}`}>
-                                <input type="checkbox" className="filter-checkbox" checked={showXL} onChange={toggleShowXL}/> XL Pokémon
+                                <input type="checkbox" className="filter-checkbox" checked={showXL} onChange={toggleShowXL}/> {translator(TranslatorKeys.XLPokemon, currentLanguage)}
                             </div>
                         </li>
                         <li className="options-li">
                             <div className="option-entry">
                                 <span>
-                                    {pathname.includes("raid") ? "Raid attack Type" : "Type"}
+                                    {pathname.includes("raid") ? translator(TranslatorKeys.RaidType, currentLanguage) : translator(TranslatorKeys.Type, currentLanguage)}
                                 </span>
                                 <Select
                                     className="navbar-dropdown"
@@ -402,7 +402,7 @@ const Navbar = () => {
                             </div>
                             {type1Filter !== undefined && !pathname.includes("raid") && <div className="option-entry">
                                 <span>
-                                    or Type
+                                    {translator(TranslatorKeys.OrType, currentLanguage)}
                                 </span>
                                 <Select
                                     className="navbar-dropdown"
