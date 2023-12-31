@@ -184,7 +184,7 @@ const Pokedex = () => {
         
         switch (listType) {
             case ListType.POKEDEX:
-                const pokedexDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && (showMega || !pokemon.isMega) && (type1Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type1Filter])) && (type2Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type2Filter]));
+                const pokedexDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && (showMega || !pokemon.isMega) && (type1Filter === undefined || pokemon.types.includes(type1Filter)) && (type2Filter === undefined || pokemon.types.includes(type2Filter));
                 const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
                 processedList = Object.values(gamemasterPokemon).filter(p => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilterForFamily));
                 break;
@@ -193,7 +193,7 @@ const Pokedex = () => {
             case ListType.MASTER_LEAGUE:
             case ListType.CUSTOM_CUP:
                 const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
-                const cupDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega && (showShadow || !pokemon.isShadow) && (showXL || !needsXLCandy(pokemon, cpThreshold)) && (type1Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type1Filter])) && (type2Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type2Filter]));
+                const cupDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega && (showShadow || !pokemon.isShadow) && (showXL || !needsXLCandy(pokemon, cpThreshold)) && (type1Filter === undefined || pokemon.types.includes(type1Filter)) && (type2Filter === undefined || pokemon.types.includes(type2Filter));
                 const cupDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega;
                 processedList = leaguePool.filter(p => cupDomainFilter(p) && inputFilter(p, cupDomainFilterForFamily));
                 break;

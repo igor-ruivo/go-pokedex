@@ -143,9 +143,9 @@ const any = new Map<Language, string>([
 ]);
 
 const orType = new Map<Language, string>([
-    [Language.English, "...or Type"],
-    [Language.Portuguese, "...ou Tipo"],
-    [Language.Bosnian, "...ili Tipu"]
+    [Language.English, "...and Type"],
+    [Language.Portuguese, "...e Tipo"],
+    [Language.Bosnian, "...i Tipu"]
 ]);
 
 const official = new Map<Language, string>([
