@@ -18,7 +18,7 @@ const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonF
                         <div key = {p.speciesId}>
                             <Link to={getClickDestination(p.speciesId)}>
                                 <strong className={`move-detail with-shadow soft normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
-                                    <PokemonImage pokemon={p} withName={false} specificHeight={33} specificWidth={33}/>
+                                    <PokemonImage pokemon={p} withName={false} specificHeight={38} specificWidth={38}/>
                                     {p.speciesId === pokemon.speciesId && p.speciesShortName}
                                 </strong>
                             </Link>

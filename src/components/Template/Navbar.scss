@@ -65,7 +65,7 @@
 
 .navbar-section {
     display: grid;
-    grid-template-columns: 40px 100px 1fr;
+    grid-template-columns: 40px 100px 1fr 40px;
     align-items: center;
     justify-content: space-between;
     grid-gap: 18px;
@@ -126,7 +126,24 @@ button {
 .navbar-menu {
     display: grid;
     grid-template-columns: 30% 70%;
-    height: 42px;
+    height: 40px;
+    padding: 9px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--buttonsBackground);
+    border: 1px;
+    border-style: solid;
+    border-color: var(--borderColor2);
+    cursor: pointer;
+    &:hover {
+        border: 1px solid var(--buttonsBorderColor);
+    }
+    box-shadow: 0px 0px rgba(3, 7, 18, 0.1), 0px 1px 1px rgba(3, 7, 18, 0.08), 0px 1px 1px rgba(3, 7, 18, 0.06), 0px 3px 3px rgba(3, 7, 18, 0.04), 0px 4px 4px rgba(3, 7, 18, 0.02)
+}
+
+.navbar-filter {
+    display: grid;
+    height: 40px;
     padding: 9px;
     align-items: center;
     justify-content: center;
@@ -172,7 +189,7 @@ button {
 
 @media (max-width: 500px) {
     .navbar {
-        height: 65px;
+        height: 55px;
         padding-left: 16px;
         padding-right: 16px;
     }
@@ -181,19 +198,33 @@ button {
         gap: 24px;
     }
 
+    .navbar-logo {
+        width: 34px;
+        height: 34px;
+    }
+
     .navbar-menu {
         display: flex;
         order: 3;
-        height: 40px;
+        height: 34px;
+        span {
+            display: none;
+        }
+    }
+
+    .navbar-filter {
+        display: flex;
+        order: 4;
+        height: 34px;
         span {
             display: none;
         }
     }
 
     .navbar-section {
-        gap: 16px;
+        gap: 12px;
         max-width: 100%;
-        grid-template-columns: 32px 1fr 45px;
+        grid-template-columns: 34px 1fr 34px 34px;
     }
 
     .search-wrapper {
@@ -201,7 +232,7 @@ button {
     }
 
     .options-menu {
-        top: 65px;
+        top: 55px;
     }
 
     .navbar-dropdown {

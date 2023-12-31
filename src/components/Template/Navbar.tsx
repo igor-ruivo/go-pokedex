@@ -253,6 +253,12 @@ const Navbar = () => {
                         )}
                     />
                 </div>
+                <button
+                    className="navbar-filter"
+                    //onClick={() => setOptionsOpened(previous => !previous)}
+                >
+                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="20" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
+                </button>
             </section>
         </header>
         <aside className={"options-menu" + (!optionsOpened ? " hidden" : " visible")}>

@@ -50,3 +50,9 @@ label.MuiFormLabel-root.MuiInputLabel-root {
     background-color: var(--dropdownOptionFocused) !important;
     color: var(--textColor) !important;
 }
+
+@media (max-width: 500px) {
+    .MuiOutlinedInput-root {
+        padding: 3px 9px !important;
+    }
+}
