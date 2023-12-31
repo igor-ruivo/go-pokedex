@@ -72,7 +72,7 @@ const Navbar = () => {
     const [optionsOpened, setOptionsOpened] = useState(AvailableOptions.None);
     const {currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage} = useLanguage();
     const {imageSource, updateImageSource} = useImageSource();
-    const {familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL} = useNavbarSearchInput();
+    const {familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL, type1Filter, updateType1, type2Filter, updateType2} = useNavbarSearchInput();
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -219,11 +219,11 @@ const Navbar = () => {
         }
     ];
 
-    const typesOptions: Entry<PokemonTypes>[] = Object.keys(PokemonTypes).filter(key => !isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
+    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: pathname.includes("raid") ? "Any" : "None", value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => !isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
         label: k,
         value: PokemonTypes[k as keyof typeof PokemonTypes],
         hint: `${process.env.PUBLIC_URL}/images/types/${k.toLocaleLowerCase()}.png`
-    }));
+    }))];
 
     return <>
         <header className="navbar">
@@ -269,7 +269,6 @@ const Navbar = () => {
                                 withName={false}
                                 specificHeight={28}
                                 specificWidth={28}
-                                lowRes
                               />
                               {option.label}
                             </Box>
@@ -277,7 +276,7 @@ const Navbar = () => {
                     />
                 </div>
                 <button
-                    className="navbar-filter"
+                    className={`navbar-filter ${pathname.includes("pokemon") ? "unavailable" : ""}`}
                     onClick={() => setOptionsOpened(p => p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter)}
                 >
                     <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="20" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
@@ -364,7 +363,7 @@ const Navbar = () => {
                 </section>
             </nav>
         </aside>
-        <aside className={"filter-menu" + (optionsOpened !== AvailableOptions.Filter ? " hidden" : " visible")}>
+        <aside className={"filter-menu" + ((optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible")}>
             <nav className="options-nav">
                 <section>
                     <strong>
@@ -377,43 +376,43 @@ const Navbar = () => {
                             <div className="option-entry-row-filter">
                                 <input type="checkbox" className="filter-checkbox" checked={familyTree} onChange={toggleFamilyTree}/> Family tree
                             </div>
-                            <div className="option-entry-row-filter">
+                            <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") ? "unavailable" : ""}`}>
                                 <input type="checkbox" className="filter-checkbox" checked={showMega} onChange={toggleShowMega}/> Mega Pokémon
                             </div>
-                            <div className="option-entry-row-filter">
+                            <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid") ? "" : "unavailable"}`}>
                                 <input type="checkbox" className="filter-checkbox" checked={showShadow} onChange={toggleShowShadow}/> Shadow Pokémon
                             </div>
-                            <div className="option-entry-row-filter">
+                            <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom") ? "" : "unavailable"}`}>
                                 <input type="checkbox" className="filter-checkbox" checked={showXL} onChange={toggleShowXL}/> XL Pokémon
                             </div>
                         </li>
                         <li className="options-li">
                             <div className="option-entry">
                                 <span>
-                                    Type 1 filter
+                                    {pathname.includes("raid") ? "Raid attack Type" : "Type"}
                                 </span>
                                 <Select
                                     className="navbar-dropdown"
                                     isSearchable={false}
-                                    options={typesOptions}
-                                    value={typesOptions[8]}
-                                    onChange={() => {}}
-                                    formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className="country-flag" src={data.hint} height={17} /><span>{data.label}</span></div>}
+                                    options={typesOptions.filter(e => type2Filter === undefined || e.value !== type2Filter)}
+                                    value={type1Filter === undefined ? typesOptions[0] : typesOptions.find(l => l.value === type1Filter)}
+                                    onChange={(v) => updateType1(v!.value)}
+                                    formatOptionLabel={(data, _) => <div className="hint-container">{data.hint && <img alt="flag" src={data.hint} height={17} />}<span>{data.label}</span></div>}
                                 />
                             </div>
-                            <div className="option-entry">
+                            {type1Filter !== undefined && !pathname.includes("raid") && <div className="option-entry">
                                 <span>
-                                    Type 2 filter
+                                    or Type
                                 </span>
                                 <Select
                                     className="navbar-dropdown"
                                     isSearchable={false}
-                                    options={typesOptions}
-                                    value={typesOptions[8]}
-                                    onChange={() => {}}
-                                    formatOptionLabel={(data, _) => <div className="hint-container"><img alt="flag" className="country-flag" src={data.hint} height={17} /><span>{data.label}</span></div>}
+                                    options={typesOptions.filter(e => e.value !== type1Filter)}
+                                    value={type2Filter === undefined ? typesOptions[0] : typesOptions.find(l => l.value === type2Filter)}
+                                    onChange={(v) => updateType2(v!.value)}
+                                    formatOptionLabel={(data, _) => <div className="hint-container">{data.hint && <img alt="flag" src={data.hint} height={17} />}<span>{data.label}</span></div>}
                                 />
-                            </div>
+                            </div>}
                         </li>
                     </ul>
                 </section>

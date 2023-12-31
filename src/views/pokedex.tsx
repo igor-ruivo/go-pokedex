@@ -14,6 +14,7 @@ import { usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { dpsEntry } from '../components/PokemonInfoBanner';
 import { useMoves } from '../contexts/moves-context';
+import { PokemonTypes } from '../DTOs/PokemonTypes';
 
 export enum ListType {
     POKEDEX,
@@ -28,7 +29,7 @@ const Pokedex = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
     const { moves, movesFetchCompleted } = useMoves();
-    const { inputText, familyTree, showShadow, showMega, showXL } = useNavbarSearchInput();
+    const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const renderCustom = true;
@@ -137,6 +138,14 @@ const Pokedex = () => {
 
     const computedComparisons = useMemo(() => computeComparisons(), [computeComparisons]);
 
+    const computedTypeComparisons = useMemo(() => {
+        if (type1Filter === undefined) {
+            return computedComparisons;
+        }
+
+        return computeComparisons(PokemonTypes[type1Filter].toString().toLocaleLowerCase());
+    }, [computeComparisons, type1Filter, computedComparisons]);
+
     type DataType = {
         processedList: IGamemasterPokemon[],
         cpStringOverrides: Dictionary<string>,
@@ -175,7 +184,7 @@ const Pokedex = () => {
         
         switch (listType) {
             case ListType.POKEDEX:
-                const pokedexDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && (showMega || !pokemon.isMega);
+                const pokedexDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && (showMega || !pokemon.isMega) && (type1Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type1Filter])) && (type2Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type2Filter]));
                 const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
                 processedList = Object.values(gamemasterPokemon).filter(p => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilterForFamily));
                 break;
@@ -184,14 +193,13 @@ const Pokedex = () => {
             case ListType.MASTER_LEAGUE:
             case ListType.CUSTOM_CUP:
                 const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
-                const cupDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega && (showShadow || !pokemon.isShadow) && (showXL || !needsXLCandy(pokemon, cpThreshold));
+                const cupDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega && (showShadow || !pokemon.isShadow) && (showXL || !needsXLCandy(pokemon, cpThreshold)) && (type1Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type1Filter])) && (type2Filter === undefined || pokemon.types.map(t => t.toString()).includes(PokemonTypes[type2Filter]));
                 const cupDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega;
                 processedList = leaguePool.filter(p => cupDomainFilter(p) && inputFilter(p, cupDomainFilterForFamily));
                 break;
             case ListType.RAID:
                 const preProcessedList: IGamemasterPokemon[] = [];
-
-                computedComparisons.forEach((e, idx) => {
+                computedTypeComparisons.forEach((e, idx) => {
                     const raidFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && (showMega || !pokemon.isMega) && (showShadow || !pokemon.isShadow);
                     const raidFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId;
                     if (!raidFilter(gamemasterPokemon[e.speciesId]) || !inputFilter(gamemasterPokemon[e.speciesId], raidFilterForFamily)) {
@@ -214,7 +222,7 @@ const Pokedex = () => {
             cpStringOverrides,
             rankOverrides
         };
-    }, [gamemasterPokemon, listType, familyTree, showShadow, showMega, showXL, cpThreshold, rankLists, inputText, movesFetchCompleted, computedComparisons, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
+    }, [gamemasterPokemon, listType, familyTree, showShadow, showMega, showXL, cpThreshold, type1Filter, type2Filter, rankLists, inputText, movesFetchCompleted, computedTypeComparisons, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
 
     return (
         <main className="layout">

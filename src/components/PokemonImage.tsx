@@ -19,7 +19,7 @@ interface IPokemonImage {
     lowRes?: boolean;
 }
 
-const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, withName, lazy, descriptionComponent, xl, buddy, specificWidth, specificHeight, galleryToggle, lowRes}: IPokemonImage, ref) => {
+const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, withName, lazy, descriptionComponent, xl, buddy, specificWidth, specificHeight, galleryToggle, lowRes = true}: IPokemonImage, ref) => {
     const {currentGameLanguage} = useLanguage();
     const {imageSource} = useImageSource();
 

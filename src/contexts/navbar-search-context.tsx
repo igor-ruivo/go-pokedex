@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from '../utils/persistent-configs-handler';
+import { PokemonTypes } from '../DTOs/PokemonTypes';
 
 interface NavbarSearchContextType {
     inputText: string;
@@ -12,6 +13,10 @@ interface NavbarSearchContextType {
     toggleShowShadow: () => void;
     showXL: boolean;
     toggleShowXL: () => void;
+    type1Filter: PokemonTypes | undefined;
+    updateType1: (newType: PokemonTypes | undefined) => void;
+    type2Filter: PokemonTypes | undefined;
+    updateType2: (newType: PokemonTypes | undefined) => void;
 }
 
 const NavbarSearchContext = createContext<NavbarSearchContextType | undefined>(undefined);
@@ -40,6 +45,17 @@ const parseSessionCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) 
     return cachedValue === "true";
 }
 
+const getDefaultType = (key: ConfigKeys) => {
+    const cachedValue = readSessionValue(key);
+    if (!cachedValue) {
+        return undefined;
+    }
+
+    const typedValue = +cachedValue as PokemonTypes;
+
+    return typedValue;
+}
+
 export const NavbarSearchProvider = (props: React.PropsWithChildren<{}>) => {
 
     const [inputText, setInputText] = useState(readSessionValue(ConfigKeys.SearchInputText) ?? "");
@@ -47,6 +63,8 @@ export const NavbarSearchProvider = (props: React.PropsWithChildren<{}>) => {
     const [showMega, setShowMega] = useState(parsePersistentCachedBooleanValue(ConfigKeys.ShowMega, true));
     const [showShadow, setShowShadow] = useState(parseSessionCachedBooleanValue(ConfigKeys.ShowShadow, true));
     const [showXL, setShowXL] = useState(parseSessionCachedBooleanValue(ConfigKeys.ShowXL, true));
+    const [type1Filter, setType1Filter] = useState(getDefaultType(ConfigKeys.Type1));
+    const [type2Filter, setType2Filter] = useState(getDefaultType(ConfigKeys.Type2));
 
     const updateInputText = (newInputText: string) => {
         writeSessionValue(ConfigKeys.SearchInputText, newInputText);
@@ -80,9 +98,23 @@ export const NavbarSearchProvider = (props: React.PropsWithChildren<{}>) => {
             return !p;
         });
     }
+
+    const updateType1 = (newType: PokemonTypes | undefined) => {
+        writeSessionValue(ConfigKeys.Type1, JSON.stringify(newType));
+        setType1Filter(newType);
+        
+        if (newType === undefined) {
+            updateType2(undefined);
+        }
+    }
+
+    const updateType2 = (newType: PokemonTypes | undefined) => {
+        writeSessionValue(ConfigKeys.Type2, JSON.stringify(newType));
+        setType2Filter(newType);
+    }
   
     return (
-        <NavbarSearchContext.Provider value={{ inputText, updateInputText, familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL }}>
+        <NavbarSearchContext.Provider value={{ inputText, updateInputText, familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL, type1Filter, updateType1, type2Filter, updateType2 }}>
             {props.children}
         </NavbarSearchContext.Provider>
     );
