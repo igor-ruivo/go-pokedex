@@ -176,7 +176,8 @@ const Pokedex = () => {
         switch (listType) {
             case ListType.POKEDEX:
                 const pokedexDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && (showMega || !pokemon.isMega);
-                processedList = Object.values(gamemasterPokemon).filter(p => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilter));
+                const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
+                processedList = Object.values(gamemasterPokemon).filter(p => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilterForFamily));
                 break;
             case ListType.GREAT_LEAGUE:
             case ListType.ULTRA_LEAGUE:
@@ -184,14 +185,16 @@ const Pokedex = () => {
             case ListType.CUSTOM_CUP:
                 const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
                 const cupDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega && (showShadow || !pokemon.isShadow) && (showXL || !needsXLCandy(pokemon, cpThreshold));
-                processedList = leaguePool.filter(p => cupDomainFilter(p) && inputFilter(p, cupDomainFilter));
+                const cupDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega;
+                processedList = leaguePool.filter(p => cupDomainFilter(p) && inputFilter(p, cupDomainFilterForFamily));
                 break;
             case ListType.RAID:
                 const preProcessedList: IGamemasterPokemon[] = [];
 
                 computedComparisons.forEach((e, idx) => {
                     const raidFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && (showMega || !pokemon.isMega) && (showShadow || !pokemon.isShadow);
-                    if (!raidFilter(gamemasterPokemon[e.speciesId]) || !inputFilter(gamemasterPokemon[e.speciesId], raidFilter)) {
+                    const raidFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId;
+                    if (!raidFilter(gamemasterPokemon[e.speciesId]) || !inputFilter(gamemasterPokemon[e.speciesId], raidFilterForFamily)) {
                         return;
                     }
 
