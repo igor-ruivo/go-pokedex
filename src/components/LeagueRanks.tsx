@@ -117,35 +117,33 @@ const LeagueRanks = ({
         const rankString = buildRankString(leagueStat.pokemonRankInLeague, currentLanguage);
         
         return (
-            <div className="with-border">
-                <ListEntry
-                    mainIcon={{
-                        imageDescription: leagueStat.leagueTitle,
-                        image: <div className={leagueStat.leagueTitle === "raid" ? "img-padding" : ""}><img className={leagueStat.leagueTitle === "raid" ? "raid-img" : ""} height={leagueStat.leagueTitle === "raid" ? 20 : 28} width={leagueStat.leagueTitle === "raid" ? 20 : 28} src={logoSrc} alt={leagueStat.leagueTitle}/></div>,
-                        withBackground: false
-                    }}
-                    extraIcons={[
-                        {
-                            imageDescription: "Most relevant Pokémon",
-                            image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} specificWidth={28} specificHeight={28}/>,
-                            imageSideText: leagueStat.bestReachablePokemon.speciesShortName,
-                            withBackground: true
-                        }
-                    ]}
-                    backgroundColorClassName={leagueToLeagueName(league) === leagueStat.leagueTitle ? leagueStat.leagueTitle : defaultBackgroundStyle}
-                    onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
-                    secondaryContent={[
-                        <React.Fragment key={leagueStat.leagueTitle}>
-                            {rankString && <div className="cp-container with-brightness">{rankString}</div>}
-                            {rankString ? translator(TranslatorKeys.Ranked, currentLanguage) : <div className="unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div>}
-                            <span className={`larger-rank-change with-brightness ${leagueStat.leagueTitle !== "raid" && rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
-                        </React.Fragment>
-                    ]}
-                    slim
-                    soft
-                    defaultBackgroundStyle={defaultBackgroundStyle}
-                />
-            </div>
+            <ListEntry
+                mainIcon={{
+                    imageDescription: leagueStat.leagueTitle,
+                    image: <div className={leagueStat.leagueTitle === "raid" ? "img-padding" : ""}><img className={leagueStat.leagueTitle === "raid" ? "raid-img" : ""} height={leagueStat.leagueTitle === "raid" ? 20 : 28} width={leagueStat.leagueTitle === "raid" ? 20 : 28} src={logoSrc} alt={leagueStat.leagueTitle}/></div>,
+                    withBackground: false
+                }}
+                extraIcons={[
+                    {
+                        imageDescription: "Most relevant Pokémon",
+                        image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} specificWidth={28} specificHeight={28}/>,
+                        imageSideText: leagueStat.bestReachablePokemon.speciesShortName,
+                        withBackground: true
+                    }
+                ]}
+                backgroundColorClassName={leagueToLeagueName(league) === leagueStat.leagueTitle ? leagueStat.leagueTitle : defaultBackgroundStyle}
+                onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
+                secondaryContent={[
+                    <React.Fragment key={leagueStat.leagueTitle}>
+                        {rankString && <div className="cp-container with-brightness">{rankString}</div>}
+                        {rankString ? translator(TranslatorKeys.Ranked, currentLanguage) : <div className="unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div>}
+                        <span className={`larger-rank-change with-brightness ${leagueStat.leagueTitle !== "raid" && rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
+                    </React.Fragment>
+                ]}
+                slim
+                soft
+                defaultBackgroundStyle={defaultBackgroundStyle}
+            />
         );
     }
 

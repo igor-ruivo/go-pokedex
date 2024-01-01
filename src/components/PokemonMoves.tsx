@@ -23,8 +23,8 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {moves, movesFetchCompleted} = useMoves();
-    const [fastMovesCollapsed, setFastMovesCollapsed] = useState(true);
-    const [chargedMovesCollapsed, setChargedMovesCollapsed] = useState(true);
+    const [fastMovesCollapsed, setFastMovesCollapsed] = useState(false);
+    const [chargedMovesCollapsed, setChargedMovesCollapsed] = useState(false);
     
     useEffect(() => {
         if (!fastMovesCollapsed || !chargedMovesCollapsed) {
@@ -59,6 +59,11 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     const movesSorter = (m1: string, m2: string) => {
         const move1 = moves[m1];
         const move2 = moves[m2];
+
+        const recommendedComparison = (relevantMoveSet.includes(m2) ? 1 : 0) - (relevantMoveSet.includes(m1) ? 1 : 0);
+        if (recommendedComparison !== 0) {
+            return recommendedComparison;
+        }
 
         const specialComparison = (hasBuffs(m2) ? 1 : 0) - (hasBuffs(m1) ? 1 : 0);
         if (specialComparison !== 0) {
@@ -225,7 +230,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             mainIcon={
                 {
                     imageDescription: translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage),
-                    image: <div className="img-padding"><img height={28} width={28} src={moveUrl} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}/></div>,
+                    image: <div className="img-padding"><img height={20} width={20} src={moveUrl} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}/></div>,
                     imageSideText: translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : ""),
                     withBackground: true
                 }
@@ -257,12 +262,15 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 </React.Fragment>
             ]}
             details={renderDetails(moveId, isRecommended)}
+            slim
+            soft
+            defaultBackgroundStyle="normal-entry"
         />
     }
 
     return (
         <div className="banner_layout">
-            <div className="recommended-moves">
+            {false && <div className="recommended-moves">
                 <div className="recommended-moves-content menu-item">
                     <h3 className="moves-title recommended-title">
                         {`${translator(TranslatorKeys.RecommendedMoves, currentLanguage)} (${leagueName})`}
@@ -285,7 +293,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                         }
                     </ul>
                 </div>
-            </div>
+            </div>}
             <div className="moves-display-layout">
                 <div className="menu-item">
                     <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
@@ -296,12 +304,12 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             <img className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${fastMovesCollapsed ? "down" : "up"}.svg`} />
                         </figure>
                     </div>
-                    <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
+                    <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
                         {
                             getAllFastMoves(pokemon, moves)
                             .sort(movesSorter)
                             .map(m => {
-                                const className = `background-${moves[m].type}`;
+                                const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
                                 return (
@@ -322,12 +330,12 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             <img className="invert-dark-mode" alt="All available Charged Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${chargedMovesCollapsed ? "down" : "up"}.svg`} />
                         </figure>
                     </div>
-                    <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding sparse-list`}>
+                    <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
                         {
                             getAllChargedMoves(pokemon, moves)
                             .sort(movesSorter)
                             .map(m => {
-                                const className = `background-${moves[m].type}`;
+                                const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
                                 return (

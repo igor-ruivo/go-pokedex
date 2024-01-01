@@ -47,26 +47,28 @@ const ListEntry = ({
 
     return(
         <li>
-            <div style={specificBackgroundStyle ? {background: specificBackgroundStyle} : undefined} className={`move-card ${!specificBackgroundStyle ? backgroundColorClassName : ""} ${onClick ? "selectable" : ""}`} onClick={onClick}>
-                <div className={`move-card-content ${slim ? "slim-content" : "sparse-content"}`}>
-                    <div className="move-main-info">
-                        <strong className={`move-detail ${mainIcon.withBackground ? "with-shadow": ""} ${slim ? "slim-padding" : ""}`}>
-                            {mainIcon.image}
-                            {!!mainIcon.imageSideText && mainIcon.imageSideText}
+            <div className="with-border">
+                <div style={specificBackgroundStyle ? {background: specificBackgroundStyle} : undefined} className={`move-card ${!specificBackgroundStyle ? backgroundColorClassName : ""} ${onClick ? "selectable" : ""}`} onClick={onClick}>
+                    <div className={`move-card-content ${slim ? "slim-content" : "sparse-content"}`}>
+                        <div className="move-main-info">
+                            <strong className={`move-detail ${mainIcon.withBackground ? "with-shadow": ""} ${soft && !extraIcons && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
+                                {mainIcon.image}
+                                {!!mainIcon.imageSideText && mainIcon.imageSideText}
+                            </strong>
+                            {extraIcons?.map(i => <strong key={i.imageDescription} className={`move-detail ${i.withBackground ? "with-shadow": ""} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
+                                {i.image}
+                                {!!i.imageSideText && i.imageSideText}
+                            </strong>
+                            )}
+                        </div>
+                        <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${toggledContent ? "clickable" : ""}`}>
+                            {secondaryContentToBeRendered?.map(content => 
+                                (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
+                                    {content}
+                                </span>)
+                            )}
                         </strong>
-                        {extraIcons?.map(i => <strong key={i.imageDescription} className={`move-detail ${i.withBackground ? "with-shadow": ""} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
-                            {i.image}
-                            {!!i.imageSideText && i.imageSideText}
-                        </strong>
-                        )}
                     </div>
-                    <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${toggledContent ? "clickable" : ""}`}>
-                        {secondaryContentToBeRendered?.map(content => 
-                            (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
-                                {content}
-                            </span>)
-                        )}
-                    </strong>
                 </div>
             </div>
             <div className="buffs-placeholder">

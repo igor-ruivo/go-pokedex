@@ -108,10 +108,11 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         const type2 = pokemon.types.length > 1 ? pokemon.types[1] : undefined;
 
         return <ListEntry
+            slim
             mainIcon={
                 {
                     imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
-                    image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 36 : 32} specificWidth={imageSource !== ImageSource.Official ? 36 : 32} withName={false}/></div>,
+                    image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 28 : 24} specificWidth={imageSource !== ImageSource.Official ? 28 : 24} withName={false}/></div>,
                     imageSideText: pokemon.speciesShortName,
                     withBackground: true
                 }
@@ -170,10 +171,11 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         const type2 = pokemon.types.length > 1 ? pokemon.types[1] : undefined;
 
         return <ListEntry
+            slim
             mainIcon={
                 {
                     imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
-                    image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 36 : 32} specificWidth={imageSource !== ImageSource.Official ? 36 : 32} withName={false}/></div>,
+                    image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 28 : 24} specificWidth={imageSource !== ImageSource.Official ? 28 : 24} withName={false}/></div>,
                     imageSideText: pokemon.speciesShortName,
                     withBackground: true
                 }
@@ -194,7 +196,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         <div className="banner_layout">
             {league === LeagueType.RAID &&
                 <div className="extra-ivs-options item default-padding block-column">
-                    <span>
+                    <span className="justified">
                         {translator(TranslatorKeys.In, currentLanguage).substring(0, 1).toLocaleUpperCase() + translator(TranslatorKeys.In, currentLanguage).substring(1)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}, {translator(TranslatorKeys.RaidsIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))}:
                     </span>
                     <br/>
@@ -212,7 +214,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     </div>
                 </div>
             }
-            {league !== LeagueType.RAID && <span className="item default-padding">
+            {league !== LeagueType.RAID && <span className="item default-padding justified">
                 {translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}:
             </span>}
             <div className={`${league !== LeagueType.RAID ? "counters-display-layout" : "raid-counters-display-layout"}`}>
@@ -222,7 +224,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                             {`${pokemon.speciesShortName} ${translator(TranslatorKeys.StrongAgainst, currentLanguage)} (${leagueName}):`}
                         </h3>
                     </div>
-                    <ul className={`moves-list no-padding sparse-list`}>
+                    <ul className={`moves-list no-padding slim-list`}>
                         {rankLists[league as number][pokemon.speciesId] ?
                             relevantMatchUps
                             .map(m => {
@@ -246,7 +248,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                             {`${pokemon.speciesShortName} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
                         </h3>
                     </div>
-                    <ul className={`moves-list no-padding sparse-list`}>
+                    <ul className={`moves-list no-padding slim-list`}>
                         {league === LeagueType.RAID ?
                             comparisons
                             .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))

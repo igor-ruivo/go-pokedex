@@ -32,6 +32,10 @@
     padding: 2px;
 }
 
+.justified {
+    text-align: justify;
+}
+
 .recommended-title {
     margin-bottom: 9px;
 }
@@ -143,7 +147,7 @@ details[open] {
 
 .moves-title {
     margin-top: 0px;
-    padding: 9px;
+    padding: 6px 9px;
     border-radius: 12px;
     border: 1px solid var(--borderColor2);
     background-color: var(--buttonsBackground);
