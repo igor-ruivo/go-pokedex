@@ -13,6 +13,7 @@ export enum TranslatorKeys {
     FamilyTree,
     GridFiltering,
     MegaPokemon,
+    RecommendedChargedSingle,
     RaidType,
     CountersWeak,
     RecommendedFast,
@@ -172,6 +173,12 @@ const recommendedCharged = new Map<Language, string>([
     [Language.English, "are the recommended Charged Moves"],
     [Language.Portuguese, "são os Ataques Carregados recomendados"],
     [Language.Bosnian, "su preporučeni Posebni Napadi"]
+]);
+
+const recommendedChargedSingle = new Map<Language, string>([
+    [Language.English, "is the recommended Charged Move"],
+    [Language.Portuguese, "é o Ataque Carregado recomendado"],
+    [Language.Bosnian, "je preporučen Poseban Napad"]
 ]);
 
 const recommendedFast = new Map<Language, string>([
@@ -877,6 +884,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.VisualSettings, visualSettings],
     [TranslatorKeys.Official, official],
     [TranslatorKeys.RecommendedCharged, recommendedCharged],
+    [TranslatorKeys.RecommendedChargedSingle, recommendedChargedSingle],
     [TranslatorKeys.Language, language],
     [TranslatorKeys.Search, search],
     [TranslatorKeys.Loading, loading],
