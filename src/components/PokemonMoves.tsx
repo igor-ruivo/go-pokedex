@@ -60,9 +60,19 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
         const move1 = moves[m1];
         const move2 = moves[m2];
 
-        const recommendedComparison = (relevantMoveSet.includes(m2) ? 1 : 0) - (relevantMoveSet.includes(m1) ? 1 : 0);
+        const m1Index = relevantMoveSet.indexOf(m1);
+        const m2Index = relevantMoveSet.indexOf(m2);
+
+        const recommendedComparison = (m2Index !== -1 ? 1 : 0) - (m1Index !== -1 ? 1 : 0);
         if (recommendedComparison !== 0) {
             return recommendedComparison;
+        }
+
+        if (m1Index !== -1 && m2Index !== -1) {
+            const indexesDraw = m2Index - m1Index;
+            if (indexesDraw !== 0) {
+                return indexesDraw;
+            }
         }
 
         const specialComparison = (hasBuffs(m2) ? 1 : 0) - (hasBuffs(m1) ? 1 : 0);

@@ -16,6 +16,7 @@ import { useMoves } from "../contexts/moves-context";
 import { MatchUp } from "../DTOs/IRankedPokemon";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
+import useResize from "../hooks/useResize";
 
 interface IPokemonCounters {
     pokemon: IGamemasterPokemon;
@@ -50,7 +51,7 @@ const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolea
 const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const [shadow, setShadow] = useState(parsePersistentCachedBooleanValue(ConfigKeys.Shadow, true));
     const [mega, setMega] = useState(parsePersistentCachedBooleanValue(ConfigKeys.Mega, true));
-    const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.ShowEntries, 5));
+    const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.ShowEntries, 10));
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {gameTranslation, gameTranslationFetchCompleted} = useGameTranslation();
@@ -58,6 +59,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const {moves, movesFetchCompleted} = useMoves();
     const { pathname } = useLocation();
     const navigate = useNavigate();
+    const {x} = useResize();
     const {imageSource} = useImageSource();
     const resourcesNotReady = !fetchCompleted || !gameTranslationFetchCompleted || !movesFetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon;
     
@@ -203,7 +205,6 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     <br/>
                     <div className="justified">
                         {translator(TranslatorKeys.Show, currentLanguage)}&nbsp;<select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
-                            <option key={5} value={5}>{5}</option>
                             <option key={10} value={10}>{10}</option>
                             <option key={20} value={20}>{20}</option>
                             <option key={30} value={30}>{30}</option>
@@ -217,7 +218,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             {league !== LeagueType.RAID && <span className="item default-padding justified">
                 {translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}:
             </span>}
-            <div className={`${league !== LeagueType.RAID ? "counters-display-layout" : "raid-counters-display-layout"}`}>
+            <div className="counters-display-layout">
                 {league !== LeagueType.RAID && <div className="menu-item">
                     <div className={`moves-title all-moves fast-moves-section`}>
                         <h3>
@@ -245,14 +246,14 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 <div className="menu-item">
                     <div className={`moves-title all-moves charged-moves-section`}>
                         <h3>
-                            {`${pokemon.speciesShortName} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
+                            {league === LeagueType.RAID ? `${pokemon.speciesShortName} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)}${x > 750 ? ` (1 - ${top / 2}):` : ":"}` : `${pokemon.speciesShortName} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
                         </h3>
                     </div>
                     <ul className={`moves-list no-padding slim-list`}>
                         {league === LeagueType.RAID ?
                             comparisons
                             .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))
-                            .slice(0, top)
+                            .slice(0, x > 750 ? top / 2 : top)
                             .map(m => {
                                 const pokemon = gamemasterPokemon[m.speciesId];
                                 const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
@@ -279,6 +280,29 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                         }
                     </ul>
                 </div>
+                {x > 750 && league === LeagueType.RAID && <div className="menu-item">
+                    <div className={`moves-title all-moves charged-moves-section`}>
+                        <h3>
+                            {`${pokemon.speciesShortName} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
+                        </h3>
+                    </div>
+                    <ul className={`moves-list no-padding slim-list`}>
+                        {
+                            comparisons
+                            .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))
+                            .slice(top / 2, top)
+                            .map(m => {
+                                const pokemon = gamemasterPokemon[m.speciesId];
+                                const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
+                                return (
+                                    <React.Fragment key={m.speciesId}>
+                                        {renderRaidEntry(pokemon, (m as dpsEntry).dps, (m as dpsEntry).fastMoveId, (m as dpsEntry).chargedMoveId, className, (m as dpsEntry).fastMoveDamage, (m as dpsEntry).chargedMoveDamage)}
+                                    </React.Fragment>
+                                )
+                            })
+                        }
+                    </ul>
+                </div>}
             </div>
         </div>
     );

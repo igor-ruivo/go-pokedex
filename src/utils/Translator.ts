@@ -14,6 +14,7 @@ export enum TranslatorKeys {
     GridFiltering,
     MegaPokemon,
     RaidType,
+    CountersWeak,
     Type,
     ShadowPokemon,
     XLPokemon,
@@ -151,6 +152,12 @@ const official = new Map<Language, string>([
     [Language.English, "Official"],
     [Language.Portuguese, "Oficiais"],
     [Language.Bosnian, "Službene"]
+]);
+
+const countersWeak = new Map<Language, string>([
+    [Language.English, "Counters"],
+    [Language.Portuguese, "Adversários Eficazes"],
+    [Language.Bosnian, "Efikasni Protivnici"]
 ]);
 
 const gridFiltering = new Map<Language, string>([
@@ -804,6 +811,7 @@ const familyTree = new Map<Language, string>([
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.GridFiltering, gridFiltering],
+    [TranslatorKeys.CountersWeak, countersWeak],
     [TranslatorKeys.Any, any],
     [TranslatorKeys.FamilyTree, familyTree],
     [TranslatorKeys.LanguageSettings, languageSettings],

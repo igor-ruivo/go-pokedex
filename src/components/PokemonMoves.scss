@@ -86,12 +86,12 @@ details[open] {
     summary {
         max-width: calc(33vw);
         white-space: nowrap;
-        font-size: small;
+        font-size: 11px;
         font-weight: 500;
         display: flex;
         align-items: center;
         gap: 9px;
-        height: 20px;
+        height: 14px;
         line-height: 18px;
 
         span {
@@ -101,6 +101,7 @@ details[open] {
     }
 
     p {
+        font-size: 11px;
         margin-top: 3px;
         padding-top: 3px;
         margin-bottom: 0;
@@ -126,12 +127,6 @@ details[open] {
 .justified {
     display: flex;
     justify-content: center;
-}
-
-.raid-counters-display-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 9px;
 }
 
 .counters-display-layout {
@@ -385,7 +380,7 @@ summary::-webkit-details-marker {
     color: #c1002d;
 }
 
-@media (min-width: 750px) {
+@media (min-width: 750.99px) {
     .moves-display-layout {
         display: grid;
         grid-template-columns: 1fr 1fr;
