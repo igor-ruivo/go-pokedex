@@ -257,7 +257,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 {Math.round(relevantMoveEnergy(moveId) / relevantMoveDuration(moveId) * 100) / 100} EPS
                 </React.Fragment>,
                 isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-dpe`}>
-                {Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / relevantMoveEnergy(moveId) * -1 * 100) / 100} DPE
+                {relevantMoveEnergy(moveId) !== 0 ? (Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / relevantMoveEnergy(moveId) * -1 * 100) / 100) : "∞"} DPE
                 </React.Fragment>
             ]}
             details={renderDetails(moveId, isRecommended)}
