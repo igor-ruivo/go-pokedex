@@ -133,9 +133,9 @@ const languageSettings = new Map<Language, string>([
 ]);
 
 const overall = new Map<Language, string>([
-    [Language.English, "Overall, "],
-    [Language.Portuguese, "No geral, "],
-    [Language.Bosnian, "Sveukupno, "]
+    [Language.English, "Overall"],
+    [Language.Portuguese, "No geral"],
+    [Language.Bosnian, "Sveukupno"]
 ]);
 
 const using = new Map<Language, string>([
