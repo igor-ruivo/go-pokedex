@@ -308,8 +308,8 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
                         value={computeSearchString(p)}
                         readOnly
                     /></div>)}
-                </div> : <div className="item default-padding">
-                    {translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.
+                </div> : <div className="item default-padding centered">
+                    <span>{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
             }
         </>

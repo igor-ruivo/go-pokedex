@@ -304,7 +304,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                 </span>
             </div>
             </>}
-            {league !== LeagueType.RAID && <div className="menu-item">{relevantMoveSet.length > 0 ? <><strong className="cp-container with-brightness">{`${translateMoveFromMoveId(relevantMoveSet[0])}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(relevantMoveSet[1])}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(relevantMoveSet[2])}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.HolidayCup, currentGameLanguage)}...`}</div>}
+            {league !== LeagueType.RAID && <div className="menu-item centered"><div>{relevantMoveSet.length > 0 ? <><strong className="cp-container with-brightness">{`${translateMoveFromMoveId(relevantMoveSet[0])}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(relevantMoveSet[1])}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(relevantMoveSet[2])}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.HolidayCup, currentGameLanguage)}...`}</div></div>}
             <div className="moves-display-layout">
                 <div className="menu-item">
                     <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
@@ -317,6 +317,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </div>
                     <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
                         {
+                            getAllFastMoves(pokemon, moves).length > 0 ?
                             getAllFastMoves(pokemon, moves)
                             .sort(movesSorter)
                             .map(m => {
@@ -328,7 +329,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                         {renderMove(m, typeTranslatorKey, url, className, false, false)}
                                     </React.Fragment>
                                 )
-                            })
+                            }) : <span>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
                         }
                     </ul>
                 </div>
@@ -343,6 +344,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     </div>
                     <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
                         {
+                            getAllChargedMoves(pokemon, moves).length > 0 ?
                             getAllChargedMoves(pokemon, moves)
                             .sort(movesSorter)
                             .map(m => {
@@ -354,7 +356,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                         {renderMove(m, typeTranslatorKey, url, className, true, false)}
                                     </React.Fragment>
                                 )
-                            })
+                            }) : <span>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
                         }
                     </ul>
                 </div>

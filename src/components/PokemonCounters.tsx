@@ -198,9 +198,10 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         <div className="banner_layout">
             {league === LeagueType.RAID &&
                 <div className="extra-ivs-options item default-padding block-column">
-                    <span className="justified">
+                    <div className="centered">
+                    <span>
                         {translator(TranslatorKeys.In, currentLanguage).substring(0, 1).toLocaleUpperCase() + translator(TranslatorKeys.In, currentLanguage).substring(1)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}, {translator(TranslatorKeys.RaidsIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))}:
-                    </span>
+                    </span></div>
                     <br/>
                     <div className="justified">
                         {translator(TranslatorKeys.Show, currentLanguage)}&nbsp;<select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
@@ -214,9 +215,9 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     </div>
                 </div>
             }
-            {league !== LeagueType.RAID && <span className="item default-padding justified">
+            {league !== LeagueType.RAID && <div className="centered item default-padding"><span>
                 {translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}:
-            </span>}
+            </span></div>}
             <div className="counters-display-layout">
                 {league !== LeagueType.RAID && <div className="menu-item">
                     <div className={`moves-title all-moves fast-moves-section`}>
@@ -225,7 +226,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                         </h3>
                     </div>
                     <ul className={`moves-list no-padding slim-list`}>
-                        {rankLists[league as number][pokemon.speciesId] ?
+                        {rankLists[league as number][pokemon.speciesId] ? relevantMatchUps.length > 0 ?
                             relevantMatchUps
                             .map(m => {
                                 const pokemon = gamemasterPokemon[m.speciesId];
@@ -235,7 +236,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                         {renderPvPEntry(pokemon, m.rating, className)}
                                     </React.Fragment>
                                 )
-                            }) :
+                            }) : <span>{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
                             <span className="unavailable_moves">
                                 {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                             </span>
@@ -262,7 +263,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                     </React.Fragment>
                                 )
                             }) :
-                            rankLists[league as number][pokemon.speciesId] ?
+                            rankLists[league as number][pokemon.speciesId] ? relevantCounters.length > 0 ?
                             relevantCounters
                             .map(m => {
                                 const pokemon = gamemasterPokemon[m.speciesId];
@@ -272,7 +273,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                         {renderPvPEntry(pokemon, (m as MatchUp).rating, className)}
                                     </React.Fragment>
                                 )
-                            }) :
+                            }) : <span>{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
                             <span className="unavailable_moves">
                                 {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                             </span>

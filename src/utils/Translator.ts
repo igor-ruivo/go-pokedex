@@ -11,6 +11,7 @@ export enum TranslatorKeys {
     Search,
     Loading,
     FamilyTree,
+    NoResults,
     GridFiltering,
     MegaPokemon,
     RecommendedChargedSingle,
@@ -131,6 +132,12 @@ const languageSettings = new Map<Language, string>([
     [Language.English, "Language Settings"],
     [Language.Portuguese, "Opções de Idioma"],
     [Language.Bosnian, "Jezičke Postavke"]
+]);
+
+const noResults = new Map<Language, string>([
+    [Language.English, "No results."],
+    [Language.Portuguese, "Sem resultados."],
+    [Language.Bosnian, "Nema rezultata."]
 ]);
 
 const overall = new Map<Language, string>([
@@ -896,6 +903,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Defense, defense],
     [TranslatorKeys.HP, hp],
     [TranslatorKeys.LVL, lvl],
+    [TranslatorKeys.NoResults, noResults],
     [TranslatorKeys.Water, water],
     [TranslatorKeys.Overall, overall],
     [TranslatorKeys.Fire, fire],

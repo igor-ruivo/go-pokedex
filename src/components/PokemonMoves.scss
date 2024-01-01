@@ -144,6 +144,12 @@ details[open] {
     justify-content: center;
 }
 
+.centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .counters-display-layout {
     display: flex;
     flex-direction: column;

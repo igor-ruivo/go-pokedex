@@ -298,8 +298,8 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                     fixedHeaderContent={fixedHeaderContent}
                     itemContent={rowContent}
                 />
-            </div> : <div className="item default-padding">
-                    {translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.
+            </div> : <div className="item default-padding centered">
+                    <span>{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
             }
         </>
