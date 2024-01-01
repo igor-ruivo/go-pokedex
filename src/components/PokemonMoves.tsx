@@ -270,6 +270,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
     return (
         <div className="banner_layout">
             {league === LeagueType.RAID && <><div className="raid-container item">
+                <div className="overflowing">
                 <div className="img-family">
                     {Array.from(new Set(getAllChargedMoves(pokemon, moves).map(m => moves[m].type)))
                     .map(t => (
@@ -286,7 +287,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                             </strong>
                         </div>
                     ))}
-                </div>
+                </div></div>
                 <span className="with-padding">
                     <>
                         {!raidAttackType ? <span>{translator(TranslatorKeys.Overall, currentLanguage)}</span> : <span>{translator(TranslatorKeys.Focused1, currentLanguage)}</span>}

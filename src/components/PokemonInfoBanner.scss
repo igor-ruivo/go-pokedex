@@ -81,7 +81,7 @@ table {
     flex-wrap: nowrap;
     //overflow-x: scroll;
     //background-color: var(--popup-background-color);
-    padding: 6px;
+    padding: 6px 0px;
     //border-radius: 12px;
     //border: 1px solid var(--borderColor2);
     display: flex;
@@ -93,6 +93,14 @@ table {
     a {   
         color: inherit;
         text-decoration: none;
+    }
+
+    >div:first-child {
+        padding-left: 6px;
+    }
+
+    >div:last-child {
+        padding-right: 6px;
     }
 }
 

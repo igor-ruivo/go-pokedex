@@ -24,6 +24,11 @@
     align-items: center;
 }
 
+.overflowing {
+    overflow: auto;
+    max-width: 100%;
+}
+
 @media (min-width: 500px) {
     .clickable {
         &:hover {
