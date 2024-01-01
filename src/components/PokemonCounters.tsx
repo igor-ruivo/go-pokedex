@@ -202,7 +202,6 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                         {translator(TranslatorKeys.In, currentLanguage).substring(0, 1).toLocaleUpperCase() + translator(TranslatorKeys.In, currentLanguage).substring(1)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}, {translator(TranslatorKeys.RaidsIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))}:
                     </span>
                     <br/>
-                    <br/>
                     <div className="justified">
                         {translator(TranslatorKeys.Show, currentLanguage)}&nbsp;<select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
                             <option key={10} value={10}>{10}</option>

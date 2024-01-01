@@ -12,7 +12,7 @@ interface IPokemonFamilyProps {
 const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonFamilyProps) => {
     return (
         <>
-            {similarPokemon.size > 1 && <div className="img-container">
+            {similarPokemon.size > 1 && <div className="img-container item">
                 <div className="img-family">
                     {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                         <div key = {p.speciesId}>

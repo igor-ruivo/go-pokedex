@@ -269,7 +269,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
 
     return (
         <div className="banner_layout">
-            {league === LeagueType.RAID && <><div className="raid-container">
+            {league === LeagueType.RAID && <><div className="raid-container item">
                 <div className="img-family">
                     {Array.from(new Set(getAllChargedMoves(pokemon, moves).map(m => moves[m].type)))
                     .map(t => (
@@ -287,21 +287,21 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                         </div>
                     ))}
                 </div>
+                <span className="with-padding">
+                    <>
+                        {!raidAttackType ? <span>{translator(TranslatorKeys.Overall, currentLanguage)}</span> : <span>{translator(TranslatorKeys.Focused1, currentLanguage)}</span>}
+                        <strong className="cp-container with-brightness">{translatedType((raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1)) as unknown as PokemonTypes, currentLanguage)}</strong>
+                        <span>{translator(TranslatorKeys.Focused2, currentLanguage)},</span>
+                        <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
+                        <strong className="cp-container with-brightness"> {Math.round(raidComputation.dps * 100) / 100} DPS</strong>
+                        <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
+                        <strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(raidComputation.fastMoveId)}`}</strong>
+                        <span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span>
+                        <strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(raidComputation.chargedMoveId)}`}</strong>
+                        .
+                    </>
+                </span>
             </div>
-            <span className="menu-item">
-                <>
-                    {!raidAttackType ? <span>{translator(TranslatorKeys.Overall, currentLanguage)}</span> : <span>{translator(TranslatorKeys.Focused1, currentLanguage)}</span>}
-                    <strong className="cp-container with-brightness">{translatedType((raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1)) as unknown as PokemonTypes, currentLanguage)}</strong>
-                    <span>{translator(TranslatorKeys.Focused2, currentLanguage)},</span>
-                    <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
-                    <strong className="cp-container with-brightness"> {Math.round(raidComputation.dps * 100) / 100} DPS</strong>
-                    <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
-                    <strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(raidComputation.fastMoveId)}`}</strong>
-                    <span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span>
-                    <strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(raidComputation.chargedMoveId)}`}</strong>
-                    .
-                </>
-            </span>
             </>}
             {league !== LeagueType.RAID && <div className="menu-item">{relevantMoveSet.length > 0 ? <><strong className="cp-container with-brightness">{`${translateMoveFromMoveId(relevantMoveSet[0])}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(relevantMoveSet[1])}`}</strong><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(relevantMoveSet[2])}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedCharged, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.HolidayCup, currentGameLanguage)}...`}</div>}
             <div className="moves-display-layout">
