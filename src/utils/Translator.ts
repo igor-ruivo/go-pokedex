@@ -15,7 +15,13 @@ export enum TranslatorKeys {
     MegaPokemon,
     RaidType,
     CountersWeak,
+    RecommendedFast,
+    CanDeal,
     Type,
+    Using,
+    Overall,
+    And,
+    RecommendedCharged,
     ShadowPokemon,
     XLPokemon,
     NotAvailableForRaids,
@@ -115,6 +121,8 @@ export enum TranslatorKeys {
     BaseValue,
     WeakAgainst,
     StrongAgainst,
+    Focused1,
+    Focused2,
     OrType
 }
 
@@ -124,16 +132,64 @@ const languageSettings = new Map<Language, string>([
     [Language.Bosnian, "Jezičke Postavke"]
 ]);
 
+const overall = new Map<Language, string>([
+    [Language.English, "Overall, "],
+    [Language.Portuguese, "No geral, "],
+    [Language.Bosnian, "Sveukupno, "]
+]);
+
+const using = new Map<Language, string>([
+    [Language.English, "when using the Recommended Moves"],
+    [Language.Portuguese, "ao utilizar os Ataques Recomendados"],
+    [Language.Bosnian, "korištenjem Preporučeni Napadi"]
+]);
+
+const focused1 = new Map<Language, string>([
+    [Language.English, "By focusing on "],
+    [Language.Portuguese, "Focando no dano de "],
+    [Language.Bosnian, " Fokusirajući se na štetu od "]
+]);
+
+const focused2 = new Map<Language, string>([
+    [Language.English, " damage"],
+    [Language.Portuguese, ""],
+    [Language.Bosnian, ""]
+]);
+
+const canDeal = new Map<Language, string>([
+    [Language.English, "it can deal"],
+    [Language.Portuguese, "pode atingir"],
+    [Language.Bosnian, "može nanijeti"]
+]);
+
 const raidType = new Map<Language, string>([
     [Language.English, "Best Attackers of Type"],
     [Language.Portuguese, "Melhores Atacantes do Tipo"],
     [Language.Bosnian, "Najbolji Napadači po Tipu"]
 ]);
 
+const recommendedCharged = new Map<Language, string>([
+    [Language.English, "are the recommended Charged Moves"],
+    [Language.Portuguese, "são os Ataques Carregados recomendados"],
+    [Language.Bosnian, "su preporučeni Posebni Napadi"]
+]);
+
+const recommendedFast = new Map<Language, string>([
+    [Language.English, "is the recommended Fast Move"],
+    [Language.Portuguese, "é o Ataque Ágil recomendado"],
+    [Language.Bosnian, "je preporučeni Brzi Napad"]
+]);
+
 const type = new Map<Language, string>([
     [Language.English, "Type Filter"],
     [Language.Portuguese, "Filtragem por Tipo"],
     [Language.Bosnian, "Filtriranja po Tipu"]
+]);
+
+const and = new Map<Language, string>([
+    [Language.English, "and"],
+    [Language.Portuguese, "e"],
+    [Language.Bosnian, "i"]
 ]);
 
 const any = new Map<Language, string>([
@@ -811,6 +867,7 @@ const familyTree = new Map<Language, string>([
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.GridFiltering, gridFiltering],
+    [TranslatorKeys.And, and],
     [TranslatorKeys.CountersWeak, countersWeak],
     [TranslatorKeys.Any, any],
     [TranslatorKeys.FamilyTree, familyTree],
@@ -819,6 +876,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.PickIVs, pickIVs],
     [TranslatorKeys.VisualSettings, visualSettings],
     [TranslatorKeys.Official, official],
+    [TranslatorKeys.RecommendedCharged, recommendedCharged],
     [TranslatorKeys.Language, language],
     [TranslatorKeys.Search, search],
     [TranslatorKeys.Loading, loading],
@@ -826,10 +884,12 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.IVTables, ivTables],
     [TranslatorKeys.SearchStrings, searchStrings],
     [TranslatorKeys.Attack, attack],
+    [TranslatorKeys.RecommendedFast, recommendedFast],
     [TranslatorKeys.Defense, defense],
     [TranslatorKeys.HP, hp],
     [TranslatorKeys.LVL, lvl],
     [TranslatorKeys.Water, water],
+    [TranslatorKeys.Overall, overall],
     [TranslatorKeys.Fire, fire],
     [TranslatorKeys.Dragon, dragon],
     [TranslatorKeys.XLPokemon, XLPokemon],
@@ -845,6 +905,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Flying, flying],
     [TranslatorKeys.Ghost, ghost],
     [TranslatorKeys.Steel, steel],
+    [TranslatorKeys.CanDeal, canDeal],
     [TranslatorKeys.Dark, dark],
     [TranslatorKeys.Normal, normal],
     [TranslatorKeys.Grass, grass],
@@ -852,6 +913,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Poison, poison],
     [TranslatorKeys.Bug, bug],
     [TranslatorKeys.Unranked, unranked],
+    [TranslatorKeys.Using, using],
     [TranslatorKeys.Ranked, ranked],
     [TranslatorKeys.ATK, atk],
     [TranslatorKeys.DEF, def],
@@ -887,6 +949,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.LightTheme, lightTheme],
     [TranslatorKeys.DarkTheme, darkTheme],
     [TranslatorKeys.SystemDefault, systemDefault],
+    [TranslatorKeys.Focused1, focused1],
+    [TranslatorKeys.Focused2, focused2],
     [TranslatorKeys.RecommendedMovesInfo1, recommendedMovesInfo1],
     [TranslatorKeys.RecommendedMovesInfo2, recommendedMovesInfo2],
     [TranslatorKeys.targetAttackStatStageChange, targetAttack],
