@@ -220,13 +220,15 @@ const Navbar = () => {
         }
     ];
 
-    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: pathname.includes("raid") ? translator(TranslatorKeys.Any, currentLanguage) : translator(TranslatorKeys.None, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
+    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: translator(TranslatorKeys.Any, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
         label: translatedType(PokemonTypes[k as keyof typeof PokemonTypes], currentLanguage),
         value: PokemonTypes[k as keyof typeof PokemonTypes],
         hint: `${process.env.PUBLIC_URL}/images/types/${PokemonTypes[k as keyof typeof PokemonTypes].toString().toLocaleLowerCase()}.png`
     }))];
-console.log("igor");
-    console.log(type1Filter);
+
+    const megaDisabled = pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom");
+    const shadowDisabled = !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid"));
+    const xlDisabled = !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom"));
 
     return <>
         <header className="navbar">
@@ -376,17 +378,17 @@ console.log("igor");
                     </strong>
                     <ul className="options-ul options-ul-filter">
                         <li className="options-li">
-                            <div className="option-entry-row-filter">
-                                <input type="checkbox" className="filter-checkbox" checked={familyTree} onChange={toggleFamilyTree}/> {translator(TranslatorKeys.FamilyTree, currentLanguage)}
+                            <div className="option-entry-row-filter" onClick={toggleFamilyTree}>
+                                <input type="checkbox" className="filter-checkbox" checked={familyTree} onChange={() => {}}/> {translator(TranslatorKeys.FamilyTree, currentLanguage)}
                             </div>
-                            <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") ? "unavailable" : ""}`}>
-                                <input type="checkbox" className="filter-checkbox" checked={showMega} onChange={toggleShowMega}/> {translator(TranslatorKeys.MegaPokemon, currentLanguage)}
+                            <div onClick={() => {if (!megaDisabled) {toggleShowMega();}}} className={`option-entry-row-filter ${megaDisabled ? "unavailable" : ""}`}>
+                                <input type="checkbox" className="filter-checkbox" checked={showMega} disabled={megaDisabled} onChange={() => {}}/> {translator(TranslatorKeys.MegaPokemon, currentLanguage)}
                             </div>
-                            <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid") ? "" : "unavailable"}`}>
-                                <input type="checkbox" className="filter-checkbox" checked={showShadow} onChange={toggleShowShadow}/> {translator(TranslatorKeys.ShadowPokemon, currentLanguage)}
+                            <div onClick={() => {if (!shadowDisabled) {toggleShowShadow();}}} className={`option-entry-row-filter ${shadowDisabled ? "unavailable" : ""}`}>
+                                <input type="checkbox" className="filter-checkbox" checked={showShadow} disabled={shadowDisabled} onChange={() => {}}/> {translator(TranslatorKeys.ShadowPokemon, currentLanguage)}
                             </div>
-                            <div className={`option-entry-row-filter ${pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom") ? "" : "unavailable"}`}>
-                                <input type="checkbox" className="filter-checkbox" checked={showXL} onChange={toggleShowXL}/> {translator(TranslatorKeys.XLPokemon, currentLanguage)}
+                            <div onClick={() => {if (!xlDisabled) {toggleShowXL();}}} className={`option-entry-row-filter ${xlDisabled ? "unavailable" : ""}`}>
+                                <input type="checkbox" className="filter-checkbox" checked={showXL} disabled={xlDisabled} onChange={() => {}}/> {translator(TranslatorKeys.XLPokemon, currentLanguage)}
                             </div>
                         </li>
                         <li className="options-li">
@@ -399,7 +401,7 @@ console.log("igor");
                                     isSearchable={false}
                                     options={typesOptions.filter(e => e.value === undefined || type2Filter === undefined || (pathname.includes("raid") || e.value !== type2Filter))}
                                     value={type1Filter === undefined ? typesOptions[0] : typesOptions.find(l => l.value === type1Filter)}
-                                    onChange={(v) => {console.log("updating:" + v!.value); updateType1(v!.value)}}
+                                    onChange={(v) => updateType1(v!.value)}
                                     formatOptionLabel={(data, _) => <div className="hint-container">{data.hint && <img alt="flag" src={data.hint} height={17} />}<span>{data.label}</span></div>}
                                 />
                             </div>

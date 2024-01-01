@@ -24,7 +24,6 @@ export enum TranslatorKeys {
     Name,
     Show,
     RaidsIntro,
-    None,
     Items,
     Counters,
     IVTables,
@@ -802,17 +801,10 @@ const familyTree = new Map<Language, string>([
     [Language.Bosnian, "Porodično Stablo"]
 ]);
 
-const none = new Map<Language, string>([
-    [Language.English, "None"],
-    [Language.Portuguese, "Nenhum"],
-    [Language.Bosnian, "Nijedan"]
-]);
-
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.GridFiltering, gridFiltering],
     [TranslatorKeys.Any, any],
-    [TranslatorKeys.None, none],
     [TranslatorKeys.FamilyTree, familyTree],
     [TranslatorKeys.LanguageSettings, languageSettings],
     [TranslatorKeys.RaidsIntro, raidsIntro],
