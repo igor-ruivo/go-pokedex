@@ -147,12 +147,12 @@ const using = new Map<Language, string>([
 
 const focused1 = new Map<Language, string>([
     [Language.English, "By focusing on "],
-    [Language.Portuguese, "Focando no dano de "],
-    [Language.Bosnian, " Fokusirajući se na štetu od "]
+    [Language.Portuguese, "Focando no dano de tipo "],
+    [Language.Bosnian, "Fokusirajući se na štetu od tipa "]
 ]);
 
 const focused2 = new Map<Language, string>([
-    [Language.English, " damage"],
+    [Language.English, " type damage"],
     [Language.Portuguese, ""],
     [Language.Bosnian, ""]
 ]);

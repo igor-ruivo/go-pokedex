@@ -292,7 +292,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <>
                         {!raidAttackType ? <span>{translator(TranslatorKeys.Overall, currentLanguage)}</span> : <span>{translator(TranslatorKeys.Focused1, currentLanguage)}</span>}
                         <strong className="cp-container with-brightness">{translatedType((raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1)) as unknown as PokemonTypes, currentLanguage)}</strong>
-                        <span>{translator(TranslatorKeys.Focused2, currentLanguage)},</span>
+                        <span>{raidAttackType && translator(TranslatorKeys.Focused2, currentLanguage)},</span>
                         <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
                         <strong className="cp-container with-brightness"> {Math.round(raidComputation.dps * 100) / 100} DPS</strong>
                         <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
