@@ -1,4 +1,6 @@
 .navbar {
+    min-height: 75px;
+    max-height: 75px;
     height: 75px;
     border-bottom: 1px solid var(--borderColor2);
     background-color: var(--headerBackground);
@@ -251,6 +253,8 @@ button {
 
 @media (max-width: 500px) {
     .navbar {
+        min-height: 55px;
+        max-height: 55px;
         height: 55px;
         padding-left: 16px;
         padding-right: 16px;
