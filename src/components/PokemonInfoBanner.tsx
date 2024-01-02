@@ -338,6 +338,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                 }))
                             }
                         }
+                        unranked={rankLists[league] && !rankLists[league][bestInFamilyForGreatLeague.speciesId]?.rank ? true : false}
                     />
             </div>
     </div>;

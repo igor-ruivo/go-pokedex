@@ -48,7 +48,8 @@ interface ILeaguePanelsProps {
     hp: number,
     league: LeagueType,
     level: number,
-    isShadow: boolean
+    isShadow: boolean,
+    unranked: boolean
 }
 
 const LeaguePanels = ({
@@ -62,7 +63,8 @@ const LeaguePanels = ({
     hp,
     league,
     level,
-    isShadow
+    isShadow,
+    unranked
 }: ILeaguePanelsProps) => {
     const [toggled, setToggled] = useState(false);
     const {currentLanguage, currentGameLanguage} = useLanguage();
@@ -89,14 +91,14 @@ const LeaguePanels = ({
 
         return (
             <div className={pvpStatsClassName}>
-                <div>
+                {!unranked && <div>
                     <div className="pvp-entry rank-title">
                         <div className="pvp-entry-content potential">
                             <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> <strong className="cp-container with-brightness">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub>
                         </div>
                     </div>
-                </div>
-                <div className="pvp-stats">
+                </div>}
+                {unranked ? <div style={{minHeight: 123}} className="unranked-pvp-stats pvp-entry centered-text aligned unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div> : <div className="pvp-stats">
                     <div className="pvp-labels">
                         <header>
                             {translator(TranslatorKeys.Config, currentLanguage)}:
@@ -149,7 +151,7 @@ const LeaguePanels = ({
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>}
                 <div className="centered-text pvp-entry">... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}</div>
                 <img className='background-absolute-img' width="100%" height="100%" src={logoSrc} alt={leagueStat.leagueTitle} />
             </div>
