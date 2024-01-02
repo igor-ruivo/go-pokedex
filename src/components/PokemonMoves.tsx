@@ -272,7 +272,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             {league === LeagueType.RAID && <><div className="raid-container item">
                 <div className="overflowing">
                 <div className="img-family">
-                    {Array.from(new Set(getAllChargedMoves(pokemon, moves).map(m => moves[m].type)))
+                    {Array.from(new Set(getAllChargedMoves(pokemon, moves).map(m => moves[m].type))).filter(t => t !== "normal")
                     .map(t => (
                         <div className="clickable" key = {t} onClick={() => {
                             if (t === raidAttackType) {
@@ -281,7 +281,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                                 setRaidAttackType(t);
                             }
                         }}>
-                            <strong className={`move-detail with-shadow soft normal-padding item ${t === raidAttackType ? "extra-padding-right" : ""}`}>
+                            <strong className={`move-detail soft normal-padding item ${t === raidAttackType ? "extra-padding-right" : ""}`}>
                                 <div className="img-padding"><img height={30} width={30} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
                                 {t === raidAttackType && translatedType((t.substring(0, 1).toLocaleUpperCase() + t.substring(1)) as unknown as PokemonTypes, currentLanguage)}
                             </strong>
@@ -292,7 +292,8 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
                     <>
                         {!raidAttackType ? <span>{translator(TranslatorKeys.Overall, currentLanguage)}</span> : <span>{translator(TranslatorKeys.Focused1, currentLanguage)}</span>}
                         <strong className="cp-container with-brightness">{translatedType((raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1)) as unknown as PokemonTypes, currentLanguage)}</strong>
-                        <span>{raidAttackType && translator(TranslatorKeys.Focused2, currentLanguage)},</span>
+                        <span>{raidAttackType && translator(TranslatorKeys.Focused2, currentLanguage)}</span>
+                        <span>{raidAttackType && translator(TranslatorKeys.Effective, currentLanguage)},</span>
                         <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
                         <strong className="cp-container with-brightness"> {Math.round(raidComputation.dps * 100) / 100} DPS</strong>
                         <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>

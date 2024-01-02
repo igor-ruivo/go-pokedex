@@ -14,6 +14,7 @@ export enum TranslatorKeys {
     NoResults,
     GridFiltering,
     MegaPokemon,
+    Effective,
     RecommendedChargedSingle,
     RaidType,
     CountersWeak,
@@ -222,6 +223,12 @@ const official = new Map<Language, string>([
     [Language.English, "Official"],
     [Language.Portuguese, "Oficiais"],
     [Language.Bosnian, "Službene"]
+]);
+
+const effective = new Map<Language, string>([
+    [Language.English, " (as the Effective type damage)"],
+    [Language.Portuguese, " (como sendo o tipo de dano Eficaz)"],
+    [Language.Bosnian, " (kao Efektivna vrsta oštećenja)"]
 ]);
 
 const countersWeak = new Map<Language, string>([
@@ -897,6 +904,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Loading, loading],
     [TranslatorKeys.Name, name],
     [TranslatorKeys.IVTables, ivTables],
+    [TranslatorKeys.Effective, effective],
     [TranslatorKeys.SearchStrings, searchStrings],
     [TranslatorKeys.Attack, attack],
     [TranslatorKeys.RecommendedFast, recommendedFast],

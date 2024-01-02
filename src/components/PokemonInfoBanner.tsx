@@ -142,7 +142,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
 
         const ranksDic: Dictionary<number> = {};
     
-        allChargedMoveTypes.forEach(t => ranksDic[t] = computeComparisons(t).findIndex(c => c.speciesId === bestReachable!.speciesId) + 1);
+        allChargedMoveTypes.filter(t => t !== "normal").forEach(t => ranksDic[t] = computeComparisons(t).findIndex(c => c.speciesId === bestReachable!.speciesId) + 1);
 
         return ranksDic;
     }, [allChargedMoveTypes, computeComparisons, bestReachable, resourcesNotReady]);

@@ -463,8 +463,8 @@ export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMa
             if (forcedType && chargedMove.type !== forcedType) {
                 continue;
             }
-            const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(fastMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && fastMove.type === forcedType) ? Effectiveness.Effective : Effectiveness.Normal, attackIV, level, target ? target.def : 200);
-            const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(chargedMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && chargedMove.type === forcedType) ? Effectiveness.Effective : Effectiveness.Normal, attackIV, level, target ? target.def : 200);
+            const fastMoveDmg = calculateDamage(p.atk, fastMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(fastMove.type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(fastMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && forcedType !== "normal" && fastMove.type === forcedType) ? Effectiveness.Effective : Effectiveness.Normal, attackIV, level, target ? target.def : 200);
+            const chargedMoveDmg = calculateDamage(p.atk, chargedMove.pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(chargedMove.type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(chargedMove.type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && forcedType !== "normal" && chargedMove.type === forcedType) ? Effectiveness.Effective : Effectiveness.Normal, attackIV, level, target ? target.def : 200);
             const dps = pveDPS(chargedMoveDmg, fastMoveDmg, fastMove.pveDuration, chargedMove.pveEnergyDelta * -1, fastMove.pveEnergyDelta, chargedMove.pveDuration);
             if (dps > higherDPS) {
                 higherDPS = dps;
@@ -492,11 +492,11 @@ export const calculateDamage = (baseAtk: number, moveDamage: number, stab: boole
 export const pveDPS = (chargedMoveDamage: number, fastMoveDamage: number, fastMoveCooldown: number, chargedMoveRequiredEnergy: number, fastMoveEnergy: number, chargedMoveAnimationDuration: number) => {
     const fastMoveDPS = fastMoveDamage / fastMoveCooldown;
 
-    if (fastMoveEnergy === 0) {
+    if (fastMoveEnergy === 0 && chargedMoveRequiredEnergy !== 0) {
         return fastMoveDPS;
     }
 
-    const secondsNeededToLoadChargedMove = chargedMoveRequiredEnergy / fastMoveEnergy * fastMoveCooldown;
+    const secondsNeededToLoadChargedMove = chargedMoveRequiredEnergy === 0 ? 0 : chargedMoveRequiredEnergy / fastMoveEnergy * fastMoveCooldown;
 
     const chargedMoveUsageDPS = (chargedMoveDamage + fastMoveDPS * secondsNeededToLoadChargedMove) / (secondsNeededToLoadChargedMove + chargedMoveAnimationDuration);
     
