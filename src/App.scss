@@ -27,3 +27,9 @@
 a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+
+.main-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

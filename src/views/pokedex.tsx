@@ -224,7 +224,7 @@ const Pokedex = () => {
     }, [gamemasterPokemon, listType, familyTree, showShadow, showMega, showXL, cpThreshold, type1Filter, type2Filter, rankLists, inputText, movesFetchCompleted, computedTypeComparisons, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
 
     return (
-        <main className="layout">
+        <main className="pokedex-layout">
             <nav className="navigation-header extra-gap leagues">
                 <ul>
                     <li>

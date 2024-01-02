@@ -23,6 +23,7 @@ const App = () => {
                             <MovesProvider>
                                 <NavbarSearchProvider>
                                     <HashRouter>
+                                        <div className='main-wrapper'>
                                         <Navbar/>
                                         <Content>
                                             <Routes>
@@ -38,6 +39,7 @@ const App = () => {
                                                 <Route path="/*" element={<div>404 not found!</div>} />
                                             </Routes>
                                         </Content>
+                                        </div>
                                     </HashRouter>
                                 </NavbarSearchProvider>
                             </MovesProvider>
