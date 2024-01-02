@@ -10,16 +10,17 @@ import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useState } from "react";
 import ListEntry from "./ListEntry";
-import { computeDPSEntry, getAllChargedMoves, getAllFastMoves } from "../utils/pokemon-helper";
+import { Effectiveness, calculateDamage, computeDPSEntry, getAllChargedMoves, getAllFastMoves } from "../utils/pokemon-helper";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { translatedType } from "./PokemonInfoImagePlaceholder";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
+    level: number;
     league: LeagueType;
 }
 
-const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
+const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const {gameTranslation, gameTranslationFetchCompleted} = useGameTranslation();
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
@@ -237,7 +238,7 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             backgroundColorClassName={className}
             secondaryContent={[
                 <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-atk`}>
-                    {Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) * 10) / 10}
+                    {Math.round(calculateDamage(pokemon.atk, relevantMovePower(moveId), isStabMove(moveId), pokemon.isShadow, false, league === LeagueType.RAID && raidAttackType && raidAttackType === moves[moveId].type ? Effectiveness.Effective : Effectiveness.Normal, 15, level) * 10) / 10}
                     <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={16}/>
                 </React.Fragment>,
                 <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-eng`}>
@@ -251,13 +252,13 @@ const PokemonMoves = ({pokemon, league}: IPokemonMoves) => {
             ]}
             toggledContent={[
                 !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-dps`}>
-                    {Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / relevantMoveDuration(moveId) * 100) / 100} DPS
+                    {Math.round(calculateDamage(pokemon.atk, relevantMovePower(moveId), isStabMove(moveId), pokemon.isShadow, false, league === LeagueType.RAID && raidAttackType && raidAttackType === moves[moveId].type ? Effectiveness.Effective : Effectiveness.Normal, 15, level) / relevantMoveDuration(moveId) * 100) / 100} DPS
                 </React.Fragment>,
                 !isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-eps`}>
                 {Math.round(relevantMoveEnergy(moveId) / relevantMoveDuration(moveId) * 100) / 100} EPS
                 </React.Fragment>,
                 isChargedMove && <React.Fragment key={`${moveId}-${isRecommended ? "rec" : "all"}-dpe`}>
-                {relevantMoveEnergy(moveId) !== 0 ? (Math.round(relevantMovePower(moveId) * (isStabMove(moveId) ? 1.2 : 1) * (pokemon.isShadow ? 1.2 : 1) / relevantMoveEnergy(moveId) * -1 * 100) / 100) : "∞"} DPE
+                {relevantMoveEnergy(moveId) !== 0 ? (Math.round(calculateDamage(pokemon.atk, relevantMovePower(moveId), isStabMove(moveId), pokemon.isShadow, false, league === LeagueType.RAID && raidAttackType && raidAttackType === moves[moveId].type ? Effectiveness.Effective : Effectiveness.Normal, 15, level) / relevantMoveEnergy(moveId) * -1 * 100) / 100) : "∞"} DPE
                 </React.Fragment>
             ]}
             details={renderDetails(moveId, isRecommended)}

@@ -145,7 +145,7 @@ const Pokemon = () => {
                                             setHPIV={setHPIV}
                                             level={levelCap}
                                         />}
-                                        {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league}/>}
+                                        {tab.endsWith("/moves") && <PokemonMoves pokemon={pokemon} league={league} level={(levelCap - 1) * 2}/>}
                                         {tab.endsWith("/counters") && <PokemonCounters pokemon={pokemon} league={league}/>}
                                         {tab.endsWith("/tables") && <PokemonIVTables pokemon={pokemon} league={league} attackIV={attackIV} setAttackIV={setAttackIV} defenseIV={defenseIV} setDefenseIV={setDefenseIV} hpIV={hpIV} setHPIV={setHPIV}/>}
                                         {tab.endsWith("/strings") && <PokemonSearchStrings pokemon={pokemon} league={league}/>}

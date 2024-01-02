@@ -6,6 +6,7 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import PokemonImage from "./PokemonImage";
 import "./PokemonInfoImagePlaceholder.scss";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import { useLocation } from "react-router-dom";
 
 interface IPokemonInfoImagePlaceholderProps {
     pokemon: IGamemasterPokemon;
@@ -25,6 +26,7 @@ export const translatedType = (type: PokemonTypes, language: Language) => {
 
 const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
+    const { pathname } = useLocation();
 
     return <div className="with-margin-bottom">
         <div className="pokemon_main_info item">
@@ -49,7 +51,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 </span>
                 <span className="cp-level big">
                     <strong className="cp-container with-brightness very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> @
-                    <div className="weighted-font">{translator(TranslatorKeys.LVL, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} className="select-level big">
+                    <div className="weighted-font">{translator(TranslatorKeys.LVL, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} disabled={pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings")} className="select-level big">
                         {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
                         .map(e => (<option key={e} value={e}>{e}</option>))}
                     </select>}</div>
