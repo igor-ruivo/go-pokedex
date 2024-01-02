@@ -52,6 +52,10 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
 
     const translateMoveFromMoveId = (moveId: string) => {
         const typedMove = moves[moveId];
+        if (!typedMove) {
+            console.error("Couldn't find PokemonMoves " + moveId);
+            return moveId ?? "";
+        }
         const vid = typedMove.vId;
         return gameTranslation[vid].name;
     }

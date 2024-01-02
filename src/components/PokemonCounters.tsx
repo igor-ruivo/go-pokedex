@@ -132,6 +132,10 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
 
     const translateMoveFromMoveId = (moveId: string) => {
         const typedMove = moves[moveId];
+        if (!typedMove) {
+            console.error("Couldn't find PokemonCounters " + moveId);
+            return moveId ?? "";
+        }
         const vid = typedMove.vId;
         return gameTranslation[vid].name;
     }

@@ -213,12 +213,6 @@ table {
     margin-top: 15px;
 }
 
-@media (min-width: 615px) {
-    .img-family {
-        overflow: hidden;
-    }
-}
-
 @media (max-width: 700px) {
     .pokemon_with_ivs {
         grid-template-columns: 1fr;
