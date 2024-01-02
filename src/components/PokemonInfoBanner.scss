@@ -146,7 +146,9 @@ table {
     color: var(--textColor);
     border: 0px;
     outline: 1px solid var(--buttonsBorderColor);
-    cursor: pointer;
+    &:not([disabled]) {
+        cursor: pointer;
+    }
 }
 
 .level-cp {
