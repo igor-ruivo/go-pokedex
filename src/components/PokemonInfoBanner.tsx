@@ -3,7 +3,7 @@ import { usePokemon } from "../contexts/pokemon-context";
 import Dictionary from "../utils/Dictionary";
 import "./PokemonInfoBanner.scss";
 import LeaguePanels from "./LeaguePanels";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
 import { computeDPSEntry, fetchReachablePokemonIncludingSelf, getAllChargedMoves } from "../utils/pokemon-helper";
@@ -84,9 +84,21 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const {rankLists} = usePvp();
     const {moves} = useMoves();
 
+    const [currentBestReachableGreatLeagueIndex, setCurrentBestReachableGreatLeagueIndex] = useState(0);
+    const [currentBestReachableUltraLeagueIndex, setCurrentBestReachableUltraLeagueIndex] = useState(0);
+    const [currentBestReachableMasterLeagueIndex, setCurrentBestReachableMasterLeagueIndex] = useState(0);
+    const [currentBestReachableCustomLeagueIndex, setCurrentBestReachableCustomLeagueIndex] = useState(0);
+    const [currentBestReachableRaidLeagueIndex, setCurrentBestReachableRaidLeagueIndex] = useState(0);
+
     const rankOnlyFilteredTypePokemon = false; //TODO: connect to settings
 
+    const resourcesNotReady = !fetchCompleted || !pokemon || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
+
     const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
+        if (resourcesNotReady) {
+            return false;
+        }
+
         if (!forcedType) {
             return true;
         }
@@ -98,9 +110,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }
 
         return getAllChargedMoves(p, moves).some(m => moves[m].type === forcedType);
-    }, [rankOnlyFilteredTypePokemon, moves]);
-
-    const resourcesNotReady = !fetchCompleted || !pokemon || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
+    }, [rankOnlyFilteredTypePokemon, moves, resourcesNotReady]);
 
     const computeComparisons = useCallback((forcedType = "") => {
         if (resourcesNotReady) {
@@ -114,9 +124,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
     }, [gamemasterPokemon, typeFilter, resourcesNotReady, moves]);
 
-    const getBestReachableVersion = useCallback((comparisons: dpsEntry[]) => {
+    const getSortedRaidReachableVersions = useCallback((comparisons: dpsEntry[]) => {
+        if (resourcesNotReady) {
+            return [];
+        }
         const reachableExcludingMega = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
-        const mega = pokemon.isMega ? [] : Object.values(gamemasterPokemon).filter(p => !p.aliasId && Array.from(reachableExcludingMega).map(pk => pk.dex).includes(p.dex) && p.isMega);
+        const mega = pokemon.isMega || pokemon.isShadow ? [] : Object.values(gamemasterPokemon).filter(p => !p.aliasId && Array.from(reachableExcludingMega).map(pk => pk.dex).includes(p.dex) && p.isMega);
 
         const allPokemon = [...reachableExcludingMega, ...mega];
 
@@ -126,13 +139,14 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             return dpsB - dpsA;
         });
 
-        return sortedPokemon[0].speciesId;
-    }, [gamemasterPokemon, pokemon]);
+        return sortedPokemon.map(p => p.speciesId);
+    }, [gamemasterPokemon, pokemon, resourcesNotReady]);
 
     //TODO: make this an async service or context provider...
     const globalComparisons = useMemo(() => computeComparisons(), [computeComparisons]);
-    const bestReachable = useMemo(() => !resourcesNotReady ? gamemasterPokemon[getBestReachableVersion(globalComparisons)] : undefined, [gamemasterPokemon, globalComparisons, getBestReachableVersion, resourcesNotReady]);
-
+    const orderedRaidVersions = useMemo(() => !resourcesNotReady ? getSortedRaidReachableVersions(globalComparisons) : [], [globalComparisons, getSortedRaidReachableVersions, resourcesNotReady]);
+    const bestReachable = useMemo(() => !resourcesNotReady ? gamemasterPokemon[orderedRaidVersions[currentBestReachableRaidLeagueIndex]] : undefined, [gamemasterPokemon, orderedRaidVersions, resourcesNotReady, currentBestReachableRaidLeagueIndex]);
+    
     const allChargedMoveTypes = useMemo(() => resourcesNotReady ? [] : Array.from(new Set(getAllChargedMoves(bestReachable as IGamemasterPokemon, moves).map(m => moves[m].type))), [bestReachable, moves, resourcesNotReady]);
     
     const ranksComputation = useMemo(() => {
@@ -167,40 +181,42 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     if (resourcesNotReady) {
         return <></>;
     }
-
-    let bestInFamilyForGreatLeague = pokemon;
-    let bestInFamilyForGreatLeagueRank = Number.MAX_VALUE;
-    let bestInFamilyForUltraLeague = pokemon;
-    let bestInFamilyForUltraLeagueRank = Number.MAX_VALUE;
-    let bestInFamilyForMasterLeague = pokemon;
-    let bestInFamilyForMasterLeagueRank = Number.MAX_VALUE;
-    let bestInFamilyForCustomLeague = pokemon;
-    let bestInFamilyForCustomLeagueRank = Number.MAX_VALUE;
-
+    
     const reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
 
-    reachablePokemons.forEach(member => {
-        const rankInGreat = rankLists[0][member.speciesId]?.rank;
-        const rankInUltra = rankLists[1][member.speciesId]?.rank;
-        const rankInMaster = rankLists[2][member.speciesId]?.rank;
-        const rankInCustom = rankLists[3] ? rankLists[3][member.speciesId]?.rank : 0;
-        if (!isNaN(rankInGreat) && rankInGreat < bestInFamilyForGreatLeagueRank) {
-            bestInFamilyForGreatLeagueRank = rankInGreat;
-            bestInFamilyForGreatLeague = member;
-        }
-        if (!isNaN(rankInUltra) && rankInUltra < bestInFamilyForUltraLeagueRank) {
-            bestInFamilyForUltraLeagueRank = rankInUltra;
-            bestInFamilyForUltraLeague = member;
-        }
-        if (!isNaN(rankInMaster) && rankInMaster < bestInFamilyForMasterLeagueRank) {
-            bestInFamilyForMasterLeagueRank = rankInMaster;
-            bestInFamilyForMasterLeague = member;
-        }
-        if (!isNaN(rankInCustom) && rankInCustom < bestInFamilyForCustomLeagueRank) {
-            bestInFamilyForCustomLeagueRank = rankInCustom;
-            bestInFamilyForCustomLeague = member;
-        }
-    });
+    const leagueSorter = (reachablePokemons: Set<IGamemasterPokemon>, leagueIndex: number) => {
+        return Array.from(reachablePokemons)
+            .filter(p => p.speciesId === pokemon.speciesId || rankLists[leagueIndex][p.speciesId]?.rank)
+            .sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => {
+                const aRank = rankLists[leagueIndex][a.speciesId]?.rank;
+                const bRank = rankLists[leagueIndex][b.speciesId]?.rank;
+                if (!aRank && bRank) {
+                    return 1;
+                }
+                if (aRank && !bRank) {
+                    return -1;
+                }
+                if (!aRank && !bRank) {
+                    return b.speciesId.localeCompare(a.speciesId);
+                }
+                return aRank - bRank;
+            });
+    }
+
+    const allSortedReachableGreatLeaguePokemon = leagueSorter(reachablePokemons, 0);
+    
+    const allSortedReachableUltraLeaguePokemon = leagueSorter(reachablePokemons, 1);
+    
+    const allSortedReachableMasterLeaguePokemon = leagueSorter(reachablePokemons, 2);
+    
+    const allSortedReachableCustomLeaguePokemon = rankLists[3] ? leagueSorter(reachablePokemons, 3) : [];
+
+    const bestInFamilyForGreatLeague = allSortedReachableGreatLeaguePokemon[currentBestReachableGreatLeagueIndex];
+    const bestInFamilyForUltraLeague = allSortedReachableUltraLeaguePokemon[currentBestReachableUltraLeagueIndex];
+    const bestInFamilyForMasterLeague = allSortedReachableMasterLeaguePokemon[currentBestReachableMasterLeagueIndex];
+    const bestInFamilyForCustomLeague = allSortedReachableCustomLeaguePokemon[currentBestReachableCustomLeagueIndex];
+
+    const indexedBests = [bestInFamilyForGreatLeague, bestInFamilyForUltraLeague, bestInFamilyForMasterLeague, bestInFamilyForCustomLeague];
 
     const bestReachableGreatLeagueIvs = ivPercents[bestInFamilyForGreatLeague.speciesId];
     const bestReachableUltraLeagueIvs = ivPercents[bestInFamilyForUltraLeague.speciesId];
@@ -208,6 +224,35 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const bestReachableCustomLeagueIvs = ivPercents[bestInFamilyForCustomLeague.speciesId];
 
     const getRankPercentage = (rank: number) => Math.round(((1 - (rank / 4095)) * 100 + Number.EPSILON) * 100) / 100;
+
+    const handleListEntryClick = (newLeague: LeagueType) => {
+        if (league === newLeague) {
+            switch (newLeague) {
+                case LeagueType.GREAT_LEAGUE:
+                    setCurrentBestReachableGreatLeagueIndex(p => (p + 1) % allSortedReachableGreatLeaguePokemon.length);
+                    break;
+                case LeagueType.ULTRA_LEAGUE:
+                    setCurrentBestReachableUltraLeagueIndex(p => (p + 1) % allSortedReachableUltraLeaguePokemon.length);
+                    break;
+                case LeagueType.MASTER_LEAGUE:
+                    setCurrentBestReachableMasterLeagueIndex(p => (p + 1) % allSortedReachableMasterLeaguePokemon.length);
+                    break;
+                case LeagueType.CUSTOM_CUP:
+                    setCurrentBestReachableCustomLeagueIndex(p => (p + 1) % allSortedReachableCustomLeaguePokemon.length);
+                    break;
+                case LeagueType.RAID:
+                    setCurrentBestReachableRaidLeagueIndex(p => (p + 1) % orderedRaidVersions.length);
+                    break;
+            }
+        } else {
+            setCurrentBestReachableGreatLeagueIndex(0);
+            setCurrentBestReachableUltraLeagueIndex(0);
+            setCurrentBestReachableMasterLeagueIndex(0);
+            setCurrentBestReachableCustomLeagueIndex(0);
+            setCurrentBestReachableRaidLeagueIndex(0);
+            handleSetLeague(newLeague);
+        }
+    }
 
     return <div className="banner_layout">
         <div className="pokemon_with_ivs">
@@ -249,7 +294,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         }
                     }
                     league={league}
-                    handleSetLeague={handleSetLeague}
+                    handleSetLeague={handleListEntryClick}
                 />
             </div>
                 <AppraisalBar
@@ -338,7 +383,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                 }))
                             }
                         }
-                        unranked={rankLists[league] && !rankLists[league][bestInFamilyForGreatLeague.speciesId]?.rank ? true : false}
+                        unranked={rankLists[league] && indexedBests[league] && !rankLists[league][indexedBests[league].speciesId]?.rank ? true : false}
                     />
             </div>
     </div>;
