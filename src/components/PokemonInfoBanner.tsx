@@ -6,7 +6,7 @@ import LeaguePanels from "./LeaguePanels";
 import React, { useCallback, useMemo, useState } from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
-import { computeDPSEntry, fetchReachablePokemonIncludingSelf, getAllChargedMoves } from "../utils/pokemon-helper";
+import { Effectiveness, computeDPSEntry, computeMoveEffectiveness, fetchReachablePokemonIncludingSelf, getAllChargedMoves } from "../utils/pokemon-helper";
 import { useLanguage } from "../contexts/language-context";
 import LeagueRanks from "./LeagueRanks";
 import { LeagueType } from "../hooks/useLeague";
@@ -15,6 +15,7 @@ import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import PokemonTypes from "./PokemonTypes";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import { PokemonTypes as TypesDTO } from "../DTOs/PokemonTypes";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -81,8 +82,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const {gameTranslationFetchCompleted} = useGameTranslation();
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {rankLists} = usePvp();
-    const {moves} = useMoves();
+    const {rankLists, pvpFetchCompleted} = usePvp();
+    const {moves, movesFetchCompleted} = useMoves();
 
     const [currentBestReachableGreatLeagueIndex, setCurrentBestReachableGreatLeagueIndex] = useState(0);
     const [currentBestReachableUltraLeagueIndex, setCurrentBestReachableUltraLeagueIndex] = useState(0);
@@ -92,7 +93,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
 
     const rankOnlyFilteredTypePokemon = false; //TODO: connect to settings
 
-    const resourcesNotReady = !fetchCompleted || !pokemon || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
+    const resourcesNotReady = !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
 
     const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
         if (resourcesNotReady) {
@@ -223,10 +224,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     
     const allSortedReachableCustomLeaguePokemon = rankLists[3] ? leagueSorter(reachablePokemons, 3) : [];
 
-    const bestInFamilyForGreatLeague = allSortedReachableGreatLeaguePokemon[currentBestReachableGreatLeagueIndex];
-    const bestInFamilyForUltraLeague = allSortedReachableUltraLeaguePokemon[currentBestReachableUltraLeagueIndex];
-    const bestInFamilyForMasterLeague = allSortedReachableMasterLeaguePokemon[currentBestReachableMasterLeagueIndex];
-    const bestInFamilyForCustomLeague = allSortedReachableCustomLeaguePokemon[currentBestReachableCustomLeagueIndex];
+    //TODO: these fallbacks shouldn't be needed... Need to refactor every async resource from the custom hooks.
+    const bestInFamilyForGreatLeague = allSortedReachableGreatLeaguePokemon[currentBestReachableGreatLeagueIndex] ?? pokemon;
+    const bestInFamilyForUltraLeague = allSortedReachableUltraLeaguePokemon[currentBestReachableUltraLeagueIndex] ?? pokemon;
+    const bestInFamilyForMasterLeague = allSortedReachableMasterLeaguePokemon[currentBestReachableMasterLeagueIndex] ?? pokemon;
+    const bestInFamilyForCustomLeague = allSortedReachableCustomLeaguePokemon[currentBestReachableCustomLeagueIndex] ?? pokemon;
 
     const indexedBests = [bestInFamilyForGreatLeague, bestInFamilyForUltraLeague, bestInFamilyForMasterLeague, bestInFamilyForCustomLeague];
 
@@ -234,6 +236,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const bestReachableUltraLeagueIvs = ivPercents[bestInFamilyForUltraLeague.speciesId];
     const bestReachableMasterLeagueIvs = ivPercents[bestInFamilyForMasterLeague.speciesId];
     const bestReachableCustomLeagueIvs = ivPercents[bestInFamilyForCustomLeague.speciesId];
+
+    const computeEffectiveness = (effectiveness: Effectiveness) => Array.from(Object.keys(TypesDTO).filter(k => isNaN(+k) && (Math.round(1000000 * computeMoveEffectiveness(k.toLocaleLowerCase(), pokemon.types[0].toString().toLocaleLowerCase(), pokemon.types[1] ? pokemon.types[1].toString().toLocaleLowerCase() : undefined)) / 1000000) === effectiveness));
+    const effective = computeEffectiveness(Effectiveness.Effective);
+    const superEffective = computeEffectiveness(Effectiveness.DoubleEffective);
+    const resistance = computeEffectiveness(Effectiveness.Resistance);
+    const superResistance = computeEffectiveness(Effectiveness.DoubleResistance);
 
     const getRankPercentage = (rank: number) => Math.round(((1 - (rank / 4095)) * 100 + Number.EPSILON) * 100) / 100;
 
@@ -398,6 +406,84 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         }
                         unranked={rankLists[league] && indexedBests[league] && !rankLists[league][indexedBests[league].speciesId]?.rank ? true : false}
                     />
+                    <div className="item default-padding with-computed-min-height">
+                    <div className="horizontal-combo">
+                    <div className="with-space-between">
+                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
+                                <div className="max-width">
+                                <div className="gapped potential with-border-bottom"><strong>2x Weak to</strong><sub className="small-hint weighted-font">{`(x${Effectiveness.DoubleEffective})`}</sub></div>
+                                </div>
+                                <div className="max-width">
+                                    <div className="overflowing">
+                                        <div className="img-family smaller-padding">
+                                            {superEffective.length > 0 ? superEffective
+                                            .map(t => (
+                                                <div className="clickable" key = {t}>
+                                                    <strong className={`move-detail soft no-padding item`}>
+                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
+                                                    </strong>
+                                                </div>
+                                            )) : <sub className="weighted-font">Nothing</sub>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
+                                <div className="gapped potential with-border-bottom"><strong>Weak to</strong><sub className="small-hint weighted-font">{`(x${Effectiveness.Effective})`}</sub></div>
+                                <div className="max-width">
+                                    <div className="overflowing">
+                                        <div className="img-family smaller-padding">
+                                            {effective.length > 0 ? effective
+                                            .map(t => (
+                                                <div className="clickable" key = {t}>
+                                                    <strong className={`move-detail soft no-padding item`}>
+                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
+                                                    </strong>
+                                                </div>
+                                            )) : <sub className="weighted-font">Nothing</sub>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="with-space-between">
+                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
+                                <div className="gapped potential with-border-bottom"><strong>2x Resistant to</strong><sub className="small-hint weighted-font">{`(x0.39)`}</sub></div>
+                                <div className="max-width">
+                                    <div className="overflowing">
+                                        <div className="img-family smaller-padding">
+                                            {superResistance.length > 0 ? superResistance
+                                            .map(t => (
+                                                <div className="clickable" key = {t}>
+                                                    <strong className={`move-detail soft no-padding item`}>
+                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
+                                                    </strong>
+                                                </div>
+                                            )) : <sub className="weighted-font">Nothing</sub>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
+                                <div className="gapped potential with-border-bottom"><strong>Resistant to</strong><sub className="small-hint weighted-font">{`(x0.63)`}</sub></div>
+                                <div className="max-width">
+                                    <div className="overflowing">
+                                        <div className="img-family smaller-padding">
+                                            {resistance.length > 0 ? resistance
+                                            .map(t => (
+                                                <div className="clickable" key = {t}>
+                                                    <strong className={`move-detail soft no-padding item`}>
+                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
+                                                    </strong>
+                                                </div>
+                                            )) : <sub className="weighted-font">Nothing</sub>}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
             </div>
     </div>;
 }

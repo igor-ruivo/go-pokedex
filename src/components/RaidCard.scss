@@ -3,7 +3,7 @@
 }
 
 .raid-wrapper {
-    padding-top: 7px;
+    padding-top: 2px;
     height: 100%;
     width: 100%;
     flex-direction: column;
@@ -13,11 +13,11 @@
     margin-left: 0;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 2px;
     border-radius: 12px;
     list-style: none;
     place-self: center;
-    padding-bottom: 8px;
+    padding-bottom: 2px;
     background-color: var(--raid-wrapper-shadow);
 }
 
@@ -44,4 +44,12 @@
 .card-footer {
     color: white;
     text-shadow: -1px 0 #00000040, 0 1px #00000040, 1px 0 #00000040, 0 -1px #00000040;
+    sub {
+        font-size: 10px;
+    }
+}
+
+.with-raid-padding {
+    padding-top: 2.6px;
+    padding-bottom: 2.6px;
 }

@@ -92,14 +92,14 @@ const LeaguePanels = ({
 
         return (
             <div className={pvpStatsClassName}>
-                {!unranked && <div>
+                <div>
                     <div className="pvp-entry rank-title">
                         <div className="pvp-entry-content potential">
-                            <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> <strong className="cp-container with-brightness">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub>
+                            <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> {unranked ? "-" : <><strong className="cp-container with-brightness">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub></>}
                         </div>
                     </div>
-                </div>}
-                {unranked ? <div style={{minHeight: 123}} className="unranked-pvp-stats pvp-entry centered-text aligned unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div> : <div className="pvp-stats">
+                </div>
+                {unranked ? <div style={{minHeight: 95.2}} className="unranked-pvp-stats pvp-entry centered-text aligned unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div> : <div className="pvp-stats">
                     <div className="pvp-labels">
                         <header>
                             {translator(TranslatorKeys.Config, currentLanguage)}:

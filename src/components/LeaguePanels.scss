@@ -101,12 +101,16 @@
     font-weight: 700;
     gap: 3px;
     padding: 3px 0;
+    &.no-padding {
+        padding: 0 0;
+    }
     sub {
         opacity: .55;
     }
 }
 
-.raid-rank-types {
+.raid-rank-types,
+.pvp-entry {
     sub {
         opacity: .55;
     }

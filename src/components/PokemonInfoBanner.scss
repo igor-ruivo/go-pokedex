@@ -102,6 +102,37 @@ table {
     >div:last-child {
         padding-right: 6px;
     }
+    &.smaller-padding {
+        width: fit-content;
+        padding: 3px 0px;
+    }
+}
+
+.with-computed-min-height {
+    height: 175.6px;
+}
+
+.unjustified {
+    justify-content: unset !important;
+}
+
+.with-border-bottom {
+    border-bottom: 1px solid var(--borderColor2);
+    justify-content: center;
+}
+
+.column-display {
+    display: flex;
+    flex-direction: column;
+}
+
+.small-hint {
+    font-size: 11px;
+}
+
+.gapped {
+    display: flex;
+    gap: 3px;
 }
 
 .banner-left-side {
@@ -161,6 +192,24 @@ table {
     position: relative;
 }
 
+.with-gap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.with-space-between {
+    grid-template-rows: calc(50% - 1.5px) calc(50% - 1.5px);
+    display: grid;
+    gap: 3px;
+}
+
+.resistance-div {
+    display: grid !important;
+    grid-template-rows: calc(30% - 1.5px) calc(70% - 1.5px);
+    gap: 3px;
+}
+
 .lvl-img-container {
     pointer-events: none;
     display: flex;
@@ -173,6 +222,11 @@ table {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 9px;
+}
+
+.max-width {
+    display: grid;
+    max-width: 100%;
 }
 
 .appraisal_with_moves {
@@ -233,6 +287,12 @@ table {
         height: calc(40px + 23 * calc(100vw - 320px) / 180);
     }
 
+    .img-family {
+        &.smaller-padding {
+            padding: 0px 0px;
+        }
+    }
+
     .level-cp {
         font-size: x-small;
     }
@@ -243,8 +303,18 @@ table {
     }
 }
 
+@media (max-width: 390px) {
+    .small-hint {
+        font-size: 9px;
+    }
+}
+
 @media (max-width: 360px) {
     .img-family {
         font-size: 12px;
+    }
+
+    .with-computed-min-height {
+        height: 163.6px;
     }
 }

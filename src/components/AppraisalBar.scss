@@ -26,6 +26,13 @@
     flex-direction: column;
 }
 
+.horizontal-combo {
+    height: 100%;
+    display: grid;
+    gap: 4px;
+    grid-template-columns: calc(50% - 2px) calc(50% - 2px);
+}
+
 .fitting-content {
     flex-grow: unset;
 }
