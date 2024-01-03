@@ -26,7 +26,8 @@ interface LeagueStat {
 
 interface TypeRank {
     type: PokemonTypes,
-    rank: number
+    rank: number,
+    dps: number
 }
 
 interface RaidStat {
@@ -184,6 +185,7 @@ const LeaguePanels = ({
                                  <RaidCard
                                     type={r.type}
                                     rank={r.rank}
+                                    dps={r.dps}
                                 />
                             </div>
                         ))
@@ -193,6 +195,7 @@ const LeaguePanels = ({
                             <RaidCard
                                 type={PokemonTypes.Normal}
                                 rank={0}
+                                dps={0}
                             />
                         </div>
                     ))}

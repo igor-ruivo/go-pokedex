@@ -46,7 +46,8 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const customLeagueMoveset = rankLists[3] ? (rankLists[3][pokemon.speciesId]?.moveset ?? []) : [];
 
     const raidComputation = computeDPSEntry(pokemon, moves, 15, 100, raidAttackType);
-    const raidMoveset = [raidComputation.fastMoveId, raidComputation.chargedMoveId];
+    const raidMoveset: [string, string] = [raidComputation.fastMoveId, raidComputation.chargedMoveId];
+    const realDps = computeDPSEntry(pokemon, moves, 15, level, raidAttackType, undefined, raidMoveset);
 
     const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : league === LeagueType.MASTER_LEAGUE ? masterLeagueMoveset : raidMoveset;
 
@@ -300,7 +301,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                         <span>{raidAttackType && translator(TranslatorKeys.Focused2, currentLanguage)}</span>
                         <span>{raidAttackType && translator(TranslatorKeys.Effective, currentLanguage)},</span>
                         <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
-                        <strong className="cp-container with-brightness"> {Math.round(raidComputation.dps * 100) / 100} DPS</strong>
+                        <strong className="cp-container with-brightness"> {Math.round(/*raidComputation.dps*/ realDps.dps * 100) / 100} DPS</strong>
                         <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
                         <strong className="cp-container with-brightness">{` ${translateMoveFromMoveId(raidComputation.fastMoveId)}`}</strong>
                         <span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span>

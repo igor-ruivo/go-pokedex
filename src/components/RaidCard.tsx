@@ -9,11 +9,13 @@ import "./RaidCard.scss"
 interface IRaidCardProps {
     type: PokemonTypes;
     rank: number;
+    dps: number;
 }
 
 const RaidCard = ({
     type,
-    rank
+    rank,
+    dps
 }: IRaidCardProps) => {
     const {currentLanguage} = useLanguage();
     const raidUrl = `${process.env.PUBLIC_URL}/images/raid.webp`;
@@ -30,7 +32,7 @@ const RaidCard = ({
                 </strong>
             </div>
             <small className="card-footer">
-                {translator(TranslatorKeys.Types1, currentLanguage)} {translatedType(type, currentLanguage)} {translator(TranslatorKeys.Types2, currentLanguage)}
+                {translator(TranslatorKeys.Types1, currentLanguage)} {translatedType(type, currentLanguage)} {translator(TranslatorKeys.Types2, currentLanguage)}<br/><sub className="contained-big weighted-font">{`(${Math.round(dps * 100) / 100} DPS)`}</sub>
             </small>
         </section>}
     </div>;

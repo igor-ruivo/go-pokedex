@@ -106,6 +106,12 @@
     }
 }
 
+.raid-rank-types {
+    sub {
+        opacity: .55;
+    }
+}
+
 .potential {
     display: flex;
     align-items: flex-end;

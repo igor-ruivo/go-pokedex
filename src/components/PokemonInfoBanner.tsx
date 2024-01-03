@@ -149,17 +149,29 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     
     const allChargedMoveTypes = useMemo(() => resourcesNotReady ? [] : Array.from(new Set(getAllChargedMoves(bestReachable as IGamemasterPokemon, moves).map(m => moves[m].type))), [bestReachable, moves, resourcesNotReady]);
     
+    type ranksDicDTO = {
+        rank: number,
+        dps: number
+    }
+
     const ranksComputation = useMemo(() => {
         if (resourcesNotReady) {
             return {};
         }
 
-        const ranksDic: Dictionary<number> = {};
+        const ranksDic: Dictionary<ranksDicDTO> = {};
     
-        allChargedMoveTypes.filter(t => t !== "normal").forEach(t => ranksDic[t] = computeComparisons(t).findIndex(c => c.speciesId === bestReachable!.speciesId) + 1);
+        allChargedMoveTypes.filter(t => t !== "normal").forEach(t => {
+            const comps = computeComparisons(t);
+            const idx = comps.findIndex(c => c.speciesId === bestReachable!.speciesId);
+            ranksDic[t] = {
+                rank: idx + 1,
+                dps: computeDPSEntry(bestReachable as IGamemasterPokemon, moves, attack, (level - 1) * 2, t, undefined, [comps[idx].fastMoveId, comps[idx].chargedMoveId]).dps//comps[idx].dps
+            };
+        });
 
         return ranksDic;
-    }, [allChargedMoveTypes, computeComparisons, bestReachable, resourcesNotReady]);
+    }, [allChargedMoveTypes, computeComparisons, bestReachable, resourcesNotReady, attack, level, moves]);
 
     const mostRelevantType = Object.entries(ranksComputation)
         .sort(([typeA, rankA], [typeB, rankB]) => {
@@ -169,7 +181,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             if (typeB === "normal") {
                 return -1;
             }
-            return rankA - rankB;
+            return rankA.rank - rankB.rank;
         })
         .slice(0, 3)
         .map(([type, rank]) => ({type: type, rank: rank}));
@@ -379,7 +391,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                 dps: selfRealDPS.dps,
                                 typeRanks: mostRelevantType.map(t => ({
                                     type: (t.type.substring(0, 1).toLocaleUpperCase() + t.type.substring(1)) as keyof typeof PokemonTypes,
-                                    rank: t.rank
+                                    rank: t.rank.rank,
+                                    dps: t.rank.dps
                                 }))
                             }
                         }
