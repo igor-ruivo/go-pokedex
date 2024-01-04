@@ -65,7 +65,7 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride}: IPokem
                     <PokemonImage pokemon={pokemon} xl={needsXLCandy(pokemon, cpThreshold)} withName lazy/>
                 </span>
                 <span className="header-footer">
-                    <strong className="cp-container with-brightness">
+                    <strong className="cp-container">
                         {getCPContainerString()}
                     </strong>
                 </span>

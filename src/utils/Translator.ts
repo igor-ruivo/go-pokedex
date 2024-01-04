@@ -23,6 +23,9 @@ export enum TranslatorKeys {
     Type,
     Using,
     Overall,
+    Weak,
+    Resistant,
+    Nothing,
     And,
     RecommendedCharged,
     ShadowPokemon,
@@ -133,6 +136,24 @@ const languageSettings = new Map<Language, string>([
     [Language.English, "Language Settings"],
     [Language.Portuguese, "Opções de Idioma"],
     [Language.Bosnian, "Jezičke Postavke"]
+]);
+
+const nothing = new Map<Language, string>([
+    [Language.English, "Nothing..."],
+    [Language.Portuguese, "Nada..."],
+    [Language.Bosnian, "Ništa..."]
+]);
+
+const weak = new Map<Language, string>([
+    [Language.English, "Weak to"],
+    [Language.Portuguese, "Vulnerável a"],
+    [Language.Bosnian, "Slab na"]
+]);
+
+const resistant = new Map<Language, string>([
+    [Language.English, "Resistant to"],
+    [Language.Portuguese, "Resistente a"],
+    [Language.Bosnian, "Otporna na"]
 ]);
 
 const noResults = new Map<Language, string>([
@@ -912,6 +933,9 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.HP, hp],
     [TranslatorKeys.LVL, lvl],
     [TranslatorKeys.NoResults, noResults],
+    [TranslatorKeys.Weak, weak],
+    [TranslatorKeys.Resistant, resistant],
+    [TranslatorKeys.Nothing, nothing],
     [TranslatorKeys.Water, water],
     [TranslatorKeys.Overall, overall],
     [TranslatorKeys.Fire, fire],

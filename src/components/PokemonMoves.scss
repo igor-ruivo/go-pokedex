@@ -281,6 +281,9 @@ summary::-webkit-details-marker {
     &.soft {
         background-color: var(--background-shadow-soft);
     }
+    &.baby-soft {
+        background-color: var(--background-shadow-baby-soft);
+    }
     padding-right: 12px;
 }
 

@@ -135,7 +135,7 @@ const LeagueRanks = ({
                 onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
                 secondaryContent={[
                     <React.Fragment key={leagueStat.leagueTitle}>
-                        {rankString && <div className="cp-container with-brightness">{rankString}</div>}
+                        {rankString && <div className="cp-container">{rankString}</div>}
                         {rankString ? translator(TranslatorKeys.Ranked, currentLanguage) : <div className="unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div>}
                         <span className={`larger-rank-change with-brightness ${leagueStat.leagueTitle !== "raid" && rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
                     </React.Fragment>

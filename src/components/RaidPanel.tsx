@@ -27,7 +27,7 @@ const RaidPanel = ({ pokemon, level, atkIV }: IRaidPanelProps) => {
         <div>
             <div className="pvp-entry smooth with-border">
                 <div className="pvp-entry-content potential">
-                    <strong className="cp-container with-brightness">
+                    <strong className="cp-container">
                         {buildRankString(ordinal(9), currentLanguage)}&nbsp;
                     </strong>
                     <strong>

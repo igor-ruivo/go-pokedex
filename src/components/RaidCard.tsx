@@ -24,7 +24,7 @@ const RaidCard = ({
         {type && rank ? <img className="raid-img" src={url} width={32} height={32} alt={type.toString()} /> : <img className="raid-img" src={raidUrl} width={48} height={48} alt={type?.toString()} />}
         {rank !== 0 && <section className="raid-rank-types">
             <div className="flex pvp-entry smooth with-shadow with-raid-padding">
-                <strong className="cp-container with-brightness">
+                <strong className="cp-container">
                     {buildRankString(ordinal(rank), currentLanguage)}&nbsp;
                 </strong>
                 <strong>

@@ -16,6 +16,7 @@ import { useGameTranslation } from "../contexts/gameTranslation-context";
 import PokemonTypes from "./PokemonTypes";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { PokemonTypes as TypesDTO } from "../DTOs/PokemonTypes";
+import translator, { TranslatorKeys } from "../utils/Translator";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -78,7 +79,7 @@ export type dpsEntry = {
 }
 
 const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague, level}: IPokemonInfoBanner) => {
-    const {currentGameLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
     const {gameTranslationFetchCompleted} = useGameTranslation();
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
@@ -406,85 +407,49 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         }
                         unranked={rankLists[league] && indexedBests[league] && !rankLists[league][indexedBests[league].speciesId]?.rank ? true : false}
                     />
-                    <div className="item default-padding with-computed-min-height">
-                    <div className="horizontal-combo">
-                    <div className="with-space-between">
-                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
+                    <div className="with-computed-min-height">
+                        <div className="vertical-combo">
+                            <div className="pvp-entry with-popup-background smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
                                 <div className="max-width">
-                                <div className="gapped potential with-border-bottom"><strong>2x Weak to</strong><sub className="small-hint weighted-font">{`(x${Effectiveness.DoubleEffective})`}</sub></div>
+                                <div className="gapped potential with-border-bottom"><strong>{translator(TranslatorKeys.Weak, currentLanguage)}:</strong></div>
                                 </div>
                                 <div className="max-width">
                                     <div className="overflowing">
-                                        <div className="img-family smaller-padding">
-                                            {superEffective.length > 0 ? superEffective
+                                        <div className="types-family no-padding">
+                                            {[...superEffective, ...effective].length > 0 ? [...superEffective, ...effective]
                                             .map(t => (
-                                                <div className="clickable" key = {t}>
-                                                    <strong className={`move-detail soft no-padding item`}>
+                                                <div key = {t}>
+                                                    <strong className={`move-detail ${superEffective.includes(t) ? "special-item" : ""} soft no-padding item`}>
+                                                        {superEffective.includes(t) && <sub className="special-overlay">2x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
                                                     </strong>
                                                 </div>
-                                            )) : <sub className="weighted-font">Nothing</sub>}
+                                            )) : <sub className="weighted-font">{translator(TranslatorKeys.Nothing, currentLanguage)}</sub>}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
-                                <div className="gapped potential with-border-bottom"><strong>Weak to</strong><sub className="small-hint weighted-font">{`(x${Effectiveness.Effective})`}</sub></div>
+                            <div className="pvp-entry with-popup-background smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
+                                <div className="gapped potential with-border-bottom"><strong>{translator(TranslatorKeys.Resistant, currentLanguage)}:</strong></div>
                                 <div className="max-width">
                                     <div className="overflowing">
-                                        <div className="img-family smaller-padding">
-                                            {effective.length > 0 ? effective
+                                        <div className="types-family no-padding">
+                                            {[...superResistance, ...resistance].length > 0 ? [...superResistance, ...resistance]
                                             .map(t => (
-                                                <div className="clickable" key = {t}>
-                                                    <strong className={`move-detail soft no-padding item`}>
+                                                <div key = {t}>
+                                                    <strong className={`move-detail ${superResistance.includes(t) ? "special-item" : ""} soft no-padding item`}>
+                                                        {superResistance.includes(t) && <sub className="special-overlay">2x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
                                                     </strong>
                                                 </div>
-                                            )) : <sub className="weighted-font">Nothing</sub>}
+                                            )) : <sub className="weighted-font">{translator(TranslatorKeys.Nothing, currentLanguage)}</sub>}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="with-space-between">
-                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
-                                <div className="gapped potential with-border-bottom"><strong>2x Resistant to</strong><sub className="small-hint weighted-font">{`(x0.39)`}</sub></div>
-                                <div className="max-width">
-                                    <div className="overflowing">
-                                        <div className="img-family smaller-padding">
-                                            {superResistance.length > 0 ? superResistance
-                                            .map(t => (
-                                                <div className="clickable" key = {t}>
-                                                    <strong className={`move-detail soft no-padding item`}>
-                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
-                                                    </strong>
-                                                </div>
-                                            )) : <sub className="weighted-font">Nothing</sub>}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="pvp-entry smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
-                                <div className="gapped potential with-border-bottom"><strong>Resistant to</strong><sub className="small-hint weighted-font">{`(x0.63)`}</sub></div>
-                                <div className="max-width">
-                                    <div className="overflowing">
-                                        <div className="img-family smaller-padding">
-                                            {resistance.length > 0 ? resistance
-                                            .map(t => (
-                                                <div className="clickable" key = {t}>
-                                                    <strong className={`move-detail soft no-padding item`}>
-                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
-                                                    </strong>
-                                                </div>
-                                            )) : <sub className="weighted-font">Nothing</sub>}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         </div>
                     </div>
-            </div>
+                </div>
     </div>;
 }
 

@@ -240,7 +240,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                         {renderPvPEntry(pokemon, m.rating, className)}
                                     </React.Fragment>
                                 )
-                            }) : <span>{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
+                            }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
                             <span className="unavailable_moves">
                                 {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                             </span>
@@ -277,7 +277,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                         {renderPvPEntry(pokemon, (m as MatchUp).rating, className)}
                                     </React.Fragment>
                                 )
-                            }) : <span>{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
+                            }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
                             <span className="unavailable_moves">
                                 {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.HolidayCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
                             </span>
