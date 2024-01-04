@@ -441,9 +441,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                             {[...tripleResistance, ...superResistance, ...resistance].length > 0 ? [...tripleResistance, ...superResistance, ...resistance]
                                             .map(t => (
                                                 <div key = {t}>
-                                                    <strong className={`move-detail ${(tripleResistance.includes(t) || superResistance.includes(t)) ? "special-item" : ""} soft family-padding item`}>
+                                                    <strong className={`move-detail ${tripleResistance.includes(t)  ? "triple-item" : superResistance.includes(t) ? "special-item" : ""} soft family-padding item`}>
                                                         {superResistance.includes(t) && <sub className="special-overlay">2x</sub>}
-                                                        {tripleResistance.includes(t) && <sub className="special-overlay">3x</sub>}
+                                                        {tripleResistance.includes(t) && <sub className="special-overlay triple-overlay">3x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t.toLocaleLowerCase()}.png`}/></div>
                                                     </strong>
                                                 </div>

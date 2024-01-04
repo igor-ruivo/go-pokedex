@@ -31,7 +31,12 @@ table {
     border: 2px solid var(--cp-color) !important;
 }
 
+.triple-item {
+    border: 2px solid var(--triple-color) !important;
+}
+
 .special-overlay {
+    font-size: x-small;
     border-radius: 50%;
     padding: 2px 3px;
     color: var(--cp-color);
@@ -40,6 +45,10 @@ table {
     z-index: 10000;
     transform: translateY(-75%) translateX(110%);
     opacity: 1 !important;
+}
+
+.triple-overlay {
+    color: var(--triple-color);
 }
 
 .content {
