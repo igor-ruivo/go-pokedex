@@ -1,5 +1,6 @@
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
+import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import Dictionary from "./Dictionary";
 
 /**
@@ -17,6 +18,21 @@ export enum Effectiveness {
     Normal = 1,
     Effective = 1.6,
     DoubleEffective = 2.56
+}
+
+const normalizedMoveName = (moveName: string) => moveName
+    .split("_")
+    .map(p => p.substring(0, 1).toLocaleUpperCase() + p.substring(1).toLocaleLowerCase())
+    .join(" ");
+
+export const translateMoveFromMoveId = (moveId: string, moves: Dictionary<IGameMasterMove>, gameTranslation: Dictionary<ITranslatedMove>) => {
+    const typedMove = moves[moveId];
+    if (!typedMove) {
+        console.error("Couldn't find PokemonCounters " + moveId);
+        return moveId ?? "";
+    }
+    const vid = typedMove.vId;
+    return gameTranslation[vid]?.name ?? normalizedMoveName(typedMove.moveId);
 }
 
 const accumulatedStardustCosts = [0, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3000, 3600, 4200, 4800, 5600, 6400, 7200, 8000, 9000, 10000, 11000, 12000, 13300, 14600, 15900, 17200, 18800, 20400, 22000, 23600, 25500, 27400, 29300, 31200, 33400, 35600, 37800, 40000, 42500, 45000, 47500, 50000, 53000, 56000, 59000, 62000, 65500, 69000, 72500, 76000, 80000, 84000, 88000, 92000, 96500, 101000, 105500, 110000, 115000, 120000, 125000, 130000, 136000, 142000, 146000, 154000, 161000, 168000, 175000, 182000, 190000, 198000, 206000, 214000, 223000, 232000, 241000, 250000, 260000, 270000, 280000, 290000, 301000, 312000, 323000, 334000, 346000, 358000, 370000, 382000, 395000, 408000, 421000, 434000, 448000, 462000, 476000, 490000, 505000, 520000, 520000, 520000];

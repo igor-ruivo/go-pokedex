@@ -11,7 +11,7 @@ import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImageSource, useImageSource } from "../contexts/imageSource-context";
-import { computeDPSEntry } from "../utils/pokemon-helper";
+import { computeDPSEntry, translateMoveFromMoveId } from "../utils/pokemon-helper";
 import { useMoves } from "../contexts/moves-context";
 import { MatchUp } from "../DTOs/IRankedPokemon";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
@@ -130,16 +130,6 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         />
     }
 
-    const translateMoveFromMoveId = (moveId: string) => {
-        const typedMove = moves[moveId];
-        if (!typedMove) {
-            console.error("Couldn't find PokemonCounters " + moveId);
-            return moveId ?? "";
-        }
-        const vid = typedMove.vId;
-        return gameTranslation[vid].name;
-    }
-
     const detailsClickHandler = (e: MouseEvent, elementId: string) => {
         const details = document.getElementById(elementId) as HTMLDetailsElement;
         if (details) {
@@ -155,7 +145,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             onClick: (event: any) => detailsClickHandler(event, `${moveId}-${speciesId}`),
             summary: <>
                 <img alt="Special effects" loading="lazy" width="14" height="14" decoding="async" src={`${process.env.PUBLIC_URL}/images/types/${moves[moveId].type}.png`}/>
-                <span>{translateMoveFromMoveId(moveId)}</span>
+                <span>{translateMoveFromMoveId(moveId, moves, gameTranslation)}</span>
             </>,
             content: <>
                 <p>

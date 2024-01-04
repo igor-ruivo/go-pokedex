@@ -10,7 +10,7 @@ import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import React, { useState } from "react";
 import ListEntry from "./ListEntry";
-import { Effectiveness, calculateDamage, computeDPSEntry, getAllChargedMoves, getAllFastMoves } from "../utils/pokemon-helper";
+import { Effectiveness, calculateDamage, computeDPSEntry, getAllChargedMoves, getAllFastMoves, translateMoveFromMoveId } from "../utils/pokemon-helper";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { translatedType } from "./PokemonInfoImagePlaceholder";
 
@@ -50,16 +50,6 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const realDps = computeDPSEntry(pokemon, moves, 15, level, raidAttackType, undefined, raidMoveset);
 
     const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : league === LeagueType.MASTER_LEAGUE ? masterLeagueMoveset : raidMoveset;
-
-    const translateMoveFromMoveId = (moveId: string) => {
-        const typedMove = moves[moveId];
-        if (!typedMove) {
-            console.error("Couldn't find PokemonMoves " + moveId);
-            return moveId ?? "";
-        }
-        const vid = typedMove.vId;
-        return gameTranslation[vid].name;
-    }
 
     const movesSorter = (m1: string, m2: string) => {
         const move1 = moves[m1];
@@ -105,7 +95,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
             return typeComparison;
         }
 
-        return translateMoveFromMoveId(m1).localeCompare(translateMoveFromMoveId(m2));
+        return translateMoveFromMoveId(m1, moves, gameTranslation).localeCompare(translateMoveFromMoveId(m2, moves, gameTranslation));
     }
     
     const isStabMove = (moveId: string) => pokemon.types.map(t => { const stringVal = t.toString(); return stringVal.toLocaleLowerCase() }).includes(moves[moveId].type.toLocaleLowerCase());
@@ -134,7 +124,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
             </>,
             content: <>
                 <p>
-                    <strong>{translateMoveFromMoveId(moveId)}</strong> {translator(TranslatorKeys.Has, currentLanguage)} <strong>{moves[moveId].pvpBuffs!.chance * 100}% {translator(TranslatorKeys.Chance, currentLanguage)}</strong> {translator(TranslatorKeys.To, currentLanguage)}:
+                    <strong>{translateMoveFromMoveId(moveId, moves, gameTranslation)}</strong> {translator(TranslatorKeys.Has, currentLanguage)} <strong>{moves[moveId].pvpBuffs!.chance * 100}% {translator(TranslatorKeys.Chance, currentLanguage)}</strong> {translator(TranslatorKeys.To, currentLanguage)}:
                 </p>
                 <ul className="buff-panel-buff">
                     {moves[moveId].pvpBuffs!.buffs
@@ -236,7 +226,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                 {
                     imageDescription: translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage),
                     image: <div className="img-padding"><img height={20} width={20} src={moveUrl} alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}/></div>,
-                    imageSideText: translateMoveFromMoveId(moveId) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : ""),
+                    imageSideText: translateMoveFromMoveId(moveId, moves, gameTranslation) + (pokemon.eliteMoves.includes(moveId) ? " *" : pokemon.legacyMoves.includes(moveId) ? " †" : ""),
                     withBackground: true
                 }
             }
@@ -303,15 +293,15 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                         <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
                         <strong className="cp-container"> {Math.round(/*raidComputation.dps*/ realDps.dps * 100) / 100} DPS</strong>
                         <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
-                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.fastMoveId)}`}</strong>
+                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.fastMoveId, moves, gameTranslation)}`}</strong>
                         <span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span>
-                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.chargedMoveId)}`}</strong>
+                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.chargedMoveId, moves, gameTranslation)}`}</strong>
                         .
                     </>
                 </span>
             </div>
             </>}
-            {league !== LeagueType.RAID && <div className="menu-item centered"><div>{relevantMoveSet.length > 0 ? <><strong className="cp-container">{`${translateMoveFromMoveId(relevantMoveSet[0])}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[1])}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[2])}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.HolidayCup, currentGameLanguage)}...`}</div></div>}
+            {league !== LeagueType.RAID && <div className="menu-item centered"><div>{relevantMoveSet.length > 0 ? <><strong className="cp-container">{`${translateMoveFromMoveId(relevantMoveSet[0], moves, gameTranslation)}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[1], moves, gameTranslation)}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[2], moves, gameTranslation)}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.HolidayCup, currentGameLanguage)}...`}</div></div>}
             <div className="moves-display-layout">
                 <div className="menu-item">
                     <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
