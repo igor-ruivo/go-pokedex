@@ -238,11 +238,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const bestReachableMasterLeagueIvs = ivPercents[bestInFamilyForMasterLeague.speciesId];
     const bestReachableCustomLeagueIvs = ivPercents[bestInFamilyForCustomLeague.speciesId];
 
-    const computeEffectiveness = (effectiveness: Effectiveness) => Array.from(Object.keys(TypesDTO).filter(k => isNaN(+k) && (Math.round(1000000 * computeMoveEffectiveness(k.toLocaleLowerCase(), pokemon.types[0].toString().toLocaleLowerCase(), pokemon.types[1] ? pokemon.types[1].toString().toLocaleLowerCase() : undefined)) / 1000000) === effectiveness));
+    const computeEffectiveness = (effectiveness: Effectiveness) => Array.from(Object.keys(TypesDTO).filter(k => isNaN(+k) && (Math.round(1000000000 * computeMoveEffectiveness(k.toLocaleLowerCase(), pokemon.types[0].toString().toLocaleLowerCase(), pokemon.types[1] ? pokemon.types[1].toString().toLocaleLowerCase() : undefined)) / 1000000000) === effectiveness));
     const effective = computeEffectiveness(Effectiveness.Effective);
     const superEffective = computeEffectiveness(Effectiveness.DoubleEffective);
     const resistance = computeEffectiveness(Effectiveness.Resistance);
     const superResistance = computeEffectiveness(Effectiveness.DoubleResistance);
+    const tripleResistance = computeEffectiveness(Effectiveness.DoubleResistance * Effectiveness.Resistance);
 
     const getRankPercentage = (rank: number) => Math.round(((1 - (rank / 4095)) * 100 + Number.EPSILON) * 100) / 100;
 
@@ -275,7 +276,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }
     }
 
-    if (([...superEffective, ...effective].length > 6 && [...superResistance, ...resistance].length > 6) || [...superResistance, ...resistance].length > 12 || [...superEffective, ...effective].length > 12) {
+    if (([...superEffective, ...effective].length > 6 && [...tripleResistance, ...superResistance, ...resistance].length > 6) || [...tripleResistance, ...superResistance, ...resistance].length > 12 || [...superEffective, ...effective].length > 12) {
         alert("debug: Too many effectivenesses and resistances. Layout is broken.");
     }
 
@@ -437,11 +438,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                 <div className="max-width aligned full-height">
                                     <div className="overflowing">
                                         <div className="types-family no-padding">
-                                            {[...superResistance, ...resistance].length > 0 ? [...superResistance, ...resistance]
+                                            {[...tripleResistance, ...superResistance, ...resistance].length > 0 ? [...tripleResistance, ...superResistance, ...resistance]
                                             .map(t => (
                                                 <div key = {t}>
-                                                    <strong className={`move-detail ${superResistance.includes(t) ? "special-item" : ""} soft family-padding item`}>
+                                                    <strong className={`move-detail ${(tripleResistance.includes(t) || superResistance.includes(t)) ? "special-item" : ""} soft family-padding item`}>
                                                         {superResistance.includes(t) && <sub className="special-overlay">2x</sub>}
+                                                        {tripleResistance.includes(t) && <sub className="special-overlay">3x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t.toLocaleLowerCase()}.png`}/></div>
                                                     </strong>
                                                 </div>

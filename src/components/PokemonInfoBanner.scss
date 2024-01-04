@@ -33,12 +33,12 @@ table {
 
 .special-overlay {
     border-radius: 50%;
-    padding: 1px;
+    padding: 2px 3px;
     color: var(--cp-color);
     background-color: var(--popup-background-color);
     position: absolute;
     z-index: 10000;
-    transform: translateY(-75%) translateX(140%);
+    transform: translateY(-75%) translateX(110%);
     opacity: 1 !important;
 }
 
