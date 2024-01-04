@@ -419,7 +419,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                             {[...superEffective, ...effective].length > 0 ? [...superEffective, ...effective]
                                             .map(t => (
                                                 <div key = {t}>
-                                                    <strong className={`move-detail ${superEffective.includes(t) ? "special-item" : ""} soft no-padding item`}>
+                                                    <strong className={`move-detail ${superEffective.includes(t) ? "special-item" : ""} soft family-padding item`}>
                                                         {superEffective.includes(t) && <sub className="special-overlay">2x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
                                                     </strong>
@@ -437,7 +437,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                             {[...superResistance, ...resistance].length > 0 ? [...superResistance, ...resistance]
                                             .map(t => (
                                                 <div key = {t}>
-                                                    <strong className={`move-detail ${superResistance.includes(t) ? "special-item" : ""} soft no-padding item`}>
+                                                    <strong className={`move-detail ${superResistance.includes(t) ? "special-item" : ""} soft family-padding item`}>
                                                         {superResistance.includes(t) && <sub className="special-overlay">2x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
                                                     </strong>
