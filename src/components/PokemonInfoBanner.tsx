@@ -424,7 +424,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                                 <div key = {t}>
                                                     <strong className={`move-detail ${superEffective.includes(t) ? "special-item" : ""} soft family-padding item`}>
                                                         {superEffective.includes(t) && <sub className="special-overlay">2x</sub>}
-                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
+                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t.toLocaleLowerCase()}.png`}/></div>
                                                     </strong>
                                                 </div>
                                             )) : <sub className="weighted-font">{translator(TranslatorKeys.Nothing, currentLanguage)}</sub>}
@@ -442,7 +442,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                                 <div key = {t}>
                                                     <strong className={`move-detail ${superResistance.includes(t) ? "special-item" : ""} soft family-padding item`}>
                                                         {superResistance.includes(t) && <sub className="special-overlay">2x</sub>}
-                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
+                                                        <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t.toLocaleLowerCase()}.png`}/></div>
                                                     </strong>
                                                 </div>
                                             )) : <sub className="weighted-font">{translator(TranslatorKeys.Nothing, currentLanguage)}</sub>}
