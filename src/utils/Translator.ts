@@ -895,9 +895,9 @@ const reached = new Map<Language, string>([
 ]);
 
 const levelExceeded = new Map<Language, string>([
-    [Language.English, "Level exceeded..."],
-    [Language.Portuguese, "Nível excedido..."],
-    [Language.Bosnian, "Nivo premašen..."]
+    [Language.English, "LVL. exceeded"],
+    [Language.Portuguese, "Nív. excedido"],
+    [Language.Bosnian, "Niv. premašen"]
 ]);
 
 const familyTree = new Map<Language, string>([
