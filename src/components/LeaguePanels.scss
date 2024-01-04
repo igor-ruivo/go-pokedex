@@ -72,6 +72,10 @@
     backdrop-filter: blur(25px);
 }
 
+.spaced {
+    justify-content: space-between;
+}
+
 .pvp-entry {
     border-radius: 12px;
     background-color: var(--background-shadow);
