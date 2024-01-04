@@ -276,10 +276,6 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }
     }
 
-    if (([...superEffective, ...effective].length > 6 && [...tripleResistance, ...superResistance, ...resistance].length > 6) || [...tripleResistance, ...superResistance, ...resistance].length > 12 || [...superEffective, ...effective].length > 12) {
-        alert("debug: Too many effectivenesses and resistances. Layout is broken.");
-    }
-
     return <div className="banner_layout">
         <div className="pokemon_with_ivs">
             <div className="item aligned">

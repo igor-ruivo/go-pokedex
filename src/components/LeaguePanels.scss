@@ -1,20 +1,25 @@
 
 
 .pvp-stats {
+    height: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 6px;
     gap: 6px;
+    align-items: center;
 }
 
 .unranked-pvp-stats {
+    height: 100%;
     display: grid;
     grid-template-columns: 1fr;
     grid-gap: 6px;
+    align-items: center;
     gap: 6px;
 }
 
 .raid-stats {
+    height: 100%;
     display: grid;
     grid-gap: 6px;
     gap: 6px;
@@ -76,7 +81,6 @@
     }
 
     >div {
-        height: 100%;
         display: grid;
         grid-template-rows: calc(50% - 3px) calc(50% - 3px);
         gap: 6px;
