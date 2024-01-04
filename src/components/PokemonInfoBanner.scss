@@ -165,8 +165,22 @@ table {
     flex-direction: column;
 }
 
+.type-effectiveness-distribution {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+}
+
 .small-hint {
     font-size: 11px;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.full-width {
+    width: 100%
 }
 
 .gapped {
@@ -353,7 +367,11 @@ table {
         font-size: 12px;
     }
 
+    .adjusting-font-size {
+        font-size: 12px;
+    }
+
     .with-computed-min-height {
-        height: 163.6px;
+        //height: 163.6px;
     }
 }

@@ -275,6 +275,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }
     }
 
+    if (([...superEffective, ...effective].length > 6 && [...superResistance, ...resistance].length > 6) || [...superResistance, ...resistance].length > 12 || [...superEffective, ...effective].length > 12) {
+        alert("debug: Too many effectivenesses and resistances. Layout is broken.");
+    }
+
     return <div className="banner_layout">
         <div className="pokemon_with_ivs">
             <div className="item aligned">
@@ -407,13 +411,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         }
                         unranked={rankLists[league] && indexedBests[league] && !rankLists[league][indexedBests[league].speciesId]?.rank ? true : false}
                     />
-                    <div className="with-computed-min-height">
-                        <div className="vertical-combo">
-                            <div className="pvp-entry with-popup-background smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
-                                <div className="max-width">
-                                <div className="gapped potential with-border-bottom"><strong>{translator(TranslatorKeys.Weak, currentLanguage)}:</strong></div>
-                                </div>
-                                <div className="max-width">
+                    <div className="with-computed-min-height item default-padding adjusting-font-size">
+                        <div className="full-height type-effectiveness-distribution">
+                            <div className="with-shadow aligned column-display gapped unjustified">
+                                <div className="pvp-entry full-width smooth with-border fitting-content gapped"><strong>{translator(TranslatorKeys.Weak, currentLanguage)}:</strong></div>
+                                
+                                <div className="max-width aligned full-height">
                                     <div className="overflowing">
                                         <div className="types-family no-padding">
                                             {[...superEffective, ...effective].length > 0 ? [...superEffective, ...effective]
@@ -429,9 +432,9 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                     </div>
                                 </div>
                             </div>
-                            <div className="pvp-entry with-popup-background smooth with-shadow aligned with-border column-display gapped resistance-div unjustified">
-                                <div className="gapped potential with-border-bottom"><strong>{translator(TranslatorKeys.Resistant, currentLanguage)}:</strong></div>
-                                <div className="max-width">
+                            <div className="with-shadow aligned column-display gapped unjustified">
+                                <div className="pvp-entry full-width smooth with-border fitting-content gapped"><strong>{translator(TranslatorKeys.Resistant, currentLanguage)}:</strong></div>
+                                <div className="max-width aligned full-height">
                                     <div className="overflowing">
                                         <div className="types-family no-padding">
                                             {[...superResistance, ...resistance].length > 0 ? [...superResistance, ...resistance]
