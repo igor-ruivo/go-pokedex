@@ -112,6 +112,9 @@ table {
         width: fit-content;
         padding: 3px 0px;
     }
+    >* {
+        z-index: 10;
+    }
 }
 
 .img-family {
