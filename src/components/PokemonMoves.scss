@@ -316,6 +316,10 @@ summary::-webkit-details-marker {
     opacity: 0.6;
 }
 
+.unranked-panel {
+    min-height: 95.2px;
+}
+
 .fast-moves-section,
 .charged-moves-section {
     display: flex;
@@ -460,5 +464,8 @@ summary::-webkit-details-marker {
 @media (max-width: 360px) {
     .move-card-content {
         font-size: 12px;
+    }
+    .unranked-panel {
+        min-height: 88px;
     }
 }

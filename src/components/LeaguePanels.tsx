@@ -99,7 +99,7 @@ const LeaguePanels = ({
                         </div>
                     </div>
                 </div>
-                {unranked ? <div style={{minHeight: 95.2}} className="unranked-pvp-stats pvp-entry centered-text aligned unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div> : <div className="pvp-stats">
+                {unranked ? <div className="unranked-pvp-stats pvp-entry centered-text aligned unranked unranked-panel">{translator(TranslatorKeys.Unranked, currentLanguage)}</div> : <div className="pvp-stats">
                     <div className="pvp-labels">
                         <header>
                             {translator(TranslatorKeys.Config, currentLanguage)}:

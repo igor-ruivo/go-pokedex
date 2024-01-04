@@ -53,3 +53,10 @@
     padding-top: 2.6px;
     padding-bottom: 2.6px;
 }
+
+@media (max-width: 360px) {
+    .with-raid-padding {
+        padding-top: 3.4px;
+        padding-bottom: 3.4px;
+    }
+}
