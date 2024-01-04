@@ -71,7 +71,7 @@ const LeaguePanels = ({
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const renderPanel = (leagueStat: LeagueStat) => {
-        const pvpStatsClassName = `pvp-stats-column ${leagueStat.leagueTitle} spaced full-height`;
+        const pvpStatsClassName = `pvp-stats-column pvp-gap ${leagueStat.leagueTitle} spaced full-height`;
         const neededResources = computeNeededResources(level, leagueStat.pokemonLevel, isShadow);
 
         let logoSrc = "";
@@ -167,7 +167,7 @@ const LeaguePanels = ({
 
     const renderRaidPanel = (raidStat: RaidStat) => {
         return (
-            <div className="pvp-stats-column raid">
+            <div className="pvp-stats-column raid-gap raid full-height spaced">
                 <div>
                     <div className="pvp-entry rank-title">
                         <div className="pvp-entry-content potential">
@@ -206,7 +206,7 @@ const LeaguePanels = ({
                         </div>
                     ))}
                 </div>
-                <div className="centered-text pvp-entry">... {translator(TranslatorKeys.As, currentLanguage)} {raidStat.bestReachablePokemonName}</div>
+                <div className="centered-text pvp-entry fitting-content">... {translator(TranslatorKeys.As, currentLanguage)} {raidStat.bestReachablePokemonName}</div>
                 <img className='background-absolute-img-raid' width="100%" height="100%" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="raid" />
             </div>
         );

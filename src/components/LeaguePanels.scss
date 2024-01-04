@@ -32,8 +32,6 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    grid-gap: 5px;
-    gap: 5px;
     padding: 5px;
     border-radius: 12px;
     border: 1px solid var(--borderColor2);
@@ -42,6 +40,16 @@
     * {
         z-index: 1;
     }
+}
+
+.pvp-gap {
+    gap: 5px;
+    grid-gap: 5px;
+}
+
+.raid-gap {
+    gap: 4px;
+    grid-gap: 4px;
 }
 
 .pvp-labels {
