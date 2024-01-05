@@ -110,6 +110,10 @@ const Pokedex = () => {
     const rankOnlyFilteredTypePokemon = false; //TODO: connect to settings
 
     const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
+        if (!fetchCompleted || !movesFetchCompleted) {
+            return false;
+        }
+
         if (!forcedType) {
             return true;
         }
@@ -120,8 +124,8 @@ const Pokedex = () => {
             }
         }
 
-        return getAllChargedMoves(p, moves).some(m => moves[m].type === forcedType);
-    }, [rankOnlyFilteredTypePokemon, moves]);
+        return getAllChargedMoves(p, moves, gamemasterPokemon).some(m => moves[m].type === forcedType);
+    }, [rankOnlyFilteredTypePokemon, moves, gamemasterPokemon, fetchCompleted, movesFetchCompleted]);
 
     const computeComparisons = useCallback((forcedType = "") => {
         if (!fetchCompleted || !movesFetchCompleted) {
@@ -131,7 +135,7 @@ const Pokedex = () => {
         const comparisons: dpsEntry[] = [];
         Object.values(gamemasterPokemon)
             .filter(p => !p.aliasId && typeFilter(p, forcedType))
-            .forEach(p => comparisons.push(computeDPSEntry(p, moves, 15, 100, forcedType)));
+            .forEach(p => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, forcedType)));
         return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
     }, [gamemasterPokemon, fetchCompleted, movesFetchCompleted, typeFilter, moves]);
 

@@ -111,8 +111,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             }
         }
 
-        return getAllChargedMoves(p, moves).some(m => moves[m].type === forcedType);
-    }, [rankOnlyFilteredTypePokemon, moves, resourcesNotReady]);
+        return getAllChargedMoves(p, moves, gamemasterPokemon).some(m => moves[m].type === forcedType);
+    }, [rankOnlyFilteredTypePokemon, moves, resourcesNotReady, gamemasterPokemon]);
 
     const computeComparisons = useCallback((forcedType = "") => {
         if (resourcesNotReady) {
@@ -122,7 +122,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         const comparisons: dpsEntry[] = [];
         Object.values(gamemasterPokemon)
             .filter(p => !p.aliasId && typeFilter(p, forcedType))
-            .forEach(p => comparisons.push(computeDPSEntry(p, moves, 15, 100, forcedType)));
+            .forEach(p => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, forcedType)));
         return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
     }, [gamemasterPokemon, typeFilter, resourcesNotReady, moves]);
 
@@ -149,7 +149,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const orderedRaidVersions = useMemo(() => !resourcesNotReady ? getSortedRaidReachableVersions(globalComparisons) : [], [globalComparisons, getSortedRaidReachableVersions, resourcesNotReady]);
     const bestReachable = useMemo(() => !resourcesNotReady ? gamemasterPokemon[orderedRaidVersions[currentBestReachableRaidLeagueIndex]] : undefined, [gamemasterPokemon, orderedRaidVersions, resourcesNotReady, currentBestReachableRaidLeagueIndex]);
     
-    const allChargedMoveTypes = useMemo(() => resourcesNotReady ? [] : Array.from(new Set(getAllChargedMoves(bestReachable as IGamemasterPokemon, moves).map(m => moves[m].type))), [bestReachable, moves, resourcesNotReady]);
+    const allChargedMoveTypes = useMemo(() => resourcesNotReady ? [] : Array.from(new Set(getAllChargedMoves(bestReachable as IGamemasterPokemon, moves, gamemasterPokemon).map(m => moves[m].type))), [bestReachable, moves, resourcesNotReady, gamemasterPokemon]);
     
     type ranksDicDTO = {
         rank: number,
@@ -168,12 +168,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             const idx = comps.findIndex(c => c.speciesId === bestReachable!.speciesId);
             ranksDic[t] = {
                 rank: idx + 1,
-                dps: computeDPSEntry(bestReachable as IGamemasterPokemon, moves, attack, (level - 1) * 2, t, undefined, [comps[idx].fastMoveId, comps[idx].chargedMoveId]).dps//comps[idx].dps
+                dps: computeDPSEntry(bestReachable as IGamemasterPokemon, gamemasterPokemon, moves, attack, (level - 1) * 2, t, undefined, [comps[idx].fastMoveId, comps[idx].chargedMoveId]).dps//comps[idx].dps
             };
         });
 
         return ranksDic;
-    }, [allChargedMoveTypes, computeComparisons, bestReachable, resourcesNotReady, attack, level, moves]);
+    }, [allChargedMoveTypes, computeComparisons, bestReachable, resourcesNotReady, attack, level, moves, gamemasterPokemon]);
 
     const mostRelevantType = Object.entries(ranksComputation)
         .sort(([typeA, rankA], [typeB, rankB]) => {
@@ -190,7 +190,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     
     const rank = useMemo(() => resourcesNotReady ? 0 : globalComparisons.findIndex(c => c.speciesId === bestReachable!.speciesId) + 1, [globalComparisons, bestReachable, resourcesNotReady]);
     
-    const selfRealDPS = useMemo(() => resourcesNotReady ? {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0} : computeDPSEntry(bestReachable as IGamemasterPokemon, moves, attack, (level - 1) * 2), [bestReachable, attack, level, moves, resourcesNotReady]);
+    const selfRealDPS = useMemo(() => resourcesNotReady ? {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0} : computeDPSEntry(bestReachable as IGamemasterPokemon, gamemasterPokemon, moves, attack, (level - 1) * 2), [bestReachable, attack, level, moves, gamemasterPokemon, resourcesNotReady]);
 
     if (resourcesNotReady) {
         return <></>;

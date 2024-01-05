@@ -83,7 +83,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         const comparisons: dpsEntry[] = [];
         Object.values(gamemasterPokemon)
             .filter(p => !p.aliasId)
-            .forEach(p => comparisons.push(computeDPSEntry(p, moves, 15, 100, "", pokemon)));
+            .forEach(p => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, "", pokemon)));
         return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
     }, [resourcesNotReady, gamemasterPokemon, moves, pokemon]);
 

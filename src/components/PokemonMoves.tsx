@@ -45,9 +45,9 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
     const customLeagueMoveset = rankLists[3] ? (rankLists[3][pokemon.speciesId]?.moveset ?? []) : [];
 
-    const raidComputation = computeDPSEntry(pokemon, moves, 15, 100, raidAttackType);
+    const raidComputation = computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, 100, raidAttackType);
     const raidMoveset: [string, string] = [raidComputation.fastMoveId, raidComputation.chargedMoveId];
-    const realDps = computeDPSEntry(pokemon, moves, 15, level, raidAttackType, undefined, raidMoveset);
+    const realDps = computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, level, raidAttackType, undefined, raidMoveset);
 
     const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : league === LeagueType.MASTER_LEAGUE ? masterLeagueMoveset : raidMoveset;
 
@@ -268,7 +268,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
             {league === LeagueType.RAID && <><div className="raid-container item">
                 <div className="overflowing">
                 <div className="img-family">
-                    {Array.from(new Set(getAllChargedMoves(pokemon, moves).map(m => moves[m].type))).filter(t => t !== "normal")
+                    {Array.from(new Set(getAllChargedMoves(pokemon, moves, gamemasterPokemon).map(m => moves[m].type))).filter(t => t !== "normal")
                     .map(t => (
                         <div className="clickable" key = {t} onClick={() => {
                             if (t === raidAttackType) {
@@ -341,8 +341,8 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                     </div>
                     <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
                         {
-                            getAllChargedMoves(pokemon, moves).length > 0 ?
-                            getAllChargedMoves(pokemon, moves)
+                            getAllChargedMoves(pokemon, moves, gamemasterPokemon).length > 0 ?
+                            getAllChargedMoves(pokemon, moves, gamemasterPokemon)
                             .sort(movesSorter)
                             .map(m => {
                                 const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";

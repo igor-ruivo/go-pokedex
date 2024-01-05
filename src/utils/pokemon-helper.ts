@@ -20,6 +20,15 @@ export enum Effectiveness {
     DoubleEffective = 2.56
 }
 
+const isNormalPokemonAndHasShadowVersion = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    if (pokemon.isShadow) {
+        return false;
+    }
+    
+    return Object.values(gamemasterPokemon)
+        .some(p => p.speciesId !== pokemon.speciesId && !p.aliasId && p.dex === pokemon.dex && p.isShadow && p.types.length === pokemon.types.length && p.types.every(t => pokemon.types.includes(t)));
+}
+
 const normalizedMoveName = (moveName: string) => moveName
     .split("_")
     .map(p => p.substring(0, 1).toLocaleUpperCase() + p.substring(1).toLocaleLowerCase())
@@ -71,11 +80,31 @@ export const computeNeededResources: (currentLevel: number, targetLevel: number,
 }
 
 export const getAllFastMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>) => {
-    return Array.from(new Set(p.fastMoves.concat(p.eliteMoves.filter(m => moves[m].isFast)).concat(p.legacyMoves.filter(m => moves[m].isFast))));
+    return Array.from(
+        new Set(
+            p.fastMoves
+            .concat(p.eliteMoves.filter(m => moves[m].isFast))
+            .concat(p.legacyMoves.filter(m => moves[m].isFast))
+        )
+    );
 }
 
-export const getAllChargedMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>) => {
-    return Array.from(new Set(p.chargedMoves.concat(p.eliteMoves.filter(m => !moves[m].isFast)).concat(p.legacyMoves.filter(m => !moves[m].isFast))));
+export const getAllChargedMoves = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const moveSet = new Set(
+        p.chargedMoves
+        .concat(p.eliteMoves.filter(m => !moves[m].isFast))
+        .concat(p.legacyMoves.filter(m => !moves[m].isFast))
+    );
+
+    if (p.isShadow) {
+        moveSet.add("FRUSTRATION");
+    }
+
+    if (isNormalPokemonAndHasShadowVersion(p, gamemasterPokemon)) {
+        moveSet.add("RETURN");
+    }
+
+    return Array.from(new Set(moveSet));
 }
 
 export const computeMoveEffectiveness = (ownMoveType: string, targetType1: string, targetType2?: string) => {
@@ -464,8 +493,11 @@ export const computeMoveEffectiveness = (ownMoveType: string, targetType1: strin
     return matrix[ownMoveType][targetType1Index] * (targetType2 ? matrix[ownMoveType][targetType2Index] : 1);
 }
 
-export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMasterMove>, attackIV = 15, level = 100, forcedType = "", target?: IGamemasterPokemon, movesetOverride?: [string, string]) => {
-    const computeDamageCalculation = (moveId: string) => calculateDamage(p.atk, moves[moveId].pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(moves[moveId].type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(moves[moveId].type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && forcedType !== "normal" && moves[moveId].type === forcedType) ? Effectiveness.Effective : Effectiveness.Normal, attackIV, level, target ? target.def : 200);
+export const computeDPSEntry = (p: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, attackIV = 15, level = 100, forcedType = "", target?: IGamemasterPokemon, movesetOverride?: [string, string]) => {
+    const computeDamageCalculation = (moveId: string) => {
+        return calculateDamage(p.atk, moves[moveId].pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(moves[moveId].type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(moves[moveId].type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && forcedType !== "normal" && moves[moveId].type === forcedType) ? Effectiveness.Effective : Effectiveness.Normal, attackIV, level, target ? target.def : 200)
+    
+    };
     const computePveDPS = (chargedMoveDmg: number, fastMoveDmg: number, fastMoveId: string, chargedMoveId: string) => pveDPS(chargedMoveDmg, fastMoveDmg, moves[fastMoveId].pveDuration, moves[chargedMoveId].pveEnergyDelta * -1, moves[fastMoveId].pveEnergyDelta, moves[chargedMoveId].pveDuration);
     
     if (movesetOverride) {
@@ -483,7 +515,7 @@ export const computeDPSEntry = (p: IGamemasterPokemon, moves: Dictionary<IGameMa
     }
 
     const fastMoves = getAllFastMoves(p, moves);
-    const chargedMoves = getAllChargedMoves(p, moves);
+    const chargedMoves = getAllChargedMoves(p, moves, gamemasterPokemon);
     let higherDPS = Number.MIN_VALUE;
     let higherFast = "";
     let higherFastDmg = 0;
