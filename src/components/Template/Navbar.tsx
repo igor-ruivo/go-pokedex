@@ -251,7 +251,7 @@ const Navbar = () => {
                             }
                             
                             if (pathname.startsWith("/great") || pathname.startsWith("/ultra") || pathname.startsWith("/master") || pathname.startsWith("/custom")) {
-                                return !p.isMega/* && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? 500 : 0))*/;
+                                return !p.isMega/* && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? customCupCPLimit : 0))*/;
                             }
 
                             if (pathname.startsWith("/pokemon")) {
@@ -259,7 +259,7 @@ const Navbar = () => {
                             }
 
                             if (pathname.startsWith("/raid")) {
-                                return true/*(showMega || !p.isMega) && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? 500 : 0))*/;
+                                return true/*(showMega || !p.isMega) && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? customCupCPLimit : 0))*/;
                             }
 
                             return !p.isShadow/* && (showMega || !p.isMega)*/;

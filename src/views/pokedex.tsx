@@ -10,7 +10,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/language-context';
 import { computeDPSEntry, fetchPokemonFamily, getAllChargedMoves, needsXLCandy } from '../utils/pokemon-helper';
 import Dictionary from '../utils/Dictionary';
-import { usePvp } from '../contexts/pvp-context';
+import { customCupCPLimit, usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { dpsEntry } from '../components/PokemonInfoBanner';
 import { useMoves } from '../contexts/moves-context';
@@ -54,7 +54,7 @@ const Pokedex = () => {
             break;
         case "custom":
             listType = ListType.CUSTOM_CUP;
-            cpThreshold = 500;
+            cpThreshold = customCupCPLimit;
             break;
         case "raid":
             listType = ListType.RAID;

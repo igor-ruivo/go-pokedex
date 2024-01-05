@@ -8,6 +8,7 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
+import { customCupCPLimit } from "../contexts/pvp-context";
 
 interface IPokemonSearchStringsProps {
     pokemon: IGamemasterPokemon;
@@ -85,7 +86,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             cpCap = Number.MAX_VALUE;
             break;
         case LeagueType.CUSTOM_CUP:
-            cpCap = 500;
+            cpCap = customCupCPLimit;
             break;
     }
 

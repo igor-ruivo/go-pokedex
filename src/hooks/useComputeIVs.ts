@@ -4,6 +4,7 @@ import Dictionary from "../utils/Dictionary";
 import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
 import { usePokemon } from "../contexts/pokemon-context";
 import { IIvPercents } from "../components/PokemonInfoBanner";
+import { customCupCPLimit } from "../contexts/pvp-context";
 
 interface IUseComputeIVsProps {
     pokemon: IGamemasterPokemon;
@@ -35,7 +36,7 @@ const useComputeIVs = ({pokemon, attackIV, defenseIV, hpIV, justForSelf = false}
             }
 
             Array.from(reachablePokemons).filter(p => p).forEach(p => {
-                const resLC = computeBestIVs(p.atk, p.def, p.hp, 500);
+                const resLC = computeBestIVs(p.atk, p.def, p.hp, customCupCPLimit);
                 const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
                 const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
                 const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE);

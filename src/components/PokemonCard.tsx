@@ -8,7 +8,7 @@ import { ListType } from "../views/pokedex";
 import { calculateCP, needsXLCandy } from "../utils/pokemon-helper";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import { usePvp } from "../contexts/pvp-context";
+import { customCupCPLimit, usePvp } from "../contexts/pvp-context";
 
 interface IPokemonCardProps {
     pokemon: IGamemasterPokemon,
@@ -32,7 +32,7 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride}: IPokem
             cpThreshold = 2500;
             break;
         case ListType.CUSTOM_CUP:
-            cpThreshold = 500;
+            cpThreshold = customCupCPLimit;
             break;
     }
 
