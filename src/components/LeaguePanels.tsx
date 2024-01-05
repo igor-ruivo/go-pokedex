@@ -86,7 +86,7 @@ const LeaguePanels = ({
                 logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master-big.webp`;
                 break;
             case "custom":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/holiday-big.webp`;
+                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/great-remix-big.png`;
                 break;
         }
 

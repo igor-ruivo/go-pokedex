@@ -13,6 +13,7 @@ export enum GameTranslatorKeys {
     Holiday,
     Raids,
     GreatLeague,
+    GreatRemixCup,
     UltraLeague,
     MasterLeague,
     RetroCup,
@@ -32,6 +33,11 @@ export enum GameTranslatorKeys {
 const hp = new Map<GameLanguage, string>([
     [GameLanguage.English, "HP"],
     [GameLanguage.Portuguese, "PS"]
+]);
+
+const greatRemixCup = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Great League Remix"],
+    [GameLanguage.Portuguese, "Remix da Grande Liga"]
 ]);
 
 const favorite = new Map<GameLanguage, string>([
@@ -183,6 +189,7 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.PaldeanSearch, paldeanSearch],
     [GameTranslatorKeys.AlolanSearch, alolanSearch],
     [GameTranslatorKeys.HisuianSearch, hisuianSearch],
+    [GameTranslatorKeys.GreatRemixCup, greatRemixCup],
     [GameTranslatorKeys.Legendary, legendary],
     [GameTranslatorKeys.Mythical, mythical],
     [GameTranslatorKeys.Favorite, favorite]
