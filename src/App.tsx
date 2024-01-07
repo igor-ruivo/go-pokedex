@@ -12,6 +12,7 @@ import { MovesProvider } from './contexts/moves-context';
 import { GameTranslationProvider } from './contexts/gameTranslation-context';
 import DeleteTrash from './components/DeleteTrash';
 import { ImageSourceProvider } from './contexts/imageSource-context';
+import { RaidRankerProvider } from './contexts/raid-ranker-context';
 
 const App = () => {
     return (
@@ -22,25 +23,27 @@ const App = () => {
                         <GameTranslationProvider>
                             <MovesProvider>
                                 <NavbarSearchProvider>
-                                    <HashRouter>
-                                        <div className='main-wrapper'>
-                                        <Navbar/>
-                                        <Content>
-                                            <Routes>
-                                                <Route index path="/" element={<Pokedex />}/>
-                                                <Route path="/:listTypeArg" element={<Pokedex />}/>
-                                                <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
-                                                <Route path="/pokemon/:speciesId/info" element={<Pokemon />}/>
-                                                <Route path="/pokemon/:speciesId/moves" element={<Pokemon />}/>
-                                                <Route path="/pokemon/:speciesId/counters" element={<Pokemon />}/>
-                                                <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
-                                                <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
-                                                <Route path="/igor" element={<DeleteTrash />}/>
-                                                <Route path="/*" element={<div>404 not found!</div>} />
-                                            </Routes>
-                                        </Content>
-                                        </div>
-                                    </HashRouter>
+                                    <RaidRankerProvider>
+                                        <HashRouter>
+                                            <div className='main-wrapper'>
+                                            <Navbar/>
+                                            <Content>
+                                                <Routes>
+                                                    <Route index path="/" element={<Pokedex />}/>
+                                                    <Route path="/:listTypeArg" element={<Pokedex />}/>
+                                                    <Route path="/pokemon/:speciesId" element={<Pokemon />}/>
+                                                    <Route path="/pokemon/:speciesId/info" element={<Pokemon />}/>
+                                                    <Route path="/pokemon/:speciesId/moves" element={<Pokemon />}/>
+                                                    <Route path="/pokemon/:speciesId/counters" element={<Pokemon />}/>
+                                                    <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
+                                                    <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
+                                                    <Route path="/igor" element={<DeleteTrash />}/>
+                                                    <Route path="/*" element={<div>404 not found!</div>} />
+                                                </Routes>
+                                            </Content>
+                                            </div>
+                                        </HashRouter>
+                                    </RaidRankerProvider>
                                 </NavbarSearchProvider>
                             </MovesProvider>
                         </GameTranslationProvider>
