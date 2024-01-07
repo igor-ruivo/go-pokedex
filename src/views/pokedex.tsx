@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -8,11 +8,11 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/language-context';
-import { computeDPSEntry, fetchPokemonFamily, getAllChargedMoves, needsXLCandy } from '../utils/pokemon-helper';
+import { fetchPokemonFamily, needsXLCandy } from '../utils/pokemon-helper';
 import Dictionary from '../utils/Dictionary';
 import { customCupCPLimit, usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import { dpsEntry } from '../components/PokemonInfoBanner';
+import { useRaidRanker } from '../contexts/raid-ranker-context';
 import { useMoves } from '../contexts/moves-context';
 
 export enum ListType {
@@ -26,9 +26,18 @@ export enum ListType {
 
 const Pokedex = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
     const { moves, movesFetchCompleted } = useMoves();
+    const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
+    const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
     const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
+
+    useEffect(() => {
+        if (!fetchCompleted || !movesFetchCompleted) {
+            return;
+        }
+        computeRaidRankerforTypes(gamemasterPokemon, moves, type1Filter ? [type1Filter] : undefined);
+    }, [type1Filter, fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes]);
+
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const renderCustom = true;
@@ -107,48 +116,6 @@ const Pokedex = () => {
         return dict;
     }, [gamemasterPokemon, fetchCompleted]);
 
-    const rankOnlyFilteredTypePokemon = false; //TODO: connect to settings
-
-    const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
-        if (!fetchCompleted || !movesFetchCompleted) {
-            return false;
-        }
-
-        if (!forcedType) {
-            return true;
-        }
-
-        if (rankOnlyFilteredTypePokemon) {
-            if (!p.types.map(t => t.toString().toLocaleLowerCase()).includes(forcedType.toLocaleLowerCase())) {
-                return false;
-            }
-        }
-
-        return getAllChargedMoves(p, moves, gamemasterPokemon).some(m => moves[m].type === forcedType);
-    }, [rankOnlyFilteredTypePokemon, moves, gamemasterPokemon, fetchCompleted, movesFetchCompleted]);
-
-    const computeComparisons = useCallback((forcedType = "") => {
-        if (!fetchCompleted || !movesFetchCompleted) {
-            return [];
-        }
-
-        const comparisons: dpsEntry[] = [];
-        Object.values(gamemasterPokemon)
-            .filter(p => !p.aliasId && typeFilter(p, forcedType))
-            .forEach(p => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, forcedType)));
-        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
-    }, [gamemasterPokemon, fetchCompleted, movesFetchCompleted, typeFilter, moves]);
-
-    const computedComparisons = useMemo(() => computeComparisons(), [computeComparisons]);
-
-    const computedTypeComparisons = useMemo(() => {
-        if (type1Filter === undefined) {
-            return computedComparisons;
-        }
-        
-        return computeComparisons(type1Filter.toString().toLocaleLowerCase());
-    }, [computeComparisons, type1Filter, computedComparisons]);
-
     type DataType = {
         processedList: IGamemasterPokemon[],
         cpStringOverrides: Dictionary<string>,
@@ -156,7 +123,7 @@ const Pokedex = () => {
     }
 
     const data: DataType = useMemo(() => {
-        if (!fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted) {
+        if (!fetchCompleted || !pvpFetchCompleted) {
             return {
                 processedList: [],
                 cpStringOverrides: {},
@@ -202,16 +169,24 @@ const Pokedex = () => {
                 break;
             case ListType.RAID:
                 const preProcessedList: IGamemasterPokemon[] = [];
-                computedTypeComparisons.forEach((e, idx) => {
+                if (!raidRankerFetchCompleted(type1Filter ? [type1Filter] : undefined)) {
+                    processedList = [];
+                    break;
+                }
+
+                console.log(raidDPS);
+                console.log(type1Filter);
+
+                Object.entries(raidDPS[type1Filter ? type1Filter.toString().toLocaleLowerCase() : ""]).forEach(([speciesId, e], idx) => {
                     const raidFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && (showMega || !pokemon.isMega) && (showShadow || !pokemon.isShadow);
                     const raidFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId;
-                    if (!raidFilter(gamemasterPokemon[e.speciesId]) || !inputFilter(gamemasterPokemon[e.speciesId], raidFilterForFamily)) {
+                    if (!raidFilter(gamemasterPokemon[speciesId]) || !inputFilter(gamemasterPokemon[speciesId], raidFilterForFamily)) {
                         return;
                     }
 
-                    preProcessedList.push(gamemasterPokemon[e.speciesId]);
-                    cpStringOverrides[e.speciesId] = `${Math.round(e.dps * 100) / 100} DPS`;
-                    rankOverrides[e.speciesId] = idx + 1;
+                    preProcessedList.push(gamemasterPokemon[speciesId]);
+                    cpStringOverrides[speciesId] = `${Math.round(e.dps * 100) / 100} DPS`;
+                    rankOverrides[speciesId] = idx + 1;
                 });
 
                 processedList = preProcessedList;
@@ -225,7 +200,7 @@ const Pokedex = () => {
             cpStringOverrides,
             rankOverrides
         };
-    }, [gamemasterPokemon, listType, familyTree, showShadow, showMega, showXL, cpThreshold, type1Filter, type2Filter, rankLists, inputText, movesFetchCompleted, computedTypeComparisons, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
+    }, [gamemasterPokemon, listType, familyTree, showShadow, raidDPS, raidRankerFetchCompleted, showMega, showXL, cpThreshold, type1Filter, type2Filter, rankLists, inputText, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
 
     return (
         <main className="pokedex-layout">
@@ -264,7 +239,7 @@ const Pokedex = () => {
                 </ul>
             </nav>
             <div className="pokedex" ref={containerRef}>
-                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && movesFetchCompleted}>
+                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && raidRankerFetchCompleted(type1Filter ? [type1Filter] : undefined)}>
                     <PokemonGrid pokemonInfoList={data.processedList} cpStringOverrides={data.cpStringOverrides} rankOverrides={data.rankOverrides} listType={listType} containerRef={containerRef}/>
                 </LoadingRenderer>
             </div>

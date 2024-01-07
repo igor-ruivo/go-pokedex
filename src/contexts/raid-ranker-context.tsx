@@ -1,11 +1,11 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import Dictionary, { cloneDictionary } from '../utils/Dictionary';
-import { usePokemon } from './pokemon-context';
 import { computeDPSEntry, getAllChargedMoves } from '../utils/pokemon-helper';
-import { useMoves } from './moves-context';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { readEntry, writeEntry } from '../utils/resource-cache';
 import { cacheTtlInMillis } from '../utils/Configs';
+import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { IGameMasterMove } from '../DTOs/IGameMasterMove';
 
 type DPSEntry = {
     dps: number,
@@ -17,33 +17,28 @@ type DPSEntry = {
 
 interface RaidRankerContextType {
     raidDPS: Dictionary<Dictionary<DPSEntry>>;
-    computeRaidRankerforTypes: (ensureTypeComputations?: PokemonTypes[]) => void;
+    computeRaidRankerforTypes: (gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, ensureTypeComputations?: PokemonTypes[]) => void;
     raidRankerFetchCompleted: (ensureTypeComputations?: PokemonTypes[]) => boolean;
 }
 
 const RaidRankerContext = createContext<RaidRankerContextType | undefined>(undefined);
 
-const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (ensureTypeComputations?: PokemonTypes[]) => void, (ensureTypeComputations?: PokemonTypes[]) => boolean] = () => {
-    const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {moves, movesFetchCompleted} = useMoves();
+const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, ensureTypeComputations?: PokemonTypes[]) => void, (ensureTypeComputations?: PokemonTypes[]) => boolean] = () => {
     const [raidDPS, setRaidDPS] = useState<Dictionary<Dictionary<DPSEntry>>>({});
     const [computationFinished, setComputationFinished] = useState<Dictionary<boolean>>({});
 
-    const raidRankerFetchCompleted = (ensureTypeComputations?: PokemonTypes[]) => {
+    const raidRankerFetchCompleted = useCallback((ensureTypeComputations?: PokemonTypes[]) => {
         if (!ensureTypeComputations) {
             return computationFinished[""];
         }
 
-        return Object.keys(ensureTypeComputations)
-            .filter(t => !t || isNaN(Number(t)))
-            .map(t => !t ? t : t.toLocaleLowerCase())
-            .every(t => computationFinished[t]);
-    }
+        return ensureTypeComputations
+            .every(t => computationFinished[t.toString().toLocaleLowerCase()]);
+    }, [computationFinished]);
 
-    const computeRaidRankerforTypes = (ensureTypeComputations?: PokemonTypes[]) => {
-        (ensureTypeComputations ? Object.keys(ensureTypeComputations)
-            .filter(t => !t || isNaN(Number(t)))
-            .map(t => !t ? t : t.toLocaleLowerCase()) : [""])
+    const computeRaidRankerforTypes = useCallback((gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, ensureTypeComputations?: PokemonTypes[]) => {
+        (ensureTypeComputations ? ensureTypeComputations
+            .map(t => t.toString().toLocaleLowerCase()) : [""])
             .forEach(t => {
                 const raidDpsKey = `raid-dps${t}`;
                 const cachedData = readEntry<Dictionary<DPSEntry>>(raidDpsKey);
@@ -107,18 +102,8 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (ensureTy
                     return result;
                 });
             });
-    }
-
-    useEffect(() => {
-        setComputationFinished({});
-        if (!fetchCompleted || !movesFetchCompleted) {
-            return;
-        }
-        
-        computeRaidRankerforTypes();
-
-    }, [fetchCompleted, movesFetchCompleted]);
-
+    }, [setRaidDPS, setComputationFinished]);
+    
     return [raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted];
 }
 
@@ -131,7 +116,7 @@ export const useRaidRanker = (): RaidRankerContextType => {
 };
 
 export const RaidRankerProvider = (props: React.PropsWithChildren<{}>) => {
-    const [raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted]: [Dictionary<Dictionary<DPSEntry>>, (ensureTypeComputations?: PokemonTypes[]) => void, (ensureTypeComputations?: PokemonTypes[]) => boolean] = useRaidDPSComputations();
+    const [raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted]: [Dictionary<Dictionary<DPSEntry>>, (gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, ensureTypeComputations?: PokemonTypes[]) => void, (ensureTypeComputations?: PokemonTypes[]) => boolean] = useRaidDPSComputations();
 
     return (
         <RaidRankerContext.Provider value={{
