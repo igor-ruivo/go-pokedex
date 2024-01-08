@@ -8,11 +8,12 @@ import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ListEntry from "./ListEntry";
 import { Effectiveness, calculateDamage, computeDPSEntry, getAllChargedMoves, getAllFastMoves, translateMoveFromMoveId } from "../utils/pokemon-helper";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { translatedType } from "./PokemonInfoImagePlaceholder";
+import { useRaidRanker } from "../contexts/raid-ranker-context";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -26,15 +27,25 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {moves, movesFetchCompleted} = useMoves();
+    const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
     const [fastMovesCollapsed, setFastMovesCollapsed] = useState(false);
     const [chargedMovesCollapsed, setChargedMovesCollapsed] = useState(false);
     const [raidAttackType, setRaidAttackType] = useState<string>("");
-    /*
+    
     useEffect(() => {
-        if (!fastMovesCollapsed || !chargedMovesCollapsed) {
-            window.scrollTo(0, document.body.scrollHeight);
+        if (!fetchCompleted || !movesFetchCompleted || league !== LeagueType.RAID) {
+            return;
         }
-    }, [fastMovesCollapsed, chargedMovesCollapsed]);*/
+
+        const type = !raidAttackType ? undefined : [(raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes];
+
+        if (raidRankerFetchCompleted(type)) {
+            return;
+        }
+
+        console.log("invoking computation: " + type);
+        computeRaidRankerforTypes(gamemasterPokemon, moves, type);
+    }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, raidAttackType, league]);
 
     if (!fetchCompleted || !gameTranslationFetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
