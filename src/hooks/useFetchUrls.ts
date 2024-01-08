@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { AxiosRequestConfig } from "axios";
 import { fetchUrls } from "../utils/network";
 
@@ -17,7 +17,7 @@ export const useFetchUrls = (): FetchData<any> => {
     const [fetchCompleted, setFetchCompleted] = useState(false);
     const [errorLoadingData, setErrorLoadingData] = useState("");
     
-    const fetchUrlsCallback = async (urls: string[], useCache: boolean = false, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => any) => {
+    const fetchUrlsCallback = useCallback(async (urls: string[], useCache: boolean = false, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => any) => {
         try {
             const response = await fetchUrls(urls, useCache, axiosRequestConfig, dataTransformer);
             setData(response);
@@ -29,7 +29,7 @@ export const useFetchUrls = (): FetchData<any> => {
         finally {
             setFetchCompleted(true);
         }
-    };
+    }, [setData, setErrorLoadingData, setFetchCompleted]);
 
     const response: FetchData<any> = [data, fetchUrlsCallback, fetchCompleted, errorLoadingData];
     return response;

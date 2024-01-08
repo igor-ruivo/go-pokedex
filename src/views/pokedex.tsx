@@ -31,15 +31,6 @@ const Pokedex = () => {
     const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
     const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
 
-    useEffect(() => {
-        const computedTypeCollection = type1Filter ? [type1Filter] : undefined;
-        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(computedTypeCollection)) {
-            return;
-        }
-
-        computeRaidRankerforTypes(gamemasterPokemon, moves, computedTypeCollection);
-    }, [type1Filter, fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted]);
-
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const renderCustom = true;
@@ -73,6 +64,15 @@ const Pokedex = () => {
         default:
             throw Error("404 not found!");
     }
+
+    useEffect(() => {
+        const computedTypeCollection = type1Filter ? [type1Filter] : undefined;
+        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(computedTypeCollection) || listTypeArg !== "raid") {
+            return;
+        }
+
+        computeRaidRankerforTypes(gamemasterPokemon, moves, computedTypeCollection);
+    }, [type1Filter, listTypeArg, fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted]);
 
     const pokemonByDex = useMemo(() => {
         if (!fetchCompleted) {
@@ -238,7 +238,7 @@ const Pokedex = () => {
                 </ul>
             </nav>
             <div className="pokedex" ref={containerRef}>
-                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && raidRankerFetchCompleted(type1Filter ? [type1Filter] : undefined)}>
+                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidRankerFetchCompleted(type1Filter ? [type1Filter] : undefined))}>
                     <PokemonGrid pokemonInfoList={data.processedList} cpStringOverrides={data.cpStringOverrides} rankOverrides={data.rankOverrides} listType={listType} containerRef={containerRef}/>
                 </LoadingRenderer>
             </div>

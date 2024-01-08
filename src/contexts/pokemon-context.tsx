@@ -22,7 +22,7 @@ const useFetchAllData: () => [Dictionary<IGamemasterPokemon>, boolean, string] =
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, []);
+    }, [fetchGamemasterPokemon]);
 
     return [gamemasterPokemon[0], gememasterPokemonFetchCompleted, errorLoadingGamemasterData];
 }
