@@ -104,7 +104,7 @@ const PokemonGrid = memo(({pokemonInfoList, cpStringOverrides, rankOverrides, li
                         rowCount={Math.ceil(pokemonInfoList.length / itemsPerRow) + 1}
                         columnCount={itemsPerRow}
                         height={height}
-                        width={((containerRef.current?.offsetWidth ?? 0) - width) / 2 + width}
+                        width={containerRef.current?.offsetWidth ?? 0}
                         rowHeight={width / itemsPerRow - 1}
                         columnWidth={width / itemsPerRow - 1}
                         onScroll={(e: ScrollParams) => {

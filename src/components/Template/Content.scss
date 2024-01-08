@@ -1,4 +1,6 @@
 .main-content {
+    //padding-top: 75px;
+    //padding-bottom: 65px;
     height: calc(100% - 75px - 65px);
     display: flex;
     justify-content: center;
@@ -6,6 +8,7 @@
 
 @media (max-width: 500px) {
     .main-content {
+        //padding-top: 55px;
         height: calc(100% - 55px - 65px);
     }
 }

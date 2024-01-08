@@ -2,6 +2,7 @@
     min-height: 75px;
     max-height: 75px;
     height: 75px;
+    z-index: 40000;
     border-top: 1px solid var(--borderColor2);
     border-bottom: 1px solid var(--borderColor2);
     background-color: var(--headerBackground);
@@ -9,6 +10,9 @@
     padding: 6px;
     display: flex;
     position: sticky;
+    //position: fixed;
+    //top: 0px;
+    //width: 100%;
 }
 
 .options-menu {
