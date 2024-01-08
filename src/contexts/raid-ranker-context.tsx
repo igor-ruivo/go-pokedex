@@ -37,6 +37,7 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemast
     }, [computationFinished]);
 
     const computeRaidRankerforTypes = useCallback((gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, ensureTypeComputations?: PokemonTypes[]) => {
+        console.log("computing " + ensureTypeComputations);
         (ensureTypeComputations ? ensureTypeComputations
             .map(t => t.toString().toLocaleLowerCase()) : [""])
             .forEach(t => {

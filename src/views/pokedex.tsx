@@ -32,11 +32,13 @@ const Pokedex = () => {
     const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
 
     useEffect(() => {
-        if (!fetchCompleted || !movesFetchCompleted) {
+        const computedTypeCollection = type1Filter ? [type1Filter] : undefined;
+        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(computedTypeCollection)) {
             return;
         }
-        computeRaidRankerforTypes(gamemasterPokemon, moves, type1Filter ? [type1Filter] : undefined);
-    }, [type1Filter, fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes]);
+
+        computeRaidRankerforTypes(gamemasterPokemon, moves, computedTypeCollection);
+    }, [type1Filter, fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted]);
 
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);

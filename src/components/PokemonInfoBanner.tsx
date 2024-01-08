@@ -3,7 +3,7 @@ import { usePokemon } from "../contexts/pokemon-context";
 import Dictionary from "../utils/Dictionary";
 import "./PokemonInfoBanner.scss";
 import LeaguePanels from "./LeaguePanels";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AppraisalBar from "./AppraisalBar";
 import { ordinal } from "../utils/conversions";
 import { Effectiveness, computeDPSEntry, computeMoveEffectiveness, fetchReachablePokemonIncludingSelf, getAllChargedMoves } from "../utils/pokemon-helper";
@@ -17,6 +17,7 @@ import PokemonTypes from "./PokemonTypes";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { PokemonTypes as TypesDTO } from "../DTOs/PokemonTypes";
 import translator, { TranslatorKeys } from "../utils/Translator";
+import { useRaidRanker } from "../contexts/raid-ranker-context";
 
 interface IPokemonInfoBanner {
     pokemon: IGamemasterPokemon;
@@ -78,6 +79,11 @@ export type dpsEntry = {
     speciesId: string;
 }
 
+type ranksDicDTO = {
+    rank: number,
+    dps: number
+}
+
 const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague, level}: IPokemonInfoBanner) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const {gameTranslationFetchCompleted} = useGameTranslation();
@@ -85,6 +91,54 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {moves, movesFetchCompleted} = useMoves();
+    const [bestReachableRaidVersion, setBestReachableRaidVersion] = useState<IGamemasterPokemon | undefined>(undefined);
+    const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
+
+    const allRelevantChargedMoveTypes = useMemo(() => {
+        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion) {
+            return [];
+        }
+
+        return Array.from(new Set(getAllChargedMoves(bestReachableRaidVersion, moves, gamemasterPokemon).map(m => moves[m].type)))
+            .filter(t => t !== "normal")
+            .map(t => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as TypesDTO);
+    }, [fetchCompleted, movesFetchCompleted, bestReachableRaidVersion, moves, gamemasterPokemon]);
+
+    const ranksComputation = useMemo(() => {
+        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidRankerFetchCompleted(allRelevantChargedMoveTypes)) {
+            return {};
+        }
+
+        const ranksDic: Dictionary<ranksDicDTO> = {};
+    
+        allRelevantChargedMoveTypes
+            .map(t => t.toString().toLocaleLowerCase())
+            .forEach(t => {
+                const typeCollection = raidDPS[t];
+                //todo: make rank part of the obj. it's safer, but not quicker...
+                const idx = Object.keys(typeCollection).indexOf(bestReachableRaidVersion.speciesId);
+                const dpsEntry = typeCollection[bestReachableRaidVersion.speciesId];
+                ranksDic[t] = {
+                    rank: idx + 1,
+                    dps: computeDPSEntry(bestReachableRaidVersion, gamemasterPokemon, moves, attack, (level - 1) * 2, t, undefined, [dpsEntry.fastMove, dpsEntry.chargedMove]).dps
+                };
+            });
+
+        return ranksDic;
+    }, [fetchCompleted, raidRankerFetchCompleted, movesFetchCompleted, allRelevantChargedMoveTypes, raidDPS, bestReachableRaidVersion, attack, level, moves, gamemasterPokemon]);
+    
+    useEffect(() => {
+        const typeArray = allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes;
+
+        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(typeArray)) {
+            return;
+        }
+
+        console.log("invoking computation: " + typeArray);
+        computeRaidRankerforTypes(gamemasterPokemon, moves, typeArray);
+    }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
+
+    const resourcesNotReady = !raidRankerFetchCompleted() || !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
 
     const [currentBestReachableGreatLeagueIndex, setCurrentBestReachableGreatLeagueIndex] = useState(0);
     const [currentBestReachableUltraLeagueIndex, setCurrentBestReachableUltraLeagueIndex] = useState(0);
@@ -92,105 +146,55 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const [currentBestReachableCustomLeagueIndex, setCurrentBestReachableCustomLeagueIndex] = useState(0);
     const [currentBestReachableRaidLeagueIndex, setCurrentBestReachableRaidLeagueIndex] = useState(0);
 
-    const rankOnlyFilteredTypePokemon = false; //TODO: connect to settings
-
-    const resourcesNotReady = !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
-
-    const typeFilter = useCallback((p: IGamemasterPokemon, forcedType: string) => {
-        if (resourcesNotReady) {
-            return false;
+    const allReachableRaidPokemon = useMemo(() => {
+        if (!fetchCompleted) {
+            return [pokemon];
         }
 
-        if (!forcedType) {
-            return true;
-        }
-
-        if (rankOnlyFilteredTypePokemon) {
-            if (!p.types.map(t => t.toString().toLocaleLowerCase()).includes(forcedType.toLocaleLowerCase())) {
-                return false;
-            }
-        }
-
-        return getAllChargedMoves(p, moves, gamemasterPokemon).some(m => moves[m].type === forcedType);
-    }, [rankOnlyFilteredTypePokemon, moves, resourcesNotReady, gamemasterPokemon]);
-
-    const computeComparisons = useCallback((forcedType = "") => {
-        if (resourcesNotReady) {
-            return [];
-        }
-
-        const comparisons: dpsEntry[] = [];
-        Object.values(gamemasterPokemon)
-            .filter(p => !p.aliasId && typeFilter(p, forcedType))
-            .forEach(p => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, forcedType)));
-        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
-    }, [gamemasterPokemon, typeFilter, resourcesNotReady, moves]);
-
-    const getSortedRaidReachableVersions = useCallback((comparisons: dpsEntry[]) => {
-        if (resourcesNotReady) {
-            return [];
-        }
         const reachableExcludingMega = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
         const mega = pokemon.isMega || pokemon.isShadow ? [] : Object.values(gamemasterPokemon).filter(p => !p.aliasId && Array.from(reachableExcludingMega).map(pk => pk.dex).includes(p.dex) && p.isMega);
 
-        const allPokemon = [...reachableExcludingMega, ...mega];
+        return [...reachableExcludingMega, ...mega];
+    }, [pokemon, gamemasterPokemon, fetchCompleted]);
 
-        const sortedPokemon = allPokemon.sort((a, b) => {
-            const dpsA = comparisons.find(c => c.speciesId === a.speciesId)?.dps ?? 0;
-            const dpsB = comparisons.find(c => c.speciesId === b.speciesId)?.dps ?? 0;
+    useEffect(() => {
+        if (!fetchCompleted || !movesFetchCompleted || !raidRankerFetchCompleted()) {
+            return;
+        }
+        
+        const sortedPokemon = [...allReachableRaidPokemon].sort((a, b) => {
+            const dpsA = raidDPS[""][a.speciesId].dps;
+            const dpsB = raidDPS[""][b.speciesId].dps;
             return dpsB - dpsA;
         });
 
-        return sortedPokemon.map(p => p.speciesId);
-    }, [gamemasterPokemon, pokemon, resourcesNotReady]);
+        setBestReachableRaidVersion(sortedPokemon[currentBestReachableRaidLeagueIndex]);
 
-    //TODO: make this an async service or context provider...
-    const globalComparisons = useMemo(() => computeComparisons(), [computeComparisons]);
-    const orderedRaidVersions = useMemo(() => !resourcesNotReady ? getSortedRaidReachableVersions(globalComparisons) : [], [globalComparisons, getSortedRaidReachableVersions, resourcesNotReady]);
-    const bestReachable = useMemo(() => !resourcesNotReady ? gamemasterPokemon[orderedRaidVersions[currentBestReachableRaidLeagueIndex]] : undefined, [gamemasterPokemon, orderedRaidVersions, resourcesNotReady, currentBestReachableRaidLeagueIndex]);
-    
-    const allChargedMoveTypes = useMemo(() => resourcesNotReady ? [] : Array.from(new Set(getAllChargedMoves(bestReachable as IGamemasterPokemon, moves, gamemasterPokemon).map(m => moves[m].type))), [bestReachable, moves, resourcesNotReady, gamemasterPokemon]);
-    
-    type ranksDicDTO = {
-        rank: number,
-        dps: number
-    }
-
-    const ranksComputation = useMemo(() => {
-        if (resourcesNotReady) {
-            return {};
-        }
-
-        const ranksDic: Dictionary<ranksDicDTO> = {};
-    
-        allChargedMoveTypes.filter(t => t !== "normal").forEach(t => {
-            const comps = computeComparisons(t);
-            const idx = comps.findIndex(c => c.speciesId === bestReachable!.speciesId);
-            ranksDic[t] = {
-                rank: idx + 1,
-                dps: computeDPSEntry(bestReachable as IGamemasterPokemon, gamemasterPokemon, moves, attack, (level - 1) * 2, t, undefined, [comps[idx].fastMoveId, comps[idx].chargedMoveId]).dps//comps[idx].dps
-            };
-        });
-
-        return ranksDic;
-    }, [allChargedMoveTypes, computeComparisons, bestReachable, resourcesNotReady, attack, level, moves, gamemasterPokemon]);
+    }, [fetchCompleted, allReachableRaidPokemon, movesFetchCompleted, gamemasterPokemon, pokemon, raidDPS, raidRankerFetchCompleted, setBestReachableRaidVersion, currentBestReachableRaidLeagueIndex]);
 
     const mostRelevantType = Object.entries(ranksComputation)
-        .sort(([typeA, rankA], [typeB, rankB]) => {
-            if (typeA === "normal") {
-                return 1;
-            }
-            if (typeB === "normal") {
-                return -1;
-            }
+        .sort(([, rankA], [, rankB]) => {
             return rankA.rank - rankB.rank;
         })
         .slice(0, 3)
         .map(([type, rank]) => ({type: type, rank: rank}));
     
-    const rank = useMemo(() => resourcesNotReady ? 0 : globalComparisons.findIndex(c => c.speciesId === bestReachable!.speciesId) + 1, [globalComparisons, bestReachable, resourcesNotReady]);
+    const rank = useMemo(() => {
+        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidRankerFetchCompleted()) {
+            return 0;
+        }
+
+        return Object.entries(raidDPS[""])
+            .findIndex(([speciesId]) => speciesId === bestReachableRaidVersion.speciesId) + 1;
+    }, [raidDPS, bestReachableRaidVersion, fetchCompleted, movesFetchCompleted, raidRankerFetchCompleted]);
     
-    const selfRealDPS = useMemo(() => resourcesNotReady ? {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0} : computeDPSEntry(bestReachable as IGamemasterPokemon, gamemasterPokemon, moves, attack, (level - 1) * 2), [bestReachable, attack, level, moves, gamemasterPokemon, resourcesNotReady]);
+    const selfRealDPS = useMemo(() => {
+        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion) {
+            return {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0};
+        }
+
+        return computeDPSEntry(bestReachableRaidVersion, gamemasterPokemon, moves, attack, (level - 1) * 2);
+    }, [bestReachableRaidVersion, attack, level, moves, gamemasterPokemon, fetchCompleted, movesFetchCompleted, ]);
 
     if (resourcesNotReady) {
         return <></>;
@@ -263,7 +267,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                     setCurrentBestReachableCustomLeagueIndex(p => (p + 1) % allSortedReachableCustomLeaguePokemon.length);
                     break;
                 case LeagueType.RAID:
-                    setCurrentBestReachableRaidLeagueIndex(p => (p + 1) % orderedRaidVersions.length);
+                    setCurrentBestReachableRaidLeagueIndex(p => (p + 1) % allReachableRaidPokemon.length);
                     break;
             }
         } else {
@@ -311,7 +315,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                     raidsStats={
                         {
                             leagueTitle: "raid",
-                            bestReachablePokemon: bestReachable as IGamemasterPokemon,
+                            bestReachablePokemon: bestReachableRaidVersion as IGamemasterPokemon || pokemon,
                             pokemonRankInLeague: ordinal(rank)
                         }
                     }
@@ -396,7 +400,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         }
                         raidStats={
                             {
-                                bestReachablePokemonName: (bestReachable as IGamemasterPokemon).speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
+                                bestReachablePokemonName: ((bestReachableRaidVersion as IGamemasterPokemon) ?? pokemon).speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
                                 rank: rank,
                                 dps: selfRealDPS.dps,
                                 typeRanks: mostRelevantType.map(t => ({
