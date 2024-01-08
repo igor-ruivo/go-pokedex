@@ -53,12 +53,6 @@
     }
 }
 
-@media (max-width: 1200px) {
-    .grid_container:not(:is(:has(.pokedex))) {
-        //max-width: 800px;
-    }
-}
-
 @media (max-width: 768px) {
     .grid_container {
         max-width: 100%;

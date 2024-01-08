@@ -13,6 +13,10 @@
     color: var(--textColor) !important;
 }
 
+.MuiAutocomplete-popper {
+    z-index: 50000 !important;
+}
+
 div.MuiAutocomplete-listbox,
 ul.MuiAutocomplete-listbox,
 .MuiAutocomplete-listbox > .ReactVirtualized__Grid {
