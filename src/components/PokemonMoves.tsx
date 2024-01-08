@@ -50,7 +50,6 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
             return;
         }
 
-        console.log("invoking computation: " + type);
         computeRaidRankerforTypes(gamemasterPokemon, moves, type);
     }, [fetchCompleted, movesFetchCompleted, type, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, raidAttackType]);
 

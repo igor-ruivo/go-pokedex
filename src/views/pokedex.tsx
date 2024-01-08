@@ -176,9 +176,6 @@ const Pokedex = () => {
                     break;
                 }
 
-                console.log(raidDPS);
-                console.log(type1Filter);
-
                 Object.entries(raidDPS[type1Filter ? type1Filter.toString().toLocaleLowerCase() : ""]).forEach(([speciesId, e], idx) => {
                     const raidFilter = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && (showMega || !pokemon.isMega) && (showShadow || !pokemon.isShadow);
                     const raidFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId;
