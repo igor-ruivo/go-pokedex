@@ -8,7 +8,7 @@ import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ListEntry from "./ListEntry";
 import { Effectiveness, calculateDamage, computeDPSEntry, getAllChargedMoves, getAllFastMoves, translateMoveFromMoveId } from "../utils/pokemon-helper";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
@@ -31,23 +31,30 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const [fastMovesCollapsed, setFastMovesCollapsed] = useState(false);
     const [chargedMovesCollapsed, setChargedMovesCollapsed] = useState(false);
     const [raidAttackType, setRaidAttackType] = useState<string>("");
-    
+
+    const type = useMemo(() => {
+        if (!raidAttackType) {
+            return undefined;
+        }
+
+        return [(raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes];
+    }, [raidAttackType]);
+
     useEffect(() => {
         if (!fetchCompleted || !movesFetchCompleted || league !== LeagueType.RAID) {
             return;
         }
 
-        const type = !raidAttackType ? undefined : [(raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes];
-
+        
         if (raidRankerFetchCompleted(type)) {
             return;
         }
 
         console.log("invoking computation: " + type);
         computeRaidRankerforTypes(gamemasterPokemon, moves, type);
-    }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, raidAttackType, league]);
+    }, [fetchCompleted, movesFetchCompleted, type, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, raidAttackType, league]);
 
-    if (!fetchCompleted || !gameTranslationFetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon) {
+    if ((league === LeagueType.RAID && !raidRankerFetchCompleted(type)) || !fetchCompleted || !gameTranslationFetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
     }
 
@@ -56,8 +63,8 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const masterLeagueMoveset = rankLists[2][pokemon.speciesId]?.moveset ?? [];
     const customLeagueMoveset = rankLists[3] ? (rankLists[3][pokemon.speciesId]?.moveset ?? []) : [];
 
-    const raidComputation = computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, 100, raidAttackType);
-    const raidMoveset: [string, string] = [raidComputation.fastMoveId, raidComputation.chargedMoveId];
+    const raidComputation = raidDPS[type ? type[0].toString().toLocaleLowerCase() : ""][pokemon.speciesId];
+    const raidMoveset: [string, string] = [raidComputation.fastMove, raidComputation.chargedMove];
     const realDps = computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, level, raidAttackType, undefined, raidMoveset);
 
     const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : league === LeagueType.MASTER_LEAGUE ? masterLeagueMoveset : raidMoveset;
@@ -302,11 +309,11 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                         <span>{raidAttackType && translator(TranslatorKeys.Focused2, currentLanguage)}</span>
                         <span>{raidAttackType && translator(TranslatorKeys.Effective, currentLanguage)},</span>
                         <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
-                        <strong className="cp-container"> {Math.round(/*raidComputation.dps*/ realDps.dps * 100) / 100} DPS</strong>
+                        <strong className="cp-container"> {Math.round(realDps.dps * 100) / 100} DPS</strong>
                         <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
-                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.fastMoveId, moves, gameTranslation)}`}</strong>
+                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.fastMove, moves, gameTranslation)}`}</strong>
                         <span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span>
-                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.chargedMoveId, moves, gameTranslation)}`}</strong>
+                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.chargedMove, moves, gameTranslation)}`}</strong>
                         .
                     </>
                 </span>
