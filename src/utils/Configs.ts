@@ -1,4 +1,4 @@
-export const cacheTtlInMillis = 60 * 60 * 1000;
+export const cacheTtlInMillis = 60 * 60 * 1000 * 12;
 export const rankChangesCacheTtlInMillis = 3 * 24 * 60 * 60 * 1000;
 export const goBaseUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets/pm";
 export const buildPokemonImageUrl = (dex: string, type: string, form?: string) => `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/${dex}${form ? "_f" + form : ""}.png`;
