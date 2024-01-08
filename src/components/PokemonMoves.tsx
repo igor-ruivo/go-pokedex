@@ -41,7 +41,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     }, [raidAttackType]);
 
     useEffect(() => {
-        if (!fetchCompleted || !movesFetchCompleted || league !== LeagueType.RAID) {
+        if (!fetchCompleted || !movesFetchCompleted) {
             return;
         }
 
@@ -52,9 +52,9 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
 
         console.log("invoking computation: " + type);
         computeRaidRankerforTypes(gamemasterPokemon, moves, type);
-    }, [fetchCompleted, movesFetchCompleted, type, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, raidAttackType, league]);
+    }, [fetchCompleted, movesFetchCompleted, type, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, raidAttackType]);
 
-    if ((league === LeagueType.RAID && !raidRankerFetchCompleted(type)) || !fetchCompleted || !gameTranslationFetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon) {
+    if (!raidRankerFetchCompleted(type) || !fetchCompleted || !gameTranslationFetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon) {
         return <></>;
     }
 

@@ -128,14 +128,16 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     }, [fetchCompleted, league, raidRankerFetchCompleted, movesFetchCompleted, allRelevantChargedMoveTypes, raidDPS, bestReachableRaidVersion, attack, level, moves, gamemasterPokemon]);
     
     useEffect(() => {
-        const typeArray = allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes;
+        setTimeout(() => {
+            const typeArray = allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes;
 
-        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(typeArray)) {
-            return;
-        }
-
-        console.log("invoking computation: " + typeArray);
-        computeRaidRankerforTypes(gamemasterPokemon, moves, typeArray);
+            if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(typeArray)) {
+                return;
+            }
+    
+            console.log("invoking computation: " + typeArray);
+            computeRaidRankerforTypes(gamemasterPokemon, moves, typeArray);
+        }, 0);
     }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
 
     const resourcesNotReady = !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
@@ -158,18 +160,19 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     }, [pokemon, gamemasterPokemon, fetchCompleted]);
 
     useEffect(() => {
-        if (!fetchCompleted || !movesFetchCompleted || !raidRankerFetchCompleted()) {
-            return;
-        }
-        
-        const sortedPokemon = [...allReachableRaidPokemon].sort((a, b) => {
-            const dpsA = raidDPS[""][a.speciesId].dps;
-            const dpsB = raidDPS[""][b.speciesId].dps;
-            return dpsB - dpsA;
-        });
-
-        setBestReachableRaidVersion(sortedPokemon[currentBestReachableRaidLeagueIndex]);
-
+        setTimeout(() => {
+            if (!fetchCompleted || !movesFetchCompleted || !raidRankerFetchCompleted()) {
+                return;
+            }
+            
+            const sortedPokemon = [...allReachableRaidPokemon].sort((a, b) => {
+                const dpsA = raidDPS[""][a.speciesId].dps;
+                const dpsB = raidDPS[""][b.speciesId].dps;
+                return dpsB - dpsA;
+            });
+    
+            setBestReachableRaidVersion(sortedPokemon[currentBestReachableRaidLeagueIndex]);
+        }, 0);
     }, [fetchCompleted, allReachableRaidPokemon, movesFetchCompleted, gamemasterPokemon, pokemon, raidDPS, raidRankerFetchCompleted, setBestReachableRaidVersion, currentBestReachableRaidLeagueIndex]);
 
     const mostRelevantType = Object.entries(ranksComputation)
