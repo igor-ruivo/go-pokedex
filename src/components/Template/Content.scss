@@ -1,7 +1,14 @@
 .main-content {
-    //margin-right: auto;
-    //margin-left: auto;
-    height: 100%;
+    height: calc(100% - 75px - 50px);
     display: flex;
     justify-content: center;
+    &:not(:is(:has(.pokedex))) {
+        overflow-y: scroll;
+    }
+}
+
+@media (max-width: 500px) {
+    .main-content {
+        height: calc(100% - 55px - 50px);
+    }
 }

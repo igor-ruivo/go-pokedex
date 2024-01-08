@@ -420,12 +420,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                                 <div className="pvp-entry full-width smooth with-border fitting-content gapped"><strong>{translator(TranslatorKeys.Weak, currentLanguage)}:</strong></div>
                                 
                                 <div className="max-width aligned full-height">
-                                    <div className="overflowing">
+                                    <div className="full-width">
                                         <div className="types-family no-padding">
                                             {[...superEffective, ...effective].length > 0 ? [...superEffective, ...effective]
                                             .map(t => (
                                                 <div key = {t}>
-                                                    <strong className={`move-detail ${superEffective.includes(t) ? "special-item" : ""} soft family-padding item`}>
+                                                    <strong className={`move-detail ${superEffective.includes(t) ? "special-item" : ""} relative soft family-padding item`}>
                                                         {superEffective.includes(t) && <sub className="special-overlay">2x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t.toLocaleLowerCase()}.png`}/></div>
                                                     </strong>
@@ -438,12 +438,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                             <div className="with-shadow aligned column-display gapped unjustified">
                                 <div className="pvp-entry full-width smooth with-border fitting-content gapped"><strong>{translator(TranslatorKeys.Resistant, currentLanguage)}:</strong></div>
                                 <div className="max-width aligned full-height">
-                                    <div className="overflowing">
+                                    <div className="full-width">
                                         <div className="types-family no-padding">
                                             {[...tripleResistance, ...superResistance, ...resistance].length > 0 ? [...tripleResistance, ...superResistance, ...resistance]
                                             .map(t => (
                                                 <div key = {t}>
-                                                    <strong className={`move-detail ${tripleResistance.includes(t)  ? "triple-item" : superResistance.includes(t) ? "special-item" : ""} soft family-padding item`}>
+                                                    <strong className={`move-detail ${tripleResistance.includes(t)  ? "triple-item" : superResistance.includes(t) ? "special-item" : ""} relative soft family-padding item`}>
                                                         {superResistance.includes(t) && <sub className="special-overlay">2x</sub>}
                                                         {tripleResistance.includes(t) && <sub className="special-overlay triple-overlay">3x</sub>}
                                                         <div className="img-padding"><img height={20} width={20} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t.toLocaleLowerCase()}.png`}/></div>

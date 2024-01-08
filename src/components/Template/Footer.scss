@@ -1,0 +1,12 @@
+.footer {
+    min-height: 50px;
+    max-height: 50px;
+    height: 50px;
+    z-index: 10;
+    border-top: 1px solid var(--borderColor2);
+    border-bottom: 1px solid var(--borderColor2);
+    background-color: var(--headerBackground);
+    color: var(--textColor);
+    padding: 6px;
+    display: flex;
+}

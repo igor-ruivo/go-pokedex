@@ -3,6 +3,11 @@
 }
 
 .grid_container {
+    //max-width: 55%;
+    //min-width: 55%;
+    //width: 55%;
+    margin: 0 auto;  //
+    max-width: 65%;
     height: 100%;
     a {
         text-decoration: none;
@@ -42,9 +47,21 @@
     }
 }
 
-@media (max-width: 435px) {
-    .card-wrapper {
-        padding: 1px;
+@media (max-width: 1600px) {
+    .grid_container {
+        max-width: 1024px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .grid_container:not(:is(:has(.pokedex))) {
+        //max-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid_container {
+        max-width: 100%;
     }
 }
 
@@ -55,5 +72,11 @@
 
     .ReactVirtualized__Grid__innerScrollContainer {
         margin-left: 1px;
+    }
+}
+
+@media (max-width: 435px) {
+    .card-wrapper {
+        padding: 1px;
     }
 }

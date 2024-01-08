@@ -84,14 +84,13 @@ const PokemonGrid = memo(({pokemonInfoList, cpStringOverrides, rankOverrides, li
     }, [pokemonInfoList, typedCurrentRank]);
 
     const itemsPerRow = x >= 900 ? 5 : x >= 600 ? 4 : 3;
-    const cardDimensions = (containerRef.current?.offsetWidth ?? 0) / itemsPerRow - 1;
 
     return (
         <div className="grid_container" ref={renderDivRef}>
             {pokemonInfoList.length === 0 && <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div>}
             {pokemonInfoList.length > 0 &&
             <AutoSizer>
-                {({height}) => (
+                {({height, width}) => (
                     <Grid className='grid'
                         cellRenderer={(props: GridCellProps) => {
                             const idx = props.rowIndex * itemsPerRow + props.columnIndex;
@@ -105,9 +104,9 @@ const PokemonGrid = memo(({pokemonInfoList, cpStringOverrides, rankOverrides, li
                         rowCount={Math.ceil(pokemonInfoList.length / itemsPerRow) + 1}
                         columnCount={itemsPerRow}
                         height={height}
-                        width={containerRef.current?.offsetWidth ?? 0}
-                        rowHeight={cardDimensions}
-                        columnWidth={cardDimensions}
+                        width={((containerRef.current?.offsetWidth ?? 0) - width) / 2 + width}
+                        rowHeight={width / itemsPerRow - 1}
+                        columnWidth={width / itemsPerRow - 1}
                         onScroll={(e: ScrollParams) => {
                             if (e.scrollTop === 0) {
                                 return;
