@@ -41,12 +41,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     }, [raidAttackType]);
 
     useEffect(() => {
-        if (!fetchCompleted || !movesFetchCompleted) {
-            return;
-        }
-
-        
-        if (raidRankerFetchCompleted(type)) {
+        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(type)) {
             return;
         }
 

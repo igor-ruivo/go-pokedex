@@ -36,7 +36,7 @@ const useFetchAllData: () => [Dictionary<ITranslatedMove>, boolean, string] = ()
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [gameLanguageResourceUrl]);
+    }, [gameLanguageResourceUrl, fetchGameTranslation]);
 
     return [gameTranslation[0], fetchGameTranslationCompleted, errorLoadingGameTranslationData];
 }

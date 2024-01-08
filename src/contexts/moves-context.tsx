@@ -22,7 +22,7 @@ const useFetchAllData: () => [Dictionary<IGameMasterMove>, boolean, string] = ()
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, []);
+    }, [fetchMoves]);
 
     return [moves[0], fetchMovesCompleted, errorLoadingMovesData];
 }

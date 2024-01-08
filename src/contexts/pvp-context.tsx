@@ -30,7 +30,7 @@ const useFetchAllData: () => [Dictionary<IRankedPokemon>[], boolean, string] = (
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [fetchCompleted]);
+    }, [fetchCompleted, fetchRankLists, gamemasterPokemon]);
 
     return [rankLists, fetchCompleted && rankListsFetchCompleted, errors + errorLoadingRankListsData];
 }
