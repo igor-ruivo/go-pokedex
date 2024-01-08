@@ -3,7 +3,7 @@
     overscroll-behavior: none !important;
     -webkit-text-size-adjust: 100%;
 
-    @media (min-width: 500px) {
+   // @media (min-width: 500px) {
         scrollbar-color: var(--scroll-background);
         scrollbar-width: 6px;
 
@@ -21,7 +21,7 @@
         &::-webkit-scrollbar-corner {
             background-color: rgba(0, 0, 0, 0);
         }
-    }
+    //}
 }
 
 a {
