@@ -13,6 +13,15 @@
     position: fixed;
     top: 0px;
     width: 100%;
+    //transition: 200ms linear;
+}
+
+.nav-visible {
+    //transform: translateY(0);
+}
+  
+.nav-hidden {
+    //transform: translateY(-75px); /* Adjust the value based on your navbar height */
 }
 
 .options-menu {
@@ -264,6 +273,10 @@ button {
         height: 55px;
         padding-left: 16px;
         padding-right: 16px;
+    }
+
+    .nav-hidden {
+       // transform: translateY(-55px); /* Adjust the value based on your navbar height */
     }
 
     .options-nav {

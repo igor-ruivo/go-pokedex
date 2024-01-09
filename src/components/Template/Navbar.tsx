@@ -74,7 +74,31 @@ const Navbar = () => {
     const {currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage} = useLanguage();
     const {imageSource, updateImageSource} = useImageSource();
     const {familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL, type1Filter, updateType1, type2Filter, updateType2} = useNavbarSearchInput();
-
+    const [scrollingDown, setScrollingDown] = useState(false);
+    const [prevScrollY, setPrevScrollY] = useState(0);
+/*
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+        
+            if (currentScrollY > prevScrollY) {
+                console.log("down");
+                // Scrolling down
+                setScrollingDown(true);
+            } else {
+                console.log("up");
+                // Scrolling up
+                setScrollingDown(false);
+            }
+        
+            setPrevScrollY(currentScrollY);
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+    
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [prevScrollY, setScrollingDown, setPrevScrollY]);
+*/
     useEffect(() => {
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
         const themeHandlerFunc = (event: MediaQueryListEvent) => {
@@ -231,7 +255,7 @@ const Navbar = () => {
     const xlDisabled = !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom"));
 
     return <>
-        <header className="navbar">
+        <header className={`navbar ${scrollingDown && prevScrollY > 75 ? 'nav-hidden' : 'nav-visible'}`}>
             <section className="navbar-section">
                 <Link to={getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
