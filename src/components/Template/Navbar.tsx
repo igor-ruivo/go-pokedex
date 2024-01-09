@@ -32,6 +32,25 @@ export type EntryType = {
     label: string
 }
 
+export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: number) => {
+    const threshold = 110;
+
+    if (window.scrollY < threshold) {
+        // never
+        return false;
+    }
+
+    if (scrollingDown && accumulatedScrollDownDelta > threshold) {
+        return true;
+    }
+
+    if (!scrollingDown && accumulatedScrollDownDelta <= threshold / 2) {
+        return true;
+    }
+
+    return false;
+}
+
 const Navbar = () => {
     const getSystemThemePreference = () => {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -75,7 +94,9 @@ const Navbar = () => {
     const {imageSource, updateImageSource} = useImageSource();
     const {familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL, type1Filter, updateType1, type2Filter, updateType2} = useNavbarSearchInput();
     const [scrollingDown, setScrollingDown] = useState(false);
+    //to detect direction change
     const [prevScrollY, setPrevScrollY] = useState(0);
+    const [accumulatedScrollDownDelta, setAccumulatedScrollDownDelta] = useState(0);
     const [searchOpen, setSearchOpen] = useState(false);
 
     useEffect(() => {
@@ -83,18 +104,27 @@ const Navbar = () => {
             const currentScrollY = window.scrollY;
         
             if (currentScrollY > prevScrollY) {
+                if (!scrollingDown) {
+                    setAccumulatedScrollDownDelta(0);
+                }
                 setScrollingDown(true);
             } else {
-                setScrollingDown(false);
+                if (currentScrollY < prevScrollY) {
+                    if (scrollingDown) {
+                        setAccumulatedScrollDownDelta(0);
+                    }
+                    setScrollingDown(false);
+                }
             }
         
+            setAccumulatedScrollDownDelta(p => p + Math.abs(currentScrollY - prevScrollY));
             setPrevScrollY(currentScrollY);
         };
     
         window.addEventListener('scroll', handleScroll);
     
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [prevScrollY, setScrollingDown, setPrevScrollY]);
+    }, [prevScrollY, scrollingDown, setAccumulatedScrollDownDelta, setScrollingDown, setPrevScrollY]);
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -258,7 +288,7 @@ const Navbar = () => {
     }
 
     return <>
-        <header className={`navbar ${scrollingDown && prevScrollY > 110 ? 'nav-hidden' : 'nav-visible'}`}>
+        <header className={`navbar ${hideNavbar(scrollingDown, accumulatedScrollDownDelta) ? 'nav-hidden' : 'nav-visible'}`}>
             <section className="navbar-section">
                 <Link to={getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
@@ -317,7 +347,7 @@ const Navbar = () => {
                 </button>
             </section>
         </header>
-        <aside className={`options-menu ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${scrollingDown && prevScrollY > 110 ? 'menu-hidden' : 'menu-visible'}`}>
+        <aside className={`options-menu ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta) ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>
@@ -401,7 +431,7 @@ const Navbar = () => {
             className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !pathname.includes("pokemon"))) ? "show" : "hide"}`}
             onClick={e => handleModalClick(e)}
         />
-        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${scrollingDown && prevScrollY > 110 ? 'menu-hidden' : 'menu-visible'}`}>
+        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta) ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>
