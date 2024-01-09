@@ -40,6 +40,11 @@ export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: n
         return false;
     }
 
+    if ((window.innerHeight + Math.round(window.scrollY) + threshold / 2) >= document.body.scrollHeight) {
+        // always
+        return true;
+    }
+
     if (scrollingDown && accumulatedScrollDownDelta > threshold) {
         return true;
     }

@@ -2,7 +2,7 @@ import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
-import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsHolidayLittleUrl, pvpokeRankingsHolidayUrl, pvpokeRankingsRemixLittleUrl, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
+import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";

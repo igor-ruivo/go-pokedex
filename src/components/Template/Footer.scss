@@ -3,8 +3,7 @@
     max-height: 65px;
     height: 65px;
     z-index: 40000;
-    border-top: 1px solid var(--borderColor2);
-    border-bottom: 1px solid var(--borderColor2);
+    border: 1px solid var(--borderColor2);
     background-color: var(--headerBackground);
     color: var(--textColor);
     padding: 6px;
