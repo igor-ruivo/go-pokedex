@@ -13,7 +13,7 @@
     top: 0px;
     width: 100%;
     opacity: 1;
-    transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
+    transition: opacity 225ms ease, visibility 225ms linear, transform 225ms linear;
 }
 
 .fake-modal {
@@ -56,7 +56,7 @@
     z-index: 40000;
     width: 100%;
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
-    transition: transform 200ms linear;
+    transition: transform 225ms linear;
 }
 
 .filter-menu {
@@ -70,7 +70,7 @@
     min-width: 320px;
     right: 0;
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
-    transition: transform 200ms linear;
+    transition: transform 225ms linear;
 }
 
 .filter-checkbox {

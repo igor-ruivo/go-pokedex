@@ -35,7 +35,7 @@ const Footer = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [prevScrollY, scrollingDown, setAccumulatedScrollDownDelta, setScrollingDown, setPrevScrollY]);
 
-    return <footer className={`footer ${hideNavbar(scrollingDown, accumulatedScrollDownDelta) ? 'footer-hidden' : 'footer-visible'}`}></footer>;
+    return <footer className={`footer ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, false) ? 'footer-hidden' : 'footer-visible'}`}></footer>;
 }
 
 export default Footer;

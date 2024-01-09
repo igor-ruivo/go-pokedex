@@ -32,7 +32,7 @@ export type EntryType = {
     label: string
 }
 
-export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: number) => {
+export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: number, navbar: boolean) => {
     const threshold = 110;
 
     if (window.scrollY < threshold) {
@@ -42,7 +42,7 @@ export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: n
 
     if ((window.innerHeight + Math.round(window.scrollY) + threshold / 2) >= document.body.scrollHeight) {
         // always
-        return true;
+        return navbar;
     }
 
     if (scrollingDown && accumulatedScrollDownDelta > threshold) {
@@ -293,7 +293,7 @@ const Navbar = () => {
     }
 
     return <>
-        <header className={`navbar ${hideNavbar(scrollingDown, accumulatedScrollDownDelta) ? 'nav-hidden' : 'nav-visible'}`}>
+        <header className={`navbar ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'nav-hidden' : 'nav-visible'}`}>
             <section className="navbar-section">
                 <Link to={getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
@@ -352,7 +352,7 @@ const Navbar = () => {
                 </button>
             </section>
         </header>
-        <aside className={`options-menu ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta) ? 'menu-hidden' : 'menu-visible'}`}>
+        <aside className={`options-menu ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>
@@ -436,7 +436,7 @@ const Navbar = () => {
             className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !pathname.includes("pokemon"))) ? "show" : "hide"}`}
             onClick={e => handleModalClick(e)}
         />
-        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta) ? 'menu-hidden' : 'menu-visible'}`}>
+        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>
