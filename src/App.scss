@@ -10,6 +10,8 @@
         &::-webkit-scrollbar {
             width: 6px;
             height: 6px;
+            background-color: var(--headerBackground);
+            border: 1px solid var(--borderColor2);
         }
         &::-webkit-scrollbar-thumb {
             background-color: var(--scroll-background);
