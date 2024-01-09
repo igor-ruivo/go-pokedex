@@ -32,7 +32,8 @@ export enum ConfigKeys {
     ShowShadow,
     ShowXL,
     Type1,
-    Type2
+    Type2,
+    TrashRaid
 }
 
 export const readSessionValue = (key: ConfigKeys) => {

@@ -9,6 +9,7 @@ import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pok
 import "./DeleteTrash.scss"
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
+import LoadingRenderer from "./LoadingRenderer";
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
     const cachedValue = readPersistentValue(key);
@@ -23,10 +24,9 @@ const DeleteTrash = () => {
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {currentGameLanguage} = useLanguage();
     const [trashGreat, setTrashGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashGreat, 100));
-    const [exceptGreat, setExceptGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.ExceptGreat, 0));
     const [trashUltra, setTrashUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 100));
-    const [exceptUltra, setExceptUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.ExceptUltra, 0));
     const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 200));
+    const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 20));
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashTop, 20));
     const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
 
@@ -57,15 +57,8 @@ const DeleteTrash = () => {
         if (targetRef.current) {
             targetRef.current.value = "";
         }
-        writePersistentValue(ConfigKeys.ExceptGreat, exceptGreat.toString());
-    }, [exceptGreat, targetRef]);
-
-    useEffect(() => {
-        if (targetRef.current) {
-            targetRef.current.value = "";
-        }
-        writePersistentValue(ConfigKeys.ExceptUltra, exceptUltra.toString());
-    }, [exceptUltra, targetRef]);
+        writePersistentValue(ConfigKeys.TrashRaid, trashRaid.toString());
+    }, [trashRaid, targetRef]);
 
     useEffect(() => {
         if (targetRef.current) {
@@ -121,7 +114,7 @@ const DeleteTrash = () => {
         const ulLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[1]);
         const mlLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[2]);
 
-        if ((mlLowestRank && !isBadRank(mlLowestRank.rank, trashMaster)) || (glLowestRank && !isBadRank(glLowestRank.rank, exceptGreat)) || (ulLowestRank && !isBadRank(ulLowestRank.rank, exceptUltra))) {
+        if ((mlLowestRank && !isBadRank(mlLowestRank.rank, trashMaster)) || (glLowestRank && !isBadRank(glLowestRank.rank, 0)) || (ulLowestRank && !isBadRank(ulLowestRank.rank, 0))) {
             return false;
         }
 
@@ -244,84 +237,89 @@ const DeleteTrash = () => {
             }
         });
 
-        str += `&!4*&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}`;
+        str += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}`;
         return str;
     }
 
     return (
-        <div className="item default-padding text-color">
-            {pvpFetchCompleted && fetchCompleted ? <div>
-                <div className="extra-ivs-options item default-padding column">
-                    <div>
-                    CP Limit: <select value={cp} onChange={e => setCP(+e.target.value)} className="select-level">
-                        <option key={500} value={500}>{500}</option>
-                        <option key={1000} value={1000}>{1000}</option>
-                        <option key={1500} value={1500}>{1500}</option>
-                        <option key={2000} value={2000}>{2000}</option>
-                        <option key={2500} value={2500}>{2500}</option>
-                        <option key={3000} value={3000}>{3000}</option>
-                        <option key={3500} value={3500}>{3500}</option>
-                        <option key={4000} value={4000}>{4000}</option>
-                    </select>
-                    </div>
-                    <div>
-                    Max Perfection rank <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
-                            {Array.from({length: 4096}, (_x, i) => i + 1)
-                                .map(e => (<option key={e} value={e}>{"#" + e}</option>))}
-                    </select>
-                    </div>
-                    <div>
-                    Save top X Great League <select value={trashGreat} onChange={e => setTrashGreat(+e.target.value)} className="select-level">
-                            {Array.from({length: 2000}, (_x, i) => i)
-                                .map(e => (<option key={e} value={e}>{e}</option>))}
-                    </select>
-                    </div>
-                    <div>
-                    Save top X Ultra League <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
-                        {Array.from({length: 2000}, (_x, i) => i)
-                            .map(e => (<option key={e} value={e}>{e}</option>))}
-                    </select>
-                    </div>
-                    <div>
-                    Save top X Master League <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
-                        {Array.from({length: 2000}, (_x, i) => i)
-                            .map(e => (<option key={e} value={e}>{e}</option>))}
-                    </select>
-                    </div>
-                    <div>
-                    Except if Great League rank is &lt;= <select value={exceptGreat} onChange={e => setExceptGreat(+e.target.value)} className="select-level">
-                            {Array.from({length: 4096}, (_x, i) => i)
-                                .map(e => (<option key={e} value={e}>{e}</option>))}
-                    </select>
-                    </div>
-                    <div>
-                    Except if Ultra League rank is &lt;= <select value={exceptUltra} onChange={e => setExceptUltra(+e.target.value)} className="select-level">
-                        {Array.from({length: 4096}, (_x, i) => i)
-                            .map(e => (<option key={e} value={e}>{e}</option>))}
-                    </select>
-                    </div>
+        <main className="layout">
+            <div className="full-height">
+                <div className="pokemon-content">
+                    <LoadingRenderer errors="" completed={pvpFetchCompleted && fetchCompleted}>
+                        <div className="content with-default-top-margin">
+                            <div className="extra-ivs-options item default-padding column">
+                                <div className="row-flex">
+                                    <div>
+                                    CP Limit: <select value={cp} onChange={e => setCP(+e.target.value)} className="select-level">
+                                        <option key={500} value={500}>{500}</option>
+                                        <option key={1000} value={1000}>{1000}</option>
+                                        <option key={1500} value={1500}>{1500}</option>
+                                        <option key={2000} value={2000}>{2000}</option>
+                                        <option key={2500} value={2500}>{2500}</option>
+                                        <option key={3000} value={3000}>{3000}</option>
+                                        <option key={3500} value={3500}>{3500}</option>
+                                        <option key={4000} value={4000}>{4000}</option>
+                                    </select>
+                                    </div>
+                                <div>
+                                Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
+                                        {Array.from({length: 4096}, (_x, i) => i + 1)
+                                            .map(e => (<option key={e} value={e}>{"#" + e}</option>))}
+                                </select>
+                                </div>
+                                </div>
+                                <div className="row-flex">
+                                <div>
+                                <img height={20} width={20} src={`${process.env.PUBLIC_URL}/images/leagues/great.png`}/> Top <select value={trashGreat} onChange={e => setTrashGreat(+e.target.value)} className="select-level">
+                                        {Array.from({length: 2000}, (_x, i) => i)
+                                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                                </select>
+                                </div>
+                                <div>
+                                <img height={20} width={20} src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`}/> Top <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
+                                    {Array.from({length: 2000}, (_x, i) => i)
+                                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                                </select>
+                                </div>
+                                <div>
+                                <img height={20} width={20} src={`${process.env.PUBLIC_URL}/images/leagues/master.png`}/> Top <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
+                                    {Array.from({length: 2000}, (_x, i) => i)
+                                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                                </select>
+                                </div>
+                                </div>
+                                <div className="row-flex">
+                                <div>
+                                <img height={20} width={20} className="raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/raid.webp`}/> Top <select value={trashRaid} onChange={e => setTrashRaid(+e.target.value)} className="select-level">
+                                        {Array.from({length: 2000}, (_x, i) => i)
+                                            .map(e => (<option key={e} value={e}>{e}</option>))}
+                                </select>
+                                </div>
+                                </div>
+                            </div>
+                            <button className="dark-text main-btn with-big-top-margin" onClick={() => {
+                                if (targetRef?.current) {
+                                    targetRef.current.value = "Loading data...";
+                                    setTimeout(() => {
+                                        if (targetRef?.current) {
+                                            targetRef.current.value = computeStr();
+                                        }
+                                    }, 100);
+                                }
+                            }}>Calculate!</button>
+                            <textarea
+                                ref={targetRef}
+                                className="search-strings-container big-height"
+                                readOnly
+                                onClick={(e: any) => {e.target.select();
+                                    document.execCommand("copy");
+                                    alert("Copied to clipboard.");}}
+                            />
+                        </div>
+                    </LoadingRenderer>
                 </div>
-                <button className="dark-text main-btn" onClick={() => {
-                    if (targetRef?.current) {
-                        targetRef.current.value = "Loading data...";
-                        setTimeout(() => {
-                            if (targetRef?.current) {
-                                targetRef.current.value = computeStr();
-                            }
-                        }, 0);
-                    }
-                }}>Calculate!</button>
-                <textarea
-                    ref={targetRef}
-                    className="search-strings-container big-height"
-                    readOnly
-                    onClick={(e: any) => {e.target.select();
-                        document.execCommand("copy");
-                        alert("Copied to clipboard.");}}
-                />
-            </div>:
-            <span>Fetching Pokémon...</span>}
-        </div>
+            </div>
+        </main>
     );
 }
 

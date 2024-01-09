@@ -1,5 +1,6 @@
 .big-height {
     min-height: 80vh;
+    padding-bottom: 71px;
 }
 
 .text-color {
@@ -11,6 +12,17 @@
     gap: 6px;
 }
 
+.row-flex {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+
+    >div {
+        display: flex;
+        align-items: center;
+    }
+}
+
 .dark-text {
     color: #000000;
 }
@@ -20,5 +32,4 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 3px;
 }
