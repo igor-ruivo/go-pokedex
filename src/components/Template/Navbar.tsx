@@ -250,6 +250,12 @@ const Navbar = () => {
     const shadowDisabled = !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid"));
     const xlDisabled = !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom"));
 
+    const handleModalClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        setOptionsOpened(AvailableOptions.None);
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
     return <>
         <header className={`navbar ${scrollingDown && prevScrollY > 110 ? 'nav-hidden' : 'nav-visible'}`}>
             <section className="navbar-section">
@@ -308,7 +314,7 @@ const Navbar = () => {
                 </button>
             </section>
         </header>
-        <aside className={`options-menu ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${scrollingDown && prevScrollY > 110 ? 'nav-hidden' : 'nav-visible'}`}>
+        <aside className={`options-menu ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${scrollingDown && prevScrollY > 110 ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>
@@ -388,7 +394,11 @@ const Navbar = () => {
                 </section>
             </nav>
         </aside>
-        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${scrollingDown && prevScrollY > 110 ? 'nav-hidden' : 'nav-visible'}`}>
+        <div
+            className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || (optionsOpened === AvailableOptions.Filter && !pathname.includes("pokemon"))) ? "show" : "hide"}`}
+            onClick={e => handleModalClick(e)}
+        />
+        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${scrollingDown && prevScrollY > 110 ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>

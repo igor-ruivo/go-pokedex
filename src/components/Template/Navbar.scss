@@ -17,6 +17,18 @@
     transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
 }
 
+.fake-modal {
+    background-color: rgba(0, 0, 0, .33);
+    position: fixed;
+    height: 100%;
+    width: 100vw;
+    z-index: 39999;
+
+    &.hide {
+        display: none;
+    }
+}
+
 .nav-visible {
     transform: translateY(0);
     opacity: 1;
@@ -29,6 +41,14 @@
     transform: translateY(-75px);
 }
 
+.menu-visible {
+    transform: translateY(0);
+}
+  
+.menu-hidden {
+    transform: translateY(-75px);
+}
+
 .options-menu {
     position: fixed;
     top: 75px;
@@ -37,8 +57,7 @@
     z-index: 40000;
     width: 100%;
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
-    transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
-    opacity: 1;
+    transition: transform 200ms linear;
 }
 
 .filter-menu {
@@ -52,8 +71,7 @@
     min-width: 320px;
     right: 0;
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
-    transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
-    opacity: 1;
+    transition: transform 200ms linear;
 }
 
 .filter-checkbox {
