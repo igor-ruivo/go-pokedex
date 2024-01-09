@@ -9,13 +9,15 @@ import React from "react";
 import { List } from "react-virtualized";
 
 interface ISearchableDropdownProps {
+    searchOpen: boolean;
+    setSearchOpen: (_: React.SetStateAction<boolean>) => void;
     options: EntryType[];
     isLoading: boolean;
     onSelection: (selectedEntry: any) => void;
     renderOption?: (props: any, option: EntryType) => any;
 }
 
-const SearchableDropdown = ({options, isLoading, onSelection, renderOption}: ISearchableDropdownProps) => {
+const SearchableDropdown = ({options, isLoading, onSelection, renderOption, searchOpen, setSearchOpen}: ISearchableDropdownProps) => {
     const {inputText, updateInputText} = useNavbarSearchInput();
     const [debouncingInputText, setDebouncingInputText] = useState(inputText);
     const {currentLanguage} = useLanguage();
@@ -66,6 +68,9 @@ const SearchableDropdown = ({options, isLoading, onSelection, renderOption}: ISe
             root: 'autoComplete-root',
             option: 'autoComplete-option'
         }}
+        open={searchOpen}
+        onOpen={() => setSearchOpen(true)}
+        onClose={() => setSearchOpen(false)}
         className="auto_complete_input"
         inputValue={debouncingInputText}
         onInputChange={(_e, newInputValue, _reason) => setDebouncingInputText(newInputValue)}

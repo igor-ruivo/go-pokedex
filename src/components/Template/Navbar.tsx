@@ -76,6 +76,7 @@ const Navbar = () => {
     const {familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL, type1Filter, updateType1, type2Filter, updateType2} = useNavbarSearchInput();
     const [scrollingDown, setScrollingDown] = useState(false);
     const [prevScrollY, setPrevScrollY] = useState(0);
+    const [searchOpen, setSearchOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -271,6 +272,8 @@ const Navbar = () => {
                 </button>
                 <div className="search-wrapper">
                     <SearchableDropdown
+                        searchOpen={searchOpen}
+                        setSearchOpen={setSearchOpen}
                         options={!fetchCompleted ? [] : Object.values(gamemasterPokemon).filter(p => {
                             if (p.aliasId) {
                                 return false;
@@ -395,7 +398,7 @@ const Navbar = () => {
             </nav>
         </aside>
         <div
-            className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || (optionsOpened === AvailableOptions.Filter && !pathname.includes("pokemon"))) ? "show" : "hide"}`}
+            className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !pathname.includes("pokemon"))) ? "show" : "hide"}`}
             onClick={e => handleModalClick(e)}
         />
         <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${scrollingDown && prevScrollY > 110 ? 'menu-hidden' : 'menu-visible'}`}>
