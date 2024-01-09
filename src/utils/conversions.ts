@@ -282,6 +282,7 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
         case pvpokeRankingsUrl:
             rankId = "master";
             break;
+            /*
         case pvpokeRankingsHolidayUrl:
             rankId = "holiday";
             break;
@@ -293,6 +294,7 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
             break;
         default:
             console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
+            */
     }
 
     const rankedPokemonDictionary: Dictionary<IRankedPokemon> = {};
@@ -317,37 +319,39 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
 
             let parsedRankChange = 0;
 
-            const computedKey = `${computedId}${rankId}`;
-            const computedRankChange = readEntry<number[]>(computedKey, (data: number[]) => {
-                if (data && data[1]) {
-                    data[0] = data[1];
-                    delete data[1];
-                }
-            });
+            if (rankId) {
+                const computedKey = `${computedId}${rankId}`;
+                const computedRankChange = readEntry<number[]>(computedKey, (data: number[]) => {
+                    if (data && data[1]) {
+                        data[0] = data[1];
+                        delete data[1];
+                    }
+                });
 
-            if (computedRankChange) {
-                if (!computedRankChange[0]) {
-                    computedRankChange[0] = computedRank;
-                    writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
-                } else {
-                    const latestValue = computedRankChange[1];
-                    if (latestValue) {
-                        if (latestValue !== computedRank) {
-                            computedRankChange[0] = computedRankChange[1];
-                            computedRankChange[1] = computedRank;
-                            writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
-                        }
-                        parsedRankChange = computedRankChange[0] - computedRank;
+                if (computedRankChange) {
+                    if (!computedRankChange[0]) {
+                        computedRankChange[0] = computedRank;
+                        writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
                     } else {
-                        if (computedRank !== computedRankChange[0]) {
-                            computedRankChange[1] = computedRank;
+                        const latestValue = computedRankChange[1];
+                        if (latestValue) {
+                            if (latestValue !== computedRank) {
+                                computedRankChange[0] = computedRankChange[1];
+                                computedRankChange[1] = computedRank;
+                                writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
+                            }
                             parsedRankChange = computedRankChange[0] - computedRank;
-                            writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
+                        } else {
+                            if (computedRank !== computedRankChange[0]) {
+                                computedRankChange[1] = computedRank;
+                                parsedRankChange = computedRankChange[0] - computedRank;
+                                writeEntry(computedKey, computedRankChange, rankChangesCacheTtlInMillis);
+                            }
                         }
                     }
+                } else {
+                    writeEntry(computedKey, [computedRank], rankChangesCacheTtlInMillis);
                 }
-            } else {
-                writeEntry(computedKey, [computedRank], rankChangesCacheTtlInMillis);
             }
 
             rankedPokemonDictionary[computedId] = {
