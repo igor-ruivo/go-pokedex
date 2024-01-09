@@ -13,25 +13,32 @@
     position: fixed;
     top: 0px;
     width: 100%;
-    //transition: 200ms linear;
+    opacity: 1;
+    transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
 }
 
 .nav-visible {
-    //transform: translateY(0);
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
 }
   
 .nav-hidden {
-    //transform: translateY(-75px); /* Adjust the value based on your navbar height */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-75px);
 }
 
 .options-menu {
+    position: fixed;
     top: 75px;
     background: var(--headerBackground);
     color: var(--textColor);
-    position: absolute;
-    z-index: 200;
+    z-index: 40000;
     width: 100%;
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
+    transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
+    opacity: 1;
 }
 
 .filter-menu {
@@ -39,12 +46,14 @@
     top: 75px;
     background: var(--headerBackground);
     color: var(--textColor);
-    position: absolute;
-    z-index: 200;
+    position: fixed;
+    z-index: 40000;
     width: 33%;
     min-width: 320px;
     right: 0;
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
+    transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
+    opacity: 1;
 }
 
 .filter-checkbox {

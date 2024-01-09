@@ -12,4 +12,18 @@
     position: fixed;
     bottom: 0px;
     width: 100%;
+    opacity: 1;
+    transition: opacity 200ms ease, visibility 200ms linear, transform 200ms linear;
+}
+
+.footer-visible {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+  
+.footer-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(65px);
 }
