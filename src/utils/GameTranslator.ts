@@ -12,6 +12,9 @@ export enum GameTranslatorKeys {
     Retro,
     Holiday,
     Raids,
+    MegaEvolve,
+    TradeEvolve,
+    UltraBeast,
     GreatLeague,
     GreatRemixCup,
     UltraLeague,
@@ -33,6 +36,21 @@ export enum GameTranslatorKeys {
 const hp = new Map<GameLanguage, string>([
     [GameLanguage.English, "HP"],
     [GameLanguage.Portuguese, "PS"]
+]);
+
+const megaEvolve = new Map<GameLanguage, string>([
+    [GameLanguage.English, "megaevolve"],
+    [GameLanguage.Portuguese, "megaevolui"]
+]);
+
+const tradeEvolve = new Map<GameLanguage, string>([
+    [GameLanguage.English, "tradeevolve"],
+    [GameLanguage.Portuguese, "evoluirportroca"]
+]);
+
+const ultraBeast = new Map<GameLanguage, string>([
+    [GameLanguage.English, "ultrabeasts"],
+    [GameLanguage.Portuguese, "ultracriatura"]
 ]);
 
 const greatRemixCup = new Map<GameLanguage, string>([
@@ -192,6 +210,9 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.GreatRemixCup, greatRemixCup],
     [GameTranslatorKeys.Legendary, legendary],
     [GameTranslatorKeys.Mythical, mythical],
+    [GameTranslatorKeys.MegaEvolve, megaEvolve],
+    [GameTranslatorKeys.TradeEvolve, tradeEvolve],
+    [GameTranslatorKeys.UltraBeast, ultraBeast],
     [GameTranslatorKeys.Favorite, favorite]
 ]);
 

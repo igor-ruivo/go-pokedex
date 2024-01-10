@@ -27,7 +27,6 @@ const DeleteTrash = () => {
     const [trashUltra, setTrashUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 100));
     const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 200));
     const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 20));
-    const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashTop, 20));
     const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
 
     const targetRef = useRef<HTMLTextAreaElement>(null);
@@ -64,13 +63,6 @@ const DeleteTrash = () => {
         if (targetRef.current) {
             targetRef.current.value = "";
         }
-        writePersistentValue(ConfigKeys.TrashTop, top.toString());
-    }, [top, targetRef]);
-
-    useEffect(() => {
-        if (targetRef.current) {
-            targetRef.current.value = "";
-        }
         writePersistentValue(ConfigKeys.TrashCP, cp.toString());
     }, [cp, targetRef]);
 
@@ -80,7 +72,7 @@ const DeleteTrash = () => {
 
     const needsLessThanFiveAttack = (p: IGamemasterPokemon, leagueIndex: number) => {
         const bestIVs = Object.values(computeBestIVs(p.atk, p.def, p.hp, leagueIndex === 0 ? 1500 : leagueIndex === 1 ? 2500 : Number.MAX_VALUE)).flat();
-        for (let i = 0; i < top; i++) {
+        for (let i = 0; i < 20; i++) {
             const neededAtk = bestIVs[i].IVs.A;
             if (neededAtk >= 5) {
                 return false;
@@ -237,7 +229,7 @@ const DeleteTrash = () => {
             }
         });
 
-        str += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}`;
+        str += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.MegaEvolve, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.UltraBeast, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.TradeEvolve, currentGameLanguage)}`;
         return str;
     }
 
@@ -261,12 +253,6 @@ const DeleteTrash = () => {
                                         <option key={4000} value={4000}>{4000}</option>
                                     </select>
                                     </div>
-                                <div>
-                                Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
-                                        {Array.from({length: 4096}, (_x, i) => i + 1)
-                                            .map(e => (<option key={e} value={e}>{"#" + e}</option>))}
-                                </select>
-                                </div>
                                 </div>
                                 <div className="row-flex">
                                 <div>
