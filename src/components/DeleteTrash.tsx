@@ -246,7 +246,7 @@ const DeleteTrash = () => {
             <div className="full-height">
                 <div className="pokemon-content">
                     <LoadingRenderer errors="" completed={pvpFetchCompleted && fetchCompleted}>
-                        <div className="content with-default-top-margin">
+                        <div className="content with-default-top-padding">
                             <div className="extra-ivs-options item default-padding column">
                                 <div className="row-flex">
                                     <div>
