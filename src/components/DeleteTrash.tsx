@@ -31,7 +31,7 @@ const DeleteTrash = () => {
     const [trashGreat, setTrashGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashGreat, 100));
     const [trashUltra, setTrashUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 100));
     const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 200));
-    const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 20));
+    const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 10));
     const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
     const {raidDPS, raidRankerFetchCompleted, computeRaidRankerforTypes} = useRaidRanker();
     const [isCalculating, setIsCalculating] = useState(false);
