@@ -7,7 +7,7 @@
 }
 
 .pokedex-layout {
-    height: calc(100% - 75px);
+    height: 100%;//calc(100% - 75px);
     width: 100%;
     //max-width: 65%;
     display: flex;
@@ -100,7 +100,7 @@
 
     .pokedex-layout {
         padding-top: 55px;
-        height: calc(100% - 55px);
+        //height: calc(100% - 55px);
     }
 
     .layout {

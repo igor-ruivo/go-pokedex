@@ -13,6 +13,7 @@ import LoadingRenderer from "./LoadingRenderer";
 import { useRaidRanker } from "../contexts/raid-ranker-context";
 import { useMoves } from "../contexts/moves-context";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
+import translator, { TranslatorKeys } from "../utils/Translator";
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
     const cachedValue = readPersistentValue(key);
@@ -26,7 +27,7 @@ const DeleteTrash = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {moves, movesFetchCompleted} = useMoves();
     const {rankLists, pvpFetchCompleted} = usePvp();
-    const {currentGameLanguage} = useLanguage();
+    const {currentGameLanguage, currentLanguage} = useLanguage();
     const [trashGreat, setTrashGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashGreat, 100));
     const [trashUltra, setTrashUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 100));
     const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 200));
@@ -323,7 +324,7 @@ const DeleteTrash = () => {
                             <div className="extra-ivs-options item default-padding column">
                                 <div className="row-flex">
                                     <div>
-                                    CP Limit: <select value={cp} onChange={e => setCP(+e.target.value)} className="select-level">
+                                    {translator(TranslatorKeys.Save, currentLanguage)} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}s{translator(TranslatorKeys.CPCap, currentLanguage)}: <select value={cp} onChange={e => setCP(+e.target.value)} className="select-level">
                                         <option key={500} value={500}>{500}</option>
                                         <option key={1000} value={1000}>{1000}</option>
                                         <option key={1500} value={1500}>{1500}</option>
@@ -337,27 +338,28 @@ const DeleteTrash = () => {
                                 </div>
                                 <div className="row-flex">
                                 <div>
-                                <img height={20} width={20} alt="Great League" src={`${process.env.PUBLIC_URL}/images/leagues/great.png`}/> Top <select value={trashGreat} onChange={e => setTrashGreat(+e.target.value)} className="select-level">
+                                <img height={20} width={20} alt="Great League" src={`${process.env.PUBLIC_URL}/images/leagues/great.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashGreat} onChange={e => setTrashGreat(+e.target.value)} className="select-level">
                                         {Array.from({length: 2000}, (_x, i) => i)
                                             .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>
                                 </div>
                                 <div>
-                                <img height={20} width={20} alt="Ultra League" src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`}/> Top <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
-                                    {Array.from({length: 2000}, (_x, i) => i)
-                                        .map(e => (<option key={e} value={e}>{e}</option>))}
-                                </select>
-                                </div>
-                                <div>
-                                <img height={20} width={20} alt="Master League" src={`${process.env.PUBLIC_URL}/images/leagues/master.png`}/> Top <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
+                                <img height={20} width={20} alt="Ultra League" src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
                                     {Array.from({length: 2000}, (_x, i) => i)
                                         .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>
                                 </div>
                                 </div>
                                 <div className="row-flex">
+                                    
                                 <div>
-                                <img height={20} width={20} className="raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/raid.webp`}/> Top <select value={trashRaid} onChange={e => setTrashRaid(+e.target.value)} className="select-level">
+                                <img height={20} width={20} alt="Master League" src={`${process.env.PUBLIC_URL}/images/leagues/master.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
+                                    {Array.from({length: 2000}, (_x, i) => i)
+                                        .map(e => (<option key={e} value={e}>{e}</option>))}
+                                </select>
+                                </div>
+                                <div>
+                                <img height={20} width={20} className="raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/raid.webp`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashRaid} onChange={e => setTrashRaid(+e.target.value)} className="select-level">
                                         {Array.from({length: 2000}, (_x, i) => i)
                                             .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>
@@ -366,7 +368,7 @@ const DeleteTrash = () => {
                             </div>
                             <button className="dark-text main-btn with-big-top-margin" disabled={isCalculating} onClick={(e) => {
                                 setIsCalculating(true);
-                            }}>Calculate!</button>
+                            }}>{translator(TranslatorKeys.Compute, currentLanguage)}!</button>
                             <textarea
                                 ref={targetRef}
                                 className="search-strings-container big-height"

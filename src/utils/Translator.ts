@@ -13,8 +13,11 @@ export enum TranslatorKeys {
     FamilyTree,
     NoResults,
     GridFiltering,
+    Save,
     MegaPokemon,
+    Compute,
     Effective,
+    CPCap,
     RecommendedChargedSingle,
     RaidType,
     CountersWeak,
@@ -138,6 +141,12 @@ const languageSettings = new Map<Language, string>([
     [Language.Bosnian, "Jezičke Postavke"]
 ]);
 
+const save = new Map<Language, string>([
+    [Language.English, "Save"],
+    [Language.Portuguese, "Manter"],
+    [Language.Bosnian, "Čuvati"]
+]);
+
 const nothing = new Map<Language, string>([
     [Language.English, "Nothing..."],
     [Language.Portuguese, "Nada..."],
@@ -244,6 +253,12 @@ const official = new Map<Language, string>([
     [Language.English, "Official"],
     [Language.Portuguese, "Oficiais"],
     [Language.Bosnian, "Službene"]
+]);
+
+const cpCap = new Map<Language, string>([
+    [Language.English, " at or above"],
+    [Language.Portuguese, " a partir de"],
+    [Language.Bosnian, "-ove od"]
 ]);
 
 const effective = new Map<Language, string>([
@@ -526,6 +541,12 @@ const findTop = new Map<Language, string>([
     [Language.English, "top"],
     [Language.Portuguese, "os top"],
     [Language.Bosnian, "top"]
+]);
+
+const compute = new Map<Language, string>([
+    [Language.English, "Compute"],
+    [Language.Portuguese, "Calcular"],
+    [Language.Bosnian, "Računati"]
 ]);
 
 const forLeague = new Map<Language, string>([
@@ -936,6 +957,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Weak, weak],
     [TranslatorKeys.Resistant, resistant],
     [TranslatorKeys.Nothing, nothing],
+    [TranslatorKeys.Save, save],
     [TranslatorKeys.Water, water],
     [TranslatorKeys.Overall, overall],
     [TranslatorKeys.Fire, fire],
@@ -952,6 +974,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Fighting, fighting],
     [TranslatorKeys.Flying, flying],
     [TranslatorKeys.Ghost, ghost],
+    [TranslatorKeys.Compute, compute],
     [TranslatorKeys.Steel, steel],
     [TranslatorKeys.CanDeal, canDeal],
     [TranslatorKeys.Dark, dark],
@@ -992,6 +1015,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Current, current],
     [TranslatorKeys.Best, best],
     [TranslatorKeys.GameLanguage, gameLanguage],
+    [TranslatorKeys.CPCap, cpCap],
     [TranslatorKeys.Menu, menu],
     [TranslatorKeys.Theme, theme],
     [TranslatorKeys.LightTheme, lightTheme],
