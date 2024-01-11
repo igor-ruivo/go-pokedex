@@ -13,8 +13,11 @@ export enum TranslatorKeys {
     FamilyTree,
     NoResults,
     GridFiltering,
+    ReadMore,
+    ReadLess,
     Save,
     MegaPokemon,
+    TrashHelp,
     Compute,
     Effective,
     CPCap,
@@ -145,6 +148,12 @@ const save = new Map<Language, string>([
     [Language.English, "Save"],
     [Language.Portuguese, "Manter"],
     [Language.Bosnian, "Čuvati"]
+]);
+
+const trashHelp = new Map<Language, string>([
+    [Language.English, "You can use this section to generate a search string that will find all Pokémon in your storage that aren't meta-relevant. You can define what's relevant or not based on the available filters below. Choose to discard all Pokémon that aren't ranked above rank X in one league and rank Y in another league. If you set a CP cap of Z, then Pokémon with a CP equal to or higher than that CP will never be deleted. This search string won't ever delete any favorite, tagged, legendary, ultra beast, mythical, mega-evolvable, or trade-to-evolve Pokémon. It will also target Pokémon that require low Attack IVs to be relevant, in case they don't have a low Attack IV – because trading couldn't make them relevant either. Please double-check if your in-game language matches the language selected in the website settings."],
+    [Language.Portuguese, "Podes usar esta secção para gerar uma string de pesquisa que encontre todos os teus Pokémon armazenados que não são meta-relevantes. Podes definir o que consideras relevante ou não com base nos filtros disponíveis abaixo. Escolhe descartar todos os Pokémon que não têm uma classificação acima da classificação X numa liga e da classificação Y noutra liga. Se estabeleceres um limite de PC de Z, então Pokémons com um PC igual ou superior a esse PC nunca serão eliminados. Esta string de pesquisa nunca eliminará qualquer Pokémon favorito, etiquetado, lendário, ultra criatura, mítico, mega-evoluível ou Pokémons com evolução gratuita após uma troca. Também irá apanhar Pokémons que requerem IVs de Ataque baixos para serem relevantes, no caso de não terem um IV de Ataque baixo - porque a troca também não os tornaria relevantes. Por favor, verifica se o idioma no teu jogo coincide com o idioma selecionado nas configurações do site."],
+    [Language.Bosnian, "Možeš koristiti ovu sekciju kako bi generisao/la niz pretrage koji će pronaći sve Pokémon-e u tvom skladištu koji nisu relevantni za trenutni meta. Možeš definirati šta smatraš relevantnim ili ne na osnovu dostupnih filtera ispod. Odluči da odbaciš sve Pokémon-e koji nisu rangirani iznad ranga X u jednoj ligi i ranga Y u drugoj ligi. Ako postaviš ograničenje za CP na vrijednost Z, tada Pokémon-i sa CP jednakim ili većim od tog CP-a nikada neće biti izbrisani. Ovaj niz pretrage nikada neće obrisati nijednog favorita, označenog, legendarnog, ultra bića, mitološkog, mega-evoluirajućeg ili Pokémon-a koji se razvija trampom. Također će ciljati Pokémon-e koji zahtijevaju niski Attack IV da bi bili relevantni, u slučaju da nemaju niski Attack IV - jer ih trampa također ne bi učinila relevantnim. Molim te da provjeriš da li je jezik u igri usklađen s odabranim jezikom u postavkama web stranice."]
 ]);
 
 const nothing = new Map<Language, string>([
@@ -741,6 +750,18 @@ const lower = new Map<Language, string>([
     [Language.Bosnian, "Smanjiti"]
 ]);
 
+const readMore = new Map<Language, string>([
+    [Language.English, "Read more"],
+    [Language.Portuguese, "Ler mais"],
+    [Language.Bosnian, "Pročitaj više"]
+]);
+
+const readLess = new Map<Language, string>([
+    [Language.English, "Read less"],
+    [Language.Portuguese, "Ler menos"],
+    [Language.Bosnian, "Pročitaj manje"]
+]);
+
 const increase = new Map<Language, string>([
     [Language.English, "Increase"],
     [Language.Portuguese, "Aumentar"],
@@ -932,6 +953,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.GridFiltering, gridFiltering],
     [TranslatorKeys.And, and],
     [TranslatorKeys.CountersWeak, countersWeak],
+    [TranslatorKeys.TrashHelp, trashHelp],
     [TranslatorKeys.Any, any],
     [TranslatorKeys.FamilyTree, familyTree],
     [TranslatorKeys.LanguageSettings, languageSettings],
@@ -994,6 +1016,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.TrashString, trashString],
     [TranslatorKeys.Find, find],
     [TranslatorKeys.WildUnpowered, wildUnpowered],
+    [TranslatorKeys.ReadMore, readMore],
+    [TranslatorKeys.ReadLess, readLess],
     [TranslatorKeys.ThatResultIn, thatResultIn],
     [TranslatorKeys.FindTop, findTop],
     [TranslatorKeys.ForLeague, forLeague],

@@ -35,6 +35,7 @@ const DeleteTrash = () => {
     const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
     const {raidDPS, raidRankerFetchCompleted, computeRaidRankerforTypes} = useRaidRanker();
     const [isCalculating, setIsCalculating] = useState(false);
+    const [isExpanded, setExpanded] = useState(false);
 
     const targetRef = useRef<HTMLTextAreaElement>(null);
     
@@ -243,7 +244,7 @@ const DeleteTrash = () => {
         }
         
         if (targetRef?.current) { 
-            targetRef.current.value = "Computing data...";
+            targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
         }
 
         setTimeout(() => {
@@ -253,7 +254,7 @@ const DeleteTrash = () => {
             setIsCalculating(false);
         }, 100);
         
-    }, [isCalculating, computeStr, targetRef]);
+    }, [isCalculating, computeStr, targetRef, currentLanguage]);
 
     useEffect(() => {
 
@@ -262,14 +263,14 @@ const DeleteTrash = () => {
         }
 
         if (targetRef?.current) { 
-            targetRef.current.value = "Loading Pokémon...";
+            targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
         }
 
         setTimeout(() => {
             computeRaidRankerforTypes(gamemasterPokemon, moves, enumValues);
         }, 100);
 
-    }, [fetchCompleted, movesFetchCompleted, enumValues, gamemasterPokemon, isCalculating, moves, raidRankerFetchCompleted, computeRaidRankerforTypes]);
+    }, [fetchCompleted, currentLanguage, movesFetchCompleted, enumValues, gamemasterPokemon, isCalculating, moves, raidRankerFetchCompleted, computeRaidRankerforTypes]);
 
     useEffect(() => {
         if (targetRef.current) {
@@ -305,6 +306,12 @@ const DeleteTrash = () => {
         }
         writePersistentValue(ConfigKeys.TrashCP, cp.toString());
     }, [cp, targetRef]);
+
+    useEffect(() => {
+        if (targetRef.current) {
+            targetRef.current.value = "";
+        }
+    }, [currentGameLanguage, targetRef]);
     
     type DisambiguatedEntry = {
         dex: number,
@@ -320,7 +327,16 @@ const DeleteTrash = () => {
             <div className="full-height">
                 <div className="pokemon-content">
                     <LoadingRenderer errors="" completed={pvpFetchCompleted && fetchCompleted}>
-                        <div className="content with-default-top-padding">
+                        <div className="content with-default-top-padding flex-column">
+                            
+                            <div className={`extra-ivs-options item default-padding column text-container ${isExpanded ? 'expanded' : ''}`}>
+                            <p id="readMoreText" className={`${isExpanded ? 'expanded' : ''}`}>{translator(TranslatorKeys.TrashHelp, currentLanguage)}</p>
+                            <u onClick={()=>{setExpanded(e => !e)}} id="readMoreLink">
+                                {isExpanded ? translator(TranslatorKeys.ReadLess, currentLanguage) : translator(TranslatorKeys.ReadMore, currentLanguage)}
+                            </u>
+                            
+                            </div>
+
                             <div className="extra-ivs-options item default-padding column">
                                 <div className="row-flex">
                                     <div>

@@ -11,6 +11,44 @@
     gap: 6px;
 }
 
+.text-container {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.3s ease;
+  }
+  
+  .text-container.expanded {
+    max-height: none;
+  }
+  
+  #readMoreText {
+    //margin: 0; /* Reset margin for the paragraph */
+    &:not(.expanded) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Adjust the number of lines to show before ellipsis */
+        -webkit-box-orient: vertical;
+    }
+  }
+
+  #readMoreLink {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 6px; /* Add some padding for better visibility */
+    text-decoration: underline; /* Provide a visual hint that it's clickable */
+    cursor: pointer;
+  }
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
 .row-flex {
     display: flex;
     flex-direction: row;
