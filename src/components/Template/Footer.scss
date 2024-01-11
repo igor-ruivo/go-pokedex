@@ -27,3 +27,40 @@
     visibility: hidden;
     transform: translateY(65px);
 }
+
+.footer-section {
+    display: grid;
+    grid-template-columns: 40px 40px 40px 40px 40px;
+    align-items: center;
+    justify-content: space-between;
+    grid-gap: 18px;
+    gap: 18px;
+    max-width: 65%;
+    margin: auto;
+    width: 100%;
+}
+
+.button {
+    color: var(--buttonsTextColor);
+    border-radius: 12px;
+    font-size: inherit;
+}
+
+@media (max-width: 800px) {
+    .footer-section {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .footer-section {
+        gap: 12px;
+        max-width: 100%;
+        grid-template-columns: 34px 34px 34px 34px 34px;
+    }
+
+    .footer {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}

@@ -38,7 +38,7 @@ const App = () => {
                                                         <Route path="/pokemon/:speciesId/counters" element={<Pokemon />}/>
                                                         <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
                                                         <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
-                                                        <Route path="/igor" element={<DeleteTrash />}/>
+                                                        <Route path="/trash-pokemon" element={<DeleteTrash />}/>
                                                         <Route path="/*" element={<div>404 not found!</div>} />
                                                     </Routes>
                                                 </Content>

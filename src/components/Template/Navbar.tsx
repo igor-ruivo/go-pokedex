@@ -318,7 +318,7 @@ const Navbar = () => {
                                 return !p.isMega/* && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? customCupCPLimit : 0))*/;
                             }
 
-                            if (pathname.startsWith("/pokemon")) {
+                            if (pathname.includes("pokemon")) {
                                 return true;
                             }
 
@@ -329,7 +329,7 @@ const Navbar = () => {
                             return !p.isShadow/* && (showMega || !p.isMega)*/;
                         }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} as EntryType))}
                         isLoading={!fetchCompleted}
-                        onSelection={(selectedEntry: EntryType) => pathname.startsWith("/pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`)}
+                        onSelection={(selectedEntry: EntryType) => pathname.includes("pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`.replace("/trash-pokemon", "/info"))}
                         renderOption={(props: any, option: EntryType) => (
                             <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                               <PokemonImage
