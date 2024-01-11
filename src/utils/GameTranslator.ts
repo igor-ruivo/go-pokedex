@@ -49,7 +49,7 @@ const tradeEvolve = new Map<GameLanguage, string>([
 ]);
 
 const ultraBeast = new Map<GameLanguage, string>([
-    [GameLanguage.English, "ultrabeasts"],
+    [GameLanguage.English, "ultra beasts"],
     [GameLanguage.Portuguese, "ultracriatura"]
 ]);
 
