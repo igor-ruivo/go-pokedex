@@ -239,24 +239,6 @@ const DeleteTrash = () => {
     }, [fetchCompleted, gamemasterPokemon, isAlwaysBadPokemon, isBadWithAttack, cp, currentGameLanguage]);
 
     useEffect(() => {
-        if (!isCalculating) {
-            return;
-        }
-        
-        if (targetRef?.current) { 
-            targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
-        }
-
-        setTimeout(() => {
-            if (targetRef?.current) {
-                targetRef.current.value = computeStr();
-            }
-            setIsCalculating(false);
-        }, 100);
-        
-    }, [isCalculating, computeStr, targetRef, currentLanguage]);
-
-    useEffect(() => {
 
         if (!isCalculating || !fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(enumValues)) {
             return;
@@ -271,6 +253,24 @@ const DeleteTrash = () => {
         }, 100);
 
     }, [fetchCompleted, currentLanguage, movesFetchCompleted, enumValues, gamemasterPokemon, isCalculating, moves, raidRankerFetchCompleted, computeRaidRankerforTypes]);
+
+    useEffect(() => {
+        if (!isCalculating || !raidRankerFetchCompleted(enumValues)) {
+            return;
+        }
+        
+        if (targetRef?.current) { 
+            targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
+        }
+
+        setTimeout(() => {
+            if (targetRef?.current) {
+                targetRef.current.value = computeStr();
+            }
+            setIsCalculating(false);
+        }, 100);
+        
+    }, [isCalculating, computeStr, raidRankerFetchCompleted, targetRef, currentLanguage]);
 
     useEffect(() => {
         if (targetRef.current) {
