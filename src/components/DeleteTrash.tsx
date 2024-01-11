@@ -60,7 +60,7 @@ const DeleteTrash = () => {
 
     const isGoodForRaids = useCallback((p: IGamemasterPokemon) => {
         if (!fetchCompleted || !raidRankerFetchCompleted(enumValues)) {
-            return false;
+            return true;
         }
 
         const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
@@ -239,7 +239,6 @@ const DeleteTrash = () => {
     }, [fetchCompleted, gamemasterPokemon, isAlwaysBadPokemon, isBadWithAttack, cp, currentGameLanguage]);
 
     useEffect(() => {
-
         if (!isCalculating || !fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(enumValues)) {
             return;
         }
@@ -255,7 +254,7 @@ const DeleteTrash = () => {
     }, [fetchCompleted, currentLanguage, movesFetchCompleted, enumValues, gamemasterPokemon, isCalculating, moves, raidRankerFetchCompleted, computeRaidRankerforTypes]);
 
     useEffect(() => {
-        if (!isCalculating || !raidRankerFetchCompleted(enumValues)) {
+        if (!isCalculating || !raidRankerFetchCompleted(enumValues) || !fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted) {
             return;
         }
         
@@ -270,7 +269,7 @@ const DeleteTrash = () => {
             setIsCalculating(false);
         }, 100);
         
-    }, [isCalculating, computeStr, raidRankerFetchCompleted, targetRef, currentLanguage]);
+    }, [isCalculating, enumValues, fetchCompleted, pvpFetchCompleted, movesFetchCompleted, computeStr, raidRankerFetchCompleted, targetRef, currentLanguage]);
 
     useEffect(() => {
         if (targetRef.current) {
