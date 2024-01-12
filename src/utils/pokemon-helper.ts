@@ -589,7 +589,6 @@ export const fetchReachablePokemonIncludingSelf = (pokemon: IGamemasterPokemon, 
         queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk && pk.isShadow === currentPokemon.isShadow && (!domainFilter || domainFilter(pk))) as IGamemasterPokemon[]);
     }
 
-    console.log(pokemon.speciesId + ">" + Array.from(reachablePokemons).map(f => f.speciesId).join(","));
     return reachablePokemons;
 }
 

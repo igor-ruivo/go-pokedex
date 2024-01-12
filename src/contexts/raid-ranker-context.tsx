@@ -57,8 +57,6 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemast
                     return;
                 }
 
-                const startTime = performance.now();
-
                 const pokemonEntries = Object.values(gamemasterPokemon)
                     .filter(p => !p.aliasId && (!t || getAllChargedMoves(p, moves, gamemasterPokemon).some(m => moves[m].type === t)))
                     .map(p => {
@@ -74,9 +72,6 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemast
                     });
             
                 pokemonEntries.sort((a, b) => b.dps - a.dps);
-
-                const endTime = performance.now();
-                console.log(`${!t ? "Overall" : t} computation took ${endTime - startTime} milliseconds.`);
 
                 setRaidDPS(p => {
                     const result = cloneDictionary(p);
