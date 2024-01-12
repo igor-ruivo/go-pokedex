@@ -22,6 +22,7 @@ interface LeagueStat {
     hp: number,
     bestCP: number,
     bestLevel: number,
+    bestIsShadow: boolean
 }
 
 interface TypeRank {
@@ -72,7 +73,7 @@ const LeaguePanels = ({
 
     const renderPanel = (leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-column pvp-gap ${leagueStat.leagueTitle} spaced full-height`;
-        const neededResources = computeNeededResources(level, leagueStat.pokemonLevel, isShadow);
+        const neededResources = computeNeededResources(level, leagueStat.pokemonLevel, leagueStat.bestIsShadow);
 
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
@@ -124,7 +125,7 @@ const LeaguePanels = ({
                         <div>
                             <div className="pvp-entry">
                                 <div className="pvp-entry-content">
-                                    {atk} / {def} / {hp}
+                                    {isShadow && !leagueStat.bestIsShadow ? Math.min(15, atk + 2) : atk} / {isShadow && !leagueStat.bestIsShadow ? Math.min(15, def + 2) : def} / {isShadow && !leagueStat.bestIsShadow ? Math.min(15, hp + 2) : hp}
                                 </div>
                             </div>
                             <div className="pvp-entry">

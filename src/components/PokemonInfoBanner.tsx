@@ -120,12 +120,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                 const dpsEntry = typeCollection[bestReachableRaidVersion.speciesId];
                 ranksDic[t] = {
                     rank: idx + 1,
-                    dps: computeDPSEntry(bestReachableRaidVersion, gamemasterPokemon, moves, attack, (level - 1) * 2, t, undefined, [dpsEntry.fastMove, dpsEntry.chargedMove]).dps
+                    dps: computeDPSEntry(bestReachableRaidVersion, gamemasterPokemon, moves, !bestReachableRaidVersion.isShadow && pokemon.isShadow ? Math.min(15, attack + 2) : attack, (level - 1) * 2, t, undefined, [dpsEntry.fastMove, dpsEntry.chargedMove]).dps
                 };
             });
 
         return ranksDic;
-    }, [fetchCompleted, raidRankerFetchCompleted, movesFetchCompleted, allRelevantChargedMoveTypes, raidDPS, bestReachableRaidVersion, attack, level, moves, gamemasterPokemon]);
+    }, [fetchCompleted, raidRankerFetchCompleted, movesFetchCompleted, allRelevantChargedMoveTypes, raidDPS, bestReachableRaidVersion, attack, level, moves, gamemasterPokemon, pokemon]);
     
     useEffect(() => {
         setTimeout(() => {
@@ -198,8 +198,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             return {fastMoveId: "", chargedMoveId: "", speciesId: "", dps: 0};
         }
 
-        return computeDPSEntry(bestReachableRaidVersion, gamemasterPokemon, moves, attack, (level - 1) * 2);
-    }, [bestReachableRaidVersion, attack, level, moves, gamemasterPokemon, fetchCompleted, movesFetchCompleted]);
+        return computeDPSEntry(bestReachableRaidVersion, gamemasterPokemon, moves, !bestReachableRaidVersion.isShadow && pokemon.isShadow ? Math.min(15, attack + 2) : attack, (level - 1) * 2);
+    }, [bestReachableRaidVersion, attack, level, moves, gamemasterPokemon, fetchCompleted, movesFetchCompleted, pokemon]);
 
     if (resourcesNotReady) {
         return <span className="centered">{translator(TranslatorKeys.Loading, currentLanguage)}</span>;
@@ -347,6 +347,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                             {
                                 leagueTitle: "great",
                                 bestReachablePokemonName: bestInFamilyForGreatLeague.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
+                                bestIsShadow: bestInFamilyForGreatLeague.isShadow,
                                 pokemonLeaguePercentage: getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank),
                                 pokemonLeaguePercentile: bestReachableGreatLeagueIvs.greatLeagueRank + 1,
                                 pokemonCP: bestReachableGreatLeagueIvs.greatLeagueCP,
@@ -362,6 +363,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                             {
                                 leagueTitle: "ultra",
                                 bestReachablePokemonName: bestInFamilyForUltraLeague.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
+                                bestIsShadow: bestInFamilyForUltraLeague.isShadow,
                                 pokemonLeaguePercentage: getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank),
                                 pokemonLeaguePercentile: bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
                                 pokemonCP: bestReachableUltraLeagueIvs.ultraLeagueCP,
@@ -377,6 +379,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                             {
                                 leagueTitle: "master",
                                 bestReachablePokemonName: bestInFamilyForMasterLeague.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
+                                bestIsShadow: bestInFamilyForMasterLeague.isShadow,
                                 pokemonLeaguePercentage: getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank),
                                 pokemonLeaguePercentile: bestReachableMasterLeagueIvs.masterLeagueRank + 1,
                                 pokemonCP: bestReachableMasterLeagueIvs.masterLeagueCP,
@@ -392,6 +395,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                             {
                                 leagueTitle: "custom",
                                 bestReachablePokemonName: bestInFamilyForCustomLeague.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
+                                bestIsShadow: bestInFamilyForCustomLeague.isShadow,
                                 pokemonLeaguePercentage: getRankPercentage(bestReachableCustomLeagueIvs.customLeagueRank),
                                 pokemonLeaguePercentile: bestReachableCustomLeagueIvs.customLeagueRank + 1,
                                 pokemonCP: bestReachableCustomLeagueIvs.customLeagueCP,
