@@ -156,7 +156,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
 
         const exclusions = ["slowbro_galarian", "slowpoke_galarian"];
 
-        const mega = pokemon.isMega || pokemon.isShadow || exclusions.includes(pokemon.speciesId) ? [] : Object.values(gamemasterPokemon).filter(p => !p.aliasId && Array.from(reachableExcludingMega).map(pk => pk.dex).includes(p.dex) && p.isMega);
+        const mega = pokemon.isMega || exclusions.includes(pokemon.speciesId) ? [] : Object.values(gamemasterPokemon).filter(p => !p.aliasId && Array.from(reachableExcludingMega).map(pk => pk.dex).includes(p.dex) && p.isMega);
 
         return [...reachableExcludingMega, ...mega];
     }, [pokemon, gamemasterPokemon, fetchCompleted]);
