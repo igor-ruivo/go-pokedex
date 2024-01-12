@@ -170,7 +170,11 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             const sortedPokemon = [...allReachableRaidPokemon].sort((a, b) => {
                 const dpsA = raidDPS[""][a.speciesId].dps;
                 const dpsB = raidDPS[""][b.speciesId].dps;
-                return dpsB - dpsA;
+              
+                if (dpsB !== dpsA) {
+                    return dpsB - dpsA;
+                }
+                return a.speciesId.localeCompare(b.speciesId);
             });
     
             setBestReachableRaidVersion(sortedPokemon[currentBestReachableRaidLeagueIndex]);
@@ -220,7 +224,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                     return -1;
                 }
                 if (!aRank && !bRank) {
-                    return b.speciesId.localeCompare(a.speciesId);
+                    return a.speciesId.localeCompare(b.speciesId);
                 }
                 return aRank - bRank;
             });

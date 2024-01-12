@@ -84,7 +84,14 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         Object.values(gamemasterPokemon)
             .filter(p => !p.aliasId)
             .forEach(p => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, "", pokemon)));
-        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => e2.dps - e1.dps);
+
+        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => {
+            if (e2.dps !== e1.dps) {
+                return e2.dps - e1.dps;
+            }
+            
+            return e1.speciesId.localeCompare(e2.speciesId);
+        });
     }, [resourcesNotReady, gamemasterPokemon, moves, pokemon]);
 
     if (resourcesNotReady) {

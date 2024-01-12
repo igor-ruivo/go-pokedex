@@ -71,7 +71,13 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemast
                         };
                     });
             
-                pokemonEntries.sort((a, b) => b.dps - a.dps);
+                pokemonEntries.sort((a, b) => {
+                    if (b.dps !== a.dps) {
+                        return b.dps - a.dps;
+                    }
+                    
+                    return a.speciesId.localeCompare(b.speciesId);
+                });
 
                 setRaidDPS(p => {
                     const result = cloneDictionary(p);
