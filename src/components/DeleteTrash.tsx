@@ -74,7 +74,7 @@ const DeleteTrash = () => {
         enumValues.forEach(t => {
             finalCollection.forEach(pk => {
                 const rank = Object.keys(raidDPS[t.toString().toLocaleLowerCase()]).indexOf(pk.speciesId);
-                if (rank > -1) {
+                if (rank !== -1) {
                     minRaidRank = Math.min(minRaidRank, rank + 1);
                 }
             });

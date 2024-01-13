@@ -117,6 +117,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                 const typeCollection = raidDPS[t];
                 //todo: make rank part of the obj. it's safer, but not quicker...
                 const idx = Object.keys(typeCollection).indexOf(bestReachableRaidVersion.speciesId);
+                if (idx === -1) {
+                    return;
+                }
+
                 const dpsEntry = typeCollection[bestReachableRaidVersion.speciesId];
                 ranksDic[t] = {
                     rank: idx + 1,
@@ -168,6 +172,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             }
             
             const sortedPokemon = [...allReachableRaidPokemon].sort((a, b) => {
+                if (!raidDPS[""][a.speciesId] || !raidDPS[""][b.speciesId]) {
+                    return 1;
+                }
+                
                 const dpsA = raidDPS[""][a.speciesId].dps;
                 const dpsB = raidDPS[""][b.speciesId].dps;
               

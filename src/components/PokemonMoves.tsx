@@ -58,12 +58,16 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const customLeagueMoveset = rankLists[3] ? (rankLists[3][pokemon.speciesId]?.moveset ?? []) : [];
 
     const raidComputation = raidDPS[type ? type[0].toString().toLocaleLowerCase() : ""][pokemon.speciesId];
-    const raidMoveset: [string, string] = [raidComputation.fastMove, raidComputation.chargedMove];
+    const raidMoveset: [string, string] | undefined = raidComputation ? [raidComputation.fastMove, raidComputation.chargedMove] : undefined;
     const realDps = computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, level, raidAttackType, undefined, raidMoveset);
 
     const relevantMoveSet = league === LeagueType.GREAT_LEAGUE ? greatLeagueMoveset : league === LeagueType.ULTRA_LEAGUE ? ultraLeagueMoveset : league === LeagueType.CUSTOM_CUP ? customLeagueMoveset : league === LeagueType.MASTER_LEAGUE ? masterLeagueMoveset : raidMoveset;
 
     const movesSorter = (m1: string, m2: string) => {
+        if (!relevantMoveSet) {
+            return 1;
+        }
+
         const move1 = moves[m1];
         const move2 = moves[m2];
 
@@ -305,15 +309,15 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                         <span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
                         <strong className="cp-container"> {Math.round(realDps.dps * 100) / 100} DPS</strong>
                         <span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
-                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.fastMove, moves, gameTranslation)}`}</strong>
+                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation?.fastMove ?? "", moves, gameTranslation)}`}</strong>
                         <span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span>
-                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation.chargedMove, moves, gameTranslation)}`}</strong>
+                        <strong className="cp-container">{` ${translateMoveFromMoveId(raidComputation?.chargedMove ?? "", moves, gameTranslation)}`}</strong>
                         .
                     </>
                 </span>
             </div>
             </>}
-            {league !== LeagueType.RAID && <div className="menu-item centered"><div>{relevantMoveSet.length > 0 ? <><strong className="cp-container">{`${translateMoveFromMoveId(relevantMoveSet[0], moves, gameTranslation)}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[1], moves, gameTranslation)}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[2], moves, gameTranslation)}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.GreatRemixCup, currentGameLanguage)}...`}</div></div>}
+            {league !== LeagueType.RAID && <div className="menu-item centered"><div>{relevantMoveSet && relevantMoveSet.length > 0 ? <><strong className="cp-container">{`${translateMoveFromMoveId(relevantMoveSet[0], moves, gameTranslation)}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[1], moves, gameTranslation)}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[2], moves, gameTranslation)}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.GreatRemixCup, currentGameLanguage)}...`}</div></div>}
             <div className="moves-display-layout">
                 <div className="menu-item">
                     <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
@@ -330,7 +334,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                             getAllFastMoves(pokemon, moves)
                             .sort(movesSorter)
                             .map(m => {
-                                const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
+                                const className = relevantMoveSet?.includes(m) ? `background-${moves[m].type}` : "normal-entry";
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
                                 return (
@@ -357,7 +361,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                             getAllChargedMoves(pokemon, moves, gamemasterPokemon)
                             .sort(movesSorter)
                             .map(m => {
-                                const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
+                                const className = relevantMoveSet?.includes(m) ? `background-${moves[m].type}` : "normal-entry";
                                 const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
                                 const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
                                 return (
