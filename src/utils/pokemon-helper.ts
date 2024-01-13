@@ -1,6 +1,7 @@
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
+import { DPSEntry } from "../contexts/raid-ranker-context";
 import Dictionary from "./Dictionary";
 
 /**
@@ -493,7 +494,7 @@ export const computeMoveEffectiveness = (ownMoveType: string, targetType1: strin
     return matrix[ownMoveType][targetType1Index] * (targetType2 ? matrix[ownMoveType][targetType2Index] : 1);
 }
 
-export const computeDPSEntry = (p: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, attackIV = 15, level = 100, forcedType = "", target?: IGamemasterPokemon, movesetOverride?: [string, string]) => {
+export const computeDPSEntry = (p: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>, moves: Dictionary<IGameMasterMove>, attackIV = 15, level = 100, forcedType = "", target?: IGamemasterPokemon, movesetOverride?: [string, string]): DPSEntry => {
     const computeDamageCalculation = (moveId: string) => calculateDamage(p.atk, moves[moveId].pvePower, p.types.map(t => t.toString().toLocaleLowerCase()).includes(moves[moveId].type.toLocaleLowerCase()), p.isShadow, target ? target.isShadow : false, target ? computeMoveEffectiveness(moves[moveId].type, target.types[0].toString().toLocaleLowerCase(), target.types[1]?.toString().toLocaleLowerCase()) : (forcedType && forcedType !== "normal" && moves[moveId].type === forcedType) ? Effectiveness.Effective : Effectiveness.Normal, attackIV, level, target ? target.def : 200);
     const computePveDPS = (chargedMoveDmg: number, fastMoveDmg: number, fastMoveId: string, chargedMoveId: string) => pveDPS(chargedMoveDmg, fastMoveDmg, moves[fastMoveId].pveDuration, moves[chargedMoveId].pveEnergyDelta * -1, moves[fastMoveId].pveEnergyDelta, moves[chargedMoveId].pveDuration);
     
@@ -502,12 +503,12 @@ export const computeDPSEntry = (p: IGamemasterPokemon, gamemasterPokemon: Dictio
         const chargedMoveDmg = computeDamageCalculation(movesetOverride[1]);
         const dps = computePveDPS(chargedMoveDmg, fastMoveDmg, movesetOverride[0], movesetOverride[1]);
         return {
-            fastMoveId: movesetOverride[0],
-            chargedMoveId: movesetOverride[1],
+            fastMove: movesetOverride[0],
+            chargedMove: movesetOverride[1],
             dps: dps,
             speciesId: p.speciesId,
-            fastMoveDamage: fastMoveDmg,
-            chargedMoveDamage: chargedMoveDmg
+            fastMoveDmg: fastMoveDmg,
+            chargedMoveDmg: chargedMoveDmg
         };
     }
 
@@ -538,12 +539,12 @@ export const computeDPSEntry = (p: IGamemasterPokemon, gamemasterPokemon: Dictio
         }
     }
     return {
-        fastMoveId: higherFast,
-        chargedMoveId: higherCharged,
+        fastMove: higherFast,
+        chargedMove: higherCharged,
         dps: higherDPS,
         speciesId: p.speciesId,
-        fastMoveDamage: higherFastDmg,
-        chargedMoveDamage: higherChargedDmg
+        fastMoveDmg: higherFastDmg,
+        chargedMoveDmg: higherChargedDmg
     };
 }
 

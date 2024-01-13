@@ -72,13 +72,6 @@ export interface IIvPercents {
     customLeaguePerfectCP: number
 }
 
-export type dpsEntry = {
-    fastMoveId: string;
-    chargedMoveId: string;
-    dps: number;
-    speciesId: string;
-}
-
 type ranksDicDTO = {
     rank: number,
     dps: number
@@ -175,7 +168,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                 if (!raidDPS[""][a.speciesId] || !raidDPS[""][b.speciesId]) {
                     return 1;
                 }
-                
+
                 const dpsA = raidDPS[""][a.speciesId].dps;
                 const dpsB = raidDPS[""][b.speciesId].dps;
               

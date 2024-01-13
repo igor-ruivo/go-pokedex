@@ -7,12 +7,13 @@ import { cacheTtlInMillis } from '../utils/Configs';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { IGameMasterMove } from '../DTOs/IGameMasterMove';
 
-type DPSEntry = {
+export type DPSEntry = {
     dps: number,
     fastMove: string,
     fastMoveDmg: number,
     chargedMove: string,
-    chargedMoveDmg: number
+    chargedMoveDmg: number,
+    speciesId: string
 }
 
 interface RaidRankerContextType {
@@ -59,17 +60,7 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemast
 
                 const pokemonEntries = Object.values(gamemasterPokemon)
                     .filter(p => !p.aliasId && (!t || getAllChargedMoves(p, moves, gamemasterPokemon).some(m => moves[m].type === t)))
-                    .map(p => {
-                        const entry = computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, t);
-                        return {
-                            speciesId: p.speciesId,
-                            dps: entry.dps,
-                            fastMove: entry.fastMoveId,
-                            fastMoveDmg: entry.fastMoveDamage,
-                            chargedMove: entry.chargedMoveId,
-                            chargedMoveDmg: entry.chargedMoveDamage
-                        };
-                    });
+                    .map(p => computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, t));
             
                 pokemonEntries.sort((a, b) => {
                     if (b.dps !== a.dps) {
@@ -83,13 +74,7 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemast
                     const result = cloneDictionary(p);
                     const parsedEntries: Dictionary<DPSEntry> = {};
                     pokemonEntries.forEach(p => {
-                        parsedEntries[p.speciesId] = {
-                            dps: p.dps,
-                            fastMove: p.fastMove,
-                            fastMoveDmg: p.fastMoveDmg,
-                            chargedMove: p.chargedMove,
-                            chargedMoveDmg: p.chargedMoveDmg
-                        };
+                        parsedEntries[p.speciesId] = p;
                     });
 
                     writeEntry(raidDpsKey, parsedEntries, cacheTtlInMillis);

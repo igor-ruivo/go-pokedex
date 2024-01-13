@@ -17,19 +17,11 @@ import { MatchUp } from "../DTOs/IRankedPokemon";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
 import useResize from "../hooks/useResize";
+import { DPSEntry } from "../contexts/raid-ranker-context";
 
 interface IPokemonCounters {
     pokemon: IGamemasterPokemon;
     league: LeagueType;
-}
-
-type dpsEntry = {
-    fastMoveId: string;
-    chargedMoveId: string;
-    dps: number;
-    speciesId: string;
-    fastMoveDamage: number;
-    chargedMoveDamage: number;
 }
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
@@ -80,12 +72,12 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             return [];
         }
 
-        const comparisons: dpsEntry[] = [];
+        const comparisons: DPSEntry[] = [];
         Object.values(gamemasterPokemon)
             .filter(p => !p.aliasId)
             .forEach(p => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, "", pokemon)));
 
-        return comparisons.sort((e1: dpsEntry, e2: dpsEntry) => {
+        return comparisons.sort((e1: DPSEntry, e2: DPSEntry) => {
             if (e2.dps !== e1.dps) {
                 return e2.dps - e1.dps;
             }
@@ -260,7 +252,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                 const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
                                 return (
                                     <React.Fragment key={m.speciesId}>
-                                        {renderRaidEntry(pokemon, (m as dpsEntry).dps, (m as dpsEntry).fastMoveId, (m as dpsEntry).chargedMoveId, className, (m as dpsEntry).fastMoveDamage, (m as dpsEntry).chargedMoveDamage)}
+                                        {renderRaidEntry(pokemon, (m as DPSEntry).dps, (m as DPSEntry).fastMove, (m as DPSEntry).chargedMove, className, (m as DPSEntry).fastMoveDmg, (m as DPSEntry).chargedMoveDmg)}
                                     </React.Fragment>
                                 )
                             }) :
@@ -297,7 +289,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                 const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
                                 return (
                                     <React.Fragment key={m.speciesId}>
-                                        {renderRaidEntry(pokemon, (m as dpsEntry).dps, (m as dpsEntry).fastMoveId, (m as dpsEntry).chargedMoveId, className, (m as dpsEntry).fastMoveDamage, (m as dpsEntry).chargedMoveDamage)}
+                                        {renderRaidEntry(pokemon, (m as DPSEntry).dps, (m as DPSEntry).fastMove, (m as DPSEntry).chargedMove, className, (m as DPSEntry).fastMoveDmg, (m as DPSEntry).chargedMoveDmg)}
                                     </React.Fragment>
                                 )
                             })
