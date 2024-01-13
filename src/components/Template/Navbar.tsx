@@ -429,6 +429,25 @@ const Navbar = () => {
                             </div>
                         </li>
                     </ul>
+                    <strong>
+                        <span className="strong-underline">
+                            {translator(TranslatorKeys.NavigationData, currentLanguage)}
+                        </span>
+                    </strong>
+                    <ul className="options-ul">
+                        <li className="options-li">
+                            <div className="option-entry">
+                                <span>
+                                    {translator(TranslatorKeys.DeleteNavigationData, currentLanguage)}
+                                </span>
+                                <button className="fitting-content-width dark-text default-side-padding" onClick={() => {
+                                    localStorage.clear();
+                                    sessionStorage.clear();
+                                    window.location.reload();
+                                }}>{translator(TranslatorKeys.Delete, currentLanguage)}</button>
+                            </div>
+                        </li>
+                    </ul>
                 </section>
             </nav>
         </aside>

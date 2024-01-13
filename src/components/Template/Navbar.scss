@@ -104,6 +104,14 @@
     }
 }
 
+.default-side-padding {
+    padding: 0px 12px;
+}
+
+.fitting-content-width {
+    width: fit-content;
+}
+
 .option-entry {
     display: flex;
     flex-direction: column;

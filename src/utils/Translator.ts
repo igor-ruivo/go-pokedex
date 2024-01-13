@@ -14,6 +14,9 @@ export enum TranslatorKeys {
     NoResults,
     GridFiltering,
     ReadMore,
+    NavigationData,
+    DeleteNavigationData,
+    Delete,
     ReadLess,
     Save,
     MegaPokemon,
@@ -172,6 +175,24 @@ const resistant = new Map<Language, string>([
     [Language.English, "Resistant to"],
     [Language.Portuguese, "Resistente a"],
     [Language.Bosnian, "Otporna na"]
+]);
+
+const navigationData = new Map<Language, string>([
+    [Language.English, "Navigation Data"],
+    [Language.Portuguese, "Dados de Navegação"],
+    [Language.Bosnian, "Kolačiće i Keš"]
+]);
+
+const deleteNavigationData = new Map<Language, string>([
+    [Language.English, "Delete navigation data"],
+    [Language.Portuguese, "Apagar dados de navegação"],
+    [Language.Bosnian, "Izbriši kolačiće i keš"]
+]);
+
+const deleteTranslation = new Map<Language, string>([
+    [Language.English, "Delete"],
+    [Language.Portuguese, "Apagar"],
+    [Language.Bosnian, "Izbriši"]
 ]);
 
 const noResults = new Map<Language, string>([
@@ -952,6 +973,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.GridFiltering, gridFiltering],
     [TranslatorKeys.And, and],
+    [TranslatorKeys.Delete, deleteTranslation],
     [TranslatorKeys.CountersWeak, countersWeak],
     [TranslatorKeys.TrashHelp, trashHelp],
     [TranslatorKeys.Any, any],
@@ -979,6 +1001,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Weak, weak],
     [TranslatorKeys.Resistant, resistant],
     [TranslatorKeys.Nothing, nothing],
+    [TranslatorKeys.DeleteNavigationData, deleteNavigationData],
+    [TranslatorKeys.NavigationData, navigationData],
     [TranslatorKeys.Save, save],
     [TranslatorKeys.Water, water],
     [TranslatorKeys.Overall, overall],
