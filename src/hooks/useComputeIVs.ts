@@ -36,6 +36,10 @@ const useComputeIVs = ({pokemon, attackIV, defenseIV, hpIV, justForSelf = false}
             }
 
             Array.from(reachablePokemons).filter(p => p).forEach(p => {
+                const effectiveAtk = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + attackIV : attackIV);
+                const effectiveDef = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + defenseIV : defenseIV);
+                const effectiveHP = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + hpIV : hpIV);
+
                 const resLC = computeBestIVs(p.atk, p.def, p.hp, customCupCPLimit);
                 const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
                 const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
@@ -46,10 +50,10 @@ const useComputeIVs = ({pokemon, attackIV, defenseIV, hpIV, justForSelf = false}
                 const flatULResult = Object.values(resUL).flat();
                 const flatMLResult = Object.values(resML).flat();
         
-                const rankLIndex = flatLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
-                const rankGLIndex = flatGLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
-                const rankULIndex = flatULResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
-                const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === attackIV && r.IVs.D === defenseIV && r.IVs.S === hpIV);
+                const rankLIndex = flatLResult.findIndex(r => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP);
+                const rankGLIndex = flatGLResult.findIndex(r => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP);
+                const rankULIndex = flatULResult.findIndex(r => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP);
+                const rankMLIndex = flatMLResult.findIndex(r => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP);
         
                 familyIvPercents[p.speciesId] = {
                     greatLeagueRank: rankGLIndex,
