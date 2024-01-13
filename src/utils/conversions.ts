@@ -45,7 +45,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "rayquaza_mega",
         "typhlosion_hisuian",
         "ditto",
-        "shedinja"
+        "shedinja",
+        "annihilape"
     ]);    
 
     const overrideMappings = new Map<string, string>();
