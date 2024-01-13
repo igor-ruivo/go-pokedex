@@ -10,6 +10,7 @@ export const pvpokeRankingsRetroUrl = "https://raw.githubusercontent.com/pvpoke/
 export const pvpokeRankingsHolidayUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/holiday/overall/rankings-1500.json";
 export const pvpokeRankingsHolidayLittleUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/holiday/overall/rankings-500.json";
 export const pvpokeRankingsRemixLittleUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/remix/overall/rankings-1500.json";
+export const pvpokeRankingsFantasyLittleUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/fantasy/overall/rankings-1500.json";
 export const gameMasterUrl = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json";
 export const enTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_english.json";
 export const ptbrTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_brazilianportuguese.json";
