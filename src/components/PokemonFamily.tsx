@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import PokemonImage from "./PokemonImage";
-import { sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
+import { shortName, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 
 interface IPokemonFamilyProps {
     pokemon: IGamemasterPokemon;
@@ -19,7 +19,7 @@ const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonF
                             <Link to={getClickDestination(p.speciesId)}>
                                 <strong className={`move-detail with-shadow ${p.speciesId === pokemon.speciesId ? "soft" : "baby-soft"} normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
                                     <PokemonImage pokemon={p} withName={false} specificHeight={38} specificWidth={38}/>
-                                    {p.speciesId === pokemon.speciesId && p.speciesShortName}
+                                    {p.speciesId === pokemon.speciesId && shortName(p.speciesName)}
                                 </strong>
                             </Link>
                         </div>

@@ -5,6 +5,7 @@ import { useLanguage } from "../contexts/language-context";
 import { ImageSource, useImageSource } from "../contexts/imageSource-context";
 import { goBaseUrl } from "../utils/Configs";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import { shortName } from "../utils/pokemon-helper";
 
 interface IPokemonImage {
     pokemon: IGamemasterPokemon;
@@ -78,7 +79,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, with
                 </span>
                 {descriptionComponent && descriptionComponent}
             </span>
-            {withName && pokemon.speciesShortName}
+            {withName && shortName(pokemon.speciesName)}
         </>
     )
 });

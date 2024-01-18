@@ -7,6 +7,7 @@ import "./LeagueRanks.scss"
 import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
 import { usePvp } from "../contexts/pvp-context";
+import { shortName } from "../utils/pokemon-helper";
 
 interface LeagueStat {
     leagueTitle: string,
@@ -127,7 +128,7 @@ const LeagueRanks = ({
                     {
                         imageDescription: "Most relevant Pokémon",
                         image: <PokemonImage pokemon={leagueStat.bestReachablePokemon} withName={false} specificWidth={28} specificHeight={28}/>,
-                        imageSideText: leagueStat.bestReachablePokemon.speciesShortName,
+                        imageSideText: shortName(leagueStat.bestReachablePokemon.speciesName),
                         withBackground: true
                     }
                 ]}

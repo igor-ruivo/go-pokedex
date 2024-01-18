@@ -6,6 +6,7 @@ import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
+import { getForm } from "./pokemon-helper";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -223,7 +224,6 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 dex: pokemon.dex,
                 speciesId: pokemon.speciesId,
                 speciesName: sexConverter(pokemon.speciesName),
-                speciesShortName: shortName(pokemon.speciesName),
                 imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
                 goImageUrl: computeGoShortUrl(goOverrideMappings.has(pokemon.speciesId) ? goOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoImageUrl(pokemon.dex, getGoForm(pokemon.speciesName))),
                 shinyGoImageUrl: computeGoShortUrl(shinyGoOverrideMappings.has(pokemon.speciesId) ? shinyGoOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoShinyImageUrl(pokemon.dex, getGoForm(pokemon.speciesName))),
@@ -240,7 +240,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 familyId: pokemon.family?.id,
                 parent: pokemon.family?.parent,
                 evolutions: pokemon.family ? pokemon.family.evolutions : [],
-                aliasId: pokemon.aliasId
+                aliasId: pokemon.aliasId,
+                form: getForm(pokemon.speciesName)
             }
         }
     );
@@ -542,24 +543,6 @@ export const ordinal = (number: number) => {
     const category = english_ordinal_rules.select(number);
     const suffix = suffixes[category];
     return number + suffix;
-}
-
-const shortName = (name: string) => {
-    return name
-        .replace("(Alolan)", "(A)")
-        .replace("(Galarian)", "(G)")
-        .replace("(Paldean)", "(P)")
-        .replace("(Mega)", "(M)")
-        .replace("(Shadow)", "(S)")
-        .replace("(Complete Forme)", "(CF)")
-        .replace("(50% Forme)", "(50% F)")
-        .replace("(10% Forme)", "(10% F)")
-        .replace("(Hisuian)", "(H)")
-        .replace("(Standard)", "(Std.)")
-        .replace("(Incarnate)", "(Inc.)")
-        .replace("(Average)", "(Avg.)")
-        .replace("Male", "♂")
-        .replace("Female", "♀");
 }
 
 const sexConverter = (name: string) => {

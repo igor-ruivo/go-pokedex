@@ -1,6 +1,7 @@
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
+import { PokemonForms } from "../DTOs/PokemonForms";
 import { DPSEntry } from "../contexts/raid-ranker-context";
 import Dictionary from "./Dictionary";
 
@@ -44,6 +45,44 @@ export const translateMoveFromMoveId = (moveId: string, moves: Dictionary<IGameM
     const vid = typedMove.vId;
     return gameTranslation[vid]?.name ?? normalizedMoveName(typedMove.moveId);
 }
+
+export const shortName = (name: string) => {
+    return name
+        .replace("(Alolan)", "(A)")
+        .replace("(Galarian)", "(G)")
+        .replace("(Paldean)", "(P)")
+        .replace("(Mega)", "(M)")
+        .replace("(Shadow)", "(S)")
+        .replace("(Complete Forme)", "(CF)")
+        .replace("(50% Forme)", "(50% F)")
+        .replace("(10% Forme)", "(10% F)")
+        .replace("(Hisuian)", "(H)")
+        .replace("(Standard)", "(Std.)")
+        .replace("(Incarnate)", "(Inc.)")
+        .replace("(Average)", "(Avg.)")
+        .replace("Male", "♂")
+        .replace("Female", "♀");
+}
+
+export const getForm = (name: string) => {
+    name = name.replaceAll("(Shadow)", "");
+    name = name.replaceAll("Shadow", "");
+    
+    if (name.length - 1 > name.replaceAll("(", "").length) {
+        console.error(`Multiple forms for ${name} detected.`);
+    }
+
+    const firstParenthesisIdx = name.indexOf("(");
+    if (firstParenthesisIdx === -1) {
+        return "";
+    }
+
+    const form = name.substring(firstParenthesisIdx + 1, name.indexOf(")"));
+    if (form) {
+        console.log(form);
+    }
+    return form;
+} 
 
 const accumulatedStardustCosts = [0, 200, 400, 600, 800, 1200, 1600, 2000, 2400, 3000, 3600, 4200, 4800, 5600, 6400, 7200, 8000, 9000, 10000, 11000, 12000, 13300, 14600, 15900, 17200, 18800, 20400, 22000, 23600, 25500, 27400, 29300, 31200, 33400, 35600, 37800, 40000, 42500, 45000, 47500, 50000, 53000, 56000, 59000, 62000, 65500, 69000, 72500, 76000, 80000, 84000, 88000, 92000, 96500, 101000, 105500, 110000, 115000, 120000, 125000, 130000, 136000, 142000, 146000, 154000, 161000, 168000, 175000, 182000, 190000, 198000, 206000, 214000, 223000, 232000, 241000, 250000, 260000, 270000, 280000, 290000, 301000, 312000, 323000, 334000, 346000, 358000, 370000, 382000, 395000, 408000, 421000, 434000, 448000, 462000, 476000, 490000, 505000, 520000, 520000, 520000];
 const accumulatedCandyCosts = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 63, 60, 69, 72, 75, 78, 81, 84, 87, 90, 94, 98, 102, 106, 110, 114, 118, 122, 126, 130, 136, 142, 148, 154, 162, 170, 178, 186, 196, 206, 216, 226, 238, 250, 262, 274, 289, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304, 304];

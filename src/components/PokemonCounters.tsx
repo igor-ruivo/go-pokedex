@@ -11,7 +11,7 @@ import ListEntry from "./ListEntry";
 import PokemonImage from "./PokemonImage";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImageSource, useImageSource } from "../contexts/imageSource-context";
-import { computeDPSEntry, translateMoveFromMoveId } from "../utils/pokemon-helper";
+import { computeDPSEntry, shortName, translateMoveFromMoveId } from "../utils/pokemon-helper";
 import { useMoves } from "../contexts/moves-context";
 import { MatchUp } from "../DTOs/IRankedPokemon";
 import { useGameTranslation } from "../contexts/gameTranslation-context";
@@ -114,7 +114,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 {
                     imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
                     image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 28 : 24} specificWidth={imageSource !== ImageSource.Official ? 28 : 24} withName={false}/></div>,
-                    imageSideText: pokemon.speciesShortName,
+                    imageSideText: shortName(pokemon.speciesName),
                     withBackground: true
                 }
             }
@@ -171,7 +171,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 {
                     imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
                     image: <div className={`${imageSource !== ImageSource.Official ? "" : "img-small-padding"}`}><PokemonImage pokemon={pokemon} specificHeight={imageSource !== ImageSource.Official ? 28 : 24} specificWidth={imageSource !== ImageSource.Official ? 28 : 24} withName={false}/></div>,
-                    imageSideText: pokemon.speciesShortName,
+                    imageSideText: shortName(pokemon.speciesName),
                     withBackground: true
                 }
             }
@@ -215,7 +215,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 {league !== LeagueType.RAID && <div className="menu-item">
                     <div className={`moves-title all-moves fast-moves-section`}>
                         <h3>
-                            {`${pokemon.speciesShortName} ${translator(TranslatorKeys.StrongAgainst, currentLanguage)} (${leagueName}):`}
+                            {`${shortName(pokemon.speciesName)} ${translator(TranslatorKeys.StrongAgainst, currentLanguage)} (${leagueName}):`}
                         </h3>
                     </div>
                     <ul className={`moves-list no-padding slim-list`}>
@@ -239,7 +239,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 <div className="menu-item">
                     <div className={`moves-title all-moves charged-moves-section`}>
                         <h3>
-                            {league === LeagueType.RAID ? `${pokemon.speciesShortName} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)}${x > 750 ? ` (1 - ${top / 2}):` : ":"}` : `${pokemon.speciesShortName} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
+                            {league === LeagueType.RAID ? `${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)}${x > 750 ? ` (1 - ${top / 2}):` : ":"}` : `${shortName(pokemon.speciesName)} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
                         </h3>
                     </div>
                     <ul className={`moves-list no-padding slim-list`}>
@@ -276,7 +276,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 {x > 750 && league === LeagueType.RAID && <div className="menu-item">
                     <div className={`moves-title all-moves charged-moves-section`}>
                         <h3>
-                            {`${pokemon.speciesShortName} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
+                            {`${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
                         </h3>
                     </div>
                     <ul className={`moves-list no-padding slim-list`}>

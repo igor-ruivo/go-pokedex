@@ -1,10 +1,10 @@
+import { PokemonForms } from "./PokemonForms";
 import { PokemonTypes } from "./PokemonTypes";
 
 export interface IGamemasterPokemon {
     dex: number,
     speciesId: string,
     speciesName: string,
-    speciesShortName: string,
     types: PokemonTypes[],
     imageUrl: string,
     goImageUrl: string,
@@ -21,5 +21,6 @@ export interface IGamemasterPokemon {
     familyId?: string,
     parent?: string,
     evolutions: string[],
-    aliasId?: string
+    aliasId?: string,
+    form: string
 }
