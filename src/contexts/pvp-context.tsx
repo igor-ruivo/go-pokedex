@@ -26,7 +26,7 @@ const useFetchAllData: () => [Dictionary<IRankedPokemon>[], boolean, string] = (
         }
 
         const controller = new AbortController();
-        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, pvpokeRankingsFantasyLittleUrl], true, {signal: controller.signal}, (data: any, request: any) => mapRankedPokemon(data, request, gamemasterPokemon));
+        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], true, {signal: controller.signal}, (data: any, request: any) => mapRankedPokemon(data, request, gamemasterPokemon));
         return () => {
             controller.abort("Request canceled by cleanup.");
         }

@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect } from 'react';
-import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { gamemasterPokemonUrl } from '../utils/Configs';
-import { mapGamemasterPokemonData } from '../utils/conversions';
+import { bossesUrl } from '../utils/Configs';
+import { mapRaidBosses } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
+import { IRaidBosses } from '../DTOs/IRaidBosses';
+import { usePokemon } from './pokemon-context';
 
 interface NewsContextType {
     
@@ -11,18 +12,23 @@ interface NewsContextType {
 
 const NewsContext = createContext<NewsContextType | undefined>(undefined);
 
-const useFetchAllData: () => [Dictionary<IGamemasterPokemon>, boolean, string] = () => {
-    const [gamemasterPokemon, fetchGamemasterPokemon, gememasterPokemonFetchCompleted, errorLoadingGamemasterData]: FetchData<Dictionary<IGamemasterPokemon>> = useFetchUrls();
+const useFetchAllData: () => [Dictionary<IRaidBosses>, boolean, string] = () => {
+    const {gamemasterPokemon, fetchCompleted} = usePokemon();
+    const [raidBosses, fetchRaidBosses, raidBossesFetchCompleted, errorLoadingRaidBosses]: FetchData<Dictionary<IRaidBosses>> = useFetchUrls();
 
     useEffect(() => {
+        if (!fetchCompleted) {
+            return;
+        }
+
         const controller = new AbortController();
-        fetchGamemasterPokemon([gamemasterPokemonUrl], true, {signal: controller.signal}, mapGamemasterPokemonData);
+        fetchRaidBosses([bossesUrl], false, {signal: controller.signal}, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon));
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [fetchGamemasterPokemon]);
+    }, [fetchRaidBosses, fetchCompleted]);
 
-    return [gamemasterPokemon[0], gememasterPokemonFetchCompleted, errorLoadingGamemasterData];
+    return [raidBosses[0], raidBossesFetchCompleted, errorLoadingRaidBosses];
 }
 
 export const useNews = (): NewsContextType => {
@@ -34,7 +40,7 @@ export const useNews = (): NewsContextType => {
 };
 
 export const NewsProvider = (props: React.PropsWithChildren<{}>) => {
-    const [gamemasterPokemon, fetchCompleted, errors]: [Dictionary<IGamemasterPokemon>, boolean, string] = useFetchAllData();
+    const [raidBosses, fetchCompleted, errors]: [Dictionary<IRaidBosses>, boolean, string] = useFetchAllData();
 
     return (
         <NewsContext.Provider value={{

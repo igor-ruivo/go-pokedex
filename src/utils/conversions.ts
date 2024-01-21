@@ -7,6 +7,7 @@ import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { getForm } from "./pokemon-helper";
+import { IRaidBosses } from "../DTOs/IRaidBosses";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -270,6 +271,14 @@ export const mapTranslatedMoves: (data: any) => Dictionary<ITranslatedMove> = (d
     return translatedMovesDictionary;
 }
 
+export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBosses> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(data, 'text/html');
+    const bosses = htmlDoc.getElementsByClassName("boss-tier-header");
+    console.log(bosses);
+    return data;
+}
+
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const observedPokemon = new Set<string>();
 
@@ -284,19 +293,6 @@ export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dict
         case pvpokeRankingsUrl:
             rankId = "master";
             break;
-            /*
-        case pvpokeRankingsHolidayUrl:
-            rankId = "holiday";
-            break;
-        case pvpokeRankingsHolidayLittleUrl:
-            rankId = "holiday-l";
-            break;
-        case pvpokeRankingsRemixLittleUrl:
-            rankId = "remix-g";
-            break;
-        default:
-            console.error(`Unknown source url (${request.responseURL}). Rank change service failed.`);
-            */
     }
 
     const rankedPokemonDictionary: Dictionary<IRankedPokemon> = {};

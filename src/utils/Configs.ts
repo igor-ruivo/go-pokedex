@@ -14,3 +14,4 @@ export const pvpokeRankingsFantasyLittleUrl = "https://raw.githubusercontent.com
 export const gameMasterUrl = "https://raw.githubusercontent.com/PokeMiners/game_masters/master/latest/latest.json";
 export const enTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_english.json";
 export const ptbrTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_brazilianportuguese.json";
+export const bossesUrl = "https://leekduck.com/boss/";

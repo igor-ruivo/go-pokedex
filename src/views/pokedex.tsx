@@ -33,7 +33,7 @@ const Pokedex = () => {
 
     const {currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
-    const renderCustom = true;
+    const renderCustom = false;
 
     let listType = ListType.POKEDEX;
     let cpThreshold = 0;
