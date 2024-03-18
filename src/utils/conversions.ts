@@ -16,7 +16,8 @@ const blacklistedSpecieIds = new Set<string>([
     "pikachu_libre",
     "pikachu_pop_star",
     "pikachu_rock_star",
-    "pikachu_shaymin"
+    "pikachu_shaymin",
+    "pikachu_horizons"
 ]);
 
 const hiddenPowers = new Set<string>([
