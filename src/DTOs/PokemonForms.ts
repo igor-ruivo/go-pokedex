@@ -53,5 +53,13 @@ export enum PokemonForms {
     Hero = "Hero",
     TenForme = "TenForme",
     FiftyForme = "FiftyForme",
-    CompleteForme = "CompleteForme"
+    CompleteForme = "CompleteForme",
+    //Synthetic:
+    TenPerc = "10% Forme",
+    FiftyPerc = "50% Forme",
+    HundredPerc = "Complete Forme",
+    Pau2 = "Pa'u",
+    PomPom2 = "Pom-Pom",
+    Y = "Y",
+    X = "X"
 }

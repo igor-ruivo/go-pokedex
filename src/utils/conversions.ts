@@ -6,8 +6,9 @@ import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
-import { getForm } from "./pokemon-helper";
+import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBosses } from "../DTOs/IRaidBosses";
+import { PokemonForms } from "../DTOs/PokemonForms";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -272,11 +273,142 @@ export const mapTranslatedMoves: (data: any) => Dictionary<ITranslatedMove> = (d
     return translatedMovesDictionary;
 }
 
+const removeFormsFromPokemonName = (rawName: string) => {
+    rawName = rawName.toLocaleLowerCase();
+    rawName = rawName.replaceAll("(shadow)", "");
+    rawName = rawName.replaceAll("shadow", "");
+
+    for (let form of Object.values(PokemonForms)) {
+        rawName = rawName.replaceAll(form.toLocaleLowerCase(), "");
+    }
+    rawName = rawName.replaceAll("(", "");
+    rawName = rawName.replaceAll(")", "");
+    return rawName.trim();
+}
+
 export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBosses> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
-    const bosses = htmlDoc.getElementsByClassName("boss-tier-header");
-    console.log(bosses);
+    const entries = Array.from(htmlDoc.getElementsByClassName("list")[0].children);
+
+    // first, trying to parse by name without forms.
+    // if <=1 match, return immediatelly
+    // otherwise, check types
+    // if <= 1 return;
+    // otherwise, check cps while > 1 count...
+    // if still >1 , return first
+
+    let tier = "0";
+
+    const results: Dictionary<IGamemasterPokemon[]> = {};
+    results["1"] = [];
+    results["3"] = [];
+    results["5"] = [];
+    results["mega"] = [];
+
+    for (let b of entries) {
+        if (b.classList.contains("header-li")) {
+            const innerTxt = (b as HTMLElement).innerText;
+            if (innerTxt === "Mega") {
+                tier = "mega";
+            } else {
+                tier = innerTxt.split(" ")[1];
+            }
+            continue;
+        }
+
+        const bossName = b.getElementsByClassName("boss-name")[0].innerHTML;
+        let matches = Object.values(gamemasterPokemon).filter(p =>
+            !p.aliasId &&
+            !p.isShadow &&
+            removeFormsFromPokemonName(p.speciesName) === removeFormsFromPokemonName(bossName)
+        );
+
+        if (matches.length === 0) {
+            continue;
+        }
+
+        if (matches.length === 1) {
+            results[tier].push(matches[0]);
+            continue;
+        }
+
+        // Multiple matches...
+
+        const types = Array.from(b.getElementsByClassName("boss-type")).map(e => Array.from(e.children).map(c => (c as HTMLImageElement).title)).flat();
+        
+        matches = matches.filter(p => p.types.length === types.length && p.types.map(t => t.toString().toLocaleLowerCase()).every(u => types.map(v => v.toLocaleLowerCase()).includes(u)));
+        
+        if (matches.length === 0) {
+            continue;
+        }
+
+        if (matches.length === 1) {
+            results[tier].push(matches[0]);
+            continue;
+        }
+
+        const CP = (b.getElementsByClassName("boss-2")[0] as HTMLElement).innerText.trim().substring(3).split(" - ");
+        const lowerCP = Number(CP[0]);
+        const higherCP = Number(CP[1]);
+
+        const WBCP = (b.getElementsByClassName("boss-3")[0] as HTMLElement).innerText.trim().substring(3).split(" - ");
+        const lowerWBCP = Number(WBCP[0]);
+        const higherWBCP = Number(WBCP[1]);
+
+        matches = matches.filter(p => calculateCP(p.atk, 10, p.def, 10, p.hp, 10, levelToLevelIndex(20)) === lowerCP);
+        if (matches.length === 0) {
+            continue;
+        }
+
+        if (matches.length === 1) {
+            results[tier].push(matches[0]);
+            continue;
+        }
+
+        matches = matches.filter(p => calculateCP(p.atk, 15, p.def, 15, p.hp, 15, levelToLevelIndex(20)) === higherCP);
+        if (matches.length === 0) {
+            continue;
+        }
+
+        if (matches.length === 1) {
+            results[tier].push(matches[0]);
+            continue;
+        }
+
+        matches = matches.filter(p => calculateCP(p.atk, 10, p.def, 10, p.hp, 10, levelToLevelIndex(25)) === lowerWBCP);
+        if (matches.length === 0) {
+            continue;
+        }
+
+        if (matches.length === 1) {
+            results[tier].push(matches[0]);
+            continue;
+        }
+
+        matches = matches.filter(p => calculateCP(p.atk, 15, p.def, 15, p.hp, 15, levelToLevelIndex(25)) === higherWBCP);
+        if (matches.length === 0) {
+            continue;
+        }
+
+        if (matches.length === 1) {
+            results[tier].push(matches[0]);
+            continue;
+        }
+
+        console.error("Couldn't parse raid pokémon to model DTO: " + bossName);
+    }
+    
+    for (let i = 0; i < results["mega"].length; i++) {
+        const currMega = results["mega"][i];
+        const correspondingMega = Object.values(gamemasterPokemon).find(pk => pk.dex === currMega.dex && !pk.aliasId && pk.isMega);
+        if (!correspondingMega) {
+            console.error("Couldn't find corresponding Mega form for " + currMega.speciesId);
+            continue;
+        }
+        results["mega"][i] = correspondingMega;
+    }
+
     return data;
 }
 

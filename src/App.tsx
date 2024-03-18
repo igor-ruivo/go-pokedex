@@ -26,6 +26,7 @@ const App = () => {
                                 <MovesProvider>
                                     <NavbarSearchProvider>
                                         <RaidRankerProvider>
+                                            <NewsProvider>
                                             <HashRouter>
                                                 <div className='main-wrapper'>
                                                     <Navbar/>
@@ -46,6 +47,7 @@ const App = () => {
                                                     <Footer/>
                                                 </div>
                                             </HashRouter>
+                                            </NewsProvider>
                                         </RaidRankerProvider>
                                     </NavbarSearchProvider>
                                 </MovesProvider>

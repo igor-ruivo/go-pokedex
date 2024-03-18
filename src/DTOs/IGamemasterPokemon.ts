@@ -1,4 +1,3 @@
-import { PokemonForms } from "./PokemonForms";
 import { PokemonTypes } from "./PokemonTypes";
 
 export interface IGamemasterPokemon {
