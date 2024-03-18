@@ -14,7 +14,7 @@ import DeleteTrash from './components/DeleteTrash';
 import { ImageSourceProvider } from './contexts/imageSource-context';
 import { RaidRankerProvider } from './contexts/raid-ranker-context';
 import Footer from './components/Template/Footer';
-import { NewsProvider } from './contexts/news-context';
+import { RaidBossesProvider } from './contexts/raid-bosses-context';
 
 const App = () => {
     return (
@@ -26,7 +26,7 @@ const App = () => {
                                 <MovesProvider>
                                     <NavbarSearchProvider>
                                         <RaidRankerProvider>
-                                            <NewsProvider>
+                                            <RaidBossesProvider>
                                             <HashRouter>
                                                 <div className='main-wrapper'>
                                                     <Navbar/>
@@ -47,7 +47,7 @@ const App = () => {
                                                     <Footer/>
                                                 </div>
                                             </HashRouter>
-                                            </NewsProvider>
+                                            </RaidBossesProvider>
                                         </RaidRankerProvider>
                                     </NavbarSearchProvider>
                                 </MovesProvider>

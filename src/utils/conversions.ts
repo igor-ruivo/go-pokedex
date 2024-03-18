@@ -7,7 +7,7 @@ import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
-import { IRaidBosses } from "../DTOs/IRaidBosses";
+import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
 
 const blacklistedSpecieIds = new Set<string>([
@@ -286,7 +286,7 @@ const removeFormsFromPokemonName = (rawName: string) => {
     return rawName.trim();
 }
 
-export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBosses> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("list")[0].children);
@@ -300,11 +300,7 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
 
     let tier = "0";
 
-    const results: Dictionary<IGamemasterPokemon[]> = {};
-    results["1"] = [];
-    results["3"] = [];
-    results["5"] = [];
-    results["mega"] = [];
+    const results: Dictionary<IRaidBoss[]> = {};
 
     for (let b of entries) {
         if (b.classList.contains("header-li")) {
@@ -314,8 +310,11 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
             } else {
                 tier = innerTxt.split(" ")[1];
             }
+            results[tier] = [];
             continue;
         }
+
+        const hasShiny = b.getElementsByClassName("shiny-icon").length > 0;
 
         const bossName = b.getElementsByClassName("boss-name")[0].innerHTML;
         let matches = Object.values(gamemasterPokemon).filter(p =>
@@ -329,7 +328,10 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
         }
 
         if (matches.length === 1) {
-            results[tier].push(matches[0]);
+            results[tier].push({
+                speciesId: matches[0].speciesId,
+                shiny: hasShiny
+            });
             continue;
         }
 
@@ -344,7 +346,10 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
         }
 
         if (matches.length === 1) {
-            results[tier].push(matches[0]);
+            results[tier].push({
+                speciesId: matches[0].speciesId,
+                shiny: hasShiny
+            });
             continue;
         }
 
@@ -362,7 +367,10 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
         }
 
         if (matches.length === 1) {
-            results[tier].push(matches[0]);
+            results[tier].push({
+                speciesId: matches[0].speciesId,
+                shiny: hasShiny
+            });
             continue;
         }
 
@@ -372,7 +380,10 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
         }
 
         if (matches.length === 1) {
-            results[tier].push(matches[0]);
+            results[tier].push({
+                speciesId: matches[0].speciesId,
+                shiny: hasShiny
+            });
             continue;
         }
 
@@ -382,7 +393,10 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
         }
 
         if (matches.length === 1) {
-            results[tier].push(matches[0]);
+            results[tier].push({
+                speciesId: matches[0].speciesId,
+                shiny: hasShiny
+            });
             continue;
         }
 
@@ -392,24 +406,33 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
         }
 
         if (matches.length === 1) {
-            results[tier].push(matches[0]);
+            results[tier].push({
+                speciesId: matches[0].speciesId,
+                shiny: hasShiny
+            });
             continue;
         }
 
         console.error("Couldn't parse raid pokémon to model DTO: " + bossName);
     }
     
-    for (let i = 0; i < results["mega"].length; i++) {
-        const currMega = results["mega"][i];
-        const correspondingMega = Object.values(gamemasterPokemon).find(pk => pk.dex === currMega.dex && !pk.aliasId && pk.isMega);
-        if (!correspondingMega) {
-            console.error("Couldn't find corresponding Mega form for " + currMega.speciesId);
-            continue;
+    if (results["mega"]) {
+        for (let i = 0; i < results["mega"].length; i++) {
+            const currMega = results["mega"][i];
+            const dex = gamemasterPokemon[currMega.speciesId].dex;
+            const correspondingMega = Object.values(gamemasterPokemon).find(pk => pk.dex === dex && !pk.aliasId && pk.isMega);
+            if (!correspondingMega) {
+                console.error("Couldn't find corresponding Mega form for " + currMega.speciesId);
+                continue;
+            }
+            results["mega"][i] = {
+                speciesId: correspondingMega.speciesId,
+                shiny: currMega.shiny
+            };
         }
-        results["mega"][i] = correspondingMega;
     }
 
-    return data;
+    return results;
 }
 
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
