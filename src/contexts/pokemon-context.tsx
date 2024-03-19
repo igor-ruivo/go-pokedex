@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { gamemasterPokemonUrl } from '../utils/Configs';
+import { cacheTtlInMillis, gamemasterPokemonUrl } from '../utils/Configs';
 import { mapGamemasterPokemonData } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 
@@ -18,7 +18,7 @@ const useFetchAllData: () => [Dictionary<IGamemasterPokemon>, boolean, string] =
 
     useEffect(() => {
         const controller = new AbortController();
-        fetchGamemasterPokemon([gamemasterPokemonUrl], true, {signal: controller.signal}, mapGamemasterPokemonData);
+        fetchGamemasterPokemon([gamemasterPokemonUrl], cacheTtlInMillis, {signal: controller.signal}, mapGamemasterPokemonData);
         return () => {
             controller.abort("Request canceled by cleanup.");
         }

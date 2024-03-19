@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { bossesUrl } from '../utils/Configs';
+import { bossesUrl, calendarCache } from '../utils/Configs';
 import { mapRaidBosses } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 import { IRaidBoss } from '../DTOs/IRaidBoss';
@@ -8,8 +8,8 @@ import { usePokemon } from './pokemon-context';
 
 interface RaidBossesContextType {
     bossesPerTier: Dictionary<IRaidBoss[]>;
-    fetchCompleted: boolean;
-    errors: string;
+    bossesFetchCompleted: boolean;
+    bossesErrors: string;
 }
 
 const RaidBossesContext = createContext<RaidBossesContextType | undefined>(undefined);
@@ -24,7 +24,7 @@ const useFetchAllData: () => [Dictionary<IRaidBoss[]>, boolean, string] = () => 
         }
 
         const controller = new AbortController();
-        fetchRaidBosses([bossesUrl], false, {signal: controller.signal}, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon));
+        fetchRaidBosses([bossesUrl], calendarCache, {signal: controller.signal}, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon));
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
@@ -47,8 +47,8 @@ export const RaidBossesProvider = (props: React.PropsWithChildren<{}>) => {
     return (
         <RaidBossesContext.Provider value={{
             bossesPerTier: raidBosses,
-            fetchCompleted: fetchCompleted,
-            errors: errors
+            bossesFetchCompleted: fetchCompleted,
+            bossesErrors: errors
         }}
         >
             {props.children}

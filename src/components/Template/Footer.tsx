@@ -38,8 +38,11 @@ const Footer = () => {
 
     return <footer className={`footer ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, false) ? 'footer-hidden' : 'footer-visible'}`}>
         <section className="footer-section">
-            <Link to="/trash-pokemon" className={`navbar-filter button`}>
-                <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="20" decoding="async" src={`${process.env.PUBLIC_URL}/images/search.png`}/>
+            <Link to="/trash-pokemon" className={`navbar-filter button no-padding`}>
+                <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="24" decoding="async" src={`${process.env.PUBLIC_URL}/images/search.png`}/>
+            </Link>
+            <Link to="/calendar" className={`navbar-filter button no-padding`}>
+                <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="24" decoding="async" src={`${process.env.PUBLIC_URL}/images/calendar.png`}/>
             </Link>
             </section>
     </footer>;

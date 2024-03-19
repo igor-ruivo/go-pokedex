@@ -84,3 +84,13 @@
     height: 12%;
     z-index: 2;
 }
+
+.shiny-overlay {
+    opacity: 1;
+    position: absolute;
+    top: 75%;
+    left: 100%;
+    width: 50%;
+    height: 50%;
+    z-index: 2;
+}

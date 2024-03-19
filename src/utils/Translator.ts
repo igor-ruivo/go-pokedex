@@ -23,6 +23,8 @@ export enum TranslatorKeys {
     TrashHelp,
     Compute,
     Effective,
+    CurrentRaid,
+    Tier,
     CPCap,
     RecommendedChargedSingle,
     RaidType,
@@ -151,6 +153,12 @@ const save = new Map<Language, string>([
     [Language.English, "Save"],
     [Language.Portuguese, "Manter"],
     [Language.Bosnian, "Čuvati"]
+]);
+
+const tier = new Map<Language, string>([
+    [Language.English, "Tier"],
+    [Language.Portuguese, "Nível"],
+    [Language.Bosnian, "Nivo"]
 ]);
 
 const trashHelp = new Map<Language, string>([
@@ -433,6 +441,12 @@ const rock = new Map<Language, string>([
     [Language.English, "Rock"],
     [Language.Portuguese, "Pedra"],
     [Language.Bosnian, "Kamen"]
+]);
+
+const currentRaid = new Map<Language, string>([
+    [Language.English, "Current Bosses"],
+    [Language.Portuguese, "Bosses Atuais"],
+    [Language.Bosnian, "Trenutni Šefovi"]
 ]);
 
 const psychic = new Map<Language, string>([
@@ -1016,6 +1030,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.RaidType, raidType],
     [TranslatorKeys.Type, type],
     [TranslatorKeys.OrType, orType],
+    [TranslatorKeys.Tier, tier],
     [TranslatorKeys.Psychic, psychic],
     [TranslatorKeys.Fighting, fighting],
     [TranslatorKeys.Flying, flying],
@@ -1077,6 +1092,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.targetDefenseStatStageChange, targetDefense],
     [TranslatorKeys.attackerAttackStatStageChange, ownAttack],
     [TranslatorKeys.attackerDefenseStatStageChange, ownDefense],
+    [TranslatorKeys.CurrentRaid, currentRaid],
     [TranslatorKeys.Lower, lower],
     [TranslatorKeys.Increase, increase],
     [TranslatorKeys.STAB, stab],

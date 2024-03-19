@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { gameMasterUrl } from '../utils/Configs';
+import { cacheTtlInMillis, gameMasterUrl } from '../utils/Configs';
 import { mapGameMaster } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 import { IGameMasterMove } from '../DTOs/IGameMasterMove';
@@ -18,7 +18,7 @@ const useFetchAllData: () => [Dictionary<IGameMasterMove>, boolean, string] = ()
 
     useEffect(() => {
         const controller = new AbortController();
-        fetchMoves([gameMasterUrl], true, {signal: controller.signal}, mapGameMaster);
+        fetchMoves([gameMasterUrl], cacheTtlInMillis, {signal: controller.signal}, mapGameMaster);
         return () => {
             controller.abort("Request canceled by cleanup.");
         }

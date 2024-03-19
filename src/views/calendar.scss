@@ -1,0 +1,24 @@
+.with-flex {
+    display: flex;
+    flex-wrap: wrap;
+    a {
+        text-decoration: none;
+    }
+}
+
+.dynamic-size {
+    width: 20%;
+    aspect-ratio: 1 / 1;
+}
+
+@media (max-width: 1000px) {
+    .dynamic-size {
+        width: 25%;
+    }
+}
+
+@media (max-width: 800px) {
+    .dynamic-size {
+        width: calc(100% / 3);
+    }
+}

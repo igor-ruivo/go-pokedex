@@ -15,6 +15,7 @@ import { ImageSourceProvider } from './contexts/imageSource-context';
 import { RaidRankerProvider } from './contexts/raid-ranker-context';
 import Footer from './components/Template/Footer';
 import { RaidBossesProvider } from './contexts/raid-bosses-context';
+import Calendar from './views/calendar';
 
 const App = () => {
     return (
@@ -41,6 +42,7 @@ const App = () => {
                                                             <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
                                                             <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
                                                             <Route path="/trash-pokemon" element={<DeleteTrash />}/>
+                                                            <Route path="/calendar" element={<Calendar />}/>
                                                             <Route path="/*" element={<div>404 not found!</div>} />
                                                         </Routes>
                                                     </Content>

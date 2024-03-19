@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { enTranslationsUrl, ptbrTranslationsUrl } from '../utils/Configs';
+import { cacheTtlInMillis, enTranslationsUrl, ptbrTranslationsUrl } from '../utils/Configs';
 import Dictionary from '../utils/Dictionary';
 import { ITranslatedMove } from '../DTOs/ITranslatedMove';
 import { mapTranslatedMoves } from '../utils/conversions';
@@ -32,7 +32,7 @@ const useFetchAllData: () => [Dictionary<ITranslatedMove>, boolean, string] = ()
 
     useEffect(() => {
         const controller = new AbortController();
-        fetchGameTranslation([gameLanguageResourceUrl], true, {signal: controller.signal}, mapTranslatedMoves);
+        fetchGameTranslation([gameLanguageResourceUrl], cacheTtlInMillis, {signal: controller.signal}, mapTranslatedMoves);
         return () => {
             controller.abort("Request canceled by cleanup.");
         }

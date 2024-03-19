@@ -415,22 +415,6 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
 
         console.error("Couldn't parse raid pokémon to model DTO: " + bossName);
     }
-    
-    if (results["mega"]) {
-        for (let i = 0; i < results["mega"].length; i++) {
-            const currMega = results["mega"][i];
-            const dex = gamemasterPokemon[currMega.speciesId].dex;
-            const correspondingMega = Object.values(gamemasterPokemon).find(pk => pk.dex === dex && !pk.aliasId && pk.isMega);
-            if (!correspondingMega) {
-                console.error("Couldn't find corresponding Mega form for " + currMega.speciesId);
-                continue;
-            }
-            results["mega"][i] = {
-                speciesId: correspondingMega.speciesId,
-                shiny: currMega.shiny
-            };
-        }
-    }
 
     return results;
 }

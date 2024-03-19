@@ -318,7 +318,7 @@ const Navbar = () => {
                                 return !p.isMega/* && (showShadow || !p.isShadow) && (showXL || !needsXLCandy(p, pathname.startsWith("/great") ? 1500 : pathname.startsWith("/ultra") ? 2500 : pathname.startsWith("/custom") ? customCupCPLimit : 0))*/;
                             }
 
-                            if (pathname.includes("pokemon")) {
+                            if (pathname.includes("pokemon") || pathname.includes("calendar")) {
                                 return true;
                             }
 
@@ -329,7 +329,7 @@ const Navbar = () => {
                             return !p.isShadow/* && (showMega || !p.isMega)*/;
                         }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} as EntryType))}
                         isLoading={!fetchCompleted}
-                        onSelection={(selectedEntry: EntryType) => pathname.includes("pokemon") && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`.replace("/trash-pokemon", "/info"))}
+                        onSelection={(selectedEntry: EntryType) => (pathname.includes("pokemon") || pathname.includes("calendar")) && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`.replace("/trash-pokemon", "/info").replace("/calendar", "/info"))}
                         renderOption={(props: any, option: EntryType) => (
                             <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                               <PokemonImage
@@ -345,7 +345,7 @@ const Navbar = () => {
                     />
                 </div>
                 <button
-                    className={`navbar-filter ${pathname.includes("pokemon") ? "unavailable" : ""}`}
+                    className={`navbar-filter ${pathname.includes("pokemon") || pathname.includes("calendar") ? "unavailable" : ""}`}
                     onClick={() => setOptionsOpened(p => p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter)}
                 >
                     <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="20" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
@@ -452,10 +452,10 @@ const Navbar = () => {
             </nav>
         </aside>
         <div
-            className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !pathname.includes("pokemon"))) ? "show" : "hide"}`}
+            className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !(pathname.includes("pokemon") || pathname.includes("calendar")))) ? "show" : "hide"}`}
             onClick={e => handleModalClick(e)}
         />
-        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon")) ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
+        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon") || pathname.includes("calendar")) ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>

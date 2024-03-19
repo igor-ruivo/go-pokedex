@@ -15,9 +15,10 @@ interface IPokemonCardProps {
     listType: ListType,
     cpStringOverride?: string;
     rankOverride?: number;
+    shinyBadge?: boolean;
 }
 
-const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride}: IPokemonCardProps) => {
+const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBadge}: IPokemonCardProps) => {
     const {currentGameLanguage} = useLanguage();
     const {rankLists} = usePvp();
 
@@ -62,7 +63,7 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride}: IPokem
                     <PokemonTypes types={pokemon.types} />
                 </span>
                 <span className="card-content">
-                    <PokemonImage pokemon={pokemon} xl={needsXLCandy(pokemon, cpThreshold)} withName lazy/>
+                    <PokemonImage pokemon={pokemon} xl={needsXLCandy(pokemon, cpThreshold)} shiny={shinyBadge} withName lazy/>
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container">
