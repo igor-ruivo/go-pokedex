@@ -41,7 +41,7 @@ const Footer = () => {
             <Link to="/trash-pokemon" className={`navbar-filter button no-padding`}>
                 <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="24" decoding="async" src={`${process.env.PUBLIC_URL}/images/search.png`}/>
             </Link>
-            <Link to="/calendar" className={`navbar-filter button no-padding`}>
+            <Link to="/calendar/bosses" className={`navbar-filter button no-padding`}>
                 <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="24" decoding="async" src={`${process.env.PUBLIC_URL}/images/calendar.png`}/>
             </Link>
             </section>

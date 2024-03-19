@@ -8,10 +8,12 @@ import { ListType } from './pokedex';
 import { calculateCP, levelToLevelIndex } from '../utils/pokemon-helper';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
+import { Link, useLocation } from 'react-router-dom';
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { bossesPerTier, bossesFetchCompleted, bossesErrors } = useRaidBosses();
+    const { pathname } = useLocation();
     
     const {currentGameLanguage, currentLanguage} = useLanguage();
 
@@ -26,18 +28,45 @@ const Calendar = () => {
         const original = gamemasterPokemon[speciesId];
         return Object.values(gamemasterPokemon).find(p => p.dex === original.dex && !p.aliasId && p.isMega);
     }
+
+    const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
+    const tab = pathname.substring(pathname.lastIndexOf("/"));
     
     return (
         <main className="layout">
-            <div className="pokemon with-margin-top">
+            <nav className="navigation-header">
+                <ul>
+                    <li>
+                        <Link to={pokemonBasePath + "/bosses"} className={"header-tab " + (tab.endsWith("/bosses") ? "selected" : "")}>
+                            <span>Bosses</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to={pokemonBasePath + "/spawns"} className={"header-tab disabled " + (tab.endsWith("/spawns") ? "selected" : "")}>
+                            <span>Spawns</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to={pokemonBasePath + "/rockets"} className={"header-tab disabled " + (tab.endsWith("/rockets") ? "selected" : "")}>
+                            <span>Rockets</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to={pokemonBasePath + "/eggs"} className={"header-tab disabled " + (tab.endsWith("/eggs") ? "selected" : "")}>
+                            <span>Eggs</span>
+                        </Link>
+                    </li>
+                </ul>
+            </nav>
+            <div className="pokemon">
                 <LoadingRenderer errors={errors + bossesErrors} completed={fetchCompleted && bossesFetchCompleted}>
                 <div className="pokemon-content">
-                    <div className="content">
-                        <header className="pokemonheader-header">
+                    <div className="content small-side-padding">
+                        <header className="pokemonheader-header without-negative-margins">
                             <h1 className="baseheader-name">{translator(TranslatorKeys.CurrentRaid, currentLanguage)} ({gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)})</h1>
                         </header>
-                        <div className="pokemon">
-                            {bossesFetchCompleted && Object.entries(bossesPerTier).map(e => <div key={e[0]}>
+                        <div className="pokemon with-normal-gap">
+                            {bossesFetchCompleted && Object.entries(bossesPerTier).map(e => <div className='item default-padding' key={e[0]}>
                                 <h1>
                                     {e[0].includes("mega") ? gameTranslator(GameTranslatorKeys.MegaRaid, currentGameLanguage) : `${translator(TranslatorKeys.Tier, currentLanguage)} ${e[0]}`}
                                 </h1>

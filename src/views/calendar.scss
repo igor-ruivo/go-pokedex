@@ -6,9 +6,30 @@
     }
 }
 
+.without-negative-margins {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .dynamic-size {
     width: 20%;
     aspect-ratio: 1 / 1;
+}
+
+.with-normal-gap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 50%;
+}
+
+.small-side-padding {
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 @media (max-width: 1000px) {
@@ -20,5 +41,12 @@
 @media (max-width: 800px) {
     .dynamic-size {
         width: calc(100% / 3);
+    }
+}
+
+@media (max-width: 600px) {
+    .small-side-padding {
+        padding-left: 3px;
+        padding-right: 3px;
     }
 }

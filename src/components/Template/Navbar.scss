@@ -17,6 +17,10 @@
     transition: opacity 225ms ease, visibility 225ms linear, transform 225ms linear;
 }
 
+.with-pointer {
+    cursor: pointer;
+}
+
 .fake-modal {
     background-color: rgba(0, 0, 0, .33);
     position: fixed;
