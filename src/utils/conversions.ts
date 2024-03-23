@@ -420,6 +420,33 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
     return results;
 }
 
+export const mapPosts: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(data, 'text/html');
+    const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock__body"));
+    if (entries.length === 0) {
+        console.log("No entries for request.");
+        return {};
+    }
+    const date = entries[0].children[0]?.innerHTML.trim();
+    if (!date) {
+        console.log("No date.")
+    }
+    else {
+        console.log(date);
+    }
+    
+    for (let i = 1; i < entries.length; i++) {
+        const entry = entries[i];
+        const title = entry.parentElement?.getElementsByClassName("ContainerBlock__headline__title")[0];
+        //console.log(title?.innerHTML.trim());
+    }
+
+    //console.log(entries);
+
+    return {};
+}
+
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const observedPokemon = new Set<string>();
 

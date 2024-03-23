@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
 import { bossesUrl, calendarCache, corsProxyUrl, pokemonGoBaseUrl, pokemonGoNewsUrl } from '../utils/Configs';
-import { mapRaidBosses } from '../utils/conversions';
+import { mapPosts, mapRaidBosses } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 import { IRaidBoss } from '../DTOs/IRaidBoss';
 import { usePokemon } from './pokemon-context';
@@ -38,17 +38,15 @@ const useFetchAllData: () => [string, boolean, string] = () => {
 
         const parser = new DOMParser();
         const htmlDoc = parser.parseFromString(news[0], 'text/html');
-        const entries = Array.from(htmlDoc.getElementsByClassName("blogList__post"));
+        const postsEntries = Array.from(htmlDoc.getElementsByClassName("blogList__post")).filter(e => !e.querySelector(".blogList__post__content__title")?.innerHTML.trim().startsWith("Welcome"));
 
         const controller = new AbortController();
 
-        fetchPosts(entries.map(e => {
+        fetchPosts(postsEntries.map(e => {
             const hrefValue = (e as HTMLAnchorElement).href;
-            if (hrefValue.includes("incarnate"))
-            window.alert(hrefValue)
             const relativeComponent = hrefValue.substring(hrefValue.lastIndexOf("/post/") + 1);
             return corsProxyUrl + encodeURIComponent(pokemonGoBaseUrl + relativeComponent);
-        }), 0, {signal: controller.signal});
+        }), 0, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, request, gamemasterPokemon));
 
         return () => {
             controller.abort("Request canceled by cleanup.");
