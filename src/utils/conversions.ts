@@ -289,8 +289,9 @@ const removeFormsFromPokemonName = (rawName: string) => {
 export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
-    const entries = Array.from(htmlDoc.getElementsByClassName("list")[0].children);
+    const entries = Array.from(htmlDoc.getElementsByClassName("blogList__posts")[0].children);
 
+    console.log(entries);
     // first, trying to parse by name without forms.
     // if <=1 match, return immediatelly
     // otherwise, check types
