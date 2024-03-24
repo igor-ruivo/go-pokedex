@@ -9,6 +9,7 @@ import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
+import { IEntry, IPostEntry, IRaidEntry } from "../DTOs/INews";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -454,29 +455,263 @@ const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => 
 const normalizeSpeciesNameForId = (speciesName: string) => speciesName.toLocaleLowerCase().replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’", "'").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+export const mapSeason: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    console.log("Fetching season");
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(data, 'text/html');
+    const entries = Array.from(htmlDoc.getElementById("spawns")?.getElementsByClassName("alola__pokemonTabContent") ?? []).map(e => e as HTMLElement);
+    const wildDomain = Object.values(gamemasterPokemon)
+        .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
+    const wildEncounters = fetchPokemonFromElements(entries, gamemasterPokemon, wildDomain);
+
+    return data;
+}
+
+const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
+    const wildEncounters: IEntry[] = [];
+    const textes = [];
+    const stack = [...elements];
+    while (stack.length > 0) {
+        const node = stack.pop();
+        if (!node) {
+            continue;
+        }
+        
+        if (node.nodeType === Node.TEXT_NODE) {
+            const actualText = node.textContent?.trim();
+            if (actualText) {
+                textes.push(actualText);
+            }
+            continue;
+        }
+        
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                stack.push(node.childNodes[i] as HTMLElement);
+            }
+        }
+    }
+    const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", "and more", "wild encounters", "sunny", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog"];
+    const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k)));
+    const pkmwithNoClothes = parsedPokemon.map(pp => {
+        const idx = pp.indexOf(" wearing");
+        if (idx !== -1) {
+            return pp.substring(0, idx);
+        }
+        return pp;
+    });
+    
+    for (let j = 0; j < pkmwithNoClothes.length; j++) {
+        const isShiny =  pkmwithNoClothes[j].includes("*");
+        let currP = pkmwithNoClothes[j].replace("*", "").trim();
+
+        // First (90% hits): direct indexing
+        // start by lowercasing and converting special characters
+        const match = gamemasterPokemon[normalizeSpeciesNameForId(currP)];
+        if (match) {
+            wildEncounters.push({
+                speciesId: match.speciesId,
+                shiny: isShiny
+            });
+            continue;
+        }
+
+        const gamemasterKnownForms = new Set([
+            //"Mega X",
+            //"Mega Y",
+            //"Mega",
+            //"Shadow",
+            "Mow",
+            "Alolan",
+            "Wash",
+            "Plant",
+            "Sandy",
+            "Trash",
+            "Frost",
+            "Sky",
+            "Hero",
+            "Speed",
+            "Land",
+            "Primal",
+            "Attack",
+            "Origin",
+            "Aria",
+            "Burn",
+            "Unbound",
+            "Pa'u",
+            //"Pa’u",
+            "Dusk",
+            "Armored",
+            "Paldean",
+            "Rainy",
+            "Snowy",
+            "Sunny",
+            "Defense",
+            "Chill",
+            "Douse",
+            "Shock",
+            "Baile",
+            "Sensu",
+            "Galarian",
+            "Hisuian",
+            "Ordinary",
+            "Large",
+            "Small",
+            "Super",
+            "Midday",
+            "Overcast",
+            "Sunshine",
+            "Altered",
+            "Therian",
+            "Pom-Pom",
+            "Average",
+            "Midnight",
+            "Incarnate",
+            "Standard",
+        ]);
+
+        // from here, we have to deal with extreme cases: for example -> Red Flower Hat Galarian Tapu Lele Jumping Rope
+        // or simpler ones: Galarian Muk
+
+        // First, let's try to isolate the base pokémon name
+        //this first commented approach wouldn't work for mew -> mewtwo
+        //const isolatedPkmName = wildDomain.filter(domainP => currP.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(domainP.speciesName.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
+        const isolatedPkmName = domain.filter(domainP => {
+            // Normalize and lower case both strings for a case-insensitive, accent-insensitive comparison
+            const normalizedCurrP = currP.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const normalizedDomainPSpeciesName = domainP.speciesName.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        
+            // Create a regex pattern that matches the species name as a whole word
+            // \b at the start and end denotes word boundaries
+            // The 'i' flag makes the search case-insensitive
+            const pattern = new RegExp(`\\b${normalizedDomainPSpeciesName}\\b`, "i");
+        
+            // Check if the pattern matches within currP
+            return pattern.test(normalizedCurrP);
+        });
+
+
+        if (isolatedPkmName.length === 0) {
+            // Pokémon only has forms. Oricorio?
+
+            //first, find the form
+            //then remove it from the string
+            // then try to match any of the remaining words with any speciesName
+            // if we have multiple occasions, then try to find one with what we removed (form)
+
+            const formCandidate = currP.split(" ").map(p => ndfNormalized(p)).filter(f => Array.from(gamemasterKnownForms).some(e => ndfNormalized(e) === f));
+            if (formCandidate.length === 0) {
+                console.error("(0) Couldn't map form for " + currP);
+                continue;
+            }
+
+            if (formCandidate.length > 1) {
+                console.error("Multiple forms for " + currP);
+                continue;
+            }
+
+            const form = formCandidate[0]; //pom-pom
+
+            const finalResults = domain.filter(wd => ndfNormalized(wd.speciesName).includes("(" + form + ")"));
+            if (finalResults.length === 0) {
+                console.error("Couldn't find Form in gamemaster.");
+                continue;
+            }
+
+            if (finalResults.length === 1) {
+                wildEncounters.push({
+                    speciesId: finalResults[0].speciesId,
+                    shiny: isShiny
+                });
+                continue;
+            }
+
+            //>1
+
+            const pkmNameWithoutForm = ndfNormalized(currP).replaceAll(form, "");
+            //Style Oricorio
+            const ans = domain.filter(wff => pkmNameWithoutForm.split(" ").some(s => ndfNormalized(wff.speciesName).includes(s)) && ndfNormalized(wff.speciesName).includes(form));
+
+            if (ans.length === 0) {
+                console.error("No match found for " + currP);
+                continue;
+            }
+
+            if (ans.length === 1) {
+                wildEncounters.push({
+                    speciesId: ans[0].speciesId,
+                    shiny: isShiny
+                });
+                continue;
+            }
+
+            console.error("Multiple matches for " + currP);
+            continue;
+        }
+        
+        if (isolatedPkmName.length > 1) {
+            console.error("Couldn't isolate the base pokémon name of " + currP);
+            continue;
+        }
+
+        const dex = isolatedPkmName[0].dex;
+        // now try to find the form...
+        // there can also be garbage in the currP, like "Red Flower Hat"
+
+        const availableForms = domain.filter(formC => formC.dex === dex);
+        if (availableForms.length === 1) {
+            wildEncounters.push({
+                speciesId: availableForms[0].speciesId,
+                shiny: isShiny
+            });
+            continue;
+        }
+
+        if (availableForms.length === 0) {
+            console.error("Couldn't find form of " + currP);
+            continue;
+        }
+
+        const mappedForm = availableForms.filter(af => Array.from(gamemasterKnownForms).some(e => ndfNormalized(af.speciesName).includes(ndfNormalized(e)) && ndfNormalized(currP).includes(ndfNormalized(e))))
+        if (mappedForm.length === 0) {
+            console.error("Couldn't map form for " + currP);
+            continue;
+        }
+
+        if (mappedForm.length === 1) {
+            wildEncounters.push({
+                speciesId: mappedForm[0].speciesId,
+                shiny: isShiny
+            });
+            continue;
+        }
+
+        console.error("Multiple forms for " + currP);
+        continue;
+    }
+
+    console.log(wildEncounters)
+    return wildEncounters;
+}
+
 export const mapPosts: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock"));
-    const wildEncounters = [];
+
+    const raidsEntries: Dictionary<IEntry[]> = {};
+
     if (entries.length === 0) {
-        //console.log("No entries for request.");
         return {};
     }
+
     const date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
-    if (date) {
-        //console.log(date);
+    if (!date) {
+        return {};
     }
 
     const wildDomain = Object.values(gamemasterPokemon)
-    .filter(p => !p.isShadow && !p.isMega && !p.aliasId)
-    /*.map(p => {
-        return {...p, speciesName: removeFormsFromPokemonName(p.speciesName)}
-    })*/
-    //.sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => a.speciesName.localeCompare(b.speciesName));
-
-    //console.log("wild!")
-    //console.log(wildDomain);
+        .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
     
     for (let i = 1; i < entries.length; i++) {
         const entry = entries[i];
@@ -485,263 +720,7 @@ export const mapPosts: (data: any, request: any, gamemasterPokemon: Dictionary<I
         const contentBodies = Array.from(entry.children) as HTMLElement[];
         switch(kind) {
             case "Wild encounters":
-                const textes = [];
-                const stack = [...contentBodies];
-                while (stack.length > 0) {
-                    const node = stack.pop();
-                    if (!node) {
-                        continue;
-                    }
-                    
-                    if (node.nodeType === Node.TEXT_NODE) {
-                        const actualText = node.textContent?.trim();
-                        if (actualText) {
-                            textes.push(actualText);
-                        }
-                        continue;
-                    }
-                    
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        for (let i = node.childNodes.length - 1; i >= 0; i--) {
-                            stack.push(node.childNodes[i] as HTMLElement);
-                        }
-                    }
-                }
-                console.log("output:");
-                //console.log(textes);
-                const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you may", "wild encounters", "sunny", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog"];
-                const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k)));
-                //const noPkm = textes.filter(t => !(t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k))));
-                //console.error(noPkm);
-                //remove clothes:
-                const pkmwithNoClothes = parsedPokemon.map(pp => {
-                    const idx = pp.indexOf(" wearing");
-                    if (idx !== -1) {
-                        return pp.substring(0, idx);
-                    }
-                    return pp;
-                });
-                //console.log(pkmwithNoClothes);
-                for(let j = 0; j < pkmwithNoClothes.length; j++) {
-                    let currP = pkmwithNoClothes[j].replace("*", "").trim();
-                    console.log("Parsing: " + currP);
-
-                    // First (90% hits): direct indexing
-                    // start by lowercasing and converting special characters
-                    const match = gamemasterPokemon[normalizeSpeciesNameForId(currP)];
-                    if (match) {
-                        //console.log(match.speciesId);
-                        continue;
-                    }
-
-                    const gamemasterKnownForms = new Set([
-                        //"Mega X",
-                        //"Mega Y",
-                        //"Mega",
-                        //"Shadow",
-                        "Mow",
-                        "Alolan",
-                        "Wash",
-                        "Plant",
-                        "Sandy",
-                        "Trash",
-                        "Frost",
-                        "Sky",
-                        "Hero",
-                        "Speed",
-                        "Land",
-                        "Primal",
-                        "Attack",
-                        "Origin",
-                        "Aria",
-                        "Burn",
-                        "Unbound",
-                        "Pa'u",
-                        //"Pa’u",
-                        "Dusk",
-                        "Armored",
-                        "Paldean",
-                        "Rainy",
-                        "Snowy",
-                        "Sunny",
-                        "Defense",
-                        "Chill",
-                        "Douse",
-                        "Shock",
-                        "Baile",
-                        "Sensu",
-                        "Galarian",
-                        "Hisuian",
-                        "Ordinary",
-                        "Large",
-                        "Small",
-                        "Super",
-                        "Midday",
-                        "Overcast",
-                        "Sunshine",
-                        "Altered",
-                        "Therian",
-                        "Pom-Pom",
-                        "Average",
-                        "Midnight",
-                        "Incarnate",
-                        "Standard",
-                    ]);
-
-                    // from here, we have to deal with extreme cases: for example -> Red Flower Hat Galarian Tapu Lele Jumping Rope
-                    // or simpler ones: Galarian Muk
-
-                    // First, let's try to isolate the base pokémon name
-                    //this first commented approach wouldn't work for mew -> mewtwo
-                    //const isolatedPkmName = wildDomain.filter(domainP => currP.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(domainP.speciesName.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
-                    const isolatedPkmName = wildDomain.filter(domainP => {
-                        // Normalize and lower case both strings for a case-insensitive, accent-insensitive comparison
-                        const normalizedCurrP = currP.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                        const normalizedDomainPSpeciesName = domainP.speciesName.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    
-                        // Create a regex pattern that matches the species name as a whole word
-                        // \b at the start and end denotes word boundaries
-                        // The 'i' flag makes the search case-insensitive
-                        const pattern = new RegExp(`\\b${normalizedDomainPSpeciesName}\\b`, "i");
-                    
-                        // Check if the pattern matches within currP
-                        return pattern.test(normalizedCurrP);
-                    });
-
-
-                    if (isolatedPkmName.length === 0) {
-                        // Pokémon only has forms. Oricorio?
-                        //TODO LATER
-
-                        //first, find the form
-                        //then remove it from the string
-                        // then try to match any of the remaining words with any speciesName
-                        // if we have multiple occasions, then try to find one with what we removed (form)
-
-                        const formCandidate = currP.split(" ").map(p => ndfNormalized(p)).filter(f => Array.from(gamemasterKnownForms).some(e => ndfNormalized(e) === f));
-                        if (formCandidate.length === 0) {
-                            console.error("(0) Couldn't map form for " + currP);
-                            continue;
-                        }
-
-                        if (formCandidate.length > 1) {
-                            console.error("Multiple forms for " + currP);
-                            continue;
-                        }
-
-                        const form = formCandidate[0]; //pom-pom
-
-                        const finalResults = wildDomain.filter(wd => ndfNormalized(wd.speciesName).includes("(" + form + ")"));
-                        if (finalResults.length === 0) {
-                            console.error("Couldn't find Form in gamemaster.");
-                            continue;
-                        }
-
-                        if (finalResults.length === 1) {
-                            console.log(finalResults[0].speciesId);
-                            continue;
-                        }
-
-                        //>1
-
-                        const pkmNameWithoutForm = ndfNormalized(currP).replaceAll(form, "");
-                        //Style Oricorio
-                        const ans = wildDomain.filter(wff => pkmNameWithoutForm.split(" ").some(s => ndfNormalized(wff.speciesName).includes(s)) && ndfNormalized(wff.speciesName).includes(form));
-
-                        if (ans.length === 0) {
-                            console.error("No match found for " + currP);
-                            continue;
-                        }
-
-                        if (ans.length === 1) {
-                            console.log(ans[0].speciesId);
-                            continue;
-                        }
-
-                        console.error("Multiple matches for " + currP);
-/*
-                        const mappedForm = wildDomain.filter(af => Array.from(gamemasterKnownForms).some(e => ndfNormalized(af.speciesName).includes(ndfNormalized(e)) && ndfNormalized(currP).includes(ndfNormalized(e))))
-                        if (mappedForm.length === 0) {
-                            console.error("Couldn't map form for " + currP);
-                            continue;
-                        }
-
-                        if (mappedForm.length === 1) {
-                            console.log(mappedForm[0].speciesId);
-                            continue;
-                        }
-
-                        console.error("Multiple forms for " + currP);
-
-
-                        console.error("Couldn't isolate the base pokémon name of " + currP);
-                        continue;*/
-                    }
-                    
-                    if (isolatedPkmName.length > 1) {
-                        console.error("Couldn't isolate the base pokémon name of " + currP);
-                        continue;
-                    }
-
-                    const dex = isolatedPkmName[0].dex;
-                    // now try to find the form...
-                    // there can also be garbage in the currP, like "Red Flower Hat"
-
-                    const availableForms = wildDomain.filter(formC => formC.dex === dex);
-                    if (availableForms.length === 1) {
-                        //console.log("Weird. Was expecting multiple forms, but we can't continue.")
-                        console.log(availableForms[0].speciesId);
-                        continue;
-                    }
-
-                    if (availableForms.length === 0) {
-                        console.error("Couldn't find form of " + currP);
-                        continue;
-                    }
-
-                    const mappedForm = availableForms.filter(af => Array.from(gamemasterKnownForms).some(e => ndfNormalized(af.speciesName).includes(ndfNormalized(e)) && ndfNormalized(currP).includes(ndfNormalized(e))))
-                    if (mappedForm.length === 0) {
-                        console.error("Couldn't map form for " + currP);
-                        continue;
-                    }
-
-                    if (mappedForm.length === 1) {
-                        console.log(mappedForm[0].speciesId);
-                        continue;
-                    }
-
-                    console.error("Multiple forms for " + currP);
-
-
-                    //wildDomain.filter(formC => formC.dex === dex && ndfNormalized(formC.speciesName).includes(ndfNormalized(isolatedPkmName[0].speciesName)))
-/*
-                    const words = currP.split(" ");
-                    if (words.length <= 1) {
-                        console.error("Couldn't find form of " + currP);
-                        continue;
-                    }*/
-
-                    // remove pokémon base name word from the name
-
-                    //console.error(currP);
-/*
-                    const gamemasterP = wildDomain
-                        .filter(p => removeFormsFromPokemonName(p.speciesName) === removeFormsFromPokemonName(currP));
-                    
-                        if (gamemasterP.length === 0) {
-                            console.error("Couldn't find gamemaster Pokémon for " + currP);
-                            continue;
-                        }
-
-                        if (gamemasterP.length === 1) {
-                            console.log(gamemasterP[0].speciesId);
-                            continue;
-                        }
-
-                        console.log(gamemasterP.map(k => k.speciesName));*/
-                }
-
-
+                const wildEncounters = fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain);
                 break;
             case "Eggs":
                 //console.log("Detected Eggs");
@@ -753,8 +732,6 @@ export const mapPosts: (data: any, request: any, gamemasterPokemon: Dictionary<I
                 break;
         }
     }
-
-    //console.log(entries);
 
     return {};
 }

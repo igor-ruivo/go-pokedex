@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useCallback, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
 import { bossesUrl, calendarCache, corsProxyUrl, pokemonGoBaseUrl, pokemonGoNewsUrl } from '../utils/Configs';
-import { mapPosts, mapRaidBosses } from '../utils/conversions';
+import { mapPosts, mapRaidBosses, mapSeason } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 import { IRaidBoss } from '../DTOs/IRaidBoss';
 import { usePokemon } from './pokemon-context';
@@ -18,6 +18,9 @@ const useFetchAllData: () => [string, boolean, string] = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const [news, fetchNews, newsFetchCompleted, errorLoadingnews]: FetchData<string> = useFetchUrls();
     const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<Dictionary<any/*TODO*/>> = useFetchUrls();
+    const [season, fetchSeason, seasonFetchCompleted, errorLoadingSeason]: FetchData<Dictionary<any/*TODO*/>> = useFetchUrls();
+    
+    const encodeProxyUrl = useCallback((relativeComponent: string) => corsProxyUrl + encodeURIComponent(pokemonGoBaseUrl + relativeComponent), []);
 
     useEffect(() => {
         if (!fetchCompleted) {
@@ -25,11 +28,14 @@ const useFetchAllData: () => [string, boolean, string] = () => {
         }
 
         const controller = new AbortController();
+
         fetchNews([corsProxyUrl + pokemonGoNewsUrl], 0, {signal: controller.signal}/*, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon)*/);
+        fetchSeason([encodeProxyUrl("seasons/world-of-wonders?hl=en")], 0, {signal: controller.signal}, (data: any, request: any) => mapSeason(data, request, gamemasterPokemon));
+        
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [fetchNews, fetchCompleted]);
+    }, [fetchNews, fetchSeason, fetchCompleted, gamemasterPokemon, encodeProxyUrl]);
 
     useEffect(() => {
         if (!fetchCompleted || !newsFetchCompleted) {
@@ -42,16 +48,18 @@ const useFetchAllData: () => [string, boolean, string] = () => {
 
         const controller = new AbortController();
 
-        fetchPosts(postsEntries.map(e => {
+        const urls = postsEntries.map(e => {
             const hrefValue = (e as HTMLAnchorElement).href;
             const relativeComponent = hrefValue.substring(hrefValue.lastIndexOf("/post/") + 1);
-            return corsProxyUrl + encodeURIComponent(pokemonGoBaseUrl + relativeComponent);
-        }), 0, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, request, gamemasterPokemon));
+            return encodeProxyUrl(relativeComponent);
+        });
+
+        fetchPosts(urls, 0, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, request, gamemasterPokemon));
 
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [fetchCompleted, newsFetchCompleted]);
+    }, [fetchCompleted, newsFetchCompleted, fetchPosts, news, gamemasterPokemon, encodeProxyUrl]);
 
     return [news[0], newsFetchCompleted, errorLoadingnews];
 }
