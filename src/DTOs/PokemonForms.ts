@@ -1,5 +1,12 @@
 export enum PokemonForms {
     None = "",
+    //From pogo news:
+    PauStyle = "Pa’u Style",
+    PauStyle2 = "Pa'u Style",
+    BaileStyle = "Baile Style",
+    PomPomStyle = "Pom-Pom Style",
+    SensuStyle = "Sensu Style",
+    //Common:
     Galarian = "Galarian",
     Alolan = "Alolan",
     Paldean = "Paldean",
@@ -61,5 +68,11 @@ export enum PokemonForms {
     Pau2 = "Pa'u",
     PomPom2 = "Pom-Pom",
     Y = "Y",
-    X = "X"
+    X = "X",
+    //From pogo news:
+    RedFlower = "Red Flower",
+    BlueFlower = "Blue Flower",
+    YellowFlower = "Yellow Flower",
+    WhiteFlower = "White Flower",
+    OrangeFlower = "Orange Flower",
 }

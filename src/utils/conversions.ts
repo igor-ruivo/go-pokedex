@@ -274,15 +274,25 @@ export const mapTranslatedMoves: (data: any) => Dictionary<ITranslatedMove> = (d
 }
 
 const removeFormsFromPokemonName = (rawName: string) => {
-    rawName = rawName.toLocaleLowerCase();
-    rawName = rawName.replaceAll("(shadow)", "");
-    rawName = rawName.replaceAll("shadow", "");
+    rawName = rawName.toLowerCase();
 
+    // Define a function to escape regex special characters in form names
+    const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // Process "(shadow)" and "shadow" separately to handle them as special cases if needed
+    rawName = rawName.replace(/\(shadow\)/g, "");
+    rawName = rawName.replace(/\bshadow\b/g, "");
+
+    // Iterate over each form and replace it using a regex that matches whole words or words in parentheses
     for (let form of Object.values(PokemonForms)) {
-        rawName = rawName.replaceAll(form.toLocaleLowerCase(), "");
+        const escapedForm = escapeRegExp(form.toLowerCase());
+        const regex = new RegExp(`\\b${escapedForm}\\b|\\(${escapedForm}\\)`, "g");
+        rawName = rawName.replace(regex, "");
     }
-    rawName = rawName.replaceAll("(", "");
-    rawName = rawName.replaceAll(")", "");
+
+    // Remove remaining parentheses that might be left after replacements
+    rawName = rawName.replace(/[()]/g, "");
+
     return rawName.trim();
 }
 
@@ -420,26 +430,124 @@ export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Diction
     return results;
 }
 
+const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => {
+    let start = 0, end = arr.length - 1;
+   
+    while (start <= end) {
+        let mid = Math.floor((start + end) / 2);
+   
+        if (arr[mid].speciesName === value){
+            return arr[mid];
+        }
+        
+        if (arr[mid].speciesName < value) {
+             start = mid + 1;
+        }
+        else {
+             end = mid - 1;
+        }
+    }
+   
+    return null;
+}
+
 export const mapPosts: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
-    const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock__body"));
+    const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock"));
+    const wildEncounters = [];
     if (entries.length === 0) {
-        console.log("No entries for request.");
+        //console.log("No entries for request.");
         return {};
     }
-    const date = entries[0].children[0]?.innerHTML.trim();
-    if (!date) {
-        console.log("No date.")
+    const date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
+    if (date) {
+        //console.log(date);
     }
-    else {
-        console.log(date);
-    }
+
+    const wildDomain = Object.values(gamemasterPokemon)
+    .filter(p => !p.isShadow && !p.isMega && !p.aliasId)
+    .map(p => {
+        return {...p, speciesName: removeFormsFromPokemonName(p.speciesName)}
+    })
+    .sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => a.speciesName.localeCompare(b.speciesName));
+
+    console.log("wild!")
+    console.log(wildDomain);
     
     for (let i = 1; i < entries.length; i++) {
         const entry = entries[i];
-        const title = entry.parentElement?.getElementsByClassName("ContainerBlock__headline__title")[0];
-        //console.log(title?.innerHTML.trim());
+        const title = entry.children[0];
+        const kind = (title as HTMLElement)?.innerText.trim();
+        const contentBodies = Array.from(entry.children) as HTMLElement[];
+        switch(kind) {
+            case "Wild encounters":
+                const textes = [];
+                const stack = [...contentBodies];
+                while (stack.length > 0) {
+                    const node = stack.pop();
+                    if (!node) {
+                        continue;
+                    }
+                    
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const actualText = node.textContent?.trim();
+                        if (actualText) {
+                            textes.push(actualText);
+                        }
+                        continue;
+                    }
+                    
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                            stack.push(node.childNodes[i] as HTMLElement);
+                        }
+                    }
+                }
+                console.log("output:");
+                //console.log(textes);
+                const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you may", "wild encounters", "sunny", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog"];
+                const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k)));
+                const noPkm = textes.filter(t => !(t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k))));
+                //console.error(noPkm);
+                //remove clothes:
+                const pkmwithNoClothes = parsedPokemon.map(pp => {
+                    const idx = pp.indexOf(" wearing");
+                    if (idx !== -1) {
+                        return pp.substring(0, idx);
+                    }
+                    return pp;
+                });
+                console.log(pkmwithNoClothes);
+                for(let j = 0; j < pkmwithNoClothes.length; j++) {
+                    let currP = pkmwithNoClothes[j].replace("*", "").trim();
+                    const gamemasterP = wildDomain
+                        .filter(p => removeFormsFromPokemonName(p.speciesName) === removeFormsFromPokemonName(currP));
+                    
+                        if (gamemasterP.length === 0) {
+                            console.error("Couldn't find gamemaster Pokémon for " + currP);
+                            continue;
+                        }
+
+                        if (gamemasterP.length === 1) {
+                            console.log(gamemasterP[0].speciesId);
+                            continue;
+                        }
+
+                        console.log(gamemasterP.map(k => k.speciesName));
+                }
+
+
+                break;
+            case "Eggs":
+                //console.log("Detected Eggs");
+                break;
+            case "Raids":
+                //console.log("Detected Raids");
+                break;
+            default:
+                break;
+        }
     }
 
     //console.log(entries);
