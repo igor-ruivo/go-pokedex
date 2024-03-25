@@ -17,5 +17,6 @@ export const enTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/p
 export const ptbrTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_brazilianportuguese.json";
 export const bossesUrl = "https://leekduck.com/boss/";
 export const pokemonGoBaseUrl = "https://pokemongolive.com/";
-export const pokemonGoNewsUrl = "https://pokemongolive.com/news/";
+export const pokemonGoNewsUrl = "https://pokemongolive.com/news";
+export const pokemonGoSeasonRelativeUrl = "seasons/timeless-travels?hl=en";
 export const corsProxyUrl = "https://corsproxy.io/?";

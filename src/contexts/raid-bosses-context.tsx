@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { bossesUrl, calendarCache, corsProxyUrl, pokemonGoBaseUrl, pokemonGoNewsUrl } from '../utils/Configs';
+import { bossesUrl, calendarCache, corsProxyUrl, pokemonGoBaseUrl, pokemonGoNewsUrl, pokemonGoSeasonRelativeUrl } from '../utils/Configs';
 import { mapPosts, mapRaidBosses, mapSeason } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 import { IRaidBoss } from '../DTOs/IRaidBoss';
@@ -30,7 +30,7 @@ const useFetchAllData: () => [string, boolean, string] = () => {
         const controller = new AbortController();
 
         fetchNews([corsProxyUrl + pokemonGoNewsUrl], 0, {signal: controller.signal}/*, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon)*/);
-        fetchSeason([encodeProxyUrl("seasons/world-of-wonders?hl=en")], 0, {signal: controller.signal}, (data: any, request: any) => mapSeason(data, request, gamemasterPokemon));
+        fetchSeason([encodeProxyUrl(pokemonGoSeasonRelativeUrl)], 0, {signal: controller.signal}, (data: any, request: any) => mapSeason(data, request, gamemasterPokemon));
         
         return () => {
             controller.abort("Request canceled by cleanup.");
