@@ -14,7 +14,7 @@ import DeleteTrash from './components/DeleteTrash';
 import { ImageSourceProvider } from './contexts/imageSource-context';
 import { RaidRankerProvider } from './contexts/raid-ranker-context';
 import Footer from './components/Template/Footer';
-import { RaidBossesProvider } from './contexts/raid-bosses-context';
+import { CalendarProvider } from './contexts/raid-bosses-context';
 import Calendar from './views/calendar';
 
 const App = () => {
@@ -27,7 +27,7 @@ const App = () => {
                                 <MovesProvider>
                                     <NavbarSearchProvider>
                                         <RaidRankerProvider>
-                                            <RaidBossesProvider>
+                                            <CalendarProvider>
                                             <HashRouter>
                                                 <div className='main-wrapper'>
                                                     <Navbar/>
@@ -52,7 +52,7 @@ const App = () => {
                                                     <Footer/>
                                                 </div>
                                             </HashRouter>
-                                            </RaidBossesProvider>
+                                            </CalendarProvider>
                                         </RaidRankerProvider>
                                     </NavbarSearchProvider>
                                 </MovesProvider>

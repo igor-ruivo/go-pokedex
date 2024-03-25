@@ -1,24 +1,32 @@
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { bossesUrl, calendarCache, corsProxyUrl, pokemonGoBaseUrl, pokemonGoNewsUrl, pokemonGoSeasonRelativeUrl } from '../utils/Configs';
+import { bossesUrl, cacheTtlInMillis, calendarCache, corsProxyUrl, pokemonGoBaseUrl, pokemonGoNewsUrl, pokemonGoSeasonRelativeUrl } from '../utils/Configs';
 import { mapPosts, mapRaidBosses, mapSeason } from '../utils/conversions';
 import Dictionary from '../utils/Dictionary';
 import { IRaidBoss } from '../DTOs/IRaidBoss';
 import { usePokemon } from './pokemon-context';
+import { IPostEntry, ISeason } from '../DTOs/INews';
 
-interface RaidBossesContextType {
-    bossesPerTier: string;
+interface CalendarContextType {
+    bossesPerTier: Dictionary<IRaidBoss[]>;
+    posts: IPostEntry[];
+    season: ISeason;
     bossesFetchCompleted: boolean;
+    postsFetchCompleted: boolean;
+    seasonFetchCompleted: boolean;
     bossesErrors: string;
+    postsErrors: string;
+    seasonErrors: string;
 }
 
-const RaidBossesContext = createContext<RaidBossesContextType | undefined>(undefined);
+const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
-const useFetchAllData: () => [string, boolean, string] = () => {
+const useFetchAllData: () => [Dictionary<IRaidBoss[]>, IPostEntry[], ISeason, boolean, boolean, boolean, string, string, string] = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const [news, fetchNews, newsFetchCompleted, errorLoadingnews]: FetchData<string> = useFetchUrls();
-    const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<Dictionary<any/*TODO*/>> = useFetchUrls();
-    const [season, fetchSeason, seasonFetchCompleted, errorLoadingSeason]: FetchData<Dictionary<any/*TODO*/>> = useFetchUrls();
+    const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<IPostEntry> = useFetchUrls();
+    const [season, fetchSeason, seasonFetchCompleted, errorLoadingSeason]: FetchData<ISeason> = useFetchUrls();
+    const [bosses, fetchBosses, bossesFetchCompleted, errorLoadingBosses]: FetchData<Dictionary<IRaidBoss[]>> = useFetchUrls();
     
     const encodeProxyUrl = useCallback((relativeComponent: string) => corsProxyUrl + encodeURIComponent(pokemonGoBaseUrl + relativeComponent), []);
 
@@ -29,13 +37,14 @@ const useFetchAllData: () => [string, boolean, string] = () => {
 
         const controller = new AbortController();
 
+        fetchBosses([bossesUrl], calendarCache, {signal: controller.signal}, (data: any) => mapRaidBosses(data, gamemasterPokemon));
         fetchNews([corsProxyUrl + pokemonGoNewsUrl], 0, {signal: controller.signal}/*, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon)*/);
-        fetchSeason([encodeProxyUrl(pokemonGoSeasonRelativeUrl)], 0, {signal: controller.signal}, (data: any, request: any) => mapSeason(data, request, gamemasterPokemon));
+        fetchSeason([encodeProxyUrl(pokemonGoSeasonRelativeUrl)], cacheTtlInMillis, {signal: controller.signal}, (data: any) => mapSeason(data, gamemasterPokemon));
         
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [fetchNews, fetchSeason, fetchCompleted, gamemasterPokemon, encodeProxyUrl]);
+    }, [fetchNews, fetchSeason, fetchCompleted, gamemasterPokemon, encodeProxyUrl, fetchBosses]);
 
     useEffect(() => {
         if (!fetchCompleted || !newsFetchCompleted) {
@@ -54,35 +63,41 @@ const useFetchAllData: () => [string, boolean, string] = () => {
             return encodeProxyUrl(relativeComponent);
         });
 
-        fetchPosts(urls, 0, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, request, gamemasterPokemon));
+        fetchPosts(urls, 0, {signal: controller.signal}, (data: any) => mapPosts(data, gamemasterPokemon));
 
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
     }, [fetchCompleted, newsFetchCompleted, fetchPosts, news, gamemasterPokemon, encodeProxyUrl]);
 
-    return [news[0], newsFetchCompleted, errorLoadingnews];
+    return [bosses[0], posts, season[0], bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason];
 }
 
-export const useRaidBosses = (): RaidBossesContextType => {
-    const context = useContext(RaidBossesContext);
+export const useCalendar = (): CalendarContextType => {
+    const context = useContext(CalendarContext);
     if (!context) {
-        throw new Error("useRaidBosses must be used within a RaidBossesProvider");
+        throw new Error("useCalendar must be used within a CalendarProvider");
     }
     return context;
 };
 
-export const RaidBossesProvider = (props: React.PropsWithChildren<{}>) => {
-    const [raidBosses, fetchCompleted, errors]: [string, boolean, string] = useFetchAllData();
+export const CalendarProvider = (props: React.PropsWithChildren<{}>) => {
+    const [raidBosses, posts, season, bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason]: [Dictionary<IRaidBoss[]>, IPostEntry[], ISeason, boolean, boolean, boolean, string, string, string] = useFetchAllData();
 
     return (
-        <RaidBossesContext.Provider value={{
+        <CalendarContext.Provider value={{
             bossesPerTier: raidBosses,
-            bossesFetchCompleted: fetchCompleted,
-            bossesErrors: errors
+            posts: posts,
+            season: season,
+            bossesFetchCompleted: bossesFetchCompleted,
+            postsFetchCompleted: postsFetchCompleted,
+            seasonFetchCompleted: seasonFetchCompleted,
+            bossesErrors: errorLoadingBosses,
+            postsErrors: errorLoadingPosts,
+            seasonErrors: errorLoadingSeason
         }}
         >
             {props.children}
-        </RaidBossesContext.Provider>
+        </CalendarContext.Provider>
     );
 }

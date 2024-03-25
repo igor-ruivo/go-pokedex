@@ -14,3 +14,9 @@ export interface IRaidEntry {
     date: string,
     entries: Dictionary<IEntry[]>
 }
+
+export interface ISeason {
+    date: string,
+    entries: IEntry[],
+    eggs: IEntry[]
+}

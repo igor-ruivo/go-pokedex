@@ -9,7 +9,7 @@ import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
-import { IEntry, IPostEntry, IRaidEntry } from "../DTOs/INews";
+import { IEntry, IPostEntry, IRaidEntry, ISeason } from "../DTOs/INews";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -51,7 +51,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "typhlosion_hisuian",
         "ditto",
         "shedinja",
-        "annihilape"
+        "annihilape",
+        "heracross_mega"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -297,12 +298,11 @@ const removeFormsFromPokemonName = (rawName: string) => {
     return rawName.trim();
 }
 
-export const mapRaidBosses: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
-    const entries = Array.from(htmlDoc.getElementsByClassName("blogList__posts")[0].children);
+    const entries = Array.from(htmlDoc.getElementsByClassName("list")[0].children);
 
-    console.log(entries);
     // first, trying to parse by name without forms.
     // if <=1 match, return immediatelly
     // otherwise, check types
@@ -455,7 +455,7 @@ const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => 
 const normalizeSpeciesNameForId = (speciesName: string) => speciesName.toLocaleLowerCase().replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’", "'").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-export const mapSeason: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => ISeason = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementById("spawns")?.getElementsByClassName("alola__pokemonTabContent") ?? []).map(e => e as HTMLElement);
@@ -463,7 +463,11 @@ export const mapSeason: (data: any, request: any, gamemasterPokemon: Dictionary<
         .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
     const wildEncounters = fetchPokemonFromElements(entries, gamemasterPokemon, wildDomain);
 
-    return data;
+    return {
+        date: "March 1, 2024, at 10:00 a.m. – June 1, 2024, at 10:00 a.m. local time",
+        entries: wildEncounters,
+        eggs: []
+    };
 }
 
 const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
@@ -472,7 +476,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     const stack = [...elements];
     while (stack.length > 0) {
         const node = stack.pop();
-        if (!node) {
+        if (!node || Array.from(node.classList ?? []).includes("ContainerBlock__headline")) {
             continue;
         }
         
@@ -500,9 +504,17 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         return pp;
     });
     
+    let raidLevel = "";
     for (let j = 0; j < pkmwithNoClothes.length; j++) {
         const isShiny =  pkmwithNoClothes[j].includes("*");
-        let currP = pkmwithNoClothes[j].replace("*", "").trim();
+        let currP = pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim();
+
+        const raidLIndex = currP.indexOf(" Raids");
+        if (raidLIndex !== -1) {
+            raidLevel = currP.substring(0, raidLIndex);
+            console.log(raidLevel);
+            continue;
+        }
 
         // First (90% hits): direct indexing
         // start by lowercasing and converting special characters
@@ -531,7 +543,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             "Hero",
             "Speed",
             "Land",
-            "Primal",
+            //"Primal",
             "Attack",
             "Origin",
             "Aria",
@@ -591,7 +603,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
 
 
         if (isolatedPkmName.length === 0) {
-            // Pokémon only has forms. Oricorio?
+            // Pokémon only has forms. Oricorio / giratina
 
             //first, find the form
             //then remove it from the string
@@ -622,12 +634,13 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
                     speciesId: finalResults[0].speciesId,
                     shiny: isShiny
                 });
+
                 continue;
             }
 
             //>1
 
-            const pkmNameWithoutForm = ndfNormalized(currP).replaceAll(form, "");
+            const pkmNameWithoutForm = ndfNormalized(currP).replaceAll(form, "").trim();
             //Style Oricorio
             const ans = domain.filter(wff => pkmNameWithoutForm.split(" ").some(s => ndfNormalized(wff.speciesName).includes(s)) && ndfNormalized(wff.speciesName).includes(form));
 
@@ -657,13 +670,34 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         // now try to find the form...
         // there can also be garbage in the currP, like "Red Flower Hat"
 
-        const availableForms = domain.filter(formC => formC.dex === dex);
+        const availableForms = raidLevel !== "Mega" ? domain.filter(formC => formC.dex === dex) : Object.values(gamemasterPokemon).filter(l => l.isMega && l.dex === dex && !l.aliasId && !l.isShadow);
         if (availableForms.length === 1) {
             wildEncounters.push({
                 speciesId: availableForms[0].speciesId,
                 shiny: isShiny
             });
             continue;
+        }
+
+        // ugly edge case for charizard mega x and y (and in the future for every pokémon with multiple megas)
+        if (raidLevel === "Mega") {
+            if (dex === 6) {
+                const words = currP.split(" ").map(w => w.toLocaleLowerCase());
+                if (words.includes("x")) {
+                    wildEncounters.push({
+                        speciesId: "charizard_mega_x",
+                        shiny: isShiny
+                    });
+                    continue;
+                }
+                if (words.includes("y")) {
+                    wildEncounters.push({
+                        speciesId: "charizard_mega_y",
+                        shiny: isShiny
+                    });
+                    continue;
+                }
+            }
         }
 
         if (availableForms.length === 0) {
@@ -693,24 +727,27 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     return wildEncounters;
 }
 
-export const mapPosts: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock"));
 
-    const raidsEntries: Dictionary<IEntry[]> = {};
+    let wildEncounters: IEntry[] = [];
 
     if (entries.length === 0) {
-        return {};
+        return {date: "", entries: []};
     }
 
     const date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
     if (!date) {
-        return {};
+        return {date: "", entries: []};
     }
 
     const wildDomain = Object.values(gamemasterPokemon)
         .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
+    
+    const raidDomain = Object.values(gamemasterPokemon)
+    .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
     
     for (let i = 1; i < entries.length; i++) {
         const entry = entries[i];
@@ -719,20 +756,22 @@ export const mapPosts: (data: any, request: any, gamemasterPokemon: Dictionary<I
         const contentBodies = Array.from(entry.children) as HTMLElement[];
         switch(kind) {
             case "Wild encounters":
-                const wildEncounters = fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain);
+                wildEncounters = fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain);
                 break;
             case "Eggs":
-                //console.log("Detected Eggs");
                 break;
             case "Raids":
-                //console.log("Detected Raids");
+                const raids = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain);
                 break;
             default:
                 break;
         }
     }
 
-    return {};
+    return {
+        date: date,
+        entries: wildEncounters
+    };
 }
 
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {

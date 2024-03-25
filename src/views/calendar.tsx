@@ -2,7 +2,7 @@ import './calendar.scss';
 import LoadingRenderer from '../components/LoadingRenderer';
 import { usePokemon } from '../contexts/pokemon-context';
 import { useLanguage } from '../contexts/language-context';
-import { useRaidBosses } from '../contexts/raid-bosses-context';
+import { useCalendar } from '../contexts/raid-bosses-context';
 import PokemonCard from '../components/PokemonCard';
 import { ListType } from './pokedex';
 import { calculateCP, levelToLevelIndex } from '../utils/pokemon-helper';
@@ -12,7 +12,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { bossesPerTier, bossesFetchCompleted, bossesErrors } = useRaidBosses();
+    const { bossesPerTier, bossesFetchCompleted, bossesErrors } = useCalendar();
     const { pathname } = useLocation();
     
     const {currentGameLanguage, currentLanguage} = useLanguage();
