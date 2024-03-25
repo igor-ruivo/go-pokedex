@@ -12,7 +12,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { bossesPerTier, bossesFetchCompleted, bossesErrors } = useCalendar();
+    const { bossesPerTier, posts, season, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, bossesErrors, postsErrors } = useCalendar();
     const { pathname } = useLocation();
     
     const {currentGameLanguage, currentLanguage} = useLanguage();
@@ -42,7 +42,7 @@ const Calendar = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link to={pokemonBasePath + "/spawns"} className={"header-tab disabled " + (tab.endsWith("/spawns") ? "selected" : "")}>
+                        <Link to={pokemonBasePath + "/spawns"} className={"header-tab " + (tab.endsWith("/spawns") ? "selected" : "")}>
                             <span>Spawns</span>
                         </Link>
                     </li>
@@ -59,14 +59,15 @@ const Calendar = () => {
                 </ul>
             </nav>
             <div className="pokemon">
-                <LoadingRenderer errors={errors + bossesErrors} completed={fetchCompleted && bossesFetchCompleted}>
+                <LoadingRenderer errors={errors + bossesErrors + postsErrors + seasonErrors} completed={fetchCompleted && bossesFetchCompleted && postsFetchCompleted && seasonFetchCompleted}>
                 <div className="pokemon-content">
                     <div className="content small-side-padding">
                         <header className="pokemonheader-header without-negative-margins">
-                            <h1 className="baseheader-name">{translator(TranslatorKeys.CurrentRaid, currentLanguage)} ({gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)})</h1>
+                            {tab.endsWith("/bosses") && <h1 className="baseheader-name">{translator(TranslatorKeys.CurrentRaid, currentLanguage)} ({gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)})</h1>}
+                            {tab.endsWith("/spawns") && <h1 className="baseheader-name">Wild Encounters</h1>}
                         </header>
                         <div className="pokemon with-normal-gap">
-                            {bossesFetchCompleted && Object.entries(bossesPerTier).map(e => <div className='item default-padding' key={e[0]}>
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && Object.entries(bossesPerTier).map(e => <div className='item default-padding' key={e[0]}>
                                 <h1>
                                     {e[0].includes("mega") ? gameTranslator(GameTranslatorKeys.MegaRaid, currentGameLanguage) : `${translator(TranslatorKeys.Tier, currentLanguage)} ${e[0]}`}
                                 </h1>
@@ -78,6 +79,29 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p.entries.length > 0).map(e => <div className='item default-padding' key={e.date}>
+                                <h1>
+                                    {e.date}
+                                </h1>
+                                <div className='with-flex'>
+                                {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                    <div className='card-wrapper'>
+                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} shinyBadge={p.shiny} />
+                                    </div>
+                                </div>)}
+                                </div>
+                            </div>)}{tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
+                                <h1>
+                                    {season.date}
+                                </h1>
+                                <div className='with-flex'>
+                                    {season.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                        <div className='card-wrapper'>
+                                            <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} shinyBadge={p.shiny} />
+                                        </div>
+                                    </div>)}
+                                </div>
+                            </div>}
                         </div>
                     </div>
                 </div>

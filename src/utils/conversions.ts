@@ -9,7 +9,7 @@ import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
-import { IEntry, IPostEntry, IRaidEntry, ISeason } from "../DTOs/INews";
+import { IEntry, IPostEntry, ISeason } from "../DTOs/INews";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -472,6 +472,8 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
 
 const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
     const wildEncounters: IEntry[] = [];
+    const seen = new Set<string>();
+    //const shinySeen = new Set<string>();
     const textes = [];
     const stack = [...elements];
     while (stack.length > 0) {
@@ -520,10 +522,14 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         // start by lowercasing and converting special characters
         const match = gamemasterPokemon[normalizeSpeciesNameForId(currP)];
         if (match) {
-            wildEncounters.push({
-                speciesId: match.speciesId,
-                shiny: isShiny
-            });
+            if (!seen.has(match.speciesId)) {
+                seen.add(match.speciesId);
+
+                wildEncounters.push({
+                    speciesId: match.speciesId,
+                    shiny: isShiny
+                });
+            }
             continue;
         }
 
@@ -630,10 +636,14 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             }
 
             if (finalResults.length === 1) {
-                wildEncounters.push({
-                    speciesId: finalResults[0].speciesId,
-                    shiny: isShiny
-                });
+                if (!seen.has(finalResults[0].speciesId)) {
+                    seen.add(finalResults[0].speciesId);
+                    
+                    wildEncounters.push({
+                        speciesId: finalResults[0].speciesId,
+                        shiny: isShiny
+                    });
+                }
 
                 continue;
             }
@@ -650,10 +660,13 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             }
 
             if (ans.length === 1) {
-                wildEncounters.push({
-                    speciesId: ans[0].speciesId,
-                    shiny: isShiny
-                });
+                if (!seen.has(ans[0].speciesId)) {
+                    seen.add(ans[0].speciesId);
+                    wildEncounters.push({
+                        speciesId: ans[0].speciesId,
+                        shiny: isShiny
+                    });
+                }
                 continue;
             }
 
@@ -672,10 +685,13 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
 
         const availableForms = raidLevel !== "Mega" ? domain.filter(formC => formC.dex === dex) : Object.values(gamemasterPokemon).filter(l => l.isMega && l.dex === dex && !l.aliasId && !l.isShadow);
         if (availableForms.length === 1) {
-            wildEncounters.push({
-                speciesId: availableForms[0].speciesId,
-                shiny: isShiny
-            });
+            if (!seen.has(availableForms[0].speciesId)) {
+                seen.add(availableForms[0].speciesId);
+                wildEncounters.push({
+                    speciesId: availableForms[0].speciesId,
+                    shiny: isShiny
+                });
+            }
             continue;
         }
 
@@ -684,18 +700,24 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             if (dex === 6) {
                 const words = currP.split(" ").map(w => w.toLocaleLowerCase());
                 if (words.includes("x")) {
-                    wildEncounters.push({
-                        speciesId: "charizard_mega_x",
-                        shiny: isShiny
-                    });
-                    continue;
+                    if (!seen.has("charizard_mega_x")) {
+                        seen.add("charizard_mega_x");
+                        wildEncounters.push({
+                            speciesId: "charizard_mega_x",
+                            shiny: isShiny
+                        });
+                }
+                continue;
                 }
                 if (words.includes("y")) {
-                    wildEncounters.push({
-                        speciesId: "charizard_mega_y",
-                        shiny: isShiny
-                    });
-                    continue;
+                    if (!seen.has("charizard_mega_y")) {
+                        seen.add("charizard_mega_y");
+                        wildEncounters.push({
+                            speciesId: "charizard_mega_y",
+                            shiny: isShiny
+                        });
+                }
+                continue;
                 }
             }
         }
@@ -712,10 +734,13 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         }
 
         if (mappedForm.length === 1) {
-            wildEncounters.push({
-                speciesId: mappedForm[0].speciesId,
-                shiny: isShiny
-            });
+            if (!seen.has(mappedForm[0].speciesId)) {
+                seen.add(mappedForm[0].speciesId);
+                wildEncounters.push({
+                    speciesId: mappedForm[0].speciesId,
+                    shiny: isShiny
+                });
+            }
             continue;
         }
 
