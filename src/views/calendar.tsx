@@ -86,7 +86,7 @@ const Calendar = () => {
                                 <div className='with-flex'>
                                 {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className='card-wrapper'>
-                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} shinyBadge={p.shiny} />
+                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                     </div>
                                 </div>)}
                                 </div>
@@ -97,7 +97,7 @@ const Calendar = () => {
                                 <div className='with-flex'>
                                     {season.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                         <div className='card-wrapper'>
-                                            <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} shinyBadge={p.shiny} />
+                                            <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                         </div>
                                     </div>)}
                                 </div>
