@@ -9,8 +9,7 @@ import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
-import { IEntry, IPostEntry, ISeason } from "../DTOs/INews";
-import { start } from "repl";
+import { IEntry, IPostEntry } from "../DTOs/INews";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -496,18 +495,18 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
 
     if (!title) {
         console.error("Couldn't fetch title of leek news.");
-        return {date: new Date(), dateEnd: new Date(), entries: []};
+        return {date: 0, dateEnd: 0, entries: []};
     }
 
     if (!date) {
         console.error("Couldn't fetch date of leek news.");
-        return {date: new Date(), dateEnd: new Date(), entries: []};
+        return {date: 0, dateEnd: 0, entries: []};
     }
 
     const parts = title.split(" in ");
     if (parts.length !== 2) {
         console.error("Couldn't parse title of leek news.");
-        return {date: new Date(), dateEnd: new Date(), entries: []};
+        return {date: 0, dateEnd: 0, entries: []};
     }
 
     const rawPkmName = parts[0];
@@ -576,7 +575,7 @@ const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => 
 const normalizeSpeciesNameForId = (speciesName: string) => speciesName.replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr");
 const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’", "'").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => ISeason = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementById("spawns")?.getElementsByClassName("alola__pokemonTabContent") ?? []).map(e => e as HTMLElement);
@@ -585,7 +584,8 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     const wildEncounters = fetchPokemonFromElements(entries, gamemasterPokemon, wildDomain);
 
     return {
-        date: "March 1, 2024, at 10:00 a.m. – June 1, 2024, at 10:00 a.m. local time",
+        date: new Date(2024, 2, 1, 10, 0).valueOf(),
+        dateEnd: new Date(2024, 5, 1, 10, 0).valueOf(),
         entries: wildEncounters,
         eggs: []
     };
@@ -908,6 +908,13 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, knownForms, domain);
 }
 
+const isValidDate = (d: Date) => {
+    return d instanceof Date && !isNaN(d.getTime());
+}
+
+const toMonthIndex = (month: string) => ["January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December"].indexOf(month);
+
 const fetchDateFromString = (date: string) => {
     const trimmedDate = date.trim().replaceAll("  ", " ").replaceAll("a.m.", "am").replaceAll("A.M.", "am").replaceAll("p.m.", "pm").replaceAll("P.M.", "pm");
     let dWithoutWeekDay = trimmedDate.substring(trimmedDate.indexOf(", ") + 2);
@@ -918,9 +925,12 @@ const fetchDateFromString = (date: string) => {
         dWithoutWeekDay = dWithoutWeekDay.split(", ").filter((e: string, i: number) => i !== 1).join(", ");
     }
     const localIdx = dWithoutWeekDay.toLocaleLowerCase().lastIndexOf("local");
-    const finalDate = dWithoutWeekDay.substring(0, localIdx === -1 ? undefined : localIdx).trim().replace(", at", "") + ", " + year;
-    const dateObj = new Date(finalDate);
-    return dateObj;
+    const finalDate = dWithoutWeekDay.substring(0, localIdx === -1 ? undefined : localIdx).trim().replace(", at", "");
+    const components = finalDate.split(" ");
+    const timeComponent = components[2].split(":");
+    const dateObj = new Date(year, toMonthIndex(components[0]), Number(components[1]), Number(timeComponent[0] === "12" && components[3].toLocaleLowerCase() === "am" ? 0 : timeComponent[0]) + Number(components[3].toLocaleLowerCase() === "pm" ? 12 : 0), Number(timeComponent[1]));
+
+    return dateObj.valueOf();
 }
 
 export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IPostEntry> = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {

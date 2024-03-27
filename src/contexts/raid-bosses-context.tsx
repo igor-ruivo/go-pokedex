@@ -5,12 +5,12 @@ import { mapLeekNews, mapPosts, mapRaidBosses, mapSeason } from '../utils/conver
 import Dictionary from '../utils/Dictionary';
 import { IRaidBoss } from '../DTOs/IRaidBoss';
 import { usePokemon } from './pokemon-context';
-import { IPostEntry, ISeason } from '../DTOs/INews';
+import { IPostEntry } from '../DTOs/INews';
 
 interface CalendarContextType {
     bossesPerTier: Dictionary<IRaidBoss[]>;
     posts: Dictionary<IPostEntry>[];
-    season: ISeason;
+    season: IPostEntry;
     leekPosts: IPostEntry[];
     bossesFetchCompleted: boolean;
     postsFetchCompleted: boolean;
@@ -24,11 +24,11 @@ interface CalendarContextType {
 
 const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
-const useFetchAllData: () => [Dictionary<IRaidBoss[]>, Dictionary<IPostEntry>[], ISeason, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = () => {
+const useFetchAllData: () => [Dictionary<IRaidBoss[]>, Dictionary<IPostEntry>[], IPostEntry, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const [news, fetchNews, newsFetchCompleted, errorLoadingnews]: FetchData<string> = useFetchUrls();
     const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<Dictionary<IPostEntry>> = useFetchUrls();
-    const [season, fetchSeason, seasonFetchCompleted, errorLoadingSeason]: FetchData<ISeason> = useFetchUrls();
+    const [season, fetchSeason, seasonFetchCompleted, errorLoadingSeason]: FetchData<IPostEntry> = useFetchUrls();
     const [bosses, fetchBosses, bossesFetchCompleted, errorLoadingBosses]: FetchData<Dictionary<IRaidBoss[]>> = useFetchUrls();
     const [leekNews, fetchLeekNews, leekNewsFetchCompleted, errorLoadingLeekNews]: FetchData<string> = useFetchUrls();
     const [leekPosts, fetchLeekPosts, leekPostsFetchCompleted, errorLoadingLeekPosts]: FetchData<IPostEntry> = useFetchUrls();
@@ -111,7 +111,7 @@ export const useCalendar = (): CalendarContextType => {
 };
 
 export const CalendarProvider = (props: React.PropsWithChildren<{}>) => {
-    const [raidBosses, posts, season, leekPosts, bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts]: [Dictionary<IRaidBoss[]>, Dictionary<IPostEntry>[], ISeason, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = useFetchAllData();
+    const [raidBosses, posts, season, leekPosts, bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts]: [Dictionary<IRaidBoss[]>, Dictionary<IPostEntry>[], IPostEntry, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = useFetchAllData();
 
     return (
         <CalendarContext.Provider value={{

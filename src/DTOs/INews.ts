@@ -6,19 +6,14 @@ export interface IEntry {
 }
 
 export interface IPostEntry {
-    date: Date,
-    dateEnd: Date,
+    date: number,
+    dateEnd: number,
     entries: IEntry[],
     kind?: string
+    eggs?: IEntry[]
 }
 
 export interface IRaidEntry {
     date: string,
     entries: Dictionary<IEntry[]>
-}
-
-export interface ISeason {
-    date: string,
-    entries: IEntry[],
-    eggs: IEntry[]
 }
