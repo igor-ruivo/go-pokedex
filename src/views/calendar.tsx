@@ -9,10 +9,11 @@ import { calculateCP, levelToLevelIndex } from '../utils/pokemon-helper';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { Link, useLocation } from 'react-router-dom';
+import { IEntry, IPostEntry } from '../DTOs/INews';
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { bossesPerTier, posts, season, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, bossesErrors, postsErrors } = useCalendar();
+    const { bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
     const { pathname } = useLocation();
     
     const {currentGameLanguage, currentLanguage} = useLanguage();
@@ -59,7 +60,7 @@ const Calendar = () => {
                 </ul>
             </nav>
             <div className="pokemon">
-                <LoadingRenderer errors={errors + bossesErrors + postsErrors + seasonErrors} completed={fetchCompleted && bossesFetchCompleted && postsFetchCompleted && seasonFetchCompleted}>
+                <LoadingRenderer errors={errors + bossesErrors + postsErrors + seasonErrors + leekPostsErrors} completed={fetchCompleted && bossesFetchCompleted && postsFetchCompleted && seasonFetchCompleted && leekPostsFetchCompleted}>
                 <div className="pokemon-content">
                     <div className="content small-side-padding">
                         <header className="pokemonheader-header without-negative-margins">
@@ -67,22 +68,56 @@ const Calendar = () => {
                             {tab.endsWith("/spawns") && <h1 className="baseheader-name">Wild Encounters</h1>}
                         </header>
                         <div className="pokemon with-normal-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && Object.entries(bossesPerTier).map(e => <div className='item default-padding' key={e[0]}>
-                                <h1>
-                                    {e[0].includes("mega") ? gameTranslator(GameTranslatorKeys.MegaRaid, currentGameLanguage) : `${translator(TranslatorKeys.Tier, currentLanguage)} ${e[0]}`}
-                                </h1>
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && <div className='item default-padding'><h1>
+                                    Today
+                                </h1> {Object.entries(bossesPerTier).map(e => 
+                                <div className='with-flex' key={e[0]}>
+                                    {e[1].map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                        <div className='card-wrapper'>
+                                            <PokemonCard pokemon={e[0].includes("mega") ? getMega(p.speciesId) ?? gamemasterPokemon[p.speciesId] : gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} shinyBadge={p.shiny} cpStringOverride={computeCPString(p.speciesId)} />
+                                        </div>
+                                    </div>)}
+                                </div>)}
+                            </div>}
+                            {tab.endsWith("/bosses") && leekPostsFetchCompleted && Object.entries(leekPosts
+                            .reduce((acc: { [key: string]: IPostEntry }, obj) => {
+                                const key = obj.date + obj.dateEnd;
+                                // If the key already exists in the accumulator, merge 'entries'
+                                if (acc[key]) {
+                                  acc[key].entries = [...acc[key].entries, ...obj.entries];
+                                  // Optionally keep one of the 'kind' values, if it exists
+                                  if (!acc[key].kind && obj.kind) {
+                                    acc[key].kind = obj.kind;
+                                  }
+                                } else {
+                                  // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
+                                  acc[key] = { date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries, kind: obj.kind };
+                                }
+                                return acc;
+                              }, {}))
+                              .map(([key, value]) => ({
+                                date: value.date,
+                                dateEnd: value.dateEnd,
+                                entries: value.entries,
+                                kind: value.kind
+                              } as IPostEntry))
+                            .filter(p => p.entries.length > 0)
+                            .map(e => <div className='item default-padding' key={e.date + e.dateEnd}>
+                                <h3>
+                                    {e.date} - {e.dateEnd}
+                                </h3>
                                 <div className='with-flex'>
-                                {e[1].map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className='card-wrapper'>
-                                        <PokemonCard pokemon={e[0].includes("mega") ? getMega(p.speciesId) ?? gamemasterPokemon[p.speciesId] : gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} shinyBadge={p.shiny} cpStringOverride={computeCPString(p.speciesId)} />
+                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                     </div>
                                 </div>)}
                                 </div>
                             </div>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p.entries.length > 0).map(e => <div className='item default-padding' key={e.date}>
-                                <h1>
+                                <h3>
                                     {e.date}
-                                </h1>
+                                </h3>
                                 <div className='with-flex'>
                                 {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className='card-wrapper'>

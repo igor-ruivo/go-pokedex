@@ -444,9 +444,9 @@ const rock = new Map<Language, string>([
 ]);
 
 const currentRaid = new Map<Language, string>([
-    [Language.English, "Current Bosses"],
-    [Language.Portuguese, "Bosses Atuais"],
-    [Language.Bosnian, "Trenutni Šefovi"]
+    [Language.English, "Bosses"],
+    [Language.Portuguese, "Bosses"],
+    [Language.Bosnian, "Šefovi"]
 ]);
 
 const psychic = new Map<Language, string>([

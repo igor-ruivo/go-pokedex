@@ -7,7 +7,9 @@ export interface IEntry {
 
 export interface IPostEntry {
     date: string,
-    entries: IEntry[]
+    dateEnd?: string,
+    entries: IEntry[],
+    kind?: string
 }
 
 export interface IRaidEntry {

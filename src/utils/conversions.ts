@@ -10,6 +10,7 @@ import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
 import { IEntry, IPostEntry, ISeason } from "../DTOs/INews";
+import { start } from "repl";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -431,6 +432,126 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
     return results;
 }
 
+export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(data, 'text/html');
+
+    const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent;
+    const date = htmlDoc.getElementById("event-date-start")?.textContent + " " + htmlDoc.getElementById("event-time-start")?.textContent ?? undefined;//event-date-end;
+    const end = htmlDoc.getElementById("event-date-end")?.textContent + " " + htmlDoc.getElementById("event-time-end")?.textContent ?? undefined;//event-date-end;
+
+    const knownForms = new Set([
+        //"Mega X",
+        //"Mega Y",
+        //"Mega",
+        //"Shadow",
+        "Mow",
+        "Alolan",
+        "Wash",
+        "Plant",
+        "Sandy",
+        "Trash",
+        "Frost",
+        "Sky",
+        "Hero",
+        "Speed",
+        "Land",
+        //"Primal",
+        "Attack",
+        "Origin",
+        "Aria",
+        "Burn",
+        "Unbound",
+        "Pa'u",
+        //"Pa’u",
+        "Dusk",
+        "Armored",
+        "Paldean",
+        "Rainy",
+        "Snowy",
+        "Sunny",
+        "Defense",
+        "Chill",
+        "Douse",
+        "Shock",
+        "Baile",
+        "Sensu",
+        "Galarian",
+        "Hisuian",
+        "Ordinary",
+        "Large",
+        "Small",
+        "Super",
+        "Midday",
+        "Overcast",
+        "Sunshine",
+        "Altered",
+        "Therian",
+        "Pom-Pom",
+        "Average",
+        "Midnight",
+        "Incarnate",
+        "Standard",
+    ]);
+
+    if (!title) {
+        console.error("Couldn't fetch title of leek news.");
+        return {date: "", entries: []};
+    }
+
+    if (!date) {
+        console.error("Couldn't fetch date of leek news.");
+        return {date: "", entries: []};
+    }
+
+    const parts = title.split(" in ");
+    if (parts.length !== 2) {
+        console.error("Couldn't parse title of leek news.");
+        return {date: "", entries: []};
+    }
+
+    const rawPkmName = parts[0];
+    const raidType = parts[1];
+
+    let domainToUse: IGamemasterPokemon[] = [];
+
+    const isShadow = raidType.includes("Shadow");
+    if (isShadow) {
+        domainToUse = Object.values(gamemasterPokemon).filter(p => !p.isMega && !p.aliasId);
+    }
+
+    const isMega = raidType.includes("Mega");
+    if (isMega) {
+        domainToUse = Object.values(gamemasterPokemon).filter(p => !p.isShadow && !p.aliasId);
+    }
+
+    if (!isShadow && !isMega) {
+        domainToUse = Object.values(gamemasterPokemon).filter(p => !p.isShadow && !p.isMega && !p.aliasId);
+    }
+
+    const finalEntries: IEntry[] = [];
+    const multiplePkms = rawPkmName.split(" and "); // TODO: more than 2 pokémons? are they comma separated? ex: xurkitree buzzhole and pheromosa
+    for (let i = 0; i < multiplePkms.length; i++) {
+        const p = multiplePkms[i].trim();
+        //const isShiny = Array.from(htmlDoc.getElementsByClassName("pkmn-list-img")).filter(e => e.parentElement?.getElementsByClassName("pkmn-name")[0]?.textContent === p.replaceAll("Mega", "").replaceAll("Shadow", "").trim()).map(i => i.children[0] as HTMLImageElement).some(i => i.src.endsWith("shiny.png"));
+        //console.log(isShiny);
+        const finalP = fetchPokemonFromString([p], gamemasterPokemon, knownForms, domainToUse);
+        if (finalP[0]?.speciesId) {
+            finalEntries.push({
+                speciesId: finalP[0].speciesId,
+                shiny: false //TODO
+            });
+        }
+    }
+
+    return {
+        date: date,
+        dateEnd: end,
+        entries: finalEntries,
+        kind: raidType.split(" Raid")[0]
+    };
+}
+
 const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => {
     let start = 0, end = arr.length - 1;
    
@@ -452,7 +573,7 @@ const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => 
     return null;
 }
 
-const normalizeSpeciesNameForId = (speciesName: string) => speciesName.toLocaleLowerCase().replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const normalizeSpeciesNameForId = (speciesName: string) => speciesName.replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr");
 const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’", "'").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => ISeason = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
@@ -470,34 +591,10 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     };
 }
 
-const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
+const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, knownForms: Set<string>, domain: IGamemasterPokemon[]) => {
     const wildEncounters: IEntry[] = [];
     const seen = new Set<string>();
-    //const shinySeen = new Set<string>();
-    const textes = [];
-    const stack = [...elements];
-    while (stack.length > 0) {
-        const node = stack.pop();
-        if (!node || Array.from(node.classList ?? []).includes("ContainerBlock__headline")) {
-            continue;
-        }
-        
-        if (node.nodeType === Node.TEXT_NODE) {
-            const actualText = node.textContent?.trim();
-            if (actualText) {
-                textes.push(actualText);
-            }
-            continue;
-        }
-        
-        if (node.nodeType === Node.ELEMENT_NODE) {
-            for (let i = node.childNodes.length - 1; i >= 0; i--) {
-                stack.push(node.childNodes[i] as HTMLElement);
-            }
-        }
-    }
-    const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", "and more", "wild encounters", "sunny", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog"];
-    const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k)));
+
     const pkmwithNoClothes = parsedPokemon.map(pp => {
         const idx = pp.indexOf(" wearing");
         if (idx !== -1) {
@@ -509,19 +606,37 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     let raidLevel = "";
     for (let j = 0; j < pkmwithNoClothes.length; j++) {
         const isShiny =  pkmwithNoClothes[j].includes("*");
-        let currP = pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim();
+        let isShadow = false;
+        let isMega = false;
+        let currP = ndfNormalized(pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim()).trim();
 
-        const raidLIndex = currP.indexOf(" Raids");
+        const raidLIndex = currP.indexOf(" raids");
         if (raidLIndex !== -1) {
             raidLevel = currP.substring(0, raidLIndex);
-            console.log(raidLevel);
+            //console.log(raidLevel);
             continue;
         }
+
+        let words = currP.split(" ");
+
+        if (words.includes("shadow")) {
+            isShadow = true;
+            words = words.filter(word => word !== "shadow"); // Remove "shadow" from the array
+        }
+        
+        // Check if "mega" is a standalone word and remove it if present
+        if (words.includes("mega")) {
+            isMega = true;
+            words = words.filter(word => word !== "mega"); // Remove "mega" from the array
+        }
+        
+        // Join the array back into a string, preserving the original structure as much as possible
+        currP = words.join(" ").trim();
 
         // First (90% hits): direct indexing
         // start by lowercasing and converting special characters
         const match = gamemasterPokemon[normalizeSpeciesNameForId(currP)];
-        if (match) {
+        if (match && !isShadow && !isMega) {
             if (!seen.has(match.speciesId)) {
                 seen.add(match.speciesId);
 
@@ -533,60 +648,6 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             continue;
         }
 
-        const gamemasterKnownForms = new Set([
-            //"Mega X",
-            //"Mega Y",
-            //"Mega",
-            //"Shadow",
-            "Mow",
-            "Alolan",
-            "Wash",
-            "Plant",
-            "Sandy",
-            "Trash",
-            "Frost",
-            "Sky",
-            "Hero",
-            "Speed",
-            "Land",
-            //"Primal",
-            "Attack",
-            "Origin",
-            "Aria",
-            "Burn",
-            "Unbound",
-            "Pa'u",
-            //"Pa’u",
-            "Dusk",
-            "Armored",
-            "Paldean",
-            "Rainy",
-            "Snowy",
-            "Sunny",
-            "Defense",
-            "Chill",
-            "Douse",
-            "Shock",
-            "Baile",
-            "Sensu",
-            "Galarian",
-            "Hisuian",
-            "Ordinary",
-            "Large",
-            "Small",
-            "Super",
-            "Midday",
-            "Overcast",
-            "Sunshine",
-            "Altered",
-            "Therian",
-            "Pom-Pom",
-            "Average",
-            "Midnight",
-            "Incarnate",
-            "Standard",
-        ]);
-
         // from here, we have to deal with extreme cases: for example -> Red Flower Hat Galarian Tapu Lele Jumping Rope
         // or simpler ones: Galarian Muk
 
@@ -595,7 +656,6 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         //const isolatedPkmName = wildDomain.filter(domainP => currP.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(domainP.speciesName.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
         const isolatedPkmName = domain.filter(domainP => {
             // Normalize and lower case both strings for a case-insensitive, accent-insensitive comparison
-            const normalizedCurrP = currP.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const normalizedDomainPSpeciesName = domainP.speciesName.toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         
             // Create a regex pattern that matches the species name as a whole word
@@ -604,9 +664,8 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             const pattern = new RegExp(`\\b${normalizedDomainPSpeciesName}\\b`, "i");
         
             // Check if the pattern matches within currP
-            return pattern.test(normalizedCurrP);
+            return pattern.test(currP);
         });
-
 
         if (isolatedPkmName.length === 0) {
             // Pokémon only has forms. Oricorio / giratina
@@ -616,7 +675,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             // then try to match any of the remaining words with any speciesName
             // if we have multiple occasions, then try to find one with what we removed (form)
 
-            const formCandidate = currP.split(" ").map(p => ndfNormalized(p)).filter(f => Array.from(gamemasterKnownForms).some(e => ndfNormalized(e) === f));
+            const formCandidate = currP.split(" ").filter(f => Array.from(knownForms).some(e => ndfNormalized(e) === f));
             if (formCandidate.length === 0) {
                 console.error("(0) Couldn't map form for " + currP);
                 continue;
@@ -629,7 +688,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
 
             const form = formCandidate[0]; //pom-pom
 
-            const finalResults = domain.filter(wd => ndfNormalized(wd.speciesName).includes("(" + form + ")"));
+            const finalResults = domain.filter(wd => ndfNormalized(wd.speciesName).includes("(" + form + ")") && wd.isShadow === isShadow && wd.isMega === isMega);
             if (finalResults.length === 0) {
                 console.error("Couldn't find Form in gamemaster.");
                 continue;
@@ -650,9 +709,9 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
 
             //>1
 
-            const pkmNameWithoutForm = ndfNormalized(currP).replaceAll(form, "").trim();
+            const pkmNameWithoutForm = currP.replaceAll(form, "").trim();
             //Style Oricorio
-            const ans = domain.filter(wff => pkmNameWithoutForm.split(" ").some(s => ndfNormalized(wff.speciesName).includes(s)) && ndfNormalized(wff.speciesName).includes(form));
+            const ans = domain.filter(wff => pkmNameWithoutForm.split(" ").some(s => ndfNormalized(wff.speciesName).includes(s)) && ndfNormalized(wff.speciesName).includes(form) && wff.isShadow === isShadow && wff.isMega === isMega);
 
             if (ans.length === 0) {
                 console.error("No match found for " + currP);
@@ -683,7 +742,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         // now try to find the form...
         // there can also be garbage in the currP, like "Red Flower Hat"
 
-        const availableForms = raidLevel !== "Mega" ? domain.filter(formC => formC.dex === dex) : Object.values(gamemasterPokemon).filter(l => l.isMega && l.dex === dex && !l.aliasId && !l.isShadow);
+        const availableForms = raidLevel !== "Mega" ? domain.filter(formC => formC.dex === dex && formC.isShadow === isShadow && formC.isMega === isMega) : Object.values(gamemasterPokemon).filter(l => l.isMega && l.dex === dex && !l.aliasId && !l.isShadow);
         if (availableForms.length === 1) {
             if (!seen.has(availableForms[0].speciesId)) {
                 seen.add(availableForms[0].speciesId);
@@ -696,9 +755,9 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         }
 
         // ugly edge case for charizard mega x and y (and in the future for every pokémon with multiple megas)
-        if (raidLevel === "Mega") {
+        if (raidLevel === "Mega" || isMega) {
             if (dex === 6) {
-                const words = currP.split(" ").map(w => w.toLocaleLowerCase());
+                const words = currP.split(" ");
                 if (words.includes("x")) {
                     if (!seen.has("charizard_mega_x")) {
                         seen.add("charizard_mega_x");
@@ -727,7 +786,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             continue;
         }
 
-        const mappedForm = availableForms.filter(af => Array.from(gamemasterKnownForms).some(e => ndfNormalized(af.speciesName).includes(ndfNormalized(e)) && ndfNormalized(currP).includes(ndfNormalized(e))))
+        const mappedForm = availableForms.filter(af => Array.from(knownForms).some(e => ndfNormalized(af.speciesName).includes(ndfNormalized(e)) && currP.includes(ndfNormalized(e))))
         if (mappedForm.length === 0) {
             console.error("Couldn't map form for " + currP);
             continue;
@@ -748,8 +807,92 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         continue;
     }
 
-    console.log(wildEncounters)
+    //console.log(wildEncounters)
     return wildEncounters;
+}
+
+const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
+    //const shinySeen = new Set<string>();
+    const textes = [];
+    const stack = [...elements];
+    while (stack.length > 0) {
+        const node = stack.pop();
+        if (!node || Array.from(node.classList ?? []).includes("ContainerBlock__headline")) {
+            continue;
+        }
+        
+        if (node.nodeType === Node.TEXT_NODE) {
+            const actualText = node.textContent?.trim();
+            if (actualText) {
+                textes.push(actualText);
+            }
+            continue;
+        }
+        
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            for (let i = node.childNodes.length - 1; i >= 0; i--) {
+                stack.push(node.childNodes[i] as HTMLElement);
+            }
+        }
+    }
+    const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", "and more", "wild encounters", "sunny", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog"];
+    const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k)));
+    
+    const knownForms = new Set([
+        //"Mega X",
+        //"Mega Y",
+        //"Mega",
+        //"Shadow",
+        "Mow",
+        "Alolan",
+        "Wash",
+        "Plant",
+        "Sandy",
+        "Trash",
+        "Frost",
+        "Sky",
+        "Hero",
+        "Speed",
+        "Land",
+        //"Primal",
+        "Attack",
+        "Origin",
+        "Aria",
+        "Burn",
+        "Unbound",
+        "Pa'u",
+        //"Pa’u",
+        "Dusk",
+        "Armored",
+        "Paldean",
+        "Rainy",
+        "Snowy",
+        "Sunny",
+        "Defense",
+        "Chill",
+        "Douse",
+        "Shock",
+        "Baile",
+        "Sensu",
+        "Galarian",
+        "Hisuian",
+        "Ordinary",
+        "Large",
+        "Small",
+        "Super",
+        "Midday",
+        "Overcast",
+        "Sunshine",
+        "Altered",
+        "Therian",
+        "Pom-Pom",
+        "Average",
+        "Midnight",
+        "Incarnate",
+        "Standard",
+    ]);
+
+    return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, knownForms, domain);
 }
 
 export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
