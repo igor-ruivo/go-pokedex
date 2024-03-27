@@ -298,135 +298,50 @@ const removeFormsFromPokemonName = (rawName: string) => {
     return rawName.trim();
 }
 
-export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRaidBoss[]> = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("list")[0].children);
 
-    // first, trying to parse by name without forms.
-    // if <=1 match, return immediatelly
-    // otherwise, check types
-    // if <= 1 return;
-    // otherwise, check cps while > 1 count...
-    // if still >1 , return first
+    const pokemons: IEntry[] = [];
 
-    let tier = "0";
+    let tier = "";
 
-    const results: Dictionary<IRaidBoss[]> = {};
+    const shadowDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && !v.isMega);
+    const megaDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && !v.isShadow);
+    const normalDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && !v.isShadow && !v.isMega);
 
-    for (let b of entries) {
-        if (b.classList.contains("header-li")) {
-            const innerTxt = (b as HTMLElement).innerText;
-            if (innerTxt === "Mega") {
-                tier = "mega";
-            } else {
-                tier = innerTxt.split(" ")[1];
+    for (let i = 0; i < entries.length; i++) {
+        const e = entries[i];
+        if (Array.from(e.classList).includes("header-li")) {
+            const newTier = (e as HTMLElement).innerText.trim();
+            if (newTier.split(" ").length === 2) {
+                tier = newTier.split(" ")[1].toLocaleLowerCase();
             }
-            results[tier] = [];
+
+            if (newTier.split(" ").length === 1) {
+                tier = newTier.toLocaleLowerCase();
+            }
             continue;
         }
 
-        const hasShiny = b.getElementsByClassName("shiny-icon").length > 0;
-
-        const bossName = b.getElementsByClassName("boss-name")[0].innerHTML;
-        let matches = Object.values(gamemasterPokemon).filter(p =>
-            !p.aliasId &&
-            !p.isShadow &&
-            removeFormsFromPokemonName(p.speciesName) === removeFormsFromPokemonName(bossName)
-        );
-
-        if (matches.length === 0) {
-            continue;
-        }
-
-        if (matches.length === 1) {
-            results[tier].push({
-                speciesId: matches[0].speciesId,
-                shiny: hasShiny
-            });
-            continue;
-        }
-
-        // Multiple matches...
-
-        const types = Array.from(b.getElementsByClassName("boss-type")).map(e => Array.from(e.children).map(c => (c as HTMLImageElement).title)).flat();
+        const bossName = (e.getElementsByClassName("boss-name")[0] as HTMLElement).innerText.trim();
+        const parsedPkm = fetchPokemonFromString([bossName], gamemasterPokemon, tier === "mega" ? megaDomain : bossName.toLocaleLowerCase().includes("shadow") ? shadowDomain : normalDomain);
         
-        matches = matches.filter(p => p.types.length === types.length && p.types.map(t => t.toString().toLocaleLowerCase()).every(u => types.map(v => v.toLocaleLowerCase()).includes(u)));
-        
-        if (matches.length === 0) {
-            continue;
-        }
-
-        if (matches.length === 1) {
-            results[tier].push({
-                speciesId: matches[0].speciesId,
-                shiny: hasShiny
+        if (parsedPkm[0]) {
+            pokemons.push({
+                shiny: parsedPkm[0].shiny,
+                speciesId: parsedPkm[0].speciesId,
+                kind: tier
             });
-            continue;
         }
-
-        const CP = (b.getElementsByClassName("boss-2")[0] as HTMLElement).innerText.trim().substring(3).split(" - ");
-        const lowerCP = Number(CP[0]);
-        const higherCP = Number(CP[1]);
-
-        const WBCP = (b.getElementsByClassName("boss-3")[0] as HTMLElement).innerText.trim().substring(3).split(" - ");
-        const lowerWBCP = Number(WBCP[0]);
-        const higherWBCP = Number(WBCP[1]);
-
-        matches = matches.filter(p => calculateCP(p.atk, 10, p.def, 10, p.hp, 10, levelToLevelIndex(20)) === lowerCP);
-        if (matches.length === 0) {
-            continue;
-        }
-
-        if (matches.length === 1) {
-            results[tier].push({
-                speciesId: matches[0].speciesId,
-                shiny: hasShiny
-            });
-            continue;
-        }
-
-        matches = matches.filter(p => calculateCP(p.atk, 15, p.def, 15, p.hp, 15, levelToLevelIndex(20)) === higherCP);
-        if (matches.length === 0) {
-            continue;
-        }
-
-        if (matches.length === 1) {
-            results[tier].push({
-                speciesId: matches[0].speciesId,
-                shiny: hasShiny
-            });
-            continue;
-        }
-
-        matches = matches.filter(p => calculateCP(p.atk, 10, p.def, 10, p.hp, 10, levelToLevelIndex(25)) === lowerWBCP);
-        if (matches.length === 0) {
-            continue;
-        }
-
-        if (matches.length === 1) {
-            results[tier].push({
-                speciesId: matches[0].speciesId,
-                shiny: hasShiny
-            });
-            continue;
-        }
-
-        matches = matches.filter(p => calculateCP(p.atk, 15, p.def, 15, p.hp, 15, levelToLevelIndex(25)) === higherWBCP);
-        if (matches.length === 0) {
-            continue;
-        }
-
-        if (matches.length === 1) {
-            results[tier].push({
-                speciesId: matches[0].speciesId,
-                shiny: hasShiny
-            });
-            continue;
-        }
-
-        console.error("Couldn't parse raid pokémon to model DTO: " + bossName);
     }
+
+    const results: IPostEntry = {
+        date: (new Date()).valueOf(),
+        dateEnd: (new Date()).valueOf(),
+        entries: pokemons,
+    };
 
     return results;
 }
@@ -438,60 +353,6 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent;
     const date = fetchDateFromString(htmlDoc.getElementById("event-date-start")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-start")?.textContent?.trim());
     const end = fetchDateFromString(htmlDoc.getElementById("event-date-end")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-end")?.textContent?.trim());
-
-    const knownForms = new Set([
-        //"Mega X",
-        //"Mega Y",
-        //"Mega",
-        //"Shadow",
-        "Mow",
-        "Alolan",
-        "Wash",
-        "Plant",
-        "Sandy",
-        "Trash",
-        "Frost",
-        "Sky",
-        "Hero",
-        "Speed",
-        "Land",
-        //"Primal",
-        "Attack",
-        "Origin",
-        "Aria",
-        "Burn",
-        "Unbound",
-        "Pa'u",
-        //"Pa’u",
-        "Dusk",
-        "Armored",
-        "Paldean",
-        "Rainy",
-        "Snowy",
-        "Sunny",
-        "Defense",
-        "Chill",
-        "Douse",
-        "Shock",
-        "Baile",
-        "Sensu",
-        "Galarian",
-        "Hisuian",
-        "Ordinary",
-        "Large",
-        "Small",
-        "Super",
-        "Midday",
-        "Overcast",
-        "Sunshine",
-        "Altered",
-        "Therian",
-        "Pom-Pom",
-        "Average",
-        "Midnight",
-        "Incarnate",
-        "Standard",
-    ]);
 
     if (!title) {
         console.error("Couldn't fetch title of leek news.");
@@ -534,7 +395,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
         const p = multiplePkms[i].trim();
         //const isShiny = Array.from(htmlDoc.getElementsByClassName("pkmn-list-img")).filter(e => e.parentElement?.getElementsByClassName("pkmn-name")[0]?.textContent === p.replaceAll("Mega", "").replaceAll("Shadow", "").trim()).map(i => i.children[0] as HTMLImageElement).some(i => i.src.endsWith("shiny.png"));
         //console.log(isShiny);
-        const finalP = fetchPokemonFromString([p], gamemasterPokemon, knownForms, domainToUse);
+        const finalP = fetchPokemonFromString([p], gamemasterPokemon, domainToUse);
         if (finalP[0]?.speciesId) {
             finalEntries.push({
                 speciesId: finalP[0].speciesId,
@@ -591,7 +452,7 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     };
 }
 
-const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, knownForms: Set<string>, domain: IGamemasterPokemon[]) => {
+const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
     const wildEncounters: IEntry[] = [];
     const seen = new Set<string>();
 
@@ -824,6 +685,60 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
     return wildEncounters;
 }
 
+const knownForms = new Set([
+    //"Mega X",
+    //"Mega Y",
+    //"Mega",
+    //"Shadow",
+    "Mow",
+    "Alolan",
+    "Wash",
+    "Plant",
+    "Sandy",
+    "Trash",
+    "Frost",
+    "Sky",
+    "Hero",
+    "Speed",
+    "Land",
+    //"Primal",
+    "Attack",
+    "Origin",
+    "Aria",
+    "Burn",
+    "Unbound",
+    "Pa'u",
+    //"Pa’u",
+    "Dusk",
+    "Armored",
+    "Paldean",
+    "Rainy",
+    "Snowy",
+    "Sunny",
+    "Defense",
+    "Chill",
+    "Douse",
+    "Shock",
+    "Baile",
+    "Sensu",
+    "Galarian",
+    "Hisuian",
+    "Ordinary",
+    "Large",
+    "Small",
+    "Super",
+    "Midday",
+    "Overcast",
+    "Sunshine",
+    "Altered",
+    "Therian",
+    "Pom-Pom",
+    "Average",
+    "Midnight",
+    "Incarnate",
+    "Standard",
+]);
+
 const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
     //const shinySeen = new Set<string>();
     const textes = [];
@@ -850,62 +765,8 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     }
     const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", "and more", "wild encounters", "sunny", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog"];
     const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k)));
-    
-    const knownForms = new Set([
-        //"Mega X",
-        //"Mega Y",
-        //"Mega",
-        //"Shadow",
-        "Mow",
-        "Alolan",
-        "Wash",
-        "Plant",
-        "Sandy",
-        "Trash",
-        "Frost",
-        "Sky",
-        "Hero",
-        "Speed",
-        "Land",
-        //"Primal",
-        "Attack",
-        "Origin",
-        "Aria",
-        "Burn",
-        "Unbound",
-        "Pa'u",
-        //"Pa’u",
-        "Dusk",
-        "Armored",
-        "Paldean",
-        "Rainy",
-        "Snowy",
-        "Sunny",
-        "Defense",
-        "Chill",
-        "Douse",
-        "Shock",
-        "Baile",
-        "Sensu",
-        "Galarian",
-        "Hisuian",
-        "Ordinary",
-        "Large",
-        "Small",
-        "Super",
-        "Midday",
-        "Overcast",
-        "Sunshine",
-        "Altered",
-        "Therian",
-        "Pom-Pom",
-        "Average",
-        "Midnight",
-        "Incarnate",
-        "Standard",
-    ]);
 
-    return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, knownForms, domain);
+    return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, domain);
 }
 
 const isValidDate = (d: Date) => {
@@ -946,8 +807,6 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
     let date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
 
     if (!date) {
-        console.error("Couldn't fetch post date");
-        console.error(entries);
         return {};
     }
 
@@ -961,8 +820,6 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
 
     const parsedDate = date.split(" to ");
     if (parsedDate.length !== 2) {
-        console.error("Couldn't parse post date");
-        console.error(entries);
         return {};
     }
 

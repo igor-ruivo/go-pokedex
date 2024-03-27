@@ -47,6 +47,112 @@ const Calendar = () => {
 
     const inUpperCase = (str: string) => str?.substring(0, 1)?.toUpperCase() + str?.substring(1);
 
+    const reducedLeekPosts = Object.entries(leekPosts
+        .reduce((acc: { [key: string]: IPostEntry }, obj) => {
+            const key = getDateKey(obj);
+            // If the key already exists in the accumulator, merge 'entries'
+            if (acc[key]) {
+              acc[key].entries = [...acc[key].entries, ...obj.entries];
+            } else {
+              // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
+              acc[key] = { date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries };
+            }
+            return acc;
+          }, {}))
+          .map(([key, value]) => ({
+            date: value.date,
+            dateEnd: value.dateEnd,
+            entries: value.entries
+          } as IPostEntry))
+        .filter(p => p.entries.length > 0 && new Date(p.dateEnd) >= new Date());
+
+    const reducedRaids = posts.filter(p => p["raids"]?.entries.length > 0 && new Date(p["raids"]?.dateEnd) >= new Date());
+
+    const sortEntries = (e1: IEntry, e2: IEntry) => {
+        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
+            return 1;
+        }
+
+        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
+            return -1;
+        }
+
+        if (e1.kind === e2.kind) {
+            return e1.speciesId.localeCompare(e2.speciesId);
+        }
+
+        if (!e1.kind) {
+            return -1;
+        }
+
+        if (!e2.kind) {
+            return 1;
+        }
+
+        return e1.kind.localeCompare(e2.kind);
+    }
+
+    const generateTodayBosses = (entries: IPostEntry[]) => {
+        if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted) {
+            return [];
+        }
+
+        const seenIds = new Set<string>(bossesPerTier.entries.map(e => e.speciesId));
+        const response = [...bossesPerTier.entries];
+
+        const today = new Date();
+        const currentDay = today.getDate();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+
+        const left = new Date(currentYear, currentMonth, currentDay, 0, 0);
+        const right = new Date(currentYear, currentMonth, currentDay, 0, 0);
+        right.setDate(right.getDate() + 1);
+
+        for (let i = 0; i < entries.length; i++) {
+            const entry = entries[i];
+            const dateEntryStart = new Date(entry.date);
+            const dateEntryEnd = new Date(entry.dateEnd);
+
+            if (dateEntryStart > right || dateEntryEnd < left) {
+                continue;
+            }
+            
+            for (let j = 0; j < entry.entries.length; j++) {
+                const p = entry.entries[j];
+                if (seenIds.has(p.speciesId)) {
+                    continue;
+                }
+
+                seenIds.add(p.speciesId);
+
+                response.push({
+                    speciesId: p.speciesId,
+                    shiny: p.shiny,
+                    kind: p.kind
+                });
+            }
+        }
+
+        return response.sort(sortEntries);
+    }
+
+    const additionalBosses = [...reducedLeekPosts, ...reducedRaids.map(r => r["raids"])];
+
+    const bossesAvailableToday = generateTodayBosses(additionalBosses);
+    
+    const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
+        if (e1.date.valueOf() === e2.date.valueOf()) {
+            return e1.dateEnd.valueOf() - e2.dateEnd.valueOf();
+        }
+
+        return e1.date.valueOf() - e2.date.valueOf();
+    }
+
+    const remainingBosses = additionalBosses
+    .filter(e => e.entries.length > 0 && !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId)))
+    .sort(sortPosts);
+
     return (
         <main className="layout">
             <nav className="navigation-header">
@@ -82,40 +188,18 @@ const Calendar = () => {
                             {tab.endsWith("/spawns") && <h1 className="baseheader-name">Wild Encounters</h1>}
                         </header>
                         <div className="pokemon with-normal-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && <div className='item default-padding'><h1>
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='item default-padding'><h1>
                                     Today
-                                </h1> {Object.entries(bossesPerTier).map(e => 
-                                <div className='with-flex' key={e[0]}>
-                                    {e[1].map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                </h1><div className='with-flex'>{bossesAvailableToday.map(e => 
+                                    <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className='card-wrapper'>
-                                            <PokemonCard pokemon={e[0].includes("mega") ? getMega(p.speciesId) ?? gamemasterPokemon[p.speciesId] : gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} shinyBadge={p.shiny} cpStringOverride={computeCPString(p.speciesId)} />
+                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeCPString(e.speciesId)} />
                                         </div>
                                     </div>)}
-                                </div>)}
+                                </div>
                             </div>}
-                            {tab.endsWith("/bosses") && leekPostsFetchCompleted && Object.entries(leekPosts
-                            .reduce((acc: { [key: string]: IPostEntry }, obj) => {
-                                const key = getDateKey(obj);
-                                // If the key already exists in the accumulator, merge 'entries'
-                                if (acc[key]) {
-                                  acc[key].entries = [...acc[key].entries, ...obj.entries];
-                                  // Optionally keep one of the 'kind' values, if it exists
-                                  if (!acc[key].kind && obj.kind) {
-                                    acc[key].kind = obj.kind;
-                                  }
-                                } else {
-                                  // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
-                                  acc[key] = { date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries, kind: obj.kind };
-                                }
-                                return acc;
-                              }, {}))
-                              .map(([key, value]) => ({
-                                date: value.date,
-                                dateEnd: value.dateEnd,
-                                entries: value.entries,
-                                kind: value.kind
-                              } as IPostEntry))
-                            .filter(p => p.entries.length > 0 && new Date(p.dateEnd) >= new Date())
+                            {tab.endsWith("/bosses") && leekPostsFetchCompleted && postsFetchCompleted &&
+                            remainingBosses
                             .map(e => <div className='item default-padding' key={getDateKey(e)}>
                                 <h4>
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd).toLocaleString(undefined, options))}
@@ -128,24 +212,12 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/bosses") && postsFetchCompleted && posts.filter(p => p["raids"]?.entries.length > 0 && new Date(p["raids"]?.dateEnd) >= new Date()).map(e => <div className='item default-padding' key={getDateKey(e["raids"])}>
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd) >= new Date()).sort(sortPosts).map(e => <div className='item default-padding' key={getDateKey(e)}>
                                 <h4>
-                                    {inUpperCase(new Date(e["raids"].date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e["raids"].dateEnd).toLocaleString(undefined, options))}
+                                    {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
-                                {e["raids"].entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
-                                    <div className='card-wrapper'>
-                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
-                                    </div>
-                                </div>)}
-                                </div>
-                            </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p["wild"]?.entries.length > 0 && new Date(p["wild"]?.dateEnd) >= new Date()).map(e => <div className='item default-padding' key={getDateKey(e["wild"])}>
-                                <h4>
-                                    {inUpperCase(new Date(e["wild"].date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e["wild"].dateEnd).toLocaleString(undefined, options))}
-                                </h4>
-                                <div className='with-flex'>
-                                {e["wild"].entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className='card-wrapper'>
                                         <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                     </div>
