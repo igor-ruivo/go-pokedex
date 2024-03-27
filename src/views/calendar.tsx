@@ -32,7 +32,21 @@ const Calendar = () => {
 
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
-    
+
+    const getDateKey = (obj: IPostEntry) => String(obj.date.valueOf()) + "-" + String(obj.dateEnd.valueOf());
+
+    const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        weekday: 'short',
+        month: 'short',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: false
+    }
+
+    const inUpperCase = (str: string) => str.substring(0, 1).toUpperCase() + str.substring(1);
+
     return (
         <main className="layout">
             <nav className="navigation-header">
@@ -81,7 +95,7 @@ const Calendar = () => {
                             </div>}
                             {tab.endsWith("/bosses") && leekPostsFetchCompleted && Object.entries(leekPosts
                             .reduce((acc: { [key: string]: IPostEntry }, obj) => {
-                                const key = obj.date + obj.dateEnd;
+                                const key = getDateKey(obj);
                                 // If the key already exists in the accumulator, merge 'entries'
                                 if (acc[key]) {
                                   acc[key].entries = [...acc[key].entries, ...obj.entries];
@@ -101,10 +115,10 @@ const Calendar = () => {
                                 entries: value.entries,
                                 kind: value.kind
                               } as IPostEntry))
-                            .filter(p => p.entries.length > 0)
-                            .map(e => <div className='item default-padding' key={e.date + e.dateEnd}>
+                            .filter(p => p.entries.length > 0/* && p.dateEnd >= new Date()*/)
+                            .map(e => <div className='item default-padding' key={getDateKey(e)}>
                                 <h3>
-                                    {e.date} - {e.dateEnd}
+                                    {inUpperCase(e.date.toLocaleString(undefined, options))} - {inUpperCase(e.dateEnd.toLocaleString(undefined, options))}
                                 </h3>
                                 <div className='with-flex'>
                                 {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
@@ -114,9 +128,9 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/bosses") && postsFetchCompleted && posts.filter(p => p["raids"]?.entries.length > 0).map(e => <div className='item default-padding' key={e["raids"].date}>
+                            {tab.endsWith("/bosses") && postsFetchCompleted && posts.filter(p => p["raids"]?.entries.length > 0 /*&& p["raids"]?.dateEnd >= new Date()*/).map(e => <div className='item default-padding' key={getDateKey(e["raids"])}>
                                 <h3>
-                                    {e["raids"].date}
+                                    {inUpperCase(e["raids"].date.toLocaleString(undefined, options))} - {inUpperCase(e["raids"].dateEnd.toLocaleString(undefined, options))}
                                 </h3>
                                 <div className='with-flex'>
                                 {e["raids"].entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
@@ -126,9 +140,9 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p["wild"]?.entries.length > 0).map(e => <div className='item default-padding' key={e["wild"].date}>
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p["wild"]?.entries.length > 0 /*&& p["wild"]?.dateEnd >= new Date()*/).map(e => <div className='item default-padding' key={getDateKey(e["wild"])}>
                                 <h3>
-                                    {e["wild"].date}
+                                    {inUpperCase(e["wild"].date.toLocaleString(undefined, options))} - {inUpperCase(e["wild"].dateEnd.toLocaleString(undefined, options))}
                                 </h3>
                                 <div className='with-flex'>
                                 {e["wild"].entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
@@ -138,9 +152,9 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}{tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
-                                <h1>
+                                <h3>
                                     {season.date}
-                                </h1>
+                                </h3>
                                 <div className='with-flex'>
                                     {season.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                         <div className='card-wrapper'>

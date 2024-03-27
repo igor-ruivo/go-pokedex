@@ -437,8 +437,8 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     const htmlDoc = parser.parseFromString(data, 'text/html');
 
     const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent;
-    const date = htmlDoc.getElementById("event-date-start")?.textContent + " " + htmlDoc.getElementById("event-time-start")?.textContent ?? undefined;//event-date-end;
-    const end = htmlDoc.getElementById("event-date-end")?.textContent + " " + htmlDoc.getElementById("event-time-end")?.textContent ?? undefined;//event-date-end;
+    const date = fetchDateFromString(htmlDoc.getElementById("event-date-start")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-start")?.textContent?.trim());
+    const end = fetchDateFromString(htmlDoc.getElementById("event-date-end")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-end")?.textContent?.trim());
 
     const knownForms = new Set([
         //"Mega X",
@@ -496,18 +496,18 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
 
     if (!title) {
         console.error("Couldn't fetch title of leek news.");
-        return {date: "", entries: []};
+        return {date: new Date(), dateEnd: new Date(), entries: []};
     }
 
     if (!date) {
         console.error("Couldn't fetch date of leek news.");
-        return {date: "", entries: []};
+        return {date: new Date(), dateEnd: new Date(), entries: []};
     }
 
     const parts = title.split(" in ");
     if (parts.length !== 2) {
         console.error("Couldn't parse title of leek news.");
-        return {date: "", entries: []};
+        return {date: new Date(), dateEnd: new Date(), entries: []};
     }
 
     const rawPkmName = parts[0];
@@ -908,6 +908,21 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, knownForms, domain);
 }
 
+const fetchDateFromString = (date: string) => {
+    const trimmedDate = date.trim().replaceAll("  ", " ").replaceAll("a.m.", "am").replaceAll("A.M.", "am").replaceAll("p.m.", "pm").replaceAll("P.M.", "pm");
+    let dWithoutWeekDay = trimmedDate.substring(trimmedDate.indexOf(", ") + 2);
+    const hasYear = dWithoutWeekDay.split(", ")[1].trim().length === 4 && Number(dWithoutWeekDay.split(", ")[1].trim()) > 2020 && Number(dWithoutWeekDay.split(", ")[1].trim()) < 2050;
+    let year = (new Date()).getFullYear();
+    if (hasYear) {
+        year = Number(dWithoutWeekDay.split(", ")[1]);
+        dWithoutWeekDay = dWithoutWeekDay.split(", ").filter((e: string, i: number) => i !== 1).join(", ");
+    }
+    const localIdx = dWithoutWeekDay.toLocaleLowerCase().lastIndexOf("local");
+    const finalDate = dWithoutWeekDay.substring(0, localIdx === -1 ? undefined : localIdx).trim().replace(", at", "") + ", " + year;
+    const dateObj = new Date(finalDate);
+    return dateObj;
+}
+
 export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IPostEntry> = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const res: Dictionary<IPostEntry> = {};
     const parser = new DOMParser();
@@ -918,10 +933,31 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         return {};
     }
 
-    const date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
+    let date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
+
     if (!date) {
+        console.error("Couldn't fetch post date");
+        console.error(entries);
         return {};
     }
+
+    if (date.includes(" from ")) {
+        const split = date.split(" to ");
+        split[0] = split[0].replace(" from ", " at ");
+        const idx = split[0].indexOf(" at ") + 4;
+        split[1] = split[0].substring(0, idx) + split[1];
+        date = split.join(" to ");
+    }
+
+    const parsedDate = date.split(" to ");
+    if (parsedDate.length !== 2) {
+        console.error("Couldn't parse post date");
+        console.error(entries);
+        return {};
+    }
+
+    const startDate = fetchDateFromString(parsedDate[0]);
+    const endDate = fetchDateFromString(parsedDate[1]);
 
     const wildDomain = Object.values(gamemasterPokemon)
         .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
@@ -938,7 +974,8 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             case "Wild encounters":
                 const wildEncounters = fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain);
                 res["wild"] = {
-                    date: date,
+                    date: startDate,
+                    dateEnd: endDate,
                     entries: wildEncounters
                 };
                 break;
@@ -949,7 +986,8 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             case "Shadow Raid debut":
                 const raids = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain);
                 res["raids"] = {
-                    date: date,
+                    date: startDate,
+                    dateEnd: endDate,
                     entries: raids
                 };
                 break;

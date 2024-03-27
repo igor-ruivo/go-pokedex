@@ -6,8 +6,8 @@ export interface IEntry {
 }
 
 export interface IPostEntry {
-    date: string,
-    dateEnd?: string,
+    date: Date,
+    dateEnd: Date,
     entries: IEntry[],
     kind?: string
 }

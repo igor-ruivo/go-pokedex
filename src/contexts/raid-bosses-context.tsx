@@ -43,7 +43,7 @@ const useFetchAllData: () => [Dictionary<IRaidBoss[]>, Dictionary<IPostEntry>[],
         const controller = new AbortController();
 
         fetchBosses([bossesUrl], calendarCache, {signal: controller.signal}, (data: any) => mapRaidBosses(data, gamemasterPokemon));
-        fetchLeekNews([leekNewsUrl], 0, {signal: controller.signal}/*, (data: any) => mapLeekNews(data, gamemasterPokemon)*/);
+        fetchLeekNews([leekNewsUrl], calendarCache, {signal: controller.signal}/*, (data: any) => mapLeekNews(data, gamemasterPokemon)*/);
         fetchNews([corsProxyUrl + pokemonGoNewsUrl], calendarCache, {signal: controller.signal}/*, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon)*/);
         fetchSeason([encodeProxyUrl(pokemonGoSeasonRelativeUrl)], cacheTtlInMillis, {signal: controller.signal}, (data: any) => mapSeason(data, gamemasterPokemon));
         
@@ -92,7 +92,7 @@ const useFetchAllData: () => [Dictionary<IRaidBoss[]>, Dictionary<IPostEntry>[],
             return leekBaseUrl + relativeComponent;
         });
 
-        fetchLeekPosts(urls, 0, {signal: controller.signal}, (data: any) => mapLeekNews(data, gamemasterPokemon));
+        fetchLeekPosts(urls, calendarCache, {signal: controller.signal}, (data: any) => mapLeekNews(data, gamemasterPokemon));
 
         return () => {
             controller.abort("Request canceled by cleanup.");
