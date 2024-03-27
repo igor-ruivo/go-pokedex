@@ -742,7 +742,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
         // now try to find the form...
         // there can also be garbage in the currP, like "Red Flower Hat"
 
-        const availableForms = raidLevel !== "Mega" ? domain.filter(formC => formC.dex === dex && formC.isShadow === isShadow && formC.isMega === isMega) : Object.values(gamemasterPokemon).filter(l => l.isMega && l.dex === dex && !l.aliasId && !l.isShadow);
+        const availableForms = (raidLevel.toLocaleLowerCase() !== "mega" || !isMega) ? !isShadow ? domain.filter(formC => formC.dex === dex && formC.isShadow === isShadow && formC.isMega === isMega) : Object.values(gamemasterPokemon).filter(l => !l.isMega && l.dex === dex && !l.aliasId && l.isShadow) : Object.values(gamemasterPokemon).filter(l => l.isMega && l.dex === dex && !l.aliasId && !l.isShadow);
         if (availableForms.length === 1) {
             if (!seen.has(availableForms[0].speciesId)) {
                 seen.add(availableForms[0].speciesId);
@@ -788,6 +788,19 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
 
         const mappedForm = availableForms.filter(af => Array.from(knownForms).some(e => ndfNormalized(af.speciesName).includes(ndfNormalized(e)) && currP.includes(ndfNormalized(e))))
         if (mappedForm.length === 0) {
+            if (isShadow) {
+                const guess = Object.values(gamemasterPokemon).filter(g => !g.aliasId && g.isShadow && dex === g.dex && !Array.from(knownForms).some(f => ndfNormalized(g.speciesName).includes(ndfNormalized(f))));
+                if (guess.length === 1) {
+                    if (!seen.has(guess[0].speciesId)) {
+                        seen.add(guess[0].speciesId);
+                        wildEncounters.push({
+                            speciesId: guess[0].speciesId,
+                            shiny: isShiny
+                        });
+                    }
+                    continue;
+                }
+            }
             console.error("Couldn't map form for " + currP);
             continue;
         }
@@ -895,20 +908,19 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, knownForms, domain);
 }
 
-export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IPostEntry> = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const res: Dictionary<IPostEntry> = {};
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock"));
 
-    let wildEncounters: IEntry[] = [];
-
     if (entries.length === 0) {
-        return {date: "", entries: []};
+        return {};
     }
 
     const date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
     if (!date) {
-        return {date: "", entries: []};
+        return {};
     }
 
     const wildDomain = Object.values(gamemasterPokemon)
@@ -924,22 +936,29 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         const contentBodies = Array.from(entry.children) as HTMLElement[];
         switch(kind) {
             case "Wild encounters":
-                wildEncounters = fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain);
+                const wildEncounters = fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain);
+                res["wild"] = {
+                    date: date,
+                    entries: wildEncounters
+                };
                 break;
             case "Eggs":
                 break;
             case "Raids":
+            case "Shadow Raids":
+            case "Shadow Raid debut":
                 const raids = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain);
+                res["raids"] = {
+                    date: date,
+                    entries: raids
+                };
                 break;
             default:
                 break;
         }
     }
 
-    return {
-        date: date,
-        entries: wildEncounters
-    };
+    return res;
 }
 
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {

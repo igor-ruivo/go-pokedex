@@ -114,12 +114,24 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p.entries.length > 0).map(e => <div className='item default-padding' key={e.date}>
+                            {tab.endsWith("/bosses") && postsFetchCompleted && posts.filter(p => p["raids"]?.entries.length > 0).map(e => <div className='item default-padding' key={e["raids"].date}>
                                 <h3>
-                                    {e.date}
+                                    {e["raids"].date}
                                 </h3>
                                 <div className='with-flex'>
-                                {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                {e["raids"].entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                    <div className='card-wrapper'>
+                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
+                                    </div>
+                                </div>)}
+                                </div>
+                            </div>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p["wild"]?.entries.length > 0).map(e => <div className='item default-padding' key={e["wild"].date}>
+                                <h3>
+                                    {e["wild"].date}
+                                </h3>
+                                <div className='with-flex'>
+                                {e["wild"].entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className='card-wrapper'>
                                         <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                     </div>
