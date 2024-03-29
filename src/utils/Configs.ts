@@ -19,6 +19,6 @@ export const leekBaseUrl = "https://leekduck.com/";
 export const bossesUrl = "https://leekduck.com/boss/";
 export const leekNewsUrl = "https://leekduck.com/events/";
 export const pokemonGoBaseUrl = "https://pokemongolive.com/";
-export const pokemonGoNewsUrl = "https://pokemongolive.com/news/?hl=en&page=1";
+export const pokemonGoNewsUrl = "https://pokemongolive.com/news/?hl=en";
 export const pokemonGoSeasonRelativeUrl = "seasons/world-of-wonders?hl=en";
 export const corsProxyUrl = "https://corsproxy.io/?";

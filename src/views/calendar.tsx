@@ -26,12 +26,12 @@ const Calendar = () => {
         if (kind.toLocaleLowerCase().includes("mega")) {
             return "Mega Raid";
         }
-
+/*
         if (kind.toLocaleLowerCase().includes("shadow")) {
             return "Shadow Raid";
-        }
+        }*/
 
-        return `Tier ${kind}${isShadow ? " Shadow" : ""}`;
+        return `Tier ${kind}${isShadow && !kind.toLocaleLowerCase().includes("shadow") ? " Shadow" : ""}`;
     }
 
     const getMega = (speciesId: string) => {
@@ -73,9 +73,9 @@ const Calendar = () => {
             dateEnd: value.dateEnd,
             entries: value.entries
           } as IPostEntry))
-        .filter(p => p.entries.length > 0 /*&& new Date(p.dateEnd ?? 0) >= new Date()*/);
+        .filter(p => p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date());
 
-    const reducedRaids = posts.filter(p => p["raids"]?.entries.length > 0 /*&& new Date(p["raids"]?.dateEnd ?? 0) >= new Date()*/);
+    const reducedRaids = posts.filter(p => p["raids"]?.entries.length > 0 && new Date(p["raids"]?.dateEnd ?? 0) >= new Date());
 
     const sortEntries = (e1: IEntry, e2: IEntry) => {
         if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
@@ -87,7 +87,7 @@ const Calendar = () => {
         }
 
         if (e1.kind === e2.kind) {
-            return e1.speciesId.localeCompare(e2.speciesId);
+            return gamemasterPokemon[e1.speciesId].dex - gamemasterPokemon[e2.speciesId].dex;
         }
 
         if (!e1.kind) {
@@ -197,11 +197,11 @@ const Calendar = () => {
                             {tab.endsWith("/spawns") && <h1 className="baseheader-name">Wild Encounters</h1>}
                         </header>
                         <div className="pokemon with-normal-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='item default-padding'><h1>
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='item default-padding'><h1 className='centered-text'>
                                     Today
                                 </h1><div className='with-flex'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                        <div className='card-wrapper'>
+                                        <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                             <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date < new Date().valueOf() && d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd ? new Date(additionalBosses.sort(sortPosts).find(d => d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd ?? 0).valueOf() : undefined} />
                                         </div>
                                     </div>)}
@@ -210,35 +210,35 @@ const Calendar = () => {
                             {tab.endsWith("/bosses") && leekPostsFetchCompleted && postsFetchCompleted &&
                             remainingBosses
                             .map(e => <div className='item default-padding' key={getDateKey(e)}>
-                                <h4>
+                                <h4 className='centered-text'>
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
-                                {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
-                                    <div className='card-wrapper'>
+                                {e.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                    <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                         <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} cpStringOverride={computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow)}/>
                                     </div>
                                 </div>)}
                                 </div>
                             </div>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(e => <div className='item default-padding' key={getDateKey(e)}>
-                                <h4>
+                                <h4 className='centered-text'>
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
                                 {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
-                                    <div className='card-wrapper'>
+                                    <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                         <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                     </div>
                                 </div>)}
                                 </div>
                             </div>)}{tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
-                                <h4>
+                                <h4 className='centered-text'>
                                     {inUpperCase(new Date(season.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(season.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
                                     {season.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
-                                        <div className='card-wrapper'>
+                                        <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                             <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                         </div>
                                     </div>)}

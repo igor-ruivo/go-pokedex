@@ -22,6 +22,10 @@
     gap: 6px;
 }
 
+.with-golden-border {
+    border: 1px solid var(--cp-color) !important;
+}
+
 .disabled {
     pointer-events: none;
     opacity: 50%;

@@ -41,9 +41,9 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBa
     }
 
     const getCPContainerString = () => {
-        /*if (withCountdown) {
-            return days > 0 ? `${days} Days` : `${hours}h:${minutes}m:${seconds}s`;
-        }*/
+        if (withCountdown) {
+            return days > 0 ? `${days} day${days > 1 ? "s" : ""} left` : `${hours}h:${minutes}m:${seconds}s`;
+        }
 
         if (cpStringOverride) {
             return cpStringOverride;

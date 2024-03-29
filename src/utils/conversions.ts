@@ -474,7 +474,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
 
         const raidLIndex = currP.indexOf(" raids");
         if (raidLIndex !== -1) {
-            raidLevel = currP.substring(0, raidLIndex).replaceAll("one-star", "1").replaceAll("three-star", "3").replaceAll("five-star", "5").replaceAll("six-star", "6").replaceAll("shadow", "Shadow");
+            raidLevel = currP.substring(0, raidLIndex).replaceAll("one-star", "1").replaceAll("three-star", "3").replaceAll("four-star", "4").replaceAll("five-star", "5").replaceAll("six-star", "6").replaceAll("shadow", "Shadow");
             //console.log(raidLevel);
             continue;
         }
@@ -864,11 +864,15 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             case "Shadow Raids":
             case "Shadow Raid debut":
                 const raids = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain);
-                res["raids"] = {
-                    date: startDate,
-                    dateEnd: endDate,
-                    entries: raids
-                };
+                if (res["raids"]) {
+                    res["raids"].entries = [...res["raids"].entries, ...raids];
+                } else {
+                    res["raids"] = {
+                        date: startDate,
+                        dateEnd: endDate,
+                        entries: raids
+                    };
+                }
                 break;
             default:
                 break;
