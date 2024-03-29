@@ -609,7 +609,11 @@ export const pveDPS = (chargedMoveDamage: number, fastMoveDamage: number, fastMo
     return Math.max(chargedMoveUsageDPS, fastMoveDPS);
 }
 
-const isNonShadowVersion = (p: IGamemasterPokemon, original: IGamemasterPokemon) => original.isShadow && !p.isShadow && p.speciesId !== original.speciesId && p.dex === original.dex && !p.isMega && p.types.length === original.types.length && p.types.every(t => original.types.includes(t));   
+/*
+Set of pokémons that have the same types on different forms while also being available as shadow in some other different form but not on this form.
+*/
+const nonShadowExceptions = new Set<string>(["mewtwo_armored"]);
+const isNonShadowVersion = (p: IGamemasterPokemon, original: IGamemasterPokemon) => !nonShadowExceptions.has(p.speciesId) && original.isShadow && !p.isShadow && p.speciesId !== original.speciesId && p.dex === original.dex && !p.isMega && p.types.length === original.types.length && p.types.every(t => original.types.includes(t));   
 
 export const fetchReachablePokemonIncludingSelf = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>, domainFilter?: (p: IGamemasterPokemon) => boolean) => {
     const reachablePokemons = new Set<IGamemasterPokemon>();

@@ -314,7 +314,7 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
     for (let i = 0; i < entries.length; i++) {
         const e = entries[i];
         if (Array.from(e.classList).includes("header-li")) {
-            const newTier = (e as HTMLElement).innerText.trim();
+            const newTier = (e as HTMLElement).innerText?.trim();
             if (newTier.split(" ").length === 2) {
                 tier = newTier.split(" ")[1].toLocaleLowerCase();
             }
@@ -339,7 +339,7 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
 
     const results: IPostEntry = {
         date: (new Date()).valueOf(),
-        dateEnd: (new Date()).valueOf(),
+        //dateEnd: (new Date()).valueOf(),
         entries: pokemons,
     };
 
@@ -399,6 +399,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
         if (finalP[0]?.speciesId) {
             finalEntries.push({
                 speciesId: finalP[0].speciesId,
+                kind: isMega ? "mega" : "5",//raidType.split(" Raid")[0].replaceAll("-star", ""),
                 shiny: false //TODO
             });
         }
@@ -408,7 +409,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
         date: date,
         dateEnd: end,
         entries: finalEntries,
-        kind: raidType.split(" Raid")[0]
+        //kind: raidType.split(" Raid")[0]
     };
 }
 
@@ -473,7 +474,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
 
         const raidLIndex = currP.indexOf(" raids");
         if (raidLIndex !== -1) {
-            raidLevel = currP.substring(0, raidLIndex);
+            raidLevel = currP.substring(0, raidLIndex).replaceAll("one-star", "1").replaceAll("three-star", "3").replaceAll("five-star", "5").replaceAll("six-star", "6").replaceAll("shadow", "Shadow");
             //console.log(raidLevel);
             continue;
         }
@@ -503,7 +504,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
 
                 wildEncounters.push({
                     speciesId: match.speciesId,
-                    shiny: isShiny
+                    shiny: isShiny,
+                    kind: raidLevel
                 });
             }
             continue;
@@ -561,7 +563,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                     
                     wildEncounters.push({
                         speciesId: finalResults[0].speciesId,
-                        shiny: isShiny
+                        shiny: isShiny,
+                        kind: raidLevel
                     });
                 }
 
@@ -584,7 +587,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                     seen.add(ans[0].speciesId);
                     wildEncounters.push({
                         speciesId: ans[0].speciesId,
-                        shiny: isShiny
+                        shiny: isShiny,
+                        kind: raidLevel
                     });
                 }
                 continue;
@@ -609,7 +613,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                 seen.add(availableForms[0].speciesId);
                 wildEncounters.push({
                     speciesId: availableForms[0].speciesId,
-                    shiny: isShiny
+                    shiny: isShiny,
+                    kind: raidLevel
                 });
             }
             continue;
@@ -624,7 +629,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                         seen.add("charizard_mega_x");
                         wildEncounters.push({
                             speciesId: "charizard_mega_x",
-                            shiny: isShiny
+                            shiny: isShiny,
+                            kind: raidLevel
                         });
                 }
                 continue;
@@ -634,7 +640,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                         seen.add("charizard_mega_y");
                         wildEncounters.push({
                             speciesId: "charizard_mega_y",
-                            shiny: isShiny
+                            shiny: isShiny,
+                            kind: raidLevel
                         });
                 }
                 continue;
@@ -656,7 +663,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                         seen.add(guess[0].speciesId);
                         wildEncounters.push({
                             speciesId: guess[0].speciesId,
-                            shiny: isShiny
+                            shiny: isShiny,
+                            kind: raidLevel
                         });
                     }
                     continue;
@@ -671,7 +679,8 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                 seen.add(mappedForm[0].speciesId);
                 wildEncounters.push({
                     speciesId: mappedForm[0].speciesId,
-                    shiny: isShiny
+                    shiny: isShiny,
+                    kind: raidLevel
                 });
             }
             continue;
@@ -804,13 +813,16 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         return {};
     }
 
-    let date = (entries[0].children[1] as HTMLElement)?.innerText.trim();
+    let date = (entries[0].children[1] as HTMLElement)?.innerText?.trim();
 
     if (!date) {
         return {};
     }
-
+    
     if (date.includes(" from ")) {
+        if (!date.includes(" to ") || !date.includes(" at ")) {
+            return {};
+        }
         const split = date.split(" to ");
         split[0] = split[0].replace(" from ", " at ");
         const idx = split[0].indexOf(" at ") + 4;
@@ -819,7 +831,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
     }
 
     const parsedDate = date.split(" to ");
-    if (parsedDate.length !== 2) {
+    if (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10) {
         return {};
     }
 
@@ -835,7 +847,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
     for (let i = 1; i < entries.length; i++) {
         const entry = entries[i];
         const title = entry.children[0];
-        const kind = (title as HTMLElement)?.innerText.trim();
+        const kind = (title as HTMLElement)?.innerText?.trim();
         const contentBodies = Array.from(entry.children) as HTMLElement[];
         switch(kind) {
             case "Wild encounters":

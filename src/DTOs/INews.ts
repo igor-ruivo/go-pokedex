@@ -8,7 +8,7 @@ export interface IEntry {
 
 export interface IPostEntry {
     date: number,
-    dateEnd: number,
+    dateEnd?: number,
     entries: IEntry[],
     eggs?: IEntry[]
 }

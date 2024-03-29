@@ -9,6 +9,7 @@ import { calculateCP, needsXLCandy } from "../utils/pokemon-helper";
 import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { customCupCPLimit, usePvp } from "../contexts/pvp-context";
+import useCountdown from "../hooks/useCountdown";
 
 interface IPokemonCardProps {
     pokemon: IGamemasterPokemon,
@@ -16,9 +17,11 @@ interface IPokemonCardProps {
     cpStringOverride?: string;
     rankOverride?: number;
     shinyBadge?: boolean;
+    withCountdown?: number;
 }
 
-const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBadge}: IPokemonCardProps) => {
+const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBadge, withCountdown}: IPokemonCardProps) => {
+    const {days, hours, minutes, seconds} = useCountdown(withCountdown ?? 0);
     const {currentGameLanguage} = useLanguage();
     const {rankLists} = usePvp();
 
@@ -38,6 +41,10 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBa
     }
 
     const getCPContainerString = () => {
+        /*if (withCountdown) {
+            return days > 0 ? `${days} Days` : `${hours}h:${minutes}m:${seconds}s`;
+        }*/
+
         if (cpStringOverride) {
             return cpStringOverride;
         }

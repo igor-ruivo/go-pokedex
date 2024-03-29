@@ -18,11 +18,20 @@ const Calendar = () => {
     
     const {currentGameLanguage, currentLanguage} = useLanguage();
 
-    const computeCPString = (speciesId: string) => {
-        let pkm = gamemasterPokemon[speciesId];
-        const minCP = calculateCP(pkm.atk, 10, pkm.def, 10, pkm.hp, 10, levelToLevelIndex(20));
-        const maxCP = calculateCP(pkm.atk, 15, pkm.def, 15, pkm.hp, 15, levelToLevelIndex(20));
-        return `${minCP} - ${maxCP} ${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}`;
+    const computeString = (kind: string | undefined, isShadow: boolean) => {
+        if (!kind) {
+            return undefined;
+        }
+
+        if (kind.toLocaleLowerCase().includes("mega")) {
+            return "Mega Raid";
+        }
+
+        if (kind.toLocaleLowerCase().includes("shadow")) {
+            return "Shadow Raid";
+        }
+
+        return `Tier ${kind}${isShadow ? " Shadow" : ""}`;
     }
 
     const getMega = (speciesId: string) => {
@@ -64,9 +73,9 @@ const Calendar = () => {
             dateEnd: value.dateEnd,
             entries: value.entries
           } as IPostEntry))
-        .filter(p => p.entries.length > 0 && new Date(p.dateEnd) >= new Date());
+        .filter(p => p.entries.length > 0 /*&& new Date(p.dateEnd ?? 0) >= new Date()*/);
 
-    const reducedRaids = posts.filter(p => p["raids"]?.entries.length > 0 && new Date(p["raids"]?.dateEnd) >= new Date());
+    const reducedRaids = posts.filter(p => p["raids"]?.entries.length > 0 /*&& new Date(p["raids"]?.dateEnd ?? 0) >= new Date()*/);
 
     const sortEntries = (e1: IEntry, e2: IEntry) => {
         if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
@@ -112,7 +121,7 @@ const Calendar = () => {
         for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
             const dateEntryStart = new Date(entry.date);
-            const dateEntryEnd = new Date(entry.dateEnd);
+            const dateEntryEnd = new Date(entry.dateEnd ?? 0);
 
             if (dateEntryStart > right || dateEntryEnd < left) {
                 continue;
@@ -143,7 +152,7 @@ const Calendar = () => {
     
     const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
         if (e1.date.valueOf() === e2.date.valueOf()) {
-            return e1.dateEnd.valueOf() - e2.dateEnd.valueOf();
+            return (e1.dateEnd?.valueOf() ?? 0) - (e2.dateEnd?.valueOf() ?? 0);
         }
 
         return e1.date.valueOf() - e2.date.valueOf();
@@ -193,7 +202,7 @@ const Calendar = () => {
                                 </h1><div className='with-flex'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className='card-wrapper'>
-                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeCPString(e.speciesId)} />
+                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date < new Date().valueOf() && d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd ? new Date(additionalBosses.sort(sortPosts).find(d => d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd ?? 0).valueOf() : undefined} />
                                         </div>
                                     </div>)}
                                 </div>
@@ -202,19 +211,19 @@ const Calendar = () => {
                             remainingBosses
                             .map(e => <div className='item default-padding' key={getDateKey(e)}>
                                 <h4>
-                                    {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd).toLocaleString(undefined, options))}
+                                    {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
                                 {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className='card-wrapper'>
-                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
+                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} cpStringOverride={computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow)}/>
                                     </div>
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd) >= new Date()).sort(sortPosts).map(e => <div className='item default-padding' key={getDateKey(e)}>
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(e => <div className='item default-padding' key={getDateKey(e)}>
                                 <h4>
-                                    {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd).toLocaleString(undefined, options))}
+                                    {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
                                 {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
@@ -225,7 +234,7 @@ const Calendar = () => {
                                 </div>
                             </div>)}{tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
                                 <h4>
-                                    {inUpperCase(new Date(season.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(season.dateEnd).toLocaleString(undefined, options))}
+                                    {inUpperCase(new Date(season.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(season.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
                                     {season.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
