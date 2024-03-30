@@ -440,10 +440,16 @@ const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’",
 export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
-    const entries = Array.from(htmlDoc.getElementById("spawns")?.getElementsByClassName("alola__pokemonTabContent") ?? []).map(e => e as HTMLElement);
+    const cityEntries = Array.from(htmlDoc.getElementById("cities")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+    const forestEntries = Array.from(htmlDoc.getElementById("forests")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+    const mountainEntries = Array.from(htmlDoc.getElementById("mountains")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+    const beachEntries = Array.from(htmlDoc.getElementById("beaches-water")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+    const northEntries = Array.from(htmlDoc.getElementById("northern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+    const southEntries = Array.from(htmlDoc.getElementById("southern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
     const wildDomain = Object.values(gamemasterPokemon)
         .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
-    const wildEncounters = fetchPokemonFromElements(entries, gamemasterPokemon, wildDomain);
+
+    const wildEncounters = [cityEntries, forestEntries, mountainEntries, beachEntries, northEntries, southEntries].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
 
     return {
         date: new Date(2024, 2, 1, 10, 0).valueOf(),

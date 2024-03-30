@@ -10,13 +10,41 @@ import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { Link, useLocation } from 'react-router-dom';
 import { IEntry, IPostEntry } from '../DTOs/INews';
+import { useState } from 'react';
+import useCountdown from '../hooks/useCountdown';
+
+
+const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
+
+const inUpperCase = (str: string) => str?.substring(0, 1)?.toUpperCase() + str?.substring(1);
+
+const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    weekday: 'short',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: false
+}
+
+const computeCount = (d: number, h: number, m: number, s: number) => {
+    if (!d && !h && !m && !s) {
+        return "Expired";
+    }
+
+    return d > 0 ? `${d} day${d > 1 ? "s" : ""} left` : `${h}h : ${m}m : ${s}s`;
+}
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
     const { pathname } = useLocation();
     
+    const {days, hours, minutes, seconds} = useCountdown(season?.dateEnd ?? 0);
+
     const {currentGameLanguage, currentLanguage} = useLanguage();
+    const [currentPlace, setCurrentPlace] = useState("0");
 
     const computeString = (kind: string | undefined, isShadow: boolean) => {
         if (!kind) {
@@ -41,20 +69,6 @@ const Calendar = () => {
 
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
-
-    const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
-
-    const options: Intl.DateTimeFormatOptions = {
-        day: 'numeric',
-        weekday: 'short',
-        month: 'short',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: false
-    }
-
-    const inUpperCase = (str: string) => str?.substring(0, 1)?.toUpperCase() + str?.substring(1);
 
     const reducedLeekPosts = Object.entries(leekPosts
         .reduce((acc: { [key: string]: IPostEntry }, obj) => {
@@ -162,6 +176,40 @@ const Calendar = () => {
     .filter(e => e.entries.length > 0 && !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId)))
     .sort(sortPosts);
 
+    const idxToPlace = (idx: number) => {
+        switch(idx) {
+            case 0:
+                return "Cities";
+            case 1:
+                return "Forests";
+            case 2:
+                return "Mountains";
+            case 3:
+                return "Beaches & Water";
+            case 4:
+                return "Northen Hemisphere";
+            case 5:
+                return "Southern Hemisphere";
+        }
+    }
+    
+    const idxToRes = (idx: number) => {
+        switch(idx) {
+            case 0:
+                return "City";
+            case 1:
+                return "Forest";
+            case 2:
+                return "Mountain";
+            case 3:
+                return "Water";
+            case 4:
+                return "North";
+            case 5:
+                return "South";
+        }
+    }
+
     return (
         <main className="layout">
             <nav className="navigation-header">
@@ -221,29 +269,34 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(e => <div className='item default-padding' key={getDateKey(e)}>
-                                <h4 className='centered-text'>
-                                    {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
-                                </h4>
-                                <div className='with-flex'>
-                                {e.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
-                                    <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
+                                <div className='centered-text'>
+                                <h1>Current Season</h1><h4>({computeCount(days, hours, minutes, seconds)})</h4>
+                                <div className="raid-container">
+                                    <div className="overflowing">
+                                        <div className="img-family">
+                                            {[season.entries.filter(e => e.kind === "0"), season.entries.filter(e => e.kind === "1"), season.entries.filter(e => e.kind === "2"), season.entries.filter(e => e.kind === "3"), season.entries.filter(e => e.kind === "4"), season.entries.filter(e => e.kind === "5")]
+                                            .map((t, i) => (
+                                                <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
+                                                    <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
+                                                        <div className="img-padding"><img className="invert-light-mode" height={30} width={30} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`}/></div>
+                                                        {String(i) === currentPlace && idxToPlace(i)}
+                                                    </strong>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>)}
-                                </div>
-                            </div>)}{tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
-                                <h4 className='centered-text'>
-                                    {inUpperCase(new Date(season.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(season.dateEnd ?? 0).toLocaleString(undefined, options))}
-                                </h4>
+                                </div></div>
                                 <div className='with-flex'>
-                                    {season.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
-                                        <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
+                                    {season.entries.filter(r => r.kind === currentPlace).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                        <div className={`card-wrapper`}>
                                             <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                         </div>
                                     </div>)}
                                 </div>
                             </div>}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                         </div>
                     </div>
                 </div>
@@ -253,3 +306,30 @@ const Calendar = () => {
     );
 }
 export default Calendar;
+
+interface IPost {
+    post: IPostEntry;
+    sortEntries: (e1: IEntry, e2: IEntry) => number;
+}
+
+const PostEntry = ({post, sortEntries}: IPost) => {
+    const {gamemasterPokemon} = usePokemon();
+    const {days, hours, minutes, seconds} = useCountdown(post.dateEnd ?? 0);
+
+    const now = new Date();
+    const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
+
+    return <div className='item default-padding'>
+        <div className='centered-text'>
+        {postIsNow && <><h1>Current Spawns</h1><h4>({computeCount(days, hours, minutes, seconds)})</h4></>}
+        {!postIsNow && <h4>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
+        </div><div className='with-flex'>
+        {post.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+            <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
+                <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
+            </div>
+        </div>)}
+        </div>
+    </div>
+    
+}
