@@ -42,6 +42,10 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBa
 
     const getCPContainerString = () => {
         if (withCountdown) {
+            if (!days && !hours && !minutes && !seconds) {
+                return "Expired";
+            }
+
             return days > 0 ? `${days} day${days > 1 ? "s" : ""} left` : `${hours}h:${minutes}m:${seconds}s`;
         }
 

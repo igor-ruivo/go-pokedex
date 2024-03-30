@@ -109,21 +109,21 @@ const Calendar = () => {
         const seenIds = new Set<string>(bossesPerTier.entries.map(e => e.speciesId));
         const response = [...bossesPerTier.entries];
 
-        const today = new Date();
-        const currentDay = today.getDate();
+        const now = new Date();
+        /*const currentDay = today.getDate();
         const currentMonth = today.getMonth();
         const currentYear = today.getFullYear();
 
         const left = new Date(currentYear, currentMonth, currentDay, 0, 0);
         const right = new Date(currentYear, currentMonth, currentDay, 0, 0);
-        right.setDate(right.getDate() + 1);
+        right.setDate(right.getDate() + 1);*/
 
         for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
             const dateEntryStart = new Date(entry.date);
             const dateEntryEnd = new Date(entry.dateEnd ?? 0);
 
-            if (dateEntryStart > right || dateEntryEnd < left) {
+            if (!(now >= dateEntryStart && now < dateEntryEnd)) {
                 continue;
             }
             
@@ -198,11 +198,11 @@ const Calendar = () => {
                         </header>
                         <div className="pokemon with-normal-gap">
                             {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='item default-padding'><h1 className='centered-text'>
-                                    Today
+                                    Current Bosses
                                 </h1><div className='with-flex'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date < new Date().valueOf() && d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd ? new Date(additionalBosses.sort(sortPosts).find(d => d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd ?? 0).valueOf() : undefined} />
+                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd} />
                                         </div>
                                     </div>)}
                                 </div>
@@ -226,7 +226,7 @@ const Calendar = () => {
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
-                                {e.entries.map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                {e.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                         <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                     </div>
