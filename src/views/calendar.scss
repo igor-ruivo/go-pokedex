@@ -1,9 +1,6 @@
 .with-flex {
     display: flex;
     flex-wrap: wrap;
-    a {
-        text-decoration: none;
-    }
 }
 
 .without-negative-margins {
@@ -31,9 +28,36 @@
     opacity: 50%;
 }
 
+.computeCount {
+    font-size: 0.875rem;
+}
+
 .small-side-padding {
     padding-left: 5px;
     padding-right: 5px;
+}
+
+.with-side-margin {
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+.calendar-content {
+    max-width: 65%;
+    font-size: 0.875rem;
+    padding-bottom: 61px;
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--bodyBackgroundColor);
+    a {
+        text-decoration: none;
+    }
+}
+
+@media (max-width: 1600px) {
+    .calendar-content {
+        max-width: 1024px;
+    }
 }
 
 @media (max-width: 1000px) {
@@ -45,6 +69,12 @@
 @media (max-width: 800px) {
     .dynamic-size {
         width: calc(100% / 3);
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-content {
+        max-width: 100%;
     }
 }
 

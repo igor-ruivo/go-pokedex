@@ -238,15 +238,10 @@ const Calendar = () => {
             </nav>
             <div className="pokemon">
                 <LoadingRenderer errors={errors + bossesErrors + postsErrors + seasonErrors + leekPostsErrors} completed={fetchCompleted && bossesFetchCompleted && postsFetchCompleted && seasonFetchCompleted && leekPostsFetchCompleted}>
-                <div className="pokemon-content">
-                    <div className="content small-side-padding">
-                        <header className="pokemonheader-header without-negative-margins">
-                            {tab.endsWith("/bosses") && <h1 className="baseheader-name">{translator(TranslatorKeys.CurrentRaid, currentLanguage)} ({gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)})</h1>}
-                            {tab.endsWith("/spawns") && <h1 className="baseheader-name">Wild Encounters</h1>}
-                        </header>
+                <div className="calendar-content">
                         <div className="pokemon with-normal-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='item default-padding'><h1 className='centered-text'>
-                                    Current Bosses
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div><h1 className='centered-text with-side-margin item default-padding'>
+                                Current Bosses
                                 </h1><div className='with-flex'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
@@ -257,8 +252,8 @@ const Calendar = () => {
                             </div>}
                             {tab.endsWith("/bosses") && leekPostsFetchCompleted && postsFetchCompleted &&
                             remainingBosses
-                            .map(e => <div className='item default-padding' key={getDateKey(e)}>
-                                <h4 className='centered-text'>
+                            .map(e => <div key={getDateKey(e)}>
+                                <h4 className='centered-text item default-padding with-side-margin'>
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
@@ -270,9 +265,9 @@ const Calendar = () => {
                                 </div>
                             </div>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
-                                <div className='centered-text'>
-                                <h1>Current Season</h1><h4>({computeCount(days, hours, minutes, seconds)})</h4>
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div>
+                                <div>
+                                <div><h1 className='centered-text with-side-margin item default-padding'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h1></div>
                                 <div className="raid-container">
                                     <div className="overflowing">
                                         <div className="img-family">
@@ -280,7 +275,7 @@ const Calendar = () => {
                                             .map((t, i) => (
                                                 <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
                                                     <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
-                                                        <div className="img-padding"><img className="invert-light-mode" height={30} width={30} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`}/></div>
+                                                        <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`}/></div>
                                                         {String(i) === currentPlace && idxToPlace(i)}
                                                     </strong>
                                                 </div>
@@ -298,7 +293,6 @@ const Calendar = () => {
                             </div>}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                         </div>
-                    </div>
                 </div>
                 </LoadingRenderer>
             </div>
@@ -319,11 +313,10 @@ const PostEntry = ({post, sortEntries}: IPost) => {
     const now = new Date();
     const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
 
-    return <div className='item default-padding'>
-        <div className='centered-text'>
-        {postIsNow && <><h1>Current Spawns</h1><h4>({computeCount(days, hours, minutes, seconds)})</h4></>}
-        {!postIsNow && <h4>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
-        </div><div className='with-flex'>
+    return <div>
+        {postIsNow && <><h1 className='centered-text with-side-margin item default-padding'>Current Spawns</h1><h4>({computeCount(days, hours, minutes, seconds)})</h4></>}
+        {!postIsNow && <h4 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
+        <div className='with-flex'>
         {post.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
             <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
                 <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
