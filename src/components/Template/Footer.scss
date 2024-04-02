@@ -1,7 +1,7 @@
 .footer {
-    min-height: 65px;
-    max-height: 65px;
-    height: 65px;
+    min-height: 55px;
+    max-height: 55px;
+    height: 55px;
     z-index: 40000;
     border-top: 1px solid var(--borderColor2);
     border-bottom: 1px solid var(--borderColor2);
@@ -30,7 +30,7 @@
 
 .footer-section {
     display: grid;
-    grid-template-columns: 40px 40px;
+    grid-template-columns: 34px 34px;
     align-items: center;
     justify-content: space-between;
     grid-gap: 18px;

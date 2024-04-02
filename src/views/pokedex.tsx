@@ -207,31 +207,31 @@ const Pokedex = () => {
                 <ul>
                     <li>
                         <Link to="/great" className={"header-tab league-picker " + (listType === ListType.GREAT_LEAGUE ? "selected" : "")}>
-                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/great.png`} alt="Great League"/>
+                            <img height="28" width="28" src={`${process.env.PUBLIC_URL}/images/leagues/great.png`} alt="Great League"/>
                             {listType === ListType.GREAT_LEAGUE && <span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>}
                         </Link>
                     </li>
                     <li>
                         <Link to="/ultra" className={"header-tab league-picker " + (listType === ListType.ULTRA_LEAGUE ? "selected" : "")}>
-                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`} alt="Ultra League"/>
+                            <img height="28" width="28" src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`} alt="Ultra League"/>
                             {listType === ListType.ULTRA_LEAGUE && <span>Ultra</span>}
                         </Link>
                     </li>
                     <li>
                         <Link to="/master" className={"header-tab league-picker " + (listType === ListType.MASTER_LEAGUE ? "selected" : "")}>
-                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/master.png`} alt="Master League"/>
+                            <img height="28" width="28" src={`${process.env.PUBLIC_URL}/images/leagues/master.png`} alt="Master League"/>
                             {listType === ListType.MASTER_LEAGUE && <span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>}
                         </Link>
                     </li>
                     {renderCustom && <li>
                         <Link to="/custom" className={"header-tab league-picker " + (listType === ListType.CUSTOM_CUP ? "selected" : "")}>
-                            <img height="32" width="32" src={`${process.env.PUBLIC_URL}/images/leagues/fantasy-cup.png`} alt="Fantasy Cup"/>
+                            <img height="28" width="28" src={`${process.env.PUBLIC_URL}/images/leagues/fantasy-cup.png`} alt="Fantasy Cup"/>
                             {listType === ListType.CUSTOM_CUP && <span>{gameTranslator(GameTranslatorKeys.Fantasy, currentGameLanguage)}</span>}
                         </Link>
                     </li>}
                     <li>
                         <Link to="/raid" className={"header-tab league-picker " + (listType === ListType.RAID ? "selected" : "")}>
-                            <div className="img-padding"><img className="raid-img-with-contrast" height="24" width="24" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="Raids"/></div>
+                            <div className="img-padding"><img className="raid-img-with-contrast" height="20" width="20" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="Raids"/></div>
                             {listType === ListType.RAID && <span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>}
                         </Link>
                     </li>

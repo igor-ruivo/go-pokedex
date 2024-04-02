@@ -55,8 +55,6 @@ label.MuiFormLabel-root.MuiInputLabel-root {
     color: var(--textColor) !important;
 }
 
-@media (max-width: 500px) {
     .MuiOutlinedInput-root {
         padding: 3px 9px !important;
     }
-}
