@@ -219,6 +219,10 @@
     .contained-big {
         font-size: 11px;
     }
+
+    .pkm-stats-container {
+        font-size: unset;
+    }
 }
 
 @media (max-width: 440px) {
@@ -227,9 +231,15 @@
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 440px) {
     .pkm-stats-container {
-        font-size: unset;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 410px) {
+    .pkm-stats-container {
+        gap: 10px;
     }
 }
 
@@ -242,4 +252,14 @@
         width: 24px;
         height: 24px;
     }
+
+    .pkm-stats-container {
+        gap: 11px;
+    }
+}
+
+@media (max-width: 360px) {
+    .pkm-stats-container {
+        gap: 10px;
+    }   
 }
