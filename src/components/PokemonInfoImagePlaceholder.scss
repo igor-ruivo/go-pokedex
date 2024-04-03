@@ -82,6 +82,10 @@
     align-self: center;
 }
 
+.with-margin-left {
+    margin-left: 9px;
+}
+
 .pkm-stats-container {
     font-size: large;
     display: flex;
@@ -178,6 +182,11 @@
     filter: contrast(0);
 }
 
+.pkm-weather-boost-img {
+    width: 32px;
+    height: 32px;
+}
+
 @media (max-width: 1200px) {
     .big {
         font-size: 15px;
@@ -221,5 +230,16 @@
 @media (max-width: 500px) {
     .pkm-stats-container {
         font-size: unset;
+    }
+}
+
+@media (max-width: 380px) {
+    .pkm-stats-container {
+        font-size: small;
+    }
+
+    .pkm-weather-boost-img {
+        width: 24px;
+        height: 24px;
     }
 }

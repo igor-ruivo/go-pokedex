@@ -89,20 +89,16 @@ const Pokemon = () => {
                                             pokemon={pokemon}
                                             computedCP={calculateCP(pokemon.atk, attackIV, pokemon.def, defenseIV, pokemon.hp, hpIV, (displayLevel - 1) * 2)}
                                             displayLevel={displayLevel}
+                                            computedPokemonFamily={computedPokemonFamily}
+                                            tab={tab}
                                             setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
                                         />}
                                         
-                                        <div className='item with-margin-top'>
+                                        <div className='with-margin-top'>
                                         <LeaguePicker
                                             league={league}
                                             handleSetLeague={handleSetLeague}
-                                        />
-                                        
-                                        {fetchCompleted && computedPokemonFamily && <PokemonFamily
-                                            pokemon={pokemon}
-                                            similarPokemon={computedPokemonFamily}
-                                            getClickDestination={(speciesId: string) => `/pokemon/${speciesId}/${tab.substring(tab.lastIndexOf("/") + 1)}`}
-                                        />}</div>
+                                        /></div>
 
                                         <nav className="navigation-header">
                                             <ul>

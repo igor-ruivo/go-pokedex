@@ -54,7 +54,11 @@
 }
 
 .options-menu {
+    margin: 0 auto; /* Only centers horizontally not vertically! */
+    left: 0;
+    right: 0;
     position: fixed;
+    max-width: 1300px;
     top: 55px;
     background: var(--headerBackground);
     color: var(--textColor);

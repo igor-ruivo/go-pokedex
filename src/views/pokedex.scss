@@ -78,10 +78,6 @@
         &.selected {
             border-bottom: 2px solid var(--buttonsBorderColor) !important;
         }
-
-        &:hover {
-            border-bottom: 2px solid var(--buttonsBorderColor) !important;
-        }
     }
 }
 
@@ -115,5 +111,15 @@
 
     .layout {
         padding-top: 55px;
+    }
+}
+
+@media (min-width: 500px) {
+    .header-tab {
+        &.no-full-border {
+            &:hover {
+                border-bottom: 2px solid var(--buttonsBorderColor) !important;
+            }
+        }
     }
 }
