@@ -28,8 +28,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const { pathname } = useLocation();
 
-    return <div className="with-margin-bottom">
-        <div className="pokemon_main_info item">
+    return <div className="pokemon_main_info item with-small-margin-top">
             <PokemonImage
                 pokemon={props.pokemon}
                 withName={false}
@@ -57,8 +56,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     </select>}</div>
                 </span>
             </div>
-        </div>
-    </div>;
+        </div>;
 }
 
 export default PokemonInfoImagePlaceholder;

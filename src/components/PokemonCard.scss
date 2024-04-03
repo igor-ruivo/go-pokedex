@@ -14,7 +14,7 @@
     padding: 3px;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: clamp(0px, calc(4.656px + 1.23vw), 15.4px);
+    font-size: clamp(0px, calc(4.656px + 1.23vw), 15px);
     justify-content: space-around;
     color: var(--textColor);
 }
@@ -58,7 +58,6 @@
 }
 
 .header-footer {
-    font-size: 0.875rem;
     width: 100%;
     display: flex;
     gap: 6px;

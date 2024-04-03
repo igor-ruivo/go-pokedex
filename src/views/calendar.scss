@@ -28,8 +28,16 @@
     opacity: 50%;
 }
 
+.header-selected {
+    background-color: var(--button-selected);
+}
+
+.header-unselected {
+    background-color: var(--buttonsBackground);
+}
+
 .computeCount {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
 }
 
 .small-side-padding {

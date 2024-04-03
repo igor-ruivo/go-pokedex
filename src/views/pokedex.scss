@@ -25,7 +25,6 @@
     flex-direction: row;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    background-color: var(--bodyBackgroundColor);
     ul {
         display: flex;
         align-items: center;
@@ -46,6 +45,10 @@
     }
 }
 
+.without-background {
+    background-color: unset !important;
+}
+
 .header-tab {
     display: flex;
     align-items: center;
@@ -54,14 +57,12 @@
     cursor: pointer;
     padding: 3px 12px;
     color: var(--buttonsTextColor);
-    background-color: var(--buttonsBackground);
     border: 1px solid var(--borderColor2);
     font-weight: 700;
     text-decoration: none;
-    border-radius: 15px;
+    border-radius: 12px;
     height: 35.6px;
     white-space: nowrap;
-    box-shadow: 0px 0px 0px rgba(3,7,18,.1),0px 1px 1px rgba(3,7,18,.08),0px 1px 1px rgba(3,7,18,.06),0px 3px 3px rgba(3,7,18,.04),0px 4px 4px rgba(3,7,18,.02);
     &:hover {
         border: 1px solid var(--buttonsBorderColor);
     }
@@ -69,10 +70,19 @@
     &.league-picker {
         height: unset;
     }
-}
 
-.selected {
-    background-color: var(--button-selected);
+    &.no-full-border {
+        border: 1px !important;
+        border-radius: 0px;
+
+        &.selected {
+            border-bottom: 2px solid var(--buttonsBorderColor) !important;
+        }
+
+        &:hover {
+            border-bottom: 2px solid var(--buttonsBorderColor) !important;
+        }
+    }
 }
 
 .pokedex {

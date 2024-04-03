@@ -215,22 +215,22 @@ const Calendar = () => {
             <nav className="navigation-header">
                 <ul>
                     <li>
-                        <Link to={pokemonBasePath + "/bosses"} className={"header-tab " + (tab.endsWith("/bosses") ? "selected" : "")}>
+                        <Link to={pokemonBasePath + "/bosses"} className={"header-tab no-full-border " + (tab.endsWith("/bosses") ? "selected" : "")}>
                             <span>Bosses</span>
                         </Link>
                     </li>
                     <li>
-                        <Link to={pokemonBasePath + "/spawns"} className={"header-tab " + (tab.endsWith("/spawns") ? "selected" : "")}>
+                        <Link to={pokemonBasePath + "/spawns"} className={"header-tab no-full-border " + (tab.endsWith("/spawns") ? "selected" : "")}>
                             <span>Spawns</span>
                         </Link>
                     </li>
                     <li>
-                        <Link to={pokemonBasePath + "/rockets"} className={"header-tab disabled " + (tab.endsWith("/rockets") ? "selected" : "")}>
+                        <Link to={pokemonBasePath + "/rockets"} className={"header-tab disabled no-full-border " + (tab.endsWith("/rockets") ? "selected" : "")}>
                             <span>Rockets</span>
                         </Link>
                     </li>
                     <li>
-                        <Link to={pokemonBasePath + "/eggs"} className={"header-tab disabled " + (tab.endsWith("/eggs") ? "selected" : "")}>
+                        <Link to={pokemonBasePath + "/eggs"} className={"header-tab disabled no-full-border " + (tab.endsWith("/eggs") ? "selected" : "")}>
                             <span>Eggs</span>
                         </Link>
                     </li>
@@ -240,9 +240,9 @@ const Calendar = () => {
                 <LoadingRenderer errors={errors + bossesErrors + postsErrors + seasonErrors + leekPostsErrors} completed={fetchCompleted && bossesFetchCompleted && postsFetchCompleted && seasonFetchCompleted && leekPostsFetchCompleted}>
                 <div className="calendar-content">
                         <div className="pokemon with-normal-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div><h1 className='centered-text with-side-margin item default-padding'>
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div><h3 className='centered-text with-side-margin item default-padding'>
                                 Current Bosses
-                                </h1><div className='with-flex'>{bossesAvailableToday.map(e => 
+                                </h3><div className='with-flex'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                             <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd} />
@@ -267,7 +267,7 @@ const Calendar = () => {
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div>
                                 <div>
-                                <div><h1 className='centered-text with-side-margin item default-padding'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h1></div>
+                                <div><h3 className='centered-text with-side-margin item default-padding'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3></div>
                                 <div className="raid-container">
                                     <div className="overflowing">
                                         <div className="img-family">
@@ -314,7 +314,7 @@ const PostEntry = ({post, sortEntries}: IPost) => {
     const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
 
     return <div>
-        {postIsNow && <><h1 className='centered-text with-side-margin item default-padding'>Current Spawns</h1><h4>({computeCount(days, hours, minutes, seconds)})</h4></>}
+        {postIsNow && <><h3 className='centered-text with-side-margin item default-padding'>Current Spawns</h3><h4>({computeCount(days, hours, minutes, seconds)})</h4></>}
         {!postIsNow && <h4 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
         <div className='with-flex'>
         {post.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">

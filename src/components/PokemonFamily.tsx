@@ -12,12 +12,12 @@ interface IPokemonFamilyProps {
 const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonFamilyProps) => {
     return (
         <>
-            {similarPokemon.size > 1 && <div className="img-container item">
+            {similarPokemon.size > 1 && <div className="img-container ">
                 <div className="img-family">
                     {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
                         <div key = {p.speciesId}>
                             <Link to={getClickDestination(p.speciesId)}>
-                                <strong className={`move-detail with-shadow ${p.speciesId === pokemon.speciesId ? "soft" : "baby-soft"} normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
+                                <strong className={`move-detail with-hover ${p.speciesId === pokemon.speciesId ? "soft" : "baby-soft"} normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
                                     <PokemonImage pokemon={p} withName={false} specificHeight={34} specificWidth={34}/>
                                     {p.speciesId === pokemon.speciesId && shortName(p.speciesName)}
                                 </strong>

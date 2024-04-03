@@ -71,35 +71,6 @@ const Pokemon = () => {
 
     return (
         <main className="layout">
-            <nav className="navigation-header">
-                <ul>
-                    <li>
-                        <Link to={pokemonBasePath + "/info"} className={"header-tab " + (tab.endsWith("/info") ? "selected" : "")}>
-                            <span>{translator(TranslatorKeys.Stats, currentLanguage)}</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to={pokemonBasePath + "/moves"} className={"header-tab " + (tab.endsWith("/moves") ? "selected" : "")}>
-                            <span>{translator(TranslatorKeys.Moves, currentLanguage)}</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to={pokemonBasePath + "/counters"} className={"header-tab " + (tab.endsWith("/counters") ? "selected" : "")}>
-                            <span>{translator(TranslatorKeys.Counters, currentLanguage)}</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to={pokemonBasePath + "/tables"} className={"header-tab " + (tab.endsWith("/tables") ? "selected" : "")}>
-                            <span>{translator(TranslatorKeys.IVTables, currentLanguage)}</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to={pokemonBasePath + "/strings"} className={"header-tab " + (tab.endsWith("/strings") ? "selected" : "")}>
-                            <span>{translator(TranslatorKeys.SearchStrings, currentLanguage)}</span>
-                        </Link>
-                    </li>
-                </ul>
-            </nav>
             <div className="pokemon">
                 <div className="pokemon-content">
                     <LoadingRenderer errors={errors} completed={fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId)}>
@@ -113,6 +84,15 @@ const Pokemon = () => {
                                         type2={pokemon!.types.length > 1 ? pokemon!.types[1] : undefined}
                                     />
                                     <div className="pokemon">
+
+                                        {fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId) && <PokemonInfoImagePlaceholder
+                                            pokemon={pokemon}
+                                            computedCP={calculateCP(pokemon.atk, attackIV, pokemon.def, defenseIV, pokemon.hp, hpIV, (displayLevel - 1) * 2)}
+                                            displayLevel={displayLevel}
+                                            setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
+                                        />}
+                                        
+                                        <div className='item with-margin-top'>
                                         <LeaguePicker
                                             league={league}
                                             handleSetLeague={handleSetLeague}
@@ -122,14 +102,37 @@ const Pokemon = () => {
                                             pokemon={pokemon}
                                             similarPokemon={computedPokemonFamily}
                                             getClickDestination={(speciesId: string) => `/pokemon/${speciesId}/${tab.substring(tab.lastIndexOf("/") + 1)}`}
-                                        />}
+                                        />}</div>
 
-                                        {fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId) && <PokemonInfoImagePlaceholder
-                                            pokemon={pokemon}
-                                            computedCP={calculateCP(pokemon.atk, attackIV, pokemon.def, defenseIV, pokemon.hp, hpIV, (displayLevel - 1) * 2)}
-                                            displayLevel={displayLevel}
-                                            setDisplayLevel={(newLevel: number) => {setDisplayLevel(newLevel); setLevelCap(newLevel);}}
-                                        />}
+                                        <nav className="navigation-header">
+                                            <ul>
+                                                <li>
+                                                    <Link to={pokemonBasePath + "/info"} className={"header-tab no-full-border " + (tab.endsWith("/info") ? "selected" : "")}>
+                                                        <span>{translator(TranslatorKeys.Stats, currentLanguage)}</span>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to={pokemonBasePath + "/moves"} className={"header-tab no-full-border " + (tab.endsWith("/moves") ? "selected" : "")}>
+                                                        <span>{translator(TranslatorKeys.Moves, currentLanguage)}</span>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to={pokemonBasePath + "/counters"} className={"header-tab no-full-border " + (tab.endsWith("/counters") ? "selected" : "")}>
+                                                        <span>{translator(TranslatorKeys.Counters, currentLanguage)}</span>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to={pokemonBasePath + "/tables"} className={"header-tab no-full-border " + (tab.endsWith("/tables") ? "selected" : "")}>
+                                                        <span>{translator(TranslatorKeys.IVTables, currentLanguage)}</span>
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <Link to={pokemonBasePath + "/strings"} className={"header-tab no-full-border " + (tab.endsWith("/strings") ? "selected" : "")}>
+                                                        <span>{translator(TranslatorKeys.SearchStrings, currentLanguage)}</span>
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </nav>
                                         
                                         {tab.endsWith("/info") && <PokemonInfo
                                             pokemon={pokemon}

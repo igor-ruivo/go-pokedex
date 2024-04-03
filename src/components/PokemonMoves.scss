@@ -282,13 +282,20 @@ summary::-webkit-details-marker {
         background-color: var(--background-shadow);
         box-shadow: 0 0 2px hsla(0,21%,90%,.158),0 12px 11px #00000009;
     }
-    &.soft {
-        background-color: var(--background-shadow-soft);
-    }
-    &.baby-soft {
-        background-color: var(--background-shadow-baby-soft);
+    &.with-hover {
+        &:hover {
+            border: 1px solid var(--buttonsBorderColor);
+        }
     }
     padding-right: 12px;
+}
+
+.soft {
+    background-color: var(--background-shadow-soft) !important;
+}
+
+.baby-soft {
+    background-color: var(--background-shadow-baby-soft) !important;
 }
 
 .all-moves {
