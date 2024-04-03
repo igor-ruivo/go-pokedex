@@ -17,6 +17,25 @@
     position: absolute;
 }
 
+.ellipsed {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aligned-block {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.family-container-element {
+    max-width: 215px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    margin-bottom: 6px;
+}
+
 table {
     table-layout: fixed;
     width: 180px;

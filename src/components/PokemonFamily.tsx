@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import PokemonImage from "./PokemonImage";
 import { shortName, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
+import Select from "react-select";
+import { usePokemon } from "../contexts/pokemon-context";
 
 interface IPokemonFamilyProps {
     pokemon: IGamemasterPokemon;
@@ -10,21 +12,20 @@ interface IPokemonFamilyProps {
 }
 
 const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonFamilyProps) => {
+    const {gamemasterPokemon} = usePokemon();
+    const navigate = useNavigate();
+
     return (
         <>
-            {similarPokemon.size > 1 && <div className="img-container ">
-                <div className="img-family">
-                    {Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc).map(p => (
-                        <div key = {p.speciesId}>
-                            <Link to={getClickDestination(p.speciesId)}>
-                                <strong className={`move-detail with-hover ${p.speciesId === pokemon.speciesId ? "soft" : "baby-soft"} normal-padding item ${p.speciesId === pokemon.speciesId ? "extra-padding-right" : ""}`}>
-                                    <PokemonImage pokemon={p} withName={false} specificHeight={34} specificWidth={34}/>
-                                    {p.speciesId === pokemon.speciesId && shortName(p.speciesName)}
-                                </strong>
-                            </Link>
-                        </div>
-                    ))}
-                </div>
+            {similarPokemon.size > 1 && <div className="family-container-element">
+                <Select
+                    className="navbar-dropdown-family"
+                    isSearchable={false}
+                    options={Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc)}
+                    value={Array.from(similarPokemon).find(s => s.speciesId === pokemon.speciesId)}
+                    onChange={v => navigate(getClickDestination(v!.speciesId))}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<PokemonImage pokemon={gamemasterPokemon[data.speciesId]} withName={false} specificHeight={34} specificWidth={34}/>}<div className="aligned-block ellipsed">{shortName(data.speciesName)}</div></div>}
+                />
             </div>}
         </>
     );
