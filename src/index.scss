@@ -37,6 +37,7 @@ code {
     --headerBackground: rgb(36, 41, 47);
     --headerBackgroundSide: rgba(40, 45, 51, 0.975);
     --textColor: #eff2f7;
+    --statValueColor: #eff2f7;
     --titleTextColor: #eff2f7;
     --borderColor: #424a53;
     --borderColor2: #424a53;
@@ -85,19 +86,22 @@ code {
     --type-Water: #3f7dba;
     --contrastFilter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
     --raid-wrapper-shadow: rgba(0, 0, 0, .38);
+    --stat-label-color: rgb(183 166 118);
 }
 
 .theme-light {
     --entry-background-shadow: hsla(0,0%,100%,.8);
     --empty-entry: rgb(235, 235, 235);
-    --cp-color: #B78700;
+    --cp-color: #cdb266;
     --triple-color: #b76b00;
     --hover-brightness: saturate(1.1) brightness(1.05);
+    --stat-label-color: #cdb266;
     --buff-panel-border: 1px solid var(--borderColor2);
     --text-shadow: none;
     --extra-brightness: none;
     --scroll-background: #b3b3b3;
     --bodyBackgroundColor: #f0f0e5;
+    --statValueColor: gray;
     --gridItemsBackgroundColor: rgb(240, 240, 240);
     --selectionHover: rgb(205, 205, 205);
     --headerBackground: rgb(244, 244, 244);

@@ -82,6 +82,26 @@
     align-self: center;
 }
 
+.pkm-stats-container {
+    font-size: large;
+    display: flex;
+    gap: 15px;
+}
+
+.stat-label {
+    color: var(--stat-label-color);
+}
+
+.stat-value {
+    color: var(--statValueColor);
+}
+
+.atk-stat,
+.def-stat,
+.hp-stat {
+    text-align: center;
+}
+
 .pokemon_number {
     font-size: clamp(40px, 14vw, 60px);
     line-height: 1;
@@ -94,6 +114,7 @@
     display: flex;
     align-items: center;
     gap: 9px;
+    margin-top: 16px;
 }
 
 .pokemon_type_bg {
@@ -153,13 +174,17 @@
     line-height: 1;
 }
 
+.no-contrast {
+    filter: contrast(0);
+}
+
 @media (max-width: 1200px) {
     .big {
-        font-size: 12px;
+        font-size: 15px;
     }
 
     .very-big {
-        font-size: clamp(15px, 7vw, 16.5px);
+        font-size: clamp(15px, 7vw, 28px);
     }
 }
 
@@ -190,5 +215,11 @@
 @media (max-width: 440px) {
     .pokemon_main_info {
         min-height: 155px;
+    }
+}
+
+@media (max-width: 390px) {
+    .pkm-stats-container {
+        font-size: unset;
     }
 }
