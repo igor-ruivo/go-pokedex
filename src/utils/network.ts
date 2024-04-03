@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { readEntry, writeEntry } from "./resource-cache";
 
-export const fetchUrls = async(urls: string[], cacheTtl: number = 0, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => any): Promise<any[]> => {
+export const fetchUrls = async(urls: string[], cacheTtl: number = 0, withoutCache: boolean, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => any): Promise<any[]> => {
     const axiosInstance = axios.create();
 
     if (dataTransformer) {
@@ -22,7 +22,7 @@ export const fetchUrls = async(urls: string[], cacheTtl: number = 0, axiosReques
             if (cacheTtl > 0 && (cachedData = readEntry(url))) {
                 resolve(cachedData);
             } else {
-                const response = await axiosInstance.get(url, axiosRequestConfig);
+                const response = await axiosInstance.get(url + (withoutCache ? `?timestamp=${new Date().getTime()}` : ""), axiosRequestConfig);
                 if (cacheTtl > 0) {
                     writeEntry(url, response.data, cacheTtl);
                 }

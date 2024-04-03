@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { AxiosRequestConfig } from "axios";
 import { fetchUrls } from "../utils/network";
 
-type FetchDataCallback<T> = (urls: string[], cacheTtl: number, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => T) => Promise<T>;
+type FetchDataCallback<T> = (urls: string[], cacheTtl: number, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => T, withoutCache?: boolean) => Promise<T>;
 export type FetchData<T> = [T[], FetchDataCallback<T>, boolean, string];
 
 /**
@@ -17,9 +17,9 @@ export const useFetchUrls = (): FetchData<any> => {
     const [fetchCompleted, setFetchCompleted] = useState(false);
     const [errorLoadingData, setErrorLoadingData] = useState("");
     
-    const fetchUrlsCallback = useCallback(async (urls: string[], cacheTtl: number = 0, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => any) => {
+    const fetchUrlsCallback = useCallback(async (urls: string[], cacheTtl: number = 0, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => any, withoutCache = false) => {
         try {
-            const response = await fetchUrls(urls, cacheTtl, axiosRequestConfig, dataTransformer);
+            const response = await fetchUrls(urls, cacheTtl, withoutCache, axiosRequestConfig, dataTransformer);
             setData(response);
         }
         catch(error) {
