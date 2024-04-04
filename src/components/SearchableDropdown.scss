@@ -26,7 +26,9 @@ ul.MuiAutocomplete-listbox,
 }
 
 .MuiAutocomplete-option[aria-selected="true"] {
-    background-color: var(--buttonsBackground) !important;
+    &:not(:hover) {
+        background-color: var(--dropdownOptionBlurred) !important;
+    }
 }
 
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
@@ -51,7 +53,9 @@ label.MuiFormLabel-root.MuiInputLabel-root {
 }
 
 .Mui-focused {
-    background-color: var(--dropdownOptionFocused) !important;
+    &.MuiAutocomplete-option {
+        background-color: var(--dropdownOptionFocused) !important;
+    }
     color: var(--textColor) !important;
 }
 

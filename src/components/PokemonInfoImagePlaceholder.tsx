@@ -105,7 +105,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     value={{label: props.displayLevel, value: props.displayLevel}}
                     options={Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any)}
                     onChange={e => props.setDisplayLevel((e as any).label)}
-                    formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left"><strong className="aligned-block ellipsed">Level {<span className="cp-container">{data.label}</span>}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left"><strong className="aligned-block ellipsed">{translator(TranslatorKeys.Level, currentLanguage)} {<span className="cp-container">{data.label}</span>}</strong></div>}
                 />
             </div>
             </div>
