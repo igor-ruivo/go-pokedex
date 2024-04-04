@@ -210,7 +210,6 @@
 
 .navbar-dropdown-family {
     z-index: 39998;
-    
     >div {
         border: 1px solid var(--borderColor2) !important;
         border-radius: 12px !important;
@@ -228,8 +227,10 @@
     }
 
     * {
-        cursor: pointer;
-        color: var(--textColor) !important;
+        cursor: pointer !important;
+        &:not(.cp-container) {
+            color: var(--textColor) !important;
+        }
         background-color: var(--popup-background-color) !important;
         //overflow: unset !important;
     }
@@ -410,6 +411,13 @@ button {
 }
 
 @media (min-width: 500px) {
+    .navbar-dropdown-family div[tabIndex="-1"]:hover:has(> div.hint-container) {
+        background: var(--background-dropdowns) !important;
+        *:not(img) {
+            background: var(--background-dropdowns) !important;
+        }
+    }
+
     div[tabIndex="-1"]:hover:has(> div.hint-container) {
         background: var(--selectionHover) !important;
         *:not(img) {

@@ -8,6 +8,7 @@ import "./PokemonInfoImagePlaceholder.scss";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { useLocation } from "react-router-dom";
 import PokemonFamily from "./PokemonFamily";
+import Select from "react-select";
 
 interface IPokemonInfoImagePlaceholderProps {
     pokemon: IGamemasterPokemon;
@@ -77,12 +78,8 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     </div>
                 </strong>
 
-                <span className="cp-level big">
-                    <strong className="cp-container very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> @
-                    <div className="weighted-font">{translator(TranslatorKeys.LVL, currentLanguage)}&nbsp;{<select value={props.displayLevel} onChange={e => props.setDisplayLevel(+e.target.value)} disabled={pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings")} className="select-level big">
-                        {Array.from({length: 101}, (_x, i) => valueToLevel(i + 1))
-                        .map(e => (<option key={e} value={e}>{e}</option>))}
-                    </select>}</div>
+                <span className="cp-level">
+                    <strong className="cp-container very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong>
                 </span>
                 
                 <span className="pokemon_types">
@@ -95,12 +92,23 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 </span>
             </div>
             </div>
-                                        
+            <div className="row justified with-big-gap">
             {props.computedPokemonFamily && <PokemonFamily
                 pokemon={props.pokemon}
                 similarPokemon={props.computedPokemonFamily}
                 getClickDestination={(speciesId: string) => `/pokemon/${speciesId}/${props.tab.substring(props.tab.lastIndexOf("/") + 1)}`}
             />}
+            <div className="level-element">
+                <Select
+                    className="navbar-dropdown-family"
+                    isSearchable={false}
+                    value={{label: props.displayLevel, value: props.displayLevel}}
+                    options={Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any)}
+                    onChange={e => props.setDisplayLevel((e as any).label)}
+                    formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left"><strong className="aligned-block ellipsed">Level {<span className="cp-container">{data.label}</span>}</strong></div>}
+                />
+            </div>
+            </div>
         </div>;
 }
 

@@ -87,6 +87,7 @@ code {
     --contrastFilter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
     --raid-wrapper-shadow: rgba(0, 0, 0, .38);
     --stat-label-color: rgb(183 166 118);
+    --background-dropdowns: #1C252C;
 }
 
 .theme-light {
@@ -132,6 +133,7 @@ code {
     --background-shadow: hsla(0,0%,100%,.8);
     --background-shadow-soft: hsla(0,0%,100%,.8);
     --background-shadow-baby-soft: hsla(0,0%,100%,.8);
+    --background-dropdowns: #ffffff;
     --buffBackground: #EBEBEB;
     --type-Bug: #92c92b;
     --type-Dark: #575467;

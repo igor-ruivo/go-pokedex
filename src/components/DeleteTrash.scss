@@ -49,6 +49,20 @@
     gap: 6px;
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.mini-margin-left {
+    margin-left: 2px;
+}
+
+.level-element {
+    margin-bottom: 6px;
+    width: 130px;
+}
+
 .row-flex {
     display: flex;
     flex-direction: row;

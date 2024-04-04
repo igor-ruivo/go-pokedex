@@ -24,7 +24,7 @@ const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonF
                     options={Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc)}
                     value={Array.from(similarPokemon).find(s => s.speciesId === pokemon.speciesId)}
                     onChange={v => navigate(getClickDestination(v!.speciesId))}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<PokemonImage pokemon={gamemasterPokemon[data.speciesId]} withName={false} specificHeight={34} specificWidth={34}/>}<div className="aligned-block ellipsed">{shortName(data.speciesName)}</div></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<PokemonImage pokemon={gamemasterPokemon[data.speciesId]} withName={false} specificHeight={34} specificWidth={34}/>}<strong className="aligned-block ellipsed">{shortName(data.speciesName)}</strong></div>}
                 />
             </div>}
         </>

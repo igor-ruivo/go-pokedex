@@ -30,8 +30,6 @@
 
 .family-container-element {
     max-width: 215px;
-    margin-left: auto;
-    margin-right: auto;
     width: 50%;
     margin-bottom: 6px;
 }
@@ -283,6 +281,10 @@ table {
     display: flex;
     flex-direction: column;
     gap: 3px;
+}
+
+.with-big-gap {
+    gap: 6px;
 }
 
 .with-default-top-padding {
