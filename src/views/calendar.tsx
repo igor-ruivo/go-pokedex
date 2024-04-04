@@ -172,7 +172,7 @@ const Calendar = () => {
     }
 
     const remainingBosses = additionalBosses
-    .filter(e => e.entries.length > 0 /*&& e.date > new Date().valueOf()*/ /*&& !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId))*/)
+    .filter(e => e.entries.length > 0 && e.date > new Date().valueOf() /*&& !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId))*/)
     .sort(sortPosts);
 
     const idxToPlace = (idx: number) => {
