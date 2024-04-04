@@ -313,7 +313,7 @@ const PostEntry = ({post, sortEntries}: IPost) => {
     const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
 
     return <div>
-        {postIsNow && <><h3 className='centered-text with-side-margin item default-padding'>Current Spawns</h3><h4>({computeCount(days, hours, minutes, seconds)})</h4></>}
+        {postIsNow && <h3 className='centered-text with-side-margin item default-padding'>Current Spawns <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3>}
         {!postIsNow && <h4 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
         <div className='with-flex'>
         {post.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
