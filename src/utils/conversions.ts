@@ -66,7 +66,9 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("rotom_mow", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/479_f6.png`);
     overrideMappings.set("rotom_wash", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/479_f3.png`);
     overrideMappings.set("darmanitan_galarian_standard", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/555_f2.png`);
+    overrideMappings.set("darmanitan_galarian_standard_shadow", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/555_f2.png`);
     overrideMappings.set("darmanitan_standard", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/555.png`);
+    overrideMappings.set("darmanitan_standard_shadow", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/555.png`);
     overrideMappings.set("genesect_burn", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/649.png`);
     overrideMappings.set("genesect_chill", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/649.png`);
     overrideMappings.set("genesect_douse", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/649.png`);
@@ -160,6 +162,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     goOverrideMappings.set("gastrodon", buildPokemonGoImageUrl("423", "WEST_SEA"));
     goOverrideMappings.set("basculin", buildPokemonGoImageUrl("550", "RED_STRIPED"));
     goOverrideMappings.set("darmanitan_galarian_standard", buildPokemonGoImageUrl("555", "GALARIAN_STANDARD"));
+    goOverrideMappings.set("darmanitan_galarian_standard_shadow", buildPokemonGoImageUrl("555", "GALARIAN_STANDARD"));
+    goOverrideMappings.set("darmanitan_standard_shadow", buildPokemonGoImageUrl("555", "STANDARD"));
     goOverrideMappings.set("deerling", buildPokemonGoImageUrl("585", "SPRING"));
     goOverrideMappings.set("sawsbuck", buildPokemonGoImageUrl("586", "SPRING"));
     goOverrideMappings.set("kyurem", buildPokemonGoImageUrl("646", "NORMAL"));
@@ -186,6 +190,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     shinyGoOverrideMappings.set("gastrodon", buildPokemonGoShinyImageUrl("423", "WEST_SEA"));
     shinyGoOverrideMappings.set("basculin", buildPokemonGoShinyImageUrl("550", "RED_STRIPED"));
     shinyGoOverrideMappings.set("darmanitan_galarian_standard", buildPokemonGoShinyImageUrl("555", "GALARIAN_STANDARD"));
+    shinyGoOverrideMappings.set("darmanitan_galarian_standard_shadow", buildPokemonGoShinyImageUrl("555", "GALARIAN_STANDARD"));
+    shinyGoOverrideMappings.set("darmanitan_standard_shadow", buildPokemonGoShinyImageUrl("555", "STANDARD"));
     shinyGoOverrideMappings.set("deerling", buildPokemonGoShinyImageUrl("585", "SPRING"));
     shinyGoOverrideMappings.set("sawsbuck", buildPokemonGoShinyImageUrl("586", "SPRING"));
     shinyGoOverrideMappings.set("kyurem", buildPokemonGoShinyImageUrl("646", "NORMAL"));
