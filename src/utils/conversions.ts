@@ -875,7 +875,9 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             case "Raids":
             case "Shadow Raids":
             case "Shadow Raid debut":
-                const raids = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain);
+                const raids = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain)
+                .filter(r => !r.kind?.includes("5") && !r.kind?.toLocaleLowerCase().includes("mega"));
+                
                 if (res["raids"]) {
                     res["raids"].entries = [...res["raids"].entries, ...raids];
                 } else {

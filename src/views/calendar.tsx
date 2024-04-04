@@ -70,26 +70,9 @@ const Calendar = () => {
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
 
-    const reducedLeekPosts = Object.entries(leekPosts
-        .reduce((acc: { [key: string]: IPostEntry }, obj) => {
-            const key = getDateKey(obj);
-            // If the key already exists in the accumulator, merge 'entries'
-            if (acc[key]) {
-              acc[key].entries = [...acc[key].entries, ...obj.entries];
-            } else {
-              // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
-              acc[key] = { date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries };
-            }
-            return acc;
-          }, {}))
-          .map(([key, value]) => ({
-            date: value.date,
-            dateEnd: value.dateEnd,
-            entries: value.entries
-          } as IPostEntry))
-        .filter(p => p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date());
+    const reducedLeekPosts = leekPosts.filter(p => p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date());
 
-    const reducedRaids = posts.filter(p => p["raids"]?.entries.length > 0 && new Date(p["raids"]?.dateEnd ?? 0) >= new Date());
+    const reducedRaids = posts.map(r => r["raids"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date());
 
     const sortEntries = (e1: IEntry, e2: IEntry) => {
         if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
@@ -160,7 +143,23 @@ const Calendar = () => {
         return response.sort(sortEntries);
     }
 
-    const additionalBosses = [...reducedLeekPosts, ...reducedRaids.map(r => r["raids"])];
+    const additionalBosses = Object.entries([...reducedLeekPosts, ...reducedRaids]
+    .reduce((acc: { [key: string]: IPostEntry }, obj) => {
+        const key = getDateKey(obj);
+        // If the key already exists in the accumulator, merge 'entries'
+        if (acc[key]) {
+          acc[key].entries = [...acc[key].entries, ...obj.entries];
+        } else {
+          // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
+          acc[key] = { date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries };
+        }
+        return acc;
+      }, {}))
+      .map(([key, value]) => ({
+        date: value.date,
+        dateEnd: value.dateEnd,
+        entries: value.entries
+      } as IPostEntry));
 
     const bossesAvailableToday = generateTodayBosses(additionalBosses);
     
@@ -173,7 +172,7 @@ const Calendar = () => {
     }
 
     const remainingBosses = additionalBosses
-    .filter(e => e.entries.length > 0 && !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId)))
+    .filter(e => e.entries.length > 0 /*&& e.date > new Date().valueOf()*/ /*&& !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId))*/)
     .sort(sortPosts);
 
     const idxToPlace = (idx: number) => {
