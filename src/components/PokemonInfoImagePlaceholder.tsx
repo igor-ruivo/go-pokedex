@@ -32,6 +32,8 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const { pathname } = useLocation();
 
+    const levelOptions = Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any);
+
     return <div className="column item with-small-margin-top">
         <div className="pokemon_main_info">
             <PokemonImage
@@ -103,8 +105,8 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     className="navbar-dropdown-family"
                     isSearchable={false}
                     isDisabled={pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings")}
-                    value={{label: props.displayLevel, value: props.displayLevel}}
-                    options={Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any)}
+                    value={levelOptions.find(o => o.label === props.displayLevel)}
+                    options={levelOptions}
                     onChange={e => props.setDisplayLevel((e as any).label)}
                     formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left"><strong className="aligned-block ellipsed">{translator(TranslatorKeys.Level, currentLanguage)} {<span className="cp-container">{data.label}</span>}</strong></div>}
                 />

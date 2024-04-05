@@ -14,15 +14,15 @@ interface IPokemonFamilyProps {
 const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonFamilyProps) => {
     const {gamemasterPokemon} = usePokemon();
     const navigate = useNavigate();
-
+    const options = Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc);
     return (
         <>
             {similarPokemon.size > 1 && <div className="family-container-element">
                 <Select
                     className="navbar-dropdown-family"
                     isSearchable={false}
-                    options={Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc)}
-                    value={Array.from(similarPokemon).find(s => s.speciesId === pokemon.speciesId)}
+                    options={options}
+                    value={options.find(s => s.speciesId === pokemon.speciesId)}
                     onChange={v => navigate(getClickDestination(v!.speciesId))}
                     formatOptionLabel={(data, _) => <div className="hint-container">{<PokemonImage pokemon={gamemasterPokemon[data.speciesId]} withName={false} specificHeight={34} specificWidth={34}/>}<strong className="aligned-block ellipsed">{shortName(data.speciesName)}</strong></div>}
                 />
