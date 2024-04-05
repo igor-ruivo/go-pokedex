@@ -32,6 +32,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const { pathname } = useLocation();
 
+    const isDisabled = pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings");
     const levelOptions = Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any);
 
     return <div className="column item with-small-margin-top">
@@ -102,9 +103,9 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
             />}
             <div className="level-element">
                 <Select
-                    className="navbar-dropdown-family"
+                    className={`navbar-dropdown-family ${isDisabled ? "disabled" : ""}`}
                     isSearchable={false}
-                    isDisabled={pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings")}
+                    isDisabled={isDisabled}
                     value={levelOptions.find(o => o.label === props.displayLevel)}
                     options={levelOptions}
                     onChange={e => props.setDisplayLevel((e as any).label)}
