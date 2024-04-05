@@ -102,6 +102,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 <Select
                     className="navbar-dropdown-family"
                     isSearchable={false}
+                    isDisabled={pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings")}
                     value={{label: props.displayLevel, value: props.displayLevel}}
                     options={Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any)}
                     onChange={e => props.setDisplayLevel((e as any).label)}
