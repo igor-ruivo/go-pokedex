@@ -346,7 +346,7 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
     const results: IPostEntry = {
         date: (new Date()).valueOf(),
         //dateEnd: (new Date()).valueOf(),
-        entries: pokemons,
+        raids: pokemons,
         title: "Current Raid Bosses"
     };
 
@@ -363,18 +363,18 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
 
     if (!title) {
         console.error("Couldn't fetch title of leek news.");
-        return {title: "", date: 0, dateEnd: 0, entries: []};
+        return {title: "", date: 0, dateEnd: 0};
     }
 
     if (!date) {
         console.error("Couldn't fetch date of leek news.");
-        return {title: "", date: 0, dateEnd: 0, entries: []};
+        return {title: "", date: 0, dateEnd: 0};
     }
 
     const parts = title.split(" in ");
     if (parts.length !== 2) {
         console.error("Couldn't parse title of leek news.");
-        return {title: "", date: 0, dateEnd: 0, entries: []};
+        return {title: "", date: 0, dateEnd: 0};
     }
 
     const rawPkmName = parts[0];
@@ -415,7 +415,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     return {
         date: date,
         dateEnd: end,
-        entries: finalEntries,
+        raids: finalEntries,
         title: title
         //kind: raidType.split(" Raid")[0]
     };
@@ -462,8 +462,7 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     return {
         date: new Date(2024, 2, 1, 10, 0).valueOf(),
         dateEnd: new Date(2024, 5, 1, 10, 0).valueOf(),
-        entries: wildEncounters,
-        eggs: [],
+        wild: wildEncounters,
         title: "Welcome to Pokémon GO: World of Wonders"
     };
 }
@@ -875,7 +874,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                 res["wild"] = {
                     date: startDate,
                     dateEnd: endDate,
-                    entries: wildEncounters,
+                    wild: wildEncounters,
                     title: postTitle,
                     imgUrl: img
                 };
@@ -889,12 +888,12 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                 .filter(r => !r.kind?.includes("5") && !r.kind?.toLocaleLowerCase().includes("mega"));
                 
                 if (res["raids"]) {
-                    res["raids"].entries = [...res["raids"].entries, ...raids];
+                    res["raids"].raids = [...(res["raids"].raids ?? []), ...raids];
                 } else {
                     res["raids"] = {
                         date: startDate,
                         dateEnd: endDate,
-                        entries: raids,
+                        raids: raids,
                         title: postTitle,
                         imgUrl: img
                     };

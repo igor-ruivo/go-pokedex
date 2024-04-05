@@ -11,7 +11,10 @@ export interface IPostEntry {
     imgUrl?: string,
     date: number,
     dateEnd?: number,
-    entries: IEntry[],
+    raids?: IEntry[],
+    wild?: IEntry[],
+    bonuses?: IEntry[],
+    researches?: IEntry[],
     eggs?: IEntry[]
 }
 

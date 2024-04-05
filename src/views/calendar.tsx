@@ -82,9 +82,9 @@ const Calendar = () => {
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
 
-    const reducedLeekPosts = leekPosts.filter(p => p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date());
+    const reducedLeekPosts = leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
 
-    const reducedRaids = posts.map(r => r["raids"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date());
+    const reducedRaids = posts.map(r => r["raids"]).filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
 
     const sortEntries = (e1: IEntry, e2: IEntry) => {
         if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
@@ -115,8 +115,8 @@ const Calendar = () => {
             return [];
         }
 
-        const seenIds = new Set<string>(bossesPerTier.entries.map(e => e.speciesId));
-        const response = [...bossesPerTier.entries];
+        const seenIds = new Set<string>((bossesPerTier.raids ?? []).map(e => e.speciesId));
+        const response = [...(bossesPerTier.raids ?? [])];
 
         const now = new Date();
         /*const currentDay = today.getDate();
@@ -136,8 +136,12 @@ const Calendar = () => {
                 continue;
             }
             
-            for (let j = 0; j < entry.entries.length; j++) {
-                const p = entry.entries[j];
+            for (let j = 0; j < (entry.raids ?? []).length; j++) {
+                if (!entry.raids) {
+                    break;
+                }
+
+                const p = entry.raids[j];
                 if (seenIds.has(p.speciesId)) {
                     continue;
                 }
@@ -160,10 +164,10 @@ const Calendar = () => {
         const key = getDateKey(obj);
         // If the key already exists in the accumulator, merge 'entries'
         if (acc[key]) {
-          acc[key].entries = [...acc[key].entries, ...obj.entries];
+          acc[key].raids = [...(acc[key].raids ?? []), ...(obj.raids ?? [])];
         } else {
           // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
-          acc[key] = { title: obj.title, imgUrl: obj.imgUrl, date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries };
+          acc[key] = { title: obj.title, imgUrl: obj.imgUrl, date: obj.date, dateEnd: obj.dateEnd, raids: obj.raids };
         }
         return acc;
       }, {}))
@@ -172,7 +176,7 @@ const Calendar = () => {
         imgUrl: value.imgUrl, //TODO: Review this.
         date: value.date,
         dateEnd: value.dateEnd,
-        entries: value.entries
+        raids: value.raids
       } as IPostEntry));
 
     const bossesAvailableToday = generateTodayBosses(additionalBosses);
@@ -186,7 +190,7 @@ const Calendar = () => {
     }
 
     const remainingBosses = additionalBosses
-    .filter(e => e.entries.length > 0 && e.date > new Date().valueOf() /*&& !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId))*/)
+    .filter(e => (e.raids?.length ?? 0) > 0 && e.date > new Date().valueOf() /*&& !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId))*/)
     .sort(sortPosts);
 
     const idxToPlace = (idx: number) => {
@@ -270,7 +274,7 @@ const Calendar = () => {
                                 </h3><div className='with-flex'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && d.entries.some(f => f.speciesId === e.speciesId))?.dateEnd} />
+                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />
                                         </div>
                                     </div>)}
                                 </div>
@@ -282,21 +286,21 @@ const Calendar = () => {
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h4>
                                 <div className='with-flex'>
-                                {e.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                {(e.raids ?? []).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                         <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} cpStringOverride={computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow)}/>
                                     </div>
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div>
                                 <div>
                                 <div><h3 className='centered-text with-side-margin item default-padding'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3></div>
                                 <div className="raid-container">
                                     <div className="overflowing">
                                         <div className="img-family">
-                                            {[season.entries.filter(e => e.kind === "0"), season.entries.filter(e => e.kind === "1"), season.entries.filter(e => e.kind === "2"), season.entries.filter(e => e.kind === "3"), season.entries.filter(e => e.kind === "4"), season.entries.filter(e => e.kind === "5")]
+                                            {[(season.wild ?? []).filter(e => e.kind === "0"), (season.wild ?? []).filter(e => e.kind === "1"), (season.wild ?? []).filter(e => e.kind === "2"), (season.wild ?? []).filter(e => e.kind === "3"), (season.wild ?? []).filter(e => e.kind === "4"), (season.wild ?? []).filter(e => e.kind === "5")]
                                             .map((t, i) => (
                                                 <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
                                                     <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
@@ -309,17 +313,17 @@ const Calendar = () => {
                                     </div>
                                 </div></div>
                                 <div className='with-flex'>
-                                    {season.entries.filter(r => r.kind === currentPlace).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                    {(season.wild ?? []).filter(r => r.kind === currentPlace).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                         <div className={`card-wrapper`}>
                                             <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
                                         </div>
                                     </div>)}
                                 </div>
                             </div>}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-big-top-margin with-xl-gap'>{
-                            posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0/* TODO: UNCOMMENT && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()*/).sort(sortPosts).map(event =>
+                            posts.map(p => p["wild"]).filter(p => p && (p.wild?.length ?? 0) > 0/* TODO: UNCOMMENT && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()*/).sort(sortPosts).map(event =>
                                 <div key={event.title} className='column item'>
                                     <div className='event-panel-container'>
                                         <span className='images-container'>
@@ -336,13 +340,13 @@ const Calendar = () => {
                                         </div>
                                         {x >= 360 && <div className='perks-container aligned justified'>
                                             <div className='perks-container-row aligned justified'>
-                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
-                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/research.png`}/>
-                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
+                                                <img className={'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
+                                                <img className={'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/>
+                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
                                             </div>
                                             <div className='perks-container-row aligned justified'>
-                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
-                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
+                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
                                             </div>
                                         </div>}
                                     </div>
@@ -373,7 +377,7 @@ const PostEntry = ({post, sortEntries}: IPost) => {
         {postIsNow && <h3 className='centered-text with-side-margin item default-padding'>Current Spawns <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3>}
         {!postIsNow && <h4 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
         <div className='with-flex'>
-        {post.entries.sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+        {(post.wild ?? []).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
             <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
                 <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
             </div>
