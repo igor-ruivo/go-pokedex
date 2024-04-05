@@ -817,30 +817,26 @@ const fetchDateFromString = (date: string) => {
     return dateObj.valueOf();
 }
 
-export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IPostEntry> = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
-    const res: Dictionary<IPostEntry> = {};
+export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock"));
     const postTitle = (htmlDoc.getElementsByClassName("blogPost__title")[0] as HTMLElement)?.innerText;
     const img = (htmlDoc.getElementsByClassName("blogPost__post")[0]?.getElementsByClassName("image")[0]?.getElementsByTagName("img")[0] as HTMLImageElement)?.src;
 
-    console.log(postTitle);
-    console.log(img);
-
     if (entries.length === 0) {
-        return {};
+        return {title: "", date: 0};
     }
 
     let date = (entries[0].children[1] as HTMLElement)?.innerText?.trim();
 
     if (!date) {
-        return {};
+        return {title: "", date: 0};
     }
     
     if (date.includes(" from ")) {
         if (!date.includes(" to ") || !date.includes(" at ")) {
-            return {};
+            return {title: "", date: 0};
         }
         const split = date.split(" to ");
         split[0] = split[0].replace(" from ", " at ");
@@ -851,7 +847,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
 
     const parsedDate = date.split(" to ");
     if (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10) {
-        return {};
+        return {title: "", date: 0};
     }
 
     const startDate = fetchDateFromString(parsedDate[0]);
@@ -863,6 +859,9 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
     const raidDomain = Object.values(gamemasterPokemon)
     .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
     
+    const raids: IEntry[] = [];
+    const wild: IEntry[] = [];
+
     for (let i = 1; i < entries.length; i++) {
         const entry = entries[i];
         const title = entry.children[0];
@@ -870,41 +869,31 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         const contentBodies = Array.from(entry.children) as HTMLElement[];
         switch(kind) {
             case "Wild encounters":
-                const wildEncounters = fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain);
-                res["wild"] = {
-                    date: startDate,
-                    dateEnd: endDate,
-                    wild: wildEncounters,
-                    title: postTitle,
-                    imgUrl: img
-                };
+                wild.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
                 break;
             case "Eggs":
                 break;
             case "Raids":
             case "Shadow Raids":
             case "Shadow Raid debut":
-                const raids = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain)
+                const result = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain)
                 .filter(r => !r.kind?.includes("5") && !r.kind?.toLocaleLowerCase().includes("mega"));
                 
-                if (res["raids"]) {
-                    res["raids"].raids = [...(res["raids"].raids ?? []), ...raids];
-                } else {
-                    res["raids"] = {
-                        date: startDate,
-                        dateEnd: endDate,
-                        raids: raids,
-                        title: postTitle,
-                        imgUrl: img
-                    };
-                }
+                raids.push(...result);
                 break;
             default:
                 break;
         }
     }
 
-    return res;
+    return {
+        title: postTitle,
+        date: startDate,
+        dateEnd: endDate,
+        imgUrl: img,
+        raids: raids,
+        wild: wild
+    };
 }
 
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
