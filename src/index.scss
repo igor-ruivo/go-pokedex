@@ -56,7 +56,8 @@ code {
     --tableRowSelected: rgba(25, 118, 210, 0.18);
     --popup-background-color: #26313b;
     --underlineDivision: rgba(255, 255, 255, 0.25);
-    --lighter-tone-text: #e5e5e5;
+    --lighter-tone-text: #ffffff;
+    --event-special-font: #E7D7B8;
     --titleMoveTextColor: #eff2f7;
     --cp-color: rgb(255, 189, 0);
     --triple-color: rgb(255, 139, 0);
@@ -84,6 +85,7 @@ code {
     --type-Psychic: #cc595d;
     --type-Rock: #9f9052;
     --type-Steel: #548a9e;
+    --activePerkFilter: contrast(0) sepia(0.6) brightness(1.5) var(--event-filter);
     --type-Water: #3f7dba;
     --event-filter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
     --contrastFilter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
@@ -93,7 +95,9 @@ code {
 }
 
 .theme-light {
+    --activePerkFilter: contrast(0) brightness(0.6);
     --lighter-tone-text: #202122;
+    --event-special-font: #4C4C4C;
     --event-filter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
     --entry-background-shadow: hsla(0,0%,100%,.8);
     --empty-entry: rgb(235, 235, 235);

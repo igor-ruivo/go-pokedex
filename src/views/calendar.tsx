@@ -330,20 +330,19 @@ const Calendar = () => {
                                         <div className='event-text-container justified'>
                                             <strong className='ellipsed'>{event.title}</strong>
                                             <div className='with-padding-left with-normal-gap event-dates'>
-                                            <span><strong>From:</strong> <span className='lighter-tone-text'>{inUpperCase(new Date(event.date).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
-                                            <span><strong>To:</strong> <span className='lighter-tone-text'>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
+                                            <span className='event-special-font'><strong>From:</strong> <span>{inUpperCase(new Date(event.date).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
+                                            <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
                                             </div>
                                         </div>
                                         {x >= 360 && <div className='perks-container aligned justified'>
                                             <div className='perks-container-row aligned justified'>
-                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
-                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
-                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
+                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/research.png`}/>
+                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
                                             </div>
                                             <div className='perks-container-row aligned justified'>
                                                 <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
                                                 <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
-                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
                                             </div>
                                         </div>}
                                     </div>

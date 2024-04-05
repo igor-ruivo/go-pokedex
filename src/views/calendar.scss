@@ -122,12 +122,16 @@
     gap: 16px;
 }
 
+.event-special-font {
+    color: var(--event-special-font);
+}
+
 .active-perk {
-    filter: contrast(0) sepia(0.6) brightness(1.5) var(--event-filter);
+    filter: var(--activePerkFilter);
 }
 
 .inactive-perk {
-    filter: contrast(0) opacity(0.15);
+    filter: contrast(0) opacity(0.2);
 }
 
 .img-with-rounded-corners {
@@ -193,9 +197,6 @@
 }
 
 @media (max-width: 690px) {
-    .event-panel-container {
-        grid-template-columns: 25% 50% 1fr;
-    }
 }
 
 @media (max-width: 600px) {
@@ -226,6 +227,10 @@
 
     .event-text-container {
         gap: 5px;
+    }
+    
+    .event-panel-container {
+        grid-template-columns: 25% 45% 1fr;
     }
 }
 
