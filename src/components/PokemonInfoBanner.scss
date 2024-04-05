@@ -283,6 +283,12 @@ table {
     gap: 3px;
 }
 
+.with-xl-gap {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
 .with-big-gap {
     gap: 6px;
 }

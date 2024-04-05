@@ -12,6 +12,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { IEntry, IPostEntry } from '../DTOs/INews';
 import { useState } from 'react';
 import useCountdown from '../hooks/useCountdown';
+import PokemonHeader from '../components/PokemonHeader';
+import useResize from '../hooks/useResize';
 
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
@@ -21,6 +23,15 @@ const inUpperCase = (str: string) => str?.substring(0, 1)?.toUpperCase() + str?.
 const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     weekday: 'short',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: false
+}
+
+const smallOptions: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
     month: 'short',
     year: 'numeric',
     hour: 'numeric',
@@ -40,6 +51,7 @@ const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
     const { pathname } = useLocation();
+    const {x} = useResize();
     
     const {days, hours, minutes, seconds} = useCountdown(season?.dateEnd ?? 0);
 
@@ -151,11 +163,13 @@ const Calendar = () => {
           acc[key].entries = [...acc[key].entries, ...obj.entries];
         } else {
           // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
-          acc[key] = { date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries };
+          acc[key] = { title: obj.title, imgUrl: obj.imgUrl, date: obj.date, dateEnd: obj.dateEnd, entries: obj.entries };
         }
         return acc;
       }, {}))
       .map(([key, value]) => ({
+        title: value.title, //TODO: Review this.
+        imgUrl: value.imgUrl, //TODO: Review this.
         date: value.date,
         dateEnd: value.dateEnd,
         entries: value.entries
@@ -233,11 +247,23 @@ const Calendar = () => {
                             <span>Eggs</span>
                         </Link>
                     </li>
+                    <li>
+                        <Link to={pokemonBasePath + "/events"} className={"header-tab no-full-border " + (tab.endsWith("/events") ? "selected" : "")}>
+                            <span>Events</span>
+                        </Link>
+                    </li>
                 </ul>
             </nav>
             <div className="pokemon">
                 <LoadingRenderer errors={errors + bossesErrors + postsErrors + seasonErrors + leekPostsErrors} completed={fetchCompleted && bossesFetchCompleted && postsFetchCompleted && seasonFetchCompleted && leekPostsFetchCompleted}>
                 <div className="calendar-content">
+                    <div className='content'>
+                    <PokemonHeader
+                        pokemonName="Events"
+                        type1={undefined}
+                        type2={undefined}
+                        defaultTextColor
+                    />
                         <div className="pokemon with-normal-gap">
                             {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div><h3 className='centered-text with-side-margin item default-padding'>
                                 Current Bosses
@@ -291,7 +317,39 @@ const Calendar = () => {
                                 </div>
                             </div>}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
-                        </div>
+                            {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
+                            <div className='with-big-top-margin with-xl-gap'>{
+                            posts.map(p => p["wild"]).filter(p => p && p.entries.length > 0/* TODO: UNCOMMENT && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()*/).sort(sortPosts).map(event =>
+                                <div key={event.title} className='column item'>
+                                    <div className='event-panel-container'>
+                                        <span className='images-container'>
+                                            <span className='restricted-img-size'>
+                                                <img className="img-with-rounded-corners img-clickable" src={event.imgUrl} width="100%" height="100%"/>
+                                            </span>
+                                        </span>
+                                        <div className='event-text-container justified'>
+                                            <strong className='ellipsed'>{event.title}</strong>
+                                            <div className='with-padding-left with-normal-gap event-dates'>
+                                            <span><strong>From:</strong> <span className='lighter-tone-text'>{inUpperCase(new Date(event.date).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
+                                            <span><strong>To:</strong> <span className='lighter-tone-text'>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
+                                            </div>
+                                        </div>
+                                        {x >= 360 && <div className='perks-container aligned justified'>
+                                            <div className='perks-container-row aligned justified'>
+                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
+                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                            </div>
+                                            <div className='perks-container-row aligned justified'>
+                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
+                                                <img className='active-perk' src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                                <img className='inactive-perk' src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
+                                            </div>
+                                        </div>}
+                                    </div>
+                                </div>)}</div>}
+                    </div>
+                    </div>
                 </div>
                 </LoadingRenderer>
             </div>

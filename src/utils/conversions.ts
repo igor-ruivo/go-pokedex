@@ -347,6 +347,7 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
         date: (new Date()).valueOf(),
         //dateEnd: (new Date()).valueOf(),
         entries: pokemons,
+        title: "Current Raid Bosses"
     };
 
     return results;
@@ -362,18 +363,18 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
 
     if (!title) {
         console.error("Couldn't fetch title of leek news.");
-        return {date: 0, dateEnd: 0, entries: []};
+        return {title: "", date: 0, dateEnd: 0, entries: []};
     }
 
     if (!date) {
         console.error("Couldn't fetch date of leek news.");
-        return {date: 0, dateEnd: 0, entries: []};
+        return {title: "", date: 0, dateEnd: 0, entries: []};
     }
 
     const parts = title.split(" in ");
     if (parts.length !== 2) {
         console.error("Couldn't parse title of leek news.");
-        return {date: 0, dateEnd: 0, entries: []};
+        return {title: "", date: 0, dateEnd: 0, entries: []};
     }
 
     const rawPkmName = parts[0];
@@ -415,6 +416,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
         date: date,
         dateEnd: end,
         entries: finalEntries,
+        title: title
         //kind: raidType.split(" Raid")[0]
     };
 }
@@ -461,7 +463,8 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
         date: new Date(2024, 2, 1, 10, 0).valueOf(),
         dateEnd: new Date(2024, 5, 1, 10, 0).valueOf(),
         entries: wildEncounters,
-        eggs: []
+        eggs: [],
+        title: "Welcome to Pokémon GO: World of Wonders"
     };
 }
 
@@ -820,6 +823,11 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock"));
+    const postTitle = (htmlDoc.getElementsByClassName("blogPost__title")[0] as HTMLElement)?.innerText;
+    const img = (htmlDoc.getElementsByClassName("blogPost__post")[0]?.getElementsByClassName("image")[0]?.getElementsByTagName("img")[0] as HTMLImageElement)?.src;
+
+    console.log(postTitle);
+    console.log(img);
 
     if (entries.length === 0) {
         return {};
@@ -867,7 +875,9 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                 res["wild"] = {
                     date: startDate,
                     dateEnd: endDate,
-                    entries: wildEncounters
+                    entries: wildEncounters,
+                    title: postTitle,
+                    imgUrl: img
                 };
                 break;
             case "Eggs":
@@ -884,7 +894,9 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                     res["raids"] = {
                         date: startDate,
                         dateEnd: endDate,
-                        entries: raids
+                        entries: raids,
+                        title: postTitle,
+                        imgUrl: img
                     };
                 }
                 break;

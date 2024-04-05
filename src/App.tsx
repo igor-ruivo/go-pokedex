@@ -46,6 +46,7 @@ const App = () => {
                                                             <Route path="/calendar/spawns" element={<Calendar />}/>
                                                             <Route path="/calendar/rockets" element={<Calendar />}/>
                                                             <Route path="/calendar/eggs" element={<Calendar />}/>
+                                                            <Route path="/calendar/events" element={<Calendar />}/>
                                                             <Route path="/*" element={<div>404 not found!</div>} />
                                                         </Routes>
                                                     </Content>

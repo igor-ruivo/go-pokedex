@@ -7,6 +7,8 @@ export interface IEntry {
 }
 
 export interface IPostEntry {
+    title: string,
+    imgUrl?: string,
     date: number,
     dateEnd?: number,
     entries: IEntry[],

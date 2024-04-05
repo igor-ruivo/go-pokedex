@@ -328,7 +328,7 @@ const Navbar = () => {
                             return !p.isShadow/* && (showMega || !p.isMega)*/;
                         }).map(p => ({value: p.speciesId, label: p.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} as EntryType))}
                         isLoading={!fetchCompleted}
-                        onSelection={(selectedEntry: EntryType) => (pathname.includes("pokemon") || pathname.includes("calendar")) && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`.replace("/trash-pokemon", "/info").replace("/bosses", "/info").replace("/spawns", "/info").replace("/rockets", "/info").replace("/eggs", "/info"))}
+                        onSelection={(selectedEntry: EntryType) => (pathname.includes("pokemon") || pathname.includes("calendar")) && navigate(`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf("/"))}`.replace("/trash-pokemon", "/info").replace("/bosses", "/info").replace("/spawns", "/info").replace("/rockets", "/info").replace("/eggs", "/info").replace("/events", "/info"))}
                         renderOption={(props: any, option: EntryType) => (
                             <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                               <PokemonImage
