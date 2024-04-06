@@ -130,8 +130,8 @@
     gap: 16px;
 }
 
-.with-border-left {
-    border-left: 1px solid var(--borderColor2);
+.with-border-right {
+    border-right: 1px solid var(--borderColor2);
 }
 
 .bonus-container {
@@ -272,7 +272,7 @@
     
     .event-panel-container {
         grid-template-columns: 25% 45% 1fr;
-        padding-right: 0px;
+        //padding-right: 0px;
     }
 }
 

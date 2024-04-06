@@ -332,14 +332,14 @@ const Calendar = () => {
                                                 <img className="img-with-rounded-corners" src={event.imgUrl} width="100%" height="100%"/>
                                             </span>
                                         </span>
-                                        <div className='event-text-container justified'>
+                                        <div className='event-text-container justified with-border-right'>
                                             <strong className='ellipsed'>{posts.flat().some(pf => pf.title === event.title) ? (event.subtitle ?? event.title) : event.title}</strong>
                                             <div className='with-padding-left with-normal-gap event-dates'>
                                             <span className='event-special-font'><strong>From:</strong> <span>{inUpperCase(new Date(event.date).toLocaleString(undefined, x > 500 ? options : smallOptions))}</span></span>
                                             <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, x > 500 ? options : smallOptions))}</span></span>
                                             </div>
                                         </div>
-                                        {x >= 360 && <div className='perks-container with-border-left aligned justified'>
+                                        {x >= 360 && <div className='perks-container aligned justified'>
                                             <div className='perks-container-row aligned justified'>
                                                 <img className={(event.wild?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
                                                 <img className={(event.raids?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
