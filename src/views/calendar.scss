@@ -122,6 +122,10 @@
     gap: 16px;
 }
 
+.with-border-left {
+    border-left: 1px solid var(--borderColor2);
+}
+
 .event-special-font {
     color: var(--event-special-font);
 }
