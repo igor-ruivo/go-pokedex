@@ -39,12 +39,62 @@ const smallOptions: Intl.DateTimeFormatOptions = {
     hour12: false
 }
 
+const idxToPlace = (idx: number) => {
+    switch(idx) {
+        case 0:
+            return "Cities";
+        case 1:
+            return "Forests";
+        case 2:
+            return "Mountains";
+        case 3:
+            return "Beaches & Water";
+        case 4:
+            return "Northen Hemisphere";
+        case 5:
+            return "Southern Hemisphere";
+    }
+}
+
+const idxToRes = (idx: number) => {
+    switch(idx) {
+        case 0:
+            return "City";
+        case 1:
+            return "Forest";
+        case 2:
+            return "Mountain";
+        case 3:
+            return "Water";
+        case 4:
+            return "North";
+        case 5:
+            return "South";
+    }
+}
+
 const computeCount = (d: number, h: number, m: number, s: number) => {
     if (!d && !h && !m && !s) {
         return "Expired";
     }
 
     return d > 0 ? `${d} day${d > 1 ? "s" : ""} left` : `${h}h : ${m}m : ${s}s`;
+}
+
+const computeString = (kind: string | undefined, isShadow: boolean) => {
+    if (!kind) {
+        return undefined;
+    }
+
+    if (kind.toLocaleLowerCase().includes("mega")) {
+        return "Mega Raid";
+    }
+/*
+    if (kind.toLocaleLowerCase().includes("shadow")) {
+        return "Shadow Raid";
+    }*/
+
+    return `Tier ${kind}${isShadow && !kind.toLocaleLowerCase().includes("shadow") ? " Shadow" : ""}`;
 }
 
 const Calendar = () => {
@@ -57,22 +107,7 @@ const Calendar = () => {
 
     const {currentGameLanguage, currentLanguage} = useLanguage();
     const [currentPlace, setCurrentPlace] = useState("0");
-
-    const computeString = (kind: string | undefined, isShadow: boolean) => {
-        if (!kind) {
-            return undefined;
-        }
-
-        if (kind.toLocaleLowerCase().includes("mega")) {
-            return "Mega Raid";
-        }
-/*
-        if (kind.toLocaleLowerCase().includes("shadow")) {
-            return "Shadow Raid";
-        }*/
-
-        return `Tier ${kind}${isShadow && !kind.toLocaleLowerCase().includes("shadow") ? " Shadow" : ""}`;
-    }
+    const [currentEvent, setCurrentEvent] = useState("");
 
     const getMega = (speciesId: string) => {
         const original = gamemasterPokemon[speciesId];
@@ -193,44 +228,15 @@ const Calendar = () => {
     .filter(e => (e.raids?.length ?? 0) > 0 && e.date > new Date().valueOf() /*&& !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId))*/)
     .sort(sortPosts);
 
-    const idxToPlace = (idx: number) => {
-        switch(idx) {
-            case 0:
-                return "Cities";
-            case 1:
-                return "Forests";
-            case 2:
-                return "Mountains";
-            case 3:
-                return "Beaches & Water";
-            case 4:
-                return "Northen Hemisphere";
-            case 5:
-                return "Southern Hemisphere";
-        }
-    }
-    
-    const idxToRes = (idx: number) => {
-        switch(idx) {
-            case 0:
-                return "City";
-            case 1:
-                return "Forest";
-            case 2:
-                return "Mountain";
-            case 3:
-                return "Water";
-            case 4:
-                return "North";
-            case 5:
-                return "South";
-        }
-    }
-
     return (
-        <main className="layout">
+        <main className="pokedex-layout">
             <nav className="navigation-header">
                 <ul>
+                    <li>
+                        <Link to={pokemonBasePath + "/events"} className={"header-tab no-full-border " + (tab.endsWith("/events") ? "selected" : "")}>
+                            <span>Events</span>
+                        </Link>
+                    </li>
                     <li>
                         <Link to={pokemonBasePath + "/bosses"} className={"header-tab no-full-border " + (tab.endsWith("/bosses") ? "selected" : "")}>
                             <span>Bosses</span>
@@ -251,14 +257,9 @@ const Calendar = () => {
                             <span>Eggs</span>
                         </Link>
                     </li>
-                    <li>
-                        <Link to={pokemonBasePath + "/events"} className={"header-tab no-full-border " + (tab.endsWith("/events") ? "selected" : "")}>
-                            <span>Events</span>
-                        </Link>
-                    </li>
                 </ul>
             </nav>
-            <div className="pokemon">
+            <div className="pokemon hardcoded-height">
                 <LoadingRenderer errors={errors + bossesErrors + postsErrors + seasonErrors + leekPostsErrors} completed={fetchCompleted && bossesFetchCompleted && postsFetchCompleted && seasonFetchCompleted && leekPostsFetchCompleted}>
                 <div className="calendar-content">
                     <div className='content'>
@@ -293,7 +294,7 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div>
                                 <div>
                                 <div><h3 className='centered-text with-side-margin item default-padding'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3></div>
@@ -320,15 +321,15 @@ const Calendar = () => {
                                     </div>)}
                                 </div>
                             </div>}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-big-top-margin with-xl-gap'>{
                             [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0)/*TODO && new Date(p.dateEnd ?? 0) >= new Date()*/).sort(sortPosts).map(event =>
-                                <div key={event.subtitle ?? event.title} className='column item'>
-                                    <div className='event-panel-container'>
+                                <div key={event.subtitle + "-" + event.title} className='column item'>
+                                    <div className='event-panel-container clickable' onClick={() => setCurrentEvent(c => c === (event.subtitle + "-" + event.title) ? "" : (event.subtitle + "-" + event.title))}>
                                         <span className='images-container'>
                                             <span className='restricted-img-size'>
-                                                <img className="img-with-rounded-corners img-clickable" src={event.imgUrl} width="100%" height="100%"/>
+                                                <img className="img-with-rounded-corners" src={event.imgUrl} width="100%" height="100%"/>
                                             </span>
                                         </span>
                                         <div className='event-text-container justified'>
@@ -340,8 +341,8 @@ const Calendar = () => {
                                         </div>
                                         {x >= 360 && <div className='perks-container with-border-left aligned justified'>
                                             <div className='perks-container-row aligned justified'>
-                                                <img className={(event.raids?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
                                                 <img className={(event.wild?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                                <img className={(event.raids?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
                                             </div>
                                             <div className='perks-container-row aligned justified'>
                                                 <img className={event.bonuses ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
@@ -350,6 +351,9 @@ const Calendar = () => {
                                             </div>
                                         </div>}
                                     </div>
+                                    {currentEvent === event.subtitle + "-" + event.title && <div>
+                                        <EventDetail eventKey='event.subtitle + "-" + event.title' post={event} sortEntries={sortEntries}/>
+                                    </div>}
                                 </div>)}</div>}
                     </div>
                     </div>
@@ -361,25 +365,97 @@ const Calendar = () => {
 }
 export default Calendar;
 
-interface IPost {
+interface IEventDetail {
+    eventKey: string;
     post: IPostEntry;
     sortEntries: (e1: IEntry, e2: IEntry) => number;
 }
 
-const PostEntry = ({post, sortEntries}: IPost) => {
+const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
+    const [currTab, setCurrTab] = useState(post.bonuses ? "bonuses" : (post.wild?.length ?? 0) > 0 ? "spawns" : (post.raids?.length ?? 0) > 0 ? "raids" : (post.researches?.length ?? 0) > 0 ? "researches" : "eggs");
+    const [currentPlace, setCurrentPlace] = useState("0");
+
+    return <div>
+        <div className='divider'/>
+        <nav className="navigation-header">
+            <ul>
+                {post.bonuses && <li>
+                    <div onClick={() => setCurrTab("bonuses")} className={"header-tab no-full-border " + (currTab === "bonuses" ? "selected" : "")}>
+                        <span>Bonuses</span>
+                    </div>
+                </li>}
+                {(post.wild?.length ?? 0) > 0 && <li>
+                    <div onClick={() => setCurrTab("spawns")} className={"header-tab no-full-border " + (currTab === "spawns" ? "selected" : "")}>
+                        <span>Spawns</span>
+                    </div>
+                </li>}
+                {(post.raids?.length ?? 0) > 0 && <li>
+                    <div onClick={() => setCurrTab("raids")} className={"header-tab no-full-border " + (currTab === "raids" ? "selected" : "")}>
+                        <span>Raids</span>
+                    </div>
+                </li>}
+                {(post.researches?.length ?? 0) > 0 && <li>
+                    <div onClick={() => setCurrTab("researches")} className={"header-tab no-full-border " + (currTab === "researches" ? "selected" : "")}>
+                        <span>Researches</span>
+                    </div>
+                </li>}
+                {(post.eggs?.length ?? 0) > 0 && <li>
+                    <div onClick={() => setCurrTab("eggs")} className={"header-tab no-full-border disabled" + (currTab === "eggs" ? "selected" : "")}>
+                        <span>Eggs</span>
+                    </div>
+                </li>}
+            </ul>
+        </nav>
+        {post.isSeason && currTab === "spawns" && <div className="raid-container">
+            <div className="overflowing">
+                <div className="img-family">
+                    {[(post.wild ?? []).filter(e => e.kind === "0"), (post.wild ?? []).filter(e => e.kind === "1"), (post.wild ?? []).filter(e => e.kind === "2"), (post.wild ?? []).filter(e => e.kind === "3"), (post.wild ?? []).filter(e => e.kind === "4"), (post.wild ?? []).filter(e => e.kind === "5")]
+                    .map((t, i) => (
+                        <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
+                            <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
+                                <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`}/></div>
+                                {String(i) === currentPlace && idxToPlace(i)}
+                            </strong>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>}
+        {currTab === "spawns" && <PostEntry collection={post.wild ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} kindFilter={post.isSeason ? currentPlace : undefined}/>}
+        {currTab === "raids" && <PostEntry collection={post.raids ?? []} withRaidCPStringOverride={true} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
+        {currTab === "researches" && <PostEntry collection={post.researches ?? []} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
+        {currTab === "eggs" && <PostEntry collection={post.eggs ?? []} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
+        {currTab === "bonuses" && post.bonuses && <div className='default-padding bonus-container'>
+            {post.bonuses.split("\n").filter(b => b).map(b => <ul key={b} className='ul-with-adorner'>{b}</ul>)}
+        </div>}
+    </div>;
+}
+
+interface IPost {
+    post: IPostEntry;
+    collection: IEntry[];
+    sortEntries: (e1: IEntry, e2: IEntry) => number;
+    kindFilter?: string;
+    withoutTitle?: boolean;
+    withRaidCPStringOverride?: boolean;
+}
+
+const PostEntry = ({post, collection, sortEntries, kindFilter, withoutTitle, withRaidCPStringOverride}: IPost) => {
     const {gamemasterPokemon} = usePokemon();
     const {days, hours, minutes, seconds} = useCountdown(post.dateEnd ?? 0);
+
+    
 
     const now = new Date();
     const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
 
     return <div>
-        {postIsNow && <h3 className='centered-text with-side-margin item default-padding'>Current Spawns <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3>}
-        {!postIsNow && <h4 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
+        {!withoutTitle && postIsNow && <h3 className='centered-text with-side-margin item default-padding'>Current Spawns <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3>}
+        {!withoutTitle && !postIsNow && <h4 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
         <div className='with-flex'>
-        {(post.wild ?? []).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
-            <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
+        {collection.filter(k => !kindFilter || kindFilter === k.kind).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+            <div className={`card-wrapper ${!post.isSeason && (p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} cpStringOverride={withRaidCPStringOverride ? computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow) : undefined} />
             </div>
         </div>)}
         </div>

@@ -16,7 +16,8 @@ export interface IPostEntry {
     wild?: IEntry[],
     bonuses?: string,
     researches?: IEntry[],
-    eggs?: IEntry[]
+    eggs?: IEntry[],
+    isSeason?: boolean
 }
 
 export interface IRaidEntry {

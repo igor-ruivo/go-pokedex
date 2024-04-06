@@ -69,6 +69,12 @@
     color: var(--cp-color);
 }
 
+@media (min-width: 1250px) {
+    .header-footer {
+        font-size: clamp(0px, 4.656px + 1.23vw, 12px);
+    }
+}
+
 @media (max-width: 899.9px) {
     .card-content {
         gap: 2px;
@@ -98,5 +104,6 @@
 
     .pokemon-card {
         line-height: 1;
+        gap: 4px;
     }
 }

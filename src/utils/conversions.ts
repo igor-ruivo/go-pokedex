@@ -464,6 +464,7 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
         date: new Date(2024, 2, 1, 10, 0).valueOf(),
         dateEnd: new Date(2024, 5, 1, 10, 0).valueOf(),
         wild: wildEncounters,
+        isSeason: true,
         researches: researches,
         bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
         imgUrl: "https://lh3.googleusercontent.com/qt9Y-NahbwhpAq8QIUulHnmdjzSqNJybRcjyz_IUgrf47z7qrdeoKn55T4eIJAS9sfQ0Hmpbm1HEQsLnMmg7dMZbN3LM_mLnBMgSuE5TuCaq=rw-e365-w1800",
