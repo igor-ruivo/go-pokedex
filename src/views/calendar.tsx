@@ -323,7 +323,7 @@ const Calendar = () => {
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-big-top-margin with-xl-gap'>{
-                            posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0)/*TODO && new Date(p.dateEnd ?? 0) >= new Date()*/).sort(sortPosts).map(event =>
+                            [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0)/*TODO && new Date(p.dateEnd ?? 0) >= new Date()*/).sort(sortPosts).map(event =>
                                 <div key={event.subtitle ?? event.title} className='column item'>
                                     <div className='event-panel-container'>
                                         <span className='images-container'>
@@ -334,8 +334,8 @@ const Calendar = () => {
                                         <div className='event-text-container justified'>
                                             <strong className='ellipsed'>{posts.flat().some(pf => pf.title === event.title) ? (event.subtitle ?? event.title) : event.title}</strong>
                                             <div className='with-padding-left with-normal-gap event-dates'>
-                                            <span className='event-special-font'><strong>From:</strong> <span>{inUpperCase(new Date(event.date).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
-                                            <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, x > 400 ? options : smallOptions))}</span></span>
+                                            <span className='event-special-font'><strong>From:</strong> <span>{inUpperCase(new Date(event.date).toLocaleString(undefined, x > 500 ? options : smallOptions))}</span></span>
+                                            <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, x > 500 ? options : smallOptions))}</span></span>
                                             </div>
                                         </div>
                                         {x >= 360 && <div className='perks-container with-border-left aligned justified'>

@@ -458,11 +458,15 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
         .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
 
     const wildEncounters = [cityEntries, forestEntries, mountainEntries, beachEntries, northEntries, southEntries].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
+    const researches = fetchPokemonFromElements(Array.from(htmlDoc.getElementById("research-breakthrough-tabs")?.children ?? []).map(e => e as HTMLElement), gamemasterPokemon, wildDomain);
 
     return {
         date: new Date(2024, 2, 1, 10, 0).valueOf(),
         dateEnd: new Date(2024, 5, 1, 10, 0).valueOf(),
         wild: wildEncounters,
+        researches: researches,
+        bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
+        imgUrl: "https://lh3.googleusercontent.com/qt9Y-NahbwhpAq8QIUulHnmdjzSqNJybRcjyz_IUgrf47z7qrdeoKn55T4eIJAS9sfQ0Hmpbm1HEQsLnMmg7dMZbN3LM_mLnBMgSuE5TuCaq=rw-e365-w1800",
         title: "Welcome to Pokémon GO: World of Wonders"
     };
 }
@@ -793,7 +797,7 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     // castform fallbacks...
     const whitelist = ["(sunny)", "(rainy)", "(snowy)"]
     const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", " tms", "and more", "wild encounters", "sunny", "event-themed", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog", "will be available"];
-    const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && (whitelist.some(k => t.toLocaleLowerCase().includes(k)) || !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k))));
+    const parsedPokemon = textes.filter(t => t !== "All" && t.split(" ").length <= 10 && (whitelist.some(k => t.toLocaleLowerCase().includes(k)) || !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k))));
 
     return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, domain);
 }
