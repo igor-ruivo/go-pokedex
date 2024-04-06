@@ -84,7 +84,7 @@ const Calendar = () => {
 
     const reducedLeekPosts = leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
 
-    const reducedRaids = posts.filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
+    const reducedRaids = posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
 
     const sortEntries = (e1: IEntry, e2: IEntry) => {
         if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
@@ -293,7 +293,7 @@ const Calendar = () => {
                                 </div>)}
                                 </div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div>
                                 <div>
                                 <div><h3 className='centered-text with-side-margin item default-padding'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3></div>
@@ -320,11 +320,11 @@ const Calendar = () => {
                                     </div>)}
                                 </div>
                             </div>}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-big-top-margin with-xl-gap'>{
-                            posts.filter(p => p && (p.wild?.length ?? 0) > 0/* TODO: UNCOMMENT && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()*/).sort(sortPosts).map(event =>
-                                <div key={event.title} className='column item'>
+                            posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0)/*TODO && new Date(p.dateEnd ?? 0) >= new Date()*/).sort(sortPosts).map(event =>
+                                <div key={event.subtitle ?? event.title} className='column item'>
                                     <div className='event-panel-container'>
                                         <span className='images-container'>
                                             <span className='restricted-img-size'>
@@ -340,13 +340,13 @@ const Calendar = () => {
                                         </div>
                                         {x >= 360 && <div className='perks-container aligned justified'>
                                             <div className='perks-container-row aligned justified'>
-                                                <img className={'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
-                                                <img className={'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/>
-                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
+                                                <img className={(event.raids?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
+                                                <img className={(event.wild?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
                                             </div>
                                             <div className='perks-container-row aligned justified'>
-                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
-                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                                <img className={event.bonuses ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
+                                                <img className={(event.researches?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/>
+                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
                                             </div>
                                         </div>}
                                     </div>

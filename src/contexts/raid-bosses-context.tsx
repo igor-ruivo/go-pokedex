@@ -9,7 +9,7 @@ import { IPostEntry } from '../DTOs/INews';
 
 interface CalendarContextType {
     bossesPerTier: IPostEntry;
-    posts: IPostEntry[];
+    posts: IPostEntry[][];
     season: IPostEntry;
     leekPosts: IPostEntry[];
     bossesFetchCompleted: boolean;
@@ -24,10 +24,10 @@ interface CalendarContextType {
 
 const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
-const useFetchAllData: () => [IPostEntry, IPostEntry[], IPostEntry, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = () => {
+const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const [news, fetchNews, newsFetchCompleted, errorLoadingnews]: FetchData<string> = useFetchUrls();
-    const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<IPostEntry> = useFetchUrls();
+    const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<IPostEntry[]> = useFetchUrls();
     const [season, fetchSeason, seasonFetchCompleted, errorLoadingSeason]: FetchData<IPostEntry> = useFetchUrls();
     const [bosses, fetchBosses, bossesFetchCompleted, errorLoadingBosses]: FetchData<IPostEntry> = useFetchUrls();
     const [leekNews, fetchLeekNews, leekNewsFetchCompleted, errorLoadingLeekNews]: FetchData<string> = useFetchUrls();
@@ -115,7 +115,7 @@ export const useCalendar = (): CalendarContextType => {
 };
 
 export const CalendarProvider = (props: React.PropsWithChildren<{}>) => {
-    const [raidBosses, posts, season, leekPosts, bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts]: [IPostEntry, IPostEntry[], IPostEntry, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = useFetchAllData();
+    const [raidBosses, posts, season, leekPosts, bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts]: [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry[], boolean, boolean, boolean, boolean, string, string, string, string] = useFetchAllData();
 
     return (
         <CalendarContext.Provider value={{

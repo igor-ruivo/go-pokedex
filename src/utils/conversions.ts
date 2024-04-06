@@ -484,7 +484,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
         const isShiny =  pkmwithNoClothes[j].includes("*");
         let isShadow = false;
         let isMega = false;
-        let currP = ndfNormalized(pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim()).trim();
+        let currP = ndfNormalized(pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim()).replaceAll("(normal)", "").trim();
 
         const raidLIndex = currP.indexOf(" raids");
         if (raidLIndex !== -1) {
@@ -664,7 +664,11 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
         }
 
         if (availableForms.length === 0) {
-            console.error("Couldn't find form of " + currP);
+            if (isMega) {
+                console.log("Domain didn't cover Megas while computing " + currP);
+            } else {
+                console.error("Couldn't find form of " + currP);
+            }
             continue;
         }
 
@@ -786,8 +790,10 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
             }
         }
     }
-    const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", "and more", "wild encounters", "sunny", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog"];
-    const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k)));
+    // castform fallbacks...
+    const whitelist = ["(sunny)", "(rainy)", "(snowy)"]
+    const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", " tms", "and more", "wild encounters", "sunny", "event-themed", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog", "will be available"];
+    const parsedPokemon = textes.filter(t => t.split(" ").length <= 10 && (whitelist.some(k => t.toLocaleLowerCase().includes(k)) || !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k))));
 
     return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, domain);
 }
@@ -817,83 +823,119 @@ const fetchDateFromString = (date: string) => {
     return dateObj.valueOf();
 }
 
-export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
-    const entries = Array.from(htmlDoc.getElementsByClassName("ContainerBlock"));
+    const entries = Array.from(htmlDoc.getElementsByClassName("blogPost__post__blocks")[0]?.children ?? []/*.getElementsByClassName("ContainerBlock")*/);
+    
     const postTitle = (htmlDoc.getElementsByClassName("blogPost__title")[0] as HTMLElement)?.innerText;
     const img = (htmlDoc.getElementsByClassName("blogPost__post")[0]?.getElementsByClassName("image")[0]?.getElementsByTagName("img")[0] as HTMLImageElement)?.src;
 
-    if (entries.length === 0) {
-        return {title: "", date: 0};
-    }
-
-    let date = (entries[0].children[1] as HTMLElement)?.innerText?.trim();
-
-    if (!date) {
-        return {title: "", date: 0};
-    }
-    
-    if (date.includes(" from ")) {
-        if (!date.includes(" to ") || !date.includes(" at ")) {
-            return {title: "", date: 0};
-        }
-        const split = date.split(" to ");
-        split[0] = split[0].replace(" from ", " at ");
-        const idx = split[0].indexOf(" at ") + 4;
-        split[1] = split[0].substring(0, idx) + split[1];
-        date = split.join(" to ");
-    }
-
-    const parsedDate = date.split(" to ");
-    if (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10) {
-        return {title: "", date: 0};
-    }
-
-    const startDate = fetchDateFromString(parsedDate[0]);
-    const endDate = fetchDateFromString(parsedDate[1]);
-
     const wildDomain = Object.values(gamemasterPokemon)
-        .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
-    
+    .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
+
     const raidDomain = Object.values(gamemasterPokemon)
     .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
-    
-    const raids: IEntry[] = [];
-    const wild: IEntry[] = [];
 
-    for (let i = 1; i < entries.length; i++) {
-        const entry = entries[i];
-        const title = entry.children[0];
-        const kind = (title as HTMLElement)?.innerText?.trim();
-        const contentBodies = Array.from(entry.children) as HTMLElement[];
-        switch(kind) {
-            case "Wild encounters":
-                wild.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
-                break;
-            case "Eggs":
-                break;
-            case "Raids":
-            case "Shadow Raids":
-            case "Shadow Raid debut":
-                const result = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain)
-                .filter(r => !r.kind?.includes("5") && !r.kind?.toLocaleLowerCase().includes("mega"));
-                
-                raids.push(...result);
-                break;
-            default:
-                break;
+    const endResults: IPostEntry[] = [];
+
+    for (let k = 0; k < entries.length; k++) {
+        const containerBlock = entries[k].children[0];
+
+        const innerEntries = containerBlock.getElementsByClassName("ContainerBlock");
+        if (innerEntries.length === 0) {
+            continue;
         }
-    }
 
-    return {
-        title: postTitle,
-        date: startDate,
-        dateEnd: endDate,
-        imgUrl: img,
-        raids: raids,
-        wild: wild
-    };
+        const subtitle = (containerBlock.getElementsByClassName("ContainerBlock__headline")[0] as HTMLElement)?.innerText.trim();
+
+        let date = (containerBlock.children[1] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
+        if (date.endsWith(".")) {
+            date = date.substring(0, date.length - 1);
+        }
+
+        if (!date) {
+            continue;
+        }
+        
+        if (date.includes(" from ")) {
+            if (!date.includes(" to ") /*|| !date.includes(" at ")*/) {
+                continue;
+            }
+            const split = date.split(" to ");
+            split[0] = split[0].replace(" from ", " at ");
+            const idx = split[0].indexOf(" at ") + 4;
+            split[1] = split[0].substring(0, idx) + split[1];
+            date = split.join(" to ");
+        }
+
+        const parsedDate = date.split(" to ");
+        if (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10) {
+            continue;
+        }
+
+        let startDate = 0;
+        let endDate = 0;
+        try {
+            startDate = fetchDateFromString(parsedDate[0]);
+            endDate = fetchDateFromString(parsedDate[1]);
+        } catch {
+            continue;
+        }
+        
+        const raids: IEntry[] = [];
+        const wild: IEntry[] = [];
+        const research: IEntry[] = [];
+        let bonus = "";
+
+        for (let i = 0; i < innerEntries.length; i++) {
+            const entry = innerEntries[i];
+            const title = entry.children[0];
+            const kind = (title as HTMLElement)?.innerText?.trim();
+            const contentBodies = Array.from(entry.children) as HTMLElement[];
+            switch(kind) {
+                case "Wild encounters":
+                    wild.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
+                    break;
+                case "Eggs":
+                    break;
+                case "Event bonus":
+                case "Event bonuses":
+                case "Event Bonuses":
+                    bonus += "\n\n" + contentBodies[1].innerText.trim();
+                    break;
+                case "Field Research task encounters":
+                case "Field Research task rewards":
+                case "Field Research":
+                case "Timed Research":
+                    research.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
+                    break;
+                //TODO Increased Incense encounters
+                case "Raids":
+                case "Shadow Raids":
+                case "Shadow Raid debut":
+                    const result = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain)
+                    .filter(r => !r.kind?.includes("5") && !r.kind?.toLocaleLowerCase().includes("mega"));
+                    
+                    raids.push(...result);
+                    break;
+                default:
+                    break;
+            }
+        }
+        endResults.push({
+            title: postTitle,
+            subtitle: subtitle,
+            date: startDate,
+            dateEnd: endDate,
+            researches: research,
+            imgUrl: img,
+            raids: raids,
+            wild: wild,
+            bonuses: bonus.trim()
+        });
+    }
+    return endResults;
 }
 
 export const mapRankedPokemon: (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => Dictionary<IRankedPokemon> = (data: any, request: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {

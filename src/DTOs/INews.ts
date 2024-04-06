@@ -8,12 +8,13 @@ export interface IEntry {
 
 export interface IPostEntry {
     title: string,
+    subtitle?: string,
     imgUrl?: string,
     date: number,
     dateEnd?: number,
     raids?: IEntry[],
     wild?: IEntry[],
-    bonuses?: IEntry[],
+    bonuses?: string,
     researches?: IEntry[],
     eggs?: IEntry[]
 }
