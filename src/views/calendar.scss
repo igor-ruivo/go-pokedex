@@ -54,6 +54,10 @@
     margin-right: 6px;
 }
 
+.ongoing-event {
+    border-left: 6px solid lightgreen;
+}
+
 .calendar-content {
     max-width: 65%;
     font-size: 0.875rem;
@@ -240,6 +244,10 @@
 }
 
 @media (max-width: 565px) {
+    .ongoing-event {
+        border-left: 4px solid lightgreen;
+    }
+
     .bonus-container {
         margin: 6px;
         font-size: x-small;
@@ -264,6 +272,7 @@
     
     .event-panel-container {
         grid-template-columns: 25% 45% 1fr;
+        padding-right: 0px;
     }
 }
 

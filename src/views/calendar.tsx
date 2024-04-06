@@ -283,9 +283,9 @@ const Calendar = () => {
                             {tab.endsWith("/bosses") && leekPostsFetchCompleted && postsFetchCompleted &&
                             remainingBosses
                             .map(e => <div key={getDateKey(e)}>
-                                <h4 className='centered-text item default-padding with-side-margin'>
+                                <h5 className='centered-text item default-padding with-side-margin'>
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
-                                </h4>
+                                </h5>
                                 <div className='with-flex'>
                                 {(e.raids ?? []).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
@@ -324,8 +324,8 @@ const Calendar = () => {
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-big-top-margin with-xl-gap'>{
-                            [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0)/*TODO && new Date(p.dateEnd ?? 0) >= new Date()*/).sort(sortPosts).map(event =>
-                                <div key={event.subtitle + "-" + event.title} className='column item'>
+                            [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(event =>
+                                <div key={event.subtitle + "-" + event.title} className={`column item ${new Date(event.date ?? 0) < new Date() ? "ongoing-event" : ""}`}>
                                     <div className='event-panel-container clickable' onClick={() => setCurrentEvent(c => c === (event.subtitle + "-" + event.title) ? "" : (event.subtitle + "-" + event.title))}>
                                         <span className='images-container'>
                                             <span className='restricted-img-size'>
@@ -451,7 +451,7 @@ const PostEntry = ({post, collection, sortEntries, kindFilter, withoutTitle, wit
 
     return <div>
         {!withoutTitle && postIsNow && <h3 className='centered-text with-side-margin item default-padding'>Current Spawns <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3>}
-        {!withoutTitle && !postIsNow && <h4 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h4>}
+        {!withoutTitle && !postIsNow && <h5 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h5>}
         <div className='with-flex'>
         {collection.filter(k => !kindFilter || kindFilter === k.kind).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
             <div className={`card-wrapper ${!post.isSeason && (p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6")) ? "with-golden-border" : ""}`}>
