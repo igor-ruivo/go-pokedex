@@ -59,17 +59,17 @@ const idxToPlace = (idx: number) => {
 const idxToRes = (idx: number) => {
     switch(idx) {
         case 0:
-            return "City";
+            return "city";
         case 1:
-            return "Forest";
+            return "forest";
         case 2:
-            return "Mountain";
+            return "mountain";
         case 3:
-            return "Water";
+            return "water";
         case 4:
-            return "North";
+            return "north";
         case 5:
-            return "South";
+            return "south";
     }
 }
 
