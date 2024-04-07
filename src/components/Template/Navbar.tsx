@@ -304,7 +304,7 @@ const Navbar = () => {
                 >
                     <img className={"navbar-menu-img " + (optionsOpened === AvailableOptions.Menu ? "invert-white-mode " : "invert-dark-mode ") + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : `${process.env.PUBLIC_URL}/images/cogwheel.png`}/>
                 </button>
-                <div className="search-wrapper normal-text-descendants">
+                <div className="normal-text-descendants-all">
                     <SearchableDropdown
                         searchOpen={searchOpen}
                         setSearchOpen={setSearchOpen}
@@ -338,7 +338,7 @@ const Navbar = () => {
                                 specificHeight={28}
                                 specificWidth={28}
                               />
-                              <span className="normal-text">{option.label}</span>
+                              <span className="normal-text-all">{option.label}</span>
                             </Box>
                         )}
                     />

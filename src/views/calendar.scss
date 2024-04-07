@@ -9,7 +9,9 @@
 }
 
 .dynamic-size {
-    width: 20%;
+    max-width: 100px;
+    max-height: 100px;
+    width: calc(20%);
     aspect-ratio: 1 / 1;
 }
 
@@ -17,6 +19,18 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+.contained {
+    max-width: 65%;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.less-contained {
+    max-width: 75%;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 .perk-wrapper {
@@ -77,7 +91,7 @@
 .calendar-content {
     max-width: 65%;
     font-size: 0.875rem;
-    padding-bottom: 55px;
+    padding-bottom: 52.13px;
     margin-left: auto;
     margin-right: auto;
     background: var(--bodyBackgroundColor);
@@ -183,6 +197,10 @@
     margin: 0px 10px;
 }
 
+.first-perk-row {
+    padding: 0px 23px;
+}
+
 .event-special-font {
     color: var(--event-special-font);
 }
@@ -223,17 +241,22 @@
 
 @media (max-width: 1000px) {
     .dynamic-size {
-        width: 25%;
+        width: calc(25% / 1.5);
     }
 }
 
 @media (max-width: 800px) {
+    .contained,
+    .less-contained {
+        max-width: 100%;
+    }
+
     .event-dates {
         gap: 0px !important;
     }
 
     .dynamic-size {
-        width: calc(100% / 3);
+        width: calc(calc(100% / 3) / 1.5);
     }
 
     .perks-container-row {
@@ -252,6 +275,10 @@
             width: 14px;
             height: 14px;
         }
+    }
+
+    .first-perk-row {
+        padding: 0px 14px;
     }
 
     .perk-wrapper {

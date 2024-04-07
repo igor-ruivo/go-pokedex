@@ -81,7 +81,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, with
                 </span>
                 {descriptionComponent && descriptionComponent}
             </span>
-            {withName && shortName(pokemon.speciesName)}
+            {withName && <span className="pkm-img-name">{shortName(pokemon.speciesName)}</span>}
         </>
     )
 });

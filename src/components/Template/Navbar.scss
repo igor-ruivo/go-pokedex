@@ -1,7 +1,7 @@
 .navbar {
-    min-height: 55px;
-    max-height: 55px;
-    height: 55px;
+    min-height: 52.13px;
+    max-height: 52.13px;
+    height: 52.13px;
     z-index: 40000;
     border-top: 1px solid var(--borderColor2);
     border-bottom: 1px solid var(--borderColor2);
@@ -59,7 +59,7 @@
     right: 0;
     position: fixed;
     max-width: 1300px;
-    top: 55px;
+    top: 52.13px;
     background: var(--headerBackground);
     color: var(--textColor);
     z-index: 40000;
@@ -71,7 +71,7 @@
 
 .filter-menu {
     font-size: 14px;
-    top: 55px;
+    top: 52.13px;
     background: var(--headerBackground);
     color: var(--textColor);
     position: fixed;
@@ -181,7 +181,7 @@
 
 .navbar-section {
     display: grid;
-    grid-template-columns: 34px 1fr 34px 34px;
+    grid-template-columns: 31.13px 1fr 31.13px 31.13px;
     align-items: center;
     justify-content: space-between;
     grid-gap: 18px;
@@ -193,8 +193,8 @@
 
 .navbar-logo {
     position: relative;
-    width: 34px;
-    height: 34px;
+    width: 31.13px;
+    height: 31.13px;
     display: flex;
 }
 
@@ -275,7 +275,7 @@ button {
     display: flex;
     order: 3;
     grid-template-columns: 30% 70%;
-    height: 34px;
+    height: 31.13px;
     padding: 9px;
     align-items: center;
     justify-content: center;
@@ -292,7 +292,7 @@ button {
 
 .navbar-filter {
     display: flex;
-    height: 34px;
+    height: 31.13px;
     order: 4;
     padding: 9px;
     align-items: center;

@@ -14,6 +14,7 @@ import { useState } from 'react';
 import useCountdown from '../hooks/useCountdown';
 import PokemonHeader from '../components/PokemonHeader';
 import useResize from '../hooks/useResize';
+import PokemonMiniature from '../components/PokemonMiniature';
 
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
@@ -272,10 +273,10 @@ const Calendar = () => {
                         <div className="pokemon with-normal-gap">
                             {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div><h3 className='centered-text with-side-margin item default-padding'>
                                 Current Bosses
-                                </h3><div className='with-flex'>{bossesAvailableToday.map(e => 
+                                </h3><div className='with-flex contained'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                            <PokemonCard pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} listType={ListType.POKEDEX} shinyBadge={e.shiny} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow)} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />
+                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow) ?? ""} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />
                                         </div>
                                     </div>)}
                                 </div>
@@ -286,10 +287,10 @@ const Calendar = () => {
                                 <h5 className='centered-text item default-padding with-side-margin'>
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, options))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, options))}
                                 </h5>
-                                <div className='with-flex'>
+                                <div className='with-flex contained'>
                                 {(e.raids ?? []).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                     <div className={`card-wrapper ${p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                        <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} cpStringOverride={computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow)}/>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} cpStringOverride={computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow)}/>
                                     </div>
                                 </div>)}
                                 </div>
@@ -313,10 +314,10 @@ const Calendar = () => {
                                         </div>
                                     </div>
                                 </div></div>
-                                <div className='with-flex'>
+                                <div className='with-flex contained'>
                                     {(season.wild ?? []).filter(r => r.kind === currentPlace).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                         <div className={`card-wrapper`}>
-                                            <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} />
+                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                         </div>
                                     </div>)}
                                 </div>
@@ -341,7 +342,7 @@ const Calendar = () => {
                                                 <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, options))}</span></span>
                                                 </div>
                                             </div>{x > 565 && <div className='perks-container aligned justified'>
-                                                <div className='perks-container-row aligned justified'>
+                                                <div className='perks-container-row first-perk-row aligned justified'>
                                                     <div className='perk-wrapper'>
                                                         <img className={(event.wild?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
                                                     </div>
@@ -471,7 +472,7 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
         {currTab === "raids" && <PostEntry collection={post.raids ?? []} withRaidCPStringOverride={true} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
         {currTab === "researches" && <PostEntry collection={post.researches ?? []} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
         {currTab === "eggs" && <PostEntry collection={post.eggs ?? []} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
-        {currTab === "bonuses" && post.bonuses && <div className='default-padding bonus-container'>
+        {currTab === "bonuses" && post.bonuses && <div className='default-padding bonus-container less-contained'>
             {post.bonuses.split("\n").filter(b => b).map(b => <ul key={b} className='ul-with-adorner'>{b}</ul>)}
         </div>}
     </div>;
@@ -498,10 +499,10 @@ const PostEntry = ({post, collection, sortEntries, kindFilter, withoutTitle, wit
     return <div>
         {!withoutTitle && postIsNow && <h3 className='centered-text with-side-margin item default-padding'>Current Spawns <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></h3>}
         {!withoutTitle && !postIsNow && <h5 className='centered-text with-side-margin item default-padding'>{inUpperCase(new Date(post.date).toLocaleString(undefined, options)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, options))}</h5>}
-        <div className='with-flex'>
+        <div className='with-flex contained'>
         {collection.filter(k => !kindFilter || kindFilter === k.kind).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
             <div className={`card-wrapper ${!post.isSeason && (p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6")) ? "with-golden-border" : ""}`}>
-                <PokemonCard pokemon={gamemasterPokemon[p.speciesId]} listType={ListType.POKEDEX} cpStringOverride={withRaidCPStringOverride ? computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow) : undefined} />
+                <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} cpStringOverride={withRaidCPStringOverride ? computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow) : undefined} />
             </div>
         </div>)}
         </div>

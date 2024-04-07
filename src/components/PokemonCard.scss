@@ -19,12 +19,46 @@
     color: var(--textColor);
 }
 
+.pokemon-miniature {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    flex-wrap: nowrap;
+    text-decoration: none;
+    font-weight: 700;
+    line-height: 1.25;
+    overflow: hidden;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: clamp(0px, calc(4.656px + 1.23vw), 12px);
+    color: var(--textColor);
+}
+
 .header-container {
     width: 100%;
     display: flex;
     gap: 6px;
     align-items: center;
     justify-content: space-between;
+}
+
+.mini-card-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-direction: column;
+    text-align: center;
+    .images-container {
+        .main-image-container {
+            width: clamp(0px, calc(calc(80px / 1.5) + calc(80 / 1.5) * calc(100vw - 900px) / (1300 - 900)), calc(100px / 1.5));
+            height: clamp(0px, calc(calc(80px / 1.5) + calc(80 / 1.5) * calc(100vw - 900px) / (1300 - 900)), calc(100px / 1.5));
+        }
+    }
 }
 
 .card-content {
@@ -86,6 +120,16 @@
         }
     }
 
+    .mini-card-content {
+        gap: 2px;
+        .images-container {
+            .main-image-container {
+                width: calc(calc(55px / 1.5) + calc(65 / 1.5) * calc(100vw - 600px) / (900 - 600));
+                height: calc(calc(55px / 1.5) + calc(65 / 1.5) * calc(100vw - 600px) / (900 - 600));
+            }
+        }
+    }
+
     .pokemon-card {
         line-height: 1;
     }
@@ -98,6 +142,16 @@
             .main-image-container {
                 width: calc(45px + 50 * calc(100vw - 320px) / (600 - 320));
                 height: calc(45px + 50 * calc(100vw - 320px) / (600 - 320));
+            }
+        }
+    }
+
+    .mini-card-content {
+        gap: 2px;
+        .images-container {
+            .main-image-container {
+                width: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
+                height: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
             }
         }
     }
