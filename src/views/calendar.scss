@@ -19,6 +19,22 @@
     gap: 6px;
 }
 
+.perk-wrapper {
+    flex-wrap: wrap;
+    display: flex;
+    align-content: center;
+    //background: var(--event-buff-panel-bg);
+    padding: 3px 9px;
+    border-radius: 12px;
+    border: 1px solid var(--borderColor2);
+}
+
+.with-small-gap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
 .with-golden-border {
     border: 1px solid var(--cp-color) !important;
 }
@@ -118,8 +134,8 @@
     gap: 10px;
 
     img {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
     }
 }
 
@@ -143,7 +159,8 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    gap: 16px;
+    justify-content: space-evenly;
+    //gap: 16px;
 }
 
 .bonus-container {
@@ -214,13 +231,12 @@
     .event-dates {
         gap: 0px !important;
     }
-    
+
     .dynamic-size {
         width: calc(100% / 3);
     }
 
     .perks-container-row {
-        gap: 0px;
         justify-content: space-evenly;
     }
 
@@ -231,6 +247,17 @@
 }
 
 @media (max-width: 768px) {
+    .perks-container {
+        img {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    .perk-wrapper {
+        padding: 2px 6px;
+    }
+
     .calendar-content {
         max-width: 100%;
     }
@@ -245,6 +272,9 @@
 }
 
 @media (max-width: 690px) {
+    .event-panel-container {
+        gap: 10px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -293,15 +323,17 @@
     .event-text-container {
         gap: 5px;
     }
-
-    .event-dates {
-        font-size: x-small;
-        gap: 0px !important;
-    }
     
     .event-panel-container {
         grid-template-columns: 25% 75%;
         //padding-right: 0px;
+    }
+}
+
+@media (max-width: 430px) {
+    .event-dates {
+        font-size: x-small;
+        gap: 0px !important;
     }
 }
 
