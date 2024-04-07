@@ -322,7 +322,7 @@ const DeleteTrash = () => {
     }
 
     return (
-        <main className="layout">
+        <main className="layout normal-text-descendants">
             <div className="full-height">
                 <div className="pokemon-content">
                     <LoadingRenderer errors="" completed={pvpFetchCompleted && fetchCompleted}>

@@ -56,11 +56,16 @@
     .footer-section {
         gap: 12px;
         max-width: 100%;
-        grid-template-columns: 34px 34px;
+        grid-template-columns: 28.25px 28.25px;
     }
 
     .footer {
         padding-left: 16px;
         padding-right: 16px;
+    }
+    .footer {
+        min-height: 49.25px;
+        max-height: 49.25px;
+        height: 49.25px;
     }
 }

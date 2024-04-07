@@ -276,7 +276,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     }
 
     return (
-        <div className="banner_layout">
+        <div className="banner_layout normal-text">
             {league === LeagueType.RAID && <><div className="raid-container item">
                 <div className="overflowing">
                 <div className="img-family">

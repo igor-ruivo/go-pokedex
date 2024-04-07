@@ -341,15 +341,15 @@ button {
 
 @media (max-width: 500px) {
     .navbar {
-        min-height: 55px;
-        max-height: 55px;
-        height: 55px;
+        min-height: 49.25px;
+        max-height: 49.25px;
+        height: 49.25px;
         padding-left: 16px;
         padding-right: 16px;
     }
 
     .nav-hidden {
-       // transform: translateY(-55px); /* Adjust the value based on your navbar height */
+       // transform: translateY(-49.25px); /* Adjust the value based on your navbar height */
     }
 
     .options-nav {
@@ -357,14 +357,14 @@ button {
     }
 
     .navbar-logo {
-        width: 34px;
-        height: 34px;
+        width: 28.25px;
+        height: 28.25px;
     }
 
     .navbar-menu {
         display: flex;
         order: 3;
-        height: 34px;
+        height: 28.25px;
         span {
             display: none;
         }
@@ -373,7 +373,7 @@ button {
     .navbar-filter {
         display: flex;
         order: 4;
-        height: 34px;
+        height: 28.25px;
         span {
             display: none;
         }
@@ -382,7 +382,7 @@ button {
     .navbar-section {
         gap: 12px;
         max-width: 100%;
-        grid-template-columns: 34px 1fr 34px 34px;
+        grid-template-columns: 28.25px 1fr 28.25px 28.25px;
     }
 
     .search-wrapper {
@@ -391,7 +391,7 @@ button {
 
     .options-menu,
     .filter-menu {
-        top: 55px;
+        top: 49.25px;
     }
 
     .navbar-dropdown-menu {

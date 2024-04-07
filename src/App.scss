@@ -27,6 +27,22 @@
     //}
 }
 
+@media(max-width: 500px) {
+    *.normal-text {
+        font-size: 12px !important;
+    }
+
+    *.normal-text-descendants {
+        * {
+            font-size: 12px !important;
+        }
+    }
+
+    *.important-text {
+        font-size: 14px !important;
+    }
+}
+
 a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }

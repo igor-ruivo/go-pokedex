@@ -222,6 +222,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                 {columns.map((column) => (
                     <TableCell
                         key={column.dataKey}
+                        className="important-text"
                         variant="head"
                         align={"center"}
                         style={{ width: column.width }}
@@ -258,6 +259,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                     <TableCell
                         key={column.dataKey}
                         align={"center"}
+                        className="normal-text"
                     >
                         {row[column.dataKey]}
                     </TableCell>
@@ -268,7 +270,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
 
     return (<>
         {league !== LeagueType.RAID ?
-            <div className="banner_layout">
+            <div className="banner_layout normal-text">
                 <div className="extra-ivs-options item default-padding">
                     {translator(TranslatorKeys.SearchIVs, currentLanguage)}:
                     <select value={attackIV} onChange={e => setAttackIV(+e.target.value)} className="select-level">
@@ -299,7 +301,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                     fixedHeaderContent={fixedHeaderContent}
                     itemContent={rowContent}
                 />
-            </div> : <div className="item default-padding centered">
+            </div> : <div className="item default-padding centered normal-text">
                     <span>{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
             }

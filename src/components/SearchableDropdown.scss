@@ -17,6 +17,12 @@
     z-index: 50000 !important;
 }
 
+.MuiAutocomplete-paper {
+    position: relative;
+    top: 10px;
+    border-radius: 12px !important;
+}
+
 div.MuiAutocomplete-listbox,
 ul.MuiAutocomplete-listbox,
 .MuiAutocomplete-listbox > .ReactVirtualized__Grid {
@@ -39,7 +45,7 @@ ul.MuiAutocomplete-listbox,
     background-color: var(--dropdownOptionBlurred);
     color: var(--textColor);
     min-height: unset !important;
-    border: 1px solid var(--borderColorSearchBar);
+    //border: 1px solid var(--borderColorSearchBar);
     gap: 3px;
 }
 
@@ -59,6 +65,12 @@ label.MuiFormLabel-root.MuiInputLabel-root {
     color: var(--textColor) !important;
 }
 
-    .MuiOutlinedInput-root {
-        padding: 3px 9px !important;
+.MuiOutlinedInput-root {
+    padding: 3px 9px !important;
+}
+
+@media (max-width: 500px) {
+    .MuiAutocomplete-endAdornment {
+        top: unset !important;
     }
+}

@@ -293,7 +293,7 @@ const Navbar = () => {
     }
 
     return <>
-        <header className={`navbar ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'nav-hidden' : 'nav-visible'}`}>
+        <header className={`navbar normal-text ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'nav-hidden' : 'nav-visible'}`}>
             <section className="navbar-section">
                 <Link to={getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
@@ -302,9 +302,9 @@ const Navbar = () => {
                     className="navbar-menu"
                     onClick={() => setOptionsOpened(p => p === AvailableOptions.Menu ? AvailableOptions.None : AvailableOptions.Menu)}
                 >
-                    <img className={"navbar-menu-img" + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="24" height="20" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
+                    <img className={"navbar-menu-img" + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
                 </button>
-                <div className="search-wrapper">
+                <div className="search-wrapper normal-text-descendants">
                     <SearchableDropdown
                         searchOpen={searchOpen}
                         setSearchOpen={setSearchOpen}
@@ -338,7 +338,7 @@ const Navbar = () => {
                                 specificHeight={28}
                                 specificWidth={28}
                               />
-                              {option.label}
+                              <span className="normal-text">{option.label}</span>
                             </Box>
                         )}
                     />
@@ -347,7 +347,7 @@ const Navbar = () => {
                     className={`navbar-filter ${pathname.includes("pokemon") || pathname.includes("calendar") ? "unavailable" : ""}`}
                     onClick={() => setOptionsOpened(p => p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter)}
                 >
-                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="24" height="20" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
+                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
                 </button>
             </section>
         </header>
@@ -362,7 +362,7 @@ const Navbar = () => {
                     <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
-                                <span>
+                                <span className="important-text">
                                     {translator(TranslatorKeys.Language, currentLanguage)}
                                 </span>
                                 <Select
@@ -377,7 +377,7 @@ const Navbar = () => {
                         </li>
                         <li className="options-li">
                             <div className="option-entry">
-                                <span>
+                                <span className="important-text">
                                     {translator(TranslatorKeys.GameLanguage, currentLanguage)}
                                 </span>
                                 <Select
@@ -399,7 +399,7 @@ const Navbar = () => {
                     <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
-                                <span>
+                                <span className="important-text">
                                     {translator(TranslatorKeys.Theme, currentLanguage)}
                                 </span>
                                 <Select
@@ -414,7 +414,7 @@ const Navbar = () => {
                         </li>
                         <li className="options-li">
                             <div className="option-entry">
-                                <span>
+                                <span className="important-text">
                                     {translator(TranslatorKeys.Source, currentLanguage)}
                                 </span>
                                 <Select
@@ -436,10 +436,10 @@ const Navbar = () => {
                     <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
-                                <span>
+                                <span className="important-text">
                                     {translator(TranslatorKeys.DeleteNavigationData, currentLanguage)}
                                 </span>
-                                <button className="fitting-content-width dark-text default-side-padding with-pointer" onClick={() => {
+                                <button className="fitting-content-width dark-text default-side-padding with-pointer important-text" onClick={() => {
                                     localStorage.clear();
                                     sessionStorage.clear();
                                     window.location.reload();
@@ -458,7 +458,7 @@ const Navbar = () => {
             <nav className="options-nav">
                 <section>
                     <strong>
-                        <span className="strong-underline">
+                        <span className="strong-underline important-text">
                             {translator(TranslatorKeys.GridFiltering, currentLanguage)}
                         </span>
                     </strong>

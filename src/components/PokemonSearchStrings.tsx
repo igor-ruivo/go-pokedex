@@ -294,7 +294,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
     return (
         <>
             {league !== LeagueType.RAID ?
-                <div className="banner_layout">
+                <div className="banner_layout normal-text">
                     <div className="extra-ivs-options item default-padding">
                         Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
                             {Array.from({length: 4096}, (_x, i) => i + 1)
@@ -309,7 +309,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
                         value={computeSearchString(p)}
                         readOnly
                     /></div>)}
-                </div> : <div className="item default-padding centered">
+                </div> : <div className="item default-padding centered normal-text">
                     <span>{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
             }

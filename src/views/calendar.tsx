@@ -230,7 +230,7 @@ const Calendar = () => {
 
     return (
         <main className="pokedex-layout">
-            <nav className="navigation-header smaller-navigation">
+            <nav className="navigation-header normal-text">
                 <ul>
                     <li>
                         <Link to={pokemonBasePath + "/events"} className={"header-tab no-full-border " + (tab.endsWith("/events") ? "selected" : "")}>
@@ -423,7 +423,7 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
 
     return <div>
         <div className='divider'/>
-        <nav className="navigation-header smaller-navigation">
+        <nav className="navigation-header normal-text">
             <ul>
                 {post.bonuses && <li>
                     <div onClick={() => setCurrTab("bonuses")} className={"header-tab no-full-border " + (currTab === "bonuses" ? "selected" : "")}>

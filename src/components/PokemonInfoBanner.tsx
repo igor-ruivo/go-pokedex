@@ -290,7 +290,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }
     }
 
-    return <div className="banner_layout">
+    return <div className="banner_layout normal-text">
         <div className="pokemon_with_ivs">
             <div className="item aligned">
                 <LeagueRanks
