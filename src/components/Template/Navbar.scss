@@ -63,13 +63,14 @@
     background: var(--headerBackground);
     color: var(--textColor);
     z-index: 40000;
+    font-size: 14px;
     width: 100%;
     box-shadow: 0 0 2px rgba(0,0,0,.293),0 12px 11px #00000049,0 100px 80px #00000012;
     transition: transform 225ms linear;
 }
 
 .filter-menu {
-    font-size: 12px;
+    font-size: 14px;
     top: 55px;
     background: var(--headerBackground);
     color: var(--textColor);
@@ -261,6 +262,8 @@ button {
 
 .hint-container {
     display: flex;
+    min-height: 16px;
+
     gap: 9px;
 
     img {
@@ -309,13 +312,27 @@ button {
         filter: opacity(0.33);
     }
 }
+    
+.selectable-descendants {
+    * {
+        cursor: pointer !important;
+    }
+}
+
+.cogwheel {
+    filter: var(--cogwheel-filter);
+}
+
+.contrast-border {
+    border: 1px solid rgb(204,204,204);
+}
 
 .navbar-menu-img {
     justify-self: center;
 
     &.cross {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
     }
 }
 

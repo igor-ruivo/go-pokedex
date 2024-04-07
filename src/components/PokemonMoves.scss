@@ -134,11 +134,11 @@ details[open] {
 }
 
 .buff-panel {
-    margin-top: -4px;
+    margin-top: -8px;
     padding: 0px 9px;
     border-radius: 12px;
-    background-color: var(--buffBackground);
-    border: var(--buff-panel-border);
+    background-color: var(--event-buff-panel-bg);
+    border: var(--event-buff-panel-border);
     max-width: -moz-fit-content;
     height: fit-content;
     max-width: fit-content;

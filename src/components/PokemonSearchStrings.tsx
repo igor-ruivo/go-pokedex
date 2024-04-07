@@ -296,12 +296,13 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             {league !== LeagueType.RAID ?
                 <div className="banner_layout normal-text">
                     <div className="extra-ivs-options item default-padding">
+                        <div className="with-padding">
                         Top <select value={top} onChange={e => setTop(+e.target.value)} className="select-level">
                             {Array.from({length: 4096}, (_x, i) => i + 1)
                                 .map(e => (<option key={e} value={e}>{e}</option>))}
                         </select>
                         &nbsp;&nbsp;&nbsp;{translator(TranslatorKeys.TrashString, currentLanguage)} <input type="checkbox" checked={trash} onChange={_ => setTrash(previous => !previous)}/>
-                    </div>
+                    </div></div>
 
                     {predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map(p => <div key = {p.speciesId} className="textarea-label item default-padding"><span>{p.speciesId === pokemon.speciesId ?
                     `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? "" : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === 0 ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === 1 ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === 3 ? gameTranslator(GameTranslatorKeys.FantasyCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)}:` :
@@ -310,7 +311,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
                         readOnly
                     /></div>)}
                 </div> : <div className="item default-padding centered normal-text">
-                    <span>{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
+                    <span className="with-padding">{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
             }
         </>

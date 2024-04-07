@@ -272,6 +272,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
         {league !== LeagueType.RAID ?
             <div className="banner_layout normal-text">
                 <div className="extra-ivs-options item default-padding">
+                    <div className="with-padding">
                     {translator(TranslatorKeys.SearchIVs, currentLanguage)}:
                     <select value={attackIV} onChange={e => setAttackIV(+e.target.value)} className="select-level">
                         {Array.from({length: 16}, (_x, i) => i)
@@ -285,6 +286,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                         {Array.from({length: 16}, (_x, i) => i)
                             .map(e => (<option key={e} value={e}>{e}</option>))}
                     </select>
+                    </div>
                 </div>
                 <TableVirtuoso
                     className="ivs-table item"
@@ -302,7 +304,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                     itemContent={rowContent}
                 />
             </div> : <div className="item default-padding centered normal-text">
-                    <span>{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
+                    <span className="with-padding">{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
             }
         </>

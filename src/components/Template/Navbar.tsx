@@ -302,7 +302,7 @@ const Navbar = () => {
                     className="navbar-menu"
                     onClick={() => setOptionsOpened(p => p === AvailableOptions.Menu ? AvailableOptions.None : AvailableOptions.Menu)}
                 >
-                    <img className={"navbar-menu-img" + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : "https://i.imgur.com/NEVZ0qK.png"}/>
+                    <img className={"navbar-menu-img " + (optionsOpened === AvailableOptions.Menu ? "invert-white-mode " : "invert-dark-mode ") + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : `${process.env.PUBLIC_URL}/images/cogwheel.png`}/>
                 </button>
                 <div className="search-wrapper normal-text-descendants">
                     <SearchableDropdown
@@ -351,7 +351,7 @@ const Navbar = () => {
                 </button>
             </section>
         </header>
-        <aside className={`options-menu ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
+        <aside className={`options-menu normal-text ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>
@@ -362,11 +362,11 @@ const Navbar = () => {
                     <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
-                                <span className="important-text">
+                                <span className="normal-text">
                                     {translator(TranslatorKeys.Language, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown navbar-dropdown-menu"
+                                    className="navbar-dropdown navbar-dropdown-menu selectable-descendants"
                                     isSearchable={false}
                                     options={languageOptions}
                                     value={languageOptions.find(l => l.value === currentLanguage)}
@@ -377,11 +377,11 @@ const Navbar = () => {
                         </li>
                         <li className="options-li">
                             <div className="option-entry">
-                                <span className="important-text">
+                                <span className="normal-text">
                                     {translator(TranslatorKeys.GameLanguage, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown navbar-dropdown-menu"
+                                    className="navbar-dropdown navbar-dropdown-menu selectable-descendants"
                                     isSearchable={false}
                                     options={gameLanguageOptions}
                                     value={gameLanguageOptions.find(l => l.value === currentGameLanguage)}
@@ -399,11 +399,11 @@ const Navbar = () => {
                     <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
-                                <span className="important-text">
+                                <span className="normal-text">
                                     {translator(TranslatorKeys.Theme, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown navbar-dropdown-menu"
+                                    className="navbar-dropdown navbar-dropdown-menu selectable-descendants"
                                     isSearchable={false}
                                     options={themeOptions}
                                     value={themeOptions.find(l => l.value === getDefaultTheme())}
@@ -414,11 +414,11 @@ const Navbar = () => {
                         </li>
                         <li className="options-li">
                             <div className="option-entry">
-                                <span className="important-text">
+                                <span className="normal-text">
                                     {translator(TranslatorKeys.Source, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown navbar-dropdown-menu"
+                                    className="navbar-dropdown navbar-dropdown-menu selectable-descendants"
                                     isSearchable={false}
                                     options={sourceOptions}
                                     value={sourceOptions.find(l => l.value === imageSource)}
@@ -436,14 +436,14 @@ const Navbar = () => {
                     <ul className="options-ul">
                         <li className="options-li">
                             <div className="option-entry">
-                                <span className="important-text">
+                                <span className="normal-text">
                                     {translator(TranslatorKeys.DeleteNavigationData, currentLanguage)}
                                 </span>
-                                <button className="fitting-content-width dark-text default-side-padding with-pointer important-text" onClick={() => {
+                                <div className="fitting-content-width item contrast-border default-side-padding with-pointer important-text" onClick={() => {
                                     localStorage.clear();
                                     sessionStorage.clear();
                                     window.location.reload();
-                                }}>{translator(TranslatorKeys.Delete, currentLanguage)}</button>
+                                }}>{translator(TranslatorKeys.Delete, currentLanguage)}</div>
                             </div>
                         </li>
                     </ul>
@@ -454,11 +454,11 @@ const Navbar = () => {
             className={`fake-modal ${(optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !(pathname.includes("pokemon") || pathname.includes("calendar")))) ? "show" : "hide"}`}
             onClick={e => handleModalClick(e)}
         />
-        <aside className={`filter-menu ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon") || pathname.includes("calendar")) ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
+        <aside className={`filter-menu normal-text ${(optionsOpened !== AvailableOptions.Filter || pathname.includes("pokemon") || pathname.includes("calendar")) ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
             <nav className="options-nav">
                 <section>
                     <strong>
-                        <span className="strong-underline important-text">
+                        <span className="strong-underline normal-text">
                             {translator(TranslatorKeys.GridFiltering, currentLanguage)}
                         </span>
                     </strong>
@@ -483,7 +483,7 @@ const Navbar = () => {
                                     {pathname.includes("raid") ? translator(TranslatorKeys.RaidType, currentLanguage) : translator(TranslatorKeys.Type, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown"
+                                    className="navbar-dropdown selectable-descendants"
                                     isSearchable={false}
                                     options={typesOptions.filter(e => e.value === undefined || type2Filter === undefined || (pathname.includes("raid") || e.value !== type2Filter))}
                                     value={type1Filter === undefined ? typesOptions[0] : typesOptions.find(l => l.value === type1Filter)}
@@ -496,7 +496,7 @@ const Navbar = () => {
                                     {translator(TranslatorKeys.OrType, currentLanguage)}
                                 </span>
                                 <Select
-                                    className="navbar-dropdown"
+                                    className="navbar-dropdown selectable-descendants"
                                     isSearchable={false}
                                     options={typesOptions.filter(e => e.value === undefined || e.value !== type1Filter)}
                                     value={type2Filter === undefined ? typesOptions[0] : typesOptions.find(l => l.value === type2Filter)}

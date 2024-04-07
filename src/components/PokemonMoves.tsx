@@ -277,7 +277,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
 
     return (
         <div className="banner_layout normal-text">
-            {league === LeagueType.RAID && <><div className="raid-container item">
+            {league === LeagueType.RAID && <><div className="raid-container item with-padding">
                 <div className="overflowing">
                 <div className="img-family">
                     {Array.from(new Set(getAllChargedMoves(pokemon, moves, gamemasterPokemon).map(m => moves[m].type))).filter(t => t !== "normal")
@@ -313,7 +313,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                 </span>
             </div>
             </>}
-            {league !== LeagueType.RAID && <div className="menu-item centered"><div>{relevantMoveSet.length > 0 ? <><strong className="cp-container">{`${translateMoveFromMoveId(relevantMoveSet[0], moves, gameTranslation)}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[1], moves, gameTranslation)}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[2], moves, gameTranslation)}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.FantasyCup, currentGameLanguage)}...`}</div></div>}
+            {league !== LeagueType.RAID && <div className="menu-item centered with-padding"><div className="with-padding">{relevantMoveSet.length > 0 ? <><strong className="cp-container">{`${translateMoveFromMoveId(relevantMoveSet[0], moves, gameTranslation)}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[1], moves, gameTranslation)}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[2], moves, gameTranslation)}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.FantasyCup, currentGameLanguage)}...`}</div></div>}
             <div className="moves-display-layout">
                 <div className="menu-item">
                     <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>

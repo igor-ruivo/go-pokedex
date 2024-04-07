@@ -192,7 +192,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             {league === LeagueType.RAID &&
                 <div className="extra-ivs-options item default-padding block-column">
                     <div className="centered">
-                    <span>
+                    <span className="with-padding">
                         {translator(TranslatorKeys.In, currentLanguage).substring(0, 1).toLocaleUpperCase() + translator(TranslatorKeys.In, currentLanguage).substring(1)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}, {translator(TranslatorKeys.RaidsIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))}:
                     </span></div>
                     <br/>
@@ -208,7 +208,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     </div>
                 </div>
             }
-            {league !== LeagueType.RAID && <div className="centered item default-padding"><span>
+            {league !== LeagueType.RAID && <div className="centered item default-padding"><span className="with-padding">
                 {translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.FantasyCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}:
             </span></div>}
             <div className="counters-display-layout">
