@@ -21,7 +21,7 @@ const getDefaultLeagueType = () => {
 }
 
 const useLeague = () => {
-    const [league, setLeague] = useState<LeagueType>(getDefaultLeagueType() ?? LeagueType.GREAT_LEAGUE);
+    const [league, setLeague] = useState<LeagueType>(getDefaultLeagueType() ?? LeagueType.RAID);
 
     useEffect(() => {
         writeSessionValue(ConfigKeys.LastLeague, JSON.stringify(league));

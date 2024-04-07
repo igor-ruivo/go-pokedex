@@ -73,6 +73,11 @@
     grid-row: 2;
 }
 
+.shifted-left {
+    left: -5px;
+    position: relative;
+}
+
 .cp-stats-container {
     width: fit-content;
     align-items: center;
@@ -87,6 +92,7 @@
 }
 
 .pkm-stats-container {
+    margin-top: 16px;
     font-size: large;
     display: flex;
     gap: 15px;
@@ -154,7 +160,6 @@
 }
 
 .cp-level {
-    margin-top: 16px;
     display: flex;
 }
 

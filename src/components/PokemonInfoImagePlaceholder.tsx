@@ -19,6 +19,16 @@ interface IPokemonInfoImagePlaceholderProps {
     setDisplayLevel: (newLevel: number) => void;
 }
 
+interface PokemonType {
+    types: string[];
+}
+
+interface WeatherImageInfo {
+    types: string[];
+    image: string;
+    alt: string;
+}
+
 const valueToLevel = (value: number) => {
     return value / 2 + 0.5
 }
@@ -35,6 +45,28 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     const isDisabled = pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings");
     const levelOptions = Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any);
 
+    const conditions: WeatherImageInfo[] = [
+        { types: ["grass", "fire", "ground"], image: "sunny.png", alt: "sunny" },
+        { types: ["water", "electric", "bug"], image: "rainy.png", alt: "rainy" },
+        { types: ["normal", "rock"], image: "partly-cloudy.png", alt: "partly cloudy" },
+        { types: ["fairy", "fighting", "poison"], image: "cloudy.png", alt: "cloudy" },
+        { types: ["flying", "dragon", "psychic"], image: "windy.png", alt: "windy" },
+        { types: ["ice", "steel"], image: "snow.png", alt: "snow" },
+        { types: ["dark", "ghost"], image: "fog.png", alt: "fog" }
+    ];
+
+    let matchCount = 0;
+    const imagesToRender = conditions.flatMap(condition => {
+        if (condition.types.some(type => props.pokemon.types.map(t => t.toString().toLowerCase()).includes(type))) {
+            matchCount++;
+            return [{
+                ...condition,
+                className: matchCount === 1 ? "pkm-weather-boost-img " : "pkm-weather-boost-img shifted-left"
+            }];
+        }
+        return [];
+    });
+
     return <div className="column item with-small-margin-top">
         <div className="pokemon_main_info">
             <PokemonImage
@@ -44,6 +76,10 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 lowRes={false}
             />
             <div className="with-margin-left">
+
+                <span className="cp-level">
+                    <strong className="cp-container very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong>
+                </span>
                 
                 <strong className="pkm-stats-container">
                     <div className="atk-stat">
@@ -71,19 +107,11 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                         </div>
                     </div>
                     <div className="weather-boost aligned-end no-contrast">
-                        {["grass", "fire", "ground"].some(h => props.pokemon.types.map(t => t.toString().toLocaleLowerCase()).includes(h)) && <img className="pkm-weather-boost-img" src={`${process.env.PUBLIC_URL}/images/weather/sunny.png`} alt="sunny" height="100%" width="100%"/>}
-                        {["water", "electric", "bug"].some(h => props.pokemon.types.map(t => t.toString().toLocaleLowerCase()).includes(h)) && <img className="pkm-weather-boost-img" src={`${process.env.PUBLIC_URL}/images/weather/rainy.png`} alt="rainy" height="100%" width="100%"/>}
-                        {["normal", "rock"].some(h => props.pokemon.types.map(t => t.toString().toLocaleLowerCase()).includes(h)) && <img className="pkm-weather-boost-img" src={`${process.env.PUBLIC_URL}/images/weather/partly-cloudy.png`} alt="partly cloudy" height="100%" width="100%"/>}
-                        {["fairy", "fighting", "poison"].some(h => props.pokemon.types.map(t => t.toString().toLocaleLowerCase()).includes(h)) && <img className="pkm-weather-boost-img" src={`${process.env.PUBLIC_URL}/images/weather/cloudy.png`} alt="cloudy" height="100%" width="100%"/>}
-                        {["flying", "dragon", "psychic"].some(h => props.pokemon.types.map(t => t.toString().toLocaleLowerCase()).includes(h)) && <img className="pkm-weather-boost-img" src={`${process.env.PUBLIC_URL}/images/weather/windy.png`} alt="windy" height="100%" width="100%"/>}
-                        {["ice", "steel"].some(h => props.pokemon.types.map(t => t.toString().toLocaleLowerCase()).includes(h)) && <img className="pkm-weather-boost-img" src={`${process.env.PUBLIC_URL}/images/weather/snow.png`} alt="snow" height="100%" width="100%"/>}
-                        {["dark", "ghost"].some(h => props.pokemon.types.map(t => t.toString().toLocaleLowerCase()).includes(h)) && <img className="pkm-weather-boost-img" src={`${process.env.PUBLIC_URL}/images/weather/fog.png`} alt="fog" height="100%" width="100%"/>}
+                        {imagesToRender.map((img, index) => (
+                            <img key={index} className={img.className} src={`${process.env.PUBLIC_URL}/images/weather/${img.image}`} alt={img.alt} height="100%" width="100%"/>
+                        ))}
                     </div>
                 </strong>
-
-                <span className="cp-level">
-                    <strong className="cp-container very-big">{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong>
-                </span>
                 
                 <span className="pokemon_types">
                     {props.pokemon.types[0] && <span className="pokemon_type_bg" style={{backgroundColor: `var(--type-${props.pokemon.types[0]})`}}>
@@ -109,7 +137,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     value={levelOptions.find(o => o.label === props.displayLevel)}
                     options={levelOptions}
                     onChange={e => props.setDisplayLevel((e as any).label)}
-                    formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left"><strong className="aligned-block ellipsed">{translator(TranslatorKeys.Level, currentLanguage)} {<span className="cp-container">{data.label}</span>}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left normal-text"><strong className="aligned-block ellipsed">{translator(TranslatorKeys.Level, currentLanguage)} {<span className="cp-container">{data.label}</span>}</strong></div>}
                 />
             </div>
             </div>
