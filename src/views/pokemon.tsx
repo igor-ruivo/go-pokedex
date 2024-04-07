@@ -100,11 +100,11 @@ const Pokemon = () => {
                                             handleSetLeague={handleSetLeague}
                                         /></div>
 
-                                        <nav className="navigation-header">
+                                        <nav className="navigation-header smaller-navigation">
                                             <ul>
                                                 <li>
                                                     <Link to={pokemonBasePath + "/info"} className={"header-tab no-full-border " + (tab.endsWith("/info") ? "selected" : "")}>
-                                                        <span>{translator(TranslatorKeys.Stats, currentLanguage)}</span>
+                                                        <span>Ranks</span>
                                                     </Link>
                                                 </li>
                                                 <li>

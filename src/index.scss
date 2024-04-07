@@ -28,6 +28,8 @@ code {
     --empty-entry: rgb(36,41,47)//#26313b;
     --hover-brightness: saturate(1.1) brightness(1.2);
     --buff-panel-border: 2px solid var(--popup-background-color);
+    --event-buff-panel-border: 1px solid var(--borderColor2);
+    --event-buff-panel-bg: var(--popup-background-color);
     --text-shadow: -1px 0 #00000040, 0 1px #00000040, 1px 0 #00000040, 0 -1px #00000040;
     --extra-brightness: brightness(1.4);
     --scroll-background: #55585b;
@@ -57,7 +59,7 @@ code {
     --popup-background-color: #26313b;
     --underlineDivision: rgba(255, 255, 255, 0.25);
     --lighter-tone-text: #ffffff;
-    --event-special-font: #E7D7B8;
+    --event-special-font: #d7d7d7;
     --titleMoveTextColor: #eff2f7;
     --cp-color: rgb(255, 189, 0);
     --triple-color: rgb(255, 139, 0);
@@ -106,6 +108,7 @@ code {
     --hover-brightness: saturate(1.1) brightness(1.05);
     --stat-label-color: #cdb266;
     --buff-panel-border: 1px solid var(--borderColor2);
+    --event-buff-panel-border: 1px solid var(--borderColor2);
     --text-shadow: none;
     --extra-brightness: none;
     --scroll-background: #b3b3b3;
@@ -129,6 +132,7 @@ code {
     --buttonsTextColor: #202122;
     --buttonsBorderColor: #848484;
     --tableBackground: #f6f6f6;
+    --event-buff-panel-bg: var(--bodyBackgroundColor);
     --tableBackgroundHover: #dcdcdc;
     --tableHeaderSortable: rgb(140, 140, 140);
     --tableRowSelected: rgba(25, 118, 210, 0.18);

@@ -37,6 +37,15 @@
     }
 }
 
+.season-img-padding {
+    display: flex;
+    padding: 4px;
+    img {
+        width: 26px;
+        height: 26px;
+    }
+}
+
 .img-padding {
     display: flex;
     padding: 4px;
@@ -77,6 +86,42 @@
     gap: 3px;
     position: relative;
     flex-direction: row;
+}
+
+.event-buffs-placeholder {
+    justify-content: center;
+    display: flex;
+    gap: 3px;
+    position: relative;
+    flex-direction: row;
+}
+
+.event-buff-panel {
+    margin-top: -9px;
+    padding: 0px 9px;
+    border-radius: 12px;
+    background-color: var(--event-buff-panel-bg);
+    border: var(--event-buff-panel-border);
+    max-width: -moz-fit-content;
+    height: fit-content;
+    max-width: fit-content;
+
+    summary {
+        max-width: calc(33vw);
+        white-space: nowrap;
+        font-size: 11px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        height: 15px;
+        line-height: 18px;
+
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
 }
 
 details {
@@ -466,6 +511,15 @@ summary::-webkit-details-marker {
             margin-bottom: 0px;
         }
     }
+}
+
+@media (max-width: 565px) {
+.season-img-padding {
+    img {
+        width: 22px;
+        height: 22px;
+    }
+}
 }
 
 @media (max-width: 360px) {

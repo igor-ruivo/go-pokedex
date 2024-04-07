@@ -230,7 +230,7 @@ const Calendar = () => {
 
     return (
         <main className="pokedex-layout">
-            <nav className="navigation-header">
+            <nav className="navigation-header smaller-navigation">
                 <ul>
                     <li>
                         <Link to={pokemonBasePath + "/events"} className={"header-tab no-full-border " + (tab.endsWith("/events") ? "selected" : "")}>
@@ -325,36 +325,72 @@ const Calendar = () => {
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-big-top-margin with-xl-gap'>{
                             [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(event =>
-                                <div key={event.subtitle + "-" + event.title} className={`column item ${new Date(event.date ?? 0) < new Date() ? "ongoing-event" : ""}`}>
-                                    <div className='event-panel-container clickable' onClick={() => setCurrentEvent(c => c === (event.subtitle + "-" + event.title) ? "" : (event.subtitle + "-" + event.title))}>
-                                        <span className='images-container'>
-                                            <span className='restricted-img-size'>
-                                                <img className="img-with-rounded-corners" src={event.imgUrl} width="100%" height="100%"/>
+                                <div key={event.subtitle + "-" + event.title}>
+                                <div className={`column item ${new Date(event.date ?? 0) < new Date() ? "ongoing-event" : ""}`}>
+                                    <div className='column'>
+                                        <div className='event-panel-container clickable' onClick={() => setCurrentEvent(c => c === (event.subtitle + "-" + event.title) ? "" : (event.subtitle + "-" + event.title))}>
+                                            <span className='images-container'>
+                                                <span className='restricted-img-size'>
+                                                    <img className="img-with-rounded-corners" src={event.imgUrl} width="100%" height="100%"/>
+                                                </span>
                                             </span>
-                                        </span>
-                                        <div className='event-text-container justified with-border-right'>
-                                            <strong className='ellipsed'>{posts.flat().some(pf => pf.title === event.title) ? (event.subtitle ?? event.title) : event.title}</strong>
-                                            <div className='with-padding-left with-normal-gap event-dates'>
-                                            <span className='event-special-font'><strong>From:</strong> <span>{inUpperCase(new Date(event.date).toLocaleString(undefined, x > 500 ? options : smallOptions))}</span></span>
-                                            <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, x > 500 ? options : smallOptions))}</span></span>
-                                            </div>
+                                            <div className='event-text-container justified with-border-right'>
+                                                <strong className='ellipsed'>{posts.flat().some(pf => pf.title === event.title) ? (event.subtitle ?? event.title) : event.title}</strong>
+                                                <div className='with-padding-left with-normal-gap event-dates'>
+                                                <span className='event-special-font'><strong>From:</strong> <span>{inUpperCase(new Date(event.date).toLocaleString(undefined, options))}</span></span>
+                                                <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, options))}</span></span>
+                                                </div>
+                                            </div>{x > 565 && <div className='perks-container aligned justified'>
+                                                <div className='perks-container-row aligned justified'>
+                                                    <img className={(event.wild?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                                    <img className={(event.raids?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
+                                                </div>
+                                                <div className='perks-container-row aligned justified'>
+                                                    <img className={event.bonuses ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
+                                                    <img className={(event.researches?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/>
+                                                    <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
+                                                </div>
+                                            </div>}
                                         </div>
-                                        {x >= 360 && <div className='perks-container aligned justified'>
-                                            <div className='perks-container-row aligned justified'>
-                                                <img className={(event.wild?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
-                                                <img className={(event.raids?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
-                                            </div>
-                                            <div className='perks-container-row aligned justified'>
-                                                <img className={event.bonuses ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
-                                                <img className={(event.researches?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/>
-                                                <img className={(event.eggs?.length ?? 0) > 0 ? 'active-perk' : 'inactive-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
-                                            </div>
-                                        </div>}
+                                        
                                     </div>
                                     {currentEvent === event.subtitle + "-" + event.title && <div>
                                         <EventDetail eventKey='event.subtitle + "-" + event.title' post={event} sortEntries={sortEntries}/>
                                     </div>}
-                                </div>)}</div>}
+                                </div>
+                                
+                                
+                                {x <= 565 && currentEvent !== event.subtitle + "-" + event.title && //perks-container-mobile perks-container-row aligned justified 
+                                <div className='event-buffs-placeholder'>
+                                    {event.bonuses && <div className="event-buff-panel">
+                                        <summary>
+                                            <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/>
+                                        </summary>
+                                    </div>}
+                                    {(event.wild?.length ?? 0) > 0 && <div className="event-buff-panel">
+                                        <summary>
+                                            <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/>
+                                        </summary>
+                                    </div>}
+                                    {(event.raids?.length ?? 0) > 0 && <div className="event-buff-panel">
+                                        <summary>
+                                            <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>
+                                        </summary>
+                                    </div>}
+                                    {(event.researches?.length ?? 0) > 0 && <div className="event-buff-panel">
+                                        <summary>
+                                            <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/>
+                                        </summary>
+                                    </div>}
+                                    {(event.eggs?.length ?? 0) > 0 && <div className="event-buff-panel">
+                                        <summary>
+                                            <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
+                                        </summary>
+                                    </div>}
+                                </div>}
+                                </div>
+                                
+                                )}</div>}
                     </div>
                     </div>
                 </div>
@@ -377,31 +413,31 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
 
     return <div>
         <div className='divider'/>
-        <nav className="navigation-header">
+        <nav className="navigation-header smaller-navigation">
             <ul>
                 {post.bonuses && <li>
                     <div onClick={() => setCurrTab("bonuses")} className={"header-tab no-full-border " + (currTab === "bonuses" ? "selected" : "")}>
-                        <span>Bonuses</span>
+                        <img width="18" height="18" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`}/><span>Bonuses</span>
                     </div>
                 </li>}
                 {(post.wild?.length ?? 0) > 0 && <li>
                     <div onClick={() => setCurrTab("spawns")} className={"header-tab no-full-border " + (currTab === "spawns" ? "selected" : "")}>
-                        <span>Spawns</span>
+                        <img width="18" height="18" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`}/><span>Spawns</span>
                     </div>
                 </li>}
                 {(post.raids?.length ?? 0) > 0 && <li>
                     <div onClick={() => setCurrTab("raids")} className={"header-tab no-full-border " + (currTab === "raids" ? "selected" : "")}>
-                        <span>Raids</span>
+                        <img width="18" height="18" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`}/><span>Raids</span>
                     </div>
                 </li>}
                 {(post.researches?.length ?? 0) > 0 && <li>
                     <div onClick={() => setCurrTab("researches")} className={"header-tab no-full-border " + (currTab === "researches" ? "selected" : "")}>
-                        <span>Researches</span>
+                        <img width="18" height="18" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/><span>Researches</span>
                     </div>
                 </li>}
                 {(post.eggs?.length ?? 0) > 0 && <li>
                     <div onClick={() => setCurrTab("eggs")} className={"header-tab no-full-border disabled" + (currTab === "eggs" ? "selected" : "")}>
-                        <span>Eggs</span>
+                        <img width="18" height="18" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/><span>Eggs</span>
                     </div>
                 </li>}
             </ul>
@@ -413,7 +449,7 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
                     .map((t, i) => (
                         <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
                             <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
-                                <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`}/></div>
+                                <div className="season-img-padding"><img className="invert-light-mode" height="100%" width="100%" alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`}/></div>
                                 {String(i) === currentPlace && idxToPlace(i)}
                             </strong>
                         </div>

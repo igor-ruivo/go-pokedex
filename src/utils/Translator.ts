@@ -366,7 +366,7 @@ const ivTables = new Map<Language, string>([
 ]);
 
 const searchStrings = new Map<Language, string>([
-    [Language.English, "Search Strings"],
+    [Language.English, "Strings"],
     [Language.Portuguese, "Pesquisas"],
     [Language.Bosnian, "Istraživanja"]
 ]);

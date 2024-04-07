@@ -123,15 +123,27 @@
     }
 }
 
+.perks-container-mobile {
+    margin-left: auto;
+    margin-right: auto;
+    border-top: 1px solid var(--borderColor2);
+    padding: 3px 0px;
+    max-width: 65%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+    img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
 .perks-container-row {
     display: flex;
     flex-direction: row;
     width: 100%;
     gap: 16px;
-}
-
-.with-border-right {
-    border-right: 1px solid var(--borderColor2);
 }
 
 .bonus-container {
@@ -199,6 +211,10 @@
 }
 
 @media (max-width: 800px) {
+    .event-dates {
+        gap: 0px !important;
+    }
+    
     .dynamic-size {
         width: calc(100% / 3);
     }
@@ -243,6 +259,12 @@
     }
 }
 
+@media (min-width: 566px) {
+    .with-border-right {
+        border-right: 1px solid var(--borderColor2);
+    }
+}
+
 @media (max-width: 565px) {
     .ongoing-event {
         border-left: 4px solid lightgreen;
@@ -250,14 +272,11 @@
 
     .bonus-container {
         margin: 6px;
-        font-size: x-small;
+        font-size: smaller;
     }
 
-    .event-dates {
-        font-size: x-small;
-    }
-
-    .perks-container {
+    .perks-container,
+    .perks-container-mobile {
         img {
             width: 22px;
             height: 22px;
@@ -266,12 +285,22 @@
         gap: 6px;
     }
 
+    .ul-with-adorner {
+        padding-right: 0px;
+        padding-left: 10px;
+    }
+
     .event-text-container {
         gap: 5px;
     }
+
+    .event-dates {
+        font-size: x-small;
+        gap: 0px !important;
+    }
     
     .event-panel-container {
-        grid-template-columns: 25% 45% 1fr;
+        grid-template-columns: 25% 75%;
         //padding-right: 0px;
     }
 }
@@ -282,7 +311,8 @@
         padding-bottom: 0px;
     }
 
-    .perks-container {
+    .perks-container,
+    .perks-container-mobile {
         img {
             width: 20px;
             height: 20px;
@@ -297,7 +327,7 @@
         padding-bottom: 6px;
     }
 
-    .event-panel-container {
-        grid-template-columns: 25% 75%;
+    .event-text-container {
+        gap: 0px !important;
     }
 }
