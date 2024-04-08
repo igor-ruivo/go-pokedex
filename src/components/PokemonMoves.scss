@@ -255,6 +255,10 @@ details[open] {
     padding: 0px 12px;
 }
 
+.smallish-padding {
+    padding: 0px 9px;
+}
+
 .family-padding {
     padding: 0px 7px !important;
 }
@@ -265,6 +269,10 @@ details[open] {
 
 .extra-padding-right {
     padding-right: 18px !important;
+}
+
+.small-extra-padding-right {
+    padding-right: 15px !important;
 }
 
 .slim-padding {
@@ -335,6 +343,24 @@ summary::-webkit-details-marker {
     padding-right: 12px;
 }
 
+.small-move-detail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    &.with-shadow {
+        border-radius: 12px;
+        background-color: var(--background-shadow);
+        box-shadow: 0 0 2px hsla(0,21%,90%,.158),0 12px 11px #00000009;
+    }
+    &.with-hover {
+        &:hover {
+            border: 1px solid var(--buttonsBorderColor);
+        }
+    }
+    padding-right: 9px;
+}
+
 .soft {
     background-color: var(--background-shadow-soft) !important;
 }
@@ -355,6 +381,7 @@ summary::-webkit-details-marker {
 .move-stats-slim {
     gap: 6px;
     padding: 6px;
+    height: 34.38px;
 }
 
 .move-stats-content {

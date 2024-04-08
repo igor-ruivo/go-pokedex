@@ -289,7 +289,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                                 setRaidAttackType(t);
                             }
                         }}>
-                            <strong className={`move-detail ${t === raidAttackType ? "soft" : "baby-soft"} normal-padding item ${t === raidAttackType ? "extra-padding-right" : ""}`}>
+                            <strong className={`small-move-detail ${t === raidAttackType ? "soft" : "baby-soft"} smallish-padding item ${t === raidAttackType ? "small-extra-padding-right" : ""}`}>
                                 <div className="img-padding"><img height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
                                 {t === raidAttackType && translatedType((t.substring(0, 1).toLocaleUpperCase() + t.substring(1)) as unknown as PokemonTypes, currentLanguage)}
                             </strong>
