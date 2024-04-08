@@ -121,7 +121,7 @@ const LeagueRanks = ({
             <ListEntry
                 mainIcon={{
                     imageDescription: leagueStat.leagueTitle,
-                    image: <div className={leagueStat.leagueTitle === "raid" ? "img-padding" : ""}><img className={leagueStat.leagueTitle === "raid" ? "raid-img" : ""} height={leagueStat.leagueTitle === "raid" ? 20 : 28} width={leagueStat.leagueTitle === "raid" ? 20 : 28} src={logoSrc} alt={leagueStat.leagueTitle}/></div>,
+                    image: <div className={leagueStat.leagueTitle === "raid" ? "img-padding-extra" : ""}><img className={leagueStat.leagueTitle === "raid" ? "raid-img" : ""} height={leagueStat.leagueTitle === "raid" ? 20 : 28} width={leagueStat.leagueTitle === "raid" ? 20 : 28} src={logoSrc} alt={leagueStat.leagueTitle}/></div>,
                     withBackground: false
                 }}
                 extraIcons={[
