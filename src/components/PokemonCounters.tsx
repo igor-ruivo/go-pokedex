@@ -109,7 +109,8 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         const type2 = pokemon.types.length > 1 ? pokemon.types[1] : undefined;
 
         return <ListEntry
-            slim
+        slimmer
+        slim
             mainIcon={
                 {
                     imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
@@ -166,7 +167,8 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
         const type2 = pokemon.types.length > 1 ? pokemon.types[1] : undefined;
 
         return <ListEntry
-            slim
+        slimmer
+        slim
             mainIcon={
                 {
                     imageDescription: pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),

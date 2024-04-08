@@ -11,6 +11,7 @@ interface IListEntryProps {
     details?: EntryDetails[];
     slim?: boolean;
     soft?: boolean;
+    slimmer?: boolean;
     specificBackgroundStyle?: string;
     defaultBackgroundStyle?: string;
 }
@@ -38,6 +39,7 @@ const ListEntry = ({
     onClick,
     details,
     slim,
+    slimmer,
     soft,
     specificBackgroundStyle,
     defaultBackgroundStyle
@@ -61,7 +63,7 @@ const ListEntry = ({
                             </strong>
                             )}
                         </div>
-                        <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${toggledContent ? "clickable" : ""}`}>
+                        <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slimmer ? "move-stats-slimmer" : slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${toggledContent ? "clickable" : ""}`}>
                             {secondaryContentToBeRendered?.map(content => 
                                 (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
                                     {content}

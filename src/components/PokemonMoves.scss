@@ -384,6 +384,12 @@ summary::-webkit-details-marker {
     height: 34.38px;
 }
 
+.move-stats-slimmer {
+    gap: 6px;
+    padding: 6px;
+    height: 30.38px;
+}
+
 .move-stats-content {
     display: flex;
     justify-content: center;
@@ -547,6 +553,12 @@ summary::-webkit-details-marker {
         height: 22px;
     }
 }
+}
+
+@media (max-width: 500px) {
+    .move-stats-slim {
+        height: 33.38px;
+    }
 }
 
 @media (max-width: 360px) {

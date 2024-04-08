@@ -269,6 +269,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                 </React.Fragment>
             ]}
             details={renderDetails(moveId, isRecommended)}
+            slimmer
             slim
             soft
             defaultBackgroundStyle="normal-entry"
