@@ -425,7 +425,7 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
                     </div>
                 </li>}
                 {(post.eggs?.length ?? 0) > 0 && <li>
-                    <div onClick={() => setCurrTab("eggs")} className={"header-tab no-full-border disabled" + (currTab === "eggs" ? "selected" : "")}>
+                    <div onClick={() => setCurrTab("eggs")} className={"header-tab no-full-border" + (currTab === "eggs" ? "selected" : "")}>
                         <img width="16" height="16" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/><span>Eggs</span>
                     </div>
                 </li>}
@@ -478,7 +478,7 @@ const PostEntry = ({post, collection, sortEntries, kindFilter, withoutTitle, wit
         {!withoutTitle && postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong>}
         {!withoutTitle && !postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>{inUpperCase(new Date(post.date).toLocaleString(undefined, smallOptions)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, smallOptions))}</strong>}
         <div className='with-flex contained'>
-        {collection.filter(k => !kindFilter || kindFilter === k.kind).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+        {collection.filter(k => !kindFilter || kindFilter === k.kind).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
             <div className={`card-wrapper ${!post.isSeason && (p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6")) ? "with-golden-border" : ""}`}>
                 <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} cpStringOverride={withRaidCPStringOverride ? computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow) : undefined} />
             </div>
