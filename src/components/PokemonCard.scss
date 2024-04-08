@@ -55,8 +55,10 @@
     text-align: center;
     .images-container {
         .main-image-container {
-            width: clamp(0px, calc(calc(80px / 1.5) + calc(80 / 1.5) * calc(100vw - 900px) / (1300 - 900)), calc(100px / 1.5));
-            height: clamp(0px, calc(calc(80px / 1.5) + calc(80 / 1.5) * calc(100vw - 900px) / (1300 - 900)), calc(100px / 1.5));
+            width: 55px;
+            height: 55px;
+            //width: clamp(0px, calc(calc(80px / 1.5) + calc(80 / 1.5) * calc(100vw - 900px) / (1300 - 900)), calc(100px / 1.5));
+            //height: clamp(0px, calc(calc(80px / 1.5) + calc(80 / 1.5) * calc(100vw - 900px) / (1300 - 900)), calc(100px / 1.5));
         }
     }
 }
@@ -124,14 +126,31 @@
         gap: 2px;
         .images-container {
             .main-image-container {
-                width: calc(calc(55px / 1.5) + calc(65 / 1.5) * calc(100vw - 600px) / (900 - 600));
-                height: calc(calc(55px / 1.5) + calc(65 / 1.5) * calc(100vw - 600px) / (900 - 600));
+                width: 55px;
+                height: 55px;
+                //width: calc(calc(55px / 1.5) + calc(65 / 1.5) * calc(100vw - 600px) / (900 - 600));
+                //height: calc(calc(55px / 1.5) + calc(65 / 1.5) * calc(100vw - 600px) / (900 - 600));
             }
         }
     }
 
     .pokemon-card {
         line-height: 1;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .mini-card-content {
+        gap: 2px;
+        .images-container {
+            .main-image-container {
+                width: 45px;
+                height: 45px;
+                //width: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
+                //height: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
+            }
+        }
     }
 }
 
@@ -150,8 +169,10 @@
         gap: 2px;
         .images-container {
             .main-image-container {
-                width: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
-                height: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
+                width: 45px;
+                height: 45px;
+                //width: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
+                //height: calc(calc(45px / 1.5) + calc(25 / 1.5) * calc(100vw - 320px) / (600 - 320));
             }
         }
     }
@@ -159,5 +180,16 @@
     .pokemon-card {
         line-height: 1;
         gap: 4px;
+    }
+}
+
+@media (max-width: 500px) {
+    .mini-card-content {
+        .images-container {
+            .main-image-container {
+                width: 35px;
+                height: 35px;
+            }
+        }
     }
 }

@@ -19,9 +19,10 @@ interface IPokemonImage {
     specificHeight?: number;
     galleryToggle?: boolean;
     lowRes?: boolean;
+    specificNameContainerWidth?: number;
 }
 
-const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, withName, lazy, descriptionComponent, xl, buddy, shiny, specificWidth, specificHeight, galleryToggle, lowRes = true}: IPokemonImage, ref) => {
+const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, specificNameContainerWidth, withName, lazy, descriptionComponent, xl, buddy, shiny, specificWidth, specificHeight, galleryToggle, lowRes = true}: IPokemonImage, ref) => {
     const {currentGameLanguage} = useLanguage();
     const {imageSource} = useImageSource();
 
@@ -81,7 +82,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, with
                 </span>
                 {descriptionComponent && descriptionComponent}
             </span>
-            {withName && <span className="pkm-img-name">{shortName(pokemon.speciesName)}</span>}
+            {withName && <span className="pkm-img-name ellipsed" style={specificNameContainerWidth ? {width: specificNameContainerWidth} : {}}>{shortName(pokemon.speciesName)}</span>}
         </>
     )
 });

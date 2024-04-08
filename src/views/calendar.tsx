@@ -265,15 +265,13 @@ const Calendar = () => {
                 <div className="calendar-content">
                     <div className='content'>
                     <PokemonHeader
-                        pokemonName="Events"
+                        pokemonName={tab.endsWith("/bosses") ? "Current Bosses" : tab.endsWith("/spawns") ? "Current Spawns" : "Events"}
                         type1={undefined}
                         type2={undefined}
                         defaultTextColor
                     />
                         <div className="pokemon with-normal-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div><h3 className='centered-text with-side-margin item default-padding'>
-                                Current Bosses
-                                </h3><div className='with-flex contained'>{bossesAvailableToday.map(e => 
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div><div className='with-flex with-margin-top contained'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                             <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow) ?? ""} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />

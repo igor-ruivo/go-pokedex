@@ -9,9 +9,7 @@
 }
 
 .dynamic-size {
-    max-width: 100px;
-    max-height: 100px;
-    width: calc(20%);
+    width: calc(854.25px / 7);
     aspect-ratio: 1 / 1;
 }
 
@@ -22,15 +20,16 @@
 }
 
 .contained {
-    max-width: 65%;
+    justify-content: center;
+    max-width: 85%;
     margin-left: auto !important;
     margin-right: auto !important;
 }
 
 .less-contained {
     max-width: 75%;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .perk-wrapper {
@@ -180,7 +179,6 @@
 .bonus-container {
     border: 1px solid var(--borderColor2);
     border-radius: 12px;
-    margin: 16px;
     background: var(--background-shadow-baby-soft);
     font-size: small;
 }
@@ -239,24 +237,9 @@
     }
 }
 
-@media (max-width: 1000px) {
-    .dynamic-size {
-        width: calc(25% / 1.5);
-    }
-}
-
 @media (max-width: 800px) {
-    .contained,
-    .less-contained {
-        max-width: 100%;
-    }
-
     .event-dates {
         gap: 0px !important;
-    }
-
-    .dynamic-size {
-        width: calc(calc(100% / 3) / 1.5);
     }
 
     .perks-container-row {
@@ -270,6 +253,10 @@
 }
 
 @media (max-width: 768px) {
+    .dynamic-size {
+        width: calc(749px / 7);
+    }
+
     .perks-container {
         img {
             width: 14px;
@@ -298,6 +285,17 @@
     }
 }
 
+@media (max-width: 700px) {
+    .contained {
+        max-width: 100%;
+    }
+
+    .less-contained {
+        max-width: 100%;
+        margin: 16px;
+    }
+}
+
 @media (max-width: 690px) {
     .event-panel-container {
         gap: 10px;
@@ -323,6 +321,14 @@
 }
 
 @media (max-width: 565px) {
+    .less-contained {
+        margin: 6px;
+    }
+
+    .dynamic-size {
+        width: calc(565px / 6);
+    }
+
     .ongoing-event {
         border-left: 4px solid lightgreen;
     }
@@ -364,6 +370,9 @@
 }
 
 @media (max-width: 430px) {
+    .dynamic-size {
+        width: calc(430px / 5);
+    }
     .event-dates {
         font-size: x-small;
         gap: 0px !important;
@@ -387,6 +396,9 @@
 }
 
 @media (max-width: 359.9px) {
+    .dynamic-size {
+        width: calc(303px / 4);
+    }
     .event-panel-container {
         padding-top: 6px;
         padding-bottom: 6px;

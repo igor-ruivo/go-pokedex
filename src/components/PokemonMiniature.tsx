@@ -9,6 +9,7 @@ import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { customCupCPLimit, usePvp } from "../contexts/pvp-context";
 import useCountdown from "../hooks/useCountdown";
+import { useRef } from "react";
 
 interface IPokemonMiniatureProps {
     pokemon: IGamemasterPokemon,
@@ -19,6 +20,7 @@ interface IPokemonMiniatureProps {
 const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown}: IPokemonMiniatureProps) => {
     const {days, hours, minutes, seconds} = useCountdown(withCountdown ?? 0);
     const {currentGameLanguage} = useLanguage();
+    const containerWidth = useRef<HTMLDivElement>(null);
 
     const link = `/pokemon/${pokemon.speciesId}/info`;
 
@@ -40,9 +42,9 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown}: IPokemonMi
 
     return (
         <Link to={link}>
-            <div className="pokemon-miniature">
+            <div ref={containerWidth} className="pokemon-miniature">
                 <span className="mini-card-content">
-                    <PokemonImage pokemon={pokemon} withName lazy/>
+                    <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth}/>
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container">
