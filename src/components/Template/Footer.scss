@@ -57,6 +57,8 @@
         gap: 12px;
         max-width: 100%;
         grid-template-columns: 28.25px 28.25px;
+        margin: 2px auto;
+        align-items: unset;
     }
 
     .footer {
@@ -64,8 +66,8 @@
         padding-right: 16px;
     }
     .footer {
-        min-height: 49.25px;
-        max-height: 49.25px;
-        height: 49.25px;
+        min-height: 80px;
+        max-height: 80px;
+        height: 80px;
     }
 }
