@@ -74,6 +74,44 @@ const idxToRes = (idx: number) => {
     }
 }
 
+const idxToEgg = (idx: number) => {
+    switch(idx) {
+        case 0:
+            return "2km";
+        case 1:
+            return "5km";
+        case 2:
+            return "7km";
+        case 3:
+            return "10km";
+        case 4:
+            return "5km";
+        case 5:
+            return "7km";
+        case 6:
+            return "10km";
+    }
+}
+
+const idxToEggName = (idx: number) => {
+    switch(idx) {
+        case 0:
+            return "2 km";
+        case 1:
+            return "5 km";
+        case 2:
+            return "7 km";
+        case 3:
+            return "10 km";
+        case 4:
+            return "5 km";
+        case 5:
+            return "7 km";
+        case 6:
+            return "10 km";
+    }
+}
+
 const computeCount = (d: number, h: number, m: number, s: number) => {
     if (!d && !h && !m && !s) {
         return "Expired";
@@ -399,6 +437,7 @@ interface IEventDetail {
 const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
     const [currTab, setCurrTab] = useState(post.bonuses ? "bonuses" : (post.wild?.length ?? 0) > 0 ? "spawns" : (post.raids?.length ?? 0) > 0 ? "raids" : (post.researches?.length ?? 0) > 0 ? "researches" : "eggs");
     const [currentPlace, setCurrentPlace] = useState("0");
+    const [currentEgg, setCurrentEgg] = useState("0");
 
     return <div>
         <div className='divider'/>
@@ -425,7 +464,7 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
                     </div>
                 </li>}
                 {(post.eggs?.length ?? 0) > 0 && <li>
-                    <div onClick={() => setCurrTab("eggs")} className={"header-tab no-full-border" + (currTab === "eggs" ? "selected" : "")}>
+                    <div onClick={() => setCurrTab("eggs")} className={"header-tab no-full-border " + (currTab === "eggs" ? "selected" : "")}>
                         <img width="16" height="16" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/><span>Eggs</span>
                     </div>
                 </li>}
@@ -446,10 +485,25 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
                 </div>
             </div>
         </div>}
+        {post.isSeason && currTab === "eggs" && <div className="raid-container">
+            <div className="overflowing">
+                <div className="img-family">
+                    {[(post.eggs ?? []).filter(e => e.kind === "0"), (post.eggs ?? []).filter(e => e.kind === "1"), (post.eggs ?? []).filter(e => e.kind === "2"), (post.eggs ?? []).filter(e => e.kind === "3")]
+                    .map((t, i) => (
+                        <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
+                            <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
+                                <div className="season-img-padding"><img className="invert-light-mode" height="100%" width="100%" alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`}/></div>
+                                {String(i) === currentEgg && idxToEggName(i)}
+                            </strong>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>}
         {currTab === "spawns" && <PostEntry collection={post.wild ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} kindFilter={post.isSeason ? currentPlace : undefined}/>}
         {currTab === "raids" && <PostEntry collection={post.raids ?? []} withRaidCPStringOverride={true} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
         {currTab === "researches" && <PostEntry collection={post.researches ?? []} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
-        {currTab === "eggs" && <PostEntry collection={post.eggs ?? []} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
+        {currTab === "eggs" && <PostEntry collection={post.eggs ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} kindFilter={post.isSeason ? currentEgg : undefined}/>}
         {currTab === "bonuses" && post.bonuses && <div className='default-padding bonus-container less-contained'>
             {post.bonuses.split("\n").filter(b => b).map(b => <ul key={b} className='ul-with-adorner'>{b}</ul>)}
         </div>}
