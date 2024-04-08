@@ -82,7 +82,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, spec
                 </span>
                 {descriptionComponent && descriptionComponent}
             </span>
-            {withName && <span className="pkm-img-name ellipsed" style={specificNameContainerWidth ? {width: specificNameContainerWidth} : {}}>{shortName(pokemon.speciesName)}</span>}
+            {withName && <div><span className="pkm-img-name ellipsed block-column" style={specificNameContainerWidth ? {width: specificNameContainerWidth} : {}}>{shortName(pokemon.speciesName)}</span></div>}
         </>
     )
 });
