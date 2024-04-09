@@ -492,7 +492,7 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
                     .map((t, i) => (
                         <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
                             <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
-                                <div className="season-img-padding"><img className="invert-light-mode" height="100%" width="100%" alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`}/></div>
+                                <div className="season-img-padding"><img height="100%" width="100%" alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`}/></div>
                                 {String(i) === currentEgg && idxToEggName(i)}
                             </strong>
                         </div>
