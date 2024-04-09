@@ -421,6 +421,50 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     };
 }
 
+export const mapLeekEggs: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(data, 'text/html');
+    const entries = Array.from(htmlDoc.getElementsByClassName("page-content")[0]?.children ?? []);
+
+    const pokemons: IEntry[] = [];
+
+    let km = "";
+    let comment = "";
+
+    const normalDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && !v.isShadow && !v.isMega);
+
+    for (let i = 0; i < entries.length; i++) {
+        const e = entries[i];
+        if (e.tagName === "H2") {
+            const txt = (e as HTMLElement).innerText?.trim();
+            km = txt.split(" ")[0];
+
+            if (txt.includes("(")) {
+                comment = txt.substring(txt.indexOf("("));
+            } else {
+                comment = "";
+            }
+
+            continue;
+        }
+
+        if (e.classList.contains("egg-list-flex")) {
+            const pkmList = Array.from(e.children).map(c => (c.getElementsByClassName("hatch-pkmn")[0] as HTMLElement).innerText.trim());
+            const parsedPkm = fetchPokemonFromString(pkmList, gamemasterPokemon, normalDomain).map(r => { return { ...r, kind: km, comment: comment }; });
+            pokemons.push(...parsedPkm);
+        }
+    }
+
+    const results: IPostEntry = {
+        date: (new Date()).valueOf(),
+        //dateEnd: (new Date()).valueOf(),
+        eggs: pokemons,
+        title: "Current Eggs"
+    };
+
+    return results;
+}
+
 const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => {
     let start = 0, end = arr.length - 1;
    
@@ -457,24 +501,13 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     const wildDomain = Object.values(gamemasterPokemon)
         .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
 
-    const twoKmEggs = Array.from(htmlDoc.getElementById("2km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const fiveKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-    const sevenKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-    const tenKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-    const fiveSyncKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
-    const sevenRoutesKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
-    const tenSyncKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
-
     const wildEncounters = [cityEntries, forestEntries, mountainEntries, beachEntries, northEntries, southEntries].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
     const researches = fetchPokemonFromElements(Array.from(htmlDoc.getElementById("research-breakthrough-tabs")?.children ?? []).map(e => e as HTMLElement), gamemasterPokemon, wildDomain);
 
-    const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
-    
     return {
         date: new Date(2024, 2, 1, 10, 0).valueOf(),
         dateEnd: new Date(2024, 5, 1, 10, 0).valueOf(),
         wild: wildEncounters,
-        eggs: eggs,
         isSeason: true,
         researches: researches,
         bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
@@ -901,7 +934,6 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         
         const raids: IEntry[] = [];
         const wild: IEntry[] = [];
-        const eggs: IEntry[] = [];
         const research: IEntry[] = [];
         let bonus = "";
 
@@ -913,9 +945,6 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             switch(kind) {
                 case "Wild encounters":
                     wild.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
-                    break;
-                case "Eggs":
-                    eggs.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
                     break;
                 case "Event bonus":
                 case "Event bonuses":
@@ -948,7 +977,6 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             dateEnd: endDate,
             researches: research,
             imgUrl: img,
-            eggs: eggs,
             raids: raids,
             wild: wild,
             bonuses: bonus.trim()

@@ -85,11 +85,7 @@ const idxToEgg = (idx: number) => {
         case 3:
             return "10km";
         case 4:
-            return "5km";
-        case 5:
-            return "7km";
-        case 6:
-            return "10km";
+            return "12km";
     }
 }
 
@@ -104,11 +100,22 @@ const idxToEggName = (idx: number) => {
         case 3:
             return "10 km";
         case 4:
-            return "5 km";
-        case 5:
-            return "7 km";
-        case 6:
-            return "10 km";
+            return "12 km";
+    }
+}
+
+const idxToKind = (idx: number) => {
+    switch (idx) {
+        case 0:
+            return 2;
+        case 1:
+            return 5;
+        case 2:
+            return 7;
+        case 3:
+            return 10;
+        case 4:
+            return 12;
     }
 }
 
@@ -138,7 +145,7 @@ const computeString = (kind: string | undefined, isShadow: boolean) => {
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
+    const { leekEggs, leekEggsErrors, leekEggsFetchCompleted, bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
     const { pathname } = useLocation();
     const {x} = useResize();
     
@@ -358,14 +365,13 @@ const Calendar = () => {
                                 </div>)}
                                 </div></div>
                             </div>)}
-                            {tab.endsWith("/eggs") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.eggs?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.eggs ?? []} post={e} sortEntries={sortEntries} withItemBorder/>)}
-                            {tab.endsWith("/eggs") && postsFetchCompleted && seasonFetchCompleted && <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'>
+                            {tab.endsWith("/eggs") && postsFetchCompleted && seasonFetchCompleted && leekEggsFetchCompleted && <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'>
                                 <div>
-                                <div><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong></div>
+                                <div><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>Current Eggs:</strong></div>
                                 <div className="raid-container">
                                     <div className="overflowing">
                                         <div className="img-family">
-                                            {[(season.eggs ?? []).filter(e => e.kind === "0"), (season.eggs ?? []).filter(e => e.kind === "1"), (season.eggs ?? []).filter(e => e.kind === "2"), (season.eggs ?? []).filter(e => e.kind === "3")]
+                                            {[(leekEggs.eggs ?? []).filter(e => e.kind === "2"), (leekEggs.eggs ?? []).filter(e => e.kind === "5"), (leekEggs.eggs ?? []).filter(e => e.kind === "7"), (leekEggs.eggs ?? []).filter(e => e.kind === "10"), (leekEggs.eggs ?? []).filter(e => e.kind === "12")]
                                             .map((t, i) => (
                                                 <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
                                                     <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
@@ -378,15 +384,15 @@ const Calendar = () => {
                                     </div>
                                 </div></div>
                                 <div className='with-flex contained'>
-                                    {(season.eggs ?? []).filter(r => r.kind === currentEgg).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
+                                    {(leekEggs.eggs ?? []).filter(r => !r.comment && r.kind === String(idxToKind(+currentEgg))).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
                                         <div className={`card-wrapper`}>
                                             <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                         </div>
                                     </div>)}
                                 </div>
-                                {getCurrentEggCounter() && (season.eggs?.length ?? 0) > 0 && <div className='centered-text with-padding'><strong>{getEggDivider()}</strong></div>}
+                                {(leekEggs.eggs?.length ?? 0) > 0 && leekEggs.eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'><strong>{leekEggs.eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment}:</strong></div>}
                                 <div className='with-flex contained'>
-                                    {(season.eggs ?? []).filter(r => r.kind === getCurrentEggCounter()).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
+                                    {(leekEggs.eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
                                         <div className={`card-wrapper`}>
                                             <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                         </div>
@@ -423,7 +429,7 @@ const Calendar = () => {
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} withItemBorder collection={e.wild ?? []} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-small-margin-top with-xl-gap aligned'>{
-                            [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(event =>
+                            [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(event =>
                                 <div className="with-dynamic-max-width" key={event.subtitle + "-" + event.title}>
                                 <div className={`column item ${new Date(event.date ?? 0) < new Date() ? "ongoing-event" : ""}`}>
                                     <div className='column '>
@@ -471,11 +477,6 @@ const Calendar = () => {
                                             <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/>
                                         </summary>
                                     </div>}
-                                    {(event.eggs?.length ?? 0) > 0 && <div className="event-buff-panel">
-                                        <summary>
-                                            <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/>
-                                        </summary>
-                                    </div>}
                                 </div>}
                                 </div>
                                 
@@ -497,7 +498,7 @@ interface IEventDetail {
 }
 
 const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
-    const [currTab, setCurrTab] = useState(post.bonuses ? "bonuses" : (post.wild?.length ?? 0) > 0 ? "spawns" : (post.raids?.length ?? 0) > 0 ? "raids" : (post.researches?.length ?? 0) > 0 ? "researches" : "eggs");
+    const [currTab, setCurrTab] = useState(post.bonuses ? "bonuses" : (post.wild?.length ?? 0) > 0 ? "spawns" : (post.raids?.length ?? 0) > 0 ? "raids" : "researches");
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEgg, setCurrentEgg] = useState("0");
 
@@ -551,11 +552,6 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
                         <img width="16" height="16" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`}/><span>Researches</span>
                     </div>
                 </li>}
-                {(post.eggs?.length ?? 0) > 0 && <li>
-                    <div onClick={() => setCurrTab("eggs")} className={"header-tab no-full-border " + (currTab === "eggs" ? "selected" : "")}>
-                        <img width="16" height="16" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/egg.png`}/><span>Eggs</span>
-                    </div>
-                </li>}
             </ul>
         </nav>
         {post.isSeason && currTab === "spawns" && <div className="raid-container">
@@ -573,25 +569,9 @@ const EventDetail = ({eventKey, post, sortEntries}: IEventDetail) => {
                 </div>
             </div>
         </div>}
-        {post.isSeason && currTab === "eggs" && <div className="raid-container">
-            <div className="overflowing">
-                <div className="img-family">
-                    {[(post.eggs ?? []).filter(e => e.kind === "0"), (post.eggs ?? []).filter(e => e.kind === "1"), (post.eggs ?? []).filter(e => e.kind === "2"), (post.eggs ?? []).filter(e => e.kind === "3")]
-                    .map((t, i) => (
-                        <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
-                            <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
-                                <div className="season-img-padding"><img style={{width: "auto"}} height="100%" width="100%" alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`}/></div>
-                                {String(i) === currentEgg && idxToEggName(i)}
-                            </strong>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>}
         {currTab === "spawns" && <PostEntry collection={post.wild ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} kindFilter={post.isSeason ? currentPlace : undefined}/>}
         {currTab === "raids" && <PostEntry collection={post.raids ?? []} withRaidCPStringOverride={true} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
         {currTab === "researches" && <PostEntry collection={post.researches ?? []} withoutTitle={true} post={post} sortEntries={sortEntries}/>}
-        {currTab === "eggs" && <><PostEntry collection={post.eggs ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} kindFilter={post.isSeason ? currentEgg : undefined}/>{getCurrentEggCounter() && post.isSeason && <><div className='centered-text with-padding'><strong>{getEggDivider()}</strong></div><PostEntry collection={post.eggs ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} kindFilter={getCurrentEggCounter()}/></>}</>}
         {currTab === "bonuses" && post.bonuses && <div className='default-padding bonus-container less-contained'>
             {post.bonuses.split("\n").filter(b => b).map(b => <ul key={b} className='ul-with-adorner'>{b}</ul>)}
         </div>}

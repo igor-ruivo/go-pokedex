@@ -4,6 +4,7 @@ export interface IEntry {
     speciesId: string;
     shiny: boolean;
     kind?: string;
+    comment?: string;
 }
 
 export interface IPostEntry {
@@ -17,7 +18,8 @@ export interface IPostEntry {
     bonuses?: string,
     researches?: IEntry[],
     eggs?: IEntry[],
-    isSeason?: boolean
+    isSeason?: boolean,
+    comment?: string
 }
 
 export interface IRaidEntry {
