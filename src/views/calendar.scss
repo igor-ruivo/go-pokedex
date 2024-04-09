@@ -67,7 +67,6 @@
 
 .computeCount {
     margin-left: 4px;
-    font-size: 10px;
 }
 
 .small-side-padding {
@@ -223,6 +222,10 @@
 
 .lighter-tone-text {
     color: var(--lighter-tone-text);
+}
+
+.with-medium-margin-bottom {
+    margin-bottom: 5px;
 }
 
 .auto-margin-sides {

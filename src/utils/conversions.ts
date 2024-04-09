@@ -901,6 +901,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         
         const raids: IEntry[] = [];
         const wild: IEntry[] = [];
+        const eggs: IEntry[] = [];
         const research: IEntry[] = [];
         let bonus = "";
 
@@ -914,6 +915,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                     wild.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
                     break;
                 case "Eggs":
+                    eggs.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
                     break;
                 case "Event bonus":
                 case "Event bonuses":
@@ -946,6 +948,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             dateEnd: endDate,
             researches: research,
             imgUrl: img,
+            eggs: eggs,
             raids: raids,
             wild: wild,
             bonuses: bonus.trim()
