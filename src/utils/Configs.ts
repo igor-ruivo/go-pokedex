@@ -23,3 +23,4 @@ export const pokemonGoNewsUrl = "https://pokemongolive.com/news/?hl=en";
 export const pokemonGoSeasonRelativeUrl = "seasons/world-of-wonders?hl=en";
 export const corsProxyUrl = "https://corsproxy.io/?";
 export const leekEggsUrl = "https://leekduck.com/eggs/";
+export const leekRocketsUrl = "https://leekduck.com/rocket-lineups/";

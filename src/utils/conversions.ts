@@ -205,9 +205,45 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
 
     const computeGoShortUrl = (url: string) => url.split(goBaseUrl)[1];
 
-    (Array.from(data) as any[])
+    const syntheticPokemon = [
+        {
+            "dex": 554,
+            "speciesId": "darumaka_shadow",
+            "speciesName": "Darumaka (Shadow)",
+            "baseStats": {
+                "atk": 153,
+                "def": 86,
+                "hp": 172
+            },
+            "types": ["fire", "none"],
+            "fastMoves": ["TACKLE", "FIRE_FANG"],
+            "chargedMoves": ["FIRE_PUNCH", "FLAME_CHARGE"],
+            "defaultIVs": {
+                "cp500": [13, 4, 14, 14],
+                "cp1500": [49, 5, 14, 13],
+                "cp2500": [50, 15, 15, 15],
+                "cp1500l40": [40, 15, 15, 15]
+            },
+            "buddyDistance": 3,
+            "thirdMoveCost": 50000,
+            "released": true,
+            "family": {
+                "id": "FAMILY_DARUMAKA",
+                "evolutions": ["darmanitan_standard_shadow"]
+            },
+            "tags": ["shadow"]
+        }
+    ];
+
+    const seenP = new Set<string>();
+    [...(Array.from(data) as any[]), ...syntheticPokemon]
         .filter(baseDataFilter)
         .forEach(pokemon => {
+            if (seenP.has(pokemon.speciesId)) {
+                return;
+            }
+            
+            seenP.add(pokemon.speciesId);
             const isShadow = isShadowConditionFilter(pokemon);
 
             let urlDex = "" + pokemon.dex;
@@ -234,7 +270,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
             pokemonDictionary[pokemon.speciesId] = {
                 dex: pokemon.dex,
                 speciesId: pokemon.speciesId,
-                speciesName: sexConverter(pokemon.speciesName),
+                speciesName: sexConverter(pokemon.speciesName.replaceAll("Darmanitan (Standard)", "Darmanitan")),
                 imageUrl: overrideMappings.has(pokemon.speciesId) ? overrideMappings.get(pokemon.speciesId) as string : buildPokemonImageUrl(urlDex, type, form),
                 goImageUrl: computeGoShortUrl(goOverrideMappings.has(pokemon.speciesId) ? goOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoImageUrl(pokemon.dex, getGoForm(pokemon.speciesName))),
                 shinyGoImageUrl: computeGoShortUrl(shinyGoOverrideMappings.has(pokemon.speciesId) ? shinyGoOverrideMappings.get(pokemon.speciesId) as string : buildPokemonGoShinyImageUrl(pokemon.dex, getGoForm(pokemon.speciesName))),
@@ -249,7 +285,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 isShadow: isShadow,
                 isMega: pokemon.tags ? Array.from(pokemon.tags).includes("mega") : false,
                 familyId: pokemon.family?.id,
-                parent: pokemon.family?.parent,
+                parent: pokemon.speciesId === "darmanitan_standard_shadow" ? "darumaka_shadow" : pokemon.family?.parent,
                 evolutions: pokemon.family ? pokemon.family.evolutions : [],
                 aliasId: pokemon.aliasId,
                 form: getForm(pokemon.speciesName)
@@ -463,6 +499,28 @@ export const mapLeekEggs: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     };
 
     return results;
+}
+
+export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => any = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(data, 'text/html');
+    const entries = Array.from(htmlDoc.getElementsByClassName("rocket-profile"));
+
+    const answer: any[] = [];
+
+    const shadowDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && v.isShadow && !v.isMega);
+
+    for (let i = 0; i < entries.length; i++) {
+        const e = entries[i];
+
+        if (e.classList.contains("egg-list-flex")) {
+            const pkmList = Array.from(e.children).map(c => (c.getElementsByClassName("hatch-pkmn")[0] as HTMLElement).innerText.trim());
+            const parsedPkm = fetchPokemonFromString(pkmList, gamemasterPokemon, shadowDomain);
+            answer.push(...parsedPkm);
+        }
+    }
+
+    return answer;
 }
 
 const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => {
