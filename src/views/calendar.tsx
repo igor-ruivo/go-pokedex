@@ -309,17 +309,17 @@ const Calendar = () => {
                         defaultTextColor
                     />
                         <div className="pokemon with-small-margin-top with-xl-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='item default-padding'><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment:</strong><div className='with-flex with-margin-top contained'>{bossesAvailableToday.map(e => 
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment:</strong><div className='with-flex with-margin-top contained'>{bossesAvailableToday.map(e => 
                                     <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                         <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                             <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride={computeString(e.kind, gamemasterPokemon[e.speciesId].isShadow) ?? ""} withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />
                                         </div>
                                     </div>)}
                                 </div>
-                            </div>}
+                            </div></div>}
                             {tab.endsWith("/bosses") && leekPostsFetchCompleted && postsFetchCompleted &&
                             remainingBosses
-                            .map(e => <div key={getDateKey(e)}><div className='item default-padding'>
+                            .map(e => <div className='with-dynamic-max-width auto-margin-sides' key={getDateKey(e)}><div className='item default-padding'>
                                 <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>
                                     {inUpperCase(new Date(e.date).toLocaleString(undefined, smallOptions))} - {inUpperCase(new Date(e.dateEnd ?? 0).toLocaleString(undefined, smallOptions))}
                                 </strong>
@@ -331,8 +331,8 @@ const Calendar = () => {
                                 </div>)}
                                 </div></div>
                             </div>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries}/>)}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='item default-padding'>
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries} withItemBorder/>)}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'>
                                 <div>
                                 <div><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong></div>
                                 <div className="raid-container">
@@ -357,8 +357,8 @@ const Calendar = () => {
                                         </div>
                                     </div>)}
                                 </div>
-                            </div>}
-                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries}/>)}
+                            </div></div>}
+                            {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} withItemBorder collection={e.wild ?? []} post={e} sortEntries={sortEntries}/>)}
                             {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                             <div className='with-small-margin-top with-xl-gap aligned'>{
                             [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.eggs?.length ?? 0) > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(event =>
@@ -517,9 +517,10 @@ interface IPost {
     kindFilter?: string;
     withoutTitle?: boolean;
     withRaidCPStringOverride?: boolean;
+    withItemBorder?: boolean;
 }
 
-const PostEntry = ({post, collection, sortEntries, kindFilter, withoutTitle, withRaidCPStringOverride}: IPost) => {
+const PostEntry = ({post, collection, sortEntries, kindFilter, withoutTitle, withRaidCPStringOverride, withItemBorder}: IPost) => {
     const {gamemasterPokemon} = usePokemon();
     const {days, hours, minutes, seconds} = useCountdown(post.dateEnd ?? 0);
 
@@ -528,7 +529,7 @@ const PostEntry = ({post, collection, sortEntries, kindFilter, withoutTitle, wit
     const now = new Date();
     const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
 
-    return <div><div className='item default-padding'>
+    return <div className='with-dynamic-max-width auto-margin-sides'><div className={withItemBorder ? 'item default-padding' : ""}>
         {!withoutTitle && postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong>}
         {!withoutTitle && !postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>{inUpperCase(new Date(post.date).toLocaleString(undefined, smallOptions)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, smallOptions))}</strong>}
         <div className='with-flex contained'>

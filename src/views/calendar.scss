@@ -9,7 +9,7 @@
 }
 
 .dynamic-size {
-    width: calc(854.25px / 7);
+    width: calc(952px / 7);
     aspect-ratio: 1 / 1;
 }
 
@@ -21,7 +21,7 @@
 
 .contained {
     justify-content: center;
-    max-width: 85%;
+    //max-width: 85%;
     margin-left: auto !important;
     margin-right: auto !important;
 }
@@ -185,6 +185,7 @@
     border-radius: 12px;
     background: var(--background-shadow-baby-soft);
     font-size: small;
+    margin-bottom: 5px;
 }
 
 .ul-with-adorner {
@@ -224,6 +225,11 @@
     color: var(--lighter-tone-text);
 }
 
+.auto-margin-sides {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .restricted-img-size {
     display: block;
     max-width:100%;
@@ -231,12 +237,23 @@
     height: auto;
 }
 
-.with-dynamic-max-width {
+.with-dynamic-width {
     width: 75%;
+}
+
+.with-dynamic-max-width {
+    width: 100%;
+    max-width: 966px;
 }
    
 .event-dates {
     font-size: small;
+}
+
+@media (max-width: 977px) {
+    .dynamic-size {
+        width: calc(817px / 7);
+    }
 }
 
 @media (max-width: 800px) {
@@ -257,6 +274,10 @@
 @media (max-width: 768px) {
     .dynamic-size {
         width: calc(749px / 7);
+    }
+
+    .with-dynamic-max-width {
+        max-width: 100%;
     }
 
     .perks-container {
@@ -303,7 +324,7 @@
         gap: 10px;
     }
 
-    .with-dynamic-max-width {
+    .with-dynamic-width {
         width: 100%;
     }
 }
@@ -371,7 +392,7 @@
 
 @media (max-width: 430px) {
     .dynamic-size {
-        width: calc(430px / 5);
+        width: calc(366px / 5);
     }
     .event-dates {
         font-size: x-small;
