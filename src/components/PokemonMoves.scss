@@ -251,6 +251,12 @@ details[open] {
 .no-extra-padding {
     padding-right: 0 !important;
 }
+.guaranteedWidth {
+    img {
+        min-width: 20px;
+        min-height: 20px;
+    }
+}
 
 .calendar-list {
     list-style: none;
@@ -342,11 +348,15 @@ summary::-webkit-details-marker {
     align-items: center;
     text-align: left;
     gap: 3px 9px;
+    justify-content: space-between;
 }
 
 .move-main-info {
-    margin-right: auto;
     display: flex;
+    align-items: center;
+    flex-grow: 1;
+    max-width: calc(100% - 39px); 
+    overflow: hidden; 
 }
 
 .move-detail {

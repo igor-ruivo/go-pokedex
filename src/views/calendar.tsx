@@ -308,7 +308,7 @@ const Calendar = () => {
             mainIcon={
                 {
                     imageDescription: "",
-                    image: <div className="img-padding"><img height={20} width={20} src={moveUrl}/></div>,
+                    image: <div className="img-padding guaranteedWidth"><img height={20} width={20} src={moveUrl}/></div>,
                     imageSideText: m.phrase,
                     withBackground: true
                 }
