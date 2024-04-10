@@ -9,12 +9,14 @@ import { calculateCP, levelToLevelIndex } from '../utils/pokemon-helper';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { Link, useLocation } from 'react-router-dom';
-import { IEntry, IPostEntry } from '../DTOs/INews';
+import { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useState } from 'react';
 import useCountdown from '../hooks/useCountdown';
 import PokemonHeader from '../components/PokemonHeader';
 import useResize from '../hooks/useResize';
 import PokemonMiniature from '../components/PokemonMiniature';
+import ListEntry from '../components/ListEntry';
+import React from 'react';
 
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
@@ -145,7 +147,7 @@ const computeString = (kind: string | undefined, isShadow: boolean) => {
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { leekEggs, leekEggsErrors, leekEggsFetchCompleted, bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
+    const { leekEggs, leekRockets, leekRocketsErrors, leekRocketsFetchCompleted, leekEggsErrors, leekEggsFetchCompleted, bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
     const { pathname } = useLocation();
     const {x} = useResize();
     
@@ -301,6 +303,25 @@ const Calendar = () => {
     .filter(e => (e.raids?.length ?? 0) > 0 && e.date > new Date().valueOf() /*&& !e.entries.every(c => bossesAvailableToday.map(n => n.speciesId).includes(c.speciesId))*/)
     .sort(sortPosts);
 
+    const renderMove = (m: IRocketGrunt, moveUrl: string, className: string) => {
+        return <ListEntry
+            mainIcon={
+                {
+                    imageDescription: "",
+                    image: <div className="img-padding"><img height={20} width={20} src={moveUrl}/></div>,
+                    imageSideText: m.phrase,
+                    withBackground: true
+                }
+            }
+            secondaryContent={[<img key="chevron" className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-down.svg`} />]}
+            backgroundColorClassName={className}
+            slimmer
+            slim
+            soft
+            defaultBackgroundStyle="normal-entry"
+        />
+    }
+
     return (
         <main className="pokedex-layout">
             <nav className="navigation-header normal-text">
@@ -321,7 +342,7 @@ const Calendar = () => {
                         </Link>
                     </li>
                     <li>
-                        <Link to={pokemonBasePath + "/rockets"} className={"header-tab disabled no-full-border " + (tab.endsWith("/rockets") ? "selected" : "")}>
+                        <Link to={pokemonBasePath + "/rockets"} className={"header-tab no-full-border " + (tab.endsWith("/rockets") ? "selected" : "")}>
                             <span>Rockets</span>
                         </Link>
                     </li>
@@ -337,7 +358,7 @@ const Calendar = () => {
                 <div className="calendar-content">
                     <div className='content'>
                     <PokemonHeader
-                        pokemonName={tab.endsWith("/bosses") ? "Current Bosses" : tab.endsWith("/spawns") ? "Current Spawns" : tab.endsWith("/eggs") ? "Current Eggs" : "Events"}
+                        pokemonName={tab.endsWith("/bosses") ? "Current Bosses" : tab.endsWith("/spawns") ? "Current Spawns" : tab.endsWith("/eggs") ? "Current Eggs" : tab.endsWith("/rockets") ? "Rocket Lineups" : "Events"}
                         type1={undefined}
                         type2={undefined}
                         defaultTextColor
@@ -399,6 +420,40 @@ const Calendar = () => {
                                     </div>)}
                                 </div>
                             </div></div>}
+                            {tab.endsWith("/rockets") && leekRocketsFetchCompleted && <div className="moves-display-layout normal-text">
+                                <div className="menu-item">
+                                    <ul className={`calendar-list no-padding`}>
+                                        {
+                                            leekRockets.slice(0, x > 750 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
+                                                const className = m.type ? `background-${m.type}` : "normal-entry";
+                                                const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
+                                                const url = `${process.env.PUBLIC_URL}/images/${resName}`;
+                                                return (
+                                                    <React.Fragment key={m.trainerId}>
+                                                        {renderMove(m, url, className)}
+                                                    </React.Fragment>
+                                                )
+                                            })
+                                        }
+                                    </ul>
+                                </div>
+                                {x > 750 && <div className="menu-item">
+                                    <ul className={`calendar-list no-padding`}>
+                                        {
+                                            leekRockets.slice(Math.round(leekRockets.length / 2)).map(m => {
+                                                const className = m.type ? `background-${m.type}` : "normal-entry";
+                                                const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
+                                                const url = `${process.env.PUBLIC_URL}/images/${resName}`;
+                                                return (
+                                                    <React.Fragment key={m.trainerId}>
+                                                        {renderMove(m, url, className)}
+                                                    </React.Fragment>
+                                                )
+                                            })
+                                        }
+                                    </ul>
+                                </div>}
+                            </div>}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries} withItemBorder/>)}
                             {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'>
                                 <div>

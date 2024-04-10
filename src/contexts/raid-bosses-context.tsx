@@ -5,7 +5,7 @@ import { mapLeekEggs, mapLeekNews, mapLeekRockets, mapPosts, mapRaidBosses, mapS
 import Dictionary from '../utils/Dictionary';
 import { IRaidBoss } from '../DTOs/IRaidBoss';
 import { usePokemon } from './pokemon-context';
-import { IPostEntry } from '../DTOs/INews';
+import { IPostEntry, IRocketGrunt } from '../DTOs/INews';
 
 interface CalendarContextType {
     bossesPerTier: IPostEntry;
@@ -13,21 +13,24 @@ interface CalendarContextType {
     season: IPostEntry;
     leekPosts: IPostEntry[];
     leekEggs: IPostEntry;
+    leekRockets: IRocketGrunt[];
     bossesFetchCompleted: boolean;
     postsFetchCompleted: boolean;
     seasonFetchCompleted: boolean;
     leekPostsFetchCompleted: boolean;
     leekEggsFetchCompleted: boolean;
+    leekRocketsFetchCompleted: boolean;
     bossesErrors: string;
     postsErrors: string;
     seasonErrors: string;
     leekPostsErrors: string;
     leekEggsErrors: string;
+    leekRocketsErrors: string;
 }
 
 const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
-const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry[], IPostEntry, boolean, boolean, boolean, boolean, boolean, string, string, string, string, string] = () => {
+const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry[], IPostEntry, IRocketGrunt[], boolean, boolean, boolean, boolean, boolean, boolean, string, string, string, string, string, string] = () => {
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const [news, fetchNews, newsFetchCompleted, errorLoadingnews]: FetchData<string> = useFetchUrls();
     const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<IPostEntry[]> = useFetchUrls();
@@ -36,7 +39,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry
     const [leekNews, fetchLeekNews, leekNewsFetchCompleted, errorLoadingLeekNews]: FetchData<string> = useFetchUrls();
     const [leekPosts, fetchLeekPosts, leekPostsFetchCompleted, errorLoadingLeekPosts]: FetchData<IPostEntry> = useFetchUrls();
     const [leekEggs, fetchLeekEggs, leekEggsFetchCompleted, errorLoadingLeekEggs]: FetchData<IPostEntry> = useFetchUrls();
-    const [leekRockets, fetchLeekRockets, leekRocketsFetchCompleted, errorLoadingLeekRockets]: FetchData<any> = useFetchUrls();
+    const [leekRockets, fetchLeekRockets, leekRocketsFetchCompleted, errorLoadingLeekRockets]: FetchData<IRocketGrunt[]> = useFetchUrls();
     
     const encodeProxyUrl = useCallback((relativeComponent: string) => corsProxyUrl + encodeURIComponent(pokemonGoBaseUrl + relativeComponent), []);
 
@@ -110,7 +113,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry
         }
     }, [fetchCompleted, leekNewsFetchCompleted, fetchLeekPosts, leekNews, gamemasterPokemon]);
 
-    return [bosses[0], posts, season[0], leekPosts, leekEggs[0], bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, leekEggsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts, errorLoadingLeekEggs];
+    return [bosses[0], posts, season[0], leekPosts, leekEggs[0], leekRockets[0], bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, leekEggsFetchCompleted, leekRocketsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts, errorLoadingLeekEggs, errorLoadingLeekRockets];
 }
 
 export const useCalendar = (): CalendarContextType => {
@@ -122,7 +125,7 @@ export const useCalendar = (): CalendarContextType => {
 };
 
 export const CalendarProvider = (props: React.PropsWithChildren<{}>) => {
-    const [raidBosses, posts, season, leekPosts, leekEggs, bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, leekEggsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts, errorLoadingLeekEggs]: [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry[], IPostEntry, boolean, boolean, boolean, boolean, boolean, string, string, string, string, string] = useFetchAllData();
+    const [raidBosses, posts, season, leekPosts, leekEggs, leekRockets, bossesFetchCompleted, postsFetchCompleted, seasonFetchCompleted, leekPostsFetchCompleted, leekEggsFetchCompleted, leekRocketsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingSeason, errorLoadingLeekPosts, errorLoadingLeekEggs, errorLoadingLeekRockets]: [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry[], IPostEntry, IRocketGrunt[], boolean, boolean, boolean, boolean, boolean, boolean, string, string, string, string, string, string] = useFetchAllData();
 
     return (
         <CalendarContext.Provider value={{
@@ -131,16 +134,19 @@ export const CalendarProvider = (props: React.PropsWithChildren<{}>) => {
             season: season,
             leekPosts: leekPosts,
             leekEggs: leekEggs,
+            leekRockets: leekRockets,
             bossesFetchCompleted: bossesFetchCompleted,
             postsFetchCompleted: postsFetchCompleted,
             seasonFetchCompleted: seasonFetchCompleted,
             leekPostsFetchCompleted: leekPostsFetchCompleted,
             leekEggsFetchCompleted: leekEggsFetchCompleted,
+            leekRocketsFetchCompleted: leekRocketsFetchCompleted,
             bossesErrors: errorLoadingBosses,
             postsErrors: errorLoadingPosts,
             seasonErrors: errorLoadingSeason,
             leekPostsErrors: errorLoadingLeekPosts,
-            leekEggsErrors: errorLoadingLeekEggs
+            leekEggsErrors: errorLoadingLeekEggs,
+            leekRocketsErrors: errorLoadingLeekRockets
         }}
         >
             {props.children}

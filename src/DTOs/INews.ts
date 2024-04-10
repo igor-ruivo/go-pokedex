@@ -7,7 +7,7 @@ export interface IEntry {
     comment?: string;
 }
 
-export interface RocketGrunt {
+export interface IRocketGrunt {
     trainerId: string;
     type: string | undefined;
     phrase: string;

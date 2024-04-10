@@ -5,7 +5,7 @@ interface IListEntryProps {
     mainIcon: EntryImage;
     extraIcons?: EntryImage[];
     backgroundColorClassName: string;
-    secondaryContent: ReactNode[];
+    secondaryContent?: ReactNode[];
     toggledContent?: ReactNode[];
     onClick?: (event: any) => void;
     details?: EntryDetails[];
@@ -55,7 +55,7 @@ const ListEntry = ({
                         <div className="move-main-info">
                             <strong className={`move-detail ${mainIcon.withBackground ? "with-shadow": ""} ${soft && !extraIcons && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
                                 {mainIcon.image}
-                                {!!mainIcon.imageSideText && mainIcon.imageSideText}
+                                {!!mainIcon.imageSideText && <span className="ellipsed">{mainIcon.imageSideText}</span>}
                             </strong>
                             {extraIcons?.map(i => <strong key={i.imageDescription} className={`move-detail ${i.withBackground ? "with-shadow": ""} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
                                 {i.image}
@@ -63,13 +63,13 @@ const ListEntry = ({
                             </strong>
                             )}
                         </div>
-                        <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slimmer ? "move-stats-slimmer" : slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${toggledContent ? "clickable" : ""}`}>
-                            {secondaryContentToBeRendered?.map(content => 
+                        {secondaryContentToBeRendered && <strong onClick={toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slimmer ? "move-stats-slimmer" : slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${toggledContent ? "clickable" : ""}`}>
+                            {secondaryContentToBeRendered.map(content => 
                                 (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
                                     {content}
                                 </span>)
                             )}
-                        </strong>
+                        </strong>}
                     </div>
                 </div>
             </div>

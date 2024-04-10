@@ -9,7 +9,7 @@ import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
-import { IEntry, IPostEntry, RocketGrunt } from "../DTOs/INews";
+import { IEntry, IPostEntry, IRocketGrunt } from "../DTOs/INews";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -501,12 +501,12 @@ export const mapLeekEggs: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     return results;
 }
 
-export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => RocketGrunt[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRocketGrunt[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("rocket-profile"));
 
-    const answer: RocketGrunt[] = [];
+    const answer: IRocketGrunt[] = [];
 
     const shadowDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && !v.isShadow && !v.isMega);
 
@@ -649,7 +649,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                 }
                 continue;
             }
-            
+
             if (!seen.has("darmanitan_standard")) {
                 seen.add("darmanitan_standard");
 
