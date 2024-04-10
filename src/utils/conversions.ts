@@ -9,7 +9,7 @@ import { ITranslatedMove } from "../DTOs/ITranslatedMove";
 import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
 import { IRaidBoss } from "../DTOs/IRaidBoss";
 import { PokemonForms } from "../DTOs/PokemonForms";
-import { IEntry, IPostEntry } from "../DTOs/INews";
+import { IEntry, IPostEntry, RocketGrunt } from "../DTOs/INews";
 
 const blacklistedSpecieIds = new Set<string>([
     "pikachu_5th_anniversary",
@@ -501,23 +501,42 @@ export const mapLeekEggs: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     return results;
 }
 
-export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => any = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => RocketGrunt[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("rocket-profile"));
 
-    const answer: any[] = [];
+    const answer: RocketGrunt[] = [];
 
-    const shadowDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && v.isShadow && !v.isMega);
+    const shadowDomain = Object.values(gamemasterPokemon).filter(v => !v.aliasId && !v.isShadow && !v.isMega);
 
     for (let i = 0; i < entries.length; i++) {
         const e = entries[i];
 
-        if (e.classList.contains("egg-list-flex")) {
-            const pkmList = Array.from(e.children).map(c => (c.getElementsByClassName("hatch-pkmn")[0] as HTMLElement).innerText.trim());
-            const parsedPkm = fetchPokemonFromString(pkmList, gamemasterPokemon, shadowDomain);
-            answer.push(...parsedPkm);
-        }
+        const trainerId = (e.getElementsByClassName("name")[0] as HTMLElement)?.innerText.trim() ?? "";
+        const typeIdx = trainerId.indexOf("-type");
+        const type = typeIdx !== -1 ? trainerId.substring(0, typeIdx).toLocaleLowerCase() : undefined;
+        const phrase = (e.getElementsByClassName("quote-text")[0] as HTMLElement)?.innerText.trim() ?? "";
+
+        const tier1 = Array.from(e.getElementsByClassName("lineup-info")[0].children[0].getElementsByClassName("pokemon-wrapper")).map(p => (p as HTMLElement)?.innerText.replaceAll("Shadow", "").trim());
+        const tier2 = Array.from(e.getElementsByClassName("lineup-info")[0].children[1].getElementsByClassName("pokemon-wrapper")).map(p => (p as HTMLElement)?.innerText.replaceAll("Shadow", "").trim());
+        const tier3 = Array.from(e.getElementsByClassName("lineup-info")[0].children[2].getElementsByClassName("pokemon-wrapper")).map(p => (p as HTMLElement)?.innerText.replaceAll("Shadow", "").trim());
+
+        const tier1Pkms = fetchPokemonFromString(tier1, gamemasterPokemon, shadowDomain).map(e => e.speciesId);
+        const tier2Pkms = fetchPokemonFromString(tier2, gamemasterPokemon, shadowDomain).map(e => e.speciesId);
+        const tier3Pkms = fetchPokemonFromString(tier3, gamemasterPokemon, shadowDomain).map(e => e.speciesId);
+
+        const catchableTiers = Array.from(e.getElementsByClassName("lineup-info")[0].children).map((c: Element, i: number) => c.classList.contains("slot-wrapper") ? i : undefined).filter(e => e !== undefined) as number[];
+
+        answer.push({
+            phrase: phrase,
+            type: type,
+            trainerId: trainerId,
+            tier1: tier1Pkms,
+            tier2: tier2Pkms,
+            tier3: tier3Pkms,
+            catchableTiers: catchableTiers
+        });
     }
 
     return answer;
@@ -615,6 +634,33 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
         
         // Join the array back into a string, preserving the original structure as much as possible
         currP = words.join(" ").trim();
+
+        // Edge case for Darmanitan -> it has a form (Standard) on the id but not on the name...
+        if (currP === "darmanitan") {
+            if (isShadow) { //darmanitan_standard_shadow // darmanitan_standard
+                if (!seen.has("darmanitan_standard_shadow")) {
+                    seen.add("darmanitan_standard_shadow");
+
+                    wildEncounters.push({
+                        speciesId: "darmanitan_standard_shadow",
+                        shiny: isShiny,
+                        kind: raidLevel
+                    });
+                }
+                continue;
+            }
+            
+            if (!seen.has("darmanitan_standard")) {
+                seen.add("darmanitan_standard");
+
+                wildEncounters.push({
+                    speciesId: "darmanitan_standard",
+                    shiny: isShiny,
+                    kind: raidLevel
+                });
+            }
+            continue;
+        }
 
         // First (90% hits): direct indexing
         // start by lowercasing and converting special characters

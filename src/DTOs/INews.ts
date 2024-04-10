@@ -7,6 +7,16 @@ export interface IEntry {
     comment?: string;
 }
 
+export interface RocketGrunt {
+    trainerId: string;
+    type: string | undefined;
+    phrase: string;
+    tier1: string[];
+    tier2: string[];
+    tier3: string[];
+    catchableTiers: number[];
+}
+
 export interface IPostEntry {
     title: string,
     subtitle?: string,
