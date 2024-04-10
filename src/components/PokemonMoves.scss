@@ -251,6 +251,7 @@ details[open] {
 .no-extra-padding {
     padding-right: 0 !important;
 }
+
 .guaranteedWidth {
     img {
         min-width: 20px;
@@ -334,16 +335,13 @@ details[open] {
     filter: var(--filter-inverse)
 }
 
-.move-card {
-    border-radius: 12px;
-}
-
 summary::-webkit-details-marker {
     display: none;
 }
 
 .move-card-content {
     display: flex;
+    border-radius: 12px;
     flex-wrap: nowrap;
     align-items: center;
     text-align: left;

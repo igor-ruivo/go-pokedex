@@ -313,7 +313,41 @@ const Calendar = () => {
                     withBackground: true
                 }
             }
-            secondaryContent={[<img key="chevron" className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-down.svg`} />]}
+            expandable
+            expandedContent={
+                <div className='row-container'>
+                    <div className='in-row'>
+                        <span className='aligned-text-marker'>1º</span>
+                        <div className='in-row rockets-row-wrapper'>{m.tier1.map(id =>
+                            <div className="card-wrapper-padding dynamic-size" key={id}>
+                                <div className={`card-wrapper rocket-card-wrapper`}>
+                                    <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                </div>
+                            </div>
+                        )}</div>
+                    </div>
+                    <div className='in-row'>
+                        <span className='aligned-text-marker'>2º</span>
+                        <div className='in-row rockets-row-wrapper'>{m.tier2.map(id =>
+                            <div className="card-wrapper-padding dynamic-size" key={id}>
+                                <div className={`card-wrapper rocket-card-wrapper`}>
+                                    <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                </div>
+                            </div>
+                        )}</div>
+                    </div>
+                    <div className='in-row'>
+                        <span className='aligned-text-marker'>3º</span>
+                        <div className='in-row rockets-row-wrapper'>{m.tier3.map(id =>
+                            <div className="card-wrapper-padding dynamic-size" key={id}>
+                                <div className={`card-wrapper rocket-card-wrapper`}>
+                                    <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                </div>
+                            </div>
+                        )}</div>
+                    </div>
+                </div>
+            }
             backgroundColorClassName={className}
             slimmer
             slim
