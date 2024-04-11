@@ -49,7 +49,7 @@
 }
 
 .with-golden-border {
-    border: 1px solid var(--cp-color) !important;
+    border: 3px solid var(--cp-color) !important;
 }
 
 .disabled {
@@ -247,6 +247,10 @@
 .with-dynamic-max-width {
     width: 100%;
     max-width: 966px;
+}
+
+.relative {
+    position: relative;
 }
    
 .event-dates {

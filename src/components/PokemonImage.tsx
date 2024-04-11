@@ -21,10 +21,9 @@ interface IPokemonImage {
     lowRes?: boolean;
     specificNameContainerWidth?: number;
     forceShadowAdorner?: boolean;
-    withPokeball?: boolean;
 }
 
-const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, forceShadowAdorner, withPokeball, specificNameContainerWidth, withName, lazy, descriptionComponent, xl, buddy, shiny, specificWidth, specificHeight, galleryToggle, lowRes = true}: IPokemonImage, ref) => {
+const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, forceShadowAdorner, specificNameContainerWidth, withName, lazy, descriptionComponent, xl, buddy, shiny, specificWidth, specificHeight, galleryToggle, lowRes = true}: IPokemonImage, ref) => {
     const {currentGameLanguage} = useLanguage();
     const {imageSource} = useImageSource();
 
@@ -81,7 +80,6 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, forc
                     {xl && <img alt="xl" className='image xl-overlay' loading={lazy ? "lazy" : undefined} src='https://i.imgur.com/NTtZq10.png' width="100%" height="100%"/>}
                     {false && shiny && <img alt="shiny" className='image shiny-overlay invert-dark-mode' loading={lazy ? "lazy" : undefined} src={`${process.env.PUBLIC_URL}/vectors/shiny.svg`} width="100%" height="100%"/>}
                     {buddy && <img alt="buddy" className='image buddy-overlay' loading={lazy ? "lazy" : undefined} src='https://i.imgur.com/MGCXGl0.png' width="100%" height="100%"/>}
-                    {withPokeball && <img alt="catchable" className='image pokeball-overlay' loading={lazy ? "lazy" : undefined} src={`${process.env.PUBLIC_URL}/images/pokeball.png`} width="100%" height="100%"/>}
                 </span>
                 {descriptionComponent && descriptionComponent}
             </span>

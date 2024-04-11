@@ -332,9 +332,10 @@ const Calendar = () => {
                         <div className={`in-row rockets-row-wrapper ${colorVar ? "not-softer" : "softer"}`} style={colorVar ? {border: `3px solid var(--${colorVar})` } : {border: `3px solid var(--borderColor2)` }}>
                             <span className='aligned-text-marker'>1</span>
                             <div className='in-row'>{m.tier1.map(id =>
-                                <div className="card-wrapper-padding dynamic-size" key={id}>
+                                <div key={id} className="card-wrapper-padding dynamic-size relative">
+                                    {m.catchableTiers.includes(0) && <img className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`}/>}
                                     <div className={`card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(0) ? "with-golden-border" : ""}`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} withPokeball={m.catchableTiers.includes(0)} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(0)} />
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(0)} />
                                     </div>
                                 </div>
                         )}</div></div>
@@ -343,20 +344,22 @@ const Calendar = () => {
                         <div className={`in-row rockets-row-wrapper ${colorVar ? "not-softer" : "softer"}`} style={colorVar ? {border: `3px solid var(--${colorVar})` } : {border: `3px solid var(--borderColor2)` }}>
                             <span className='aligned-text-marker'>2</span>
                             <div className='in-row'>{m.tier2.map(id =>
-                                <div className="card-wrapper-padding dynamic-size" key={id}>
+                                <div key={id} className="card-wrapper-padding dynamic-size relative">
+                                    {m.catchableTiers.includes(1) && <img className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`}/>}
                                     <div className={`card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(1) ? "with-golden-border" : ""}`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} withPokeball={m.catchableTiers.includes(1)} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(1)} />
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(1)} />
                                     </div>
                                 </div>
                         )}</div></div>
                     </div>
                     <div className='in-row round-border' style={colorVar ? { backgroundColor: `var(--${colorVar})` } : undefined}>
-                        <div className={`in-row rockets-row-wrapper ${colorVar ? "not-softer" : "softer"}`} style={colorVar ? {border: `3px solid var(--${colorVar})` } : {border: `3px solid var(--borderColor2)` }}>   
+                        <div className={`in-row rockets-row-wrapper ${colorVar ? "not-softer" : "softer"}`} style={colorVar ? {border: `3px solid var(--${colorVar})` } : {border: `3px solid var(--borderColor2)` }}>
                             <span className='aligned-text-marker'>3</span>
                             <div className='in-row'>{m.tier3.map(id =>
-                                <div className="card-wrapper-padding dynamic-size" key={id}>
+                                <div key={id} className="card-wrapper-padding dynamic-size relative">
+                                    {m.catchableTiers.includes(2) && <img className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`}/>}
                                     <div className={`card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(2) ? "with-golden-border" : ""}`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} withPokeball={m.catchableTiers.includes(2)} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(2)} />
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(2)} />
                                     </div>
                                 </div>
                         )}</div></div>

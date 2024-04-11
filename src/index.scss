@@ -36,6 +36,7 @@ code {
     --bodyBackgroundColor: #202023;
     --gridItemsBackgroundColor: rgb(36, 41, 47);
     --ball-drop-shadow: none;
+    --poke-border: drop-shadow(1px 1px 0 var(--cp-color)) drop-shadow(-0.5px -0.5px 0 var(--cp-color)) drop-shadow(1px -1px 0 var(--cp-color)) drop-shadow(-1px 1.5px 0 var(--cp-color));
     --gridItemsBackgroundColor2: rgba(0, 0, 0, 0.6);
     --rocket-softer: var(--background-shadow-soft);
     --selectionHover: #464f59;
@@ -102,6 +103,7 @@ code {
 .theme-light {
     --activePerkFilter: contrast(0) brightness(0.6);
     --lighter-tone-text: #202122;
+    --poke-border: drop-shadow(1px 1px 0 var(--cp-color)) drop-shadow(-0.5px -0.5px 0 var(--cp-color)) drop-shadow(1px -1px 0 var(--cp-color)) drop-shadow(-1px 1.5px 0 var(--cp-color));
     --event-special-font: #4C4C4C;
     --event-filter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
     --entry-background-shadow: hsla(0,0%,100%,.8);

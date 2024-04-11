@@ -56,6 +56,18 @@
     left: 0;
 }
 
+.background-absolute-img-grunt {
+    object-fit: contain;
+    position: absolute;
+    z-index: 0 !important;
+    /* opacity: 35%; */
+    top: -40%;
+    left: -40%;
+    padding: 40%;
+    -webkit-filter: var(--poke-border);
+    filter: var(--poke-border);
+}
+
 .background-absolute-img-raid {
     object-fit: contain;
     position: absolute;
@@ -93,16 +105,4 @@
     width: 33%;
     height: 33%;
     z-index: 2;
-}
-
-.pokeball-overlay {
-    opacity: 1;
-    position: absolute;
-    top: 75%;
-    left: 100%;
-    width: 33%;
-    height: 33%;
-    z-index: 2;
-    -webkit-filter: var(--ball-drop-shadow);
-    filter: var(--ball-drop-shadow);
 }

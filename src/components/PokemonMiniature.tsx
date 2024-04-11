@@ -16,11 +16,10 @@ interface IPokemonMiniatureProps {
     cpStringOverride?: string,
     withCountdown?: number,
     linkToShadowVersion?: boolean,
-    forceShadowAdorner?: boolean,
-    withPokeball?: boolean
+    forceShadowAdorner?: boolean
 }
 
-const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShadowVersion, forceShadowAdorner, withPokeball}: IPokemonMiniatureProps) => {
+const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShadowVersion, forceShadowAdorner}: IPokemonMiniatureProps) => {
     const {days, hours, minutes, seconds} = useCountdown(withCountdown ?? 0);
     const {currentGameLanguage} = useLanguage();
     const containerWidth = useRef<HTMLDivElement>(null);
@@ -47,7 +46,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         <Link to={link}>
             <div ref={containerWidth} className="pokemon-miniature">
                 <span className="mini-card-content">
-                    <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} withPokeball={withPokeball}/>
+                    <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />
                 </span>
                 <span className="header-footer">
                     <strong className="cp-container">
