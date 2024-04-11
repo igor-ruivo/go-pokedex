@@ -37,8 +37,20 @@
     }
 }
 
+.softer {
+    background-color: var(--rocket-softer);
+}
+
+.not-softer {
+    background-color: var(--background-shadow);
+}
+
+.round-border {
+    border-radius: 12px;
+}
+
 .rocket-card-wrapper {
-    background-color: var(--gridItemsBackgroundColor) !important;
+    background-color: var(--gridItemsBackgroundColor2) !important;
 }
 
 .card-wrapper-padding {

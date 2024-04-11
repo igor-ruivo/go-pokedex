@@ -254,22 +254,27 @@
 }
 
 .aligned-text-marker {
+    color: var(--event-special-font);
+    margin-left: 5%;
     align-self: center;
     font-size: 50px;
     font-weight: 700;
 }
 
 .rockets-row-wrapper {
+    justify-content: space-between;
     //background-color: var(--background-shadow-soft);
     border: 1px solid var(--borderColor2);
     border-radius: 12px;
-    margin: 0px 9px;
-    padding: 0px 9px;
+    //margin: 0px 9px;
+    //padding: 0px 9px;
+    padding: 1px 1px;
     width: 100%;
 }
 
 .row-container {
     gap: 5px;
+    margin: 0px 5px;
     padding-bottom: 5px;
     display: flex;
     flex-direction: column;

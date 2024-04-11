@@ -192,6 +192,12 @@ details[open] {
     gap: 9px;
 }
 
+.moves-display-layout-big {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
 .block-column {
     display: block;
 }
@@ -527,6 +533,13 @@ summary::-webkit-details-marker {
 
 .lose {
     color: #c1002d;
+}
+
+@media (min-width: 1003px) {
+    .moves-display-layout-big {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 @media (min-width: 750.99px) {

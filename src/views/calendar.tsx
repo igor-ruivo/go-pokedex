@@ -304,6 +304,8 @@ const Calendar = () => {
     .sort(sortPosts);
 
     const renderMove = (m: IRocketGrunt, moveUrl: string, className: string) => {
+        const colorVar = m.type ? `type-${m.type.substring(0, 1).toLocaleUpperCase() + m.type.substring(1)}` : undefined;
+
         return <ListEntry
             mainIcon={
                 {
@@ -316,35 +318,38 @@ const Calendar = () => {
             expandable
             expandedContent={
                 <div className='row-container'>
-                    <div className='in-row'>
-                        <span className='aligned-text-marker'>1º</span>
-                        <div className='in-row rockets-row-wrapper'>{m.tier1.map(id =>
-                            <div className="card-wrapper-padding dynamic-size" key={id}>
-                                <div className={`card-wrapper rocket-card-wrapper`}>
-                                    <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                    <div className='in-row round-border' style={colorVar ? { backgroundColor: `var(--${colorVar})` } : undefined}>
+                        <div className={`in-row rockets-row-wrapper ${colorVar ? "not-softer" : "softer"}`} style={colorVar ? {border: `3px solid var(--${colorVar})` } : {border: `3px solid var(--borderColor2)` }}>
+                            <span className='aligned-text-marker'>1</span>
+                            <div className='in-row'>{m.tier1.map(id =>
+                                <div className="card-wrapper-padding dynamic-size" key={id}>
+                                    <div className={`card-wrapper rocket-card-wrapper`}>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                    </div>
                                 </div>
-                            </div>
-                        )}</div>
+                        )}</div></div>
                     </div>
-                    <div className='in-row'>
-                        <span className='aligned-text-marker'>2º</span>
-                        <div className='in-row rockets-row-wrapper'>{m.tier2.map(id =>
-                            <div className="card-wrapper-padding dynamic-size" key={id}>
-                                <div className={`card-wrapper rocket-card-wrapper`}>
-                                    <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                    <div className='in-row round-border' style={colorVar ? { backgroundColor: `var(--${colorVar})` } : undefined}>
+                        <div className={`in-row rockets-row-wrapper ${colorVar ? "not-softer" : "softer"}`} style={colorVar ? {border: `3px solid var(--${colorVar})` } : {border: `3px solid var(--borderColor2)` }}>
+                            <span className='aligned-text-marker'>2</span>
+                            <div className='in-row'>{m.tier2.map(id =>
+                                <div className="card-wrapper-padding dynamic-size" key={id}>
+                                    <div className={`card-wrapper rocket-card-wrapper`}>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                    </div>
                                 </div>
-                            </div>
-                        )}</div>
+                        )}</div></div>
                     </div>
-                    <div className='in-row'>
-                        <span className='aligned-text-marker'>3º</span>
-                        <div className='in-row rockets-row-wrapper'>{m.tier3.map(id =>
-                            <div className="card-wrapper-padding dynamic-size" key={id}>
-                                <div className={`card-wrapper rocket-card-wrapper`}>
-                                    <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                    <div className='in-row round-border' style={colorVar ? { backgroundColor: `var(--${colorVar})` } : undefined}>
+                        <div className={`in-row rockets-row-wrapper ${colorVar ? "not-softer" : "softer"}`} style={colorVar ? {border: `3px solid var(--${colorVar})` } : {border: `3px solid var(--borderColor2)` }}>   
+                            <span className='aligned-text-marker'>3</span>
+                            <div className='in-row'>{m.tier3.map(id =>
+                                <div className="card-wrapper-padding dynamic-size" key={id}>
+                                    <div className={`card-wrapper rocket-card-wrapper`}>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                    </div>
                                 </div>
-                            </div>
-                        )}</div>
+                        )}</div></div>
                     </div>
                 </div>
             }
@@ -454,11 +459,11 @@ const Calendar = () => {
                                     </div>)}
                                 </div>
                             </div></div>}
-                            {tab.endsWith("/rockets") && leekRocketsFetchCompleted && <div className="moves-display-layout normal-text">
+                            {tab.endsWith("/rockets") && leekRocketsFetchCompleted && <div className="moves-display-layout-big normal-text">
                                 <div className="menu-item">
                                     <ul className={`calendar-list no-padding`}>
                                         {
-                                            leekRockets.slice(0, x > 750 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
+                                            leekRockets.slice(0, x > 1002 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
                                                 const className = m.type ? `background-${m.type}` : "normal-entry";
                                                 const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
                                                 const url = `${process.env.PUBLIC_URL}/images/${resName}`;
@@ -471,7 +476,7 @@ const Calendar = () => {
                                         }
                                     </ul>
                                 </div>
-                                {x > 750 && <div className="menu-item">
+                                {x > 1002 && <div className="menu-item">
                                     <ul className={`calendar-list no-padding`}>
                                         {
                                             leekRockets.slice(Math.round(leekRockets.length / 2)).map(m => {
