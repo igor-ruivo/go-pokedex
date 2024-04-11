@@ -17,6 +17,7 @@ import useResize from '../hooks/useResize';
 import PokemonMiniature from '../components/PokemonMiniature';
 import ListEntry from '../components/ListEntry';
 import React from 'react';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
@@ -157,7 +158,7 @@ const Calendar = () => {
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEvent, setCurrentEvent] = useState("");
     const [currentEgg, setCurrentEgg] = useState("0");
-    const [expandedRocket, setExpandedRocket] = useState("");
+    const [expandedRocket, setExpandedRocket] = useState(readSessionValue(ConfigKeys.ExpandedRocket) ?? "");
 
     const getMega = (speciesId: string) => {
         const original = gamemasterPokemon[speciesId];
@@ -318,7 +319,13 @@ const Calendar = () => {
             }
             expandable
             expanded={expandedRocket === m.trainerId}
-            setExpanded={() => setExpandedRocket(p => p === m.trainerId ? "" : m.trainerId)}
+            setExpanded={() => {
+                setExpandedRocket(p => {
+                    const newVal = p === m.trainerId ? "" : m.trainerId;
+                    writeSessionValue(ConfigKeys.ExpandedRocket, newVal);
+                    return newVal;
+                });
+            }}
             expandedContent={
                 <div className='row-container'>
                     <div className='in-row round-border' style={colorVar ? { backgroundColor: `var(--${colorVar})` } : undefined}>

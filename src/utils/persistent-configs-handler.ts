@@ -33,7 +33,8 @@ export enum ConfigKeys {
     ShowXL,
     Type1,
     Type2,
-    TrashRaid
+    TrashRaid,
+    ExpandedRocket
 }
 
 export const readSessionValue = (key: ConfigKeys) => {
