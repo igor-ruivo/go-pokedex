@@ -16,6 +16,8 @@ interface IListEntryProps {
     defaultBackgroundStyle?: string;
     expandable?: boolean;
     expandedContent?: ReactNode;
+    expanded?: boolean;
+    setExpanded?: () => void,
 }
 
 interface EntryImage {
@@ -46,16 +48,17 @@ const ListEntry = ({
     specificBackgroundStyle,
     defaultBackgroundStyle,
     expandable,
+    expanded,
+    setExpanded,
     expandedContent
 }: IListEntryProps) => {
     const [toggled, setToggled] = useState(false);
-    const [expanded, setExpanded] = useState(false);
     const secondaryContentToBeRendered = toggled ? toggledContent : secondaryContent;
 
     return(
         <li>
             <div className="with-border">
-                <div onClick={e => expandable ? setExpanded(c => !c) : onClick ? onClick(e) : undefined} style={specificBackgroundStyle ? {background: specificBackgroundStyle} : undefined} className={`move-card-content ${expandable && expanded ? "with-border-bottom" : ""} ${slim ? "slim-content" : "sparse-content"} ${!specificBackgroundStyle ? backgroundColorClassName : ""} ${(expandable || onClick) ? "selectable" : ""}`}>
+                <div onClick={e => (expandable && setExpanded) ? setExpanded() : onClick ? onClick(e) : undefined} style={specificBackgroundStyle ? {background: specificBackgroundStyle} : undefined} className={`move-card-content ${expandable && expanded ? "with-border-bottom" : ""} ${slim ? "slim-content" : "sparse-content"} ${!specificBackgroundStyle ? backgroundColorClassName : ""} ${(expandable || onClick) ? "selectable" : ""}`}>
                     <div className="move-main-info">
                         <strong className={`move-detail ${mainIcon.withBackground ? "with-shadow": ""} ${soft && !extraIcons && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
                             {mainIcon.image}

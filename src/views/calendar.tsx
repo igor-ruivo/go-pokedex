@@ -157,6 +157,7 @@ const Calendar = () => {
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEvent, setCurrentEvent] = useState("");
     const [currentEgg, setCurrentEgg] = useState("0");
+    const [expandedRocket, setExpandedRocket] = useState("");
 
     const getMega = (speciesId: string) => {
         const original = gamemasterPokemon[speciesId];
@@ -316,6 +317,8 @@ const Calendar = () => {
                 }
             }
             expandable
+            expanded={expandedRocket === m.trainerId}
+            setExpanded={() => setExpandedRocket(m.trainerId)}
             expandedContent={
                 <div className='row-container'>
                     <div className='in-row round-border' style={colorVar ? { backgroundColor: `var(--${colorVar})` } : undefined}>
