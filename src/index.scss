@@ -35,6 +35,7 @@ code {
     --scroll-background: #55585b;
     --bodyBackgroundColor: #202023;
     --gridItemsBackgroundColor: rgb(36, 41, 47);
+    --ball-drop-shadow: none;
     --gridItemsBackgroundColor2: rgba(0, 0, 0, 0.6);
     --rocket-softer: var(--background-shadow-soft);
     --selectionHover: #464f59;
@@ -116,6 +117,7 @@ code {
     --scroll-background: #b3b3b3;
     --bodyBackgroundColor: #f0f0e5;
     --statValueColor: gray;
+    --ball-drop-shadow: drop-shadow(4px 4px 4px var(--cp-color));
     --gridItemsBackgroundColor: rgb(240, 240, 240);
     --gridItemsBackgroundColor2: rgb(240, 240, 240);
     --rocket-softer: unset;

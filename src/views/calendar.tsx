@@ -323,8 +323,8 @@ const Calendar = () => {
                             <span className='aligned-text-marker'>1</span>
                             <div className='in-row'>{m.tier1.map(id =>
                                 <div className="card-wrapper-padding dynamic-size" key={id}>
-                                    <div className={`card-wrapper rocket-card-wrapper`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                    <div className={`card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(0) ? "with-golden-border" : ""}`}>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} withPokeball={m.catchableTiers.includes(0)} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(0)} />
                                     </div>
                                 </div>
                         )}</div></div>
@@ -334,8 +334,8 @@ const Calendar = () => {
                             <span className='aligned-text-marker'>2</span>
                             <div className='in-row'>{m.tier2.map(id =>
                                 <div className="card-wrapper-padding dynamic-size" key={id}>
-                                    <div className={`card-wrapper rocket-card-wrapper`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                    <div className={`card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(1) ? "with-golden-border" : ""}`}>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} withPokeball={m.catchableTiers.includes(1)} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(1)} />
                                     </div>
                                 </div>
                         )}</div></div>
@@ -345,8 +345,8 @@ const Calendar = () => {
                             <span className='aligned-text-marker'>3</span>
                             <div className='in-row'>{m.tier3.map(id =>
                                 <div className="card-wrapper-padding dynamic-size" key={id}>
-                                    <div className={`card-wrapper rocket-card-wrapper`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} />
+                                    <div className={`card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(2) ? "with-golden-border" : ""}`}>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[id]} withPokeball={m.catchableTiers.includes(2)} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(2)} />
                                     </div>
                                 </div>
                         )}</div></div>
