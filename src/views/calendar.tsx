@@ -318,7 +318,7 @@ const Calendar = () => {
             }
             expandable
             expanded={expandedRocket === m.trainerId}
-            setExpanded={() => setExpandedRocket(m.trainerId)}
+            setExpanded={() => setExpandedRocket(p => p === m.trainerId ? "" : m.trainerId)}
             expandedContent={
                 <div className='row-container'>
                     <div className='in-row round-border' style={colorVar ? { backgroundColor: `var(--${colorVar})` } : undefined}>
