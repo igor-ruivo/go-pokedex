@@ -501,6 +501,39 @@ export const mapLeekEggs: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     return results;
 }
 
+export const mapShadowRaids: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    const raid1 = Array.from(data.tiers)
+        .filter((t: any) => t.tier === "RAID_LEVEL_1_SHADOW")
+        .map((t: any) => t.raids.map((f: any) => f.pokemon))
+        .flat()
+        .map((t: any) => { return {
+            shiny: false,
+            speciesId: t.toLocaleLowerCase().replace("_form", "").replace("alola", "alolan"),
+            kind: "1"
+        }
+    });
+
+    const raid3: IEntry[] = Array.from(data.tiers)
+        .filter((t: any) => t.tier === "RAID_LEVEL_3_SHADOW")
+        .map((t: any) => t.raids.map((f: any) => f.pokemon))
+        .flat()
+        .map((t: any) => { return {
+                shiny: false,
+                speciesId: t.toLocaleLowerCase().replace("_form", "").replace("alola", "alolan"),
+                kind: "3"
+            }
+        });
+
+    const results: IPostEntry = {
+        date: (new Date()).valueOf(),
+        raids: [...raid1, ...raid3],
+        title: "Current Shadow Raids"
+    };
+
+    return results;
+}
+
+
 export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRocketGrunt[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');

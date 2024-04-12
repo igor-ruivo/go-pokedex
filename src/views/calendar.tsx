@@ -148,7 +148,7 @@ const computeString = (kind: string | undefined, isShadow: boolean) => {
 
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { leekEggs, leekRockets, leekRocketsErrors, leekRocketsFetchCompleted, leekEggsErrors, leekEggsFetchCompleted, bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
+    const { leekEggs, shadowRaids, shadowRaidsErrors, shadowRaidsFetchCompleted, leekRockets, leekRocketsErrors, leekRocketsFetchCompleted, leekEggsErrors, leekEggsFetchCompleted, bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
     const { pathname } = useLocation();
     const {x} = useResize();
     
@@ -223,12 +223,12 @@ const Calendar = () => {
     }
 
     const generateTodayBosses = (entries: IPostEntry[]) => {
-        if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted) {
+        if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted || !shadowRaidsFetchCompleted) {
             return [];
         }
 
-        const seenIds = new Set<string>((bossesPerTier.raids ?? []).map(e => e.speciesId));
-        const response = [...(bossesPerTier.raids ?? [])];
+        const seenIds = new Set<string>([...(bossesPerTier.raids ?? []).map(e => e.speciesId), ...(shadowRaids.raids ?? []).map(e => e.speciesId)]);
+        const response = [...(bossesPerTier.raids ?? []), ...(shadowRaids.raids ?? [])];
 
         const now = new Date();
         /*const currentDay = today.getDate();
