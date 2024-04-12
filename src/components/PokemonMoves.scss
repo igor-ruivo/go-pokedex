@@ -94,6 +94,7 @@
 }
 
 .buffs-placeholder {
+    z-index: 11;
     display: flex;
     gap: 3px;
     position: relative;
@@ -343,6 +344,11 @@ details[open] {
 
 summary::-webkit-details-marker {
     display: none;
+}
+
+.relativeIndex {
+    position: relative;
+    z-index: 10;
 }
 
 .move-card-content {

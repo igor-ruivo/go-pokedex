@@ -35,7 +35,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
             return days > 0 ? `${days} day${days > 1 ? "s" : ""} left` : `${hours}h:${minutes}m:${seconds}s`;
         }
 
-        if (cpStringOverride) {
+        if (cpStringOverride !== undefined) {
             return cpStringOverride;
         }
 

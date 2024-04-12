@@ -58,7 +58,7 @@ const ListEntry = ({
     return(
         <li>
             <div className="with-border">
-                <div onClick={e => (expandable && setExpanded) ? setExpanded() : onClick ? onClick(e) : undefined} style={specificBackgroundStyle ? {background: specificBackgroundStyle} : undefined} className={`move-card-content ${expandable && expanded ? "with-border-bottom" : ""} ${slim ? "slim-content" : "sparse-content"} ${!specificBackgroundStyle ? backgroundColorClassName : ""} ${(expandable || onClick) ? "selectable" : ""}`}>
+                <div onClick={e => (expandable && setExpanded) ? setExpanded() : onClick ? onClick(e) : undefined} style={specificBackgroundStyle ? {background: specificBackgroundStyle} : undefined} className={`move-card-content relativeIndex ${expandable && expanded ? "with-border-bottom" : ""} ${slim ? "slim-content" : "sparse-content"} ${!specificBackgroundStyle ? backgroundColorClassName : ""} ${(expandable || onClick) ? "selectable" : ""}`}>
                     <div className="move-main-info">
                         <strong className={`move-detail ${mainIcon.withBackground ? "with-shadow": ""} ${soft && !extraIcons && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${slim ? "slim-padding" : ""}`}>
                             {mainIcon.image}
