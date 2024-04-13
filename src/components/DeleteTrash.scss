@@ -64,7 +64,7 @@
 }
 
 .raid-date-element {
-    width: 160px;
+    min-width: 170px;
 }
 
 .row-flex {
@@ -87,4 +87,10 @@
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+@media (max-width: 500px) {
+    .raid-date-element {
+        min-width: 160px;
+    }
 }
