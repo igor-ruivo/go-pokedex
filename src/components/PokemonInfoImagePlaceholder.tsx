@@ -123,7 +123,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                 </span>
             </div>
             </div>
-            <div className="row justified with-big-gap">
+            <div className="row justified aligned with-big-gap">
             {props.computedPokemonFamily && <PokemonFamily
                 pokemon={props.pokemon}
                 similarPokemon={props.computedPokemonFamily}

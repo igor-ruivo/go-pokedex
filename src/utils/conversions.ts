@@ -370,7 +370,7 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
         const bossName = (e.getElementsByClassName("boss-name")[0] as HTMLElement).innerText.trim();
         const parsedPkm = fetchPokemonFromString([bossName], gamemasterPokemon, tier === "mega" ? megaDomain : bossName.toLocaleLowerCase().includes("shadow") ? shadowDomain : normalDomain);
         
-        if (parsedPkm[0]) {
+        if (parsedPkm[0] && tier !== "5" && tier !== "mega") {
             pokemons.push({
                 shiny: parsedPkm[0].shiny,
                 speciesId: parsedPkm[0].speciesId,

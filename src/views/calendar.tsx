@@ -17,6 +17,7 @@ import useResize from '../hooks/useResize';
 import PokemonMiniature from '../components/PokemonMiniature';
 import ListEntry from '../components/ListEntry';
 import React from 'react';
+import Select from "react-select";
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 
 
@@ -41,6 +42,12 @@ const smallOptions: Intl.DateTimeFormatOptions = {
     hour: 'numeric',
     minute: '2-digit',
     hour12: false
+}
+
+const smallestOptions: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
 }
 
 const idxToPlace = (idx: number) => {
@@ -154,6 +161,8 @@ const Calendar = () => {
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEvent, setCurrentEvent] = useState("");
     const [currentEgg, setCurrentEgg] = useState("0");
+    const [currentTier, setCurrentTier] = useState("2");
+    const [currentBossDate, setCurrentBossDate] = useState("current");
     const [expandedRocket, setExpandedRocket] = useState(readSessionValue(ConfigKeys.ExpandedRocket) ?? "");
 
     const getMega = (speciesId: string) => {
@@ -341,6 +350,22 @@ const Calendar = () => {
         return additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === speciesId))?.dateEnd;
     }
 
+    const eggIdxToKind = (idx: string) => {
+        switch(idx) {
+            case "0":
+                return "1";
+            case "1":
+                return "3";
+            case "3":
+                return "mega";
+            default:
+            return "5";
+        }
+    }
+
+    const raidEventDates = [{label: "Current Bosses", value: "current"}, ...remainingBosses.map(e => ({label: inUpperCase(new Date(e.date).toLocaleString(undefined, smallestOptions)), value: getDateKey(e)}) as any)];
+    const raidEventEggs = [{label: "Tier 1", value: "0"}, {label: "Tier 3", value: "1"}, {label: "Tier 5", value: "2"}, {label: "Mega", value: "3"}];
+
     return (
         <main className="pokedex-layout">
             <nav className="navigation-header normal-text">
@@ -383,13 +408,39 @@ const Calendar = () => {
                         defaultTextColor
                     />
                         <div className="pokemon with-small-margin-top with-xl-gap">
-                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment:</strong><div className='with-flex with-margin-top contained'>
+                            {
+                                tab.endsWith("/bosses") && 
+                                <div className='boss-header-filters'>
+                                    <div className='raid-date-element'>
+                                        <Select
+                                            className={`navbar-dropdown-family`}
+                                            isSearchable={false}
+                                            value={raidEventDates.find(o => o.value === currentBossDate)}
+                                            options={raidEventDates}
+                                            onChange={e => setCurrentBossDate((e as any).value)}
+                                            formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left normal-text"><span className="cp-container">{data.label}</span></div>}
+                                        />
+                                    </div>
+                                    <div className='raid-date-element'>
+                                        <Select
+                                            className={`navbar-dropdown-family`}
+                                            isSearchable={false}
+                                            value={raidEventEggs.find(o => o.value === currentTier)}
+                                            options={raidEventEggs}
+                                            onChange={e => setCurrentTier((e as any).value)}
+                                            formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{width: "auto"}} height={26} width={26}/></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                                        />
+                                    </div>
+                                </div>
+                            }
+                            {tab.endsWith("/bosses") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && 
+                            <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment:</strong><div className='with-flex with-margin-top contained'>
                                 <div className='row-container'>
-                                    {bossesAvailableToday.filter(e => e.kind === "1" && !gamemasterPokemon[e.speciesId].isShadow).length > 0 && <div className='in-row round-border' style={{ backgroundColor: "yellow" }}>
-                                        <div className={`in-row bosses-row-wrapper not-softer`} style={{border: `3px solid yellow` }}>
+                                    {bossesAvailableToday.filter(e => e.kind === eggIdxToKind(currentTier) /*&& !gamemasterPokemon[e.speciesId].isShadow*/).length > 0 && <div className='in-row round-border'>
+                                        
                                             <div className='in-column'>
                                                 <div className='in-row wrapped'>
-                                                    {bossesAvailableToday.filter(e => e.kind === "1" && !getCountdownForBoss(e.speciesId) && !gamemasterPokemon[e.speciesId].isShadow).map(e => 
+                                                    {bossesAvailableToday.filter(e => e.kind === eggIdxToKind(currentTier) && !getCountdownForBoss(e.speciesId) /*&& !gamemasterPokemon[e.speciesId].isShadow*/).map(e => 
                                                         <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                                             <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                                                 <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
@@ -399,7 +450,7 @@ const Calendar = () => {
                                                     )}
                                                 </div>
                                                 <div className='in-row wrapped'>
-                                                    {bossesAvailableToday.filter(e => e.kind === "1" && getCountdownForBoss(e.speciesId) && !gamemasterPokemon[e.speciesId].isShadow).map(e => 
+                                                    {bossesAvailableToday.filter(e => e.kind === eggIdxToKind(currentTier) && getCountdownForBoss(e.speciesId) /*&& !gamemasterPokemon[e.speciesId].isShadow*/).map(e => 
                                                         <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
                                                             <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
                                                                 <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
@@ -408,75 +459,11 @@ const Calendar = () => {
                                                     )}
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>}
-                                    {bossesAvailableToday.filter(e => e.kind === "3" && !gamemasterPokemon[e.speciesId].isShadow).length > 0 && <div className='in-row round-border' style={{ backgroundColor: "red" }}>
-                                        <div className={`in-row bosses-row-wrapper not-softer`} style={{border: `3px solid red` }}>
-                                            <div className='in-column'>
-                                                <div className='in-row wrapped'>
-                                                    {bossesAvailableToday.filter(e => e.kind === "3" && !getCountdownForBoss(e.speciesId) && !gamemasterPokemon[e.speciesId].isShadow).map(e => 
-                                                        <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                            <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                                                <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
-                                                            </div>
-                                                        </div>
-                                                    
-                                                    )}
-                                                </div>
-                                                <div className='in-row wrapped'>
-                                                    {bossesAvailableToday.filter(e => e.kind === "3" && getCountdownForBoss(e.speciesId) && !gamemasterPokemon[e.speciesId].isShadow).map(e => 
-                                                        <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                            <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                                                <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>}
-                                    {bossesAvailableToday.filter(e => e.kind === "5" || e.kind?.toLocaleLowerCase().includes("mega")).length > 0 && <div className='in-row round-border' style={{ backgroundColor: "blue" }}>
-                                        <div className={`in-row bosses-row-wrapper not-softer`} style={{border: `3px solid blue` }}>
-                                            <div className='in-row wrapped'>
-                                                {bossesAvailableToday.filter(e => e.kind === "5" || e.kind?.toLocaleLowerCase().includes("mega")).map(e => 
-                                                    <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                        <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>}
-                                    {bossesAvailableToday.filter(e => e.kind === "1" && gamemasterPokemon[e.speciesId].isShadow).length > 0 && <div className='in-row round-border' style={{ backgroundColor: "mediumpurple" }}>
-                                        <div className={`in-row bosses-row-wrapper not-softer`} style={{border: `3px solid mediumpurple` }}>
-                                            <div className='in-row wrapped'>
-                                                {bossesAvailableToday.filter(e => e.kind === "1" && gamemasterPokemon[e.speciesId].isShadow).map(e => 
-                                                    <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                        <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>}
-                                    {bossesAvailableToday.filter(e => e.kind === "3" && gamemasterPokemon[e.speciesId].isShadow).length > 0 && <div className='in-row round-border' style={{ backgroundColor: "purple" }}>
-                                        <div className={`in-row bosses-row-wrapper not-softer`} style={{border: `3px solid purple` }}>
-                                            <div className='in-row wrapped'>
-                                                {bossesAvailableToday.filter(e => e.kind === "3" && gamemasterPokemon[e.speciesId].isShadow).map(e => 
-                                                    <div className="card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                        <div className={`card-wrapper ${e.kind === "mega" || e.kind?.includes("5") || e.kind?.includes("6") ? "with-golden-border" : ""}`}>
-                                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === e.speciesId))?.dateEnd} />
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
                                     </div>}
                                 </div>
                             </div>
-                            </div></div>}
+                            </div>
+                            </div>}
                             {tab.endsWith("/bosses") && leekPostsFetchCompleted && postsFetchCompleted &&
                             remainingBosses
                             .map(e => <div className='with-dynamic-max-width auto-margin-sides' key={getDateKey(e)}><div className='item default-padding'>
