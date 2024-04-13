@@ -13,6 +13,12 @@
     aspect-ratio: 1 / 1;
 }
 
+.with-medium-gap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
 .with-normal-gap {
     display: flex;
     flex-direction: column;

@@ -10,7 +10,7 @@ import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { Link, useLocation } from 'react-router-dom';
 import { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useCountdown from '../hooks/useCountdown';
 import PokemonHeader from '../components/PokemonHeader';
 import useResize from '../hooks/useResize';
@@ -161,45 +161,8 @@ const Calendar = () => {
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEvent, setCurrentEvent] = useState("");
     const [currentEgg, setCurrentEgg] = useState("0");
-    const [currentTier, setCurrentTier] = useState("2");
     const [currentBossDate, setCurrentBossDate] = useState("current");
     const [expandedRocket, setExpandedRocket] = useState(readSessionValue(ConfigKeys.ExpandedRocket) ?? "");
-
-    const getMega = (speciesId: string) => {
-        const original = gamemasterPokemon[speciesId];
-        return Object.values(gamemasterPokemon).find(p => p.dex === original.dex && !p.aliasId && p.isMega);
-    }
-
-    const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
-    const tab = pathname.substring(pathname.lastIndexOf("/"));
-
-    const reducedLeekPosts = leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
-
-    const reducedRaids = posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
-
-    const sortEntries = (e1: IEntry, e2: IEntry) => {
-        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
-            return 1;
-        }
-
-        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
-            return -1;
-        }
-
-        if (e1.kind === e2.kind) {
-            return gamemasterPokemon[e1.speciesId].dex - gamemasterPokemon[e2.speciesId].dex;
-        }
-
-        if (!e1.kind) {
-            return -1;
-        }
-
-        if (!e2.kind) {
-            return 1;
-        }
-
-        return e1.kind.localeCompare(e2.kind);
-    }
 
     const generateTodayBosses = (entries: IPostEntry[]) => {
         if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted || !shadowRaidsFetchCompleted) {
@@ -243,6 +206,9 @@ const Calendar = () => {
         return response.sort(sortEntries);
     }
 
+    const reducedLeekPosts = leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
+    const reducedRaids = posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
+
     const additionalBosses = Object.entries([...reducedLeekPosts, ...reducedRaids]
         .reduce((acc: { [key: string]: IPostEntry }, obj) => {
             const key = getDateKey(obj);
@@ -263,8 +229,49 @@ const Calendar = () => {
             raids: value.raids
         } as IPostEntry));
 
+    const sortEntries = (e1: IEntry, e2: IEntry) => {
+        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
+            return 1;
+        }
+
+        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
+            return -1;
+        }
+
+        if (e1.kind === e2.kind) {
+            return gamemasterPokemon[e1.speciesId].dex - gamemasterPokemon[e2.speciesId].dex;
+        }
+
+        if (!e1.kind) {
+            return -1;
+        }
+
+        if (!e2.kind) {
+            return 1;
+        }
+
+        return e1.kind.localeCompare(e2.kind);
+    }
+
     const bossesAvailable = (currentBossDate === "current" ? generateTodayBosses(additionalBosses) : additionalBosses.find(a => getDateKey(a) === currentBossDate)!.raids as IEntry[]).sort(sortEntries);//generateFilteredBosses(additionalBosses);
-    console.log(bossesAvailable);
+
+    const raidEventEggs = [...(bossesAvailable.some(a => a.kind === "1") ? [{ label: "Tier 1", value: "0" }] : []), ...(bossesAvailable.some(a => a.kind === "3") ? [{ label: "Tier 3", value: "1" }] : []), ...(bossesAvailable.some(a => a.kind === "5") ? [{ label: "Tier 5", value: "2" }] : []), ...(bossesAvailable.some(a => a.kind === "mega") ? [{ label: "Mega", value: "3" }] : [])];
+    const firstRelevantEntryTierForDate = raidEventEggs[0]?.value ?? "";
+    const [currentTier, setCurrentTier] = useState(firstRelevantEntryTierForDate);
+
+    useEffect(() => {
+        if (!raidEventEggs.some(e => e.value === currentTier)) {
+            setCurrentTier(firstRelevantEntryTierForDate);
+        }
+    });
+
+    const getMega = (speciesId: string) => {
+        const original = gamemasterPokemon[speciesId];
+        return Object.values(gamemasterPokemon).find(p => p.dex === original.dex && !p.aliasId && p.isMega);
+    }
+
+    const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
+    const tab = pathname.substring(pathname.lastIndexOf("/"));
 
     const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
         if (e1.date.valueOf() === e2.date.valueOf()) {
@@ -365,7 +372,6 @@ const Calendar = () => {
     }
 
     const raidEventDates = [{ label: "Current Bosses", value: "current" }, ...remainingBosses.map(e => ({ label: inUpperCase(new Date(e.date).toLocaleString(undefined, smallestOptions)), value: getDateKey(e) }) as any)];
-    const raidEventEggs = [{ label: "Tier 1", value: "0" }, { label: "Tier 3", value: "1" }, { label: "Tier 5", value: "2" }, { label: "Mega", value: "3" }];
 
     return (
         <main className="pokedex-layout">
@@ -408,7 +414,7 @@ const Calendar = () => {
                                 type2={undefined}
                                 defaultTextColor
                             />
-                            <div className="pokemon with-small-margin-top with-xl-gap">
+                            <div className="pokemon with-small-margin-top with-medium-gap">
                                 {
                                     tab.endsWith("/bosses") &&
                                     <div className='boss-header-filters'>
@@ -419,7 +425,7 @@ const Calendar = () => {
                                                 value={raidEventDates.find(o => o.value === currentBossDate)}
                                                 options={raidEventDates}
                                                 onChange={e => setCurrentBossDate((e as any).value)}
-                                                formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left normal-text"><span className="cp-container">{data.label}</span></div>}
+                                                formatOptionLabel={(data, _) => <div className="hint-container mini-margin-left normal-text"><strong>{data.label}</strong></div>}
                                             />
                                         </div>
                                         <div className='raid-date-element'>
@@ -440,7 +446,7 @@ const Calendar = () => {
                                             <div className='with-dynamic-max-width auto-margin-sides'>
                                                 <div className='item default-padding'>
                                                     <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>
-                                                        {`Current ${raidEventEggs.find(o => o.value === currentTier)!.label} Bosses`}
+                                                        {`${raidEventEggs.find(o => o.value === currentTier)?.label} Bosses`}
                                                     </strong>
                                                     <div className='with-flex with-margin-top contained'>
                                                         <div className='row-container'>
@@ -477,7 +483,7 @@ const Calendar = () => {
                                             <div className='with-dynamic-max-width auto-margin-sides'>
                                                 <div className='item default-padding'>
                                                     <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>
-                                                        {`Current ${raidEventEggs.find(o => o.value === currentTier)!.label} Shadow Bosses`}
+                                                        {`${raidEventEggs.find(o => o.value === currentTier)?.label} Shadow Bosses`}
                                                     </strong>
                                                     <div className='with-flex with-margin-top contained'>
                                                         <div className='row-container'>
