@@ -371,7 +371,7 @@ const Calendar = () => {
         }
     }
 
-    const raidEventDates = [{ label: "Current Bosses", value: "current" }, ...remainingBosses.map(e => ({ label: inUpperCase(new Date(e.date).toLocaleString(undefined, smallestOptions)), value: getDateKey(e) }) as any)];
+    const raidEventDates = [{ label: "Current", value: "current" }, ...remainingBosses.map(e => ({ label: inUpperCase(new Date(e.date).toLocaleString(undefined, smallestOptions)), value: getDateKey(e) }) as any)];
 
     return (
         <main className="pokedex-layout">
@@ -425,7 +425,7 @@ const Calendar = () => {
                                                 value={raidEventDates.find(o => o.value === currentBossDate)}
                                                 options={raidEventDates}
                                                 onChange={e => setCurrentBossDate((e as any).value)}
-                                                formatOptionLabel={(data, _) => data.value === "current" ? <div className="hint-container mini-margin-left normal-text"><strong>{data.label}</strong></div> : <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                                                formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                                             />
                                         </div>
                                         <div>
