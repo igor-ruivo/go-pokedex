@@ -1,38 +1,103 @@
-.news-display-layout{
+.news-display-layout {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 32px;
+    padding: 12px;
 }
 
 .news-header-section {
     display: grid;
-    grid-template-columns: 40% 60%;
-    gap: 12px;
+    grid-template-columns: 38% 58%;
+    max-height: 266px;
+    > * {
+        max-height: 266px;
+    }
+
+    gap: 4%;
+    img {
+        border-radius: 12px;
+        border: 1px solid var(--borderColor2);
+        max-width: 100%;
+        max-height: 100%;
+        height: auto;
+    }
+}
+
+.current-news-bonus {
+    height: 100%;
+}
+
+.bonus-container {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.news-selected {
+    img {
+        border: 3px solid var(--cp-color) !important;
+        max-width: 170px !important;
+    }
+}
+
+.season-miniature {
+    border-right: 1px solid var(--borderColor2);
+    padding-right: 30px;
+}
+
+.miniature-date {
+    font-weight: 700;
+    font-size: large;
+    text-align: center;
+}
+
+.post-miniature {
+    display: flex;
+    flex-direction: column;
+    max-width: fit-content;
+}
+
+.news-gallery {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 30px;
+    img {
+        border-radius: 12px;
+        border: 1px solid var(--borderColor2);
+        width: auto;
+        max-width: 145px;
+    }
 }
 
 .current-news-main-info {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 15% 15% 60%;
     gap: 12px;
 }
 
 .current-news-title {
-    font-size: x-large;
+    font-size: xx-large;
     font-weight: 700;
     word-wrap: break-word;
 }
 
+.pkm-container {
+    display: flex;
+    flex-direction: row;
+}
+
 .from-date {
     font-weight: 700;
-    font-size: large;
+    font-size: medium;
 }
 
 .to-date {
-    font-weight: 600;
-    font-size: larger;
+    font-weight: 700;
+    font-size: small;
 }
 
 .date-container {
+    color: var(--event-special-font);
     display: flex;
     flex-direction: row;
     gap: 4px;
@@ -42,5 +107,11 @@
     img {
         //border-radius: 120px;
         //clip-path: inset(21px);
+    }
+}
+
+@media (max-width: 500px) {
+    .news-display-layout {
+        padding: 12px 0px;
     }
 }

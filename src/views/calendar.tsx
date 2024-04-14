@@ -9,7 +9,7 @@ import { calculateCP, levelToLevelIndex } from '../utils/pokemon-helper';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { Link, useLocation } from 'react-router-dom';
-import { IEntry, IPostEntry, IRocketGrunt, sortPosts } from '../DTOs/INews';
+import { IEntry, IPostEntry, IRocketGrunt, sortEntries, sortPosts } from '../DTOs/INews';
 import { useEffect, useState } from 'react';
 import useCountdown from '../hooks/useCountdown';
 import PokemonHeader from '../components/PokemonHeader';
@@ -21,6 +21,7 @@ import Select from "react-select";
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import News from './News';
 import { inCamelCase, localeStringSmallOptions, localeStringSmallestOptions } from '../utils/Misc';
+import PostEntry from '../components/PostEntry';
 
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
@@ -112,18 +113,6 @@ const computeCount = (d: number, h: number, m: number, s: number) => {
     return d > 0 ? `${d} day${d > 1 ? "s" : ""} left` : `${h}h:${m}m:${s}s`;
 }
 
-const computeString = (kind: string | undefined, isShadow: boolean) => {
-    if (!kind) {
-        return undefined;
-    }
-
-    if (kind.toLocaleLowerCase().includes("mega")) {
-        return "Mega Raid";
-    }
-
-    return `Tier ${kind}${isShadow && !kind.toLocaleLowerCase().includes("shadow") ? " Shadow" : ""}`;
-}
-
 const Calendar = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { leekEggs, shadowRaids, shadowRaidsErrors, shadowRaidsFetchCompleted, leekRockets, leekRocketsErrors, leekRocketsFetchCompleted, leekEggsErrors, leekEggsFetchCompleted, bossesPerTier, posts, season, leekPosts, seasonFetchCompleted, seasonErrors, bossesFetchCompleted, postsFetchCompleted, leekPostsFetchCompleted, leekPostsErrors, bossesErrors, postsErrors } = useCalendar();
@@ -178,7 +167,7 @@ const Calendar = () => {
             }
         }
 
-        return response.sort(sortEntries);
+        return response.sort((a, b) => sortEntries(a, b, gamemasterPokemon));
     }
 
     const reducedLeekPosts = leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date());
@@ -204,31 +193,7 @@ const Calendar = () => {
             raids: value.raids
         } as IPostEntry));
 
-    const sortEntries = (e1: IEntry, e2: IEntry) => {
-        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
-            return 1;
-        }
-
-        if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
-            return -1;
-        }
-
-        if (e1.kind === e2.kind) {
-            return gamemasterPokemon[e1.speciesId].dex - gamemasterPokemon[e2.speciesId].dex;
-        }
-
-        if (!e1.kind) {
-            return -1;
-        }
-
-        if (!e2.kind) {
-            return 1;
-        }
-
-        return e1.kind.localeCompare(e2.kind);
-    }
-
-    const bossesAvailable = (currentBossDate === "current" ? generateTodayBosses(additionalBosses) : additionalBosses.find(a => getDateKey(a) === currentBossDate)!.raids as IEntry[]).sort(sortEntries);//generateFilteredBosses(additionalBosses);
+    const bossesAvailable = (currentBossDate === "current" ? generateTodayBosses(additionalBosses) : additionalBosses.find(a => getDateKey(a) === currentBossDate)!.raids as IEntry[]).sort((a, b) => sortEntries(a, b, gamemasterPokemon));//generateFilteredBosses(additionalBosses);
 
     const raidEventEggs = [...(bossesAvailable.some(a => a.kind === "1") ? [{ label: "Tier 1", value: "0" }] : []), ...(bossesAvailable.some(a => a.kind === "3") ? [{ label: "Tier 3", value: "1" }] : []), ...(bossesAvailable.some(a => a.kind === "5" || a.kind === "mega") ? [{ label: "Special", value: "2" }] : [])];
     const firstRelevantEntryTierForDate = raidEventEggs[0]?.value ?? "";
@@ -502,7 +467,7 @@ const Calendar = () => {
                                             </div>
                                         </div></div>
                                     <div className='with-flex contained'>
-                                        {(leekEggs.eggs ?? []).filter(r => !r.comment && r.kind === String(idxToKind(+currentEgg))).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
+                                        {(leekEggs.eggs ?? []).filter(r => !r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
                                             <div className={`card-wrapper`}>
                                                 <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                             </div>
@@ -510,7 +475,7 @@ const Calendar = () => {
                                     </div>
                                     {(leekEggs.eggs?.length ?? 0) > 0 && leekEggs.eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'><strong>{leekEggs.eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment}:</strong></div>}
                                     <div className='with-flex contained'>
-                                        {(leekEggs.eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
+                                        {(leekEggs.eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
                                             <div className={`card-wrapper`}>
                                                 <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                             </div>
@@ -551,7 +516,7 @@ const Calendar = () => {
                                         </ul>
                                     </div>}
                                 </div>}
-                                {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} sortEntries={sortEntries} withItemBorder />)}
+                                {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} collection={e.wild ?? []} post={e} withItemBorder />)}
                                 {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && <div className='with-dynamic-max-width auto-margin-sides'><div className='item default-padding'>
                                     <div>
                                         <div><strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>Current Season <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong></div>
@@ -571,14 +536,14 @@ const Calendar = () => {
                                             </div>
                                         </div></div>
                                     <div className='with-flex contained'>
-                                        {(season.wild ?? []).filter(r => r.kind === currentPlace).sort(sortEntries).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
+                                        {(season.wild ?? []).filter(r => r.kind === currentPlace).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId} className="card-wrapper-padding dynamic-size">
                                             <div className={`card-wrapper`}>
                                                 <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                             </div>
                                         </div>)}
                                     </div>
                                 </div></div>}
-                                {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} withItemBorder collection={e.wild ?? []} post={e} sortEntries={sortEntries} />)}
+                                {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} withItemBorder collection={e.wild ?? []} post={e} />)}
                                 {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
                                     <News news={posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)} season={season} />
                                 }
@@ -670,44 +635,11 @@ const EventDetail = ({ eventKey, post, sortEntries }: IEventDetail) => {
                 </div>
             </div>
         </div>}
-        {currTab === "spawns" && <PostEntry collection={post.wild ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} kindFilter={post.isSeason ? currentPlace : undefined} />}
-        {currTab === "raids" && <PostEntry collection={post.raids ?? []} withRaidCPStringOverride={true} withoutTitle={true} post={post} sortEntries={sortEntries} />}
-        {currTab === "researches" && <PostEntry collection={post.researches ?? []} withoutTitle={true} post={post} sortEntries={sortEntries} />}
+        {currTab === "spawns" && <PostEntry collection={post.wild ?? []} withoutTitle={true} post={post} kindFilter={post.isSeason ? currentPlace : undefined} />}
+        {currTab === "raids" && <PostEntry collection={post.raids ?? []} withRaidCPStringOverride={true} withoutTitle={true} post={post} />}
+        {currTab === "researches" && <PostEntry collection={post.researches ?? []} withoutTitle={true} post={post}  />}
         {currTab === "bonuses" && post.bonuses && <div className='default-padding bonus-container less-contained'>
             {post.bonuses.split("\n").filter(b => b).map(b => <ul key={b} className='ul-with-adorner'>{b}</ul>)}
         </div>}
     </div>;
-}
-
-interface IPost {
-    post: IPostEntry;
-    collection: IEntry[];
-    sortEntries: (e1: IEntry, e2: IEntry) => number;
-    kindFilter?: string;
-    withoutTitle?: boolean;
-    withRaidCPStringOverride?: boolean;
-    withItemBorder?: boolean;
-}
-
-const PostEntry = ({ post, collection, sortEntries, kindFilter, withoutTitle, withRaidCPStringOverride, withItemBorder }: IPost) => {
-    const { gamemasterPokemon } = usePokemon();
-    const { days, hours, minutes, seconds } = useCountdown(post.dateEnd ?? 0);
-
-
-
-    const now = new Date();
-    const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
-
-    return <div className='with-dynamic-max-width auto-margin-sides'><div className={withItemBorder ? 'item default-padding' : ""}>
-        {!withoutTitle && postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong>}
-        {!withoutTitle && !postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>{inCamelCase(new Date(post.date).toLocaleString(undefined, localeStringSmallOptions)) + " - " + inCamelCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, localeStringSmallOptions))}</strong>}
-        <div className='with-flex contained'>
-            {collection.filter(k => !kindFilter || kindFilter === k.kind).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
-                <div className={`card-wrapper ${!post.isSeason && (p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6")) ? "with-golden-border" : ""}`}>
-                    <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} cpStringOverride={withRaidCPStringOverride ? computeString(p.kind, gamemasterPokemon[p.speciesId].isShadow) : undefined} />
-                </div>
-            </div>)}
-        </div></div>
-    </div>
-
 }

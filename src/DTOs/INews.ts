@@ -1,4 +1,5 @@
 import Dictionary from "../utils/Dictionary";
+import { IGamemasterPokemon } from "./IGamemasterPokemon";
 
 export interface IEntry {
     speciesId: string;
@@ -45,4 +46,28 @@ export const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
     }
 
     return e1.date.valueOf() - e2.date.valueOf();
+}
+
+export const sortEntries = (e1: IEntry, e2: IEntry, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+    if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
+        return 1;
+    }
+
+    if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
+        return -1;
+    }
+
+    if (e1.kind === e2.kind) {
+        return gamemasterPokemon[e1.speciesId].dex - gamemasterPokemon[e2.speciesId].dex;
+    }
+
+    if (!e1.kind) {
+        return -1;
+    }
+
+    if (!e2.kind) {
+        return 1;
+    }
+
+    return e1.kind.localeCompare(e2.kind);
 }

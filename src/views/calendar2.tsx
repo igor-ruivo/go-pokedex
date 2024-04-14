@@ -1,5 +1,6 @@
 import './pokemon.scss';
 import '../components/PokemonImage.css';
+import './calendar.scss';
 import './calendar2.scss';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { usePokemon } from '../contexts/pokemon-context';

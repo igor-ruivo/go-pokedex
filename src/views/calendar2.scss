@@ -11,6 +11,13 @@
     }
 }
 
+.ul-with-adorner {
+    list-style-type: circle;
+    list-style-position: inside;
+    display: list-item;
+    padding-right: 16px;
+}
+
 @media (min-width: 500px) {
     .events-header-image-container {
         height: 215px;

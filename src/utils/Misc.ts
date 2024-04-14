@@ -24,3 +24,8 @@ export const localeStringOptions: Intl.DateTimeFormatOptions = {
     minute: '2-digit',
     hour12: false
 };
+
+export const localeStringMiniature: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+};
