@@ -36,3 +36,13 @@ export interface IRaidEntry {
     date: string,
     entries: Dictionary<IEntry[]>
 }
+
+
+
+export const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
+    if (e1.date.valueOf() === e2.date.valueOf()) {
+        return (e1.dateEnd?.valueOf() ?? 0) - (e2.dateEnd?.valueOf() ?? 0);
+    }
+
+    return e1.date.valueOf() - e2.date.valueOf();
+}

@@ -15,7 +15,7 @@ import { ImageSourceProvider } from './contexts/imageSource-context';
 import { RaidRankerProvider } from './contexts/raid-ranker-context';
 import Footer from './components/Template/Footer';
 import { CalendarProvider } from './contexts/raid-bosses-context';
-import Calendar from './views/calendar';
+import Calendar2 from './views/calendar2';
 
 const App = () => {
     return (
@@ -42,11 +42,11 @@ const App = () => {
                                                             <Route path="/pokemon/:speciesId/tables" element={<Pokemon />}/>
                                                             <Route path="/pokemon/:speciesId/strings" element={<Pokemon />}/>
                                                             <Route path="/trash-pokemon" element={<DeleteTrash />}/>
-                                                            <Route path="/calendar/bosses" element={<Calendar />}/>
-                                                            <Route path="/calendar/spawns" element={<Calendar />}/>
-                                                            <Route path="/calendar/rockets" element={<Calendar />}/>
-                                                            <Route path="/calendar/eggs" element={<Calendar />}/>
-                                                            <Route path="/calendar/events" element={<Calendar />}/>
+                                                            <Route path="/calendar/bosses" element={<Calendar2 />}/>
+                                                            <Route path="/calendar/spawns" element={<Calendar2 />}/>
+                                                            <Route path="/calendar/rockets" element={<Calendar2 />}/>
+                                                            <Route path="/calendar/eggs" element={<Calendar2 />}/>
+                                                            <Route path="/calendar/events" element={<Calendar2 />}/>
                                                             <Route path="/*" element={<div>404 not found!</div>} />
                                                         </Routes>
                                                     </Content>

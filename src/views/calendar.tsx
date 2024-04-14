@@ -9,7 +9,7 @@ import { calculateCP, levelToLevelIndex } from '../utils/pokemon-helper';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { Link, useLocation } from 'react-router-dom';
-import { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
+import { IEntry, IPostEntry, IRocketGrunt, sortPosts } from '../DTOs/INews';
 import { useEffect, useState } from 'react';
 import useCountdown from '../hooks/useCountdown';
 import PokemonHeader from '../components/PokemonHeader';
@@ -19,36 +19,11 @@ import ListEntry from '../components/ListEntry';
 import React from 'react';
 import Select from "react-select";
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
+import News from './News';
+import { inCamelCase, localeStringSmallOptions, localeStringSmallestOptions } from '../utils/Misc';
 
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
-
-const inUpperCase = (str: string) => str?.substring(0, 1)?.toUpperCase() + str?.substring(1);
-
-const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    weekday: 'short',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: false
-}
-
-const smallOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: false
-}
-
-const smallestOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-}
 
 const idxToPlace = (idx: number) => {
     switch (idx) {
@@ -273,14 +248,6 @@ const Calendar = () => {
     const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
     const tab = pathname.substring(pathname.lastIndexOf("/"));
 
-    const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
-        if (e1.date.valueOf() === e2.date.valueOf()) {
-            return (e1.dateEnd?.valueOf() ?? 0) - (e2.dateEnd?.valueOf() ?? 0);
-        }
-
-        return e1.date.valueOf() - e2.date.valueOf();
-    }
-
     const remainingBosses = additionalBosses
         .filter(e => (e.raids?.length ?? 0) > 0 && e.date > new Date().valueOf())
         .sort(sortPosts);
@@ -371,7 +338,7 @@ const Calendar = () => {
         }
     }
 
-    const raidEventDates = [{ label: "Current", value: "current" }, ...remainingBosses.map(e => ({ label: inUpperCase(new Date(e.date).toLocaleString(undefined, smallestOptions)), value: getDateKey(e) }) as any)];
+    const raidEventDates = [{ label: "Current", value: "current" }, ...remainingBosses.map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
 
     return (
         <main className="pokedex-layout">
@@ -613,59 +580,8 @@ const Calendar = () => {
                                 </div></div>}
                                 {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} withItemBorder collection={e.wild ?? []} post={e} sortEntries={sortEntries} />)}
                                 {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
-                                    <div className='with-small-margin-top with-xl-gap aligned'>{
-                                        [...posts.flat(), season].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts).map(event =>
-                                            <div className="with-dynamic-max-width" key={event.subtitle + "-" + event.title}>
-                                                <div className={`column item ${new Date(event.date ?? 0) < new Date() ? "ongoing-event" : ""}`}>
-                                                    <div className='column '>
-                                                        <div className='event-panel-container clickable' onClick={() => setCurrentEvent(c => c === (event.subtitle + "-" + event.title) ? "" : (event.subtitle + "-" + event.title))}>
-                                                            <span className='images-container'>
-                                                                <span className='restricted-img-size'>
-                                                                    <img className="img-with-rounded-corners" src={event.imgUrl} width="100%" height="100%" />
-                                                                </span>
-                                                            </span>
-                                                            <div className='event-text-container justified'>
-                                                                <strong className='ellipsed'>{posts.flat().some(pf => pf.title === event.title) ? (event.subtitle ?? event.title) : event.title}</strong>
-                                                                <div className='with-padding-left with-small-gap event-dates'>
-                                                                    <span className='event-special-font'><strong>From:</strong> <span>{inUpperCase(new Date(event.date).toLocaleString(undefined, options))}</span></span>
-                                                                    <span className='event-special-font'><strong>To:</strong> <span>{inUpperCase(new Date(event.dateEnd ?? 0).toLocaleString(undefined, options))}</span></span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                    {currentEvent === event.subtitle + "-" + event.title && <div className='with-medium-margin-bottom'>
-                                                        <EventDetail eventKey='event.subtitle + "-" + event.title' post={event} sortEntries={sortEntries} />
-                                                    </div>}
-                                                </div>
-
-
-                                                {false && x <= 565 && currentEvent !== event.subtitle + "-" + event.title &&
-                                                    <div className='event-buffs-placeholder'>
-                                                        {event.bonuses && <div className="event-buff-panel">
-                                                            <summary>
-                                                                <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/bonus.png`} />
-                                                            </summary>
-                                                        </div>}
-                                                        {(event.wild?.length ?? 0) > 0 && <div className="event-buff-panel">
-                                                            <summary>
-                                                                <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/wild.webp`} />
-                                                            </summary>
-                                                        </div>}
-                                                        {(event.raids?.length ?? 0) > 0 && <div className="event-buff-panel">
-                                                            <summary>
-                                                                <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`} />
-                                                            </summary>
-                                                        </div>}
-                                                        {(event.researches?.length ?? 0) > 0 && <div className="event-buff-panel">
-                                                            <summary>
-                                                                <img width="14" height="14" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/research.png`} />
-                                                            </summary>
-                                                        </div>}
-                                                    </div>}
-                                            </div>
-
-                                        )}</div>}
+                                    <News news={posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)} season={season} />
+                                }
                             </div>
                         </div>
                     </div>
@@ -784,7 +700,7 @@ const PostEntry = ({ post, collection, sortEntries, kindFilter, withoutTitle, wi
 
     return <div className='with-dynamic-max-width auto-margin-sides'><div className={withItemBorder ? 'item default-padding' : ""}>
         {!withoutTitle && postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong>}
-        {!withoutTitle && !postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>{inUpperCase(new Date(post.date).toLocaleString(undefined, smallOptions)) + " - " + inUpperCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, smallOptions))}</strong>}
+        {!withoutTitle && !postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>{inCamelCase(new Date(post.date).toLocaleString(undefined, localeStringSmallOptions)) + " - " + inCamelCase(new Date(post.dateEnd ?? 0).toLocaleString(undefined, localeStringSmallOptions))}</strong>}
         <div className='with-flex contained'>
             {collection.filter(k => !kindFilter || kindFilter === k.kind).sort(sortEntries).map(p => <div key={p.speciesId + p.kind} className="card-wrapper-padding dynamic-size">
                 <div className={`card-wrapper ${!post.isSeason && (p.kind === "mega" || p.kind?.includes("5") || p.kind?.includes("6")) ? "with-golden-border" : ""}`}>

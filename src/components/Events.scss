@@ -1,0 +1,46 @@
+.news-display-layout{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.news-header-section {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    gap: 12px;
+}
+
+.current-news-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.current-news-title {
+    font-size: x-large;
+    font-weight: 700;
+    word-wrap: break-word;
+}
+
+.from-date {
+    font-weight: 700;
+    font-size: large;
+}
+
+.to-date {
+    font-weight: 600;
+    font-size: larger;
+}
+
+.date-container {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+}
+
+.current-news-image-wrapper {
+    img {
+        //border-radius: 120px;
+        //clip-path: inset(21px);
+    }
+}
