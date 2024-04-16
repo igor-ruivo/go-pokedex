@@ -25,6 +25,18 @@
     margin-left: 2px;
 }
 
+.mini-card-wrapper {
+    width: 100%;
+    height: 100%;
+    padding: 1px;
+    background-color: var(--gridItemsBackgroundColor) !important;
+    border: 1px solid var(--borderColor2);
+    border-radius: 4px;
+    &:hover {
+        border: 1px solid var(--buttonsBorderColor);
+    }
+}
+
 .card-wrapper {
     width: 100%;
     height: 100%;
@@ -55,6 +67,10 @@
 
 .card-wrapper-padding {
     padding: 4px;
+}
+
+.mini-card-wrapper-padding {
+    padding: 1px;
 }
 
 @media (min-width: 500px) {

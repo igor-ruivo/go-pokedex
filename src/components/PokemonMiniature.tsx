@@ -48,11 +48,6 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
                 <span className="mini-card-content">
                     <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />
                 </span>
-                <span className="header-footer">
-                    <strong className="cp-container">
-                        {getCPContainerString()}
-                    </strong>
-                </span>
             </div>
         </Link>
     );

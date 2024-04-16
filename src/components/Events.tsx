@@ -2,17 +2,20 @@
 import { useEffect, useState } from 'react';
 import { useCalendar } from '../contexts/raid-bosses-context';
 import LoadingRenderer from './LoadingRenderer';
-import { IPostEntry, sortPosts } from '../DTOs/INews';
+import { IPostEntry, sortEntries, sortPosts } from '../DTOs/INews';
 import './Events.scss';
 import { inCamelCase, localeStringMiniature, localeStringSmallOptions } from '../utils/Misc';
 import PostEntry from './PostEntry';
 import useResize from '../hooks/useResize';
+import { usePokemon } from '../contexts/pokemon-context';
+import PokemonMiniature from './PokemonMiniature';
 
 const Events = () => {
     const { posts, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted } = useCalendar();
 
     const relevantPosts = [season, ...posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)];
 
+    const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
     const [selectedNews, setSelectedNews] = useState(1);
     const [currentPlace, setCurrentPlace] = useState("0");
     const {x} = useResize();
@@ -26,7 +29,7 @@ const Events = () => {
 
     }, [postsFetchCompleted, setSelectedNews]);
     
-    return <LoadingRenderer errors={postsErrors + seasonErrors} completed={seasonFetchCompleted && postsFetchCompleted}>
+    return <LoadingRenderer errors={postsErrors + seasonErrors + errors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='news-display-layout'>
@@ -65,31 +68,87 @@ const Events = () => {
                         </div>}
                     </div>
                 </div>
-                <div className='pokemon_with_ivs'>
-                    {((relevantPosts[selectedNews].wild ?? []).length > 0 || (relevantPosts[selectedNews].researches ?? []).length > 0) && <><div className='item default-padding'>
+                <div className='pokemon_with_ivs_events'>
+                    {(relevantPosts[selectedNews].wild ?? []).length > 0 && <div className='item default-padding'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Wild Spawns</strong>
                         </div>
-                        <PostEntry collection={relevantPosts[selectedNews].wild ?? []} withoutTitle={true} post={relevantPosts[selectedNews]} kindFilter={relevantPosts[selectedNews].isSeason ? currentPlace : undefined} />
-                    </div>
-                    <div className='item default-padding'>
+                        <div className="raid-container with-margin-top">
+                            <div className="overflowing">
+                                <div className="img-family no-gap">
+                                    {(relevantPosts[selectedNews].wild ?? [])
+                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
+                                    .map(t => (
+                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
+                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
+                    {(relevantPosts[selectedNews].researches ?? []).length > 0 && <div className='item default-padding'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Researches</strong>
                         </div>
-                        <PostEntry collection={relevantPosts[selectedNews].researches ?? []} withoutTitle={true} post={relevantPosts[selectedNews]} kindFilter={relevantPosts[selectedNews].isSeason ? currentPlace : undefined} />
-                    </div></>}
-                    {((relevantPosts[selectedNews].raids ?? []).length > 0 || (relevantPosts[selectedNews].eggs ?? []).length > 0) && <><div className='item default-padding'>
+                        <div className="raid-container with-margin-top">
+                            <div className="overflowing">
+                                <div className="img-family no-gap">
+                                    {(relevantPosts[selectedNews].researches ?? [])
+                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
+                                    .map(t => (
+                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
+                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
+                    {(relevantPosts[selectedNews].raids ?? []).length > 0 && <div className='item default-padding'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Raids</strong>
                         </div>
-                        <PostEntry collection={relevantPosts[selectedNews].raids ?? []} withoutTitle={true} post={relevantPosts[selectedNews]} kindFilter={relevantPosts[selectedNews].isSeason ? currentPlace : undefined} />
-                    </div>
-                    <div className='item default-padding'>
+                        <div className="raid-container with-margin-top">
+                            <div className="overflowing">
+                                <div className="img-family no-gap">
+                                    {(relevantPosts[selectedNews].raids ?? [])
+                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
+                                    .map(t => (
+                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
+                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
+                    {(relevantPosts[selectedNews].eggs ?? []).length > 0 && <div className='item default-padding'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Eggs</strong>
                         </div>
-                        <PostEntry collection={relevantPosts[selectedNews].eggs ?? []} withoutTitle={true} post={relevantPosts[selectedNews]} kindFilter={relevantPosts[selectedNews].isSeason ? currentPlace : undefined} />
-                    </div></>}
+                        <div className="raid-container with-margin-top">
+                            <div className="overflowing">
+                                <div className="img-family no-gap">
+                                    {(relevantPosts[selectedNews].eggs ?? [])
+                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
+                                    .map(t => (
+                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
+                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>}
                 </div>
             </div>
         }

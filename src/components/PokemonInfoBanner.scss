@@ -146,6 +146,10 @@ table {
     }
 }
 
+.no-gap {
+    gap: 0px !important;
+}
+
 .img-family {
     white-space: nowrap;
     flex-wrap: nowrap;

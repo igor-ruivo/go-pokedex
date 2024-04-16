@@ -9,7 +9,9 @@
 }
 
 .dynamic-size {
-    width: calc(601.5px / 6);
+    width: 70px;
+    min-width: 70px;
+    max-width: 70px;
     aspect-ratio: 1 / 1;
 }
 

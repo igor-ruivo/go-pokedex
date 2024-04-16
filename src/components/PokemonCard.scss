@@ -26,16 +26,14 @@
     height: 100%;
     flex-wrap: nowrap;
     text-decoration: none;
-    font-weight: 700;
     line-height: 1.25;
     overflow: hidden;
-    gap: 2px;
     align-items: center;
     justify-content: center;
     padding: 3px;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: clamp(0px, calc(4.656px + 1.23vw), 12px);
+    font-size: 10px;
     color: var(--textColor);
 }
 
