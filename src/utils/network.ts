@@ -34,6 +34,6 @@ export const fetchUrls = async(urls: string[], cacheTtl: number = 0, withoutCach
         }
     }));
 
-    const promiseValues = await Promise.all(promises);
+    const promiseValues = (await Promise.allSettled(promises)).filter(p => p.status === "fulfilled").map(result => (result as PromiseFulfilledResult<any>).value);
     return promiseValues;
 }

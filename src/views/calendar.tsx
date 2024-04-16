@@ -19,7 +19,6 @@ import ListEntry from '../components/ListEntry';
 import React from 'react';
 import Select from "react-select";
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
-import News from './News';
 import { inCamelCase, localeStringSmallOptions, localeStringSmallestOptions } from '../utils/Misc';
 import PostEntry from '../components/PostEntry';
 
@@ -544,9 +543,7 @@ const Calendar = () => {
                                     </div>
                                 </div></div>}
                                 {tab.endsWith("/spawns") && postsFetchCompleted && seasonFetchCompleted && posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => <PostEntry key={getDateKey(e)} withItemBorder collection={e.wild ?? []} post={e} />)}
-                                {tab.endsWith("/events") && bossesFetchCompleted && leekPostsFetchCompleted && postsFetchCompleted && seasonFetchCompleted &&
-                                    <News news={posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)} season={season} />
-                                }
+                                
                             </div>
                         </div>
                     </div>

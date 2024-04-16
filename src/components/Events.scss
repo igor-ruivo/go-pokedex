@@ -15,6 +15,7 @@
 
     gap: 4%;
     img {
+        min-height: 200px;
         border-radius: 12px;
         border: 1px solid var(--borderColor2);
         max-width: 100%;
@@ -33,46 +34,45 @@
 }
 
 .news-selected {
+    width: 13% !important;
+    min-width: 140px !important;
     img {
         border: 3px solid var(--cp-color) !important;
-        max-width: 170px !important;
     }
 }
 
 .season-miniature {
-    border-right: 1px solid var(--borderColor2);
-    padding-right: 30px;
+    //border-right: 1px solid var(--borderColor2);
 }
 
 .miniature-date {
     font-weight: 700;
-    font-size: large;
     text-align: center;
 }
 
 .post-miniature {
     display: flex;
     flex-direction: column;
-    max-width: fit-content;
+    width: 11%;
+    min-width: 100px;
 }
 
 .news-gallery {
     display: flex;
     align-items: center;
     flex-direction: row;
-    gap: 30px;
+    gap: 2%;
     img {
         border-radius: 12px;
         border: 1px solid var(--borderColor2);
         width: auto;
-        max-width: 145px;
+        //max-width: 100%;
     }
 }
 
 .current-news-main-info {
     display: grid;
-    grid-template-rows: 15% 15% 60%;
-    gap: 12px;
+    grid-template-rows: 22% 20% 58%;
 }
 
 .current-news-title {
@@ -110,8 +110,72 @@
     }
 }
 
+.centered-overflow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 1000px) {
+    .news-header-section {
+        display: flex;
+        flex-direction: column;
+        max-height: unset;
+        > * {
+            max-height: unset;
+        }
+    
+        gap: 0px;
+        img {
+            align-self: center;
+            max-width: 60%;
+            min-height: unset;
+        }
+    }
+
+    .current-news-main-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .current-news-title {
+        font-size: 5vw;
+        text-align: center;
+    }
+
+    .from-date {
+        font-weight: 700;
+        font-size: 12px;
+    }
+
+    .to-date {
+        font-weight: 700;
+        font-size: 12px;
+    }
+
+    .current-news-date {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        justify-content: center;
+    }
+}
+
 @media (max-width: 500px) {
     .news-display-layout {
         padding: 12px 0px;
+    }
+
+    .miniature-date {
+        font-size: x-small;
+    }
+
+    .post-miniature {
+        min-width: 75px;
+    }
+
+    .news-selected {
+        min-width: 100px !important;
     }
 }

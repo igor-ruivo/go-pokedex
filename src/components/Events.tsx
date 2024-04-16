@@ -6,14 +6,16 @@ import { IPostEntry, sortPosts } from '../DTOs/INews';
 import './Events.scss';
 import { inCamelCase, localeStringMiniature, localeStringSmallOptions } from '../utils/Misc';
 import PostEntry from './PostEntry';
+import useResize from '../hooks/useResize';
 
 const Events = () => {
     const { posts, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted } = useCalendar();
 
-    const relevantPosts = [season, ...posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) /*&& new Date(p.dateEnd ?? 0) >= new Date()*/).sort(sortPosts)];
+    const relevantPosts = [season, ...posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)];
 
     const [selectedNews, setSelectedNews] = useState(1);
     const [currentPlace, setCurrentPlace] = useState("0");
+    const {x} = useResize();
 
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
 
@@ -28,27 +30,31 @@ const Events = () => {
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='news-display-layout'>
+                <div className='raid-container'>
                 <div className='overflowing'>
                     <div className='news-gallery'>
                         {relevantPosts.map((p, i) =>
                             <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
                                 <div className='miniature-date'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
-                                <img src={p.imgUrl}/>
+                                <img src={p.imgUrl} />
                             </div>
                         )}
                     </div>
-                </div>
+                </div></div>
                 <div className='news-header-section'>
                     <img width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl}/>
                     <div className='current-news-main-info'>
-                        <div className='current-news-title ellipsed'>{relevantPosts[selectedNews].subtitle ?? relevantPosts[selectedNews].title}</div>
+                        <div className={`current-news-title ${x > 1000 ? "ellipsed" : ""}`}>{relevantPosts[selectedNews].subtitle ?? relevantPosts[selectedNews].title}</div>
                         <div className='current-news-date'>
                             <div className='from-date date-container'>
-                                <span>From:</span>
+                                {x > 1000 && <span>From:</span>}
                                 {inCamelCase(new Date(relevantPosts[selectedNews].date).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
+                            {x <= 1000 && <div className='from-date date-container'>
+                                to
+                            </div>}
                             <div className='to-date date-container'>
-                                <span>To:</span>
+                                {x > 1000 && <span>To:</span>}
                                 {inCamelCase(new Date(relevantPosts[selectedNews].dateEnd ?? 0).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
                         </div>
