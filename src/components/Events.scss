@@ -68,6 +68,12 @@
         width: auto;
         //max-width: 100%;
     }
+    >:first-child {
+        margin-left: auto;
+    }
+    >:last-child {
+        margin-right: auto;
+    }
 }
 
 .current-news-main-info {
