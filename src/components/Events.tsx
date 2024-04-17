@@ -80,7 +80,7 @@ const Events = () => {
                                     .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
                                     .map(t => (
                                         <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                            <div className={`mini-card-wrapper`}>
                                                 <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
                                             </div>
                                         </div>
@@ -100,7 +100,7 @@ const Events = () => {
                                     .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
                                     .map(t => (
                                         <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                            <div className={`mini-card-wrapper`}>
                                                 <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
                                             </div>
                                         </div>
@@ -120,7 +120,7 @@ const Events = () => {
                                     .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
                                     .map(t => (
                                         <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                            <div className={`mini-card-wrapper`}>
                                                 <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
                                             </div>
                                         </div>
@@ -140,7 +140,7 @@ const Events = () => {
                                     .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
                                     .map(t => (
                                         <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper ${(t.kind === "mega" || t.kind?.includes("5") || t.kind?.includes("6")) ? "with-golden-border" : ""}`}>
+                                            <div className={`mini-card-wrapper`}>
                                                 <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
                                             </div>
                                         </div>
