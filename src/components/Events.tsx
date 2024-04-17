@@ -112,6 +112,7 @@ const Events = () => {
     return <LoadingRenderer errors={postsErrors + seasonErrors + errors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
+            <div>
             <div className='news-display-layout'>
                 <div className='raid-container'>
                     <div className='overflowing'>
@@ -148,8 +149,12 @@ const Events = () => {
                         </div>}
                     </div>
                 </div>
-                <div className='pokemon_with_ivs_events'>
-                    {(relevantPosts[selectedNews].wild ?? []).length > 0 && <div className='item default-padding'>
+            </div>
+            
+            <div className='pokemon_with_ivs'>
+                    {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
+                    <div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Featured Wild Spawns</strong>
                         </div>
@@ -180,8 +185,10 @@ const Events = () => {
                                         </div>
                                     </div>)}
                         </div>
-                    </div>}
-                    {(relevantPosts[selectedNews].raids ?? []).length > 0 && <div className='item default-padding'>
+                    </div></div>}
+                    {(relevantPosts[selectedNews].raids ?? []).length > 0 &&
+                    <div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Featured Raids</strong>
                         </div>
@@ -194,8 +201,10 @@ const Events = () => {
                                         </div>
                                     </div>)}
                         </div>
-                    </div>}
-                    {(relevantPosts[selectedNews].researches ?? []).length > 0 && <div className='item default-padding'>
+                    </div></div>}
+                    {(relevantPosts[selectedNews].researches ?? []).length > 0 &&
+                    <div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Featured Researches</strong>
                         </div>
@@ -208,8 +217,10 @@ const Events = () => {
                                         </div>
                                     </div>)}
                         </div>
-                    </div>}
-                    {(relevantPosts[selectedNews].eggs ?? []).length > 0 && <div className='item default-padding'>
+                    </div></div>}
+                    {(relevantPosts[selectedNews].eggs ?? []).length > 0 &&
+                    <div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Featured Eggs</strong>
                         </div>
@@ -251,9 +262,9 @@ const Events = () => {
                             </div>)}
                         </div>
 
-                    </div>}
+                    </div></div>}
                 </div>
-            </div>
+                </div>
         }
     </LoadingRenderer>;
 }

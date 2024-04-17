@@ -66,37 +66,39 @@ const Spawns = () => {
                 />
             </div>
         </div>
-        <div className='item default-padding with-margin-top'>
-            <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-                <strong>Wild Spawns</strong>
-            </div>
-            {currentBossDate === "season" &&
-                <div className="raid-container">
-                    <div className="overflowing">
-                        <div className="img-family">
-                            {[(season.wild ?? []).filter(e => e.kind === "0"), (season.wild ?? []).filter(e => e.kind === "1"), (season.wild ?? []).filter(e => e.kind === "2"), (season.wild ?? []).filter(e => e.kind === "3"), (season.wild ?? []).filter(e => e.kind === "4"), (season.wild ?? []).filter(e => e.kind === "5")]
-                                .map((t, i) => (
-                                    <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
-                                        <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
-                                            <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
-                                            {String(i) === currentPlace && idxToPlace(i)}
-                                        </strong>
-                                    </div>
-                                ))}
+        <div className='with-dynamic-max-width auto-margin-sides'>
+            <div className='item default-padding with-margin-top'>
+                <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
+                    <strong>Wild Spawns</strong>
+                </div>
+                {currentBossDate === "season" &&
+                    <div className="raid-container">
+                        <div className="overflowing">
+                            <div className="img-family">
+                                {[(season.wild ?? []).filter(e => e.kind === "0"), (season.wild ?? []).filter(e => e.kind === "1"), (season.wild ?? []).filter(e => e.kind === "2"), (season.wild ?? []).filter(e => e.kind === "3"), (season.wild ?? []).filter(e => e.kind === "4"), (season.wild ?? []).filter(e => e.kind === "5")]
+                                    .map((t, i) => (
+                                        <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
+                                            <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
+                                                <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
+                                                {String(i) === currentPlace && idxToPlace(i)}
+                                            </strong>
+                                        </div>
+                                    ))}
+                            </div>
                         </div>
-                    </div>
-                </div>}
-            <div className={`with-flex contained ${currentBossDate !== "season" ? "with-margin-top" : ""}`}>
-                {selectedPosts
-                    .sort(sortPosts)
-                    .map(t => (
-                        t.wild!
-                            .filter(r => currentBossDate !== "season" || r.kind === currentPlace).map(p =>
-                                <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
-                                    <div className={`mini-card-wrapper`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
-                                    </div>
-                                </div>)))}
+                    </div>}
+                <div className={`with-flex contained ${currentBossDate !== "season" ? "with-margin-top" : ""}`}>
+                    {selectedPosts
+                        .sort(sortPosts)
+                        .map(t => (
+                            t.wild!
+                                .filter(r => currentBossDate !== "season" || r.kind === currentPlace).map(p =>
+                                    <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                        <div className={`mini-card-wrapper`}>
+                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
+                                        </div>
+                                    </div>)))}
+                </div>
             </div>
         </div>
     </LoadingRenderer>;
