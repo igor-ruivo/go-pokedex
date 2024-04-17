@@ -15,11 +15,11 @@ const Events = () => {
 
     const relevantPosts = [season, ...posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)];
 
-    const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
+    const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const [selectedNews, setSelectedNews] = useState(1);
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEgg, setCurrentEgg] = useState("0");
-    const {x} = useResize();
+    const { x } = useResize();
 
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
 
@@ -46,7 +46,7 @@ const Events = () => {
                 return "Southern Hemisphere";
         }
     }
-    
+
     const idxToRes = (idx: number) => {
         switch (idx) {
             case 0:
@@ -78,7 +78,7 @@ const Events = () => {
                 return "12km";
         }
     }
-    
+
     const idxToEggName = (idx: number) => {
         switch (idx) {
             case 0:
@@ -94,23 +94,38 @@ const Events = () => {
         }
     }
 
+    const idxToKind = (idx: number) => {
+        switch (idx) {
+            case 0:
+                return 2;
+            case 1:
+                return 5;
+            case 2:
+                return 7;
+            case 3:
+                return 10;
+            case 4:
+                return 12;
+        }
+    }
+
     return <LoadingRenderer errors={postsErrors + seasonErrors + errors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='news-display-layout'>
                 <div className='raid-container'>
-                <div className='overflowing'>
-                    <div className='news-gallery'>
-                        {relevantPosts.map((p, i) =>
-                            <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
-                                <div className='miniature-date'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
-                                <img src={p.imgUrl} />
-                            </div>
-                        )}
-                    </div>
-                </div></div>
+                    <div className='overflowing'>
+                        <div className='news-gallery'>
+                            {relevantPosts.map((p, i) =>
+                                <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
+                                    <div className='miniature-date'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
+                                    <img src={p.imgUrl} />
+                                </div>
+                            )}
+                        </div>
+                    </div></div>
                 <div className='news-header-section'>
-                    <img width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl}/>
+                    <img width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
                     <div className='current-news-main-info'>
                         <div className={`current-news-title ${x > 1000 ? "ellipsed" : ""}`}>{relevantPosts[selectedNews].subtitle ?? relevantPosts[selectedNews].title}</div>
                         <div className='current-news-date'>
@@ -136,7 +151,7 @@ const Events = () => {
                 <div className='pokemon_with_ivs_events'>
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 && <div className='item default-padding'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-                            <strong>Wild Spawns</strong>
+                            <strong>Featured Wild Spawns</strong>
                         </div>
                         {selectedNews === 0 &&
                             <div className="raid-container">
@@ -155,99 +170,87 @@ const Events = () => {
                                 </div>
                             </div>
                         }
-                        <div className={`raid-container ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
-                            <div className="overflowing">
-                                <div className="img-family no-gap">
-                                    {(relevantPosts[selectedNews].wild ?? [])
-                                    .filter(k => selectedNews !== 0 || k.kind === currentPlace)
-                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
-                                    .map(t => (
-                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper`}>
-                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
-                                            </div>
+                        <div className={`with-flex contained ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
+                            {(relevantPosts[selectedNews].wild ?? [])
+                                .filter(k => selectedNews !== 0 || k.kind === currentPlace)
+                                .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
+                                    <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                        <div className={`mini-card-wrapper`}>
+                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>}
-                    {(relevantPosts[selectedNews].researches ?? []).length > 0 && <div className='item default-padding'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-                            <strong>Researches</strong>
-                        </div>
-                        <div className="raid-container with-margin-top">
-                            <div className="overflowing">
-                                <div className="img-family no-gap">
-                                    {(relevantPosts[selectedNews].researches ?? [])
-                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
-                                    .map(t => (
-                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper`}>
-                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                                    </div>)}
                         </div>
                     </div>}
                     {(relevantPosts[selectedNews].raids ?? []).length > 0 && <div className='item default-padding'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-                            <strong>Raids</strong>
+                            <strong>Featured Raids</strong>
                         </div>
-                        <div className="raid-container with-margin-top">
-                            <div className="overflowing">
-                                <div className="img-family no-gap">
-                                    {(relevantPosts[selectedNews].raids ?? [])
-                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
-                                    .map(t => (
-                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper`}>
-                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
-                                            </div>
+                        <div className={`with-flex contained with-margin-top`}>
+                            {(relevantPosts[selectedNews].raids ?? [])
+                                .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
+                                    <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                        <div className={`mini-card-wrapper`}>
+                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+                                    </div>)}
+                        </div>
+                    </div>}
+                    {(relevantPosts[selectedNews].researches ?? []).length > 0 && <div className='item default-padding'>
+                        <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
+                            <strong>Featured Researches</strong>
+                        </div>
+                        <div className={`with-flex contained with-margin-top`}>
+                            {(relevantPosts[selectedNews].researches ?? [])
+                                .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
+                                    <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                        <div className={`mini-card-wrapper`}>
+                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
+                                        </div>
+                                    </div>)}
                         </div>
                     </div>}
                     {(relevantPosts[selectedNews].eggs ?? []).length > 0 && <div className='item default-padding'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-                            <strong>Eggs</strong>
+                            <strong>Featured Eggs</strong>
                         </div>
                         {selectedNews === 0 &&
                             <div className="raid-container">
-                            <div className="overflowing">
-                                <div className="img-family">
-                                    {[(season.eggs ?? []).filter(e => e.kind === "2"), (season.eggs ?? []).filter(e => e.kind === "5"), (season.eggs ?? []).filter(e => e.kind === "7"), (season.eggs ?? []).filter(e => e.kind === "10"), (season.eggs ?? []).filter(e => e.kind === "12")]
-                                        .map((t, i) => (
-                                            <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
-                                                <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
-                                                    <div className="img-padding"><img height={26} width={26} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
-                                                    {String(i) === currentEgg && idxToEggName(i)}
-                                                </strong>
-                                            </div>
-                                        ))}
+                                <div className="overflowing">
+                                    <div className="img-family">
+                                        {[(season.eggs ?? []).filter(e => e.kind === "2"), (season.eggs ?? []).filter(e => e.kind === "5"), (season.eggs ?? []).filter(e => e.kind === "7"), (season.eggs ?? []).filter(e => e.kind === "10")]
+                                            .map((t, i) => (
+                                                <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
+                                                    <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
+                                                        <div className="img-padding"><img height={26} width={26} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
+                                                        {String(i) === currentEgg && idxToEggName(i)}
+                                                    </strong>
+                                                </div>
+                                            ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         }
-                        <div className={`raid-container ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
-                            <div className="overflowing">
-                                <div className="img-family no-gap">
-                                    {(relevantPosts[selectedNews].eggs ?? [])
-                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
-                                    .map(t => (
-                                        <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
-                                            <div className={`mini-card-wrapper`}>
-                                                <PokemonMiniature pokemon={gamemasterPokemon[t.speciesId]}/>
-                                            </div>
+                        <div className={`with-flex contained ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
+                            {(relevantPosts[selectedNews].eggs ?? [])
+                                .filter(r => !r.comment && r.kind === String(idxToKind(+currentEgg)))
+                                .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
+                                    <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                        <div className={`mini-card-wrapper`}>
+                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+                                    </div>)}
                         </div>
+                        {(relevantPosts[selectedNews].eggs?.length ?? 0) > 0 && relevantPosts[selectedNews].eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
+                            <strong>{relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment}:</strong>
+                        </div>}
+                        <div className='with-flex contained'>
+                            {(relevantPosts[selectedNews].eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                <div className={`mini-card-wrapper`}>
+                                    <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
+                                </div>
+                            </div>)}
+                        </div>
+
                     </div>}
                 </div>
             </div>

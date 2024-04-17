@@ -619,9 +619,50 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     const sevenRoutesKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
     const tenSyncKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
 
+    const fiveComment = (htmlDoc.getElementById("5km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+    const sevenComment = (htmlDoc.getElementById("7km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+    const tenComment = (htmlDoc.getElementById("10km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+
+    const convertKind = (kind: number) => {
+        switch (kind) {
+            case 0:
+                return "2";
+            case 1:
+                return "5";
+            case 2:
+                return "7";
+            case 3:
+                return "10";
+            case 4:
+                return "5";
+            case 5:
+                return "7";
+            case 6:
+                return "10";
+            default:
+                throw new Error("Invalid egg idx");
+        }
+    }
+
+    const getComment = (kind: number) => {
+        switch (kind) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                return undefined;
+            case 4:
+                return fiveComment;
+            case 5:
+                return sevenComment;
+            case 6:
+                return tenComment;
+        }
+    }
+
     const wildEncounters = [cityEntries, forestEntries, mountainEntries, beachEntries, northEntries, southEntries].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
     const researches = fetchPokemonFromElements(Array.from(htmlDoc.getElementById("research-breakthrough-tabs")?.children ?? []).map(e => e as HTMLElement), gamemasterPokemon, wildDomain);
-    const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
+    const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
 
     return {
         date: new Date(2024, 2, 1, 10, 0).valueOf(),
