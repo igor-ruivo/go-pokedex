@@ -18,6 +18,7 @@ const Events = () => {
     const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
     const [selectedNews, setSelectedNews] = useState(1);
     const [currentPlace, setCurrentPlace] = useState("0");
+    const [currentEgg, setCurrentEgg] = useState("0");
     const {x} = useResize();
 
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
@@ -28,7 +29,71 @@ const Events = () => {
         }
 
     }, [postsFetchCompleted, setSelectedNews]);
+
+    const idxToPlace = (idx: number) => {
+        switch (idx) {
+            case 0:
+                return "Cities";
+            case 1:
+                return "Forests";
+            case 2:
+                return "Mountains";
+            case 3:
+                return "Beaches & Water";
+            case 4:
+                return "Northen Hemisphere";
+            case 5:
+                return "Southern Hemisphere";
+        }
+    }
     
+    const idxToRes = (idx: number) => {
+        switch (idx) {
+            case 0:
+                return "city";
+            case 1:
+                return "forest";
+            case 2:
+                return "mountain";
+            case 3:
+                return "water";
+            case 4:
+                return "north";
+            case 5:
+                return "south";
+        }
+    }
+
+    const idxToEgg = (idx: number) => {
+        switch (idx) {
+            case 0:
+                return "2km";
+            case 1:
+                return "5km";
+            case 2:
+                return "7km";
+            case 3:
+                return "10km";
+            case 4:
+                return "12km";
+        }
+    }
+    
+    const idxToEggName = (idx: number) => {
+        switch (idx) {
+            case 0:
+                return "2 km";
+            case 1:
+                return "5 km";
+            case 2:
+                return "7 km";
+            case 3:
+                return "10 km";
+            case 4:
+                return "12 km";
+        }
+    }
+
     return <LoadingRenderer errors={postsErrors + seasonErrors + errors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
@@ -73,10 +138,28 @@ const Events = () => {
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Wild Spawns</strong>
                         </div>
-                        <div className="raid-container with-margin-top">
+                        {selectedNews === 0 &&
+                            <div className="raid-container">
+                                <div className="overflowing">
+                                    <div className="img-family">
+                                        {[(season.wild ?? []).filter(e => e.kind === "0"), (season.wild ?? []).filter(e => e.kind === "1"), (season.wild ?? []).filter(e => e.kind === "2"), (season.wild ?? []).filter(e => e.kind === "3"), (season.wild ?? []).filter(e => e.kind === "4"), (season.wild ?? []).filter(e => e.kind === "5")]
+                                            .map((t, i) => (
+                                                <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
+                                                    <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
+                                                        <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
+                                                        {String(i) === currentPlace && idxToPlace(i)}
+                                                    </strong>
+                                                </div>
+                                            ))}
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div className={`raid-container ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
                             <div className="overflowing">
                                 <div className="img-family no-gap">
                                     {(relevantPosts[selectedNews].wild ?? [])
+                                    .filter(k => selectedNews !== 0 || k.kind === currentPlace)
                                     .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
                                     .map(t => (
                                         <div key={t.speciesId + t.kind} className="mini-card-wrapper-padding dynamic-size">
@@ -133,7 +216,24 @@ const Events = () => {
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
                             <strong>Eggs</strong>
                         </div>
-                        <div className="raid-container with-margin-top">
+                        {selectedNews === 0 &&
+                            <div className="raid-container">
+                            <div className="overflowing">
+                                <div className="img-family">
+                                    {[(season.eggs ?? []).filter(e => e.kind === "2"), (season.eggs ?? []).filter(e => e.kind === "5"), (season.eggs ?? []).filter(e => e.kind === "7"), (season.eggs ?? []).filter(e => e.kind === "10"), (season.eggs ?? []).filter(e => e.kind === "12")]
+                                        .map((t, i) => (
+                                            <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
+                                                <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
+                                                    <div className="img-padding"><img height={26} width={26} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
+                                                    {String(i) === currentEgg && idxToEggName(i)}
+                                                </strong>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        </div>
+                        }
+                        <div className={`raid-container ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
                             <div className="overflowing">
                                 <div className="img-family no-gap">
                                     {(relevantPosts[selectedNews].eggs ?? [])

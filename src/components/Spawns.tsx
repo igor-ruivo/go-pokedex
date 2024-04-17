@@ -35,7 +35,7 @@ const Spawns = () => {
                 return "Southern Hemisphere";
         }
     }
-    
+
     const idxToRes = (idx: number) => {
         switch (idx) {
             case 0:
@@ -86,21 +86,17 @@ const Spawns = () => {
                         </div>
                     </div>
                 </div>}
-            <div className={`raid-container ${currentBossDate !== "season" ? "with-margin-top" : ""}`}>
-                <div className="overflowing">
-                    <div className="img-family no-gap">
-                        {selectedPosts
-                            .sort(sortPosts)
-                            .map(t => (
-                                t.wild!
-                                .filter(r => currentBossDate !== "season" || r.kind === currentPlace).map(w => <div key={getDateKey(t) + w.speciesId} className="mini-card-wrapper-padding dynamic-size">
+            <div className={`with-flex contained ${currentBossDate !== "season" ? "with-margin-top" : ""}`}>
+                {selectedPosts
+                    .sort(sortPosts)
+                    .map(t => (
+                        t.wild!
+                            .filter(r => currentBossDate !== "season" || r.kind === currentPlace).map(p =>
+                                <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                                     <div className={`mini-card-wrapper`}>
-                                        <PokemonMiniature pokemon={gamemasterPokemon[w.speciesId]} />
+                                        <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                     </div>
-                                </div>)
-                            ))}
-                    </div>
-                </div>
+                                </div>)))}
             </div>
         </div>
     </LoadingRenderer>;
