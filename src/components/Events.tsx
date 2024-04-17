@@ -151,7 +151,7 @@ const Events = () => {
                 </div>
             </div>
             
-            <div className='pokemon_with_ivs'>
+            <div className='pokemon_with_ivs_events'>
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
@@ -243,7 +243,7 @@ const Events = () => {
                         }
                         <div className={`with-flex contained ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
                             {(relevantPosts[selectedNews].eggs ?? [])
-                                .filter(r => !r.comment && r.kind === String(idxToKind(+currentEgg)))
+                                .filter(r => selectedNews !== 0 || !r.comment && r.kind === String(idxToKind(+currentEgg)))
                                 .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
                                     <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                                         <div className={`mini-card-wrapper`}>

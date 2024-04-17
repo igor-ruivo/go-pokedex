@@ -111,7 +111,7 @@
 
 .pokemon_with_ivs_events {
     display: grid;
-    grid-template-columns: 100%;
+    grid-template-columns: calc(50% - 4.5px) calc(50% - 4.5px);
     gap: 9px;
 }
 
