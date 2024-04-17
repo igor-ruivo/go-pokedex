@@ -9,9 +9,9 @@
 }
 
 .dynamic-size {
-    width: 70px;
-    min-width: 70px;
-    max-width: 70px;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
     aspect-ratio: 1 / 1;
 }
 
@@ -409,6 +409,12 @@
 @media (max-width: 565px) {
     .less-contained {
         margin: 6px;
+    }
+
+    .dynamic-size {
+        width: 70px;
+        min-width: 70px;
+        max-width: 70px;
     }
 
     .ongoing-event {
