@@ -1139,6 +1139,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                     eggs.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
                     break;
                 case "Event bonus":
+                case "Event Bonus":
                 case "Event bonuses":
                 case "Event Bonuses":
                     bonus += "\n\n" + contentBodies[1].innerText.trim();
