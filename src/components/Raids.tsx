@@ -88,7 +88,7 @@ const Raids = () => {
     const bossesAvailable = (currentBossDate === "current" ? generateTodayBosses(additionalBosses) : additionalBosses.find(a => getDateKey(a) === currentBossDate)!.raids as IEntry[]).sort((a, b) => sortEntries(a, b, gamemasterPokemon));//generateFilteredBosses(additionalBosses);
 
     const raidEventEggs = [...(bossesAvailable.some(a => a.kind === "1") ? [{ label: "Tier 1", value: "0" }] : []), ...(bossesAvailable.some(a => a.kind === "3") ? [{ label: "Tier 3", value: "1" }] : []), ...(bossesAvailable.some(a => a.kind === "5" || a.kind === "mega") ? [{ label: "Special", value: "2" }] : [])];
-    const firstRelevantEntryTierForDate = raidEventEggs.filter(k => k.value === "2")[0]?.value ?? "";
+    const firstRelevantEntryTierForDate = raidEventEggs.filter(k => k.value === "2")[0]?.value ?? (raidEventEggs[0]?.value ?? "");
     const [currentTier, setCurrentTier] = useState(firstRelevantEntryTierForDate);
 
     useEffect(() => {
