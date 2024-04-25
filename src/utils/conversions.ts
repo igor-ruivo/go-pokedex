@@ -1133,6 +1133,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
             const contentBodies = Array.from(entry.children) as HTMLElement[];
             switch(kind) {
                 case "Wild encounters":
+                case "Wild Encounters":
                     wild.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
                     break;
                 case "Eggs":
@@ -1144,6 +1145,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                 case "Event Bonuses":
                     bonus += "\n\n" + contentBodies[1].innerText.trim();
                     break;
+                case "Field Research Task Encounters":
                 case "Field Research task encounters":
                 case "Field Research task rewards":
                 case "Field Research":
