@@ -1043,7 +1043,7 @@ const toMonthIndex = (month: string) => ["January", "February", "March", "April"
 "July", "August", "September", "October", "November", "December"].indexOf(month);
 
 const fetchDateFromString = (date: string) => {
-    const trimmedDate = date.trim().replaceAll("  ", " ").replaceAll("a.m.", "am").replaceAll("A.M.", "am").replaceAll("p.m.", "pm").replaceAll("P.M.", "pm");
+    const trimmedDate = date.trim().replaceAll("  ", " ").replaceAll(/\u00A0/g, " ").replaceAll("a.m.", "am").replaceAll("A.M.", "am").replaceAll("p.m.", "pm").replaceAll("P.M.", "pm");
     let dWithoutWeekDay = trimmedDate.substring(trimmedDate.indexOf(", ") + 2);
     const hasYear = dWithoutWeekDay.split(", ")[1].trim().length === 4 && Number(dWithoutWeekDay.split(", ")[1].trim()) > 2020 && Number(dWithoutWeekDay.split(", ")[1].trim()) < 2050;
     let year = (new Date()).getFullYear();

@@ -4,7 +4,7 @@ import { useCalendar } from "../contexts/raid-bosses-context";
 import LoadingRenderer from "./LoadingRenderer";
 import Select from "react-select";
 import PokemonMiniature from "./PokemonMiniature";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { inCamelCase, localeStringSmallestOptions } from "../utils/Misc";
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
@@ -12,12 +12,19 @@ const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + Str
 const Spawns = () => {
     const { gamemasterPokemon, errors, fetchCompleted } = usePokemon();
     const { posts, postsFetchCompleted, postsErrors, season, seasonFetchCompleted, seasonErrors } = useCalendar();
-    const [currentBossDate, setCurrentBossDate] = useState("current");
+    const currPosts = postsFetchCompleted ? posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()) : [];
+    const [currentBossDate, setCurrentBossDate] = useState(currPosts.length > 0 ? "current" : "season");
     const [currentPlace, setCurrentPlace] = useState("0");
 
-    const raidEventDates = [{ label: "Current", value: "current" }, { label: "Season", value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
+    const raidEventDates = [...(currPosts.length > 0 ? [{ label: "Current", value: "current" }] : []), { label: "Season", value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
 
-    const selectedPosts = currentBossDate === "season" ? [season] : currentBossDate === "current" ? posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()) : posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate);
+    const selectedPosts = currentBossDate === "season" ? [season] : currentBossDate === "current" ? currPosts : posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate);
+
+    useEffect(() => {
+        if (postsFetchCompleted && seasonFetchCompleted && currPosts.length > 0) {
+            setCurrentBossDate("current");
+        }
+    }, [currPosts, setCurrentBossDate, postsFetchCompleted, seasonFetchCompleted]);
 
     const idxToPlace = (idx: number) => {
         switch (idx) {
@@ -53,7 +60,7 @@ const Spawns = () => {
         }
     }
 
-    return <LoadingRenderer errors={postsErrors + errors + seasonErrors} completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted}>
+    return <LoadingRenderer errors={postsErrors + errors + seasonErrors} completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted && !!season}>
         <div className='boss-header-filters with-margin-top'>
             <div className='raid-date-element'>
                 <Select
@@ -75,7 +82,7 @@ const Spawns = () => {
                     <div className="raid-container">
                         <div className="overflowing">
                             <div className="img-family">
-                                {[(season.wild ?? []).filter(e => e.kind === "0"), (season.wild ?? []).filter(e => e.kind === "1"), (season.wild ?? []).filter(e => e.kind === "2"), (season.wild ?? []).filter(e => e.kind === "3"), (season.wild ?? []).filter(e => e.kind === "4"), (season.wild ?? []).filter(e => e.kind === "5")]
+                                {[(season?.wild ?? []).filter(e => e.kind === "0"), (season?.wild ?? []).filter(e => e.kind === "1"), (season?.wild ?? []).filter(e => e.kind === "2"), (season?.wild ?? []).filter(e => e.kind === "3"), (season?.wild ?? []).filter(e => e.kind === "4"), (season?.wild ?? []).filter(e => e.kind === "5")]
                                     .map((t, i) => (
                                         <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
                                             <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
@@ -91,7 +98,7 @@ const Spawns = () => {
                     {selectedPosts
                         .sort(sortPosts)
                         .map(t => (
-                            t.wild!
+                            t?.wild!
                                 .filter(r => currentBossDate !== "season" || r.kind === currentPlace).map(p =>
                                     <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                                         <div className={`mini-card-wrapper`}>
