@@ -1317,7 +1317,9 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
         .forEach(entry => {
             const isPvP = !!entry.data.combatMove;
             const dataPointer = entry.data.moveSettings || entry.data.combatMove;
-            const moveIdPointer = dataPointer.movementId || dataPointer.uniqueId;
+            const helperConst = "_MOVE_";
+            const helperIdx = entry.data.templateId.indexOf(helperConst);
+            const moveIdPointer = entry.data.templateId.substring(helperIdx + helperConst.length);
             const typePointer = dataPointer.pokemonType || dataPointer.type;
 
             const id = moveIdPointer.endsWith("_FAST") ? moveIdPointer.substring(0, moveIdPointer.lastIndexOf("_FAST")) : moveIdPointer
