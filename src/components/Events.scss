@@ -8,18 +8,19 @@
 .news-header-section {
     display: grid;
     grid-template-columns: 38% 58%;
-    max-height: 266px;
+    /*max-height: 266px;
     > * {
         max-height: 266px;
-    }
+    }*/
 
     gap: 4%;
     img {
-        min-height: 200px;
+        //min-height: 200px;
         border-radius: 12px;
         border: 1px solid var(--borderColor2);
         max-width: 100%;
         max-height: 100%;
+        width: auto;
         height: auto;
     }
 }
