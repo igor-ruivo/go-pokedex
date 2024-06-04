@@ -56,11 +56,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry
 
         fetchBosses([bossesUrl], calendarCache, {signal: controller.signal}, (data: any) => mapRaidBosses(data, gamemasterPokemon));
         fetchLeekNews([leekNewsUrl], calendarCache, {signal: controller.signal}/*, (data: any) => mapLeekNews(data, gamemasterPokemon)*/);
-        fetchNews([corsProxyUrl + pokemonGoNewsUrl], calendarCache, {signal: controller.signal, headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        }}, undefined, true/*, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon)*/);
+        fetchNews([corsProxyUrl + pokemonGoNewsUrl], calendarCache, {signal: controller.signal}, undefined, true/*, (data: any, request: any) => mapRaidBosses(data, request, gamemasterPokemon)*/);
         fetchSeason([encodeProxyUrl(pokemonGoSeasonRelativeUrl)], cacheTtlInMillis, {signal: controller.signal}, (data: any) => mapSeason(data, gamemasterPokemon));
         fetchLeekEggs([leekEggsUrl], calendarCache, {signal: controller.signal}, (data: any) => mapLeekEggs(data, gamemasterPokemon));
         fetchLeekRockets([leekRocketsUrl], calendarCache, {signal: controller.signal}, (data: any) => mapLeekRockets(data, gamemasterPokemon));
@@ -102,7 +98,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry
 
         const parser = new DOMParser();
         const htmlDoc = parser.parseFromString(leekNews[0], 'text/html');
-        const postUrls = Array.from(new Set<string>(Array.from(htmlDoc.getElementsByClassName("event-item-wrapper raid-battles")).map(e => (e.parentElement as HTMLAnchorElement).href)));
+        const postUrls = Array.from(new Set<string>([...Array.from(htmlDoc.getElementsByClassName("event-item-wrapper raid-battles")).map(e => (e.parentElement as HTMLAnchorElement).href), ...Array.from(htmlDoc.getElementsByClassName("event-item-wrapper elite-raids")).map(e => (e.parentElement as HTMLAnchorElement).href)]));
         
         const controller = new AbortController();
 

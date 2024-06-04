@@ -16,7 +16,7 @@ const Events = () => {
     const relevantPosts = [season, ...posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)];
 
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const [selectedNews, setSelectedNews] = useState(1);
+    const [selectedNews, setSelectedNews] = useState(posts.length === 0 ? 0 : 1);
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEgg, setCurrentEgg] = useState("0");
     const { x } = useResize();
@@ -25,10 +25,10 @@ const Events = () => {
 
     useEffect(() => {
         if (postsFetchCompleted) {
-            setSelectedNews(1);
+            setSelectedNews(posts.length === 0 ? 0 : 1);
         }
 
-    }, [postsFetchCompleted, setSelectedNews]);
+    }, [postsFetchCompleted, setSelectedNews, posts]);
 
     const idxToPlace = (idx: number) => {
         switch (idx) {

@@ -16,6 +16,7 @@ const Raids = () => {
     const {gamemasterPokemon, errors, fetchCompleted} = usePokemon();
 
     const reducedLeekPosts = leekPostsFetchCompleted ? leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : [];
+    //console.log(reducedLeekPosts);
     const reducedRaids = postsFetchCompleted ? posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : [];
 
     const additionalBosses = Object.entries([...reducedLeekPosts, ...reducedRaids]

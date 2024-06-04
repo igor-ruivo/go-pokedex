@@ -61,6 +61,8 @@ export enum PokemonForms {
     TenForme = "TenForme",
     FiftyForme = "FiftyForme",
     CompleteForme = "CompleteForme",
+    DawnWings = "Dawn Wings",
+    DuskMane = "Dusk Mane",
     //Synthetic:
     TenPerc = "10% Forme",
     FiftyPerc = "50% Forme",

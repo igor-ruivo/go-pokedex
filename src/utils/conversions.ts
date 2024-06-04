@@ -394,8 +394,12 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     const htmlDoc = parser.parseFromString(data, 'text/html');
 
     const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent;
-    const date = fetchDateFromString(htmlDoc.getElementById("event-date-start")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-start")?.textContent?.trim());
-    const end = fetchDateFromString(htmlDoc.getElementById("event-date-end")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-end")?.textContent?.trim());
+
+    const dateCont = htmlDoc.getElementById("event-date-start")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-start")?.textContent?.trim();
+    const endCont = htmlDoc.getElementById("event-date-end")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-end")?.textContent?.trim();
+
+    const date = fetchDateFromString(dateCont);
+    const end = fetchDateFromString(endCont);
 
     if (!title) {
         console.error("Couldn't fetch title of leek news.");
@@ -403,7 +407,9 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     }
 
     if (!date) {
-        console.error("Couldn't fetch date of leek news.");
+        console.error("Couldn't fetch date of leek news:");
+        console.error(dateCont);
+        console.error(endCont);
         return {title: "", date: 0, dateEnd: 0};
     }
 
@@ -423,7 +429,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
         domainToUse = Object.values(gamemasterPokemon).filter(p => !p.isMega && !p.aliasId);
     }
 
-    const isMega = raidType.includes("Mega");
+    const isMega = raidType.includes("Mega") || raidType.includes("Elite");
     if (isMega) {
         domainToUse = Object.values(gamemasterPokemon).filter(p => !p.isShadow && !p.aliasId);
     }
@@ -665,15 +671,15 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
 
     return {
-        date: new Date(2024, 2, 1, 10, 0).valueOf(),
-        dateEnd: new Date(2024, 5, 1, 10, 0).valueOf(),
+        date: new Date(2024, 5, 1, 10, 0).valueOf(),
+        dateEnd: new Date(2024, 8, 3, 10, 0).valueOf(),
         wild: wildEncounters,
         eggs: eggs,
         isSeason: true,
         researches: researches,
         bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
-        imgUrl: "https://lh3.googleusercontent.com/qt9Y-NahbwhpAq8QIUulHnmdjzSqNJybRcjyz_IUgrf47z7qrdeoKn55T4eIJAS9sfQ0Hmpbm1HEQsLnMmg7dMZbN3LM_mLnBMgSuE5TuCaq=rw-e365-w1800",
-        title: "Welcome to Pokémon GO: World of Wonders"
+        imgUrl: "https://lh3.googleusercontent.com/d0ffiqo2kTL--_48u4suEOIiIk9kBCpg5xTne5_-PVH9MIeAnT18SFal3yCvUmDt7H6ZHn3_Pvc2OX-czbJ4bJ0Lsqn9B4XsWcwfWXd29SBvwA=rw-e365-w1800",
+        title: "Welcome to Pokémon GO: Shared Skies"
     };
 }
 
@@ -1043,7 +1049,7 @@ const toMonthIndex = (month: string) => ["January", "February", "March", "April"
 "July", "August", "September", "October", "November", "December"].indexOf(month);
 
 const fetchDateFromString = (date: string) => {
-    const trimmedDate = date.trim().replaceAll("  ", " ").replaceAll(/\u00A0/g, " ").replaceAll("a.m.", "am").replaceAll("A.M.", "am").replaceAll("p.m.", "pm").replaceAll("P.M.", "pm");
+    const trimmedDate = date.trim().replaceAll("  ", " ").replaceAll(/\u00A0/g, " ").replaceAll("  ", " ").replaceAll("a.m.", "am").replaceAll("A.M.", "am").replaceAll("p.m.", "pm").replaceAll("P.M.", "pm");
     let dWithoutWeekDay = trimmedDate.substring(trimmedDate.indexOf(", ") + 2);
     const hasYear = dWithoutWeekDay.split(", ")[1].trim().length === 4 && Number(dWithoutWeekDay.split(", ")[1].trim()) > 2020 && Number(dWithoutWeekDay.split(", ")[1].trim()) < 2050;
     let year = (new Date()).getFullYear();
@@ -1055,7 +1061,7 @@ const fetchDateFromString = (date: string) => {
     const finalDate = dWithoutWeekDay.substring(0, localIdx === -1 ? undefined : localIdx).trim().replace(", at", "");
     const components = finalDate.split(" ");
     const timeComponent = components[2].split(":");
-    const dateObj = new Date(year, toMonthIndex(components[0]), Number(components[1]), Number(timeComponent[0] === "12" && components[3].toLocaleLowerCase() === "am" ? 0 : timeComponent[0]) + Number(components[3].toLocaleLowerCase() === "pm" ? 12 : 0), Number(timeComponent[1]));
+    const dateObj = new Date(year, toMonthIndex(components[0]), Number(components[1]), Number(timeComponent[0]) + Number(components[3].toLocaleLowerCase() === "pm" && Number(timeComponent[0]) !== 12 ? 12 : 0), Number(timeComponent[1]));
 
     return dateObj.valueOf();
 }
