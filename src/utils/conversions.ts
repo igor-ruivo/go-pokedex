@@ -1152,6 +1152,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                 case "Bonuses":
                     bonus += "\n\n" + contentBodies[1].innerText.trim();
                     break;
+                case "Field Research Task Rewards":
                 case "Field Research Task Encounters":
                 case "Field Research task encounters":
                 case "Field Research task rewards":
