@@ -671,8 +671,8 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
 
     return {
-        date: new Date(2024, 9, 3, 10, 0).valueOf(),
-        dateEnd: new Date(2024, 12, 3, 10, 0).valueOf(),
+        date: new Date(2024, 8, 3, 10, 0).valueOf(),
+        dateEnd: new Date(2024, 11, 3, 10, 0).valueOf(),
         wild: wildEncounters,
         eggs: eggs,
         isSeason: true,
