@@ -69,8 +69,8 @@
     text-align: center;
     .images-container {
         .main-image-container {
-            width: clamp(0px, calc(80px + 20 * calc(100vw - 900px) / (1300 - 900)), 100px);
-            height: clamp(0px, calc(80px + 20 * calc(100vw - 900px) / (1300 - 900)), 100px);
+            width: clamp(0px, calc(80px + 20 * calc(100vw - 950px) / (1250 - 950)), 120px);
+            height: clamp(0px, calc(80px + 20 * calc(100vw - 950px) / (1250 - 950)), 120px);
         }
     }
 }

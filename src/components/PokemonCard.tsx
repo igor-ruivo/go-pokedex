@@ -77,9 +77,9 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBa
                     <PokemonImage pokemon={pokemon} xl={needsXLCandy(pokemon, cpThreshold)} shiny={shinyBadge} withName lazy/>
                 </span>
                 <span className="header-footer">
-                    <strong className="cp-container">
+                    <span className="cp-container heavy-weighted-font">
                         {getCPContainerString()}
-                    </strong>
+                    </span>
                 </span>
             </div>
         </Link>

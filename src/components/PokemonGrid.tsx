@@ -83,7 +83,7 @@ const PokemonGrid = memo(({pokemonInfoList, cpStringOverrides, rankOverrides, li
         }
     }, [pokemonInfoList, typedCurrentRank]);
 
-    const itemsPerRow = x >= 900 ? 5 : x >= 600 ? 4 : 3;
+    const itemsPerRow = x >= 1600 ? 7 : x >= 1250 ? 6 : x >= 950 ? 5 : x >= 600 ? 4 : 3;
 
     return (
         <div className="grid_container" ref={renderDivRef}>
