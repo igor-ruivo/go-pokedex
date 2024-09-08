@@ -671,15 +671,15 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
 
     return {
-        date: new Date(2024, 5, 1, 10, 0).valueOf(),
-        dateEnd: new Date(2024, 8, 3, 10, 0).valueOf(),
+        date: new Date(2024, 9, 3, 10, 0).valueOf(),
+        dateEnd: new Date(2024, 12, 3, 10, 0).valueOf(),
         wild: wildEncounters,
         eggs: eggs,
         isSeason: true,
         researches: researches,
         bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
-        imgUrl: "https://lh3.googleusercontent.com/d0ffiqo2kTL--_48u4suEOIiIk9kBCpg5xTne5_-PVH9MIeAnT18SFal3yCvUmDt7H6ZHn3_Pvc2OX-czbJ4bJ0Lsqn9B4XsWcwfWXd29SBvwA=rw-e365-w1800",
-        title: "Welcome to Pokémon GO: Shared Skies"
+        imgUrl: "https://lh3.googleusercontent.com/NB7Ayfyqg5pdBtaDflJ1PA71ztk18He3NjSIVtC2t8uIVoI80nMfHT2TBVpvg_LQ9O-rL1u2omNUQ4d0RaqpflvJlJJtDG1BT8nwKTe5RVP3MA=rw-e365-w1800",
+        title: "Welcome to Pokémon GO: Max Out"
     };
 }
 
@@ -797,6 +797,22 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
 
             const formCandidate = currP.split(" ").filter(f => Array.from(knownForms).some(e => ndfNormalized(e) === f));
             if (formCandidate.length === 0) {
+
+                // edge case -> Zacian (Hero) is commonly referred to as zacian only.
+                if (currP === 'zacian') {
+                    if (!seen.has('zacian_hero')) {
+                        seen.add('zacian_hero');
+                        
+                        wildEncounters.push({
+                            speciesId: 'zacian_hero',
+                            shiny: isShiny,
+                            kind: raidLevel
+                        });
+                    }
+
+                    continue;
+                }
+
                 console.error("(0) Couldn't map form for " + currP);
                 continue;
             }
@@ -1006,7 +1022,7 @@ const knownForms = new Set([
     "Average",
     "Midnight",
     "Incarnate",
-    "Standard",
+    "Standard"
 ]);
 
 const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
@@ -1150,7 +1166,14 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
                 case "Event bonuses":
                 case "Event Bonuses":
                 case "Bonuses":
-                    bonus += "\n\n" + contentBodies[1].innerText.trim();
+                    const contentWithNewlines = contentBodies[1].innerHTML.trim().replace(/<br\s*\/?>/gi, '\n').trim();
+                    
+                    const tempElement = document.createElement('div');
+                    tempElement.innerHTML = contentWithNewlines;
+                    
+                    const plainText = tempElement.textContent || tempElement.innerText;
+                    
+                    bonus += "\n\n" + plainText;
                     break;
                 case "Field Research Task Rewards":
                 case "Field Research Task Encounters":

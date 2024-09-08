@@ -84,6 +84,7 @@ export const getForm = (name: string) => {
 
     if (form && !Object.values(PokemonForms).map(f => f.toLocaleLowerCase()).includes(form.toLocaleLowerCase())) {
         console.log("Missing form for raid detection:" + form);
+        console.log(`pokemon id: ${name}`);
     }
     return form;
 } 
