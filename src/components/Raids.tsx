@@ -7,7 +7,7 @@ import LoadingRenderer from "./LoadingRenderer";
 import { usePokemon } from "../contexts/pokemon-context";
 import PokemonMiniature from "./PokemonMiniature";
 
-const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
+const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf());
 
 const Raids = () => {
     const [currentBossDate, setCurrentBossDate] = useState("current");
@@ -16,18 +16,24 @@ const Raids = () => {
     const {gamemasterPokemon, errors, fetchCompleted} = usePokemon();
 
     const reducedLeekPosts = leekPostsFetchCompleted ? leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : [];
-    //console.log(reducedLeekPosts);
     const reducedRaids = postsFetchCompleted ? posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : [];
 
     const additionalBosses = Object.entries([...reducedLeekPosts, ...reducedRaids]
         .reduce((acc: { [key: string]: IPostEntry }, obj) => {
             const key = getDateKey(obj);
-            // If the key already exists in the accumulator, merge 'entries'
             if (acc[key]) {
-                acc[key].raids = [...(acc[key].raids ?? []), ...(obj.raids ?? [])];
+                const mergedRaids = [...(acc[key].raids ?? []), ...(obj.raids ?? [])];
+                acc[key].raids = mergedRaids.filter((raid, index, self) =>
+                    index === self.findIndex((r) => r.speciesId === raid.speciesId)
+                );
             } else {
-                // Otherwise, initialize it with the current object (ignoring 'kind' or keeping it arbitrarily)
-                acc[key] = { title: obj.title, imgUrl: obj.imgUrl, date: obj.date, dateEnd: obj.dateEnd, raids: obj.raids };
+                acc[key] = {
+                    title: obj.title,
+                    imgUrl: obj.imgUrl,
+                    date: obj.date,
+                    dateEnd: obj.dateEnd,
+                    raids: obj.raids
+                };
             }
             return acc;
         }, {}))
