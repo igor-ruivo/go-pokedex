@@ -1,37 +1,39 @@
 .news-display-layout {
     display: flex;
     flex-direction: column;
-    gap: 32px;
-    padding: 12px;
+    gap: 9px;
+    padding-top: 9px;
+}
+
+.current-news-date {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+}
+
+.smaller-title {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 500px;
+    width: 100%;
 }
 
 .news-header-section {
-    display: grid;
-    grid-template-columns: 38% 58%;
-    /*max-height: 266px;
-    > * {
-        max-height: 266px;
-    }*/
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
 
-    gap: 4%;
     img {
         //min-height: 200px;
         border-radius: 12px;
         border: 1px solid var(--borderColor2);
-        max-width: 100%;
-        max-height: 100%;
+        max-width: 42%;
         width: auto;
         height: auto;
+        align-self: center;
     }
-}
-
-.current-news-bonus {
-    height: 100%;
-}
-
-.bonus-container {
-    height: 100%;
-    overflow-y: auto;
 }
 
 .news-selected {
@@ -59,6 +61,7 @@
 }
 
 .news-gallery {
+    padding: 6px 0px;
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -78,14 +81,19 @@
 }
 
 .current-news-main-info {
-    display: grid;
-    grid-template-rows: 22% 20% 58%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
 }
 
 .current-news-title {
-    font-size: xx-large;
+    font-size: 2.75vw;
+    align-self: center;
+    max-width: 75%;
     font-weight: 700;
     word-wrap: break-word;
+    text-align: center;
 }
 
 .pkm-container {
@@ -95,25 +103,19 @@
 
 .from-date {
     font-weight: 700;
-    font-size: medium;
+    font-size: larger;
 }
 
 .to-date {
     font-weight: 700;
-    font-size: small;
+    font-size: larger;
 }
 
 .date-container {
-    color: var(--event-special-font);
+    color: var(--cp-color);
     display: flex;
     flex-direction: row;
     gap: 4px;
-}
-
-.pokemon_with_ivs_events {
-    display: grid;
-    grid-template-columns: calc(50% - 4.5px) calc(50% - 4.5px);
-    gap: 9px;
 }
 
 .current-news-image-wrapper {
@@ -129,64 +131,37 @@
     align-items: center;
 }
 
+@media (max-width: 1024px) {
+    .miniature-date {
+        font-size: 11px;
+    }
+}
+
 @media (max-width: 1000px) {
     .news-header-section {
-        display: flex;
-        flex-direction: column;
-        max-height: unset;
-        > * {
-            max-height: unset;
-        }
-    
-        gap: 0px;
         img {
-            align-self: center;
             max-width: 60%;
-            min-height: unset;
         }
-    }
-
-    .current-news-main-info {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-top: 6px;
     }
 
     .current-news-title {
+        align-self: unset;
+        max-width: 100%;
         font-size: 5vw;
-        text-align: center;
     }
 
     .from-date {
         font-weight: 700;
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .to-date {
         font-weight: 700;
-        font-size: 12px;
-    }
-
-    .current-news-date {
-        display: flex;
-        flex-direction: row;
-        gap: 8px;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 700px) {
-    .pokemon_with_ivs_events {
-        grid-template-columns: 100%;
+        font-size: 14px;
     }
 }
 
 @media (max-width: 500px) {
-    .news-display-layout {
-        padding: 12px 0px;
-    }
-
     .miniature-date {
         font-size: x-small;
     }

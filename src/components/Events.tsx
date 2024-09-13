@@ -5,8 +5,6 @@ import LoadingRenderer from './LoadingRenderer';
 import { IPostEntry, sortEntries, sortPosts } from '../DTOs/INews';
 import './Events.scss';
 import { inCamelCase, localeStringMiniature, localeStringSmallOptions } from '../utils/Misc';
-import PostEntry from './PostEntry';
-import useResize from '../hooks/useResize';
 import { usePokemon } from '../contexts/pokemon-context';
 import PokemonMiniature from './PokemonMiniature';
 
@@ -19,7 +17,6 @@ const Events = () => {
     const [selectedNews, setSelectedNews] = useState(posts.length === 0 ? 0 : 1);
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEgg, setCurrentEgg] = useState("0");
-    const { x } = useResize();
 
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
 
@@ -114,48 +111,49 @@ const Events = () => {
             <span>No News!</span> :
             <div>
             <div className='news-display-layout'>
-                <div className='raid-container'>
-                    <div className='overflowing'>
-                        <div className='news-gallery'>
-                            {relevantPosts.map((p, i) =>
-                                <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
-                                    <div className='miniature-date'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
-                                    <img src={p.imgUrl} />
-                                </div>
-                            )}
+                <div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='raid-container item'>
+                        <div className='overflowing'>
+                            <div className='news-gallery'>
+                                {relevantPosts.map((p, i) =>
+                                    <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
+                                        <div className='miniature-date ellipsed'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
+                                        <img src={p.imgUrl} />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div></div>
-                <div className='news-header-section'>
-                    <img width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
-                    <div className='current-news-main-info'>
-                        <div className={`current-news-title ${x > 1000 ? "ellipsed" : ""}`}>{relevantPosts[selectedNews].subtitle ?? relevantPosts[selectedNews].title}</div>
+                    </div>
+                </div>
+                <div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='news-header-section item'>
+                        <img width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
+                        <div className={'current-news-title'}>{(relevantPosts[selectedNews].subtitle?.length ?? 0) > 15 ? relevantPosts[selectedNews].subtitle : relevantPosts[selectedNews].title}</div>
                         <div className='current-news-date'>
                             <div className='from-date date-container'>
-                                {x > 1000 && <span>From:</span>}
                                 {inCamelCase(new Date(relevantPosts[selectedNews].date).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
-                            {x <= 1000 && <div className='from-date date-container'>
+                            {<div className='from-date date-container'>
                                 to
                             </div>}
                             <div className='to-date date-container'>
-                                {x > 1000 && <span>To:</span>}
                                 {inCamelCase(new Date(relevantPosts[selectedNews].dateEnd ?? 0).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
                         </div>
-                        {relevantPosts[selectedNews]?.bonuses && <div className='current-news-bonus'>
-                            <div className='item default-padding bonus-container'>
-                                {relevantPosts[selectedNews]?.bonuses?.split("\n").filter(b => b).map(b => <ul key={b} className='ul-with-adorner'>{b}</ul>)}
-                            </div>
-                        </div>}
                     </div>
                 </div>
             </div>
             
-            <div className='pokemon_with_ivs_events'>
+            <div className='with-xl-gap'>
+                {relevantPosts[selectedNews]?.bonuses && <div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='item default-padding bonus-container'>
+                        {relevantPosts[selectedNews]?.bonuses?.split("\n").filter(b => b).map(b => <span key={b} className='ul-with-adorner'>{b}</span>)}
+                    </div>
+                </div>}
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
+                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
                             <strong>Featured Wild Spawns</strong>
                         </div>
                         {selectedNews === 0 &&
@@ -189,7 +187,7 @@ const Events = () => {
                     {(relevantPosts[selectedNews].raids ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
+                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
                             <strong>Featured Raids</strong>
                         </div>
                         <div className={`with-flex contained with-margin-top`}>
@@ -205,7 +203,7 @@ const Events = () => {
                     {(relevantPosts[selectedNews].researches ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
+                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
                             <strong>Featured Researches</strong>
                         </div>
                         <div className={`with-flex contained with-margin-top`}>
@@ -221,7 +219,7 @@ const Events = () => {
                     {(relevantPosts[selectedNews].eggs ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
+                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
                             <strong>Featured Eggs</strong>
                         </div>
                         {selectedNews === 0 &&

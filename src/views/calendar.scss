@@ -188,18 +188,16 @@
 }
 
 .bonus-container {
+    padding: 12px;
+    margin-top: 9px;
     border: 1px solid var(--borderColor2);
     border-radius: 12px;
-    background: var(--background-shadow-baby-soft);
-    font-size: small;
-    margin-bottom: 5px;
-}
-
-.ul-with-adorner {
-    list-style-type: circle;
-    list-style-position: inside;
-    display: list-item;
-    padding-right: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 9px;
 }
 
 .divider {
@@ -254,7 +252,7 @@
 
 .with-dynamic-max-width {
     width: 100%;
-    max-width: 966px;
+    max-width: 1024px;
 }
 
 .relative {
@@ -422,8 +420,11 @@
     }
 
     .bonus-container {
-        margin: 6px;
-        font-size: 11px;
+        font-size: 12px;
+    }
+
+    .ul-with-adorner {
+        padding-left: 12px;
     }
 
     .perks-container,
@@ -434,11 +435,6 @@
         }
         
         gap: 6px;
-    }
-
-    .ul-with-adorner {
-        padding-right: 0px;
-        padding-left: 10px;
     }
 
     .event-text-container {
@@ -454,6 +450,10 @@
 @media (max-width: 500px) {
     .calendar-content {
         padding-bottom: 80px;
+    }
+
+    .bonus-container {
+        text-align: unset;
     }
 }
 
