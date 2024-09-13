@@ -109,8 +109,7 @@ const Events = () => {
     return <LoadingRenderer errors={postsErrors + seasonErrors + errors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
-            <div>
-            <div className='news-display-layout'>
+            <div className='with-xl-gap'>
                 <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='raid-container item'>
                         <div className='overflowing'>
@@ -142,9 +141,7 @@ const Events = () => {
                         </div>
                     </div>
                 </div>
-            </div>
             
-            <div className='with-xl-gap'>
                 {relevantPosts[selectedNews]?.bonuses && <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding bonus-container'>
                         {relevantPosts[selectedNews]?.bonuses?.split("\n").filter(b => b).map(b => <span key={b} className='ul-with-adorner'>{b}</span>)}
@@ -261,7 +258,6 @@ const Events = () => {
                         </div>
 
                     </div></div>}
-                </div>
                 </div>
         }
     </LoadingRenderer>;
