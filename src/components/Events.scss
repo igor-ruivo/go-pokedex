@@ -28,7 +28,7 @@
     img {
         //min-height: 200px;
         border-radius: 12px;
-        border: 1px solid var(--borderColor2);
+        border: 3px solid var(--cp-color);
         max-width: 42%;
         width: auto;
         height: auto;
@@ -68,7 +68,7 @@
     gap: 2%;
     img {
         border-radius: 12px;
-        border: 1px solid var(--borderColor2);
+        border: 2px solid var(--cp-color);
         width: auto;
         //max-width: 100%;
     }
@@ -103,12 +103,12 @@
 
 .from-date {
     font-weight: 700;
-    font-size: larger;
+    font-size: 16px;
 }
 
 .to-date {
     font-weight: 700;
-    font-size: larger;
+    font-size: 16px;
 }
 
 .date-container {
@@ -145,6 +145,7 @@
     }
 
     .current-news-title {
+        margin-top: 6px;
         align-self: unset;
         max-width: 100%;
         font-size: 5vw;
