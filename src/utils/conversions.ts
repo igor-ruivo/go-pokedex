@@ -6,9 +6,7 @@ import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
-import { calculateCP, getForm, levelToLevelIndex } from "./pokemon-helper";
-import { IRaidBoss } from "../DTOs/IRaidBoss";
-import { PokemonForms } from "../DTOs/PokemonForms";
+import { getForm } from "./pokemon-helper";
 import { IEntry, IPostEntry, IRocketGrunt } from "../DTOs/INews";
 
 const blacklistedSpecieIds = new Set<string>([
@@ -320,6 +318,7 @@ export const mapTranslatedMoves: (data: any) => Dictionary<ITranslatedMove> = (d
     return translatedMovesDictionary;
 }
 
+/*
 const removeFormsFromPokemonName = (rawName: string) => {
     rawName = rawName.toLowerCase();
 
@@ -342,6 +341,7 @@ const removeFormsFromPokemonName = (rawName: string) => {
 
     return rawName.trim();
 }
+*/
 
 export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();
@@ -599,7 +599,7 @@ export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemast
     return answer;
 }
 
-const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => {
+/*const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => {
     let start = 0, end = arr.length - 1;
    
     while (start <= end) {
@@ -618,7 +618,7 @@ const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => 
     }
    
     return null;
-}
+}*/
 
 const normalizeSpeciesNameForId = (speciesName: string) => speciesName.replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr");
 const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’", "'").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -1073,10 +1073,6 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
     const parsedPokemon = textes.filter(t => t !== "All" && t.split(" ").length <= 10 && (whitelist.some(k => t.toLocaleLowerCase().includes(k)) || !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k))));
 
     return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, domain);
-}
-
-const isValidDate = (d: Date) => {
-    return d instanceof Date && !isNaN(d.getTime());
 }
 
 const toMonthIndex = (month: string) => ["January", "February", "March", "April", "May", "June",

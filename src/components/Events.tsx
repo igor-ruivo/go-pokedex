@@ -15,9 +15,9 @@ const Events = () => {
     const { updateSeenEvents } = useNotifications();
 
     const nonSeasonalPosts = useMemo(() => [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)]
-    , [posts, leekPosts, sortPosts]);
+    , [posts, leekPosts]);
 
-    const relevantPosts = [season, ...nonSeasonalPosts];
+    const relevantPosts = useMemo(() => [season, ...nonSeasonalPosts], [season, nonSeasonalPosts]);
 
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const [selectedNews, setSelectedNews] = useState(posts.length === 0 ? 0 : 1);
@@ -27,9 +27,9 @@ const Events = () => {
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
 
     useEffect(() => {
-        const justSeenPosts = nonSeasonalPosts.map(postTitle);
+        const justSeenPosts = relevantPosts.map(postTitle);
         updateSeenEvents(justSeenPosts);
-    }, [updateSeenEvents, nonSeasonalPosts]);
+    }, [updateSeenEvents, relevantPosts]);
 
     useEffect(() => {
         if (postsFetchCompleted) {
@@ -129,7 +129,7 @@ const Events = () => {
                                     <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
                                         <div className='miniature-date ellipsed'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
                                         <div className='spotlight-miniature-container'>
-                                            <img className='miniature-itself' src={p.imgUrl} />
+                                            <img className='miniature-itself' alt='Miniature' src={p.imgUrl} />
                                             {(p.spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
                                                 pokemon = {gamemasterPokemon[p.spotlightPokemons![0].speciesId]}
                                                 withName = {false}
@@ -146,7 +146,7 @@ const Events = () => {
                 <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='news-header-section item'>
                         <div className='event-img-container'>
-                            <img className='event-img-itself' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
+                            <img className='event-img-itself' alt='Event' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
                             {(relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
                                 pokemon = {gamemasterPokemon[relevantPosts[selectedNews].spotlightPokemons![0].speciesId]}
                                 withName = {false}
@@ -268,7 +268,7 @@ const Events = () => {
                         }
                         <div className={`with-flex contained ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
                             {(relevantPosts[selectedNews].eggs ?? [])
-                                .filter(r => selectedNews !== 0 || !r.comment && r.kind === String(idxToKind(+currentEgg)))
+                                .filter(r => selectedNews !== 0 || (!r.comment && r.kind === String(idxToKind(+currentEgg))))
                                 .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
                                     <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                                         <div className={`mini-card-wrapper`}>
