@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCalendar } from '../contexts/raid-bosses-context';
 import LoadingRenderer from './LoadingRenderer';
 import { IPostEntry, sortEntries, sortPosts } from '../DTOs/INews';
@@ -8,11 +8,15 @@ import { inCamelCase, localeStringMiniature, localeStringSmallOptions } from '..
 import { usePokemon } from '../contexts/pokemon-context';
 import PokemonMiniature from './PokemonMiniature';
 import PokemonImage from './PokemonImage';
+import { useNotifications } from '../contexts/notifications-context';
 
 const Events = () => {
     const { posts, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted, leekPosts, leekPostsErrors, leekPostsFetchCompleted } = useCalendar();
+    const { updateSeenEvents } = useNotifications();
 
-    const nonSeasonalPosts = [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)];
+    const nonSeasonalPosts = useMemo(() => [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)]
+    , [posts, leekPosts, sortPosts]);
+
     const relevantPosts = [season, ...nonSeasonalPosts];
 
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
@@ -21,6 +25,11 @@ const Events = () => {
     const [currentEgg, setCurrentEgg] = useState("0");
 
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
+
+    useEffect(() => {
+        const justSeenPosts = nonSeasonalPosts.map(postTitle);
+        updateSeenEvents(justSeenPosts);
+    }, [updateSeenEvents, nonSeasonalPosts]);
 
     useEffect(() => {
         if (postsFetchCompleted) {

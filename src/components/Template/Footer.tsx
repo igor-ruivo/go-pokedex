@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import "./Footer.scss";
 import { hideNavbar } from "./Navbar";
 import { Link } from "react-router-dom";
+import { useNotifications } from "../../contexts/notifications-context";
 
 const Footer = () => {
     const [scrollingDown, setScrollingDown] = useState(false);
+    const {unseenEvents} = useNotifications();
     //to detect direction change
     const [prevScrollY, setPrevScrollY] = useState(0);
     const [accumulatedScrollDownDelta, setAccumulatedScrollDownDelta] = useState(0);
@@ -38,13 +40,18 @@ const Footer = () => {
 
     return <footer className={`footer ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, false) ? 'footer-hidden' : 'footer-visible'}`}>
         <section className="footer-section">
-            <Link to="/trash-pokemon" className={`navbar-filter button no-padding`}>
-                <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/search.png`}/>
-            </Link>
-            <Link to="/calendar/events" className={`navbar-filter button no-padding`}>
-                <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/calendar.png`}/>
-            </Link>
-            </section>
+            <div className="relative-holder">
+                <Link to="/trash-pokemon" className={`navbar-filter button no-padding`}>
+                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/search.png`}/>
+                </Link>
+            </div>
+            <div className="relative-holder">
+                {unseenEvents > 0 && <span className="notifications-counter">{unseenEvents}</span>}
+                <Link to="/calendar/events" className={`navbar-filter button no-padding`}>
+                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/calendar.png`}/>
+                </Link>
+            </div>
+        </section>
     </footer>;
 }
 
