@@ -21,9 +21,11 @@ interface IPokemonImage {
     lowRes?: boolean;
     specificNameContainerWidth?: number;
     forceShadowAdorner?: boolean;
+    withClassname?: string;
+    imgOnly?: boolean;
 }
 
-const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, forceShadowAdorner, specificNameContainerWidth, withName, lazy, descriptionComponent, xl, buddy, shiny, specificWidth, specificHeight, galleryToggle, lowRes = true}: IPokemonImage, ref) => {
+const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgOnly, forceShadowAdorner, withClassname, specificNameContainerWidth, withName, lazy, descriptionComponent, xl, buddy, shiny, specificWidth, specificHeight, galleryToggle, lowRes = true}: IPokemonImage, ref) => {
     const {currentGameLanguage} = useLanguage();
     const {imageSource} = useImageSource();
 
@@ -70,11 +72,11 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, forc
         }
     }
 
-    return (
+    return imgOnly ? <img ref={ref} className={`${withClassname ?? ''} ${currentImageSource !== ImageSource.Official ? "with-img-dropShadow" : ""}`} onClick={galleryToggle ? handleImageClick : undefined} loading={lazy ? "lazy" : undefined} alt={pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} height={specificHeight ?? "100%"} width={specificWidth ?? "100%"} src={fetchSrc(currentImageSource)} onError={e => onError(e, currentImageSource)}/> : (
         <>
             <span className="images-container">
                 <span className="main-image-container">
-                    <img ref={ref} className={`${galleryToggle ? "img-clickable" : ""} ${currentImageSource !== ImageSource.Official ? "with-img-dropShadow" : ""}`} onClick={galleryToggle ? handleImageClick : undefined} loading={lazy ? "lazy" : undefined} alt={pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} height={specificHeight ?? "100%"} width={specificWidth ?? "100%"} src={fetchSrc(currentImageSource)} onError={e => onError(e, currentImageSource)}/>
+                    <img ref={ref} className={`${withClassname ?? ''} ${galleryToggle ? "img-clickable" : ""} ${currentImageSource !== ImageSource.Official ? "with-img-dropShadow" : ""}`} onClick={galleryToggle ? handleImageClick : undefined} loading={lazy ? "lazy" : undefined} alt={pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} height={specificHeight ?? "100%"} width={specificWidth ?? "100%"} src={fetchSrc(currentImageSource)} onError={e => onError(e, currentImageSource)}/>
                     {pokemon.isMega && <span className="mega-container"><img alt="mega" loading={lazy ? "lazy" : undefined} height="100%" width="100%" src="https://i.imgur.com/sayBxjT.png"/></span>}
                     {(forceShadowAdorner || pokemon.isShadow) && <img className='image shadow-overlay' width="100%" loading={lazy ? "lazy" : undefined} height="100%" src="https://i.imgur.com/OS1Whqr.png" alt={pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} />}
                     {xl && <img alt="xl" className='image xl-overlay' loading={lazy ? "lazy" : undefined} src='https://i.imgur.com/NTtZq10.png' width="100%" height="100%"/>}

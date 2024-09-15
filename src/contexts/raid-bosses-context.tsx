@@ -98,7 +98,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry, IPostEntry
 
         const parser = new DOMParser();
         const htmlDoc = parser.parseFromString(leekNews[0], 'text/html');
-        const postUrls = Array.from(new Set<string>([...Array.from(htmlDoc.getElementsByClassName("event-item-wrapper raid-battles")).map(e => (e.parentElement as HTMLAnchorElement).href), ...Array.from(htmlDoc.getElementsByClassName("event-item-wrapper elite-raids")).map(e => (e.parentElement as HTMLAnchorElement).href)]));
+        const postUrls = Array.from(new Set<string>([...Array.from(htmlDoc.getElementsByClassName("event-item-wrapper raid-battles")).map(e => (e.parentElement as HTMLAnchorElement).href), ...Array.from(htmlDoc.getElementsByClassName("event-item-wrapper elite-raids")).map(e => (e.parentElement as HTMLAnchorElement).href), ...Array.from(htmlDoc.getElementsByClassName("event-item-wrapper pokémon-spotlight-hour")).map(e => (e.parentElement as HTMLAnchorElement).href)]));
         
         const controller = new AbortController();
 

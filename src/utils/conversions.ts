@@ -396,10 +396,10 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
 
-    const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent;
+    const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent?.trim();
 
-    const dateCont = htmlDoc.getElementById("event-date-start")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-start")?.textContent?.trim();
-    const endCont = htmlDoc.getElementById("event-date-end")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-end")?.textContent?.trim();
+    const dateCont = (htmlDoc.getElementById("event-date-start")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-start")?.textContent?.trim()).replaceAll("  ", " ");
+    const endCont = (htmlDoc.getElementById("event-date-end")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-end")?.textContent?.trim()).replaceAll("  ", " ");
 
     const date = fetchDateFromString(dateCont);
     const end = fetchDateFromString(endCont);
@@ -409,25 +409,37 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
         return {title: "", date: 0, dateEnd: 0};
     }
 
-    if (!date) {
+    if (!date || !end) {
         console.error("Couldn't fetch date of leek news:");
         console.error(dateCont);
         console.error(endCont);
         return {title: "", date: 0, dateEnd: 0};
     }
 
+    let rawPkmName = '';
+    let isSpotlight = false;
+
+    if (title.includes("Spotlight")) {
+        isSpotlight = true;
+        rawPkmName = title.split("Spotlight")[0].trim();
+    }
+
     const parts = title.split(" in ");
-    if (parts.length !== 2) {
+    if (parts.length !== 2 && !isSpotlight) {
         console.error("Couldn't parse title of leek news.");
         return {title: "", date: 0, dateEnd: 0};
     }
 
-    const rawPkmName = parts[0];
-    const raidType = parts[1];
+    let raidType = '';
+
+    if (!isSpotlight) {
+        rawPkmName = parts[0];
+        raidType = parts[1];
+    }
 
     let domainToUse: IGamemasterPokemon[] = [];
 
-    const isShadow = raidType.includes("Shadow");
+    const isShadow = raidType.includes("Shadow") || rawPkmName.includes("Shadow");
     if (isShadow) {
         domainToUse = Object.values(gamemasterPokemon).filter(p => !p.isMega && !p.aliasId);
     }
@@ -442,7 +454,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     }
 
     const finalEntries: IEntry[] = [];
-    const multiplePkms = rawPkmName.split(" and "); // TODO: more than 2 pokémons? are they comma separated? ex: xurkitree buzzhole and pheromosa
+    const multiplePkms = rawPkmName.replaceAll(', ', ',').replaceAll(' and ', ',').split(","); // TODO: more than 2 pokémons? are they comma separated? ex: xurkitree buzzhole and pheromosa
     for (let i = 0; i < multiplePkms.length; i++) {
         const p = multiplePkms[i].trim();
         //const isShiny = Array.from(htmlDoc.getElementsByClassName("pkmn-list-img")).filter(e => e.parentElement?.getElementsByClassName("pkmn-name")[0]?.textContent === p.replaceAll("Mega", "").replaceAll("Shadow", "").trim()).map(i => i.children[0] as HTMLImageElement).some(i => i.src.endsWith("shiny.png"));
@@ -460,8 +472,11 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     return {
         date: date,
         dateEnd: end,
-        raids: finalEntries,
-        title: title
+        raids: !isSpotlight ? finalEntries : [],
+        title: title,
+        imgUrl: isSpotlight ? `${process.env.PUBLIC_URL}/images/spotlight.png` : '',
+        spotlightBonus: (htmlDoc.getElementsByClassName('event-description')[0] as HTMLElement)?.innerText.split('bonus is')[1]?.split('.')[0].trim(),
+        spotlightPokemons: isSpotlight ? finalEntries : []
         //kind: raidType.split(" Raid")[0]
     };
 }
@@ -1085,7 +1100,7 @@ const fetchDateFromString = (date: string) => {
     return dateObj.valueOf();
 }
 
-const referen = (subtitle: string, date: string, innerEntries: Element[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, raidDomain: IGamemasterPokemon[], wildDomain: IGamemasterPokemon[], postTitle: string, img: string, endResults: IPostEntry[], hasToComputeInnerEntries: boolean) => {
+const innerParseNews = (subtitle: string, date: string, innerEntries: Element[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, raidDomain: IGamemasterPokemon[], wildDomain: IGamemasterPokemon[], postTitle: string, img: string, endResults: IPostEntry[], hasToComputeInnerEntries: boolean) => {
     if (date.endsWith(".")) {
         date = date.substring(0, date.length - 1);
     }
@@ -1221,7 +1236,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         
         const date = (entries[0].getElementsByClassName("ContainerBlock__body")[0] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        return referen(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries);
+        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries);
     }
 
     for (let k = 0; k < entries.length; k++) {
@@ -1236,7 +1251,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
 
         const date = (containerBlock.children[1] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        referen(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries);
+        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries);
     }
 
     return endResults;

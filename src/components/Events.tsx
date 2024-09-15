@@ -7,11 +7,13 @@ import './Events.scss';
 import { inCamelCase, localeStringMiniature, localeStringSmallOptions } from '../utils/Misc';
 import { usePokemon } from '../contexts/pokemon-context';
 import PokemonMiniature from './PokemonMiniature';
+import PokemonImage from './PokemonImage';
 
 const Events = () => {
-    const { posts, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted } = useCalendar();
+    const { posts, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted, leekPosts, leekPostsErrors, leekPostsFetchCompleted } = useCalendar();
 
-    const relevantPosts = [season, ...posts.flat().filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)];
+    const nonSeasonalPosts = [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)];
+    const relevantPosts = [season, ...nonSeasonalPosts];
 
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const [selectedNews, setSelectedNews] = useState(posts.length === 0 ? 0 : 1);
@@ -106,7 +108,7 @@ const Events = () => {
         }
     }
 
-    return <LoadingRenderer errors={postsErrors + seasonErrors + errors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted}>
+    return <LoadingRenderer errors={postsErrors + seasonErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='with-xl-gap'>
@@ -117,6 +119,7 @@ const Events = () => {
                                 {relevantPosts.map((p, i) =>
                                     <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
                                         <div className='miniature-date ellipsed'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
+                                        
                                         <img src={p.imgUrl} />
                                     </div>
                                 )}
@@ -126,7 +129,16 @@ const Events = () => {
                 </div>
                 <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='news-header-section item'>
-                        <img width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
+                        <div className='event-img-container'>
+                            <img className='event-img-itself' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
+                            {(relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
+                                pokemon = {gamemasterPokemon[relevantPosts[selectedNews].spotlightPokemons![0].speciesId]}
+                                withName = {false}
+                                imgOnly
+                                withClassname = 'spotlighted-pokemon'
+                                lazy
+                            />}
+                        </div>
                         <div className={'current-news-title'}>{(relevantPosts[selectedNews].subtitle?.length ?? 0) > 15 ? relevantPosts[selectedNews].subtitle : relevantPosts[selectedNews].title}</div>
                         <div className='current-news-date'>
                             <div className='from-date date-container'>
@@ -139,6 +151,9 @@ const Events = () => {
                                 {inCamelCase(new Date(relevantPosts[selectedNews].dateEnd ?? 0).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
                         </div>
+                        {relevantPosts[selectedNews]?.spotlightBonus && 
+                            <span className='spotlight-bonus'>{relevantPosts[selectedNews]?.spotlightBonus}</span>
+                        }
                     </div>
                 </div>
             

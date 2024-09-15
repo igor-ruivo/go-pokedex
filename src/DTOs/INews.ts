@@ -30,7 +30,9 @@ export interface IPostEntry {
     researches?: IEntry[],
     eggs?: IEntry[],
     isSeason?: boolean,
-    comment?: string
+    comment?: string,
+    spotlightPokemons?: IEntry[],
+    spotlightBonus?: string
 }
 
 export interface IRaidEntry {
