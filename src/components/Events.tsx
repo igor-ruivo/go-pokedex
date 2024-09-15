@@ -135,7 +135,6 @@ const Events = () => {
                                                 withName = {false}
                                                 imgOnly
                                                 withClassname = 'spotlighted-pokemon'
-                                                lazy
                                             />}
                                         </div>
                                     </div>
@@ -153,7 +152,6 @@ const Events = () => {
                                 withName = {false}
                                 imgOnly
                                 withClassname = 'spotlighted-pokemon'
-                                lazy
                             />}
                         </div>
                         <div className={'current-news-title'}>{(relevantPosts[selectedNews].subtitle?.length ?? 0) > 15 ? relevantPosts[selectedNews].subtitle : relevantPosts[selectedNews].title}</div>

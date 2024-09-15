@@ -42,7 +42,7 @@ const Footer = () => {
         <section className="footer-section">
             <div className="relative-holder">
                 <Link to="/trash-pokemon" className={`navbar-filter button no-padding`}>
-                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/search.png`}/>
+                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/bin.png`}/>
                 </Link>
             </div>
             <div className="relative-holder">

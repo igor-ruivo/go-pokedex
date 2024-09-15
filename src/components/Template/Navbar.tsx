@@ -292,18 +292,20 @@ const Navbar = () => {
         e.preventDefault();
     }
 
+    const hasSessionChanges = !showShadow || !showXL || type1Filter;
+
     return <>
         <header className={`navbar normal-text ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'nav-hidden' : 'nav-visible'}`}>
             <section className="navbar-section">
                 <Link to={getDestination()} className="navbar-logo">
                     <img className="navbar-logo-image" alt="GO-Pokedéx" loading="lazy" decoding="async" src="https://i.imgur.com/eBscnsv.png"/>  
                 </Link>
-                <button
-                    className="navbar-menu"
-                    onClick={() => setOptionsOpened(p => p === AvailableOptions.Menu ? AvailableOptions.None : AvailableOptions.Menu)}
-                >
-                    <img className={"navbar-menu-img " + (optionsOpened === AvailableOptions.Menu ? "invert-white-mode " : "invert-dark-mode ") + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : `${process.env.PUBLIC_URL}/images/cogwheel.png`}/>
-                </button>
+                    <button
+                        className="navbar-menu"
+                        onClick={() => setOptionsOpened(p => p === AvailableOptions.Menu ? AvailableOptions.None : AvailableOptions.Menu)}
+                    >
+                        <img className={"navbar-menu-img " + (optionsOpened === AvailableOptions.Menu ? "invert-white-mode " : "invert-dark-mode ") + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : `${process.env.PUBLIC_URL}/images/cogwheel.png`}/>
+                    </button>
                 <div className="normal-text-descendants-all">
                     <SearchableDropdown
                         searchOpen={searchOpen}
@@ -343,12 +345,15 @@ const Navbar = () => {
                         )}
                     />
                 </div>
-                <button
-                    className={`navbar-filter ${pathname.includes("pokemon") || pathname.includes("calendar") ? "unavailable" : ""}`}
-                    onClick={() => setOptionsOpened(p => p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter)}
-                >
-                    <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
-                </button>
+                <div className="relative-holder">
+                    {hasSessionChanges && !(pathname.includes("pokemon") || pathname.includes("calendar")) && <span className="notifications-counter heavy-weight">!</span>}
+                    <button
+                        className={`navbar-filter ${pathname.includes("pokemon") || pathname.includes("calendar") ? "unavailable" : ""}`}
+                        onClick={() => setOptionsOpened(p => p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter)}
+                    >
+                        <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
+                    </button>
+                </div>
             </section>
         </header>
         <aside className={`options-menu normal-text ${optionsOpened !== AvailableOptions.Menu ? " hidden" : " visible"} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}>
