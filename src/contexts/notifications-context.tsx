@@ -29,11 +29,11 @@ export const NotificationsProvider = (props: React.PropsWithChildren<{}>) => {
     }
 
     const [seenEvents, setSeenEvents] = useState(getDefaultSeenEvents());
-    const {posts, leekPosts, postsFetchCompleted, leekPostsFetchCompleted} = useCalendar();
+    const {posts, leekPosts, postsFetchCompleted, leekPostsFetchCompleted, season, seasonFetchCompleted} = useCalendar();
 
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
     
-    const currentEventIds = postsFetchCompleted && leekPostsFetchCompleted ? [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date())].map(postTitle) : [];
+    const currentEventIds = postsFetchCompleted && seasonFetchCompleted && leekPostsFetchCompleted ? [...[...posts.flat(), season, ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date())].map(postTitle) : [];
     const unseenEvents = currentEventIds.filter(e => !seenEvents.has(e)).length;
 
     const updateSeenEvents = useCallback((newEvents: string[]) => {
