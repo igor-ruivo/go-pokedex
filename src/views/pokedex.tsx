@@ -231,7 +231,7 @@ const Pokedex = () => {
                     </li>}
                     <li>
                         <Link to="/raid" className={"header-tab league-picker " + (listType === ListType.RAID ? "header-selected" : "header-unselected")}>
-                            <div className="img-padding"><img className="raid-img-with-contrast" height="20" width="20" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="Raids"/></div>
+                            <div className="img-padding"><img className="raid-img-with-contrast" height="20" width="20" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} alt="Raids"/></div>
                             {listType === ListType.RAID && <span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>}
                         </Link>
                     </li>

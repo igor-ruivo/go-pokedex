@@ -94,24 +94,26 @@ code {
     --activePerkFilter: contrast(0) sepia(0.6) brightness(1.5) var(--event-filter);
     --type-Water: #3f7dba;
     --event-filter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
-    --contrastFilter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
+    --contrastFilter: brightness(0.85);
     --raid-wrapper-shadow: rgba(0, 0, 0, .38);
     --stat-label-color: rgb(183 166 118);
     --background-dropdowns: #1C252C;
+    --higher-level: rgb(210, 42, 42);
 }
 
 .theme-light {
     --activePerkFilter: contrast(0) brightness(0.6);
+    --higher-level: rgb(148, 0, 0);
     --lighter-tone-text: #202122;
     --poke-border: drop-shadow(1px 1px 0 var(--cp-color)) drop-shadow(-0.5px -0.5px 0 var(--cp-color)) drop-shadow(1px -1px 0 var(--cp-color)) drop-shadow(-1px 1.5px 0 var(--cp-color));
     --event-special-font: #4C4C4C;
     --event-filter: drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(1px 0 0 rgba(0,0,0,.5)) drop-shadow(-1px 0 0 rgba(0,0,0,.5)) drop-shadow(0 -1px 0 rgba(0,0,0,.5));
     --entry-background-shadow: hsla(0,0%,100%,.8);
     --empty-entry: rgb(235, 235, 235);
-    --cp-color: #cdb266;
-    --triple-color: #b76b00;
+    --cp-color: #e07a3b;
+    --triple-color: #f34612e1;
     --hover-brightness: saturate(1.1) brightness(1.05);
-    --stat-label-color: #cdb266;
+    --stat-label-color: #e78547;
     --buff-panel-border: 1px solid var(--borderColor2);
     --event-buff-panel-border: 1px solid var(--borderColor2);
     --text-shadow: none;
@@ -173,6 +175,6 @@ code {
     --type-Rock: #cdba6c;
     --type-Steel: #538b9f;
     --type-Water: #5092d5;
-    --contrastFilter: brightness(0.33);
+    --contrastFilter: brightness(1);
     --raid-wrapper-shadow: rgba(0, 0, 0, .18);
 }

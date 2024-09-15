@@ -18,10 +18,10 @@ const RaidCard = ({
     dps
 }: IRaidCardProps) => {
     const {currentLanguage} = useLanguage();
-    const raidUrl = `${process.env.PUBLIC_URL}/images/raid.webp`;
+    const raidUrl = `${process.env.PUBLIC_URL}/images/tx_raid_coin.png`;
     const url = `${process.env.PUBLIC_URL}/images/types/${type?.toString().toLocaleLowerCase()}.png`;
     return <div className="raid-wrapper">
-        {type && rank ? <img className="raid-img" src={url} width={32} height={32} alt={type.toString()} /> : <img className="raid-img" src={raidUrl} width={48} height={48} alt={type?.toString()} />}
+        {type && rank ? <img src={url} width={32} height={32} alt={type.toString()} /> : <img className="raid-img-with-contrast" src={raidUrl} width={48} height={48} alt={type?.toString()} />}
         {rank !== 0 && <section className="raid-rank-types">
             <div className="flex pvp-entry smooth with-shadow with-raid-padding">
                 <strong className="cp-container">

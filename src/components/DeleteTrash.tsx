@@ -374,7 +374,7 @@ const DeleteTrash = () => {
                                 </select>
                                 </div>
                                 <div>
-                                <img height={20} width={20} className="raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/raid.webp`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashRaid} onChange={e => setTrashRaid(+e.target.value)} className="select-level">
+                                <img height={20} width={20} className="padded-img raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashRaid} onChange={e => setTrashRaid(+e.target.value)} className="select-level">
                                         {Array.from({length: 2000}, (_x, i) => i)
                                             .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>

@@ -607,7 +607,7 @@ const EventDetail = ({ eventKey, post, sortEntries }: IEventDetail) => {
                 </li>}
                 {(post.raids?.length ?? 0) > 0 && <li>
                     <div onClick={() => setCurrTab("raids")} className={"header-tab no-full-border " + (currTab === "raids" ? "selected" : "")}>
-                        <img width="16" height="16" className={'active-perk'} src={`${process.env.PUBLIC_URL}/images/raid.webp`} /><span>Raids</span>
+                        <img width="16" height="16" className={'active-perk raid-img-with-contrast'} src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} /><span>Raids</span>
                     </div>
                 </li>}
                 {(post.researches?.length ?? 0) > 0 && <li>

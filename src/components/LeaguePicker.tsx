@@ -40,7 +40,7 @@ const LeaguePicker = ({league, handleSetLeague}: ILeaguePickerProps) => {
             </li>}
             <li>
                 <div onClick={() => handleSetLeague(LeagueType.RAID)} className={"header-tab league-picker selectable " + (league === LeagueType.RAID ? "soft" : "baby-soft")}>
-                    <div className="img-padding"><img className="raid-img-with-contrast" height="20" width="20" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="Raids"/></div>
+                    <div className="img-padding raid-img-with-contrast"><img height="20" width="20" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} alt="Raids"/></div>
                     {league === LeagueType.RAID && <span className="league-tooltip">{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>}
                 </div>
             </li>

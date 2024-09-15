@@ -96,7 +96,7 @@ const LeaguePanels = ({
                 <div>
                     <div className="pvp-entry rank-title">
                         <div className="pvp-entry-content potential">
-                            <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> {unranked ? "-" : <><strong className="cp-container">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub></>}
+                            <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> {unranked ? "-" : <><strong className="cp-container">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big heavy-weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub></>}
                         </div>
                     </div>
                 </div>
@@ -208,7 +208,7 @@ const LeaguePanels = ({
                     ))}
                 </div>
                 <div className="centered-text pvp-entry fitting-content">... {translator(TranslatorKeys.As, currentLanguage)} {raidStat.bestReachablePokemonName}</div>
-                <img className='background-absolute-img-raid' width="100%" height="100%" src={`${process.env.PUBLIC_URL}/images/raid.webp`} alt="raid" />
+                <img className='background-absolute-img-raid raid-img-with-contrast' width="100%" height="100%" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} alt="raid" />
             </div>
         );
     }

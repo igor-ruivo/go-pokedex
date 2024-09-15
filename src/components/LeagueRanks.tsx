@@ -94,7 +94,7 @@ const LeagueRanks = ({
                 logoSrc = `${process.env.PUBLIC_URL}/images/leagues/fantasy-cup.png`;
                 break;
             case "raid":
-                logoSrc = `${process.env.PUBLIC_URL}/images/raid.webp`;
+                logoSrc = `${process.env.PUBLIC_URL}/images/tx_raid_coin.png`;
                 break;
         }
 
@@ -121,7 +121,7 @@ const LeagueRanks = ({
             <ListEntry
                 mainIcon={{
                     imageDescription: leagueStat.leagueTitle,
-                    image: <div className={leagueStat.leagueTitle === "raid" ? "img-padding-extra" : ""}><img className={leagueStat.leagueTitle === "raid" ? "raid-img" : ""} height={leagueStat.leagueTitle === "raid" ? 20 : 28} width={leagueStat.leagueTitle === "raid" ? 20 : 28} src={logoSrc} alt={leagueStat.leagueTitle}/></div>,
+                    image: <div className={leagueStat.leagueTitle === "raid" ? "img-padding-extra" : ""}><img className = {leagueStat.leagueTitle === "raid" ? "raid-img-with-contrast" : ""} height={leagueStat.leagueTitle === "raid" ? 20 : 28} width={leagueStat.leagueTitle === "raid" ? 20 : 28} src={logoSrc} alt={leagueStat.leagueTitle}/></div>,
                     withBackground: false
                 }}
                 extraIcons={[

@@ -115,10 +115,10 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         <Link to={link}>
             <div ref={containerWidth} className="pokemon-miniature">
                 <div className="miniature-tooltip">
-                    {pvpFetchCompleted && fetchCompleted && isGoodForLeague(0) && <img alt="Great League" src={`${process.env.PUBLIC_URL}/images/leagues/great.png`}/>}
-                    {pvpFetchCompleted && fetchCompleted && isGoodForLeague(1) && <img alt="Ultra League" src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`}/>}
-                    {pvpFetchCompleted && fetchCompleted && isGoodForLeague(2) && <img alt="Master League" src={`${process.env.PUBLIC_URL}/images/leagues/master.png`}/>}
-                    {isGoodForRaids() && <img className="padded-img invert-light-mode" alt="Raids" src={`${process.env.PUBLIC_URL}/images/raid.webp`}/>}
+                    {pvpFetchCompleted && fetchCompleted && isGoodForLeague(0) && <img alt="Great League" src={`${process.env.PUBLIC_URL}/images/leagues/great-big.webp`}/>}
+                    {pvpFetchCompleted && fetchCompleted && isGoodForLeague(1) && <img alt="Ultra League" src={`${process.env.PUBLIC_URL}/images/leagues/ultra-big.webp`}/>}
+                    {pvpFetchCompleted && fetchCompleted && isGoodForLeague(2) && <img alt="Master League" src={`${process.env.PUBLIC_URL}/images/leagues/master-big.webp`}/>}
+                    {isGoodForRaids() && <img className="padded-img raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`}/>}
                 </div>
                 <span className="mini-card-content">
                     <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />
