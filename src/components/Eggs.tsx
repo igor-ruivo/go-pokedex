@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { sortEntries } from "../DTOs/INews";
 import { usePokemon } from "../contexts/pokemon-context";
 import { useCalendar } from "../contexts/raid-bosses-context";
@@ -13,7 +13,7 @@ const Eggs = () => {
     const [currentEgg, setCurrentEgg] = useState("0");
     const {currentLanguage} = useLanguage();
 
-    const idxToEggName = (idx: number) => {
+    const idxToEggName = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return "2 km";
@@ -26,9 +26,9 @@ const Eggs = () => {
             case 4:
                 return "12 km";
         }
-    }
+    }, []);
 
-    const idxToEgg = (idx: number) => {
+    const idxToEgg = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return "2km";
@@ -41,9 +41,9 @@ const Eggs = () => {
             case 4:
                 return "12km";
         }
-    }
+    }, []);
 
-    const idxToKind = (idx: number) => {
+    const idxToKind = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return 2;
@@ -56,7 +56,7 @@ const Eggs = () => {
             case 4:
                 return 12;
         }
-    }
+    }, []);
 
     return <LoadingRenderer errors={leekEggsErrors + errors} completed={fetchCompleted && leekEggsFetchCompleted}>
         <div className='with-dynamic-max-width auto-margin-sides'>

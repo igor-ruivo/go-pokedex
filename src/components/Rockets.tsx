@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useCalendar } from "../contexts/raid-bosses-context";
 import PokemonMiniature from "./PokemonMiniature";
 import ListEntry from "./ListEntry";
@@ -19,7 +19,7 @@ const Rockets = () => {
 
     const [expandedRocket, setExpandedRocket] = useState(readSessionValue(ConfigKeys.ExpandedRocket) ?? "");
 
-    const translatePhrase = (phrase: string, key?: string) => {
+    const translatePhrase = useCallback((phrase: string, key?: string) => {
         if (!key) {
             return phrase;
         }
@@ -33,16 +33,16 @@ const Rockets = () => {
             case GameLanguage.Portuguese:
                 return gameTranslation?.rocketPhrases[indexable]?.phrase ?? phrase;
         }
-    }
+    }, [currentGameLanguage, gameTranslation]);
 
-    const renderMove = (m: IRocketGrunt, moveUrl: string, className: string) => {
+    const renderMove = useCallback((m: IRocketGrunt, moveUrl: string, className: string) => {
         const colorVar = m.type ? `type-${m.type.substring(0, 1).toLocaleUpperCase() + m.type.substring(1)}` : undefined;
 
         return <ListEntry
             mainIcon={
                 {
                     imageDescription: "",
-                    image: <div className="img-padding guaranteedWidth"><img height={20} width={20} src={moveUrl} /></div>,
+                    image: <div className="img-padding guaranteedWidth"><img alt='move' height={20} width={20} src={moveUrl} /></div>,
                     imageSideText: translatePhrase(m.phrase, m.trainerId),
                     withBackground: true
                 }
@@ -63,7 +63,7 @@ const Rockets = () => {
                             <span className='aligned-text-marker'>1</span>
                             <div className='in-row'>{m.tier1.map(id =>
                                 <div key={id} className="mini-card-wrapper-padding dynamic-size relative">
-                                    {m.catchableTiers.includes(0) && <img className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
+                                    {m.catchableTiers.includes(0) && <img alt='grunt' className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
                                     <div className={`mini-card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(0) ? "with-golden-border" : ""}`}>
                                         <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(0)} />
                                     </div>
@@ -75,7 +75,7 @@ const Rockets = () => {
                             <span className='aligned-text-marker'>2</span>
                             <div className='in-row'>{m.tier2.map(id =>
                                 <div key={id} className="mini-card-wrapper-padding dynamic-size relative">
-                                    {m.catchableTiers.includes(1) && <img className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
+                                    {m.catchableTiers.includes(1) && <img alt='grunt' className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
                                     <div className={`mini-card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(1) ? "with-golden-border" : ""}`}>
                                         <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(1)} />
                                     </div>
@@ -87,7 +87,7 @@ const Rockets = () => {
                             <span className='aligned-text-marker'>3</span>
                             <div className='in-row'>{m.tier3.map(id =>
                                 <div key={id} className="mini-card-wrapper-padding dynamic-size relative">
-                                    {m.catchableTiers.includes(2) && <img className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
+                                    {m.catchableTiers.includes(2) && <img alt='grunt' className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
                                     <div className={`mini-card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(2) ? "with-golden-border" : ""}`}>
                                         <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(2)} />
                                     </div>
@@ -102,7 +102,7 @@ const Rockets = () => {
             soft
             defaultBackgroundStyle="normal-entry"
         />
-    }
+    }, [expandedRocket, gamemasterPokemon, translatePhrase]);
 
     return <LoadingRenderer errors={errors + leekRocketsErrors + gameTranslationErrors} completed={fetchCompleted && leekRocketsFetchCompleted && gameTranslationFetchCompleted}>
         <div className="moves-display-layout-big normal-text">

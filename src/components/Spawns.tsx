@@ -4,7 +4,7 @@ import { useCalendar } from "../contexts/raid-bosses-context";
 import LoadingRenderer from "./LoadingRenderer";
 import Select from "react-select";
 import PokemonMiniature from "./PokemonMiniature";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { inCamelCase, localeStringSmallestOptions } from "../utils/Misc";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
@@ -20,9 +20,11 @@ const Spawns = () => {
     const [currentBossDate, setCurrentBossDate] = useState(currPosts.length > 0 ? "current" : "season");
     const [currentPlace, setCurrentPlace] = useState("0");
 
-    const raidEventDates = [...(currPosts.length > 0 ? [{ label: "Current", value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
+    const raidEventDates = useMemo(() => [...(currPosts.length > 0 ? [{ label: "Current", value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
+    , [currPosts, currentLanguage, posts]);
 
-    const selectedPosts = currentBossDate === "season" ? [season] : currentBossDate === "current" ? currPosts : posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate);
+    const selectedPosts = useMemo(() => currentBossDate === "season" ? [season] : currentBossDate === "current" ? currPosts : posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate)
+    , [currentBossDate, season, currPosts, posts]);
 
     useEffect(() => {
         if (postsFetchCompleted && seasonFetchCompleted && currPosts.length > 0) {
@@ -30,7 +32,7 @@ const Spawns = () => {
         }
     }, [currPosts, setCurrentBossDate, postsFetchCompleted, seasonFetchCompleted]);
 
-    const idxToPlace = (idx: number) => {
+    const idxToPlace = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return translator(TranslatorKeys.Cities, currentLanguage);;
@@ -45,9 +47,9 @@ const Spawns = () => {
             case 5:
                 return translator(TranslatorKeys.Southern, currentLanguage);;
         }
-    }
+    }, [currentLanguage]);
 
-    const idxToRes = (idx: number) => {
+    const idxToRes = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return "city";
@@ -62,7 +64,7 @@ const Spawns = () => {
             case 5:
                 return "south";
         }
-    }
+    }, []);
 
     return <LoadingRenderer errors={postsErrors + errors + seasonErrors} completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted && !!season}>
         <div className='boss-header-filters with-margin-top'>
@@ -73,7 +75,7 @@ const Spawns = () => {
                     value={raidEventDates.find(o => o.value === currentBossDate)}
                     options={raidEventDates}
                     onChange={e => setCurrentBossDate((e as any).value)}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} alt='calendar' style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
         </div>
