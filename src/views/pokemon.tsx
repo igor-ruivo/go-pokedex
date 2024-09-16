@@ -59,12 +59,12 @@ const Pokemon = () => {
 
     const [displayLevel, setDisplayLevel] = useState(levelCap);
 
-    const pokemon = fetchCompleted && !gamemasterPokemon[speciesId ?? ""]?.aliasId ? gamemasterPokemon[speciesId ?? ""] : undefined;
+    const pokemon = useMemo(() => fetchCompleted && !gamemasterPokemon[speciesId ?? ""]?.aliasId ? gamemasterPokemon[speciesId ?? ""] : undefined, [fetchCompleted, gamemasterPokemon, speciesId]);
     
     const [ivPercents, loading] = useComputeIVs({pokemon: pokemon as IGamemasterPokemon, attackIV, defenseIV, hpIV});
 
-    const pokemonBasePath = pathname.substring(0, pathname.lastIndexOf("/"));
-    const tab = pathname.substring(pathname.lastIndexOf("/"));
+    const pokemonBasePath = useMemo(() => pathname.substring(0, pathname.lastIndexOf("/")), [pathname]);
+    const tab = useMemo(() => pathname.substring(pathname.lastIndexOf("/")), [pathname]);
 
     const computedPokemonFamily = useMemo(() => fetchCompleted ? fetchPokemonFamily(pokemon as IGamemasterPokemon, gamemasterPokemon) : undefined, [pokemon, fetchCompleted, gamemasterPokemon]);
 

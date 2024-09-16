@@ -4,7 +4,7 @@ import SearchableDropdown from "../SearchableDropdown";
 import "./Navbar.scss";
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue } from "../../utils/persistent-configs-handler";
 import { ListType } from "../../views/pokedex";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { GameLanguage, Language, useLanguage } from "../../contexts/language-context";
 import Select from "react-select";
 import translator, { TranslatorKeys } from "../../utils/Translator";
@@ -57,23 +57,23 @@ export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: n
 }
 
 const Navbar = () => {
-    const getSystemThemePreference = () => {
+    const getSystemThemePreference = useCallback(() => {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             return ThemeValues.Dark;
         }
         return ThemeValues.Light;
-    }
+    }, []);
 
     const [systemDefaultTheme, setSystemDefaultTheme] = useState<ThemeValues>(getSystemThemePreference());
 
-    const getDefaultTheme = () => {
+    const getDefaultTheme = useCallback(() => {
         const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
         if (!currentTheme) {
             return ThemeOptions.SystemDefault;
         }
 
         return +currentTheme as ThemeOptions;
-    }
+    }, []);
 
     const getComputedTheme = useCallback(() => {
         const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
@@ -156,12 +156,12 @@ const Navbar = () => {
         }
     }, [getComputedTheme, theme]);
 
-    const handleThemeToggle = (newTheme: ThemeOptions) => {
+    const handleThemeToggle = useCallback((newTheme: ThemeOptions) => {
         writePersistentValue(ConfigKeys.DefaultTheme, JSON.stringify(newTheme));
         setTheme(newTheme);
-    }
+    }, [setTheme]);
 
-    const getDestination = () => {
+    const getDestination = useCallback(() => {
         if (pathname === "/") {
             return "/";
         }
@@ -190,7 +190,7 @@ const Navbar = () => {
         }
 
         return `/${destinationPath}`;
-    }
+    }, [pathname]);
 
     type Entry<T> = {
         label: string,
@@ -199,7 +199,7 @@ const Navbar = () => {
         invertOnDarkMode?: boolean
     }
 
-    const languageOptions: Entry<Language>[] = [
+    const languageOptions: Entry<Language>[] = useMemo(() => [
         {
             label: "English",
             value: Language.English,
@@ -215,18 +215,18 @@ const Navbar = () => {
             value: Language.Bosnian,
             hint: "https://i.imgur.com/kn0M3hW.png"
         }
-    ];
+    ], []);
 
-    const themeToHint = (theme: ThemeValues) => {
+    const themeToHint = useCallback((theme: ThemeValues) => {
         switch (theme) {
             case ThemeValues.Light:
                 return "🔆";
             case ThemeValues.Dark:
                 return "🌙";
         }
-    }
+    }, []);
 
-    const themeOptions: Entry<ThemeOptions>[] = [
+    const themeOptions: Entry<ThemeOptions>[] = useMemo(() => [
         {
             hint: themeToHint(systemDefaultTheme),
             label: translator(TranslatorKeys.SystemDefault, currentLanguage),
@@ -242,9 +242,9 @@ const Navbar = () => {
             label: translator(TranslatorKeys.DarkTheme, currentLanguage),
             value: ThemeOptions.Dark
         }
-    ];
+    ], [systemDefaultTheme, currentLanguage, themeToHint]);
 
-    const sourceOptions: Entry<ImageSource>[] = [
+    const sourceOptions: Entry<ImageSource>[] = useMemo(() => [
         {
             hint: "https://i.imgur.com/nPnjxcq.png",
             label: translator(TranslatorKeys.Official, currentLanguage),
@@ -261,9 +261,9 @@ const Navbar = () => {
             label: gameTranslator(GameTranslatorKeys.Shiny, currentGameLanguage),
             value: ImageSource.Shiny
         }
-    ];
+    ], [currentLanguage, currentGameLanguage]);
 
-    const gameLanguageOptions: Entry<GameLanguage>[] = [
+    const gameLanguageOptions: Entry<GameLanguage>[] = useMemo(() => [
         {
             label: "English",
             value: GameLanguage.English,
@@ -274,25 +274,25 @@ const Navbar = () => {
             value: GameLanguage.Portuguese,
             hint: "https://i.imgur.com/AEOlghs.png"
         }
-    ];
+    ], []);
 
-    const typesOptions: Entry<PokemonTypes | undefined>[] = [{label: translator(TranslatorKeys.Any, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
+    const typesOptions: Entry<PokemonTypes | undefined>[] = useMemo(() => [{label: translator(TranslatorKeys.Any, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
         label: translatedType(PokemonTypes[k as keyof typeof PokemonTypes], currentLanguage),
         value: PokemonTypes[k as keyof typeof PokemonTypes],
         hint: `${process.env.PUBLIC_URL}/images/types/${PokemonTypes[k as keyof typeof PokemonTypes].toString().toLocaleLowerCase()}.png`
-    }))];
+    }))], [currentLanguage]);
 
-    const megaDisabled = pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom");
-    const shadowDisabled = !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid"));
-    const xlDisabled = !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom"));
+    const megaDisabled = useMemo(() => pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom"), [pathname]);
+    const shadowDisabled = useMemo(() => !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom") || pathname.includes("raid")), [pathname]);
+    const xlDisabled = useMemo(() => !(pathname.includes("great") || pathname.includes("ultra") || pathname.includes("custom")), [pathname]);
 
-    const handleModalClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const handleModalClick = useCallback((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         setOptionsOpened(AvailableOptions.None);
         e.stopPropagation();
         e.preventDefault();
-    }
+    }, [setOptionsOpened, AvailableOptions])
 
-    const hasSessionChanges = !showShadow || !showXL || type1Filter;
+    const hasSessionChanges = useMemo(() => !showShadow || !showXL || type1Filter, [showShadow, showXL, type1Filter]);
 
     return <>
         <header className={`navbar normal-text ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'nav-hidden' : 'nav-visible'}`}>

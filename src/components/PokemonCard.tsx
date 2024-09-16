@@ -10,6 +10,7 @@ import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { customCupCPLimit, usePvp } from "../contexts/pvp-context";
 import useCountdown from "../hooks/useCountdown";
+import { useCallback } from "react";
 
 interface IPokemonCardProps {
     pokemon: IGamemasterPokemon,
@@ -40,7 +41,7 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBa
             break;
     }
 
-    const getCPContainerString = () => {
+    const getCPContainerString = useCallback(() => {
         if (withCountdown) {
             if (!days && !hours && !minutes && !seconds) {
                 return "Expired";
@@ -64,7 +65,7 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBa
 
             return `${rankLists[listType - 1][pokemon.speciesId].score}%`;
         }
-    }
+    }, [days, cpStringOverride, currentGameLanguage, hours, listType, minutes, pokemon, rankLists, seconds, withCountdown])
 
     return (
         <Link to={link}>

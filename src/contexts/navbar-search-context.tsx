@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { ConfigKeys, readPersistentValue, readSessionValue, writePersistentValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 
@@ -67,40 +67,45 @@ export const NavbarSearchProvider = (props: React.PropsWithChildren<{}>) => {
     const [type1Filter, setType1Filter] = useState(getDefaultType(ConfigKeys.Type1));
     const [type2Filter, setType2Filter] = useState(getDefaultType(ConfigKeys.Type2));
 
-    const updateInputText = (newInputText: string) => {
+    const updateInputText = useCallback((newInputText: string) => {
         writeSessionValue(ConfigKeys.SearchInputText, newInputText);
         setInputText(newInputText);
-    }
+    }, []);
 
-    const toggleFamilyTree = () => {
+    const toggleFamilyTree = useCallback(() => {
         setFamilyTree(p => {
             writePersistentValue(ConfigKeys.ShowFamilyTree, (!p).toString());
             return !p;
         });
-    }
+    }, []);
 
-    const toggleShowMega = () => {
+    const toggleShowMega = useCallback(() => {
         setShowMega(p => {
             writePersistentValue(ConfigKeys.ShowMega, (!p).toString());
             return !p;
         });
-    }
+    }, []);
 
-    const toggleShowShadow = () => {
+    const toggleShowShadow = useCallback(() => {
         setShowShadow(p => {
             writeSessionValue(ConfigKeys.ShowShadow, (!p).toString());
             return !p;
         });
-    }
+    }, []);
 
-    const toggleShowXL = () => {
+    const toggleShowXL = useCallback(() => {
         setShowXL(p => {
             writeSessionValue(ConfigKeys.ShowXL, (!p).toString());
             return !p;
         });
-    }
+    }, []);
 
-    const updateType1 = (newType: PokemonTypes | undefined) => {
+    const updateType2 = useCallback((newType: PokemonTypes | undefined) => {
+        writeSessionValue(ConfigKeys.Type2, JSON.stringify(newType));
+        setType2Filter(newType);
+    }, []);
+
+    const updateType1 = useCallback((newType: PokemonTypes | undefined) => {
         writeSessionValue(ConfigKeys.Type1, JSON.stringify(newType));
         setType1Filter(newType);
         
@@ -111,12 +116,7 @@ export const NavbarSearchProvider = (props: React.PropsWithChildren<{}>) => {
         if (newType === type2Filter) {
             updateType2(undefined);
         }
-    }
-
-    const updateType2 = (newType: PokemonTypes | undefined) => {
-        writeSessionValue(ConfigKeys.Type2, JSON.stringify(newType));
-        setType2Filter(newType);
-    }
+    }, [type2Filter, updateType2]);
   
     return (
         <NavbarSearchContext.Provider value={{ inputText, updateInputText, familyTree, toggleFamilyTree, showMega, toggleShowMega, showShadow, toggleShowShadow, showXL, toggleShowXL, type1Filter, updateType1, type2Filter, updateType2 }}>

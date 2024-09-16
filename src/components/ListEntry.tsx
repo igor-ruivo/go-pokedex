@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ReactNode } from "react"
 
 interface IListEntryProps {
@@ -53,7 +53,7 @@ const ListEntry = ({
     expandedContent
 }: IListEntryProps) => {
     const [toggled, setToggled] = useState(false);
-    const secondaryContentToBeRendered = toggled ? toggledContent : secondaryContent;
+    const secondaryContentToBeRendered = useMemo(() => toggled ? toggledContent : secondaryContent, [toggled, toggledContent, secondaryContent]);
 
     return(
         <li>

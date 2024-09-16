@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef, useEffect, useState } from "react";
+import { ReactNode, forwardRef, useCallback, useEffect, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import "./PokemonImage.css";
 import { useLanguage } from "../contexts/language-context";
@@ -29,7 +29,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgO
     const {currentGameLanguage} = useLanguage();
     const {imageSource} = useImageSource();
 
-    const fetchSrc: (urlKind: ImageSource) => string = (urlKind: ImageSource) => {
+    const fetchSrc: (urlKind: ImageSource) => string = useCallback((urlKind: ImageSource) => {
         switch (urlKind) {
             case ImageSource.Official:
                 return lowRes ? pokemon.imageUrl.replace("full", "detail") : pokemon.imageUrl;
@@ -38,7 +38,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgO
             case ImageSource.Shiny:
                 return goBaseUrl + pokemon.shinyGoImageUrl;
         }
-    }
+    }, [lowRes, pokemon]);
 
     const [currentImageSource, setCurrentImageSource] = useState(imageSource);
 
@@ -46,7 +46,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgO
         setCurrentImageSource(imageSource);
       }, [imageSource]);
 
-    const handleImageClick = () => {
+    const handleImageClick = useCallback(() => {
         setCurrentImageSource(p => {
             const enumValues = Object.values(ImageSource).filter((v: any) => !isNaN(v)) as ImageSource[];
             const currentIndex = enumValues.indexOf(p);
@@ -54,9 +54,9 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgO
             const nextImageSource = enumValues[nextIndex];
             return nextImageSource;
         });
-    }
+    }, [setCurrentImageSource])
 
-    const onError = (e: any, urlKind: ImageSource) => {
+    const onError = useCallback((e: any, urlKind: ImageSource) => {
         const target = e.target as HTMLImageElement;
         switch (urlKind) {
             case ImageSource.Official:
@@ -70,7 +70,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgO
                 target.src = fetchSrc(ImageSource.GO);
                 return;
         }
-    }
+    }, [fetchSrc]);
 
     return imgOnly ? <img ref={ref} className={`${withClassname ?? ''} ${currentImageSource !== ImageSource.Official ? "with-img-dropShadow" : ""}`} onClick={galleryToggle ? handleImageClick : undefined} loading={lazy ? "lazy" : undefined} alt={pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} height={specificHeight ?? "100%"} width={specificWidth ?? "100%"} src={fetchSrc(currentImageSource)} onError={e => onError(e, currentImageSource)}/> : (
         <>

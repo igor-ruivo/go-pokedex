@@ -136,7 +136,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }, 0);
     }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
 
-    const resourcesNotReady = !raidRankerFetchCompleted(allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes) || !bestReachableRaidVersion || !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0;
+    const resourcesNotReady = useMemo(() => !raidRankerFetchCompleted(allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes) || !bestReachableRaidVersion || !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0
+    , [allRelevantChargedMoveTypes, bestReachableRaidVersion, fetchCompleted, gameTranslationFetchCompleted, gamemasterPokemon, ivPercents, moves, movesFetchCompleted, pokemon, pvpFetchCompleted, raidRankerFetchCompleted, rankLists]);
 
     const [currentBestReachableGreatLeagueIndex, setCurrentBestReachableGreatLeagueIndex] = useState(0);
     const [currentBestReachableUltraLeagueIndex, setCurrentBestReachableUltraLeagueIndex] = useState(0);
@@ -182,12 +183,12 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }, 0);
     }, [fetchCompleted, allReachableRaidPokemon, movesFetchCompleted, gamemasterPokemon, pokemon, raidDPS, raidRankerFetchCompleted, setBestReachableRaidVersion, currentBestReachableRaidLeagueIndex]);
 
-    const mostRelevantType = Object.entries(ranksComputation)
+    const mostRelevantType = useMemo(() => Object.entries(ranksComputation)
         .sort(([, rankA], [, rankB]) => {
             return rankA.rank - rankB.rank;
         })
         .slice(0, 3)
-        .map(([type, rank]) => ({type: type, rank: rank}));
+        .map(([type, rank]) => ({type: type, rank: rank})), [ranksComputation]);
     
     const rank = useMemo(() => {
         if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidRankerFetchCompleted()) {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { useLanguage } from "../contexts/language-context";
 import { usePokemon } from "../contexts/pokemon-context";
@@ -39,9 +39,9 @@ const DeleteTrash = () => {
 
     const targetRef = useRef<HTMLTextAreaElement>(null);
     
-    const enumValues: PokemonTypes[] = Object.keys(PokemonTypes)
+    const enumValues: PokemonTypes[] = useMemo(() => Object.keys(PokemonTypes)
         .filter(key => isNaN(Number(key)) && key !== "Normal")
-        .map(key => key as unknown as PokemonTypes);
+        .map(key => key as unknown as PokemonTypes), []);
     
     const isBadRank = useCallback((rank: number, rankLimit: number) => {
         return rank === Infinity || rank > rankLimit;

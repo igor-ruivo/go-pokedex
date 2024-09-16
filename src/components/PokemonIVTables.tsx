@@ -3,7 +3,7 @@ import { computeBestIVs } from "../utils/pokemon-helper";
 import "./PokemonIVTables.scss"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { TableComponents, TableVirtuoso } from "react-virtuoso";
-import React from "react";
+import React, { useMemo } from "react";
 import { visuallyHidden } from '@mui/utils';
 import { usePokemon } from "../contexts/pokemon-context";
 import translator, { TranslatorKeys } from "../utils/Translator";
@@ -99,7 +99,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
 
-    const columns: ColumnData[] = [
+    const columns: ColumnData[] = useMemo(() => [
         {
         width: 70,
         label: '#',
@@ -154,7 +154,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
         dataKey: 'productPercentage',
         sortable: false
         }
-    ];
+    ], [currentGameLanguage, currentLanguage]);
 
     let cpCap = Number.MAX_VALUE;
 
@@ -176,11 +176,11 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
             break;
     }
 
-    const result = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap)).flat();
+    const result = useMemo(() => Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap)).flat(), [pokemon, cpCap]);
 
-    const highestScore = Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S);
+    const highestScore = useMemo(() => Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S), [result]);
 
-    const rows: Data[] = result.map((e, index) => {
+    const rows: Data[] = useMemo(() => result.map((e, index) => {
         return createData (
             index + 1,
             e.IVs.A + " / " + e.IVs.D + " / " + e.IVs.S,
@@ -192,7 +192,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
             Math.round(e.battle.A * e.battle.D * e.battle.S),
             +(100 * (e.battle.A * e.battle.D * e.battle.S) / highestScore).toFixed(3) + "%"
         );
-    });
+    }), [result, highestScore]);
 
     const visibleRows = React.useMemo(() => stableSort(rows, getComparator(order, orderBy)),
         [order, orderBy, rows]

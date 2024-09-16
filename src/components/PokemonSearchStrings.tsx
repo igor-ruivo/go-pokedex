@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { calculateCP, calculateHP, computeBestIVs, fetchPredecessorPokemonIncludingSelf, sortPokemonByBattlePowerAsc } from "../utils/pokemon-helper";
 import "./PokemonSearchStrings.scss"
@@ -37,8 +37,8 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
 
-    const predecessorPokemon = fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon);
-    const predecessorPokemonArray = Array.from(predecessorPokemon);
+    const predecessorPokemon = useMemo(() => fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon), [pokemon, gamemasterPokemon]);
+    const predecessorPokemonArray = useMemo(() => Array.from(predecessorPokemon), [predecessorPokemon]);
 
     const {currentLanguage, currentGameLanguage} = useLanguage();
 

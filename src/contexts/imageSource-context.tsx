@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 
 export enum ImageSource {
@@ -23,21 +23,21 @@ export const useImageSource = (): ImageSourceContextType => {
 };
 
 export const ImageSourceProvider = (props: React.PropsWithChildren<{}>) => {
-    const getDefaultImageSource = () => {
+    const getDefaultImageSource = useCallback(() => {
         const cachedImageSource = readPersistentValue(ConfigKeys.ImageSource);
         if (!cachedImageSource) {
             return ImageSource.Official;
         }
     
         return +cachedImageSource as ImageSource;
-    }
+    }, []);
 
     const [imageSource, setImageSource] = useState(getDefaultImageSource());
 
-    const updateImageSource = (newImageSource: ImageSource) => {
+    const updateImageSource = useCallback((newImageSource: ImageSource) => {
         writePersistentValue(ConfigKeys.ImageSource, JSON.stringify(newImageSource));
         setImageSource(newImageSource);
-    }
+    }, [setImageSource]);
   
     return (
         <ImageSourceContext.Provider value={{ imageSource, updateImageSource, }}>

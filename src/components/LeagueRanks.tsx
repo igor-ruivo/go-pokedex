@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { Language, useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
@@ -50,7 +50,7 @@ const LeagueRanks = ({
     const {rankLists, pvpFetchCompleted} = usePvp();
     const renderCustom = false;
 
-    const getLeagueType = (league: string) => {
+    const getLeagueType = useCallback((league: string) => {
         switch (league) {
             case "great":
                 return LeagueType.GREAT_LEAGUE;
@@ -65,20 +65,21 @@ const LeagueRanks = ({
             default:
                 throw new Error("Missing case for switch: " + league);
         }
-    }
+    }, []);
 
-    const computeRankChange = (speciesId: string, leagueTitle: string) => {
+    const computeRankChange = useCallback((speciesId: string, leagueTitle: string) => {
         if (!pvpFetchCompleted || leagueTitle === "raid") {
             return "";
         }
 
         return ` ${(!rankLists[getLeagueType(leagueTitle)][speciesId] || rankLists[getLeagueType(leagueTitle)][speciesId].rankChange === 0) ? "" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange < 0 ? "▾" + rankLists[getLeagueType(leagueTitle)][speciesId].rankChange * -1 : "▴" + rankLists[getLeagueType(leagueTitle)][speciesId].rankChange}`;
-    }
+    }, [pvpFetchCompleted, rankLists, getLeagueType]);
 
-    const rankChangeClassName = (speciesId: string, leagueTitle: string) => (!pvpFetchCompleted || !rankLists[getLeagueType(leagueTitle)][speciesId]) ? "" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange === 0 ? "neutral" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange < 0 ? "nerfed" : "buffed";
+    const rankChangeClassName = useCallback((speciesId: string, leagueTitle: string) => (!pvpFetchCompleted || !rankLists[getLeagueType(leagueTitle)][speciesId]) ? "" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange === 0 ? "neutral" : rankLists[getLeagueType(leagueTitle)][speciesId].rankChange < 0 ? "nerfed" : "buffed"
+    , [pvpFetchCompleted, rankLists, getLeagueType]);
 
 
-    const renderPanel = (leagueStat: LeagueStat) => {
+    const renderPanel = useCallback((leagueStat: LeagueStat) => {
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
             case "great":
@@ -146,7 +147,7 @@ const LeagueRanks = ({
                 defaultBackgroundStyle={defaultBackgroundStyle}
             />
         );
-    }
+    }, [computeRankChange, currentLanguage, getLeagueType, handleSetLeague, league, rankChangeClassName]);
 
     return <div className="default-padding pvp-leagues-2 moves-list slim-list">
         {renderPanel(greatLeagueStats)}

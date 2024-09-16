@@ -53,7 +53,9 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const navigate = useNavigate();
     const {x} = useResize();
     const {imageSource} = useImageSource();
-    const resourcesNotReady = !fetchCompleted || !gameTranslationFetchCompleted || !movesFetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon;
+
+    const resourcesNotReady = useMemo(() => !fetchCompleted || !gameTranslationFetchCompleted || !movesFetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon
+    , [fetchCompleted, gameTranslationFetchCompleted, gamemasterPokemon, movesFetchCompleted, pokemon, pvpFetchCompleted]);
     
     useEffect(() => {
         writePersistentValue(ConfigKeys.ShowEntries, top.toString());

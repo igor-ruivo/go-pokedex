@@ -4,6 +4,7 @@ import PokemonImage from "./PokemonImage";
 import { shortName, sortPokemonByBattlePowerDesc } from "../utils/pokemon-helper";
 import Select from "react-select";
 import { usePokemon } from "../contexts/pokemon-context";
+import { useMemo } from "react";
 
 interface IPokemonFamilyProps {
     pokemon: IGamemasterPokemon;
@@ -14,7 +15,7 @@ interface IPokemonFamilyProps {
 const PokemonFamily = ({pokemon, similarPokemon, getClickDestination}: IPokemonFamilyProps) => {
     const {gamemasterPokemon} = usePokemon();
     const navigate = useNavigate();
-    const options = Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc);
+    const options = useMemo(() => Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc), [similarPokemon]);
     return (
         <>
             {similarPokemon.size > 1 && <div className="family-container-element">

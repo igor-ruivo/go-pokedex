@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { IEntry, IPostEntry, sortEntries } from "../DTOs/INews";
 import { usePokemon } from "../contexts/pokemon-context";
 import useCountdown from "../hooks/useCountdown";
@@ -17,18 +18,18 @@ const PostEntry = ({ post, collection, kindFilter, withoutTitle, withRaidCPStrin
     const { gamemasterPokemon } = usePokemon();
     const { days, hours, minutes, seconds } = useCountdown(post.dateEnd ?? 0);
 
-    const computeCount = (d: number, h: number, m: number, s: number) => {
+    const computeCount = useCallback((d: number, h: number, m: number, s: number) => {
         if (!d && !h && !m && !s) {
             return "Expired";
         }
     
         return d > 0 ? `${d} day${d > 1 ? "s" : ""} left` : `${h}h:${m}m:${s}s`;
-    }
+    }, []);
     
     const now = new Date();
     const postIsNow = now > new Date(post.date) && now < new Date(post.dateEnd ?? 0);
 
-    const computeString = (kind: string | undefined, isShadow: boolean) => {
+    const computeString = useCallback((kind: string | undefined, isShadow: boolean) => {
         if (!kind) {
             return undefined;
         }
@@ -38,7 +39,7 @@ const PostEntry = ({ post, collection, kindFilter, withoutTitle, withRaidCPStrin
         }
 
         return `Tier ${kind}${isShadow && !kind.toLocaleLowerCase().includes("shadow") ? " Shadow" : ""}`;
-    }
+    }, []);
 
     return <div className='with-dynamic-max-width auto-margin-sides'>
         {!withoutTitle && postIsNow && <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>At the moment <span className="computeCount">({computeCount(days, hours, minutes, seconds)})</span></strong>}

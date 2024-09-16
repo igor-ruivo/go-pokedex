@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
 import { cacheTtlInMillis, enTranslationsUrl, ptbrTranslationsUrl } from '../utils/Configs';
 import { ITranslatedGame } from '../DTOs/ITranslatedGame';
@@ -27,7 +27,7 @@ const useFetchAllData: () => [ITranslatedGame, boolean, string] = () => {
     const {currentGameLanguage} = useLanguage();
     const [gameTranslation, fetchGameTranslation, fetchGameTranslationCompleted, errorLoadingGameTranslationData]: FetchData<ITranslatedGame> = useFetchUrls();
 
-    const gameLanguageResourceUrl = getGameLanguageResourceFromCurrentGameLanguage(currentGameLanguage);
+    const gameLanguageResourceUrl = useMemo(() => getGameLanguageResourceFromCurrentGameLanguage(currentGameLanguage), [currentGameLanguage]);
 
     useEffect(() => {
         const controller = new AbortController();

@@ -111,6 +111,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     }
     
     const isStabMove = (moveId: string) => pokemon.types.map(t => { const stringVal = t.toString(); return stringVal.toLocaleLowerCase() }).includes(moves[moveId].type.toLocaleLowerCase());
+    
     const hasBuffs = (moveId: string) => league !== LeagueType.RAID && !!moves[moveId].pvpBuffs;
     
     const computeIdAttr = (moveId: string, isRecommended: boolean) => `details-${moveId}-${isRecommended ? "rec" : "all"}`;

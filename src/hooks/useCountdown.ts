@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 // TypeScript interface for the countdown hook return value
 interface CountdownTime {
@@ -34,10 +34,10 @@ const useCountdown = (targetDate: number): CountdownTime => {
   }, [countDownDate, setTimeLeft]);
 
   // Calculate days, hours, minutes and seconds
-  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+  const days = useMemo(() => Math.floor(timeLeft / (1000 * 60 * 60 * 24)), [timeLeft]);
+  const hours = useMemo(() => Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)), [timeLeft]);
+  const minutes = useMemo(() => Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)), [timeLeft]);
+  const seconds = useMemo(() => Math.floor((timeLeft % (1000 * 60)) / 1000), [timeLeft]);
 
   return { days, hours, minutes, seconds };
 };

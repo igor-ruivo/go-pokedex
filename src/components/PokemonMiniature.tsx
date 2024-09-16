@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import PokemonImage from "./PokemonImage";
-import { /*useEffect, useMemo,*/ useRef } from "react";
+import { /*useEffect, useMemo,*/ useMemo, useRef } from "react";
 import useResize from "../hooks/useResize";
 /*import PokemonNumber from "./PokemonNumber";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
@@ -61,7 +61,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         }, 0);
     }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);*/
 
-    const link = `/pokemon/${pokemon.speciesId + (linkToShadowVersion ? "_shadow" : "")}/info`;
+    const link = useMemo(() => `/pokemon/${pokemon.speciesId + (linkToShadowVersion ? "_shadow" : "")}/info`, [linkToShadowVersion, pokemon]);
 
     /*const isGoodForRaids = () => {
         if (allRelevantChargedMoveTypes.length === 0) {

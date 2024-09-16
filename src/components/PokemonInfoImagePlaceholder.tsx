@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useMemo } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { Language, useLanguage } from "../contexts/language-context";
@@ -38,10 +38,10 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const { pathname } = useLocation();
 
-    const isDisabled = pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings");
-    const levelOptions = Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any);
+    const isDisabled = useMemo(() => pathname.endsWith("counters") || pathname.endsWith("tables") || pathname.endsWith("strings"), [pathname]);
+    const levelOptions = useMemo(() => Array.from({length: 101}, (_x, i) => valueToLevel(i + 1)).map(e => ({label: e, value: e}) as any), []);
 
-    const conditions: WeatherImageInfo[] = [
+    const conditions: WeatherImageInfo[] = useMemo(() => [
         { types: ["grass", "fire", "ground"], image: "sunny.png", alt: "sunny" },
         { types: ["water", "electric", "bug"], image: "rainy.png", alt: "rainy" },
         { types: ["normal", "rock"], image: "partly-cloudy.png", alt: "partly cloudy" },
@@ -49,10 +49,10 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
         { types: ["flying", "dragon", "psychic"], image: "windy.png", alt: "windy" },
         { types: ["ice", "steel"], image: "snow.png", alt: "snow" },
         { types: ["dark", "ghost"], image: "fog.png", alt: "fog" }
-    ];
+    ], []);
 
     let matchCount = 0;
-    const imagesToRender = conditions.flatMap(condition => {
+    const imagesToRender = useMemo(() => conditions.flatMap(condition => {
         if (condition.types.some(type => props.pokemon.types.map(t => t.toString().toLowerCase()).includes(type))) {
             matchCount++;
             return [{
@@ -61,7 +61,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
             }];
         }
         return [];
-    });
+    }), [conditions, matchCount, props.pokemon]);
 
     return <div className="column item with-small-margin-top">
         <div className="pokemon_main_info">

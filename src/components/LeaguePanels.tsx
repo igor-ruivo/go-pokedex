@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
@@ -71,7 +71,7 @@ const LeaguePanels = ({
     const [toggled, setToggled] = useState(false);
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
-    const renderPanel = (leagueStat: LeagueStat) => {
+    const renderPanel = useCallback((leagueStat: LeagueStat) => {
         const pvpStatsClassName = `pvp-stats-column pvp-gap ${leagueStat.leagueTitle} spaced full-height`;
         const neededResources = computeNeededResources(level, leagueStat.pokemonLevel, leagueStat.bestIsShadow);
 
@@ -164,9 +164,9 @@ const LeaguePanels = ({
                 <img className='background-absolute-img' width="100%" height="100%" src={logoSrc} alt={leagueStat.leagueTitle} />
             </div>
         );
-    }
+    }, [atk, currentGameLanguage, currentLanguage, def, hp, isShadow, level, toggled, unranked]);
 
-    const renderRaidPanel = (raidStat: RaidStat) => {
+    const renderRaidPanel = useCallback((raidStat: RaidStat) => {
         return (
             <div className="pvp-stats-column raid-gap raid full-height spaced">
                 <div>
@@ -211,7 +211,7 @@ const LeaguePanels = ({
                 <img className='background-absolute-img-raid raid-img-with-contrast' width="100%" height="100%" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} alt="raid" />
             </div>
         );
-    }
+    }, [raidStats, currentGameLanguage, currentLanguage]);
 
     return <div>
         {league === LeagueType.GREAT_LEAGUE && renderPanel(greatLeagueStats)}

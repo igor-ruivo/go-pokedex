@@ -3,6 +3,7 @@ import { ListType } from "../views/pokedex";
 import { ordinal } from "../utils/conversions";
 import { Language, useLanguage } from "../contexts/language-context";
 import { usePvp } from "../contexts/pvp-context";
+import { useCallback, useMemo } from "react";
 
 type IPokemonNumberProps = {
     dex: number,
@@ -15,7 +16,7 @@ const PokemonNumber = ({ dex, speciesId, listType, rankOverride }: IPokemonNumbe
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {currentLanguage} = useLanguage();
 
-    const fetchPokemonRank = (): string => {
+    const fetchPokemonRank = useCallback((): string => {
         if (!pvpFetchCompleted) {
             return "";
         }
@@ -57,17 +58,18 @@ const PokemonNumber = ({ dex, speciesId, listType, rankOverride }: IPokemonNumbe
         }
         
         return ordinalRank as string;        
-    }
+    }, [currentLanguage, listType, pvpFetchCompleted, rankLists, rankOverride, speciesId]);
 
-    const computeRankChange = () => {
+    const computeRankChange = useCallback(() => {
         if (!pvpFetchCompleted || !rankLists[listType - 1]) {
             return "";
         }
 
         return ` ${rankLists[listType - 1][speciesId].rankChange === 0 ? "" : rankLists[listType - 1][speciesId].rankChange < 0 ? "▾" + rankLists[listType - 1][speciesId].rankChange * -1 : "▴" + rankLists[listType - 1][speciesId].rankChange}`;
-    }
+    }, [pvpFetchCompleted, rankLists, listType, speciesId]);
 
-    const rankChangeClassName = (!pvpFetchCompleted || listType === ListType.POKEDEX || !rankLists[listType - 1]) ? "" : rankLists[listType - 1][speciesId].rankChange === 0 ? "neutral" : rankLists[listType - 1][speciesId].rankChange < 0 ? "nerfed" : "buffed";
+    const rankChangeClassName = useMemo(() => (!pvpFetchCompleted || listType === ListType.POKEDEX || !rankLists[listType - 1]) ? "" : rankLists[listType - 1][speciesId].rankChange === 0 ? "neutral" : rankLists[listType - 1][speciesId].rankChange < 0 ? "nerfed" : "buffed"
+    , [listType, pvpFetchCompleted, rankLists, speciesId]);
 
     return (
         <div className="pokemon-number">

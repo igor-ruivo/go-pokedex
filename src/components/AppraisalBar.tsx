@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./AppraisalBar.scss";
 import { Slider } from "@mui/material";
 import translator, { TranslatorKeys } from "../utils/Translator";
@@ -46,7 +46,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
         return () => clearTimeout(timeoutId);
     }, [debouncingHP, setHP]);
 
-    const handleCellClick = (stat: Stat, cellIndex: number) => {
+    const handleCellClick = useCallback((stat: Stat, cellIndex: number) => {
         switch (stat) {
             case Stat.Attack:
                 setDebouncingAttack(cellIndex);
@@ -58,9 +58,9 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
                 setDebouncingHP(cellIndex);
                 break;
         }
-    };
+    }, [setDebouncingAttack, setDebouncingDefense, setDebouncingHP]);
     
-    const renderStatBar = (stat: Stat, value: number) => {
+    const renderStatBar = useCallback((stat: Stat, value: number) => {
         const cells = [];
         for (let i = 0; i < 15; i++) {
             const isActive = i < value;
@@ -120,7 +120,7 @@ const AppraisalBar = ({attack, setAttack, defense, setDefense, hp, setHP}: IAppr
                 </div>
             </div>
         );
-    }
+    }, [handleCellClick, currentLanguage]);
 
     return (
         <div className="item default-padding appraisal-combo">

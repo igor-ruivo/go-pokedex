@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 
 export enum Language {
@@ -39,27 +39,27 @@ export const LanguageProvider = (props: React.PropsWithChildren<{}>) => {
         return +cachedLanguage as Language;
     }
 
-    const getDefaultGameLanguage = () => {
+    const getDefaultGameLanguage = useCallback(() => {
         const cachedGameLanguage = readPersistentValue(ConfigKeys.GameLanguage);
         if (!cachedGameLanguage) {
             return GameLanguage.English;
         }
     
         return +cachedGameLanguage as GameLanguage;
-    } 
+    }, []);
 
     const [currentLanguage, setCurrentLanguage] = useState(getDefaultLanguage());
     const [currentGameLanguage, setCurrentGameLanguage] = useState(getDefaultGameLanguage());
 
-    const updateCurrentLanguage = (newInputText: Language) => {
+    const updateCurrentLanguage = useCallback((newInputText: Language) => {
         writePersistentValue(ConfigKeys.Language, JSON.stringify(newInputText));
         setCurrentLanguage(newInputText);
-    }
+    }, []);
 
-    const updateCurrentGameLanguage = (newInputText: GameLanguage) => {
+    const updateCurrentGameLanguage = useCallback((newInputText: GameLanguage) => {
         writePersistentValue(ConfigKeys.GameLanguage, JSON.stringify(newInputText));
         setCurrentGameLanguage(newInputText);
-    }
+    }, []);
   
     return (
         <LanguageContext.Provider value={{ currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage }}>

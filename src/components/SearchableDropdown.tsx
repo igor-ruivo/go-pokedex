@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./SearchableDropdown.scss";
 import { useNavbarSearchInput } from "../contexts/navbar-search-context";
 import { Autocomplete, TextField } from "@mui/material";
@@ -25,7 +25,7 @@ const SearchableDropdown = ({options, isLoading, onSelection, renderOption, sear
 
     const ListboxComponent = React.forwardRef((props: any, ref: any) => {
         const { children, role, ...other } = props;
-        const itemCount = Array.isArray(children) ? children.length : 0;
+        const itemCount = useMemo(() => Array.isArray(children) ? children.length : 0, [children]);
         const itemSize = 41.6;
     
         return (

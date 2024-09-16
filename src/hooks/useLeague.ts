@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 
 export enum LeagueType {
@@ -27,9 +27,9 @@ const useLeague = () => {
         writeSessionValue(ConfigKeys.LastLeague, JSON.stringify(league));
     }, [league]);
 
-    const handleSetLeague = (newLeague: LeagueType) => {
+    const handleSetLeague = useCallback((newLeague: LeagueType) => {
         setLeague(newLeague);
-    }
+    }, [setLeague]);
 
     return {
         league,

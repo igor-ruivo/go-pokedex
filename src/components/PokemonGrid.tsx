@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import "./PokemonGrid.scss"
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import PokemonCard from './PokemonCard';
@@ -39,7 +39,7 @@ const PokemonGrid = memo(({pokemonInfoList, cpStringOverrides, rankOverrides, li
     const initialPropsSet = useRef(false);
     
     const location = useLocation();
-    const currentRank = location.pathname.substring(1);
+    const currentRank = useMemo(() => location.pathname.substring(1), [location]);
     let typedCurrentRank = ListType.POKEDEX;
 
     switch (currentRank) {
@@ -83,7 +83,7 @@ const PokemonGrid = memo(({pokemonInfoList, cpStringOverrides, rankOverrides, li
         }
     }, [pokemonInfoList, typedCurrentRank]);
 
-    const itemsPerRow = x >= 1600 ? 7 : x >= 1250 ? 6 : x >= 950 ? 5 : x >= 600 ? 4 : 3;
+    const itemsPerRow = useMemo(() => x >= 1600 ? 7 : x >= 1250 ? 6 : x >= 950 ? 5 : x >= 600 ? 4 : 3, [x]);
 
     return (
         <div className="grid_container" ref={renderDivRef}>
