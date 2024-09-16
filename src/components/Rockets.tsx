@@ -109,7 +109,7 @@ const Rockets = () => {
             <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>
                     {
-                        leekRockets?.slice(0, x > 1002 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
+                        leekRockets?.slice(0, x > 1200 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
                             const className = m.type ? `background-${m.type}` : "normal-entry";
                             const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
                             const url = `${process.env.PUBLIC_URL}/images/${resName}`;
@@ -122,7 +122,7 @@ const Rockets = () => {
                     }
                 </ul>
             </div>
-            {x > 1002 && <div className="menu-item">
+            {x > 1200 && <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>
                     {
                         leekRockets.slice(Math.round(leekRockets.length / 2)).map(m => {

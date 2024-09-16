@@ -184,7 +184,7 @@ const Events = () => {
                             <div className='news-gallery'>
                                 {relevantPosts.map((p, i) =>
                                     <div key={postTitle(p)} className={`post-miniature clickable ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
-                                        <div className='miniature-date ellipsed'>{i === 0 ? "Season" : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
+                                        <div className='miniature-date ellipsed'>{i === 0 ? translator(TranslatorKeys.Season, currentLanguage) : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
                                         <div className='spotlight-miniature-container'>
                                             <img className='miniature-itself' alt='Miniature' src={p.imgUrl} />
                                             {(p.spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
