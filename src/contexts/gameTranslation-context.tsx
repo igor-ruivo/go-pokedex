@@ -1,13 +1,12 @@
 import { createContext, useContext, useEffect } from 'react';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
 import { cacheTtlInMillis, enTranslationsUrl, ptbrTranslationsUrl } from '../utils/Configs';
-import Dictionary from '../utils/Dictionary';
-import { ITranslatedMove } from '../DTOs/ITranslatedMove';
+import { ITranslatedGame } from '../DTOs/ITranslatedGame';
 import { mapTranslatedMoves } from '../utils/conversions';
 import { GameLanguage, useLanguage } from './language-context';
 
 interface GameTranslationContextType {
-    gameTranslation: Dictionary<ITranslatedMove>;
+    gameTranslation: ITranslatedGame;
     gameTranslationFetchCompleted: boolean;
     gameTranslationErrors: string
 }
@@ -24,9 +23,9 @@ const getGameLanguageResourceFromCurrentGameLanguage = (currentGameLanguage: Gam
     }
 }
 
-const useFetchAllData: () => [Dictionary<ITranslatedMove>, boolean, string] = () => {
+const useFetchAllData: () => [ITranslatedGame, boolean, string] = () => {
     const {currentGameLanguage} = useLanguage();
-    const [gameTranslation, fetchGameTranslation, fetchGameTranslationCompleted, errorLoadingGameTranslationData]: FetchData<Dictionary<ITranslatedMove>> = useFetchUrls();
+    const [gameTranslation, fetchGameTranslation, fetchGameTranslationCompleted, errorLoadingGameTranslationData]: FetchData<ITranslatedGame> = useFetchUrls();
 
     const gameLanguageResourceUrl = getGameLanguageResourceFromCurrentGameLanguage(currentGameLanguage);
 
@@ -50,7 +49,7 @@ export const useGameTranslation = (): GameTranslationContextType => {
 };
 
 export const GameTranslationProvider = (props: React.PropsWithChildren<{}>) => {
-    const [gameTranslation, gameTranslationFetchCompleted, gameTranslationErrors]: [Dictionary<ITranslatedMove>, boolean, string] = useFetchAllData();
+    const [gameTranslation, gameTranslationFetchCompleted, gameTranslationErrors]: [ITranslatedGame, boolean, string] = useFetchAllData();
 
     return (
         <GameTranslationContext.Provider value={{

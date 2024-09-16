@@ -5,7 +5,7 @@ import Dictionary from "./Dictionary";
 import { buildPokemonImageUrl, corsProxyUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
-import { ITranslatedMove } from "../DTOs/ITranslatedMove";
+import { ITranslatedGame, ITranslatedGruntPhrase, ITranslatedMove } from "../DTOs/ITranslatedGame";
 import { getForm } from "./pokemon-helper";
 import { IEntry, IPostEntry, IRocketGrunt } from "../DTOs/INews";
 
@@ -297,25 +297,92 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     return pokemonDictionary;
 }
 
-export const mapTranslatedMoves: (data: any) => Dictionary<ITranslatedMove> = (data: any) => {
+export const mapTranslatedMoves: (data: any) => ITranslatedGame = (data: any) => {
     const translatedMovesDictionary: Dictionary<ITranslatedMove> = {};
+    const translatedPhrasesDictionary: Dictionary<ITranslatedGruntPhrase> = {};
     const term = "move_name_";
+    const gruntTerm = 'combat_grunt_quote';
 
-    (Array.from(data.data) as any[])
+    const arr = Array.from(data.data);
+
+    (arr as any[])
         .forEach((t: string, index: number) => {
-            if (!t.startsWith(term)) {
-                return;
+            if (t.startsWith(term)) {
+                const vid = t.substring(term.length);
+                const moveName = arr[index + 1];
+                translatedMovesDictionary[vid] = {
+                    vId: vid,
+                    name: moveName as string
+                }
             }
 
-            const vid = t.substring(term.length);
-            const moveName = Array.from(data.data)[index + 1];
-            translatedMovesDictionary[vid] = {
-                vId: vid,
-                name: moveName as string
+            if (t.startsWith(gruntTerm)) {
+                const key = t.substring(gruntTerm.length);
+                const name = arr[index + 1];
+                translatedPhrasesDictionary[key] = {
+                    key: key,
+                    phrase: name as string
+                }
+            }
+
+            if (t === 'combat_giovanni_quote#1') {
+                const name = arr[index + 1];
+                translatedPhrasesDictionary['Giovanni'] = {
+                    key: 'Giovanni',
+                    phrase: name as string
+                }
+            }
+
+            if (t === 'combat_cliff_quote#1') {
+                const name = arr[index + 1];
+                translatedPhrasesDictionary['Cliff'] = {
+                    key: 'Cliff',
+                    phrase: name as string
+                }
+            }
+
+            if (t === 'combat_arlo_quote#1') {
+                const name = arr[index + 1];
+                translatedPhrasesDictionary['Arlo'] = {
+                    key: 'Arlo',
+                    phrase: name as string
+                }
+            }
+
+            if (t === 'combat_sierra_quote#1') {
+                const name = arr[index + 1];
+                translatedPhrasesDictionary['Sierra'] = {
+                    key: 'Sierra',
+                    phrase: name as string
+                }
+            }
+
+            if (t === 'combat_grunt_decoy_quote#1') {
+                const name = arr[index + 1];
+                translatedPhrasesDictionary['Decoy Female Grunt'] = {
+                    key: 'Decoy Female Grunt',
+                    phrase: name as string
+                }
+            }
+
+            if (t === 'combat_grunt_quote#1__male_speaker') {
+                const name = arr[index + 1];
+                translatedPhrasesDictionary['Male Grunt'] = {
+                    key: 'Male Grunt',
+                    phrase: name as string
+                }
+
+                translatedPhrasesDictionary['Female Grunt'] = {
+                    key: 'Female Grunt',
+                    phrase: name as string
+                }
             }
         });
 
-    return translatedMovesDictionary;
+    return {
+        moves: translatedMovesDictionary,
+        rocketPhrases: translatedPhrasesDictionary
+    };
 }
 
 /*
@@ -396,7 +463,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
 
-    const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent?.trim();
+    const title = htmlDoc.getElementsByClassName("page-title")[0]?.textContent?.replace(/\s/g, ' ').trim();
 
     const dateCont = (htmlDoc.getElementById("event-date-start")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-start")?.textContent?.trim()).replaceAll("  ", " ");
     const endCont = (htmlDoc.getElementById("event-date-end")?.textContent?.trim() + " " + htmlDoc.getElementById("event-time-end")?.textContent?.trim()).replaceAll("  ", " ");
@@ -586,9 +653,9 @@ export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemast
         const catchableTiers = Array.from(e.getElementsByClassName("lineup-info")[0].children).map((c: Element, i: number) => c.classList.contains("slot-wrapper") ? i : undefined).filter(e => e !== undefined) as number[];
 
         answer.push({
-            phrase: phrase,
-            type: type,
-            trainerId: trainerId,
+            phrase: phrase.replace(/\s/g, ' ').trim(),
+            type: type?.replace(/\s/g, ' ').trim(),
+            trainerId: trainerId.replace(/\s/g, ' ').trim(),
             tier1: tier1Pkms,
             tier2: tier2Pkms,
             tier3: tier3Pkms,
@@ -623,82 +690,100 @@ export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemast
 const normalizeSpeciesNameForId = (speciesName: string) => speciesName.replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr");
 const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’", "'").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any, isPT?: boolean) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any, isPT = false) => {
+    const url: string = request.responseURL;
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
-    const cityEntries = Array.from(htmlDoc.getElementById("cities")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const forestEntries = Array.from(htmlDoc.getElementById("forests")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const mountainEntries = Array.from(htmlDoc.getElementById("mountains")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const beachEntries = Array.from(htmlDoc.getElementById("beaches-water")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const northEntries = Array.from(htmlDoc.getElementById("northern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const southEntries = Array.from(htmlDoc.getElementById("southern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const wildDomain = Object.values(gamemasterPokemon)
-        .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
 
-    const twoKmEggs = Array.from(htmlDoc.getElementById("2km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-    const fiveKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-    const sevenKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-    const tenKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-    const fiveSyncKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
-    const sevenRoutesKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
-    const tenSyncKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
+    if (!isPT) {
+        const cityEntries = Array.from(htmlDoc.getElementById("cities")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const forestEntries = Array.from(htmlDoc.getElementById("forests")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const mountainEntries = Array.from(htmlDoc.getElementById("mountains")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const beachEntries = Array.from(htmlDoc.getElementById("beaches-water")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const northEntries = Array.from(htmlDoc.getElementById("northern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const southEntries = Array.from(htmlDoc.getElementById("southern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const wildDomain = Object.values(gamemasterPokemon)
+            .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
 
-    const fiveComment = (htmlDoc.getElementById("5km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
-    const sevenComment = (htmlDoc.getElementById("7km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
-    const tenComment = (htmlDoc.getElementById("10km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+        const twoKmEggs = Array.from(htmlDoc.getElementById("2km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const fiveKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
+        const sevenKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
+        const tenKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
+        const fiveSyncKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
+        const sevenRoutesKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
+        const tenSyncKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
 
-    const convertKind = (kind: number) => {
-        switch (kind) {
-            case 0:
-                return "2";
-            case 1:
-                return "5";
-            case 2:
-                return "7";
-            case 3:
-                return "10";
-            case 4:
-                return "5";
-            case 5:
-                return "7";
-            case 6:
-                return "10";
-            default:
-                throw new Error("Invalid egg idx");
+        const fiveComment = (htmlDoc.getElementById("5km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+        const sevenComment = (htmlDoc.getElementById("7km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+        const tenComment = (htmlDoc.getElementById("10km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+
+        const convertKind = (kind: number) => {
+            switch (kind) {
+                case 0:
+                    return "2";
+                case 1:
+                    return "5";
+                case 2:
+                    return "7";
+                case 3:
+                    return "10";
+                case 4:
+                    return "5";
+                case 5:
+                    return "7";
+                case 6:
+                    return "10";
+                default:
+                    throw new Error("Invalid egg idx");
+            }
         }
-    }
 
-    const getComment = (kind: number) => {
-        switch (kind) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-                return undefined;
-            case 4:
-                return fiveComment;
-            case 5:
-                return sevenComment;
-            case 6:
-                return tenComment;
+        const getComment = (kind: number) => {
+            switch (kind) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    return undefined;
+                case 4:
+                    return fiveComment;
+                case 5:
+                    return sevenComment;
+                case 6:
+                    return tenComment;
+            }
         }
-    }
 
-    const wildEncounters = [cityEntries, forestEntries, mountainEntries, beachEntries, northEntries, southEntries].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
-    const researches = fetchPokemonFromElements(Array.from(htmlDoc.getElementById("research-breakthrough-tabs")?.children ?? []).map(e => e as HTMLElement), gamemasterPokemon, wildDomain);
-    const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
+        const wildEncounters = [cityEntries, forestEntries, mountainEntries, beachEntries, northEntries, southEntries].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
+        const researches = fetchPokemonFromElements(Array.from(htmlDoc.getElementById("research-breakthrough-tabs")?.children ?? []).map(e => e as HTMLElement), gamemasterPokemon, wildDomain);
+        const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
+
+        return {
+            date: new Date(2024, 8, 3, 10, 0).valueOf(),
+            dateEnd: new Date(2024, 11, 3, 10, 0).valueOf(),
+            wild: wildEncounters,
+            eggs: eggs,
+            isSeason: true,
+            researches: researches,
+            bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
+            imgUrl: "https://lh3.googleusercontent.com/NB7Ayfyqg5pdBtaDflJ1PA71ztk18He3NjSIVtC2t8uIVoI80nMfHT2TBVpvg_LQ9O-rL1u2omNUQ4d0RaqpflvJlJJtDG1BT8nwKTe5RVP3MA=rw-e365-w1800",
+            title: (htmlDoc.querySelector('h2.headline__title.TemplateSingleColumnSimple__content__title') as HTMLElement).innerText ?? 'Welcome to Pokémon GO',
+            comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('seasons/')[1] : ''
+        };
+    }
 
     return {
         date: new Date(2024, 8, 3, 10, 0).valueOf(),
         dateEnd: new Date(2024, 11, 3, 10, 0).valueOf(),
-        wild: wildEncounters,
-        eggs: eggs,
+        wild: [],
+        eggs: [],
         isSeason: true,
-        researches: researches,
+        researches: [],
         bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
         imgUrl: "https://lh3.googleusercontent.com/NB7Ayfyqg5pdBtaDflJ1PA71ztk18He3NjSIVtC2t8uIVoI80nMfHT2TBVpvg_LQ9O-rL1u2omNUQ4d0RaqpflvJlJJtDG1BT8nwKTe5RVP3MA=rw-e365-w1800",
-        title: "Welcome to Pokémon GO: Max Out"
-    };
+        title: (htmlDoc.querySelector('h2.headline__title.TemplateSingleColumnSimple__content__title') as HTMLElement).innerText ?? 'Welcome to Pokémon GO',
+        comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('seasons/')[1] : ''
+    }
 }
 
 const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, domain: IGamemasterPokemon[]) => {
@@ -1119,6 +1204,10 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
     const parsedDate = date.split(" to ");
     if (!isPT && (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10)) {
         return endResults;
+    }
+
+    if (!parsedDate[0].includes(', at') && parsedDate[0].includes(' at')) {
+        parsedDate[0] = parsedDate[0].replace(' at', ', at');
     }
 
     let startDate = 0;

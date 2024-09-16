@@ -7,13 +7,33 @@ import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import useResize from "../hooks/useResize";
 import LoadingRenderer from "./LoadingRenderer";
+import { useGameTranslation } from "../contexts/gameTranslation-context";
+import { GameLanguage, useLanguage } from "../contexts/language-context";
 
 const Rockets = () => {
     const { leekRockets, leekRocketsFetchCompleted, leekRocketsErrors } = useCalendar();
+    const {gameTranslation, gameTranslationErrors, gameTranslationFetchCompleted} = useGameTranslation();
+    const {currentGameLanguage} = useLanguage();
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { x } = useResize();
 
     const [expandedRocket, setExpandedRocket] = useState(readSessionValue(ConfigKeys.ExpandedRocket) ?? "");
+
+    const translatePhrase = (phrase: string, key?: string) => {
+        if (!key) {
+            return phrase;
+        }
+
+        const type = key.includes('-type') ? key.split('-type')[0].toLocaleLowerCase().trim() : undefined;
+        const indexable = type ? `_${type}__male_speaker` : key;
+
+        switch (currentGameLanguage) {
+            case GameLanguage.English:
+                return phrase;
+            case GameLanguage.Portuguese:
+                return gameTranslation?.rocketPhrases[indexable]?.phrase ?? phrase;
+        }
+    }
 
     const renderMove = (m: IRocketGrunt, moveUrl: string, className: string) => {
         const colorVar = m.type ? `type-${m.type.substring(0, 1).toLocaleUpperCase() + m.type.substring(1)}` : undefined;
@@ -23,7 +43,7 @@ const Rockets = () => {
                 {
                     imageDescription: "",
                     image: <div className="img-padding guaranteedWidth"><img height={20} width={20} src={moveUrl} /></div>,
-                    imageSideText: m.phrase,
+                    imageSideText: translatePhrase(m.phrase, m.trainerId),
                     withBackground: true
                 }
             }
@@ -84,12 +104,12 @@ const Rockets = () => {
         />
     }
 
-    return <LoadingRenderer errors={errors + leekRocketsErrors} completed={fetchCompleted && leekRocketsFetchCompleted}>
+    return <LoadingRenderer errors={errors + leekRocketsErrors + gameTranslationErrors} completed={fetchCompleted && leekRocketsFetchCompleted && gameTranslationFetchCompleted}>
         <div className="moves-display-layout-big normal-text">
             <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>
                     {
-                        leekRockets.slice(0, x > 1002 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
+                        leekRockets?.slice(0, x > 1002 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
                             const className = m.type ? `background-${m.type}` : "normal-entry";
                             const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
                             const url = `${process.env.PUBLIC_URL}/images/${resName}`;

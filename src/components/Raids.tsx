@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { IEntry, IPostEntry, sortEntries, sortPosts } from "../DTOs/INews";
 import { inCamelCase, localeStringSmallestOptions } from "../utils/Misc";
@@ -6,19 +6,25 @@ import { useCalendar } from "../contexts/raid-bosses-context";
 import LoadingRenderer from "./LoadingRenderer";
 import { usePokemon } from "../contexts/pokemon-context";
 import PokemonMiniature from "./PokemonMiniature";
-
-const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf());
+import translator, { TranslatorKeys } from "../utils/Translator";
+import { Language, useLanguage } from "../contexts/language-context";
+import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 
 const Raids = () => {
     const [currentBossDate, setCurrentBossDate] = useState("current");
+    const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const { shadowRaids, bossesPerTier, leekPosts, posts, leekPostsFetchCompleted, postsFetchCompleted, leekPostsErrors, postsErrors, bossesFetchCompleted, shadowRaidsFetchCompleted } = useCalendar();
     const {gamemasterPokemon, errors, fetchCompleted} = usePokemon();
 
-    const reducedLeekPosts = leekPostsFetchCompleted ? leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : [];
-    const reducedRaids = postsFetchCompleted ? posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : [];
+    const reducedLeekPosts = useMemo(() => leekPostsFetchCompleted ? leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : []
+    , [leekPostsFetchCompleted, leekPosts]);
+    const reducedRaids = useMemo(() => postsFetchCompleted ? posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : []
+    , [postsFetchCompleted, posts]);
 
-    const additionalBosses = Object.entries([...reducedLeekPosts, ...reducedRaids]
+    const getDateKey = useCallback((obj: IPostEntry) => String(obj?.date?.valueOf()), []);
+
+    const additionalBosses = useMemo(() => Object.entries([...reducedLeekPosts, ...reducedRaids]
         .reduce((acc: { [key: string]: IPostEntry }, obj) => {
             const key = getDateKey(obj);
             if (acc[key]) {
@@ -43,13 +49,13 @@ const Raids = () => {
             date: value.date,
             dateEnd: value.dateEnd,
             raids: value.raids
-        } as IPostEntry));
+        } as IPostEntry)), [reducedLeekPosts, reducedRaids, getDateKey]);
 
     const remainingBosses = additionalBosses
         .filter(e => (e.raids?.length ?? 0) > 0 && e.date > new Date().valueOf())
         .sort(sortPosts);
 
-    const generateTodayBosses = (entries: IPostEntry[]) => {
+    const generateTodayBosses = useCallback((entries: IPostEntry[]) => {
         if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted || !shadowRaidsFetchCompleted) {
             return [];
         }
@@ -89,20 +95,22 @@ const Raids = () => {
         }
 
         return response.sort((a, b) => sortEntries(a, b, gamemasterPokemon));
-    }
+    }, [bossesFetchCompleted, leekPostsFetchCompleted, postsFetchCompleted, shadowRaidsFetchCompleted, bossesPerTier, shadowRaids, gamemasterPokemon]);
 
-    const raidEventDates = [{ label: "Current", value: "current" }, ...remainingBosses.map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
-    const bossesAvailable = (currentBossDate === "current" ? generateTodayBosses(additionalBosses) : additionalBosses.find(a => getDateKey(a) === currentBossDate)!.raids as IEntry[]).sort((a, b) => sortEntries(a, b, gamemasterPokemon));//generateFilteredBosses(additionalBosses);
+    const raidEventDates = [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }, ...remainingBosses.map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
+    const bossesAvailable = useMemo(() => (currentBossDate === "current" ? generateTodayBosses(additionalBosses) : additionalBosses.find(a => getDateKey(a) === currentBossDate)!.raids as IEntry[]).sort((a, b) => sortEntries(a, b, gamemasterPokemon))
+    , [currentBossDate, additionalBosses, generateTodayBosses, getDateKey, gamemasterPokemon]);
 
-    const raidEventEggs = [...(bossesAvailable.some(a => a.kind === "1") ? [{ label: "Tier 1", value: "0" }] : []), ...(bossesAvailable.some(a => a.kind === "3") ? [{ label: "Tier 3", value: "1" }] : []), ...(bossesAvailable.some(a => a.kind === "5" || a.kind === "mega") ? [{ label: "Special", value: "2" }] : []), { label: "All Tiers", value: "3" }];
-    const firstRelevantEntryTierForDate = raidEventEggs.filter(k => k.value === "3")[0]?.value ?? (raidEventEggs[0]?.value ?? "");
+    const raidEventEggs = useMemo(() => [...(bossesAvailable.some(a => a.kind === "1") ? [{ label: translator(TranslatorKeys.Tier, currentLanguage) + " 1", value: "0" }] : []), ...(bossesAvailable.some(a => a.kind === "3") ? [{ label: translator(TranslatorKeys.Tier, currentLanguage) + " 3", value: "1" }] : []), ...(bossesAvailable.some(a => a.kind === "5" || a.kind === "mega") ? [{ label: translator(TranslatorKeys.SpecialBosses, currentLanguage), value: "2" }] : []), { label: translator(TranslatorKeys.AllTiers, currentLanguage), value: "3" }]
+    , [bossesAvailable, currentLanguage]);
+    const firstRelevantEntryTierForDate = useMemo(() => raidEventEggs.filter(k => k.value === "3")[0]?.value ?? (raidEventEggs[0]?.value ?? ""), [raidEventEggs]);
     const [currentTier, setCurrentTier] = useState(firstRelevantEntryTierForDate);
 
     useEffect(() => {
         if (!raidEventEggs.some(e => e.value === currentTier)) {
             setCurrentTier(firstRelevantEntryTierForDate);
         }
-    });
+    }, [raidEventEggs, currentTier, setCurrentTier, firstRelevantEntryTierForDate]);
     
     const getCountdownForBoss = (speciesId: string) => additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === speciesId))?.dateEnd;
 
@@ -148,11 +156,11 @@ const Raids = () => {
             </div>
         </div>
         <div className='with-xl-gap with-margin-top'>
-            {raidEventEggs.sort((i1, i2) => i2.value.localeCompare(i1.value)).filter(egg => egg.value != "3" && (egg.value === currentTier || currentTier === "3")).map(egg => bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).length > 0 &&
+            {raidEventEggs.sort((i1, i2) => i2.value.localeCompare(i1.value)).filter(egg => egg.value !== "3" && (egg.value === currentTier || currentTier === "3")).map(egg => bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).length > 0 &&
                 <div key={egg.value} className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding'>
                         <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom smaller-title'>
-                            {`${raidEventEggs.find(o => o.value === egg.value)?.label} Bosses`}
+                            {`${currentLanguage !== Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${raidEventEggs.find(o => o.value === egg.value)?.label} ${currentLanguage === Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''}`}
                         </strong>
                         <div className='with-flex with-margin-top contained'>
                             <div className='row-container'>
@@ -186,11 +194,11 @@ const Raids = () => {
                 </div>)
             }
 
-            {raidEventEggs.sort((i1, i2) => i2.value.localeCompare(i1.value)).filter(egg => egg.value != "3" && (egg.value === currentTier || currentTier === "3")).map(egg => bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && gamemasterPokemon[e.speciesId].isShadow).length > 0 &&
+            {raidEventEggs.sort((i1, i2) => i2.value.localeCompare(i1.value)).filter(egg => egg.value !== "3" && (egg.value === currentTier || currentTier === "3")).map(egg => bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && gamemasterPokemon[e.speciesId].isShadow).length > 0 &&
                 <div key={egg.value} className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding'>
                         <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom smaller-title'>
-                            {`${raidEventEggs.find(o => o.value === egg.value)?.label} Shadow Bosses`}
+                            {`${currentLanguage !== Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${raidEventEggs.find(o => o.value === egg.value)?.label} ${currentLanguage === Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}`}
                         </strong>
                         <div className='with-flex with-margin-top contained'>
                             <div className='row-container'>

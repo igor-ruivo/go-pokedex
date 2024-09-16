@@ -1,17 +1,29 @@
 import { Language } from "../contexts/language-context";
 
 export enum TranslatorKeys {
+    Cities,
+    Forests,
+    Beaches,
+    Mountains,
+    Northen,
+    Southern,
     LanguageSettings,
     VisualSettings,
     Official,
     Language,
+    Events,
+    Spawns,
+    Rockets,
+    Eggs,
     Source,
     Types1,
     Types2,
     Search,
     Loading,
+    SpecialBosses,
     FamilyTree,
     NoResults,
+    Season,
     GridFiltering,
     ReadMore,
     NavigationData,
@@ -19,12 +31,18 @@ export enum TranslatorKeys {
     Delete,
     ReadLess,
     Save,
+    FeaturedSpawns,
+    FeaturedEggs,
+    FeaturedResearches,
+    Featured1,
+    Featured2,
     MegaPokemon,
     TrashHelp,
     Compute,
     Effective,
     CurrentRaid,
     Tier,
+    Until,
     CPCap,
     RecommendedChargedSingle,
     RaidType,
@@ -140,7 +158,8 @@ export enum TranslatorKeys {
     StrongAgainst,
     Focused1,
     Focused2,
-    OrType
+    OrType,
+    AllTiers
 }
 
 const languageSettings = new Map<Language, string>([
@@ -153,6 +172,12 @@ const save = new Map<Language, string>([
     [Language.English, "Save"],
     [Language.Portuguese, "Manter"],
     [Language.Bosnian, "Čuvati"]
+]);
+
+const allTiers = new Map<Language, string>([
+    [Language.English, "All Tiers"],
+    [Language.Portuguese, "Todos os Níveis"],
+    [Language.Bosnian, "Svi Nivoi"]
 ]);
 
 const tier = new Map<Language, string>([
@@ -287,6 +312,12 @@ const orType = new Map<Language, string>([
     [Language.Bosnian, "...i Tipu"]
 ]);
 
+const until = new Map<Language, string>([
+    [Language.English, "to"],
+    [Language.Portuguese, "a"],
+    [Language.Bosnian, "-"]
+]);
+
 const official = new Map<Language, string>([
     [Language.English, "Official"],
     [Language.Portuguese, "Oficiais"],
@@ -309,6 +340,42 @@ const countersWeak = new Map<Language, string>([
     [Language.English, "Counters"],
     [Language.Portuguese, "Adversários Eficazes"],
     [Language.Bosnian, "Efikasni Protivnici"]
+]);
+
+const cities = new Map<Language, string>([
+    [Language.English, "Cities"],
+    [Language.Portuguese, "Cidades"],
+    [Language.Bosnian, "Gradovi"]
+]);
+
+const forests = new Map<Language, string>([
+    [Language.English, "Forests"],
+    [Language.Portuguese, "Florestas"],
+    [Language.Bosnian, "Šume"]
+]);
+
+const mountains = new Map<Language, string>([
+    [Language.English, "Mountains"],
+    [Language.Portuguese, "Montanhas"],
+    [Language.Bosnian, "Planine"]
+]);
+
+const beaches = new Map<Language, string>([
+    [Language.English, "Beaches & Water"],
+    [Language.Portuguese, "Praias e Água"],
+    [Language.Bosnian, "Plaže i Voda"]
+]);
+
+const northen = new Map<Language, string>([
+    [Language.English, "Northen Hemisphere"],
+    [Language.Portuguese, "Hemisfério Norte"],
+    [Language.Bosnian, "Sjeverna Hemisfera"]
+]);
+
+const southern = new Map<Language, string>([
+    [Language.English, "Southern Hemisphere"],
+    [Language.Portuguese, "Hemisfério Sul"],
+    [Language.Bosnian, "Južna Hemisfera"]
 ]);
 
 const gridFiltering = new Map<Language, string>([
@@ -351,6 +418,36 @@ const loading = new Map<Language, string>([
     [Language.English, "Loading Pokémons…"],
     [Language.Portuguese, "A carregar Pokémons…"],
     [Language.Bosnian, "Učitavanje Pokémona…"]
+]);
+
+const featuredSpawns = new Map<Language, string>([
+    [Language.English, "Featured Wild Spawns"],
+    [Language.Portuguese, "Encontros na Natureza em Destaque"],
+    [Language.Bosnian, "Istaknuti Divlji Susreti"]
+]);
+
+const featured1 = new Map<Language, string>([
+    [Language.English, "Featured"],
+    [Language.Portuguese, ""],
+    [Language.Bosnian, "Istaknuti"]
+]);
+
+const featured2 = new Map<Language, string>([
+    [Language.English, ""],
+    [Language.Portuguese, "em Destaque"],
+    [Language.Bosnian, ""]
+]);
+
+const featuredEggs = new Map<Language, string>([
+    [Language.English, "Featured Eggs"],
+    [Language.Portuguese, "Ovos em Destaque"],
+    [Language.Bosnian, "Istaknuta Jaja"]
+]);
+
+const featuredResearches = new Map<Language, string>([
+    [Language.English, "Featured Researches"],
+    [Language.Portuguese, "Pesquisas em Destaque"],
+    [Language.Bosnian, "Istaknuta Istraživanja"]
 ]);
 
 const name = new Map<Language, string>([
@@ -413,6 +510,12 @@ const fire = new Map<Language, string>([
     [Language.Bosnian, "Vatra"]
 ]);
 
+const season = new Map<Language, string>([
+    [Language.English, "Season"],
+    [Language.Portuguese, "Temporada"],
+    [Language.Bosnian, "Sezona"]
+]);
+
 const dragon = new Map<Language, string>([
     [Language.English, "Dragon"],
     [Language.Portuguese, "Dragão"],
@@ -437,6 +540,12 @@ const ground = new Map<Language, string>([
     [Language.Bosnian, "Zemljani"]
 ]);
 
+const specialBosses = new Map<Language, string>([
+    [Language.English, "Special"],
+    [Language.Portuguese, "Especiais"],
+    [Language.Bosnian, "Specijalni"]
+]);
+
 const rock = new Map<Language, string>([
     [Language.English, "Rock"],
     [Language.Portuguese, "Pedra"],
@@ -459,6 +568,30 @@ const fighting = new Map<Language, string>([
     [Language.English, "Fighting"],
     [Language.Portuguese, "Lutador"],
     [Language.Bosnian, "Borac"]
+]);
+
+const events = new Map<Language, string>([
+    [Language.English, "Events"],
+    [Language.Portuguese, "Eventos"],
+    [Language.Bosnian, "Događaji"]
+]);
+
+const spawns = new Map<Language, string>([
+    [Language.English, "Spawns"],
+    [Language.Portuguese, "Encontros"],
+    [Language.Bosnian, "Pojave"]
+]);
+
+const rockets = new Map<Language, string>([
+    [Language.English, "Rocket Lineups"],
+    [Language.Portuguese, "Equipas Rocket"],
+    [Language.Bosnian, "Rocket Sastavi"]
+]);
+
+const eggs = new Map<Language, string>([
+    [Language.English, "Eggs"],
+    [Language.Portuguese, "Ovos"],
+    [Language.Bosnian, "Jaja"]
 ]);
 
 const flying = new Map<Language, string>([
@@ -984,9 +1117,21 @@ const familyTree = new Map<Language, string>([
 ]);
 
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
+    [TranslatorKeys.Cities, cities],
+    [TranslatorKeys.Forests, forests],
+    [TranslatorKeys.Mountains, mountains],
+    [TranslatorKeys.Beaches, beaches],
+    [TranslatorKeys.SpecialBosses, specialBosses],
+    [TranslatorKeys.Northen, northen],
+    [TranslatorKeys.Southern, southern],
     [TranslatorKeys.Source, source],
     [TranslatorKeys.GridFiltering, gridFiltering],
     [TranslatorKeys.And, and],
+    [TranslatorKeys.FeaturedSpawns, featuredSpawns],
+    [TranslatorKeys.FeaturedEggs, featuredEggs],
+    [TranslatorKeys.FeaturedResearches, featuredResearches],
+    [TranslatorKeys.Featured1, featured1],
+    [TranslatorKeys.Featured2, featured2],
     [TranslatorKeys.Delete, deleteTranslation],
     [TranslatorKeys.CountersWeak, countersWeak],
     [TranslatorKeys.TrashHelp, trashHelp],
@@ -1084,6 +1229,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.LightTheme, lightTheme],
     [TranslatorKeys.DarkTheme, darkTheme],
     [TranslatorKeys.SystemDefault, systemDefault],
+    [TranslatorKeys.Until, until],
+    [TranslatorKeys.Season, season],
     [TranslatorKeys.Focused1, focused1],
     [TranslatorKeys.Focused2, focused2],
     [TranslatorKeys.RecommendedMovesInfo1, recommendedMovesInfo1],
@@ -1112,12 +1259,17 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.StrongAgainst, strongAgainst],
     [TranslatorKeys.In, inKey],
     [TranslatorKeys.Types1, types1],
+    [TranslatorKeys.Events, events],
+    [TranslatorKeys.Spawns, spawns],
+    [TranslatorKeys.Rockets, rockets],
+    [TranslatorKeys.Eggs, eggs],
     [TranslatorKeys.Types2, types2],
     [TranslatorKeys.FastMove, fastMove],
     [TranslatorKeys.ChargedMove, chargedMove],
     [TranslatorKeys.NotAvailableForRaids, notAvailableForRaids],
     [TranslatorKeys.WIP, wip],
     [TranslatorKeys.MegaPokemon, megaPokemon],
+    [TranslatorKeys.AllTiers, allTiers],
     [TranslatorKeys.ShadowPokemon, shadowPokemon],
     [TranslatorKeys.Show, show],
     [TranslatorKeys.Items, items],

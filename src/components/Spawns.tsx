@@ -4,19 +4,23 @@ import { useCalendar } from "../contexts/raid-bosses-context";
 import LoadingRenderer from "./LoadingRenderer";
 import Select from "react-select";
 import PokemonMiniature from "./PokemonMiniature";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { inCamelCase, localeStringSmallestOptions } from "../utils/Misc";
+import translator, { TranslatorKeys } from "../utils/Translator";
+import { useLanguage } from "../contexts/language-context";
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
 
 const Spawns = () => {
     const { gamemasterPokemon, errors, fetchCompleted } = usePokemon();
+    const {currentLanguage} = useLanguage();
     const { posts, postsFetchCompleted, postsErrors, season, seasonFetchCompleted, seasonErrors } = useCalendar();
-    const currPosts = postsFetchCompleted ? posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()) : [];
+    const currPosts = useMemo(() => postsFetchCompleted ? posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()) : []
+    , [postsFetchCompleted, posts]);
     const [currentBossDate, setCurrentBossDate] = useState(currPosts.length > 0 ? "current" : "season");
     const [currentPlace, setCurrentPlace] = useState("0");
 
-    const raidEventDates = [...(currPosts.length > 0 ? [{ label: "Current", value: "current" }] : []), { label: "Season", value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
+    const raidEventDates = [...(currPosts.length > 0 ? [{ label: "Current", value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)];
 
     const selectedPosts = currentBossDate === "season" ? [season] : currentBossDate === "current" ? currPosts : posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate);
 
@@ -29,17 +33,17 @@ const Spawns = () => {
     const idxToPlace = (idx: number) => {
         switch (idx) {
             case 0:
-                return "Cities";
+                return translator(TranslatorKeys.Cities, currentLanguage);;
             case 1:
-                return "Forests";
+                return translator(TranslatorKeys.Forests, currentLanguage);;
             case 2:
-                return "Mountains";
+                return translator(TranslatorKeys.Mountains, currentLanguage);;
             case 3:
-                return "Beaches & Water";
+                return translator(TranslatorKeys.Beaches, currentLanguage);;
             case 4:
-                return "Northen Hemisphere";
+                return translator(TranslatorKeys.Northen, currentLanguage);;
             case 5:
-                return "Southern Hemisphere";
+                return translator(TranslatorKeys.Southern, currentLanguage);;
         }
     }
 
@@ -76,7 +80,7 @@ const Spawns = () => {
         <div className='with-dynamic-max-width auto-margin-sides'>
             <div className='item default-padding with-margin-top'>
                 <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-                    <strong>Wild Spawns</strong>
+                    <strong>{translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}</strong>
                 </div>
                 {currentBossDate === "season" &&
                     <div className="raid-container">

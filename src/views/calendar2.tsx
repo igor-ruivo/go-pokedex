@@ -79,27 +79,27 @@ const Calendar2 = () => {
                                     <ul>
                                         <li>
                                             <Link to={basePath + "/events"} className={"header-tab no-full-border " + (tab.endsWith("/events") ? "selected" : "")}>
-                                                <span>Events</span>
+                                                <span>{translator(TranslatorKeys.Events, currentLanguage)}</span>
                                             </Link>
                                         </li>
                                         <li>
                                             <Link to={basePath + "/bosses"} className={"header-tab no-full-border " + (tab.endsWith("/bosses") ? "selected" : "")}>
-                                                <span>Bosses</span>
+                                                <span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>
                                             </Link>
                                         </li>
                                         <li>
                                             <Link to={basePath + "/spawns"} className={"header-tab no-full-border " + (tab.endsWith("/spawns") ? "selected" : "")}>
-                                                <span>Spawns</span>
+                                                <span>{translator(TranslatorKeys.Spawns, currentLanguage)}</span>
                                             </Link>
                                         </li>
                                         <li>
                                             <Link to={basePath + "/rockets"} className={"header-tab no-full-border " + (tab.endsWith("/rockets") ? "selected" : "")}>
-                                                <span>Rocket Lineups</span>
+                                                <span>{translator(TranslatorKeys.Rockets, currentLanguage)}</span>
                                             </Link>
                                         </li>
                                         <li>
                                             <Link to={basePath + "/eggs"} className={"header-tab no-full-border " + (tab.endsWith("/eggs") ? "selected" : "")}>
-                                                <span>Eggs</span>
+                                                <span>{translator(TranslatorKeys.Eggs, currentLanguage)}</span>
                                             </Link>
                                         </li>
                                     </ul>

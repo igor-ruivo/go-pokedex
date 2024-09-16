@@ -10,11 +10,13 @@ import PokemonMiniature from './PokemonMiniature';
 import PokemonImage from './PokemonImage';
 import { useNotifications } from '../contexts/notifications-context';
 import { Language, useLanguage } from '../contexts/language-context';
+import translator, { TranslatorKeys } from '../utils/Translator';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 
 const Events = () => {
-    const { posts, postsPT, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
+    const { posts, postsPT, season, seasonPT, postsErrors, seasonErrors, seasonPTErrors, seasonPTFetchCompleted, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
     const { updateSeenEvents } = useNotifications();
-    const {currentLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const nonSeasonalPosts = useMemo(() => [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)]
     , [posts, leekPosts]);
@@ -43,17 +45,17 @@ const Events = () => {
     const idxToPlace = (idx: number) => {
         switch (idx) {
             case 0:
-                return "Cities";
+                return translator(TranslatorKeys.Cities, currentLanguage);
             case 1:
-                return "Forests";
+                return translator(TranslatorKeys.Forests, currentLanguage);
             case 2:
-                return "Mountains";
+                return translator(TranslatorKeys.Mountains, currentLanguage);
             case 3:
-                return "Beaches & Water";
+                return translator(TranslatorKeys.Beaches, currentLanguage);
             case 4:
-                return "Northen Hemisphere";
+                return translator(TranslatorKeys.Northen, currentLanguage);
             case 5:
-                return "Southern Hemisphere";
+                return translator(TranslatorKeys.Southern, currentLanguage);
         }
     }
 
@@ -104,6 +106,41 @@ const Events = () => {
         }
     }
 
+    const translateSpotlightTitle = (title?: string) => {
+        if (!title) {
+            return title;
+        }
+
+        switch(currentLanguage) {
+            case Language.English:
+            case Language.Bosnian:
+                return title;
+            case Language.Portuguese:
+                return title.replaceAll(' Spotlight Hour', ': Hora do Holofote')
+            default: return title;
+        }
+    }
+
+    const translateSpotlightBonus = (bonus?: string) => {
+        if (!bonus) {
+            return bonus;
+        }
+
+        switch(currentLanguage) {
+            case Language.English:
+            case Language.Bosnian:
+                return bonus;
+            case Language.Portuguese:
+                return bonus
+                .replaceAll('Catch XP', 'XP ao capturar')
+                .replaceAll('Catch Candy', 'Doces ao capturar')
+                .replaceAll('Transfer Candy', 'Doces ao transferir')
+                .replaceAll('Evolution XP', 'XP ao evoluir')
+                .replaceAll('Catch Stardust', 'Poeira Estelar ao capturar');
+            default: return bonus;
+        }
+    }
+
     const idxToKind = (idx: number) => {
         switch (idx) {
             case 0:
@@ -128,16 +165,16 @@ const Events = () => {
             return post;
         }
 
-        const candidate = postsPT.flat().filter(p => p.comment && p.comment === post.comment)[0];
+        const candidate = [...postsPT.flat(), seasonPT].filter(p => p && p.comment && p.comment === post.comment)[0];
 
         if (!candidate) {
             return post;
         }
 
         return candidate;
-    }, [currentLanguage, postsPT]);
+    }, [currentLanguage, postsPT, seasonPT]);
 
-    return <LoadingRenderer errors={postsErrors + postsPTErrors + seasonErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && postsPTFetchCompleted && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
+    return <LoadingRenderer errors={postsErrors + postsPTErrors + seasonErrors + seasonPTErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && seasonPTFetchCompleted && postsPTFetchCompleted && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='with-xl-gap'>
@@ -174,20 +211,20 @@ const Events = () => {
                                 withClassname = 'spotlighted-pokemon'
                             />}
                         </div>
-                        <div className={'current-news-title'}>{(translatedEvent(relevantPosts[selectedNews]).subtitle?.length ?? 0) > 15 ? translatedEvent(relevantPosts[selectedNews]).subtitle : translatedEvent(relevantPosts[selectedNews]).title}</div>
+                        <div className={'current-news-title'}>{translateSpotlightTitle((translatedEvent(relevantPosts[selectedNews]).subtitle?.length ?? 0) > 15 ? translatedEvent(relevantPosts[selectedNews]).subtitle : translatedEvent(relevantPosts[selectedNews]).title)}</div>
                         <div className='current-news-date'>
                             <div className='from-date date-container'>
                                 {inCamelCase(new Date(relevantPosts[selectedNews].date).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
                             {<div className='from-date date-container'>
-                                to
+                                {translator(TranslatorKeys.Until, currentLanguage)}
                             </div>}
                             <div className='to-date date-container'>
                                 {inCamelCase(new Date(relevantPosts[selectedNews].dateEnd ?? 0).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
                         </div>
                         {relevantPosts[selectedNews]?.spotlightBonus && 
-                            <span className='spotlight-bonus'>{relevantPosts[selectedNews]?.spotlightBonus}</span>
+                            <span className='spotlight-bonus'>{translateSpotlightBonus(relevantPosts[selectedNews]?.spotlightBonus)}</span>
                         }
                     </div>
                 </div>
@@ -201,7 +238,7 @@ const Events = () => {
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
-                            <strong>Featured Wild Spawns</strong>
+                            <strong>{translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}</strong>
                         </div>
                         {selectedNews === 0 &&
                             <div className="raid-container">
@@ -235,7 +272,7 @@ const Events = () => {
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
-                            <strong>Featured Raids</strong>
+                            <strong>{`${translator(TranslatorKeys.Featured1, currentLanguage)} ${gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.Featured2, currentLanguage)}`}</strong>
                         </div>
                         <div className={`with-flex contained with-margin-top`}>
                             {(relevantPosts[selectedNews].raids ?? [])
@@ -251,7 +288,7 @@ const Events = () => {
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
-                            <strong>Featured Researches</strong>
+                            <strong>{translator(TranslatorKeys.FeaturedResearches, currentLanguage)}</strong>
                         </div>
                         <div className={`with-flex contained with-margin-top`}>
                             {(relevantPosts[selectedNews].researches ?? [])
@@ -267,7 +304,7 @@ const Events = () => {
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
                         <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
-                            <strong>Featured Eggs</strong>
+                            <strong>{translator(TranslatorKeys.FeaturedEggs, currentLanguage)}</strong>
                         </div>
                         {selectedNews === 0 &&
                             <div className="raid-container">

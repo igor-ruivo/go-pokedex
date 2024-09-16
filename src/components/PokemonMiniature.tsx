@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import PokemonImage from "./PokemonImage";
 import { /*useEffect, useMemo,*/ useRef } from "react";
+import useResize from "../hooks/useResize";
 /*import PokemonNumber from "./PokemonNumber";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { ListType } from "../views/pokedex";
@@ -26,6 +27,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
     /*const {days, hours, minutes, seconds} = useCountdown(withCountdown ?? 0);
     const {currentGameLanguage} = useLanguage();*/
     const containerWidth = useRef<HTMLDivElement>(null);
+    useResize();
     //const {rankLists, pvpFetchCompleted} = usePvp();
     //const {gamemasterPokemon, fetchCompleted} = usePokemon();
     //const {moves, movesFetchCompleted} = useMoves();
