@@ -28,12 +28,12 @@ const Events = () => {
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEgg, setCurrentEgg] = useState("0");
 
-    const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
+    const postTitle = useCallback((post: IPostEntry) => `${post.title}-${post.subtitle}`, []);
 
     useEffect(() => {
         const justSeenPosts = relevantPosts.filter(p => p).map(postTitle);
         updateSeenEvents(justSeenPosts);
-    }, [updateSeenEvents, relevantPosts]);
+    }, [updateSeenEvents, relevantPosts, postTitle]);
 
     useEffect(() => {
         if (postsFetchCompleted) {
@@ -42,7 +42,7 @@ const Events = () => {
 
     }, [postsFetchCompleted, setSelectedNews, posts]);
 
-    const idxToPlace = (idx: number) => {
+    const idxToPlace = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return translator(TranslatorKeys.Cities, currentLanguage);
@@ -57,9 +57,9 @@ const Events = () => {
             case 5:
                 return translator(TranslatorKeys.Southern, currentLanguage);
         }
-    }
+    }, [currentLanguage]);
 
-    const idxToRes = (idx: number) => {
+    const idxToRes = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return "city";
@@ -74,9 +74,9 @@ const Events = () => {
             case 5:
                 return "south";
         }
-    }
+    }, []);
 
-    const idxToEgg = (idx: number) => {
+    const idxToEgg = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return "2km";
@@ -89,9 +89,9 @@ const Events = () => {
             case 4:
                 return "12km";
         }
-    }
+    }, []);
 
-    const idxToEggName = (idx: number) => {
+    const idxToEggName = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return "2 km";
@@ -104,9 +104,9 @@ const Events = () => {
             case 4:
                 return "12 km";
         }
-    }
+    }, []);
 
-    const translateSpotlightTitle = (title?: string) => {
+    const translateSpotlightTitle = useCallback((title?: string) => {
         if (!title) {
             return title;
         }
@@ -119,9 +119,9 @@ const Events = () => {
                 return title.replaceAll(' Spotlight Hour', ': Hora do Holofote')
             default: return title;
         }
-    }
+    }, [currentLanguage]);
 
-    const translateSpotlightBonus = (bonus?: string) => {
+    const translateSpotlightBonus = useCallback((bonus?: string) => {
         if (!bonus) {
             return bonus;
         }
@@ -139,9 +139,9 @@ const Events = () => {
                 .replaceAll('Catch Stardust', 'Poeira Estelar ao capturar');
             default: return bonus;
         }
-    }
+    }, [currentLanguage]);
 
-    const idxToKind = (idx: number) => {
+    const idxToKind = useCallback((idx: number) => {
         switch (idx) {
             case 0:
                 return 2;
@@ -154,7 +154,7 @@ const Events = () => {
             case 4:
                 return 12;
         }
-    }
+    }, []);
 
     const translatedEvent = useCallback((post: IPostEntry) => {
         if (currentLanguage === Language.English) {

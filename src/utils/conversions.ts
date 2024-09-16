@@ -1181,7 +1181,7 @@ const fetchDateFromString = (date: string) => {
     return dateObj.valueOf();
 }
 
-const innerParseNews = (subtitle: string, date: string, innerEntries: Element[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, raidDomain: IGamemasterPokemon[], wildDomain: IGamemasterPokemon[], postTitle: string, img: string, endResults: IPostEntry[], hasToComputeInnerEntries: boolean, setRelevantPosts?: React.Dispatch<React.SetStateAction<Set<string>>>, url?: string, isPT = false) => {
+const innerParseNews = (subtitle: string, date: string, innerEntries: Element[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, raidDomain: IGamemasterPokemon[], wildDomain: IGamemasterPokemon[], postTitle: string, img: string, endResults: IPostEntry[], hasToComputeInnerEntries: boolean, url?: string, isPT = false) => {
     if (date.endsWith(".")) {
         date = date.substring(0, date.length - 1);
     }
@@ -1276,12 +1276,6 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
                 break;
         }
     }
-
-    if (!isPT && setRelevantPosts && url && (postTitle || subtitle) && startDate && endDate && new Date(endDate) > new Date() && img && (research.length > 0 || eggs.length > 0 || raids.length > 0 || wild.length > 0 || bonus.trim())) {
-        setRelevantPosts(r => {
-            return new Set([...r, url]);
-        });
-    }
             
     endResults.push({
         title: postTitle,
@@ -1294,7 +1288,9 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
         raids: raids,
         wild: wild,
         bonuses: bonus.trim(),
-        comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('post/')[1] : ''
+        rawUrl: url,
+        comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('post/')[1] : '',
+        isRelevant: !!(!isPT && url && (postTitle || subtitle) && startDate && endDate && new Date(endDate) > new Date() && img && (research.length > 0 || eggs.length > 0 || raids.length > 0 || wild.length > 0 || bonus.trim()))
     });
 
     return endResults;
@@ -1312,7 +1308,7 @@ const removeLeadingAndTrailingAsterisks = (plainText: string) => {
     return plainText;
 }
 
-export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, setRelevantPosts: React.Dispatch<React.SetStateAction<Set<string>>>, request: any) => IPostEntry[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, setRelevantPosts: React.Dispatch<React.SetStateAction<Set<string>>>, request: any) => {
+export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any) => IPostEntry[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any) => {
     const url: string = request.responseURL;
 
     const parser = new DOMParser();
@@ -1345,7 +1341,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         
         const date = (entries[0].getElementsByClassName("ContainerBlock__body")[0] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, setRelevantPosts, url);
+        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, url);
     }
 
     for (let k = 0; k < entries.length; k++) {
@@ -1360,7 +1356,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
 
         const date = (containerBlock.children[1] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, setRelevantPosts, url);
+        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, url);
     }
 
     return endResults;
@@ -1398,7 +1394,7 @@ export const mapPostsPT: (data: any, gamemasterPokemon: Dictionary<IGamemasterPo
         
         const date = (entries[0].getElementsByClassName("ContainerBlock__body")[0] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, undefined, url, true);
+        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, url, true);
     }
 
     for (let k = 0; k < entries.length; k++) {
@@ -1413,7 +1409,7 @@ export const mapPostsPT: (data: any, gamemasterPokemon: Dictionary<IGamemasterPo
 
         const date = (containerBlock.children[1] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, undefined, url, true);
+        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, url, true);
     }
 
     return endResults;

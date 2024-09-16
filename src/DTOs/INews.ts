@@ -32,7 +32,9 @@ export interface IPostEntry {
     isSeason?: boolean,
     comment?: string,
     spotlightPokemons?: IEntry[],
-    spotlightBonus?: string
+    spotlightBonus?: string,
+    isRelevant?: boolean,
+    rawUrl?: string
 }
 
 export interface IRaidEntry {

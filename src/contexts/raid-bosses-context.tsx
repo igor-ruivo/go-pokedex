@@ -51,7 +51,6 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
     const [leekRockets, fetchLeekRockets, leekRocketsFetchCompleted, errorLoadingLeekRockets]: FetchData<IRocketGrunt[]> = useFetchUrls();
     const [shadowRaids, fetchShadowRaids, shadowRaidsFetchCompleted, errorLoadingShadowRaids]: FetchData<IPostEntry> = useFetchUrls();
     
-    const [relevantPosts, setRelevantPosts] = useState(new Set<string>());
     const encodeProxyUrl = useCallback((relativeComponent: string) => corsProxyUrl + encodeURIComponent(pokemonGoBaseUrl + relativeComponent), []);
 
     useEffect(() => {
@@ -91,12 +90,12 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
             return encodeProxyUrl(relativeComponent);
         });
 
-        fetchPosts(urls, calendarCache, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, gamemasterPokemon, setRelevantPosts, request));
+        fetchPosts(urls, calendarCache, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, gamemasterPokemon, request));
 
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [fetchCompleted, newsFetchCompleted, fetchPosts, news, gamemasterPokemon, encodeProxyUrl, setRelevantPosts]);
+    }, [fetchCompleted, newsFetchCompleted, fetchPosts, news, gamemasterPokemon, encodeProxyUrl]);
 
     useEffect(() => {
         if (!fetchCompleted || !leekNewsFetchCompleted) {
@@ -128,12 +127,12 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
 
         const controller = new AbortController();
 
-        const ptbrUrls = Array.from(relevantPosts).map(p => {
-            const decodedUrl = decodeURIComponent(p.split(corsProxyUrl)[1]);
+        const ptbrUrls = posts.flat().filter(p => p.isRelevant && p.rawUrl).map(p => {
+            const decodedUrl = decodeURIComponent(p.rawUrl!.split(corsProxyUrl)[1]);
             const postIndex = decodedUrl.indexOf('/post');
 
             if (postIndex === -1) {
-                return p;
+                return p.rawUrl!;
             }
 
             const newPath = decodedUrl.substring(0, postIndex) + '/pt_br/' + decodedUrl.substring(postIndex + 1);
@@ -150,7 +149,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [postsFetchCompleted, relevantPosts, gamemasterPokemon, fetchPostsPT, fetchSeasonPT, encodeProxyUrl]);
+    }, [postsFetchCompleted, gamemasterPokemon, posts, fetchPostsPT, fetchSeasonPT, encodeProxyUrl]);
 
     return [bosses[0], posts, postsPT, season[0], seasonPT[0], leekPosts, leekEggs[0], leekRockets[0], shadowRaids[0], bossesFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, seasonFetchCompleted, seasonPTFetchCompleted, leekPostsFetchCompleted, leekEggsFetchCompleted, leekRocketsFetchCompleted, shadowRaidsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingPostsPT, errorLoadingSeason, errorLoadingSeasonPT, errorLoadingLeekPosts, errorLoadingLeekEggs, errorLoadingLeekRockets, errorLoadingShadowRaids];
 }
