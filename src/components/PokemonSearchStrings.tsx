@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { calculateCP, calculateHP, computeBestIVs, fetchPredecessorPokemonIncludingSelf, sortPokemonByBattlePowerAsc } from "../utils/pokemon-helper";
 import "./PokemonSearchStrings.scss"
@@ -9,6 +9,7 @@ import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
 import { customCupCPLimit } from "../contexts/pvp-context";
+import LoadingRenderer from "./LoadingRenderer";
 
 interface IPokemonSearchStringsProps {
     pokemon: IGamemasterPokemon;
@@ -90,11 +91,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             break;
     }
 
-    if (!fetchCompleted || !gamemasterPokemon) {
-        return <></>;
-    }
-
-    const getRanges = (array: any[]) => {
+    const getRanges = useCallback((array: any[]) => {
         /* https://stackoverflow.com/a/54205694 */
         return array.reduce(((l:any)=>(r,v: number,i,a)=>{
             if (l[1] > v)
@@ -105,9 +102,9 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             return r;
         }
         )([]), []);
-    }
+    }, []);
 
-    const groupAttr = (input: Set<number>, lang: string) => {
+    const groupAttr = useCallback((input: Set<number>, lang: string) => {
         let output = Array.from(input);
         output.sort((a, b) => a - b);
         output = getRanges(output);
@@ -132,9 +129,9 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             checkStr = splitStr.join(",");
         }
         return "," + checkStr;
-    }
+    }, [getRanges]);
 
-    const get_matching_string = (a: number[], t: string) => {
+    const get_matching_string = useCallback((a: number[], t: string) => {
         var list = ''
           , last = -1;
         for (var i = 0; i < a.length; i++) {
@@ -155,9 +152,9 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
             }
         }
         return list.substr(1);
-    }
+    }, []);
 
-    const trashFlip = (cps: Set<number>, maxCP: number, attr: boolean) => {
+    const trashFlip = useCallback((cps: Set<number>, maxCP: number, attr: boolean) => {
         for (let i = attr ? 0 : 10; i <= maxCP; i++) {
             if (cps.has(i)) {
                 cps.delete(i);
@@ -167,9 +164,13 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
         }
 
         return cps;
-    }
+    }, []);
 
-    const computeSearchString = (predecessorPokemon: IGamemasterPokemon) => {
+    const computeSearchString = useCallback((predecessorPokemon: IGamemasterPokemon) => {
+        if (!pokemon) {
+            return '';
+        }
+        
         const cps = [];
         const hps = [];
         const atkivs = [];
@@ -289,11 +290,11 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
         }
 
         return result;
-    }
+    }, [cpCap, currentGameLanguage, get_matching_string, groupAttr, pokemon, top, trash, trashFlip]);
 
     return (
-        <>
-            {league !== LeagueType.RAID ?
+        <LoadingRenderer errors={''} completed={fetchCompleted && !!gamemasterPokemon}>
+            {fetchCompleted && !!gamemasterPokemon && (league !== LeagueType.RAID ?
                 <div className="banner_layout normal-text">
                     <div className="extra-ivs-options item default-padding">
                         <div className="with-padding">
@@ -313,8 +314,8 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
                 </div> : <div className="item default-padding centered normal-text">
                     <span className="with-padding">{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
-            }
-        </>
+            )}
+        </LoadingRenderer>
     );
 }
 

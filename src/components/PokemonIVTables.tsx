@@ -3,7 +3,7 @@ import { computeBestIVs } from "../utils/pokemon-helper";
 import "./PokemonIVTables.scss"
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { TableComponents, TableVirtuoso } from "react-virtuoso";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { visuallyHidden } from '@mui/utils';
 import { usePokemon } from "../contexts/pokemon-context";
 import translator, { TranslatorKeys } from "../utils/Translator";
@@ -11,6 +11,7 @@ import { useLanguage } from "../contexts/language-context";
 import { LeagueType } from "../hooks/useLeague";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { customCupCPLimit } from "../contexts/pvp-context";
+import LoadingRenderer from "./LoadingRenderer";
 
 interface IPokemonIVTables {
     pokemon: IGamemasterPokemon;
@@ -97,7 +98,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('top');
 
-    const {gamemasterPokemon, fetchCompleted} = usePokemon();
+    const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
 
     const columns: ColumnData[] = useMemo(() => [
         {
@@ -198,10 +199,6 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
         [order, orderBy, rows]
     );
 
-    if (!fetchCompleted || !gamemasterPokemon) {
-        return <></>;
-    }
-
     const VirtuosoTableComponents: TableComponents<Data> = {
         Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
             <TableContainer component={Paper} {...props} ref={ref} />
@@ -216,7 +213,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
         )),
     };
 
-    const fixedHeaderContent = () => {
+    const fixedHeaderContent = useCallback(() => {
         return (
             <TableRow hover>
                 {columns.map((column) => (
@@ -250,9 +247,9 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                 ))}
             </TableRow>
         );
-    }
+    }, [columns, order, orderBy]);
 
-    function rowContent(_index: number, row: Data) {
+    const rowContent = useCallback((_index: number, row: Data) => {
         return (
             <React.Fragment>
                 {columns.map((column) => (
@@ -266,10 +263,10 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
                 ))}
             </React.Fragment>
         );
-    }
+    }, [columns]);
 
-    return (<>
-        {league !== LeagueType.RAID ?
+    return (<LoadingRenderer errors={errors} completed={fetchCompleted && !!gamemasterPokemon}>
+        {fetchCompleted && !!gamemasterPokemon && (league !== LeagueType.RAID ?
             <div className="banner_layout normal-text">
                 <div className="extra-ivs-options item default-padding">
                     <div className="with-padding">
@@ -306,8 +303,8 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
             </div> : <div className="item default-padding centered normal-text">
                     <span className="with-padding">{translator(TranslatorKeys.NotAvailableForRaids, currentLanguage)} {gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}.</span>
                 </div>
-            }
-        </>
+            )}
+        </LoadingRenderer>
     );
 }
 
