@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCalendar } from '../contexts/raid-bosses-context';
 import LoadingRenderer from './LoadingRenderer';
 import { IPostEntry, sortEntries, sortPosts } from '../DTOs/INews';
@@ -9,10 +9,12 @@ import { usePokemon } from '../contexts/pokemon-context';
 import PokemonMiniature from './PokemonMiniature';
 import PokemonImage from './PokemonImage';
 import { useNotifications } from '../contexts/notifications-context';
+import { Language, useLanguage } from '../contexts/language-context';
 
 const Events = () => {
-    const { posts, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted, leekPosts, leekPostsErrors, leekPostsFetchCompleted } = useCalendar();
+    const { posts, postsPT, season, postsErrors, seasonErrors, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
     const { updateSeenEvents } = useNotifications();
+    const {currentLanguage} = useLanguage();
 
     const nonSeasonalPosts = useMemo(() => [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)]
     , [posts, leekPosts]);
@@ -20,20 +22,20 @@ const Events = () => {
     const relevantPosts = useMemo(() => [season, ...nonSeasonalPosts], [season, nonSeasonalPosts]);
 
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const [selectedNews, setSelectedNews] = useState(posts.length === 0 ? 0 : 1);
+    const [selectedNews, setSelectedNews] = useState(posts.flat().length === 0 ? 0 : 1);
     const [currentPlace, setCurrentPlace] = useState("0");
     const [currentEgg, setCurrentEgg] = useState("0");
 
     const postTitle = (post: IPostEntry) => `${post.title}-${post.subtitle}`;
 
     useEffect(() => {
-        const justSeenPosts = relevantPosts.map(postTitle);
+        const justSeenPosts = relevantPosts.filter(p => p).map(postTitle);
         updateSeenEvents(justSeenPosts);
     }, [updateSeenEvents, relevantPosts]);
 
     useEffect(() => {
         if (postsFetchCompleted) {
-            setSelectedNews(posts.length === 0 ? 0 : 1);
+            setSelectedNews(posts.flat().length === 0 ? 0 : 1);
         }
 
     }, [postsFetchCompleted, setSelectedNews, posts]);
@@ -117,7 +119,25 @@ const Events = () => {
         }
     }
 
-    return <LoadingRenderer errors={postsErrors + seasonErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
+    const translatedEvent = useCallback((post: IPostEntry) => {
+        if (currentLanguage === Language.English) {
+            return post;
+        }
+
+        if (!post.comment) {
+            return post;
+        }
+
+        const candidate = postsPT.flat().filter(p => p.comment && p.comment === post.comment)[0];
+
+        if (!candidate) {
+            return post;
+        }
+
+        return candidate;
+    }, [currentLanguage, postsPT]);
+
+    return <LoadingRenderer errors={postsErrors + postsPTErrors + seasonErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && postsPTFetchCompleted && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='with-xl-gap'>
@@ -154,7 +174,7 @@ const Events = () => {
                                 withClassname = 'spotlighted-pokemon'
                             />}
                         </div>
-                        <div className={'current-news-title'}>{(relevantPosts[selectedNews].subtitle?.length ?? 0) > 15 ? relevantPosts[selectedNews].subtitle : relevantPosts[selectedNews].title}</div>
+                        <div className={'current-news-title'}>{(translatedEvent(relevantPosts[selectedNews]).subtitle?.length ?? 0) > 15 ? translatedEvent(relevantPosts[selectedNews]).subtitle : translatedEvent(relevantPosts[selectedNews]).title}</div>
                         <div className='current-news-date'>
                             <div className='from-date date-container'>
                                 {inCamelCase(new Date(relevantPosts[selectedNews].date).toLocaleString(undefined, localeStringSmallOptions))}
@@ -174,7 +194,7 @@ const Events = () => {
             
                 {relevantPosts[selectedNews]?.bonuses && <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding bonus-container'>
-                        {relevantPosts[selectedNews]?.bonuses?.split("\n").filter(b => b).map(b => <span key={b} className='ul-with-adorner'>{b}</span>)}
+                        {translatedEvent(relevantPosts[selectedNews])?.bonuses?.split("\n").filter(b => b).map(b => <span key={b} className='ul-with-adorner'>{b}</span>)}
                     </div>
                 </div>}
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&

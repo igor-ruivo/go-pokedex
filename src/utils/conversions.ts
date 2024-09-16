@@ -2,7 +2,7 @@ import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import Dictionary from "./Dictionary";
-import { buildPokemonImageUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
+import { buildPokemonImageUrl, corsProxyUrl, goBaseUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl, rankChangesCacheTtlInMillis } from "./Configs";
 import { readEntry, writeEntry } from "./resource-cache";
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { ITranslatedMove } from "../DTOs/ITranslatedMove";
@@ -1096,7 +1096,7 @@ const fetchDateFromString = (date: string) => {
     return dateObj.valueOf();
 }
 
-const innerParseNews = (subtitle: string, date: string, innerEntries: Element[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, raidDomain: IGamemasterPokemon[], wildDomain: IGamemasterPokemon[], postTitle: string, img: string, endResults: IPostEntry[], hasToComputeInnerEntries: boolean) => {
+const innerParseNews = (subtitle: string, date: string, innerEntries: Element[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, raidDomain: IGamemasterPokemon[], wildDomain: IGamemasterPokemon[], postTitle: string, img: string, endResults: IPostEntry[], hasToComputeInnerEntries: boolean, setRelevantPosts?: React.Dispatch<React.SetStateAction<Set<string>>>, url?: string, isPT = false) => {
     if (date.endsWith(".")) {
         date = date.substring(0, date.length - 1);
     }
@@ -1105,7 +1105,7 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
         return endResults;
     }
     
-    if (date.includes(" from ")) {
+    if (!isPT && date.includes(" from ")) {
         if (!date.includes(" to ") /*|| !date.includes(" at ")*/) {
             return endResults;
         }
@@ -1117,15 +1117,17 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
     }
 
     const parsedDate = date.split(" to ");
-    if (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10) {
+    if (!isPT && (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10)) {
         return endResults;
     }
 
     let startDate = 0;
     let endDate = 0;
     try {
-        startDate = fetchDateFromString(parsedDate[0]);
-        endDate = fetchDateFromString(parsedDate[1]);
+        if (!isPT) {
+            startDate = fetchDateFromString(parsedDate[0]);
+            endDate = fetchDateFromString(parsedDate[1]);
+        }
     } catch {
         return endResults;
     }
@@ -1153,6 +1155,7 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
             case "Event Bonus":
             case "Event bonuses":
             case "Event Bonuses":
+            case "Bônus do evento":
             case "Bonuses":
                 const contentWithNewlines = contentBodies[1].innerHTML.trim().replace(/<br\s*\/?>/gi, '\n').trim();
                 
@@ -1161,7 +1164,7 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
                 
                 const plainText = tempElement.textContent || tempElement.innerText;
                 
-                bonus += "\n\n" + plainText;
+                bonus += "\n\n" + removeLeadingAndTrailingAsterisks(plainText);
                 break;
             case "Field Research Task Rewards":
             case "Field Research Task Encounters":
@@ -1184,6 +1187,12 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
                 break;
         }
     }
+
+    if (!isPT && setRelevantPosts && url && (postTitle || subtitle) && startDate && endDate && new Date(endDate) > new Date() && img && (research.length > 0 || eggs.length > 0 || raids.length > 0 || wild.length > 0 || bonus.trim())) {
+        setRelevantPosts(r => {
+            return new Set([...r, url]);
+        });
+    }
             
     endResults.push({
         title: postTitle,
@@ -1195,13 +1204,28 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
         eggs: eggs,
         raids: raids,
         wild: wild,
-        bonuses: bonus.trim()
+        bonuses: bonus.trim(),
+        comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('post/')[1] : ''
     });
 
     return endResults;
 }
 
-export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+const removeLeadingAndTrailingAsterisks = (plainText: string) => {
+    if (plainText.startsWith('*')) {
+        plainText = plainText.substring(1);
+    }
+
+    if (plainText.endsWith('*')) {
+        plainText = plainText.substring(0, plainText.length - 1);
+    }
+
+    return plainText;
+}
+
+export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, setRelevantPosts: React.Dispatch<React.SetStateAction<Set<string>>>, request: any) => IPostEntry[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, setRelevantPosts: React.Dispatch<React.SetStateAction<Set<string>>>, request: any) => {
+    const url: string = request.responseURL;
+
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("blogPost__post__blocks")[0]?.children ?? []/*.getElementsByClassName("ContainerBlock")*/);
@@ -1232,7 +1256,7 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
         
         const date = (entries[0].getElementsByClassName("ContainerBlock__body")[0] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries);
+        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, setRelevantPosts, url);
     }
 
     for (let k = 0; k < entries.length; k++) {
@@ -1247,7 +1271,60 @@ export const mapPosts: (data: any, gamemasterPokemon: Dictionary<IGamemasterPoke
 
         const date = (containerBlock.children[1] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
 
-        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries);
+        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, setRelevantPosts, url);
+    }
+
+    return endResults;
+}
+
+export const mapPostsPT: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any) => IPostEntry[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any) => {
+    const url = request.responseURL;
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(data, 'text/html');
+    const entries = Array.from(htmlDoc.getElementsByClassName("blogPost__post__blocks")[0]?.children ?? []/*.getElementsByClassName("ContainerBlock")*/);
+    let hasToComputeInnerEntries = true;
+
+    if (!htmlDoc.querySelector('.blogPost__post__blocks>.block.block--ContainerBlock>.ContainerBlock>.ContainerBlock__blocks>.block.block--ContainerBlock>.ContainerBlock>.ContainerBlock__headline')) {
+        // This is not the enclosed format.
+        hasToComputeInnerEntries = false;
+    }
+    
+    const postTitle = (htmlDoc.getElementsByClassName("blogPost__title")[0] as HTMLElement)?.innerText;
+    const img = (htmlDoc.getElementsByClassName("blogPost__post")[0]?.getElementsByClassName("image")[0]?.getElementsByTagName("img")[0] as HTMLImageElement)?.src;
+
+    const wildDomain = Object.values(gamemasterPokemon)
+    .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
+
+    const raidDomain = Object.values(gamemasterPokemon)
+    .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
+
+    const endResults: IPostEntry[] = [];
+
+    if (!hasToComputeInnerEntries) {
+        if (entries.length === 0) {
+            return [];
+        }
+
+        const subtitle = (entries[0].getElementsByClassName("ContainerBlock__headline")[0] as HTMLElement)?.innerText.trim();
+        
+        const date = (entries[0].getElementsByClassName("ContainerBlock__body")[0] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
+
+        return innerParseNews(subtitle, date, entries, gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, undefined, url, true);
+    }
+
+    for (let k = 0; k < entries.length; k++) {
+        const containerBlock = entries[k].children[0];
+
+        const innerEntries = containerBlock.getElementsByClassName("ContainerBlock");
+        if (innerEntries.length === 0) {
+            continue;
+        }
+
+        const subtitle = (containerBlock.getElementsByClassName("ContainerBlock__headline")[0] as HTMLElement)?.innerText.trim();
+
+        const date = (containerBlock.children[1] as HTMLElement)?.innerText?.trim().split("\n")[0].trim();
+
+        innerParseNews(subtitle, date, Array.from(innerEntries), gamemasterPokemon, raidDomain, wildDomain, postTitle, img, endResults, hasToComputeInnerEntries, undefined, url, true);
     }
 
     return endResults;

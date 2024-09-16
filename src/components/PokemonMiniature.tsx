@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import PokemonImage from "./PokemonImage";
-import PokemonNumber from "./PokemonNumber";
+import { /*useEffect, useMemo,*/ useRef } from "react";
+/*import PokemonNumber from "./PokemonNumber";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { ListType } from "../views/pokedex";
 import { calculateCP, fetchReachablePokemonIncludingSelf, getAllChargedMoves, needsXLCandy } from "../utils/pokemon-helper";
@@ -9,10 +10,9 @@ import { useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { customCupCPLimit, usePvp } from "../contexts/pvp-context";
 import useCountdown from "../hooks/useCountdown";
-import { useEffect, useMemo, useRef } from "react";
 import { usePokemon } from "../contexts/pokemon-context";
 import { useRaidRanker } from "../contexts/raid-ranker-context";
-import { useMoves } from "../contexts/moves-context";
+import { useMoves } from "../contexts/moves-context";*/
 
 interface IPokemonMiniatureProps {
     pokemon: IGamemasterPokemon,
@@ -23,15 +23,15 @@ interface IPokemonMiniatureProps {
 }
 
 const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShadowVersion, forceShadowAdorner}: IPokemonMiniatureProps) => {
-    const {days, hours, minutes, seconds} = useCountdown(withCountdown ?? 0);
-    const {currentGameLanguage} = useLanguage();
+    /*const {days, hours, minutes, seconds} = useCountdown(withCountdown ?? 0);
+    const {currentGameLanguage} = useLanguage();*/
     const containerWidth = useRef<HTMLDivElement>(null);
-    const {rankLists, pvpFetchCompleted} = usePvp();
-    const {gamemasterPokemon, fetchCompleted} = usePokemon();
-    const {moves, movesFetchCompleted} = useMoves();
-    const {raidRankerFetchCompleted, raidDPS, computeRaidRankerforTypes} = useRaidRanker();
+    //const {rankLists, pvpFetchCompleted} = usePvp();
+    //const {gamemasterPokemon, fetchCompleted} = usePokemon();
+    //const {moves, movesFetchCompleted} = useMoves();
+    //const {raidRankerFetchCompleted, raidDPS, computeRaidRankerforTypes} = useRaidRanker();
 
-    const allRelevantChargedMoveTypes = useMemo(() => {
+    /*const allRelevantChargedMoveTypes = useMemo(() => {
         if (!fetchCompleted || !movesFetchCompleted) {
             return [];
         }
@@ -57,11 +57,11 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
     
             computeRaidRankerforTypes(gamemasterPokemon, moves, allRelevantChargedMoveTypes);
         }, 0);
-    }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
+    }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);*/
 
     const link = `/pokemon/${pokemon.speciesId + (linkToShadowVersion ? "_shadow" : "")}/info`;
 
-    const isGoodForRaids = () => {
+    /*const isGoodForRaids = () => {
         if (allRelevantChargedMoveTypes.length === 0) {
             return false;
         }
@@ -109,17 +109,17 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
     const isGoodForLeague = (leagueIdx: number) => {
         const reachable = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
         return Array.from(reachable).some(r => rankLists[leagueIdx][r.speciesId]?.rank <= 100);
-    }
+    }*/
 
     return (
         <Link to={link}>
             <div ref={containerWidth} className="pokemon-miniature">
-                <div className="miniature-tooltip">
+                {/*<div className="miniature-tooltip">
                     {pvpFetchCompleted && fetchCompleted && isGoodForLeague(0) && <img alt="Great League" src={`${process.env.PUBLIC_URL}/images/leagues/great-big.webp`}/>}
                     {pvpFetchCompleted && fetchCompleted && isGoodForLeague(1) && <img alt="Ultra League" src={`${process.env.PUBLIC_URL}/images/leagues/ultra-big.webp`}/>}
                     {pvpFetchCompleted && fetchCompleted && isGoodForLeague(2) && <img alt="Master League" src={`${process.env.PUBLIC_URL}/images/leagues/master-big.webp`}/>}
                     {isGoodForRaids() && <img className="padded-img raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`}/>}
-                </div>
+                </div>*/}
                 <span className="mini-card-content">
                     <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />
                 </span>

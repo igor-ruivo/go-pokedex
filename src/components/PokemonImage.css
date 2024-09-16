@@ -61,7 +61,6 @@
 }
 
 .miniature-tooltip {
-    display: none !important; /*not ready yet*/
     background-color: rgba(0, 0, 0, .075);
     border: 1px solid var(--borderColor2);
     border-radius: 6px;
