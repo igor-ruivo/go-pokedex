@@ -141,7 +141,7 @@ const Raids = () => {
                     value={raidEventDates.find(o => o.value === currentBossDate)}
                     options={raidEventDates}
                     onChange={e => setCurrentBossDate((e as any).value)}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='calendar' className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
             <div>
@@ -151,7 +151,7 @@ const Raids = () => {
                     value={raidEventEggs.find(o => o.value === currentTier)}
                     options={raidEventEggs}
                     onChange={e => setCurrentTier((e as any).value)}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={26} width={26} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={26} width={26} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
         </div>

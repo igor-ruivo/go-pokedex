@@ -19,10 +19,6 @@ interface IPokemonInfoImagePlaceholderProps {
     setDisplayLevel: (newLevel: number) => void;
 }
 
-interface PokemonType {
-    types: string[];
-}
-
 interface WeatherImageInfo {
     types: string[];
     image: string;

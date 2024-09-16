@@ -12,7 +12,6 @@ import PokemonMoves from '../components/PokemonMoves';
 import LeaguePicker from '../components/LeaguePicker';
 import PokemonHeader from '../components/PokemonHeader';
 import useLeague from '../hooks/useLeague';
-import PokemonFamily from '../components/PokemonFamily';
 import { calculateCP, fetchPokemonFamily } from '../utils/pokemon-helper';
 import { useEffect, useMemo, useState } from 'react';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
