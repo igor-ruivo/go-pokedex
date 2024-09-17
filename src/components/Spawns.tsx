@@ -81,7 +81,7 @@ const Spawns = () => {
         </div>
         <div className='with-dynamic-max-width auto-margin-sides'>
             <div className='item default-padding with-margin-top'>
-                <div className='pvp-entry full-width smooth with-border fitting-content gapped'>
+                <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped'>
                     <strong>{translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}</strong>
                 </div>
                 {currentBossDate === "season" &&
@@ -91,7 +91,7 @@ const Spawns = () => {
                                 {[(season?.wild ?? []).filter(e => e.kind === "0"), (season?.wild ?? []).filter(e => e.kind === "1"), (season?.wild ?? []).filter(e => e.kind === "2"), (season?.wild ?? []).filter(e => e.kind === "3"), (season?.wild ?? []).filter(e => e.kind === "4"), (season?.wild ?? []).filter(e => e.kind === "5")]
                                     .map((t, i) => (
                                         <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
-                                            <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
+                                            <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding normal-text item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
                                                 <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
                                                 {String(i) === currentPlace && idxToPlace(i)}
                                             </strong>

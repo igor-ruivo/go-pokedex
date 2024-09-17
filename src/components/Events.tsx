@@ -237,7 +237,7 @@ const Events = () => {
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
+                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
                             <strong>{translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}</strong>
                         </div>
                         {selectedNews === 0 &&
@@ -271,7 +271,7 @@ const Events = () => {
                     {(relevantPosts[selectedNews].raids ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
+                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
                             <strong>{`${translator(TranslatorKeys.Featured1, currentLanguage)} ${gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.Featured2, currentLanguage)}`}</strong>
                         </div>
                         <div className={`with-flex contained with-margin-top`}>
@@ -287,7 +287,7 @@ const Events = () => {
                     {(relevantPosts[selectedNews].researches ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
+                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
                             <strong>{translator(TranslatorKeys.FeaturedResearches, currentLanguage)}</strong>
                         </div>
                         <div className={`with-flex contained with-margin-top`}>
@@ -303,7 +303,7 @@ const Events = () => {
                     {(relevantPosts[selectedNews].eggs ?? []).length > 0 &&
                     <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border fitting-content gapped smaller-title'>
+                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
                             <strong>{translator(TranslatorKeys.FeaturedEggs, currentLanguage)}</strong>
                         </div>
                         {selectedNews === 0 &&

@@ -71,7 +71,7 @@ const Eggs = () => {
                                 {[(leekEggs?.eggs ?? []).filter(e => e.kind === "2"), (leekEggs?.eggs ?? []).filter(e => e.kind === "5"), (leekEggs?.eggs ?? []).filter(e => e.kind === "7"), (leekEggs?.eggs ?? []).filter(e => e.kind === "10"), (leekEggs?.eggs ?? []).filter(e => e.kind === "12")]
                                     .map((t, i) => (
                                         <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
-                                            <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
+                                            <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding normal-text item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
                                                 <div className="img-padding"><img height={26} width={26} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
                                                 {String(i) === currentEgg && idxToEggName(i)}
                                             </strong>
