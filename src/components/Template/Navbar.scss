@@ -235,6 +235,9 @@
         background-color: var(--popup-background-color) !important;
         //overflow: unset !important;
     }
+    .img-adorner {
+        background-color: rgba(0,0,0,0) !important;
+    }
 }
 
 .navbar-dropdown {
