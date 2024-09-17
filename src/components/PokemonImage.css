@@ -60,6 +60,10 @@
     left: 0;
 }
 
+.minimal-padding-bottom {
+    padding-bottom: 1px;
+}
+
 .miniature-tooltip {
     background-color: rgba(0, 0, 0, .075);
     border: 1px solid var(--borderColor2);

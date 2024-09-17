@@ -86,6 +86,15 @@
     border-radius: 12px;
 }
 
+.miniature-notification {
+    transform: none;
+    top: 0;
+    left: 0;
+    padding: 0 25%;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
 .post-miniature {
     display: flex;
     flex-direction: column;
@@ -198,6 +207,10 @@
 @media (max-width: 500px) {
     .miniature-date {
         font-size: x-small;
+    }
+
+    .miniature-notification {
+        font-size: unset;
     }
     
     .post-notification {

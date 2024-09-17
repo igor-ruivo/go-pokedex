@@ -85,7 +85,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgO
                 </span>
                 {descriptionComponent && descriptionComponent}
             </span>
-            {withName && <div><span className="pkm-img-name ellipsed block-column" style={specificNameContainerWidth ? {width: specificNameContainerWidth} : {}}>{shortName(pokemon.speciesName) + (forceShadowAdorner ? " (S)" : "")}</span></div>}
+            {withName && <div><span className="pkm-img-name ellipsed block-column minimal-padding-bottom" style={specificNameContainerWidth ? {width: specificNameContainerWidth} : {}}>{shortName(pokemon.speciesName) + (forceShadowAdorner ? " (S)" : "")}</span></div>}
         </>
     )
 });
