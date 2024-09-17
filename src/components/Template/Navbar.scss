@@ -258,6 +258,7 @@ button {
     color: var(--buttonsTextColor);
     border-radius: 12px;
     font-size: inherit;
+    border: 1px solid var(--buttonsTextColor);
 }
 
 .hint-container {

@@ -15,6 +15,7 @@ export enum TranslatorKeys {
     Spawns,
     Rockets,
     Eggs,
+    Trash,
     Source,
     Types1,
     New,
@@ -455,6 +456,12 @@ const featuredResearches = new Map<Language, string>([
     [Language.English, "Featured Researches"],
     [Language.Portuguese, "Pesquisas em Destaque"],
     [Language.Bosnian, "Istaknuta Istraživanja"]
+]);
+
+const trash = new Map<Language, string>([
+    [Language.English, "Mass Delete Pokémons"],
+    [Language.Portuguese, "Eliminar Pokémons em Massa"],
+    [Language.Bosnian, "Masovno brisanje Pokemoni"]
 ]);
 
 const name = new Map<Language, string>([
@@ -1127,6 +1134,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Cities, cities],
     [TranslatorKeys.Forests, forests],
     [TranslatorKeys.Mountains, mountains],
+    [TranslatorKeys.Trash, trash],
     [TranslatorKeys.Beaches, beaches],
     [TranslatorKeys.SpecialBosses, specialBosses],
     [TranslatorKeys.Northen, northen],

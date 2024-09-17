@@ -14,6 +14,7 @@ import { useRaidRanker } from "../contexts/raid-ranker-context";
 import { useMoves } from "../contexts/moves-context";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import translator, { TranslatorKeys } from "../utils/Translator";
+import PokemonHeader from "./PokemonHeader";
 
 const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
     const cachedValue = readPersistentValue(key);
@@ -322,12 +323,22 @@ const DeleteTrash = () => {
     }
 
     return (
-        <main className="layout normal-text-descendants">
+        <main className="layout">
             <div className="full-height">
                 <div className="pokemon-content">
                     <LoadingRenderer errors="" completed={pvpFetchCompleted && fetchCompleted}>
-                        <div className="content with-default-top-padding flex-column">
-                            
+                        <div className="content with-default-top-padding">
+                            <PokemonHeader
+                                pokemonName={translator(TranslatorKeys.Trash, currentLanguage)}
+                                type1={undefined}
+                                type2={undefined}
+                                defaultTextColor
+                            />
+                            <div className="pokemon normal-text-descendants">
+                            <div className="item with-small-margin-top events-header-image-container">
+                                        <img alt='AI' src= {`${process.env.PUBLIC_URL}/images/ai/trash-no-bg.png`}/>
+                                    </div>
+                                    <div className="flex-column normal-margin-top">
                             <div className={`extra-ivs-options item default-padding column text-container ${isExpanded ? 'expanded' : ''}`}>
                             <p id="readMoreText" className={`${isExpanded ? 'expanded' : ''}`}>{translator(TranslatorKeys.TrashHelp, currentLanguage)}</p>
                             <u onClick={()=>{setExpanded(e => !e)}} id="readMoreLink">
@@ -391,7 +402,8 @@ const DeleteTrash = () => {
                                 onClick={(e: any) => {e.target.select();
                                     document.execCommand("copy");
                                     alert("Copied to clipboard.");}}
-                            />
+                            /></div>
+                            </div>
                         </div>
                     </LoadingRenderer>
                 </div>
