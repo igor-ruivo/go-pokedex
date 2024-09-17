@@ -56,7 +56,8 @@
     height: 18px;
     width: 18px;
     transform: translateY(-45%) translateX(120%);
-    background-color: red;
+    background-color: var(--cp-color);
+    color: #202122;
     position: absolute;
     border-radius: 50%;
     font-weight: 700;

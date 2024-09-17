@@ -5,6 +5,7 @@ import { IPostEntry } from '../DTOs/INews';
 
 interface NotificationsContextType {
     unseenEvents: number;
+    seenEvents: Set<string>;
     updateSeenEvents: (newEvents: string[]) => void;
 }
 
@@ -48,7 +49,7 @@ export const NotificationsProvider = (props: React.PropsWithChildren<{}>) => {
     }, [setSeenEvents]);
   
     return (
-        <NotificationsContext.Provider value={{ unseenEvents, updateSeenEvents }}>
+        <NotificationsContext.Provider value={{ seenEvents, unseenEvents, updateSeenEvents }}>
             {props.children}
         </NotificationsContext.Provider>
     );

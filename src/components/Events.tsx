@@ -15,7 +15,7 @@ import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 
 const Events = () => {
     const { posts, postsPT, season, seasonPT, postsErrors, seasonErrors, seasonPTErrors, seasonPTFetchCompleted, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
-    const { updateSeenEvents } = useNotifications();
+    const { seenEvents, updateSeenEvents } = useNotifications();
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const nonSeasonalPosts = useMemo(() => [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)]
@@ -31,9 +31,11 @@ const Events = () => {
     const postTitle = useCallback((post: IPostEntry) => `${post.title}-${post.subtitle}`, []);
 
     useEffect(() => {
-        const justSeenPosts = relevantPosts.filter(p => p).map(postTitle);
-        updateSeenEvents(justSeenPosts);
-    }, [updateSeenEvents, relevantPosts, postTitle]);
+        const currentPost = relevantPosts[selectedNews];
+        if (currentPost) {
+            updateSeenEvents([postTitle(currentPost)]);
+        }
+    }, [updateSeenEvents, relevantPosts, postTitle, selectedNews]);
 
     useEffect(() => {
         if (postsFetchCompleted) {
@@ -193,6 +195,7 @@ const Events = () => {
                                                 imgOnly
                                                 withClassname = 'spotlighted-pokemon'
                                             />}
+                                            {!seenEvents.has(postTitle(p)) && <span className="notifications-counter heavy-weight post-notification">{translator(TranslatorKeys.New, currentLanguage)}</span>}
                                         </div>
                                     </div>
                                 )}

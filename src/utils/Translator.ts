@@ -17,6 +17,7 @@ export enum TranslatorKeys {
     Eggs,
     Source,
     Types1,
+    New,
     Types2,
     Search,
     Loading,
@@ -346,6 +347,12 @@ const cities = new Map<Language, string>([
     [Language.English, "Cities"],
     [Language.Portuguese, "Cidades"],
     [Language.Bosnian, "Gradovi"]
+]);
+
+const newEvent = new Map<Language, string>([
+    [Language.English, "New!"],
+    [Language.Portuguese, "Novo!"],
+    [Language.Bosnian, "Novi!"]
 ]);
 
 const forests = new Map<Language, string>([
@@ -1127,6 +1134,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Source, source],
     [TranslatorKeys.GridFiltering, gridFiltering],
     [TranslatorKeys.And, and],
+    [TranslatorKeys.New, newEvent],
     [TranslatorKeys.FeaturedSpawns, featuredSpawns],
     [TranslatorKeys.FeaturedEggs, featuredEggs],
     [TranslatorKeys.FeaturedResearches, featuredResearches],

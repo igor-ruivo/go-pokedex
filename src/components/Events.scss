@@ -71,13 +71,15 @@
     }
 }
 
-.season-miniature {
-    //border-right: 1px solid var(--borderColor2);
-}
-
 .miniature-date {
     font-weight: 700;
     text-align: center;
+}
+
+.post-notification {
+    transform: none;
+    padding: 0 25%;
+    border-radius: 12px;
 }
 
 .post-miniature {
@@ -192,6 +194,10 @@
 @media (max-width: 500px) {
     .miniature-date {
         font-size: x-small;
+    }
+    
+    .post-notification {
+        transform: translateY(160%) translateX(20%)
     }
 
     .post-miniature {
