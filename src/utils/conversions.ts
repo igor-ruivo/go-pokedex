@@ -294,6 +294,9 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         }
     );
 
+    pokemonDictionary['gastrodon'].familyId = 'FAMILY_SHELLOS';
+    pokemonDictionary['gastrodon'].parent = 'shellos';
+
     return pokemonDictionary;
 }
 
