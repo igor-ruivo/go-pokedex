@@ -690,7 +690,7 @@ export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemast
     return null;
 }*/
 
-const normalizeSpeciesNameForId = (speciesName: string) => speciesName.replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr");
+const normalizeSpeciesNameForId = (speciesName: string) => speciesName.replaceAll("-", "_").replaceAll(". ", "_").replaceAll("'", "").replaceAll("’", "").replaceAll(" ", "_").replaceAll(" (jr)", "_jr").replaceAll('♂', '_male').replaceAll('♀', '_female');
 const ndfNormalized = (str: string) => str.toLocaleLowerCase().replaceAll("’", "'").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any, isPT?: boolean) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>, request: any, isPT = false) => {
@@ -911,6 +911,21 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                         
                         wildEncounters.push({
                             speciesId: 'zacian_hero',
+                            shiny: isShiny,
+                            kind: raidLevel
+                        });
+                    }
+
+                    continue;
+                }
+
+                // edge case -> Zamazenta (Hero) is commonly referred to as zamazenta only.
+                if (currP === 'zamazenta') {
+                    if (!seen.has('zamazenta_hero')) {
+                        seen.add('zamazenta_hero');
+                        
+                        wildEncounters.push({
+                            speciesId: 'zamazenta_hero',
                             shiny: isShiny,
                             kind: raidLevel
                         });
