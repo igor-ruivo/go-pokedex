@@ -87,7 +87,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("necrozma_dusk_mane", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/800_f2.png`);
 
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
-    const isShadowConditionFilter = (pokemon: any) => pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
+    const isShadowConditionFilter = (pokemon: any) => pokemon.tags && Array.from(pokemon.tags).includes("shadow") || pokemon.speciesName.toLocaleLowerCase().includes('(shadow)');
 
     const pokemonDictionary: Dictionary<IGamemasterPokemon> = {};
 
@@ -255,11 +255,28 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 "evolutions": ["darmanitan_standard_shadow"]
             },
             "tags": ["shadow"]
+        },
+        {
+            "dex": 303,
+            "speciesId": "mawile_mega",
+            "speciesName": "Mawile (Mega)",
+            "baseStats": {
+                "atk": 188,
+                "def": 217,
+                "hp": 137
+            },
+            "types": ["steel", "fairy"],
+            "fastMoves": ["ASTONISH", "BITE", "FIRE_FANG", "ICE_FANG", "FAIRY_WIND"],
+            "chargedMoves": ["IRON_HEAD", "PLAY_ROUGH", "VICE_GRIP", "POWER_UP_PUNCH"],
+            "released": true,
+            "tags": ["mega"]
         }
     ];
 
     const seenP = new Set<string>();
-    [...(Array.from(data) as any[]), ...syntheticPokemon]
+    const collect = [...(Array.from(data) as any[]), ...syntheticPokemon];
+
+    collect
         .filter(baseDataFilter)
         .forEach(pokemon => {
             if (seenP.has(pokemon.speciesId)) {
@@ -281,7 +298,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
             const idForIndexCalc = pokemon.speciesId.replace("_shadow", "");
 
             let form = "";
-            const repeatedDexs = (data as any[]).filter(p => baseDataFilter(p) && p.dex === pokemon.dex && !isShadowConditionFilter(p) && !p.aliasId);
+            const repeatedDexs = collect.filter(p => baseDataFilter(p) && p.dex === pokemon.dex && !isShadowConditionFilter(p) && !p.aliasId);
             const currentIndex = repeatedDexs.findIndex(p => p.speciesId === idForIndexCalc);
             if (currentIndex === -1) {
                 console.log(`Couldn't find matching species id for ${pokemon.speciesId} (alias: ${pokemon.aliasId})`);
@@ -306,7 +323,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 eliteMoves: (cleanHiddenPowers(pokemon.eliteMoves)) ?? [],
                 legacyMoves: (cleanHiddenPowers(pokemon.legacyMoves)) ?? [],
                 isShadow: isShadow,
-                isMega: pokemon.tags ? Array.from(pokemon.tags).includes("mega") : false,
+                isMega: pokemon.tags && Array.from(pokemon.tags).includes("mega") || pokemon.speciesName.toLocaleLowerCase().includes('(mega)'),
                 familyId: pokemon.family?.id,
                 parent: pokemon.speciesId === "darmanitan_standard_shadow" ? "darumaka_shadow" : pokemon.family?.parent,
                 evolutions: pokemon.family ? pokemon.family.evolutions : [],
