@@ -53,7 +53,10 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "heracross_mega",
         "hatenna",
         "hattrem",
-        "hatterene"
+        "hatterene",
+        "morpeko_full_belly",
+        "morpeko_hangry",
+        "mawile_mega"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -80,6 +83,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("oricorio_pau", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/741_f3.png`);
     overrideMappings.set("oricorio_pom_pom", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/741_f2.png`);
     overrideMappings.set("pumpkaboo_small", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/710.png`);
+    overrideMappings.set("necrozma_dawn_wings", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/800_f3.png`);
+    overrideMappings.set("necrozma_dusk_mane", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/800_f2.png`);
 
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => pokemon.tags ? Array.from(pokemon.tags).includes("shadow") : false;
@@ -136,8 +141,23 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
             return "POMPOM";
         }
 
+        if (pokemonName.includes("(Dawn Wings)")) {
+            return "DAWN_WINGS";
+        }
+
+        if (pokemonName.includes("(Dusk Mane)")) {
+            return "DUSK_MANE";
+        }
+
+        if (pokemonName.includes("(Full Belly)")) {
+            return "FULL_BELLY";
+        }
+
         if ((pokemonName.length - pokemonName.replaceAll("(", "").length === 1) && !pokemonName.includes("Shadow") && !pokemonName.includes("Jr")) {
             const form = pokemonName.substring(pokemonName.indexOf("(") + 1, pokemonName.indexOf(")"));
+            if (form.includes(' ')) {
+                console.log('Warning: form for pokémon go asset containing spaces: ' + pokemonName + ' -> form is: ' + form);
+            }
             return form.toLocaleUpperCase();
         }
 
@@ -175,6 +195,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     goOverrideMappings.set("florges", buildPokemonGoImageUrl("671", "RED"));
     goOverrideMappings.set("furfrou", buildPokemonGoImageUrl("676", "NATURAL"));
     goOverrideMappings.set("meowstic", buildPokemonGoImageUrl("678", ""));
+    //goOverrideMappings.set("morpeko_full_belly", buildPokemonGoImageUrl("877", "FULL_BELLY"));
 
     const shinyGoOverrideMappings = new Map<string, string>();
     shinyGoOverrideMappings.set("unown", buildPokemonGoShinyImageUrl("201", "UNOWN_F"));
@@ -203,6 +224,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     shinyGoOverrideMappings.set("florges", buildPokemonGoShinyImageUrl("671", "RED"));
     shinyGoOverrideMappings.set("furfrou", buildPokemonGoShinyImageUrl("676", "NATURAL"));
     shinyGoOverrideMappings.set("meowstic", buildPokemonGoShinyImageUrl("678", ""));
+    //shinyGoOverrideMappings.set("morpeko_full_belly", buildPokemonGoShinyImageUrl("877", "FULL_BELLY"));
 
     const computeGoShortUrl = (url: string) => url.split(goBaseUrl)[1];
 
@@ -905,7 +927,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
             if (formCandidate.length === 0) {
 
                 // edge case -> Zacian (Hero) is commonly referred to as zacian only.
-                if (currP === 'zacian') {
+                if (currP.includes('zacian') && !currP.includes('sword') && !currP.includes('crowned')) {
                     if (!seen.has('zacian_hero')) {
                         seen.add('zacian_hero');
                         
@@ -920,12 +942,26 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                 }
 
                 // edge case -> Zamazenta (Hero) is commonly referred to as zamazenta only.
-                if (currP === 'zamazenta') {
+                if (currP.includes('zamazenta') && !currP.includes('shield') && !currP.includes('crowned')) {
                     if (!seen.has('zamazenta_hero')) {
                         seen.add('zamazenta_hero');
                         
                         wildEncounters.push({
                             speciesId: 'zamazenta_hero',
+                            shiny: isShiny,
+                            kind: raidLevel
+                        });
+                    }
+
+                    continue;
+                }
+
+                if (currP.includes('morpeko') && !currP.includes('hangry')) {
+                    if (!seen.has('morpeko_full_belly')) {
+                        seen.add('morpeko_full_belly');
+                        
+                        wildEncounters.push({
+                            speciesId: 'morpeko_full_belly',
                             shiny: isShiny,
                             kind: raidLevel
                         });

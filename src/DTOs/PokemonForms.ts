@@ -78,4 +78,7 @@ export enum PokemonForms {
     YellowFlower = "Yellow Flower",
     WhiteFlower = "White Flower",
     OrangeFlower = "Orange Flower",
+    //New
+    FullBelly = "Full Belly",
+    Hangry = "Hangry",
 }
