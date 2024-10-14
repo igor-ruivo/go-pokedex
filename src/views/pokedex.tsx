@@ -158,7 +158,34 @@ const Pokedex = () => {
             case ListType.POKEDEX:
                 const pokedexDomainFilter = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && (showMega || !pokemon.isMega) && (type1Filter === undefined || pokemon.types.includes(type1Filter)) && (type2Filter === undefined || pokemon.types.includes(type2Filter));
                 const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
-                processedList = Object.values(gamemasterPokemon).filter(p => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilterForFamily));
+                processedList = Object.values(gamemasterPokemon).filter(p => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilterForFamily)).sort((p1: IGamemasterPokemon, p2: IGamemasterPokemon) => {
+                    // Sort by dex number first
+                    if (p1.dex !== p2.dex) {
+                      return p1.dex - p2.dex;
+                    }
+                
+                    // Sort Megas higher
+                    if (p1.isMega !== p2.isMega) {
+                      return p1.isMega ? 1 : -1;
+                    }
+                
+                    // Cache lowercase species names
+                    const p1Name = p1.speciesName.toLocaleLowerCase();
+                    const p2Name = p2.speciesName.toLocaleLowerCase();
+                
+                    // Handle '(small)', '(average)', '(large)', '(super)' sizes
+                    const sizePriority = ['small', 'average', 'large', 'super'];
+                
+                    const p1SizeIndex = sizePriority.findIndex(size => p1Name.includes(`(${size})`));
+                    const p2SizeIndex = sizePriority.findIndex(size => p2Name.includes(`(${size})`));
+                
+                    if (p1SizeIndex !== p2SizeIndex) {
+                      return p1SizeIndex - p2SizeIndex;
+                    }
+                
+                    // Default to alphabetical order by species name (meaning the forms come at the end, but before the megas, and that the forms are ordered alphabetically)
+                    return p1Name.localeCompare(p2Name);
+                });
                 break;
             case ListType.GREAT_LEAGUE:
             case ListType.ULTRA_LEAGUE:

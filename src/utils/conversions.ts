@@ -87,7 +87,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("necrozma_dusk_mane", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/800_f2.png`);
 
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
-    const isShadowConditionFilter = (pokemon: any) => pokemon.tags && Array.from(pokemon.tags).includes("shadow") || pokemon.speciesName.toLocaleLowerCase().includes('(shadow)');
+    const isShadowConditionFilter = (pokemon: any) => (pokemon.tags && Array.from(pokemon.tags).includes("shadow")) || pokemon.speciesName.toLocaleLowerCase().includes('(shadow)');
 
     const pokemonDictionary: Dictionary<IGamemasterPokemon> = {};
 
@@ -323,7 +323,7 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 eliteMoves: (cleanHiddenPowers(pokemon.eliteMoves)) ?? [],
                 legacyMoves: (cleanHiddenPowers(pokemon.legacyMoves)) ?? [],
                 isShadow: isShadow,
-                isMega: pokemon.tags && Array.from(pokemon.tags).includes("mega") || pokemon.speciesName.toLocaleLowerCase().includes('(mega)'),
+                isMega: (pokemon.tags && Array.from(pokemon.tags).includes("mega")) || pokemon.speciesName.toLocaleLowerCase().includes('(mega)'),
                 familyId: pokemon.family?.id,
                 parent: pokemon.speciesId === "darmanitan_standard_shadow" ? "darumaka_shadow" : pokemon.family?.parent,
                 evolutions: pokemon.family ? pokemon.family.evolutions : [],
