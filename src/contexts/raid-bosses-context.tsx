@@ -88,7 +88,9 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
             const hrefValue = (e as HTMLAnchorElement).href;
             const relativeComponent = hrefValue.substring(hrefValue.lastIndexOf("/post/") + 1);
             return encodeProxyUrl(relativeComponent);
-        });
+        })
+        //filter unavailable events
+        .filter(x => !x.includes('festival-of-lights-2024'));
 
         fetchPosts(urls, calendarCache, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, gamemasterPokemon, request));
 
