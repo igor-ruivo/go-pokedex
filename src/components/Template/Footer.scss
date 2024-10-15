@@ -56,8 +56,8 @@
     height: 18px;
     width: 18px;
     transform: translateY(-45%) translateX(120%);
-    background-color: var(--cp-color);
-    color: #202122;
+    background-color: var(--notifications-color);
+    color: var(--notifications-color-text);
     position: absolute;
     border-radius: 50%;
     font-weight: 700;

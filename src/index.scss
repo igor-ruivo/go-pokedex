@@ -99,9 +99,19 @@ code {
     --stat-label-color: rgb(183 166 118);
     --background-dropdowns: #1C252C;
     --higher-level: rgb(210, 42, 42);
+    --header-main-color: #26313b;
+    --header-main-text-color: #eff2f7;
+    --notifications-color-text: #202122;
+    --notifications-color: rgb(255, 189, 0);
+    --highlighted-text: rgb(255, 189, 0);
 }
 
 .theme-light {
+    --highlighted-text: rgb(137, 113, 97);
+    --header-main-color: rgb(137, 113, 97);
+    --notifications-color-text: #FFFFFF;
+    --notifications-color: rgb(255, 189, 0);
+    --header-main-text-color: rgb(255, 255, 255);
     --activePerkFilter: contrast(0) brightness(0.6);
     --higher-level: rgb(148, 0, 0);
     --lighter-tone-text: #202122;

@@ -38,6 +38,8 @@ const Calendar2 = () => {
                                 type1={undefined}
                                 type2={undefined}
                                 defaultTextColor
+                                defaultBannerColor
+                                whiteTextColor
                             />
                             <div className="pokemon">
                                 {fetchCompleted &&

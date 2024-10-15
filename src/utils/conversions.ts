@@ -255,21 +255,6 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 "evolutions": ["darmanitan_standard_shadow"]
             },
             "tags": ["shadow"]
-        },
-        {
-            "dex": 303,
-            "speciesId": "mawile_mega",
-            "speciesName": "Mawile (Mega)",
-            "baseStats": {
-                "atk": 188,
-                "def": 217,
-                "hp": 137
-            },
-            "types": ["steel", "fairy"],
-            "fastMoves": ["ASTONISH", "BITE", "FIRE_FANG", "ICE_FANG", "FAIRY_WIND"],
-            "chargedMoves": ["IRON_HEAD", "PLAY_ROUGH", "VICE_GRIP", "POWER_UP_PUNCH"],
-            "released": true,
-            "tags": ["mega"]
         }
     ];
 

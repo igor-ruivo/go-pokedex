@@ -6,6 +6,14 @@
     color: var(--textColor);
 }
 
+.white-text-color {
+    color: var(--header-main-text-color)
+}
+
+.banner-color {
+    background: var(--header-main-color);
+}
+
 .column {
     flex-direction: column;
     gap: 6px;

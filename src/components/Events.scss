@@ -53,10 +53,13 @@
     .event-img-itself {
         //min-height: 200px;
         border-radius: 12px;
-        border: 3px solid var(--cp-color);
+        border: 3px solid var(--highlighted-text);
         max-width: 42%;
         width: auto;
         height: auto;
+    }
+    :has(>.post-notification) {
+        border: 3px solid var(--red) !important;
     }
 }
 
@@ -71,7 +74,10 @@
     width: 13% !important;
     min-width: 140px !important;
     .miniature-itself {
-        border: 3px solid var(--cp-color) !important;
+        border: 3px solid var(--highlighted-text) !important;
+    }
+    :has(>.post-notification) {
+        border: 3px solid var(--red) !important;
     }
 }
 
@@ -110,9 +116,12 @@
     gap: 2%;
     .miniature-itself {
         border-radius: 12px;
-        border: 2px solid var(--cp-color);
+        border: 2px solid var(--highlighted-text);
         width: 100%;
         //max-width: 100%;
+    }
+    .is-new > .miniature-itself {
+        border: 2px solid var(--notifications-color) !important;
     }
     >:first-child {
         margin-left: auto;
@@ -154,7 +163,7 @@
 }
 
 .date-container {
-    color: var(--cp-color);
+    color: var(--highlighted-text);
     display: flex;
     flex-direction: row;
     gap: 4px;
