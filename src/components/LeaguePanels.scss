@@ -87,8 +87,8 @@
     }
 }
 
-.with-shadow {
-    text-shadow: var(--text-shadow);
+.without-shadow {
+    box-shadow: none !important;
 }
 
 .pvp-scores {

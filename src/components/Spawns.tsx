@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { inCamelCase, localeStringSmallestOptions } from "../utils/Misc";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
+import Section from "./Template/Section";
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
 
@@ -67,7 +68,7 @@ const Spawns = () => {
     }, []);
 
     return <LoadingRenderer errors={postsErrors + errors + seasonErrors} completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted && !!season}>
-        <div className='boss-header-filters with-margin-top'>
+        <div className='boss-header-filters with-margin-top with-margin-bottom'>
             <div className='raid-date-element'>
                 <Select
                     className={`navbar-dropdown-family`}
@@ -79,11 +80,8 @@ const Spawns = () => {
                 />
             </div>
         </div>
-        <div className='with-dynamic-max-width auto-margin-sides'>
-            <div className='item default-padding with-margin-top'>
-                <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped'>
-                    <strong>{translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}</strong>
-                </div>
+        <Section title={translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}>
+            <div>
                 {currentBossDate === "season" &&
                     <div className="raid-container">
                         <div className="overflowing">
@@ -91,15 +89,16 @@ const Spawns = () => {
                                 {[(season?.wild ?? []).filter(e => e.kind === "0"), (season?.wild ?? []).filter(e => e.kind === "1"), (season?.wild ?? []).filter(e => e.kind === "2"), (season?.wild ?? []).filter(e => e.kind === "3"), (season?.wild ?? []).filter(e => e.kind === "4"), (season?.wild ?? []).filter(e => e.kind === "5")]
                                     .map((t, i) => (
                                         <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
-                                            <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding normal-text item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
-                                                <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
+                                            <strong className={`small-move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} smallish-padding normal-text item ${String(i) === currentPlace ? "small-extra-padding-right" : ""}`}>
+                                                <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
                                                 {String(i) === currentPlace && idxToPlace(i)}
                                             </strong>
                                         </div>
                                     ))}
                             </div>
                         </div>
-                    </div>}
+                    </div>
+                }
                 <div className={`with-flex contained ${currentBossDate !== "season" ? "with-margin-top" : ""}`}>
                     {selectedPosts
                         .sort(sortPosts)
@@ -110,10 +109,11 @@ const Spawns = () => {
                                         <div className={`mini-card-wrapper`}>
                                             <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                         </div>
-                                    </div>)))}
+                                    </div>)))
+                    }
                 </div>
             </div>
-        </div>
+        </Section>
     </LoadingRenderer>;
 }
 

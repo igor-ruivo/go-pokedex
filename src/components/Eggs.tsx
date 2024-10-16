@@ -6,6 +6,7 @@ import LoadingRenderer from "./LoadingRenderer";
 import PokemonMiniature from "./PokemonMiniature";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
+import Section from "./Template/Section";
 
 const Eggs = () => {
     const { leekEggs, leekEggsErrors, leekEggsFetchCompleted } = useCalendar();
@@ -59,25 +60,20 @@ const Eggs = () => {
     }, []);
 
     return <LoadingRenderer errors={leekEggsErrors + errors} completed={fetchCompleted && leekEggsFetchCompleted}>
-        <div className='with-dynamic-max-width auto-margin-sides'>
-            <div className='item default-padding'>
-                <div>
-                    <div>
-                        <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom'>{translator(TranslatorKeys.FeaturedEggs, currentLanguage)}</strong>
-                    </div>
-                    <div className="raid-container">
-                        <div className="overflowing">
-                            <div className="img-family">
-                                {[(leekEggs?.eggs ?? []).filter(e => e.kind === "2"), (leekEggs?.eggs ?? []).filter(e => e.kind === "5"), (leekEggs?.eggs ?? []).filter(e => e.kind === "7"), (leekEggs?.eggs ?? []).filter(e => e.kind === "10"), (leekEggs?.eggs ?? []).filter(e => e.kind === "12")]
-                                    .map((t, i) => (
-                                        <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
-                                            <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding normal-text item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
-                                                <div className="img-padding"><img height={26} width={26} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
-                                                {String(i) === currentEgg && idxToEggName(i)}
-                                            </strong>
-                                        </div>
-                                    ))}
-                            </div>
+        <Section title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}>
+            <div>
+                <div className="raid-container">
+                    <div className="overflowing">
+                        <div className="img-family">
+                            {[(leekEggs?.eggs ?? []).filter(e => e.kind === "2"), (leekEggs?.eggs ?? []).filter(e => e.kind === "5"), (leekEggs?.eggs ?? []).filter(e => e.kind === "7"), (leekEggs?.eggs ?? []).filter(e => e.kind === "10"), (leekEggs?.eggs ?? []).filter(e => e.kind === "12")]
+                                .map((t, i) => (
+                                    <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
+                                        <strong className={`small-move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} smallish-padding normal-text item ${String(i) === currentEgg ? "small-extra-padding-right" : ""}`}>
+                                            <div className="img-padding"><img height={22} width={22} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
+                                            {String(i) === currentEgg && idxToEggName(i)}
+                                        </strong>
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 </div>
@@ -100,7 +96,7 @@ const Eggs = () => {
                     </div>)}
                 </div>
             </div>
-        </div>
+        </Section>
     </LoadingRenderer>;
 }
 

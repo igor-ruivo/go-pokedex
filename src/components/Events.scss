@@ -49,6 +49,7 @@
     padding: 12px;
     display: flex;
     flex-direction: column;
+    border-radius: 4px;
 
     .event-img-itself {
         //min-height: 200px;
@@ -87,7 +88,7 @@
 }
 
 .is-new > .miniature-date {
-    color: var(--highlighted-text);
+    color: var(--highlighted-date);
 }
 
 .post-notification {
@@ -119,7 +120,7 @@
     flex-direction: row;
     gap: 2%;
     .miniature-itself {
-        border-radius: 12px;
+        border-radius: 4px;
         border: 2px solid var(--highlighted-text);
         width: 100%;
         //max-width: 100%;
@@ -167,7 +168,7 @@
 }
 
 .date-container {
-    color: var(--highlighted-text);
+    color: var(--cp-color);
     display: flex;
     flex-direction: row;
     gap: 4px;

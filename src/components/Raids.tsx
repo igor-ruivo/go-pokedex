@@ -9,6 +9,7 @@ import PokemonMiniature from "./PokemonMiniature";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { Language, useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
+import Section from "./Template/Section";
 
 const Raids = () => {
     const [currentBossDate, setCurrentBossDate] = useState("current");
@@ -153,84 +154,76 @@ const Raids = () => {
                     value={raidEventEggs.find(o => o.value === currentTier)}
                     options={raidEventEggs}
                     onChange={e => setCurrentTier((e as any).value)}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={26} width={26} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={22} width={22} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
         </div>
         <div className='with-xl-gap with-margin-top'>
             {raidEventEggs.sort((i1, i2) => i2.value.localeCompare(i1.value)).filter(egg => egg.value !== "3" && (egg.value === currentTier || currentTier === "3")).map(egg => bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).length > 0 &&
-                <div key={egg.value} className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='item default-padding'>
-                        <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom smaller-title'>
-                            {`${currentLanguage !== Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${raidEventEggs.find(o => o.value === egg.value)?.label} ${currentLanguage === Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''}`}
-                        </strong>
-                        <div className='with-flex with-margin-top contained'>
-                            <div className='row-container'>
-                                {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).length > 0 &&
-                                    <div className='in-row round-border'>
-                                        <div className='in-column'>
-                                            <div className='in-row wrapped contained'>
-                                                {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && !getCountdownForBoss(e.speciesId) && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).map(e =>
-                                                    <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                        <div className={`mini-card-wrapper`}>
-                                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
-                                                        </div>
+                <Section special={egg.value === "2"} key={egg.value} title={`${currentLanguage !== Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${raidEventEggs.find(o => o.value === egg.value)?.label} ${currentLanguage === Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''}`}>
+                    <div className='with-flex with-margin-top contained'>
+                        <div className='row-container'>
+                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).length > 0 &&
+                                <div className='in-row round-border'>
+                                    <div className='in-column'>
+                                        <div className='in-row wrapped contained'>
+                                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && !getCountdownForBoss(e.speciesId) && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).map(e =>
+                                                <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
+                                                    <div className={`mini-card-wrapper`}>
+                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
                                                     </div>
-                                                )}
-                                            </div>
-                                            <div className='in-row wrapped contained'>
-                                                {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && getCountdownForBoss(e.speciesId) && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).map(e =>
-                                                    <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                        <div className={`mini-card-wrapper`}>
-                                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
-                                                        </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className='in-row wrapped contained'>
+                                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && getCountdownForBoss(e.speciesId) && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).map(e =>
+                                                <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
+                                                    <div className={`mini-card-wrapper`}>
+                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
                                                     </div>
-                                                )}
-                                            </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                }
-                            </div>
+                                </div>
+                            }
                         </div>
                     </div>
-                </div>)
+                </Section>
+                )
             }
 
             {raidEventEggs.sort((i1, i2) => i2.value.localeCompare(i1.value)).filter(egg => egg.value !== "3" && (egg.value === currentTier || currentTier === "3")).map(egg => bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && gamemasterPokemon[e.speciesId].isShadow).length > 0 &&
-                <div key={egg.value} className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='item default-padding'>
-                        <strong className='pvp-entry with-border fitting-content smooth normal-text with-margin-bottom smaller-title'>
-                            {`${currentLanguage !== Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${raidEventEggs.find(o => o.value === egg.value)?.label} ${currentLanguage === Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}`}
-                        </strong>
-                        <div className='with-flex with-margin-top contained'>
-                            <div className='row-container'>
-                                {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && gamemasterPokemon[e.speciesId].isShadow).length > 0 &&
-                                    <div className='in-row round-border'>
-                                        <div className='in-column'>
-                                            <div className='in-row wrapped contained'>
-                                                {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && !getCountdownForBoss(e.speciesId) && gamemasterPokemon[e.speciesId].isShadow).map(e =>
-                                                    <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                        <div className={`mini-card-wrapper`}>
-                                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
-                                                        </div>
+                <Section key={egg.value} title={`${currentLanguage !== Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${raidEventEggs.find(o => o.value === egg.value)?.label} ${currentLanguage === Language.English ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : ''} ${gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}`} darker>
+                    <div className='with-flex with-margin-top contained'>
+                        <div className='row-container'>
+                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && gamemasterPokemon[e.speciesId].isShadow).length > 0 &&
+                                <div className='in-row round-border'>
+                                    <div className='in-column'>
+                                        <div className='in-row wrapped contained'>
+                                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && !getCountdownForBoss(e.speciesId) && gamemasterPokemon[e.speciesId].isShadow).map(e =>
+                                                <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
+                                                    <div className={`mini-card-wrapper`}>
+                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
                                                     </div>
-                                                )}
-                                            </div>
-                                            <div className='in-row wrapped contained'>
-                                                {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && getCountdownForBoss(e.speciesId) && gamemasterPokemon[e.speciesId].isShadow).map(e =>
-                                                    <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                        <div className={`mini-card-wrapper`}>
-                                                            <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>}
-                            </div>
+                                        <div className='in-row wrapped contained'>
+                                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && getCountdownForBoss(e.speciesId) && gamemasterPokemon[e.speciesId].isShadow).map(e =>
+                                                <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
+                                                    <div className={`mini-card-wrapper`}>
+                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
-                </div>)
+                </Section>)
             }
         </div>
     </LoadingRenderer>;

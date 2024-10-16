@@ -12,6 +12,7 @@ import { useNotifications } from '../contexts/notifications-context';
 import { Language, useLanguage } from '../contexts/language-context';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
+import Section from './Template/Section';
 
 const Events = () => {
     const { posts, postsPT, season, seasonPT, postsErrors, seasonErrors, seasonPTErrors, seasonPTFetchCompleted, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
@@ -118,7 +119,7 @@ const Events = () => {
             case Language.Bosnian:
                 return title;
             case Language.Portuguese:
-                return title.replaceAll(' Spotlight Hour', ': Hora do Holofote')
+                return title.replaceAll(' Spotlight Hour', ': Hora do Holofote').replaceAll("and", "e")
             default: return title;
         }
     }, [currentLanguage]);
@@ -181,7 +182,7 @@ const Events = () => {
             <span>No News!</span> :
             <div className='with-xl-gap'>
                 <div className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='raid-container item'>
+                    <div className='raid-container item without-shadow'>
                         <div className='overflowing'>
                             <div className='news-gallery'>
                                 {relevantPosts.map((p, i) =>
@@ -232,17 +233,13 @@ const Events = () => {
                     </div>
                 </div>
             
-                {relevantPosts[selectedNews]?.bonuses && <div className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='item default-padding bonus-container'>
+                {relevantPosts[selectedNews]?.bonuses && <Section title={translator(TranslatorKeys.Bonus, currentLanguage)}><div className='with-dynamic-max-width auto-margin-sides'>
+                    <div className='bonus-container'>
                         {translatedEvent(relevantPosts[selectedNews])?.bonuses?.split("\n").filter(b => b).map(b => <span key={b} className='ul-with-adorner'>{b}</span>)}
                     </div>
-                </div>}
+                </div></Section>}
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
-                    <div className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
-                            <strong>{translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}</strong>
-                        </div>
+                    <Section title={translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}>
                         {selectedNews === 0 &&
                             <div className="raid-container">
                                 <div className="overflowing">
@@ -250,8 +247,8 @@ const Events = () => {
                                         {[(season.wild ?? []).filter(e => e.kind === "0"), (season.wild ?? []).filter(e => e.kind === "1"), (season.wild ?? []).filter(e => e.kind === "2"), (season.wild ?? []).filter(e => e.kind === "3"), (season.wild ?? []).filter(e => e.kind === "4"), (season.wild ?? []).filter(e => e.kind === "5")]
                                             .map((t, i) => (
                                                 <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
-                                                    <strong className={`move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentPlace ? "extra-padding-right" : ""}`}>
-                                                        <div className="img-padding"><img className="invert-light-mode" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
+                                                    <strong className={`small-move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} smallish-padding item ${String(i) === currentPlace ? "small-extra-padding-right" : ""}`}>
+                                                        <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
                                                         {String(i) === currentPlace && idxToPlace(i)}
                                                     </strong>
                                                 </div>
@@ -270,13 +267,10 @@ const Events = () => {
                                         </div>
                                     </div>)}
                         </div>
-                    </div></div>}
+                    </Section>
+                    }
                     {(relevantPosts[selectedNews].raids ?? []).length > 0 &&
-                    <div className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
-                            <strong>{`${translator(TranslatorKeys.Featured1, currentLanguage)} ${gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.Featured2, currentLanguage)}`}</strong>
-                        </div>
+                    <Section title={`${translator(TranslatorKeys.Featured1, currentLanguage)} ${gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.Featured2, currentLanguage)}`}>
                         <div className={`with-flex contained with-margin-top`}>
                             {(relevantPosts[selectedNews].raids ?? [])
                                 .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
@@ -286,13 +280,9 @@ const Events = () => {
                                         </div>
                                     </div>)}
                         </div>
-                    </div></div>}
+                    </Section>}
                     {(relevantPosts[selectedNews].researches ?? []).length > 0 &&
-                    <div className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
-                            <strong>{translator(TranslatorKeys.FeaturedResearches, currentLanguage)}</strong>
-                        </div>
+                    <Section title={translator(TranslatorKeys.FeaturedResearches, currentLanguage)}>
                         <div className={`with-flex contained with-margin-top`}>
                             {(relevantPosts[selectedNews].researches ?? [])
                                 .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
@@ -302,52 +292,49 @@ const Events = () => {
                                         </div>
                                     </div>)}
                         </div>
-                    </div></div>}
+                    </Section>}
                     {(relevantPosts[selectedNews].eggs ?? []).length > 0 &&
-                    <div className='with-dynamic-max-width auto-margin-sides'>
-                    <div className='item default-padding max-height'>
-                        <div className='pvp-entry full-width smooth with-border normal-text fitting-content gapped smaller-title'>
-                            <strong>{translator(TranslatorKeys.FeaturedEggs, currentLanguage)}</strong>
-                        </div>
-                        {selectedNews === 0 &&
-                            <div className="raid-container">
-                                <div className="overflowing">
-                                    <div className="img-family">
-                                        {[(season.eggs ?? []).filter(e => e.kind === "2"), (season.eggs ?? []).filter(e => e.kind === "5"), (season.eggs ?? []).filter(e => e.kind === "7"), (season.eggs ?? []).filter(e => e.kind === "10")]
-                                            .map((t, i) => (
-                                                <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
-                                                    <strong className={`move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} normal-padding item ${String(i) === currentEgg ? "extra-padding-right" : ""}`}>
-                                                        <div className="img-padding"><img height={26} width={26} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
-                                                        {String(i) === currentEgg && idxToEggName(i)}
-                                                    </strong>
-                                                </div>
-                                            ))}
+                    <Section title={translator(TranslatorKeys.FeaturedResearches, currentLanguage)}>
+                        <div>
+                            {selectedNews === 0 &&
+                                <div className="raid-container">
+                                    <div className="overflowing">
+                                        <div className="img-family">
+                                            {[(season.eggs ?? []).filter(e => e.kind === "2"), (season.eggs ?? []).filter(e => e.kind === "5"), (season.eggs ?? []).filter(e => e.kind === "7"), (season.eggs ?? []).filter(e => e.kind === "10")]
+                                                .map((t, i) => (
+                                                    <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
+                                                        <strong className={`small-move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} smallish-padding item ${String(i) === currentEgg ? "small-extra-padding-right" : ""}`}>
+                                                            <div className="img-padding"><img height={22} width={22} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
+                                                            {String(i) === currentEgg && idxToEggName(i)}
+                                                        </strong>
+                                                    </div>
+                                                ))}
+                                        </div>
                                     </div>
                                 </div>
+                            }
+                            <div className={`with-flex contained ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
+                                {(relevantPosts[selectedNews].eggs ?? [])
+                                    .filter(r => selectedNews !== 0 || (!r.comment && r.kind === String(idxToKind(+currentEgg))))
+                                    .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
+                                        <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                            <div className={`mini-card-wrapper`}>
+                                                <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
+                                            </div>
+                                        </div>)}
                             </div>
-                        }
-                        <div className={`with-flex contained ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
-                            {(relevantPosts[selectedNews].eggs ?? [])
-                                .filter(r => selectedNews !== 0 || (!r.comment && r.kind === String(idxToKind(+currentEgg))))
-                                .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
-                                    <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
-                                        <div className={`mini-card-wrapper`}>
-                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
-                                        </div>
-                                    </div>)}
+                            {(relevantPosts[selectedNews].eggs?.length ?? 0) > 0 && relevantPosts[selectedNews].eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
+                                <strong>{currentLanguage === Language.English ? relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment : relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment?.replaceAll("Adventure Sync Rewards", "Recompensas de Sincroaventura").replaceAll("7 km Eggs from Mateo’s Gift Exchange", "Ovos de 7 km da Troca de presentes de Mateo")}:</strong>
+                            </div>}
+                            <div className='with-flex contained'>
+                                {(relevantPosts[selectedNews].eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                    <div className={`mini-card-wrapper`}>
+                                        <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
+                                    </div>
+                                </div>)}
+                            </div>
                         </div>
-                        {(relevantPosts[selectedNews].eggs?.length ?? 0) > 0 && relevantPosts[selectedNews].eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
-                            <strong>{relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment}:</strong>
-                        </div>}
-                        <div className='with-flex contained'>
-                            {(relevantPosts[selectedNews].eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
-                                <div className={`mini-card-wrapper`}>
-                                    <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
-                                </div>
-                            </div>)}
-                        </div>
-
-                    </div></div>}
+                    </Section>}
                 </div>
         }
     </LoadingRenderer>;

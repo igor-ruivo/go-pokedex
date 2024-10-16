@@ -14,6 +14,7 @@ export enum TranslatorKeys {
     Events,
     Spawns,
     Rockets,
+    Bonus,
     Eggs,
     Trash,
     Source,
@@ -1130,6 +1131,12 @@ const familyTree = new Map<Language, string>([
     [Language.Bosnian, "Porodično Stablo"]
 ]);
 
+const bonus = new Map<Language, string>([
+    [Language.English, "Event Bonuses"],
+    [Language.Portuguese, "Bónus do Evento"],
+    [Language.Bosnian, "Bonusi za događaje"]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Cities, cities],
     [TranslatorKeys.Forests, forests],
@@ -1291,7 +1298,8 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Items, items],
     [TranslatorKeys.TopKeyCountersIntro, topKeyCountersIntro],
     [TranslatorKeys.Reached, reached],
-    [TranslatorKeys.LevelExceeded, levelExceeded]
+    [TranslatorKeys.LevelExceeded, levelExceeded],
+    [TranslatorKeys.Bonus, bonus]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();
