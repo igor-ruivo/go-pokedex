@@ -33,7 +33,8 @@ export enum GameTranslatorKeys {
     Legendary,
     Mythical,
     MegaRaid,
-    Favorite
+    Favorite,
+    Raid
 }
 
 const hp = new Map<GameLanguage, string>([
@@ -124,6 +125,11 @@ const shadowSearch = new Map<GameLanguage, string>([
 const raids = new Map<GameLanguage, string>([
     [GameLanguage.English, "Raids"],
     [GameLanguage.Portuguese, "Reides"]
+]);
+
+const raid = new Map<GameLanguage, string>([
+    [GameLanguage.English, "Raid"],
+    [GameLanguage.Portuguese, "Reide"]
 ]);
 
 const holidayCup = new Map<GameLanguage, string>([
@@ -222,6 +228,7 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
     [GameTranslatorKeys.Holiday, holiday],
     [GameTranslatorKeys.HolidayCup, holidayCup],
     [GameTranslatorKeys.Raids, raids],
+    [GameTranslatorKeys.Raid, raid],
     [GameTranslatorKeys.Shadow, shadow],
     [GameTranslatorKeys.ShadowSearch, shadowSearch],
     [GameTranslatorKeys.GalarianSearch, galarianSearch],

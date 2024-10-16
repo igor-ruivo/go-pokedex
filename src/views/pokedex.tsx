@@ -15,6 +15,8 @@ import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { useRaidRanker } from '../contexts/raid-ranker-context';
 import { useMoves } from '../contexts/moves-context';
 import PokemonHeader from '../components/PokemonHeader';
+import translator, { TranslatorKeys } from '../utils/Translator';
+import { translatedType } from '../components/PokemonInfoImagePlaceholder';
 
 export enum ListType {
     POKEDEX,
@@ -32,7 +34,7 @@ const Pokedex = () => {
     const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
     const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
 
-    const {currentGameLanguage} = useLanguage();
+    const {currentLanguage, currentGameLanguage} = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const renderCustom = false;
 
@@ -232,7 +234,7 @@ const Pokedex = () => {
     return (
         <main className="pokedex-layout">
             <PokemonHeader
-                pokemonName={listType === ListType.GREAT_LEAGUE ? 'Best Great League Pokémons' : listType === ListType.ULTRA_LEAGUE ? 'Best Ultra League Pokémons' : listType === ListType.MASTER_LEAGUE ? 'Best Master League Pokémons' : listType === ListType.RAID ? `Best ${type1Filter ? type1Filter : ''} Raid Attackers` : 'Pokédex'}
+                pokemonName={(listType !== ListType.RAID && listType !== ListType.POKEDEX) ? `${translator(TranslatorKeys.Best1, currentLanguage)} ${gameTranslator(listType === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : listType === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.Best2, currentLanguage)}` : listType === ListType.RAID ? `${translator(TranslatorKeys.BestRaids1, currentLanguage)} ${type1Filter ? translatedType(type1Filter, currentLanguage) : ''} ${translator(TranslatorKeys.BestRaids2, currentLanguage)} ${gameTranslator(type1Filter ? GameTranslatorKeys.Raids : GameTranslatorKeys.Raid, currentGameLanguage)} ${translator(TranslatorKeys.BestRaids3, currentLanguage)}` : 'Pokédex'}
                 type1={undefined}
                 type2={undefined}
                 defaultTextColor

@@ -15,6 +15,9 @@ export enum TranslatorKeys {
     Spawns,
     Rockets,
     Bonus,
+    BestRaids1,
+    BestRaids2,
+    BestRaids3,
     Eggs,
     Trash,
     Source,
@@ -117,6 +120,8 @@ export enum TranslatorKeys {
     AllExcept,
     PokemonNotFound,
     Moves,
+    Best1,
+    Best2,
     FastMoves,
     ChargedMoves,
     Any,
@@ -1137,6 +1142,36 @@ const bonus = new Map<Language, string>([
     [Language.Bosnian, "Bonusi za događaje"]
 ]);
 
+const bestRaids1 = new Map<Language, string>([
+    [Language.English, "Best"],
+    [Language.Portuguese, "Melhores Atacantes do Tipo"],
+    [Language.Bosnian, "Najbolji Napadači"]
+]);
+
+const bestRaids2 = new Map<Language, string>([
+    [Language.English, ""],
+    [Language.Portuguese, "para"],
+    [Language.Bosnian, "za"]
+]);
+
+const bestRaids3 = new Map<Language, string>([
+    [Language.English, "Attackers"],
+    [Language.Portuguese, ""],
+    [Language.Bosnian, ""]
+]);
+
+const best1 = new Map<Language, string>([
+    [Language.English, "Best"],
+    [Language.Portuguese, "Melhores Pokémons para a"],
+    [Language.Bosnian, "Najbolji Pokemoni za"]
+]);
+
+const best2 = new Map<Language, string>([
+    [Language.English, "Pokémons"],
+    [Language.Portuguese, ""],
+    [Language.Bosnian, ""]
+]);
+
 const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Cities, cities],
     [TranslatorKeys.Forests, forests],
@@ -1299,7 +1334,12 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.TopKeyCountersIntro, topKeyCountersIntro],
     [TranslatorKeys.Reached, reached],
     [TranslatorKeys.LevelExceeded, levelExceeded],
-    [TranslatorKeys.Bonus, bonus]
+    [TranslatorKeys.Bonus, bonus],
+    [TranslatorKeys.BestRaids1, bestRaids1],
+    [TranslatorKeys.BestRaids2, bestRaids2],
+    [TranslatorKeys.BestRaids3, bestRaids3],
+    [TranslatorKeys.Best1, best1],
+    [TranslatorKeys.Best2, best2]
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) => translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();
