@@ -31,9 +31,9 @@ const DeleteTrash = () => {
     const {currentGameLanguage, currentLanguage} = useLanguage();
     const [trashGreat, setTrashGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashGreat, 50));
     const [trashUltra, setTrashUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 50));
-    const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 100));
-    const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 10));
-    const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2000));
+    const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 110));
+    const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 5));
+    const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2500));
     const {raidDPS, raidRankerFetchCompleted, computeRaidRankerforTypes} = useRaidRanker();
     const [isCalculating, setIsCalculating] = useState(false);
     const [isExpanded, setExpanded] = useState(false);
@@ -327,7 +327,7 @@ const DeleteTrash = () => {
             <div className="full-height">
                 <div className="pokemon-content">
                     <LoadingRenderer errors="" completed={pvpFetchCompleted && fetchCompleted}>
-                        <div className="content with-default-top-padding">
+                        <div className="content">
                             <PokemonHeader
                                 pokemonName={translator(TranslatorKeys.Trash, currentLanguage)}
                                 type1={undefined}
