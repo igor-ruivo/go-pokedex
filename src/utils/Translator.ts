@@ -16,6 +16,7 @@ export enum TranslatorKeys {
     Rockets,
     Bonus,
     BestRaids1,
+    BestRaids15,
     BestRaids2,
     BestRaids3,
     Eggs,
@@ -1144,8 +1145,14 @@ const bonus = new Map<Language, string>([
 
 const bestRaids1 = new Map<Language, string>([
     [Language.English, "Best"],
-    [Language.Portuguese, "Melhores Atacantes do Tipo"],
+    [Language.Portuguese, "Melhores Atacantes"],
     [Language.Bosnian, "Najbolji Napadači"]
+]);
+
+const bestRaids15 = new Map<Language, string>([
+    [Language.English, ""],
+    [Language.Portuguese, "do Tipo"],
+    [Language.Bosnian, ""]
 ]);
 
 const bestRaids2 = new Map<Language, string>([
@@ -1336,6 +1343,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.LevelExceeded, levelExceeded],
     [TranslatorKeys.Bonus, bonus],
     [TranslatorKeys.BestRaids1, bestRaids1],
+    [TranslatorKeys.BestRaids15, bestRaids15],
     [TranslatorKeys.BestRaids2, bestRaids2],
     [TranslatorKeys.BestRaids3, bestRaids3],
     [TranslatorKeys.Best1, best1],

@@ -7,7 +7,7 @@ import LoadingRenderer from '../components/LoadingRenderer';
 import { usePokemon } from '../contexts/pokemon-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { Link, useParams } from 'react-router-dom';
-import { useLanguage } from '../contexts/language-context';
+import { Language, useLanguage } from '../contexts/language-context';
 import { fetchPokemonFamily, needsXLCandy } from '../utils/pokemon-helper';
 import Dictionary from '../utils/Dictionary';
 import { customCupCPLimit, usePvp } from '../contexts/pvp-context';
@@ -234,7 +234,7 @@ const Pokedex = () => {
     return (
         <main className="pokedex-layout">
             <PokemonHeader
-                pokemonName={(listType !== ListType.RAID && listType !== ListType.POKEDEX) ? `${translator(TranslatorKeys.Best1, currentLanguage)} ${gameTranslator(listType === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : listType === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.Best2, currentLanguage)}` : listType === ListType.RAID ? `${translator(TranslatorKeys.BestRaids1, currentLanguage)} ${type1Filter ? translatedType(type1Filter, currentLanguage) : ''} ${translator(TranslatorKeys.BestRaids2, currentLanguage)} ${gameTranslator(type1Filter ? GameTranslatorKeys.Raids : GameTranslatorKeys.Raid, currentGameLanguage)} ${translator(TranslatorKeys.BestRaids3, currentLanguage)}` : 'Pokédex'}
+                pokemonName={(listType !== ListType.RAID && listType !== ListType.POKEDEX) ? `${translator(TranslatorKeys.Best1, currentLanguage)} ${gameTranslator(listType === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : listType === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.Best2, currentLanguage)}` : listType === ListType.RAID ? `${translator(TranslatorKeys.BestRaids1, currentLanguage)} ${type1Filter ? translator(TranslatorKeys.BestRaids15, currentLanguage) : ""} ${type1Filter ? translatedType(type1Filter, currentLanguage) : ''} ${translator(TranslatorKeys.BestRaids2, currentLanguage)} ${gameTranslator(currentLanguage === Language.English ? GameTranslatorKeys.Raid : GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.BestRaids3, currentLanguage)}` : 'Pokédex'}
                 type1={undefined}
                 type2={undefined}
                 defaultTextColor
@@ -270,7 +270,7 @@ const Pokedex = () => {
                     </li>}
                     <li>
                         <Link to="/raid" className={"header-tab league-picker " + (listType === ListType.RAID ? "header-selected" : "header-unselected")}>
-                            <div className="img-padding"><img className="raid-img-with-contrast" height="20" width="20" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} alt="Raids"/></div>
+                            <div className="img-padding-s"><img className="raid-img-with-contrast" height="18" width="18" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} alt="Raids"/></div>
                             {listType === ListType.RAID && <span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>}
                         </Link>
                     </li>
