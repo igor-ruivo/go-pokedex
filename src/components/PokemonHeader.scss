@@ -31,6 +31,15 @@
     text-shadow: none;
 }
 
+.constrained {
+    max-width: 1600px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 100%;
+    border-right: 1px solid var(--borderColor2);
+    border-left: 1px solid var(--borderColor2);
+}
+
 @media (max-width: 500px) {
     .pokemonheader-name {
         font-size: clamp(18.9px, 5vw, 32px);

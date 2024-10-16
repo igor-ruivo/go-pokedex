@@ -14,6 +14,7 @@ import { customCupCPLimit, usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { useRaidRanker } from '../contexts/raid-ranker-context';
 import { useMoves } from '../contexts/moves-context';
+import PokemonHeader from '../components/PokemonHeader';
 
 export enum ListType {
     POKEDEX,
@@ -230,7 +231,16 @@ const Pokedex = () => {
 
     return (
         <main className="pokedex-layout">
-            <nav className="navigation-header extra-gap leagues">
+            <PokemonHeader
+                pokemonName={listType === ListType.GREAT_LEAGUE ? 'Best Great League Pokémons' : listType === ListType.ULTRA_LEAGUE ? 'Best Ultra League Pokémons' : listType === ListType.MASTER_LEAGUE ? 'Best Master League Pokémons' : listType === ListType.RAID ? `Best ${type1Filter ? type1Filter : ''} Raid Attackers` : 'Pokédex'}
+                type1={undefined}
+                type2={undefined}
+                defaultTextColor
+                defaultBannerColor
+                whiteTextColor
+                constrained
+            />
+            <nav className="navigation-header extra-gap leagues bordered-sides">
                 <ul>
                     <li>
                         <Link to="/great" className={"header-tab league-picker " + (listType === ListType.GREAT_LEAGUE ? "header-selected" : "header-unselected")}>

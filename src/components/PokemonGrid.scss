@@ -16,9 +16,10 @@
 
 .grid {
     display: flex;
-    justify-content: center;
+    //justify-content: center;
     overflow-x: hidden !important;
     overflow-y: overlay !important;
+    scrollbar-width: none;
 }
 
 .ReactVirtualized__Grid__innerScrollContainer {
