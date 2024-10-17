@@ -24,7 +24,7 @@ const PokemonHeader = ({pokemonName, type1, type2, defaultTextColor, defaultBann
     return <header className={`pokemonheader-header ${constrained ? "constrained" : ""} ${defaultBannerColor ? (darker ? "darker-banner-color" : (special ? "special-banner-color" : "banner-color")) : ""} ${additionalClasses}`} onClick={onClickHandler} style = {!defaultBannerColor ? {background: `linear-gradient(45deg, ${type1Color} 72%, ${type2Color} 72%)`} : {}}>
         <h1 className={`pokemonheader-name ellipsed ${defaultTextColor ? "text-color no-shadow" : ""} ${whiteTextColor ? "white-text-color no-shadow" : ""}`}>{pokemonName}</h1>
         {withChevron && <figure className="chevron move-card hidden-in-big-screens">
-            <img className="invert-dark-mode" alt="All available Charged Moves" loading="lazy" width="14" height="14" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${chevronCollapsed ? "down" : "up"}.svg`} />
+            <img className="invert-dark-mode" alt="All available Charged Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${chevronCollapsed ? "down" : "up"}.svg`} />
         </figure>}
     </header>;
 }

@@ -4,7 +4,10 @@
     h1 {
         font-size: 16px;
     }
-    max-height: 27px;
+    height: 27px;
+    &.large-title {
+        height: 40px;
+    }
 }
 
 .popup-color {

@@ -217,7 +217,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 <div className="counters-display-layout">
                     {league !== LeagueType.RAID && <Section
                         title={`${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
-                        additionalClasses={`moves-title all-moves fast-moves-section auto-margins`}
+                        additionalClasses={`moves-title all-moves fast-moves-section auto-margins large-title`}
                         noPadding
                     >
                         <div className="menu-item no-margin no-border-container">
@@ -242,7 +242,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     </Section>}
                     <Section
                         title={league === LeagueType.RAID ? `${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)}${x > 750 ? ` (1 - ${top / 2}):` : ":"}` : `${shortName(pokemon.speciesName)} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
-                        additionalClasses={`moves-title all-moves charged-moves-section auto-margins`}
+                        additionalClasses={`moves-title all-moves charged-moves-section auto-margins large-title`}
                         noPadding
                     >
                         <div className="menu-item no-margin no-border-container">
@@ -280,7 +280,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     </Section>
                     {x > 750 && league === LeagueType.RAID && <Section
                         title={`${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
-                        additionalClasses={`moves-title all-moves charged-moves-section auto-margins`}
+                        additionalClasses={`moves-title all-moves charged-moves-section auto-margins large-title`}
                         noPadding
                     >
                         <div className="menu-item no-margin no-border-container">

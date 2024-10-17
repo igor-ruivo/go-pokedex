@@ -71,8 +71,8 @@ const ListEntry = ({
                         )}
                     </div>
                     {(expandable || secondaryContentToBeRendered) && <strong onClick={expandable ? undefined : toggledContent ? () => {setToggled(prev => !prev)} : undefined} className={`move-detail with-shadow ${slimmer ? "move-stats-slimmer" : slim ? "move-stats-slim" : "move-stats"} ${soft && backgroundColorClassName === defaultBackgroundStyle ? "soft" : ""} ${(expandable || toggledContent) ? "clickable" : ""}`}>
-                        {expandable && !expanded && <img key="chevron" className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="14" height="14" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-down.svg`} />}
-                        {expandable && expanded && <img key="chevron" className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="14" height="14" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-up.svg`} />}
+                        {expandable && !expanded && <img key="chevron" className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-down.svg`} />}
+                        {expandable && expanded && <img key="chevron" className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-up.svg`} />}
                         {!expandable && secondaryContentToBeRendered && secondaryContentToBeRendered.map(content => 
                             (React.isValidElement(content) && content.key && <span key={`${content.key}-span`} className="move-stats-content">
                                 {content}

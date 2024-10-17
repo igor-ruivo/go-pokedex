@@ -324,7 +324,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                         withChevron
                         chevronCollapsed={fastMovesCollapsed}
                         onClickHandler={() => {setFastMovesCollapsed(c => !c)}}
-                        additionalClasses={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section auto-margins`}
+                        additionalClasses={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section auto-margins large-title`}
                         noPadding
                     >
                         <div className="menu-item no-margin no-border-container">
@@ -352,7 +352,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                         withChevron
                         chevronCollapsed={chargedMovesCollapsed}
                         onClickHandler={() => {setChargedMovesCollapsed(c => !c)}}
-                        additionalClasses={`moves-title ${chargedMovesCollapsed ? "hidden" : ""} all-moves charged-moves-section auto-margins`}
+                        additionalClasses={`moves-title ${chargedMovesCollapsed ? "hidden" : ""} all-moves charged-moves-section auto-margins large-title`}
                         noPadding
                     >
                     <div className="menu-item no-margin no-border-container">
