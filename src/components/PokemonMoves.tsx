@@ -15,6 +15,7 @@ import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { translatedType } from "./PokemonInfoImagePlaceholder";
 import { DPSEntry, useRaidRanker } from "../contexts/raid-ranker-context";
 import LoadingRenderer from "./LoadingRenderer";
+import Section from "./Template/Section";
 
 interface IPokemonMoves {
     pokemon: IGamemasterPokemon;
@@ -318,42 +319,43 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                 </>}
                 {league !== LeagueType.RAID && <div className="menu-item centered with-padding"><div className="with-padding">{relevantMoveSet.length > 0 ? <><strong className="cp-container">{`${translateMoveFromMoveId(relevantMoveSet[0], moves, gameTranslation)}`}</strong><span>{` ${translator(TranslatorKeys.RecommendedFast, currentLanguage)}.`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[1], moves, gameTranslation)}`}</strong>{relevantMoveSet[2] && <><span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span><strong className="cp-container">{` ${translateMoveFromMoveId(relevantMoveSet[2], moves, gameTranslation)}`}</strong></>}<span>{` ${translator(relevantMoveSet[2] ? TranslatorKeys.RecommendedCharged : TranslatorKeys.RecommendedChargedSingle, currentLanguage)}.`}</span></> : `${pokemon.speciesName} ${translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} ${gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.MASTER_LEAGUE ? GameTranslatorKeys.MasterLeague : GameTranslatorKeys.FantasyCup, currentGameLanguage)}...`}</div></div>}
                 <div className="moves-display-layout">
-                    <div className="menu-item">
-                        <div onClick={() => {setFastMovesCollapsed(c => !c)}} className={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section`}>
-                            <h3>
-                                {translator(TranslatorKeys.FastMoves, currentLanguage)}
-                            </h3>
-                            <figure className="chevron move-card hidden-in-big-screens">
-                                <img className="invert-dark-mode" alt="All available Fast Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${fastMovesCollapsed ? "down" : "up"}.svg`} />
-                            </figure>
+                    <Section
+                        title={translator(TranslatorKeys.FastMoves, currentLanguage)}
+                        withChevron
+                        chevronCollapsed={fastMovesCollapsed}
+                        onClickHandler={() => {setFastMovesCollapsed(c => !c)}}
+                        additionalClasses={`moves-title ${fastMovesCollapsed ? "hidden" : ""} all-moves fast-moves-section auto-margins`}
+                        noPadding
+                    >
+                        <div className="menu-item no-margin no-border-container">
+                            <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
+                                {
+                                    getAllFastMoves(pokemon, moves).length > 0 ?
+                                    getAllFastMoves(pokemon, moves)
+                                    .sort(movesSorter)
+                                    .map(m => {
+                                        const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
+                                        const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
+                                        const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
+                                        return (
+                                            <React.Fragment key={m}>
+                                                {renderMove(m, typeTranslatorKey, url, className, false, false)}
+                                            </React.Fragment>
+                                        )
+                                    }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
+                                }
+                            </ul>
                         </div>
-                        <ul className={`moves-list ${fastMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
-                            {
-                                getAllFastMoves(pokemon, moves).length > 0 ?
-                                getAllFastMoves(pokemon, moves)
-                                .sort(movesSorter)
-                                .map(m => {
-                                    const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
-                                    const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                                    const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
-                                    return (
-                                        <React.Fragment key={m}>
-                                            {renderMove(m, typeTranslatorKey, url, className, false, false)}
-                                        </React.Fragment>
-                                    )
-                                }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
-                            }
-                        </ul>
-                    </div>
-                    <div className="menu-item">
-                        <div onClick={() => {setChargedMovesCollapsed(c => !c)}} className={`moves-title ${chargedMovesCollapsed ? "hidden" : ""} all-moves charged-moves-section`}>
-                            <h3>
-                                {translator(TranslatorKeys.ChargedMoves, currentLanguage)}
-                            </h3>
-                            <figure className="chevron move-card hidden-in-big-screens">
-                                <img className="invert-dark-mode" alt="All available Charged Moves" loading="lazy" width="18" height="18" decoding="async" src={`${process.env.PUBLIC_URL}/vectors/chevron-${chargedMovesCollapsed ? "down" : "up"}.svg`} />
-                            </figure>
-                        </div>
+                    </Section>
+                    <Section
+                        title={translator(TranslatorKeys.ChargedMoves, currentLanguage)}
+                        withChevron
+                        chevronCollapsed={chargedMovesCollapsed}
+                        onClickHandler={() => {setChargedMovesCollapsed(c => !c)}}
+                        additionalClasses={`moves-title ${chargedMovesCollapsed ? "hidden" : ""} all-moves charged-moves-section auto-margins`}
+                        noPadding
+                    >
+                    <div className="menu-item no-margin no-border-container">
                         <ul className={`moves-list ${chargedMovesCollapsed ? "hidden" : ""} no-padding slim-list`}>
                             {
                                 getAllChargedMoves(pokemon, moves, gamemasterPokemon).length > 0 ?
@@ -372,6 +374,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                             }
                         </ul>
                     </div>
+                    </Section>
                 </div>
             </div>}
         </LoadingRenderer>
