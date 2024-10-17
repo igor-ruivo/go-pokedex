@@ -19,6 +19,7 @@ import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/
 import useResize from "../hooks/useResize";
 import { DPSEntry } from "../contexts/raid-ranker-context";
 import LoadingRenderer from "./LoadingRenderer";
+import Section from "./Template/Section";
 
 interface IPokemonCounters {
     pokemon: IGamemasterPokemon;
@@ -214,90 +215,93 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     {translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)} {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.In, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.FantasyCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}:
                 </span></div>}
                 <div className="counters-display-layout">
-                    {league !== LeagueType.RAID && <div className="menu-item">
-                        <div className={`moves-title all-moves fast-moves-section`}>
-                            <h3>
-                                {`${shortName(pokemon.speciesName)} ${translator(TranslatorKeys.StrongAgainst, currentLanguage)} (${leagueName}):`}
-                            </h3>
+                    {league !== LeagueType.RAID && <Section
+                        title={`${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
+                        additionalClasses={`moves-title all-moves fast-moves-section auto-margins`}
+                        noPadding
+                    >
+                        <div className="menu-item no-margin no-border-container">
+                            <ul className={`moves-list no-padding slim-list`}>
+                                {rankLists[league as number][pokemon.speciesId] ? relevantMatchUps.length > 0 ?
+                                    relevantMatchUps
+                                    .map(m => {
+                                        const pokemon = gamemasterPokemon[m.speciesId];
+                                        const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
+                                        return (
+                                            <React.Fragment key={m.speciesId}>
+                                                {renderPvPEntry(pokemon, m.rating, className)}
+                                            </React.Fragment>
+                                        )
+                                    }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
+                                    <span className="unavailable_moves">
+                                        {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.FantasyCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                                    </span>
+                                }
+                            </ul>
                         </div>
-                        <ul className={`moves-list no-padding slim-list`}>
-                            {rankLists[league as number][pokemon.speciesId] ? relevantMatchUps.length > 0 ?
-                                relevantMatchUps
-                                .map(m => {
-                                    const pokemon = gamemasterPokemon[m.speciesId];
-                                    const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
-                                    return (
-                                        <React.Fragment key={m.speciesId}>
-                                            {renderPvPEntry(pokemon, m.rating, className)}
-                                        </React.Fragment>
-                                    )
-                                }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
-                                <span className="unavailable_moves">
-                                    {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.FantasyCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
-                                </span>
-                            }
-                        </ul>
-                    </div>}
-                    <div className="menu-item">
-                        <div className={`moves-title all-moves charged-moves-section`}>
-                            <h3>
-                                {league === LeagueType.RAID ? `${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)}${x > 750 ? ` (1 - ${top / 2}):` : ":"}` : `${shortName(pokemon.speciesName)} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
-                            </h3>
+                    </Section>}
+                    <Section
+                        title={league === LeagueType.RAID ? `${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)}${x > 750 ? ` (1 - ${top / 2}):` : ":"}` : `${shortName(pokemon.speciesName)} ${translator(TranslatorKeys.WeakAgainst, currentLanguage)} (${leagueName}):`}
+                        additionalClasses={`moves-title all-moves charged-moves-section auto-margins`}
+                        noPadding
+                    >
+                        <div className="menu-item no-margin no-border-container">
+                            <ul className={`moves-list no-padding slim-list`}>
+                                {league === LeagueType.RAID ?
+                                    comparisons
+                                    .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))
+                                    .slice(0, x > 750 ? top / 2 : top)
+                                    .map(m => {
+                                        const pokemon = gamemasterPokemon[m.speciesId];
+                                        const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
+                                        return (
+                                            <React.Fragment key={m.speciesId}>
+                                                {renderRaidEntry(pokemon, (m as DPSEntry).dps, (m as DPSEntry).fastMove, (m as DPSEntry).chargedMove, className, (m as DPSEntry).fastMoveDmg, (m as DPSEntry).chargedMoveDmg)}
+                                            </React.Fragment>
+                                        )
+                                    }) :
+                                    rankLists[league as number][pokemon.speciesId] ? relevantCounters.length > 0 ?
+                                    relevantCounters
+                                    .map(m => {
+                                        const pokemon = gamemasterPokemon[m.speciesId];
+                                        const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
+                                        return (
+                                            <React.Fragment key={m.speciesId}>
+                                                {renderPvPEntry(pokemon, (m as MatchUp).rating, className)}
+                                            </React.Fragment>
+                                        )
+                                    }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
+                                    <span className="unavailable_moves">
+                                        {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.FantasyCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
+                                    </span>
+                                }
+                            </ul>
                         </div>
-                        <ul className={`moves-list no-padding slim-list`}>
-                            {league === LeagueType.RAID ?
-                                comparisons
-                                .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))
-                                .slice(0, x > 750 ? top / 2 : top)
-                                .map(m => {
-                                    const pokemon = gamemasterPokemon[m.speciesId];
-                                    const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
-                                    return (
-                                        <React.Fragment key={m.speciesId}>
-                                            {renderRaidEntry(pokemon, (m as DPSEntry).dps, (m as DPSEntry).fastMove, (m as DPSEntry).chargedMove, className, (m as DPSEntry).fastMoveDmg, (m as DPSEntry).chargedMoveDmg)}
-                                        </React.Fragment>
-                                    )
-                                }) :
-                                rankLists[league as number][pokemon.speciesId] ? relevantCounters.length > 0 ?
-                                relevantCounters
-                                .map(m => {
-                                    const pokemon = gamemasterPokemon[m.speciesId];
-                                    const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
-                                    return (
-                                        <React.Fragment key={m.speciesId}>
-                                            {renderPvPEntry(pokemon, (m as MatchUp).rating, className)}
-                                        </React.Fragment>
-                                    )
-                                }) : <span className="centered">{translator(TranslatorKeys.NoResults, currentLanguage)}</span> :
-                                <span className="unavailable_moves">
-                                    {pokemon.speciesName.replace("Shadow", gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} {translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)} {gameTranslator(league === LeagueType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : league === LeagueType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : league === LeagueType.CUSTOM_CUP ? GameTranslatorKeys.FantasyCup : GameTranslatorKeys.MasterLeague, currentGameLanguage)}
-                                </span>
-                            }
-                        </ul>
-                    </div>
-                    {x > 750 && league === LeagueType.RAID && <div className="menu-item">
-                        <div className={`moves-title all-moves charged-moves-section`}>
-                            <h3>
-                                {`${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
-                            </h3>
+                    </Section>
+                    {x > 750 && league === LeagueType.RAID && <Section
+                        title={`${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
+                        additionalClasses={`moves-title all-moves charged-moves-section auto-margins`}
+                        noPadding
+                    >
+                        <div className="menu-item no-margin no-border-container">
+                            <ul className={`moves-list no-padding slim-list`}>
+                                {
+                                    comparisons
+                                    .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))
+                                    .slice(top / 2, top)
+                                    .map(m => {
+                                        const pokemon = gamemasterPokemon[m.speciesId];
+                                        const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
+                                        return (
+                                            <React.Fragment key={m.speciesId}>
+                                                {renderRaidEntry(pokemon, (m as DPSEntry).dps, (m as DPSEntry).fastMove, (m as DPSEntry).chargedMove, className, (m as DPSEntry).fastMoveDmg, (m as DPSEntry).chargedMoveDmg)}
+                                            </React.Fragment>
+                                        )
+                                    })
+                                }
+                            </ul>
                         </div>
-                        <ul className={`moves-list no-padding slim-list`}>
-                            {
-                                comparisons
-                                .filter(o => (shadow || !gamemasterPokemon[o.speciesId].isShadow) && (mega || !gamemasterPokemon[o.speciesId].isMega))
-                                .slice(top / 2, top)
-                                .map(m => {
-                                    const pokemon = gamemasterPokemon[m.speciesId];
-                                    const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
-                                    return (
-                                        <React.Fragment key={m.speciesId}>
-                                            {renderRaidEntry(pokemon, (m as DPSEntry).dps, (m as DPSEntry).fastMove, (m as DPSEntry).chargedMove, className, (m as DPSEntry).fastMoveDmg, (m as DPSEntry).chargedMoveDmg)}
-                                        </React.Fragment>
-                                    )
-                                })
-                            }
-                        </ul>
-                    </div>}
+                    </Section>}
                 </div>
             </div>}
         </LoadingRenderer>
