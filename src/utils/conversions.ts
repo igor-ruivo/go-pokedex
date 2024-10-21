@@ -972,6 +972,34 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
                     continue;
                 }
 
+                if (currP.includes('pumpkaboo')) {
+                    if (!seen.has('pumpkaboo_average')) {
+                        seen.add('pumpkaboo_average');
+                        
+                        wildEncounters.push({
+                            speciesId: 'pumpkaboo_average',
+                            shiny: isShiny,
+                            kind: raidLevel
+                        });
+                    }
+
+                    continue;
+                }
+
+                if (currP.includes('gourgeist')) {
+                    if (!seen.has('gourgeist_average')) {
+                        seen.add('gourgeist_average');
+                        
+                        wildEncounters.push({
+                            speciesId: 'gourgeist_average',
+                            shiny: isShiny,
+                            kind: raidLevel
+                        });
+                    }
+
+                    continue;
+                }
+
                 console.error("(0) Couldn't map form for " + currP);
                 continue;
             }

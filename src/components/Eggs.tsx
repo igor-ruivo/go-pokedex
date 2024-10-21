@@ -5,7 +5,7 @@ import { useCalendar } from "../contexts/raid-bosses-context";
 import LoadingRenderer from "./LoadingRenderer";
 import PokemonMiniature from "./PokemonMiniature";
 import translator, { TranslatorKeys } from "../utils/Translator";
-import { useLanguage } from "../contexts/language-context";
+import { Language, useLanguage } from "../contexts/language-context";
 import Section from "./Template/Section";
 
 const Eggs = () => {
@@ -86,7 +86,7 @@ const Eggs = () => {
                         </div>)}
                 </div>
                 {(leekEggs?.eggs?.length ?? 0) > 0 && leekEggs?.eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
-                    <strong>{leekEggs?.eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment}:</strong>
+                    <strong>{currentLanguage === Language.English ? leekEggs?.eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment : leekEggs?.eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment?.replaceAll("Adventure Sync Rewards", "Recompensas de Sincroaventura").replaceAll("From Route Gift", "Ovos de 7 km da Troca de presentes de Mateo")}:</strong>
                 </div>}
                 <div className='with-flex contained'>
                     {(leekEggs?.eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
