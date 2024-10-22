@@ -235,7 +235,7 @@ const Events = () => {
             
                 {relevantPosts[selectedNews]?.bonuses && <Section title={translator(TranslatorKeys.Bonus, currentLanguage)}><div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='bonus-container'>
-                        {translatedEvent(relevantPosts[selectedNews])?.bonuses?.split("\n").filter(b => b).map(b => <span key={b} className='ul-with-adorner'>{b}</span>)}
+                        {translatedEvent(relevantPosts[selectedNews])?.bonuses?.split("\n").filter(b => b).map((b, i) => <span key={i + '-' + currentLanguage} className='ul-with-adorner'>{b}</span>)}
                     </div>
                 </div></Section>}
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
@@ -294,7 +294,7 @@ const Events = () => {
                         </div>
                     </Section>}
                     {(relevantPosts[selectedNews].eggs ?? []).length > 0 &&
-                    <Section title={translator(TranslatorKeys.FeaturedResearches, currentLanguage)}>
+                    <Section title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}>
                         <div>
                             {selectedNews === 0 &&
                                 <div className="raid-container">

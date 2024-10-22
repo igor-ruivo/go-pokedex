@@ -216,7 +216,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 </span></div>}
                 <div className="counters-display-layout">
                     {league !== LeagueType.RAID && <Section
-                        title={`${shortName(pokemon.speciesName)} - ${translator(TranslatorKeys.CountersWeak, currentLanguage)} (${top / 2 + 1} - ${top}):`}
+                        title={`${shortName(pokemon.speciesName)} ${translator(TranslatorKeys.StrongAgainst, currentLanguage)} (${leagueName}):`}
                         additionalClasses={`moves-title all-moves fast-moves-section auto-margins large-title`}
                         noPadding
                     >

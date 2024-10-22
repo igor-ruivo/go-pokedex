@@ -925,7 +925,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
             // then try to match any of the remaining words with any speciesName
             // if we have multiple occasions, then try to find one with what we removed (form)
 
-            const formCandidate = currP.split(" ").filter(f => Array.from(knownForms).some(e => ndfNormalized(e) === f));
+            const formCandidate = currP.replaceAll('(', '').replaceAll(')', '').split(" ").filter(f => Array.from(knownForms).some(e => ndfNormalized(e) === f));
             if (formCandidate.length === 0) {
 
                 // edge case -> Zacian (Hero) is commonly referred to as zacian only.

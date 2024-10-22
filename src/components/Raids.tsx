@@ -167,19 +167,24 @@ const Raids = () => {
                                 <div className='in-row round-border'>
                                     <div className='in-column'>
                                         <div className='in-row wrapped contained'>
-                                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && !getCountdownForBoss(e.speciesId) && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).map(e =>
+                                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).sort((p1: IEntry, p2: IEntry) => {
+                                                if (currentBossDate !== "current") {
+                                                    return 0;
+                                                }
+
+                                                if (getCountdownForBoss(p1.speciesId) && !getCountdownForBoss(p2.speciesId)) {
+                                                    return -1;
+                                                }
+                                                
+                                                if (getCountdownForBoss(p2.speciesId) && !getCountdownForBoss(p1.speciesId)) {
+                                                    return 1;
+                                                }
+
+                                                return 0;
+                                            }).map(e =>
                                                 <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
                                                     <div className={`mini-card-wrapper`}>
-                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className='in-row wrapped contained'>
-                                            {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && getCountdownForBoss(e.speciesId) && (egg.value === "2" || !gamemasterPokemon[e.speciesId].isShadow)).map(e =>
-                                                <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
-                                                    <div className={`mini-card-wrapper`}>
-                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
+                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={currentBossDate === "current" ? getCountdownForBoss(e.speciesId) : undefined} />
                                                     </div>
                                                 </div>
                                             )}
