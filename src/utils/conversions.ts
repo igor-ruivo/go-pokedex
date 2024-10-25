@@ -853,7 +853,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
         }
         
         // Join the array back into a string, preserving the original structure as much as possible
-        currP = words.join(" ").trim();
+        currP = words.join(" ").trim().replaceAll('palkida', 'palkia'); //typo in leekduck
 
         // Edge case for Darmanitan -> it has a form (Standard) on the id but not on the name...
         if (currP === "darmanitan") {
