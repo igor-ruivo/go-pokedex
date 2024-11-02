@@ -310,6 +310,8 @@ const DeleteTrash = () => {
                         terms.add(newTerm);
                     }
                 }
+                
+                return;
             }
 
             //ambiguous...
