@@ -160,7 +160,6 @@ const DeleteTrash = () => {
 
         const potentiallyDeletablePokemon = new Set<number>();
 
-        const alwaysBad: Dictionary<Set<IGamemasterPokemon>> = {};
         const alwaysBadIfHighAtk: Dictionary<Set<IGamemasterPokemon>> = {};
         const alwaysGood: Dictionary<Set<IGamemasterPokemon>> = {};
 
@@ -169,10 +168,6 @@ const DeleteTrash = () => {
             .forEach(p => {
                 if (isBadForEverything(p)) {
                     potentiallyDeletablePokemon.add(p.dex);
-                    if (!alwaysBad[p.dex]) {
-                        alwaysBad[p.dex] = new Set<IGamemasterPokemon>();
-                    }
-                    alwaysBad[p.dex].add(p);
                 } else {
                     if (isBadForEverythingIfItHasHighAttack(p)) {
                         potentiallyDeletablePokemon.add(p.dex);
@@ -299,24 +294,18 @@ const DeleteTrash = () => {
 
         const terms = new Set<string>();
         
+        // so these are all the pokémon dexes that will be deleted.
+        // take dex number x, for example. there can be y variations that are always bad, and there can be another one that is just bad if it has high atk and yet another one that is always good.
+        // we don't need to care about "if it needs to be disambiguated or not in order to save space", because their baseIds already compute that.
+        // so we always use that baseId.
+        // so: for each dex, check if there are variants alwaysGood. they will be negated in the search string and even if more entries with the same id are not alwaysGood, we can rest assured because this single one will save that pkm.
+        // then, check if there are entries bad if they have high atk. same thing, but add 2- atk after.
+        // no need to do anything for the alwaysBad collection. these are already the default due to the first AND that has all dexes.
         potentiallyDeletablePokemonArray.forEach(d => {
-            const isAmbiguous = (alwaysBad[d] ? 1 : 0) + (alwaysBadIfHighAtk[d] ? 1 : 0) + (alwaysGood[d] ? 1 : 0) > 1;
-
-            if (!isAmbiguous) {
-                if (alwaysBadIfHighAtk[d]) {
-                    const newTerm = `&!${d},2-${gameTranslator(GameTranslatorKeys.AttackSearch, currentGameLanguage)}`;
-                    if (!terms.has(newTerm)) {
-                        str += newTerm;
-                        terms.add(newTerm);
-                    }
-                }
-                
-                return;
-            }
-
-            //ambiguous...
-
             if (alwaysGood[d]) {
+                // first: check if it's always good for something. if this is the case, abort immediatelly because it may not be a pokémon that is able to be differenciated.
+                // (examples: pumpkaboo, genesect...)
+                // the !dex will appear in the string and even if more entries appear, this one will be enough to not delete any of them.
                 const entries = alwaysGood[d];
                 entries.forEach(e => {
                     let newStr = '';
