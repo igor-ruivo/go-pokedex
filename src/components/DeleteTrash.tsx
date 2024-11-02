@@ -5,7 +5,7 @@ import { usePokemon } from "../contexts/pokemon-context";
 import { usePvp } from "../contexts/pvp-context";
 import Dictionary from "../utils/Dictionary";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import { computeBestIVs, fetchReachablePokemonIncludingSelf } from "../utils/pokemon-helper";
+import { computeBestIVs, fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from "../utils/pokemon-helper";
 import "./DeleteTrash.scss"
 import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
@@ -84,7 +84,7 @@ const DeleteTrash = () => {
         return minRaidRank <= trashRaid;
     }, [fetchCompleted, trashRaid, raidRankerFetchCompleted, enumValues, gamemasterPokemon, raidDPS]);
 
-    const isBadWithAttack = useCallback((p: IGamemasterPokemon) => {
+    const isBadForEverythingIfItHasHighAttack = useCallback((p: IGamemasterPokemon) => {
         if (!fetchCompleted || !pvpFetchCompleted) {
             return false;
         }
@@ -140,7 +140,7 @@ const DeleteTrash = () => {
         return false;
     }, [fetchCompleted, pvpFetchCompleted, isGoodForRaids, gamemasterPokemon, rankLists, trashMaster, trashGreat, trashUltra, isBadRank, needsLessThanFiveAttack]);
 
-    const isAlwaysBadPokemon = useCallback((p: IGamemasterPokemon) => {
+    const isBadForEverything = useCallback((p: IGamemasterPokemon) => {
         if (!fetchCompleted || !pvpFetchCompleted) {
             return false;
         }
@@ -158,10 +158,9 @@ const DeleteTrash = () => {
             return "";
         }
 
-        const dexesWithGoodForms = new Set<number>();
         const potentiallyDeletablePokemon = new Set<number>();
         const pokemonBadWithAttack: Dictionary<DisambiguatedEntry[]> = {};
-        const needsDisambiguation = new Set<number>();
+        const disambiguationDic: Dictionary<DisambiguatedEntry[]> = {};
         const alwaysBadSet = new Set<number>();
         Object.values(gamemasterPokemon)
             .filter(p => !p.aliasId && !p.isMega)
@@ -175,13 +174,22 @@ const DeleteTrash = () => {
                     paldean: p.speciesName.includes("(Paldean)")
                 };
 
-                if (isAlwaysBadPokemon(p)) {
+                if (isBadForEverything(p)) {
                     alwaysBadSet.add(p.dex);
                     potentiallyDeletablePokemon.add(p.dex);
+                    if (pokemonBadWithAttack[p.dex] && pokemonBadWithAttack[p.dex].length > 0) {
+                        if (!disambiguationDic[p.dex]) {
+                            disambiguationDic[p.dex] = [];
+                        }
+                        disambiguationDic[p.dex].push(pEntry);
+                    }
                 } else {
-                    if (isBadWithAttack(p)) {
+                    if (isBadForEverythingIfItHasHighAttack(p)) {
                         if (alwaysBadSet.has(p.dex)) {
-                            needsDisambiguation.add(p.dex);
+                            if (!disambiguationDic[p.dex]) {
+                                disambiguationDic[p.dex] = [];
+                            }
+                            disambiguationDic[p.dex].push(pEntry);
                         }
                         potentiallyDeletablePokemon.add(p.dex);
                         if (!pokemonBadWithAttack[p.dex]) {
@@ -189,55 +197,180 @@ const DeleteTrash = () => {
                         }
                         pokemonBadWithAttack[p.dex].push(pEntry);
                     } else {
-                        dexesWithGoodForms.add(p.dex);
+                        // is always good for something, no matter the IVs.
+                        if (alwaysBadSet.has(p.dex) || (pokemonBadWithAttack[p.dex] && pokemonBadWithAttack[p.dex].length > 0)) {
+                            if (!disambiguationDic[p.dex]) {
+                                disambiguationDic[p.dex] = [];
+                            }
+                            disambiguationDic[p.dex].push(pEntry);
+                        }
                     }
                 }
             });
 
+        console.log(`These pokémon need disambigution:`);
+        console.log(Object.keys(disambiguationDic).join(','));
+
+        //
+        type PokemonForm = {
+            dexNumber: number;
+            types: string[];
+            isShadow: boolean;
+            p: IGamemasterPokemon;
+        };
+        
+        type UniqueTypes = { [dexNumber: number]: Set<string> };
+        
+        const buildUniqueTypes = (pokemonForms: PokemonForm[]): UniqueTypes => {
+            const typeOccurrences: { [dexNumber: number]: { [type: string]: number } } = {};
+        
+            pokemonForms.forEach(({ dexNumber, types }) => {
+                if (!typeOccurrences[dexNumber]) typeOccurrences[dexNumber] = {};
+                types.forEach(type => {
+                    typeOccurrences[dexNumber][type] = (typeOccurrences[dexNumber][type] || 0) + 1;
+                });
+            });
+        
+            const uniqueTypes: UniqueTypes = {};
+            for (const dex in typeOccurrences) {
+                const dexNumber = parseInt(dex);
+                uniqueTypes[dexNumber] = new Set<string>();
+                for (const type in typeOccurrences[dexNumber]) {
+                    if (typeOccurrences[dexNumber][type] === 1) {
+                        uniqueTypes[dexNumber].add(type);
+                    }
+                }
+            }
+        
+            return uniqueTypes;
+        };
+        
+        const generatePokemonId = (
+            dexNumber: number,
+            types: string[],
+            uniqueTypes: UniqueTypes,
+            formSiblings: PokemonForm[],
+            form: PokemonForm
+        ) => {
+            // Base case: if only one form exists for this dex number, no disambiguation is needed.
+            if (formSiblings.length === 1) {
+                return `${dexNumber}`;
+            }
+        
+            let identifier = `${dexNumber}`;
+            const uniqueTypesForDex = uniqueTypes[dexNumber] || new Set<string>();
+            const siblingTypesToNegate = new Set<string>();
+        
+            // Check if this form has a unique type
+            const uniqueType = types.find(type => uniqueTypesForDex.has(type));
+        
+            if (uniqueType) {
+                identifier += `,${uniqueType}`;
+            } else {
+                // No unique type; include all types and selectively negate sibling-specific types
+                types.forEach(type => {
+                    // only if not all other forms already have it...
+                    if (formSiblings.some(t => !t.types.includes(type))) {
+                        identifier += `,${type}`;
+                    }
+                });
+        
+                formSiblings.forEach(sibling => {
+                    if (sibling !== form) {
+                        sibling.types.forEach(siblingType => {
+                            if (!types.includes(siblingType) && sibling.types.some(t => types.includes(t))) {
+                                siblingTypesToNegate.add(siblingType);
+                            }
+                        });
+                    }
+                });
+        
+                siblingTypesToNegate.forEach(type => {
+                    identifier += `,!${type}`;
+                });
+            }
+        
+            return identifier;
+        };
+        
+        // Original collection that includes shadow Pokémon
+        const allPokemonForms = Object.values(gamemasterPokemon)
+            .filter(e => !e.isMega && !e.aliasId)
+            .map(e => ({
+                dexNumber: e.dex,
+                types: e.types.map(f => f.toString().toLocaleLowerCase()),
+                isShadow: e.isShadow,
+                p: e,
+            }));
+        
+        const uniqueTypes = buildUniqueTypes(allPokemonForms.filter(c => !c.isShadow));
+        
+        const baseIds: { [key: string]: string } = {};
+        
+        allPokemonForms.forEach(form => {
+            const formSiblings = allPokemonForms.filter(f => f.dexNumber === form.dexNumber && !f.isShadow);
+            const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
+            baseIds[`${form.dexNumber},${form.types.join(",")}`] = id;
+        });
+        
+        // Second pass: Apply shadow modifiers, using the original collection
+        const ids = allPokemonForms.map(form => {
+            let baseId = baseIds[`${form.dexNumber},${form.types.join(",")}`];
+            if (form.isShadow) {
+                baseId += `&shadow`;
+            } else if (isNormalPokemonAndHasShadowVersion(form.p, gamemasterPokemon)) {
+                baseId += `&!shadow`;
+            }
+            return baseId;
+        });
+        
+        // Output results for verification
+        ids.forEach(id => console.log(id));        
+
         let str = "";
 
-        // excluding Pokémon that are potentially deletable if they have at least one form that shouldn't be deleted,
-        // because it would be very hard to create an exception in the search string for them.
-        const alwaysDeletablePokemon = Array.from(potentiallyDeletablePokemon).filter(d => !dexesWithGoodForms.has(d));
-        str += alwaysDeletablePokemon.join(",");
+        const potentiallyDeletablePokemonArray = Array.from(potentiallyDeletablePokemon);
+        str += potentiallyDeletablePokemonArray.join(",");
 
         const terms = new Set<string>();
-        alwaysDeletablePokemon.forEach(d => {
-            const specificPokemon = pokemonBadWithAttack[d];
-            if (specificPokemon) {
-                specificPokemon.forEach(b => {
-                    let newStr = `&!${b.dex}`;
-                    const pokemonNeedsDisambiguation = needsDisambiguation.has(d);
-                    if (pokemonNeedsDisambiguation) {
-                        if (b.shadow) {
-                            newStr += `,!${gameTranslator(GameTranslatorKeys.ShadowSearch, currentGameLanguage)}`;
-                        }
-                        if (b.hisuian) {
-                            newStr += `,!${gameTranslator(GameTranslatorKeys.HisuianSearch, currentGameLanguage)}`;
-                        }
-                        if (b.alolan) {
-                            newStr += `,!${gameTranslator(GameTranslatorKeys.AlolanSearch, currentGameLanguage)}`;
-                        }
-                        if (b.galarian) {
-                            newStr += `,!${gameTranslator(GameTranslatorKeys.GalarianSearch, currentGameLanguage)}`;
-                        }
-                        if (b.paldean) {
-                            newStr += `,!${gameTranslator(GameTranslatorKeys.PaldeanSearch, currentGameLanguage)}`;
-                        }
-                    }
-                    newStr += `,2-${gameTranslator(GameTranslatorKeys.AttackSearch, currentGameLanguage)}`;
+        potentiallyDeletablePokemonArray.forEach(d => {
+            if (!(disambiguationDic[d] && disambiguationDic[d].length > 0) && !(pokemonBadWithAttack[d] && pokemonBadWithAttack[d].length > 0)) {
+                // Nothing to disambiguate and it's not even worth if has low attack
+                return;
+            }
 
-                    if (!terms.has(newStr)) {
-                        str += newStr;
-                        terms.add(newStr);
+            const defaultTerm = `&!${d}`;
+            let newStr = `&!${d}`;
+
+            if (disambiguationDic[d] || pokemonBadWithAttack[d]) {
+                const list = new Set<DisambiguatedEntry>([...(disambiguationDic[d] ?? []), ...(pokemonBadWithAttack[d] ?? [])]);
+                list.forEach(b => {
+                    if (b.shadow) {
+                        newStr += `,!${gameTranslator(GameTranslatorKeys.ShadowSearch, currentGameLanguage)}`;
+                    } else {
+                        newStr += `,${gameTranslator(GameTranslatorKeys.ShadowSearch, currentGameLanguage)}`;
+                    }
+
+                    // find 1 different type between all forms
+
+                    const pkmAlwaysBadIfHasHighAtk = pokemonBadWithAttack[d];
+                    if (pkmAlwaysBadIfHasHighAtk) {
+                        if (pkmAlwaysBadIfHasHighAtk.includes(b)) {
+                            newStr += `,2-${gameTranslator(GameTranslatorKeys.AttackSearch, currentGameLanguage)}`;
+                        }
                     }
                 });
             }
+
+            if (!terms.has(newStr) && newStr !== defaultTerm) {
+                str += newStr;
+                terms.add(newStr);
+            }
         });
 
-        str += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.MegaEvolve, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.UltraBeast, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.TradeEvolve, currentGameLanguage)}`;
+        str += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.MegaEvolve, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.UltraBeast, currentGameLanguage)}`;
         return str;
-    }, [fetchCompleted, gamemasterPokemon, isAlwaysBadPokemon, isBadWithAttack, cp, currentGameLanguage]);
+    }, [fetchCompleted, gamemasterPokemon, isBadForEverything, isBadForEverythingIfItHasHighAttack, cp, currentGameLanguage]);
 
     useEffect(() => {
         if (!isCalculating || !fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(enumValues)) {

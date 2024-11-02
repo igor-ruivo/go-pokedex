@@ -22,7 +22,7 @@ export enum Effectiveness {
     DoubleEffective = 2.56
 }
 
-const isNormalPokemonAndHasShadowVersion = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
+export const isNormalPokemonAndHasShadowVersion = (pokemon: IGamemasterPokemon, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     if (pokemon.isShadow) {
         return false;
     }
