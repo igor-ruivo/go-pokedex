@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { useLanguage } from "../contexts/language-context";
+import { GameLanguage, useLanguage } from "../contexts/language-context";
 import { usePokemon } from "../contexts/pokemon-context";
 import { usePvp } from "../contexts/pvp-context";
 import Dictionary from "../utils/Dictionary";
@@ -358,7 +358,30 @@ const DeleteTrash = () => {
             }
         });
 
+        if (currentGameLanguage === GameLanguage.Portuguese) {
+            str = str
+            .replaceAll('bug', 'inseto')
+            .replaceAll('dark', 'sombrio')
+            .replaceAll('dragon', 'dragão')
+            .replaceAll('electric', 'elétrico')
+            .replaceAll('fairy', 'fada')
+            .replaceAll('fighting', 'lutador')
+            .replaceAll('fire', 'fogo')
+            .replaceAll('flying', 'voador')
+            .replaceAll('ghost', 'fantasma')
+            .replaceAll('grass', 'planta')
+            .replaceAll('ground', 'terrestre')
+            .replaceAll('ice', 'gelo')
+            .replaceAll('poison', 'venenoso')
+            .replaceAll('psychic', 'psíquico')
+            .replaceAll('rock', 'pedra')
+            .replaceAll('steel', 'aço')
+            .replaceAll('water', 'água')
+            .replaceAll('shadow', 'sombroso');
+        }
+
         str += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.MegaEvolve, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.UltraBeast, currentGameLanguage)}`;
+
         return str;
     }, [fetchCompleted, gamemasterPokemon, isBadForEverything, isBadForEverythingIfItHasHighAttack, cp, currentGameLanguage]);
 
