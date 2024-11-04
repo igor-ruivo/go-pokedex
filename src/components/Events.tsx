@@ -13,6 +13,7 @@ import { Language, useLanguage } from '../contexts/language-context';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import Section from './Template/Section';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 
 const Events = () => {
     const { posts, postsPT, season, seasonPT, postsErrors, seasonErrors, seasonPTErrors, seasonPTFetchCompleted, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
@@ -25,9 +26,9 @@ const Events = () => {
     const relevantPosts = useMemo(() => [season, ...nonSeasonalPosts], [season, nonSeasonalPosts]);
 
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const [selectedNews, setSelectedNews] = useState(posts.flat().length === 0 ? 0 : 1);
-    const [currentPlace, setCurrentPlace] = useState("0");
-    const [currentEgg, setCurrentEgg] = useState("0");
+    const [selectedNews, setSelectedNews] = useState((readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!) >= relevantPosts.length ? 0 : (readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!));
+    const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? "0");
+    const [currentEgg, setCurrentEgg] = useState(readSessionValue(ConfigKeys.ExpandedEgg) ?? "0");
 
     const postTitle = useCallback((post: IPostEntry) => `${post.title}-${post.subtitle}`, []);
 
@@ -40,7 +41,8 @@ const Events = () => {
 
     useEffect(() => {
         if (postsFetchCompleted) {
-            setSelectedNews(posts.flat().length === 0 ? 0 : 1);
+            setSelectedNews(readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!);
+            writeSessionValue(ConfigKeys.ExpandedEvent, readSessionValue(ConfigKeys.ExpandedEvent) === null ? ('' + (posts.flat().length === 0 ? 0 : 1)) : readSessionValue(ConfigKeys.ExpandedEvent)!);
         }
 
     }, [postsFetchCompleted, setSelectedNews, posts]);
@@ -186,7 +188,7 @@ const Events = () => {
                         <div className='overflowing'>
                             <div className='news-gallery'>
                                 {relevantPosts.map((p, i) =>
-                                    <div key={postTitle(p)} className={`post-miniature clickable ${!seenEvents.has(postTitle(p)) ? "is-new" : ""} ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => setSelectedNews(i)}>
+                                    <div key={postTitle(p)} className={`post-miniature clickable ${!seenEvents.has(postTitle(p)) ? "is-new" : ""} ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => {setSelectedNews(i); writeSessionValue(ConfigKeys.ExpandedEvent, '' + i)}}>
                                         <div className='miniature-date ellipsed'>{i === 0 ? translator(TranslatorKeys.Season, currentLanguage) : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
                                         <div className={`spotlight-miniature-container`}>
                                             <img className='miniature-itself' alt='Miniature' src={p.imgUrl} />
@@ -246,7 +248,7 @@ const Events = () => {
                                     <div className="img-family">
                                         {[(season.wild ?? []).filter(e => e.kind === "0"), (season.wild ?? []).filter(e => e.kind === "1"), (season.wild ?? []).filter(e => e.kind === "2"), (season.wild ?? []).filter(e => e.kind === "3"), (season.wild ?? []).filter(e => e.kind === "4"), (season.wild ?? []).filter(e => e.kind === "5")]
                                             .map((t, i) => (
-                                                <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
+                                                <div className="clickable" key={i} onClick={() => {setCurrentPlace(String(i)); writeSessionValue(ConfigKeys.ExpandedArea, String(i))}}>
                                                     <strong className={`small-move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} smallish-padding item ${String(i) === currentPlace ? "small-extra-padding-right" : ""}`}>
                                                         <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
                                                         {String(i) === currentPlace && idxToPlace(i)}
@@ -302,7 +304,7 @@ const Events = () => {
                                         <div className="img-family">
                                             {[(season.eggs ?? []).filter(e => e.kind === "2"), (season.eggs ?? []).filter(e => e.kind === "5"), (season.eggs ?? []).filter(e => e.kind === "7"), (season.eggs ?? []).filter(e => e.kind === "10")]
                                                 .map((t, i) => (
-                                                    <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
+                                                    <div className="clickable" key={i} onClick={() => {setCurrentEgg(String(i)); writeSessionValue(ConfigKeys.ExpandedEgg, String(i))}}>
                                                         <strong className={`small-move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} smallish-padding item ${String(i) === currentEgg ? "small-extra-padding-right" : ""}`}>
                                                             <div className="img-padding"><img height={22} width={22} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
                                                             {String(i) === currentEgg && idxToEggName(i)}

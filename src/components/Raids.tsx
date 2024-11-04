@@ -10,9 +10,9 @@ import translator, { TranslatorKeys } from "../utils/Translator";
 import { Language, useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import Section from "./Template/Section";
+import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 
 const Raids = () => {
-    const [currentBossDate, setCurrentBossDate] = useState("current");
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
     const { shadowRaids, bossesPerTier, leekPosts, posts, leekPostsFetchCompleted, postsFetchCompleted, leekPostsErrors, postsErrors, bossesFetchCompleted, shadowRaidsFetchCompleted } = useCalendar();
@@ -100,17 +100,22 @@ const Raids = () => {
 
     const raidEventDates = useMemo(() => [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }, ...remainingBosses.map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
     , [currentLanguage, getDateKey, remainingBosses]);
+
+    
+    const [currentBossDate, setCurrentBossDate] = useState(raidEventDates.some(f => f.value === (readSessionValue(ConfigKeys.ExpandedRaidDate) ?? "current")) ? (readSessionValue(ConfigKeys.ExpandedRaidDate) ?? "current") : "current");
+
     const bossesAvailable = useMemo(() => (currentBossDate === "current" ? generateTodayBosses(additionalBosses) : additionalBosses.find(a => getDateKey(a) === currentBossDate)!.raids as IEntry[]).sort((a, b) => sortEntries(a, b, gamemasterPokemon))
     , [currentBossDate, additionalBosses, generateTodayBosses, getDateKey, gamemasterPokemon]);
 
     const raidEventEggs = useMemo(() => [...(bossesAvailable.some(a => a.kind === "1") ? [{ label: translator(TranslatorKeys.Tier, currentLanguage) + " 1", value: "0" }] : []), ...(bossesAvailable.some(a => a.kind === "3") ? [{ label: translator(TranslatorKeys.Tier, currentLanguage) + " 3", value: "1" }] : []), ...(bossesAvailable.some(a => a.kind === "5" || a.kind === "mega") ? [{ label: translator(TranslatorKeys.SpecialBosses, currentLanguage), value: "2" }] : []), { label: translator(TranslatorKeys.AllTiers, currentLanguage), value: "3" }]
     , [bossesAvailable, currentLanguage]);
     const firstRelevantEntryTierForDate = useMemo(() => raidEventEggs.filter(k => k.value === "3")[0]?.value ?? (raidEventEggs[0]?.value ?? ""), [raidEventEggs]);
-    const [currentTier, setCurrentTier] = useState(firstRelevantEntryTierForDate);
+    const [currentTier, setCurrentTier] = useState(readSessionValue(ConfigKeys.ExpandedRaidTier) === null ? firstRelevantEntryTierForDate : raidEventEggs.some(f => f.value === readSessionValue(ConfigKeys.ExpandedRaidTier)) ? readSessionValue(ConfigKeys.ExpandedRaidTier) : firstRelevantEntryTierForDate);
 
     useEffect(() => {
         if (!raidEventEggs.some(e => e.value === currentTier)) {
             setCurrentTier(firstRelevantEntryTierForDate);
+            writeSessionValue(ConfigKeys.ExpandedRaidTier, firstRelevantEntryTierForDate);
         }
     }, [raidEventEggs, currentTier, setCurrentTier, firstRelevantEntryTierForDate]);
     
@@ -143,7 +148,7 @@ const Raids = () => {
                     isSearchable={false}
                     value={raidEventDates.find(o => o.value === currentBossDate)}
                     options={raidEventDates}
-                    onChange={e => setCurrentBossDate((e as any).value)}
+                    onChange={e => {setCurrentBossDate((e as any).value); writeSessionValue(ConfigKeys.ExpandedRaidDate, (e as any).value)}}
                     formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='calendar' className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
@@ -153,7 +158,8 @@ const Raids = () => {
                     isSearchable={false}
                     value={raidEventEggs.find(o => o.value === currentTier)}
                     options={raidEventEggs}
-                    onChange={e => setCurrentTier((e as any).value)}
+                    onChange={e => {setCurrentTier((e as any).value); 
+                        writeSessionValue(ConfigKeys.ExpandedRaidTier, (e as any).value);}}
                     formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={22} width={22} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>

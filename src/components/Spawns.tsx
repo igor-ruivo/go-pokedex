@@ -9,6 +9,7 @@ import { inCamelCase, localeStringSmallestOptions } from "../utils/Misc";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { useLanguage } from "../contexts/language-context";
 import Section from "./Template/Section";
+import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 
 const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
 
@@ -18,8 +19,8 @@ const Spawns = () => {
     const { posts, postsFetchCompleted, postsErrors, season, seasonFetchCompleted, seasonErrors } = useCalendar();
     const currPosts = useMemo(() => postsFetchCompleted ? posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()) : []
     , [postsFetchCompleted, posts]);
-    const [currentBossDate, setCurrentBossDate] = useState(currPosts.length > 0 ? "current" : "season");
-    const [currentPlace, setCurrentPlace] = useState("0");
+    const [currentBossDate, setCurrentBossDate] = useState(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.flat().some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
+    const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? "0");
 
     const raidEventDates = useMemo(() => [...(currPosts.length > 0 ? [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
     , [currPosts, currentLanguage, posts]);
@@ -29,9 +30,9 @@ const Spawns = () => {
 
     useEffect(() => {
         if (postsFetchCompleted && seasonFetchCompleted && currPosts.length > 0) {
-            setCurrentBossDate("current");
+            setCurrentBossDate(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.flat().some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
         }
-    }, [currPosts, setCurrentBossDate, postsFetchCompleted, seasonFetchCompleted]);
+    }, [currPosts, setCurrentBossDate, postsFetchCompleted, seasonFetchCompleted, posts]);
 
     const idxToPlace = useCallback((idx: number) => {
         switch (idx) {
@@ -75,7 +76,7 @@ const Spawns = () => {
                     isSearchable={false}
                     value={raidEventDates.find(o => o.value === currentBossDate)}
                     options={raidEventDates}
-                    onChange={e => setCurrentBossDate((e as any).value)}
+                    onChange={e => {setCurrentBossDate((e as any).value); writeSessionValue(ConfigKeys.ExpandedSpawnDate, (e as any).value)}}
                     formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} alt='calendar' style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
@@ -88,7 +89,7 @@ const Spawns = () => {
                             <div className="img-family">
                                 {[(season?.wild ?? []).filter(e => e.kind === "0"), (season?.wild ?? []).filter(e => e.kind === "1"), (season?.wild ?? []).filter(e => e.kind === "2"), (season?.wild ?? []).filter(e => e.kind === "3"), (season?.wild ?? []).filter(e => e.kind === "4"), (season?.wild ?? []).filter(e => e.kind === "5")]
                                     .map((t, i) => (
-                                        <div className="clickable" key={i} onClick={() => setCurrentPlace(String(i))}>
+                                        <div className="clickable" key={i} onClick={() => {setCurrentPlace(String(i)); writeSessionValue(ConfigKeys.ExpandedArea, String(i))}}>
                                             <strong className={`small-move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} smallish-padding normal-text item ${String(i) === currentPlace ? "small-extra-padding-right" : ""}`}>
                                                 <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
                                                 {String(i) === currentPlace && idxToPlace(i)}

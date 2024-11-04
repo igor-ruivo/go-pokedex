@@ -35,7 +35,13 @@ export enum ConfigKeys {
     Type2,
     TrashRaid,
     ExpandedRocket,
-    SeenEvents
+    SeenEvents,
+    ExpandedEgg,
+    ExpandedArea,
+    ExpandedEvent,
+    ExpandedRaidDate,
+    ExpandedRaidTier,
+    ExpandedSpawnDate
 }
 
 export const readSessionValue = (key: ConfigKeys) => {

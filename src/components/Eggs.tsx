@@ -7,11 +7,12 @@ import PokemonMiniature from "./PokemonMiniature";
 import translator, { TranslatorKeys } from "../utils/Translator";
 import { Language, useLanguage } from "../contexts/language-context";
 import Section from "./Template/Section";
+import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 
 const Eggs = () => {
     const { leekEggs, leekEggsErrors, leekEggsFetchCompleted } = useCalendar();
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const [currentEgg, setCurrentEgg] = useState("0");
+    const [currentEgg, setCurrentEgg] = useState(readSessionValue(ConfigKeys.ExpandedEgg) ?? "0");
     const {currentLanguage} = useLanguage();
 
     const idxToEggName = useCallback((idx: number) => {
@@ -67,7 +68,7 @@ const Eggs = () => {
                         <div className="img-family">
                             {[(leekEggs?.eggs ?? []).filter(e => e.kind === "2"), (leekEggs?.eggs ?? []).filter(e => e.kind === "5"), (leekEggs?.eggs ?? []).filter(e => e.kind === "7"), (leekEggs?.eggs ?? []).filter(e => e.kind === "10"), (leekEggs?.eggs ?? []).filter(e => e.kind === "12")]
                                 .map((t, i) => (
-                                    <div className="clickable" key={i} onClick={() => setCurrentEgg(String(i))}>
+                                    <div className="clickable" key={i} onClick={() => {setCurrentEgg(String(i)); writeSessionValue(ConfigKeys.ExpandedEgg, String(i))}}>
                                         <strong className={`small-move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} smallish-padding normal-text item ${String(i) === currentEgg ? "small-extra-padding-right" : ""}`}>
                                             <div className="img-padding"><img height={22} width={22} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
                                             {String(i) === currentEgg && idxToEggName(i)}
