@@ -114,8 +114,8 @@ const Raids = () => {
         }
     }, [raidEventEggs, currentTier, setCurrentTier, firstRelevantEntryTierForDate]);
     
-    const getCountdownForBoss = useCallback((speciesId: string) => additionalBosses.sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === speciesId))?.dateEnd
-    , [additionalBosses]);
+    const getCountdownForBoss = useCallback((speciesId: string) => Object.values([...reducedLeekPosts, ...reducedRaids]).sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === speciesId))?.dateEnd
+    , [reducedLeekPosts, reducedRaids]);
 
     const eggIdxToKind = useCallback((idx: string) => {
         switch (idx) {
