@@ -28,7 +28,7 @@ const Events = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const [selectedNews, setSelectedNews] = useState((readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!) >= relevantPosts.length ? 0 : (readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!));
     const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? "0");
-    const [currentEgg, setCurrentEgg] = useState(readSessionValue(ConfigKeys.ExpandedEgg) ?? "0");
+    const [currentEgg, setCurrentEgg] = useState(readSessionValue(ConfigKeys.ExpandedEgg) === "4" ? "0" : (readSessionValue(ConfigKeys.ExpandedEgg) ?? "0"));
 
     const postTitle = useCallback((post: IPostEntry) => `${post.title}-${post.subtitle}`, []);
 
