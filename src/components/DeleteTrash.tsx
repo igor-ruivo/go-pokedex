@@ -7,7 +7,6 @@ import Dictionary from "../utils/Dictionary";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { computeBestIVs, fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from "../utils/pokemon-helper";
 import "./DeleteTrash.scss"
-import { IRankedPokemon } from "../DTOs/IRankedPokemon";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
 import LoadingRenderer from "./LoadingRenderer";
 import { useRaidRanker } from "../contexts/raid-ranker-context";
@@ -94,51 +93,27 @@ const DeleteTrash = () => {
         }
 
         // here, the pokémon is good for something...
-        // find those good for gl and ul that need <5 atk in the first 20 spots, except if rank for great or ultra is <= 20
         const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
 
-        const findMinRankAndPokemon = (reachablePokemon: IGamemasterPokemon[], rankList: Dictionary<IRankedPokemon>) => {
-            let minRank = Infinity;
-            let minSpeciesId = undefined;
-          
-            for (const p of reachablePokemon) {
-                const rank = rankList[p.speciesId]?.rank;
-          
-                if (rank !== undefined && rank < minRank) {
-                    minRank = rank;
-                    minSpeciesId = p.speciesId;
-                }
-            }
-          
-            return minSpeciesId !== undefined ? { speciesId: minSpeciesId, rank: minRank } : undefined;
-        }
+        // if any reachable is good for master, return false
+        // if some reachable good for great DONT need little attack, return false
+        // if some reabhable good for ultra DONT need little attack, return false
+        // otherwise, return true
 
-        const glLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[0]);
-        const ulLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[1]);
-        const mlLowestRank = findMinRankAndPokemon(reachablePokemon, rankLists[2]);
-
-        if ((mlLowestRank && !isBadRank(mlLowestRank.rank, trashMaster)) || (glLowestRank && !isBadRank(glLowestRank.rank, 0)) || (ulLowestRank && !isBadRank(ulLowestRank.rank, 0))) {
+        if (reachablePokemon.some(k => !isBadRank(rankLists[2][k.speciesId]?.rank ?? Infinity, trashMaster))) {
             return false;
         }
 
-        if (glLowestRank && !isBadRank(glLowestRank.rank, trashGreat) && !needsLessThanFiveAttack(gamemasterPokemon[glLowestRank.speciesId], 0)) {
+        if (reachablePokemon.some(k => !isBadRank(rankLists[0][k.speciesId]?.rank ?? Infinity, trashGreat) && !needsLessThanFiveAttack(k, 0))) {
             return false;
         }
 
-        if (ulLowestRank && !isBadRank(ulLowestRank.rank, trashUltra) && !needsLessThanFiveAttack(gamemasterPokemon[ulLowestRank.speciesId], 1)) {
+        if (reachablePokemon.some(k => !isBadRank(rankLists[1][k.speciesId]?.rank ?? Infinity, trashUltra) && !needsLessThanFiveAttack(k, 1))) {
             return false;
         }
 
-        if (glLowestRank && !isBadRank(glLowestRank.rank, trashGreat) && needsLessThanFiveAttack(gamemasterPokemon[glLowestRank.speciesId], 0)) {
-            return true;
-        }
-
-        if (ulLowestRank && !isBadRank(ulLowestRank.rank, trashUltra) && needsLessThanFiveAttack(gamemasterPokemon[ulLowestRank.speciesId], 1)) {
-            return true;
-        }
-
-        return false;
-    }, [fetchCompleted, pvpFetchCompleted, isGoodForRaids, gamemasterPokemon, rankLists, trashMaster, trashGreat, trashUltra, isBadRank, needsLessThanFiveAttack]);
+        return true;
+    }, [fetchCompleted, pvpFetchCompleted, isGoodForRaids, gamemasterPokemon, rankLists, trashMaster, isBadRank, needsLessThanFiveAttack, trashGreat, trashUltra]);
 
     const isBadForEverything = useCallback((p: IGamemasterPokemon) => {
         if (!fetchCompleted || !pvpFetchCompleted) {
