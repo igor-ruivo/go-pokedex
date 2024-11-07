@@ -42,7 +42,7 @@ const Rockets = () => {
             mainIcon={
                 {
                     imageDescription: "",
-                    image: <div className="img-padding guaranteedWidth"><img alt='move' height={20} width={20} src={moveUrl} /></div>,
+                    image: <div className="img-padding guaranteedWidth"><img alt='move' className="with-img-dropShadow" height={20} width={20} src={moveUrl} /></div>,
                     imageSideText: translatePhrase(m.phrase, m.trainerId),
                     withBackground: true
                 }

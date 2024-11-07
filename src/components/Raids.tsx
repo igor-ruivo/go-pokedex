@@ -23,7 +23,7 @@ const Raids = () => {
     const reducedRaids = useMemo(() => postsFetchCompleted ? posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : []
     , [postsFetchCompleted, posts]);
 
-    const getDateKey = useCallback((obj: IPostEntry) => String(obj?.date?.valueOf()), []);
+    const getDateKey = useCallback((obj: IPostEntry) => {const d = new Date(obj?.date ?? 0); return `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`}, []);
 
     const additionalBosses = useMemo(() => Object.entries([...reducedLeekPosts, ...reducedRaids]
         .reduce((acc: { [key: string]: IPostEntry }, obj) => {
@@ -160,7 +160,7 @@ const Raids = () => {
                     options={raidEventEggs}
                     onChange={e => {setCurrentTier((e as any).value); 
                         writeSessionValue(ConfigKeys.ExpandedRaidTier, (e as any).value);}}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={22} width={22} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' className="with-img-dropShadow" src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={22} width={22} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
         </div>

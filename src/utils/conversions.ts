@@ -57,7 +57,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "morpeko_full_belly",
         "morpeko_hangry",
         "mawile_mega",
-        "spewpa"
+        "spewpa",
+        "toxel"
     ]);    
 
     const overrideMappings = new Map<string, string>();

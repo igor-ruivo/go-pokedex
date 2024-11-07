@@ -444,14 +444,14 @@ button {
 @media (min-width: 500px) {
     .navbar-dropdown-family div[tabIndex="-1"]:hover:has(> div.hint-container) {
         background: var(--background-dropdowns) !important;
-        *:not(img) {
+        *:not(img):not(.img-adorner) {
             background: var(--background-dropdowns) !important;
         }
     }
 
     div[tabIndex="-1"]:hover:has(> div.hint-container) {
         background: var(--selectionHover) !important;
-        *:not(img) {
+        *:not(img):not(.img-adorner) {
             background: var(--selectionHover) !important;
         }
     }

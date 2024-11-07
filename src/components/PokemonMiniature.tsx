@@ -158,7 +158,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
                     {pvpFetchCompleted && fetchCompleted && (raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? <img className="padded-img raid-img-with-contrast is-raid" alt="Raids" src={`${process.env.PUBLIC_URL}/images/types/${raidRaking.actualType}.png`}/> : relevantLeagueElement(mapper))}
                 </div>
                 <span className="mini-card-content">
-                    <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />
+                    <PokemonImage withClassname="with-img-dropShadow" pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />
                 </span>
             </div>
         </Link>

@@ -14,11 +14,13 @@ import translator, { TranslatorKeys } from '../utils/Translator';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import Section from './Template/Section';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
+import { useNavigate } from 'react-router-dom';
 
 const Events = () => {
     const { posts, postsPT, season, seasonPT, postsErrors, seasonErrors, seasonPTErrors, seasonPTFetchCompleted, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
     const { seenEvents, updateSeenEvents } = useNotifications();
     const {currentLanguage, currentGameLanguage} = useLanguage();
+    const navigate = useNavigate();
 
     const nonSeasonalPosts = useMemo(() => [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)]
     , [posts, leekPosts]);
@@ -209,7 +211,7 @@ const Events = () => {
                 <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='news-header-section item'>
                         <div className='event-img-container'>
-                            <img className='event-img-itself' alt='Event' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} />
+                            <img className='event-img-itself' alt='Event' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} onClick={((relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0) ? (() => navigate(`/pokemon/${relevantPosts[selectedNews].spotlightPokemons![0].speciesId}`)) : undefined}/>
                             {(relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
                                 pokemon = {gamemasterPokemon[relevantPosts[selectedNews].spotlightPokemons![0].speciesId]}
                                 withName = {false}
@@ -217,7 +219,7 @@ const Events = () => {
                                 withClassname = 'spotlighted-pokemon'
                             />}
                         </div>
-                        <div className={'current-news-title'}>{translateSpotlightTitle((translatedEvent(relevantPosts[selectedNews]).subtitle?.length ?? 0) > 15 ? translatedEvent(relevantPosts[selectedNews]).subtitle : translatedEvent(relevantPosts[selectedNews]).title)}</div>
+                        <div className={'current-news-title'}>{translateSpotlightTitle((((translatedEvent(relevantPosts[selectedNews]).subtitle?.length ?? 0) > 15) || (relevantPosts.some(r => r !== relevantPosts[selectedNews] && r.title === relevantPosts[selectedNews].title))) ? translatedEvent(relevantPosts[selectedNews]).subtitle : translatedEvent(relevantPosts[selectedNews]).title)}</div>
                         <div className='current-news-date'>
                             <div className='from-date date-container'>
                                 {inCamelCase(new Date(relevantPosts[selectedNews].date).toLocaleString(undefined, localeStringSmallOptions))}
