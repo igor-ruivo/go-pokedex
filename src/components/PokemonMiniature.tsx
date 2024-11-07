@@ -77,13 +77,13 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
 
     const link = useMemo(() => `/pokemon/${pokemon.speciesId + (linkToShadowVersion ? "_shadow" : "")}/info`, [linkToShadowVersion, pokemon]);
 
-    const raidRank = () => {
+    const raidRank = useCallback(() => {
         if (allRelevantChargedMoveTypes.length === 0) {
-            return Infinity;
+            return {minRaidRank: Infinity, actualType: ''};
         }
 
         if (!fetchCompleted || !raidRankerFetchCompleted(allRelevantChargedMoveTypes)) {
-            return Infinity;
+            return {minRaidRank: Infinity, actualType: ''};
         }
 
         const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon));
@@ -93,18 +93,22 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
             .filter(pk => !pk.aliasId && pk.isMega && reachablePokemon.some(r => r.dex === pk.dex));
 
         let minRaidRank = Infinity;
+        let actualType = '';
         const finalCollection = [...reachablePokemon, ...mega];
         allRelevantChargedMoveTypes.forEach(t => {
             finalCollection.forEach(pk => {
                 const rank = Object.keys(raidDPS[t.toString().toLocaleLowerCase()]).indexOf(pk.speciesId);
                 if (rank !== -1) {
-                    minRaidRank = Math.min(minRaidRank, rank + 1);
+                    if (rank + 1 < minRaidRank) {
+                        minRaidRank = rank + 1;
+                        actualType = t.toString().toLocaleLowerCase();
+                    }
                 }
             });
         });
 
-        return minRaidRank;
-    };
+        return {minRaidRank: minRaidRank, actualType: actualType};
+    }, [allRelevantChargedMoveTypes, fetchCompleted, gamemasterPokemon, pokemon, raidDPS, raidRankerFetchCompleted]);
 
     const rankForLeague = useCallback((leagueIdx: number) => {
         if (!pvpFetchCompleted || !fetchCompleted) {
@@ -142,6 +146,8 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         return dic;
     }, [rankForLeague]);
 
+    const raidRaking = useMemo(() => raidRank(), [raidRank]);
+
     return (
         <Link to={link}>
             <div ref={containerWidth} className="pokemon-miniature">
@@ -149,7 +155,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
                     {computeCountdownLabel()}
                 </div>}
                 <div className={`miniature-tooltip`}>
-                    {pvpFetchCompleted && fetchCompleted && (raidRank() <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? <img className="padded-img raid-img-with-contrast is-raid" alt="Raids" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`}/> : relevantLeagueElement(mapper))}
+                    {pvpFetchCompleted && fetchCompleted && (raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? <img className="padded-img raid-img-with-contrast is-raid" alt="Raids" src={`${process.env.PUBLIC_URL}/images/types/${raidRaking.actualType}.png`}/> : relevantLeagueElement(mapper))}
                 </div>
                 <span className="mini-card-content">
                     <PokemonImage pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />

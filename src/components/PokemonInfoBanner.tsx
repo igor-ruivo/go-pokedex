@@ -327,7 +327,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
                         {
                             leagueTitle: "raid",
                             bestReachablePokemon: bestReachableRaidVersion as IGamemasterPokemon || pokemon,
-                            pokemonRankInLeague: ordinal(rank)
+                            pokemonRankInLeague: ordinal(mostRelevantType[0].rank.rank ?? rank),
+                            type: mostRelevantType[0].type ?? undefined
                         }
                     }
                     league={league}

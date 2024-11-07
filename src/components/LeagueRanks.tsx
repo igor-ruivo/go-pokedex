@@ -13,6 +13,7 @@ interface LeagueStat {
     leagueTitle: string,
     bestReachablePokemon: IGamemasterPokemon,
     pokemonRankInLeague: string | undefined,
+    type?: string | undefined
 }
 
 interface ILeaguePanelsProps {
@@ -139,6 +140,7 @@ const LeagueRanks = ({
                     <React.Fragment key={leagueStat.leagueTitle}>
                         {rankString && <div className="cp-container">{rankString}</div>}
                         {rankString ? translator(TranslatorKeys.Ranked, currentLanguage) : <div className="unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div>}
+                        {leagueStat.type && <img alt='type' src={`${process.env.PUBLIC_URL}/images/types/${leagueStat.type}.png`} height={18} width={18}/>}
                         <span className={`larger-rank-change with-brightness ${leagueStat.leagueTitle !== "raid" && rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
                     </React.Fragment>
                 ]}
