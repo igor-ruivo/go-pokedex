@@ -211,7 +211,7 @@ const Events = () => {
                 <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='news-header-section item'>
                         <div className='event-img-container'>
-                            <img className='event-img-itself' alt='Event' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} onClick={((relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0) ? (() => navigate(`/pokemon/${relevantPosts[selectedNews].spotlightPokemons![0].speciesId}`)) : undefined}/>
+                            <img className='event-img-itself' alt='Event' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} onClick={((relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0) ? (() => navigate(`/pokemon/${relevantPosts[selectedNews].spotlightPokemons![0].speciesId}/info`)) : undefined}/>
                             {(relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
                                 pokemon = {gamemasterPokemon[relevantPosts[selectedNews].spotlightPokemons![0].speciesId]}
                                 withName = {false}

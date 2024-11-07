@@ -523,6 +523,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     const parts = title.split(" in ");
     if (parts.length !== 2 && !isSpotlight) {
         console.error("Couldn't parse title of leek news.");
+        console.error(title)
         return {title: "", date: 0, dateEnd: 0};
     }
 
