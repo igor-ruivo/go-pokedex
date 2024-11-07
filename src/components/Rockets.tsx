@@ -63,7 +63,7 @@ const Rockets = () => {
                             <span className='aligned-text-marker'>1</span>
                             <div className='in-row'>{m.tier1.map(id =>
                                 <div key={id} className="mini-card-wrapper-padding dynamic-size relative">
-                                    {m.catchableTiers.includes(0) && <img alt='grunt' className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
+                                    {m.catchableTiers.includes(0) && <img alt='grunt' className="background-absolute-img-grunt no-events" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
                                     <div className={`mini-card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(0) ? "with-golden-border" : ""}`}>
                                         <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(0)} />
                                     </div>
@@ -75,7 +75,7 @@ const Rockets = () => {
                             <span className='aligned-text-marker'>2</span>
                             <div className='in-row'>{m.tier2.map(id =>
                                 <div key={id} className="mini-card-wrapper-padding dynamic-size relative">
-                                    {m.catchableTiers.includes(1) && <img alt='grunt' className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
+                                    {m.catchableTiers.includes(1) && <img alt='grunt' className="background-absolute-img-grunt no-events" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
                                     <div className={`mini-card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(1) ? "with-golden-border" : ""}`}>
                                         <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(1)} />
                                     </div>
@@ -87,7 +87,7 @@ const Rockets = () => {
                             <span className='aligned-text-marker'>3</span>
                             <div className='in-row'>{m.tier3.map(id =>
                                 <div key={id} className="mini-card-wrapper-padding dynamic-size relative">
-                                    {m.catchableTiers.includes(2) && <img alt='grunt' className="background-absolute-img-grunt" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
+                                    {m.catchableTiers.includes(2) && <img alt='grunt' className="background-absolute-img-grunt no-events" src={`${process.env.PUBLIC_URL}/images/pokeball.png`} />}
                                     <div className={`mini-card-wrapper rocket-card-wrapper ${m.catchableTiers.includes(2) ? "with-golden-border" : ""}`}>
                                         <PokemonMiniature pokemon={gamemasterPokemon[id]} forceShadowAdorner linkToShadowVersion={m.catchableTiers.includes(2)} />
                                     </div>
@@ -125,7 +125,7 @@ const Rockets = () => {
             {x > 1200 && <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>
                     {
-                        leekRockets.slice(Math.round(leekRockets.length / 2)).map(m => {
+                        leekRockets?.slice(Math.round(leekRockets.length / 2)).map(m => {
                             const className = m.type ? `background-${m.type}` : "normal-entry";
                             const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
                             const url = `${process.env.PUBLIC_URL}/images/${resName}`;
