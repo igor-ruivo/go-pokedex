@@ -344,7 +344,9 @@ const DeleteTrash = () => {
 
         const actualDexes = new Set(parts[0].split(',').map(f => +f));
 
-        const oppositeDexes = '!' + Array.from(allDexes).filter(j => !actualDexes.has(j)).join('&!');
+        const specialDexes = new Set(Object.values(gamemasterPokemon).filter(d => !d.aliasId && !d.isMega && (d.isBeast || d.isLegendary || d.isMythical)).map(d => +d.dex));
+
+        const oppositeDexes = '!' + Array.from(allDexes).filter(j => !actualDexes.has(j) || specialDexes.has(j)).join('&!');
 
         let newStr = '';
 
