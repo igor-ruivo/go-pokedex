@@ -139,7 +139,7 @@ const DeleteTrash = () => {
         const alwaysGood: Dictionary<Set<IGamemasterPokemon>> = {};
 
         Object.values(gamemasterPokemon)
-            .filter(p => !p.aliasId && !p.isMega)
+            .filter(p => !p.aliasId && !p.isMega && !p.isLegendary && !p.isMythical && !p.isBeast)
             .forEach(p => {
                 if (isBadForEverything(p)) {
                     potentiallyDeletablePokemon.add(p.dex);
@@ -292,6 +292,9 @@ const DeleteTrash = () => {
                         return `!${f}`;
                     }).join(","));//!23,!dark,dragon
 
+                    // improvement: for each dex: for each entry: if there's 1 with shadow and there's its non-shadow counterpart in the delete string, remove from both.
+                    // no repetitions
+                    // improvement check if it's better to invert the first part if it saves space...
                     if (e.isShadow) {
                         newStr += `,!shadow`;
                     } else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
@@ -333,8 +336,51 @@ const DeleteTrash = () => {
             }
         });
 
+        // optimization for lower length query (apk on android devices has a limit of 5k characters...)
+
+        const parts = str.split('&');
+        const allDexes = new Set(Object.values(gamemasterPokemon)
+            .filter(e => !e.isMega && !e.aliasId).map(f => f.dex));
+
+        const actualDexes = new Set(parts[0].split(',').map(f => +f));
+
+        const oppositeDexes = '!' + Array.from(allDexes).filter(j => !actualDexes.has(j)).join('&!');
+
+        let newStr = '';
+
+        if (parts[0].length <= oppositeDexes.length) {
+            newStr = parts[0];
+        } else {
+            newStr = oppositeDexes;
+        }
+
+        let currentDex = '';
+        const buffer = new Map<string, string>();
+        for (let i = 1; i < parts.length; i++) {
+            const current = parts[i];
+            const readDex = current.substring(1, current.indexOf(','));
+            if (currentDex !== readDex) {
+                currentDex = readDex;
+                if (buffer.size > 0) {
+                    newStr += (newStr ? '&' : '') + Array.from(buffer.values()).join('&');
+                    buffer.clear();
+                }
+            }
+            const termWithoutShadowModifier = current.replaceAll(',!shadow', '').replaceAll(',shadow', '');
+
+            if (!buffer.has(termWithoutShadowModifier)) {
+                buffer.set(termWithoutShadowModifier, current);
+            } else {
+                buffer.set(termWithoutShadowModifier, termWithoutShadowModifier);
+            }
+        }
+
+        if (buffer.size > 0) {
+            newStr += (newStr ? '&' : '') + Array.from(buffer.values()).join('&');
+        }
+
         if (currentGameLanguage === GameLanguage.Portuguese) {
-            str = str
+            newStr = newStr
             .replaceAll('bug', 'inseto')
             .replaceAll('dark', 'sombrio')
             .replaceAll('dragon', 'dragão')
@@ -355,9 +401,9 @@ const DeleteTrash = () => {
             .replaceAll('shadow', 'sombroso');
         }
 
-        str += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.Legendary, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.Mythical, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.MegaEvolve, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.UltraBeast, currentGameLanguage)}`;
+        newStr += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, currentGameLanguage)}&!${gameTranslator(GameTranslatorKeys.MegaEvolve, currentGameLanguage)}`;
 
-        return str;
+        return newStr;
     }, [fetchCompleted, gamemasterPokemon, isBadForEverything, isBadForEverythingIfItHasHighAttack, cp, currentGameLanguage]);
 
     useEffect(() => {

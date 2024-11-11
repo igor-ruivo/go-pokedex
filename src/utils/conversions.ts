@@ -315,7 +315,10 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
                 parent: pokemon.speciesId === "darmanitan_standard_shadow" ? "darumaka_shadow" : pokemon.family?.parent,
                 evolutions: pokemon.family ? pokemon.family.evolutions : [],
                 aliasId: pokemon.aliasId,
-                form: getForm(pokemon.speciesName)
+                form: getForm(pokemon.speciesName),
+                isLegendary: pokemon.tags && Array.from(pokemon.tags).includes("legendary"),
+                isMythical: pokemon.tags && Array.from(pokemon.tags).includes("mythical"),
+                isBeast: pokemon.tags && Array.from(pokemon.tags).includes("ultrabeast")
             }
         }
     );

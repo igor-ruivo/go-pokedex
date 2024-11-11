@@ -21,5 +21,8 @@ export interface IGamemasterPokemon {
     parent?: string,
     evolutions: string[],
     aliasId?: string,
-    form: string
+    form: string,
+    isLegendary: boolean,
+    isMythical: boolean,
+    isBeast: boolean
 }
