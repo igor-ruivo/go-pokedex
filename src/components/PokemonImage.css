@@ -155,7 +155,7 @@
 .background-absolute-img-grunt {
     object-fit: contain;
     position: absolute;
-    z-index: 0 !important;
+    z-index: 1 !important;
     /* opacity: 35%; */
     top: -40%;
     left: -40%;

@@ -47,15 +47,43 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
     const {moves, movesFetchCompleted} = useMoves();
     const {raidRankerFetchCompleted, raidDPS, computeRaidRankerforTypes} = useRaidRanker();
 
+    const idToUse = useMemo(() => {
+        if (!fetchCompleted) {
+            return pokemon.speciesId;
+        }
+
+        const potentialId = pokemon.speciesId + '_shadow';
+
+        if (forceShadowAdorner && !!gamemasterPokemon[potentialId]) {
+            return potentialId;
+        }
+
+        return pokemon.speciesId;
+    }, [pokemon, fetchCompleted, forceShadowAdorner, gamemasterPokemon]);
+
+    const pkmToUse = useMemo(() => {
+        if (!fetchCompleted) {
+            return pokemon;
+        }
+
+        const potentialId = pokemon.speciesId + '_shadow';
+
+        if (forceShadowAdorner && !!gamemasterPokemon[potentialId]) {
+            return gamemasterPokemon[potentialId];
+        }
+
+        return pokemon;
+    }, [pokemon, fetchCompleted, forceShadowAdorner, gamemasterPokemon]);
+
     const allRelevantChargedMoveTypes = useMemo(() => {
         if (!fetchCompleted || !movesFetchCompleted) {
             return [];
         }
 
-        const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon));
+        const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon));
         const exceptionPokemon = ["slowpoke_galarian", "slowbro_galarian"];
 
-        const mega = exceptionPokemon.includes(pokemon.speciesId) ? [] : Object.values(gamemasterPokemon)
+        const mega = exceptionPokemon.includes(idToUse) ? [] : Object.values(gamemasterPokemon)
             .filter(pk => !pk.aliasId && pk.isMega && reachablePokemon.some(r => r.dex === pk.dex));
 
         const finalCollection = [...reachablePokemon, ...mega];
@@ -63,7 +91,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         return Array.from(new Set(finalCollection.flatMap(f => getAllChargedMoves(f, moves, gamemasterPokemon).map(m => moves[m].type))))
             .filter(t => t !== "normal")
             .map(t => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes);
-    }, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pokemon]);
+    }, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pkmToUse, idToUse]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -75,7 +103,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         }, 0);
     }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
 
-    const link = useMemo(() => `/pokemon/${pokemon.speciesId + (linkToShadowVersion ? "_shadow" : "")}/info`, [linkToShadowVersion, pokemon]);
+    const link = useMemo(() => `/pokemon/${idToUse}/info`, [idToUse]);
 
     const raidRank = useCallback(() => {
         if (allRelevantChargedMoveTypes.length === 0) {
@@ -86,10 +114,10 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
             return {minRaidRank: Infinity, actualType: ''};
         }
 
-        const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon));
+        const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon));
         const exceptionPokemon = ["slowpoke_galarian", "slowbro_galarian"];
 
-        const mega = exceptionPokemon.includes(pokemon.speciesId) ? [] : Object.values(gamemasterPokemon)
+        const mega = exceptionPokemon.includes(idToUse) ? [] : Object.values(gamemasterPokemon)
             .filter(pk => !pk.aliasId && pk.isMega && reachablePokemon.some(r => r.dex === pk.dex));
 
         let minRaidRank = Infinity;
@@ -108,15 +136,15 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         });
 
         return {minRaidRank: minRaidRank, actualType: actualType};
-    }, [allRelevantChargedMoveTypes, fetchCompleted, gamemasterPokemon, pokemon, raidDPS, raidRankerFetchCompleted]);
+    }, [allRelevantChargedMoveTypes, fetchCompleted, gamemasterPokemon, pkmToUse, raidDPS, raidRankerFetchCompleted, idToUse]);
 
     const rankForLeague = useCallback((leagueIdx: number) => {
         if (!pvpFetchCompleted || !fetchCompleted) {
             return Infinity;
         }
-        const reachable = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
+        const reachable = fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon);
         return Math.min(...Array.from(reachable).map(r => rankLists[leagueIdx][r.speciesId]?.rank ?? Infinity));
-    }, [pvpFetchCompleted, pokemon, gamemasterPokemon, rankLists, fetchCompleted]);
+    }, [pvpFetchCompleted, pkmToUse, gamemasterPokemon, rankLists, fetchCompleted]);
 
     const relevantLeagueElement = useCallback((mapper: Dictionary<ReactNode>) => {
         const minimum = String(Math.min(...Object.keys(mapper).map(t => +t)));
@@ -158,7 +186,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
                     {pvpFetchCompleted && fetchCompleted && (raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? <img className="padded-img raid-img-with-contrast is-raid" alt="Raids" src={`${process.env.PUBLIC_URL}/images/types/${raidRaking.actualType}.png`}/> : relevantLeagueElement(mapper))}
                 </div>
                 <span className="mini-card-content">
-                    <PokemonImage withClassname="with-img-dropShadow" pokemon={pokemon} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner} />
+                    <PokemonImage withClassname="with-img-dropShadow" pokemon={pkmToUse} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner && !pkmToUse.speciesId.endsWith("_shadow")} />
                 </span>
             </div>
         </Link>
