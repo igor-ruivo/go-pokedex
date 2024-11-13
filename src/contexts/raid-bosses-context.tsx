@@ -92,7 +92,8 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
             return encodeProxyUrl(relativeComponent);
         })
         //filter unavailable events
-        .filter(x => !x.includes('festival-of-lights-2024'));
+        .filter(x => !x.includes('festival-of-lights-2024'))
+        .slice(0, Math.ceil(postsEntries.length * 0.67));
 
         fetchPosts(urls, calendarCache, {signal: controller.signal}, (data: any, request: any) => mapPosts(data, gamemasterPokemon, request));
 
@@ -130,7 +131,6 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
         }
 
         const controller = new AbortController();
-        console.log(`computing because ${currentLanguage}`)
         const ptbrUrls = posts.flat().filter(p => p.isRelevant && p.rawUrl).map(p => {
             const decodedUrl = decodeURIComponent(p.rawUrl!.split(corsProxyUrl)[1]);
             const postIndex = decodedUrl.indexOf('/post');
