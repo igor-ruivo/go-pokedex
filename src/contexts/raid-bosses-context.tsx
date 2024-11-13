@@ -4,6 +4,7 @@ import { bossesUrl, cacheTtlInMillis, calendarCache, corsProxyUrl, leekBaseUrl, 
 import { mapLeekEggs, mapLeekNews, mapLeekRockets, mapPosts, mapPostsPT, mapRaidBosses, mapSeason, mapShadowRaids } from '../utils/conversions';
 import { usePokemon } from './pokemon-context';
 import { IPostEntry, IRocketGrunt } from '../DTOs/INews';
+import { Language, useLanguage } from './language-context';
 
 interface CalendarContextType {
     bossesPerTier: IPostEntry;
@@ -50,6 +51,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
     const [leekEggs, fetchLeekEggs, leekEggsFetchCompleted, errorLoadingLeekEggs]: FetchData<IPostEntry> = useFetchUrls();
     const [leekRockets, fetchLeekRockets, leekRocketsFetchCompleted, errorLoadingLeekRockets]: FetchData<IRocketGrunt[]> = useFetchUrls();
     const [shadowRaids, fetchShadowRaids, shadowRaidsFetchCompleted, errorLoadingShadowRaids]: FetchData<IPostEntry> = useFetchUrls();
+    const {currentLanguage} = useLanguage();
     
     const encodeProxyUrl = useCallback((relativeComponent: string) => corsProxyUrl + encodeURIComponent(pokemonGoBaseUrl + relativeComponent), []);
 
@@ -123,12 +125,12 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
     }, [fetchCompleted, leekNewsFetchCompleted, fetchLeekPosts, leekNews, gamemasterPokemon]);
 
     useEffect(() => {
-        if (!postsFetchCompleted) {
+        if (!postsFetchCompleted || currentLanguage === Language.English) {
             return;
         }
 
         const controller = new AbortController();
-
+        console.log(`computing because ${currentLanguage}`)
         const ptbrUrls = posts.flat().filter(p => p.isRelevant && p.rawUrl).map(p => {
             const decodedUrl = decodeURIComponent(p.rawUrl!.split(corsProxyUrl)[1]);
             const postIndex = decodedUrl.indexOf('/post');
@@ -151,7 +153,7 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
         return () => {
             controller.abort("Request canceled by cleanup.");
         }
-    }, [postsFetchCompleted, gamemasterPokemon, posts, fetchPostsPT, fetchSeasonPT, encodeProxyUrl]);
+    }, [postsFetchCompleted, currentLanguage, gamemasterPokemon, posts, fetchPostsPT, fetchSeasonPT, encodeProxyUrl]);
 
     return [bosses[0], posts, postsPT, season[0], seasonPT[0], leekPosts, leekEggs[0], leekRockets[0], shadowRaids[0], bossesFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, seasonFetchCompleted, seasonPTFetchCompleted, leekPostsFetchCompleted, leekEggsFetchCompleted, leekRocketsFetchCompleted, shadowRaidsFetchCompleted, errorLoadingBosses, errorLoadingPosts, errorLoadingPostsPT, errorLoadingSeason, errorLoadingSeasonPT, errorLoadingLeekPosts, errorLoadingLeekEggs, errorLoadingLeekRockets, errorLoadingShadowRaids];
 }

@@ -181,7 +181,7 @@ const Events = () => {
         return candidate;
     }, [currentLanguage, postsPT, seasonPT]);
 
-    return <LoadingRenderer errors={postsErrors + postsPTErrors + seasonErrors + seasonPTErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && seasonPTFetchCompleted && postsPTFetchCompleted && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
+    return <LoadingRenderer errors={postsErrors + postsPTErrors + seasonErrors + seasonPTErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && (currentLanguage === Language.English || (seasonPTFetchCompleted && postsPTFetchCompleted)) && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='with-xl-gap'>
