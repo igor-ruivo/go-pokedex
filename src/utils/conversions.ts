@@ -675,9 +675,9 @@ export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemast
         const type = typeIdx !== -1 ? trainerId.substring(0, typeIdx).toLocaleLowerCase() : undefined;
         const phrase = (e.getElementsByClassName("quote-text")[0] as HTMLElement)?.innerText.trim() ?? "";
 
-        const tier1 = Array.from(e.getElementsByClassName("lineup-info")[0].children[0].getElementsByClassName("pokemon-wrapper")).map(p => (p as HTMLElement)?.innerText.replaceAll("Shadow", "").trim());
-        const tier2 = Array.from(e.getElementsByClassName("lineup-info")[0].children[1].getElementsByClassName("pokemon-wrapper")).map(p => (p as HTMLElement)?.innerText.replaceAll("Shadow", "").trim());
-        const tier3 = Array.from(e.getElementsByClassName("lineup-info")[0].children[2].getElementsByClassName("pokemon-wrapper")).map(p => (p as HTMLElement)?.innerText.replaceAll("Shadow", "").trim());
+        const tier1 = Array.from(e.getElementsByClassName("lineup-info")[0].children[0].getElementsByClassName("shadow-pokemon")).map(p => (p as HTMLElement)?.getAttribute('data-pokemon')?.trim() ?? '');
+        const tier2 = Array.from(e.getElementsByClassName("lineup-info")[0].children[1].getElementsByClassName("shadow-pokemon")).map(p => (p as HTMLElement)?.getAttribute('data-pokemon')?.trim() ?? '');
+        const tier3 = Array.from(e.getElementsByClassName("lineup-info")[0].children[2].getElementsByClassName("shadow-pokemon")).map(p => (p as HTMLElement)?.getAttribute('data-pokemon')?.trim() ?? '');
 
         const tier1Pkms = fetchPokemonFromString(tier1, gamemasterPokemon, shadowDomain).map(e => e.speciesId);
         const tier2Pkms = fetchPokemonFromString(tier2, gamemasterPokemon, shadowDomain).map(e => e.speciesId);
