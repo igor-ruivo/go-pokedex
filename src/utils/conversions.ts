@@ -683,7 +683,7 @@ export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemast
         const tier2Pkms = fetchPokemonFromString(tier2, gamemasterPokemon, shadowDomain).map(e => e.speciesId);
         const tier3Pkms = fetchPokemonFromString(tier3, gamemasterPokemon, shadowDomain).map(e => e.speciesId);
 
-        const catchableTiers = Array.from(e.getElementsByClassName("lineup-info")[0].children).map((c: Element, i: number) => c.classList.contains("slot-wrapper") ? i : undefined).filter(e => e !== undefined) as number[];
+        const catchableTiers = Array.from(e.getElementsByClassName("lineup-info")[0].children).map((c: Element, i: number) => c.classList.contains("encounter") ? i : undefined).filter(e => e !== undefined) as number[];
 
         answer.push({
             phrase: phrase.replace(/\s/g, ' ').trim(),
