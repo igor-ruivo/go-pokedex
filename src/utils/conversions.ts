@@ -328,6 +328,11 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     pokemonDictionary['gastrodon'].familyId = 'FAMILY_SHELLOS';
     pokemonDictionary['gastrodon'].parent = 'shellos';
 
+    pokemonDictionary['cursola'].parent = 'corsola_galarian';
+
+    pokemonDictionary['corsola'].familyId = 'FAMILY_CORSOLA';
+    pokemonDictionary['corsola_galarian'].familyId = 'FAMILY_CORSOLA';
+    pokemonDictionary['corsola_galarian'].evolutions = ['cursola'];
     return pokemonDictionary;
 }
 
@@ -1367,11 +1372,6 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
             default:
                 break;
         }
-    }
-
-    if (url?.includes('get-ready-for-go-wild-area')) {
-        raids.push({speciesId: 'groudon_primal', shiny: true});
-        raids.push({speciesId: 'kyogre_primal', shiny: true});
     }
             
     endResults.push({
