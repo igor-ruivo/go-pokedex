@@ -58,7 +58,9 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "morpeko_hangry",
         "mawile_mega",
         "spewpa",
-        "toxel"
+        "toxel",
+        "cursola",
+        "corsola_galarian"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -1365,6 +1367,11 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
             default:
                 break;
         }
+    }
+
+    if (url?.includes('get-ready-for-go-wild-area')) {
+        raids.push({speciesId: 'groudon_primal', shiny: true});
+        raids.push({speciesId: 'kyogre_primal', shiny: true});
     }
             
     endResults.push({
