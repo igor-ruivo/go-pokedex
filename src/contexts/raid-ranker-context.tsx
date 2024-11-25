@@ -70,14 +70,15 @@ const useRaidDPSComputations: () => [Dictionary<Dictionary<DPSEntry>>, (gamemast
                     return a.speciesId.localeCompare(b.speciesId);
                 });
 
+                const parsedEntries: Dictionary<DPSEntry> = {};
+                pokemonEntries.forEach(k => {
+                    parsedEntries[k.speciesId] = k;
+                });
+
+                writeEntry(raidDpsKey, parsedEntries, cacheTtlInMillis);
+
                 setRaidDPS(p => {
                     const result = cloneDictionary(p);
-                    const parsedEntries: Dictionary<DPSEntry> = {};
-                    pokemonEntries.forEach(p => {
-                        parsedEntries[p.speciesId] = p;
-                    });
-
-                    writeEntry(raidDpsKey, parsedEntries, cacheTtlInMillis);
                     result[t] = parsedEntries;
                     return result;
                 });
