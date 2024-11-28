@@ -60,7 +60,9 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "spewpa",
         "toxel",
         "cursola",
-        "corsola_galarian"
+        "corsola_galarian",
+        "sinistea",
+        "polteageist"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -941,6 +943,20 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
             const formCandidate = currP.replaceAll('(', '').replaceAll(')', '').split(" ").filter(f => Array.from(knownForms).some(e => ndfNormalized(e) === f));
             if (formCandidate.length === 0) {
 
+                if (currP.includes('giratina') && !currP.includes('altered') && !currP.includes('origin')) {
+                    if (!seen.has('giratina_altered')) {
+                        seen.add('giratina_altered');
+                        
+                        wildEncounters.push({
+                            speciesId: 'giratina_altered',
+                            shiny: isShiny,
+                            kind: raidLevel
+                        });
+                    }
+
+                    continue;
+                }
+
                 // edge case -> Zacian (Hero) is commonly referred to as zacian only.
                 if (currP.includes('zacian') && !currP.includes('sword') && !currP.includes('crowned')) {
                     if (!seen.has('zacian_hero')) {
@@ -1322,6 +1338,7 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
     const wild: IEntry[] = [];
     const eggs: IEntry[] = [];
     const research: IEntry[] = [];
+    const incenses: IEntry[] = [];
     let bonus = "";
 
     for (let i = 0; i < innerEntries.length; i++) {
@@ -1369,6 +1386,11 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
                 
                 raids.push(...result);
                 break;
+            case "Incense Encounters":
+            case "Increased Incense encounters":
+                const incenseResult = fetchPokemonFromElements(contentBodies, gamemasterPokemon, raidDomain);
+                incenses.push(...incenseResult);
+                break;
             default:
                 break;
         }
@@ -1383,6 +1405,7 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
         imgUrl: img,
         eggs: eggs,
         raids: raids,
+        incenses: incenses,
         wild: wild,
         bonuses: bonus.trim(),
         rawUrl: url,

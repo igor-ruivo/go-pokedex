@@ -26,6 +26,7 @@ export interface IPostEntry {
     dateEnd?: number,
     raids?: IEntry[],
     wild?: IEntry[],
+    incenses?: IEntry[],
     bonuses?: string,
     researches?: IEntry[],
     eggs?: IEntry[],

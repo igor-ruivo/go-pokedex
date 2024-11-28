@@ -339,6 +339,18 @@ const Events = () => {
                             </div>
                         </div>
                     </Section>}
+                    {(relevantPosts[selectedNews].incenses ?? []).length > 0 &&
+                    <Section title={translator(TranslatorKeys.FeaturedIncenses, currentLanguage)}>
+                        <div className={`with-flex contained with-margin-top`}>
+                            {(relevantPosts[selectedNews].incenses ?? [])
+                                .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
+                                    <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                        <div className={`mini-card-wrapper`}>
+                                            <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
+                                        </div>
+                                    </div>)}
+                        </div>
+                    </Section>}
                 </div>
         }
     </LoadingRenderer>;
