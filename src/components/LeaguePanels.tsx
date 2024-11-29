@@ -96,7 +96,7 @@ const LeaguePanels = ({
                 <div>
                     <div className="pvp-entry rank-title">
                         <div className="pvp-entry-content potential">
-                            <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> {unranked ? "-" : <><strong className="cp-container">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big heavy-weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub></>}
+                            <strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong> {<><strong className="cp-container">{leagueStat.pokemonLeaguePercentage}%</strong> <sub className="contained-big heavy-weighted-font">(#{leagueStat.pokemonLeaguePercentile})</sub></>}
                         </div>
                     </div>
                 </div>
