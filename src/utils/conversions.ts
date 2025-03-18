@@ -62,7 +62,9 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "cursola",
         "corsola_galarian",
         "sinistea",
-        "polteageist"
+        "polteageist",
+        "sizzlipede",
+        "centiskorch"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -91,6 +93,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("pumpkaboo_small", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/710.png`);
     overrideMappings.set("necrozma_dawn_wings", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/800_f3.png`);
     overrideMappings.set("necrozma_dusk_mane", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/800_f2.png`);
+    overrideMappings.set("kyurem_black", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/646_f3.png`);
+    overrideMappings.set("kyurem_white", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/646_f2.png`);
 
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => (pokemon.tags && Array.from(pokemon.tags).includes("shadow")) || pokemon.speciesName.toLocaleLowerCase().includes('(shadow)');
@@ -533,7 +537,7 @@ export const mapLeekNews: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
     }
 
     const parts = title.split(" in ");
-    if (parts.length !== 2 && !isSpotlight) {
+    if (parts.length < 2 && !isSpotlight) {
         console.error("Couldn't parse title of leek news.");
         console.error(title)
         return {title: "", date: 0, dateEnd: 0};
@@ -738,26 +742,29 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
     const htmlDoc = parser.parseFromString(data, 'text/html');
 
     if (!isPT) {
-        const cityEntries = Array.from(htmlDoc.getElementById("cities")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-        const forestEntries = Array.from(htmlDoc.getElementById("forests")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-        const mountainEntries = Array.from(htmlDoc.getElementById("mountains")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-        const beachEntries = Array.from(htmlDoc.getElementById("beaches-water")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-        const northEntries = Array.from(htmlDoc.getElementById("northern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-        const southEntries = Array.from(htmlDoc.getElementById("southern-hemisphere")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
+        const appearing = Array.from(htmlDoc.getElementById('different-pokemon-appearing')?.querySelectorAll('[role=list]') ?? []);
+        const eggsElement = Array.from(htmlDoc.getElementById('eggs')?.querySelectorAll('[role=list]') ?? []);
+
+        const cityEntries = Array.from(appearing[0].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const forestEntries = Array.from(appearing[1].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const mountainEntries = Array.from(appearing[2].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const beachEntries = Array.from(appearing[3].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const northEntries = Array.from(appearing[4].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const southEntries = Array.from(appearing[5].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
         const wildDomain = Object.values(gamemasterPokemon)
             .filter(p => !p.isShadow && !p.isMega && !p.aliasId);
 
-        const twoKmEggs = Array.from(htmlDoc.getElementById("2km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement);
-        const fiveKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-        const sevenKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-        const tenKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !e.closest(".TemplateSeasonsSpawns__section"));
-        const fiveSyncKmEggs = Array.from(htmlDoc.getElementById("5km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
-        const sevenRoutesKmEggs = Array.from(htmlDoc.getElementById("7km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
-        const tenSyncKmEggs = Array.from(htmlDoc.getElementById("10km-eggs")?.getElementsByClassName("alola__pokemonGrid__pokemon") ?? []).map(e => e as HTMLElement).filter(e => !!e.closest(".TemplateSeasonsSpawns__section"));
+        const twoKmEggs = Array.from(eggsElement[0].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const fiveKmEggs = Array.from(eggsElement[1].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const sevenKmEggs = Array.from(eggsElement[3].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const tenKmEggs = Array.from(eggsElement[5].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const fiveSyncKmEggs = Array.from(eggsElement[2].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const sevenRoutesKmEggs = Array.from(eggsElement[4].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
+        const tenSyncKmEggs = Array.from(eggsElement[6].querySelectorAll('[role=listitem]')).map(e => e as HTMLElement);
 
-        const fiveComment = (htmlDoc.getElementById("5km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
-        const sevenComment = (htmlDoc.getElementById("7km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
-        const tenComment = (htmlDoc.getElementById("10km-eggs")!.getElementsByClassName("TemplateSeasonsSpawns__section__label")[0] as HTMLElement).innerText;
+        const fiveComment = 'Adventure Sync Rewards';
+        const sevenComment = 'Route Rewards';
+        const tenComment = 'Adventure Sync Rewards';
 
         const convertKind = (kind: number) => {
             switch (kind) {
@@ -797,33 +804,33 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
         }
 
         const wildEncounters = [cityEntries, forestEntries, mountainEntries, beachEntries, northEntries, southEntries].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: String(i)} as IEntry})).flat();
-        const researches = fetchPokemonFromElements(Array.from(htmlDoc.getElementById("research-breakthrough-tabs")?.children ?? []).map(e => e as HTMLElement), gamemasterPokemon, wildDomain);
+        const researches = fetchPokemonFromElements(Array.from(htmlDoc.getElementById('encounter-pokemon')?.querySelectorAll('[role=listitem]') ?? []).map(e => e as HTMLElement), gamemasterPokemon, wildDomain);
         const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
 
         return {
-            date: new Date(2024, 8, 3, 10, 0).valueOf(),
-            dateEnd: new Date(2024, 11, 3, 10, 0).valueOf(),
+            date: new Date(2025, 2, 4, 10, 0).valueOf(),
+            dateEnd: new Date(2025, 5, 3, 10, 0).valueOf(),
             wild: wildEncounters,
             eggs: eggs,
             isSeason: true,
             researches: researches,
-            bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
-            imgUrl: "https://lh3.googleusercontent.com/NB7Ayfyqg5pdBtaDflJ1PA71ztk18He3NjSIVtC2t8uIVoI80nMfHT2TBVpvg_LQ9O-rL1u2omNUQ4d0RaqpflvJlJJtDG1BT8nwKTe5RVP3MA=rw-e365-w1800",
-            title: (htmlDoc.querySelector('h2.headline__title.TemplateSingleColumnSimple__content__title') as HTMLElement).innerText ?? 'Welcome to Pokémon GO',
+            bonuses: htmlDoc.getElementById("seasonal-bonuses")?.innerText.trim(),
+            imgUrl: "https://lh3.googleusercontent.com/-IFEKZ5cXhjIqaU9IrRRkJZmRVjsY3LPopxyzt0ePYxXGMYQ08g7WdTGnD2KCNrQU-SmWLR-a8TB0GNNl8Q5SBOKas06cU5faY0=e365-pa-nu-w1728",
+            title: 'Welcome to Pokémon GO: Might and Mastery',
             comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('seasons/')[1] : ''
         };
     }
 
     return {
-        date: new Date(2024, 8, 3, 10, 0).valueOf(),
-        dateEnd: new Date(2024, 11, 3, 10, 0).valueOf(),
+        date: new Date(2025, 2, 4, 10, 0).valueOf(),
+        dateEnd: new Date(2025, 5, 3, 10, 0).valueOf(),
         wild: [],
         eggs: [],
         isSeason: true,
         researches: [],
-        bonuses: (htmlDoc.getElementsByClassName("TemplateSeasonsBonuses__list")[0] as HTMLElement).innerText.trim(),
-        imgUrl: "https://lh3.googleusercontent.com/NB7Ayfyqg5pdBtaDflJ1PA71ztk18He3NjSIVtC2t8uIVoI80nMfHT2TBVpvg_LQ9O-rL1u2omNUQ4d0RaqpflvJlJJtDG1BT8nwKTe5RVP3MA=rw-e365-w1800",
-        title: (htmlDoc.querySelector('h2.headline__title.TemplateSingleColumnSimple__content__title') as HTMLElement).innerText ?? 'Welcome to Pokémon GO',
+        bonuses: htmlDoc.getElementById("seasonal-bonuses")?.innerText.trim(),
+        imgUrl: "https://lh3.googleusercontent.com/-IFEKZ5cXhjIqaU9IrRRkJZmRVjsY3LPopxyzt0ePYxXGMYQ08g7WdTGnD2KCNrQU-SmWLR-a8TB0GNNl8Q5SBOKas06cU5faY0=e365-pa-nu-w1728",
+        title: 'Damos as boas-vindas ao Pokémon GO: Poder e Proeza',
         comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('seasons/')[1] : ''
     }
 }
@@ -846,6 +853,10 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
         let isShadow = false;
         let isMega = false;
         let currP = ndfNormalized(pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim()).replaceAll("(normal)", "").trim();
+
+        if (currP.toLocaleLowerCase().includes(' candy') || currP.toLocaleLowerCase().includes('dynamax')) {
+            continue;
+        }
 
         const raidLIndex = currP.indexOf(" raids");
         if (raidLIndex !== -1) {
@@ -1266,10 +1277,9 @@ const fetchPokemonFromElements = (elements: HTMLElement[], gamemasterPokemon: Di
         }
     }
     // castform fallbacks...
-    const whitelist = ["(sunny)", "(rainy)", "(snowy)"]
+    const whitelist = ["(sunny)", "(rainy)", "(snowy)", "sunny form", "rainy form", "snowy form"]
     const blackListedKeywords = ["some trainers", "the following", "appearing", "lucky, you m", " tms", "and more", "wild encounters", "sunny", "event-themed", "rainy", "snow", "partly cloudy", "cloudy", "windy", "fog", "will be available"];
     const parsedPokemon = textes.filter(t => t !== "All" && t.split(" ").length <= 10 && (whitelist.some(k => t.toLocaleLowerCase().includes(k)) || !blackListedKeywords.some(k => t.toLocaleLowerCase().includes(k))));
-
     return fetchPokemonFromString(parsedPokemon, gamemasterPokemon, domain);
 }
 
@@ -1323,12 +1333,14 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
         parsedDate[0] = parsedDate[0].replace(' at', ', at');
     }
 
+    const fixDateString = (dateString: string) => dateString.replace(/(\b[A-Za-z]+), (\d{1,2})/, "$1 $2");
+
     let startDate = 0;
     let endDate = 0;
     try {
         if (!isPT) {
-            startDate = fetchDateFromString(parsedDate[0]);
-            endDate = fetchDateFromString(parsedDate[1]);
+            startDate = fetchDateFromString(fixDateString(parsedDate[0]));
+            endDate = fetchDateFromString(fixDateString(parsedDate[1]));
         }
     } catch {
         return endResults;

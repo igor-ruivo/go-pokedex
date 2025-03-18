@@ -20,7 +20,7 @@ export const bossesUrl = "https://leekduck.com/boss/";
 export const leekNewsUrl = "https://leekduck.com/events/";
 export const pokemonGoBaseUrl = "https://pokemongolive.com/";
 export const pokemonGoNewsUrl = "https://pokemongolive.com/news/?hl=en";
-export const pokemonGoSeasonRelativeUrl = "seasons/max-out?hl=en";
+export const pokemonGoSeasonRelativeUrl = "seasons/might-and-mastery?hl=en";
 export const corsProxyUrl = "https://dex-server.vercel.app/api/proxy?targetUrl=";
 export const leekEggsUrl = "https://leekduck.com/eggs/";
 export const leekRocketsUrl = "https://leekduck.com/rocket-lineups/";
