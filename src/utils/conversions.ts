@@ -64,7 +64,9 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "sinistea",
         "polteageist",
         "sizzlipede",
-        "centiskorch"
+        "centiskorch",
+        "gossifleur",
+        "eldegoss"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -1358,6 +1360,17 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
         const title = !hasToComputeInnerEntries ? entry.children[0].getElementsByClassName('ContainerBlock__headline')[0] : entry.children[0];
         const kind = (title as HTMLElement)?.innerText?.trim();
         const contentBodies = Array.from(!hasToComputeInnerEntries ? entry.children[0].children : entry.children) as HTMLElement[];
+        if (kind.includes('Bonuses') || kind.includes('Bônus')) {
+            const contentWithNewlines = contentBodies[1].innerHTML.trim().replace(/<br\s*\/?>/gi, '\n').trim();
+                
+                const tempElement = document.createElement('div');
+                tempElement.innerHTML = contentWithNewlines;
+                
+                const plainText = tempElement.textContent || tempElement.innerText;
+                
+                bonus += "\n\n" + removeLeadingAndTrailingAsterisks(plainText);
+                continue;
+        }
         switch(kind) {
             case "Wild encounters":
             case "Wild Encounters":
