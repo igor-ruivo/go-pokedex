@@ -66,7 +66,15 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "sizzlipede",
         "centiskorch",
         "gossifleur",
-        "eldegoss"
+        "eldegoss",
+        "applin",
+        "flapple",
+        "appletun",
+        "dipplin",
+        "hydrapple",
+        "tinkatink",
+        "tinkatuff",
+        "tinkaton"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -97,6 +105,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("necrozma_dusk_mane", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/800_f2.png`);
     overrideMappings.set("kyurem_black", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/646_f3.png`);
     overrideMappings.set("kyurem_white", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/646_f2.png`);
+    overrideMappings.set("tauros_blaze", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/128_f3.png`);
+    overrideMappings.set("tauros_aqua", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/128_f4.png`);
 
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => (pokemon.tags && Array.from(pokemon.tags).includes("shadow")) || pokemon.speciesName.toLocaleLowerCase().includes('(shadow)');
@@ -1692,7 +1702,7 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
     };
 
     (Array.from(data) as any[])
-        .filter(entry => entry.data?.moveSettings || entry.data.combatMove)
+        .filter(entry => !entry.data.templateId.startsWith('VN_BM_') && (entry.data?.moveSettings || entry.data.combatMove))
         .forEach(entry => {
             const isPvP = !!entry.data.combatMove;
             const dataPointer = entry.data.moveSettings || entry.data.combatMove;
@@ -1802,6 +1812,28 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             } : undefined
         }
     });
+
+    if (!movesDictionary['UPPER_HAND']) {
+        movesDictionary['UPPER_HAND'] = {
+            moveId: 'UPPER_HAND',
+            vId: '-1',
+            type: 'fighting',
+            isFast: false,
+            pvpPower: 70,
+            pvePower: 50,
+            pvpEnergyDelta: -40,
+            pveEnergyDelta: -33,
+            pvpDuration: 500,
+            pveDuration: 2.0,
+            pvpBuffs: {
+                chance: 0.3,
+                buffs: [{
+                    buff: 'targetDefenseStatStageChange',
+                    quantity: -1
+                }],
+            }
+        }
+    }
     
     return movesDictionary;
 }

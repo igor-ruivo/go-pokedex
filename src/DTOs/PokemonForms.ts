@@ -82,5 +82,8 @@ export enum PokemonForms {
     FullBelly = "Full Belly",
     Hangry = "Hangry",
     White = "White",
-    Black = "Black"
+    Black = "Black",
+    Combat = "Combat",
+    Aqua = "Aqua",
+    Blaze = "Blaze"
 }
