@@ -107,6 +107,12 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("kyurem_white", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/646_f2.png`);
     overrideMappings.set("tauros_blaze", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/128_f3.png`);
     overrideMappings.set("tauros_aqua", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/128_f4.png`);
+    overrideMappings.set("urshifu_single_strike", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/892.png`);
+    overrideMappings.set("urshifu_rapid_strike", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/892_f2.png`);
+    overrideMappings.set("zacian_hero", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/888.png`);
+    overrideMappings.set("zacian_crowned_sword", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/888_f2.png`);
+    overrideMappings.set("zamazenta_hero", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/889.png`);
+    overrideMappings.set("zamazenta_crowned_shield", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/889_f2.png`);
 
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => (pokemon.tags && Array.from(pokemon.tags).includes("shadow")) || pokemon.speciesName.toLocaleLowerCase().includes('(shadow)');
@@ -173,6 +179,22 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
 
         if (pokemonName.includes("(Full Belly)")) {
             return "FULL_BELLY";
+        }
+
+        if (pokemonName.includes("(Crowned Sword)")) {
+            return "CROWNED_SWORD";
+        }
+
+        if (pokemonName.includes("(Crowned Shield)")) {
+            return "CROWNED_SHIELD";
+        }
+
+        if (pokemonName.includes("(Rapid Strike)")) {
+            return "RAPID_STRIKE";
+        }
+
+        if (pokemonName.includes("(Single Strike)")) {
+            return "SINGLE_STRIKE";
         }
 
         if ((pokemonName.length - pokemonName.replaceAll("(", "").length === 1) && !pokemonName.includes("Shadow") && !pokemonName.includes("Jr")) {
@@ -1317,45 +1339,55 @@ const fetchDateFromString = (date: string) => {
 }
 
 const innerParseNews = (subtitle: string, date: string, innerEntries: Element[], gamemasterPokemon: Dictionary<IGamemasterPokemon>, raidDomain: IGamemasterPokemon[], wildDomain: IGamemasterPokemon[], postTitle: string, img: string, endResults: IPostEntry[], hasToComputeInnerEntries: boolean, url?: string, isPT = false) => {
-    if (date.endsWith(".")) {
-        date = date.substring(0, date.length - 1);
-    }
-
-    if (!date) {
-        return endResults;
-    }
-    
-    if (!isPT && date.includes(" from ")) {
-        if (!date.includes(" to ") /*|| !date.includes(" at ")*/) {
-            return endResults;
-        }
-        const split = date.split(" to ");
-        split[0] = split[0].replace(" from ", " at ");
-        const idx = split[0].indexOf(" at ") + 4;
-        split[1] = split[0].substring(0, idx) + split[1];
-        date = split.join(" to ");
-    }
-
-    const parsedDate = date.split(" to ");
-    if (!isPT && (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10)) {
-        return endResults;
-    }
-
-    if (!parsedDate[0].includes(', at') && parsedDate[0].includes(' at')) {
-        parsedDate[0] = parsedDate[0].replace(' at', ', at');
-    }
-
-    const fixDateString = (dateString: string) => dateString.replace(/(\b[A-Za-z]+), (\d{1,2})/, "$1 $2");
-
     let startDate = 0;
     let endDate = 0;
-    try {
-        if (!isPT) {
-            startDate = fetchDateFromString(fixDateString(parsedDate[0]));
-            endDate = fetchDateFromString(fixDateString(parsedDate[1]));
-        }
-    } catch {
+
+    if (date === 'June 23 at 10:00 a.m. to June 27, 2025, at 8:00 p.m. local time') { //tmp
+        startDate = 1750669200000;
+        endDate = 1751050800000;
+    } else if (date === 'Saturday, July 5, and Sunday, July 6, 2025 from 2:00 p.m. to 5:00 p.m. local time.') {
+        innerParseNews(subtitle + '(1)', 'Saturday, July 5, 2025, from 2:00 p.m. to 5:00 p.m. local time', innerEntries, gamemasterPokemon, raidDomain, wildDomain, postTitle + '(1)', img, endResults, hasToComputeInnerEntries, url, isPT);
+        innerParseNews(subtitle + '(2)', 'Saturday, July 6, 2025, from 2:00 p.m. to 5:00 p.m. local time', innerEntries, gamemasterPokemon, raidDomain, wildDomain, postTitle + '(2)', img, endResults, hasToComputeInnerEntries, url, isPT);
         return endResults;
+    } else {
+        if (date.endsWith(".")) {
+            date = date.substring(0, date.length - 1);
+        }
+
+        if (!date) {
+            return endResults;
+        }
+        
+        if (!isPT && date.includes(" from ")) {
+            if (!date.includes(" to ") /*|| !date.includes(" at ")*/) {
+                return endResults;
+            }
+            const split = date.split(" to ");
+            split[0] = split[0].replace(" from ", " at ");
+            const idx = split[0].indexOf(" at ") + 4;
+            split[1] = split[0].substring(0, idx) + split[1];
+            date = split.join(" to ");
+        }
+
+        const parsedDate = date.split(" to ");
+        if (!isPT && (parsedDate.length !== 2 || parsedDate[0].split(" ").length > 10 || parsedDate[1].split(" ").length > 10)) {
+            return endResults;
+        }
+
+        if (!parsedDate[0].includes(', at') && parsedDate[0].includes(' at')) {
+            parsedDate[0] = parsedDate[0].replace(' at', ', at');
+        }
+
+        const fixDateString = (dateString: string) => dateString.replace(/(\b[A-Za-z]+), (\d{1,2})/, "$1 $2");
+
+        try {
+            if (!isPT) {
+                startDate = fetchDateFromString(fixDateString(parsedDate[0]));
+                endDate = fetchDateFromString(fixDateString(parsedDate[1]));
+            }
+        } catch {
+            return endResults;
+        }
     }
     
     const raids: IEntry[] = [];

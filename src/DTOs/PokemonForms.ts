@@ -85,5 +85,9 @@ export enum PokemonForms {
     Black = "Black",
     Combat = "Combat",
     Aqua = "Aqua",
-    Blaze = "Blaze"
+    Blaze = "Blaze",
+    CrownedShield = "Crowned Shield",
+    CrownedSword = "Crowned Sword",
+    RapidStrike = "Rapid Strike",
+    SingleStrike = "Single Strike"
 }
