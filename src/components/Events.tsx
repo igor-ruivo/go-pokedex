@@ -328,7 +328,7 @@ const Events = () => {
                                         </div>)}
                             </div>
                             {(relevantPosts[selectedNews].eggs?.length ?? 0) > 0 && relevantPosts[selectedNews].eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
-                                <strong>{currentLanguage === Language.English ? relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment : relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment?.replaceAll("Adventure Sync Rewards", "Recompensas de Sincroaventura").replaceAll("7 km Eggs from Mateo’s Gift Exchange", "Ovos de 7 km da Troca de presentes de Mateo")}:</strong>
+                                <strong>{currentLanguage === Language.English ? relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment : relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment?.replaceAll("Adventure Sync Rewards", "Recompensas de Sincroaventura").replaceAll("Route Rewards", "Recompensas de Rota").replaceAll("7 km Eggs from Mateo’s Gift Exchange", "Ovos de 7 km da Troca de presentes de Mateo")}:</strong>
                             </div>}
                             <div className='with-flex contained'>
                                 {(relevantPosts[selectedNews].eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">

@@ -842,29 +842,29 @@ export const mapSeason: (data: any, gamemasterPokemon: Dictionary<IGamemasterPok
         const eggs = [twoKmEggs, fiveKmEggs, sevenKmEggs, tenKmEggs, fiveSyncKmEggs, sevenRoutesKmEggs, tenSyncKmEggs].map((e: HTMLElement[], i: number) => fetchPokemonFromElements(e, gamemasterPokemon, wildDomain).map(f => { return {...f, kind: convertKind(i), comment: getComment(i)} as IEntry})).flat();
 
         return {
-            date: new Date(2025, 2, 4, 10, 0).valueOf(),
-            dateEnd: new Date(2025, 5, 3, 10, 0).valueOf(),
+            date: new Date(2025, 5, 3, 10, 0).valueOf(),
+            dateEnd: new Date(2025, 8, 2, 10, 0).valueOf(),
             wild: wildEncounters,
             eggs: eggs,
             isSeason: true,
             researches: researches,
             bonuses: htmlDoc.getElementById("seasonal-bonuses")?.innerText.trim(),
-            imgUrl: "https://lh3.googleusercontent.com/-IFEKZ5cXhjIqaU9IrRRkJZmRVjsY3LPopxyzt0ePYxXGMYQ08g7WdTGnD2KCNrQU-SmWLR-a8TB0GNNl8Q5SBOKas06cU5faY0=e365-pa-nu-w1728",
-            title: 'Welcome to Pokémon GO: Might and Mastery',
+            imgUrl: "https://lh3.googleusercontent.com/bdW6I4EwnAj-smzAMgEZpZ4npVCgyXOIGKnWAuZrO-zBmOQgLY73wjYnR-tOtiV3izqbPgKS69ZdibrHPESWh4ZeTftQIy4Iw6s=e365-pa-nu-w3456",
+            title: 'Welcome to Pokémon GO: Delightful Days',
             comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('seasons/')[1] : ''
         };
     }
 
     return {
-        date: new Date(2025, 2, 4, 10, 0).valueOf(),
-        dateEnd: new Date(2025, 5, 3, 10, 0).valueOf(),
+        date: new Date(2025, 5, 3, 10, 0).valueOf(),
+        dateEnd: new Date(2025, 8, 2, 10, 0).valueOf(),
         wild: [],
         eggs: [],
         isSeason: true,
         researches: [],
         bonuses: htmlDoc.getElementById("seasonal-bonuses")?.innerText.trim(),
-        imgUrl: "https://lh3.googleusercontent.com/-IFEKZ5cXhjIqaU9IrRRkJZmRVjsY3LPopxyzt0ePYxXGMYQ08g7WdTGnD2KCNrQU-SmWLR-a8TB0GNNl8Q5SBOKas06cU5faY0=e365-pa-nu-w1728",
-        title: 'Damos as boas-vindas ao Pokémon GO: Poder e Proeza',
+        imgUrl: "https://lh3.googleusercontent.com/bdW6I4EwnAj-smzAMgEZpZ4npVCgyXOIGKnWAuZrO-zBmOQgLY73wjYnR-tOtiV3izqbPgKS69ZdibrHPESWh4ZeTftQIy4Iw6s=e365-pa-nu-w3456",
+        title: 'Damos as boas-vindas ao Pokémon GO: Dias Deslumbrantes',
         comment: url ? decodeURIComponent(url.split(corsProxyUrl)[1]).split('seasons/')[1] : ''
     }
 }
@@ -886,7 +886,7 @@ const fetchPokemonFromString = (parsedPokemon: string[], gamemasterPokemon: Dict
         const isShiny =  pkmwithNoClothes[j].includes("*");
         let isShadow = false;
         let isMega = false;
-        let currP = ndfNormalized(pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim()).replaceAll("(normal)", "").trim();
+        let currP = ndfNormalized(pkmwithNoClothes[j].replace("*", "").replace(" Forme", "").trim()).replaceAll("(normal)", "").replaceAll(' cloak', '').trim();
 
         if (currP.toLocaleLowerCase().includes(' candy') || currP.toLocaleLowerCase().includes('dynamax')) {
             continue;
@@ -1861,6 +1861,28 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
                 chance: 0.3,
                 buffs: [{
                     buff: 'targetDefenseStatStageChange',
+                    quantity: -1
+                }],
+            }
+        }
+    }
+
+    if (!movesDictionary['CLANGING_SCALES']) {
+        movesDictionary['CLANGING_SCALES'] = {
+            moveId: 'CLANGING_SCALES',
+            vId: '-1',
+            type: 'dragon',
+            isFast: false,
+            pvpPower: 120,
+            pvePower: 120,
+            pvpEnergyDelta: -45,
+            pveEnergyDelta: -100,
+            pvpDuration: 500,
+            pveDuration: 3.3,
+            pvpBuffs: {
+                chance: 1,
+                buffs: [{
+                    buff: 'attackerDefenseStatStageChange',
                     quantity: -1
                 }],
             }
