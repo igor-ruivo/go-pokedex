@@ -1416,6 +1416,7 @@ const innerParseNews = (subtitle: string, date: string, innerEntries: Element[],
         switch(kind) {
             case "Wild encounters":
             case "Wild Encounters":
+            case "Event-themed Pokémon":
                 wild.push(...fetchPokemonFromElements(contentBodies, gamemasterPokemon, wildDomain));
                 break;
             case "Eggs":

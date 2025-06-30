@@ -3,7 +3,7 @@ import { AxiosRequestConfig } from "axios";
 import { fetchUrls } from "../utils/network";
 
 type FetchDataCallback<T> = (urls: string[], cacheTtl: number, axiosRequestConfig?: AxiosRequestConfig<any>, dataTransformer?: (data: any, request: any) => T, withoutCache?: boolean) => Promise<T>;
-export type FetchData<T> = [T[], FetchDataCallback<T>, boolean, string];
+export type FetchData<T> = [T[], FetchDataCallback<T>, boolean, string, React.Dispatch<React.SetStateAction<T[]>>];
 
 /**
  * A custom hook used to fetch data from a batch of urls.
@@ -31,7 +31,7 @@ export const useFetchUrls = (): FetchData<any> => {
         }
     }, [setData, setErrorLoadingData, setFetchCompleted]);
 
-    const response: FetchData<any> = [data, fetchUrlsCallback, fetchCompleted, errorLoadingData];
+    const response: FetchData<any> = [data, fetchUrlsCallback, fetchCompleted, errorLoadingData, setData];
     return response;
 };
 
