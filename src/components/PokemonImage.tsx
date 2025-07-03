@@ -32,7 +32,16 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(({pokemon, imgO
     const fetchSrc: (urlKind: ImageSource) => string = useCallback((urlKind: ImageSource) => {
         switch (urlKind) {
             case ImageSource.Official:
-                return lowRes ? pokemon.imageUrl.replace("full", "detail") : pokemon.imageUrl;
+                if (lowRes) {
+                    if (pokemon.speciesId === "aegislash_blade") {
+                        return pokemon.imageUrl.replace("full/681_f2", "detail/681");
+                    }
+                    if (pokemon.speciesId === "aegislash_shield") {
+                        return pokemon.imageUrl.replace("full/681", "detail/681_f2");
+                    }
+                    return pokemon.imageUrl.replace("full", "detail");
+                }
+                return pokemon.imageUrl;
             case ImageSource.GO:
                 return goBaseUrl + pokemon.goImageUrl;
             case ImageSource.Shiny:

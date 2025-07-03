@@ -89,5 +89,7 @@ export enum PokemonForms {
     CrownedShield = "Crowned Shield",
     CrownedSword = "Crowned Sword",
     RapidStrike = "Rapid Strike",
-    SingleStrike = "Single Strike"
+    SingleStrike = "Single Strike",
+    Blade = "Blade",
+    Shield = "Shield"
 }

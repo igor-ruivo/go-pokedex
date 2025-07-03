@@ -61,7 +61,13 @@ export const shortName = (name: string) => {
         .replace("(Incarnate)", "(Inc.)")
         .replace("(Average)", "(Avg.)")
         .replace("Male", "♂")
-        .replace("Female", "♀");
+        .replace("Female", "♀")
+        .replace("(Single Strike)", "(Single)")
+        .replace("(Rapid Strike)", "(Rapid)")
+        .replace("(Crowned Shield)", "(Shield)")
+        .replace("(Crowned Sword)", "(Sword)")
+        .replace("(Dawn Wings)", "(Wings)")
+        .replace("(Dusk Mane)", "(Mane)")
 }
 
 export const getForm = (name: string) => {

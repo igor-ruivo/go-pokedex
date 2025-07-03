@@ -112,6 +112,17 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
                     rawUrl: 'https://dex-server.vercel.app/api/proxy?targetUrl=https%3A%2F%2Fpokemongo.com%2Fnews%2Fcommunityday-july-2025-quaxly%2F',
                     imgUrl: 'https://lh3.googleusercontent.com/mTaxl778XzEFvST60TC4rvBPFQnrODlIgr98eY5mewqpz-NEnDe21UX60ZIQcyQKeg-rsauBunR9aznCuUjAyD37UIYpg5FL410r=e365-pa-nu-w1920',
                     bonuses: '3× Catch Stardust.\n2× Candy for catching Pokémon.\n2× chance for Trainers level 31 and up to receive Candy XL from catching Pokémon.\nLure Modules activated during the event will last for three hours.\nIncense (excluding Daily Adventure Incense) activated during the event will last for three hours.\nTake a few snapshots during Community Day for a surprise!\nOne additional Special Trade can be made for a maximum of three for the day.*\nTrades will require 50% less Stardust.*\n*While most bonuses are only active during the three-hour event period, these will be active from 2:00 p.m. to 10:00 p.m. local time.'
+                },
+                {
+                    title: 'Hisuian Lilligant Raid Day',
+                    subtitle: 'Hisuian Lilligant Raid Day',
+                    date: 1752325200000,
+                    dateEnd: 1752336000000,
+                    isRelevant: true,
+                    comment: 'hisuian-lilligant-raid-day-2025/',
+                    rawUrl: 'https://dex-server.vercel.app/api/proxy?targetUrl=https%3A%2F%2Fpokemongo.com%2Fnews%2Fhisuian-lilligant-raid-day-2025%2F',
+                    imgUrl: 'https://lh3.googleusercontent.com/lUDWzGohGO26tCXUbOHxdaB4ICaqRzqCU8hkCFS3wFEVX0CM-ZYrdSRqKLaisAp4ejT3eAeneqErSo6RuU3ftr9TvoWmpg2qgzE=e365-pa-nu-w1920',
+                    bonuses: 'Remote Raid Pass limit increased to 20 from Friday, July 11, at 5:00 p.m. to Saturday, July 12, 2025, at 8:00 p.m. PDT.\nReceive up to five additional free Raid Passes from spinning Gym Photo Discs (for a total of six).\nIncreased chance of encountering Shiny Hisuian Lilligant from raids.'
                 }]]);
             });
 
@@ -169,13 +180,24 @@ const useFetchAllData: () => [IPostEntry, IPostEntry[][], IPostEntry[][], IPostE
             setPostsPT(oldPosts => [...oldPosts, [{
                 title: 'Dia Comunitário de julho de 2025: Quaxly',
                 subtitle: 'Dia Comunitário de julho de 2025: Quaxly',
-                date: 1753016400000,
-                dateEnd: 1753027200000,
+                date: 1752328800,
+                dateEnd: 1752339600,
                 isRelevant: true,
                 comment: 'communityday-july-2025-quaxly/',
                 rawUrl: 'https://dex-server.vercel.app/api/proxy?targetUrl=https%3A%2F%2Fpokemongo.com%2Fnews%2Fcommunityday-july-2025-quaxly%2F',
                 imgUrl: 'https://lh3.googleusercontent.com/mTaxl778XzEFvST60TC4rvBPFQnrODlIgr98eY5mewqpz-NEnDe21UX60ZIQcyQKeg-rsauBunR9aznCuUjAyD37UIYpg5FL410r=e365-pa-nu-w1920',
                 bonuses: '3× Poeira Estelar por captura.\n2× mais doces por capturar Pokémon.\n2× mais chances de Treinadoras e Treinadores no nível 31 e acima receberem doces GG por capturar Pokémon.\nOs Módulos Atrair ativados durante o evento durarão três horas.\nO Incenso (exceto o Incenso de Aventura Diário) ativado durante o evento durará três horas.\nTirem fotos durante o Dia Comunitário para receberem uma surpresa!\nPode ser feita uma troca especial adicional (máximo de três por dia).*\nAs trocas exigirão 50% menos Poeira Estelar.*\n*Embora a maioria dos bônus só fique ativa durante as três horas do evento, esses bônus estarão ativos das 14h às 22h, horário local.'
+            },
+            {
+                title: 'Dia de Reides com Liligant de Hisui',
+                subtitle: 'Dia de Reides com Liligant de Hisui',
+                date: 1752325200000,
+                dateEnd: 1752336000000,
+                isRelevant: true,
+                comment: 'hisuian-lilligant-raid-day-2025/',
+                rawUrl: 'https://dex-server.vercel.app/api/proxy?targetUrl=https%3A%2F%2Fpokemongo.com%2Fnews%2Fhisuian-lilligant-raid-day-2025%2F',
+                imgUrl: 'https://lh3.googleusercontent.com/lUDWzGohGO26tCXUbOHxdaB4ICaqRzqCU8hkCFS3wFEVX0CM-ZYrdSRqKLaisAp4ejT3eAeneqErSo6RuU3ftr9TvoWmpg2qgzE=e365-pa-nu-w1920',
+                bonuses: 'O limite de Passe de Reide a Distância aumentará para 20, de sexta-feira, 11 de julho, às 17h PDT (21h, no horário de Brasília), a sábado, 12 de julho de 2025, às 20h PDT (meia-noite de domingo, 4 de maio, no horário de Brasília).*\nReceba até cinco Passes de Reide gratuitos adicionais ao girar fotodiscos em Ginásios (até um total de seis).*\nMaior chance de encontrar Lilligant de Hisui Brilhante em Reides.'
             }]]);
         });
         fetchSeasonPT([encodeProxyUrl('pt_br/' + pokemonGoSeasonRelativeUrl)], calendarCache, {signal: controller.signal}, (data: any, request: any) => mapSeason(data, gamemasterPokemon, request, true));

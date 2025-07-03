@@ -74,7 +74,14 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "hydrapple",
         "tinkatink",
         "tinkatuff",
-        "tinkaton"
+        "tinkaton",
+        "lilligant_hisuian",
+        "zorua_hisuian",
+        "zoroark_hisuian",
+        "honedge",
+        "doublade",
+        "aegislash_blade",
+        "aegislash_shield"
     ]);    
 
     const overrideMappings = new Map<string, string>();
@@ -113,6 +120,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     overrideMappings.set("zacian_crowned_sword", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/888_f2.png`);
     overrideMappings.set("zamazenta_hero", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/889.png`);
     overrideMappings.set("zamazenta_crowned_shield", `https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/889_f2.png`);
+    overrideMappings.set("aegislash_blade", type === 'full' ? `https://assets.pokemon.com/assets/cms2/img/pokedex/full/681_f2.png` : `https://assets.pokemon.com/assets/cms2/img/pokedex/detail/681.png`);
+    overrideMappings.set("aegislash_shield", type === 'full' ? `https://assets.pokemon.com/assets/cms2/img/pokedex/full/681.png` : `https://assets.pokemon.com/assets/cms2/img/pokedex/detail/681_f2.png`);
 
     const baseDataFilter = (pokemon: any) => (pokemon.released || releasedOverride.has(pokemon.speciesId)) && !blacklistedSpecieIds.has(pokemon.speciesId);
     const isShadowConditionFilter = (pokemon: any) => (pokemon.tags && Array.from(pokemon.tags).includes("shadow")) || pokemon.speciesName.toLocaleLowerCase().includes('(shadow)');
