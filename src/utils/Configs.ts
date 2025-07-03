@@ -24,4 +24,3 @@ export const pokemonGoSeasonRelativeUrl = "seasons/delightful-days?hl=en";
 export const corsProxyUrl = "https://dex-server.vercel.app/api/proxy?targetUrl=";
 export const leekEggsUrl = "https://leekduck.com/eggs/";
 export const leekRocketsUrl = "https://leekduck.com/rocket-lineups/";
-export const shadowRaidsAPI = "https://static.pokebattler.com/raids.json";

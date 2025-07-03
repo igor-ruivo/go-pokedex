@@ -502,6 +502,7 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
     const parser = new DOMParser();
     const htmlDoc = parser.parseFromString(data, 'text/html');
     const entries = Array.from(htmlDoc.getElementsByClassName("list")[0].children);
+    const shadowEntries = Array.from(htmlDoc.getElementsByClassName("list")[1].children);
 
     const pokemons: IEntry[] = [];
 
@@ -525,6 +526,10 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
             continue;
         }
 
+        if (!Array.from(e.classList).includes("boss-item")) {
+            continue;
+        }
+
         const bossName = (e.getElementsByClassName("boss-name")[0] as HTMLElement).innerText.trim();
         const parsedPkm = fetchPokemonFromString([bossName], gamemasterPokemon, tier === "mega" ? megaDomain : bossName.toLocaleLowerCase().includes("shadow") ? shadowDomain : normalDomain);
         
@@ -533,6 +538,37 @@ export const mapRaidBosses: (data: any, gamemasterPokemon: Dictionary<IGamemaste
                 shiny: parsedPkm[0].shiny,
                 speciesId: parsedPkm[0].speciesId,
                 kind: tier
+            });
+        }
+    }
+
+    for (let i = 0; i < shadowEntries.length; i++) {
+        const e = shadowEntries[i];
+        if (Array.from(e.classList).includes("header-li")) {
+            const newTier = (e as HTMLElement).innerText?.replaceAll('Shadow', '').replaceAll('shadow', '').trim();
+            if (newTier.split(" ").length === 2) {
+                tier = newTier.split(" ")[1].toLocaleLowerCase();
+            }
+
+            if (newTier.split(" ").length === 1) {
+                tier = newTier.toLocaleLowerCase();
+            }
+            continue;
+        }
+
+        if (!Array.from(e.classList).includes("boss-item")) {
+            continue;
+        }
+
+        const bossName = 'Shadow ' + (e.getElementsByClassName("boss-name")[0] as HTMLElement).innerText.trim();
+        const parsedPkm = fetchPokemonFromString([bossName], gamemasterPokemon, shadowDomain);
+        
+        if (parsedPkm[0] && tier !== "5" && tier !== "mega") {
+            pokemons.push({
+                shiny: parsedPkm[0].shiny,
+                speciesId: parsedPkm[0].speciesId,
+                kind: tier,
+                comment: 'shadow'
             });
         }
     }
@@ -680,39 +716,6 @@ export const mapLeekEggs: (data: any, gamemasterPokemon: Dictionary<IGamemasterP
 
     return results;
 }
-
-export const mapShadowRaids: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IPostEntry = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
-    const raid1 = Array.from(data.tiers)
-        .filter((t: any) => t.tier === "RAID_LEVEL_1_SHADOW")
-        .map((t: any) => t.raids.map((f: any) => f.pokemon))
-        .flat()
-        .map((t: any) => { return {
-            shiny: false,
-            speciesId: t.toLocaleLowerCase().replace("_form", "").replace("alola", "alolan"),
-            kind: "1"
-        }
-    });
-
-    const raid3: IEntry[] = Array.from(data.tiers)
-        .filter((t: any) => t.tier === "RAID_LEVEL_3_SHADOW")
-        .map((t: any) => t.raids.map((f: any) => f.pokemon))
-        .flat()
-        .map((t: any) => { return {
-                shiny: false,
-                speciesId: t.toLocaleLowerCase().replace("_form", "").replace("alola", "alolan"),
-                kind: "3"
-            }
-        });
-
-    const results: IPostEntry = {
-        date: (new Date()).valueOf(),
-        raids: [...raid1, ...raid3],
-        title: "Current Shadow Raids"
-    };
-
-    return results;
-}
-
 
 export const mapLeekRockets: (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => IRocketGrunt[] = (data: any, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {
     const parser = new DOMParser();

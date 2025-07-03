@@ -15,7 +15,7 @@ import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persis
 const Raids = () => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
-    const { shadowRaids, bossesPerTier, leekPosts, posts, leekPostsFetchCompleted, postsFetchCompleted, leekPostsErrors, postsErrors, bossesFetchCompleted, shadowRaidsFetchCompleted } = useCalendar();
+    const { bossesPerTier, leekPosts, posts, leekPostsFetchCompleted, postsFetchCompleted, leekPostsErrors, postsErrors, bossesFetchCompleted } = useCalendar();
     const {gamemasterPokemon, errors, fetchCompleted} = usePokemon();
 
     const reducedLeekPosts = useMemo(() => leekPostsFetchCompleted ? leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : []
@@ -57,12 +57,12 @@ const Raids = () => {
         .sort(sortPosts), [additionalBosses]);
 
     const generateTodayBosses = useCallback((entries: IPostEntry[]) => {
-        if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted || !shadowRaidsFetchCompleted) {
+        if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted) {
             return [];
         }
 
-        const seenIds = new Set<string>([...(bossesPerTier.raids ?? []).map(e => e.speciesId), ...(shadowRaids.raids ?? []).map(e => e.speciesId)]);
-        const response = [...(bossesPerTier.raids ?? []), ...(shadowRaids.raids ?? [])];
+        const seenIds = new Set<string>([...(bossesPerTier.raids ?? []).map(e => e.speciesId)]);
+        const response = [...(bossesPerTier.raids ?? [])];
 
         const now = new Date();
 
@@ -96,7 +96,7 @@ const Raids = () => {
         }
 
         return response.sort((a, b) => sortEntries(a, b, gamemasterPokemon));
-    }, [bossesFetchCompleted, leekPostsFetchCompleted, postsFetchCompleted, shadowRaidsFetchCompleted, bossesPerTier, shadowRaids, gamemasterPokemon]);
+    }, [bossesFetchCompleted, leekPostsFetchCompleted, postsFetchCompleted, bossesPerTier, gamemasterPokemon]);
 
     const raidEventDates = useMemo(() => [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }, ...remainingBosses.map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
     , [currentLanguage, getDateKey, remainingBosses]);
