@@ -81,7 +81,8 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
         "honedge",
         "doublade",
         "aegislash_blade",
-        "aegislash_shield"
+        "aegislash_shield",
+        "tatsugiri"
     ]);    
 
     const overrideMappings = new Map<string, string>();
