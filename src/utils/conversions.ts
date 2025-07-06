@@ -383,6 +383,10 @@ export const mapGamemasterPokemonData: (data: any) => Dictionary<IGamemasterPoke
     pokemonDictionary['corsola'].familyId = 'FAMILY_CORSOLA';
     pokemonDictionary['corsola_galarian'].familyId = 'FAMILY_CORSOLA';
     pokemonDictionary['corsola_galarian'].evolutions = ['cursola'];
+
+    if (pokemonDictionary['golisopodsh']) {
+        pokemonDictionary['golisopodsh'].aliasId = 'golisopod'
+    }
     return pokemonDictionary;
 }
 
