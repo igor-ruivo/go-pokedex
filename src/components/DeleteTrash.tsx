@@ -48,7 +48,7 @@ const DeleteTrash = () => {
     }, []);
 
     const needsLessThanFiveAttack = useCallback((p: IGamemasterPokemon, leagueIndex: number) => {
-        const bestIVs = Object.values(computeBestIVs(p.atk, p.def, p.hp, leagueIndex === 0 ? 1500 : leagueIndex === 1 ? 2500 : Number.MAX_VALUE)).flat();
+        const bestIVs = Object.values(computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, leagueIndex === 0 ? 1500 : leagueIndex === 1 ? 2500 : Number.MAX_VALUE)).flat();
         for (let i = 0; i < 5; i++) {
             const neededAtk = bestIVs[i].IVs.A;
             if (neededAtk >= 5) {

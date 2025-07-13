@@ -177,7 +177,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
             break;
     }
 
-    const result = useMemo(() => Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap)).flat(), [pokemon, cpCap]);
+    const result = useMemo(() => Object.values(computeBestIVs(pokemon.baseStats.atk, pokemon.baseStats.def, pokemon.baseStats.hp, cpCap)).flat(), [pokemon, cpCap]);
 
     const highestScore = useMemo(() => Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S), [result]);
 

@@ -187,7 +187,7 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
 
         const maxCP = new Array(5).fill(0), maxHP = new Array(5).fill(0);
 
-        const topIVCombinations = Object.values(computeBestIVs(pokemon.atk, pokemon.def, pokemon.hp, cpCap)).flat();
+        const topIVCombinations = Object.values(computeBestIVs(pokemon.baseStats.atk, pokemon.baseStats.def, pokemon.baseStats.hp, cpCap)).flat();
 
         for (let i = 0; i < top; i++) {
             const topIVCombination = topIVCombinations[i];
@@ -199,9 +199,9 @@ const PokemonSearchStrings = ({pokemon, league}: IPokemonSearchStringsProps) => 
 
             const star = topIVCombination.IVs.star;
 
-            const baseatk = predecessorPokemon.atk;
-            const basedef = predecessorPokemon.def;
-            const basesta = predecessorPokemon.hp;
+            const baseatk = predecessorPokemon.baseStats.atk;
+            const basedef = predecessorPokemon.baseStats.def;
+            const basesta = predecessorPokemon.baseStats.hp;
 
             for (let j = 0; j <= (Math.min(35, maxLevel) - 1) * 2; j += 2) {
                 const cp = calculateCP(baseatk, topIVCombination.IVs.A, basedef, topIVCombination.IVs.D, basesta, topIVCombination.IVs.S, j);

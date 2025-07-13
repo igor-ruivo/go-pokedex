@@ -86,7 +86,7 @@ const Pokemon = () => {
 
                                         {fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId) && <PokemonInfoImagePlaceholder
                                             pokemon={pokemon}
-                                            computedCP={calculateCP(pokemon.atk, attackIV, pokemon.def, defenseIV, pokemon.hp, hpIV, (displayLevel - 1) * 2)}
+                                            computedCP={calculateCP(pokemon.baseStats.atk, attackIV, pokemon.baseStats.def, defenseIV, pokemon.baseStats.hp, hpIV, (displayLevel - 1) * 2)}
                                             displayLevel={displayLevel}
                                             computedPokemonFamily={computedPokemonFamily}
                                             tab={tab}

@@ -1442,17 +1442,11 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
                 isFast: move.isFast,
                 pvpPower: move.pvpPower ?? 0,
                 pvePower: pveCounterpart?.pvePower ?? 0,
-                pvpEnergyDelta: move.pvpEnergy ?? 0,
-                pveEnergyDelta: pveCounterpart?.pveEnergy ?? 0,
-                pvpDuration: move.pvpCooldown ?? 0,
-                pveDuration: pveCounterpart?.pveCooldown ?? 0,
-                pvpBuffs: move?.buffs ? {
-                    chance: move.buffs.buffActivationChance as number,
-                    buffs: Object.entries(move.buffs).filter(e => e[0] !== "buffActivationChance").map(e => ({
-                        buff: e[0],
-                        quantity: e[1] as number
-                    })),
-                } : undefined
+                pvpEnergy: move.pvpEnergy ?? 0,
+                pveEnergy: pveCounterpart?.pveEnergy ?? 0,
+                pvpCooldown: move.pvpCooldown ?? 0,
+                pveCooldown: pveCounterpart?.pveCooldown ?? 0,
+                buffs: move.buffs
             }
         });
 
@@ -1477,17 +1471,11 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             isFast: move.isFast,
             pvpPower: pvpCounterpart?.pvpPower ?? 0,
             pvePower: move.pvePower ?? 0,
-            pvpEnergyDelta: pvpCounterpart?.pvpEnergy ?? 0,
-            pveEnergyDelta: move.pveEnergy ?? 0,
-            pvpDuration: pvpCounterpart?.pvpCooldown ?? 0,
-            pveDuration: move.pveCooldown ?? 0,
-            pvpBuffs: pvpCounterpart?.buffs ? {
-                chance: pvpCounterpart.buffs.buffActivationChance as number,
-                buffs: Object.entries(pvpCounterpart.buffs).filter(e => e[0] !== "buffActivationChance").map(e => ({
-                    buff: e[0],
-                    quantity: e[1] as number
-                })),
-            } : undefined
+            pvpEnergy: pvpCounterpart?.pvpEnergy ?? 0,
+            pveEnergy: move.pveEnergy ?? 0,
+            pvpCooldown: pvpCounterpart?.pvpCooldown ?? 0,
+            pveCooldown: move.pveCooldown ?? 0,
+            buffs: pvpCounterpart?.buffs
         }
     });
 
@@ -1499,16 +1487,13 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             isFast: false,
             pvpPower: 70,
             pvePower: 50,
-            pvpEnergyDelta: -40,
-            pveEnergyDelta: -33,
-            pvpDuration: 500,
-            pveDuration: 2.0,
-            pvpBuffs: {
-                chance: 0.3,
-                buffs: [{
-                    buff: 'targetDefenseStatStageChange',
-                    quantity: -1
-                }],
+            pvpEnergy: -40,
+            pveEnergy: -33,
+            pvpCooldown: 500,
+            pveCooldown: 2.0,
+            buffs: {
+                buffActivationChance: 0.3,
+                targetDefenseStatStageChange: -1
             }
         }
     }
@@ -1521,16 +1506,13 @@ export const mapGameMaster: (data: any) => Dictionary<IGameMasterMove> = (data: 
             isFast: false,
             pvpPower: 120,
             pvePower: 120,
-            pvpEnergyDelta: -45,
-            pveEnergyDelta: -100,
-            pvpDuration: 500,
-            pveDuration: 3.3,
-            pvpBuffs: {
-                chance: 1,
-                buffs: [{
-                    buff: 'attackerDefenseStatStageChange',
-                    quantity: -1
-                }],
+            pvpEnergy: -45,
+            pveEnergy: -100,
+            pvpCooldown: 500,
+            pveCooldown: 3.3,
+            buffs: {
+                buffActivationChance: 1,
+                attackerDefenseStatStageChange: -1
             }
         }
     }

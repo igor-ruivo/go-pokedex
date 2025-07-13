@@ -83,7 +83,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                             ATK
                         </div>
                         <div className="stat-value">
-                            {props.pokemon.atk}
+                            {props.pokemon.baseStats.atk}
                         </div>
                     </div>
                     <div className="def-stat">
@@ -91,7 +91,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                             DEF
                         </div>
                         <div className="stat-value">
-                            {props.pokemon.def}
+                            {props.pokemon.baseStats.def}
                         </div>
                     </div>
                     <div className="hp-stat">
@@ -99,7 +99,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                             HP
                         </div>
                         <div className="stat-value">
-                            {props.pokemon.hp}
+                            {props.pokemon.baseStats.hp}
                         </div>
                     </div>
                     <div className="weather-boost aligned-end no-contrast">

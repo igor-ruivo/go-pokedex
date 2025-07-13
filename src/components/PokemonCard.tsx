@@ -55,7 +55,7 @@ const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBa
         }
 
         if (listType === ListType.POKEDEX) {
-            return `${calculateCP(pokemon.atk, 15, pokemon.def, 15, pokemon.hp, 15, 100)} ${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}`;
+            return `${calculateCP(pokemon.baseStats.atk, 15, pokemon.baseStats.def, 15, pokemon.baseStats.hp, 15, 100)} ${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}`;
         }
 
         if (listType !== ListType.RAID) {

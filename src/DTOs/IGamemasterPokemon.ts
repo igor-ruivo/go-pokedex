@@ -8,9 +8,11 @@ export interface IGamemasterPokemon {
     imageUrl: string,
     goImageUrl: string,
     shinyGoImageUrl: string,
-    atk: number,
-    def: number,
-    hp: number,
+    baseStats: {
+        atk: number,
+        def: number,
+        hp: number
+    },
     fastMoves: string[],
     chargedMoves: string[],
     eliteMoves: string[],

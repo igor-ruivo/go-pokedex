@@ -40,10 +40,10 @@ const useComputeIVs = ({pokemon, attackIV, defenseIV, hpIV, justForSelf = false}
                 const effectiveDef = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + defenseIV : defenseIV);
                 const effectiveHP = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + hpIV : hpIV);
 
-                const resLC = computeBestIVs(p.atk, p.def, p.hp, customCupCPLimit);
-                const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
-                const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
-                const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE);
+                const resLC = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, customCupCPLimit);
+                const resGL = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, 1500);
+                const resUL = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, 2500);
+                const resML = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, Number.MAX_VALUE);
         
                 const flatLResult = Object.values(resLC).flat();
                 const flatGLResult = Object.values(resGL).flat();

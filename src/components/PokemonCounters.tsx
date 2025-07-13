@@ -152,9 +152,9 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                     <strong className="move-detail no-extra-padding">
                         {attack}
                         <img className="invert-light-mode" alt="damage" src="https://i.imgur.com/uzIMRdH.png" width={14} height={16}/>
-                        {Math.abs(moves[moveId].pveEnergyDelta)}
+                        {Math.abs(moves[moveId].pveEnergy)}
                         <img className="invert-light-mode" alt="energy gain" src="https://i.imgur.com/Ztp5sJE.png" width={11} height={16}/>
-                        {moves[moveId].pveDuration}s
+                        {moves[moveId].pveCooldown}s
                         <img className="invert-light-mode" alt="cooldown" src="https://i.imgur.com/RIdKYJG.png" width={11} height={16}/>
                     </strong>
                 </p> 

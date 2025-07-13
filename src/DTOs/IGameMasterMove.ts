@@ -5,19 +5,14 @@ export interface IGameMasterMove {
     isFast: boolean,
     pvpPower: number,
     pvePower: number,
-    pvpDuration: number,
-    pveDuration: number,
-    pvpEnergyDelta: number,
-    pveEnergyDelta: number,
-    pvpBuffs?: BuffEntry
+    pvpCooldown: number,
+    pveCooldown: number,
+    pvpEnergy: number,
+    pveEnergy: number,
+    buffs?: BuffsType
 }
 
-interface BuffEntry {
-    chance: number,
-    buffs: Buff[]
-}
-
-export interface Buff {
-    buff: string,
-    quantity: number
-}
+export interface BuffsType  {
+    buffActivationChance: number;
+    [key: string]: number;
+};
