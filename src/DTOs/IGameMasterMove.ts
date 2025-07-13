@@ -1,3 +1,5 @@
+import { GameLanguage } from "../contexts/language-context";
+
 export interface IGameMasterMove {
     moveId: string,
     vId: string,
@@ -9,7 +11,8 @@ export interface IGameMasterMove {
     pveCooldown: number,
     pvpEnergy: number,
     pveEnergy: number,
-    buffs?: BuffsType
+    buffs?: BuffsType,
+    moveName: Record<GameLanguage, string>
 }
 
 export interface BuffsType  {

@@ -14,7 +14,6 @@ import { ImageSource, useImageSource } from "../contexts/imageSource-context";
 import { computeDPSEntry, shortName, translateMoveFromMoveId } from "../utils/pokemon-helper";
 import { useMoves } from "../contexts/moves-context";
 import { MatchUp } from "../DTOs/IRankedPokemon";
-import { useGameTranslation } from "../contexts/gameTranslation-context";
 import { ConfigKeys, readPersistentValue, writePersistentValue } from "../utils/persistent-configs-handler";
 import useResize from "../hooks/useResize";
 import { DPSEntry } from "../contexts/raid-ranker-context";
@@ -48,7 +47,6 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.ShowEntries, 10));
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
-    const {gameTranslation, gameTranslationFetchCompleted, gameTranslationErrors} = useGameTranslation();
     const {rankLists, pvpFetchCompleted, pvpErrors} = usePvp();
     const {moves, movesFetchCompleted, movesErrors} = useMoves();
     const { pathname } = useLocation();
@@ -56,8 +54,8 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     const {x} = useResize();
     const {imageSource} = useImageSource();
 
-    const resourcesNotReady = useMemo(() => !fetchCompleted || !gameTranslationFetchCompleted || !movesFetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon
-    , [fetchCompleted, gameTranslationFetchCompleted, gamemasterPokemon, movesFetchCompleted, pokemon, pvpFetchCompleted]);
+    const resourcesNotReady = useMemo(() => !fetchCompleted || !movesFetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon
+    , [fetchCompleted, gamemasterPokemon, movesFetchCompleted, pokemon, pvpFetchCompleted]);
     
     useEffect(() => {
         writePersistentValue(ConfigKeys.ShowEntries, top.toString());
@@ -145,7 +143,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
             onClick: (event: any) => detailsClickHandler(event, `${moveId}-${speciesId}`),
             summary: <>
                 <img alt="Special effects" className="with-img-dropShadow" loading="lazy" width="14" height="14" decoding="async" src={`${process.env.PUBLIC_URL}/images/types/${moves[moveId].type}.png`}/>
-                <span>{translateMoveFromMoveId(moveId, moves, gameTranslation)}</span>
+                <span>{translateMoveFromMoveId(moveId, moves, currentGameLanguage)}</span>
             </>,
             content: <>
                 <p>
@@ -160,7 +158,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                 </p> 
             </>
         }
-    }, [detailsClickHandler, gameTranslation, moves])
+    }, [detailsClickHandler, moves, currentGameLanguage])
 
     const renderRaidEntry = useCallback((pokemon: IGamemasterPokemon, dps: number, fastMove: string, chargedMove: string, className: string, fastMoveDamage: number, chargedMoveDamage: number) => {
         const type1 = pokemon.types[0];
@@ -190,7 +188,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
     }, [currentGameLanguage, imageSource, navigate, pathname, renderBuffDetailItem])
 
     return (
-        <LoadingRenderer errors={gameTranslationErrors + pvpErrors + movesErrors + errors} completed={!resourcesNotReady}>
+        <LoadingRenderer errors={pvpErrors + movesErrors + errors} completed={!resourcesNotReady}>
             {!resourcesNotReady && <div className="banner_layout normal-text">
                 {league === LeagueType.RAID &&
                     <div className="extra-ivs-options item default-padding block-column">

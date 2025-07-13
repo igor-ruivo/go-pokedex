@@ -9,7 +9,6 @@ import { NavbarSearchProvider } from './contexts/navbar-search-context';
 import { LanguageProvider } from './contexts/language-context';
 import { PvpProvider } from './contexts/pvp-context';
 import { MovesProvider } from './contexts/moves-context';
-import { GameTranslationProvider } from './contexts/gameTranslation-context';
 import DeleteTrash from './components/DeleteTrash';
 import { ImageSourceProvider } from './contexts/imageSource-context';
 import { RaidRankerProvider } from './contexts/raid-ranker-context';
@@ -24,7 +23,6 @@ const App = () => {
             <PvpProvider>
                 <ImageSourceProvider>
                     <LanguageProvider>
-                        <GameTranslationProvider>
                             <MovesProvider>
                                 <NavbarSearchProvider>
                                     <RaidRankerProvider>
@@ -60,7 +58,6 @@ const App = () => {
                                     </RaidRankerProvider>
                                 </NavbarSearchProvider>
                             </MovesProvider>
-                        </GameTranslationProvider>
                     </LanguageProvider>
                 </ImageSourceProvider>
             </PvpProvider>

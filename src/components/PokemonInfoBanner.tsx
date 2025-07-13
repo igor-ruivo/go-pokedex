@@ -12,7 +12,6 @@ import LeagueRanks from "./LeagueRanks";
 import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
-import { useGameTranslation } from "../contexts/gameTranslation-context";
 import PokemonTypes from "./PokemonTypes";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { PokemonTypes as TypesDTO } from "../DTOs/PokemonTypes";
@@ -79,7 +78,6 @@ type ranksDicDTO = {
 
 const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, setDefense, hp, setHP, league, handleSetLeague, level}: IPokemonInfoBanner) => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
-    const {gameTranslationFetchCompleted} = useGameTranslation();
 
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {rankLists, pvpFetchCompleted} = usePvp();
@@ -136,8 +134,8 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         }, 0);
     }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
 
-    const resourcesNotReady = useMemo(() => !raidRankerFetchCompleted(allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes) || !bestReachableRaidVersion || !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gameTranslationFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0
-    , [allRelevantChargedMoveTypes, bestReachableRaidVersion, fetchCompleted, gameTranslationFetchCompleted, gamemasterPokemon, ivPercents, moves, movesFetchCompleted, pokemon, pvpFetchCompleted, raidRankerFetchCompleted, rankLists]);
+    const resourcesNotReady = useMemo(() => !raidRankerFetchCompleted(allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes) || !bestReachableRaidVersion || !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0
+    , [allRelevantChargedMoveTypes, bestReachableRaidVersion, fetchCompleted, gamemasterPokemon, ivPercents, moves, movesFetchCompleted, pokemon, pvpFetchCompleted, raidRankerFetchCompleted, rankLists]);
 
     const [currentBestReachableGreatLeagueIndex, setCurrentBestReachableGreatLeagueIndex] = useState(0);
     const [currentBestReachableUltraLeagueIndex, setCurrentBestReachableUltraLeagueIndex] = useState(0);

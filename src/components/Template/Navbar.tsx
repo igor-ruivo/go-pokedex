@@ -266,12 +266,12 @@ const Navbar = () => {
     const gameLanguageOptions: Entry<GameLanguage>[] = useMemo(() => [
         {
             label: "English",
-            value: GameLanguage.English,
+            value: GameLanguage.en,
             hint: "https://i.imgur.com/9gMorO5.png"
         },
         {
             label: "Português",
-            value: GameLanguage.Portuguese,
+            value: GameLanguage.ptbr,
             hint: "https://i.imgur.com/AEOlghs.png"
         }
     ], []);

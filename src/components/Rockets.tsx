@@ -7,12 +7,10 @@ import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import useResize from "../hooks/useResize";
 import LoadingRenderer from "./LoadingRenderer";
-import { useGameTranslation } from "../contexts/gameTranslation-context";
 import { GameLanguage, useLanguage } from "../contexts/language-context";
 
 const Rockets = () => {
     const { leekRockets, leekRocketsFetchCompleted, leekRocketsErrors } = useCalendar();
-    const {gameTranslation, gameTranslationErrors, gameTranslationFetchCompleted} = useGameTranslation();
     const {currentGameLanguage} = useLanguage();
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { x } = useResize();
@@ -24,16 +22,13 @@ const Rockets = () => {
             return phrase;
         }
 
-        const type = key.includes('-type') ? key.split('-type')[0].toLocaleLowerCase().trim() : undefined;
-        const indexable = type ? `_${type}__male_speaker` : key;
-
         switch (currentGameLanguage) {
-            case GameLanguage.English:
+            case GameLanguage.en:
                 return phrase;
-            case GameLanguage.Portuguese:
-                return gameTranslation?.rocketPhrases[indexable]?.phrase ?? phrase;
+            case GameLanguage.ptbr:
+                return phrase;
         }
-    }, [currentGameLanguage, gameTranslation]);
+    }, [currentGameLanguage]);
 
     const renderMove = useCallback((m: IRocketGrunt, moveUrl: string, className: string) => {
         const colorVar = m.type ? `type-${m.type.substring(0, 1).toLocaleUpperCase() + m.type.substring(1)}` : undefined;
@@ -104,7 +99,7 @@ const Rockets = () => {
         />
     }, [expandedRocket, gamemasterPokemon, translatePhrase]);
 
-    return <LoadingRenderer errors={errors + leekRocketsErrors + gameTranslationErrors} completed={fetchCompleted && leekRocketsFetchCompleted && gameTranslationFetchCompleted}>
+    return <LoadingRenderer errors={errors + leekRocketsErrors} completed={fetchCompleted && leekRocketsFetchCompleted}>
         <div className="moves-display-layout-big normal-text">
             <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>

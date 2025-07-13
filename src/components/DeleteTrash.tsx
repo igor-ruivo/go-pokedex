@@ -381,7 +381,7 @@ const DeleteTrash = () => {
             newStr += (newStr ? '&' : '') + Array.from(buffer.values()).join('&');
         }
 
-        if (currentGameLanguage === GameLanguage.Portuguese) {
+        if (currentGameLanguage === GameLanguage.ptbr) {
             newStr = newStr
             .replaceAll('bug', 'inseto')
             .replaceAll('dark', 'sombrio')

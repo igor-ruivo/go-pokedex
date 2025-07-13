@@ -8,8 +8,8 @@ export enum Language {
 }
 
 export enum GameLanguage {
-    English,
-    Portuguese
+    en = 'en',
+    ptbr = 'pt_br',
 }
 
 interface LanguageContextType {
@@ -42,10 +42,10 @@ export const LanguageProvider = (props: React.PropsWithChildren<{}>) => {
     const getDefaultGameLanguage = useCallback(() => {
         const cachedGameLanguage = readPersistentValue(ConfigKeys.GameLanguage);
         if (!cachedGameLanguage) {
-            return GameLanguage.English;
+            return GameLanguage.en;
         }
     
-        return +cachedGameLanguage as GameLanguage;
+        return JSON.parse(cachedGameLanguage) as GameLanguage;
     }, []);
 
     const [currentLanguage, setCurrentLanguage] = useState(getDefaultLanguage());

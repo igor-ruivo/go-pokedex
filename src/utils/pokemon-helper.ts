@@ -1,7 +1,7 @@
 import { IGameMasterMove } from "../DTOs/IGameMasterMove";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import { ITranslatedGame } from "../DTOs/ITranslatedGame";
 import { PokemonForms } from "../DTOs/PokemonForms";
+import { GameLanguage } from "../contexts/language-context";
 import { DPSEntry } from "../contexts/raid-ranker-context";
 import Dictionary from "./Dictionary";
 
@@ -36,14 +36,14 @@ const normalizedMoveName = (moveName: string) => moveName
     .map(p => p.substring(0, 1).toLocaleUpperCase() + p.substring(1).toLocaleLowerCase())
     .join(" ");
 
-export const translateMoveFromMoveId = (moveId: string, moves: Dictionary<IGameMasterMove>, gameTranslation: ITranslatedGame) => {
+export const translateMoveFromMoveId = (moveId: string, moves: Dictionary<IGameMasterMove>, gameLanguage: GameLanguage) => {
     const typedMove = moves[moveId];
     if (!typedMove) {
         console.error("Couldn't find PokemonCounters " + moveId);
-        return moveId ?? "";
+        return normalizedMoveName(moveId);
     }
-    const vid = typedMove.vId;
-    return gameTranslation.moves[vid]?.name ?? normalizedMoveName(typedMove.moveId);
+    
+    return typedMove.moveName[gameLanguage];
 }
 
 export const shortName = (name: string) => {
