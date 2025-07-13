@@ -107,14 +107,14 @@ const Pokedex = () => {
         Object.values(gamemasterPokemon)
         .filter(p => !p.aliasId)
         .forEach(p => {
-            if (!p.familyId) {
+            if (!p.family || !p.family.id) {
                 return;
             }
 
-            if (!dict[p.familyId]) {
-                dict[p.familyId] = [p];
+            if (!dict[p.family.id]) {
+                dict[p.family.id] = [p];
             } else {
-                dict[p.familyId].push(p);
+                dict[p.family.id].push(p);
             }
         });
 

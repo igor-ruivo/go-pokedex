@@ -638,10 +638,10 @@ export const fetchReachablePokemonIncludingSelf = (pokemon: IGamemasterPokemon, 
         }
 
         reachablePokemons.add(currentPokemon);
-        if (!currentPokemon.evolutions || currentPokemon.evolutions.length === 0) {
+        if (!currentPokemon.family || !currentPokemon.family.evolutions || currentPokemon.family.evolutions.length === 0) {
             continue;
         }
-        queue.push(...currentPokemon.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk && pk.isShadow === currentPokemon.isShadow && (!domainFilter || domainFilter(pk))) as IGamemasterPokemon[]);
+        queue.push(...currentPokemon.family.evolutions.map(id => gamemasterPokemon[id]).filter(pk => pk && pk.isShadow === currentPokemon.isShadow && (!domainFilter || domainFilter(pk))) as IGamemasterPokemon[]);
     }
 
     return reachablePokemons;
@@ -687,11 +687,11 @@ export const fetchPredecessorPokemonIncludingSelf = (pokemon: IGamemasterPokemon
 
         predecessorPokemons.add(currentPokemon);
         
-        if (!currentPokemon.parent) {
+        if (!currentPokemon.family || !currentPokemon.family.parent) {
             continue;
         }
 
-        const parentRef = gamemasterPokemon[currentPokemon.parent];
+        const parentRef = gamemasterPokemon[currentPokemon.family.parent];
         if (!parentRef || parentRef.isShadow !== pokemon.isShadow || (domainFilter && !domainFilter(parentRef))) {
             continue;
         }
@@ -716,7 +716,11 @@ export const fetchPokemonFamily = (pokemon: IGamemasterPokemon, gamemasterPokemo
         family.add(currentPokemon);
 
         const sameDex = pokemonByDex ? pokemonByDex[currentPokemon.dex].filter(p => (!domainFilter || domainFilter(p))) : Object.values(gamemasterPokemon).filter(p => (!domainFilter || domainFilter(p)) && p.dex === currentPokemon.dex && p.isShadow === currentPokemon.isShadow && !p.aliasId);
-        const sameFamily = currentPokemon.familyId ? pokemonByFamilyId ? pokemonByFamilyId[currentPokemon.familyId].filter(p => (!domainFilter || domainFilter(p))) : Object.values(gamemasterPokemon).filter(p => (!domainFilter || domainFilter(p)) && p.familyId === currentPokemon.familyId && p.isShadow === currentPokemon.isShadow && !p.aliasId) : [];
+        const sameFamily = (currentPokemon.family && currentPokemon.family.id)
+                                ? pokemonByFamilyId
+                                    ? pokemonByFamilyId[currentPokemon.family.id].filter(p => (!domainFilter || domainFilter(p)))
+                                    : Object.values(gamemasterPokemon).filter(p => (!domainFilter || domainFilter(p)) && p.family && p.family.id === currentPokemon.family!.id && p.isShadow === currentPokemon.isShadow && !p.aliasId)
+                                : [];
         const predecessorPokemons = fetchPredecessorPokemonIncludingSelf(currentPokemon, gamemasterPokemon, domainFilter);
         const reachablePokemons = Array.from(fetchReachablePokemonIncludingSelf(currentPokemon, gamemasterPokemon, domainFilter)).filter(k => k.isShadow === currentPokemon.isShadow);
 
