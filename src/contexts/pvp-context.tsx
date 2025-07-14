@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
-import { cacheTtlInMillis, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Configs';
-import { mapRankedPokemon } from '../utils/conversions';
+import { pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Configs';
 import Dictionary from '../utils/Dictionary';
 import { usePokemon } from './pokemon-context';
 
@@ -26,7 +25,7 @@ const useFetchAllData: () => [Dictionary<IRankedPokemon>[], boolean, string] = (
         }
 
         const controller = new AbortController();
-        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], cacheTtlInMillis, {signal: controller.signal}, (data: any, request: any) => mapRankedPokemon(data, request, gamemasterPokemon));
+        fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], 0, {signal: controller.signal});
         return () => {
             controller.abort("Request canceled by cleanup.");
         }

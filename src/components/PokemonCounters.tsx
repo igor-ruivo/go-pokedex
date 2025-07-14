@@ -223,10 +223,10 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                 {rankLists[league as number][pokemon.speciesId] ? relevantMatchUps.length > 0 ?
                                     relevantMatchUps
                                     .map(m => {
-                                        const pokemon = gamemasterPokemon[m.speciesId];
+                                        const pokemon = gamemasterPokemon[m.opponent];
                                         const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
                                         return (
-                                            <React.Fragment key={m.speciesId}>
+                                            <React.Fragment key={m.opponent}>
                                                 {renderPvPEntry(pokemon, m.rating, className)}
                                             </React.Fragment>
                                         )
@@ -261,10 +261,10 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
                                     rankLists[league as number][pokemon.speciesId] ? relevantCounters.length > 0 ?
                                     relevantCounters
                                     .map(m => {
-                                        const pokemon = gamemasterPokemon[m.speciesId];
+                                        const pokemon = gamemasterPokemon[m.opponent];
                                         const className = `background-${pokemon.types[0].toString().toLocaleLowerCase()}`;
                                         return (
-                                            <React.Fragment key={m.speciesId}>
+                                            <React.Fragment key={m.opponent}>
                                                 {renderPvPEntry(pokemon, (m as MatchUp).rating, className)}
                                             </React.Fragment>
                                         )

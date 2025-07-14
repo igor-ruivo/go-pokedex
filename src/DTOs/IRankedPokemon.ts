@@ -1,7 +1,7 @@
 export interface IRankedPokemon {
     speciesId: string;
-    rating: number;
     moveset: string[];
+    score: number;
     matchups: MatchUp[];
     counters: MatchUp[];
     lead: number;
@@ -10,12 +10,11 @@ export interface IRankedPokemon {
     closer: number;
     consistency: number;
     attacker: number;
-    score: number;
     rank: number;
     rankChange: number;
 }
 
 export type MatchUp = {
-    speciesId: string;
+    opponent: string;
     rating: number;
 }
