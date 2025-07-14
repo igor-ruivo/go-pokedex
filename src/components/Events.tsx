@@ -206,7 +206,7 @@ const Events = () => {
             
                 {relevantPosts[selectedNews]?.bonuses[currentGameLanguage].length > 0 && <Section title={translator(TranslatorKeys.Bonus, currentLanguage)}><div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='bonus-container'>
-                        {relevantPosts[selectedNews].bonuses[currentGameLanguage].filter(b => b).map((b, i) => <span key={i + '-' + currentLanguage} className='ul-with-adorner'>{b}</span>)}
+                        {relevantPosts[selectedNews].bonuses[currentGameLanguage].filter(b => b).map((b, i) => <span key={i + '-' + currentLanguage}>{b}</span>)}
                     </div>
                 </div></Section>}
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
