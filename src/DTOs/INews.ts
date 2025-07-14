@@ -1,3 +1,4 @@
+import { GameLanguage } from "../contexts/language-context";
 import Dictionary from "../utils/Dictionary";
 import { IGamemasterPokemon } from "./IGamemasterPokemon";
 
@@ -5,13 +6,13 @@ export interface IEntry {
     speciesId: string;
     shiny: boolean;
     kind?: string;
-    comment?: string;
+    comment?: Record<GameLanguage, string>;
 }
 
 export interface IRocketGrunt {
     trainerId: string;
     type: string | undefined;
-    phrase: string;
+    phrase: Record<GameLanguage, string>;
     tier1: string[];
     tier2: string[];
     tier3: string[];
@@ -19,23 +20,23 @@ export interface IRocketGrunt {
 }
 
 export interface IPostEntry {
-    title: string,
-    subtitle?: string,
-    imgUrl?: string,
-    date: number,
-    dateEnd?: number,
-    raids?: IEntry[],
-    wild?: IEntry[],
-    incenses?: IEntry[],
-    bonuses?: string,
-    researches?: IEntry[],
-    eggs?: IEntry[],
-    isSeason?: boolean,
-    comment?: string,
-    spotlightPokemons?: IEntry[],
-    spotlightBonus?: string,
+    id: string,
+    url: string,
+    title: Record<GameLanguage, string>,
+    subtitle: Record<GameLanguage, string>,
+    startDate: number,
+    endDate: number,
+    dateRanges: Array<{start: number, end: number}>
+    imageUrl: string,
+    wild: IEntry[],
+    raids: IEntry[],
+    eggs: IEntry[],
+    researches: IEntry[],
+    incenses: IEntry[],
+    lures: IEntry[],
+    bonuses: Record<GameLanguage, string[]>,
     isRelevant?: boolean,
-    rawUrl?: string
+    isSpotlight?: boolean
 }
 
 export interface IRaidEntry {
@@ -43,14 +44,12 @@ export interface IRaidEntry {
     entries: Dictionary<IEntry[]>
 }
 
-
-
 export const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
-    if (e1.date.valueOf() === e2.date.valueOf()) {
-        return (e1.dateEnd?.valueOf() ?? 0) - (e2.dateEnd?.valueOf() ?? 0);
+    if (e1.startDate.valueOf() === e2.startDate.valueOf()) {
+        return (e1.endDate.valueOf() ?? 0) - (e2.endDate.valueOf() ?? 0);
     }
 
-    return e1.date.valueOf() - e2.date.valueOf();
+    return e1.startDate.valueOf() - e2.startDate.valueOf();
 }
 
 export const sortEntries = (e1: IEntry, e2: IEntry, gamemasterPokemon: Dictionary<IGamemasterPokemon>) => {

@@ -7,28 +7,15 @@ import { usePokemon } from "../contexts/pokemon-context";
 import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 import useResize from "../hooks/useResize";
 import LoadingRenderer from "./LoadingRenderer";
-import { GameLanguage, useLanguage } from "../contexts/language-context";
+import { useLanguage } from "../contexts/language-context";
 
 const Rockets = () => {
-    const { leekRockets, leekRocketsFetchCompleted, leekRocketsErrors } = useCalendar();
+    const { currentRockets, currentRocketsFetchCompleted, errorLoadingCurrentRockets } = useCalendar();
     const {currentGameLanguage} = useLanguage();
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
     const { x } = useResize();
 
     const [expandedRocket, setExpandedRocket] = useState(readSessionValue(ConfigKeys.ExpandedRocket) ?? "");
-
-    const translatePhrase = useCallback((phrase: string, key?: string) => {
-        if (!key) {
-            return phrase;
-        }
-
-        switch (currentGameLanguage) {
-            case GameLanguage.en:
-                return phrase;
-            case GameLanguage.ptbr:
-                return phrase;
-        }
-    }, [currentGameLanguage]);
 
     const renderMove = useCallback((m: IRocketGrunt, moveUrl: string, className: string) => {
         const colorVar = m.type ? `type-${m.type.substring(0, 1).toLocaleUpperCase() + m.type.substring(1)}` : undefined;
@@ -38,7 +25,7 @@ const Rockets = () => {
                 {
                     imageDescription: "",
                     image: <div className="img-padding guaranteedWidth"><img alt='move' className="with-img-dropShadow" height={20} width={20} src={moveUrl} /></div>,
-                    imageSideText: translatePhrase(m.phrase, m.trainerId),
+                    imageSideText: m.phrase[currentGameLanguage],
                     withBackground: true
                 }
             }
@@ -97,14 +84,14 @@ const Rockets = () => {
             soft
             defaultBackgroundStyle="normal-entry"
         />
-    }, [expandedRocket, gamemasterPokemon, translatePhrase]);
+    }, [expandedRocket, gamemasterPokemon, currentGameLanguage]);
 
-    return <LoadingRenderer errors={errors + leekRocketsErrors} completed={fetchCompleted && leekRocketsFetchCompleted}>
+    return <LoadingRenderer errors={errors + errorLoadingCurrentRockets} completed={fetchCompleted && currentRocketsFetchCompleted}>
         <div className="moves-display-layout-big normal-text">
             <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>
                     {
-                        leekRockets?.slice(0, x > 1200 ? Math.round(leekRockets.length / 2) : leekRockets.length).map(m => {
+                        currentRockets?.slice(0, x > 1200 ? Math.round(currentRockets.length / 2) : currentRockets.length).map(m => {
                             const className = m.type ? `background-${m.type}` : "normal-entry";
                             const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
                             const url = `${process.env.PUBLIC_URL}/images/${resName}`;
@@ -120,7 +107,7 @@ const Rockets = () => {
             {x > 1200 && <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>
                     {
-                        leekRockets?.slice(Math.round(leekRockets.length / 2)).map(m => {
+                        currentRockets?.slice(Math.round(currentRockets.length / 2)).map(m => {
                             const className = m.type ? `background-${m.type}` : "normal-entry";
                             const resName = m.type ? `types/${m.type}.png` : m.trainerId.includes("Sierra") ? "NPC/sierra.webp" : m.trainerId.includes("Cliff") ? "NPC/cliff.webp" : m.trainerId.includes("Giovanni") ? "NPC/giovanni.webp" : m.trainerId.includes("Arlo") ? "NPC/arlo.webp" : m.trainerId.includes("Female") ? "NPC/female-grunt.png" : "NPC/male-grunt.webp";
                             const url = `${process.env.PUBLIC_URL}/images/${resName}`;

@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useCalendar } from '../contexts/raid-bosses-context';
+import { ILeekduckSpotlightHour, useCalendar } from '../contexts/raid-bosses-context';
 import LoadingRenderer from './LoadingRenderer';
 import { IPostEntry, sortEntries, sortPosts } from '../DTOs/INews';
 import './Events.scss';
@@ -9,7 +9,7 @@ import { usePokemon } from '../contexts/pokemon-context';
 import PokemonMiniature from './PokemonMiniature';
 import PokemonImage from './PokemonImage';
 import { useNotifications } from '../contexts/notifications-context';
-import { Language, useLanguage } from '../contexts/language-context';
+import { GameLanguage, useLanguage } from '../contexts/language-context';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import Section from './Template/Section';
@@ -17,34 +17,57 @@ import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persis
 import { useNavigate } from 'react-router-dom';
 
 const Events = () => {
-    const { posts, postsPT, season, seasonPT, postsErrors, seasonErrors, seasonPTErrors, seasonPTFetchCompleted, seasonFetchCompleted, postsFetchCompleted, postsPTFetchCompleted, leekPosts, leekPostsErrors, postsPTErrors, leekPostsFetchCompleted } = useCalendar();
+    const { posts, season, errorLoadingPosts, errorLoadingSeason, seasonFetchCompleted, postsFetchCompleted, spotlightHours, spotlightHoursFetchCompleted, errorLoadingSpotlightHours } = useCalendar();
     const { seenEvents, updateSeenEvents } = useNotifications();
     const {currentLanguage, currentGameLanguage} = useLanguage();
     const navigate = useNavigate();
 
-    const nonSeasonalPosts = useMemo(() => [...[...posts.flat(), ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date()).sort(sortPosts)]
-    , [posts, leekPosts]);
+    const mapToPostEntry = (spotlight: ILeekduckSpotlightHour): IPostEntry => {
+        return {
+            id: spotlight.rawUrl,
+            url: spotlight.rawUrl,
+            title: spotlight.title,
+            subtitle: spotlight.title,
+            startDate: spotlight.date,
+            endDate: spotlight.dateEnd,
+            dateRanges: [{start: spotlight.date, end: spotlight.dateEnd}],
+            imageUrl: spotlight.imgUrl,
+            wild: spotlight.pokemons,
+            raids: [],
+            eggs: [],
+            researches: [],
+            incenses: [],
+            lures: [],
+            bonuses: Object.fromEntries(
+                Object.entries(spotlight.bonus).map(([k, v]) => [k, [v]])
+            ) as Record<GameLanguage, string[]>,
+            isSpotlight: true
+        }
+    }
+
+    const nonSeasonalPosts = useMemo(() => [...[...posts, ...spotlightHours.map(mapToPostEntry)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses[currentGameLanguage].length > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.endDate ?? 0) >= new Date()).sort(sortPosts)]
+    , [posts, currentGameLanguage, spotlightHours]);
 
     const relevantPosts = useMemo(() => [season, ...nonSeasonalPosts], [season, nonSeasonalPosts]);
 
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const [selectedNews, setSelectedNews] = useState((readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!) >= relevantPosts.length ? 0 : (readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!));
+    const [selectedNews, setSelectedNews] = useState((readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!) >= relevantPosts.length ? 0 : (readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!));
     const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? "0");
     const [currentEgg, setCurrentEgg] = useState(readSessionValue(ConfigKeys.ExpandedEgg) === "4" ? "0" : (readSessionValue(ConfigKeys.ExpandedEgg) ?? "0"));
 
-    const postTitle = useCallback((post: IPostEntry) => `${post.title}-${post.subtitle}`, []);
+    const postId = useCallback((post: IPostEntry) => post.id, []);
 
     useEffect(() => {
         const currentPost = relevantPosts[selectedNews];
         if (currentPost) {
-            updateSeenEvents([postTitle(currentPost)]);
+            updateSeenEvents([postId(currentPost)]);
         }
-    }, [updateSeenEvents, relevantPosts, postTitle, selectedNews]);
+    }, [updateSeenEvents, relevantPosts, postId, selectedNews]);
 
     useEffect(() => {
         if (postsFetchCompleted) {
-            setSelectedNews(readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.flat().length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!);
-            writeSessionValue(ConfigKeys.ExpandedEvent, readSessionValue(ConfigKeys.ExpandedEvent) === null ? ('' + (posts.flat().length === 0 ? 0 : 1)) : readSessionValue(ConfigKeys.ExpandedEvent)!);
+            setSelectedNews(readSessionValue(ConfigKeys.ExpandedEvent) === null ? (posts.length === 0 ? 0 : 1) : +readSessionValue(ConfigKeys.ExpandedEvent)!);
+            writeSessionValue(ConfigKeys.ExpandedEvent, readSessionValue(ConfigKeys.ExpandedEvent) === null ? ('' + (posts.length === 0 ? 0 : 1)) : readSessionValue(ConfigKeys.ExpandedEvent)!);
         }
 
     }, [postsFetchCompleted, setSelectedNews, posts]);
@@ -113,41 +136,6 @@ const Events = () => {
         }
     }, []);
 
-    const translateSpotlightTitle = useCallback((title?: string) => {
-        if (!title) {
-            return title;
-        }
-
-        switch(currentLanguage) {
-            case Language.English:
-            case Language.Bosnian:
-                return title;
-            case Language.Portuguese:
-                return title.replaceAll(' Spotlight Hour', ': Hora do Holofote').replaceAll("and", "e")
-            default: return title;
-        }
-    }, [currentLanguage]);
-
-    const translateSpotlightBonus = useCallback((bonus?: string) => {
-        if (!bonus) {
-            return bonus;
-        }
-
-        switch(currentLanguage) {
-            case Language.English:
-            case Language.Bosnian:
-                return bonus;
-            case Language.Portuguese:
-                return bonus
-                .replaceAll('Catch XP', 'XP ao capturar')
-                .replaceAll('Catch Candy', 'Doces ao capturar')
-                .replaceAll('Transfer Candy', 'Doces ao transferir')
-                .replaceAll('Evolution XP', 'XP ao evoluir')
-                .replaceAll('Catch Stardust', 'Poeira Estelar ao capturar');
-            default: return bonus;
-        }
-    }, [currentLanguage]);
-
     const idxToKind = useCallback((idx: number) => {
         switch (idx) {
             case 0:
@@ -163,25 +151,7 @@ const Events = () => {
         }
     }, []);
 
-    const translatedEvent = useCallback((post: IPostEntry) => {
-        if (currentLanguage === Language.English) {
-            return post;
-        }
-
-        if (!post.comment) {
-            return post;
-        }
-
-        const candidate = [...postsPT.flat(), seasonPT].filter(p => p && p.comment && p.comment === post.comment)[0];
-
-        if (!candidate) {
-            return post;
-        }
-
-        return candidate;
-    }, [currentLanguage, postsPT, seasonPT]);
-
-    return <LoadingRenderer errors={postsErrors + postsPTErrors + seasonErrors + seasonPTErrors + errors + leekPostsErrors} completed={seasonFetchCompleted && (currentLanguage === Language.English || (seasonPTFetchCompleted && postsPTFetchCompleted)) && postsFetchCompleted && fetchCompleted && leekPostsFetchCompleted}>
+    return <LoadingRenderer errors={errorLoadingPosts + errorLoadingSeason + errorLoadingSpotlightHours + errors} completed={postsFetchCompleted && seasonFetchCompleted && spotlightHoursFetchCompleted && fetchCompleted}>
         {relevantPosts.length === 0 || !relevantPosts[selectedNews] ?
             <span>No News!</span> :
             <div className='with-xl-gap'>
@@ -190,17 +160,17 @@ const Events = () => {
                         <div className='overflowing'>
                             <div className='news-gallery'>
                                 {relevantPosts.map((p, i) =>
-                                    <div key={postTitle(p)} className={`post-miniature clickable ${!seenEvents.has(postTitle(p)) ? "is-new" : ""} ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => {setSelectedNews(i); writeSessionValue(ConfigKeys.ExpandedEvent, '' + i)}}>
-                                        <div className='miniature-date ellipsed'>{i === 0 ? translator(TranslatorKeys.Season, currentLanguage) : new Date(p.date).toLocaleString(undefined, localeStringMiniature)}</div>
+                                    <div key={postId(p)} className={`post-miniature clickable ${!seenEvents.has(postId(p)) ? "is-new" : ""} ${i === selectedNews ? "news-selected" : ""} ${i === 0 ? "season-miniature" : ""}`} onClick={() => {setSelectedNews(i); writeSessionValue(ConfigKeys.ExpandedEvent, '' + i)}}>
+                                        <div className='miniature-date ellipsed'>{i === 0 ? translator(TranslatorKeys.Season, currentLanguage) : new Date(p.startDate).toLocaleString(undefined, localeStringMiniature)}</div>
                                         <div className={`spotlight-miniature-container`}>
-                                            <img className='miniature-itself' alt='Miniature' src={p.imgUrl} />
-                                            {(p.spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
-                                                pokemon = {gamemasterPokemon[p.spotlightPokemons![0].speciesId]}
+                                            <img className='miniature-itself' alt='Miniature' src={p.imageUrl} />
+                                            {p.isSpotlight && <PokemonImage
+                                                pokemon = {gamemasterPokemon[p.wild[0].speciesId]}
                                                 withName = {false}
                                                 imgOnly
                                                 withClassname = 'spotlighted-pokemon'
                                             />}
-                                            {!seenEvents.has(postTitle(p)) && <span className="notifications-counter heavy-weight post-notification">{translator(TranslatorKeys.New, currentLanguage)}</span>}
+                                            {!seenEvents.has(postId(p)) && <span className="notifications-counter heavy-weight post-notification">{translator(TranslatorKeys.New, currentLanguage)}</span>}
                                         </div>
                                     </div>
                                 )}
@@ -211,35 +181,32 @@ const Events = () => {
                 <div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='news-header-section item'>
                         <div className='event-img-container'>
-                            <img className='event-img-itself' alt='Event' width="100%" height="100%" src={relevantPosts[selectedNews].imgUrl} onClick={((relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0) ? (() => navigate(`/pokemon/${relevantPosts[selectedNews].spotlightPokemons![0].speciesId}/info`)) : undefined}/>
-                            {(relevantPosts[selectedNews].spotlightPokemons?.length ?? 0) > 0 && <PokemonImage
-                                pokemon = {gamemasterPokemon[relevantPosts[selectedNews].spotlightPokemons![0].speciesId]}
+                            <img className='event-img-itself' alt='Event' width="100%" height="100%" src={relevantPosts[selectedNews].imageUrl} onClick={(relevantPosts[selectedNews].isSpotlight) ? (() => navigate(`/pokemon/${relevantPosts[selectedNews].wild[0].speciesId}/info`)) : undefined}/>
+                            {relevantPosts[selectedNews].isSpotlight && <PokemonImage
+                                pokemon = {gamemasterPokemon[relevantPosts[selectedNews].wild[0].speciesId]}
                                 withName = {false}
                                 imgOnly
                                 withClassname = 'spotlighted-pokemon'
                             />}
                         </div>
-                        <div className={'current-news-title'}>{translateSpotlightTitle((((translatedEvent(relevantPosts[selectedNews]).subtitle?.length ?? 0) > 15) || (relevantPosts.some(r => r !== relevantPosts[selectedNews] && r.title === relevantPosts[selectedNews].title))) ? translatedEvent(relevantPosts[selectedNews]).subtitle : translatedEvent(relevantPosts[selectedNews]).title)}</div>
+                        <div className={'current-news-title'}>{(((relevantPosts[selectedNews].subtitle[currentGameLanguage].length > 15) || (relevantPosts.some(r => r !== relevantPosts[selectedNews] && r.title[currentGameLanguage] === relevantPosts[selectedNews].title[currentGameLanguage]))) ? relevantPosts[selectedNews].subtitle[currentGameLanguage] : relevantPosts[selectedNews].title[currentGameLanguage])}</div>
                         <div className='current-news-date'>
                             <div className='from-date date-container'>
-                                {inCamelCase(new Date(relevantPosts[selectedNews].date).toLocaleString(undefined, localeStringSmallOptions))}
+                                {inCamelCase(new Date(relevantPosts[selectedNews].startDate).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
                             {<div className='from-date date-container'>
                                 {translator(TranslatorKeys.Until, currentLanguage)}
                             </div>}
                             <div className='to-date date-container'>
-                                {inCamelCase(new Date(relevantPosts[selectedNews].dateEnd ?? 0).toLocaleString(undefined, localeStringSmallOptions))}
+                                {inCamelCase(new Date(relevantPosts[selectedNews].endDate ?? 0).toLocaleString(undefined, localeStringSmallOptions))}
                             </div>
                         </div>
-                        {relevantPosts[selectedNews]?.spotlightBonus && 
-                            <span className='spotlight-bonus'>{translateSpotlightBonus(relevantPosts[selectedNews]?.spotlightBonus)}</span>
-                        }
                     </div>
                 </div>
             
-                {relevantPosts[selectedNews]?.bonuses && <Section title={translator(TranslatorKeys.Bonus, currentLanguage)}><div className='with-dynamic-max-width auto-margin-sides'>
+                {relevantPosts[selectedNews]?.bonuses[currentGameLanguage].length > 0 && <Section title={translator(TranslatorKeys.Bonus, currentLanguage)}><div className='with-dynamic-max-width auto-margin-sides'>
                     <div className='bonus-container'>
-                        {translatedEvent(relevantPosts[selectedNews])?.bonuses?.split("\n").filter(b => b).map((b, i) => <span key={i + '-' + currentLanguage} className='ul-with-adorner'>{b}</span>)}
+                        {relevantPosts[selectedNews].bonuses[currentGameLanguage].filter(b => b).map((b, i) => <span key={i + '-' + currentLanguage} className='ul-with-adorner'>{b}</span>)}
                     </div>
                 </div></Section>}
                     {(relevantPosts[selectedNews].wild ?? []).length > 0 &&
@@ -319,7 +286,7 @@ const Events = () => {
                             }
                             <div className={`with-flex contained ${selectedNews !== 0 ? "with-margin-top" : ""}`}>
                                 {(relevantPosts[selectedNews].eggs ?? [])
-                                    .filter(r => selectedNews !== 0 || (!r.comment && r.kind === String(idxToKind(+currentEgg))))
+                                    .filter(r => selectedNews !== 0 || ((!r.comment || !r.comment[currentGameLanguage]) && r.kind === String(idxToKind(+currentEgg))))
                                     .sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon)).map(p =>
                                         <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                                             <div className={`mini-card-wrapper`}>
@@ -327,11 +294,11 @@ const Events = () => {
                                             </div>
                                         </div>)}
                             </div>
-                            {(relevantPosts[selectedNews].eggs?.length ?? 0) > 0 && relevantPosts[selectedNews].eggs!.some(e => e.comment && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
-                                <strong>{currentLanguage === Language.English ? relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment : relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment)!.comment?.replaceAll("Adventure Sync Rewards", "Recompensas de Sincroaventura").replaceAll("Route Rewards", "Recompensas de Rota").replaceAll("7 km Eggs from Mateo’s Gift Exchange", "Ovos de 7 km da Troca de presentes de Mateo")}:</strong>
+                            {(relevantPosts[selectedNews].eggs?.length ?? 0) > 0 && relevantPosts[selectedNews].eggs!.some(e => e.comment && e.comment[currentGameLanguage] && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
+                                <strong>{relevantPosts[selectedNews].eggs!.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment && e.comment[currentGameLanguage])!.comment![currentGameLanguage]}:</strong>
                             </div>}
                             <div className='with-flex contained'>
-                                {(relevantPosts[selectedNews].eggs ?? []).filter(r => r.comment && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                                {(relevantPosts[selectedNews].eggs ?? []).filter(r => r.comment && r.comment[currentGameLanguage] && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                                     <div className={`mini-card-wrapper`}>
                                         <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                                     </div>

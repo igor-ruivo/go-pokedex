@@ -2,12 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { IEntry, IPostEntry, sortEntries, sortPosts } from "../DTOs/INews";
 import { inCamelCase, localeStringSmallestOptions } from "../utils/Misc";
-import { useCalendar } from "../contexts/raid-bosses-context";
+import { ILeekduckSpecialRaidBoss, useCalendar } from "../contexts/raid-bosses-context";
 import LoadingRenderer from "./LoadingRenderer";
 import { usePokemon } from "../contexts/pokemon-context";
 import PokemonMiniature from "./PokemonMiniature";
 import translator, { TranslatorKeys } from "../utils/Translator";
-import { Language, useLanguage } from "../contexts/language-context";
+import { GameLanguage, Language, useLanguage } from "../contexts/language-context";
 import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import Section from "./Template/Section";
 import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
@@ -15,15 +15,35 @@ import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persis
 const Raids = () => {
     const {currentLanguage, currentGameLanguage} = useLanguage();
 
-    const { bossesPerTier, leekPosts, posts, leekPostsFetchCompleted, postsFetchCompleted, leekPostsErrors, postsErrors, bossesFetchCompleted } = useCalendar();
+    const { posts, currentBosses, specialBosses, postsFetchCompleted, currentBossesFetchCompleted, specialBossesFetchCompleted, errorLoadingPosts, errorLoadingCurrentBosses, errorLoadingSpecialBosses } = useCalendar();
     const {gamemasterPokemon, errors, fetchCompleted} = usePokemon();
 
-    const reducedLeekPosts = useMemo(() => leekPostsFetchCompleted ? leekPosts.filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : []
-    , [leekPostsFetchCompleted, leekPosts]);
-    const reducedRaids = useMemo(() => postsFetchCompleted ? posts.flat().filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date()) : []
+    const mapToPostEntry = (special: ILeekduckSpecialRaidBoss): IPostEntry => {
+        return {
+            id: special.rawUrl,
+            url: special.rawUrl,
+            title: special.title,
+            subtitle: special.title,
+            startDate: special.date,
+            endDate: special.dateEnd,
+            dateRanges: [{start: special.date, end: special.dateEnd}],
+            imageUrl: '',
+            wild: [],
+            raids: special.raids,
+            eggs: [],
+            researches: [],
+            incenses: [],
+            lures: [],
+            bonuses: Object.fromEntries(Object.entries(GameLanguage).map(([_k, _v]) => []))
+        }
+    }
+
+    const reducedLeekPosts = useMemo(() => specialBossesFetchCompleted ? specialBosses.map(mapToPostEntry).filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date()) : []
+    , [specialBossesFetchCompleted, specialBosses]);
+    const reducedRaids = useMemo(() => postsFetchCompleted ? posts.filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date()) : []
     , [postsFetchCompleted, posts]);
 
-    const getDateKey = useCallback((obj: IPostEntry) => {const d = new Date(obj?.date ?? 0); return `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`}, []);
+    const getDateKey = useCallback((obj: IPostEntry) => {const d = new Date(obj?.startDate ?? 0); return `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`}, []);
 
     const additionalBosses = useMemo(() => Object.entries([...reducedLeekPosts, ...reducedRaids]
         .reduce((acc: { [key: string]: IPostEntry }, obj) => {
@@ -35,41 +55,51 @@ const Raids = () => {
                 );
             } else {
                 acc[key] = {
+                    id: obj.id,
+                    url: obj.url,
+                    subtitle: obj.subtitle,
+                    dateRanges: obj.dateRanges,
+                    wild: obj.wild,
+                    researches: obj.researches,
+                    eggs: obj.eggs,
+                    lures: obj.lures,
+                    incenses: obj.incenses,
+                    bonuses: obj.bonuses,
                     title: obj.title,
-                    imgUrl: obj.imgUrl,
-                    date: obj.date,
-                    dateEnd: obj.dateEnd,
+                    imageUrl: obj.imageUrl,
+                    startDate: obj.startDate,
+                    endDate: obj.endDate,
                     raids: obj.raids
                 };
             }
             return acc;
         }, {}))
-        .map(([key, value]) => ({
+        .map(([, value]) => ({
             title: value.title,
-            imgUrl: value.imgUrl,
-            date: value.date,
-            dateEnd: value.dateEnd,
+            imageUrl: value.imageUrl,
+            startDate: value.startDate,
+            endDate: value.endDate,
             raids: value.raids
         } as IPostEntry)), [reducedLeekPosts, reducedRaids, getDateKey]);
 
     const remainingBosses = useMemo(() => additionalBosses
-        .filter(e => (e.raids?.length ?? 0) > 0 && e.date > new Date().valueOf())
+        .filter(e => (e.raids?.length ?? 0) > 0 && e.startDate > new Date().valueOf())
         .sort(sortPosts), [additionalBosses]);
 
     const generateTodayBosses = useCallback((entries: IPostEntry[]) => {
-        if (!bossesFetchCompleted || !leekPostsFetchCompleted || !postsFetchCompleted) {
+        if (!currentBossesFetchCompleted || !specialBossesFetchCompleted || !postsFetchCompleted) {
             return [];
         }
 
-        const seenIds = new Set<string>([...(bossesPerTier.raids ?? []).map(e => e.speciesId)]);
-        const response = [...(bossesPerTier.raids ?? [])];
+        const seenIds = new Set<string>([...(currentBosses).map(e => e.speciesId)]);
+        const response = [...(currentBosses)];
 
         const now = new Date();
 
         for (let i = 0; i < entries.length; i++) {
             const entry = entries[i];
-            const dateEntryStart = new Date(entry.date);
-            const dateEntryEnd = new Date(entry.dateEnd ?? 0);
+            const dateEntryStart = new Date(entry.startDate);
+            const dateEntryEnd = new Date(entry.endDate ?? 0);
 
             if (!(now >= dateEntryStart && now < dateEntryEnd)) {
                 continue;
@@ -96,9 +126,9 @@ const Raids = () => {
         }
 
         return response.sort((a, b) => sortEntries(a, b, gamemasterPokemon));
-    }, [bossesFetchCompleted, leekPostsFetchCompleted, postsFetchCompleted, bossesPerTier, gamemasterPokemon]);
+    }, [postsFetchCompleted, gamemasterPokemon, currentBosses, currentBossesFetchCompleted, specialBossesFetchCompleted]);
 
-    const raidEventDates = useMemo(() => [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }, ...remainingBosses.map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
+    const raidEventDates = useMemo(() => [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }, ...remainingBosses.map(e => ({ label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
     , [currentLanguage, getDateKey, remainingBosses]);
 
     
@@ -119,7 +149,7 @@ const Raids = () => {
         }
     }, [raidEventEggs, currentTier, setCurrentTier, firstRelevantEntryTierForDate]);
     
-    const getCountdownForBoss = useCallback((speciesId: string) => [...reducedLeekPosts, ...reducedRaids].sort(sortPosts).find(d => d.date <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === speciesId))?.dateEnd
+    const getCountdownForBoss = useCallback((speciesId: string) => [...reducedLeekPosts, ...reducedRaids].sort(sortPosts).find(d => d.startDate <= new Date().valueOf() && (d.raids ?? []).some(f => f.speciesId === speciesId))?.endDate
     , [reducedLeekPosts, reducedRaids]);
 
     const eggIdxToKind = useCallback((idx: string) => {
@@ -140,7 +170,7 @@ const Raids = () => {
         return Object.values(gamemasterPokemon).find(p => p.dex === original.dex && !p.aliasId && p.isMega);
     }, [gamemasterPokemon]);
 
-    return <LoadingRenderer errors={postsErrors + leekPostsErrors + errors} completed={postsFetchCompleted && leekPostsFetchCompleted && fetchCompleted}>
+    return <LoadingRenderer errors={errorLoadingCurrentBosses + errorLoadingSpecialBosses + errorLoadingPosts + errors} completed={postsFetchCompleted && currentBossesFetchCompleted && specialBossesFetchCompleted && fetchCompleted}>
         <div className='boss-header-filters with-margin-top'>
             <div className='raid-date-element'>
                 <Select

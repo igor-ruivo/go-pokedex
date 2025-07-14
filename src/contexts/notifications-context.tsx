@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
-import { useCalendar } from './raid-bosses-context';
+import { ILeekduckSpotlightHour, useCalendar } from './raid-bosses-context';
 import { IPostEntry } from '../DTOs/INews';
+import { GameLanguage } from './language-context';
 
 interface NotificationsContextType {
     unseenEvents: number;
@@ -30,12 +31,33 @@ export const NotificationsProvider = (props: React.PropsWithChildren<{}>) => {
     }, []);
 
     const [seenEvents, setSeenEvents] = useState(getDefaultSeenEvents());
-    const {posts, leekPosts, postsFetchCompleted, leekPostsFetchCompleted, season, seasonFetchCompleted} = useCalendar();
-
-    const postTitle = useCallback((post: IPostEntry) => `${post.title}-${post.subtitle}`, []);
+    const {posts, spotlightHours, postsFetchCompleted, spotlightHoursFetchCompleted, season, seasonFetchCompleted} = useCalendar();
     
-    const currentEventIds = useMemo(() => postsFetchCompleted && seasonFetchCompleted && leekPostsFetchCompleted ? [...[...posts.flat(), season, ...leekPosts.filter(p => (p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses || (p.researches?.length ?? 0) > 0 || ((p.spotlightPokemons?.length ?? 0) > 0 && p.spotlightBonus)) && new Date(p.dateEnd ?? 0) >= new Date())].map(postTitle) : []
-    , [leekPosts, leekPostsFetchCompleted, postTitle, posts, postsFetchCompleted, season, seasonFetchCompleted]);
+    const mapToPostEntry = (spotlight: ILeekduckSpotlightHour): IPostEntry => {
+        return {
+            id: spotlight.rawUrl,
+            url: spotlight.rawUrl,
+            title: spotlight.title,
+            subtitle: spotlight.title,
+            startDate: spotlight.date,
+            endDate: spotlight.dateEnd,
+            dateRanges: [{start: spotlight.date, end: spotlight.dateEnd}],
+            imageUrl: spotlight.imgUrl,
+            wild: spotlight.pokemons,
+            raids: [],
+            eggs: [],
+            researches: [],
+            incenses: [],
+            lures: [],
+            bonuses: Object.fromEntries(
+                Object.entries(spotlight.bonus).map(([k, v]) => [k, [v]])
+            ) as Record<GameLanguage, string[]>,
+            isSpotlight: true
+        }
+    }
+
+    const currentEventIds = useMemo(() => postsFetchCompleted && seasonFetchCompleted && spotlightHoursFetchCompleted ? [...[...posts, season, ...spotlightHours.map(mapToPostEntry)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses.en.length > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.endDate ?? 0) >= new Date())].map(p => p.id) : []
+    , [posts, postsFetchCompleted, season, seasonFetchCompleted, spotlightHours, spotlightHoursFetchCompleted]);
     
     const unseenEvents = useMemo(() => currentEventIds.filter(e => !seenEvents.has(e)).length, [currentEventIds, seenEvents]);
 

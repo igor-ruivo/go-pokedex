@@ -11,26 +11,26 @@ import { useLanguage } from "../contexts/language-context";
 import Section from "./Template/Section";
 import { ConfigKeys, readSessionValue, writeSessionValue } from "../utils/persistent-configs-handler";
 
-const getDateKey = (obj: IPostEntry) => String(obj?.date?.valueOf()) + "-" + String(obj?.dateEnd?.valueOf());
+const getDateKey = (obj: IPostEntry) => String(obj?.startDate?.valueOf()) + "-" + String(obj?.endDate?.valueOf());
 
 const Spawns = () => {
     const { gamemasterPokemon, errors, fetchCompleted } = usePokemon();
     const {currentLanguage} = useLanguage();
-    const { posts, postsFetchCompleted, postsErrors, season, seasonFetchCompleted, seasonErrors } = useCalendar();
-    const currPosts = useMemo(() => postsFetchCompleted ? posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) < new Date()) : []
+    const { posts, postsFetchCompleted, errorLoadingPosts, season, seasonFetchCompleted, errorLoadingSeason } = useCalendar();
+    const currPosts = useMemo(() => postsFetchCompleted ? posts.filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date() && new Date(p.startDate) < new Date()) : []
     , [postsFetchCompleted, posts]);
-    const [currentBossDate, setCurrentBossDate] = useState(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.flat().some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
+    const [currentBossDate, setCurrentBossDate] = useState(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
     const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? "0");
 
-    const raidEventDates = useMemo(() => [...(currPosts.length > 0 ? [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.dateEnd ?? 0) >= new Date() && new Date(p.date) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.date).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
+    const raidEventDates = useMemo(() => [...(currPosts.length > 0 ? [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...posts.filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date() && new Date(p.startDate) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
     , [currPosts, currentLanguage, posts]);
 
-    const selectedPosts = useMemo(() => currentBossDate === "season" ? [season] : currentBossDate === "current" ? currPosts : posts.flat().filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate)
+    const selectedPosts = useMemo(() => currentBossDate === "season" ? [season] : currentBossDate === "current" ? currPosts : posts.filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate)
     , [currentBossDate, season, currPosts, posts]);
 
     useEffect(() => {
         if (postsFetchCompleted && seasonFetchCompleted && currPosts.length > 0) {
-            setCurrentBossDate(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.flat().some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
+            setCurrentBossDate(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
         }
     }, [currPosts, setCurrentBossDate, postsFetchCompleted, seasonFetchCompleted, posts]);
 
@@ -68,7 +68,7 @@ const Spawns = () => {
         }
     }, []);
 
-    return <LoadingRenderer errors={postsErrors + errors + seasonErrors} completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted && !!season}>
+    return <LoadingRenderer errors={errorLoadingPosts + errors + errorLoadingSeason} completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted && !!season}>
         <div className='boss-header-filters with-margin-top with-margin-bottom'>
             <div className='raid-date-element'>
                 <Select
