@@ -33,7 +33,7 @@ const DeleteTrash = () => {
     const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 110));
     const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 5));
     const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2500));
-    const {raidDPS, raidRankerFetchCompleted, computeRaidRankerforTypes} = useRaidRanker();
+    const {raidDPS, raidDPSFetchCompleted} = useRaidRanker();
     const [isCalculating, setIsCalculating] = useState(false);
     const [isExpanded, setExpanded] = useState(false);
 
@@ -59,7 +59,7 @@ const DeleteTrash = () => {
     }, []);
 
     const isGoodForRaids = useCallback((p: IGamemasterPokemon) => {
-        if (!fetchCompleted || !raidRankerFetchCompleted(enumValues)) {
+        if (!fetchCompleted || !raidDPSFetchCompleted) {
             return true;
         }
 
@@ -81,7 +81,7 @@ const DeleteTrash = () => {
         });
 
         return minRaidRank <= trashRaid;
-    }, [fetchCompleted, trashRaid, raidRankerFetchCompleted, enumValues, gamemasterPokemon, raidDPS]);
+    }, [fetchCompleted, trashRaid, raidDPSFetchCompleted, enumValues, gamemasterPokemon, raidDPS]);
 
     const isBadForEverythingIfItHasHighAttack = useCallback((p: IGamemasterPokemon) => {
         if (!fetchCompleted || !pvpFetchCompleted) {
@@ -409,7 +409,7 @@ const DeleteTrash = () => {
     }, [fetchCompleted, gamemasterPokemon, isBadForEverything, isBadForEverythingIfItHasHighAttack, cp, currentGameLanguage]);
 
     useEffect(() => {
-        if (!isCalculating || !fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(enumValues)) {
+        if (!isCalculating || !fetchCompleted || !movesFetchCompleted || raidDPSFetchCompleted) {
             return;
         }
 
@@ -417,14 +417,10 @@ const DeleteTrash = () => {
             targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
         }
 
-        setTimeout(() => {
-            computeRaidRankerforTypes(gamemasterPokemon, moves, enumValues);
-        }, 100);
-
-    }, [fetchCompleted, currentLanguage, movesFetchCompleted, enumValues, gamemasterPokemon, isCalculating, moves, raidRankerFetchCompleted, computeRaidRankerforTypes]);
+    }, [fetchCompleted, currentLanguage, movesFetchCompleted, enumValues, gamemasterPokemon, isCalculating, moves, raidDPSFetchCompleted]);
 
     useEffect(() => {
-        if (!isCalculating || !raidRankerFetchCompleted(enumValues) || !fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted) {
+        if (!isCalculating || !raidDPSFetchCompleted || !fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted) {
             return;
         }
         
@@ -439,7 +435,7 @@ const DeleteTrash = () => {
             setIsCalculating(false);
         }, 100);
         
-    }, [isCalculating, enumValues, fetchCompleted, pvpFetchCompleted, movesFetchCompleted, computeStr, raidRankerFetchCompleted, targetRef, currentLanguage]);
+    }, [isCalculating, enumValues, fetchCompleted, pvpFetchCompleted, movesFetchCompleted, computeStr, raidDPSFetchCompleted, targetRef, currentLanguage]);
 
     useEffect(() => {
         if (targetRef.current) {

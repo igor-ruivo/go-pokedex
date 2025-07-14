@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
 import PokemonImage from "./PokemonImage";
-import { useEffect, useMemo, useCallback, useRef, ReactNode } from "react";
+import { useMemo, useCallback, useRef, ReactNode } from "react";
 import useResize from "../hooks/useResize";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
 import { usePvp } from "../contexts/pvp-context";
@@ -45,7 +45,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {gamemasterPokemon, fetchCompleted} = usePokemon();
     const {moves, movesFetchCompleted} = useMoves();
-    const {raidRankerFetchCompleted, raidDPS, computeRaidRankerforTypes} = useRaidRanker();
+    const {raidDPSFetchCompleted, raidDPS} = useRaidRanker();
 
     const idToUse = useMemo(() => {
         if (!fetchCompleted) {
@@ -93,16 +93,6 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
             .map(t => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes);
     }, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pkmToUse, idToUse]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            if (!fetchCompleted || !movesFetchCompleted || allRelevantChargedMoveTypes.length === 0 || raidRankerFetchCompleted(allRelevantChargedMoveTypes)) {
-                return;
-            }
-    
-            computeRaidRankerforTypes(gamemasterPokemon, moves, allRelevantChargedMoveTypes);
-        }, 0);
-    }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
-
     const link = useMemo(() => `/pokemon/${idToUse}/info`, [idToUse]);
 
     const raidRank = useCallback(() => {
@@ -110,7 +100,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
             return {minRaidRank: Infinity, actualType: ''};
         }
 
-        if (!fetchCompleted || !raidRankerFetchCompleted(allRelevantChargedMoveTypes)) {
+        if (!fetchCompleted || !raidDPSFetchCompleted) {
             return {minRaidRank: Infinity, actualType: ''};
         }
 
@@ -136,7 +126,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         });
 
         return {minRaidRank: minRaidRank, actualType: actualType};
-    }, [allRelevantChargedMoveTypes, fetchCompleted, gamemasterPokemon, pkmToUse, raidDPS, raidRankerFetchCompleted, idToUse]);
+    }, [allRelevantChargedMoveTypes, fetchCompleted, gamemasterPokemon, pkmToUse, raidDPS, raidDPSFetchCompleted, idToUse]);
 
     const rankForLeague = useCallback((leagueIdx: number) => {
         if (!pvpFetchCompleted || !fetchCompleted) {

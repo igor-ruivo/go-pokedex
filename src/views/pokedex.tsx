@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import PokemonGrid from '../components/PokemonGrid';
 import './pokedex.scss';
 import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -13,7 +13,6 @@ import Dictionary from '../utils/Dictionary';
 import { customCupCPLimit, usePvp } from '../contexts/pvp-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { useRaidRanker } from '../contexts/raid-ranker-context';
-import { useMoves } from '../contexts/moves-context';
 import PokemonHeader from '../components/PokemonHeader';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { translatedType } from '../components/PokemonInfoImagePlaceholder';
@@ -29,9 +28,8 @@ export enum ListType {
 
 const Pokedex = () => {
     const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-    const { moves, movesFetchCompleted } = useMoves();
     const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
-    const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
+    const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
     const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
 
     const {currentLanguage, currentGameLanguage} = useLanguage();
@@ -67,15 +65,6 @@ const Pokedex = () => {
         default:
             throw Error("404 not found!");
     }
-
-    useEffect(() => {
-        const computedTypeCollection = type1Filter ? [type1Filter] : undefined;
-        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(computedTypeCollection) || listTypeArg !== "raid") {
-            return;
-        }
-
-        computeRaidRankerforTypes(gamemasterPokemon, moves, computedTypeCollection);
-    }, [type1Filter, listTypeArg, fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted]);
 
     const pokemonByDex = useMemo(() => {
         if (!fetchCompleted) {
@@ -201,7 +190,7 @@ const Pokedex = () => {
                 break;
             case ListType.RAID:
                 const preProcessedList: IGamemasterPokemon[] = [];
-                if (!raidRankerFetchCompleted(type1Filter ? [type1Filter] : undefined)) {
+                if (!raidDPSFetchCompleted) {
                     processedList = [];
                     break;
                 }
@@ -229,7 +218,7 @@ const Pokedex = () => {
             cpStringOverrides,
             rankOverrides
         };
-    }, [gamemasterPokemon, listType, familyTree, showShadow, raidDPS, raidRankerFetchCompleted, showMega, showXL, cpThreshold, type1Filter, type2Filter, rankLists, inputText, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
+    }, [gamemasterPokemon, listType, familyTree, showShadow, raidDPS, raidDPSFetchCompleted, showMega, showXL, cpThreshold, type1Filter, type2Filter, rankLists, inputText, fetchCompleted, pvpFetchCompleted, currentGameLanguage, pokemonByDex, pokemonByFamilyId]);
 
     return (
         <main className="pokedex-layout">
@@ -277,7 +266,7 @@ const Pokedex = () => {
                 </ul>
             </nav>
             <div className="pokedex" ref={containerRef}>
-                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidRankerFetchCompleted(type1Filter ? [type1Filter] : undefined))}>
+                <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}>
                     <PokemonGrid pokemonInfoList={data.processedList} cpStringOverrides={data.cpStringOverrides} rankOverrides={data.rankOverrides} listType={listType} containerRef={containerRef}/>
                 </LoadingRenderer>
             </div>

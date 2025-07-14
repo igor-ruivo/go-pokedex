@@ -558,7 +558,8 @@ export const computeDPSEntry = (p: IGamemasterPokemon, gamemasterPokemon: Dictio
             dps: dps,
             speciesId: p.speciesId,
             fastMoveDmg: fastMoveDmg,
-            chargedMoveDmg: chargedMoveDmg
+            chargedMoveDmg: chargedMoveDmg,
+            rank: -1
         };
     }
 
@@ -594,7 +595,8 @@ export const computeDPSEntry = (p: IGamemasterPokemon, gamemasterPokemon: Dictio
         dps: higherDPS,
         speciesId: p.speciesId,
         fastMoveDmg: higherFastDmg,
-        chargedMoveDmg: higherChargedDmg
+        chargedMoveDmg: higherChargedDmg,
+        rank: -1
     };
 }
 

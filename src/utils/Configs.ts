@@ -13,6 +13,7 @@ export const pvpokeRankingsHolidayLittleUrl = "https://raw.githubusercontent.com
 export const pvpokeRankingsRemixLittleUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/remix/overall/rankings-1500.json";
 export const pvpokeRankingsFantasyLittleUrl = "https://raw.githubusercontent.com/pvpoke/pvpoke/master/src/data/rankings/fantasy/overall/rankings-1500.json";
 export const movesUrl = "https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/moves.json";
+export const dpsUrl = (type: string) => `https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${type}-raid-dps-rank.json`;
 export const enTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_english.json";
 export const ptbrTranslationsUrl = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Texts/Latest%20APK/JSON/i18n_brazilianportuguese.json";
 export const leekBaseUrl = "https://leekduck.com/";

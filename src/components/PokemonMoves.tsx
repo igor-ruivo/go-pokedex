@@ -7,7 +7,7 @@ import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
 import { LeagueType } from "../hooks/useLeague";
 import { usePvp } from "../contexts/pvp-context";
 import { useMoves } from "../contexts/moves-context";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import ListEntry from "./ListEntry";
 import { Effectiveness, calculateDamage, computeDPSEntry, getAllChargedMoves, getAllFastMoves, translateMoveFromMoveId } from "../utils/pokemon-helper";
 import { PokemonTypes } from "../DTOs/PokemonTypes";
@@ -27,7 +27,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
     const {gamemasterPokemon, fetchCompleted, errors} = usePokemon();
     const {rankLists, pvpFetchCompleted, pvpErrors} = usePvp();
     const {moves, movesFetchCompleted, movesErrors} = useMoves();
-    const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
+    const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
     const [fastMovesCollapsed, setFastMovesCollapsed] = useState(false);
     const [chargedMovesCollapsed, setChargedMovesCollapsed] = useState(false);
     const [raidAttackType, setRaidAttackType] = useState<string>("");
@@ -40,16 +40,8 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
         return [(raidAttackType.substring(0, 1).toLocaleUpperCase() + raidAttackType.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes];
     }, [raidAttackType]);
 
-    useEffect(() => {
-        if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(type)) {
-            return;
-        }
-
-        computeRaidRankerforTypes(gamemasterPokemon, moves, type);
-    }, [fetchCompleted, movesFetchCompleted, type, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, raidAttackType]);
-
-    const isNotReady = useMemo(() => !raidRankerFetchCompleted(type) || !fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon
-    , [fetchCompleted, gamemasterPokemon, movesFetchCompleted, pokemon, pvpFetchCompleted, raidRankerFetchCompleted, type]);
+    const isNotReady = useMemo(() => !raidDPSFetchCompleted || !fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !pokemon
+    , [fetchCompleted, gamemasterPokemon, movesFetchCompleted, pokemon, pvpFetchCompleted, raidDPSFetchCompleted]);
 
     const greatLeagueMoveset = useMemo(() => isNotReady ? [] : rankLists[0][pokemon.speciesId]?.moveset ?? [], [isNotReady, pokemon, rankLists]);
     const ultraLeagueMoveset = useMemo(() => isNotReady ? [] : rankLists[1][pokemon.speciesId]?.moveset ?? [], [isNotReady, pokemon, rankLists]);

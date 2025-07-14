@@ -83,7 +83,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     const {rankLists, pvpFetchCompleted} = usePvp();
     const {moves, movesFetchCompleted} = useMoves();
     const [bestReachableRaidVersion, setBestReachableRaidVersion] = useState<IGamemasterPokemon | undefined>(undefined);
-    const { raidDPS, computeRaidRankerforTypes, raidRankerFetchCompleted } = useRaidRanker();
+    const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 
     const allRelevantChargedMoveTypes = useMemo(() => {
         if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion) {
@@ -96,7 +96,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     }, [fetchCompleted, movesFetchCompleted, bestReachableRaidVersion, moves, gamemasterPokemon]);
 
     const ranksComputation = useMemo(() => {
-        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidRankerFetchCompleted(allRelevantChargedMoveTypes)) {
+        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidDPSFetchCompleted) {
             return {};
         }
 
@@ -120,22 +120,10 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
             });
 
         return ranksDic;
-    }, [fetchCompleted, raidRankerFetchCompleted, movesFetchCompleted, allRelevantChargedMoveTypes, raidDPS, bestReachableRaidVersion, attack, level, moves, gamemasterPokemon, pokemon]);
-    
-    useEffect(() => {
-        setTimeout(() => {
-            const typeArray = allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes;
+    }, [fetchCompleted, raidDPSFetchCompleted, movesFetchCompleted, allRelevantChargedMoveTypes, raidDPS, bestReachableRaidVersion, attack, level, moves, gamemasterPokemon, pokemon]);
 
-            if (!fetchCompleted || !movesFetchCompleted || raidRankerFetchCompleted(typeArray)) {
-                return;
-            }
-    
-            computeRaidRankerforTypes(gamemasterPokemon, moves, typeArray);
-        }, 0);
-    }, [fetchCompleted, movesFetchCompleted, gamemasterPokemon, moves, computeRaidRankerforTypes, raidRankerFetchCompleted, allRelevantChargedMoveTypes]);
-
-    const resourcesNotReady = useMemo(() => !raidRankerFetchCompleted(allRelevantChargedMoveTypes.length === 0 ? undefined : allRelevantChargedMoveTypes) || !bestReachableRaidVersion || !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0
-    , [allRelevantChargedMoveTypes, bestReachableRaidVersion, fetchCompleted, gamemasterPokemon, ivPercents, moves, movesFetchCompleted, pokemon, pvpFetchCompleted, raidRankerFetchCompleted, rankLists]);
+    const resourcesNotReady = useMemo(() => !raidDPSFetchCompleted || !bestReachableRaidVersion || !fetchCompleted || !pokemon || !pvpFetchCompleted || !movesFetchCompleted || !gamemasterPokemon || !moves || Object.keys(moves).length === 0 || rankLists.length === 0 || Object.keys(ivPercents).length === 0
+    , [bestReachableRaidVersion, fetchCompleted, gamemasterPokemon, ivPercents, moves, movesFetchCompleted, pokemon, pvpFetchCompleted, raidDPSFetchCompleted, rankLists]);
 
     const [currentBestReachableGreatLeagueIndex, setCurrentBestReachableGreatLeagueIndex] = useState(0);
     const [currentBestReachableUltraLeagueIndex, setCurrentBestReachableUltraLeagueIndex] = useState(0);
@@ -159,7 +147,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
 
     useEffect(() => {
         setTimeout(() => {
-            if (!fetchCompleted || !movesFetchCompleted || !raidRankerFetchCompleted()) {
+            if (!fetchCompleted || !movesFetchCompleted || !raidDPSFetchCompleted) {
                 return;
             }
             
@@ -179,7 +167,7 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
     
             setBestReachableRaidVersion(sortedPokemon[currentBestReachableRaidLeagueIndex]);
         }, 0);
-    }, [fetchCompleted, allReachableRaidPokemon, movesFetchCompleted, gamemasterPokemon, pokemon, raidDPS, raidRankerFetchCompleted, setBestReachableRaidVersion, currentBestReachableRaidLeagueIndex]);
+    }, [fetchCompleted, allReachableRaidPokemon, movesFetchCompleted, gamemasterPokemon, pokemon, raidDPS, raidDPSFetchCompleted, setBestReachableRaidVersion, currentBestReachableRaidLeagueIndex]);
 
     const mostRelevantType = useMemo(() => Object.entries(ranksComputation)
         .sort(([, rankA], [, rankB]) => {
@@ -189,13 +177,13 @@ const PokemonInfoBanner = ({pokemon, ivPercents, attack, setAttack, defense, set
         .map(([type, rank]) => ({type: type, rank: rank})), [ranksComputation]);
     
     const rank = useMemo(() => {
-        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidRankerFetchCompleted()) {
+        if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidDPSFetchCompleted) {
             return 0;
         }
 
         return Object.entries(raidDPS[""])
             .findIndex(([speciesId]) => speciesId === bestReachableRaidVersion.speciesId) + 1;
-    }, [raidDPS, bestReachableRaidVersion, fetchCompleted, movesFetchCompleted, raidRankerFetchCompleted]);
+    }, [raidDPS, bestReachableRaidVersion, fetchCompleted, movesFetchCompleted, raidDPSFetchCompleted]);
     
     const selfRealDPS = useMemo(() => {
         if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion) {
