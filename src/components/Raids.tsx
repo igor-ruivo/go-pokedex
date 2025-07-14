@@ -216,7 +216,11 @@ const Raids = () => {
                                                     return 1;
                                                 }
 
-                                                return 0;
+                                                if (!getCountdownForBoss(p2.speciesId) && !getCountdownForBoss(p1.speciesId)) {
+                                                    return 0;
+                                                }
+
+                                                return (getCountdownForBoss(p1.speciesId) ?? 0) - (getCountdownForBoss(p2.speciesId) ?? 0);
                                             }).map(e =>
                                                 <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
                                                     <div className={`mini-card-wrapper`}>
