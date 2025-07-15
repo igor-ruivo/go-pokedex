@@ -32,7 +32,7 @@ const Calendar2 = () => {
             <div className="pokemon">
                 <div className="pokemon-content">
                     <LoadingRenderer errors={errors} completed={fetchCompleted}>
-                        <div className="content">
+                        {() => <div className="content">
                             <PokemonHeader
                                 pokemonName={tab.endsWith("/bosses") ? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage) : tab.endsWith("/spawns") ? translator(TranslatorKeys.Spawns, currentLanguage) : tab.endsWith("/eggs") ? translator(TranslatorKeys.Eggs, currentLanguage) : tab.endsWith("/rockets") ? translator(TranslatorKeys.Rockets, currentLanguage) : translator(TranslatorKeys.Events, currentLanguage)}
                                 type1={undefined}
@@ -84,7 +84,7 @@ const Calendar2 = () => {
                                 {tab.endsWith("/rockets") && <Rockets/>}
                                 {tab.endsWith("/eggs") && <Eggs/>}
                             </div>
-                        </div>
+                        </div>}
                     </LoadingRenderer>
                 </div>
             </div>

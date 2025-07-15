@@ -16,6 +16,7 @@ export enum TranslatorKeys {
     Rockets,
     Bonus,
     FeaturedIncenses,
+    FeaturedLures,
     BestRaids1,
     BestRaids15,
     BestRaids2,
@@ -470,6 +471,12 @@ const featuredIncenses = new Map<Language, string>([
     [Language.English, "Incense Encounters"],
     [Language.Portuguese, "Encontros de Incenso"],
     [Language.Bosnian, "Susreti uz Tamjan"]
+]);
+
+const featuredLures = new Map<Language, string>([
+    [Language.English, "Encounters from Lure Modules"],
+    [Language.Portuguese, "Encontros de Módulos Atrair"],
+    [Language.Bosnian, "Susreti iz Mamaca"]
 ]);
 
 const trash = new Map<Language, string>([
@@ -1266,6 +1273,7 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
     [TranslatorKeys.Ranked, ranked],
     [TranslatorKeys.ATK, atk],
     [TranslatorKeys.FeaturedIncenses, featuredIncenses],
+    [TranslatorKeys.FeaturedLures, featuredLures],
     [TranslatorKeys.DEF, def],
     [TranslatorKeys.SearchIVs, searchIVs],
     [TranslatorKeys.MaxLvl, maxLvl],

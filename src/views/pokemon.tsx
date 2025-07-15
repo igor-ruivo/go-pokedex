@@ -74,7 +74,7 @@ const Pokemon = () => {
                 <div className="pokemon-content">
                     <LoadingRenderer errors={errors} completed={fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId)}>
                         {
-                            !pokemon ?
+                            () => !pokemon ?
                                 <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div> :        
                                 <div className="content">
                                     <PokemonHeader

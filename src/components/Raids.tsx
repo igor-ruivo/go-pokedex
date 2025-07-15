@@ -38,9 +38,9 @@ const Raids = () => {
         }
     }
 
-    const reducedLeekPosts = useMemo(() => specialBossesFetchCompleted ? specialBosses.map(mapToPostEntry).filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date()) : []
+    const reducedLeekPosts = useMemo(() => specialBossesFetchCompleted && specialBosses ? specialBosses.map(mapToPostEntry).filter(p => (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date()) : []
     , [specialBossesFetchCompleted, specialBosses]);
-    const reducedRaids = useMemo(() => postsFetchCompleted ? posts.filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date()) : []
+    const reducedRaids = useMemo(() => postsFetchCompleted && posts ? posts.filter(p => p && (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date()) : []
     , [postsFetchCompleted, posts]);
 
     const getDateKey = useCallback((obj: IPostEntry) => {const d = new Date(obj?.startDate ?? 0); return `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`}, []);
@@ -91,8 +91,8 @@ const Raids = () => {
             return [];
         }
 
-        const seenIds = new Set<string>([...(currentBosses).map(e => e.speciesId)]);
-        const response = [...(currentBosses)];
+        const seenIds = new Set<string>([...(currentBosses ?? []).map(e => e.speciesId)]);
+        const response = [...(currentBosses ?? [])];
 
         const now = new Date();
 
@@ -165,13 +165,8 @@ const Raids = () => {
         }
     }, []);
 
-    const getMega = useCallback((speciesId: string) => {
-        const original = gamemasterPokemon[speciesId];
-        return Object.values(gamemasterPokemon).find(p => p.dex === original.dex && !p.aliasId && p.isMega);
-    }, [gamemasterPokemon]);
-
     return <LoadingRenderer errors={errorLoadingCurrentBosses + errorLoadingSpecialBosses + errorLoadingPosts + errors} completed={postsFetchCompleted && currentBossesFetchCompleted && specialBossesFetchCompleted && fetchCompleted}>
-        <div className='boss-header-filters with-margin-top'>
+        {() => <><div className='boss-header-filters with-margin-top'>
             <div className='raid-date-element'>
                 <Select
                     className={`navbar-dropdown-family`}
@@ -224,7 +219,7 @@ const Raids = () => {
                                             }).map(e =>
                                                 <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
                                                     <div className={`mini-card-wrapper`}>
-                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={currentBossDate === "current" ? getCountdownForBoss(e.speciesId) : undefined} />
+                                                        <PokemonMiniature pokemon={gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={currentBossDate === "current" ? getCountdownForBoss(e.speciesId) : undefined} />
                                                     </div>
                                                 </div>
                                             )}
@@ -249,7 +244,7 @@ const Raids = () => {
                                             {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && !getCountdownForBoss(e.speciesId) && gamemasterPokemon[e.speciesId].isShadow).map(e =>
                                                 <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
                                                     <div className={`mini-card-wrapper`}>
-                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
+                                                        <PokemonMiniature pokemon={gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
                                                     </div>
                                                 </div>
                                             )}
@@ -258,7 +253,7 @@ const Raids = () => {
                                             {bossesAvailable.filter(e => eggIdxToKind(egg.value).includes(e.kind ?? "") && egg.value !== "2" && getCountdownForBoss(e.speciesId) && gamemasterPokemon[e.speciesId].isShadow).map(e =>
                                                 <div className="mini-card-wrapper-padding dynamic-size" key={e.speciesId}>
                                                     <div className={`mini-card-wrapper`}>
-                                                        <PokemonMiniature pokemon={e.speciesId.includes("mega") ? getMega(e.speciesId) ?? gamemasterPokemon[e.speciesId] : gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
+                                                        <PokemonMiniature pokemon={gamemasterPokemon[e.speciesId]} cpStringOverride="" withCountdown={getCountdownForBoss(e.speciesId)} />
                                                     </div>
                                                 </div>
                                             )}
@@ -271,6 +266,7 @@ const Raids = () => {
                 </Section>)
             }
         </div>
+</>}
     </LoadingRenderer>;
 }
 

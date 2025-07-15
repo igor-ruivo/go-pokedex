@@ -4,10 +4,11 @@ import "./LoadingRenderer.scss";
 
 interface ILoadingRendererProps {
     errors: string,
-    completed: boolean
+    completed: boolean,
+    children: () => React.ReactNode;
 }
 
-const LoadingRenderer = (props: React.PropsWithChildren<ILoadingRendererProps>) => {
+const LoadingRenderer = (props: ILoadingRendererProps) => {
     const {currentLanguage} = useLanguage();
     
     return (
@@ -16,7 +17,7 @@ const LoadingRenderer = (props: React.PropsWithChildren<ILoadingRendererProps>) 
                 <div>{translator(TranslatorKeys.Loading, currentLanguage)}</div> :
                 props.errors ?
                     <div>{props.errors}</div> :
-                    props.children
+                    props.children()
             }
         </div>
     );

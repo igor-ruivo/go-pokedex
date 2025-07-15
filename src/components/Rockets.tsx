@@ -87,7 +87,7 @@ const Rockets = () => {
     }, [expandedRocket, gamemasterPokemon, currentGameLanguage]);
 
     return <LoadingRenderer errors={errors + errorLoadingCurrentRockets} completed={fetchCompleted && currentRocketsFetchCompleted}>
-        <div className="moves-display-layout-big normal-text">
+        {() => <div className="moves-display-layout-big normal-text">
             <div className="menu-item">
                 <ul className={`calendar-list no-padding`}>
                     {
@@ -120,7 +120,7 @@ const Rockets = () => {
                     }
                 </ul>
             </div>}
-        </div>
+        </div>}
     </LoadingRenderer>;
 }
 

@@ -271,7 +271,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
 
     return (
         <LoadingRenderer errors={errors + movesErrors + pvpErrors} completed={!isNotReady}>
-            {!isNotReady && <div className="banner_layout normal-text">
+            {() => !isNotReady && <div className="banner_layout normal-text">
                 {league === LeagueType.RAID && <><div className="raid-container item with-padding">
                     <div className="overflowing">
                     <div className="img-family">

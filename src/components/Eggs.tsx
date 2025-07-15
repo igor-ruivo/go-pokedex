@@ -61,12 +61,12 @@ const Eggs = () => {
     }, []);
 
     return <LoadingRenderer errors={errorLoadingCurrentEggs + errors} completed={fetchCompleted && currentEggsFetchCompleted}>
-        <Section title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}>
+        {() => <Section title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}>
             <div>
                 <div className="raid-container">
                     <div className="overflowing">
                         <div className="img-family">
-                            {[(currentEggs).filter(e => e.kind === "2"), (currentEggs).filter(e => e.kind === "5"), (currentEggs).filter(e => e.kind === "7"), (currentEggs).filter(e => e.kind === "10"), (currentEggs).filter(e => e.kind === "12")]
+                            {[currentEggs.filter(e => e.kind === "2"), currentEggs.filter(e => e.kind === "5"), currentEggs.filter(e => e.kind === "7"), currentEggs.filter(e => e.kind === "10"), currentEggs.filter(e => e.kind === "12")]
                                 .map((t, i) => (
                                     <div className="clickable" key={i} onClick={() => {setCurrentEgg(String(i)); writeSessionValue(ConfigKeys.ExpandedEgg, String(i))}}>
                                         <strong className={`small-move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} smallish-padding normal-text item ${String(i) === currentEgg ? "small-extra-padding-right" : ""}`}>
@@ -79,25 +79,25 @@ const Eggs = () => {
                     </div>
                 </div>
                 <div className='with-flex contained'>
-                    {(currentEggs).filter(r => Object.values(r.comment?.en ?? {}).length === 0 && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p =>
+                    {currentEggs.filter(r => Object.values(r.comment?.en ?? {}).length === 0 && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p =>
                         <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                             <div className={`mini-card-wrapper`}>
                                 <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                             </div>
                         </div>)}
                 </div>
-                {(currentEggs.length ?? 0) > 0 && currentEggs.some(e => e.comment && e.comment[currentGameLanguage] && Object.values(e.comment[currentGameLanguage]).length > 0 && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
+                {currentEggs.length > 0 && currentEggs.some(e => e.comment && e.comment[currentGameLanguage] && Object.values(e.comment[currentGameLanguage]).length > 0 && e.kind === String(idxToKind(+currentEgg))) && <div className='centered-text with-xl-padding'>
                     <strong>{currentEggs.find(e => e.kind === String(idxToKind(+currentEgg)) && e.comment && e.comment[currentGameLanguage])!.comment![currentGameLanguage]}:</strong>
                 </div>}
                 <div className='with-flex contained'>
-                    {(currentEggs).filter(r => r.comment && r.comment[currentGameLanguage] && Object.values(r.comment[currentGameLanguage]).length > 0 && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
+                    {currentEggs.filter(r => r.comment && r.comment[currentGameLanguage] && Object.values(r.comment[currentGameLanguage]).length > 0 && r.kind === String(idxToKind(+currentEgg))).sort((a, b) => sortEntries(a, b, gamemasterPokemon)).map(p => <div key={p.speciesId + p.kind} className="mini-card-wrapper-padding dynamic-size">
                         <div className={`mini-card-wrapper`}>
                             <PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
                         </div>
                     </div>)}
                 </div>
             </div>
-        </Section>
+        </Section>}
     </LoadingRenderer>;
 }
 

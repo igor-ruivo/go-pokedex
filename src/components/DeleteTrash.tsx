@@ -483,7 +483,7 @@ const DeleteTrash = () => {
             <div className="full-height">
                 <div className="pokemon-content">
                     <LoadingRenderer errors="" completed={pvpFetchCompleted && fetchCompleted}>
-                        <div className="content">
+                        {() => <div className="content">
                             <PokemonHeader
                                 pokemonName={translator(TranslatorKeys.Trash, currentLanguage)}
                                 type1={undefined}
@@ -563,6 +563,7 @@ const DeleteTrash = () => {
                             /></div>
                             </div>
                         </div>
+}
                     </LoadingRenderer>
                 </div>
             </div>

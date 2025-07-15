@@ -267,7 +267,7 @@ const Pokedex = () => {
             </nav>
             <div className="pokedex" ref={containerRef}>
                 <LoadingRenderer errors={errors + pvpErrors} completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}>
-                    <PokemonGrid pokemonInfoList={data.processedList} cpStringOverrides={data.cpStringOverrides} rankOverrides={data.rankOverrides} listType={listType} containerRef={containerRef}/>
+                    {() => <PokemonGrid pokemonInfoList={data.processedList} cpStringOverrides={data.cpStringOverrides} rankOverrides={data.rankOverrides} listType={listType} containerRef={containerRef}/>}
                 </LoadingRenderer>
             </div>
         </main>

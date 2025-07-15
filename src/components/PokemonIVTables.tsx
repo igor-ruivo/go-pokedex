@@ -266,7 +266,7 @@ const PokemonIVTables = ({pokemon, league, attackIV, setAttackIV, defenseIV, set
     }, [columns]);
 
     return (<LoadingRenderer errors={errors} completed={fetchCompleted && !!gamemasterPokemon}>
-        {fetchCompleted && !!gamemasterPokemon && (league !== LeagueType.RAID ?
+        {() => fetchCompleted && !!gamemasterPokemon && (league !== LeagueType.RAID ?
             <div className="banner_layout normal-text">
                 <div className="extra-ivs-options item default-padding">
                     <div className="with-padding">

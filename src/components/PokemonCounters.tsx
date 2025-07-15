@@ -189,7 +189,7 @@ const PokemonCounters = ({pokemon, league}: IPokemonCounters) => {
 
     return (
         <LoadingRenderer errors={pvpErrors + movesErrors + errors} completed={!resourcesNotReady}>
-            {!resourcesNotReady && <div className="banner_layout normal-text">
+            {() => !resourcesNotReady && <div className="banner_layout normal-text">
                 {league === LeagueType.RAID &&
                     <div className="extra-ivs-options item default-padding block-column">
                         <div className="centered">

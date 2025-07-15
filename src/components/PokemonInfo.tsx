@@ -24,7 +24,7 @@ const PokemonInfo = ({pokemon, league, handleSetLeague, loading, ivPercents, att
     
     return (
         <LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
-            <>
+            {() => <>
                 <PokemonInfoBanner
                     pokemon={pokemon}
                     ivPercents={ivPercents}
@@ -38,7 +38,7 @@ const PokemonInfo = ({pokemon, league, handleSetLeague, loading, ivPercents, att
                     handleSetLeague={handleSetLeague}
                     level={level}
                 />
-            </>
+            </>}
         </LoadingRenderer>
     );
 }

@@ -17,20 +17,20 @@ const Spawns = () => {
     const { gamemasterPokemon, errors, fetchCompleted } = usePokemon();
     const {currentLanguage} = useLanguage();
     const { posts, postsFetchCompleted, errorLoadingPosts, season, seasonFetchCompleted, errorLoadingSeason } = useCalendar();
-    const currPosts = useMemo(() => postsFetchCompleted ? posts.filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date() && new Date(p.startDate) < new Date()) : []
+    const currPosts = useMemo(() => postsFetchCompleted && posts ? posts.filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date() && new Date(p.startDate) < new Date()) : []
     , [postsFetchCompleted, posts]);
-    const [currentBossDate, setCurrentBossDate] = useState(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
+    const [currentBossDate, setCurrentBossDate] = useState(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : ((postsFetchCompleted && posts && posts.some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate))) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
     const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? "0");
 
-    const raidEventDates = useMemo(() => [...(currPosts.length > 0 ? [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...posts.filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date() && new Date(p.startDate) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
+    const raidEventDates = useMemo(() => [...(currPosts.length > 0 ? [{ label: translator(TranslatorKeys.Current, currentLanguage), value: "current" }] : []), { label: translator(TranslatorKeys.Season, currentLanguage), value: "season" }, ...(posts ?? []).filter(p => p && (p.wild?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date() && new Date(p.startDate) > new Date()).sort(sortPosts).map(e => ({ label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)), value: getDateKey(e) }) as any)]
     , [currPosts, currentLanguage, posts]);
 
-    const selectedPosts = useMemo(() => currentBossDate === "season" ? [season] : currentBossDate === "current" ? currPosts : posts.filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate)
-    , [currentBossDate, season, currPosts, posts]);
+    const selectedPosts = useMemo(() => currentBossDate === "season" && seasonFetchCompleted && season ? [season] : currentBossDate === "current" ? currPosts : (posts ?? []).filter(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate)
+    , [currentBossDate, season, currPosts, posts, seasonFetchCompleted]);
 
     useEffect(() => {
         if (postsFetchCompleted && seasonFetchCompleted && currPosts.length > 0) {
-            setCurrentBossDate(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : (posts.some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate)) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
+            setCurrentBossDate(readSessionValue(ConfigKeys.ExpandedSpawnDate) === null ? (currPosts.length > 0 ? "current" : "season") : ((posts && postsFetchCompleted && posts.some(p => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === readSessionValue(ConfigKeys.ExpandedSpawnDate))) || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "current" || readSessionValue(ConfigKeys.ExpandedSpawnDate) === "session" ? readSessionValue(ConfigKeys.ExpandedSpawnDate) : (currPosts.length > 0 ? "current" : "season")));
         }
     }, [currPosts, setCurrentBossDate, postsFetchCompleted, seasonFetchCompleted, posts]);
 
@@ -69,7 +69,7 @@ const Spawns = () => {
     }, []);
 
     return <LoadingRenderer errors={errorLoadingPosts + errors + errorLoadingSeason} completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted && !!season}>
-        <div className='boss-header-filters with-margin-top with-margin-bottom'>
+        {() => <><div className='boss-header-filters with-margin-top with-margin-bottom'>
             <div className='raid-date-element'>
                 <Select
                     className={`navbar-dropdown-family`}
@@ -87,7 +87,7 @@ const Spawns = () => {
                     <div className="raid-container">
                         <div className="overflowing">
                             <div className="img-family">
-                                {[(season?.wild ?? []).filter(e => e.kind === "0"), (season?.wild ?? []).filter(e => e.kind === "1"), (season?.wild ?? []).filter(e => e.kind === "2"), (season?.wild ?? []).filter(e => e.kind === "3"), (season?.wild ?? []).filter(e => e.kind === "4"), (season?.wild ?? []).filter(e => e.kind === "5")]
+                                {[season.wild.filter(e => e.kind === "0"), season.wild.filter(e => e.kind === "1"), season.wild.filter(e => e.kind === "2"), season.wild.filter(e => e.kind === "3"), season.wild.filter(e => e.kind === "4"), season.wild.filter(e => e.kind === "5")]
                                     .map((t, i) => (
                                         <div className="clickable" key={i} onClick={() => {setCurrentPlace(String(i)); writeSessionValue(ConfigKeys.ExpandedArea, String(i))}}>
                                             <strong className={`small-move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} smallish-padding normal-text item ${String(i) === currentPlace ? "small-extra-padding-right" : ""}`}>
@@ -114,7 +114,7 @@ const Spawns = () => {
                     }
                 </div>
             </div>
-        </Section>
+        </Section></>}
     </LoadingRenderer>;
 }
 
