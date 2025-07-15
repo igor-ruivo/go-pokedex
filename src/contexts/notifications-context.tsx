@@ -56,7 +56,7 @@ export const NotificationsProvider = (props: React.PropsWithChildren<{}>) => {
         }
     }
 
-    const currentEventIds = useMemo(() => postsFetchCompleted && seasonFetchCompleted && spotlightHoursFetchCompleted ? [...[...posts, season, ...spotlightHours.map(mapToPostEntry)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses.en.length > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.endDate ?? 0) >= new Date())].map(p => p.id) : []
+    const currentEventIds = useMemo(() => postsFetchCompleted && posts && season && seasonFetchCompleted && spotlightHoursFetchCompleted ? [...[...posts, season, ...spotlightHours.map(mapToPostEntry)].filter(p => p && ((p.wild?.length ?? 0) > 0 || (p.raids?.length ?? 0) > 0 || p.bonuses.en.length > 0 || (p.researches?.length ?? 0) > 0) && new Date(p.endDate ?? 0) >= new Date())].map(p => p.id) : []
     , [posts, postsFetchCompleted, season, seasonFetchCompleted, spotlightHours, spotlightHoursFetchCompleted]);
     
     const unseenEvents = useMemo(() => currentEventIds.filter(e => !seenEvents.has(e)).length, [currentEventIds, seenEvents]);
