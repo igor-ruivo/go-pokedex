@@ -1,13 +1,19 @@
 {
-    "extends": "@ti-platform/aide-build-tools/tsconfig.base.json",
-    "compilerOptions": {
-        "sourceMap": true,
-        "baseUrl": "./",
-        "outDir": "dist",
-        "module": "ESNext",
-        "target": "ESNext",
-        "jsx": "react-jsx"
-    },
-    "include": ["src/**/*.ts", "src/**/*.tsx"],
-    "exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["DOM", "DOM.Iterable", "ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "build"]
 }
