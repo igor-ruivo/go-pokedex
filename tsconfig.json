@@ -1,13 +1,13 @@
 {
-  "extends": "@ti-platform/aide-build-tools/tsconfig.base.json",
-  "compilerOptions": {
-      "sourceMap": true,
-      "baseUrl": "./",
-      "outDir": "dist",
-      "module": "ESNext",
-      "target": "ESNext",
-      "jsx": "react-jsx"
-  },
-  "include": ["*.ts", "src/**/*.ts", "*.tsx", "src/**/*.tsx"],
-  "exclude": ["node_modules"]
+    "extends": "@ti-platform/aide-build-tools/tsconfig.base.json",
+    "compilerOptions": {
+        "sourceMap": true,
+        "baseUrl": "./",
+        "outDir": "dist",
+        "module": "ESNext",
+        "target": "ESNext",
+        "jsx": "react-jsx"
+    },
+    "include": ["*.ts", "src/**/*.ts", "*.tsx", "*.scss", "src/**/*.tsx", "src/**/*.scss"],
+    "exclude": ["node_modules"]
 }
