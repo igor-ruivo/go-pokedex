@@ -8,6 +8,6 @@
         "target": "ESNext",
         "jsx": "react-jsx"
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.scss"],
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
     "exclude": ["node_modules"]
 }

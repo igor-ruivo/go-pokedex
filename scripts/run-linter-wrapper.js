@@ -8,7 +8,7 @@ const eslintArgs = [
 	"eslint",
 	"--fix",
 	"--ext",
-	".ts,.tsx,.scss",
+	".ts,.tsx",
 	"./src",
 	"./.eslintrc.cjs",
 	"./package.json",

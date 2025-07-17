@@ -1,7 +1,7 @@
 import './App.scss';
 
-const etc = async () => {
-    console.log('ye');
+const abra = async () => {
+    return {} as any;
 };
 
 const App = () => {

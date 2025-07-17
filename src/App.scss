@@ -1,0 +1,18 @@
+.bad-class {
+  color: red
+  background: blue;
+  .nested {
+    font-size: 16px
+    .deep-nest {
+      padding: 10px;
+    }
+  }
+}
+
+$unused-var: #fff;
+
+.bad-order {
+  padding: 10px;
+  margin: 0;
+  display: flex;
+}
