@@ -4,9 +4,6 @@ const { spawnSync } = require("child_process");
 const prettierArgs = [
 	"prettier",
 	"--write",
-	"./*.ts",
-	"./*.tsx",
-	"./*.scss",
 	"./src/**/*.ts",
 	"./src/**/*.tsx",
 	"./src/**/*.scss",
