@@ -14,23 +14,6 @@ module.exports = {
                 'react/react-in-jsx-scope': 'off',
             },
         },
-        {
-            files: ['*.cjs'],
-            parser: require.resolve('espree'),
-            parserOptions: {
-                ecmaVersion: 2020,
-                sourceType: 'script',
-            },
-            env: {
-                node: true,
-                commonjs: true,
-            },
-        },
-        {
-            files: ['*.json'],
-            extends: ['plugin:json/recommended'],
-            plugins: ['json'],
-        },
     ],
     settings: {
         react: {
