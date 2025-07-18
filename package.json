@@ -1,39 +1,39 @@
 {
-		"name": "go-pokedex",
-		"version": "1.0.0",
-		"type": "module",
-		"homepage": "https://go-pokedex.com",
-		"private": true,
-		"scripts": {
-				"dev": "vite",
-				"build": "vite build",
-				"preview": "vite preview",
-				"format": "prettier --write 'src/**/*.{ts,tsx,js,json,css,md,scss}'",
-				"deploy": "gh-pages -d build",
-				"lint": " pnpm run format && eslint src/**/*.{ts,tsx} --fix && pnpm run lint:scss && pnpm tsc --noEmit",
-				"lint:scss": "stylelint \"src/**/*.{scss,css}\" --fix"
-		},
-		"dependencies": {
-				"react": "^19.1.0",
-				"react-dom": "^19.1.0"
-		},
-		"devDependencies": {
-				"@types/react": "^19.1.8",
-				"@types/react-dom": "^19.1.6",
-				"@typescript-eslint/eslint-plugin": "^8.37.0",
-				"@typescript-eslint/parser": "^8.37.0",
-				"eslint": "^8.57.1",
-				"eslint-config-prettier": "^10.1.5",
-				"eslint-plugin-import": "^2.32.0",
-				"eslint-plugin-jsx-a11y": "^6.10.2",
-				"eslint-plugin-promise": "^7.2.1",
-				"eslint-plugin-react": "^7.37.5",
-				"eslint-plugin-react-hooks": "^5.2.0",
-				"eslint-plugin-unused-imports": "^4.1.1",
-				"prettier": "^3.6.2",
-				"stylelint": "^16.21.1",
-				"stylelint-config-standard-scss": "^15.0.1",
-				"typescript": "^5.8.3",
-				"vite": "^7.0.5"
-		}
+	"name": "go-pokedex",
+	"version": "1.0.0",
+	"type": "module",
+	"homepage": "https://go-pokedex.com",
+	"private": true,
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"format": "prettier --write 'src/**/*.{ts,tsx,js,json,css,md,scss}' *.json *.md *.cjs .prettierrc",
+		"deploy": "gh-pages -d build",
+		"lint": " pnpm run format && eslint src/**/*.{ts,tsx} --fix && pnpm run lint:scss && pnpm tsc --noEmit",
+		"lint:scss": "stylelint src/**/*.{scss,css} --fix"
+	},
+	"dependencies": {
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0"
+	},
+	"devDependencies": {
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"@typescript-eslint/eslint-plugin": "^8.37.0",
+		"@typescript-eslint/parser": "^8.37.0",
+		"eslint": "^8.57.1",
+		"eslint-config-prettier": "^10.1.5",
+		"eslint-plugin-import": "^2.32.0",
+		"eslint-plugin-jsx-a11y": "^6.10.2",
+		"eslint-plugin-promise": "^7.2.1",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^5.2.0",
+		"eslint-plugin-unused-imports": "^4.1.1",
+		"prettier": "^3.6.2",
+		"stylelint": "^16.21.1",
+		"stylelint-config-standard-scss": "^15.0.1",
+		"typescript": "^5.8.3",
+		"vite": "^7.0.5"
+	}
 }

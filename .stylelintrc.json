@@ -1,9 +1,7 @@
 {
-  "extends": [
-    "stylelint-config-standard-scss"
-  ],
-  "rules": {
-    "indentation": "tab",
-    "no-descending-specificity": null
-  }
-} 
+	"extends": ["stylelint-config-standard-scss"],
+	"rules": {
+		"indentation": "tab",
+		"no-descending-specificity": null
+	}
+}
