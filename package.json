@@ -30,7 +30,7 @@
 		"eslint-plugin-promise": "^7.2.1",
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^5.2.0",
-		"eslint-plugin-unused-imports": "^4.1.1",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"prettier": "^3.6.2",
 		"sass-embedded": "^1.89.2",
 		"stylelint": "^16.21.1",
