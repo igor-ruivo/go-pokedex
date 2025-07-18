@@ -10,7 +10,7 @@
 				"preview": "vite preview",
 				"format": "prettier --write 'src/**/*.{ts,tsx,js,json,css,md,scss}'",
 				"deploy": "gh-pages -d build",
-				"lint": "eslint src/**/*.{ts,tsx} --fix && pnpm run format && pnpm run lint:scss && pnpm tsc --noEmit",
+				"lint": " pnpm run format && eslint src/**/*.{ts,tsx} --fix && pnpm run lint:scss && pnpm tsc --noEmit",
 				"lint:scss": "stylelint \"src/**/*.{scss,css}\" --fix"
 		},
 		"dependencies": {
@@ -32,9 +32,7 @@
 				"eslint-plugin-unused-imports": "^4.1.1",
 				"prettier": "^3.6.2",
 				"stylelint": "^16.21.1",
-				"stylelint-config-prettier": "^9.0.5",
 				"stylelint-config-standard-scss": "^15.0.1",
-				"stylelint-scss": "^6.12.1",
 				"typescript": "^5.8.3",
 				"vite": "^7.0.5"
 		}

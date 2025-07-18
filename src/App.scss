@@ -1,20 +1,42 @@
 .bad-class {
-  color: red;
-  background: blue;
+	color: red;
+	background: blue;
 
-  .nested {
-    font-size: 16px;
+	.nested {
+		font-size: 16px;
 
-    .deep-nest {
-      padding: 10px;
-    }
-  }
+		.deep-nest {
+			padding: 10px;
+		}
+	}
 }
 
 $unused-var: #fff;
 
 .bad-order {
-  padding: 10px;
-  margin: 0;
-  display: flex;
+	padding: 10px;
+	margin: 0;
+	display: flex;
+}
+
+// Intentionally bad SCSS for lint/fix test
+.test-lint {
+	color: red;
+	background: blue;
+
+	.nested {
+		font-size: 16px;
+
+		.deep-nest {
+			padding: 10px;
+		}
+	}
+}
+
+$badVar: #123456;
+
+.bad-order2 {
+	margin: 0;
+	padding: 10px;
+	display: flex;
 }
