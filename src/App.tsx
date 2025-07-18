@@ -1,5 +1,7 @@
+import PokedexSpotlight from './components/PokedexSpotlight';
+
 const App = () => {
-	return <>Hello World!</>;
+	return <PokedexSpotlight />;
 };
 
 export default App;

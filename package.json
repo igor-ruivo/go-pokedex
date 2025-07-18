@@ -10,7 +10,7 @@
 		"preview": "vite preview",
 		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs .prettierrc",
 		"deploy": "gh-pages -d build",
-		"lint": "pnpm run format && npx eslint src/**/*.{ts,tsx} --fix && pnpm run lint:scss && pnpm tsc --noEmit",
+		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run lint:scss && pnpm run format && pnpm tsc --noEmit",
 		"lint:scss": "npx stylelint src/**/*.{scss,css} --fix"
 	},
 	"dependencies": {
@@ -18,11 +18,12 @@
 		"react-dom": "^19.1.0"
 	},
 	"devDependencies": {
+		"@ti-platform/aide-build-tools": "^4.1.0",
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
 		"@typescript-eslint/eslint-plugin": "^8.37.0",
 		"@typescript-eslint/parser": "^8.37.0",
-		"eslint": "^8.57.1",
+		"eslint": "^9.31.0",
 		"eslint-config-prettier": "^10.1.5",
 		"eslint-import-resolver-typescript": "^4.4.4",
 		"eslint-plugin-import": "^2.32.0",
@@ -36,6 +37,7 @@
 		"stylelint": "^16.21.1",
 		"stylelint-config-standard-scss": "^15.0.1",
 		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.37.0",
 		"vite": "^7.0.5"
 	}
 }
