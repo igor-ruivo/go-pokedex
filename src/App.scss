@@ -1,8 +1,10 @@
 .bad-class {
-  color: red
+  color: red;
   background: blue;
+
   .nested {
-    font-size: 16px
+    font-size: 16px;
+
     .deep-nest {
       padding: 10px;
     }
