@@ -8,10 +8,10 @@
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
-		"format": "prettier --write 'src/**/*.{ts,tsx,js,json,css,md,scss}' *.json *.md *.cjs .prettierrc",
+		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs .prettierrc",
 		"deploy": "gh-pages -d build",
 		"lint": "pnpm run format && npx eslint src/**/*.{ts,tsx} --fix && pnpm run lint:scss && pnpm tsc --noEmit",
-		"lint:scss": "stylelint src/**/*.{scss,css} --fix"
+		"lint:scss": "npx stylelint src/**/*.{scss,css} --fix"
 	},
 	"dependencies": {
 		"react": "^19.1.0",
