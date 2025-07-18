@@ -15,56 +15,56 @@ const baseDir = __dirname;
 
 const configs = generateEslintConfigs({
 	baseDir,
-	enable: ['html', 'cjs', 'json', 'ts'],
+	enable: ['html', 'cjs', 'json'],
 });
 
-const baseTsConfigs = configureWithPossibleExtension(
+const tsConfigs = configureWithPossibleExtension(
 	getTsConfigs(getJsConfigs(), baseDir),
 	(configs) => {
 		return {
 			...configs,
 			plugins: {
 				...configs.plugins,
-				'promise': promisePlugin,
-				'jsx-a11y': jsxA11y,
+				promise: promisePlugin,
 			},
 			rules: {
 				...configs.rules,
 				...promisePlugin.configs.recommended.rules,
-				...jsxA11y.configs.recommended.rules,
 			},
 		};
 	}
 );
 
-if (baseTsConfigs) {
-	const tsxConfigWithExtends = {
-		...baseTsConfigs,
+if (tsConfigs) {
+	const tsxConfigs = {
+		...tsConfigs,
 		name: 'react-tsx additional ruleset',
 		files: ['**/*.tsx'],
 		languageOptions: {
-			...baseTsConfigs.languageOptions,
+			...tsConfigs.languageOptions,
 			parserOptions: {
-				...baseTsConfigs.languageOptions?.parserOptions,
+				...tsConfigs.languageOptions?.parserOptions,
 				ecmaFeatures: {
-					...baseTsConfigs.languageOptions?.parserOptions?.ecmaFeatures,
+					...tsConfigs.languageOptions?.parserOptions?.ecmaFeatures,
 					jsx: true,
 				},
 			},
 		},
 		plugins: {
-			...baseTsConfigs.plugins,
+			...tsConfigs.plugins,
+			'jsx-a11y': jsxA11y,
 			'react': reactPlugin,
 			'react-hooks': hooksPlugin,
 		},
 		rules: {
-			...baseTsConfigs.rules,
+			...tsConfigs.rules,
+			...jsxA11y.configs.recommended.rules,
 			...reactPlugin.configs.recommended.rules,
 			...hooksPlugin.configs.recommended.rules,
 			'react/react-in-jsx-scope': 'off',
 		},
 		settings: {
-			...baseTsConfigs.settings,
+			...tsConfigs.settings,
 			'react': { version: 'detect' },
 			'import/resolver': {
 				typescript: {},
@@ -72,7 +72,9 @@ if (baseTsConfigs) {
 		},
 	};
 
-	configs.push(...config(tsxConfigWithExtends));
+	const allConfigs = [...config(tsConfigs), ...config(tsxConfigs)];
+
+	configs.push(...allConfigs);
 }
 
 module.exports = configs;
