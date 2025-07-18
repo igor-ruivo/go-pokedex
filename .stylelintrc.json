@@ -1,9 +1,14 @@
 {
   "extends": [
-    "stylelint-config-standard-scss"
+    "stylelint-config-standard-scss",
+    "stylelint-config-prettier"
   ],
   "plugins": [
     "stylelint-scss"
   ],
-  "rules": {}
+  "rules": {
+    "scss/at-import-partial-extension": "never",
+    "scss/at-import-no-partial-leading-underscore": true,
+    "no-descending-specificity": null
+  }
 } 

@@ -29,7 +29,7 @@ module.exports = {
     'plugin:jsx-a11y/recommended',
     'plugin:import/recommended',
     'plugin:promise/recommended',
-    'prettier', // disables conflicting rules, but does not run Prettier as a rule
+    'prettier', // Using prettier from the CLI instead
   ],
   rules: {
     'react/react-in-jsx-scope': 'off',
