@@ -8,9 +8,9 @@
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
-		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs .prettierrc",
+		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs",
 		"deploy": "gh-pages -d build",
-		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run lint:scss && pnpm run format && pnpm tsc --noEmit",
+		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run lint:scss && pnpm run format && pnpm tsc --noEmit",
 		"lint:scss": "npx stylelint src/**/*.{scss,css} --fix"
 	},
 	"dependencies": {
@@ -19,6 +19,7 @@
 	},
 	"devDependencies": {
 		"@ti-platform/aide-build-tools": "^4.1.0",
+		"@tsconfig/recommended": "^1.0.10",
 		"@types/react": "^19.1.8",
 		"@types/react-dom": "^19.1.6",
 		"@typescript-eslint/parser": "^8.37.0",
