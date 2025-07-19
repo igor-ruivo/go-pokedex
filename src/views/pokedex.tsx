@@ -432,8 +432,8 @@ const Pokedex = () => {
 							<div className='img-padding-s'>
 								<img
 									className='raid-img-with-contrast'
-									height='18'
-									width='18'
+									height='20'
+									width='20'
 									src={`/images/tx_raid_coin.png`}
 									alt='Raids'
 								/>

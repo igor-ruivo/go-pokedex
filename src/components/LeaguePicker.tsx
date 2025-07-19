@@ -137,7 +137,7 @@ const LeaguePicker = ({ league, handleSetLeague }: ILeaguePickerProps) => {
 						}
 						aria-pressed={league === LeagueType.RAID}
 					>
-						<div className='img-padding raid-img-with-contrast'>
+						<div className='img-padding-s raid-img-with-contrast'>
 							<img
 								height='20'
 								width='20'

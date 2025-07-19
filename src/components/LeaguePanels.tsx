@@ -193,11 +193,7 @@ const LeaguePanels = ({
 										aria-pressed={toggled}
 										aria-label={toggled ? 'Show CP' : 'Show Resources'}
 										style={{
-											width: '100%',
-											background: 'none',
-											border: 'none',
-											padding: 0,
-											textAlign: 'inherit',
+											border: 0,
 										}}
 									>
 										<div className='pvp-entry-content potential'>

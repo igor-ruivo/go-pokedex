@@ -297,7 +297,11 @@ const Events = () => {
 													<img
 														className='miniature-itself'
 														alt='Miniature'
-														src={p.imageUrl}
+														src={
+															p.isSpotlight
+																? '/images/misc/pokemonspotlighthour.jpg'
+																: p.imageUrl
+														}
 													/>
 													{p.isSpotlight && (
 														<PokemonImage
@@ -327,7 +331,11 @@ const Events = () => {
 										alt='Event'
 										width='100%'
 										height='100%'
-										src={relevantPosts[selectedNews].imageUrl}
+										src={
+											relevantPosts[selectedNews].isSpotlight
+												? '/images/misc/pokemonspotlighthour.jpg'
+												: relevantPosts[selectedNews].imageUrl
+										}
 									/>
 									{relevantPosts[selectedNews].isSpotlight && (
 										<PokemonImage

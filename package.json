@@ -10,7 +10,7 @@
 		"preview": "vite preview",
 		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs",
 		"deploy": "pnpm run build && gh-pages -d dist",
-		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run lint:scss && pnpm run format && pnpm tsc --noEmit",
+		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run format && pnpm tsc --noEmit",
 		"lint:scss": "npx stylelint src/**/*.{scss,css} --fix"
 	},
 	"dependencies": {
