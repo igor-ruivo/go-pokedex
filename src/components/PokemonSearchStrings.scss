@@ -1,32 +1,32 @@
 .extra-ivs-options {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .ivs-nav {
-    background-color: unset;
+	background-color: unset;
 }
 
 .search-strings-container {
-    background: var(--popup-background-color);
-    color-scheme: var(--colorScheme);
-    display: flex;
-    margin-left: auto;
-    margin-right: auto;
-    width: 75%;
-    min-height: 70px;
-    resize: none;
-    margin-top: 9px;
+	background: var(--popup-background-color);
+	color-scheme: var(--colorScheme);
+	display: flex;
+	margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+	min-height: 70px;
+	resize: none;
+	margin-top: 9px;
 }
 
 .textarea-label {
-    text-align: center;
+	text-align: center;
 }
 
-@media (max-width: 500px) {
-    .search-strings-container {
-        font-size: 16px !important;
-        width: 100%;
-    }
+@media (width <= 500px) {
+	.search-strings-container {
+		font-size: 16px !important;
+		width: 100%;
+	}
 }

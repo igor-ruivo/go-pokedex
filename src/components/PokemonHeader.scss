@@ -1,60 +1,68 @@
 .pokemonheader-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 9px;
-    padding: 18px;
-    //margin-top: calc(-1 * 5px);
-    margin-left: calc(-1 * 5px);
-    margin-right: calc(-1 * 5px);
-    border-radius: 4px 4px 0 0;
-    //border-bottom: 1px solid var(--borderColor2);
-    text-shadow: 0 0 10px rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.5);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 9px;
+	padding: 18px;
+
+	// margin-top: calc(-1 * 5px);
+	margin-left: calc(-1 * 5px);
+	margin-right: calc(-1 * 5px);
+	border-radius: 4px 4px 0 0;
+
+	// border-bottom: 1px solid var(--borderColor2);
+	text-shadow:
+		0 0 10px rgb(0 0 0 / 50%),
+		0 2px 3px rgb(0 0 0 / 50%);
+}
+
+.banner-color {
+	background: var(--header-main-color) !important;
 }
 
 .no-shadow {
-    text-shadow: none;
+	text-shadow: none;
 }
 
 .pokemonheader-name {
-    color: var(--titleTextColor);
-    margin: 0;
-    padding: 0;
-    font-size: clamp(28.2px, 5vw, 36px);
+	color: var(--titleTextColor);
+	margin: 0;
+	padding: 0;
+	font-size: clamp(28.2px, 5vw, 36px);
 }
 
 .baseheader-name {
-    color: var(--textColor);
-    margin: 0;
-    padding: 0;
-    font-size: clamp(28.2px, 5vw, 36px);
-    text-shadow: none;
+	color: var(--textColor);
+	margin: 0;
+	padding: 0;
+	font-size: clamp(28.2px, 5vw, 36px);
+	text-shadow: none;
 }
 
 .constrained {
-    max-width: 1600px;
-    margin-right: auto;
-    margin-left: auto;
-    width: 100%;
-    border-right: 1px solid var(--borderColor2);
-    border-left: 1px solid var(--borderColor2);
+	max-width: 1600px;
+	margin-right: auto;
+	margin-left: auto;
+	width: 100%;
+	border-right: 1px solid var(--borderColor2);
+	border-left: 1px solid var(--borderColor2);
 }
 
-@media (max-width: 500px) {
-    .pokemonheader-name {
-        font-size: clamp(18.9px, 5vw, 32px);
-    }
+@media (width <= 500px) {
+	.pokemonheader-name {
+		font-size: clamp(18.9px, 5vw, 32px);
+	}
 
-    .baseheader-name {
-        font-size: clamp(18.9px, 5vw, 32px);
-    }
+	.baseheader-name {
+		font-size: clamp(18.9px, 5vw, 32px);
+	}
 
-    .pokemonheader-header {
-        border-radius: 0;
-        padding: 16px;
-    }
+	.pokemonheader-header {
+		border-radius: 0;
+		padding: 16px;
+	}
 
-    .sub-title > .pokemonheader-header {
-        border-radius: 4px 4px 0 0 !important;
-    }
+	.sub-title > .pokemonheader-header {
+		border-radius: 4px 4px 0 0 !important;
+	}
 }

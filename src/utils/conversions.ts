@@ -1,4 +1,3 @@
-import Dictionary from "./Dictionary";
 /*
 const removeFormsFromPokemonName = (rawName: string) => {
     rawName = rawName.toLowerCase();
@@ -45,19 +44,19 @@ const binarySearchPokemonByName = (arr: IGamemasterPokemon[], value: string) => 
 }*/
 
 export const ordinal = (number: number) => {
-    if (!number) {
-        return undefined;
-    }
+	if (!number) {
+		return undefined;
+	}
 
-    const english_ordinal_rules = new Intl.PluralRules("en", {type: "ordinal"});
-    const suffixes: Dictionary<string> = {
-        one: "st",
-        two: "nd",
-        few: "rd",
-        other: "th"
-    };
-    
-    const category = english_ordinal_rules.select(number);
-    const suffix = suffixes[category];
-    return number + suffix;
-}
+	const english_ordinal_rules = new Intl.PluralRules('en', { type: 'ordinal' });
+	const suffixes: Record<string, string> = {
+		one: 'st',
+		two: 'nd',
+		few: 'rd',
+		other: 'th',
+	};
+
+	const category = english_ordinal_rules.select(number);
+	const suffix = suffixes[category];
+	return number + suffix;
+};

@@ -1,49 +1,71 @@
 import { createContext, useContext, useEffect } from 'react';
-import { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { FetchData, useFetchUrls } from '../hooks/useFetchUrls';
+
+import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import type { FetchData } from '../hooks/useFetchUrls';
+import { useFetchUrls } from '../hooks/useFetchUrls';
 import { gamemasterPokemonUrl } from '../utils/Configs';
-import Dictionary from '../utils/Dictionary';
 
 interface PokemonContextType {
-    gamemasterPokemon: Dictionary<IGamemasterPokemon>;
-    fetchCompleted: boolean;
-    errors: string
+	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+	fetchCompleted: boolean;
+	errors: string;
 }
 
 const PokemonContext = createContext<PokemonContextType | undefined>(undefined);
 
-const useFetchAllData: () => [Dictionary<IGamemasterPokemon>, boolean, string] = () => {
-    const [gamemasterPokemon, fetchGamemasterPokemon, gememasterPokemonFetchCompleted, errorLoadingGamemasterData]: FetchData<Dictionary<IGamemasterPokemon>> = useFetchUrls();
+const useFetchAllData: () => [
+	Record<string, IGamemasterPokemon>,
+	boolean,
+	string,
+] = () => {
+	const [
+		gamemasterPokemon,
+		fetchGamemasterPokemon,
+		gememasterPokemonFetchCompleted,
+		errorLoadingGamemasterData,
+	]: FetchData<Record<string, IGamemasterPokemon>> = useFetchUrls();
 
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchGamemasterPokemon([gamemasterPokemonUrl], 0, {signal: controller.signal});
-        return () => {
-            controller.abort("Request canceled by cleanup.");
-        }
-    }, [fetchGamemasterPokemon]);
+	useEffect(() => {
+		const controller = new AbortController();
+		void fetchGamemasterPokemon([gamemasterPokemonUrl], 0, {
+			signal: controller.signal,
+		});
+		return () => {
+			controller.abort('Request canceled by cleanup.');
+		};
+	}, [fetchGamemasterPokemon]);
 
-    return [gamemasterPokemon[0], gememasterPokemonFetchCompleted, errorLoadingGamemasterData];
-}
-
-export const usePokemon = (): PokemonContextType => {
-    const context = useContext(PokemonContext);
-    if (!context) {
-        throw new Error("usePokemon must be used within a PokemonProvider");
-    }
-    return context;
+	return [
+		gamemasterPokemon[0],
+		gememasterPokemonFetchCompleted,
+		errorLoadingGamemasterData,
+	];
 };
 
-export const PokemonProvider = (props: React.PropsWithChildren<{}>) => {
-    const [gamemasterPokemon, fetchCompleted, errors]: [Dictionary<IGamemasterPokemon>, boolean, string] = useFetchAllData();
+export const usePokemon = (): PokemonContextType => {
+	const context = useContext(PokemonContext);
+	if (!context) {
+		throw new Error('usePokemon must be used within a PokemonProvider');
+	}
+	return context;
+};
 
-    return (
-        <PokemonContext.Provider value={{
-            gamemasterPokemon: gamemasterPokemon,
-            fetchCompleted,
-            errors }}
-        >
-            {props.children}
-        </PokemonContext.Provider>
-    );
-}
+export const PokemonProvider = (props: React.PropsWithChildren<object>) => {
+	const [gamemasterPokemon, fetchCompleted, errors]: [
+		Record<string, IGamemasterPokemon>,
+		boolean,
+		string,
+	] = useFetchAllData();
+
+	return (
+		<PokemonContext.Provider
+			value={{
+				gamemasterPokemon: gamemasterPokemon,
+				fetchCompleted,
+				errors,
+			}}
+		>
+			{props.children}
+		</PokemonContext.Provider>
+	);
+};

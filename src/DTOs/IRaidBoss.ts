@@ -1,4 +1,4 @@
 export interface IRaidBoss {
-    speciesId: string;
-    shiny: boolean;
+	speciesId: string;
+	shiny: boolean;
 }

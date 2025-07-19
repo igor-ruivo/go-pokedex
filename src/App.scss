@@ -1,75 +1,79 @@
 * {
-    box-sizing: border-box;
-    overscroll-behavior: none !important;
-    -webkit-text-size-adjust: 100%;
-    text-decoration: none !important;
+	box-sizing: border-box;
+	overscroll-behavior: none !important;
+	text-size-adjust: 100%;
+	text-decoration: none !important;
 
-   // @media (min-width: 500px) {
-        scrollbar-color: var(--scroll-background);
-        scrollbar-width: 6px;
+	// @media (min-width: 500px) {
+	scrollbar-color: var(--scroll-background);
+	scrollbar-width: 6px;
 
-        &::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-            background-color: var(--headerBackground);
-            border: 1px solid var(--borderColor2);
-            border-radius: 12px;
-        }
-        &::-webkit-scrollbar-thumb {
-            background-color: var(--scroll-background);
-            border-radius: 4px;
-        }
-        &::-webkit-scrollbar-button {
-            display: none;
-        }
-        &::-webkit-scrollbar-corner {
-            background-color: rgba(0, 0, 0, 0);
-        }
-    //}
+	&::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+		background-color: var(--headerBackground);
+		border: 1px solid var(--borderColor2);
+		border-radius: 12px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: var(--scroll-background);
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-button {
+		display: none;
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: rgb(0 0 0 / 0%);
+	}
+
+	// }
 }
 
 *.normal-text-descendants-all {
-    * {
-        font-size: 16px !important;
-    }
+	* {
+		font-size: 16px !important;
+	}
 }
 
 *.normal-text-all {
-    font-size: 14px !important;
+	font-size: 14px !important;
 }
 
-@media(max-width: 500px) {
-    *.normal-text {
-        font-size: 12px !important;
-    }
+@media (width <= 500px) {
+	*.normal-text {
+		font-size: 12px !important;
+	}
 
-    *.normal-text-descendants {
-        * {
-            font-size: 12px !important;
-        }
-    }
+	*.normal-text-descendants {
+		* {
+			font-size: 12px !important;
+		}
+	}
 
-    *.normal-text-descendants-all {
-        * {
-            font-size: 16px !important;
-        }
-    }
+	*.normal-text-descendants-all {
+		* {
+			font-size: 16px !important;
+		}
+	}
 
-    *.normal-text-all {
-        font-size: 12px !important;
-    }
+	*.normal-text-all {
+		font-size: 12px !important;
+	}
 
-    *.important-text {
-        font-size: 14px !important;
-    }
+	*.important-text {
+		font-size: 14px !important;
+	}
 }
 
 a {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: rgb(0 0 0 / 0%);
 }
 
 .main-wrapper {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 }

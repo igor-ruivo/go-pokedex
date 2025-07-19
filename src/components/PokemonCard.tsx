@@ -1,90 +1,123 @@
-import { Link } from "react-router-dom";
-import { IGamemasterPokemon } from "../DTOs/IGamemasterPokemon";
-import "./PokemonCard.scss"
-import PokemonImage from "./PokemonImage";
-import PokemonNumber from "./PokemonNumber";
-import PokemonTypes from "./PokemonTypes";
-import { ListType } from "../views/pokedex";
-import { calculateCP, needsXLCandy } from "../utils/pokemon-helper";
-import { useLanguage } from "../contexts/language-context";
-import gameTranslator, { GameTranslatorKeys } from "../utils/GameTranslator";
-import { customCupCPLimit, usePvp } from "../contexts/pvp-context";
-import useCountdown from "../hooks/useCountdown";
-import { useCallback } from "react";
+import './PokemonCard.scss';
+
+import { useCallback } from 'react';
+import { Link } from 'react-router-dom';
+
+import { useLanguage } from '../contexts/language-context';
+import { customCupCPLimit, usePvp } from '../contexts/pvp-context';
+import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import useCountdown from '../hooks/useCountdown';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
+import { calculateCP, needsXLCandy } from '../utils/pokemon-helper';
+import { ListType } from '../views/pokedex';
+import PokemonImage from './PokemonImage';
+import PokemonNumber from './PokemonNumber';
+import PokemonTypes from './PokemonTypes';
 
 interface IPokemonCardProps {
-    pokemon: IGamemasterPokemon,
-    listType: ListType,
-    cpStringOverride?: string;
-    rankOverride?: number;
-    shinyBadge?: boolean;
-    withCountdown?: number;
+	pokemon: IGamemasterPokemon;
+	listType: ListType;
+	cpStringOverride?: string;
+	rankOverride?: number;
+	shinyBadge?: boolean;
+	withCountdown?: number;
 }
 
-const PokemonCard = ({pokemon, listType, cpStringOverride, rankOverride, shinyBadge, withCountdown}: IPokemonCardProps) => {
-    const {days, hours, minutes, seconds} = useCountdown(withCountdown ?? 0);
-    const {currentGameLanguage} = useLanguage();
-    const {rankLists} = usePvp();
+const PokemonCard = ({
+	pokemon,
+	listType,
+	cpStringOverride,
+	rankOverride,
+	shinyBadge,
+	withCountdown,
+}: IPokemonCardProps) => {
+	const { days, hours, minutes, seconds } = useCountdown(withCountdown ?? 0);
+	const { currentGameLanguage } = useLanguage();
+	const { rankLists } = usePvp();
 
-    const link = `/pokemon/${pokemon.speciesId}/info`;
+	const link = `/pokemon/${pokemon.speciesId}/info`;
 
-    let cpThreshold = 0;
-    switch (listType) {
-        case ListType.GREAT_LEAGUE:
-            cpThreshold = 1500;
-            break;
-        case ListType.ULTRA_LEAGUE:
-            cpThreshold = 2500;
-            break;
-        case ListType.CUSTOM_CUP:
-            cpThreshold = customCupCPLimit;
-            break;
-    }
+	let cpThreshold = 0;
+	switch (listType) {
+		case ListType.GREAT_LEAGUE:
+			cpThreshold = 1500;
+			break;
+		case ListType.ULTRA_LEAGUE:
+			cpThreshold = 2500;
+			break;
+		case ListType.CUSTOM_CUP:
+			cpThreshold = customCupCPLimit;
+			break;
+	}
 
-    const getCPContainerString = useCallback(() => {
-        if (withCountdown) {
-            if (!days && !hours && !minutes && !seconds) {
-                return "Expired";
-            }
+	const getCPContainerString = useCallback(() => {
+		if (withCountdown) {
+			if (!days && !hours && !minutes && !seconds) {
+				return 'Expired';
+			}
 
-            return days > 0 ? `${days} day${days > 1 ? "s" : ""} left` : `${hours}h:${minutes}m:${seconds}s`;
-        }
+			return days > 0
+				? `${days} day${days > 1 ? 's' : ''} left`
+				: `${hours}h:${minutes}m:${seconds}s`;
+		}
 
-        if (cpStringOverride) {
-            return cpStringOverride;
-        }
+		if (cpStringOverride) {
+			return cpStringOverride;
+		}
 
-        if (listType === ListType.POKEDEX) {
-            return `${calculateCP(pokemon.baseStats.atk, 15, pokemon.baseStats.def, 15, pokemon.baseStats.hp, 15, 100)} ${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}`;
-        }
+		if (listType === ListType.POKEDEX) {
+			return `${calculateCP(pokemon.baseStats.atk, 15, pokemon.baseStats.def, 15, pokemon.baseStats.hp, 15, 100)} ${gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}`;
+		}
 
-        if (listType !== ListType.RAID) {
-            if (!rankLists[listType - 1]) {
-                return "0";
-            }
+		if (listType !== ListType.RAID) {
+			if (!rankLists[listType - 1]) {
+				return '0';
+			}
 
-            return `${rankLists[listType - 1][pokemon.speciesId].score}%`;
-        }
-    }, [days, cpStringOverride, currentGameLanguage, hours, listType, minutes, pokemon, rankLists, seconds, withCountdown])
+			return `${rankLists[listType - 1][pokemon.speciesId].score}%`;
+		}
+	}, [
+		days,
+		cpStringOverride,
+		currentGameLanguage,
+		hours,
+		listType,
+		minutes,
+		pokemon,
+		rankLists,
+		seconds,
+		withCountdown,
+	]);
 
-    return (
-        <Link to={link}>
-            <div className="pokemon-card">
-                <span className="header-container">
-                    <PokemonNumber dex={pokemon.dex} speciesId={pokemon.speciesId} listType={listType} rankOverride={rankOverride} />
-                    <PokemonTypes types={pokemon.types} />
-                </span>
-                <span className="card-content">
-                    <PokemonImage pokemon={pokemon} xl={needsXLCandy(pokemon, cpThreshold)} shiny={shinyBadge} withName lazy/>
-                </span>
-                <span className="header-footer">
-                    <span className="cp-container heavy-weighted-font">
-                        {getCPContainerString()}
-                    </span>
-                </span>
-            </div>
-        </Link>
-    );
-}
+	return (
+		<Link to={link}>
+			<div className='pokemon-card'>
+				<span className='header-container'>
+					<PokemonNumber
+						dex={pokemon.dex}
+						speciesId={pokemon.speciesId}
+						listType={listType}
+						rankOverride={rankOverride}
+					/>
+					<PokemonTypes types={pokemon.types} />
+				</span>
+				<span className='card-content'>
+					<PokemonImage
+						pokemon={pokemon}
+						xl={needsXLCandy(pokemon, cpThreshold)}
+						shiny={shinyBadge}
+						withName
+						lazy
+					/>
+				</span>
+				<span className='header-footer'>
+					<span className='cp-container heavy-weighted-font'>
+						{getCPContainerString()}
+					</span>
+				</span>
+			</div>
+		</Link>
+	);
+};
 
 export default PokemonCard;

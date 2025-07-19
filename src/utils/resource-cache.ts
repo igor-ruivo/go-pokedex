@@ -1,12 +1,13 @@
-type localStorageItem = {
-    value: any;
-    expiry: number;
+type LocalStorageItem<T> = {
+	value: T;
+	expiry: number;
 };
 
-const stringifyValue = (value: localStorageItem) => JSON.stringify(value);
+const stringifyValue = <T>(value: LocalStorageItem<T>): string =>
+	JSON.stringify(value);
 
-const deleteEntry = (key: string) => {
-    localStorage.removeItem(key);
+const deleteEntry = (key: string): void => {
+	localStorage.removeItem(key);
 };
 
 /**
@@ -15,11 +16,9 @@ const deleteEntry = (key: string) => {
  * @param value the value to be stringified and saved in the localStorage.
  * @param ttl the time to live, in milliseconds.
  */
-export const writeEntry = (key: string, value: any, ttl: number) => {
-    localStorage.setItem(
-        key,
-        stringifyValue({ value, expiry: Date.now() + ttl })
-    );
+export const writeEntry = <T>(key: string, value: T, ttl: number): void => {
+	const item: LocalStorageItem<T> = { value, expiry: Date.now() + ttl };
+	localStorage.setItem(key, stringifyValue(item));
 };
 
 /**
@@ -29,22 +28,31 @@ export const writeEntry = (key: string, value: any, ttl: number) => {
  * @returns null if the key wasn't found or if its ttl has expired,
  * or the original value otherwise.
  */
-export const readEntry = <T>(key: string, customCacheExpirationAction?: (data: T) => void) => {
-    const item = localStorage.getItem(key);
-    if (!item) {
-        return null;
-    }
+export const readEntry = <T>(
+	key: string,
+	customCacheExpirationAction?: (data: T) => void
+): T | null => {
+	const item = localStorage.getItem(key);
+	if (!item) {
+		return null;
+	}
 
-    const entryObj: localStorageItem = JSON.parse(item);
+	let entryObj: LocalStorageItem<T>;
+	try {
+		entryObj = JSON.parse(item) as LocalStorageItem<T>;
+	} catch {
+		deleteEntry(key);
+		return null;
+	}
 
-    if (Date.now() > entryObj.expiry) {
-        if (customCacheExpirationAction) {
-            customCacheExpirationAction(entryObj.value);
-            return entryObj.value as T;
-        }
-        deleteEntry(key);
-        return null;
-    }
+	if (Date.now() > entryObj.expiry) {
+		if (customCacheExpirationAction) {
+			customCacheExpirationAction(entryObj.value);
+			return entryObj.value;
+		}
+		deleteEntry(key);
+		return null;
+	}
 
-    return entryObj.value as T;
+	return entryObj.value;
 };

@@ -1,53 +1,62 @@
 .ivs-table {
-    height: 75vh !important;
-    border-radius: 4px;
-    border: 1px;
-    border-style: solid;
-    box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-    border-color: var(--borderColor2);
-    overscroll-behavior: none !important;
-    th {
-        font-weight: 700;
-    }
+	height: 75vh !important;
+	width: 100% !important;
+	border-radius: 4px;
+	border: 1px;
+	border-style: solid;
+	box-shadow:
+		0 2px 1px -1px rgb(0 0 0 / 20%),
+		0 1px 1px 0 rgb(0 0 0 / 14%),
+		0 1px 3px 0 rgb(0 0 0 / 12%);
+	border-color: var(--borderColor2);
+	overscroll-behavior: none !important;
+
+	th {
+		font-weight: 700;
+	}
 }
 
 .extra-ivs-options {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.Mui-selected {
-    background-color: var(--tableRowSelected) !important;
+.MuiTableRow-root.Mui-selected {
+	background-color: var(--tableRowSelected) !important;
 }
 
 .ivs-nav {
-    background-color: unset;
+	background-color: unset;
 }
 
 .MuiTableContainer-root,
 .MuiTableCell-head {
-    color: var(--textColor) !important;
-    background-color: var(--tableBackground) !important;
-    color-scheme: var(--colorScheme) !important;
+	color: var(--textColor) !important;
+	background-color: var(--tableBackground) !important;
+	color-scheme: var(--colorScheme) !important;
 }
 
 .MuiTableCell-body {
-    color: var(--textColor) !important;
+	color: var(--textColor) !important;
 }
 
 .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active {
-    color: var(--tableHeaderSortable);
+	color: var(--tableHeaderSortable);
+}
+
+.MuiTableRow-root {
+	background-color: var(--tableBackground) !important;
 }
 
 .MuiTableRow-hover {
-    &:hover {
-        background-color: var(--tableBackgroundHover) !important;
-    }
+	&:hover {
+		background-color: var(--tableBackgroundHover) !important;
+	}
 }
 
 .MuiTableSortLabel-root {
-    &:hover {
-        color: var(--tableHeaderSortable) !important;
-    }
+	&:hover {
+		color: var(--tableHeaderSortable) !important;
+	}
 }
