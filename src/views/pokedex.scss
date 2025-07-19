@@ -8,8 +8,13 @@
 }
 
 .nav-dropdown-width {
-	width: 25%;
+	width: 50%;
 	max-width: 215px;
+}
+
+.smaller-nav-dropdown-width {
+	width: 40%;
+	max-width: 150px;
 }
 
 .pokedex-layout {
@@ -117,10 +122,6 @@
 }
 
 @media (width <= 500px) {
-	.nav-dropdown-width {
-		width: 45%;
-	}
-
 	.navigation-header.extra-gap {
 		ul {
 			gap: 6px;

@@ -551,7 +551,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 												.filter((t) => t !== 'normal')
 												.map((t) => (
 													<div
-														className='clickable'
+														className='clickable selectable'
 														key={t}
 														onClick={() => {
 															if (t === raidAttackType) {

@@ -39,10 +39,10 @@
 	position: absolute;
 	bottom: 7.5%;
 	left: 10%;
-	width: 20%;
-	height: 20%;
-	min-height: 12px;
-	min-width: 12px;
+	width: 30%;
+	height: 30%;
+	min-height: 14px;
+	min-width: 14px;
 	z-index: 2;
 	filter: drop-shadow(0 1px 0 rgb(0 0 0 / 15%)) drop-shadow(1px 0 0 rgb(0 0 0 / 50%))
 		drop-shadow(-1px 0 0 rgb(0 0 0 / 15%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 15%));
@@ -105,7 +105,8 @@
 	&:has(.is-master) {
 		background-color: #ae98d33a;
 		border: 2px solid #b198d3;
-		border-radius: 4px;
+		border-radius: 14px;
+		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
 	}
 
 	.with-golden-border &:has(.is-great) {
@@ -117,7 +118,8 @@
 	&:has(.is-great) {
 		background-color: #7ba7cd67;
 		border: 2px solid #7ba7cd;
-		border-radius: 4px;
+		border-radius: 14px;
+		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
 	}
 
 	.with-golden-border &:has(.is-ultra) {
@@ -129,7 +131,8 @@
 	&:has(.is-ultra) {
 		background-color: #c9c08934;
 		border: 2px solid #c9c089;
-		border-radius: 4px;
+		border-radius: 14px;
+		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
 	}
 
 	.with-golden-border &:has(.is-raid) {
@@ -155,7 +158,8 @@
 
 		background-color: rgb(205 165 148 / 15.1%);
 		border: 2px solid rgb(205 165 148);
-		border-radius: 4px;
+		border-radius: 14px;
+		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
 	}
 }
 

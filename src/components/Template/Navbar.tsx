@@ -42,6 +42,13 @@ export type EntryType = {
 	label: string;
 };
 
+export type Entry<T> = {
+	label: string;
+	value: T;
+	hint: string;
+	invertOnDarkMode?: boolean;
+};
+
 export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: number, navbar: boolean): boolean => {
 	const threshold = 110;
 
@@ -220,13 +227,6 @@ const Navbar = () => {
 		return `/${destinationPath}`;
 	}, [pathname]);
 
-	type Entry<T> = {
-		label: string;
-		value: T;
-		hint: string;
-		invertOnDarkMode?: boolean;
-	};
-
 	const languageOptions: Array<Entry<Language>> = useMemo(
 		() => [
 			{
@@ -367,8 +367,6 @@ const Navbar = () => {
 		[setOptionsOpened, AvailableOptions.None]
 	);
 
-	const hasSessionChanges = useMemo(() => !showShadow || !showXL || type1Filter, [showShadow, showXL, type1Filter]);
-
 	// Keyboard accessibility for divs with click handlers
 	const handleDivKeyDown =
 		(handler: () => void, disabled = false) =>
@@ -494,29 +492,6 @@ const Navbar = () => {
 								);
 							}}
 						/>
-					</div>
-					<div className='relative-holder'>
-						{hasSessionChanges && !(pathname.includes('pokemon') || pathname.includes('calendar')) && (
-							<span className='notifications-counter heavy-weight'>!</span>
-						)}
-						<button
-							className={`navbar-filter ${pathname.includes('pokemon') || pathname.includes('calendar') ? 'unavailable' : ''}`}
-							onClick={() =>
-								setOptionsOpened((p) =>
-									p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter
-								)
-							}
-						>
-							<img
-								className={'navbar-menu-img invert-dark-mode'}
-								alt='Filter'
-								loading='lazy'
-								width='16.6'
-								height='16.6'
-								decoding='async'
-								src={`/images/filter.png`}
-							/>
-						</button>
 					</div>
 				</section>
 			</header>

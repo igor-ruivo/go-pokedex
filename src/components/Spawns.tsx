@@ -211,7 +211,7 @@ const Spawns = () => {
 												season.wild.filter((e) => e.kind === '5'),
 											].map((t, i) => (
 												<div
-													className='clickable'
+													className='clickable selectable'
 													key={i}
 													role='button'
 													tabIndex={0}

@@ -177,7 +177,7 @@
 
 .navbar-section {
 	display: grid;
-	grid-template-columns: 31.13px 1fr 31.13px 31.13px;
+	grid-template-columns: 31.13px 1fr 31.13px;
 	align-items: center;
 	justify-content: space-between;
 	grid-gap: 18px;
@@ -295,7 +295,7 @@
 	.navbar-section {
 		gap: 12px;
 		max-width: 100%;
-		grid-template-columns: 28.25px 1fr 28.25px 28.25px;
+		grid-template-columns: 28.25px 1fr 28.25px;
 	}
 
 	.options-menu,
