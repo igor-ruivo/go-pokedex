@@ -28,10 +28,7 @@ interface ILeaguePanelsProps {
 	handleSetLeague: (newLeague: LeagueType) => void;
 }
 
-export const buildRankString = (
-	rank: string | undefined,
-	language: Language
-) => {
+export const buildRankString = (rank: string | undefined, language: Language) => {
 	if (!rank) {
 		return undefined;
 	}
@@ -134,27 +131,16 @@ const LeagueRanks = ({
 
 			const defaultBackgroundStyle = 'normal-entry';
 
-			const rankString = buildRankString(
-				leagueStat.pokemonRankInLeague,
-				currentLanguage
-			);
+			const rankString = buildRankString(leagueStat.pokemonRankInLeague, currentLanguage);
 
 			return (
 				<ListEntry
 					mainIcon={{
 						imageDescription: leagueStat.leagueTitle,
 						image: (
-							<div
-								className={
-									leagueStat.leagueTitle === 'raid' ? 'img-padding-extra' : ''
-								}
-							>
+							<div className={leagueStat.leagueTitle === 'raid' ? 'img-padding-extra' : ''}>
 								<img
-									className={
-										leagueStat.leagueTitle === 'raid'
-											? 'raid-img-with-contrast'
-											: ''
-									}
+									className={leagueStat.leagueTitle === 'raid' ? 'raid-img-with-contrast' : ''}
 									height={leagueStat.leagueTitle === 'raid' ? 20 : 28}
 									width={leagueStat.leagueTitle === 'raid' ? 20 : 28}
 									src={logoSrc}
@@ -175,16 +161,12 @@ const LeagueRanks = ({
 									specificHeight={28}
 								/>
 							),
-							imageSideText: shortName(
-								leagueStat.bestReachablePokemon.speciesName
-							),
+							imageSideText: shortName(leagueStat.bestReachablePokemon.speciesName),
 							withBackground: true,
 						},
 					]}
 					backgroundColorClassName={
-						leagueToLeagueName(league) === leagueStat.leagueTitle
-							? leagueStat.leagueTitle
-							: defaultBackgroundStyle
+						leagueToLeagueName(league) === leagueStat.leagueTitle ? leagueStat.leagueTitle : defaultBackgroundStyle
 					}
 					onClick={() => handleSetLeague(getLeagueType(leagueStat.leagueTitle))}
 					secondaryContent={[
@@ -193,9 +175,7 @@ const LeagueRanks = ({
 							{rankString ? (
 								translator(TranslatorKeys.Ranked, currentLanguage)
 							) : (
-								<div className='unranked'>
-									{translator(TranslatorKeys.Unranked, currentLanguage)}
-								</div>
+								<div className='unranked'>{translator(TranslatorKeys.Unranked, currentLanguage)}</div>
 							)}
 							{leagueStat.type && (
 								<img
@@ -209,10 +189,7 @@ const LeagueRanks = ({
 							<span
 								className={`larger-rank-change with-brightness ${leagueStat.leagueTitle !== 'raid' && rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}
 							>
-								{computeRankChange(
-									leagueStat.bestReachablePokemon.speciesId,
-									leagueStat.leagueTitle
-								)}
+								{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}
 							</span>
 						</React.Fragment>,
 					]}
@@ -222,14 +199,7 @@ const LeagueRanks = ({
 				/>
 			);
 		},
-		[
-			computeRankChange,
-			currentLanguage,
-			getLeagueType,
-			handleSetLeague,
-			league,
-			rankChangeClassName,
-		]
+		[computeRankChange, currentLanguage, getLeagueType, handleSetLeague, league, rankChangeClassName]
 	);
 
 	return (

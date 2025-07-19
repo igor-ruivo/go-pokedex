@@ -13,11 +13,7 @@ interface PokemonContextType {
 
 const PokemonContext = createContext<PokemonContextType | undefined>(undefined);
 
-const useFetchAllData: () => [
-	Record<string, IGamemasterPokemon>,
-	boolean,
-	string,
-] = () => {
+const useFetchAllData: () => [Record<string, IGamemasterPokemon>, boolean, string] = () => {
 	const [
 		gamemasterPokemon,
 		fetchGamemasterPokemon,
@@ -35,11 +31,7 @@ const useFetchAllData: () => [
 		};
 	}, [fetchGamemasterPokemon]);
 
-	return [
-		gamemasterPokemon[0],
-		gememasterPokemonFetchCompleted,
-		errorLoadingGamemasterData,
-	];
+	return [gamemasterPokemon[0], gememasterPokemonFetchCompleted, errorLoadingGamemasterData];
 };
 
 export const usePokemon = (): PokemonContextType => {
@@ -51,11 +43,8 @@ export const usePokemon = (): PokemonContextType => {
 };
 
 export const PokemonProvider = (props: React.PropsWithChildren<object>) => {
-	const [gamemasterPokemon, fetchCompleted, errors]: [
-		Record<string, IGamemasterPokemon>,
-		boolean,
-		string,
-	] = useFetchAllData();
+	const [gamemasterPokemon, fetchCompleted, errors]: [Record<string, IGamemasterPokemon>, boolean, string] =
+		useFetchAllData();
 
 	return (
 		<PokemonContext.Provider

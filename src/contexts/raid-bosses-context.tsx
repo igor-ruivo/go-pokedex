@@ -58,9 +58,7 @@ interface CalendarContextType {
 	errorLoadingCurrentRockets: string;
 }
 
-const CalendarContext = createContext<CalendarContextType | undefined>(
-	undefined
-);
+const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
 const useFetchAllData: () => [
 	Array<IPostEntry>,
@@ -85,45 +83,22 @@ const useFetchAllData: () => [
 	string,
 	string,
 ] = () => {
-	const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<
-		Array<IPostEntry>
+	const [posts, fetchPosts, postsFetchCompleted, errorLoadingPosts]: FetchData<Array<IPostEntry>> = useFetchUrls();
+	const [season, fetchSeason, seasonFetchCompleted, errorLoadingSeason]: FetchData<IPostEntry> = useFetchUrls();
+	const [specialBosses, fetchSpecialBosses, specialBossesFetchCompleted, errorLoadingSpecialBosses]: FetchData<
+		Array<ILeekduckSpecialRaidBoss>
 	> = useFetchUrls();
-	const [
-		season,
-		fetchSeason,
-		seasonFetchCompleted,
-		errorLoadingSeason,
-	]: FetchData<IPostEntry> = useFetchUrls();
-	const [
-		specialBosses,
-		fetchSpecialBosses,
-		specialBossesFetchCompleted,
-		errorLoadingSpecialBosses,
-	]: FetchData<Array<ILeekduckSpecialRaidBoss>> = useFetchUrls();
-	const [
-		spotlightHours,
-		fetchSpotlightHours,
-		spotlightHoursFetchCompleted,
-		errorLoadingSpotlightHours,
-	]: FetchData<Array<ILeekduckSpotlightHour>> = useFetchUrls();
-	const [
-		currentBosses,
-		fetchCurrentBosses,
-		currentBossesFetchCompleted,
-		errorLoadingCurrentBosses,
-	]: FetchData<Array<IEntry>> = useFetchUrls();
-	const [
-		currentEggs,
-		fetchCurrentEggs,
-		currentEggsFetchCompleted,
-		errorLoadingCurrentEggs,
-	]: FetchData<Array<IEntry>> = useFetchUrls();
-	const [
-		currentRockets,
-		fetchCurrentRockets,
-		currentRocketsFetchCompleted,
-		errorLoadingCurrentRockets,
-	]: FetchData<Array<IRocketGrunt>> = useFetchUrls();
+	const [spotlightHours, fetchSpotlightHours, spotlightHoursFetchCompleted, errorLoadingSpotlightHours]: FetchData<
+		Array<ILeekduckSpotlightHour>
+	> = useFetchUrls();
+	const [currentBosses, fetchCurrentBosses, currentBossesFetchCompleted, errorLoadingCurrentBosses]: FetchData<
+		Array<IEntry>
+	> = useFetchUrls();
+	const [currentEggs, fetchCurrentEggs, currentEggsFetchCompleted, errorLoadingCurrentEggs]: FetchData<Array<IEntry>> =
+		useFetchUrls();
+	const [currentRockets, fetchCurrentRockets, currentRocketsFetchCompleted, errorLoadingCurrentRockets]: FetchData<
+		Array<IRocketGrunt>
+	> = useFetchUrls();
 
 	useEffect(() => {
 		const controller = new AbortController();

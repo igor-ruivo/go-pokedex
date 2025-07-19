@@ -1,12 +1,10 @@
+import './ReusableAdorners.scss';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { SingleValue } from 'react-select';
 import Select from 'react-select';
 
-import {
-	GameLanguage,
-	Language,
-	useLanguage,
-} from '../contexts/language-context';
+import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
 import { usePokemon } from '../contexts/pokemon-context';
 import type { ILeekduckSpecialRaidBoss } from '../contexts/raid-bosses-context';
 import { useCalendar } from '../contexts/raid-bosses-context';
@@ -14,11 +12,7 @@ import type { IEntry, IPostEntry } from '../DTOs/INews';
 import { sortEntries, sortPosts } from '../DTOs/INews';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
-import {
-	ConfigKeys,
-	readSessionValue,
-	writeSessionValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
 import PokemonMiniature from './PokemonMiniature';
@@ -76,23 +70,14 @@ const Raids = () => {
 			specialBossesFetchCompleted && specialBosses
 				? specialBosses
 						.map(mapToPostEntry)
-						.filter(
-							(p) =>
-								(p.raids?.length ?? 0) > 0 &&
-								new Date(p.endDate ?? 0) >= new Date()
-						)
+						.filter((p) => (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date())
 				: [],
 		[specialBossesFetchCompleted, specialBosses]
 	);
 	const reducedRaids = useMemo<Array<IPostEntry>>(
 		() =>
 			postsFetchCompleted && posts
-				? posts.filter(
-						(p) =>
-							p &&
-							(p.raids?.length ?? 0) > 0 &&
-							new Date(p.endDate ?? 0) >= new Date()
-					)
+				? posts.filter((p) => p && (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date())
 				: [],
 		[postsFetchCompleted, posts]
 	);
@@ -103,18 +88,14 @@ const Raids = () => {
 	}, []);
 
 	const additionalBosses = useMemo<Array<IPostEntry>>(() => {
-		const allEntries: Array<IPostEntry> = [
-			...reducedLeekPosts,
-			...reducedRaids,
-		];
+		const allEntries: Array<IPostEntry> = [...reducedLeekPosts, ...reducedRaids];
 		const acc: Record<string, IPostEntry> = {};
 		for (const obj of allEntries) {
 			const key = getDateKey(obj);
 			if (acc[key]) {
 				const mergedRaids = [...(acc[key].raids ?? []), ...(obj.raids ?? [])];
 				acc[key].raids = mergedRaids.filter(
-					(raid, index, self) =>
-						index === self.findIndex((r) => r.speciesId === raid.speciesId)
+					(raid, index, self) => index === self.findIndex((r) => r.speciesId === raid.speciesId)
 				);
 			} else {
 				acc[key] = {
@@ -159,28 +140,17 @@ const Raids = () => {
 
 	const remainingBosses = useMemo<Array<IPostEntry>>(
 		() =>
-			additionalBosses
-				.filter(
-					(e) =>
-						(e.raids?.length ?? 0) > 0 && e.startDate > new Date().valueOf()
-				)
-				.sort(sortPosts),
+			additionalBosses.filter((e) => (e.raids?.length ?? 0) > 0 && e.startDate > new Date().valueOf()).sort(sortPosts),
 		[additionalBosses]
 	);
 
 	const generateTodayBosses = useCallback(
 		(entries: Array<IPostEntry>): Array<IEntry> => {
-			if (
-				!currentBossesFetchCompleted ||
-				!specialBossesFetchCompleted ||
-				!postsFetchCompleted
-			) {
+			if (!currentBossesFetchCompleted || !specialBossesFetchCompleted || !postsFetchCompleted) {
 				return [];
 			}
 
-			const seenIds = new Set<string>(
-				[...(currentBosses ?? [])].map((e) => e.speciesId)
-			);
+			const seenIds = new Set<string>([...(currentBosses ?? [])].map((e) => e.speciesId));
 			const response: Array<IEntry> = [...(currentBosses ?? [])];
 
 			const now = new Date();
@@ -214,13 +184,7 @@ const Raids = () => {
 
 			return response.sort((a, b) => sortEntries(a, b, gamemasterPokemon));
 		},
-		[
-			postsFetchCompleted,
-			gamemasterPokemon,
-			currentBosses,
-			currentBossesFetchCompleted,
-			specialBossesFetchCompleted,
-		]
+		[postsFetchCompleted, gamemasterPokemon, currentBosses, currentBossesFetchCompleted, specialBossesFetchCompleted]
 	);
 
 	const raidEventDates = useMemo<Array<RaidEventDateOption>>(
@@ -230,12 +194,7 @@ const Raids = () => {
 				value: 'current',
 			},
 			...remainingBosses.map((e) => ({
-				label: inCamelCase(
-					new Date(e.startDate).toLocaleString(
-						undefined,
-						localeStringSmallestOptions
-					)
-				),
+				label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)),
 				value: getDateKey(e),
 			})),
 		],
@@ -243,29 +202,20 @@ const Raids = () => {
 	);
 
 	const initialBossDate = raidEventDates.some(
-		(f) =>
-			f.value === (readSessionValue(ConfigKeys.ExpandedRaidDate) ?? 'current')
+		(f) => f.value === (readSessionValue(ConfigKeys.ExpandedRaidDate) ?? 'current')
 	)
 		? (readSessionValue(ConfigKeys.ExpandedRaidDate)! ?? 'current')
 		: 'current';
 
-	const [currentBossDate, setCurrentBossDate] =
-		useState<string>(initialBossDate);
+	const [currentBossDate, setCurrentBossDate] = useState<string>(initialBossDate);
 
 	const bossesAvailable = useMemo<Array<IEntry>>(
 		() =>
 			(currentBossDate === 'current'
 				? generateTodayBosses(additionalBosses)
-				: (additionalBosses.find((a) => getDateKey(a) === currentBossDate)
-						?.raids ?? [])
+				: (additionalBosses.find((a) => getDateKey(a) === currentBossDate)?.raids ?? [])
 			).sort((a, b) => sortEntries(a, b, gamemasterPokemon)),
-		[
-			currentBossDate,
-			additionalBosses,
-			generateTodayBosses,
-			getDateKey,
-			gamemasterPokemon,
-		]
+		[currentBossDate, additionalBosses, generateTodayBosses, getDateKey, gamemasterPokemon]
 	);
 
 	type RaidEventEggOption = {
@@ -301,10 +251,7 @@ const Raids = () => {
 	}, [bossesAvailable, currentLanguage]);
 
 	const firstRelevantEntryTierForDate = useMemo<string>(
-		() =>
-			raidEventEggs.find((k) => k.value === '3')?.value ??
-			raidEventEggs[0]?.value ??
-			'',
+		() => raidEventEggs.find((k) => k.value === '3')?.value ?? raidEventEggs[0]?.value ?? '',
 		[raidEventEggs]
 	);
 
@@ -324,27 +271,16 @@ const Raids = () => {
 	useEffect(() => {
 		if (!raidEventEggs.some((e) => e.value === currentTier)) {
 			setCurrentTier(firstRelevantEntryTierForDate);
-			writeSessionValue(
-				ConfigKeys.ExpandedRaidTier,
-				firstRelevantEntryTierForDate
-			);
+			writeSessionValue(ConfigKeys.ExpandedRaidTier, firstRelevantEntryTierForDate);
 		}
-	}, [
-		raidEventEggs,
-		currentTier,
-		setCurrentTier,
-		firstRelevantEntryTierForDate,
-	]);
+	}, [raidEventEggs, currentTier, setCurrentTier, firstRelevantEntryTierForDate]);
 
 	const getCountdownForBoss = useCallback(
 		(speciesId: string): number | undefined =>
 			[...reducedLeekPosts, ...reducedRaids]
 				.sort(sortPosts)
-				.find(
-					(d) =>
-						d.startDate <= new Date().valueOf() &&
-						(d.raids ?? []).some((f) => f.speciesId === speciesId)
-				)?.endDate,
+				.find((d) => d.startDate <= new Date().valueOf() && (d.raids ?? []).some((f) => f.speciesId === speciesId))
+				?.endDate,
 		[reducedLeekPosts, reducedRaids]
 	);
 
@@ -363,18 +299,8 @@ const Raids = () => {
 
 	return (
 		<LoadingRenderer
-			errors={
-				errorLoadingCurrentBosses +
-				errorLoadingSpecialBosses +
-				errorLoadingPosts +
-				errors
-			}
-			completed={
-				postsFetchCompleted &&
-				currentBossesFetchCompleted &&
-				specialBossesFetchCompleted &&
-				fetchCompleted
-			}
+			errors={errorLoadingCurrentBosses + errorLoadingSpecialBosses + errorLoadingPosts + errors}
+			completed={postsFetchCompleted && currentBossesFetchCompleted && specialBossesFetchCompleted && fetchCompleted}
 		>
 			{() => (
 				<>
@@ -383,10 +309,7 @@ const Raids = () => {
 							<Select<RaidEventDateOption, false>
 								className='navbar-dropdown-family'
 								isSearchable={false}
-								value={
-									raidEventDates.find((o) => o.value === currentBossDate) ??
-									null
-								}
+								value={raidEventDates.find((o) => o.value === currentBossDate) ?? null}
 								options={raidEventDates}
 								onChange={(e: SingleValue<RaidEventDateOption>) => {
 									if (e) {
@@ -406,9 +329,7 @@ const Raids = () => {
 												width={16}
 											/>
 										</div>
-										<strong className='aligned-block ellipsed normal-text'>
-											{data.label}
-										</strong>
+										<strong className='aligned-block ellipsed normal-text'>{data.label}</strong>
 									</div>
 								)}
 							/>
@@ -417,9 +338,7 @@ const Raids = () => {
 							<Select<RaidEventEggOption, false>
 								className='navbar-dropdown-family'
 								isSearchable={false}
-								value={
-									raidEventEggs.find((o) => o.value === currentTier) ?? null
-								}
+								value={raidEventEggs.find((o) => o.value === currentTier) ?? null}
 								options={raidEventEggs}
 								onChange={(e: SingleValue<RaidEventEggOption>) => {
 									if (e) {
@@ -439,9 +358,7 @@ const Raids = () => {
 												width={22}
 											/>
 										</div>
-										<strong className='aligned-block ellipsed normal-text'>
-											{data.label}
-										</strong>
+										<strong className='aligned-block ellipsed normal-text'>{data.label}</strong>
 									</div>
 								)}
 							/>
@@ -451,36 +368,23 @@ const Raids = () => {
 						{raidEventEggs
 							.slice()
 							.sort((i1, i2) => i2.value.localeCompare(i1.value))
-							.filter(
-								(egg) =>
-									egg.value !== '3' &&
-									(egg.value === currentTier || currentTier === '3')
-							)
+							.filter((egg) => egg.value !== '3' && (egg.value === currentTier || currentTier === '3'))
 							.map((egg) =>
 								bossesAvailable.filter(
 									(e) =>
 										eggIdxToKind(egg.value).includes(e.kind ?? '') &&
-										(egg.value === '2' ||
-											!gamemasterPokemon[e.speciesId].isShadow)
+										(egg.value === '2' || !gamemasterPokemon[e.speciesId].isShadow)
 								).length > 0 ? (
 									<Section
 										special={egg.value === '2'}
 										key={egg.value}
 										title={`${
 											currentLanguage !== Language.English
-												? gameTranslator(
-														GameTranslatorKeys.Raids,
-														currentGameLanguage
-													)
+												? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
 												: ''
-										} ${
-											raidEventEggs.find((o) => o.value === egg.value)?.label
-										} ${
+										} ${raidEventEggs.find((o) => o.value === egg.value)?.label} ${
 											currentLanguage === Language.English
-												? gameTranslator(
-														GameTranslatorKeys.Raids,
-														currentGameLanguage
-													)
+												? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
 												: ''
 										}`}
 									>
@@ -489,8 +393,7 @@ const Raids = () => {
 												{bossesAvailable.filter(
 													(e) =>
 														eggIdxToKind(egg.value).includes(e.kind ?? '') &&
-														(egg.value === '2' ||
-															!gamemasterPokemon[e.speciesId].isShadow)
+														(egg.value === '2' || !gamemasterPokemon[e.speciesId].isShadow)
 												).length > 0 && (
 													<div className='in-row round-border'>
 														<div className='in-column'>
@@ -498,36 +401,23 @@ const Raids = () => {
 																{bossesAvailable
 																	.filter(
 																		(e) =>
-																			eggIdxToKind(egg.value).includes(
-																				e.kind ?? ''
-																			) &&
-																			(egg.value === '2' ||
-																				!gamemasterPokemon[e.speciesId]
-																					.isShadow)
+																			eggIdxToKind(egg.value).includes(e.kind ?? '') &&
+																			(egg.value === '2' || !gamemasterPokemon[e.speciesId].isShadow)
 																	)
 																	.sort((p1: IEntry, p2: IEntry) => {
 																		if (currentBossDate !== 'current') {
 																			return 0;
 																		}
 
-																		if (
-																			getCountdownForBoss(p1.speciesId) &&
-																			!getCountdownForBoss(p2.speciesId)
-																		) {
+																		if (getCountdownForBoss(p1.speciesId) && !getCountdownForBoss(p2.speciesId)) {
 																			return -1;
 																		}
 
-																		if (
-																			getCountdownForBoss(p2.speciesId) &&
-																			!getCountdownForBoss(p1.speciesId)
-																		) {
+																		if (getCountdownForBoss(p2.speciesId) && !getCountdownForBoss(p1.speciesId)) {
 																			return 1;
 																		}
 
-																		if (
-																			!getCountdownForBoss(p2.speciesId) &&
-																			!getCountdownForBoss(p1.speciesId)
-																		) {
+																		if (!getCountdownForBoss(p2.speciesId) && !getCountdownForBoss(p1.speciesId)) {
 																			return 0;
 																		}
 
@@ -537,20 +427,13 @@ const Raids = () => {
 																		);
 																	})
 																	.map((e) => (
-																		<div
-																			className='mini-card-wrapper-padding dynamic-size'
-																			key={e.speciesId}
-																		>
+																		<div className='mini-card-wrapper-padding dynamic-size' key={e.speciesId}>
 																			<div className={`mini-card-wrapper`}>
 																				<PokemonMiniature
-																					pokemon={
-																						gamemasterPokemon[e.speciesId]
-																					}
+																					pokemon={gamemasterPokemon[e.speciesId]}
 																					cpStringOverride=''
 																					withCountdown={
-																						currentBossDate === 'current'
-																							? getCountdownForBoss(e.speciesId)
-																							: undefined
+																						currentBossDate === 'current' ? getCountdownForBoss(e.speciesId) : undefined
 																					}
 																				/>
 																			</div>
@@ -569,11 +452,7 @@ const Raids = () => {
 						{raidEventEggs
 							.slice()
 							.sort((i1, i2) => i2.value.localeCompare(i1.value))
-							.filter(
-								(egg) =>
-									egg.value !== '3' &&
-									(egg.value === currentTier || currentTier === '3')
-							)
+							.filter((egg) => egg.value !== '3' && (egg.value === currentTier || currentTier === '3'))
 							.map((egg) =>
 								bossesAvailable.filter(
 									(e) =>
@@ -585,24 +464,13 @@ const Raids = () => {
 										key={egg.value}
 										title={`${
 											currentLanguage !== Language.English
-												? gameTranslator(
-														GameTranslatorKeys.Raids,
-														currentGameLanguage
-													)
+												? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
 												: ''
-										} ${
-											raidEventEggs.find((o) => o.value === egg.value)?.label
-										} ${
+										} ${raidEventEggs.find((o) => o.value === egg.value)?.label} ${
 											currentLanguage === Language.English
-												? gameTranslator(
-														GameTranslatorKeys.Raids,
-														currentGameLanguage
-													)
+												? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
 												: ''
-										} ${gameTranslator(
-											GameTranslatorKeys.Shadow,
-											currentGameLanguage
-										)}`}
+										} ${gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}`}
 										darker
 									>
 										<div className='with-flex with-margin-top contained'>
@@ -619,27 +487,18 @@ const Raids = () => {
 																{bossesAvailable
 																	.filter(
 																		(e) =>
-																			eggIdxToKind(egg.value).includes(
-																				e.kind ?? ''
-																			) &&
+																			eggIdxToKind(egg.value).includes(e.kind ?? '') &&
 																			egg.value !== '2' &&
 																			!getCountdownForBoss(e.speciesId) &&
 																			gamemasterPokemon[e.speciesId].isShadow
 																	)
 																	.map((e) => (
-																		<div
-																			className='mini-card-wrapper-padding dynamic-size'
-																			key={e.speciesId}
-																		>
+																		<div className='mini-card-wrapper-padding dynamic-size' key={e.speciesId}>
 																			<div className={`mini-card-wrapper`}>
 																				<PokemonMiniature
-																					pokemon={
-																						gamemasterPokemon[e.speciesId]
-																					}
+																					pokemon={gamemasterPokemon[e.speciesId]}
 																					cpStringOverride=''
-																					withCountdown={getCountdownForBoss(
-																						e.speciesId
-																					)}
+																					withCountdown={getCountdownForBoss(e.speciesId)}
 																				/>
 																			</div>
 																		</div>
@@ -649,27 +508,18 @@ const Raids = () => {
 																{bossesAvailable
 																	.filter(
 																		(e) =>
-																			eggIdxToKind(egg.value).includes(
-																				e.kind ?? ''
-																			) &&
+																			eggIdxToKind(egg.value).includes(e.kind ?? '') &&
 																			egg.value !== '2' &&
 																			getCountdownForBoss(e.speciesId) &&
 																			gamemasterPokemon[e.speciesId].isShadow
 																	)
 																	.map((e) => (
-																		<div
-																			className='mini-card-wrapper-padding dynamic-size'
-																			key={e.speciesId}
-																		>
+																		<div className='mini-card-wrapper-padding dynamic-size' key={e.speciesId}>
 																			<div className={`mini-card-wrapper`}>
 																				<PokemonMiniature
-																					pokemon={
-																						gamemasterPokemon[e.speciesId]
-																					}
+																					pokemon={gamemasterPokemon[e.speciesId]}
 																					cpStringOverride=''
-																					withCountdown={getCountdownForBoss(
-																						e.speciesId
-																					)}
+																					withCountdown={getCountdownForBoss(e.speciesId)}
 																				/>
 																			</div>
 																		</div>

@@ -51,29 +51,17 @@ export const sortPosts = (e1: IPostEntry, e2: IPostEntry) => {
 	return e1.startDate.valueOf() - e2.startDate.valueOf();
 };
 
-export const sortEntries = (
-	e1: IEntry,
-	e2: IEntry,
-	gamemasterPokemon: Record<string, IGamemasterPokemon>
-) => {
-	if (
-		gamemasterPokemon[e1.speciesId].isShadow &&
-		!gamemasterPokemon[e2.speciesId].isShadow
-	) {
+export const sortEntries = (e1: IEntry, e2: IEntry, gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
+	if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
 		return 1;
 	}
 
-	if (
-		gamemasterPokemon[e1.speciesId].isShadow &&
-		!gamemasterPokemon[e2.speciesId].isShadow
-	) {
+	if (gamemasterPokemon[e1.speciesId].isShadow && !gamemasterPokemon[e2.speciesId].isShadow) {
 		return -1;
 	}
 
 	if (e1.kind === e2.kind) {
-		return (
-			gamemasterPokemon[e1.speciesId].dex - gamemasterPokemon[e2.speciesId].dex
-		);
+		return gamemasterPokemon[e1.speciesId].dex - gamemasterPokemon[e2.speciesId].dex;
 	}
 
 	if (!e1.kind) {

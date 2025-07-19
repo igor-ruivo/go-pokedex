@@ -1,10 +1,6 @@
 import { createContext, useCallback, useContext, useState } from 'react';
 
-import {
-	ConfigKeys,
-	readPersistentValue,
-	writePersistentValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 
 export enum ImageSource {
 	Official,
@@ -17,9 +13,7 @@ interface ImageSourceContextType {
 	updateImageSource: (newSource: ImageSource) => void;
 }
 
-const ImageSourceContext = createContext<ImageSourceContextType | undefined>(
-	undefined
-);
+const ImageSourceContext = createContext<ImageSourceContextType | undefined>(undefined);
 
 export const useImageSource = (): ImageSourceContextType => {
 	const context = useContext(ImageSourceContext);
@@ -43,10 +37,7 @@ export const ImageSourceProvider = (props: React.PropsWithChildren<object>) => {
 
 	const updateImageSource = useCallback(
 		(newImageSource: ImageSource) => {
-			writePersistentValue(
-				ConfigKeys.ImageSource,
-				JSON.stringify(newImageSource)
-			);
+			writePersistentValue(ConfigKeys.ImageSource, JSON.stringify(newImageSource));
 			setImageSource(newImageSource);
 		},
 		[setImageSource]

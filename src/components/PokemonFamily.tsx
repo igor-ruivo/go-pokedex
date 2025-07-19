@@ -1,13 +1,12 @@
+import './ReusableAdorners.scss';
+
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
 import { usePokemon } from '../contexts/pokemon-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import {
-	shortName,
-	sortPokemonByBattlePowerDesc,
-} from '../utils/pokemon-helper';
+import { shortName, sortPokemonByBattlePowerDesc } from '../utils/pokemon-helper';
 import PokemonImage from './PokemonImage';
 
 interface IPokemonFamilyProps {
@@ -16,17 +15,10 @@ interface IPokemonFamilyProps {
 	getClickDestination: (speciesId: string) => string;
 }
 
-const PokemonFamily = ({
-	pokemon,
-	similarPokemon,
-	getClickDestination,
-}: IPokemonFamilyProps) => {
+const PokemonFamily = ({ pokemon, similarPokemon, getClickDestination }: IPokemonFamilyProps) => {
 	const { gamemasterPokemon } = usePokemon();
 	const navigate = useNavigate();
-	const options = useMemo(
-		() => Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc),
-		[similarPokemon]
-	);
+	const options = useMemo(() => Array.from(similarPokemon).sort(sortPokemonByBattlePowerDesc), [similarPokemon]);
 	return (
 		<>
 			{similarPokemon.size > 1 && (

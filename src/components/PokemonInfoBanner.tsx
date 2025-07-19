@@ -107,9 +107,7 @@ const PokemonInfoBanner = ({
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { moves, movesFetchCompleted } = useMoves();
-	const [bestReachableRaidVersion, setBestReachableRaidVersion] = useState<
-		IGamemasterPokemon | undefined
-	>(undefined);
+	const [bestReachableRaidVersion, setBestReachableRaidVersion] = useState<IGamemasterPokemon | undefined>(undefined);
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 
 	const allRelevantChargedMoveTypes = useMemo(() => {
@@ -118,35 +116,14 @@ const PokemonInfoBanner = ({
 		}
 
 		return Array.from(
-			new Set(
-				getAllChargedMoves(
-					bestReachableRaidVersion,
-					moves,
-					gamemasterPokemon
-				).map((m) => moves[m].type)
-			)
+			new Set(getAllChargedMoves(bestReachableRaidVersion, moves, gamemasterPokemon).map((m) => moves[m].type))
 		)
 			.filter((t) => t !== 'normal')
-			.map(
-				(t) =>
-					(t.substring(0, 1).toLocaleUpperCase() +
-						t.substring(1).toLocaleLowerCase()) as unknown as TypesDTO
-			);
-	}, [
-		fetchCompleted,
-		movesFetchCompleted,
-		bestReachableRaidVersion,
-		moves,
-		gamemasterPokemon,
-	]);
+			.map((t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as TypesDTO);
+	}, [fetchCompleted, movesFetchCompleted, bestReachableRaidVersion, moves, gamemasterPokemon]);
 
 	const ranksComputation = useMemo(() => {
-		if (
-			!fetchCompleted ||
-			!movesFetchCompleted ||
-			!bestReachableRaidVersion ||
-			!raidDPSFetchCompleted
-		) {
+		if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidDPSFetchCompleted) {
 			return {};
 		}
 
@@ -157,9 +134,7 @@ const PokemonInfoBanner = ({
 			.forEach((t) => {
 				const typeCollection = raidDPS[t];
 				//todo: make rank part of the obj. it's safer, but not quicker...
-				const idx = Object.keys(typeCollection).indexOf(
-					bestReachableRaidVersion.speciesId
-				);
+				const idx = Object.keys(typeCollection).indexOf(bestReachableRaidVersion.speciesId);
 				if (idx === -1) {
 					return;
 				}
@@ -171,9 +146,7 @@ const PokemonInfoBanner = ({
 						bestReachableRaidVersion,
 						gamemasterPokemon,
 						moves,
-						!bestReachableRaidVersion.isShadow && pokemon.isShadow
-							? Math.min(15, attack + 2)
-							: attack,
+						!bestReachableRaidVersion.isShadow && pokemon.isShadow ? Math.min(15, attack + 2) : attack,
 						(level - 1) * 2,
 						t,
 						undefined,
@@ -224,36 +197,18 @@ const PokemonInfoBanner = ({
 		]
 	);
 
-	const [
-		currentBestReachableGreatLeagueIndex,
-		setCurrentBestReachableGreatLeagueIndex,
-	] = useState(0);
-	const [
-		currentBestReachableUltraLeagueIndex,
-		setCurrentBestReachableUltraLeagueIndex,
-	] = useState(0);
-	const [
-		currentBestReachableMasterLeagueIndex,
-		setCurrentBestReachableMasterLeagueIndex,
-	] = useState(0);
-	const [
-		currentBestReachableCustomLeagueIndex,
-		setCurrentBestReachableCustomLeagueIndex,
-	] = useState(0);
-	const [
-		currentBestReachableRaidLeagueIndex,
-		setCurrentBestReachableRaidLeagueIndex,
-	] = useState(0);
+	const [currentBestReachableGreatLeagueIndex, setCurrentBestReachableGreatLeagueIndex] = useState(0);
+	const [currentBestReachableUltraLeagueIndex, setCurrentBestReachableUltraLeagueIndex] = useState(0);
+	const [currentBestReachableMasterLeagueIndex, setCurrentBestReachableMasterLeagueIndex] = useState(0);
+	const [currentBestReachableCustomLeagueIndex, setCurrentBestReachableCustomLeagueIndex] = useState(0);
+	const [currentBestReachableRaidLeagueIndex, setCurrentBestReachableRaidLeagueIndex] = useState(0);
 
 	const allReachableRaidPokemon = useMemo(() => {
 		if (!fetchCompleted) {
 			return [pokemon];
 		}
 
-		const reachableExcludingMega = fetchReachablePokemonIncludingSelf(
-			pokemon,
-			gamemasterPokemon
-		);
+		const reachableExcludingMega = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
 
 		const exclusions = ['slowbro_galarian', 'slowpoke_galarian'];
 
@@ -292,9 +247,7 @@ const PokemonInfoBanner = ({
 				return a.speciesId.localeCompare(b.speciesId);
 			});
 
-			setBestReachableRaidVersion(
-				sortedPokemon[currentBestReachableRaidLeagueIndex]
-			);
+			setBestReachableRaidVersion(sortedPokemon[currentBestReachableRaidLeagueIndex]);
 		}, 0);
 	}, [
 		fetchCompleted,
@@ -320,27 +273,12 @@ const PokemonInfoBanner = ({
 	);
 
 	const rank = useMemo(() => {
-		if (
-			!fetchCompleted ||
-			!movesFetchCompleted ||
-			!bestReachableRaidVersion ||
-			!raidDPSFetchCompleted
-		) {
+		if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidDPSFetchCompleted) {
 			return 0;
 		}
 
-		return (
-			Object.entries(raidDPS['']).findIndex(
-				([speciesId]) => speciesId === bestReachableRaidVersion.speciesId
-			) + 1
-		);
-	}, [
-		raidDPS,
-		bestReachableRaidVersion,
-		fetchCompleted,
-		movesFetchCompleted,
-		raidDPSFetchCompleted,
-	]);
+		return Object.entries(raidDPS['']).findIndex(([speciesId]) => speciesId === bestReachableRaidVersion.speciesId) + 1;
+	}, [raidDPS, bestReachableRaidVersion, fetchCompleted, movesFetchCompleted, raidDPSFetchCompleted]);
 
 	const selfRealDPS = useMemo(() => {
 		if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion) {
@@ -351,45 +289,20 @@ const PokemonInfoBanner = ({
 			bestReachableRaidVersion,
 			gamemasterPokemon,
 			moves,
-			!bestReachableRaidVersion.isShadow && pokemon.isShadow
-				? Math.min(15, attack + 2)
-				: attack,
+			!bestReachableRaidVersion.isShadow && pokemon.isShadow ? Math.min(15, attack + 2) : attack,
 			(level - 1) * 2
 		);
-	}, [
-		bestReachableRaidVersion,
-		attack,
-		level,
-		moves,
-		gamemasterPokemon,
-		fetchCompleted,
-		movesFetchCompleted,
-		pokemon,
-	]);
+	}, [bestReachableRaidVersion, attack, level, moves, gamemasterPokemon, fetchCompleted, movesFetchCompleted, pokemon]);
 
 	if (resourcesNotReady) {
-		return (
-			<span className='centered'>
-				{translator(TranslatorKeys.Loading, currentLanguage)}
-			</span>
-		);
+		return <span className='centered'>{translator(TranslatorKeys.Loading, currentLanguage)}</span>;
 	}
 
-	const reachablePokemons = fetchReachablePokemonIncludingSelf(
-		pokemon,
-		gamemasterPokemon
-	);
+	const reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
 
-	const leagueSorter = (
-		reachablePokemons: Set<IGamemasterPokemon>,
-		leagueIndex: number
-	) => {
+	const leagueSorter = (reachablePokemons: Set<IGamemasterPokemon>, leagueIndex: number) => {
 		return Array.from(reachablePokemons)
-			.filter(
-				(p) =>
-					p.speciesId === pokemon.speciesId ||
-					rankLists[leagueIndex][p.speciesId]?.rank
-			)
+			.filter((p) => p.speciesId === pokemon.speciesId || rankLists[leagueIndex][p.speciesId]?.rank)
 			.sort((a: IGamemasterPokemon, b: IGamemasterPokemon) => {
 				const aRank = rankLists[leagueIndex][a.speciesId]?.rank;
 				const bRank = rankLists[leagueIndex][b.speciesId]?.rank;
@@ -406,42 +319,23 @@ const PokemonInfoBanner = ({
 			});
 	};
 
-	const allSortedReachableGreatLeaguePokemon = leagueSorter(
-		reachablePokemons,
-		0
-	);
+	const allSortedReachableGreatLeaguePokemon = leagueSorter(reachablePokemons, 0);
 
-	const allSortedReachableUltraLeaguePokemon = leagueSorter(
-		reachablePokemons,
-		1
-	);
+	const allSortedReachableUltraLeaguePokemon = leagueSorter(reachablePokemons, 1);
 
-	const allSortedReachableMasterLeaguePokemon = leagueSorter(
-		reachablePokemons,
-		2
-	);
+	const allSortedReachableMasterLeaguePokemon = leagueSorter(reachablePokemons, 2);
 
-	const allSortedReachableCustomLeaguePokemon = rankLists[3]
-		? leagueSorter(reachablePokemons, 3)
-		: [];
+	const allSortedReachableCustomLeaguePokemon = rankLists[3] ? leagueSorter(reachablePokemons, 3) : [];
 
 	//TODO: these fallbacks shouldn't be needed... Need to refactor every async resource from the custom hooks.
 	const bestInFamilyForGreatLeague =
-		allSortedReachableGreatLeaguePokemon[
-			currentBestReachableGreatLeagueIndex
-		] ?? pokemon;
+		allSortedReachableGreatLeaguePokemon[currentBestReachableGreatLeagueIndex] ?? pokemon;
 	const bestInFamilyForUltraLeague =
-		allSortedReachableUltraLeaguePokemon[
-			currentBestReachableUltraLeagueIndex
-		] ?? pokemon;
+		allSortedReachableUltraLeaguePokemon[currentBestReachableUltraLeagueIndex] ?? pokemon;
 	const bestInFamilyForMasterLeague =
-		allSortedReachableMasterLeaguePokemon[
-			currentBestReachableMasterLeagueIndex
-		] ?? pokemon;
+		allSortedReachableMasterLeaguePokemon[currentBestReachableMasterLeagueIndex] ?? pokemon;
 	const bestInFamilyForCustomLeague =
-		allSortedReachableCustomLeaguePokemon[
-			currentBestReachableCustomLeagueIndex
-		] ?? pokemon;
+		allSortedReachableCustomLeaguePokemon[currentBestReachableCustomLeagueIndex] ?? pokemon;
 
 	const indexedBests = [
 		bestInFamilyForGreatLeague,
@@ -450,14 +344,10 @@ const PokemonInfoBanner = ({
 		bestInFamilyForCustomLeague,
 	];
 
-	const bestReachableGreatLeagueIvs =
-		ivPercents[bestInFamilyForGreatLeague.speciesId];
-	const bestReachableUltraLeagueIvs =
-		ivPercents[bestInFamilyForUltraLeague.speciesId];
-	const bestReachableMasterLeagueIvs =
-		ivPercents[bestInFamilyForMasterLeague.speciesId];
-	const bestReachableCustomLeagueIvs =
-		ivPercents[bestInFamilyForCustomLeague.speciesId];
+	const bestReachableGreatLeagueIvs = ivPercents[bestInFamilyForGreatLeague.speciesId];
+	const bestReachableUltraLeagueIvs = ivPercents[bestInFamilyForUltraLeague.speciesId];
+	const bestReachableMasterLeagueIvs = ivPercents[bestInFamilyForMasterLeague.speciesId];
+	const bestReachableCustomLeagueIvs = ivPercents[bestInFamilyForCustomLeague.speciesId];
 
 	const computeEffectiveness = (effectiveness: Effectiveness) =>
 		Array.from(
@@ -469,9 +359,7 @@ const PokemonInfoBanner = ({
 								computeMoveEffectiveness(
 									k.toLocaleLowerCase(),
 									pokemon.types[0].toString().toLocaleLowerCase(),
-									pokemon.types[1]
-										? pokemon.types[1].toString().toLocaleLowerCase()
-										: undefined
+									pokemon.types[1] ? pokemon.types[1].toString().toLocaleLowerCase() : undefined
 								)
 						) / 1000000000;
 					return moveEffectiveness === Number(effectiveness);
@@ -484,40 +372,27 @@ const PokemonInfoBanner = ({
 	const superEffective = computeEffectiveness(Effectiveness.DoubleEffective);
 	const resistance = computeEffectiveness(Effectiveness.Resistance);
 	const superResistance = computeEffectiveness(Effectiveness.DoubleResistance);
-	const tripleResistance = computeEffectiveness(
-		Effectiveness.DoubleResistance * Effectiveness.Resistance
-	);
+	const tripleResistance = computeEffectiveness(Effectiveness.DoubleResistance * Effectiveness.Resistance);
 
-	const getRankPercentage = (rank: number) =>
-		Math.round(((1 - rank / 4095) * 100 + Number.EPSILON) * 100) / 100;
+	const getRankPercentage = (rank: number) => Math.round(((1 - rank / 4095) * 100 + Number.EPSILON) * 100) / 100;
 
 	const handleListEntryClick = (newLeague: LeagueType) => {
 		if (league === newLeague) {
 			switch (newLeague) {
 				case LeagueType.GREAT_LEAGUE:
-					setCurrentBestReachableGreatLeagueIndex(
-						(p) => (p + 1) % allSortedReachableGreatLeaguePokemon.length
-					);
+					setCurrentBestReachableGreatLeagueIndex((p) => (p + 1) % allSortedReachableGreatLeaguePokemon.length);
 					break;
 				case LeagueType.ULTRA_LEAGUE:
-					setCurrentBestReachableUltraLeagueIndex(
-						(p) => (p + 1) % allSortedReachableUltraLeaguePokemon.length
-					);
+					setCurrentBestReachableUltraLeagueIndex((p) => (p + 1) % allSortedReachableUltraLeaguePokemon.length);
 					break;
 				case LeagueType.MASTER_LEAGUE:
-					setCurrentBestReachableMasterLeagueIndex(
-						(p) => (p + 1) % allSortedReachableMasterLeaguePokemon.length
-					);
+					setCurrentBestReachableMasterLeagueIndex((p) => (p + 1) % allSortedReachableMasterLeaguePokemon.length);
 					break;
 				case LeagueType.CUSTOM_CUP:
-					setCurrentBestReachableCustomLeagueIndex(
-						(p) => (p + 1) % allSortedReachableCustomLeaguePokemon.length
-					);
+					setCurrentBestReachableCustomLeagueIndex((p) => (p + 1) % allSortedReachableCustomLeaguePokemon.length);
 					break;
 				case LeagueType.RAID:
-					setCurrentBestReachableRaidLeagueIndex(
-						(p) => (p + 1) % allReachableRaidPokemon.length
-					);
+					setCurrentBestReachableRaidLeagueIndex((p) => (p + 1) % allReachableRaidPokemon.length);
 					break;
 			}
 		} else {
@@ -538,39 +413,29 @@ const PokemonInfoBanner = ({
 						greatLeagueStats={{
 							leagueTitle: 'great',
 							bestReachablePokemon: bestInFamilyForGreatLeague,
-							pokemonRankInLeague: ordinal(
-								rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank
-							),
+							pokemonRankInLeague: ordinal(rankLists[0][bestInFamilyForGreatLeague.speciesId]?.rank),
 						}}
 						ultraLeagueStats={{
 							leagueTitle: 'ultra',
 							bestReachablePokemon: bestInFamilyForUltraLeague,
-							pokemonRankInLeague: ordinal(
-								rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank
-							),
+							pokemonRankInLeague: ordinal(rankLists[1][bestInFamilyForUltraLeague.speciesId]?.rank),
 						}}
 						masterLeagueStats={{
 							leagueTitle: 'master',
 							bestReachablePokemon: bestInFamilyForMasterLeague,
-							pokemonRankInLeague: ordinal(
-								rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank
-							),
+							pokemonRankInLeague: ordinal(rankLists[2][bestInFamilyForMasterLeague.speciesId]?.rank),
 						}}
 						customLeagueStats={{
 							leagueTitle: 'custom',
 							bestReachablePokemon: bestInFamilyForCustomLeague,
 							pokemonRankInLeague: ordinal(
-								rankLists[3]
-									? rankLists[3][bestInFamilyForCustomLeague.speciesId]?.rank
-									: 0
+								rankLists[3] ? rankLists[3][bestInFamilyForCustomLeague.speciesId]?.rank : 0
 							),
 						}}
 						raidsStats={{
 							leagueTitle: 'raid',
 							bestReachablePokemon: bestReachableRaidVersion! || pokemon,
-							pokemonRankInLeague: ordinal(
-								mostRelevantType[0].rank.rank ?? rank
-							),
+							pokemonRankInLeague: ordinal(mostRelevantType[0].rank.rank ?? rank),
 							type: mostRelevantType[0].type ?? undefined,
 						}}
 						league={league}
@@ -594,17 +459,13 @@ const PokemonInfoBanner = ({
 					isShadow={pokemon.isShadow}
 					greatLeagueStats={{
 						leagueTitle: 'great',
-						bestReachablePokemonName:
-							bestInFamilyForGreatLeague.speciesName.replace(
-								'Shadow',
-								gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
-							),
-						bestIsShadow: bestInFamilyForGreatLeague.isShadow,
-						pokemonLeaguePercentage: getRankPercentage(
-							bestReachableGreatLeagueIvs.greatLeagueRank
+						bestReachablePokemonName: bestInFamilyForGreatLeague.speciesName.replace(
+							'Shadow',
+							gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 						),
-						pokemonLeaguePercentile:
-							bestReachableGreatLeagueIvs.greatLeagueRank + 1,
+						bestIsShadow: bestInFamilyForGreatLeague.isShadow,
+						pokemonLeaguePercentage: getRankPercentage(bestReachableGreatLeagueIvs.greatLeagueRank),
+						pokemonLeaguePercentile: bestReachableGreatLeagueIvs.greatLeagueRank + 1,
 						pokemonCP: bestReachableGreatLeagueIvs.greatLeagueCP,
 						pokemonLevel: bestReachableGreatLeagueIvs.greatLeagueLvl,
 						atk: bestReachableGreatLeagueIvs.greatLeaguePerfect.A,
@@ -615,17 +476,13 @@ const PokemonInfoBanner = ({
 					}}
 					ultraLeagueStats={{
 						leagueTitle: 'ultra',
-						bestReachablePokemonName:
-							bestInFamilyForUltraLeague.speciesName.replace(
-								'Shadow',
-								gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
-							),
-						bestIsShadow: bestInFamilyForUltraLeague.isShadow,
-						pokemonLeaguePercentage: getRankPercentage(
-							bestReachableUltraLeagueIvs.ultraLeagueRank
+						bestReachablePokemonName: bestInFamilyForUltraLeague.speciesName.replace(
+							'Shadow',
+							gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 						),
-						pokemonLeaguePercentile:
-							bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
+						bestIsShadow: bestInFamilyForUltraLeague.isShadow,
+						pokemonLeaguePercentage: getRankPercentage(bestReachableUltraLeagueIvs.ultraLeagueRank),
+						pokemonLeaguePercentile: bestReachableUltraLeagueIvs.ultraLeagueRank + 1,
 						pokemonCP: bestReachableUltraLeagueIvs.ultraLeagueCP,
 						pokemonLevel: bestReachableUltraLeagueIvs.ultraLeagueLvl,
 						atk: bestReachableUltraLeagueIvs.ultraLeaguePerfect.A,
@@ -636,17 +493,13 @@ const PokemonInfoBanner = ({
 					}}
 					masterLeagueStats={{
 						leagueTitle: 'master',
-						bestReachablePokemonName:
-							bestInFamilyForMasterLeague.speciesName.replace(
-								'Shadow',
-								gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
-							),
-						bestIsShadow: bestInFamilyForMasterLeague.isShadow,
-						pokemonLeaguePercentage: getRankPercentage(
-							bestReachableMasterLeagueIvs.masterLeagueRank
+						bestReachablePokemonName: bestInFamilyForMasterLeague.speciesName.replace(
+							'Shadow',
+							gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 						),
-						pokemonLeaguePercentile:
-							bestReachableMasterLeagueIvs.masterLeagueRank + 1,
+						bestIsShadow: bestInFamilyForMasterLeague.isShadow,
+						pokemonLeaguePercentage: getRankPercentage(bestReachableMasterLeagueIvs.masterLeagueRank),
+						pokemonLeaguePercentile: bestReachableMasterLeagueIvs.masterLeagueRank + 1,
 						pokemonCP: bestReachableMasterLeagueIvs.masterLeagueCP,
 						pokemonLevel: bestReachableMasterLeagueIvs.masterLeagueLvl,
 						atk: bestReachableMasterLeagueIvs.masterLeaguePerfect.A,
@@ -657,17 +510,13 @@ const PokemonInfoBanner = ({
 					}}
 					customLeagueStats={{
 						leagueTitle: 'custom',
-						bestReachablePokemonName:
-							bestInFamilyForCustomLeague.speciesName.replace(
-								'Shadow',
-								gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
-							),
-						bestIsShadow: bestInFamilyForCustomLeague.isShadow,
-						pokemonLeaguePercentage: getRankPercentage(
-							bestReachableCustomLeagueIvs.customLeagueRank
+						bestReachablePokemonName: bestInFamilyForCustomLeague.speciesName.replace(
+							'Shadow',
+							gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 						),
-						pokemonLeaguePercentile:
-							bestReachableCustomLeagueIvs.customLeagueRank + 1,
+						bestIsShadow: bestInFamilyForCustomLeague.isShadow,
+						pokemonLeaguePercentage: getRankPercentage(bestReachableCustomLeagueIvs.customLeagueRank),
+						pokemonLeaguePercentile: bestReachableCustomLeagueIvs.customLeagueRank + 1,
 						pokemonCP: bestReachableCustomLeagueIvs.customLeagueCP,
 						pokemonLevel: bestReachableCustomLeagueIvs.customLeagueLvl,
 						atk: bestReachableCustomLeagueIvs.customLeaguePerfect.A,
@@ -677,25 +526,20 @@ const PokemonInfoBanner = ({
 						bestLevel: bestReachableCustomLeagueIvs.customLeaguePerfectLevel,
 					}}
 					raidStats={{
-						bestReachablePokemonName: (
-							bestReachableRaidVersion! ?? pokemon
-						).speciesName.replace(
+						bestReachablePokemonName: (bestReachableRaidVersion! ?? pokemon).speciesName.replace(
 							'Shadow',
 							gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 						),
 						rank: rank,
 						dps: selfRealDPS.dps,
 						typeRanks: mostRelevantType.map((t) => ({
-							type: (t.type.substring(0, 1).toLocaleUpperCase() +
-								t.type.substring(1)) as keyof typeof PokemonTypes,
+							type: (t.type.substring(0, 1).toLocaleUpperCase() + t.type.substring(1)) as keyof typeof PokemonTypes,
 							rank: t.rank.rank,
 							dps: t.rank.dps,
 						})),
 					}}
 					unranked={
-						rankLists[league] &&
-						indexedBests[league] &&
-						!rankLists[league][indexedBests[league].speciesId]?.rank
+						rankLists[league] && indexedBests[league] && !rankLists[league][indexedBests[league].speciesId]?.rank
 							? true
 							: false
 					}
@@ -704,9 +548,7 @@ const PokemonInfoBanner = ({
 					<div className='full-height type-effectiveness-distribution'>
 						<div className='with-shadow aligned column-display gapped unjustified'>
 							<div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-								<strong>
-									{translator(TranslatorKeys.Weak, currentLanguage)}:
-								</strong>
+								<strong>{translator(TranslatorKeys.Weak, currentLanguage)}:</strong>
 							</div>
 
 							<div className='max-width aligned full-height'>
@@ -720,9 +562,7 @@ const PokemonInfoBanner = ({
 															superEffective.includes(t) ? 'special-item' : ''
 														} relative soft family-padding item`}
 													>
-														{superEffective.includes(t) && (
-															<sub className='special-overlay'>2x</sub>
-														)}
+														{superEffective.includes(t) && <sub className='special-overlay'>2x</sub>}
 														<div className='img-padding'>
 															<img
 																className='with-img-dropShadow'
@@ -736,9 +576,7 @@ const PokemonInfoBanner = ({
 												</div>
 											))
 										) : (
-											<sub className='weighted-font'>
-												{translator(TranslatorKeys.Nothing, currentLanguage)}
-											</sub>
+											<sub className='weighted-font'>{translator(TranslatorKeys.Nothing, currentLanguage)}</sub>
 										)}
 									</div>
 								</div>
@@ -746,20 +584,13 @@ const PokemonInfoBanner = ({
 						</div>
 						<div className='with-shadow aligned column-display gapped unjustified'>
 							<div className='pvp-entry full-width smooth with-border fitting-content gapped'>
-								<strong>
-									{translator(TranslatorKeys.Resistant, currentLanguage)}:
-								</strong>
+								<strong>{translator(TranslatorKeys.Resistant, currentLanguage)}:</strong>
 							</div>
 							<div className='max-width aligned full-height'>
 								<div className='full-width'>
 									<div className='types-family no-padding'>
-										{[...tripleResistance, ...superResistance, ...resistance]
-											.length > 0 ? (
-											[
-												...tripleResistance,
-												...superResistance,
-												...resistance,
-											].map((t) => (
+										{[...tripleResistance, ...superResistance, ...resistance].length > 0 ? (
+											[...tripleResistance, ...superResistance, ...resistance].map((t) => (
 												<div key={t}>
 													<strong
 														className={`move-detail ${
@@ -770,14 +601,8 @@ const PokemonInfoBanner = ({
 																	: ''
 														} relative soft family-padding item`}
 													>
-														{superResistance.includes(t) && (
-															<sub className='special-overlay'>2x</sub>
-														)}
-														{tripleResistance.includes(t) && (
-															<sub className='special-overlay triple-overlay'>
-																3x
-															</sub>
-														)}
+														{superResistance.includes(t) && <sub className='special-overlay'>2x</sub>}
+														{tripleResistance.includes(t) && <sub className='special-overlay triple-overlay'>3x</sub>}
 														<div className='img-padding'>
 															<img
 																height={20}
@@ -791,9 +616,7 @@ const PokemonInfoBanner = ({
 												</div>
 											))
 										) : (
-											<sub className='weighted-font'>
-												{translator(TranslatorKeys.Nothing, currentLanguage)}
-											</sub>
+											<sub className='weighted-font'>{translator(TranslatorKeys.Nothing, currentLanguage)}</sub>
 										)}
 									</div>
 								</div>

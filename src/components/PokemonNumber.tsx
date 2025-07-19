@@ -14,12 +14,7 @@ type IPokemonNumberProps = {
 	rankOverride?: number | undefined;
 };
 
-const PokemonNumber = ({
-	dex,
-	speciesId,
-	listType,
-	rankOverride,
-}: IPokemonNumberProps) => {
+const PokemonNumber = ({ dex, speciesId, listType, rankOverride }: IPokemonNumberProps) => {
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { currentLanguage } = useLanguage();
 
@@ -38,24 +33,15 @@ const PokemonNumber = ({
 		}
 
 		if (currentLanguage === Language.Portuguese) {
-			ordinalRank = ordinalRank
-				.replace('st', 'º')
-				.replace('nd', 'º')
-				.replace('rd', 'º')
-				.replace('th', 'º');
+			ordinalRank = ordinalRank.replace('st', 'º').replace('nd', 'º').replace('rd', 'º').replace('th', 'º');
 		}
 
 		if (currentLanguage === Language.Bosnian) {
-			ordinalRank = ordinalRank
-				.replace('st', '.')
-				.replace('nd', '.')
-				.replace('rd', '.')
-				.replace('th', '.');
+			ordinalRank = ordinalRank.replace('st', '.').replace('nd', '.').replace('rd', '.').replace('th', '.');
 		}
 
 		if (rankOverride ?? rankLists[listType - 1]) {
-			const effectiveRank =
-				rankOverride ?? rankLists[listType - 1][speciesId].rank;
+			const effectiveRank = rankOverride ?? rankLists[listType - 1][speciesId].rank;
 
 			switch (effectiveRank) {
 				case 1:
@@ -70,14 +56,7 @@ const PokemonNumber = ({
 		}
 
 		return ordinalRank;
-	}, [
-		currentLanguage,
-		listType,
-		pvpFetchCompleted,
-		rankLists,
-		rankOverride,
-		speciesId,
-	]);
+	}, [currentLanguage, listType, pvpFetchCompleted, rankLists, rankOverride, speciesId]);
 
 	const computeRankChange = useCallback(() => {
 		if (!pvpFetchCompleted || !rankLists[listType - 1]) {
@@ -89,9 +68,7 @@ const PokemonNumber = ({
 
 	const rankChangeClassName = useMemo(
 		() =>
-			!pvpFetchCompleted ||
-			listType === ListType.POKEDEX ||
-			!rankLists[listType - 1]
+			!pvpFetchCompleted || listType === ListType.POKEDEX || !rankLists[listType - 1]
 				? ''
 				: rankLists[listType - 1][speciesId].rankChange === 0
 					? 'neutral'
@@ -109,11 +86,7 @@ const PokemonNumber = ({
 				<>
 					<span>{fetchPokemonRank()}</span>
 					<br className='break-line' />
-					<span
-						className={`rank-change with-brightness ${rankChangeClassName}`}
-					>
-						{computeRankChange()}
-					</span>
+					<span className={`rank-change with-brightness ${rankChangeClassName}`}>{computeRankChange()}</span>
 				</>
 			)}
 		</div>

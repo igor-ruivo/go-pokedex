@@ -1,3 +1,5 @@
+import './ReusableAdorners.scss';
+
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -10,14 +12,8 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
 import useCountdown from '../hooks/useCountdown';
 import useResize from '../hooks/useResize';
-import {
-	ConfigKeys,
-	readPersistentValue,
-} from '../utils/persistent-configs-handler';
-import {
-	fetchReachablePokemonIncludingSelf,
-	getAllChargedMoves,
-} from '../utils/pokemon-helper';
+import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
+import { fetchReachablePokemonIncludingSelf, getAllChargedMoves } from '../utils/pokemon-helper';
 import PokemonImage from './PokemonImage';
 
 interface IPokemonMiniatureProps {
@@ -93,45 +89,25 @@ const PokemonMiniature = ({
 			return [];
 		}
 
-		const reachablePokemon = Array.from(
-			fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon)
-		);
+		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon));
 		const exceptionPokemon = ['slowpoke_galarian', 'slowbro_galarian'];
 
 		const mega = exceptionPokemon.includes(idToUse)
 			? []
 			: Object.values(gamemasterPokemon).filter(
-					(pk) =>
-						!pk.aliasId &&
-						pk.isMega &&
-						reachablePokemon.some((r) => r.dex === pk.dex)
+					(pk) => !pk.aliasId && pk.isMega && reachablePokemon.some((r) => r.dex === pk.dex)
 				);
 
 		const finalCollection = [...reachablePokemon, ...mega];
 
 		return Array.from(
-			new Set(
-				finalCollection.flatMap((f) =>
-					getAllChargedMoves(f, moves, gamemasterPokemon).map(
-						(m) => moves[m].type
-					)
-				)
-			)
+			new Set(finalCollection.flatMap((f) => getAllChargedMoves(f, moves, gamemasterPokemon).map((m) => moves[m].type)))
 		)
 			.filter((t) => t !== 'normal')
 			.map(
-				(t) =>
-					(t.substring(0, 1).toLocaleUpperCase() +
-						t.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes
+				(t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes
 			);
-	}, [
-		fetchCompleted,
-		movesFetchCompleted,
-		moves,
-		gamemasterPokemon,
-		pkmToUse,
-		idToUse,
-	]);
+	}, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pkmToUse, idToUse]);
 
 	const link = useMemo(() => `/pokemon/${idToUse}/info`, [idToUse]);
 
@@ -144,18 +120,13 @@ const PokemonMiniature = ({
 			return { minRaidRank: Infinity, actualType: '' };
 		}
 
-		const reachablePokemon = Array.from(
-			fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon)
-		);
+		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon));
 		const exceptionPokemon = ['slowpoke_galarian', 'slowbro_galarian'];
 
 		const mega = exceptionPokemon.includes(idToUse)
 			? []
 			: Object.values(gamemasterPokemon).filter(
-					(pk) =>
-						!pk.aliasId &&
-						pk.isMega &&
-						reachablePokemon.some((r) => r.dex === pk.dex)
+					(pk) => !pk.aliasId && pk.isMega && reachablePokemon.some((r) => r.dex === pk.dex)
 				);
 
 		let minRaidRank = Infinity;
@@ -163,9 +134,7 @@ const PokemonMiniature = ({
 		const finalCollection = [...reachablePokemon, ...mega];
 		allRelevantChargedMoveTypes.forEach((t) => {
 			finalCollection.forEach((pk) => {
-				const rank = Object.keys(
-					raidDPS[t.toString().toLocaleLowerCase()]
-				).indexOf(pk.speciesId);
+				const rank = Object.keys(raidDPS[t.toString().toLocaleLowerCase()]).indexOf(pk.speciesId);
 				if (rank !== -1) {
 					if (rank + 1 < minRaidRank) {
 						minRaidRank = rank + 1;
@@ -191,29 +160,19 @@ const PokemonMiniature = ({
 			if (!pvpFetchCompleted || !fetchCompleted) {
 				return Infinity;
 			}
-			const reachable = fetchReachablePokemonIncludingSelf(
-				pkmToUse,
-				gamemasterPokemon
-			);
-			return Math.min(
-				...Array.from(reachable).map(
-					(r) => rankLists[leagueIdx][r.speciesId]?.rank ?? Infinity
-				)
-			);
+			const reachable = fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon);
+			return Math.min(...Array.from(reachable).map((r) => rankLists[leagueIdx][r.speciesId]?.rank ?? Infinity));
 		},
 		[pvpFetchCompleted, pkmToUse, gamemasterPokemon, rankLists, fetchCompleted]
 	);
 
-	const relevantLeagueElement = useCallback(
-		(mapper: Record<string, ReactNode>) => {
-			const minimum = String(Math.min(...Object.keys(mapper).map((t) => +t)));
-			if (!mapper[minimum]) {
-				return <></>;
-			}
-			return mapper[minimum];
-		},
-		[]
-	);
+	const relevantLeagueElement = useCallback((mapper: Record<string, ReactNode>) => {
+		const minimum = String(Math.min(...Object.keys(mapper).map((t) => +t)));
+		if (!mapper[minimum]) {
+			return <></>;
+		}
+		return mapper[minimum];
+	}, []);
 
 	const mapper = useMemo(() => {
 		const dic: Record<string, ReactNode> = {};
@@ -222,33 +181,15 @@ const PokemonMiniature = ({
 		const master = rankForLeague(2);
 
 		if (great <= +(readPersistentValue(ConfigKeys.TrashGreat) ?? 50)) {
-			dic[great] = (
-				<img
-					alt='Great League'
-					className='is-great'
-					src={`/images/leagues/great-big.webp`}
-				/>
-			);
+			dic[great] = <img alt='Great League' className='is-great' src={`/images/leagues/great-big.webp`} />;
 		}
 
 		if (ultra <= +(readPersistentValue(ConfigKeys.TrashUltra) ?? 50)) {
-			dic[ultra] = (
-				<img
-					alt='Ultra League'
-					className='is-ultra'
-					src={`/images/leagues/ultra-big.webp`}
-				/>
-			);
+			dic[ultra] = <img alt='Ultra League' className='is-ultra' src={`/images/leagues/ultra-big.webp`} />;
 		}
 
 		if (master <= +(readPersistentValue(ConfigKeys.TrashMaster) ?? 110)) {
-			dic[master] = (
-				<img
-					alt='Master League'
-					className='is-master'
-					src={`/images/leagues/master-big.webp`}
-				/>
-			);
+			dic[master] = <img alt='Master League' className='is-master' src={`/images/leagues/master-big.webp`} />;
 		}
 		return dic;
 	}, [rankForLeague]);
@@ -259,15 +200,12 @@ const PokemonMiniature = ({
 		<Link to={link}>
 			<div ref={containerWidth} className='pokemon-miniature'>
 				{withCountdown && (
-					<div className='notifications-counter heavy-weight miniature-notification'>
-						{computeCountdownLabel()}
-					</div>
+					<div className='notifications-counter heavy-weight miniature-notification'>{computeCountdownLabel()}</div>
 				)}
 				<div className={`miniature-tooltip`}>
 					{pvpFetchCompleted &&
 						fetchCompleted &&
-						(raidRaking.minRaidRank <=
-						+(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? (
+						(raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? (
 							<img
 								className='padded-img raid-img-with-contrast is-raid'
 								alt='Raids'
@@ -284,9 +222,7 @@ const PokemonMiniature = ({
 						withName
 						lazy
 						specificNameContainerWidth={containerWidth.current?.clientWidth}
-						forceShadowAdorner={
-							forceShadowAdorner && !pkmToUse.speciesId.endsWith('_shadow')
-						}
+						forceShadowAdorner={forceShadowAdorner && !pkmToUse.speciesId.endsWith('_shadow')}
 					/>
 				</span>
 			</div>

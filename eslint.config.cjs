@@ -18,22 +18,19 @@ const configs = generateEslintConfigs({
 	enable: ['html', 'cjs', 'json'],
 });
 
-const tsConfigs = configureWithPossibleExtension(
-	getTsConfigs(getJsConfigs(), baseDir),
-	(configs) => {
-		return {
-			...configs,
-			plugins: {
-				...configs.plugins,
-				promise: promisePlugin,
-			},
-			rules: {
-				...configs.rules,
-				...promisePlugin.configs.recommended.rules,
-			},
-		};
-	}
-);
+const tsConfigs = configureWithPossibleExtension(getTsConfigs(getJsConfigs(), baseDir), (configs) => {
+	return {
+		...configs,
+		plugins: {
+			...configs.plugins,
+			promise: promisePlugin,
+		},
+		rules: {
+			...configs.rules,
+			...promisePlugin.configs.recommended.rules,
+		},
+	};
+});
 
 if (tsConfigs) {
 	const tsxConfigs = {

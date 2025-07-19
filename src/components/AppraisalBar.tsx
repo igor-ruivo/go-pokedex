@@ -21,14 +21,7 @@ interface IAppraisalBarProps {
 	setHP: (_: React.SetStateAction<number>) => void;
 }
 
-const AppraisalBar = ({
-	attack,
-	setAttack,
-	defense,
-	setDefense,
-	hp,
-	setHP,
-}: IAppraisalBarProps) => {
+const AppraisalBar = ({ attack, setAttack, defense, setDefense, hp, setHP }: IAppraisalBarProps) => {
 	const [debouncingAttack, setDebouncingAttack] = useState(attack);
 	const [debouncingDefense, setDebouncingDefense] = useState(defense);
 	const [debouncingHP, setDebouncingHP] = useState(hp);
@@ -73,22 +66,20 @@ const AppraisalBar = ({
 	);
 
 	const handleCellKeyDown = useCallback(
-		(stat: Stat, cellIndex: number) =>
-			(e: React.KeyboardEvent<HTMLDivElement>) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					handleCellClick(stat, cellIndex);
-				}
-			},
+		(stat: Stat, cellIndex: number) => (e: React.KeyboardEvent<HTMLDivElement>) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				handleCellClick(stat, cellIndex);
+			}
+		},
 		[handleCellClick]
 	);
 
 	const handleCellTouch = useCallback(
-		(stat: Stat, cellIndex: number) =>
-			(e: React.TouchEvent<HTMLDivElement>) => {
-				e.preventDefault();
-				handleCellClick(stat, cellIndex);
-			},
+		(stat: Stat, cellIndex: number) => (e: React.TouchEvent<HTMLDivElement>) => {
+			e.preventDefault();
+			handleCellClick(stat, cellIndex);
+		},
 		[handleCellClick]
 	);
 
@@ -99,9 +90,7 @@ const AppraisalBar = ({
 				const isActive = i < value;
 				const isEnd = i === value - 1 || i === 14;
 
-				const cellClass = ['bar', isActive && 'active hover', isEnd && 'end']
-					.filter(Boolean)
-					.join(' ');
+				const cellClass = ['bar', isActive && 'active hover', isEnd && 'end'].filter(Boolean).join(' ');
 
 				cells.push(
 					<div

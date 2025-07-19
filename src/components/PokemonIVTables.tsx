@@ -73,19 +73,13 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof Data>(
-	order: Order,
-	orderBy: Key
-): (a: Data, b: Data) => number {
+function getComparator<Key extends keyof Data>(order: Order, orderBy: Key): (a: Data, b: Data) => number {
 	return order === 'desc'
 		? (a, b) => descendingComparator(a, b, orderBy)
 		: (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function stableSort<T>(
-	array: ReadonlyArray<T>,
-	comparator: (a: T, b: T) => number
-) {
+function stableSort<T>(array: ReadonlyArray<T>, comparator: (a: T, b: T) => number) {
 	const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
 	stabilizedThis.sort((a, b) => {
 		const order = comparator(a[0], b[0]);
@@ -144,10 +138,7 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 			},
 			{
 				width: 70,
-				label: gameTranslator(
-					GameTranslatorKeys.CP,
-					currentGameLanguage
-				).toLocaleUpperCase(),
+				label: gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase(),
 				dataKey: 'cp',
 				sortable: true,
 			},
@@ -213,20 +204,12 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 
 	const result = useMemo(
 		() =>
-			Object.values(
-				computeBestIVs(
-					pokemon.baseStats.atk,
-					pokemon.baseStats.def,
-					pokemon.baseStats.hp,
-					cpCap
-				)
-			).flat(),
+			Object.values(computeBestIVs(pokemon.baseStats.atk, pokemon.baseStats.def, pokemon.baseStats.hp, cpCap)).flat(),
 		[pokemon, cpCap]
 	);
 
 	const highestScore = useMemo(
-		() =>
-			Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S),
+		() => Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S),
 		[result]
 	);
 
@@ -242,65 +225,53 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 					+(Math.trunc(e.battle.D * 10) / 10).toFixed(1),
 					e.battle.S,
 					Math.round(e.battle.A * e.battle.D * e.battle.S),
-					+(
-						(100 * (e.battle.A * e.battle.D * e.battle.S)) /
-						highestScore
-					).toFixed(3) + '%'
+					+((100 * (e.battle.A * e.battle.D * e.battle.S)) / highestScore).toFixed(3) + '%'
 				);
 			}),
 		[result, highestScore]
 	);
 
-	const visibleRows = useMemo(
-		() => stableSort(rows, getComparator(order, orderBy)),
-		[order, orderBy, rows]
-	);
+	const visibleRows = useMemo(() => stableSort(rows, getComparator(order, orderBy)), [order, orderBy, rows]);
 
 	const VirtuosoTableComponents: TableComponents<Data> = {
-		Scroller: forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-			function VirtuosoScroller(props, ref) {
-				return <div {...props} ref={ref} />;
-			}
-		),
-		Table: forwardRef<HTMLTableElement, TableHTMLAttributes<HTMLTableElement>>(
-			function VirtuosoTable(props, ref) {
-				const { style, ...rest } = props;
+		Scroller: forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(function VirtuosoScroller(props, ref) {
+			return <div {...props} ref={ref} />;
+		}),
+		Table: forwardRef<HTMLTableElement, TableHTMLAttributes<HTMLTableElement>>(function VirtuosoTable(props, ref) {
+			const { style, ...rest } = props;
+			return (
+				<table
+					{...rest}
+					ref={ref}
+					style={{
+						...(style ?? {}),
+						borderCollapse: 'separate',
+						tableLayout: 'fixed',
+						width: '100%',
+					}}
+				/>
+			);
+		}),
+		TableHead: function VirtuosoTableHead(props) {
+			return <thead {...props} className='MuiTableHead-root' />;
+		},
+		TableRow: forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement> & { 'data-index'?: number }>(
+			function VirtuosoTableRowComponent(props, ref) {
+				const dataIndex = props['data-index'];
 				return (
-					<table
-						{...rest}
+					<tr
+						{...props}
 						ref={ref}
-						style={{
-							...(style ?? {}),
-							borderCollapse: 'separate',
-							tableLayout: 'fixed',
-							width: '100%',
-						}}
+						className={`MuiTableRow-root MuiTableRow-hover ${dataIndex === 0 ? 'Mui-selected' : ''}`}
 					/>
 				);
 			}
 		),
-		TableHead: function VirtuosoTableHead(props) {
-			return <thead {...props} className='MuiTableHead-root' />;
-		},
-		TableRow: forwardRef<
-			HTMLTableRowElement,
-			React.HTMLAttributes<HTMLTableRowElement> & { 'data-index'?: number }
-		>(function VirtuosoTableRowComponent(props, ref) {
-			const dataIndex = props['data-index'];
-			return (
-				<tr
-					{...props}
-					ref={ref}
-					className={`MuiTableRow-root MuiTableRow-hover ${dataIndex === 0 ? 'Mui-selected' : ''}`}
-				/>
-			);
-		}),
-		TableBody: forwardRef<
-			HTMLTableSectionElement,
-			React.HTMLAttributes<HTMLTableSectionElement>
-		>(function VirtuosoTableBodyComponent(props, ref) {
-			return <tbody {...props} ref={ref} className='MuiTableBody-root' />;
-		}),
+		TableBody: forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
+			function VirtuosoTableBodyComponent(props, ref) {
+				return <tbody {...props} ref={ref} className='MuiTableBody-root' />;
+			}
+		),
 	};
 
 	const fixedHeaderContent = useCallback(() => {
@@ -316,9 +287,7 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 						sx={{
 							backgroundColor: 'background.paper',
 						}}
-						sortDirection={
-							column.sortable && orderBy === column.dataKey ? order : false
-						}
+						sortDirection={column.sortable && orderBy === column.dataKey ? order : false}
 					>
 						{column.sortable ? (
 							<TableSortLabel
@@ -326,18 +295,12 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 								direction={orderBy === column.dataKey ? order : 'asc'}
 								onClick={() => {
 									setOrderBy(column.dataKey);
-									setOrder((previousOrder) =>
-										previousOrder === 'asc' ? 'desc' : 'asc'
-									);
+									setOrder((previousOrder) => (previousOrder === 'asc' ? 'desc' : 'asc'));
 								}}
 							>
 								{column.label}
 								{orderBy === column.dataKey ? (
-									<span style={visuallyHidden}>
-										{order === 'desc'
-											? 'sorted descending'
-											: 'sorted ascending'}
-									</span>
+									<span style={visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span>
 								) : null}
 							</TableSortLabel>
 						) : (
@@ -354,11 +317,7 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 			return (
 				<>
 					{columns.map((column) => (
-						<TableCell
-							key={column.dataKey}
-							align={'center'}
-							className='normal-text MuiTableCell-body'
-						>
+						<TableCell key={column.dataKey} align={'center'} className='normal-text MuiTableCell-body'>
 							{row[column.dataKey]}
 						</TableCell>
 					))}
@@ -369,10 +328,7 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 	);
 
 	return (
-		<LoadingRenderer
-			errors={errors}
-			completed={fetchCompleted && !!gamemasterPokemon}
-		>
+		<LoadingRenderer errors={errors} completed={fetchCompleted && !!gamemasterPokemon}>
 			{() =>
 				fetchCompleted &&
 				!!gamemasterPokemon &&
@@ -381,33 +337,21 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 						<div className='extra-ivs-options item default-padding'>
 							<div className='with-padding'>
 								{translator(TranslatorKeys.SearchIVs, currentLanguage)}:
-								<select
-									value={attackIV}
-									onChange={(e) => setAttackIV(+e.target.value)}
-									className='select-level'
-								>
+								<select value={attackIV} onChange={(e) => setAttackIV(+e.target.value)} className='select-level'>
 									{Array.from({ length: 16 }, (_x, i) => i).map((e) => (
 										<option key={e} value={e}>
 											{e}
 										</option>
 									))}
 								</select>
-								<select
-									value={defenseIV}
-									onChange={(e) => setDefenseIV(+e.target.value)}
-									className='select-level'
-								>
+								<select value={defenseIV} onChange={(e) => setDefenseIV(+e.target.value)} className='select-level'>
 									{Array.from({ length: 16 }, (_x, i) => i).map((e) => (
 										<option key={e} value={e}>
 											{e}
 										</option>
 									))}
 								</select>
-								<select
-									value={hpIV}
-									onChange={(e) => setHPIV(+e.target.value)}
-									className='select-level'
-								>
+								<select value={hpIV} onChange={(e) => setHPIV(+e.target.value)} className='select-level'>
 									{Array.from({ length: 16 }, (_x, i) => i).map((e) => (
 										<option key={e} value={e}>
 											{e}

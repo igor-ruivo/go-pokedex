@@ -36,10 +36,7 @@ const PokemonInfo = ({
 	level,
 }: IPokemonInfoProps) => {
 	return (
-		<LoadingRenderer
-			errors={''}
-			completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}
-		>
+		<LoadingRenderer errors={''} completed={!loading && Object.hasOwn(ivPercents, pokemon.speciesId)}>
 			{() => (
 				<>
 					<PokemonInfoBanner

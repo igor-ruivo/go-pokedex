@@ -28,10 +28,7 @@ import {
 import { calculateCP, fetchPokemonFamily } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
 
-const parsePersistentCachedNumberValue = (
-	key: ConfigKeys,
-	defaultValue: number
-) => {
+const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
 	const cachedValue = readPersistentValue(key);
 	if (!cachedValue) {
 		return defaultValue;
@@ -39,10 +36,7 @@ const parsePersistentCachedNumberValue = (
 	return +cachedValue;
 };
 
-const parseSessionCachedNumberValue = (
-	key: ConfigKeys,
-	defaultValue: number
-) => {
+const parseSessionCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
 	const cachedValue = readSessionValue(key);
 	if (!cachedValue) {
 		return defaultValue;
@@ -57,19 +51,11 @@ const Pokemon = () => {
 	const { pathname } = useLocation();
 	const { league, handleSetLeague } = useLeague();
 
-	const [attackIV, setAttackIV] = useState(
-		parseSessionCachedNumberValue(ConfigKeys.AttackIV, 0)
-	);
-	const [defenseIV, setDefenseIV] = useState(
-		parseSessionCachedNumberValue(ConfigKeys.DefenseIV, 0)
-	);
-	const [hpIV, setHPIV] = useState(
-		parseSessionCachedNumberValue(ConfigKeys.HPIV, 0)
-	);
+	const [attackIV, setAttackIV] = useState(parseSessionCachedNumberValue(ConfigKeys.AttackIV, 0));
+	const [defenseIV, setDefenseIV] = useState(parseSessionCachedNumberValue(ConfigKeys.DefenseIV, 0));
+	const [hpIV, setHPIV] = useState(parseSessionCachedNumberValue(ConfigKeys.HPIV, 0));
 
-	const [levelCap, setLevelCap] = useState<number>(
-		parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 51)
-	);
+	const [levelCap, setLevelCap] = useState<number>(parsePersistentCachedNumberValue(ConfigKeys.LevelCap, 51));
 
 	useEffect(() => {
 		writeSessionValue(ConfigKeys.AttackIV, attackIV.toString());
@@ -82,9 +68,7 @@ const Pokemon = () => {
 
 	const pokemon = useMemo(
 		() =>
-			fetchCompleted && !gamemasterPokemon[speciesId ?? '']?.aliasId
-				? gamemasterPokemon[speciesId ?? '']
-				: undefined,
+			fetchCompleted && !gamemasterPokemon[speciesId ?? '']?.aliasId ? gamemasterPokemon[speciesId ?? ''] : undefined,
 		[fetchCompleted, gamemasterPokemon, speciesId]
 	);
 
@@ -95,20 +79,11 @@ const Pokemon = () => {
 		hpIV,
 	});
 
-	const pokemonBasePath = useMemo(
-		() => pathname.substring(0, pathname.lastIndexOf('/')),
-		[pathname]
-	);
-	const tab = useMemo(
-		() => pathname.substring(pathname.lastIndexOf('/')),
-		[pathname]
-	);
+	const pokemonBasePath = useMemo(() => pathname.substring(0, pathname.lastIndexOf('/')), [pathname]);
+	const tab = useMemo(() => pathname.substring(pathname.lastIndexOf('/')), [pathname]);
 
 	const computedPokemonFamily = useMemo(
-		() =>
-			fetchCompleted
-				? fetchPokemonFamily(pokemon!, gamemasterPokemon)
-				: undefined,
+		() => (fetchCompleted ? fetchPokemonFamily(pokemon!, gamemasterPokemon) : undefined),
 		[pokemon, fetchCompleted, gamemasterPokemon]
 	);
 
@@ -118,64 +93,46 @@ const Pokemon = () => {
 				<div className='pokemon-content'>
 					<LoadingRenderer
 						errors={errors}
-						completed={
-							fetchCompleted &&
-							!loading &&
-							!!pokemon &&
-							Object.hasOwn(ivPercents, pokemon.speciesId)
-						}
+						completed={fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId)}
 					>
 						{() =>
 							!pokemon ? (
-								<div>
-									{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}
-								</div>
+								<div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div>
 							) : (
 								<div className='content'>
 									<PokemonHeader
 										pokemonName={pokemon.speciesName.replace(
 											'Shadow',
-											gameTranslator(
-												GameTranslatorKeys.Shadow,
-												currentGameLanguage
-											)
+											gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 										)}
 										type1={pokemon.types[0]}
-										type2={
-											pokemon.types.length > 1 ? pokemon.types[1] : undefined
-										}
+										type2={pokemon.types.length > 1 ? pokemon.types[1] : undefined}
 									/>
 									<div className='pokemon'>
-										{fetchCompleted &&
-											!loading &&
-											!!pokemon &&
-											Object.hasOwn(ivPercents, pokemon.speciesId) && (
-												<PokemonInfoImagePlaceholder
-													pokemon={pokemon}
-													computedCP={calculateCP(
-														pokemon.baseStats.atk,
-														attackIV,
-														pokemon.baseStats.def,
-														defenseIV,
-														pokemon.baseStats.hp,
-														hpIV,
-														(displayLevel - 1) * 2
-													)}
-													displayLevel={displayLevel}
-													computedPokemonFamily={computedPokemonFamily}
-													tab={tab}
-													setDisplayLevel={(newLevel: number) => {
-														setDisplayLevel(newLevel);
-														setLevelCap(newLevel);
-													}}
-												/>
-											)}
+										{fetchCompleted && !loading && !!pokemon && Object.hasOwn(ivPercents, pokemon.speciesId) && (
+											<PokemonInfoImagePlaceholder
+												pokemon={pokemon}
+												computedCP={calculateCP(
+													pokemon.baseStats.atk,
+													attackIV,
+													pokemon.baseStats.def,
+													defenseIV,
+													pokemon.baseStats.hp,
+													hpIV,
+													(displayLevel - 1) * 2
+												)}
+												displayLevel={displayLevel}
+												computedPokemonFamily={computedPokemonFamily}
+												tab={tab}
+												setDisplayLevel={(newLevel: number) => {
+													setDisplayLevel(newLevel);
+													setLevelCap(newLevel);
+												}}
+											/>
+										)}
 
 										<div className='with-margin-top'>
-											<LeaguePicker
-												league={league}
-												handleSetLeague={handleSetLeague}
-											/>
+											<LeaguePicker league={league} handleSetLeague={handleSetLeague} />
 										</div>
 
 										<nav className='navigation-header normal-text'>
@@ -183,10 +140,7 @@ const Pokemon = () => {
 												<li>
 													<Link
 														to={pokemonBasePath + '/info'}
-														className={
-															'header-tab no-full-border ' +
-															(tab.endsWith('/info') ? 'selected' : '')
-														}
+														className={'header-tab no-full-border ' + (tab.endsWith('/info') ? 'selected' : '')}
 													>
 														<span>Ranks</span>
 													</Link>
@@ -194,65 +148,33 @@ const Pokemon = () => {
 												<li>
 													<Link
 														to={pokemonBasePath + '/moves'}
-														className={
-															'header-tab no-full-border ' +
-															(tab.endsWith('/moves') ? 'selected' : '')
-														}
+														className={'header-tab no-full-border ' + (tab.endsWith('/moves') ? 'selected' : '')}
 													>
-														<span>
-															{translator(
-																TranslatorKeys.Moves,
-																currentLanguage
-															)}
-														</span>
+														<span>{translator(TranslatorKeys.Moves, currentLanguage)}</span>
 													</Link>
 												</li>
 												<li>
 													<Link
 														to={pokemonBasePath + '/counters'}
-														className={
-															'header-tab no-full-border ' +
-															(tab.endsWith('/counters') ? 'selected' : '')
-														}
+														className={'header-tab no-full-border ' + (tab.endsWith('/counters') ? 'selected' : '')}
 													>
-														<span>
-															{translator(
-																TranslatorKeys.Counters,
-																currentLanguage
-															)}
-														</span>
+														<span>{translator(TranslatorKeys.Counters, currentLanguage)}</span>
 													</Link>
 												</li>
 												<li>
 													<Link
 														to={pokemonBasePath + '/tables'}
-														className={
-															'header-tab no-full-border ' +
-															(tab.endsWith('/tables') ? 'selected' : '')
-														}
+														className={'header-tab no-full-border ' + (tab.endsWith('/tables') ? 'selected' : '')}
 													>
-														<span>
-															{translator(
-																TranslatorKeys.IVTables,
-																currentLanguage
-															)}
-														</span>
+														<span>{translator(TranslatorKeys.IVTables, currentLanguage)}</span>
 													</Link>
 												</li>
 												<li>
 													<Link
 														to={pokemonBasePath + '/strings'}
-														className={
-															'header-tab no-full-border ' +
-															(tab.endsWith('/strings') ? 'selected' : '')
-														}
+														className={'header-tab no-full-border ' + (tab.endsWith('/strings') ? 'selected' : '')}
 													>
-														<span>
-															{translator(
-																TranslatorKeys.SearchStrings,
-																currentLanguage
-															)}
-														</span>
+														<span>{translator(TranslatorKeys.SearchStrings, currentLanguage)}</span>
 													</Link>
 												</li>
 											</ul>
@@ -275,15 +197,9 @@ const Pokemon = () => {
 											/>
 										)}
 										{tab.endsWith('/moves') && (
-											<PokemonMoves
-												pokemon={pokemon}
-												league={league}
-												level={(levelCap - 1) * 2}
-											/>
+											<PokemonMoves pokemon={pokemon} league={league} level={(levelCap - 1) * 2} />
 										)}
-										{tab.endsWith('/counters') && (
-											<PokemonCounters pokemon={pokemon} league={league} />
-										)}
+										{tab.endsWith('/counters') && <PokemonCounters pokemon={pokemon} league={league} />}
 										{tab.endsWith('/tables') && (
 											<PokemonIVTables
 												pokemon={pokemon}
@@ -296,9 +212,7 @@ const Pokemon = () => {
 												setHPIV={setHPIV}
 											/>
 										)}
-										{tab.endsWith('/strings') && (
-											<PokemonSearchStrings pokemon={pokemon} league={league} />
-										)}
+										{tab.endsWith('/strings') && <PokemonSearchStrings pokemon={pokemon} league={league} />}
 									</div>
 								</div>
 							)

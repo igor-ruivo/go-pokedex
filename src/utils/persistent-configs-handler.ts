@@ -60,10 +60,7 @@ export const writePersistentValue = (key: ConfigKeys, value: string) => {
 	localStorage.setItem(key.toString(), value);
 };
 
-export const writePersistentCostumKeyValue = (
-	customKey: string,
-	value: string
-) => {
+export const writePersistentCostumKeyValue = (customKey: string, value: string) => {
 	localStorage.setItem(customKey, value);
 };
 

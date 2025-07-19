@@ -22,21 +22,11 @@ interface RaidRankerContextType {
 	raidDPSErrors: string;
 }
 
-const RaidRankerContext = createContext<RaidRankerContextType | undefined>(
-	undefined
-);
+const RaidRankerContext = createContext<RaidRankerContextType | undefined>(undefined);
 
-const useFetchAllData: () => [
-	Array<Record<string, DPSEntry>>,
-	boolean,
-	string,
-] = () => {
-	const [
-		moves,
-		fetchMoves,
-		fetchMovesCompleted,
-		errorLoadingMovesData,
-	]: FetchData<Record<string, DPSEntry>> = useFetchUrls();
+const useFetchAllData: () => [Array<Record<string, DPSEntry>>, boolean, string] = () => {
+	const [moves, fetchMoves, fetchMovesCompleted, errorLoadingMovesData]: FetchData<Record<string, DPSEntry>> =
+		useFetchUrls();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -44,11 +34,7 @@ const useFetchAllData: () => [
 			[
 				...Object.values(PokemonTypes)
 					.filter((v) => typeof v === 'string')
-					.map((type) =>
-						typeof type === 'string'
-							? dpsUrl(type.toLocaleLowerCase())
-							: 'default'
-					),
+					.map((type) => (typeof type === 'string' ? dpsUrl(type.toLocaleLowerCase()) : 'default')),
 				dpsUrl('default'),
 			],
 			0
@@ -70,17 +56,12 @@ export const useRaidRanker = (): RaidRankerContextType => {
 };
 
 export const RaidRankerProvider = (props: PropsWithChildren<object>) => {
-	const [raidDPSArray, raidDPSFetchCompleted, raidDPSErrors]: [
-		Array<Record<string, DPSEntry>>,
-		boolean,
-		string,
-	] = useFetchAllData();
+	const [raidDPSArray, raidDPSFetchCompleted, raidDPSErrors]: [Array<Record<string, DPSEntry>>, boolean, string] =
+		useFetchAllData();
 
 	const raidDPS: Record<string, Record<string, DPSEntry>> = {};
 	[...Object.values(PokemonTypes).filter((v) => typeof v === 'string'), '']
-		.map((type) =>
-			typeof type === 'string' ? type.toLocaleLowerCase() : 'default'
-		)
+		.map((type) => (typeof type === 'string' ? type.toLocaleLowerCase() : 'default'))
 		.forEach((type, index) => {
 			raidDPS[type] = raidDPSArray[index];
 		});

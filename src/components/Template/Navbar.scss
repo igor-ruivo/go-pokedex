@@ -9,8 +9,6 @@
 	color: var(--textColor);
 	padding: 6px;
 	display: flex;
-
-	// position: sticky;
 	position: fixed;
 	top: 0;
 	width: 100%;
@@ -19,10 +17,6 @@
 		opacity 225ms ease,
 		visibility 225ms linear,
 		transform 225ms linear;
-}
-
-.with-pointer {
-	cursor: pointer;
 }
 
 .fake-modal {
@@ -97,15 +91,6 @@
 	margin: 0 0 0 2px;
 	top: 1px;
 	position: relative;
-}
-
-.option-entry-row {
-	display: flex;
-	flex-direction: row;
-	gap: 6px;
-	padding: 6px;
-	line-height: 1.25;
-	color: inherit;
 }
 
 .option-entry-row-filter {
@@ -217,45 +202,6 @@
 	color: transparent;
 }
 
-.navbar-dropdown-family {
-	z-index: 39998;
-
-	> div {
-		border: 1px solid var(--borderColor2) !important;
-		border-radius: 12px !important;
-	}
-
-	> div > div {
-		// border: 1px solid var(--borderColor2) !important;
-		border-radius: 12px !important;
-	}
-
-	> div > div > div {
-		// border: 1px solid var(--borderColor2) !important;
-		border-radius: 12px !important;
-	}
-
-	> * {
-		border: 1px solid var(--borderColor2);
-	}
-
-	* {
-		cursor: pointer !important;
-
-		&:not(.cp-container) {
-			color: var(--textColor) !important;
-		}
-
-		background-color: var(--popup-background-color) !important;
-
-		// overflow: unset !important;
-	}
-
-	.img-adorner {
-		background-color: rgb(0 0 0 / 0%) !important;
-	}
-}
-
 .navbar-dropdown {
 	> * {
 		border: 1px solid var(--borderColor2);
@@ -264,31 +210,12 @@
 	* {
 		color: var(--textColor) !important;
 		background: var(--buttonsBackground) !important;
-
-		// overflow: unset !important;
 	}
 }
 
 .navbar-dropdown-menu {
 	width: 80%;
 	font-size: smaller;
-}
-
-button {
-	color: var(--buttonsTextColor);
-	border-radius: 12px;
-	font-size: inherit;
-	border: 1px solid var(--buttonsTextColor);
-}
-
-.hint-container {
-	display: flex;
-	min-height: 16px;
-	gap: 9px;
-
-	img {
-		background: unset !important;
-	}
 }
 
 .navbar-menu {
@@ -317,77 +244,14 @@ button {
 		0 4px 4px rgb(3 7 18 / 2%);
 }
 
-.contents-only {
-	display: contents;
-}
-
-.heavy-weight {
-	font-weight: 800;
-}
-
-.navbar-filter {
-	display: flex;
-	width: 31.13px;
-	height: 31.13px;
-	order: 4;
-	padding: 9px;
-	align-items: center;
-	justify-content: center;
-	background-color: var(--buttonsBackground);
-	border: 1px;
-	border-style: solid;
-	border-color: var(--borderColor2);
-	cursor: pointer;
-
-	&:hover {
-		border: 1px solid var(--buttonsBorderColor);
-	}
-
-	box-shadow:
-		0 0 rgb(3 7 18 / 10%),
-		0 1px 1px rgb(3 7 18 / 8%),
-		0 1px 1px rgb(3 7 18 / 6%),
-		0 3px 3px rgb(3 7 18 / 4%),
-		0 4px 4px rgb(3 7 18 / 2%);
-
-	&.unavailable {
-		cursor: not-allowed;
-		border-color: var(--borderColor2);
-		filter: opacity(0.33);
-	}
-}
-
 .selectable-descendants {
 	* {
 		cursor: pointer !important;
 	}
 }
 
-.cogwheel {
-	filter: var(--cogwheel-filter);
-}
-
 .contrast-border {
 	border: 1px solid rgb(204 204 204);
-}
-
-.navbar-menu-img {
-	justify-self: center;
-
-	&.cross {
-		width: 14px;
-		height: 14px;
-	}
-}
-
-.theme-light {
-	.navbar-menu-img {
-		filter: brightness(0.3);
-	}
-}
-
-.search-wrapper {
-	// position: relative;
 }
 
 .MuiAutocomplete-popper * {
@@ -409,10 +273,6 @@ button {
 		padding-right: 16px;
 	}
 
-	.nav-hidden {
-		// transform: translateY(-49.25px); /* Adjust the value based on your navbar height */
-	}
-
 	.options-nav {
 		gap: 24px;
 	}
@@ -432,25 +292,10 @@ button {
 		}
 	}
 
-	.navbar-filter {
-		display: flex;
-		order: 4;
-		height: 28.25px;
-		width: 28.25px;
-
-		span {
-			display: none;
-		}
-	}
-
 	.navbar-section {
 		gap: 12px;
 		max-width: 100%;
 		grid-template-columns: 28.25px 1fr 28.25px 28.25px;
-	}
-
-	.search-wrapper {
-		// position: static;
 	}
 
 	.options-menu,
@@ -471,23 +316,5 @@ button {
 @media (width <= 351px) {
 	.country-flag {
 		display: none;
-	}
-}
-
-@media (width >= 500px) {
-	.navbar-dropdown-family div[tabIndex='-1']:hover:has(> div.hint-container) {
-		background: var(--background-dropdowns) !important;
-
-		*:not(img, .img-adorner) {
-			background: var(--background-dropdowns) !important;
-		}
-	}
-
-	div[tabIndex='-1']:hover:has(> div.hint-container) {
-		background: var(--selectionHover) !important;
-
-		*:not(img, .img-adorner) {
-			background: var(--selectionHover) !important;
-		}
 	}
 }

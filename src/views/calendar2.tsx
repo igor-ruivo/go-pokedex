@@ -23,14 +23,8 @@ const Calendar2 = () => {
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const { pathname } = useLocation();
 
-	const basePath = useMemo(
-		() => pathname.substring(0, pathname.lastIndexOf('/')),
-		[pathname]
-	);
-	const tab = useMemo(
-		() => pathname.substring(pathname.lastIndexOf('/')),
-		[pathname]
-	);
+	const basePath = useMemo(() => pathname.substring(0, pathname.lastIndexOf('/')), [pathname]);
+	const tab = useMemo(() => pathname.substring(pathname.lastIndexOf('/')), [pathname]);
 
 	const imgRes = useMemo(
 		() =>
@@ -56,19 +50,13 @@ const Calendar2 = () => {
 								<PokemonHeader
 									pokemonName={
 										tab.endsWith('/bosses')
-											? gameTranslator(
-													GameTranslatorKeys.Raids,
-													currentGameLanguage
-												)
+											? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
 											: tab.endsWith('/spawns')
 												? translator(TranslatorKeys.Spawns, currentLanguage)
 												: tab.endsWith('/eggs')
 													? translator(TranslatorKeys.Eggs, currentLanguage)
 													: tab.endsWith('/rockets')
-														? translator(
-																TranslatorKeys.Rockets,
-																currentLanguage
-															)
+														? translator(TranslatorKeys.Rockets, currentLanguage)
 														: translator(TranslatorKeys.Events, currentLanguage)
 									}
 									type1={undefined}
@@ -89,72 +77,41 @@ const Calendar2 = () => {
 											<li>
 												<Link
 													to={basePath + '/events'}
-													className={
-														'header-tab no-full-border ' +
-														(tab.endsWith('/events') ? 'selected' : '')
-													}
+													className={'header-tab no-full-border ' + (tab.endsWith('/events') ? 'selected' : '')}
 												>
-													<span>
-														{translator(TranslatorKeys.Events, currentLanguage)}
-													</span>
+													<span>{translator(TranslatorKeys.Events, currentLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
 													to={basePath + '/bosses'}
-													className={
-														'header-tab no-full-border ' +
-														(tab.endsWith('/bosses') ? 'selected' : '')
-													}
+													className={'header-tab no-full-border ' + (tab.endsWith('/bosses') ? 'selected' : '')}
 												>
-													<span>
-														{gameTranslator(
-															GameTranslatorKeys.Raids,
-															currentGameLanguage
-														)}
-													</span>
+													<span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
 													to={basePath + '/spawns'}
-													className={
-														'header-tab no-full-border ' +
-														(tab.endsWith('/spawns') ? 'selected' : '')
-													}
+													className={'header-tab no-full-border ' + (tab.endsWith('/spawns') ? 'selected' : '')}
 												>
-													<span>
-														{translator(TranslatorKeys.Spawns, currentLanguage)}
-													</span>
+													<span>{translator(TranslatorKeys.Spawns, currentLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
 													to={basePath + '/rockets'}
-													className={
-														'header-tab no-full-border ' +
-														(tab.endsWith('/rockets') ? 'selected' : '')
-													}
+													className={'header-tab no-full-border ' + (tab.endsWith('/rockets') ? 'selected' : '')}
 												>
-													<span>
-														{translator(
-															TranslatorKeys.Rockets,
-															currentLanguage
-														)}
-													</span>
+													<span>{translator(TranslatorKeys.Rockets, currentLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
 													to={basePath + '/eggs'}
-													className={
-														'header-tab no-full-border ' +
-														(tab.endsWith('/eggs') ? 'selected' : '')
-													}
+													className={'header-tab no-full-border ' + (tab.endsWith('/eggs') ? 'selected' : '')}
 												>
-													<span>
-														{translator(TranslatorKeys.Eggs, currentLanguage)}
-													</span>
+													<span>{translator(TranslatorKeys.Eggs, currentLanguage)}</span>
 												</Link>
 											</li>
 										</ul>

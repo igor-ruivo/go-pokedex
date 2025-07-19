@@ -246,8 +246,6 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) =>
 	translations.get(key)?.get(language) ??
-	(GameTranslatorKeys[key]
-		? GameTranslatorKeys[key].toString()
-		: key?.toString());
+	(GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString());
 
 export default gameTranslator;

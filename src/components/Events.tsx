@@ -1,4 +1,6 @@
 import './Events.scss';
+import './ReusableAdorners.scss';
+import './Misc.scss';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -11,16 +13,8 @@ import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IPostEntry } from '../DTOs/INews';
 import { sortEntries, sortPosts } from '../DTOs/INews';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import {
-	inCamelCase,
-	localeStringMiniature,
-	localeStringSmallOptions,
-} from '../utils/Misc';
-import {
-	ConfigKeys,
-	readSessionValue,
-	writeSessionValue,
-} from '../utils/persistent-configs-handler';
+import { inCamelCase, localeStringMiniature, localeStringSmallOptions } from '../utils/Misc';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
 import PokemonImage from './PokemonImage';
@@ -58,19 +52,17 @@ const Events = () => {
 			researches: [],
 			incenses: [],
 			lures: [],
-			bonuses: Object.fromEntries(
-				Object.entries(spotlight.bonus).map(([k, v]) => [k, [v]])
-			) as Record<GameLanguage, Array<string>>,
+			bonuses: Object.fromEntries(Object.entries(spotlight.bonus).map(([k, v]) => [k, [v]])) as Record<
+				GameLanguage,
+				Array<string>
+			>,
 			isSpotlight: true,
 		};
 	};
 
 	const nonSeasonalPosts = useMemo(() => {
 		const goPosts = postsFetchCompleted && posts ? posts : [];
-		const spotlightPosts =
-			spotlightHoursFetchCompleted && spotlightHours
-				? spotlightHours.map(mapToPostEntry)
-				: [];
+		const spotlightPosts = spotlightHoursFetchCompleted && spotlightHours ? spotlightHours.map(mapToPostEntry) : [];
 		return [
 			...[...goPosts, ...spotlightPosts]
 				.filter(
@@ -87,19 +79,10 @@ const Events = () => {
 				)
 				.sort(sortPosts),
 		];
-	}, [
-		posts,
-		currentGameLanguage,
-		spotlightHours,
-		postsFetchCompleted,
-		spotlightHoursFetchCompleted,
-	]);
+	}, [posts, currentGameLanguage, spotlightHours, postsFetchCompleted, spotlightHoursFetchCompleted]);
 
 	const relevantPosts = useMemo(
-		() => [
-			...(season && seasonFetchCompleted ? [season] : []),
-			...nonSeasonalPosts,
-		],
+		() => [...(season && seasonFetchCompleted ? [season] : []), ...nonSeasonalPosts],
 		[season, seasonFetchCompleted, nonSeasonalPosts]
 	);
 
@@ -117,13 +100,9 @@ const Events = () => {
 					: 0
 				: +readSessionValue(ConfigKeys.ExpandedEvent)!
 	);
-	const [currentPlace, setCurrentPlace] = useState(
-		readSessionValue(ConfigKeys.ExpandedArea) ?? '0'
-	);
+	const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? '0');
 	const [currentEgg, setCurrentEgg] = useState(
-		readSessionValue(ConfigKeys.ExpandedEgg) === '4'
-			? '0'
-			: (readSessionValue(ConfigKeys.ExpandedEgg) ?? '0')
+		readSessionValue(ConfigKeys.ExpandedEgg) === '4' ? '0' : (readSessionValue(ConfigKeys.ExpandedEgg) ?? '0')
 	);
 
 	const postId = useCallback((post: IPostEntry) => post.id, []);
@@ -245,18 +224,8 @@ const Events = () => {
 
 	return (
 		<LoadingRenderer
-			errors={
-				errorLoadingPosts +
-				errorLoadingSeason +
-				errorLoadingSpotlightHours +
-				errors
-			}
-			completed={
-				postsFetchCompleted &&
-				seasonFetchCompleted &&
-				spotlightHoursFetchCompleted &&
-				fetchCompleted
-			}
+			errors={errorLoadingPosts + errorLoadingSeason + errorLoadingSpotlightHours + errors}
+			completed={postsFetchCompleted && seasonFetchCompleted && spotlightHoursFetchCompleted && fetchCompleted}
 		>
 			{() =>
 				relevantPosts.length === 0 || !relevantPosts[selectedNews] ? (
@@ -270,7 +239,7 @@ const Events = () => {
 										{relevantPosts.map((p, i) => (
 											<div
 												key={postId(p)}
-												className={`post-miniature clickable ${!seenEvents.has(postId(p)) ? 'is-new' : ''} ${i === selectedNews ? 'news-selected' : ''} ${i === 0 ? 'season-miniature' : ''}`}
+												className={`post-miniature clickable selectable ${!seenEvents.has(postId(p)) ? 'is-new' : ''} ${i === selectedNews ? 'news-selected' : ''} ${i === 0 ? 'season-miniature' : ''}`}
 												role='button'
 												tabIndex={0}
 												onClick={() => {
@@ -288,20 +257,13 @@ const Events = () => {
 												<div className='miniature-date ellipsed'>
 													{i === 0
 														? translator(TranslatorKeys.Season, currentLanguage)
-														: new Date(p.startDate).toLocaleString(
-																undefined,
-																localeStringMiniature
-															)}
+														: new Date(p.startDate).toLocaleString(undefined, localeStringMiniature)}
 												</div>
 												<div className={`spotlight-miniature-container`}>
 													<img
 														className='miniature-itself'
 														alt='Miniature'
-														src={
-															p.isSpotlight
-																? '/images/misc/pokemonspotlighthour.jpg'
-																: p.imageUrl
-														}
+														src={p.isSpotlight ? '/images/misc/pokemonspotlighthour.jpg' : p.imageUrl}
 													/>
 													{p.isSpotlight && (
 														<PokemonImage
@@ -339,11 +301,7 @@ const Events = () => {
 									/>
 									{relevantPosts[selectedNews].isSpotlight && (
 										<PokemonImage
-											pokemon={
-												gamemasterPokemon[
-													relevantPosts[selectedNews].wild[0].speciesId
-												]
-											}
+											pokemon={gamemasterPokemon[relevantPosts[selectedNews].wild[0].speciesId]}
 											withName={false}
 											imgOnly
 											withClassname='spotlighted-pokemon'
@@ -351,13 +309,11 @@ const Events = () => {
 									)}
 								</div>
 								<div className={'current-news-title'}>
-									{relevantPosts[selectedNews].subtitle[currentGameLanguage]
-										.length > 15 ||
+									{relevantPosts[selectedNews].subtitle[currentGameLanguage].length > 15 ||
 									relevantPosts.some(
 										(r) =>
 											r !== relevantPosts[selectedNews] &&
-											r.title[currentGameLanguage] ===
-												relevantPosts[selectedNews].title[currentGameLanguage]
+											r.title[currentGameLanguage] === relevantPosts[selectedNews].title[currentGameLanguage]
 									)
 										? relevantPosts[selectedNews].subtitle[currentGameLanguage]
 										: relevantPosts[selectedNews].title[currentGameLanguage]}
@@ -365,32 +321,24 @@ const Events = () => {
 								<div className='current-news-date'>
 									<div className='from-date date-container'>
 										{inCamelCase(
-											new Date(
-												relevantPosts[selectedNews].startDate
-											).toLocaleString(undefined, localeStringSmallOptions)
+											new Date(relevantPosts[selectedNews].startDate).toLocaleString(
+												undefined,
+												localeStringSmallOptions
+											)
 										)}
 									</div>
-									{
-										<div className='from-date date-container'>
-											{translator(TranslatorKeys.Until, currentLanguage)}
-										</div>
-									}
+									{<div className='from-date date-container'>{translator(TranslatorKeys.Until, currentLanguage)}</div>}
 									<div className='to-date date-container'>
 										{inCamelCase(
-											new Date(
-												relevantPosts[selectedNews].endDate
-											).toLocaleString(undefined, localeStringSmallOptions)
+											new Date(relevantPosts[selectedNews].endDate).toLocaleString(undefined, localeStringSmallOptions)
 										)}
 									</div>
 								</div>
 							</div>
 						</div>
 
-						{relevantPosts[selectedNews].bonuses[currentGameLanguage].length >
-							0 && (
-							<Section
-								title={translator(TranslatorKeys.Bonus, currentLanguage)}
-							>
+						{relevantPosts[selectedNews].bonuses[currentGameLanguage].length > 0 && (
+							<Section title={translator(TranslatorKeys.Bonus, currentLanguage)}>
 								<div className='with-dynamic-max-width auto-margin-sides'>
 									<div className='bonus-container'>
 										{relevantPosts[selectedNews].bonuses[currentGameLanguage]
@@ -403,12 +351,7 @@ const Events = () => {
 							</Section>
 						)}
 						{relevantPosts[selectedNews].wild.length > 0 && (
-							<Section
-								title={translator(
-									TranslatorKeys.FeaturedSpawns,
-									currentLanguage
-								)}
-							>
+							<Section title={translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}>
 								{selectedNews === 0 && (
 									<div className='raid-container'>
 										<div className='overflowing'>
@@ -422,24 +365,18 @@ const Events = () => {
 													season.wild.filter((e) => e.kind === '5'),
 												].map((t, i) => (
 													<div
-														className='clickable'
+														className='clickable selectable'
 														key={i}
 														role='button'
 														tabIndex={0}
 														onClick={() => {
 															setCurrentPlace(String(i));
-															writeSessionValue(
-																ConfigKeys.ExpandedArea,
-																String(i)
-															);
+															writeSessionValue(ConfigKeys.ExpandedArea, String(i));
 														}}
 														onKeyDown={(e) =>
 															handleKeyDown(e, () => {
 																setCurrentPlace(String(i));
-																writeSessionValue(
-																	ConfigKeys.ExpandedArea,
-																	String(i)
-																);
+																writeSessionValue(ConfigKeys.ExpandedArea, String(i));
 															})
 														}
 														aria-pressed={String(i) === currentPlace}
@@ -464,23 +401,14 @@ const Events = () => {
 										</div>
 									</div>
 								)}
-								<div
-									className={`with-flex contained ${selectedNews !== 0 ? 'with-margin-top' : ''}`}
-								>
+								<div className={`with-flex contained ${selectedNews !== 0 ? 'with-margin-top' : ''}`}>
 									{relevantPosts[selectedNews].wild
-										.filter(
-											(k) => selectedNews !== 0 || k.kind === currentPlace
-										)
+										.filter((k) => selectedNews !== 0 || k.kind === currentPlace)
 										.sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
 										.map((p) => (
-											<div
-												key={p.speciesId + p.kind}
-												className='mini-card-wrapper-padding dynamic-size'
-											>
+											<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 												<div className={`mini-card-wrapper`}>
-													<PokemonMiniature
-														pokemon={gamemasterPokemon[p.speciesId]}
-													/>
+													<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 												</div>
 											</div>
 										))}
@@ -495,14 +423,9 @@ const Events = () => {
 									{relevantPosts[selectedNews].raids
 										.sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
 										.map((p) => (
-											<div
-												key={p.speciesId + p.kind}
-												className='mini-card-wrapper-padding dynamic-size'
-											>
+											<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 												<div className={`mini-card-wrapper`}>
-													<PokemonMiniature
-														pokemon={gamemasterPokemon[p.speciesId]}
-													/>
+													<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 												</div>
 											</div>
 										))}
@@ -510,24 +433,14 @@ const Events = () => {
 							</Section>
 						)}
 						{relevantPosts[selectedNews].researches.length > 0 && (
-							<Section
-								title={translator(
-									TranslatorKeys.FeaturedResearches,
-									currentLanguage
-								)}
-							>
+							<Section title={translator(TranslatorKeys.FeaturedResearches, currentLanguage)}>
 								<div className={`with-flex contained with-margin-top`}>
 									{relevantPosts[selectedNews].researches
 										.sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
 										.map((p) => (
-											<div
-												key={p.speciesId + p.kind}
-												className='mini-card-wrapper-padding dynamic-size'
-											>
+											<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 												<div className={`mini-card-wrapper`}>
-													<PokemonMiniature
-														pokemon={gamemasterPokemon[p.speciesId]}
-													/>
+													<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 												</div>
 											</div>
 										))}
@@ -535,9 +448,7 @@ const Events = () => {
 							</Section>
 						)}
 						{relevantPosts[selectedNews].eggs.length > 0 && (
-							<Section
-								title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}
-							>
+							<Section title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}>
 								<div>
 									{selectedNews === 0 && (
 										<div className='raid-container'>
@@ -550,24 +461,18 @@ const Events = () => {
 														season.eggs.filter((e) => e.kind === '10'),
 													].map((t, i) => (
 														<div
-															className='clickable'
+															className='clickable selectable'
 															key={i}
 															role='button'
 															tabIndex={0}
 															onClick={() => {
 																setCurrentEgg(String(i));
-																writeSessionValue(
-																	ConfigKeys.ExpandedEgg,
-																	String(i)
-																);
+																writeSessionValue(ConfigKeys.ExpandedEgg, String(i));
 															}}
 															onKeyDown={(e) =>
 																handleKeyDown(e, () => {
 																	setCurrentEgg(String(i));
-																	writeSessionValue(
-																		ConfigKeys.ExpandedEgg,
-																		String(i)
-																	);
+																	writeSessionValue(ConfigKeys.ExpandedEgg, String(i));
 																})
 															}
 															aria-pressed={String(i) === currentEgg}
@@ -592,42 +497,30 @@ const Events = () => {
 											</div>
 										</div>
 									)}
-									<div
-										className={`with-flex contained ${selectedNews !== 0 ? 'with-margin-top' : ''}`}
-									>
+									<div className={`with-flex contained ${selectedNews !== 0 ? 'with-margin-top' : ''}`}>
 										{relevantPosts[selectedNews].eggs
 											.filter(
 												(r) =>
 													selectedNews !== 0 ||
-													(!r.comment?.[currentGameLanguage] &&
-														r.kind === String(idxToKind(+currentEgg)))
+													(!r.comment?.[currentGameLanguage] && r.kind === String(idxToKind(+currentEgg)))
 											)
 											.sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
 											.map((p) => (
-												<div
-													key={p.speciesId + p.kind}
-													className='mini-card-wrapper-padding dynamic-size'
-												>
+												<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 													<div className={`mini-card-wrapper`}>
-														<PokemonMiniature
-															pokemon={gamemasterPokemon[p.speciesId]}
-														/>
+														<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 													</div>
 												</div>
 											))}
 									</div>
 									{relevantPosts[selectedNews].eggs.some(
-										(e) =>
-											e.comment?.[currentGameLanguage] &&
-											e.kind === String(idxToKind(+currentEgg))
+										(e) => e.comment?.[currentGameLanguage] && e.kind === String(idxToKind(+currentEgg))
 									) && (
 										<div className='centered-text with-xl-padding'>
 											<strong>
 												{
 													relevantPosts[selectedNews].eggs.find(
-														(e) =>
-															e.kind === String(idxToKind(+currentEgg)) &&
-															e.comment?.[currentGameLanguage]
+														(e) => e.kind === String(idxToKind(+currentEgg)) && e.comment?.[currentGameLanguage]
 													)!.comment![currentGameLanguage]
 												}
 												:
@@ -636,21 +529,12 @@ const Events = () => {
 									)}
 									<div className='with-flex contained'>
 										{relevantPosts[selectedNews].eggs
-											.filter(
-												(r) =>
-													r.comment?.[currentGameLanguage] &&
-													r.kind === String(idxToKind(+currentEgg))
-											)
+											.filter((r) => r.comment?.[currentGameLanguage] && r.kind === String(idxToKind(+currentEgg)))
 											.sort((a, b) => sortEntries(a, b, gamemasterPokemon))
 											.map((p) => (
-												<div
-													key={p.speciesId + p.kind}
-													className='mini-card-wrapper-padding dynamic-size'
-												>
+												<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 													<div className={`mini-card-wrapper`}>
-														<PokemonMiniature
-															pokemon={gamemasterPokemon[p.speciesId]}
-														/>
+														<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 													</div>
 												</div>
 											))}
@@ -659,24 +543,14 @@ const Events = () => {
 							</Section>
 						)}
 						{relevantPosts[selectedNews].incenses.length > 0 && (
-							<Section
-								title={translator(
-									TranslatorKeys.FeaturedIncenses,
-									currentLanguage
-								)}
-							>
+							<Section title={translator(TranslatorKeys.FeaturedIncenses, currentLanguage)}>
 								<div className={`with-flex contained with-margin-top`}>
 									{relevantPosts[selectedNews].incenses
 										.sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
 										.map((p) => (
-											<div
-												key={p.speciesId + p.kind}
-												className='mini-card-wrapper-padding dynamic-size'
-											>
+											<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 												<div className={`mini-card-wrapper`}>
-													<PokemonMiniature
-														pokemon={gamemasterPokemon[p.speciesId]}
-													/>
+													<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 												</div>
 											</div>
 										))}
@@ -684,24 +558,14 @@ const Events = () => {
 							</Section>
 						)}
 						{relevantPosts[selectedNews].lures.length > 0 && (
-							<Section
-								title={translator(
-									TranslatorKeys.FeaturedLures,
-									currentLanguage
-								)}
-							>
+							<Section title={translator(TranslatorKeys.FeaturedLures, currentLanguage)}>
 								<div className={`with-flex contained with-margin-top`}>
 									{relevantPosts[selectedNews].lures
 										.sort((e1, e2) => sortEntries(e1, e2, gamemasterPokemon))
 										.map((p) => (
-											<div
-												key={p.speciesId + p.kind}
-												className='mini-card-wrapper-padding dynamic-size'
-											>
+											<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 												<div className={`mini-card-wrapper`}>
-													<PokemonMiniature
-														pokemon={gamemasterPokemon[p.speciesId]}
-													/>
+													<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 												</div>
 											</div>
 										))}

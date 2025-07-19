@@ -1,3 +1,5 @@
+import './ReusableAdorners.scss';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 
@@ -7,30 +9,19 @@ import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IPostEntry } from '../DTOs/INews';
 import { sortPosts } from '../DTOs/INews';
 import { inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
-import {
-	ConfigKeys,
-	readSessionValue,
-	writeSessionValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
 import PokemonMiniature from './PokemonMiniature';
 import Section from './Template/Section';
 
-const getDateKey = (obj: IPostEntry) =>
-	String(obj?.startDate?.valueOf()) + '-' + String(obj?.endDate?.valueOf());
+const getDateKey = (obj: IPostEntry) => String(obj?.startDate?.valueOf()) + '-' + String(obj?.endDate?.valueOf());
 
 const Spawns = () => {
 	const { gamemasterPokemon, errors, fetchCompleted } = usePokemon();
 	const { currentLanguage } = useLanguage();
-	const {
-		posts,
-		postsFetchCompleted,
-		errorLoadingPosts,
-		season,
-		seasonFetchCompleted,
-		errorLoadingSeason,
-	} = useCalendar();
+	const { posts, postsFetchCompleted, errorLoadingPosts, season, seasonFetchCompleted, errorLoadingSeason } =
+		useCalendar();
 	const currPosts = useMemo(
 		() =>
 			postsFetchCompleted && posts
@@ -49,21 +40,13 @@ const Spawns = () => {
 		if (savedDate == null) {
 			return currPosts.length > 0 ? 'current' : 'season';
 		}
-		const hasMatchingPost = posts?.some(
-			(p) => p?.wild?.length && getDateKey(p) === savedDate
-		);
-		if (
-			(postsFetchCompleted && hasMatchingPost) ||
-			savedDate === 'current' ||
-			savedDate === 'season'
-		) {
+		const hasMatchingPost = posts?.some((p) => p?.wild?.length && getDateKey(p) === savedDate);
+		if ((postsFetchCompleted && hasMatchingPost) || savedDate === 'current' || savedDate === 'season') {
 			return savedDate;
 		}
 		return currPosts.length > 0 ? 'current' : 'season';
 	});
-	const [currentPlace, setCurrentPlace] = useState(
-		readSessionValue(ConfigKeys.ExpandedArea) ?? '0'
-	);
+	const [currentPlace, setCurrentPlace] = useState(readSessionValue(ConfigKeys.ExpandedArea) ?? '0');
 
 	type RaidEventDateOption = { label: string; value: string };
 
@@ -94,12 +77,7 @@ const Spawns = () => {
 				.sort(sortPosts)
 				.map(
 					(e): RaidEventDateOption => ({
-						label: inCamelCase(
-							new Date(e.startDate).toLocaleString(
-								undefined,
-								localeStringSmallestOptions
-							)
-						),
+						label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)),
 						value: getDateKey(e),
 					})
 				);
@@ -116,12 +94,7 @@ const Spawns = () => {
 				? [season]
 				: currentBossDate === 'current'
 					? currPosts
-					: (posts ?? []).filter(
-							(p) =>
-								p &&
-								(p.wild?.length ?? 0) > 0 &&
-								getDateKey(p) === currentBossDate
-						),
+					: (posts ?? []).filter((p) => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === currentBossDate),
 		[currentBossDate, season, currPosts, posts, seasonFetchCompleted]
 	);
 
@@ -134,12 +107,7 @@ const Spawns = () => {
 			} else if (
 				(posts &&
 					postsFetchCompleted &&
-					posts.some(
-						(p) =>
-							p &&
-							(p.wild?.length ?? 0) > 0 &&
-							getDateKey(p) === expandedSpawnDate
-					)) ||
+					posts.some((p) => p && (p.wild?.length ?? 0) > 0 && getDateKey(p) === expandedSpawnDate)) ||
 				expandedSpawnDate === 'current' ||
 				expandedSpawnDate === 'season'
 			) {
@@ -149,13 +117,7 @@ const Spawns = () => {
 			}
 			setCurrentBossDate(newDate);
 		}
-	}, [
-		currPosts,
-		setCurrentBossDate,
-		postsFetchCompleted,
-		seasonFetchCompleted,
-		posts,
-	]);
+	}, [currPosts, setCurrentBossDate, postsFetchCompleted, seasonFetchCompleted, posts]);
 
 	const idxToPlace = useCallback(
 		(idx: number) => {
@@ -197,12 +159,7 @@ const Spawns = () => {
 	return (
 		<LoadingRenderer
 			errors={errorLoadingPosts + errors + errorLoadingSeason}
-			completed={
-				postsFetchCompleted &&
-				seasonFetchCompleted &&
-				fetchCompleted &&
-				!!season
-			}
+			completed={postsFetchCompleted && seasonFetchCompleted && fetchCompleted && !!season}
 		>
 			{() => (
 				<>
@@ -211,10 +168,7 @@ const Spawns = () => {
 							<Select
 								className={`navbar-dropdown-family`}
 								isSearchable={false}
-								value={
-									raidEventDates.find((o) => o?.value === currentBossDate) ??
-									null
-								}
+								value={raidEventDates.find((o) => o?.value === currentBossDate) ?? null}
 								options={raidEventDates}
 								onChange={(e) => {
 									if (e?.value) {
@@ -235,18 +189,14 @@ const Spawns = () => {
 													width={16}
 												/>
 											</div>
-											<strong className='aligned-block ellipsed normal-text'>
-												{data.label}
-											</strong>
+											<strong className='aligned-block ellipsed normal-text'>{data.label}</strong>
 										</div>
 									) : null
 								}
 							/>
 						</div>
 					</div>
-					<Section
-						title={translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}
-					>
+					<Section title={translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}>
 						<div>
 							{currentBossDate === 'season' && (
 								<div className='raid-container'>
@@ -267,18 +217,12 @@ const Spawns = () => {
 													tabIndex={0}
 													onClick={() => {
 														setCurrentPlace(String(i));
-														writeSessionValue(
-															ConfigKeys.ExpandedArea,
-															String(i)
-														);
+														writeSessionValue(ConfigKeys.ExpandedArea, String(i));
 													}}
 													onKeyDown={(e) => {
 														if (e.key === 'Enter' || e.key === ' ') {
 															setCurrentPlace(String(i));
-															writeSessionValue(
-																ConfigKeys.ExpandedArea,
-																String(i)
-															);
+															writeSessionValue(ConfigKeys.ExpandedArea, String(i));
 														}
 													}}
 													aria-pressed={String(i) === currentPlace}
@@ -303,24 +247,14 @@ const Spawns = () => {
 									</div>
 								</div>
 							)}
-							<div
-								className={`with-flex contained ${currentBossDate !== 'season' ? 'with-margin-top' : ''}`}
-							>
+							<div className={`with-flex contained ${currentBossDate !== 'season' ? 'with-margin-top' : ''}`}>
 								{selectedPosts.sort(sortPosts).map((t) =>
 									t?.wild
-										.filter(
-											(r) =>
-												currentBossDate !== 'season' || r.kind === currentPlace
-										)
+										.filter((r) => currentBossDate !== 'season' || r.kind === currentPlace)
 										.map((p) => (
-											<div
-												key={p.speciesId + p.kind}
-												className='mini-card-wrapper-padding dynamic-size'
-											>
+											<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 												<div className={`mini-card-wrapper`}>
-													<PokemonMiniature
-														pokemon={gamemasterPokemon[p.speciesId]}
-													/>
+													<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 												</div>
 											</div>
 										))

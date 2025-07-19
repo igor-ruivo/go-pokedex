@@ -13,17 +13,9 @@ interface MovesContextType {
 
 const MovesContext = createContext<MovesContextType | undefined>(undefined);
 
-const useFetchAllData: () => [
-	Record<string, IGameMasterMove>,
-	boolean,
-	string,
-] = () => {
-	const [
-		moves,
-		fetchMoves,
-		fetchMovesCompleted,
-		errorLoadingMovesData,
-	]: FetchData<Record<string, IGameMasterMove>> = useFetchUrls();
+const useFetchAllData: () => [Record<string, IGameMasterMove>, boolean, string] = () => {
+	const [moves, fetchMoves, fetchMovesCompleted, errorLoadingMovesData]: FetchData<Record<string, IGameMasterMove>> =
+		useFetchUrls();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -45,11 +37,8 @@ export const useMoves = (): MovesContextType => {
 };
 
 export const MovesProvider = (props: React.PropsWithChildren<object>) => {
-	const [moves, movesFetchCompleted, movesErrors]: [
-		Record<string, IGameMasterMove>,
-		boolean,
-		string,
-	] = useFetchAllData();
+	const [moves, movesFetchCompleted, movesErrors]: [Record<string, IGameMasterMove>, boolean, string] =
+		useFetchAllData();
 
 	return (
 		<MovesContext.Provider

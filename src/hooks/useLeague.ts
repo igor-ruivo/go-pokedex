@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import {
-	ConfigKeys,
-	readSessionValue,
-	writeSessionValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 
 export enum LeagueType {
 	GREAT_LEAGUE,
@@ -26,9 +22,7 @@ const getDefaultLeagueType = () => {
 };
 
 const useLeague = () => {
-	const [league, setLeague] = useState<LeagueType>(
-		getDefaultLeagueType() ?? LeagueType.RAID
-	);
+	const [league, setLeague] = useState<LeagueType>(getDefaultLeagueType() ?? LeagueType.RAID);
 
 	useEffect(() => {
 		writeSessionValue(ConfigKeys.LastLeague, JSON.stringify(league));

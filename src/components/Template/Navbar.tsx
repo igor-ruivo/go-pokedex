@@ -1,19 +1,15 @@
 import './Navbar.scss';
+import './CommonNavbar.scss';
+import '../ReusableAdorners.scss';
+import '../Misc.scss';
 
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
-import {
-	ImageSource,
-	useImageSource,
-} from '../../contexts/imageSource-context';
-import {
-	GameLanguage,
-	Language,
-	useLanguage,
-} from '../../contexts/language-context';
+import { ImageSource, useImageSource } from '../../contexts/imageSource-context';
+import { GameLanguage, Language, useLanguage } from '../../contexts/language-context';
 import { useNavbarSearchInput } from '../../contexts/navbar-search-context';
 import { usePokemon } from '../../contexts/pokemon-context';
 import { PokemonTypes } from '../../DTOs/PokemonTypes';
@@ -46,11 +42,7 @@ export type EntryType = {
 	label: string;
 };
 
-export const hideNavbar = (
-	scrollingDown: boolean,
-	accumulatedScrollDownDelta: number,
-	navbar: boolean
-): boolean => {
+export const hideNavbar = (scrollingDown: boolean, accumulatedScrollDownDelta: number, navbar: boolean): boolean => {
 	const threshold = 110;
 
 	if (window.scrollY < threshold) {
@@ -58,10 +50,7 @@ export const hideNavbar = (
 		return false;
 	}
 
-	if (
-		window.innerHeight + Math.round(window.scrollY) + threshold / 2 >=
-		document.body.scrollHeight
-	) {
+	if (window.innerHeight + Math.round(window.scrollY) + threshold / 2 >= document.body.scrollHeight) {
 		// always
 		return navbar;
 	}
@@ -79,18 +68,13 @@ export const hideNavbar = (
 
 const Navbar = () => {
 	const getSystemThemePreference = useCallback((): ThemeValues => {
-		if (
-			window.matchMedia &&
-			window.matchMedia('(prefers-color-scheme: dark)').matches
-		) {
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			return ThemeValues.Dark;
 		}
 		return ThemeValues.Light;
 	}, []);
 
-	const [systemDefaultTheme, setSystemDefaultTheme] = useState<ThemeValues>(
-		getSystemThemePreference()
-	);
+	const [systemDefaultTheme, setSystemDefaultTheme] = useState<ThemeValues>(getSystemThemePreference());
 
 	const getDefaultTheme = useCallback((): ThemeOptions => {
 		const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
@@ -102,10 +86,7 @@ const Navbar = () => {
 
 	const getComputedTheme = useCallback((): ThemeValues => {
 		const currentTheme = readPersistentValue(ConfigKeys.DefaultTheme);
-		if (
-			!currentTheme ||
-			currentTheme === ThemeOptions.SystemDefault.toString()
-		) {
+		if (!currentTheme || currentTheme === ThemeOptions.SystemDefault.toString()) {
 			return systemDefaultTheme;
 		}
 		return Number(currentTheme) as ThemeValues;
@@ -122,12 +103,7 @@ const Navbar = () => {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
 	const [optionsOpened, setOptionsOpened] = useState(AvailableOptions.None);
-	const {
-		currentLanguage,
-		currentGameLanguage,
-		updateCurrentLanguage,
-		updateCurrentGameLanguage,
-	} = useLanguage();
+	const { currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
 	const {
 		familyTree,
@@ -146,8 +122,7 @@ const Navbar = () => {
 	const [scrollingDown, setScrollingDown] = useState(false);
 	//to detect direction change
 	const [prevScrollY, setPrevScrollY] = useState(0);
-	const [accumulatedScrollDownDelta, setAccumulatedScrollDownDelta] =
-		useState(0);
+	const [accumulatedScrollDownDelta, setAccumulatedScrollDownDelta] = useState(0);
 	const [searchOpen, setSearchOpen] = useState(false);
 
 	useEffect(() => {
@@ -168,29 +143,19 @@ const Navbar = () => {
 				}
 			}
 
-			setAccumulatedScrollDownDelta(
-				(p) => p + Math.abs(currentScrollY - prevScrollY)
-			);
+			setAccumulatedScrollDownDelta((p) => p + Math.abs(currentScrollY - prevScrollY));
 			setPrevScrollY(currentScrollY);
 		};
 
 		window.addEventListener('scroll', handleScroll);
 
 		return () => window.removeEventListener('scroll', handleScroll);
-	}, [
-		prevScrollY,
-		scrollingDown,
-		setAccumulatedScrollDownDelta,
-		setScrollingDown,
-		setPrevScrollY,
-	]);
+	}, [prevScrollY, scrollingDown, setAccumulatedScrollDownDelta, setScrollingDown, setPrevScrollY]);
 
 	useEffect(() => {
 		const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
 		const themeHandlerFunc = (event: MediaQueryListEvent) => {
-			const newColorScheme = event.matches
-				? ThemeValues.Dark
-				: ThemeValues.Light;
+			const newColorScheme = event.matches ? ThemeValues.Dark : ThemeValues.Light;
 			setSystemDefaultTheme(newColorScheme);
 		};
 
@@ -363,14 +328,9 @@ const Navbar = () => {
 		return [
 			base,
 			...Object.keys(PokemonTypes)
-				.filter((key) =>
-					isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))
-				)
+				.filter((key) => isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes])))
 				.map((k) => ({
-					label: translatedType(
-						PokemonTypes[k as keyof typeof PokemonTypes],
-						currentLanguage
-					),
+					label: translatedType(PokemonTypes[k as keyof typeof PokemonTypes], currentLanguage),
 					value: PokemonTypes[k as keyof typeof PokemonTypes],
 					hint: `/images/types/${PokemonTypes[k as keyof typeof PokemonTypes].toString().toLocaleLowerCase()}.png`,
 				})),
@@ -397,12 +357,7 @@ const Navbar = () => {
 		[pathname]
 	);
 	const xlDisabled = useMemo(
-		() =>
-			!(
-				pathname.includes('great') ||
-				pathname.includes('ultra') ||
-				pathname.includes('custom')
-			),
+		() => !(pathname.includes('great') || pathname.includes('ultra') || pathname.includes('custom')),
 		[pathname]
 	);
 
@@ -415,10 +370,7 @@ const Navbar = () => {
 		[setOptionsOpened, AvailableOptions.None]
 	);
 
-	const hasSessionChanges = useMemo(
-		() => !showShadow || !showXL || type1Filter,
-		[showShadow, showXL, type1Filter]
-	);
+	const hasSessionChanges = useMemo(() => !showShadow || !showXL || type1Filter, [showShadow, showXL, type1Filter]);
 
 	// Keyboard accessibility for divs with click handlers
 	const handleDivKeyDown =
@@ -449,19 +401,13 @@ const Navbar = () => {
 					<button
 						className='navbar-menu'
 						onClick={() =>
-							setOptionsOpened((p) =>
-								p === AvailableOptions.Menu
-									? AvailableOptions.None
-									: AvailableOptions.Menu
-							)
+							setOptionsOpened((p) => (p === AvailableOptions.Menu ? AvailableOptions.None : AvailableOptions.Menu))
 						}
 					>
 						<img
 							className={
 								'navbar-menu-img ' +
-								(optionsOpened === AvailableOptions.Menu
-									? 'invert-white-mode '
-									: 'invert-dark-mode ') +
+								(optionsOpened === AvailableOptions.Menu ? 'invert-white-mode ' : 'invert-dark-mode ') +
 								(optionsOpened === AvailableOptions.Menu ? ' cross' : '')
 							}
 							alt='Menu'
@@ -469,11 +415,7 @@ const Navbar = () => {
 							width='16.6'
 							height='16.6'
 							decoding='async'
-							src={
-								optionsOpened === AvailableOptions.Menu
-									? 'https://i.imgur.com/SWpKr1C.png'
-									: `/images/cogwheel.png`
-							}
+							src={optionsOpened === AvailableOptions.Menu ? 'https://i.imgur.com/SWpKr1C.png' : `/images/cogwheel.png`}
 						/>
 					</button>
 					<div className='normal-text-descendants-all'>
@@ -498,10 +440,7 @@ const Navbar = () => {
 													return !p.isMega;
 												}
 
-												if (
-													pathname.includes('pokemon') ||
-													pathname.includes('calendar')
-												) {
+												if (pathname.includes('pokemon') || pathname.includes('calendar')) {
 													return true;
 												}
 
@@ -516,10 +455,7 @@ const Navbar = () => {
 													value: p.speciesId,
 													label: p.speciesName.replace(
 														'Shadow',
-														gameTranslator(
-															GameTranslatorKeys.Shadow,
-															currentGameLanguage
-														)
+														gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 													),
 												};
 												return entry;
@@ -528,10 +464,7 @@ const Navbar = () => {
 							isLoading={!fetchCompleted}
 							onSelection={(selectedEntry: EntryType | null) => {
 								if (!selectedEntry) return;
-								if (
-									pathname.includes('pokemon') ||
-									pathname.includes('calendar')
-								) {
+								if (pathname.includes('pokemon') || pathname.includes('calendar')) {
 									void navigate(
 										`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf('/'))}`
 											.replace('/trash-pokemon', '/info')
@@ -543,10 +476,7 @@ const Navbar = () => {
 									);
 								}
 							}}
-							renderOption={(
-								props: React.HTMLAttributes<HTMLLIElement>,
-								option: EntryType
-							) => {
+							renderOption={(props: React.HTMLAttributes<HTMLLIElement>, option: EntryType) => {
 								// Remove key from props if present, and pass it directly
 								// Typescript doesn't know about key, so check and remove it programmatically
 								const restProps = { ...props };
@@ -554,12 +484,7 @@ const Navbar = () => {
 									delete restProps.key;
 								}
 								return (
-									<Box
-										key={option.value}
-										component='li'
-										sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
-										{...restProps}
-									>
+									<Box key={option.value} component='li' sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...restProps}>
 										<PokemonImage
 											pokemon={gamemasterPokemon[option.value]}
 											lazy
@@ -574,19 +499,14 @@ const Navbar = () => {
 						/>
 					</div>
 					<div className='relative-holder'>
-						{hasSessionChanges &&
-							!(
-								pathname.includes('pokemon') || pathname.includes('calendar')
-							) && (
-								<span className='notifications-counter heavy-weight'>!</span>
-							)}
+						{hasSessionChanges && !(pathname.includes('pokemon') || pathname.includes('calendar')) && (
+							<span className='notifications-counter heavy-weight'>!</span>
+						)}
 						<button
 							className={`navbar-filter ${pathname.includes('pokemon') || pathname.includes('calendar') ? 'unavailable' : ''}`}
 							onClick={() =>
 								setOptionsOpened((p) =>
-									p === AvailableOptions.Filter
-										? AvailableOptions.None
-										: AvailableOptions.Filter
+									p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter
 								)
 							}
 						>
@@ -609,32 +529,21 @@ const Navbar = () => {
 				<nav className='options-nav'>
 					<section>
 						<strong>
-							<span className='strong-underline'>
-								{translator(TranslatorKeys.LanguageSettings, currentLanguage)}
-							</span>
+							<span className='strong-underline'>{translator(TranslatorKeys.LanguageSettings, currentLanguage)}</span>
 						</strong>
 						<ul className='options-ul'>
 							<li className='options-li'>
 								<div className='option-entry'>
-									<span className='normal-text'>
-										{translator(TranslatorKeys.Language, currentLanguage)}
-									</span>
+									<span className='normal-text'>{translator(TranslatorKeys.Language, currentLanguage)}</span>
 									<Select
 										className='navbar-dropdown navbar-dropdown-menu selectable-descendants'
 										isSearchable={false}
 										options={languageOptions}
-										value={languageOptions.find(
-											(l) => l.value === currentLanguage
-										)}
+										value={languageOptions.find((l) => l.value === currentLanguage)}
 										onChange={(v) => updateCurrentLanguage(v!.value)}
 										formatOptionLabel={(data) => (
 											<div className='hint-container'>
-												<img
-													alt='flag'
-													className='country-flag'
-													src={data?.hint}
-													height={17}
-												/>
+												<img alt='flag' className='country-flag' src={data?.hint} height={17} />
 												<span>{data?.label}</span>
 											</div>
 										)}
@@ -643,25 +552,16 @@ const Navbar = () => {
 							</li>
 							<li className='options-li'>
 								<div className='option-entry'>
-									<span className='normal-text'>
-										{translator(TranslatorKeys.GameLanguage, currentLanguage)}
-									</span>
+									<span className='normal-text'>{translator(TranslatorKeys.GameLanguage, currentLanguage)}</span>
 									<Select
 										className='navbar-dropdown navbar-dropdown-menu selectable-descendants'
 										isSearchable={false}
 										options={gameLanguageOptions}
-										value={gameLanguageOptions.find(
-											(l) => l.value === currentGameLanguage
-										)}
+										value={gameLanguageOptions.find((l) => l.value === currentGameLanguage)}
 										onChange={(v) => updateCurrentGameLanguage(v!.value)}
 										formatOptionLabel={(data) => (
 											<div className='hint-container'>
-												<img
-													alt='flag'
-													className='country-flag'
-													src={data?.hint}
-													height={17}
-												/>
+												<img alt='flag' className='country-flag' src={data?.hint} height={17} />
 												<span>{data?.label}</span>
 											</div>
 										)}
@@ -670,23 +570,17 @@ const Navbar = () => {
 							</li>
 						</ul>
 						<strong>
-							<span className='strong-underline'>
-								{translator(TranslatorKeys.VisualSettings, currentLanguage)}
-							</span>
+							<span className='strong-underline'>{translator(TranslatorKeys.VisualSettings, currentLanguage)}</span>
 						</strong>
 						<ul className='options-ul'>
 							<li className='options-li'>
 								<div className='option-entry'>
-									<span className='normal-text'>
-										{translator(TranslatorKeys.Theme, currentLanguage)}
-									</span>
+									<span className='normal-text'>{translator(TranslatorKeys.Theme, currentLanguage)}</span>
 									<Select
 										className='navbar-dropdown navbar-dropdown-menu selectable-descendants'
 										isSearchable={false}
 										options={themeOptions}
-										value={themeOptions.find(
-											(l) => l.value === getDefaultTheme()
-										)}
+										value={themeOptions.find((l) => l.value === getDefaultTheme())}
 										onChange={(v) => handleThemeToggle(v!.value)}
 										formatOptionLabel={(data) => (
 											<div className='hint-container'>
@@ -700,9 +594,7 @@ const Navbar = () => {
 							</li>
 							<li className='options-li'>
 								<div className='option-entry'>
-									<span className='normal-text'>
-										{translator(TranslatorKeys.Source, currentLanguage)}
-									</span>
+									<span className='normal-text'>{translator(TranslatorKeys.Source, currentLanguage)}</span>
 									<Select
 										className='navbar-dropdown navbar-dropdown-menu selectable-descendants'
 										isSearchable={false}
@@ -725,21 +617,16 @@ const Navbar = () => {
 							</li>
 						</ul>
 						<strong>
-							<span className='strong-underline'>
-								{translator(TranslatorKeys.NavigationData, currentLanguage)}
-							</span>
+							<span className='strong-underline'>{translator(TranslatorKeys.NavigationData, currentLanguage)}</span>
 						</strong>
 						<ul className='options-ul'>
 							<li className='options-li'>
 								<div className='option-entry'>
 									<span className='normal-text'>
-										{translator(
-											TranslatorKeys.DeleteNavigationData,
-											currentLanguage
-										)}
+										{translator(TranslatorKeys.DeleteNavigationData, currentLanguage)}
 									</span>
 									<div
-										className='fitting-content-width item contrast-border default-side-padding with-pointer important-text'
+										className='fitting-content-width item contrast-border default-side-padding selectable important-text'
 										role='button'
 										tabIndex={0}
 										onClick={() => {
@@ -770,9 +657,7 @@ const Navbar = () => {
 				tabIndex={0}
 				onKeyDown={(e) => {
 					if (e.key === 'Enter' || e.key === ' ') {
-						handleModalClick(
-							e as unknown as React.MouseEvent<HTMLElement, MouseEvent>
-						);
+						handleModalClick(e as unknown as React.MouseEvent<HTMLElement, MouseEvent>);
 					}
 				}}
 				aria-label='Close modal'
@@ -906,16 +791,12 @@ const Navbar = () => {
 												e.value !== type2Filter
 										)}
 										value={
-											type1Filter === undefined
-												? typesOptions[0]
-												: typesOptions.find((l) => l.value === type1Filter)
+											type1Filter === undefined ? typesOptions[0] : typesOptions.find((l) => l.value === type1Filter)
 										}
 										onChange={(v) => updateType1(v!.value)}
 										formatOptionLabel={(data) => (
 											<div className='hint-container'>
-												{data?.hint && (
-													<img alt='flag' src={data.hint} height={17} />
-												)}
+												{data?.hint && <img alt='flag' src={data.hint} height={17} />}
 												<span>{data?.label}</span>
 											</div>
 										)}
@@ -923,26 +804,18 @@ const Navbar = () => {
 								</div>
 								{type1Filter !== undefined && !pathname.includes('raid') && (
 									<div className='option-entry'>
-										<span>
-											{translator(TranslatorKeys.OrType, currentLanguage)}
-										</span>
+										<span>{translator(TranslatorKeys.OrType, currentLanguage)}</span>
 										<Select
 											className='navbar-dropdown selectable-descendants'
 											isSearchable={false}
-											options={typesOptions.filter(
-												(e) => e.value === undefined || e.value !== type1Filter
-											)}
+											options={typesOptions.filter((e) => e.value === undefined || e.value !== type1Filter)}
 											value={
-												type2Filter === undefined
-													? typesOptions[0]
-													: typesOptions.find((l) => l.value === type2Filter)
+												type2Filter === undefined ? typesOptions[0] : typesOptions.find((l) => l.value === type2Filter)
 											}
 											onChange={(v) => updateType2(v!.value)}
 											formatOptionLabel={(data) => (
 												<div className='hint-container'>
-													{data?.hint && (
-														<img alt='flag' src={data.hint} height={17} />
-													)}
+													{data?.hint && <img alt='flag' src={data.hint} height={17} />}
 													<span>{data?.label}</span>
 												</div>
 											)}

@@ -4,10 +4,7 @@ import type { IIvPercents } from '../components/PokemonInfoBanner';
 import { usePokemon } from '../contexts/pokemon-context';
 import { customCupCPLimit } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import {
-	computeBestIVs,
-	fetchReachablePokemonIncludingSelf,
-} from '../utils/pokemon-helper';
+import { computeBestIVs, fetchReachablePokemonIncludingSelf } from '../utils/pokemon-helper';
 
 interface IUseComputeIVsProps {
 	pokemon: IGamemasterPokemon;
@@ -17,13 +14,7 @@ interface IUseComputeIVsProps {
 	justForSelf?: boolean;
 }
 
-const useComputeIVs = ({
-	pokemon,
-	attackIV,
-	defenseIV,
-	hpIV,
-	justForSelf = false,
-}: IUseComputeIVsProps) => {
+const useComputeIVs = ({ pokemon, attackIV, defenseIV, hpIV, justForSelf = false }: IUseComputeIVsProps) => {
 	const [ivPercents, setIvPercents] = useState<Record<string, IIvPercents>>({});
 	const [loading, setLoading] = useState(true);
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
@@ -39,10 +30,7 @@ const useComputeIVs = ({
 
 			let reachablePokemons = new Set<IGamemasterPokemon>();
 			if (!justForSelf && fetchCompleted && pokemon) {
-				reachablePokemons = fetchReachablePokemonIncludingSelf(
-					pokemon,
-					gamemasterPokemon
-				);
+				reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
 			} else {
 				reachablePokemons.add(pokemon);
 			}
@@ -50,43 +38,14 @@ const useComputeIVs = ({
 			Array.from(reachablePokemons)
 				.filter((p) => p)
 				.forEach((p) => {
-					const effectiveAtk = Math.min(
-						15,
-						pokemon.isShadow && !p.isShadow ? 2 + attackIV : attackIV
-					);
-					const effectiveDef = Math.min(
-						15,
-						pokemon.isShadow && !p.isShadow ? 2 + defenseIV : defenseIV
-					);
-					const effectiveHP = Math.min(
-						15,
-						pokemon.isShadow && !p.isShadow ? 2 + hpIV : hpIV
-					);
+					const effectiveAtk = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + attackIV : attackIV);
+					const effectiveDef = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + defenseIV : defenseIV);
+					const effectiveHP = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + hpIV : hpIV);
 
-					const resLC = computeBestIVs(
-						p.baseStats.atk,
-						p.baseStats.def,
-						p.baseStats.hp,
-						customCupCPLimit
-					);
-					const resGL = computeBestIVs(
-						p.baseStats.atk,
-						p.baseStats.def,
-						p.baseStats.hp,
-						1500
-					);
-					const resUL = computeBestIVs(
-						p.baseStats.atk,
-						p.baseStats.def,
-						p.baseStats.hp,
-						2500
-					);
-					const resML = computeBestIVs(
-						p.baseStats.atk,
-						p.baseStats.def,
-						p.baseStats.hp,
-						Number.MAX_VALUE
-					);
+					const resLC = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, customCupCPLimit);
+					const resGL = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, 1500);
+					const resUL = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, 2500);
+					const resML = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, Number.MAX_VALUE);
 
 					const flatLResult = Object.values(resLC).flat();
 					const flatGLResult = Object.values(resGL).flat();
@@ -94,28 +53,16 @@ const useComputeIVs = ({
 					const flatMLResult = Object.values(resML).flat();
 
 					const rankLIndex = flatLResult.findIndex(
-						(r) =>
-							r.IVs.A === effectiveAtk &&
-							r.IVs.D === effectiveDef &&
-							r.IVs.S === effectiveHP
+						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
 					);
 					const rankGLIndex = flatGLResult.findIndex(
-						(r) =>
-							r.IVs.A === effectiveAtk &&
-							r.IVs.D === effectiveDef &&
-							r.IVs.S === effectiveHP
+						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
 					);
 					const rankULIndex = flatULResult.findIndex(
-						(r) =>
-							r.IVs.A === effectiveAtk &&
-							r.IVs.D === effectiveDef &&
-							r.IVs.S === effectiveHP
+						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
 					);
 					const rankMLIndex = flatMLResult.findIndex(
-						(r) =>
-							r.IVs.A === effectiveAtk &&
-							r.IVs.D === effectiveDef &&
-							r.IVs.S === effectiveHP
+						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
 					);
 
 					familyIvPercents[p.speciesId] = {
@@ -161,15 +108,7 @@ const useComputeIVs = ({
 			setLoading(false);
 		};
 		computeIvs();
-	}, [
-		pokemon,
-		attackIV,
-		defenseIV,
-		hpIV,
-		justForSelf,
-		gamemasterPokemon,
-		fetchCompleted,
-	]);
+	}, [pokemon, attackIV, defenseIV, hpIV, justForSelf, gamemasterPokemon, fetchCompleted]);
 
 	const result: [Record<string, IIvPercents>, boolean] = [ivPercents, loading];
 

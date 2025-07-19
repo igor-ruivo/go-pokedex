@@ -1,4 +1,6 @@
 import './Footer.scss';
+import './CommonNavbar.scss';
+import '../ReusableAdorners.scss';
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -11,8 +13,7 @@ const Footer = () => {
 	const { unseenEvents } = useNotifications();
 	//to detect direction change
 	const [prevScrollY, setPrevScrollY] = useState(0);
-	const [accumulatedScrollDownDelta, setAccumulatedScrollDownDelta] =
-		useState(0);
+	const [accumulatedScrollDownDelta, setAccumulatedScrollDownDelta] = useState(0);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -32,22 +33,14 @@ const Footer = () => {
 				}
 			}
 
-			setAccumulatedScrollDownDelta(
-				(p) => p + Math.abs(currentScrollY - prevScrollY)
-			);
+			setAccumulatedScrollDownDelta((p) => p + Math.abs(currentScrollY - prevScrollY));
 			setPrevScrollY(currentScrollY);
 		};
 
 		window.addEventListener('scroll', handleScroll);
 
 		return () => window.removeEventListener('scroll', handleScroll);
-	}, [
-		prevScrollY,
-		scrollingDown,
-		setAccumulatedScrollDownDelta,
-		setScrollingDown,
-		setPrevScrollY,
-	]);
+	}, [prevScrollY, scrollingDown, setAccumulatedScrollDownDelta, setScrollingDown, setPrevScrollY]);
 
 	return (
 		<footer
@@ -55,10 +48,7 @@ const Footer = () => {
 		>
 			<section className='footer-section'>
 				<div className='relative-holder'>
-					<Link
-						to='/trash-pokemon'
-						className={`navbar-filter button no-padding`}
-					>
+					<Link to='/trash-pokemon' className={`navbar-filter navbar-button no-padding`}>
 						<img
 							className={'navbar-menu-img invert-dark-mode'}
 							alt='Filter'
@@ -71,13 +61,8 @@ const Footer = () => {
 					</Link>
 				</div>
 				<div className='relative-holder'>
-					{unseenEvents > 0 && (
-						<span className='notifications-counter'>{unseenEvents}</span>
-					)}
-					<Link
-						to='/calendar/events'
-						className={`navbar-filter button no-padding`}
-					>
+					{unseenEvents > 0 && <span className='notifications-counter'>{unseenEvents}</span>}
+					<Link to='/calendar/events' className={`navbar-filter navbar-button no-padding`}>
 						<img
 							className={'navbar-menu-img invert-dark-mode'}
 							alt='Filter'

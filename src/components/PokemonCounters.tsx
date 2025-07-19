@@ -16,16 +16,8 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { LeagueType } from '../hooks/useLeague';
 import useResize from '../hooks/useResize';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import {
-	ConfigKeys,
-	readPersistentValue,
-	writePersistentValue,
-} from '../utils/persistent-configs-handler';
-import {
-	computeDPSEntry,
-	shortName,
-	translateMoveFromMoveId,
-} from '../utils/pokemon-helper';
+import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
+import { computeDPSEntry, shortName, translateMoveFromMoveId } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import ListEntry from './ListEntry';
 import LoadingRenderer from './LoadingRenderer';
@@ -37,10 +29,7 @@ interface IPokemonCounters {
 	league: LeagueType;
 }
 
-const parsePersistentCachedNumberValue = (
-	key: ConfigKeys,
-	defaultValue: number
-) => {
+const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
 	const cachedValue = readPersistentValue(key);
 	if (!cachedValue) {
 		return defaultValue;
@@ -48,10 +37,7 @@ const parsePersistentCachedNumberValue = (
 	return +cachedValue;
 };
 
-const parsePersistentCachedBooleanValue = (
-	key: ConfigKeys,
-	defaultValue: boolean
-) => {
+const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) => {
 	const cachedValue = readPersistentValue(key);
 	if (cachedValue === null) {
 		return defaultValue;
@@ -60,15 +46,9 @@ const parsePersistentCachedBooleanValue = (
 };
 
 const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
-	const [shadow, setShadow] = useState(
-		parsePersistentCachedBooleanValue(ConfigKeys.Shadow, true)
-	);
-	const [mega, setMega] = useState(
-		parsePersistentCachedBooleanValue(ConfigKeys.Mega, true)
-	);
-	const [top, setTop] = useState(
-		parsePersistentCachedNumberValue(ConfigKeys.ShowEntries, 10)
-	);
+	const [shadow, setShadow] = useState(parsePersistentCachedBooleanValue(ConfigKeys.Shadow, true));
+	const [mega, setMega] = useState(parsePersistentCachedBooleanValue(ConfigKeys.Mega, true));
+	const [top, setTop] = useState(parsePersistentCachedNumberValue(ConfigKeys.ShowEntries, 10));
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
 	const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
@@ -79,19 +59,8 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 	const { imageSource } = useImageSource();
 
 	const resourcesNotReady = useMemo(
-		() =>
-			!fetchCompleted ||
-			!movesFetchCompleted ||
-			!pvpFetchCompleted ||
-			!gamemasterPokemon ||
-			!pokemon,
-		[
-			fetchCompleted,
-			gamemasterPokemon,
-			movesFetchCompleted,
-			pokemon,
-			pvpFetchCompleted,
-		]
+		() => !fetchCompleted || !movesFetchCompleted || !pvpFetchCompleted || !gamemasterPokemon || !pokemon,
+		[fetchCompleted, gamemasterPokemon, movesFetchCompleted, pokemon, pvpFetchCompleted]
 	);
 
 	useEffect(() => {
@@ -114,11 +83,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 		const comparisons: Array<DPSEntry> = [];
 		Object.values(gamemasterPokemon)
 			.filter((p) => !p.aliasId)
-			.forEach((p) =>
-				comparisons.push(
-					computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, '', pokemon)
-				)
-			);
+			.forEach((p) => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, '', pokemon)));
 
 		return comparisons.sort((e1: DPSEntry, e2: DPSEntry) => {
 			if (e2.dps !== e1.dps) {
@@ -130,63 +95,35 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 	}, [resourcesNotReady, gamemasterPokemon, moves, pokemon]);
 
 	const greatLeagueMatchUps = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: (rankLists[0][pokemon.speciesId]?.matchups ?? []),
+		() => (resourcesNotReady ? [] : (rankLists[0][pokemon.speciesId]?.matchups ?? [])),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 	const greatLeagueCounters = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: (rankLists[0][pokemon.speciesId]?.counters ?? []),
+		() => (resourcesNotReady ? [] : (rankLists[0][pokemon.speciesId]?.counters ?? [])),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 	const ultraLeagueMatchUps = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: (rankLists[1][pokemon.speciesId]?.matchups ?? []),
+		() => (resourcesNotReady ? [] : (rankLists[1][pokemon.speciesId]?.matchups ?? [])),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 	const ultraLeagueCounters = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: (rankLists[1][pokemon.speciesId]?.counters ?? []),
+		() => (resourcesNotReady ? [] : (rankLists[1][pokemon.speciesId]?.counters ?? [])),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 	const masterLeagueMatchUps = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: (rankLists[2][pokemon.speciesId]?.matchups ?? []),
+		() => (resourcesNotReady ? [] : (rankLists[2][pokemon.speciesId]?.matchups ?? [])),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 	const masterLeagueCounters = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: (rankLists[2][pokemon.speciesId]?.counters ?? []),
+		() => (resourcesNotReady ? [] : (rankLists[2][pokemon.speciesId]?.counters ?? [])),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 	const customLeagueMatchUps = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: rankLists[3]
-					? (rankLists[3][pokemon.speciesId]?.matchups ?? [])
-					: [],
+		() => (resourcesNotReady ? [] : rankLists[3] ? (rankLists[3][pokemon.speciesId]?.matchups ?? []) : []),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 	const customLeagueCounters = useMemo(
-		() =>
-			resourcesNotReady
-				? []
-				: rankLists[3]
-					? (rankLists[3][pokemon.speciesId]?.counters ?? [])
-					: [],
+		() => (resourcesNotReady ? [] : rankLists[3] ? (rankLists[3][pokemon.speciesId]?.counters ?? []) : []),
 		[rankLists, pokemon, resourcesNotReady]
 	);
 
@@ -199,13 +136,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 					: league === LeagueType.CUSTOM_CUP
 						? customLeagueMatchUps
 						: masterLeagueMatchUps,
-		[
-			customLeagueMatchUps,
-			greatLeagueMatchUps,
-			league,
-			masterLeagueMatchUps,
-			ultraLeagueMatchUps,
-		]
+		[customLeagueMatchUps, greatLeagueMatchUps, league, masterLeagueMatchUps, ultraLeagueMatchUps]
 	);
 	const relevantCounters = useMemo(
 		() =>
@@ -216,13 +147,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 					: league === LeagueType.CUSTOM_CUP
 						? customLeagueCounters
 						: masterLeagueCounters,
-		[
-			customLeagueCounters,
-			greatLeagueCounters,
-			league,
-			masterLeagueCounters,
-			ultraLeagueCounters,
-		]
+		[customLeagueCounters, greatLeagueCounters, league, masterLeagueCounters, ultraLeagueCounters]
 	);
 
 	const leagueName = useMemo(
@@ -257,14 +182,10 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 							gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 						),
 						image: (
-							<div
-								className={`${imageSource !== ImageSource.Official ? '' : 'img-small-padding'}`}
-							>
+							<div className={`${imageSource !== ImageSource.Official ? '' : 'img-small-padding'}`}>
 								<PokemonImage
 									pokemon={pokemon}
-									specificHeight={
-										imageSource !== ImageSource.Official ? 28 : 24
-									}
+									specificHeight={imageSource !== ImageSource.Official ? 28 : 24}
 									specificWidth={imageSource !== ImageSource.Official ? 28 : 24}
 									withName={false}
 								/>
@@ -277,21 +198,13 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 					secondaryContent={[
 						<React.Fragment key={pokemon.speciesId}>
 							{score >= 500 ? (
-								<span className='win with-shadow with-brightness'>
-									{score / 10}%
-								</span>
+								<span className='win with-shadow with-brightness'>{score / 10}%</span>
 							) : (
-								<span className='lose with-shadow with-brightness'>
-									{score / 10}%
-								</span>
+								<span className='lose with-shadow with-brightness'>{score / 10}%</span>
 							)}
 						</React.Fragment>,
 					]}
-					onClick={() =>
-						void navigate(
-							`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`
-						)
-					}
+					onClick={() => void navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`)}
 					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 72%, var(--type-${type2 ?? type1}) 72%)`}
 				/>
 			);
@@ -300,10 +213,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 	);
 
 	const detailsClickHandler = useCallback(
-		(
-			e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>,
-			elementId: string
-		) => {
+		(e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>, elementId: string) => {
 			const details = document.getElementById(elementId) as HTMLDetailsElement;
 			if (details) {
 				details.open = !details.open;
@@ -318,9 +228,8 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 		(moveId: string, attack: number, speciesId: string): IDetailItem => {
 			return {
 				detailId: `${moveId}-${speciesId}`,
-				onClick: (
-					event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
-				) => detailsClickHandler(event, `${moveId}-${speciesId}`),
+				onClick: (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) =>
+					detailsClickHandler(event, `${moveId}-${speciesId}`),
 				summary: (
 					<>
 						<img
@@ -332,9 +241,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 							decoding='async'
 							src={`/images/types/${moves[moveId].type}.png`}
 						/>
-						<span>
-							{translateMoveFromMoveId(moveId, moves, currentGameLanguage)}
-						</span>
+						<span>{translateMoveFromMoveId(moveId, moves, currentGameLanguage)}</span>
 					</>
 				),
 				content: (
@@ -397,14 +304,10 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 							gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 						),
 						image: (
-							<div
-								className={`${imageSource !== ImageSource.Official ? '' : 'img-small-padding'}`}
-							>
+							<div className={`${imageSource !== ImageSource.Official ? '' : 'img-small-padding'}`}>
 								<PokemonImage
 									pokemon={pokemon}
-									specificHeight={
-										imageSource !== ImageSource.Official ? 28 : 24
-									}
+									specificHeight={imageSource !== ImageSource.Official ? 28 : 24}
 									specificWidth={imageSource !== ImageSource.Official ? 28 : 24}
 									withName={false}
 								/>
@@ -416,26 +319,14 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 					backgroundColorClassName={className}
 					secondaryContent={[
 						<React.Fragment key={pokemon.speciesId}>
-							{
-								<span className='with-shadow with-brightness'>
-									{Math.round(dps * 100) / 100} DPS
-								</span>
-							}
+							{<span className='with-shadow with-brightness'>{Math.round(dps * 100) / 100} DPS</span>}
 						</React.Fragment>,
 					]}
-					onClick={() =>
-						void navigate(
-							`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`
-						)
-					}
+					onClick={() => void navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`)}
 					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 72%, var(--type-${type2 ?? type1}) 72%)`}
 					details={[
 						{
-							...renderBuffDetailItem(
-								fastMove,
-								fastMoveDamage,
-								pokemon.speciesId
-							),
+							...renderBuffDetailItem(fastMove, fastMoveDamage, pokemon.speciesId),
 							onClick: (event) => {
 								if ('button' in event || 'clientX' in event) {
 									detailsClickHandler(
@@ -446,11 +337,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 							},
 						},
 						{
-							...renderBuffDetailItem(
-								chargedMove,
-								chargedMoveDamage,
-								pokemon.speciesId
-							),
+							...renderBuffDetailItem(chargedMove, chargedMoveDamage, pokemon.speciesId),
 							onClick: (event) => {
 								if ('button' in event || 'clientX' in event) {
 									detailsClickHandler(
@@ -464,21 +351,11 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 				/>
 			);
 		},
-		[
-			currentGameLanguage,
-			detailsClickHandler,
-			imageSource,
-			navigate,
-			pathname,
-			renderBuffDetailItem,
-		]
+		[currentGameLanguage, detailsClickHandler, imageSource, navigate, pathname, renderBuffDetailItem]
 	);
 
 	return (
-		<LoadingRenderer
-			errors={pvpErrors + movesErrors + errors}
-			completed={!resourcesNotReady}
-		>
+		<LoadingRenderer errors={pvpErrors + movesErrors + errors} completed={!resourcesNotReady}>
 			{}
 			{() =>
 				!resourcesNotReady && (
@@ -487,23 +364,13 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 							<div className='extra-ivs-options item default-padding block-column'>
 								<div className='centered'>
 									<span className='with-padding'>
-										{translator(TranslatorKeys.In, currentLanguage)
-											.substring(0, 1)
-											.toLocaleUpperCase() +
-											translator(TranslatorKeys.In, currentLanguage).substring(
-												1
-											)}{' '}
-										{gameTranslator(
-											GameTranslatorKeys.Raids,
-											currentGameLanguage
-										)}
-										, {translator(TranslatorKeys.RaidsIntro, currentLanguage)}{' '}
+										{translator(TranslatorKeys.In, currentLanguage).substring(0, 1).toLocaleUpperCase() +
+											translator(TranslatorKeys.In, currentLanguage).substring(1)}{' '}
+										{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)},{' '}
+										{translator(TranslatorKeys.RaidsIntro, currentLanguage)}{' '}
 										{pokemon.speciesName.replace(
 											'Shadow',
-											gameTranslator(
-												GameTranslatorKeys.Shadow,
-												currentGameLanguage
-											)
+											gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 										)}
 										:
 									</span>
@@ -511,11 +378,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 								<br />
 								<div className='justified'>
 									{translator(TranslatorKeys.Show, currentLanguage)}&nbsp;
-									<select
-										value={top}
-										onChange={(e) => setTop(+e.target.value)}
-										className='select-level'
-									>
+									<select value={top} onChange={(e) => setTop(+e.target.value)} className='select-level'>
 										<option key={10} value={10}>
 											{10}
 										</option>
@@ -530,37 +393,20 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 										</option>
 									</select>
 									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mega{' '}
-									<input
-										type='checkbox'
-										checked={mega}
-										onChange={() => setMega((p) => !p)}
-									/>
+									<input type='checkbox' checked={mega} onChange={() => setMega((p) => !p)} />
 									&nbsp;&nbsp;
-									{gameTranslator(
-										GameTranslatorKeys.Shadow,
-										currentGameLanguage
-									)}{' '}
-									<input
-										type='checkbox'
-										checked={shadow}
-										onChange={() => setShadow((p) => !p)}
-									/>
+									{gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}{' '}
+									<input type='checkbox' checked={shadow} onChange={() => setShadow((p) => !p)} />
 								</div>
 							</div>
 						)}
 						{league !== LeagueType.RAID && (
 							<div className='centered item default-padding'>
 								<span className='with-padding'>
-									{translator(
-										TranslatorKeys.TopKeyCountersIntro,
-										currentLanguage
-									)}{' '}
+									{translator(TranslatorKeys.TopKeyCountersIntro, currentLanguage)}{' '}
 									{pokemon.speciesName.replace(
 										'Shadow',
-										gameTranslator(
-											GameTranslatorKeys.Shadow,
-											currentGameLanguage
-										)
+										gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 									)}{' '}
 									{translator(TranslatorKeys.In, currentLanguage)}{' '}
 									{gameTranslator(
@@ -598,26 +444,15 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 														);
 													})
 												) : (
-													<span className='centered'>
-														{translator(
-															TranslatorKeys.NoResults,
-															currentLanguage
-														)}
-													</span>
+													<span className='centered'>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
 												)
 											) : (
 												<span className='unavailable_moves'>
 													{pokemon.speciesName.replace(
 														'Shadow',
-														gameTranslator(
-															GameTranslatorKeys.Shadow,
-															currentGameLanguage
-														)
+														gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 													)}{' '}
-													{translator(
-														TranslatorKeys.UnrankedPokemonForLeague,
-														currentLanguage
-													)}{' '}
+													{translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)}{' '}
 													{gameTranslator(
 														league === LeagueType.GREAT_LEAGUE
 															? GameTranslatorKeys.GreatLeague
@@ -649,8 +484,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 											comparisons
 												.filter(
 													(o) =>
-														(shadow ||
-															!gamemasterPokemon[o.speciesId].isShadow) &&
+														(shadow || !gamemasterPokemon[o.speciesId].isShadow) &&
 														(mega || !gamemasterPokemon[o.speciesId].isMega)
 												)
 												.slice(0, x > 750 ? top / 2 : top)
@@ -683,26 +517,15 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 													);
 												})
 											) : (
-												<span className='centered'>
-													{translator(
-														TranslatorKeys.NoResults,
-														currentLanguage
-													)}
-												</span>
+												<span className='centered'>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
 											)
 										) : (
 											<span className='unavailable_moves'>
 												{pokemon.speciesName.replace(
 													'Shadow',
-													gameTranslator(
-														GameTranslatorKeys.Shadow,
-														currentGameLanguage
-													)
+													gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 												)}{' '}
-												{translator(
-													TranslatorKeys.UnrankedPokemonForLeague,
-													currentLanguage
-												)}{' '}
+												{translator(TranslatorKeys.UnrankedPokemonForLeague, currentLanguage)}{' '}
 												{gameTranslator(
 													league === LeagueType.GREAT_LEAGUE
 														? GameTranslatorKeys.GreatLeague
@@ -729,8 +552,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 											{comparisons
 												.filter(
 													(o) =>
-														(shadow ||
-															!gamemasterPokemon[o.speciesId].isShadow) &&
+														(shadow || !gamemasterPokemon[o.speciesId].isShadow) &&
 														(mega || !gamemasterPokemon[o.speciesId].isMega)
 												)
 												.slice(top / 2, top)

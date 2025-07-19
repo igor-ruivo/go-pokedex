@@ -36,14 +36,8 @@ const PokemonHeader = ({
 	onClickHandler,
 	additionalClasses,
 }: IPokemonHeader) => {
-	const type1Color = useMemo(
-		() => (type1 ? `var(--type-${type1})` : 'var(--popup-background-color)'),
-		[type1]
-	);
-	const type2Color = useMemo(
-		() => (type2 ? `var(--type-${type2})` : type1Color),
-		[type2, type1Color]
-	);
+	const type1Color = useMemo(() => (type1 ? `var(--type-${type1})` : 'var(--popup-background-color)'), [type1]);
+	const type2Color = useMemo(() => (type2 ? `var(--type-${type2})` : type1Color), [type2, type1Color]);
 
 	const isInteractive = typeof onClickHandler === 'function';
 

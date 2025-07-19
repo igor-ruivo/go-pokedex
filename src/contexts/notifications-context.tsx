@@ -1,17 +1,7 @@
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useMemo,
-	useState,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 import type { IPostEntry } from '../DTOs/INews';
-import {
-	ConfigKeys,
-	readPersistentValue,
-	writePersistentValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import type { GameLanguage } from './language-context';
 import type { ILeekduckSpotlightHour } from './raid-bosses-context';
 import { useCalendar } from './raid-bosses-context';
@@ -22,23 +12,17 @@ interface NotificationsContextType {
 	updateSeenEvents: (newEvents: Array<string>) => void;
 }
 
-const NotificationsContext = createContext<
-	NotificationsContextType | undefined
->(undefined);
+const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
 
 export const useNotifications = (): NotificationsContextType => {
 	const context = useContext(NotificationsContext);
 	if (!context) {
-		throw new Error(
-			'useNotifications must be used within a NotificationsProvider'
-		);
+		throw new Error('useNotifications must be used within a NotificationsProvider');
 	}
 	return context;
 };
 
-export const NotificationsProvider = (
-	props: React.PropsWithChildren<object>
-) => {
+export const NotificationsProvider = (props: React.PropsWithChildren<object>) => {
 	const getDefaultSeenEvents = useCallback((): Set<string> => {
 		const cachedSeenEvents = readPersistentValue(ConfigKeys.SeenEvents);
 		if (!cachedSeenEvents) {
@@ -53,14 +37,8 @@ export const NotificationsProvider = (
 	}, []);
 
 	const [seenEvents, setSeenEvents] = useState(getDefaultSeenEvents());
-	const {
-		posts,
-		spotlightHours,
-		postsFetchCompleted,
-		spotlightHoursFetchCompleted,
-		season,
-		seasonFetchCompleted,
-	} = useCalendar();
+	const { posts, spotlightHours, postsFetchCompleted, spotlightHoursFetchCompleted, season, seasonFetchCompleted } =
+		useCalendar();
 
 	const mapToPostEntry = (spotlight: ILeekduckSpotlightHour): IPostEntry => {
 		return {
@@ -78,20 +56,17 @@ export const NotificationsProvider = (
 			researches: [],
 			incenses: [],
 			lures: [],
-			bonuses: Object.fromEntries(
-				Object.entries(spotlight.bonus).map(([k, v]) => [k, [v]])
-			) as Record<GameLanguage, Array<string>>,
+			bonuses: Object.fromEntries(Object.entries(spotlight.bonus).map(([k, v]) => [k, [v]])) as Record<
+				GameLanguage,
+				Array<string>
+			>,
 			isSpotlight: true,
 		};
 	};
 
 	const currentEventIds = useMemo(
 		() =>
-			postsFetchCompleted &&
-			posts &&
-			season &&
-			seasonFetchCompleted &&
-			spotlightHoursFetchCompleted
+			postsFetchCompleted && posts && season && seasonFetchCompleted && spotlightHoursFetchCompleted
 				? [
 						...[...posts, season, ...spotlightHours.map(mapToPostEntry)].filter(
 							(p) =>
@@ -104,14 +79,7 @@ export const NotificationsProvider = (
 						),
 					].map((p) => p.id)
 				: [],
-		[
-			posts,
-			postsFetchCompleted,
-			season,
-			seasonFetchCompleted,
-			spotlightHours,
-			spotlightHoursFetchCompleted,
-		]
+		[posts, postsFetchCompleted, season, seasonFetchCompleted, spotlightHours, spotlightHoursFetchCompleted]
 	);
 
 	const unseenEvents = useMemo(
@@ -132,9 +100,7 @@ export const NotificationsProvider = (
 	);
 
 	return (
-		<NotificationsContext.Provider
-			value={{ seenEvents, unseenEvents, updateSeenEvents }}
-		>
+		<NotificationsContext.Provider value={{ seenEvents, unseenEvents, updateSeenEvents }}>
 			{props.children}
 		</NotificationsContext.Provider>
 	);

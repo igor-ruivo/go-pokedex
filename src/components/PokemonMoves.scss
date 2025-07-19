@@ -10,10 +10,6 @@
 	width: 100%;
 }
 
-.clickable {
-	cursor: pointer;
-}
-
 .with-padding {
 	padding: 6px;
 }
@@ -139,10 +135,6 @@
 			text-overflow: ellipsis;
 		}
 	}
-}
-
-details {
-	cursor: pointer;
 }
 
 details[open] {

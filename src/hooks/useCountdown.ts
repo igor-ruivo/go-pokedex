@@ -13,9 +13,7 @@ const useCountdown = (targetDate: number): CountdownTime => {
 	const countDownDate = new Date(targetDate).getTime();
 
 	// Initialize state with remaining time
-	const [timeLeft, setTimeLeft] = useState<number>(
-		countDownDate - new Date().valueOf()
-	);
+	const [timeLeft, setTimeLeft] = useState<number>(countDownDate - new Date().valueOf());
 
 	useEffect(() => {
 		// Update the countdown every second
@@ -36,22 +34,10 @@ const useCountdown = (targetDate: number): CountdownTime => {
 	}, [countDownDate, setTimeLeft]);
 
 	// Calculate days, hours, minutes and seconds
-	const days = useMemo(
-		() => Math.floor(timeLeft / (1000 * 60 * 60 * 24)),
-		[timeLeft]
-	);
-	const hours = useMemo(
-		() => Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-		[timeLeft]
-	);
-	const minutes = useMemo(
-		() => Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)),
-		[timeLeft]
-	);
-	const seconds = useMemo(
-		() => Math.floor((timeLeft % (1000 * 60)) / 1000),
-		[timeLeft]
-	);
+	const days = useMemo(() => Math.floor(timeLeft / (1000 * 60 * 60 * 24)), [timeLeft]);
+	const hours = useMemo(() => Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)), [timeLeft]);
+	const minutes = useMemo(() => Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)), [timeLeft]);
+	const seconds = useMemo(() => Math.floor((timeLeft % (1000 * 60)) / 1000), [timeLeft]);
 
 	return { days, hours, minutes, seconds };
 };

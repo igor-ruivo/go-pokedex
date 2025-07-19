@@ -3,8 +3,7 @@ type LocalStorageItem<T> = {
 	expiry: number;
 };
 
-const stringifyValue = <T>(value: LocalStorageItem<T>): string =>
-	JSON.stringify(value);
+const stringifyValue = <T>(value: LocalStorageItem<T>): string => JSON.stringify(value);
 
 const deleteEntry = (key: string): void => {
 	localStorage.removeItem(key);
@@ -28,10 +27,7 @@ export const writeEntry = <T>(key: string, value: T, ttl: number): void => {
  * @returns null if the key wasn't found or if its ttl has expired,
  * or the original value otherwise.
  */
-export const readEntry = <T>(
-	key: string,
-	customCacheExpirationAction?: (data: T) => void
-): T | null => {
+export const readEntry = <T>(key: string, customCacheExpirationAction?: (data: T) => void): T | null => {
 	const item = localStorage.getItem(key);
 	if (!item) {
 		return null;

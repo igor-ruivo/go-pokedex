@@ -43,32 +43,10 @@
 	width: 100%;
 }
 
-.button {
+.navbar-button {
 	color: var(--buttonsTextColor);
 	border-radius: 12px;
 	font-size: inherit;
-}
-
-.relative-holder {
-	position: relative;
-	display: flex;
-}
-
-.notifications-counter {
-	z-index: 5;
-	height: 18px;
-	width: 18px;
-	transform: translateY(-45%) translateX(120%);
-	background-color: var(--notifications-color);
-	color: var(--notifications-color-text);
-	position: absolute;
-	border-radius: 50%;
-	font-weight: 700;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-	font-size: 10px;
 }
 
 @media (width <= 800px) {
@@ -89,18 +67,8 @@
 	.footer {
 		padding-left: 16px;
 		padding-right: 16px;
-	}
-
-	.footer {
 		min-height: 80px;
 		max-height: 80px;
 		height: 80px;
-	}
-
-	.notifications-counter {
-		height: 16px;
-		width: 16px;
-		font-weight: 800;
-		transform: translateY(-35%) translateX(120%);
 	}
 }

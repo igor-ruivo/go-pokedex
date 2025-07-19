@@ -1,5 +1,4 @@
-export const inCamelCase = (str: string) =>
-	str?.substring(0, 1)?.toUpperCase() + str?.substring(1);
+export const inCamelCase = (str: string) => str?.substring(0, 1)?.toUpperCase() + str?.substring(1);
 
 export const localeStringSmallestOptions: Intl.DateTimeFormatOptions = {
 	timeZone: 'UTC',

@@ -31,15 +31,7 @@ const Pokedex = () => {
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
 	const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
-	const {
-		inputText,
-		familyTree,
-		showShadow,
-		showMega,
-		showXL,
-		type1Filter,
-		type2Filter,
-	} = useNavbarSearchInput();
+	const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
 
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -138,13 +130,9 @@ const Pokedex = () => {
 		const cpStringOverrides: Record<string, string> = {};
 		const rankOverrides: Record<string, number> = {};
 
-		const mapper = (r: IRankedPokemon): IGamemasterPokemon =>
-			gamemasterPokemon[r.speciesId];
+		const mapper = (r: IRankedPokemon): IGamemasterPokemon => gamemasterPokemon[r.speciesId];
 
-		const inputFilter = (
-			p: IGamemasterPokemon,
-			domainFilter: (pokemon: IGamemasterPokemon) => boolean
-		) => {
+		const inputFilter = (p: IGamemasterPokemon, domainFilter: (pokemon: IGamemasterPokemon) => boolean) => {
 			if (!inputText) {
 				return true;
 			}
@@ -153,22 +141,13 @@ const Pokedex = () => {
 				return baseFilter(p);
 			}
 
-			const family = fetchPokemonFamily(
-				p,
-				gamemasterPokemon,
-				domainFilter,
-				pokemonByDex,
-				pokemonByFamilyId
-			);
+			const family = fetchPokemonFamily(p, gamemasterPokemon, domainFilter, pokemonByDex, pokemonByFamilyId);
 			return Array.from(family).some(baseFilter);
 		};
 
 		const baseFilter = (p: IGamemasterPokemon) =>
 			p.speciesName
-				.replace(
-					'Shadow',
-					gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
-				)
+				.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))
 				.toLowerCase()
 				.includes(inputText.toLowerCase().trim());
 
@@ -180,14 +159,9 @@ const Pokedex = () => {
 					(showMega || !pokemon.isMega) &&
 					(type1Filter === undefined || pokemon.types.includes(type1Filter)) &&
 					(type2Filter === undefined || pokemon.types.includes(type2Filter));
-				const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) =>
-					!pokemon.isShadow && !pokemon.aliasId;
+				const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
 				processedList = Object.values(gamemasterPokemon)
-					.filter(
-						(p) =>
-							pokedexDomainFilter(p) &&
-							inputFilter(p, pokedexDomainFilterForFamily)
-					)
+					.filter((p) => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilterForFamily))
 					.sort((p1: IGamemasterPokemon, p2: IGamemasterPokemon) => {
 						// Sort by dex number first
 						if (p1.dex !== p2.dex) {
@@ -206,12 +180,8 @@ const Pokedex = () => {
 						// Handle '(small)', '(average)', '(large)', '(super)' sizes
 						const sizePriority = ['small', 'average', 'large', 'super'];
 
-						const p1SizeIndex = sizePriority.findIndex((size) =>
-							p1Name.includes(`(${size})`)
-						);
-						const p2SizeIndex = sizePriority.findIndex((size) =>
-							p2Name.includes(`(${size})`)
-						);
+						const p1SizeIndex = sizePriority.findIndex((size) => p1Name.includes(`(${size})`));
+						const p2SizeIndex = sizePriority.findIndex((size) => p2Name.includes(`(${size})`));
 
 						if (p1SizeIndex !== p2SizeIndex) {
 							return p1SizeIndex - p2SizeIndex;
@@ -225,9 +195,7 @@ const Pokedex = () => {
 			case ListType.ULTRA_LEAGUE:
 			case ListType.MASTER_LEAGUE:
 			case ListType.CUSTOM_CUP:
-				const leaguePool = rankLists[listType - 1]
-					? Object.values(rankLists[listType - 1]).map(mapper)
-					: [];
+				const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
 				const cupDomainFilter = (pokemon: IGamemasterPokemon) =>
 					!pokemon.aliasId &&
 					!pokemon.isMega &&
@@ -235,11 +203,8 @@ const Pokedex = () => {
 					(showXL || !needsXLCandy(pokemon, cpThreshold)) &&
 					(type1Filter === undefined || pokemon.types.includes(type1Filter)) &&
 					(type2Filter === undefined || pokemon.types.includes(type2Filter));
-				const cupDomainFilterForFamily = (pokemon: IGamemasterPokemon) =>
-					!pokemon.aliasId && !pokemon.isMega;
-				processedList = leaguePool.filter(
-					(p) => cupDomainFilter(p) && inputFilter(p, cupDomainFilterForFamily)
-				);
+				const cupDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId && !pokemon.isMega;
+				processedList = leaguePool.filter((p) => cupDomainFilter(p) && inputFilter(p, cupDomainFilterForFamily));
 				break;
 			case ListType.RAID:
 				const preProcessedList: Array<IGamemasterPokemon> = [];
@@ -248,26 +213,23 @@ const Pokedex = () => {
 					break;
 				}
 
-				Object.entries(
-					raidDPS[type1Filter ? type1Filter.toString().toLocaleLowerCase() : '']
-				).forEach(([speciesId, e], idx) => {
-					const raidFilter = (pokemon: IGamemasterPokemon) =>
-						!pokemon.aliasId &&
-						(showMega || !pokemon.isMega) &&
-						(showShadow || !pokemon.isShadow);
-					const raidFilterForFamily = (pokemon: IGamemasterPokemon) =>
-						!pokemon.aliasId;
-					if (
-						!raidFilter(gamemasterPokemon[speciesId]) ||
-						!inputFilter(gamemasterPokemon[speciesId], raidFilterForFamily)
-					) {
-						return;
-					}
+				Object.entries(raidDPS[type1Filter ? type1Filter.toString().toLocaleLowerCase() : '']).forEach(
+					([speciesId, e], idx) => {
+						const raidFilter = (pokemon: IGamemasterPokemon) =>
+							!pokemon.aliasId && (showMega || !pokemon.isMega) && (showShadow || !pokemon.isShadow);
+						const raidFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.aliasId;
+						if (
+							!raidFilter(gamemasterPokemon[speciesId]) ||
+							!inputFilter(gamemasterPokemon[speciesId], raidFilterForFamily)
+						) {
+							return;
+						}
 
-					preProcessedList.push(gamemasterPokemon[speciesId]);
-					cpStringOverrides[speciesId] = `${Math.round(e.dps * 100) / 100} DPS`;
-					rankOverrides[speciesId] = idx + 1;
-				});
+						preProcessedList.push(gamemasterPokemon[speciesId]);
+						cpStringOverrides[speciesId] = `${Math.round(e.dps * 100) / 100} DPS`;
+						rankOverrides[speciesId] = idx + 1;
+					}
+				);
 
 				processedList = preProcessedList;
 				break;
@@ -325,24 +287,12 @@ const Pokedex = () => {
 							to='/great'
 							className={
 								'header-tab league-picker ' +
-								(listType === ListType.GREAT_LEAGUE
-									? 'header-selected'
-									: 'header-unselected')
+								(listType === ListType.GREAT_LEAGUE ? 'header-selected' : 'header-unselected')
 							}
 						>
-							<img
-								height='24'
-								width='24'
-								src={`/images/leagues/great.png`}
-								alt='Great League'
-							/>
+							<img height='24' width='24' src={`/images/leagues/great.png`} alt='Great League' />
 							{listType === ListType.GREAT_LEAGUE && (
-								<span>
-									{gameTranslator(
-										GameTranslatorKeys.Great,
-										currentGameLanguage
-									)}
-								</span>
+								<span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>
 							)}
 						</Link>
 					</li>
@@ -351,17 +301,10 @@ const Pokedex = () => {
 							to='/ultra'
 							className={
 								'header-tab league-picker ' +
-								(listType === ListType.ULTRA_LEAGUE
-									? 'header-selected'
-									: 'header-unselected')
+								(listType === ListType.ULTRA_LEAGUE ? 'header-selected' : 'header-unselected')
 							}
 						>
-							<img
-								height='24'
-								width='24'
-								src={`/images/leagues/ultra.png`}
-								alt='Ultra League'
-							/>
+							<img height='24' width='24' src={`/images/leagues/ultra.png`} alt='Ultra League' />
 							{listType === ListType.ULTRA_LEAGUE && <span>Ultra</span>}
 						</Link>
 					</li>
@@ -370,24 +313,12 @@ const Pokedex = () => {
 							to='/master'
 							className={
 								'header-tab league-picker ' +
-								(listType === ListType.MASTER_LEAGUE
-									? 'header-selected'
-									: 'header-unselected')
+								(listType === ListType.MASTER_LEAGUE ? 'header-selected' : 'header-unselected')
 							}
 						>
-							<img
-								height='24'
-								width='24'
-								src={`/images/leagues/master.png`}
-								alt='Master League'
-							/>
+							<img height='24' width='24' src={`/images/leagues/master.png`} alt='Master League' />
 							{listType === ListType.MASTER_LEAGUE && (
-								<span>
-									{gameTranslator(
-										GameTranslatorKeys.Master,
-										currentGameLanguage
-									)}
-								</span>
+								<span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>
 							)}
 						</Link>
 					</li>
@@ -397,24 +328,12 @@ const Pokedex = () => {
 								to='/custom'
 								className={
 									'header-tab league-picker ' +
-									(listType === ListType.CUSTOM_CUP
-										? 'header-selected'
-										: 'header-unselected')
+									(listType === ListType.CUSTOM_CUP ? 'header-selected' : 'header-unselected')
 								}
 							>
-								<img
-									height='24'
-									width='24'
-									src={`/images/leagues/fantasy-cup.png`}
-									alt='Fantasy Cup'
-								/>
+								<img height='24' width='24' src={`/images/leagues/fantasy-cup.png`} alt='Fantasy Cup' />
 								{listType === ListType.CUSTOM_CUP && (
-									<span>
-										{gameTranslator(
-											GameTranslatorKeys.Fantasy,
-											currentGameLanguage
-										)}
-									</span>
+									<span>{gameTranslator(GameTranslatorKeys.Fantasy, currentGameLanguage)}</span>
 								)}
 							</Link>
 						</li>
@@ -423,10 +342,7 @@ const Pokedex = () => {
 						<Link
 							to='/raid'
 							className={
-								'header-tab league-picker ' +
-								(listType === ListType.RAID
-									? 'header-selected'
-									: 'header-unselected')
+								'header-tab league-picker ' + (listType === ListType.RAID ? 'header-selected' : 'header-unselected')
 							}
 						>
 							<div className='img-padding-s'>
@@ -439,12 +355,7 @@ const Pokedex = () => {
 								/>
 							</div>
 							{listType === ListType.RAID && (
-								<span>
-									{gameTranslator(
-										GameTranslatorKeys.Raids,
-										currentGameLanguage
-									)}
-								</span>
+								<span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>
 							)}
 						</Link>
 					</li>
@@ -453,11 +364,7 @@ const Pokedex = () => {
 			<div className='pokedex' ref={containerRef}>
 				<LoadingRenderer
 					errors={errors + pvpErrors}
-					completed={
-						fetchCompleted &&
-						pvpFetchCompleted &&
-						(listType !== ListType.RAID || raidDPSFetchCompleted)
-					}
+					completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}
 				>
 					{() => (
 						<PokemonGrid

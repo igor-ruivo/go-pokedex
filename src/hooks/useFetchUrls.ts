@@ -37,21 +37,11 @@ export const useFetchUrls = <T = unknown>(): FetchData<T> => {
 			withoutCache = false
 		) => {
 			try {
-				const response = await fetchUrls<T>(
-					urls,
-					cacheTtl,
-					withoutCache,
-					fetchRequestConfig,
-					dataTransformer
-				);
+				const response = await fetchUrls<T>(urls, cacheTtl, withoutCache, fetchRequestConfig, dataTransformer);
 				setData(response);
 			} catch (error) {
 				const errorMessage =
-					error instanceof Error
-						? error.toString()
-						: typeof error === 'string'
-							? error
-							: 'Unknown error';
+					error instanceof Error ? error.toString() : typeof error === 'string' ? error : 'Unknown error';
 				console.error(errorMessage);
 				setErrorLoadingData(errorMessage);
 			} finally {
@@ -61,11 +51,6 @@ export const useFetchUrls = <T = unknown>(): FetchData<T> => {
 		[setData, setErrorLoadingData, setFetchCompleted]
 	);
 
-	const response: FetchData<T> = [
-		data,
-		fetchUrlsCallback,
-		fetchCompleted,
-		errorLoadingData,
-	];
+	const response: FetchData<T> = [data, fetchUrlsCallback, fetchCompleted, errorLoadingData];
 	return response;
 };

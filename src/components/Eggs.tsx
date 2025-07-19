@@ -1,26 +1,21 @@
+import './Misc.scss';
+
 import { useCallback, useState } from 'react';
 
 import { useLanguage } from '../contexts/language-context';
 import { usePokemon } from '../contexts/pokemon-context';
 import { useCalendar } from '../contexts/raid-bosses-context';
 import { sortEntries } from '../DTOs/INews';
-import {
-	ConfigKeys,
-	readSessionValue,
-	writeSessionValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
 import PokemonMiniature from './PokemonMiniature';
 import Section from './Template/Section';
 
 const Eggs = () => {
-	const { currentEggs, errorLoadingCurrentEggs, currentEggsFetchCompleted } =
-		useCalendar();
+	const { currentEggs, errorLoadingCurrentEggs, currentEggsFetchCompleted } = useCalendar();
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-	const [currentEgg, setCurrentEgg] = useState(
-		readSessionValue(ConfigKeys.ExpandedEgg) ?? '0'
-	);
+	const [currentEgg, setCurrentEgg] = useState(readSessionValue(ConfigKeys.ExpandedEgg) ?? '0');
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 
 	const idxToEggName = useCallback((idx: number) => {
@@ -73,23 +68,17 @@ const Eggs = () => {
 		writeSessionValue(ConfigKeys.ExpandedEgg, String(i));
 	};
 
-	const handleEggKeyDown =
-		(i: number) => (e: React.KeyboardEvent<HTMLDivElement>) => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				handleEggSelect(i);
-			}
-		};
+	const handleEggKeyDown = (i: number) => (e: React.KeyboardEvent<HTMLDivElement>) => {
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			handleEggSelect(i);
+		}
+	};
 
 	return (
-		<LoadingRenderer
-			errors={errorLoadingCurrentEggs + errors}
-			completed={fetchCompleted && currentEggsFetchCompleted}
-		>
+		<LoadingRenderer errors={errorLoadingCurrentEggs + errors} completed={fetchCompleted && currentEggsFetchCompleted}>
 			{() => (
-				<Section
-					title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}
-				>
+				<Section title={translator(TranslatorKeys.FeaturedEggs, currentLanguage)}>
 					<div>
 						<div className='raid-container'>
 							<div className='overflowing'>
@@ -102,7 +91,7 @@ const Eggs = () => {
 										currentEggs.filter((e) => e.kind === '12'),
 									].map((t, i) => (
 										<div
-											className='clickable'
+											className='clickable selectable'
 											key={i}
 											role='button'
 											tabIndex={0}
@@ -134,20 +123,13 @@ const Eggs = () => {
 						<div className='with-flex contained'>
 							{currentEggs
 								.filter(
-									(r) =>
-										Object.values(r.comment?.en ?? {}).length === 0 &&
-										r.kind === String(idxToKind(+currentEgg))
+									(r) => Object.values(r.comment?.en ?? {}).length === 0 && r.kind === String(idxToKind(+currentEgg))
 								)
 								.sort((a, b) => sortEntries(a, b, gamemasterPokemon))
 								.map((p) => (
-									<div
-										key={p.speciesId + p.kind}
-										className='mini-card-wrapper-padding dynamic-size'
-									>
+									<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 										<div className={`mini-card-wrapper`}>
-											<PokemonMiniature
-												pokemon={gamemasterPokemon[p.speciesId]}
-											/>
+											<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 										</div>
 									</div>
 								))}
@@ -163,9 +145,7 @@ const Eggs = () => {
 									<strong>
 										{
 											currentEggs.find(
-												(e) =>
-													e.kind === String(idxToKind(+currentEgg)) &&
-													e.comment?.[currentGameLanguage]
+												(e) => e.kind === String(idxToKind(+currentEgg)) && e.comment?.[currentGameLanguage]
 											)!.comment![currentGameLanguage]
 										}
 										:
@@ -182,14 +162,9 @@ const Eggs = () => {
 								)
 								.sort((a, b) => sortEntries(a, b, gamemasterPokemon))
 								.map((p) => (
-									<div
-										key={p.speciesId + p.kind}
-										className='mini-card-wrapper-padding dynamic-size'
-									>
+									<div key={p.speciesId + p.kind} className='mini-card-wrapper-padding dynamic-size'>
 										<div className={`mini-card-wrapper`}>
-											<PokemonMiniature
-												pokemon={gamemasterPokemon[p.speciesId]}
-											/>
+											<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} />
 										</div>
 									</div>
 								))}

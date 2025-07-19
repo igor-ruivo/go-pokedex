@@ -20,6 +20,14 @@
 	background: var(--header-main-color) !important;
 }
 
+.darker-banner-color {
+	background-color: var(--shadow-header-color);
+}
+
+.special-banner-color {
+	background-color: var(--special-header-color);
+}
+
 .no-shadow {
 	text-shadow: none;
 }

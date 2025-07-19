@@ -51,9 +51,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 
 		return [
 			(raidAttackType.substring(0, 1).toLocaleUpperCase() +
-				raidAttackType
-					.substring(1)
-					.toLocaleLowerCase()) as unknown as PokemonTypes,
+				raidAttackType.substring(1).toLocaleLowerCase()) as unknown as PokemonTypes,
 		];
 	}, [raidAttackType]);
 
@@ -65,14 +63,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 			!movesFetchCompleted ||
 			!gamemasterPokemon ||
 			!pokemon,
-		[
-			fetchCompleted,
-			gamemasterPokemon,
-			movesFetchCompleted,
-			pokemon,
-			pvpFetchCompleted,
-			raidDPSFetchCompleted,
-		]
+		[fetchCompleted, gamemasterPokemon, movesFetchCompleted, pokemon, pvpFetchCompleted, raidDPSFetchCompleted]
 	);
 
 	const greatLeagueMoveset = useMemo(
@@ -88,12 +79,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 		[isNotReady, pokemon, rankLists]
 	);
 	const customLeagueMoveset = useMemo(
-		() =>
-			isNotReady
-				? []
-				: rankLists[3]
-					? (rankLists[3][pokemon.speciesId]?.moveset ?? [])
-					: [],
+		() => (isNotReady ? [] : rankLists[3] ? (rankLists[3][pokemon.speciesId]?.moveset ?? []) : []),
 		[isNotReady, pokemon, rankLists]
 	);
 
@@ -111,27 +97,10 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 			return x;
 		}
 		return (
-			raidDPS[type ? type[0].toString().toLocaleLowerCase() : ''][
-				pokemon.speciesId
-			] ??
-			computeDPSEntry(
-				pokemon,
-				gamemasterPokemon,
-				moves,
-				15,
-				100,
-				raidAttackType
-			)
+			raidDPS[type ? type[0].toString().toLocaleLowerCase() : ''][pokemon.speciesId] ??
+			computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, 100, raidAttackType)
 		);
-	}, [
-		gamemasterPokemon,
-		moves,
-		pokemon,
-		raidAttackType,
-		raidDPS,
-		type,
-		isNotReady,
-	]);
+	}, [gamemasterPokemon, moves, pokemon, raidAttackType, raidDPS, type, isNotReady]);
 	const raidMoveset: [string, string] = useMemo(
 		() => [raidComputation.fastMove, raidComputation.chargedMove],
 		[raidComputation]
@@ -149,25 +118,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 			};
 			return x;
 		}
-		return computeDPSEntry(
-			pokemon,
-			gamemasterPokemon,
-			moves,
-			15,
-			level,
-			raidAttackType,
-			undefined,
-			raidMoveset
-		);
-	}, [
-		gamemasterPokemon,
-		level,
-		moves,
-		pokemon,
-		raidAttackType,
-		raidMoveset,
-		isNotReady,
-	]);
+		return computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, level, raidAttackType, undefined, raidMoveset);
+	}, [gamemasterPokemon, level, moves, pokemon, raidAttackType, raidMoveset, isNotReady]);
 
 	const relevantMoveSet = useMemo(
 		() =>
@@ -180,14 +132,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 						: league === LeagueType.MASTER_LEAGUE
 							? masterLeagueMoveset
 							: raidMoveset,
-		[
-			customLeagueMoveset,
-			greatLeagueMoveset,
-			league,
-			masterLeagueMoveset,
-			raidMoveset,
-			ultraLeagueMoveset,
-		]
+		[customLeagueMoveset, greatLeagueMoveset, league, masterLeagueMoveset, raidMoveset, ultraLeagueMoveset]
 	);
 
 	const isStabMove = useCallback(
@@ -214,8 +159,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 			const m1Index = relevantMoveSet.indexOf(m1);
 			const m2Index = relevantMoveSet.indexOf(m2);
 
-			const recommendedComparison =
-				(m2Index !== -1 ? 1 : 0) - (m1Index !== -1 ? 1 : 0);
+			const recommendedComparison = (m2Index !== -1 ? 1 : 0) - (m1Index !== -1 ? 1 : 0);
 			if (recommendedComparison !== 0) {
 				return recommendedComparison;
 			}
@@ -232,22 +176,17 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 				return specialComparison;
 			}
 
-			const eliteComparison =
-				(pokemon.eliteMoves.includes(m2) ? 1 : 0) -
-				(pokemon.eliteMoves.includes(m1) ? 1 : 0);
+			const eliteComparison = (pokemon.eliteMoves.includes(m2) ? 1 : 0) - (pokemon.eliteMoves.includes(m1) ? 1 : 0);
 			if (eliteComparison !== 0) {
 				return eliteComparison;
 			}
 
-			const legacyComparison =
-				(pokemon.legacyMoves.includes(m2) ? 1 : 0) -
-				(pokemon.legacyMoves.includes(m1) ? 1 : 0);
+			const legacyComparison = (pokemon.legacyMoves.includes(m2) ? 1 : 0) - (pokemon.legacyMoves.includes(m1) ? 1 : 0);
 			if (legacyComparison !== 0) {
 				return legacyComparison;
 			}
 
-			const stabComparison =
-				(isStabMove(m2) ? 1 : 0) - (isStabMove(m1) ? 1 : 0);
+			const stabComparison = (isStabMove(m2) ? 1 : 0) - (isStabMove(m1) ? 1 : 0);
 			if (stabComparison !== 0) {
 				return stabComparison;
 			}
@@ -257,26 +196,20 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 				return typeComparison;
 			}
 
-			return translateMoveFromMoveId(
-				m1,
-				moves,
-				currentGameLanguage
-			).localeCompare(translateMoveFromMoveId(m2, moves, currentGameLanguage));
+			return translateMoveFromMoveId(m1, moves, currentGameLanguage).localeCompare(
+				translateMoveFromMoveId(m2, moves, currentGameLanguage)
+			);
 		},
 		[hasBuffs, isStabMove, currentGameLanguage, moves, pokemon, relevantMoveSet]
 	);
 
 	const computeIdAttr = useCallback(
-		(moveId: string, isRecommended: boolean) =>
-			`details-${moveId}-${isRecommended ? 'rec' : 'all'}`,
+		(moveId: string, isRecommended: boolean) => `details-${moveId}-${isRecommended ? 'rec' : 'all'}`,
 		[]
 	);
 
 	const detailsClickHandler = useCallback(
-		(
-			e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>,
-			elementId: string
-		) => {
+		(e: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>, elementId: string) => {
 			const details = document.getElementById(elementId) as HTMLDetailsElement;
 			if (details) {
 				details.open = !details.open;
@@ -293,9 +226,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 
 			return {
 				detailId: `${idAttr}-buff`,
-				onClick: (
-					event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
-				) => detailsClickHandler(event, `${idAttr}-buff`),
+				onClick: (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) =>
+					detailsClickHandler(event, `${idAttr}-buff`),
 				summary: (
 					<>
 						<img
@@ -313,46 +245,25 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 				content: (
 					<>
 						<p>
-							<strong>
-								{translateMoveFromMoveId(moveId, moves, currentGameLanguage)}
-							</strong>{' '}
+							<strong>{translateMoveFromMoveId(moveId, moves, currentGameLanguage)}</strong>{' '}
 							{translator(TranslatorKeys.Has, currentLanguage)}{' '}
 							<strong>
-								{moves[moveId].buffs!.buffActivationChance * 100}%{' '}
-								{translator(TranslatorKeys.Chance, currentLanguage)}
+								{moves[moveId].buffs!.buffActivationChance * 100}% {translator(TranslatorKeys.Chance, currentLanguage)}
 							</strong>{' '}
 							{translator(TranslatorKeys.To, currentLanguage)}:
 						</p>
 						<ul className='buff-panel-buff'>
-							{(moves[moveId].buffs
-								? Object.entries(moves[moveId].buffs)
-								: ([] as Array<[string, number]>)
-							)
+							{(moves[moveId].buffs ? Object.entries(moves[moveId].buffs) : ([] as Array<[string, number]>))
 								.filter(([buff]) => buff !== 'buffActivationChance')
 								.map(([buff, quantity]) => (
 									<li key={buff}>
-										{translator(
-											quantity >= 0
-												? TranslatorKeys.Increase
-												: TranslatorKeys.Lower,
-											currentLanguage
-										)}{' '}
-										{translator(
-											TranslatorKeys[buff as keyof typeof TranslatorKeys],
-											currentLanguage
-										)}{' '}
+										{translator(quantity >= 0 ? TranslatorKeys.Increase : TranslatorKeys.Lower, currentLanguage)}{' '}
+										{translator(TranslatorKeys[buff as keyof typeof TranslatorKeys], currentLanguage)}{' '}
 										{quantity > 0
-											? ((quantity + 4) / 4 - 1) * 100 +
-												'% ' +
-												translator(TranslatorKeys.BaseValue, currentLanguage)
+											? ((quantity + 4) / 4 - 1) * 100 + '% ' + translator(TranslatorKeys.BaseValue, currentLanguage)
 											: quantity * -1 +
 												' ' +
-												translator(
-													quantity === -1
-														? TranslatorKeys.Stage
-														: TranslatorKeys.Stages,
-													currentLanguage
-												)}
+												translator(quantity === -1 ? TranslatorKeys.Stage : TranslatorKeys.Stages, currentLanguage)}
 									</li>
 								))}
 						</ul>
@@ -360,49 +271,23 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 				),
 			};
 		},
-		[
-			computeIdAttr,
-			currentGameLanguage,
-			currentLanguage,
-			detailsClickHandler,
-			moves,
-		]
+		[computeIdAttr, currentGameLanguage, currentLanguage, detailsClickHandler, moves]
 	);
 
 	const renderEliteDetailItem = useCallback(
-		(
-			moveId: string,
-			isRecommended: boolean,
-			isLegacy: boolean
-		): IDetailItem => {
+		(moveId: string, isRecommended: boolean, isLegacy: boolean): IDetailItem => {
 			const idAttr = computeIdAttr(moveId, isRecommended);
 
 			return {
 				detailId: `${idAttr}-${isLegacy ? 'legacy' : 'elite'}`,
-				onClick: (
-					event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
-				) =>
-					detailsClickHandler(
-						event,
-						`${idAttr}-${isLegacy ? 'legacy' : 'elite'}`
-					),
-				summary: (
-					<>
-						{translator(
-							isLegacy ? TranslatorKeys.LegacyMove : TranslatorKeys.EliteMove,
-							currentLanguage
-						)}
-					</>
-				),
+				onClick: (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) =>
+					detailsClickHandler(event, `${idAttr}-${isLegacy ? 'legacy' : 'elite'}`),
+				summary: <>{translator(isLegacy ? TranslatorKeys.LegacyMove : TranslatorKeys.EliteMove, currentLanguage)}</>,
 				content: (
 					<>
 						<p>
-							{translator(
-								isLegacy ? TranslatorKeys.Legacy : TranslatorKeys.Elite,
-								currentLanguage
-							)}{' '}
-							{!isLegacy &&
-								gameTranslator(GameTranslatorKeys.EliteTM, currentGameLanguage)}
+							{translator(isLegacy ? TranslatorKeys.Legacy : TranslatorKeys.Elite, currentLanguage)}{' '}
+							{!isLegacy && gameTranslator(GameTranslatorKeys.EliteTM, currentGameLanguage)}
 							{!isLegacy && '.'}
 						</p>
 					</>
@@ -418,9 +303,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 
 			return {
 				detailId: `${idAttr}-stab`,
-				onClick: (
-					event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
-				) => detailsClickHandler(event, `${idAttr}-stab`),
+				onClick: (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) =>
+					detailsClickHandler(event, `${idAttr}-stab`),
 				summary: <>STAB</>,
 				content: (
 					<>
@@ -449,10 +333,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 				details.push(renderEliteDetailItem(moveId, isRecommended, false));
 			}
 
-			if (
-				!pokemon.eliteMoves.includes(moveId) &&
-				pokemon.legacyMoves.includes(moveId)
-			) {
+			if (!pokemon.eliteMoves.includes(moveId) && pokemon.legacyMoves.includes(moveId)) {
 				details.push(renderEliteDetailItem(moveId, isRecommended, true));
 			}
 
@@ -462,14 +343,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 
 			return details;
 		},
-		[
-			hasBuffs,
-			isStabMove,
-			pokemon,
-			renderBuffDetailItem,
-			renderEliteDetailItem,
-			renderStabDetailItem,
-		]
+		[hasBuffs, isStabMove, pokemon, renderBuffDetailItem, renderEliteDetailItem, renderStabDetailItem]
 	);
 
 	const relevantMovePower = useCallback(
@@ -520,10 +394,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 			return (
 				<ListEntry
 					mainIcon={{
-						imageDescription: translator(
-							typeTranslatorKey ?? moves[moveId].type,
-							currentLanguage
-						),
+						imageDescription: translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage),
 						image: (
 							<div className='img-padding'>
 								<img
@@ -531,27 +402,18 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 									height={20}
 									width={20}
 									src={moveUrl}
-									alt={translator(
-										typeTranslatorKey ?? moves[moveId].type,
-										currentLanguage
-									)}
+									alt={translator(typeTranslatorKey ?? moves[moveId].type, currentLanguage)}
 								/>
 							</div>
 						),
 						imageSideText:
 							translateMoveFromMoveId(moveId, moves, currentGameLanguage) +
-							(pokemon.eliteMoves.includes(moveId)
-								? ' *'
-								: pokemon.legacyMoves.includes(moveId)
-									? ' †'
-									: ''),
+							(pokemon.eliteMoves.includes(moveId) ? ' *' : pokemon.legacyMoves.includes(moveId) ? ' †' : ''),
 						withBackground: true,
 					}}
 					backgroundColorClassName={className}
 					secondaryContent={[
-						<React.Fragment
-							key={`${moveId}-${isRecommended ? 'rec' : 'all'}-atk`}
-						>
+						<React.Fragment key={`${moveId}-${isRecommended ? 'rec' : 'all'}-atk`}>
 							{Math.round(
 								calculateDamage(
 									pokemon.baseStats.atk,
@@ -559,9 +421,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 									isStabMove(moveId),
 									pokemon.isShadow,
 									false,
-									league === LeagueType.RAID &&
-										raidAttackType &&
-										raidAttackType === moves[moveId].type
+									league === LeagueType.RAID && raidAttackType && raidAttackType === moves[moveId].type
 										? Effectiveness.Effective
 										: Effectiveness.Normal,
 									15,
@@ -576,9 +436,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 								height={16}
 							/>
 						</React.Fragment>,
-						<React.Fragment
-							key={`${moveId}-${isRecommended ? 'rec' : 'all'}-eng`}
-						>
+						<React.Fragment key={`${moveId}-${isRecommended ? 'rec' : 'all'}-eng`}>
 							{relevantMoveEnergy(moveId) * (isChargedMove ? -1 : 1)}
 							<img
 								className='invert-light-mode'
@@ -589,9 +447,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 							/>
 						</React.Fragment>,
 						(!isChargedMove || league === LeagueType.RAID) && (
-							<React.Fragment
-								key={`${moveId}-${isRecommended ? 'rec' : 'all'}-cd`}
-							>
+							<React.Fragment key={`${moveId}-${isRecommended ? 'rec' : 'all'}-cd`}>
 								{relevantMoveDuration(moveId)}s
 								<img
 									className='invert-light-mode'
@@ -605,9 +461,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 					]}
 					toggledContent={[
 						!isChargedMove && (
-							<React.Fragment
-								key={`${moveId}-${isRecommended ? 'rec' : 'all'}-dps`}
-							>
+							<React.Fragment key={`${moveId}-${isRecommended ? 'rec' : 'all'}-dps`}>
 								{Math.round(
 									(calculateDamage(
 										pokemon.baseStats.atk,
@@ -615,9 +469,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 										isStabMove(moveId),
 										pokemon.isShadow,
 										false,
-										league === LeagueType.RAID &&
-											raidAttackType &&
-											raidAttackType === moves[moveId].type
+										league === LeagueType.RAID && raidAttackType && raidAttackType === moves[moveId].type
 											? Effectiveness.Effective
 											: Effectiveness.Normal,
 										15,
@@ -630,20 +482,12 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 							</React.Fragment>
 						),
 						!isChargedMove && (
-							<React.Fragment
-								key={`${moveId}-${isRecommended ? 'rec' : 'all'}-eps`}
-							>
-								{Math.round(
-									(relevantMoveEnergy(moveId) / relevantMoveDuration(moveId)) *
-										100
-								) / 100}{' '}
-								EPS
+							<React.Fragment key={`${moveId}-${isRecommended ? 'rec' : 'all'}-eps`}>
+								{Math.round((relevantMoveEnergy(moveId) / relevantMoveDuration(moveId)) * 100) / 100} EPS
 							</React.Fragment>
 						),
 						isChargedMove && (
-							<React.Fragment
-								key={`${moveId}-${isRecommended ? 'rec' : 'all'}-dpe`}
-							>
+							<React.Fragment key={`${moveId}-${isRecommended ? 'rec' : 'all'}-dpe`}>
 								{relevantMoveEnergy(moveId) !== 0
 									? Math.round(
 											(calculateDamage(
@@ -652,9 +496,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 												isStabMove(moveId),
 												pokemon.isShadow,
 												false,
-												league === LeagueType.RAID &&
-													raidAttackType &&
-													raidAttackType === moves[moveId].type
+												league === LeagueType.RAID && raidAttackType && raidAttackType === moves[moveId].type
 													? Effectiveness.Effective
 													: Effectiveness.Normal,
 												15,
@@ -694,10 +536,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 	);
 
 	return (
-		<LoadingRenderer
-			errors={errors + movesErrors + pvpErrors}
-			completed={!isNotReady}
-		>
+		<LoadingRenderer errors={errors + movesErrors + pvpErrors} completed={!isNotReady}>
 			{() =>
 				!isNotReady && (
 					<div className='banner_layout normal-text'>
@@ -707,13 +546,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 									<div className='overflowing'>
 										<div className='img-family'>
 											{Array.from(
-												new Set(
-													getAllChargedMoves(
-														pokemon,
-														moves,
-														gamemasterPokemon
-													).map((m) => moves[m].type)
-												)
+												new Set(getAllChargedMoves(pokemon, moves, gamemasterPokemon).map((m) => moves[m].type))
 											)
 												.filter((t) => t !== 'normal')
 												.map((t) => (
@@ -754,8 +587,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 															</div>
 															{t === raidAttackType &&
 																translatedType(
-																	(t.substring(0, 1).toLocaleUpperCase() +
-																		t.substring(1)) as unknown as PokemonTypes,
+																	(t.substring(0, 1).toLocaleUpperCase() + t.substring(1)) as unknown as PokemonTypes,
 																	currentLanguage
 																)}
 														</strong>
@@ -766,37 +598,21 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 									<span className='with-padding'>
 										<>
 											{!raidAttackType ? (
-												<span>
-													{translator(TranslatorKeys.Overall, currentLanguage)}
-												</span>
+												<span>{translator(TranslatorKeys.Overall, currentLanguage)}</span>
 											) : (
-												<span>
-													{translator(TranslatorKeys.Focused1, currentLanguage)}
-												</span>
+												<span>{translator(TranslatorKeys.Focused1, currentLanguage)}</span>
 											)}
 											<strong className='cp-container'>
 												{translatedType(
 													(raidAttackType.substring(0, 1).toLocaleUpperCase() +
-														raidAttackType.substring(
-															1
-														)) as unknown as PokemonTypes,
+														raidAttackType.substring(1)) as unknown as PokemonTypes,
 													currentLanguage
 												)}
 											</strong>
-											<span>
-												{raidAttackType &&
-													translator(TranslatorKeys.Focused2, currentLanguage)}
-											</span>
-											<span>
-												{raidAttackType &&
-													translator(TranslatorKeys.Effective, currentLanguage)}
-												,
-											</span>
+											<span>{raidAttackType && translator(TranslatorKeys.Focused2, currentLanguage)}</span>
+											<span>{raidAttackType && translator(TranslatorKeys.Effective, currentLanguage)},</span>
 											<span>{` ${translator(TranslatorKeys.CanDeal, currentLanguage)}`}</span>
-											<strong className='cp-container'>
-												{' '}
-												{Math.round(realDps.dps * 100) / 100} DPS
-											</strong>
+											<strong className='cp-container'> {Math.round(realDps.dps * 100) / 100} DPS</strong>
 											<span>{` ${translator(TranslatorKeys.Using, currentLanguage)}`}</span>
 											<strong className='cp-container'>{` ${translateMoveFromMoveId(raidComputation.fastMove, moves, currentGameLanguage)}`}</strong>
 											<span>{` ${translator(TranslatorKeys.And, currentLanguage)}`}</span>
@@ -841,9 +657,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 								noPadding
 							>
 								<div className='menu-item no-margin no-border-container'>
-									<ul
-										className={`moves-list ${fastMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}
-									>
+									<ul className={`moves-list ${fastMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}>
 										{getAllFastMoves(pokemon, moves).length > 0 ? (
 											getAllFastMoves(pokemon, moves)
 												.sort(movesSorter)
@@ -853,31 +667,18 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 														: 'normal-entry';
 													const typeTranslatorKey =
 														TranslatorKeys[
-															(moves[m].type
-																.substring(0, 1)
-																.toLocaleUpperCase() +
-																moves[m].type.substring(
-																	1
-																)) as keyof typeof TranslatorKeys
+															(moves[m].type.substring(0, 1).toLocaleUpperCase() +
+																moves[m].type.substring(1)) as keyof typeof TranslatorKeys
 														];
 													const url = `/images/types/${moves[m]?.type}.png`;
 													return (
 														<React.Fragment key={m}>
-															{renderMove(
-																m,
-																typeTranslatorKey,
-																url,
-																className,
-																false,
-																false
-															)}
+															{renderMove(m, typeTranslatorKey, url, className, false, false)}
 														</React.Fragment>
 													);
 												})
 										) : (
-											<span className='centered'>
-												{translator(TranslatorKeys.NoResults, currentLanguage)}
-											</span>
+											<span className='centered'>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
 										)}
 									</ul>
 								</div>
@@ -893,11 +694,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 								noPadding
 							>
 								<div className='menu-item no-margin no-border-container'>
-									<ul
-										className={`moves-list ${chargedMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}
-									>
-										{getAllChargedMoves(pokemon, moves, gamemasterPokemon)
-											.length > 0 ? (
+									<ul className={`moves-list ${chargedMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}>
+										{getAllChargedMoves(pokemon, moves, gamemasterPokemon).length > 0 ? (
 											getAllChargedMoves(pokemon, moves, gamemasterPokemon)
 												.sort(movesSorter)
 												.map((m) => {
@@ -906,31 +704,18 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 														: 'normal-entry';
 													const typeTranslatorKey =
 														TranslatorKeys[
-															(moves[m].type
-																.substring(0, 1)
-																.toLocaleUpperCase() +
-																moves[m].type.substring(
-																	1
-																)) as keyof typeof TranslatorKeys
+															(moves[m].type.substring(0, 1).toLocaleUpperCase() +
+																moves[m].type.substring(1)) as keyof typeof TranslatorKeys
 														];
 													const url = `/images/types/${moves[m]?.type}.png`;
 													return (
 														<React.Fragment key={m}>
-															{renderMove(
-																m,
-																typeTranslatorKey,
-																url,
-																className,
-																true,
-																false
-															)}
+															{renderMove(m, typeTranslatorKey, url, className, true, false)}
 														</React.Fragment>
 													);
 												})
 										) : (
-											<span className='centered'>
-												{translator(TranslatorKeys.NoResults, currentLanguage)}
-											</span>
+											<span className='centered'>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
 										)}
 									</ul>
 								</div>

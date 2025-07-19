@@ -3,11 +3,7 @@ import { createContext, useContext, useEffect } from 'react';
 import type { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import type { FetchData } from '../hooks/useFetchUrls';
 import { useFetchUrls } from '../hooks/useFetchUrls';
-import {
-	pvpokeRankings1500Url,
-	pvpokeRankings2500Url,
-	pvpokeRankingsUrl,
-} from '../utils/Configs';
+import { pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Configs';
 import { usePokemon } from './pokemon-context';
 
 interface PvpContextType {
@@ -20,18 +16,11 @@ const PvpContext = createContext<PvpContextType | undefined>(undefined);
 
 export const customCupCPLimit = 1500;
 
-const useFetchAllData: () => [
-	Array<Record<string, IRankedPokemon>>,
-	boolean,
-	string,
-] = () => {
+const useFetchAllData: () => [Array<Record<string, IRankedPokemon>>, boolean, string] = () => {
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
-	const [
-		rankLists,
-		fetchRankLists,
-		rankListsFetchCompleted,
-		errorLoadingRankListsData,
-	]: FetchData<Record<string, IRankedPokemon>> = useFetchUrls();
+	const [rankLists, fetchRankLists, rankListsFetchCompleted, errorLoadingRankListsData]: FetchData<
+		Record<string, IRankedPokemon>
+	> = useFetchUrls();
 
 	useEffect(() => {
 		if (!fetchCompleted) {
@@ -39,21 +28,15 @@ const useFetchAllData: () => [
 		}
 
 		const controller = new AbortController();
-		void fetchRankLists(
-			[pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl],
-			0,
-			{ signal: controller.signal }
-		);
+		void fetchRankLists([pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl], 0, {
+			signal: controller.signal,
+		});
 		return () => {
 			controller.abort('Request canceled by cleanup.');
 		};
 	}, [fetchCompleted, fetchRankLists, gamemasterPokemon]);
 
-	return [
-		rankLists,
-		fetchCompleted && rankListsFetchCompleted,
-		errors + errorLoadingRankListsData,
-	];
+	return [rankLists, fetchCompleted && rankListsFetchCompleted, errors + errorLoadingRankListsData];
 };
 
 export const usePvp = (): PvpContextType => {
@@ -65,11 +48,8 @@ export const usePvp = (): PvpContextType => {
 };
 
 export const PvpProvider = (props: React.PropsWithChildren<object>) => {
-	const [rankLists, pvpFetchCompleted, pvpErrors]: [
-		Array<Record<string, IRankedPokemon>>,
-		boolean,
-		string,
-	] = useFetchAllData();
+	const [rankLists, pvpFetchCompleted, pvpErrors]: [Array<Record<string, IRankedPokemon>>, boolean, string] =
+		useFetchAllData();
 
 	return (
 		<PvpContext.Provider

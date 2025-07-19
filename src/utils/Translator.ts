@@ -790,14 +790,8 @@ const allExcept = new Map<Language, string>([
 
 const pokemonNotFound = new Map<Language, string>([
 	[Language.English, 'No Pokémon matched your search!'],
-	[
-		Language.Portuguese,
-		'Não foi encontrado nenhum Pokémon com base nos filtros aplicados!',
-	],
-	[
-		Language.Bosnian,
-		'Ni jedan Pokémon nije pronađen na osnovu primijenjenih filtera!',
-	],
+	[Language.Portuguese, 'Não foi encontrado nenhum Pokémon com base nos filtros aplicados!'],
+	[Language.Bosnian, 'Ni jedan Pokémon nije pronađen na osnovu primijenjenih filtera!'],
 ]);
 
 const moves = new Map<Language, string>([
@@ -921,14 +915,8 @@ const systemDefault = new Map<Language, string>([
 ]);
 
 const recommendedMovesInfo1 = new Map<Language, string>([
-	[
-		Language.English,
-		'The most common Fast Move and Charged Moves combination for',
-	],
-	[
-		Language.Portuguese,
-		'A combinação de Ataque Ágil e Ataques Carregados mais frequentemente utilizados no',
-	],
+	[Language.English, 'The most common Fast Move and Charged Moves combination for'],
+	[Language.Portuguese, 'A combinação de Ataque Ágil e Ataques Carregados mais frequentemente utilizados no'],
 	[Language.Bosnian, 'Najčešća kombinacija Brzog Napada i Posebni Napadi za'],
 ]);
 
@@ -993,18 +981,12 @@ const increase = new Map<Language, string>([
 ]);
 
 const stab = new Map<Language, string>([
-	[
-		Language.English,
-		"the attack type matches this Pokémon's type, so it has a 20% extra damage bonus!",
-	],
+	[Language.English, "the attack type matches this Pokémon's type, so it has a 20% extra damage bonus!"],
 	[
 		Language.Portuguese,
 		'o tipo do ataque é compatível com o tipo deste Pokémon, por isso, tem um bónus de 20% de dano extra!',
 	],
-	[
-		Language.Bosnian,
-		'vrsta napada se podudara s vrstom ovog Pokémona, pa ima dodatni bonus od 20% na štetu!',
-	],
+	[Language.Bosnian, 'vrsta napada se podudara s vrstom ovog Pokémona, pa ima dodatni bonus od 20% na štetu!'],
 ]);
 
 const special = new Map<Language, string>([
@@ -1059,10 +1041,7 @@ const elite = new Map<Language, string>([
 ]);
 
 const legacy = new Map<Language, string>([
-	[
-		Language.English,
-		'This is a Legacy Move for this Pokémon. It is no longer able to learn it by any means.',
-	],
+	[Language.English, 'This is a Legacy Move for this Pokémon. It is no longer able to learn it by any means.'],
 	[
 		Language.Portuguese,
 		'Este é um Ataque Descontinuado para este Pokémon. Já não é possível aprendê-lo de forma alguma.',
@@ -1185,18 +1164,9 @@ const raidsIntro = new Map<Language, string>([
 ]);
 
 const topKeyCountersIntro = new Map<Language, string>([
-	[
-		Language.English,
-		'Here are 5 key wins and losses against meta-relevant Pokémon when using ',
-	],
-	[
-		Language.Portuguese,
-		'Aqui estão 5 vitórias e derrotas chave contra Pokémons meta-relevantes ao usar o ',
-	],
-	[
-		Language.Bosnian,
-		'Evo 5 ključnih pobjeda i poraza protiv relevantnih Pokémona u meti kada koristite ',
-	],
+	[Language.English, 'Here are 5 key wins and losses against meta-relevant Pokémon when using '],
+	[Language.Portuguese, 'Aqui estão 5 vitórias e derrotas chave contra Pokémons meta-relevantes ao usar o '],
+	[Language.Bosnian, 'Evo 5 ključnih pobjeda i poraza protiv relevantnih Pokémona u meti kada koristite '],
 ]);
 
 const reached = new Map<Language, string>([
@@ -1433,8 +1403,6 @@ const translations = new Map<TranslatorKeys, Map<Language, string>>([
 ]);
 
 const translator = (key: TranslatorKeys, language: Language) =>
-	translations.get(key)?.get(language) ??
-	TranslatorKeys[key]?.toString() ??
-	key?.toString();
+	translations.get(key)?.get(language) ?? TranslatorKeys[key]?.toString() ?? key?.toString();
 
 export default translator;

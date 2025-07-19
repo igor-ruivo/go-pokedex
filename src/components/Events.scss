@@ -41,9 +41,8 @@
 	object-fit: contain;
 	position: absolute;
 	z-index: 2 !important;
-	filter: brightness(0.85) drop-shadow(0 1px 0 rgb(0 0 0 / 15%))
-		drop-shadow(1px 0 0 rgb(0 0 0 / 50%)) drop-shadow(-1px 0 0 rgb(0 0 0 / 15%))
-		drop-shadow(0 -1px 0 rgb(0 0 0 / 15%));
+	filter: brightness(0.85) drop-shadow(0 1px 0 rgb(0 0 0 / 15%)) drop-shadow(1px 0 0 rgb(0 0 0 / 50%))
+		drop-shadow(-1px 0 0 rgb(0 0 0 / 15%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 15%));
 	top: 0;
 	left: 0;
 }

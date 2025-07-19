@@ -10,11 +10,7 @@ import { useRaidRanker } from '../contexts/raid-ranker-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import {
-	ConfigKeys,
-	readPersistentValue,
-	writePersistentValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import {
 	computeBestIVs,
 	fetchReachablePokemonIncludingSelf,
@@ -24,10 +20,7 @@ import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
 import PokemonHeader from './PokemonHeader';
 
-const parsePersistentCachedNumberValue = (
-	key: ConfigKeys,
-	defaultValue: number
-) => {
+const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number) => {
 	const cachedValue = readPersistentValue(key);
 	if (!cachedValue) {
 		return defaultValue;
@@ -40,21 +33,11 @@ const DeleteTrash = () => {
 	const { moves, movesFetchCompleted } = useMoves();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { currentGameLanguage, currentLanguage } = useLanguage();
-	const [trashGreat, setTrashGreat] = useState(
-		parsePersistentCachedNumberValue(ConfigKeys.TrashGreat, 50)
-	);
-	const [trashUltra, setTrashUltra] = useState(
-		parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 50)
-	);
-	const [trashMaster, setTrashMaster] = useState(
-		parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 110)
-	);
-	const [trashRaid, setTrashRaid] = useState(
-		parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 5)
-	);
-	const [cp, setCP] = useState(
-		parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2500)
-	);
+	const [trashGreat, setTrashGreat] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashGreat, 50));
+	const [trashUltra, setTrashUltra] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashUltra, 50));
+	const [trashMaster, setTrashMaster] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashMaster, 110));
+	const [trashRaid, setTrashRaid] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashRaid, 5));
+	const [cp, setCP] = useState(parsePersistentCachedNumberValue(ConfigKeys.TrashCP, 2500));
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const [isCalculating, setIsCalculating] = useState(false);
 	const [isExpanded, setExpanded] = useState(false);
@@ -73,26 +56,23 @@ const DeleteTrash = () => {
 		return rank === Infinity || rank > rankLimit;
 	}, []);
 
-	const needsLessThanFiveAttack = useCallback(
-		(p: IGamemasterPokemon, leagueIndex: number) => {
-			const bestIVs = Object.values(
-				computeBestIVs(
-					p.baseStats.atk,
-					p.baseStats.def,
-					p.baseStats.hp,
-					leagueIndex === 0 ? 1500 : leagueIndex === 1 ? 2500 : Number.MAX_VALUE
-				)
-			).flat();
-			for (let i = 0; i < 5; i++) {
-				const neededAtk = bestIVs[i].IVs.A;
-				if (neededAtk >= 5) {
-					return false;
-				}
+	const needsLessThanFiveAttack = useCallback((p: IGamemasterPokemon, leagueIndex: number) => {
+		const bestIVs = Object.values(
+			computeBestIVs(
+				p.baseStats.atk,
+				p.baseStats.def,
+				p.baseStats.hp,
+				leagueIndex === 0 ? 1500 : leagueIndex === 1 ? 2500 : Number.MAX_VALUE
+			)
+		).flat();
+		for (let i = 0; i < 5; i++) {
+			const neededAtk = bestIVs[i].IVs.A;
+			if (neededAtk >= 5) {
+				return false;
 			}
-			return true;
-		},
-		[]
-	);
+		}
+		return true;
+	}, []);
 
 	const isGoodForRaids = useCallback(
 		(p: IGamemasterPokemon) => {
@@ -100,27 +80,20 @@ const DeleteTrash = () => {
 				return true;
 			}
 
-			const reachablePokemon = Array.from(
-				fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)
-			);
+			const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
 			const exceptionPokemon = ['slowpoke_galarian', 'slowbro_galarian'];
 
 			const mega = exceptionPokemon.includes(p.speciesId)
 				? []
 				: Object.values(gamemasterPokemon).filter(
-						(pk) =>
-							!pk.aliasId &&
-							pk.isMega &&
-							reachablePokemon.some((r) => r.dex === pk.dex)
+						(pk) => !pk.aliasId && pk.isMega && reachablePokemon.some((r) => r.dex === pk.dex)
 					);
 
 			let minRaidRank = Infinity;
 			const finalCollection = [...reachablePokemon, ...mega];
 			enumValues.forEach((t) => {
 				finalCollection.forEach((pk) => {
-					const rank = Object.keys(
-						raidDPS[t.toString().toLocaleLowerCase()]
-					).indexOf(pk.speciesId);
+					const rank = Object.keys(raidDPS[t.toString().toLocaleLowerCase()]).indexOf(pk.speciesId);
 					if (rank !== -1) {
 						minRaidRank = Math.min(minRaidRank, rank + 1);
 					}
@@ -129,14 +102,7 @@ const DeleteTrash = () => {
 
 			return minRaidRank <= trashRaid;
 		},
-		[
-			fetchCompleted,
-			trashRaid,
-			raidDPSFetchCompleted,
-			enumValues,
-			gamemasterPokemon,
-			raidDPS,
-		]
+		[fetchCompleted, trashRaid, raidDPSFetchCompleted, enumValues, gamemasterPokemon, raidDPS]
 	);
 
 	const isBadForEverythingIfItHasHighAttack = useCallback(
@@ -150,19 +116,20 @@ const DeleteTrash = () => {
 			}
 
 			// here, the pokémon is good for something...
-			const reachablePokemon = Array.from(
-				fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)
-			);
+			const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
 
 			// if any reachable is good for master, return false
 			// if some reachable good for great DONT need little attack, return false
 			// if some reabhable good for ultra DONT need little attack, return false
 			// otherwise, return true
 
+			if (reachablePokemon.some((k) => !isBadRank(rankLists[2][k.speciesId]?.rank ?? Infinity, trashMaster))) {
+				return false;
+			}
+
 			if (
 				reachablePokemon.some(
-					(k) =>
-						!isBadRank(rankLists[2][k.speciesId]?.rank ?? Infinity, trashMaster)
+					(k) => !isBadRank(rankLists[0][k.speciesId]?.rank ?? Infinity, trashGreat) && !needsLessThanFiveAttack(k, 0)
 				)
 			) {
 				return false;
@@ -170,23 +137,7 @@ const DeleteTrash = () => {
 
 			if (
 				reachablePokemon.some(
-					(k) =>
-						!isBadRank(
-							rankLists[0][k.speciesId]?.rank ?? Infinity,
-							trashGreat
-						) && !needsLessThanFiveAttack(k, 0)
-				)
-			) {
-				return false;
-			}
-
-			if (
-				reachablePokemon.some(
-					(k) =>
-						!isBadRank(
-							rankLists[1][k.speciesId]?.rank ?? Infinity,
-							trashUltra
-						) && !needsLessThanFiveAttack(k, 1)
+					(k) => !isBadRank(rankLists[1][k.speciesId]?.rank ?? Infinity, trashUltra) && !needsLessThanFiveAttack(k, 1)
 				)
 			) {
 				return false;
@@ -214,24 +165,10 @@ const DeleteTrash = () => {
 				return false;
 			}
 
-			const reachablePokemon = Array.from(
-				fetchReachablePokemonIncludingSelf(p, gamemasterPokemon)
-			);
-			const glLowestRank = Math.min(
-				...reachablePokemon
-					.map((p) => rankLists[0][p.speciesId]?.rank)
-					.filter((r) => r)
-			);
-			const ulLowestRank = Math.min(
-				...reachablePokemon
-					.map((p) => rankLists[1][p.speciesId]?.rank)
-					.filter((r) => r)
-			);
-			const mlLowestRank = Math.min(
-				...reachablePokemon
-					.map((p) => rankLists[2][p.speciesId]?.rank)
-					.filter((r) => r)
-			);
+			const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
+			const glLowestRank = Math.min(...reachablePokemon.map((p) => rankLists[0][p.speciesId]?.rank).filter((r) => r));
+			const ulLowestRank = Math.min(...reachablePokemon.map((p) => rankLists[1][p.speciesId]?.rank).filter((r) => r));
+			const mlLowestRank = Math.min(...reachablePokemon.map((p) => rankLists[2][p.speciesId]?.rank).filter((r) => r));
 
 			return (
 				!isGoodForRaids(p) &&
@@ -264,14 +201,7 @@ const DeleteTrash = () => {
 		const alwaysGood: Record<string, Set<IGamemasterPokemon>> = {};
 
 		Object.values(gamemasterPokemon)
-			.filter(
-				(p) =>
-					!p.aliasId &&
-					!p.isMega &&
-					!p.isLegendary &&
-					!p.isMythical &&
-					!p.isBeast
-			)
+			.filter((p) => !p.aliasId && !p.isMega && !p.isLegendary && !p.isMythical && !p.isBeast)
 			.forEach((p) => {
 				if (isBadForEverything(p)) {
 					potentiallyDeletablePokemon.add(p.dex);
@@ -302,16 +232,13 @@ const DeleteTrash = () => {
 
 		type UniqueTypes = Record<number, Set<string>>;
 
-		const buildUniqueTypes = (
-			pokemonForms: Array<PokemonForm>
-		): UniqueTypes => {
+		const buildUniqueTypes = (pokemonForms: Array<PokemonForm>): UniqueTypes => {
 			const typeOccurrences: Record<number, Record<string, number>> = {};
 
 			pokemonForms.forEach(({ dexNumber, types }) => {
 				if (!typeOccurrences[dexNumber]) typeOccurrences[dexNumber] = {};
 				types.forEach((type) => {
-					typeOccurrences[dexNumber][type] =
-						(typeOccurrences[dexNumber][type] || 0) + 1;
+					typeOccurrences[dexNumber][type] = (typeOccurrences[dexNumber][type] || 0) + 1;
 				});
 			});
 
@@ -362,10 +289,7 @@ const DeleteTrash = () => {
 				formSiblings.forEach((sibling) => {
 					if (sibling !== form) {
 						sibling.types.forEach((siblingType) => {
-							if (
-								!types.includes(siblingType) &&
-								sibling.types.some((t) => types.includes(t))
-							) {
+							if (!types.includes(siblingType) && sibling.types.some((t) => types.includes(t))) {
 								siblingTypesToNegate.add(siblingType);
 							}
 						});
@@ -390,31 +314,19 @@ const DeleteTrash = () => {
 				p: e,
 			}));
 
-		const uniqueTypes = buildUniqueTypes(
-			allPokemonForms.filter((c) => !c.isShadow)
-		);
+		const uniqueTypes = buildUniqueTypes(allPokemonForms.filter((c) => !c.isShadow));
 
 		const baseIds: Record<string, string> = {};
 
 		allPokemonForms.forEach((form) => {
-			const formSiblings = allPokemonForms.filter(
-				(f) => f.dexNumber === form.dexNumber && !f.isShadow
-			);
-			const id = generatePokemonId(
-				form.dexNumber,
-				form.types,
-				uniqueTypes,
-				formSiblings,
-				form
-			);
+			const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber && !f.isShadow);
+			const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
 			baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
 		});
 
 		let str = '';
 
-		const potentiallyDeletablePokemonArray = Array.from(
-			potentiallyDeletablePokemon
-		);
+		const potentiallyDeletablePokemonArray = Array.from(potentiallyDeletablePokemon);
 		str += potentiallyDeletablePokemonArray.join(',');
 
 		const terms = new Set<string>();
@@ -434,10 +346,7 @@ const DeleteTrash = () => {
 				const entries = alwaysGood[d];
 				entries.forEach((e) => {
 					let newStr = '';
-					const baseId =
-						baseIds[
-							`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`
-						]; //23,dark,!dragon
+					const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`]; //23,dark,!dragon
 					newStr +=
 						'&' +
 						baseId
@@ -470,10 +379,7 @@ const DeleteTrash = () => {
 				const entries = alwaysBadIfHighAtk[d];
 				entries.forEach((e) => {
 					let newStr = '';
-					const baseId =
-						baseIds[
-							`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`
-						]; //23,dark,!dragon
+					const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`]; //23,dark,!dragon
 					newStr +=
 						'&' +
 						baseId
@@ -515,12 +421,7 @@ const DeleteTrash = () => {
 
 		const specialDexes = new Set(
 			Object.values(gamemasterPokemon)
-				.filter(
-					(d) =>
-						!d.aliasId &&
-						!d.isMega &&
-						(d.isBeast || d.isLegendary || d.isMythical)
-				)
+				.filter((d) => !d.aliasId && !d.isMega && (d.isBeast || d.isLegendary || d.isMythical))
 				.map((d) => +d.dex)
 		);
 
@@ -550,9 +451,7 @@ const DeleteTrash = () => {
 					buffer.clear();
 				}
 			}
-			const termWithoutShadowModifier = current
-				.replaceAll(',!shadow', '')
-				.replaceAll(',shadow', '');
+			const termWithoutShadowModifier = current.replaceAll(',!shadow', '').replaceAll(',shadow', '');
 
 			if (!buffer.has(termWithoutShadowModifier)) {
 				buffer.set(termWithoutShadowModifier, current);
@@ -600,20 +499,12 @@ const DeleteTrash = () => {
 	]);
 
 	useEffect(() => {
-		if (
-			!isCalculating ||
-			!fetchCompleted ||
-			!movesFetchCompleted ||
-			raidDPSFetchCompleted
-		) {
+		if (!isCalculating || !fetchCompleted || !movesFetchCompleted || raidDPSFetchCompleted) {
 			return;
 		}
 
 		if (targetRef?.current) {
-			targetRef.current.value = translator(
-				TranslatorKeys.Loading,
-				currentLanguage
-			);
+			targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
 		}
 	}, [
 		fetchCompleted,
@@ -627,21 +518,12 @@ const DeleteTrash = () => {
 	]);
 
 	useEffect(() => {
-		if (
-			!isCalculating ||
-			!raidDPSFetchCompleted ||
-			!fetchCompleted ||
-			!pvpFetchCompleted ||
-			!movesFetchCompleted
-		) {
+		if (!isCalculating || !raidDPSFetchCompleted || !fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted) {
 			return;
 		}
 
 		if (targetRef?.current) {
-			targetRef.current.value = translator(
-				TranslatorKeys.Loading,
-				currentLanguage
-			);
+			targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
 		}
 
 		setTimeout(() => {
@@ -704,9 +586,7 @@ const DeleteTrash = () => {
 	}, [currentGameLanguage, targetRef]);
 
 	// Handler for expanding/collapsing the read more section, with keyboard accessibility
-	const handleReadMoreToggle = (
-		e: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>
-	) => {
+	const handleReadMoreToggle = (e: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
 		// Only toggle on click or on Enter/Space key
 		if ((e as React.KeyboardEvent<HTMLElement>).type === 'keydown') {
 			const key = (e as React.KeyboardEvent<HTMLElement>).key;
@@ -739,17 +619,11 @@ const DeleteTrash = () => {
 		<main className='layout'>
 			<div className='full-height'>
 				<div className='pokemon-content'>
-					<LoadingRenderer
-						errors=''
-						completed={pvpFetchCompleted && fetchCompleted}
-					>
+					<LoadingRenderer errors='' completed={pvpFetchCompleted && fetchCompleted}>
 						{() => (
 							<div className='content'>
 								<PokemonHeader
-									pokemonName={translator(
-										TranslatorKeys.Trash,
-										currentLanguage
-									)}
+									pokemonName={translator(TranslatorKeys.Trash, currentLanguage)}
 									type1={undefined}
 									type2={undefined}
 									defaultTextColor
@@ -764,10 +638,7 @@ const DeleteTrash = () => {
 										<div
 											className={`extra-ivs-options item default-padding column text-container ${isExpanded ? 'expanded' : ''}`}
 										>
-											<p
-												id='readMoreText'
-												className={`${isExpanded ? 'expanded' : ''}`}
-											>
+											<p id='readMoreText' className={`${isExpanded ? 'expanded' : ''}`}>
 												{translator(TranslatorKeys.TrashHelp, currentLanguage)}
 											</p>
 											<u
@@ -782,10 +653,7 @@ const DeleteTrash = () => {
 											>
 												{isExpanded
 													? translator(TranslatorKeys.ReadLess, currentLanguage)
-													: translator(
-															TranslatorKeys.ReadMore,
-															currentLanguage
-														)}
+													: translator(TranslatorKeys.ReadMore, currentLanguage)}
 											</u>
 										</div>
 
@@ -793,16 +661,9 @@ const DeleteTrash = () => {
 											<div className='row-flex'>
 												<div>
 													{translator(TranslatorKeys.Save, currentLanguage)}{' '}
-													{gameTranslator(
-														GameTranslatorKeys.CP,
-														currentGameLanguage
-													).toLocaleUpperCase()}
-													s{translator(TranslatorKeys.CPCap, currentLanguage)}:{' '}
-													<select
-														value={cp}
-														onChange={(e) => setCP(+e.target.value)}
-														className='select-level'
-													>
+													{gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}s
+													{translator(TranslatorKeys.CPCap, currentLanguage)}:{' '}
+													<select value={cp} onChange={(e) => setCP(+e.target.value)} className='select-level'>
 														<option key={500} value={500}>
 															{500}
 														</option>
@@ -832,71 +693,50 @@ const DeleteTrash = () => {
 											</div>
 											<div className='row-flex'>
 												<div>
-													<img
-														height={20}
-														width={20}
-														alt='Great League'
-														src={`/images/leagues/great.png`}
-													/>{' '}
+													<img height={20} width={20} alt='Great League' src={`/images/leagues/great.png`} />{' '}
 													{translator(TranslatorKeys.Save, currentLanguage)} top{' '}
 													<select
 														value={trashGreat}
 														onChange={(e) => setTrashGreat(+e.target.value)}
 														className='select-level'
 													>
-														{Array.from({ length: 2000 }, (_x, i) => i).map(
-															(e) => (
-																<option key={e} value={e}>
-																	{e}
-																</option>
-															)
-														)}
+														{Array.from({ length: 2000 }, (_x, i) => i).map((e) => (
+															<option key={e} value={e}>
+																{e}
+															</option>
+														))}
 													</select>
 												</div>
 												<div>
-													<img
-														height={20}
-														width={20}
-														alt='Ultra League'
-														src={`/images/leagues/ultra.png`}
-													/>{' '}
+													<img height={20} width={20} alt='Ultra League' src={`/images/leagues/ultra.png`} />{' '}
 													{translator(TranslatorKeys.Save, currentLanguage)} top{' '}
 													<select
 														value={trashUltra}
 														onChange={(e) => setTrashUltra(+e.target.value)}
 														className='select-level'
 													>
-														{Array.from({ length: 2000 }, (_x, i) => i).map(
-															(e) => (
-																<option key={e} value={e}>
-																	{e}
-																</option>
-															)
-														)}
+														{Array.from({ length: 2000 }, (_x, i) => i).map((e) => (
+															<option key={e} value={e}>
+																{e}
+															</option>
+														))}
 													</select>
 												</div>
 											</div>
 											<div className='row-flex'>
 												<div>
-													<img
-														height={20}
-														width={20}
-														alt='Master League'
-														src={`/images/leagues/master.png`}
-													/>{' '}
+													<img height={20} width={20} alt='Master League' src={`/images/leagues/master.png`} />{' '}
 													{translator(TranslatorKeys.Save, currentLanguage)} top{' '}
 													<select
 														value={trashMaster}
 														onChange={(e) => setTrashMaster(+e.target.value)}
 														className='select-level'
 													>
-														{Array.from({ length: 2000 }, (_x, i) => i).map(
-															(e) => (
-																<option key={e} value={e}>
-																	{e}
-																</option>
-															)
-														)}
+														{Array.from({ length: 2000 }, (_x, i) => i).map((e) => (
+															<option key={e} value={e}>
+																{e}
+															</option>
+														))}
 													</select>
 												</div>
 												<div>
@@ -913,13 +753,11 @@ const DeleteTrash = () => {
 														onChange={(e) => setTrashRaid(+e.target.value)}
 														className='select-level'
 													>
-														{Array.from({ length: 2000 }, (_x, i) => i).map(
-															(e) => (
-																<option key={e} value={e}>
-																	{e}
-																</option>
-															)
-														)}
+														{Array.from({ length: 2000 }, (_x, i) => i).map((e) => (
+															<option key={e} value={e}>
+																{e}
+															</option>
+														))}
 													</select>
 												</div>
 											</div>

@@ -19,9 +19,7 @@ type PromiseRejectedResultTyped = {
 	reason: unknown;
 };
 
-type PromiseSettledResultTyped<T> =
-	| PromiseFulfilledResultTyped<T>
-	| PromiseRejectedResultTyped;
+type PromiseSettledResultTyped<T> = PromiseFulfilledResultTyped<T> | PromiseRejectedResultTyped;
 
 /**
  * fetchUrls supports passing a FetchRequestConfig, including an AbortSignal for cancellation.
@@ -50,15 +48,10 @@ export async function fetchUrls<T = unknown>(
 		}
 
 		// Ensure fetchRequestConfig is not mutated between requests
-		const requestInit: RequestInit = fetchRequestConfig
-			? { ...fetchRequestConfig }
-			: {};
+		const requestInit: RequestInit = fetchRequestConfig ? { ...fetchRequestConfig } : {};
 
 		// If headers is a plain object, convert to Headers
-		if (
-			fetchRequestConfig?.headers &&
-			!(fetchRequestConfig.headers instanceof Headers)
-		) {
+		if (fetchRequestConfig?.headers && !(fetchRequestConfig.headers instanceof Headers)) {
 			requestInit.headers = new Headers(fetchRequestConfig.headers);
 		}
 
@@ -69,18 +62,14 @@ export async function fetchUrls<T = unknown>(
 			throw new Error(`Network response was not ok for ${fetchUrl}`);
 		}
 		const data: unknown = await response.json();
-		const transformedData: T = dataTransformer
-			? dataTransformer(data, request)
-			: (data as T);
+		const transformedData: T = dataTransformer ? dataTransformer(data, request) : (data as T);
 		if (cacheTtl > 0) {
 			writeEntry(cacheKey, transformedData, cacheTtl);
 		}
 		return transformedData;
 	};
 
-	const results: Array<PromiseSettledResultTyped<T>> = await Promise.allSettled(
-		urls.map(fetchSingleUrl)
-	);
+	const results: Array<PromiseSettledResultTyped<T>> = await Promise.allSettled(urls.map(fetchSingleUrl));
 	const fulfilledResults: Array<T> = [];
 	for (const result of results) {
 		if (result.status === 'fulfilled') {

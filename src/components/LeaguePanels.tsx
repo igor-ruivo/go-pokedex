@@ -1,4 +1,5 @@
 import './LeaguePanels.scss';
+import './Misc.scss';
 
 import { useCallback, useState } from 'react';
 
@@ -77,8 +78,7 @@ const LeaguePanels = ({
 		if (
 			(e as React.MouseEvent).type === 'click' ||
 			((e as React.KeyboardEvent).type === 'keydown' &&
-				((e as React.KeyboardEvent).key === 'Enter' ||
-					(e as React.KeyboardEvent).key === ' '))
+				((e as React.KeyboardEvent).key === 'Enter' || (e as React.KeyboardEvent).key === ' '))
 		) {
 			setToggled((p) => !p);
 		}
@@ -87,11 +87,7 @@ const LeaguePanels = ({
 	const renderPanel = useCallback(
 		(leagueStat: LeagueStat) => {
 			const pvpStatsClassName = `pvp-stats-column pvp-gap ${leagueStat.leagueTitle} spaced full-height`;
-			const neededResources = computeNeededResources(
-				level,
-				leagueStat.pokemonLevel,
-				leagueStat.bestIsShadow
-			);
+			const neededResources = computeNeededResources(level, leagueStat.pokemonLevel, leagueStat.bestIsShadow);
 
 			let logoSrc = '';
 			switch (leagueStat.leagueTitle) {
@@ -114,17 +110,11 @@ const LeaguePanels = ({
 					<div>
 						<div className='pvp-entry rank-title'>
 							<div className='pvp-entry-content potential'>
-								<strong>
-									{translator(TranslatorKeys.Perfection, currentLanguage)}:
-								</strong>{' '}
+								<strong>{translator(TranslatorKeys.Perfection, currentLanguage)}:</strong>{' '}
 								{
 									<>
-										<strong className='cp-container'>
-											{leagueStat.pokemonLeaguePercentage}%
-										</strong>{' '}
-										<sub className='contained-big heavy-weighted-font'>
-											(#{leagueStat.pokemonLeaguePercentile})
-										</sub>
+										<strong className='cp-container'>{leagueStat.pokemonLeaguePercentage}%</strong>{' '}
+										<sub className='contained-big heavy-weighted-font'>(#{leagueStat.pokemonLeaguePercentile})</sub>
 									</>
 								}
 							</div>
@@ -137,19 +127,13 @@ const LeaguePanels = ({
 					) : (
 						<div className='pvp-stats'>
 							<div className='template-pvp-labels'>
-								<header>
-									{translator(TranslatorKeys.Config, currentLanguage)}:
-								</header>
+								<header>{translator(TranslatorKeys.Config, currentLanguage)}:</header>
 								<div>
 									<div className='pvp-entry smooth with-shadow'>
-										<div className='pvp-entry-content'>
-											{translator(TranslatorKeys.Current, currentLanguage)}:
-										</div>
+										<div className='pvp-entry-content'>{translator(TranslatorKeys.Current, currentLanguage)}:</div>
 									</div>
 									<div className='pvp-entry smooth with-shadow'>
-										<div className='pvp-entry-content'>
-											{translator(TranslatorKeys.Best, currentLanguage)}:
-										</div>
+										<div className='pvp-entry-content'>{translator(TranslatorKeys.Best, currentLanguage)}:</div>
 									</div>
 								</div>
 							</div>
@@ -158,17 +142,9 @@ const LeaguePanels = ({
 								<div>
 									<div className='pvp-entry'>
 										<div className='pvp-entry-content'>
-											{isShadow && !leagueStat.bestIsShadow
-												? Math.min(15, atk + 2)
-												: atk}{' '}
-											/{' '}
-											{isShadow && !leagueStat.bestIsShadow
-												? Math.min(15, def + 2)
-												: def}{' '}
-											/{' '}
-											{isShadow && !leagueStat.bestIsShadow
-												? Math.min(15, hp + 2)
-												: hp}
+											{isShadow && !leagueStat.bestIsShadow ? Math.min(15, atk + 2) : atk} /{' '}
+											{isShadow && !leagueStat.bestIsShadow ? Math.min(15, def + 2) : def} /{' '}
+											{isShadow && !leagueStat.bestIsShadow ? Math.min(15, hp + 2) : hp}
 										</div>
 									</div>
 									<div className='pvp-entry'>
@@ -179,14 +155,12 @@ const LeaguePanels = ({
 								</div>
 							</div>
 							<div className='template-pvp-labels'>
-								<header>
-									{translator(TranslatorKeys.Peaks, currentLanguage)}:
-								</header>
+								<header>{translator(TranslatorKeys.Peaks, currentLanguage)}:</header>
 								<div>
 									{/* Rewritten for a11y: use button for interactive element */}
 									<button
 										type='button'
-										className='pvp-entry clickable'
+										className='pvp-entry clickable selectable'
 										onClick={handlePanelToggle}
 										onKeyDown={handlePanelToggle}
 										tabIndex={0}
@@ -202,14 +176,10 @@ const LeaguePanels = ({
 													<>
 														<strong className='cp-container'>
 															{leagueStat.pokemonCP}{' '}
-															{gameTranslator(
-																GameTranslatorKeys.CP,
-																currentGameLanguage
-															).toLocaleUpperCase()}
+															{gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
 														</strong>
 														<div className='contained-big weighted-font'>
-															@{' '}
-															{translator(TranslatorKeys.LVL, currentLanguage)}{' '}
+															@ {translator(TranslatorKeys.LVL, currentLanguage)}{' '}
 															<strong
 																className={`${level > leagueStat.pokemonLevel ? 'higher-level' : 'cp-container'}`}
 															>
@@ -219,61 +189,30 @@ const LeaguePanels = ({
 													</>
 												) : level > leagueStat.pokemonLevel ? (
 													<strong className='higher-level '>
-														{translator(
-															TranslatorKeys.LevelExceeded,
-															currentLanguage
-														)}
+														{translator(TranslatorKeys.LevelExceeded, currentLanguage)}
 													</strong>
 												) : level === leagueStat.pokemonLevel ? (
 													<strong className='buffed  with-brightness'>
-														{translator(
-															TranslatorKeys.Reached,
-															currentLanguage
-														)}
+														{translator(TranslatorKeys.Reached, currentLanguage)}
 													</strong>
 												) : (
 													<div className='needed-resources'>
-														<img
-															src={`/images/stardust.png`}
-															alt='stardust'
-															height={16}
-															width={16}
-														/>
+														<img src={`/images/stardust.png`} alt='stardust' height={16} width={16} />
 														<strong className=' cp-container'>
 															{neededResources.stardust > 1000
-																? Math.round(
-																		Math.round(
-																			neededResources.stardust / 1000
-																		) * 10
-																	) /
-																		10 +
-																	'K'
+																? Math.round(Math.round(neededResources.stardust / 1000) * 10) / 10 + 'K'
 																: neededResources.stardust}
 														</strong>
 														{neededResources.candies !== 0 && (
 															<>
-																<img
-																	src={`/images/candy.png`}
-																	alt='candy'
-																	height={16}
-																	width={16}
-																/>
-																<strong className=' cp-container'>
-																	{neededResources.candies}
-																</strong>
+																<img src={`/images/candy.png`} alt='candy' height={16} width={16} />
+																<strong className=' cp-container'>{neededResources.candies}</strong>
 															</>
 														)}
 														{neededResources.candiesXL !== 0 && (
 															<>
-																<img
-																	src={`/images/xl-candy.png`}
-																	alt='xl-candy'
-																	height={16}
-																	width={16}
-																/>
-																<strong className=' cp-container'>
-																	{neededResources.candiesXL}
-																</strong>
+																<img src={`/images/xl-candy.png`} alt='xl-candy' height={16} width={16} />
+																<strong className=' cp-container'>{neededResources.candiesXL}</strong>
 															</>
 														)}
 													</div>
@@ -285,16 +224,11 @@ const LeaguePanels = ({
 										<div className='pvp-entry-content potential'>
 											<strong className='cp-container'>
 												{leagueStat.bestCP}{' '}
-												{gameTranslator(
-													GameTranslatorKeys.CP,
-													currentGameLanguage
-												).toLocaleUpperCase()}
+												{gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
 											</strong>{' '}
 											<div className='contained-big weighted-font'>
 												@ {translator(TranslatorKeys.LVL, currentLanguage)}{' '}
-												<strong className='cp-container'>
-													{leagueStat.bestLevel}
-												</strong>
+												<strong className='cp-container'>{leagueStat.bestLevel}</strong>
 											</div>
 										</div>
 									</div>
@@ -303,8 +237,7 @@ const LeaguePanels = ({
 						</div>
 					)}
 					<div className='centered-text fitting-content pvp-entry'>
-						... {translator(TranslatorKeys.As, currentLanguage)}{' '}
-						{leagueStat.bestReachablePokemonName}
+						... {translator(TranslatorKeys.As, currentLanguage)} {leagueStat.bestReachablePokemonName}
 					</div>
 					<img
 						className='background-absolute-img'
@@ -316,17 +249,7 @@ const LeaguePanels = ({
 				</div>
 			);
 		},
-		[
-			atk,
-			currentGameLanguage,
-			currentLanguage,
-			def,
-			hp,
-			isShadow,
-			level,
-			toggled,
-			unranked,
-		]
+		[atk, currentGameLanguage, currentLanguage, def, hp, isShadow, level, toggled, unranked]
 	);
 
 	const renderRaidPanel = useCallback(
@@ -340,28 +263,18 @@ const LeaguePanels = ({
 									{buildRankString(ordinal(raidStat.rank), currentLanguage)}
 									&nbsp;
 								</strong>
-								<strong>
-									{translator(TranslatorKeys.Ranked, currentLanguage)}
-								</strong>
+								<strong>{translator(TranslatorKeys.Ranked, currentLanguage)}</strong>
 								<strong>
 									{translator(TranslatorKeys.In, currentLanguage)}{' '}
-									{gameTranslator(
-										GameTranslatorKeys.Raids,
-										currentGameLanguage
-									)}
+									{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}
 								</strong>
 								<sub className='contained-big weighted-font'>{`(${Math.round(raidStat.dps * 100) / 100} DPS)`}</sub>
 							</div>
 						</div>
 					</div>
-					<div
-						className={`raid-stats ${raidStat.typeRanks.length < 3 ? 'double-card' : 'triple-card'}`}
-					>
+					<div className={`raid-stats ${raidStat.typeRanks.length < 3 ? 'double-card' : 'triple-card'}`}>
 						{raidStat.typeRanks.map((r, i) => (
-							<div
-								key={!r.type ? 'undefined-second-type-' + i : r.type}
-								className='pvp-labels'
-							>
+							<div key={!r.type ? 'undefined-second-type-' + i : r.type} className='pvp-labels'>
 								<RaidCard type={r.type} rank={r.rank} dps={r.dps} />
 							</div>
 						))}
@@ -374,8 +287,7 @@ const LeaguePanels = ({
 						))}
 					</div>
 					<div className='centered-text pvp-entry fitting-content'>
-						... {translator(TranslatorKeys.As, currentLanguage)}{' '}
-						{raidStat.bestReachablePokemonName}
+						... {translator(TranslatorKeys.As, currentLanguage)} {raidStat.bestReachablePokemonName}
 					</div>
 					<img
 						className='background-absolute-img-raid raid-img-with-contrast'

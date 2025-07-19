@@ -1,0 +1,92 @@
+.notifications-counter {
+	z-index: 5;
+	height: 18px;
+	width: 18px;
+	transform: translateY(-45%) translateX(120%);
+	background-color: var(--notifications-color);
+	color: var(--notifications-color-text);
+	position: absolute;
+	border-radius: 50%;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	font-size: 10px;
+}
+
+.navbar-dropdown-family {
+	z-index: 39998;
+
+	> div {
+		border: 1px solid var(--borderColor2) !important;
+		border-radius: 12px !important;
+	}
+
+	> div > div {
+		border-radius: 12px !important;
+	}
+
+	> div > div > div {
+		border-radius: 12px !important;
+	}
+
+	> * {
+		border: 1px solid var(--borderColor2);
+	}
+
+	* {
+		cursor: pointer !important;
+
+		&:not(.cp-container) {
+			color: var(--textColor) !important;
+		}
+
+		background-color: var(--popup-background-color) !important;
+	}
+
+	.img-adorner {
+		background-color: rgb(0 0 0 / 0%) !important;
+	}
+}
+
+.hint-container {
+	display: flex;
+	min-height: 16px;
+	gap: 9px;
+
+	img {
+		background: unset !important;
+	}
+}
+
+@media (width <= 500px) {
+	.notifications-counter {
+		height: 16px;
+		width: 16px;
+		font-weight: 800;
+		transform: translateY(-35%) translateX(120%);
+	}
+
+	.hint-container {
+		gap: 5px;
+	}
+}
+
+@media (width >= 500px) {
+	.navbar-dropdown-family div[tabIndex='-1']:hover:has(> div.hint-container) {
+		background: var(--background-dropdowns) !important;
+
+		*:not(img, .img-adorner) {
+			background: var(--background-dropdowns) !important;
+		}
+	}
+
+	div[tabIndex='-1']:hover:has(> div.hint-container) {
+		background: var(--selectionHover) !important;
+
+		*:not(img, .img-adorner) {
+			background: var(--selectionHover) !important;
+		}
+	}
+}

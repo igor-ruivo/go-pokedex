@@ -1,3 +1,5 @@
+import './Misc.scss';
+
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import React, { isValidElement, useMemo, useState } from 'react';
 
@@ -9,9 +11,7 @@ interface IListEntryProps {
 	backgroundColorClassName: string;
 	secondaryContent?: Array<ReactNode>;
 	toggledContent?: Array<ReactNode>;
-	onClick?: (
-		event: MouseEvent<HTMLDivElement> | KeyboardEvent<HTMLDivElement>
-	) => void;
+	onClick?: (event: MouseEvent<HTMLDivElement> | KeyboardEvent<HTMLDivElement>) => void;
 	details?: Array<IDetailItem>;
 	slim?: boolean;
 	soft?: boolean;
@@ -55,9 +55,7 @@ const ListEntry = ({
 		[toggled, toggledContent, secondaryContent]
 	);
 
-	const handleMainClick = (
-		e: MouseEvent<HTMLDivElement> | KeyboardEvent<HTMLDivElement>
-	) => {
+	const handleMainClick = (e: MouseEvent<HTMLDivElement> | KeyboardEvent<HTMLDivElement>) => {
 		if (expandable && setExpanded) {
 			setExpanded();
 		} else if (onClick) {
@@ -91,11 +89,7 @@ const ListEntry = ({
 					tabIndex={expandable || onClick ? 0 : undefined}
 					onClick={handleMainClick}
 					onKeyDown={handleMainKeyDown}
-					style={
-						specificBackgroundStyle
-							? { background: specificBackgroundStyle }
-							: undefined
-					}
+					style={specificBackgroundStyle ? { background: specificBackgroundStyle } : undefined}
 					className={`move-card-content relativeIndex ${expandable && expanded ? 'with-border-bottom' : ''} ${slim ? 'slim-content' : 'sparse-content'} ${!specificBackgroundStyle ? backgroundColorClassName : ''} ${expandable || onClick ? 'selectable' : ''}`}
 				>
 					<div className='move-main-info'>
@@ -103,9 +97,7 @@ const ListEntry = ({
 							className={`move-detail ${mainIcon.withBackground ? 'with-shadow' : ''} ${soft && !extraIcons && backgroundColorClassName === defaultBackgroundStyle ? 'soft' : ''} ${slim ? 'slim-padding' : ''}`}
 						>
 							{mainIcon.image}
-							{!!mainIcon.imageSideText && (
-								<span className='ellipsed'>{mainIcon.imageSideText}</span>
-							)}
+							{!!mainIcon.imageSideText && <span className='ellipsed'>{mainIcon.imageSideText}</span>}
 						</strong>
 						{extraIcons?.map((i) => (
 							<strong
@@ -121,21 +113,9 @@ const ListEntry = ({
 						<strong
 							role={expandable || toggledContent ? 'button' : undefined}
 							tabIndex={expandable || toggledContent ? 0 : undefined}
-							onClick={
-								expandable
-									? undefined
-									: toggledContent
-										? handleStatsClick
-										: undefined
-							}
-							onKeyDown={
-								expandable
-									? undefined
-									: toggledContent
-										? handleStatsKeyDown
-										: undefined
-							}
-							className={`move-detail with-shadow ${slimmer ? 'move-stats-slimmer' : slim ? 'move-stats-slim' : 'move-stats'} ${soft && backgroundColorClassName === defaultBackgroundStyle ? 'soft' : ''} ${expandable || toggledContent ? 'clickable' : ''}`}
+							onClick={expandable ? undefined : toggledContent ? handleStatsClick : undefined}
+							onKeyDown={expandable ? undefined : toggledContent ? handleStatsKeyDown : undefined}
+							className={`move-detail with-shadow ${slimmer ? 'move-stats-slimmer' : slim ? 'move-stats-slim' : 'move-stats'} ${soft && backgroundColorClassName === defaultBackgroundStyle ? 'soft' : ''} ${expandable || toggledContent ? 'clickable selectable' : ''}`}
 						>
 							{expandable && !expanded && (
 								<img
@@ -166,10 +146,7 @@ const ListEntry = ({
 									(content) =>
 										isValidElement(content) &&
 										content.key && (
-											<span
-												key={`${content.key}-span`}
-												className='move-stats-content'
-											>
+											<span key={`${content.key}-span`} className='move-stats-content'>
 												{content}
 											</span>
 										)
@@ -194,7 +171,7 @@ const ListEntry = ({
 							}
 						}}
 					>
-						<details id={detail.detailId} className='buff-panel'>
+						<details id={detail.detailId} className='buff-panel clickable selectable'>
 							<summary>{detail.summary}</summary>
 							{detail.content}
 						</details>

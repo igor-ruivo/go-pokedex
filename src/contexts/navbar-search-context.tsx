@@ -26,24 +26,17 @@ interface NavbarSearchContextType {
 	updateType2: (newType: PokemonTypes | undefined) => void;
 }
 
-const NavbarSearchContext = createContext<NavbarSearchContextType | undefined>(
-	undefined
-);
+const NavbarSearchContext = createContext<NavbarSearchContextType | undefined>(undefined);
 
 export const useNavbarSearchInput = (): NavbarSearchContextType => {
 	const context = useContext(NavbarSearchContext);
 	if (!context) {
-		throw new Error(
-			'useNavbarSearchInput must be used within a NavbarSearchProvider'
-		);
+		throw new Error('useNavbarSearchInput must be used within a NavbarSearchProvider');
 	}
 	return context;
 };
 
-const parsePersistentCachedBooleanValue = (
-	key: ConfigKeys,
-	defaultValue: boolean
-) => {
+const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) => {
 	const cachedValue = readPersistentValue(key);
 	if (cachedValue === null) {
 		return defaultValue;
@@ -51,10 +44,7 @@ const parsePersistentCachedBooleanValue = (
 	return cachedValue === 'true';
 };
 
-const parseSessionCachedBooleanValue = (
-	key: ConfigKeys,
-	defaultValue: boolean
-) => {
+const parseSessionCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) => {
 	const cachedValue = readSessionValue(key);
 	if (cachedValue === null) {
 		return defaultValue;
@@ -74,30 +64,14 @@ const getDefaultType = (key: ConfigKeys) => {
 	return typedValue;
 };
 
-export const NavbarSearchProvider = (
-	props: React.PropsWithChildren<object>
-) => {
-	const [inputText, setInputText] = useState(
-		readSessionValue(ConfigKeys.SearchInputText) ?? ''
-	);
-	const [familyTree, setFamilyTree] = useState(
-		parsePersistentCachedBooleanValue(ConfigKeys.ShowFamilyTree, true)
-	);
-	const [showMega, setShowMega] = useState(
-		parsePersistentCachedBooleanValue(ConfigKeys.ShowMega, true)
-	);
-	const [showShadow, setShowShadow] = useState(
-		parseSessionCachedBooleanValue(ConfigKeys.ShowShadow, true)
-	);
-	const [showXL, setShowXL] = useState(
-		parseSessionCachedBooleanValue(ConfigKeys.ShowXL, true)
-	);
-	const [type1Filter, setType1Filter] = useState(
-		getDefaultType(ConfigKeys.Type1)
-	);
-	const [type2Filter, setType2Filter] = useState(
-		getDefaultType(ConfigKeys.Type2)
-	);
+export const NavbarSearchProvider = (props: React.PropsWithChildren<object>) => {
+	const [inputText, setInputText] = useState(readSessionValue(ConfigKeys.SearchInputText) ?? '');
+	const [familyTree, setFamilyTree] = useState(parsePersistentCachedBooleanValue(ConfigKeys.ShowFamilyTree, true));
+	const [showMega, setShowMega] = useState(parsePersistentCachedBooleanValue(ConfigKeys.ShowMega, true));
+	const [showShadow, setShowShadow] = useState(parseSessionCachedBooleanValue(ConfigKeys.ShowShadow, true));
+	const [showXL, setShowXL] = useState(parseSessionCachedBooleanValue(ConfigKeys.ShowXL, true));
+	const [type1Filter, setType1Filter] = useState(getDefaultType(ConfigKeys.Type1));
+	const [type2Filter, setType2Filter] = useState(getDefaultType(ConfigKeys.Type2));
 
 	const updateInputText = useCallback((newInputText: string) => {
 		writeSessionValue(ConfigKeys.SearchInputText, newInputText);

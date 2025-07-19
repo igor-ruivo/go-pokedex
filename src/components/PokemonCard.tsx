@@ -56,9 +56,7 @@ const PokemonCard = ({
 				return 'Expired';
 			}
 
-			return days > 0
-				? `${days} day${days > 1 ? 's' : ''} left`
-				: `${hours}h:${minutes}m:${seconds}s`;
+			return days > 0 ? `${days} day${days > 1 ? 's' : ''} left` : `${hours}h:${minutes}m:${seconds}s`;
 		}
 
 		if (cpStringOverride) {
@@ -102,18 +100,10 @@ const PokemonCard = ({
 					<PokemonTypes types={pokemon.types} />
 				</span>
 				<span className='card-content'>
-					<PokemonImage
-						pokemon={pokemon}
-						xl={needsXLCandy(pokemon, cpThreshold)}
-						shiny={shinyBadge}
-						withName
-						lazy
-					/>
+					<PokemonImage pokemon={pokemon} xl={needsXLCandy(pokemon, cpThreshold)} shiny={shinyBadge} withName lazy />
 				</span>
 				<span className='header-footer'>
-					<span className='cp-container heavy-weighted-font'>
-						{getCPContainerString()}
-					</span>
+					<span className='cp-container heavy-weighted-font'>{getCPContainerString()}</span>
 				</span>
 			</div>
 		</Link>

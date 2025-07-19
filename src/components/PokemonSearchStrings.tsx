@@ -8,11 +8,7 @@ import { customCupCPLimit } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { LeagueType } from '../hooks/useLeague';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import {
-	ConfigKeys,
-	readPersistentValue,
-	writePersistentValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import {
 	calculateCP,
 	calculateHP,
@@ -28,10 +24,7 @@ interface IPokemonSearchStringsProps {
 	league: LeagueType;
 }
 
-const parsePersistentCachedNumberValue = (
-	key: ConfigKeys,
-	defaultValue: number
-): number => {
+const parsePersistentCachedNumberValue = (key: ConfigKeys, defaultValue: number): number => {
 	const cachedValue = readPersistentValue(key);
 	if (!cachedValue) {
 		return defaultValue;
@@ -39,10 +32,7 @@ const parsePersistentCachedNumberValue = (
 	return +cachedValue;
 };
 
-const parsePersistentCachedBooleanValue = (
-	key: ConfigKeys,
-	defaultValue: boolean
-): boolean => {
+const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean): boolean => {
 	const cachedValue = readPersistentValue(key);
 	if (cachedValue === null) {
 		return defaultValue;
@@ -50,16 +40,9 @@ const parsePersistentCachedBooleanValue = (
 	return cachedValue === 'true';
 };
 
-const PokemonSearchStrings = ({
-	pokemon,
-	league,
-}: IPokemonSearchStringsProps) => {
-	const [top, setTop] = useState<number>(
-		parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10)
-	);
-	const [trash, setTrash] = useState<boolean>(
-		parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false)
-	);
+const PokemonSearchStrings = ({ pokemon, league }: IPokemonSearchStringsProps) => {
+	const [top, setTop] = useState<number>(parsePersistentCachedNumberValue(ConfigKeys.TopPokemonInSearchString, 10));
+	const [trash, setTrash] = useState<boolean>(parsePersistentCachedBooleanValue(ConfigKeys.TrashString, false));
 
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 
@@ -67,10 +50,7 @@ const PokemonSearchStrings = ({
 		() => fetchPredecessorPokemonIncludingSelf(pokemon, gamemasterPokemon),
 		[pokemon, gamemasterPokemon]
 	);
-	const predecessorPokemonArray = useMemo(
-		() => Array.from(predecessorPokemon),
-		[predecessorPokemon]
-	);
+	const predecessorPokemonArray = useMemo(() => Array.from(predecessorPokemon), [predecessorPokemon]);
 
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 
@@ -85,9 +65,7 @@ const PokemonSearchStrings = ({
 	useEffect(() => {
 		const textAreas: Array<HTMLTextAreaElement> = predecessorPokemonArray
 			.map((p) => document.getElementById(p.speciesId + '-textarea'))
-			.filter(
-				(e): e is HTMLTextAreaElement => e instanceof HTMLTextAreaElement
-			);
+			.filter((e): e is HTMLTextAreaElement => e instanceof HTMLTextAreaElement);
 
 		const eventListener = (event: MouseEvent) => {
 			const target = event.target as HTMLTextAreaElement;
@@ -158,11 +136,7 @@ const PokemonSearchStrings = ({
 			output.sort((a, b) => a - b);
 			const ranges = getRanges(output);
 			if (ranges.length < 1) {
-				console.log(
-					'groupAttr: No output(' +
-						JSON.stringify(ranges) +
-						"), returning empty string('')"
-				);
+				console.log('groupAttr: No output(' + JSON.stringify(ranges) + "), returning empty string('')");
 				return '';
 			}
 			let checkStr = ranges.join(',') + lang;
@@ -181,45 +155,39 @@ const PokemonSearchStrings = ({
 	);
 
 	// get_matching_string: Accepts an array of numbers and a string, returns a formatted string
-	const get_matching_string = useCallback(
-		(a: Array<number>, t: string): string => {
-			let list = '';
-			let last = -1;
-			for (let i = 0; i < a.length; i++) {
-				if (a[i] === last + 1) {
-					list += '-';
-					last = a[i];
-					while (++i < a.length) {
-						if (a[i] !== last + 1) break;
-						last = a[i];
-					}
-					if (a[--i] < 9999) {
-						list += a[i];
-					}
-				} else {
-					list += ',' + t + a[i];
+	const get_matching_string = useCallback((a: Array<number>, t: string): string => {
+		let list = '';
+		let last = -1;
+		for (let i = 0; i < a.length; i++) {
+			if (a[i] === last + 1) {
+				list += '-';
+				last = a[i];
+				while (++i < a.length) {
+					if (a[i] !== last + 1) break;
 					last = a[i];
 				}
+				if (a[--i] < 9999) {
+					list += a[i];
+				}
+			} else {
+				list += ',' + t + a[i];
+				last = a[i];
 			}
-			return list.substring(1);
-		},
-		[]
-	);
+		}
+		return list.substring(1);
+	}, []);
 
 	// trashFlip: Accepts a set of numbers, a max value, and a boolean, returns a set of numbers
-	const trashFlip = useCallback(
-		(cps: Set<number>, maxCP: number, attr: boolean): Set<number> => {
-			for (let i = attr ? 0 : 10; i <= maxCP; i++) {
-				if (cps.has(i)) {
-					cps.delete(i);
-				} else {
-					cps.add(i);
-				}
+	const trashFlip = useCallback((cps: Set<number>, maxCP: number, attr: boolean): Set<number> => {
+		for (let i = attr ? 0 : 10; i <= maxCP; i++) {
+			if (cps.has(i)) {
+				cps.delete(i);
+			} else {
+				cps.add(i);
 			}
-			return cps;
-		},
-		[]
-	);
+		}
+		return cps;
+	}, []);
 
 	const computeSearchString = useCallback(
 		(predecessorPokemon: IGamemasterPokemon): string => {
@@ -245,30 +213,16 @@ const PokemonSearchStrings = ({
 			const maxHP: Array<number> = Array.from({ length: 5 }, () => 0);
 
 			const topIVCombinations = Object.values(
-				computeBestIVs(
-					pokemon.baseStats.atk,
-					pokemon.baseStats.def,
-					pokemon.baseStats.hp,
-					cpCap
-				)
+				computeBestIVs(pokemon.baseStats.atk, pokemon.baseStats.def, pokemon.baseStats.hp, cpCap)
 			).flat();
 
 			for (let i = 0; i < top; i++) {
 				const topIVCombination = topIVCombinations[i];
 				const maxLevel = topIVCombination.L;
 
-				const atkBucket =
-					topIVCombination.IVs.A === 15
-						? 4
-						: Math.ceil(topIVCombination.IVs.A / 5);
-				const defBucket =
-					topIVCombination.IVs.D === 15
-						? 4
-						: Math.ceil(topIVCombination.IVs.D / 5);
-				const hpBucket =
-					topIVCombination.IVs.S === 15
-						? 4
-						: Math.ceil(topIVCombination.IVs.S / 5);
+				const atkBucket = topIVCombination.IVs.A === 15 ? 4 : Math.ceil(topIVCombination.IVs.A / 5);
+				const defBucket = topIVCombination.IVs.D === 15 ? 4 : Math.ceil(topIVCombination.IVs.D / 5);
+				const hpBucket = topIVCombination.IVs.S === 15 ? 4 : Math.ceil(topIVCombination.IVs.S / 5);
 
 				const star = topIVCombination.IVs.star;
 
@@ -328,68 +282,31 @@ const PokemonSearchStrings = ({
 
 					const sortedCps = Array.from(cps[i]).sort((a, b) => a - b);
 					result +=
-						'&!' +
-						i +
-						'*' +
-						groupAttr(
-							atkivs[i],
-							gameTranslator(
-								GameTranslatorKeys.AttackSearch,
-								currentGameLanguage
-							)
-						);
+						'&!' + i + '*' + groupAttr(atkivs[i], gameTranslator(GameTranslatorKeys.AttackSearch, currentGameLanguage));
 					if (!trash) {
 						result += '&!' + i + '*';
 					}
-					result += groupAttr(
-						defivs[i],
-						gameTranslator(
-							GameTranslatorKeys.DefenseSearch,
-							currentGameLanguage
-						)
-					);
+					result += groupAttr(defivs[i], gameTranslator(GameTranslatorKeys.DefenseSearch, currentGameLanguage));
 					if (!trash) {
 						result += '&!' + i + '*';
 					}
-					result += groupAttr(
-						hpivs[i],
-						gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage)
-					);
+					result += groupAttr(hpivs[i], gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage));
 					if (!trash) {
 						result += '&!' + i + '*';
 					}
-					result +=
-						',' +
-						get_matching_string(
-							sortedCps,
-							gameTranslator(GameTranslatorKeys.CP, currentGameLanguage)
-						);
+					result += ',' + get_matching_string(sortedCps, gameTranslator(GameTranslatorKeys.CP, currentGameLanguage));
 					if (!trash) {
 						result += '&!' + i + '*';
 					} else {
-						result +=
-							',' +
-							gameTranslator(GameTranslatorKeys.CP, currentGameLanguage) +
-							String(maxCP[i] + 1) +
-							'-';
+						result += ',' + gameTranslator(GameTranslatorKeys.CP, currentGameLanguage) + String(maxCP[i] + 1) + '-';
 					}
 					if (hps[i].size > 0) {
 						const sortedHps = Array.from(hps[i]).sort((a, b) => a - b);
 						result +=
-							',' +
-							get_matching_string(
-								sortedHps,
-								gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage)
-							);
+							',' + get_matching_string(sortedHps, gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage));
 						if (trash) {
 							result +=
-								',' +
-								gameTranslator(
-									GameTranslatorKeys.HPSearch,
-									currentGameLanguage
-								) +
-								String(maxHP[i] + 1) +
-								'-';
+								',' + gameTranslator(GameTranslatorKeys.HPSearch, currentGameLanguage) + String(maxHP[i] + 1) + '-';
 						}
 					}
 				} else if (!trash) {
@@ -409,23 +326,11 @@ const PokemonSearchStrings = ({
 
 			return result;
 		},
-		[
-			cpCap,
-			currentGameLanguage,
-			get_matching_string,
-			groupAttr,
-			pokemon,
-			top,
-			trash,
-			trashFlip,
-		]
+		[cpCap, currentGameLanguage, get_matching_string, groupAttr, pokemon, top, trash, trashFlip]
 	);
 
 	return (
-		<LoadingRenderer
-			errors={''}
-			completed={fetchCompleted && !!gamemasterPokemon}
-		>
+		<LoadingRenderer errors={''} completed={fetchCompleted && !!gamemasterPokemon}>
 			{() =>
 				fetchCompleted &&
 				!!gamemasterPokemon &&
@@ -434,11 +339,7 @@ const PokemonSearchStrings = ({
 						<div className='extra-ivs-options item default-padding'>
 							<div className='with-padding'>
 								Top{' '}
-								<select
-									value={top}
-									onChange={(e) => setTop(Number(e.target.value))}
-									className='select-level'
-								>
+								<select value={top} onChange={(e) => setTop(Number(e.target.value))} className='select-level'>
 									{Array.from({ length: 4096 }, (_x, i) => i + 1).map((e) => (
 										<option key={e} value={e}>
 											{e}
@@ -447,34 +348,25 @@ const PokemonSearchStrings = ({
 								</select>
 								&nbsp;&nbsp;&nbsp;
 								{translator(TranslatorKeys.TrashString, currentLanguage)}{' '}
-								<input
-									type='checkbox'
-									checked={trash}
-									onChange={(_) => setTrash((previous) => !previous)}
-								/>
+								<input type='checkbox' checked={trash} onChange={(_) => setTrash((previous) => !previous)} />
 							</div>
 						</div>
 
-						{predecessorPokemonArray
-							.sort(sortPokemonByBattlePowerAsc)
-							.map((p) => (
-								<div
-									key={p.speciesId}
-									className='textarea-label item default-padding'
-								>
-									<span>
-										{p.speciesId === pokemon.speciesId
-											? `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? '' : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === LeagueType.GREAT_LEAGUE ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === LeagueType.ULTRA_LEAGUE ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === LeagueType.CUSTOM_CUP ? gameTranslator(GameTranslatorKeys.FantasyCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)}:`
-											: `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? '' : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === LeagueType.GREAT_LEAGUE ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === LeagueType.ULTRA_LEAGUE ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === LeagueType.CUSTOM_CUP ? gameTranslator(GameTranslatorKeys.FantasyCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)}:`}
-									</span>
-									<textarea
-										id={p.speciesId + '-textarea'}
-										className='search-strings-container'
-										value={computeSearchString(p)}
-										readOnly
-									/>
-								</div>
-							))}
+						{predecessorPokemonArray.sort(sortPokemonByBattlePowerAsc).map((p) => (
+							<div key={p.speciesId} className='textarea-label item default-padding'>
+								<span>
+									{p.speciesId === pokemon.speciesId
+										? `${translator(TranslatorKeys.Find, currentLanguage)} ${!trash ? '' : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${p.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === LeagueType.GREAT_LEAGUE ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === LeagueType.ULTRA_LEAGUE ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === LeagueType.CUSTOM_CUP ? gameTranslator(GameTranslatorKeys.FantasyCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)}:`
+										: `${translator(TranslatorKeys.Find, currentLanguage)} ${p.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} (${translator(TranslatorKeys.WildUnpowered, currentLanguage)}) ${translator(TranslatorKeys.ThatResultIn, currentLanguage)} ${!trash ? '' : translator(TranslatorKeys.AllExcept, currentLanguage)} ${translator(TranslatorKeys.FindTop, currentLanguage)} ${top} ${pokemon.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))} ${translator(TranslatorKeys.ForLeague, currentLanguage)} ${league === LeagueType.GREAT_LEAGUE ? gameTranslator(GameTranslatorKeys.GreatLeague, currentGameLanguage) : league === LeagueType.ULTRA_LEAGUE ? gameTranslator(GameTranslatorKeys.UltraLeague, currentGameLanguage) : league === LeagueType.CUSTOM_CUP ? gameTranslator(GameTranslatorKeys.FantasyCup, currentGameLanguage) : gameTranslator(GameTranslatorKeys.MasterLeague, currentGameLanguage)}:`}
+								</span>
+								<textarea
+									id={p.speciesId + '-textarea'}
+									className='search-strings-container'
+									value={computeSearchString(p)}
+									readOnly
+								/>
+							</div>
+						))}
 					</div>
 				) : (
 					<div className='item default-padding centered normal-text'>

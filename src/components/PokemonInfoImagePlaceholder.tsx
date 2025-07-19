@@ -1,4 +1,5 @@
 import './PokemonInfoImagePlaceholder.scss';
+import './ReusableAdorners.scss';
 
 import type { PropsWithChildren } from 'react';
 import { useMemo, useRef } from 'react';
@@ -39,22 +40,16 @@ type LevelOption = {
 };
 
 export const translatedType = (type: PokemonTypes, language: Language) => {
-	const translatorKey =
-		TranslatorKeys[type as unknown as keyof typeof TranslatorKeys];
+	const translatorKey = TranslatorKeys[type as unknown as keyof typeof TranslatorKeys];
 	return translator(translatorKey, language);
 };
 
-const PokemonInfoImagePlaceholder = (
-	props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>
-) => {
+const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const { pathname } = useLocation();
 
 	const isDisabled = useMemo(
-		() =>
-			pathname.endsWith('counters') ||
-			pathname.endsWith('tables') ||
-			pathname.endsWith('strings'),
+		() => pathname.endsWith('counters') || pathname.endsWith('tables') || pathname.endsWith('strings'),
 		[pathname]
 	);
 
@@ -98,19 +93,14 @@ const PokemonInfoImagePlaceholder = (
 		matchCountRef.current = 0;
 		return conditions.flatMap((condition) => {
 			const matches = condition.types.some((type) =>
-				props.pokemon.types
-					.map((t) => t.toString().toLowerCase())
-					.includes(type)
+				props.pokemon.types.map((t) => t.toString().toLowerCase()).includes(type)
 			);
 			if (matches) {
 				matchCountRef.current += 1;
 				return [
 					{
 						...condition,
-						className:
-							matchCountRef.current === 1
-								? 'pkm-weather-boost-img '
-								: 'pkm-weather-boost-img shifted-left',
+						className: matchCountRef.current === 1 ? 'pkm-weather-boost-img ' : 'pkm-weather-boost-img shifted-left',
 					},
 				];
 			}
@@ -121,20 +111,11 @@ const PokemonInfoImagePlaceholder = (
 	return (
 		<div className='column item with-small-margin-top'>
 			<div className='pokemon_main_info'>
-				<PokemonImage
-					pokemon={props.pokemon}
-					withName={false}
-					galleryToggle
-					lowRes={false}
-				/>
+				<PokemonImage pokemon={props.pokemon} withName={false} galleryToggle lowRes={false} />
 				<div className='with-margin-left'>
 					<span className='cp-level'>
 						<strong className='cp-container very-big'>
-							{props.computedCP}{' '}
-							{gameTranslator(
-								GameTranslatorKeys.CP,
-								currentGameLanguage
-							).toLocaleUpperCase()}
+							{props.computedCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}
 						</strong>
 					</span>
 
@@ -204,9 +185,7 @@ const PokemonInfoImagePlaceholder = (
 						className={`navbar-dropdown-family ${isDisabled ? 'disabled' : ''}`}
 						isSearchable={false}
 						isDisabled={isDisabled}
-						value={
-							levelOptions.find((o) => o.label === props.displayLevel) ?? null
-						}
+						value={levelOptions.find((o) => o.label === props.displayLevel) ?? null}
 						options={levelOptions}
 						onChange={(option) => {
 							const selected = option as LevelOption | null;
@@ -217,8 +196,7 @@ const PokemonInfoImagePlaceholder = (
 						formatOptionLabel={(data: LevelOption) => (
 							<div className='hint-container mini-margin-left normal-text'>
 								<strong className='aligned-block ellipsed'>
-									{translator(TranslatorKeys.Level, currentLanguage)}{' '}
-									<span className='cp-container'>{data.label}</span>
+									{translator(TranslatorKeys.Level, currentLanguage)} <span className='cp-container'>{data.label}</span>
 								</strong>
 							</div>
 						)}

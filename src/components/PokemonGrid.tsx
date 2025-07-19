@@ -8,11 +8,7 @@ import { AutoSizer, Grid } from 'react-virtualized';
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import useResize from '../hooks/useResize';
-import {
-	ConfigKeys,
-	readSessionValue,
-	writeSessionValue,
-} from '../utils/persistent-configs-handler';
+import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import { ListType } from '../views/pokedex';
 import PokemonCard from './PokemonCard';
@@ -47,13 +43,7 @@ const getDefaultListType = (): ListType | undefined => {
 };
 
 const PokemonGrid = memo(function PokemonGrid(props: IPokemonGridProps) {
-	const {
-		pokemonInfoList,
-		cpStringOverrides,
-		rankOverrides,
-		listType,
-		containerRef,
-	} = props;
+	const { pokemonInfoList, cpStringOverrides, rankOverrides, listType, containerRef } = props;
 
 	const { x } = useResize();
 
@@ -87,9 +77,7 @@ const PokemonGrid = memo(function PokemonGrid(props: IPokemonGridProps) {
 	useEffect(() => {
 		if (typedCurrentRank === getDefaultListType()) {
 			setTimeout(() => {
-				const gridElement = document.getElementsByClassName('grid')[0] as
-					| HTMLElement
-					| undefined;
+				const gridElement = document.getElementsByClassName('grid')[0] as HTMLElement | undefined;
 				if (gridElement) {
 					gridElement.scrollTo(0, getDefaultScrollY());
 				}
@@ -100,17 +88,12 @@ const PokemonGrid = memo(function PokemonGrid(props: IPokemonGridProps) {
 	useEffect(() => {
 		// Whenever the pokemonInfoList prop changes, let's reset the scrolling and the shown pokemon.
 
-		writeSessionValue(
-			ConfigKeys.LastListType,
-			JSON.stringify(typedCurrentRank)
-		);
+		writeSessionValue(ConfigKeys.LastListType, JSON.stringify(typedCurrentRank));
 
 		if (initialPropsSet.current) {
 			writeSessionValue(ConfigKeys.GridScrollY, '0');
 			setTimeout(() => {
-				const gridElement = document.getElementsByClassName('grid')[0] as
-					| HTMLElement
-					| undefined;
+				const gridElement = document.getElementsByClassName('grid')[0] as HTMLElement | undefined;
 				if (gridElement) {
 					gridElement.scrollTo(0, 0);
 				}
@@ -120,17 +103,9 @@ const PokemonGrid = memo(function PokemonGrid(props: IPokemonGridProps) {
 		}
 	}, [pokemonInfoList, typedCurrentRank]);
 
-	const itemsPerRow = useMemo(
-		() => (x >= 1600 ? 7 : x >= 1250 ? 6 : x >= 950 ? 5 : x >= 600 ? 4 : 3),
-		[x]
-	);
+	const itemsPerRow = useMemo(() => (x >= 1600 ? 7 : x >= 1250 ? 6 : x >= 950 ? 5 : x >= 600 ? 4 : 3), [x]);
 
-	const safeCellRenderer = ({
-		rowIndex,
-		columnIndex,
-		key,
-		style,
-	}: SafeGridCellProps): React.ReactNode => {
+	const safeCellRenderer = ({ rowIndex, columnIndex, key, style }: SafeGridCellProps): React.ReactNode => {
 		const idx = rowIndex * itemsPerRow + columnIndex;
 		if (idx < pokemonInfoList.length) {
 			const pokemon = pokemonInfoList[idx];
@@ -162,9 +137,7 @@ const PokemonGrid = memo(function PokemonGrid(props: IPokemonGridProps) {
 
 	return (
 		<div className='grid_container' ref={renderDivRef}>
-			{pokemonInfoList.length === 0 && (
-				<div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div>
-			)}
+			{pokemonInfoList.length === 0 && <div>{translator(TranslatorKeys.PokemonNotFound, currentLanguage)}</div>}
 			{pokemonInfoList.length > 0 && (
 				<AutoSizer>
 					{({ height, width }: { height: number; width: number }) => (
@@ -174,9 +147,7 @@ const PokemonGrid = memo(function PokemonGrid(props: IPokemonGridProps) {
 							rowCount={Math.ceil(pokemonInfoList.length / itemsPerRow) + 1}
 							columnCount={itemsPerRow}
 							height={height}
-							width={
-								containerRef.current ? containerRef.current.offsetWidth : 0
-							}
+							width={containerRef.current ? containerRef.current.offsetWidth : 0}
 							rowHeight={width / itemsPerRow - 1}
 							columnWidth={width / itemsPerRow - 1}
 							onScroll={safeOnScroll}

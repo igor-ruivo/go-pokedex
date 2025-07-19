@@ -1,4 +1,5 @@
 import './PokemonImage.css';
+import './Misc.scss';
 
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { forwardRef, useCallback, useEffect, useState } from 'react';
@@ -77,8 +78,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 			[lowRes, pokemon]
 		);
 
-		const [currentImageSource, setCurrentImageSource] =
-			useState<ImageSource>(imageSource);
+		const [currentImageSource, setCurrentImageSource] = useState<ImageSource>(imageSource);
 
 		useEffect(() => {
 			setCurrentImageSource(imageSource);
@@ -86,9 +86,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 
 		const handleImageClick = useCallback(() => {
 			setCurrentImageSource((p: ImageSource) => {
-				const enumValues = Object.values(ImageSource).filter(
-					(v): v is ImageSource => typeof v === 'number'
-				);
+				const enumValues = Object.values(ImageSource).filter((v): v is ImageSource => typeof v === 'number');
 				const currentIndex = enumValues.indexOf(p);
 				const nextIndex = (currentIndex + 1) % enumValues.length;
 				const nextImageSource = enumValues[nextIndex];
@@ -108,34 +106,19 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 		);
 
 		const onError = useCallback(
-			(
-				e: React.SyntheticEvent<HTMLImageElement, Event>,
-				urlKind: ImageSource
-			) => {
+			(e: React.SyntheticEvent<HTMLImageElement, Event>, urlKind: ImageSource) => {
 				const target = e.target as HTMLImageElement;
 				switch (urlKind) {
 					case ImageSource.Official:
 						return;
 					case ImageSource.GO:
 						target.onerror = (event) =>
-							onError(
-								event as unknown as React.SyntheticEvent<
-									HTMLImageElement,
-									Event
-								>,
-								ImageSource.Official
-							);
+							onError(event as unknown as React.SyntheticEvent<HTMLImageElement, Event>, ImageSource.Official);
 						target.src = fetchSrc(ImageSource.Official);
 						return;
 					case ImageSource.Shiny:
 						target.onerror = (event) =>
-							onError(
-								event as unknown as React.SyntheticEvent<
-									HTMLImageElement,
-									Event
-								>,
-								ImageSource.GO
-							);
+							onError(event as unknown as React.SyntheticEvent<HTMLImageElement, Event>, ImageSource.GO);
 						target.src = fetchSrc(ImageSource.GO);
 						return;
 				}
@@ -148,9 +131,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 		// Only add event handlers and interactive props if galleryToggle is true
 		const interactiveImgProps = galleryToggle
 			? {
-					onClick: handleImageClick as (
-						e: MouseEvent<HTMLImageElement>
-					) => void,
+					onClick: handleImageClick as (e: MouseEvent<HTMLImageElement>) => void,
 					onKeyDown: handleImageKeyDown,
 					tabIndex: 0,
 					role: 'button',
@@ -159,17 +140,13 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 
 		const mainImgProps = {
 			ref,
-			className: `${withClassname ?? 'with-img-dropShadow'}${galleryToggle ? ' img-clickable' : ''}${currentImageSource !== ImageSource.Official ? ' with-img-dropShadow' : ''}`,
+			className: `${withClassname ?? 'with-img-dropShadow'}${galleryToggle ? ' img-clickable selectable' : ''}${currentImageSource !== ImageSource.Official ? ' with-img-dropShadow' : ''}`,
 			loading: lazy ? 'lazy' : undefined,
-			alt: pokemon.speciesName.replace(
-				'Shadow',
-				gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
-			),
+			alt: pokemon.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
 			height: specificHeight ?? '100%',
 			width: specificWidth ?? '100%',
 			src: fetchSrc(currentImageSource),
-			onError: (e: React.SyntheticEvent<HTMLImageElement, Event>) =>
-				onError(e, currentImageSource),
+			onError: (e: React.SyntheticEvent<HTMLImageElement, Event>) => onError(e, currentImageSource),
 			...interactiveImgProps,
 		};
 
@@ -179,10 +156,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 					{...mainImgProps}
 					className={imgClassName}
 					loading={lazy ? 'lazy' : 'eager'}
-					alt={pokemon.speciesName.replace(
-						'Shadow',
-						gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
-					)}
+					alt={pokemon.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage))}
 				/>
 			);
 		}
@@ -261,14 +235,9 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 					<div style={{ lineHeight: 1.2 }}>
 						<span
 							className='pkm-img-name ellipsed block-column minimal-padding-bottom'
-							style={
-								specificNameContainerWidth
-									? { width: specificNameContainerWidth }
-									: {}
-							}
+							style={specificNameContainerWidth ? { width: specificNameContainerWidth } : {}}
 						>
-							{shortName(pokemon.speciesName) +
-								(forceShadowAdorner ? ' (S)' : '')}
+							{shortName(pokemon.speciesName) + (forceShadowAdorner ? ' (S)' : '')}
 						</span>
 					</div>
 				)}
