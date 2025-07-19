@@ -579,8 +579,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 															<div className='img-padding'>
 																<img
 																	className='with-img-dropShadow'
-																	height={26}
-																	width={26}
+																	height={22}
+																	width={22}
 																	alt='type'
 																	src={`/images/types/${t}.png`}
 																/>

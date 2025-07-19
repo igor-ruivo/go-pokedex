@@ -628,7 +628,6 @@ const DeleteTrash = () => {
 									type2={undefined}
 									defaultTextColor
 									defaultBannerColor
-									whiteTextColor
 								/>
 								<div className='pokemon normal-text-descendants'>
 									<div className='item with-small-margin-top events-header-image-container'>

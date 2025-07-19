@@ -23,6 +23,11 @@ code {
 }
 
 .theme-dark {
+	--great-color: #7ba7cd;
+	--ultra-color: #c9c089;
+	--master-color: #b198d3;
+	--raid-color: rgb(205 165 148);
+	--background-shadow-title: rgb(0 0 0 / 25%);
 	--entry-background-shadow: rgb(0 0 0 / 25%);
 	--empty-entry: rgb(36, 41, 47) //#26313b;
 		--hover-brightness: saturate(1.1) brightness(1.2);
@@ -112,20 +117,27 @@ code {
 
 // 5e7793
 .theme-light {
+	--great-color: #b0cff1;
+	--ultra-color: #cdcdad;
+	--master-color: #bfacc9;
+	--raid-color: #c9b1ac;
+	--background-shadow-title: hsl(0deg 0% 100% / 46%);
 	--highlighted-date: #1a1a1a;
 	--shadow-header-color: #7b7097;
 	--special-header-color: #855f5f;
 	--highlighted-text: #3b82f6;
-	--header-main-color: #5e7793;
+	--header-main-color: #b1c4d9;
 	--notifications-color-text: #222;
 	--notifications-color: #ffd600;
 	--header-main-text-color: rgb(255 255 255);
 	--activePerkFilter: contrast(0) brightness(0.6);
 	--higher-level: #e53935;
 	--lighter-tone-text: #222;
-	--poke-border: drop-shadow(1px 1px 0 var(--cp-color)) drop-shadow(-0.5px -0.5px 0 var(--cp-color)) drop-shadow(1px -1px 0 var(--cp-color)) drop-shadow(-1px 1.5px 0 var(--cp-color));
+	--poke-border: drop-shadow(1px 1px 0 var(--cp-color)) drop-shadow(-0.5px -0.5px 0 var(--cp-color))
+		drop-shadow(1px -1px 0 var(--cp-color)) drop-shadow(-1px 1.5px 0 var(--cp-color));
 	--event-special-font: #444;
-	--event-filter: drop-shadow(0 1px 0 rgb(0 0 0 / 30%)) drop-shadow(1px 0 0 rgb(0 0 0 / 30%)) drop-shadow(-1px 0 0 rgb(0 0 0 / 30%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 30%));
+	--event-filter: drop-shadow(0 1px 0 rgb(0 0 0 / 30%)) drop-shadow(1px 0 0 rgb(0 0 0 / 30%))
+		drop-shadow(-1px 0 0 rgb(0 0 0 / 30%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 30%));
 	--entry-background-shadow: 0 2px 16px 0 rgba(60, 60, 90, 0.07);
 	--empty-entry: #f7f8fa;
 	--cp-color: #e19261;
@@ -147,7 +159,7 @@ code {
 	--headerBackground: #f5f7fb;
 	--headerBackgroundSide: #f7fafd;
 	--textColor: #23272f;
-	--titleTextColor: #eff2f7;
+	--titleTextColor: rgba(0, 0, 0, 0.5);
 	--borderColor: #e0e6f6;
 	--borderColor2: #e0e6f6;
 	--borderColorSearchBar: #e0e6f6;
@@ -173,10 +185,10 @@ code {
 	--background-shadow: hsl(0deg 0% 100% / 80%);
 	--background-shadow-soft: hsl(0deg 0% 100% / 80%);
 	--background-shadow-baby-soft: hsl(0deg 0% 100% / 80%);
-	--background-dropdowns: #fff;
+	--background-dropdowns: #f0f0f0;
 	--buffBackground: #f3f6fa;
 	--type-Bug: #d7e5b6;
-	--type-Dark: #b4a4be;
+	--type-Dark: #958889;
 	--type-Dragon: #99bee4;
 	--type-Electric: #ffee97;
 	--type-Fairy: #f7c7d7;

@@ -277,15 +277,15 @@
 }
 
 .great {
-	background: #7ba7cd;
+	background: var(--great-color);
 }
 
 .ultra {
-	background: #c9c089;
+	background: var(--ultra-color);
 }
 
 .master {
-	background: #b198d3;
+	background: var(--master-color);
 }
 
 .custom {
@@ -293,7 +293,7 @@
 }
 
 .raid {
-	background: rgb(205 165 148);
+	background: var(--raid-color);
 }
 
 @media (width <= 530px) {

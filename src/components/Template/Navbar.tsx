@@ -212,9 +212,6 @@ const Navbar = () => {
 			case ListType.MASTER_LEAGUE:
 				destinationPath = 'master';
 				break;
-			case ListType.CUSTOM_CUP:
-				destinationPath = 'custom';
-				break;
 			case ListType.RAID:
 				destinationPath = 'raid';
 				break;

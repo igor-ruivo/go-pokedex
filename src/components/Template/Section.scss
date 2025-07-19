@@ -6,11 +6,7 @@
 		font-size: 16px;
 	}
 
-	height: 27px;
-
-	&.large-title {
-		height: 40px;
-	}
+	height: 44px;
 }
 
 .popup-color {
@@ -19,6 +15,7 @@
 
 @media (width <= 500px) {
 	.sub-title > header {
+		height: 37px;
 		padding-top: 4px;
 		padding-bottom: 4px;
 

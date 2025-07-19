@@ -25,7 +25,6 @@ const Section = (props: React.PropsWithChildren<ISection>) => {
 				type2={undefined}
 				defaultTextColor
 				defaultBannerColor
-				whiteTextColor
 				darker={props.darker}
 				special={props.special}
 				withChevron={props.withChevron}

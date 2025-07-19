@@ -35,8 +35,8 @@ const PokemonFamily = ({ pokemon, similarPokemon, getClickDestination }: IPokemo
 									<PokemonImage
 										pokemon={gamemasterPokemon[data.speciesId]}
 										withName={false}
-										specificHeight={34}
-										specificWidth={34}
+										specificHeight={32}
+										specificWidth={32}
 									/>
 								)}
 								<strong className='aligned-block ellipsed normal-text large-line-height'>

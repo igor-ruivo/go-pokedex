@@ -7,16 +7,27 @@
 	padding-top: 52.13px;
 }
 
+.nav-dropdown-width {
+	width: 25%;
+	max-width: 215px;
+}
+
 .pokedex-layout {
 	height: 100%; // calc(100% - 75px);
 	width: 100%;
 
 	// max-width: 1300px;
 	// max-width: 65%;
+	font-size: 0.875rem;
 	display: flex;
 	flex-direction: column;
 	padding-top: 52.13px;
 	max-width: 1600px;
+}
+
+.padded-on-top {
+	padding-top: 6px !important;
+	padding-bottom: 6px !important;
 }
 
 .bordered-sides {
@@ -31,7 +42,6 @@
 	z-index: 5;
 	display: flex;
 	flex-flow: row nowrap;
-	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 
 	ul {
@@ -107,6 +117,10 @@
 }
 
 @media (width <= 500px) {
+	.nav-dropdown-width {
+		width: 45%;
+	}
+
 	.navigation-header.extra-gap {
 		ul {
 			gap: 6px;

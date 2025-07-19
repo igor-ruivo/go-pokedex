@@ -170,7 +170,6 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 	const renderPvPEntry = useCallback(
 		(pokemon: IGamemasterPokemon, score: number, className: string) => {
 			const type1 = pokemon.types[0];
-			const type2 = pokemon.types.length > 1 ? pokemon.types[1] : undefined;
 
 			return (
 				<ListEntry
@@ -205,7 +204,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 						</React.Fragment>,
 					]}
 					onClick={() => void navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`)}
-					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 72%, var(--type-${type2 ?? type1}) 72%)`}
+					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 100%)`}
 				/>
 			);
 		},
@@ -292,7 +291,6 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 			chargedMoveDamage: number
 		) => {
 			const type1 = pokemon.types[0];
-			const type2 = pokemon.types.length > 1 ? pokemon.types[1] : undefined;
 
 			return (
 				<ListEntry
@@ -323,7 +321,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 						</React.Fragment>,
 					]}
 					onClick={() => void navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`)}
-					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 72%, var(--type-${type2 ?? type1}) 72%)`}
+					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 100%)`}
 					details={[
 						{
 							...renderBuffDetailItem(fastMove, fastMoveDamage, pokemon.speciesId),

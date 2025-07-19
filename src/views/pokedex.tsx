@@ -1,7 +1,8 @@
 import './pokedex.scss';
 
 import { useMemo, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
 
 import LoadingRenderer from '../components/LoadingRenderer';
 import PokemonGrid from '../components/PokemonGrid';
@@ -23,7 +24,6 @@ export enum ListType {
 	GREAT_LEAGUE,
 	ULTRA_LEAGUE,
 	MASTER_LEAGUE,
-	CUSTOM_CUP,
 	RAID,
 }
 
@@ -34,38 +34,49 @@ const Pokedex = () => {
 	const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter } = useNavbarSearchInput();
 
 	const { currentLanguage, currentGameLanguage } = useLanguage();
+	const navigate = useNavigate();
 	const containerRef = useRef<HTMLDivElement>(null);
-	const renderCustom = false;
 
-	let listType = ListType.POKEDEX;
-	let cpThreshold = 0;
 	const { listTypeArg } = useParams();
 
-	switch (listTypeArg) {
-		case undefined:
-			listType = ListType.POKEDEX;
-			break;
-		case 'great':
-			listType = ListType.GREAT_LEAGUE;
-			cpThreshold = 1500;
-			break;
-		case 'ultra':
-			listType = ListType.ULTRA_LEAGUE;
-			cpThreshold = 2500;
-			break;
-		case 'master':
-			listType = ListType.MASTER_LEAGUE;
-			break;
-		case 'custom':
-			listType = ListType.CUSTOM_CUP;
-			cpThreshold = customCupCPLimit;
-			break;
-		case 'raid':
-			listType = ListType.RAID;
-			break;
-		default:
-			throw Error('404 not found!');
-	}
+	const pageToLeague = (page: string | undefined) => {
+		switch (page) {
+			case undefined:
+				return ListType.POKEDEX;
+			case 'great':
+				return ListType.GREAT_LEAGUE;
+			case 'ultra':
+				return ListType.ULTRA_LEAGUE;
+			case 'master':
+				return ListType.MASTER_LEAGUE;
+			case 'raid':
+				return ListType.RAID;
+			default:
+				throw Error('404 not found!');
+		}
+	};
+
+	const pageToCPThreshold = (page: string | undefined) => {
+		switch (page) {
+			case undefined:
+				return 0;
+			case 'great':
+				return 1500;
+			case 'ultra':
+				return 2500;
+			case 'master':
+				return 0;
+			case 'custom':
+				return customCupCPLimit;
+			case 'raid':
+				return 0;
+			default:
+				throw Error('404 not found!');
+		}
+	};
+
+	const listType = pageToLeague(listTypeArg);
+	const cpThreshold = pageToCPThreshold(listTypeArg);
 
 	const pokemonByDex = useMemo(() => {
 		if (!fetchCompleted) {
@@ -194,7 +205,6 @@ const Pokedex = () => {
 			case ListType.GREAT_LEAGUE:
 			case ListType.ULTRA_LEAGUE:
 			case ListType.MASTER_LEAGUE:
-			case ListType.CUSTOM_CUP:
 				const leaguePool = rankLists[listType - 1] ? Object.values(rankLists[listType - 1]).map(mapper) : [];
 				const cupDomainFilter = (pokemon: IGamemasterPokemon) =>
 					!pokemon.aliasId &&
@@ -263,6 +273,20 @@ const Pokedex = () => {
 		pokemonByFamilyId,
 	]);
 
+	type LeagueOption = {
+		label: ListType;
+		value: string;
+	};
+
+	const leagueOptions: Array<LeagueOption> = useMemo(() => {
+		return Object.entries(ListType)
+			.filter(([, value]) => typeof value === 'number')
+			.map(([key, value]) => {
+				const pageValue = key.toLowerCase().replace('_league', '').replace('_', '');
+				return { label: value as ListType, value: pageValue };
+			});
+	}, []);
+
 	return (
 		<main className='pokedex-layout'>
 			<PokemonHeader
@@ -277,89 +301,55 @@ const Pokedex = () => {
 				type2={undefined}
 				defaultTextColor
 				defaultBannerColor
-				whiteTextColor
 				constrained
 			/>
-			<nav className='navigation-header extra-gap leagues bordered-sides'>
-				<ul>
-					<li>
-						<Link
-							to='/great'
-							className={
-								'header-tab league-picker ' +
-								(listType === ListType.GREAT_LEAGUE ? 'header-selected' : 'header-unselected')
+			<nav className='navigation-header padded-on-top extra-gap leagues bordered-sides'>
+				<div className='nav-dropdown-width'>
+					<Select
+						className={`navbar-dropdown-family`}
+						isSearchable={false}
+						value={leagueOptions.find((o) => o.value === (listTypeArg ?? 'pokedex')) ?? null}
+						options={leagueOptions}
+						onChange={(option) => {
+							const selected = option as LeagueOption | null;
+							if (selected) {
+								void navigate(`/${(selected.value === 'pokedex' ? '' : selected.value) ?? ''}`);
 							}
-						>
-							<img height='24' width='24' src={`/images/leagues/great.png`} alt='Great League' />
-							{listType === ListType.GREAT_LEAGUE && (
-								<span>{gameTranslator(GameTranslatorKeys.Great, currentGameLanguage)}</span>
-							)}
-						</Link>
-					</li>
-					<li>
-						<Link
-							to='/ultra'
-							className={
-								'header-tab league-picker ' +
-								(listType === ListType.ULTRA_LEAGUE ? 'header-selected' : 'header-unselected')
-							}
-						>
-							<img height='24' width='24' src={`/images/leagues/ultra.png`} alt='Ultra League' />
-							{listType === ListType.ULTRA_LEAGUE && <span>Ultra</span>}
-						</Link>
-					</li>
-					<li>
-						<Link
-							to='/master'
-							className={
-								'header-tab league-picker ' +
-								(listType === ListType.MASTER_LEAGUE ? 'header-selected' : 'header-unselected')
-							}
-						>
-							<img height='24' width='24' src={`/images/leagues/master.png`} alt='Master League' />
-							{listType === ListType.MASTER_LEAGUE && (
-								<span>{gameTranslator(GameTranslatorKeys.Master, currentGameLanguage)}</span>
-							)}
-						</Link>
-					</li>
-					{renderCustom && (
-						<li>
-							<Link
-								to='/custom'
-								className={
-									'header-tab league-picker ' +
-									(listType === ListType.CUSTOM_CUP ? 'header-selected' : 'header-unselected')
-								}
-							>
-								<img height='24' width='24' src={`/images/leagues/fantasy-cup.png`} alt='Fantasy Cup' />
-								{listType === ListType.CUSTOM_CUP && (
-									<span>{gameTranslator(GameTranslatorKeys.Fantasy, currentGameLanguage)}</span>
-								)}
-							</Link>
-						</li>
-					)}
-					<li>
-						<Link
-							to='/raid'
-							className={
-								'header-tab league-picker ' + (listType === ListType.RAID ? 'header-selected' : 'header-unselected')
-							}
-						>
-							<div className='img-padding-s'>
-								<img
-									className='raid-img-with-contrast'
-									height='20'
-									width='20'
-									src={`/images/tx_raid_coin.png`}
-									alt='Raids'
-								/>
+						}}
+						formatOptionLabel={(data: LeagueOption) => (
+							<div className='hint-container'>
+								<div className='img-padding'>
+									<img
+										alt='egg'
+										className='with-img-dropShadow'
+										src={
+											data.value === 'pokedex'
+												? 'https://i.imgur.com/eBscnsv.png'
+												: data.value === 'raid'
+													? '/images/tx_raid_coin.png'
+													: `/images/leagues/${data.value}.png`
+										}
+										style={{ width: 'auto' }}
+										height={22}
+										width={22}
+									/>
+								</div>
+								<strong className='aligned-block ellipsed normal-text'>
+									{data.value === 'pokedex'
+										? 'Pokédex'
+										: data.value === 'raid'
+											? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
+											: (() => {
+													const leagueKey = (data.value.substring(0, 1).toLocaleUpperCase() +
+														data.value.substring(1) +
+														'League') as keyof typeof GameTranslatorKeys;
+													return gameTranslator(GameTranslatorKeys[leagueKey], currentGameLanguage);
+												})()}
+								</strong>
 							</div>
-							{listType === ListType.RAID && (
-								<span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>
-							)}
-						</Link>
-					</li>
-				</ul>
+						)}
+					/>
+				</div>
 			</nav>
 			<div className='pokedex' ref={containerRef}>
 				<LoadingRenderer

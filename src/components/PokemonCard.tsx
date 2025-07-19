@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useLanguage } from '../contexts/language-context';
-import { customCupCPLimit, usePvp } from '../contexts/pvp-context';
+import { usePvp } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import useCountdown from '../hooks/useCountdown';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
@@ -44,9 +44,6 @@ const PokemonCard = ({
 			break;
 		case ListType.ULTRA_LEAGUE:
 			cpThreshold = 2500;
-			break;
-		case ListType.CUSTOM_CUP:
-			cpThreshold = customCupCPLimit;
 			break;
 	}
 

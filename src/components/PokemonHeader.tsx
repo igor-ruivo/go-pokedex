@@ -24,7 +24,6 @@ interface IPokemonHeader {
 const PokemonHeader = ({
 	pokemonName,
 	type1,
-	type2,
 	defaultTextColor,
 	defaultBannerColor,
 	whiteTextColor,
@@ -37,7 +36,6 @@ const PokemonHeader = ({
 	additionalClasses,
 }: IPokemonHeader) => {
 	const type1Color = useMemo(() => (type1 ? `var(--type-${type1})` : 'var(--popup-background-color)'), [type1]);
-	const type2Color = useMemo(() => (type2 ? `var(--type-${type2})` : type1Color), [type2, type1Color]);
 
 	const isInteractive = typeof onClickHandler === 'function';
 
@@ -63,7 +61,7 @@ const PokemonHeader = ({
 			style={
 				!defaultBannerColor
 					? {
-							background: `linear-gradient(45deg, ${type1Color} 72%, ${type2Color} 72%)`,
+							background: `linear-gradient(45deg, ${type1Color} 100%)`,
 						}
 					: {}
 			}
@@ -71,7 +69,7 @@ const PokemonHeader = ({
 			<h1
 				className={`pokemonheader-name ellipsed ${defaultTextColor ? 'text-color no-shadow' : ''} ${whiteTextColor ? 'white-text-color no-shadow' : ''}`}
 			>
-				{pokemonName}
+				<strong className='move-detail with-title-shadow compensate-padding slim-padding'>{pokemonName}</strong>
 			</h1>
 			{withChevron && (
 				<figure className='chevron move-card hidden-in-big-screens'>
