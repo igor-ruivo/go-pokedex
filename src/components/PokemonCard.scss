@@ -15,6 +15,8 @@
 	font-size: clamp(0px, calc(4.656px + 1.23vw), 15px);
 	justify-content: space-around;
 	color: var(--textColor);
+	border-radius: 14px;
+	box-shadow: 0 4px 24px 0 rgba(60, 60, 90, 0.10);
 }
 
 .large-line-height {
