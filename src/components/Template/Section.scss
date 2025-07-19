@@ -1,0 +1,33 @@
+.sub-title > header {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    h1 {
+        font-size: 16px;
+    }
+    height: 27px;
+    &.large-title {
+        height: 40px;
+    }
+}
+
+.popup-color {
+    background-color: var(--popup-background-color);
+}
+
+.darker-banner-color {
+    background-color: var(--shadow-header-color);
+}
+
+.special-banner-color {
+    background-color: var(--special-header-color);
+}
+
+@media (max-width: 500px) {
+    .sub-title > header {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        h1 {
+            font-size: 14px;
+        }
+    }
+}

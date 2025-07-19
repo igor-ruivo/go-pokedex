@@ -1,0 +1,104 @@
+.big-height {
+    min-height: 33vh;
+}
+
+.text-color {
+    color: var(--textColor);
+}
+
+.white-text-color {
+    color: var(--header-main-text-color)
+}
+
+.banner-color {
+    background: var(--header-main-color);
+}
+
+.column {
+    flex-direction: column;
+    gap: 6px;
+}
+
+.text-container {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.3s ease;
+  }
+  
+  .text-container.expanded {
+    max-height: none;
+  }
+  
+  #readMoreText {
+    //margin: 0; /* Reset margin for the paragraph */
+    &:not(.expanded) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Adjust the number of lines to show before ellipsis */
+        -webkit-box-orient: vertical;
+    }
+  }
+
+  #readMoreLink {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 6px; /* Add some padding for better visibility */
+    text-decoration: underline; /* Provide a visual hint that it's clickable */
+    cursor: pointer;
+  }
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.mini-margin-left {
+    margin-left: 2px;
+}
+
+.level-element {
+    margin-bottom: 6px;
+    width: 130px;
+}
+
+.raid-date-element {
+    min-width: 170px;
+}
+
+.row-flex {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+
+    >div {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.dark-text {
+    color: #000000;
+}
+
+.main-btn {
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 500px) {
+    .raid-date-element {
+        min-width: 160px;
+    }
+}

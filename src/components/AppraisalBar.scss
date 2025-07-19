@@ -1,0 +1,201 @@
+.appraisal-container {
+    border: 1px solid var(--borderColor2);
+    border-radius: 12px;
+    position: relative;
+    touch-action: none;
+}
+
+.MuiSlider-root {
+    bottom: 2px;
+    padding: 0 !important;
+    height: 100% !important;
+}
+
+.MuiSlider-thumb {
+    height: 0px !important;
+    width: 0px !important;
+    &::after {
+        height: 0px !important;
+        width: 0px !important;
+    }
+}
+
+.appraisal-combo {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+}
+
+.vertical-combo {
+   // grid-template-rows: calc(50% - 2px) calc(50% - 2px);
+}
+
+.fitting-content {
+    flex-grow: unset;
+}
+
+.appraisal-slider {
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    opacity: 0;
+}
+
+.appraisal-component {
+    position: relative;
+}
+
+.vertical-default-padding {
+    padding-top: 8px;
+    padding-bottom: 20px;
+}
+
+.item {
+    background-color: var(--popup-background-color);
+    border-radius: 12px;
+    border: 1px solid var(--borderColor2);
+}
+
+.aligned {
+    display: flex;
+    align-items: center;
+}
+
+.aligned-end {
+    display: flex;
+    align-items: flex-end;
+}
+
+.appraisal {
+    margin-top: auto;
+    margin-bottom: auto;
+    gap: 3px;
+    width: 100%;
+    height: 100%;
+    align-content: space-evenly;
+    padding-left: 12px;
+    padding-right: 12px;
+    display: grid;
+}
+
+.appraisal .stat {
+    margin-top: 0px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.appraisal .stat h4 {
+    font-weight: 700;
+    margin: 0 0 3px;
+    display: flex;
+    justify-content: space-between
+}
+
+.appraisal .stat h4 span {
+    color: var(--textColor);
+}
+
+.appraisal .stat-bar {
+    display: flex;
+    background: rgba(0,0,0,.08);
+    border-radius: 9px
+}
+
+.appraisal .stat-bar .bar {
+    height: 13.5px;
+    flex: 1 1 40px;
+    cursor: pointer;
+    border: 1px solid var(--borderColor2);
+}
+
+.appraisal .stat-bar .bar.hover {
+    background: #f5bf78
+}
+
+.appraisal .stat-bar .bar.active {
+    background: #e1973b
+}
+
+.appraisal .stat-bar .bar.end {
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px
+}
+
+.appraisal .stat-bar .bar:nth-child(5n+1) {
+    border-left: 4px solid #fff;
+}
+
+.appraisal .stat-bar .bar:first-child {
+    border-left: none;
+    border-top-left-radius: 9px;
+    border-bottom-left-radius: 9px
+}
+
+.appraisal .stat-bar.max .bar.active {
+    background: #d4847c
+}
+
+.appraisal .stat-bar.max-hover .bar {
+    background: #dea39f
+}
+
+.appraisal .stat-bar .bar.hover.max-hover {
+    background: #dea39f
+}
+
+.select-ivs {
+    color-scheme: var(--colorScheme);
+    padding-top: 1px;
+    margin-left: 4px;
+    background: var(--contentBackground);
+    color: var(--textColor);
+    border: 0px;
+    outline: 1px solid var(--buttonsBorderColor);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 700px) {
+    .appraisal {
+        width: 100%;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: 6px;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+@media (max-width: 500px) {
+    .appraisal {
+        max-width: unset;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .appraisal .stat {
+        max-width: 100%;
+    }
+
+    .stat-current-value {
+        align-self: center;
+    }
+    
+    .appraisal .stat {
+        margin-top: 0px;
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+    }
+}   
+
+@media (max-width: 360px) {
+    .appraisal .stat {
+        font-size: 12px;
+    }
+}

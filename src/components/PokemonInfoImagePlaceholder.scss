@@ -1,0 +1,262 @@
+.pokemon_main_info {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-self: center;
+    align-self: center;
+    min-height: 215px;
+    gap: 6%;
+}
+
+.with-margin-bottom {
+    margin-bottom: 9px;
+}
+
+.with-margin-top {
+    margin-top: 9px;
+}
+
+.with-small-margin-top {
+    margin-top: 5px;
+}
+
+.less-bright {
+    filter: brightness(0.96);
+}
+
+.left-panel {
+    display: grid;
+    background-color: var(--popup-background-color);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--borderColor2);
+}
+
+.left-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.right-container {
+    gap: 12px;
+    display: flex;
+    padding-top: 20%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.top-left-item,
+.bottom-left-item {
+    box-sizing: border-box;
+}
+
+.top-left-item {
+    align-self: flex-end;
+}
+
+.bottom-left-item {
+    align-self: flex-end;
+}
+
+.top-right {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.bottom-right {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.shifted-left {
+    left: -5px;
+    position: relative;
+}
+
+.cp-stats-container {
+    width: fit-content;
+    align-items: center;
+    gap: 9px;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+}
+
+.with-margin-left {
+    margin-left: 9px;
+}
+
+.pkm-stats-container {
+    margin-top: 16px;
+    font-size: large;
+    display: flex;
+    gap: 15px;
+}
+
+.stat-label {
+    color: var(--stat-label-color);
+}
+
+.stat-value {
+    color: var(--statValueColor);
+}
+
+.atk-stat,
+.def-stat,
+.hp-stat {
+    text-align: center;
+}
+
+.pokemon_number {
+    font-size: clamp(40px, 14vw, 60px);
+    line-height: 1;
+    display: block;
+    opacity: .25;
+    font-weight: 700;
+}
+
+.pokemon_types {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 16px;
+}
+
+.pokemon_type_bg {
+    color: var(--titleTextColor);
+    border-radius: 12px;
+    padding: 6px 12px;
+    text-shadow: 0 0 10px rgba(0,0,0,.5),0 2px 3px rgba(0,0,0,.5);
+    font-weight: 500;
+    display: block;
+}
+
+.pokemon_stats {
+    font-weight: 500;
+    display: flex;
+    gap: 9px;
+}
+
+.weighted-font {
+    font-weight: 500;
+}
+
+.heavy-weighted-font {
+    font-weight: 800;
+}
+
+.stats_ranks {
+    align-items: center;
+    gap: 22px;
+    display: flex;
+    flex-direction: row;
+}
+
+.pvp_stat {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.cp-level {
+    display: flex;
+}
+
+.big {
+    font-size: 15px;
+    font-weight: 700;
+    vertical-align: bottom;
+}
+
+.contained-big {
+    font-size: 12px;
+    font-weight: 700;
+    vertical-align: bottom;
+}
+
+.very-big {
+    font-weight: 700;
+    font-size: clamp(35px, 7vw, 50px);
+    line-height: 1;
+}
+
+.no-contrast {
+    filter: contrast(0);
+}
+
+.pkm-weather-boost-img {
+    width: 32px;
+    height: 32px;
+}
+
+@media (max-width: 1200px) {
+    .big {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 700px) {
+    .big {
+        font-size: clamp(15px, 7vw, 16px);
+    }
+}
+
+@media (max-width: 500px) {
+    .big {
+        font-size: clamp(10px, 3.5vw, 12px);
+    }
+    
+    .contained-big {
+        font-size: 11px;
+    }
+
+    .pkm-stats-container {
+        font-size: unset;
+    }
+}
+
+@media (max-width: 440px) {
+    .pokemon_main_info {
+        min-height: 155px;
+        max-height: 175px;
+    }
+}
+
+@media (max-width: 440px) {
+    .pkm-stats-container {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 410px) {
+    .pkm-stats-container {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 380px) {
+    .pkm-stats-container {
+        font-size: small;
+    }
+
+    .pkm-weather-boost-img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .pkm-stats-container {
+        gap: 11px;
+    }
+}
+
+@media (max-width: 360px) {
+    .pkm-stats-container {
+        gap: 10px;
+    }   
+}

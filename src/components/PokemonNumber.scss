@@ -1,0 +1,38 @@
+.pokemon-number {
+    border-radius: 12px;
+    padding: clamp(2px, 1.72vw, 4px) clamp(6px, 1.72vw, 12px);
+    background-color: var(--buttonsBackground);
+    font-size: clamp(9px, 1.72vw, 14px);
+    border: 1px solid var(--borderColor2);
+}
+
+.rank-change {
+    font-size: clamp(7px, 1.52vw, 12px);
+}
+
+.larger-rank-change {
+    font-size: 11px;
+}
+
+.buffed {
+    color: rgb(14, 153, 14);
+}
+
+.nerfed {
+    color: rgb(205, 30, 30);
+}
+
+.higher-level {
+    color: var(--higher-level);
+    filter: brightness(1.4);
+}
+
+.break-line {
+    display: none;
+}
+
+@media (max-width: 355px) {
+    .pokemon-number {
+        padding: 3px;
+    }
+}
