@@ -666,7 +666,7 @@ const grass = new Map<Language, string>([
 ]);
 
 const electric = new Map<Language, string>([
-    [Language.English, "Electrc"],
+    [Language.English, "Electric"],
     [Language.Portuguese, "Elétrico"],
     [Language.Bosnian, "Električni"]
 ]);
