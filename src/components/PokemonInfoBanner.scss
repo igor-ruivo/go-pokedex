@@ -93,11 +93,6 @@ table {
     padding: 6px 12px;
 }
 
-.lvl-img-selected-container {
-    width: min(calc(140px + 100 * calc(100vw - 500px) / (1920 - 500)), (100vw - 0) / 2 * 0.5);
-    height: min(calc(140px + 100 * calc(100vw - 500px) / (1920 - 500)), (100vw - 0) / 2 * 0.5);
-}
-
 .main-banner-content {
     display: flex;
     margin-left: -5px;

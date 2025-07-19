@@ -104,7 +104,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
                     </div>
                     <div className="weather-boost aligned-end no-contrast">
                         {imagesToRender.map((img, index) => (
-                            <img key={index} className={img.className} src={`${process.env.PUBLIC_URL}/images/weather/${img.image}`} alt={img.alt} height="100%" width="100%"/>
+                            <img key={index} className={img.className} src={`/images/weather/${img.image}`} alt={img.alt} height="100%" width="100%"/>
                         ))}
                     </div>
                 </strong>

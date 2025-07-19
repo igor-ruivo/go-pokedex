@@ -84,19 +84,19 @@ const LeagueRanks = ({
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
             case "great":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/great.png`;
+                logoSrc = `/images/leagues/great.png`;
                 break;
             case "ultra":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/ultra.png`;
+                logoSrc = `/images/leagues/ultra.png`;
                 break;
             case "master":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master.png`;
+                logoSrc = `/images/leagues/master.png`;
                 break;
             case "custom":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/fantasy-cup.png`;
+                logoSrc = `/images/leagues/fantasy-cup.png`;
                 break;
             case "raid":
-                logoSrc = `${process.env.PUBLIC_URL}/images/tx_raid_coin.png`;
+                logoSrc = `/images/tx_raid_coin.png`;
                 break;
         }
 
@@ -140,7 +140,7 @@ const LeagueRanks = ({
                     <React.Fragment key={leagueStat.leagueTitle}>
                         {rankString && <div className="cp-container">{rankString}</div>}
                         {rankString ? translator(TranslatorKeys.Ranked, currentLanguage) : <div className="unranked">{translator(TranslatorKeys.Unranked, currentLanguage)}</div>}
-                        {leagueStat.type && <img alt='type' className="with-img-dropShadow" src={`${process.env.PUBLIC_URL}/images/types/${leagueStat.type}.png`} height={20} width={20}/>}
+                        {leagueStat.type && <img alt='type' className="with-img-dropShadow" src={`/images/types/${leagueStat.type}.png`} height={20} width={20}/>}
                         <span className={`larger-rank-change with-brightness ${leagueStat.leagueTitle !== "raid" && rankChangeClassName(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}`}>{computeRankChange(leagueStat.bestReachablePokemon.speciesId, leagueStat.leagueTitle)}</span>
                     </React.Fragment>
                 ]}

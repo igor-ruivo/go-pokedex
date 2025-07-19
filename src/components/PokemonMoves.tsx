@@ -285,7 +285,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                                 }
                             }}>
                                 <strong className={`small-move-detail ${t === raidAttackType ? "soft" : "baby-soft"} smallish-padding item ${t === raidAttackType ? "small-extra-padding-right" : ""}`}>
-                                    <div className="img-padding"><img className="with-img-dropShadow" height={26} width={26} alt="type" src={`${process.env.PUBLIC_URL}/images/types/${t}.png`}/></div>
+                                    <div className="img-padding"><img className="with-img-dropShadow" height={26} width={26} alt="type" src={`/images/types/${t}.png`}/></div>
                                     {t === raidAttackType && translatedType((t.substring(0, 1).toLocaleUpperCase() + t.substring(1)) as unknown as PokemonTypes, currentLanguage)}
                                 </strong>
                             </div>
@@ -327,7 +327,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                                     .map(m => {
                                         const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
                                         const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                                        const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
+                                        const url = `/images/types/${moves[m]?.type}.png`;
                                         return (
                                             <React.Fragment key={m}>
                                                 {renderMove(m, typeTranslatorKey, url, className, false, false)}
@@ -355,7 +355,7 @@ const PokemonMoves = ({pokemon, level, league}: IPokemonMoves) => {
                                 .map(m => {
                                     const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : "normal-entry";
                                     const typeTranslatorKey = TranslatorKeys[(moves[m].type.substring(0, 1).toLocaleUpperCase() + moves[m].type.substring(1)) as keyof typeof TranslatorKeys];
-                                    const url = `${process.env.PUBLIC_URL}/images/types/${moves[m]?.type}.png`;
+                                    const url = `/images/types/${moves[m]?.type}.png`;
                                     return (
                                         <React.Fragment key={m}>
                                             {renderMove(m, typeTranslatorKey, url, className, true, false)}

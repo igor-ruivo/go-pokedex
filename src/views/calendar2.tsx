@@ -44,7 +44,7 @@ const Calendar2 = () => {
                             <div className="pokemon">
                                 {fetchCompleted &&
                                     <div className="item with-small-margin-top events-header-image-container">
-                                        <img alt='AI' src= {`${process.env.PUBLIC_URL}/images/ai/${imgRes}.png`}/>
+                                        <img alt='AI' src= {`/images/ai/${imgRes}.png`}/>
                                     </div>
                                 }
 

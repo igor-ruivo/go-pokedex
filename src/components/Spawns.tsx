@@ -77,7 +77,7 @@ const Spawns = () => {
                     value={raidEventDates.find(o => o.value === currentBossDate)}
                     options={raidEventDates}
                     onChange={e => {setCurrentBossDate((e as any).value); writeSessionValue(ConfigKeys.ExpandedSpawnDate, (e as any).value)}}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} alt='calendar' style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img className='invert-dark-mode' src={`/images/calendar.png`} alt='calendar' style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
         </div>
@@ -91,7 +91,7 @@ const Spawns = () => {
                                     .map((t, i) => (
                                         <div className="clickable" key={i} onClick={() => {setCurrentPlace(String(i)); writeSessionValue(ConfigKeys.ExpandedArea, String(i))}}>
                                             <strong className={`small-move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} smallish-padding normal-text item ${String(i) === currentPlace ? "small-extra-padding-right" : ""}`}>
-                                                <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
+                                                <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`/images/${idxToRes(i)}.png`} /></div>
                                                 {String(i) === currentPlace && idxToPlace(i)}
                                             </strong>
                                         </div>

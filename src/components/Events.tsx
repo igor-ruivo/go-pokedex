@@ -237,7 +237,7 @@ const Events = () => {
                                             .map((t, i) => (
                                                 <div className="clickable" key={i} onClick={() => {setCurrentPlace(String(i)); writeSessionValue(ConfigKeys.ExpandedArea, String(i))}}>
                                                     <strong className={`small-move-detail ${String(i) === currentPlace ? "soft" : "baby-soft"} smallish-padding item ${String(i) === currentPlace ? "small-extra-padding-right" : ""}`}>
-                                                        <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`${process.env.PUBLIC_URL}/images/${idxToRes(i)}.png`} /></div>
+                                                        <div className="img-padding"><img className="invert-light-mode" height={22} width={22} alt="type" src={`/images/${idxToRes(i)}.png`} /></div>
                                                         {String(i) === currentPlace && idxToPlace(i)}
                                                     </strong>
                                                 </div>
@@ -293,7 +293,7 @@ const Events = () => {
                                                 .map((t, i) => (
                                                     <div className="clickable" key={i} onClick={() => {setCurrentEgg(String(i)); writeSessionValue(ConfigKeys.ExpandedEgg, String(i))}}>
                                                         <strong className={`small-move-detail ${String(i) === currentEgg ? "soft" : "baby-soft"} smallish-padding item ${String(i) === currentEgg ? "small-extra-padding-right" : ""}`}>
-                                                            <div className="img-padding"><img height={22} width={22} style={{ width: "auto" }} alt="type" src={`${process.env.PUBLIC_URL}/images/eggs/${idxToEgg(i)}.png`} /></div>
+                                                            <div className="img-padding"><img height={22} width={22} style={{ width: "auto" }} alt="type" src={`/images/eggs/${idxToEgg(i)}.png`} /></div>
                                                             {String(i) === currentEgg && idxToEggName(i)}
                                                         </strong>
                                                     </div>

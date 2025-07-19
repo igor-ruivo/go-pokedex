@@ -19,8 +19,8 @@ const RaidCard = ({
     dps
 }: IRaidCardProps) => {
     const {currentLanguage} = useLanguage();
-    const raidUrl = useMemo(() => `${process.env.PUBLIC_URL}/images/tx_raid_coin.png`, []);
-    const url = useMemo(() => `${process.env.PUBLIC_URL}/images/types/${type?.toString().toLocaleLowerCase()}.png`, [type]);
+    const raidUrl = useMemo(() => `/images/tx_raid_coin.png`, []);
+    const url = useMemo(() => `/images/types/${type?.toString().toLocaleLowerCase()}.png`, [type]);
     return <div className="raid-wrapper">
         {type && rank ? <img className="with-img-dropShadow" src={url} width={32} height={32} alt={type.toString()} /> : <img className="raid-img-with-contrast" src={raidUrl} width={48} height={48} alt={type?.toString()} />}
         {rank !== 0 && <section className="raid-rank-types">

@@ -78,16 +78,16 @@ const LeaguePanels = ({
         let logoSrc = "";
         switch (leagueStat.leagueTitle) {
             case "great":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/great-big.webp`;
+                logoSrc = `/images/leagues/great-big.webp`;
                 break;
             case "ultra":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/ultra-big.webp`;
+                logoSrc = `/images/leagues/ultra-big.webp`;
                 break;
             case "master":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/master-big.webp`;
+                logoSrc = `/images/leagues/master-big.webp`;
                 break;
             case "custom":
-                logoSrc = `${process.env.PUBLIC_URL}/images/leagues/fantasy-cup-big.png`;
+                logoSrc = `/images/leagues/fantasy-cup-big.png`;
                 break;
         }
 
@@ -145,9 +145,9 @@ const LeaguePanels = ({
                                     <>
                                         {!toggled ? <><strong className="cp-container">{leagueStat.pokemonCP} {gameTranslator(GameTranslatorKeys.CP, currentGameLanguage).toLocaleUpperCase()}</strong> <div className="contained-big weighted-font">@ {translator(TranslatorKeys.LVL, currentLanguage)} <strong className={`${level > leagueStat.pokemonLevel ? "higher-level" : "cp-container"}`}>{leagueStat.pokemonLevel}</strong></div></> : 
                                         level > leagueStat.pokemonLevel ? <strong className="higher-level ">{translator(TranslatorKeys.LevelExceeded, currentLanguage)}</strong> : level === leagueStat.pokemonLevel ? <strong className="buffed  with-brightness">{translator(TranslatorKeys.Reached, currentLanguage)}</strong> : <div className="needed-resources">
-                                            <img src={`${process.env.PUBLIC_URL}/images/stardust.png`} alt="stardust" height={16} width={16}/><strong className=" cp-container">{neededResources.stardust > 1000 ? Math.round(Math.round(neededResources.stardust / 1000) * 10) / 10 + "K" : neededResources.stardust}</strong>
-                                            {neededResources.candies !== 0 && <><img src={`${process.env.PUBLIC_URL}/images/candy.png`} alt="candy" height={16} width={16}/><strong className=" cp-container">{neededResources.candies}</strong></>}
-                                            {neededResources.candiesXL !== 0 && <><img src={`${process.env.PUBLIC_URL}/images/xl-candy.png`} alt="xl-candy" height={16} width={16}/><strong className=" cp-container">{neededResources.candiesXL}</strong></>}
+                                            <img src={`/images/stardust.png`} alt="stardust" height={16} width={16}/><strong className=" cp-container">{neededResources.stardust > 1000 ? Math.round(Math.round(neededResources.stardust / 1000) * 10) / 10 + "K" : neededResources.stardust}</strong>
+                                            {neededResources.candies !== 0 && <><img src={`/images/candy.png`} alt="candy" height={16} width={16}/><strong className=" cp-container">{neededResources.candies}</strong></>}
+                                            {neededResources.candiesXL !== 0 && <><img src={`/images/xl-candy.png`} alt="xl-candy" height={16} width={16}/><strong className=" cp-container">{neededResources.candiesXL}</strong></>}
                                         </div>}
                                     </>
                                 </div>
@@ -208,7 +208,7 @@ const LeaguePanels = ({
                     ))}
                 </div>
                 <div className="centered-text pvp-entry fitting-content">... {translator(TranslatorKeys.As, currentLanguage)} {raidStat.bestReachablePokemonName}</div>
-                <img className='background-absolute-img-raid raid-img-with-contrast' width="100%" height="100%" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`} alt="raid" />
+                <img className='background-absolute-img-raid raid-img-with-contrast' width="100%" height="100%" src={`/images/tx_raid_coin.png`} alt="raid" />
             </div>
         );
     }, [raidStats, currentGameLanguage, currentLanguage]);

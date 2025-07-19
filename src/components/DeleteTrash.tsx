@@ -494,7 +494,7 @@ const DeleteTrash = () => {
                             />
                             <div className="pokemon normal-text-descendants">
                             <div className="item with-small-margin-top events-header-image-container">
-                                        <img alt='AI' src= {`${process.env.PUBLIC_URL}/images/ai/trash-no-bg.png`}/>
+                                        <img alt="AI" src="/images/ai/trash-no-bg.png" />
                                     </div>
                                     <div className="flex-column normal-margin-top">
                             <div className={`extra-ivs-options item default-padding column text-container ${isExpanded ? 'expanded' : ''}`}>
@@ -522,13 +522,13 @@ const DeleteTrash = () => {
                                 </div>
                                 <div className="row-flex">
                                 <div>
-                                <img height={20} width={20} alt="Great League" src={`${process.env.PUBLIC_URL}/images/leagues/great.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashGreat} onChange={e => setTrashGreat(+e.target.value)} className="select-level">
+                                <img height={20} width={20} alt="Great League" src={`/images/leagues/great.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashGreat} onChange={e => setTrashGreat(+e.target.value)} className="select-level">
                                         {Array.from({length: 2000}, (_x, i) => i)
                                             .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>
                                 </div>
                                 <div>
-                                <img height={20} width={20} alt="Ultra League" src={`${process.env.PUBLIC_URL}/images/leagues/ultra.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
+                                <img height={20} width={20} alt="Ultra League" src={`/images/leagues/ultra.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashUltra} onChange={e => setTrashUltra(+e.target.value)} className="select-level">
                                     {Array.from({length: 2000}, (_x, i) => i)
                                         .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>
@@ -537,13 +537,13 @@ const DeleteTrash = () => {
                                 <div className="row-flex">
                                     
                                 <div>
-                                <img height={20} width={20} alt="Master League" src={`${process.env.PUBLIC_URL}/images/leagues/master.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
+                                <img height={20} width={20} alt="Master League" src={`/images/leagues/master.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashMaster} onChange={e => setTrashMaster(+e.target.value)} className="select-level">
                                     {Array.from({length: 2000}, (_x, i) => i)
                                         .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>
                                 </div>
                                 <div>
-                                <img height={20} width={20} className="padded-img raid-img-with-contrast" alt="Raids" src={`${process.env.PUBLIC_URL}/images/tx_raid_coin.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashRaid} onChange={e => setTrashRaid(+e.target.value)} className="select-level">
+                                <img height={20} width={20} className="padded-img raid-img-with-contrast" alt="Raids" src={`/images/tx_raid_coin.png`}/> {translator(TranslatorKeys.Save, currentLanguage)} top <select value={trashRaid} onChange={e => setTrashRaid(+e.target.value)} className="select-level">
                                         {Array.from({length: 2000}, (_x, i) => i)
                                             .map(e => (<option key={e} value={e}>{e}</option>))}
                                 </select>

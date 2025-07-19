@@ -174,7 +174,7 @@ const Raids = () => {
                     value={raidEventDates.find(o => o.value === currentBossDate)}
                     options={raidEventDates}
                     onChange={e => {setCurrentBossDate((e as any).value); writeSessionValue(ConfigKeys.ExpandedRaidDate, (e as any).value)}}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='calendar' className='invert-dark-mode' src={`${process.env.PUBLIC_URL}/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='calendar' className='invert-dark-mode' src={`/images/calendar.png`} style={{ width: "auto" }} height={16} width={16} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
             <div>
@@ -185,7 +185,7 @@ const Raids = () => {
                     options={raidEventEggs}
                     onChange={e => {setCurrentTier((e as any).value); 
                         writeSessionValue(ConfigKeys.ExpandedRaidTier, (e as any).value);}}
-                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' className="with-img-dropShadow" src={`${process.env.PUBLIC_URL}/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={22} width={22} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
+                    formatOptionLabel={(data, _) => <div className="hint-container">{<div className="img-padding"><img alt='egg' className="with-img-dropShadow" src={`/images/raid-eggs/${data.value}.png`} style={{ width: "auto" }} height={22} width={22} /></div>}<strong className="aligned-block ellipsed normal-text">{data.label}</strong></div>}
                 />
             </div>
         </div>

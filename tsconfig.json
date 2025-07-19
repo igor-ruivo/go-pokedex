@@ -1,20 +1,18 @@
 {
-  "compilerOptions": {
-      "target": "es6",
-      "lib": ["dom", "dom.iterable", "esnext"],
-      "allowJs": true,
-      "skipLibCheck": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "strict": true,
-      "forceConsistentCasingInFileNames": true,
-      "noFallthroughCasesInSwitch": true,
-      "module": "esnext",
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "noEmit": true,
-      "jsx": "react-jsx"
-  },
-  "include": ["src", "tests"]
+	"extends": "@ti-platform/aide-build-tools/tsconfig.base.json",
+	"compilerOptions": {
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"moduleResolution": "Node",
+		"jsx": "react-jsx",
+		"noEmit": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"exactOptionalPropertyTypes": true,
+		"useUnknownInCatchVariables": true,
+		"allowJs": false,
+		"checkJs": false,
+		"incremental": true
+	},
+	"include": ["src"],
+	"exclude": ["node_modules", "dist"]
 }

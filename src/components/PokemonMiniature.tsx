@@ -151,15 +151,15 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
         const master = rankForLeague(2);
 
         if (great <= +(readPersistentValue(ConfigKeys.TrashGreat) ?? 50)) {
-            dic[great] = <img alt="Great League" className="is-great" src={`${process.env.PUBLIC_URL}/images/leagues/great-big.webp`}/>
+            dic[great] = <img alt="Great League" className="is-great" src={`/images/leagues/great-big.webp`}/>
         }
 
         if (ultra <= +(readPersistentValue(ConfigKeys.TrashUltra) ?? 50)) {
-            dic[ultra] = <img alt="Ultra League" className="is-ultra" src={`${process.env.PUBLIC_URL}/images/leagues/ultra-big.webp`}/>
+            dic[ultra] = <img alt="Ultra League" className="is-ultra" src={`/images/leagues/ultra-big.webp`}/>
         }
 
         if (master <= +(readPersistentValue(ConfigKeys.TrashMaster) ?? 110)) {
-            dic[master] = <img alt="Master League" className="is-master" src={`${process.env.PUBLIC_URL}/images/leagues/master-big.webp`}/>
+            dic[master] = <img alt="Master League" className="is-master" src={`/images/leagues/master-big.webp`}/>
         }
         return dic;
     }, [rankForLeague]);
@@ -173,7 +173,7 @@ const PokemonMiniature = ({pokemon, cpStringOverride, withCountdown, linkToShado
                     {computeCountdownLabel()}
                 </div>}
                 <div className={`miniature-tooltip`}>
-                    {pvpFetchCompleted && fetchCompleted && (raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? <img className="padded-img raid-img-with-contrast is-raid" alt="Raids" src={`${process.env.PUBLIC_URL}/images/types/${raidRaking.actualType}.png`}/> : relevantLeagueElement(mapper))}
+                    {pvpFetchCompleted && fetchCompleted && (raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? <img className="padded-img raid-img-with-contrast is-raid" alt="Raids" src={`/images/types/${raidRaking.actualType}.png`}/> : relevantLeagueElement(mapper))}
                 </div>
                 <span className="mini-card-content">
                     <PokemonImage withClassname="with-img-dropShadow" pokemon={pkmToUse} withName lazy specificNameContainerWidth={containerWidth.current?.clientWidth} forceShadowAdorner={forceShadowAdorner && !pkmToUse.speciesId.endsWith("_shadow")} />

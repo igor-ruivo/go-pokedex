@@ -256,7 +256,7 @@ const Navbar = () => {
             value: ImageSource.GO
         },
         {
-            hint: `${process.env.PUBLIC_URL}/vectors/shiny.svg`,
+            hint: `/vectors/shiny.svg`,
             invertOnDarkMode: true,
             label: gameTranslator(GameTranslatorKeys.Shiny, currentGameLanguage),
             value: ImageSource.Shiny
@@ -279,7 +279,7 @@ const Navbar = () => {
     const typesOptions: Entry<PokemonTypes | undefined>[] = useMemo(() => [{label: translator(TranslatorKeys.Any, currentLanguage), value: undefined, hint: ""}, ...Object.keys(PokemonTypes).filter(key => isNaN(Number(PokemonTypes[key as keyof typeof PokemonTypes]))).map(k => ({
         label: translatedType(PokemonTypes[k as keyof typeof PokemonTypes], currentLanguage),
         value: PokemonTypes[k as keyof typeof PokemonTypes],
-        hint: `${process.env.PUBLIC_URL}/images/types/${PokemonTypes[k as keyof typeof PokemonTypes].toString().toLocaleLowerCase()}.png`
+        hint: `/images/types/${PokemonTypes[k as keyof typeof PokemonTypes].toString().toLocaleLowerCase()}.png`
     }))], [currentLanguage]);
 
     const megaDisabled = useMemo(() => pathname.includes("great") || pathname.includes("ultra") || pathname.includes("master") || pathname.includes("custom"), [pathname]);
@@ -304,7 +304,7 @@ const Navbar = () => {
                         className="navbar-menu"
                         onClick={() => setOptionsOpened(p => p === AvailableOptions.Menu ? AvailableOptions.None : AvailableOptions.Menu)}
                     >
-                        <img className={"navbar-menu-img " + (optionsOpened === AvailableOptions.Menu ? "invert-white-mode " : "invert-dark-mode ") + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : `${process.env.PUBLIC_URL}/images/cogwheel.png`}/>
+                        <img className={"navbar-menu-img " + (optionsOpened === AvailableOptions.Menu ? "invert-white-mode " : "invert-dark-mode ") + (optionsOpened === AvailableOptions.Menu ? " cross" : "")} alt="Menu" loading="lazy" width="16.6" height="16.6" decoding="async" src={optionsOpened === AvailableOptions.Menu ? "https://i.imgur.com/SWpKr1C.png" : `/images/cogwheel.png`}/>
                     </button>
                 <div className="normal-text-descendants-all">
                     <SearchableDropdown
@@ -351,7 +351,7 @@ const Navbar = () => {
                         className={`navbar-filter ${pathname.includes("pokemon") || pathname.includes("calendar") ? "unavailable" : ""}`}
                         onClick={() => setOptionsOpened(p => p === AvailableOptions.Filter ? AvailableOptions.None : AvailableOptions.Filter)}
                     >
-                        <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`${process.env.PUBLIC_URL}/images/filter.png`}/>
+                        <img className={"navbar-menu-img invert-dark-mode"} alt="Filter" loading="lazy" width="16.6" height="16.6" decoding="async" src={`/images/filter.png`}/>
                     </button>
                 </div>
             </section>

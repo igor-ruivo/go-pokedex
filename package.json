@@ -1,75 +1,46 @@
 {
-  "name": "go-pokedex",
-  "version": "0.1.0",
-  "homepage": "https://go-pokedex.com",
-  "jest": {
-    "watchPathIgnorePatterns": [
-      "src/__tests__/utils.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "src/__tests__/utils.ts"
-    ]
-  },
-  "private": true,
-  "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.14.19",
-    "@mui/material": "^5.14.19",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.46",
-    "@types/react": "^18.2.21",
-    "@types/react-dom": "^18.2.7",
-    "axios": "^1.5.0",
-    "buffer": "^6.0.3",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "react": "^18.2.0",
-    "react-circular-slider-svg": "^0.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.16.0",
-    "react-scripts": "5.0.1",
-    "react-select": "^5.7.5",
-    "react-toggle": "^4.1.3",
-    "react-virtualized": "^9.22.5",
-    "react-virtuoso": "^4.6.1",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint \"src/**/*.{ts,tsx}\""
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@types/react-toggle": "^4.0.5",
-    "@types/react-virtualized": "^9.21.29",
-    "gh-pages": "^6.0.0",
-    "sass": "^1.66.1"
-  }
+	"name": "go-pokedex",
+	"version": "1.0.0",
+	"type": "module",
+	"homepage": "https://go-pokedex.com",
+	"private": true,
+	"scripts": {
+		"dev": "vite --host --port 3000",
+		"build": "vite build",
+		"preview": "vite preview",
+		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs",
+		"deploy": "gh-pages -d build",
+		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run lint:scss && pnpm run format && pnpm tsc --noEmit",
+		"lint:scss": "npx stylelint src/**/*.{scss,css} --fix"
+	},
+	"dependencies": {
+		"@emotion/styled": "^11.14.1",
+		"@mui/material": "^7.2.0",
+		"@mui/utils": "^7.2.0",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"react-router-dom": "^7.7.0",
+		"react-select": "^5.10.2",
+		"react-virtualized": "^9.22.6",
+		"react-virtuoso": "^4.13.0"
+	},
+	"devDependencies": {
+		"@ti-platform/aide-build-tools": "^4.1.0",
+		"@tsconfig/recommended": "^1.0.10",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"@typescript-eslint/parser": "^8.37.0",
+		"eslint": "^9.31.0",
+		"eslint-plugin-jsx-a11y": "^6.10.2",
+		"eslint-plugin-promise": "^7.2.1",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^5.2.0",
+		"prettier": "^3.6.2",
+		"sass-embedded": "^1.89.2",
+		"stylelint": "^16.21.1",
+		"stylelint-config-standard-scss": "^15.0.1",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.37.0",
+		"vite": "^7.0.5"
+	}
 }
