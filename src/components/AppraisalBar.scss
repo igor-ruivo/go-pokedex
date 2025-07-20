@@ -104,13 +104,14 @@
 	display: flex;
 	background: rgb(0 0 0 / 8%);
 	border-radius: 9px;
+	border: 1px solid var(--borderColor4);
 }
 
 .appraisal .stat-bar .bar {
 	height: 13.5px;
 	flex: 1 1 40px;
 	cursor: pointer;
-	border: 1px solid var(--borderColor2);
+	border: 1px solid var(--borderColor3);
 }
 
 .appraisal .stat-bar .bar.hover {
