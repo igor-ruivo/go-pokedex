@@ -1,6 +1,8 @@
 import './Events.scss';
 import './ReusableAdorners.scss';
 import './Misc.scss';
+import './PokemonGrid.scss';
+import './PokemonCard.scss';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

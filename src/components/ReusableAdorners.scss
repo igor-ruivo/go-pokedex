@@ -1,5 +1,5 @@
 .notifications-counter {
-	z-index: 5;
+	z-index: 4;
 	height: 18px;
 	width: 18px;
 	transform: translateY(-45%) translateX(120%);
@@ -13,6 +13,21 @@
 	justify-content: center;
 	text-align: center;
 	font-size: 10px;
+}
+
+.rank-container {
+	z-index: 4;
+	transform: translateY(-45%) translateX(120%);
+	background-color: var(--bodyBackgroundColor-2);
+	color: var(--title-text-color);
+	position: absolute;
+	border-radius: 50%;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	font-size: 10px !important;
 }
 
 .navbar-dropdown-family {
@@ -51,6 +66,7 @@
 }
 
 .hint-container {
+	margin-left: 2px;
 	display: flex;
 	min-height: 16px;
 	gap: 9px;
@@ -65,6 +81,12 @@
 		height: 16px;
 		width: 16px;
 		font-weight: 800;
+		transform: translateY(-35%) translateX(120%);
+	}
+
+	.rank-container {
+		height: 16px;
+		width: 16px;
 		transform: translateY(-35%) translateX(120%);
 	}
 

@@ -1,13 +1,12 @@
 import './pokedex.scss';
 
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Select from 'react-select';
 
-import LoadingRenderer from '../components/LoadingRenderer';
-import PokemonGrid from '../components/PokemonGrid';
 import PokemonHeader from '../components/PokemonHeader';
 import { translatedType } from '../components/PokemonInfoImagePlaceholder';
+import PokemonMiniature from '../components/PokemonMiniature';
 import type { Entry } from '../components/Template/Navbar';
 import { Language, useLanguage } from '../contexts/language-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
@@ -20,6 +19,7 @@ import { PokemonTypes } from '../DTOs/PokemonTypes';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { fetchPokemonFamily, needsXLCandy } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
+import '../components/PokemonNumber.scss'
 
 export enum ListType {
 	POKEDEX,
@@ -38,7 +38,6 @@ const Pokedex = () => {
 
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const navigate = useNavigate();
-	const containerRef = useRef<HTMLDivElement>(null);
 
 	const { listTypeArg } = useParams();
 
@@ -324,7 +323,7 @@ const Pokedex = () => {
 				defaultBannerColor
 				constrained
 			/>
-			<nav className='navigation-header padded-on-top extra-gap leagues bordered-sides'>
+			<nav className='navigation-header padded-on-top extra-gap leagues'>
 				<div className='row justified aligned with-big-gap full-width'>
 					<div className='nav-dropdown-width'>
 						<Select
@@ -400,21 +399,17 @@ const Pokedex = () => {
 					</div>
 				</div>
 			</nav>
-			<div className='pokedex' ref={containerRef}>
-				<LoadingRenderer
-					errors={errors + pvpErrors}
-					completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}
-				>
-					{() => (
-						<PokemonGrid
-							pokemonInfoList={data.processedList}
-							cpStringOverrides={data.cpStringOverrides}
-							rankOverrides={data.rankOverrides}
-							listType={listType}
-							containerRef={containerRef as React.RefObject<HTMLDivElement>}
-						/>
-					)}
-				</LoadingRenderer>
+			<div className='pokedex'>
+				<div className={`with-flex contained padding-bar-bottom`}>
+					{data.processedList
+						.map((p) => (
+							<div key={p.speciesId} className='mini-card-wrapper-padding dynamic-size'>
+								<div className={`mini-card-wrapper`}>
+									<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} withBackground={false} withNumber numberOverride={data.rankOverrides[p.speciesId]} listType={listType}/>
+								</div>
+							</div>
+						))}
+				</div>
 			</div>
 		</main>
 	);
