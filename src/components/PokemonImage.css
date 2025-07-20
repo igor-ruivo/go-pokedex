@@ -96,45 +96,6 @@
 		display: none;
 	}
 
-	.with-golden-border &:has(.is-master) {
-		background-color: #ae98d33a;
-		border: unset;
-		border-radius: unset;
-	}
-
-	&:has(.is-master) {
-		background-color: #ae98d33a;
-		border: 2px solid #b198d3;
-		border-radius: 14px;
-		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
-	}
-
-	.with-golden-border &:has(.is-great) {
-		background-color: #7ba7cd67;
-		border: unset;
-		border-radius: unset;
-	}
-
-	&:has(.is-great) {
-		background-color: #7ba7cd67;
-		border: 2px solid #7ba7cd;
-		border-radius: 14px;
-		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
-	}
-
-	.with-golden-border &:has(.is-ultra) {
-		background-color: #c9c08934;
-		border: unset;
-		border-radius: unset;
-	}
-
-	&:has(.is-ultra) {
-		background-color: #c9c08934;
-		border: 2px solid #c9c089;
-		border-radius: 14px;
-		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
-	}
-
 	.with-golden-border &:has(.is-raid) {
 		img {
 			width: 150%;
@@ -142,10 +103,6 @@
 			opacity: 0.4;
 			max-width: unset !important;
 		}
-
-		background-color: rgb(205 165 148 / 15.1%);
-		border: unset;
-		border-radius: unset;
 	}
 
 	&:has(.is-raid) {
@@ -155,11 +112,6 @@
 			opacity: 0.4;
 			max-width: unset !important;
 		}
-
-		background-color: rgb(205 165 148 / 15.1%);
-		border: 2px solid rgb(205 165 148);
-		border-radius: 14px;
-		box-shadow: 0 4px 24px 0 rgba(148, 148, 175, 0.1);
 	}
 }
 

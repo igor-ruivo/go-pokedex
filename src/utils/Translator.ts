@@ -321,9 +321,9 @@ const and = new Map<Language, string>([
 ]);
 
 const any = new Map<Language, string>([
-	[Language.English, 'Any'],
-	[Language.Portuguese, 'Qualquer'],
-	[Language.Bosnian, 'Bilo koji'],
+	[Language.English, 'Any type'],
+	[Language.Portuguese, 'Qualquer tipo'],
+	[Language.Bosnian, 'Bilo koji tip'],
 ]);
 
 const orType = new Map<Language, string>([
