@@ -21,14 +21,7 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 }) => {
 	const gridRef = useRef<Grid>(null);
 
-	// Responsive columns: match the breakpoints from legacy grid
-	const getItemsPerRow = (width: number) => {
-		if (width >= 1600) return 7;
-		if (width >= 1250) return 6;
-		if (width >= 950) return 5;
-		if (width >= 600) return 4;
-		return 3;
-	};
+	const getCardSize = (width: number) => (width < 500 ? 70 : 100);
 
 	const cellRenderer = ({ columnIndex, rowIndex, key, style }: any) => {
 		const itemsPerRow = gridRef.current?.props.columnCount || 3;
@@ -50,26 +43,28 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 		);
 	};
 
-	const CARD_SIZE = 100;
-
 	return (
 		<div style={{ width: '100%' }} className={className}>
 			<AutoSizer disableHeight>
 				{({ width }) => {
+					const CARD_SIZE = getCardSize(width);
 					const itemsPerRow = Math.max(1, Math.floor(width / CARD_SIZE));
 					const rowCount = Math.ceil(pokemonList.length / itemsPerRow);
+					const gridWidth = itemsPerRow * CARD_SIZE;
 					return (
-						<Grid
-							ref={gridRef}
-							columnCount={itemsPerRow}
-							rowCount={rowCount}
-							columnWidth={CARD_SIZE}
-							rowHeight={CARD_SIZE}
-							height={rowCount * CARD_SIZE}
-							width={width}
-							cellRenderer={cellRenderer}
-							style={{ outline: 'none' }}
-						/>
+						<div style={{ width: gridWidth, margin: '0 auto' }}>
+							<Grid
+								ref={gridRef}
+								columnCount={itemsPerRow}
+								rowCount={rowCount}
+								columnWidth={CARD_SIZE}
+								rowHeight={CARD_SIZE}
+								height={rowCount * CARD_SIZE}
+								width={gridWidth}
+								cellRenderer={cellRenderer}
+								style={{ outline: 'none' }}
+							/>
+						</div>
 					);
 				}}
 			</AutoSizer>
