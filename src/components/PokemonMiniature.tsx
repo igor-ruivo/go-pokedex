@@ -275,6 +275,19 @@ const PokemonMiniature = ({
 	return (
 		<Link to={link}>
 			<div ref={containerWidth} className='pokemon-miniature'>
+				{/* Type Color Square */}
+				<div className='type-corner-square'>
+					<div
+						className='type-corner-triangle type-corner-triangle-topright'
+						style={{ background: pokemon.types[0] !== undefined ? `var(--type-${pokemon.types[0]})` : 'transparent' }}
+					/>
+					{pokemon.types[1] !== undefined && (
+						<div
+							className='type-corner-triangle type-corner-triangle-bottomleft'
+							style={{ background: `var(--type-${pokemon.types[1]})` }}
+						/>
+					)}
+				</div>
 				{withCountdown && (
 					<div className='notifications-counter heavy-weight miniature-notification'>{computeCountdownLabel()}</div>
 				)}
