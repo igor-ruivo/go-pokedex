@@ -311,7 +311,7 @@ const PokemonMiniature = ({
 							fetchCompleted &&
 							(raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? (
 								<img
-									className='padded-img raid-img-with-contrast is-raid'
+									className='padded-img raid-img-with-contrast hyper-size is-raid'
 									alt='Raids'
 									src={`/images/types/${raidRaking.actualType}.png`}
 								/>
@@ -323,7 +323,7 @@ const PokemonMiniature = ({
 				{megaBackground && (
 					<div className={`miniature-tooltip`}>
 						{pokemon.isMega && (
-							<img className='padded-img raid-img-with-contrast' alt='Mega' src={`/images/mega.webp`} />
+							<img className='padded-img raid-img-with-contrast hyper-size' alt='Mega' src={`/images/mega.webp`} />
 						)}
 					</div>
 				)}
