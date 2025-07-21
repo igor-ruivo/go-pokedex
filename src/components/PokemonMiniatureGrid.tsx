@@ -1,10 +1,10 @@
 import './PokemonMiniatureGrid.scss';
 
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import { AutoSizer, Grid } from 'react-virtualized';
 
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import type { ListType } from '../views/pokedex';
+import { ListType } from '../views/pokedex';
 import PokemonMiniature from './PokemonMiniature';
 
 interface PokemonMiniatureGridProps {
@@ -47,21 +47,20 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 	};
 
 	return (
-		<div style={{ width: '100%' }} className={className}>
-			<AutoSizer disableHeight>
+		<div className={className} style={{width: '100%', height: '100%', overflowY: 'auto' }}>
+			<AutoSizer>
 				{({ width }) => {
 					const CARD_SIZE = getCardSize(width);
-					const maxColumns = width <= 500 ? 5 : 10;
-					const itemsPerRow = Math.min(maxColumns, Math.max(1, Math.floor(width / CARD_SIZE)));
-					const rowCount = Math.ceil(pokemonList.length / itemsPerRow);
+					const itemsPerRow = Math.max(1, Math.floor(width / CARD_SIZE));
 					const gridWidth = itemsPerRow * CARD_SIZE;
-					return (
-						<div style={{ width: gridWidth, margin: '0 auto' }}>
+					const rowCount = Math.ceil(pokemonList.length / itemsPerRow);
+					const grid = (
+						<div style={{ width: gridWidth }}>
 							<Grid
 								ref={gridRef}
 								columnCount={itemsPerRow}
 								rowCount={rowCount}
-								height={rowCount * CARD_SIZE}
+								height={window.innerHeight * 0.6}
 								columnWidth={CARD_SIZE}
 								rowHeight={CARD_SIZE}
 								width={gridWidth}
@@ -70,6 +69,14 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 							/>
 						</div>
 					);
+					if (gridWidth < width) {
+						return (
+							<div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+								{grid}
+							</div>
+						);
+					}
+					return grid;
 				}}
 			</AutoSizer>
 		</div>

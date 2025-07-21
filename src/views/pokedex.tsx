@@ -414,15 +414,16 @@ const Pokedex = () => {
 											</div>
 										</div>
 									</nav>
-									<div className='divisor'></div>
 								</div>
 								<div className='pokedex'>
+								<Section title={translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}>
 									<PokemonMiniatureGrid
 										pokemonList={data.processedList}
 										gamemasterPokemon={gamemasterPokemon}
 										rankOverrides={data.rankOverrides}
 										listType={listType}
 									/>
+								</Section>
 								</div>
 							</div>
 						)}
