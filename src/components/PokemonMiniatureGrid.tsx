@@ -1,9 +1,11 @@
+import './PokemonMiniatureGrid.scss';
+
 import React, { useMemo, useRef } from 'react';
 import { AutoSizer, Grid } from 'react-virtualized';
-import PokemonMiniature from './PokemonMiniature';
+
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { ListType } from '../views/pokedex';
-import './PokemonMiniatureGrid.scss';
+import type { ListType } from '../views/pokedex';
+import PokemonMiniature from './PokemonMiniature';
 
 interface PokemonMiniatureGridProps {
 	pokemonList: Array<IGamemasterPokemon>;

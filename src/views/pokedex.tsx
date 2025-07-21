@@ -11,6 +11,7 @@ import { translatedType } from '../components/PokemonInfoImagePlaceholder';
 import PokemonMiniature from '../components/PokemonMiniature';
 import PokemonMiniatureGrid from '../components/PokemonMiniatureGrid';
 import type { Entry } from '../components/Template/Navbar';
+import Section from '../components/Template/Section';
 import { Language, useLanguage } from '../contexts/language-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import { usePokemon } from '../contexts/pokemon-context';
@@ -22,7 +23,6 @@ import { PokemonTypes } from '../DTOs/PokemonTypes';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { fetchPokemonFamily, needsXLCandy } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
-import Section from '../components/Template/Section';
 
 export enum ListType {
 	POKEDEX,
