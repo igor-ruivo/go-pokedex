@@ -1,10 +1,11 @@
 import './PokemonMiniatureGrid.scss';
 
-import React, { useRef, useState, useLayoutEffect, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { GridCellProps } from 'react-virtualized';
 import { AutoSizer, Grid } from 'react-virtualized';
 
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { ListType } from '../views/pokedex';
+import type { ListType } from '../views/pokedex';
 import PokemonMiniature from './PokemonMiniature';
 
 interface PokemonMiniatureGridProps {
@@ -37,14 +38,14 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 		return () => window.removeEventListener('resize', updateWidth);
 	}, [parentRef]);
 
-	const cellRenderer = ({ columnIndex, rowIndex, key, style }: any) => {
-		const itemsPerRow = gridRef.current?.props.columnCount || 3;
+	const cellRenderer = ({ columnIndex, rowIndex, key, style }: GridCellProps): React.ReactNode => {
+		const itemsPerRow = gridRef.current?.props.columnCount ?? 3;
 		const idx = rowIndex * itemsPerRow + columnIndex;
 		if (idx >= pokemonList.length) return <div key={key} style={style} />;
 		const p = pokemonList[idx];
 		return (
-			<div key={key} className="mini-card-wrapper-padding" style={style}>
-				<div className="mini-card-wrapper">
+			<div key={key} className='mini-card-wrapper-padding' style={style}>
+				<div className='mini-card-wrapper'>
 					<PokemonMiniature
 						pokemon={gamemasterPokemon[p.speciesId]}
 						withBackground={false}
@@ -59,9 +60,12 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 
 	const renderGrid = (width: number) => {
 		const CARD_SIZE = getCardSize(width);
-        const hardLimitOfCardsPerRow = width <= 500 ? 5 : 10;
-		const itemsPerRow = Math.min(hardLimitOfCardsPerRow, Math.max(1, Math.floor((parentWidth ? parentWidth - 20 : width) / CARD_SIZE)));
-		const gridWidth = parentWidth ? (parentWidth - 12) : (itemsPerRow * CARD_SIZE);
+		const hardLimitOfCardsPerRow = width <= 500 ? 5 : 10;
+		const itemsPerRow = Math.min(
+			hardLimitOfCardsPerRow,
+			Math.max(1, Math.floor(((parentWidth ?? width) - 20) / CARD_SIZE))
+		);
+		const gridWidth = parentWidth !== null ? parentWidth - 12 : itemsPerRow * CARD_SIZE;
 		const rowCount = Math.ceil(pokemonList.length / itemsPerRow);
 		const grid = (
 			<div style={{ width: gridWidth }}>
@@ -69,7 +73,13 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 					ref={gridRef}
 					columnCount={itemsPerRow}
 					rowCount={rowCount}
-					height={window.innerHeight - (window.innerWidth <= 500 ? 86 : 56.13) - (window.innerWidth <= 500 ? 49.25 : 52.13) - (window.innerWidth <= 500 ? 99 : 119) - (window.innerWidth <= 500 ? 55 : 65)}
+					height={
+						window.innerHeight -
+						(window.innerWidth <= 500 ? 86 : 56.13) -
+						(window.innerWidth <= 500 ? 49.25 : 52.13) -
+						(window.innerWidth <= 500 ? 99 : 119) -
+						(window.innerWidth <= 500 ? 55 : 65)
+					}
 					columnWidth={CARD_SIZE}
 					rowHeight={CARD_SIZE}
 					width={gridWidth}
@@ -79,22 +89,16 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 			</div>
 		);
 		if (gridWidth < width) {
-			return (
-				<div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-					{grid}
-				</div>
-			);
+			return <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>{grid}</div>;
 		}
 		return grid;
 	};
 
 	return (
 		<div className={className} style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
-			<AutoSizer>
-				{({ width }) => renderGrid(window.innerWidth)}
-			</AutoSizer>
+			<AutoSizer>{({ width }) => renderGrid(window.innerWidth)}</AutoSizer>
 		</div>
 	);
 };
 
-export default PokemonMiniatureGrid; 
+export default PokemonMiniatureGrid;

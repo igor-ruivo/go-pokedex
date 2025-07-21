@@ -8,7 +8,6 @@ import Select from 'react-select';
 import LoadingRenderer from '../components/LoadingRenderer';
 import PokemonHeader from '../components/PokemonHeader';
 import { translatedType } from '../components/PokemonInfoImagePlaceholder';
-import PokemonMiniature from '../components/PokemonMiniature';
 import PokemonMiniatureGrid from '../components/PokemonMiniatureGrid';
 import type { Entry } from '../components/Template/Navbar';
 import Section from '../components/Template/Section';
@@ -412,21 +411,24 @@ const Pokedex = () => {
 									</nav>
 								</div>
 								<div className='pokedex'>
-								<Section ref={sectionRef} title={
+									<Section
+										ref={sectionRef}
+										title={
 											listType !== ListType.RAID && listType !== ListType.POKEDEX
 												? `${translator(TranslatorKeys.Best1, currentLanguage)} ${gameTranslator(listType === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : listType === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.Best2, currentLanguage)}`
 												: listType === ListType.RAID
 													? `${translator(TranslatorKeys.BestRaids1, currentLanguage)} ${type1Filter ? translator(TranslatorKeys.BestRaids15, currentLanguage) : ''} ${type1Filter ? translatedType(type1Filter, currentLanguage) : ''} ${translator(TranslatorKeys.BestRaids2, currentLanguage)} ${gameTranslator(currentLanguage === Language.English ? GameTranslatorKeys.Raid : GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.BestRaids3, currentLanguage)}`
 													: 'Pokédex'
-										}>
-									<PokemonMiniatureGrid
-										pokemonList={data.processedList}
-										gamemasterPokemon={gamemasterPokemon}
-										rankOverrides={data.rankOverrides}
-										listType={listType}
-										parentRef={sectionRef}
-									/>
-								</Section>
+										}
+									>
+										<PokemonMiniatureGrid
+											pokemonList={data.processedList}
+											gamemasterPokemon={gamemasterPokemon}
+											rankOverrides={data.rankOverrides}
+											listType={listType}
+											parentRef={sectionRef}
+										/>
+									</Section>
 								</div>
 							</div>
 						)}

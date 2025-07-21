@@ -1,7 +1,8 @@
 import './Section.scss';
 
+import { forwardRef } from 'react';
+
 import PokemonHeader from '../PokemonHeader';
-import React from 'react';
 
 interface ISection {
 	title: string;
@@ -15,7 +16,7 @@ interface ISection {
 	noPadding?: boolean;
 }
 
-const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<ISection>>((props, ref) => {
+const Section = forwardRef<HTMLDivElement, React.PropsWithChildren<ISection>>((props, ref) => {
 	return (
 		<div
 			ref={ref}
@@ -38,5 +39,7 @@ const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<ISectio
 		</div>
 	);
 });
+
+Section.displayName = 'Section';
 
 export default Section;

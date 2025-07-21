@@ -32,7 +32,7 @@ interface ListboxComponentProps {
 }
 
 const ListboxComponent = forwardRef<HTMLDivElement, ListboxComponentProps>(function ListboxComponent(props, ref) {
-	const { children, role, ...other } = props;
+	const { children, ...other } = props;
 	const itemCount = useMemo(() => (Array.isArray(children) ? children.length : 0), [children]);
 	const itemSize = 41.6;
 	const autoCompleteRef = useRef<HTMLDivElement | null>(null);
@@ -73,7 +73,6 @@ const ListboxComponent = forwardRef<HTMLDivElement, ListboxComponentProps>(funct
 						}
 						return <div />;
 					}}
-					role={role}
 				/>
 			</div>
 		</div>
