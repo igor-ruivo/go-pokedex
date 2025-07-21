@@ -30,6 +30,8 @@ interface IPokemonMiniatureProps {
 	withNumber?: boolean;
 	numberOverride?: number;
 	listType?: number;
+	megaBall?: boolean;
+	megaBackground?: boolean;
 }
 
 const PokemonMiniature = ({
@@ -43,6 +45,8 @@ const PokemonMiniature = ({
 	withNumber = false,
 	numberOverride,
 	listType,
+	megaBall = true,
+	megaBackground = false,
 }: IPokemonMiniatureProps) => {
 	const { days, hours, minutes, seconds } = useCountdown(withCountdown ?? 0);
 	const containerWidth = useRef<HTMLDivElement>(null);
@@ -298,6 +302,13 @@ const PokemonMiniature = ({
 							))}
 					</div>
 				)}
+				{megaBackground && (
+					<div className={`miniature-tooltip`}>
+						{pokemon.isMega && (
+							<img className='padded-img raid-img-with-contrast' alt='Mega' src={`/images/mega.webp`} />
+						)}
+					</div>
+				)}
 				<span className='mini-card-content'>
 					<PokemonImage
 						withClassname='with-img-dropShadow'
@@ -306,6 +317,7 @@ const PokemonMiniature = ({
 						lazy
 						specificNameContainerWidth={containerWidth.current?.clientWidth}
 						forceShadowAdorner={forceShadowAdorner && !pkmToUse.speciesId.endsWith('_shadow')}
+						megaBall={megaBall}
 					/>
 				</span>
 			</div>

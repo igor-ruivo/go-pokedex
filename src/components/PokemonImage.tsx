@@ -27,6 +27,7 @@ interface IPokemonImage {
 	forceShadowAdorner?: boolean | undefined;
 	withClassname?: string;
 	imgOnly?: boolean;
+	megaBall?: boolean;
 }
 
 const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
@@ -47,6 +48,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 			specificHeight,
 			galleryToggle,
 			lowRes = true,
+			megaBall = true,
 		}: IPokemonImage,
 		ref
 	) => {
@@ -173,18 +175,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 								gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)
 							)}
 						/>
-						{pokemon.isMega ? (
-							<span className='img-adorner mega-container'>
-								<img
-									alt='mega'
-									className='with-img-dropShadow'
-									loading={lazy ? 'lazy' : undefined}
-									height='100%'
-									width='100%'
-									src='https://i.imgur.com/sayBxjT.png'
-								/>
-							</span>
-						) : null}
+
 						{forceShadowAdorner || pokemon.isShadow ? (
 							<img
 								className='image img-adorner shadow-overlay'

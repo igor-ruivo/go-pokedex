@@ -72,6 +72,8 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 						withNumber
 						numberOverride={rankOverrides[p.speciesId]}
 						listType={listType}
+						megaBall={false}
+						megaBackground={true}
 					/>
 				</div>
 			</div>

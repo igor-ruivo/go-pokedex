@@ -60,28 +60,31 @@ export const translateMoveFromMoveId = (
 	return typedMove.moveName[gameLanguage];
 };
 
-export const shortName = (name: string) => {
-	return name
-		.replace('(Alolan)', '(A)')
-		.replace('(Galarian)', '(G)')
-		.replace('(Paldean)', '(P)')
-		.replace('(Mega)', '(M)')
-		.replace('(Shadow)', '(S)')
-		.replace('(Complete Forme)', '(CF)')
-		.replace('(50% Forme)', '(50% F)')
-		.replace('(10% Forme)', '(10% F)')
-		.replace('(Hisuian)', '(H)')
-		.replace('(Standard)', '(Std.)')
-		.replace('(Incarnate)', '(Inc.)')
-		.replace('(Average)', '(Avg.)')
-		.replace('Male', '♂')
-		.replace('Female', '♀')
-		.replace('(Single Strike)', '(Single)')
-		.replace('(Rapid Strike)', '(Rapid)')
-		.replace('(Crowned Shield)', '(Shield)')
-		.replace('(Crowned Sword)', '(Sword)')
-		.replace('(Dawn Wings)', '(Wings)')
-		.replace('(Dusk Mane)', '(Mane)');
+export const shortName = (name: string): string => {
+	const match = /\(([^()]*)\)/.exec(name); // extract content inside parentheses
+	let prefix = '';
+	let suffix = '';
+
+	if (match) {
+		const content = match[1].trim();
+
+		if (content.startsWith('Mega')) {
+			prefix = 'Mega';
+
+			// Check if it ends with X or Y
+			const parts = content.split(' ');
+			if (parts.length === 2 && (parts[1] === 'X' || parts[1] === 'Y')) {
+				suffix = parts[1];
+			}
+		}
+
+		if (content.startsWith('Primal')) {
+			prefix = 'Primal';
+		}
+	}
+
+	const baseName = name.replace(/\([^()]*\)/g, '').trim();
+	return [prefix, baseName, suffix].filter(Boolean).join(' ');
 };
 
 export const getForm = (name: string) => {
