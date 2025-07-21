@@ -28,6 +28,8 @@ interface IPokemonImage {
 	withClassname?: string;
 	imgOnly?: boolean;
 	megaBall?: boolean;
+	allowHyperSize?: boolean;
+	allowExpandedSize?: boolean;
 }
 
 const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
@@ -49,6 +51,8 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 			galleryToggle,
 			lowRes = true,
 			megaBall = true,
+			allowHyperSize = false,
+			allowExpandedSize = false,
 		}: IPokemonImage,
 		ref
 	) => {
@@ -142,7 +146,7 @@ const PokemonImage = forwardRef<HTMLImageElement, IPokemonImage>(
 
 		const mainImgProps = {
 			ref,
-			className: `${withClassname ?? 'with-img-dropShadow'}${galleryToggle ? ' img-clickable selectable' : ''}${currentImageSource !== ImageSource.Official ? ' with-img-dropShadow' : ''}`,
+			className: `${withClassname ?? 'with-img-dropShadow'}${galleryToggle ? ' img-clickable selectable' : ''}${currentImageSource !== ImageSource.Official ? ' with-img-dropShadow' : ''} ${allowExpandedSize && currentImageSource !== ImageSource.Official ? 'expanded-image' : ''} ${allowHyperSize && currentImageSource !== ImageSource.Official ? 'hyper-image' : ''}}`,
 			loading: lazy ? 'lazy' : undefined,
 			alt: pokemon.speciesName.replace('Shadow', gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)),
 			height: specificHeight ?? '100%',

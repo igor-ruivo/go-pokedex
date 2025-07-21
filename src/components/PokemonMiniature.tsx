@@ -329,13 +329,14 @@ const PokemonMiniature = ({
 				)}
 				<span className='mini-card-content'>
 					<PokemonImage
-						withClassname='with-img-dropShadow'
+						withClassname={`with-img-dropShadow`}
 						pokemon={pkmToUse}
 						withName
 						lazy
 						specificNameContainerWidth={containerWidth.current?.clientWidth}
 						forceShadowAdorner={forceShadowAdorner && !pkmToUse.speciesId.endsWith('_shadow')}
 						megaBall={megaBall}
+						allowHyperSize
 					/>
 				</span>
 			</div>

@@ -97,7 +97,14 @@ const PokemonCard = ({
 					<PokemonTypes types={pokemon.types} />
 				</span>
 				<span className='card-content'>
-					<PokemonImage pokemon={pokemon} xl={needsXLCandy(pokemon, cpThreshold)} shiny={shinyBadge} withName lazy />
+					<PokemonImage
+						pokemon={pokemon}
+						xl={needsXLCandy(pokemon, cpThreshold)}
+						shiny={shinyBadge}
+						withName
+						lazy
+						allowHyperSize
+					/>
 				</span>
 				<span className='header-footer'>
 					<span className='cp-container heavy-weighted-font'>{getCPContainerString()}</span>

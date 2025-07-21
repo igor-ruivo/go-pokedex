@@ -273,6 +273,7 @@ const Events = () => {
 															withName={false}
 															imgOnly
 															withClassname='spotlighted-pokemon'
+															allowHyperSize
 														/>
 													)}
 													{!seenEvents.has(postId(p)) && (
@@ -307,6 +308,7 @@ const Events = () => {
 											withName={false}
 											imgOnly
 											withClassname='spotlighted-pokemon'
+											allowHyperSize
 										/>
 									)}
 								</div>
