@@ -309,9 +309,16 @@ const Pokedex = () => {
 	}, [currentLanguage]);
 
 	return (
-		<main className='pokedex-layout'>
-			<div className='content'>
-			<div className='sticky'>
+		<main className='layout'>
+			<div className='pokemon'>
+				<div className='pokemon-content'>
+			
+			<LoadingRenderer
+				errors={errors + pvpErrors + raidDPSErrors}
+				completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}
+			>
+				{() => (
+					<div className='content'><div className='sticky'>
 			<PokemonHeader
 				pokemonName={
 					listType !== ListType.RAID && listType !== ListType.POKEDEX
@@ -324,7 +331,6 @@ const Pokedex = () => {
 				type2={undefined}
 				defaultTextColor
 				defaultBannerColor
-				constrained
 			/>
 			<nav className='navigation-header padded-on-top extra-gap leagues with-solid-background'>
 				<div className='row justified aligned with-big-gap full-width'>
@@ -403,12 +409,6 @@ const Pokedex = () => {
 				</div>
 			</nav>
 			</div>
-			<LoadingRenderer
-				noOverFlow
-				errors={errors + pvpErrors + raidDPSErrors}
-				completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}
-			>
-				{() => (
 					<div className='pokedex'>
 						<div className={`with-flex contained max-margins`}>
 							{data.processedList.map((p) => (
@@ -426,8 +426,8 @@ const Pokedex = () => {
 							))}
 						</div>
 					</div>
-				)}
-			</LoadingRenderer>
+				</div>)}
+			</LoadingRenderer></div>
 			</div>
 		</main>
 	);
