@@ -119,16 +119,20 @@
 	display: flex;
 }
 
+.pokemon_main_info {
+	height: 215px;
+}
+
 .pokemon_main_info .main-image-container {
 	display: flex;
 	flex-direction: row;
 	position: relative;
-	max-width: 215px;
-	max-height: 215px;
 }
 
 .pokemon_main_info .images-container {
 	justify-self: flex-end;
+	max-height: 215px;
+	max-width: 215px;
 }
 
 .header-footer {
@@ -141,6 +145,17 @@
 
 .cp-container {
 	color: var(--cp-color);
+}
+
+@media (width <= 500px) {
+	.pokemon_main_info {
+		height: 175px;
+	}
+
+	.pokemon_main_info .images-container {
+		max-height: 175px;
+		max-width: 175px;
+	}
 }
 
 @media (width >= 1250px) {
