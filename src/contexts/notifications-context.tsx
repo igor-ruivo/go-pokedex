@@ -75,7 +75,7 @@ export const NotificationsProvider = (props: React.PropsWithChildren<object>) =>
 									(p.raids?.length ?? 0) > 0 ||
 									p.bonuses.en.length > 0 ||
 									(p.researches?.length ?? 0) > 0) &&
-								new Date(p.endDate ?? 0) >= new Date()
+								p.endDate >= Date.now()
 						),
 					].map((p) => p.id)
 				: [],

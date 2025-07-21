@@ -44,7 +44,7 @@ export async function fetchUrls<T = unknown>(
 		let fetchUrl = url;
 		if (withoutCache) {
 			const separator = url.includes('?') ? '&' : '?';
-			fetchUrl = `${url}${separator}timestamp=${new Date().getTime()}`;
+			fetchUrl = `${url}${separator}timestamp=${Date.now()}`;
 		}
 
 		// Ensure fetchRequestConfig is not mutated between requests

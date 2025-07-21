@@ -70,14 +70,14 @@ const Raids = () => {
 			specialBossesFetchCompleted && specialBosses
 				? specialBosses
 						.map(mapToPostEntry)
-						.filter((p) => (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date())
+						.filter((p) => (p.raids?.length ?? 0) > 0 && p.endDate >= Date.now())
 				: [],
 		[specialBossesFetchCompleted, specialBosses]
 	);
 	const reducedRaids = useMemo<Array<IPostEntry>>(
 		() =>
 			postsFetchCompleted && posts
-				? posts.filter((p) => p && (p.raids?.length ?? 0) > 0 && new Date(p.endDate ?? 0) >= new Date())
+				? posts.filter((p) => p && (p.raids?.length ?? 0) > 0 && p.endDate >= Date.now())
 				: [],
 		[postsFetchCompleted, posts]
 	);
@@ -140,7 +140,7 @@ const Raids = () => {
 
 	const remainingBosses = useMemo<Array<IPostEntry>>(
 		() =>
-			additionalBosses.filter((e) => (e.raids?.length ?? 0) > 0 && e.startDate > new Date().valueOf()).sort(sortPosts),
+			additionalBosses.filter((e) => (e.raids?.length ?? 0) > 0 && e.startDate > Date.now()).sort(sortPosts),
 		[additionalBosses]
 	);
 
@@ -153,11 +153,11 @@ const Raids = () => {
 			const seenIds = new Set<string>([...(currentBosses ?? [])].map((e) => e.speciesId));
 			const response: Array<IEntry> = [...(currentBosses ?? [])];
 
-			const now = new Date();
+			const now = Date.now();
 
 			for (const entry of entries) {
-				const dateEntryStart = new Date(entry.startDate);
-				const dateEntryEnd = new Date(entry.endDate ?? 0);
+				const dateEntryStart = entry.startDate;
+				const dateEntryEnd = entry.endDate;
 
 				if (!(now >= dateEntryStart && now < dateEntryEnd)) {
 					continue;
@@ -279,7 +279,7 @@ const Raids = () => {
 		(speciesId: string): number | undefined =>
 			[...reducedLeekPosts, ...reducedRaids]
 				.sort(sortPosts)
-				.find((d) => d.startDate <= new Date().valueOf() && (d.raids ?? []).some((f) => f.speciesId === speciesId))
+				.find((d) => d.startDate <= Date.now() && (d.raids ?? []).some((f) => f.speciesId === speciesId))
 				?.endDate,
 		[reducedLeekPosts, reducedRaids]
 	);

@@ -10,15 +10,15 @@ interface CountdownTime {
 
 // Custom hook for countdown
 const useCountdown = (targetDate: number): CountdownTime => {
-	const countDownDate = new Date(targetDate).getTime();
+	const countDownDate = targetDate
 
 	// Initialize state with remaining time
-	const [timeLeft, setTimeLeft] = useState<number>(countDownDate - new Date().valueOf());
+	const [timeLeft, setTimeLeft] = useState<number>(countDownDate - Date.now());
 
 	useEffect(() => {
 		// Update the countdown every second
 		const interval = setInterval(() => {
-			const now = new Date().valueOf();
+			const now = Date.now();
 			const distance = countDownDate - now;
 
 			setTimeLeft(distance);

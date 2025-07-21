@@ -29,8 +29,8 @@ const Spawns = () => {
 						(p) =>
 							p &&
 							(p.wild?.length ?? 0) > 0 &&
-							new Date(p.endDate ?? 0) >= new Date() &&
-							new Date(p.startDate) < new Date()
+							p.endDate >= Date.now() &&
+							p.startDate < Date.now()
 					)
 				: [],
 		[postsFetchCompleted, posts]
@@ -71,8 +71,8 @@ const Spawns = () => {
 					(p): p is IPostEntry =>
 						!!p &&
 						(p.wild?.length ?? 0) > 0 &&
-						new Date(p.endDate ?? 0) >= new Date() &&
-						new Date(p.startDate) > new Date()
+						p.endDate >= Date.now() &&
+						p.startDate > Date.now()
 				)
 				.sort(sortPosts)
 				.map(
