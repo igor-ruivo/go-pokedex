@@ -69,7 +69,7 @@ export const shortName = (name: string): string => {
 		const content = match[1].trim();
 
 		if (content.startsWith('Mega')) {
-			prefix = 'Mega';
+			prefix = 'M.';
 
 			// Check if it ends with X or Y
 			const parts = content.split(' ');
@@ -79,7 +79,7 @@ export const shortName = (name: string): string => {
 		}
 
 		if (content.startsWith('Primal')) {
-			prefix = 'Primal';
+			prefix = 'P.';
 		}
 	}
 

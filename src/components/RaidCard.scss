@@ -31,19 +31,6 @@
 	height: 120% !important;
 }
 
-.hyper-image {
-	width: 150% !important;
-	height: 150% !important;
-	position: absolute;
-	top: -25%; /* centers vertically if needed */
-	left: -25%; /* centers horizontally if needed */
-}
-
-.expanded-image {
-	width: 150% !important;
-	margin-top: -25% !important;
-}
-
 .raid-img {
 	filter: drop-shadow(0 1px 0 rgb(0 0 0 / 50%)) drop-shadow(1px 0 0 rgb(0 0 0 / 50%))
 		drop-shadow(-1px 0 0 rgb(0 0 0 / 50%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 50%));

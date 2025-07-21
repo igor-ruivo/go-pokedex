@@ -1,5 +1,5 @@
 import './pokemon.scss';
-import '../components/PokemonImage.css';
+import '../components/PokemonImage.scss';
 import './calendar.scss';
 import './calendar2.scss';
 

@@ -18,9 +18,11 @@
 
 @media (width >= 500px) {
 	.img-clickable {
-		&:hover&.with-img-dropShadow {
-			filter: var(--hover-brightness) drop-shadow(0 1px 0 rgb(0 0 0 / 15%)) drop-shadow(1px 0 0 rgb(0 0 0 / 50%))
-				drop-shadow(-1px 0 0 rgb(0 0 0 / 15%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 15%));
+		&:hover {
+			&.with-img-dropShadow {
+				filter: var(--hover-brightness) drop-shadow(0 1px 0 rgb(0 0 0 / 15%)) drop-shadow(1px 0 0 rgb(0 0 0 / 50%))
+					drop-shadow(-1px 0 0 rgb(0 0 0 / 15%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 15%));
+			}
 		}
 
 		&:hover {
@@ -52,6 +54,20 @@
 	padding: 2px;
 }
 
+.hyper-image {
+	width: 125% !important;
+	height: 125% !important;
+	max-width: unset !important;
+	position: absolute;
+	top: -12.5%; /* centers vertically if needed */
+	left: -12.5%; /* centers horizontally if needed */
+}
+
+.expanded-image {
+	width: 150% !important;
+	margin-top: -25% !important;
+}
+
 .background-absolute-img {
 	object-fit: contain;
 	position: absolute;
@@ -70,6 +86,8 @@
 }
 
 .pkm-img-name {
+	background-color: var(--gridItemsBackgroundColor3);
+	border-radius: 14px;
 	z-index: 4;
 	position: relative;
 }

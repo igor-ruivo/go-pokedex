@@ -44,6 +44,8 @@ code {
 	--poke-border: drop-shadow(1px 1px 0 var(--cp-color)) drop-shadow(-0.5px -0.5px 0 var(--cp-color))
 		drop-shadow(1px -1px 0 var(--cp-color)) drop-shadow(-1px 1.5px 0 var(--cp-color));
 	--gridItemsBackgroundColor2: rgb(0 0 0 / 60%);
+
+	--gridItemsBackgroundColor3: rgb(36, 41, 47, 50%);
 	--rocket-softer: var(--background-shadow-soft);
 	--selectionHover: #464f59;
 	--headerBackground: rgb(36 41 47);
@@ -158,6 +160,7 @@ code {
 	--ball-drop-shadow: drop-shadow(4px 4px 4px var(--cp-color));
 	--gridItemsBackgroundColor: #fff;
 	--gridItemsBackgroundColor2: #f3f6fa;
+	--gridItemsBackgroundColor3: #ffffff7a;
 	--rocket-softer: unset;
 	--selectionHover: #e3e8f0;
 	--headerBackground: #f5f7fb;

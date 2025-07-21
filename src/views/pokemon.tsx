@@ -1,5 +1,5 @@
 import './pokemon.scss';
-import '../components/PokemonImage.css';
+import '../components/PokemonImage.scss';
 
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
