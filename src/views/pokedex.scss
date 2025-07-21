@@ -7,11 +7,19 @@
 	padding-top: 52.13px;
 }
 
+.divisor {
+	border-bottom: 1px solid var(--borderColor2);
+	margin-left: auto;
+	margin-right: auto;
+	width: calc(100vw - 5%);
+	max-width: 1500px;
+}
+
 .sticky {
 	max-width: 1600px;
-	width: 100vw;
-  z-index: 500;
-  position: fixed;
+	width: calc(100vw - 20px);
+	z-index: 500;
+	position: fixed;
 }
 
 .nav-dropdown-width {
@@ -67,8 +75,8 @@
 
 .navigation-header.leagues {
 	max-width: 1598px;
-    margin-left: -5px;
-    margin-right: -5px;
+	margin-left: -5px;
+	margin-right: -5px;
 	justify-content: center;
 }
 
@@ -133,6 +141,12 @@
 	.pokedex {
 		margin-top: 99px;
 	}
+
+	
+
+.sticky {
+	width: calc(100vw - 13px);
+}
 
 	.navigation-header.extra-gap {
 		ul {

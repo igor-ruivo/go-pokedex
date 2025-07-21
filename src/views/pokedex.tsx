@@ -21,6 +21,7 @@ import { PokemonTypes } from '../DTOs/PokemonTypes';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { fetchPokemonFamily, needsXLCandy } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
+import Section from '../components/Template/Section';
 
 export enum ListType {
 	POKEDEX,
@@ -312,122 +313,129 @@ const Pokedex = () => {
 		<main className='layout'>
 			<div className='pokemon'>
 				<div className='pokemon-content'>
-			
-			<LoadingRenderer
-				errors={errors + pvpErrors + raidDPSErrors}
-				completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}
-			>
-				{() => (
-					<div className='content'><div className='sticky'>
-			<PokemonHeader
-				pokemonName={
-					listType !== ListType.RAID && listType !== ListType.POKEDEX
-						? `${translator(TranslatorKeys.Best1, currentLanguage)} ${gameTranslator(listType === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : listType === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.Best2, currentLanguage)}`
-						: listType === ListType.RAID
-							? `${translator(TranslatorKeys.BestRaids1, currentLanguage)} ${type1Filter ? translator(TranslatorKeys.BestRaids15, currentLanguage) : ''} ${type1Filter ? translatedType(type1Filter, currentLanguage) : ''} ${translator(TranslatorKeys.BestRaids2, currentLanguage)} ${gameTranslator(currentLanguage === Language.English ? GameTranslatorKeys.Raid : GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.BestRaids3, currentLanguage)}`
-							: 'Pokédex'
-				}
-				type1={undefined}
-				type2={undefined}
-				defaultTextColor
-				defaultBannerColor
-			/>
-			<nav className='navigation-header padded-on-top extra-gap leagues with-solid-background'>
-				<div className='row justified aligned with-big-gap full-width'>
-					<div className='nav-dropdown-width'>
-						<Select
-							className={`navbar-dropdown-family`}
-							isSearchable={false}
-							value={leagueOptions.find((o) => o.value === (listTypeArg ?? 'pokedex')) ?? null}
-							options={leagueOptions}
-							onChange={(option) => {
-								const selected = option as LeagueOption | null;
-								if (selected) {
-									void navigate(`/${(selected.value === 'pokedex' ? '' : selected.value) ?? ''}`);
-								}
-							}}
-							formatOptionLabel={(data: LeagueOption) => (
-								<div className='hint-container'>
-									<div className='img-padding'>
-										<img
-											alt='egg'
-											className='with-img-dropShadow'
-											src={
-												data.value === 'pokedex'
-													? 'https://i.imgur.com/eBscnsv.png'
-													: data.value === 'raid'
-														? '/images/tx_raid_coin.png'
-														: `/images/leagues/${data.value}.png`
-											}
-											style={{ width: 'auto' }}
-											height={22}
-											width={22}
-										/>
-									</div>
-									<strong className='aligned-block ellipsed normal-text'>
-										{data.value === 'pokedex'
-											? 'Pokédex'
-											: data.value === 'raid'
-												? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
-												: (() => {
-														const leagueKey = (data.value.substring(0, 1).toLocaleUpperCase() +
-															data.value.substring(1) +
-															'League') as keyof typeof GameTranslatorKeys;
-														return gameTranslator(GameTranslatorKeys[leagueKey], currentGameLanguage);
-													})()}
-									</strong>
-								</div>
-							)}
-						/>
-					</div>
-					<div className='smaller-nav-dropdown-width'>
-						<Select
-							className='navbar-dropdown-family'
-							isSearchable={false}
-							options={typesOptions}
-							value={type1Filter === undefined ? typesOptions[0] : typesOptions.find((l) => l.value === type1Filter)}
-							onChange={(v) => updateType1(v!.value)}
-							formatOptionLabel={(data) => (
-								<div className='hint-container'>
-									{data?.hint && (
-										<div className='img-padding'>
-											<img
-												alt='flag'
-												style={{ width: 'auto' }}
-												className='with-img-dropShadow'
-												src={data.hint}
-												height={22}
-												width={22}
-											/>
+					<LoadingRenderer
+						errors={errors + pvpErrors + raidDPSErrors}
+						completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}
+					>
+						{() => (
+							<div className='content'>
+								<div className='sticky'>
+									<PokemonHeader
+										pokemonName={
+											listType !== ListType.RAID && listType !== ListType.POKEDEX
+												? `${translator(TranslatorKeys.Best1, currentLanguage)} ${gameTranslator(listType === ListType.GREAT_LEAGUE ? GameTranslatorKeys.GreatLeague : listType === ListType.ULTRA_LEAGUE ? GameTranslatorKeys.UltraLeague : GameTranslatorKeys.MasterLeague, currentGameLanguage)} ${translator(TranslatorKeys.Best2, currentLanguage)}`
+												: listType === ListType.RAID
+													? `${translator(TranslatorKeys.BestRaids1, currentLanguage)} ${type1Filter ? translator(TranslatorKeys.BestRaids15, currentLanguage) : ''} ${type1Filter ? translatedType(type1Filter, currentLanguage) : ''} ${translator(TranslatorKeys.BestRaids2, currentLanguage)} ${gameTranslator(currentLanguage === Language.English ? GameTranslatorKeys.Raid : GameTranslatorKeys.Raids, currentGameLanguage)} ${translator(TranslatorKeys.BestRaids3, currentLanguage)}`
+													: 'Pokédex'
+										}
+										type1={undefined}
+										type2={undefined}
+										defaultTextColor
+										defaultBannerColor
+									/>
+									<nav className='navigation-header padded-on-top extra-gap leagues with-solid-background'>
+										<div className='row justified aligned with-big-gap full-width'>
+											<div className='nav-dropdown-width'>
+												<Select
+													className={`navbar-dropdown-family`}
+													isSearchable={false}
+													value={leagueOptions.find((o) => o.value === (listTypeArg ?? 'pokedex')) ?? null}
+													options={leagueOptions}
+													onChange={(option) => {
+														const selected = option as LeagueOption | null;
+														if (selected) {
+															void navigate(`/${(selected.value === 'pokedex' ? '' : selected.value) ?? ''}`);
+														}
+													}}
+													formatOptionLabel={(data: LeagueOption) => (
+														<div className='hint-container'>
+															<div className='img-padding'>
+																<img
+																	alt='egg'
+																	className='with-img-dropShadow'
+																	src={
+																		data.value === 'pokedex'
+																			? 'https://i.imgur.com/eBscnsv.png'
+																			: data.value === 'raid'
+																				? '/images/tx_raid_coin.png'
+																				: `/images/leagues/${data.value}.png`
+																	}
+																	style={{ width: 'auto' }}
+																	height={22}
+																	width={22}
+																/>
+															</div>
+															<strong className='aligned-block ellipsed normal-text'>
+																{data.value === 'pokedex'
+																	? 'Pokédex'
+																	: data.value === 'raid'
+																		? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
+																		: (() => {
+																				const leagueKey = (data.value.substring(0, 1).toLocaleUpperCase() +
+																					data.value.substring(1) +
+																					'League') as keyof typeof GameTranslatorKeys;
+																				return gameTranslator(GameTranslatorKeys[leagueKey], currentGameLanguage);
+																			})()}
+															</strong>
+														</div>
+													)}
+												/>
+											</div>
+											<div className='smaller-nav-dropdown-width'>
+												<Select
+													className='navbar-dropdown-family'
+													isSearchable={false}
+													options={typesOptions}
+													value={
+														type1Filter === undefined
+															? typesOptions[0]
+															: typesOptions.find((l) => l.value === type1Filter)
+													}
+													onChange={(v) => updateType1(v!.value)}
+													formatOptionLabel={(data) => (
+														<div className='hint-container'>
+															{data?.hint && (
+																<div className='img-padding'>
+																	<img
+																		alt='flag'
+																		style={{ width: 'auto' }}
+																		className='with-img-dropShadow'
+																		src={data.hint}
+																		height={22}
+																		width={22}
+																	/>
+																</div>
+															)}
+															<strong className='aligned-block ellipsed normal-text'>{data?.label}</strong>
+														</div>
+													)}
+												/>
+											</div>
 										</div>
-									)}
-									<strong className='aligned-block ellipsed normal-text'>{data?.label}</strong>
+									</nav>
+									<div className='divisor'></div>
 								</div>
-							)}
-						/>
-					</div>
-				</div>
-			</nav>
-			</div>
-					<div className='pokedex'>
-						<div className={`with-flex contained max-margins`}>
-							{data.processedList.map((p) => (
-								<div key={p.speciesId} className='mini-card-wrapper-padding dynamic-size'>
-									<div className={`mini-card-wrapper`}>
-										<PokemonMiniature
-											pokemon={gamemasterPokemon[p.speciesId]}
-											withBackground={false}
-											withNumber
-											numberOverride={data.rankOverrides[p.speciesId]}
-											listType={listType}
-										/>
+								<div className='pokedex'>
+									<div className={`with-flex contained max-margins`}>
+										{data.processedList.map((p) => (
+											<div key={p.speciesId} className='mini-card-wrapper-padding dynamic-size'>
+												<div className={`mini-card-wrapper`}>
+													<PokemonMiniature
+														pokemon={gamemasterPokemon[p.speciesId]}
+														withBackground={false}
+														withNumber
+														numberOverride={data.rankOverrides[p.speciesId]}
+														listType={listType}
+													/>
+												</div>
+											</div>
+										))}
 									</div>
 								</div>
-							))}
-						</div>
-					</div>
-				</div>)}
-			</LoadingRenderer></div>
+							</div>
+						)}
+					</LoadingRenderer>
+				</div>
 			</div>
 		</main>
 	);
