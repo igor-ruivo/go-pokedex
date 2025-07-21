@@ -3,6 +3,7 @@ import { AutoSizer, Grid } from 'react-virtualized';
 import PokemonMiniature from './PokemonMiniature';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { ListType } from '../views/pokedex';
+import './PokemonMiniatureGrid.scss';
 
 interface PokemonMiniatureGridProps {
 	pokemonList: Array<IGamemasterPokemon>;
@@ -48,7 +49,8 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 			<AutoSizer disableHeight>
 				{({ width }) => {
 					const CARD_SIZE = getCardSize(width);
-					const itemsPerRow = Math.max(1, Math.floor(width / CARD_SIZE));
+					const maxColumns = width <= 500 ? 5 : 10;
+					const itemsPerRow = Math.min(maxColumns, Math.max(1, Math.floor(width / CARD_SIZE)));
 					const rowCount = Math.ceil(pokemonList.length / itemsPerRow);
 					const gridWidth = itemsPerRow * CARD_SIZE;
 					return (
@@ -57,9 +59,9 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 								ref={gridRef}
 								columnCount={itemsPerRow}
 								rowCount={rowCount}
+								height={rowCount * CARD_SIZE}
 								columnWidth={CARD_SIZE}
 								rowHeight={CARD_SIZE}
-								height={rowCount * CARD_SIZE}
 								width={gridWidth}
 								cellRenderer={cellRenderer}
 								style={{ outline: 'none' }}
