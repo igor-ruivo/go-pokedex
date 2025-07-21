@@ -10,7 +10,7 @@ interface CountdownTime {
 
 // Custom hook for countdown
 const useCountdown = (targetDate: number): CountdownTime => {
-	const countDownDate = targetDate
+	const countDownDate = targetDate;
 
 	// Initialize state with remaining time
 	const [timeLeft, setTimeLeft] = useState<number>(countDownDate - Date.now());

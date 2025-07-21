@@ -77,7 +77,7 @@ const Events = () => {
 							p.eggs.length > 0 ||
 							p.incenses.length > 0 ||
 							p.lures.length > 0) &&
-							p.endDate >= Date.now()
+						p.endDate >= Date.now()
 				)
 				.sort(sortPosts),
 		];

@@ -25,13 +25,7 @@ const Spawns = () => {
 	const currPosts = useMemo(
 		() =>
 			postsFetchCompleted && posts
-				? posts.filter(
-						(p) =>
-							p &&
-							(p.wild?.length ?? 0) > 0 &&
-							p.endDate >= Date.now() &&
-							p.startDate < Date.now()
-					)
+				? posts.filter((p) => p && (p.wild?.length ?? 0) > 0 && p.endDate >= Date.now() && p.startDate < Date.now())
 				: [],
 		[postsFetchCompleted, posts]
 	);
@@ -69,10 +63,7 @@ const Spawns = () => {
 			const futurePosts = posts
 				.filter(
 					(p): p is IPostEntry =>
-						!!p &&
-						(p.wild?.length ?? 0) > 0 &&
-						p.endDate >= Date.now() &&
-						p.startDate > Date.now()
+						!!p && (p.wild?.length ?? 0) > 0 && p.endDate >= Date.now() && p.startDate > Date.now()
 				)
 				.sort(sortPosts)
 				.map(

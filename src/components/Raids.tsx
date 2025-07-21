@@ -68,9 +68,7 @@ const Raids = () => {
 	const reducedLeekPosts = useMemo<Array<IPostEntry>>(
 		() =>
 			specialBossesFetchCompleted && specialBosses
-				? specialBosses
-						.map(mapToPostEntry)
-						.filter((p) => (p.raids?.length ?? 0) > 0 && p.endDate >= Date.now())
+				? specialBosses.map(mapToPostEntry).filter((p) => (p.raids?.length ?? 0) > 0 && p.endDate >= Date.now())
 				: [],
 		[specialBossesFetchCompleted, specialBosses]
 	);
@@ -139,8 +137,7 @@ const Raids = () => {
 	}, [reducedLeekPosts, reducedRaids, getDateKey]);
 
 	const remainingBosses = useMemo<Array<IPostEntry>>(
-		() =>
-			additionalBosses.filter((e) => (e.raids?.length ?? 0) > 0 && e.startDate > Date.now()).sort(sortPosts),
+		() => additionalBosses.filter((e) => (e.raids?.length ?? 0) > 0 && e.startDate > Date.now()).sort(sortPosts),
 		[additionalBosses]
 	);
 
@@ -279,8 +276,7 @@ const Raids = () => {
 		(speciesId: string): number | undefined =>
 			[...reducedLeekPosts, ...reducedRaids]
 				.sort(sortPosts)
-				.find((d) => d.startDate <= Date.now() && (d.raids ?? []).some((f) => f.speciesId === speciesId))
-				?.endDate,
+				.find((d) => d.startDate <= Date.now() && (d.raids ?? []).some((f) => f.speciesId === speciesId))?.endDate,
 		[reducedLeekPosts, reducedRaids]
 	);
 
