@@ -5,9 +5,9 @@ import type { GridCellProps } from 'react-virtualized';
 import { AutoSizer, Grid } from 'react-virtualized';
 
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import useResize from '../hooks/useResize';
 import type { ListType } from '../views/pokedex';
 import PokemonMiniature from './PokemonMiniature';
-import useResize from '../hooks/useResize';
 
 interface PokemonMiniatureGridProps {
 	pokemonList: Array<IGamemasterPokemon>;
@@ -30,7 +30,25 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 	const { x } = useResize();
 	const [parentWidth, setParentWidth] = useState<number | null>(null);
 
-	const getCardSize = (width: number) => (width <= 500 ? 70 : 100);
+	const getCardSize = (baseWidth: number, computedContainerWidth: number, itemsPerRow: number) => {
+		if (baseWidth > 500) {
+			return 100;
+		}
+
+		return computedContainerWidth / itemsPerRow;
+	};
+
+	const getItemsPerRow = (baseWidth: number, computedContainerWidth: number) => {
+		if (baseWidth <= 381) {
+			return 4;
+		}
+
+		if (baseWidth <= 500) {
+			return 5;
+		}
+
+		return Math.max(1, Math.floor(computedContainerWidth / 100));
+	};
 
 	useEffect(() => {
 		if (!parentRef?.current) return;
@@ -61,12 +79,9 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 	};
 
 	const renderGrid = (width: number) => {
-		const CARD_SIZE = getCardSize(width);
-		const hardLimitOfCardsPerRow = width <= 500 ? 5 : 10;
-		const itemsPerRow = Math.min(
-			hardLimitOfCardsPerRow,
-			Math.max(1, Math.floor(((parentWidth ?? width) - 20) / CARD_SIZE))
-		);
+		const computedContainerWidth = (parentWidth ?? width) - 20;
+		const itemsPerRow = getItemsPerRow(width, computedContainerWidth);
+		const CARD_SIZE = getCardSize(width, computedContainerWidth, itemsPerRow);
 		const gridWidth = parentWidth !== null ? parentWidth - 12 : itemsPerRow * CARD_SIZE;
 		const rowCount = Math.ceil(pokemonList.length / itemsPerRow);
 		const grid = (
