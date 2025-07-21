@@ -9,6 +9,7 @@ import LoadingRenderer from '../components/LoadingRenderer';
 import PokemonHeader from '../components/PokemonHeader';
 import { translatedType } from '../components/PokemonInfoImagePlaceholder';
 import PokemonMiniature from '../components/PokemonMiniature';
+import PokemonMiniatureGrid from '../components/PokemonMiniatureGrid';
 import type { Entry } from '../components/Template/Navbar';
 import { Language, useLanguage } from '../contexts/language-context';
 import { useNavbarSearchInput } from '../contexts/navbar-search-context';
@@ -416,21 +417,12 @@ const Pokedex = () => {
 									<div className='divisor'></div>
 								</div>
 								<div className='pokedex'>
-									<div className={`with-flex contained max-margins`}>
-										{data.processedList.map((p) => (
-											<div key={p.speciesId} className='mini-card-wrapper-padding dynamic-size'>
-												<div className={`mini-card-wrapper`}>
-													<PokemonMiniature
-														pokemon={gamemasterPokemon[p.speciesId]}
-														withBackground={false}
-														withNumber
-														numberOverride={data.rankOverrides[p.speciesId]}
-														listType={listType}
-													/>
-												</div>
-											</div>
-										))}
-									</div>
+									<PokemonMiniatureGrid
+										pokemonList={data.processedList}
+										gamemasterPokemon={gamemasterPokemon}
+										rankOverrides={data.rankOverrides}
+										listType={listType}
+									/>
 								</div>
 							</div>
 						)}
