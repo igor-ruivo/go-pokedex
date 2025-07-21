@@ -38,9 +38,9 @@
 }
 
 .nav-hidden {
-	opacity: 0;
-	visibility: hidden;
-	transform: translateY(-75px);
+	transform: translateY(0);
+	opacity: 1;
+	visibility: visible;
 }
 
 .menu-visible {

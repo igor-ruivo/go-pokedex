@@ -10,7 +10,7 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { usePvp } from '../contexts/pvp-context';
 import { useRaidRanker } from '../contexts/raid-ranker-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import type { PokemonTypes as PType} from '../DTOs/PokemonTypes';
+import type { PokemonTypes as PType } from '../DTOs/PokemonTypes';
 import useCountdown from '../hooks/useCountdown';
 import useResize from '../hooks/useResize';
 import { ordinal } from '../utils/conversions';
@@ -25,8 +25,8 @@ interface IPokemonMiniatureProps {
 	withCountdown?: number | undefined;
 	linkToShadowVersion?: boolean;
 	forceShadowAdorner?: boolean;
-	withBackground?: boolean
-	withTypes?:boolean;
+	withBackground?: boolean;
+	withTypes?: boolean;
 	withNumber?: boolean;
 	numberOverride?: number;
 	listType?: number;
@@ -42,7 +42,7 @@ const PokemonMiniature = ({
 	withTypes = false,
 	withNumber = false,
 	numberOverride,
-	listType
+	listType,
 }: IPokemonMiniatureProps) => {
 	const { days, hours, minutes, seconds } = useCountdown(withCountdown ?? 0);
 	const containerWidth = useRef<HTMLDivElement>(null);
@@ -68,7 +68,7 @@ const PokemonMiniature = ({
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { raidDPSFetchCompleted, raidDPS } = useRaidRanker();
-	const {currentLanguage} = useLanguage();
+	const { currentLanguage } = useLanguage();
 
 	const computeRankChange = useCallback(() => {
 		if (!pvpFetchCompleted || listType === undefined || !rankLists[listType - 1]) {
@@ -79,44 +79,44 @@ const PokemonMiniature = ({
 	}, [pvpFetchCompleted, rankLists, listType, pokemon]);
 
 	const fetchPokemonRank = useCallback((): string => {
-			if (!pvpFetchCompleted || listType === undefined) {
-				return '';
+		if (!pvpFetchCompleted || listType === undefined) {
+			return '';
+		}
+
+		let ordinalRank = rankLists[listType - 1]
+			? ordinal(rankLists[listType - 1][pokemon.speciesId].rank)
+			: numberOverride
+				? ordinal(numberOverride)
+				: '';
+		if (!ordinalRank) {
+			return '';
+		}
+
+		if (currentLanguage === Language.Portuguese) {
+			ordinalRank = ordinalRank.replace('st', 'º').replace('nd', 'º').replace('rd', 'º').replace('th', 'º');
+		}
+
+		if (currentLanguage === Language.Bosnian) {
+			ordinalRank = ordinalRank.replace('st', '.').replace('nd', '.').replace('rd', '.').replace('th', '.');
+		}
+
+		if (numberOverride ?? rankLists[listType - 1]) {
+			const effectiveRank = numberOverride ?? rankLists[listType - 1][pokemon.speciesId].rank;
+
+			switch (effectiveRank) {
+				case 1:
+					return '🥇' + ordinalRank;
+				case 2:
+					return '🥈' + ordinalRank;
+				case 3:
+					return '🥉' + ordinalRank;
+				default:
+					return ordinalRank;
 			}
-	
-			let ordinalRank = rankLists[listType - 1]
-				? ordinal(rankLists[listType - 1][pokemon.speciesId].rank)
-				: numberOverride
-					? ordinal(numberOverride)
-					: '';
-			if (!ordinalRank) {
-				return '';
-			}
-	
-			if (currentLanguage === Language.Portuguese) {
-				ordinalRank = ordinalRank.replace('st', 'º').replace('nd', 'º').replace('rd', 'º').replace('th', 'º');
-			}
-	
-			if (currentLanguage === Language.Bosnian) {
-				ordinalRank = ordinalRank.replace('st', '.').replace('nd', '.').replace('rd', '.').replace('th', '.');
-			}
-	
-			if (numberOverride ?? rankLists[listType - 1]) {
-				const effectiveRank = numberOverride ?? rankLists[listType - 1][pokemon.speciesId].rank;
-	
-				switch (effectiveRank) {
-					case 1:
-						return '🥇' + ordinalRank;
-					case 2:
-						return '🥈' + ordinalRank;
-					case 3:
-						return '🥉' + ordinalRank;
-					default:
-						return ordinalRank;
-				}
-			}
-	
-			return ordinalRank;
-		}, [currentLanguage, listType, pvpFetchCompleted, rankLists, numberOverride, pokemon]);
+		}
+
+		return ordinalRank;
+	}, [currentLanguage, listType, pvpFetchCompleted, rankLists, numberOverride, pokemon]);
 
 	const idToUse = useMemo(() => {
 		if (!fetchCompleted) {
@@ -166,9 +166,7 @@ const PokemonMiniature = ({
 			new Set(finalCollection.flatMap((f) => getAllChargedMoves(f, moves, gamemasterPokemon).map((m) => moves[m].type)))
 		)
 			.filter((t) => t !== 'normal')
-			.map(
-				(t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PType
-			);
+			.map((t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PType);
 	}, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pkmToUse, idToUse]);
 
 	const link = useMemo(() => `/pokemon/${idToUse}/info`, [idToUse]);
@@ -260,7 +258,7 @@ const PokemonMiniature = ({
 
 	const rankChangeClassName = useMemo(
 		() =>
-			!pvpFetchCompleted || listType === undefined || listType === ListType.POKEDEX || !rankLists[listType - 1]
+			!pvpFetchCompleted || listType === undefined || listType === +ListType.POKEDEX || !rankLists[listType - 1]
 				? ''
 				: rankLists[listType - 1][pokemon.speciesId].rankChange === 0
 					? 'neutral'
@@ -279,25 +277,27 @@ const PokemonMiniature = ({
 				{withNumber && (
 					<div className='rank-container miniature-notification'>
 						<>
-					<span>{listType === ListType.POKEDEX ? `#${pokemon.dex}` : fetchPokemonRank()}</span>
-					<br className='break-line' />
-					<span className={`rank-change with-brightness ${rankChangeClassName}`}>{computeRankChange()}</span>
-				</>
+							<span>{listType === ListType.POKEDEX ? `#${pokemon.dex}` : fetchPokemonRank()}</span>
+							<br className='break-line' />
+							<span className={`rank-change with-brightness ${rankChangeClassName}`}>{computeRankChange()}</span>
+						</>
 					</div>
 				)}
-				{withBackground && <div className={`miniature-tooltip`}>
-					{pvpFetchCompleted &&
-						fetchCompleted &&
-						(raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? (
-							<img
-								className='padded-img raid-img-with-contrast is-raid'
-								alt='Raids'
-								src={`/images/types/${raidRaking.actualType}.png`}
-							/>
-						) : (
-							relevantLeagueElement(mapper)
-						))}
-				</div>}
+				{withBackground && (
+					<div className={`miniature-tooltip`}>
+						{pvpFetchCompleted &&
+							fetchCompleted &&
+							(raidRaking.minRaidRank <= +(readPersistentValue(ConfigKeys.TrashRaid) ?? 5) ? (
+								<img
+									className='padded-img raid-img-with-contrast is-raid'
+									alt='Raids'
+									src={`/images/types/${raidRaking.actualType}.png`}
+								/>
+							) : (
+								relevantLeagueElement(mapper)
+							))}
+					</div>
+				)}
 				<span className='mini-card-content'>
 					<PokemonImage
 						withClassname='with-img-dropShadow'

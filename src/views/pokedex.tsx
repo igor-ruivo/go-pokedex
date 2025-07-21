@@ -1,9 +1,11 @@
 import './pokedex.scss';
+import '../components/PokemonNumber.scss';
 
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Select from 'react-select';
 
+import LoadingRenderer from '../components/LoadingRenderer';
 import PokemonHeader from '../components/PokemonHeader';
 import { translatedType } from '../components/PokemonInfoImagePlaceholder';
 import PokemonMiniature from '../components/PokemonMiniature';
@@ -19,7 +21,6 @@ import { PokemonTypes } from '../DTOs/PokemonTypes';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { fetchPokemonFamily, needsXLCandy } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
-import '../components/PokemonNumber.scss'
 
 export enum ListType {
 	POKEDEX,
@@ -32,7 +33,7 @@ export enum ListType {
 const Pokedex = () => {
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
 	const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
-	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
+	const { raidDPS, raidDPSFetchCompleted, raidDPSErrors } = useRaidRanker();
 	const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter, updateType1 } =
 		useNavbarSearchInput();
 
@@ -309,6 +310,8 @@ const Pokedex = () => {
 
 	return (
 		<main className='pokedex-layout'>
+			<div className='content'>
+			<div className='sticky'>
 			<PokemonHeader
 				pokemonName={
 					listType !== ListType.RAID && listType !== ListType.POKEDEX
@@ -323,7 +326,7 @@ const Pokedex = () => {
 				defaultBannerColor
 				constrained
 			/>
-			<nav className='navigation-header padded-on-top extra-gap leagues'>
+			<nav className='navigation-header padded-on-top extra-gap leagues with-solid-background'>
 				<div className='row justified aligned with-big-gap full-width'>
 					<div className='nav-dropdown-width'>
 						<Select
@@ -399,17 +402,32 @@ const Pokedex = () => {
 					</div>
 				</div>
 			</nav>
-			<div className='pokedex'>
-				<div className={`with-flex contained padding-bar-bottom`}>
-					{data.processedList
-						.map((p) => (
-							<div key={p.speciesId} className='mini-card-wrapper-padding dynamic-size'>
-								<div className={`mini-card-wrapper`}>
-									<PokemonMiniature pokemon={gamemasterPokemon[p.speciesId]} withBackground={false} withNumber numberOverride={data.rankOverrides[p.speciesId]} listType={listType}/>
+			</div>
+			<LoadingRenderer
+				noOverFlow
+				errors={errors + pvpErrors + raidDPSErrors}
+				completed={fetchCompleted && pvpFetchCompleted && (listType !== ListType.RAID || raidDPSFetchCompleted)}
+			>
+				{() => (
+					<div className='pokedex'>
+						<div className={`with-flex contained max-margins`}>
+							{data.processedList.map((p) => (
+								<div key={p.speciesId} className='mini-card-wrapper-padding dynamic-size'>
+									<div className={`mini-card-wrapper`}>
+										<PokemonMiniature
+											pokemon={gamemasterPokemon[p.speciesId]}
+											withBackground={false}
+											withNumber
+											numberOverride={data.rankOverrides[p.speciesId]}
+											listType={listType}
+										/>
+									</div>
 								</div>
-							</div>
-						))}
-				</div>
+							))}
+						</div>
+					</div>
+				)}
+			</LoadingRenderer>
 			</div>
 		</main>
 	);

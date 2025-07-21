@@ -6,6 +6,7 @@ import translator, { TranslatorKeys } from '../utils/Translator';
 interface ILoadingRendererProps {
 	errors: string;
 	completed: boolean;
+	noOverFlow?: boolean;
 	children: () => React.ReactNode;
 }
 
@@ -13,7 +14,7 @@ const LoadingRenderer = (props: ILoadingRendererProps) => {
 	const { currentLanguage } = useLanguage();
 
 	return (
-		<div className='loading_renderer'>
+		<div className={`loading_renderer ${props.noOverFlow ? 'no-overflow' : ''}`}>
 			{!props.completed ? (
 				<div>{translator(TranslatorKeys.Loading, currentLanguage)}</div>
 			) : props.errors ? (
