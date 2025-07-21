@@ -1,6 +1,7 @@
 import './Section.scss';
 
 import PokemonHeader from '../PokemonHeader';
+import React from 'react';
 
 interface ISection {
 	title: string;
@@ -14,9 +15,10 @@ interface ISection {
 	noPadding?: boolean;
 }
 
-const Section = (props: React.PropsWithChildren<ISection>) => {
+const Section = React.forwardRef<HTMLDivElement, React.PropsWithChildren<ISection>>((props, ref) => {
 	return (
 		<div
+			ref={ref}
 			className={`content popup-color sub-title without-shadow ${!props.fullMargins ? 'with-dynamic-max-width auto-margin-sides' : ''} ${props.noPadding ? 'no-padding' : ''} ${props.chevronCollapsed ? 'collapsed-chevron' : ''}`}
 		>
 			<PokemonHeader
@@ -35,6 +37,6 @@ const Section = (props: React.PropsWithChildren<ISection>) => {
 			<div className='pokemon'>{props.children}</div>
 		</div>
 	);
-};
+});
 
 export default Section;

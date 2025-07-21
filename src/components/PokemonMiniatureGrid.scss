@@ -1,9 +1,10 @@
 .ReactVirtualized__Grid__innerScrollContainer {
-	margin-left: 0px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
 }
 
 .ReactVirtualized__Grid {
-	//overflow: visible !important;
+	margin-top: 9px;
 	margin-left: auto;
 	margin-right: auto;
 }
