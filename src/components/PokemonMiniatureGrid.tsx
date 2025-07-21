@@ -70,6 +70,7 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 						pokemon={gamemasterPokemon[p.speciesId]}
 						withBackground={false}
 						withNumber
+						withTypes
 						numberOverride={rankOverrides[p.speciesId]}
 						listType={listType}
 						megaBall={false}
