@@ -5,7 +5,7 @@
 	"homepage": "https://go-pokedex.com",
 	"private": true,
 	"scripts": {
-		"dev": "vite --host --port 3000",
+		"dev": "vite --host --port 3001",
 		"build": "vite build",
 		"preview": "vite preview",
 		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs",

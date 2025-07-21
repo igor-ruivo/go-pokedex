@@ -7,6 +7,7 @@ import { AutoSizer, Grid } from 'react-virtualized';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { ListType } from '../views/pokedex';
 import PokemonMiniature from './PokemonMiniature';
+import useResize from '../hooks/useResize';
 
 interface PokemonMiniatureGridProps {
 	pokemonList: Array<IGamemasterPokemon>;
@@ -26,6 +27,7 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 	parentRef,
 }) => {
 	const gridRef = useRef<Grid>(null);
+	const { x } = useResize();
 	const [parentWidth, setParentWidth] = useState<number | null>(null);
 
 	const getCardSize = (width: number) => (width <= 500 ? 70 : 100);
@@ -75,10 +77,10 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 					rowCount={rowCount}
 					height={
 						window.innerHeight -
-						(window.innerWidth <= 500 ? 86 : 56.13) -
-						(window.innerWidth <= 500 ? 49.25 : 52.13) -
-						(window.innerWidth <= 500 ? 99 : 119) -
-						(window.innerWidth <= 500 ? 55 : 65)
+						(x <= 500 ? 86 : 56.13) -
+						(x <= 500 ? 49.25 : 52.13) -
+						(x <= 500 ? 99 : 119) -
+						(x <= 500 ? 55 : 65)
 					}
 					columnWidth={CARD_SIZE}
 					rowHeight={CARD_SIZE}
@@ -96,7 +98,7 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 
 	return (
 		<div className={className} style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
-			<AutoSizer>{({ width }) => renderGrid(window.innerWidth)}</AutoSizer>
+			<AutoSizer>{({ width }) => renderGrid(x)}</AutoSizer>
 		</div>
 	);
 };

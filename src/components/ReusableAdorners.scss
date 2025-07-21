@@ -16,6 +16,7 @@
 }
 
 .rank-container {
+	margin-top: -1px;
 	z-index: 4;
 	transform: translateY(-45%) translateX(120%);
 	background-color: var(--bodyBackgroundColor-2);
@@ -85,6 +86,7 @@
 	}
 
 	.rank-container {
+		font-size: 8px !important;
 		height: 16px;
 		width: 16px;
 		transform: translateY(-35%) translateX(120%);
