@@ -111,7 +111,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
 	return (
 		<div className='column item with-small-margin-top'>
 			<div className='pokemon_main_info'>
-				<PokemonImage pokemon={props.pokemon} withName={false} galleryToggle lowRes={false}/>
+				<PokemonImage pokemon={props.pokemon} withName={false} galleryToggle lowRes={false} />
 				<div className='with-margin-left'>
 					<span className='cp-level'>
 						<strong className='cp-container very-big'>

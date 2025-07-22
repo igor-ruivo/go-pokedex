@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useState } from 'react';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
 import {
 	ConfigKeys,
-	readPersistentValue,
+	//readPersistentValue,
 	readSessionValue,
 	writePersistentValue,
 	writeSessionValue,
@@ -36,7 +36,7 @@ export const useNavbarSearchInput = (): NavbarSearchContextType => {
 	return context;
 };
 
-const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) => {
+/*const parsePersistentCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) => {
 	const cachedValue = readPersistentValue(key);
 	if (cachedValue === null) {
 		return defaultValue;
@@ -50,7 +50,7 @@ const parseSessionCachedBooleanValue = (key: ConfigKeys, defaultValue: boolean) 
 		return defaultValue;
 	}
 	return cachedValue === 'true';
-};
+};*/
 
 const getDefaultType = (key: ConfigKeys) => {
 	const cachedValue = readSessionValue(key);
@@ -66,12 +66,16 @@ const getDefaultType = (key: ConfigKeys) => {
 
 export const NavbarSearchProvider = (props: React.PropsWithChildren<object>) => {
 	const [inputText, setInputText] = useState(readSessionValue(ConfigKeys.SearchInputText) ?? '');
-	const [familyTree, setFamilyTree] = useState(true /*parsePersistentCachedBooleanValue(ConfigKeys.ShowFamilyTree, true)*/);
+	const [familyTree, setFamilyTree] = useState(
+		true /*parsePersistentCachedBooleanValue(ConfigKeys.ShowFamilyTree, true)*/
+	);
 	const [showMega, setShowMega] = useState(true /*parsePersistentCachedBooleanValue(ConfigKeys.ShowMega, true)*/);
 	const [showShadow, setShowShadow] = useState(true /*parseSessionCachedBooleanValue(ConfigKeys.ShowShadow, true)*/);
 	const [showXL, setShowXL] = useState(true /*parseSessionCachedBooleanValue(ConfigKeys.ShowXL, true)*/);
 	const [type1Filter, setType1Filter] = useState(getDefaultType(ConfigKeys.Type1));
-	const [type2Filter, setType2Filter] = useState<PokemonTypes | undefined>(undefined /*getDefaultType(ConfigKeys.Type2)*/);
+	const [type2Filter, setType2Filter] = useState<PokemonTypes | undefined>(
+		undefined /*getDefaultType(ConfigKeys.Type2)*/
+	);
 
 	const updateInputText = useCallback((newInputText: string) => {
 		writeSessionValue(ConfigKeys.SearchInputText, newInputText);

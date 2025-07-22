@@ -785,9 +785,17 @@ export const fetchReachablePokemonIncludingSelf = (
 					(r) => !r.aliasId && isNonShadowVersion(r, pokemon) && (!domainFilter || domainFilter(r))
 				);
 
-	const baseVersionOfMegaPkm = !pokemon.isMega ? [] : Object.values(gamemasterPokemon).filter(
-					(r) => !r.aliasId && (!domainFilter || domainFilter(r)) && r.dex === pokemon.dex && !r.isMega && !r.isShadow && !['slowbro_galarian', 'slowpoke_galarian'].includes(r.speciesId)
-				);
+	const baseVersionOfMegaPkm = !pokemon.isMega
+		? []
+		: Object.values(gamemasterPokemon).filter(
+				(r) =>
+					!r.aliasId &&
+					(!domainFilter || domainFilter(r)) &&
+					r.dex === pokemon.dex &&
+					!r.isMega &&
+					!r.isShadow &&
+					!['slowbro_galarian', 'slowpoke_galarian'].includes(r.speciesId)
+			);
 
 	const queue = [pokemon, ...nonShadowReplica, ...baseVersionOfMegaPkm];
 
