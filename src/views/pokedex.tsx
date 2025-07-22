@@ -174,7 +174,7 @@ const Pokedex = () => {
 					!pokemon.isMega &&
 					(type1Filter === undefined || pokemon.types.includes(type1Filter)) &&
 					(type2Filter === undefined || pokemon.types.includes(type2Filter));
-				const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
+				const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId && !pokemon.isMega;
 				processedList = Object.values(gamemasterPokemon)
 					.filter((p) => pokedexDomainFilter(p) && inputFilter(p, pokedexDomainFilterForFamily))
 					.sort((p1: IGamemasterPokemon, p2: IGamemasterPokemon) => {

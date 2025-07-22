@@ -443,7 +443,7 @@ const Navbar = () => {
 													return true;
 												}
 
-												return !p.isShadow;
+												return !p.isShadow && !p.isMega;
 											})
 											.map((p) => {
 												const entry: EntryType = {
