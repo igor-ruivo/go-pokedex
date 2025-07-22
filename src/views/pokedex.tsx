@@ -171,7 +171,7 @@ const Pokedex = () => {
 				const pokedexDomainFilter = (pokemon: IGamemasterPokemon) =>
 					!pokemon.isShadow &&
 					!pokemon.aliasId &&
-					(showMega || !pokemon.isMega) &&
+					!pokemon.isMega &&
 					(type1Filter === undefined || pokemon.types.includes(type1Filter)) &&
 					(type2Filter === undefined || pokemon.types.includes(type2Filter));
 				const pokedexDomainFilterForFamily = (pokemon: IGamemasterPokemon) => !pokemon.isShadow && !pokemon.aliasId;
@@ -181,11 +181,6 @@ const Pokedex = () => {
 						// Sort by dex number first
 						if (p1.dex !== p2.dex) {
 							return p1.dex - p2.dex;
-						}
-
-						// Sort Megas higher
-						if (p1.isMega !== p2.isMega) {
-							return p1.isMega ? 1 : -1;
 						}
 
 						// Cache lowercase species names
