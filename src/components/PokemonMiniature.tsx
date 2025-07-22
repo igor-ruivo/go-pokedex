@@ -15,7 +15,7 @@ import useCountdown from '../hooks/useCountdown';
 import useResize from '../hooks/useResize';
 import { ordinal } from '../utils/conversions';
 import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
-import { fetchReachablePokemonIncludingSelf, getAllChargedMoves } from '../utils/pokemon-helper';
+import { fetchReachablePokemonIncludingSelf, getAllChargedMoves, needsXLCandy } from '../utils/pokemon-helper';
 import { ListType } from '../views/pokedex';
 import PokemonImage from './PokemonImage';
 
@@ -81,6 +81,16 @@ const PokemonMiniature = ({
 
 		return ` ${rankLists[listType - 1][pokemon.speciesId].rankChange === 0 ? '' : rankLists[listType - 1][pokemon.speciesId].rankChange < 0 ? '▾' + rankLists[listType - 1][pokemon.speciesId].rankChange * -1 : '▴' + rankLists[listType - 1][pokemon.speciesId].rankChange}`;
 	}, [pvpFetchCompleted, rankLists, listType, pokemon]);
+
+	let cpThreshold = 0;
+	switch (listType) {
+		case ListType.GREAT_LEAGUE:
+			cpThreshold = 1500;
+			break;
+		case ListType.ULTRA_LEAGUE:
+			cpThreshold = 2500;
+			break;
+	}
 
 	const fetchPokemonRank = useCallback((): string => {
 		if (!pvpFetchCompleted || listType === undefined) {
@@ -332,6 +342,7 @@ const PokemonMiniature = ({
 						withClassname={`with-img-dropShadow`}
 						pokemon={pkmToUse}
 						withName
+						xl={cpThreshold !== 0 && needsXLCandy(pokemon, cpThreshold)}
 						lazy
 						specificNameContainerWidth={containerWidth.current?.clientWidth}
 						forceShadowAdorner={forceShadowAdorner && !pkmToUse.speciesId.endsWith('_shadow')}
