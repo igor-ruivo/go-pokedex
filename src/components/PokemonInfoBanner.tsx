@@ -208,23 +208,7 @@ const PokemonInfoBanner = ({
 			return [pokemon];
 		}
 
-		const reachableExcludingMega = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
-
-		const exclusions = ['slowbro_galarian', 'slowpoke_galarian'];
-
-		const mega =
-			pokemon.isMega || exclusions.includes(pokemon.speciesId)
-				? []
-				: Object.values(gamemasterPokemon).filter(
-						(p) =>
-							!p.aliasId &&
-							Array.from(reachableExcludingMega)
-								.map((pk) => pk.dex)
-								.includes(p.dex) &&
-							p.isMega
-					);
-
-		return [...reachableExcludingMega, ...mega];
+		return Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true));
 	}, [pokemon, gamemasterPokemon, fetchCompleted]);
 
 	useEffect(() => {
@@ -233,16 +217,36 @@ const PokemonInfoBanner = ({
 				return;
 			}
 
-			const sortedPokemon = [...allReachableRaidPokemon].sort((a, b) => {
-				if (!raidDPS[''][a.speciesId] || !raidDPS[''][b.speciesId]) {
-					return 1;
+			const typeKeys = Object.keys(TypesDTO)
+				.filter((k) => isNaN(Number(k)))
+				.map((k) => k.toLocaleLowerCase());
+
+			const getBestRank = (speciesId: string): number => {
+				let bestRank = Infinity;
+				for (const type of typeKeys) {
+					const entry = raidDPS[type]?.[speciesId];
+					if (entry && entry.rank < bestRank) {
+						bestRank = entry.rank;
+					}
 				}
+				return bestRank;
+			};
 
-				const dpsA = raidDPS[''][a.speciesId].dps;
-				const dpsB = raidDPS[''][b.speciesId].dps;
+			const sortedPokemon = [...allReachableRaidPokemon].sort((a, b) => {
+				const rankA = getBestRank(a.speciesId);
+				const rankB = getBestRank(b.speciesId);
 
-				if (dpsB !== dpsA) {
-					return dpsB - dpsA;
+				// If both have no valid rank, sort by speciesId
+				if (rankA === Infinity && rankB === Infinity) {
+					return a.speciesId.localeCompare(b.speciesId);
+				}
+				// If only one has a valid rank, that one comes first
+				if (rankA === Infinity) return 1;
+				if (rankB === Infinity) return -1;
+
+				// Sort by best (lowest) rank
+				if (rankA !== rankB) {
+					return rankA - rankB;
 				}
 				return a.speciesId.localeCompare(b.speciesId);
 			});

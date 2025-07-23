@@ -165,19 +165,14 @@ const PokemonMiniature = ({
 			return [];
 		}
 
-		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon));
-		const exceptionPokemon = ['slowpoke_galarian', 'slowbro_galarian'];
-
-		const mega = exceptionPokemon.includes(idToUse)
-			? []
-			: Object.values(gamemasterPokemon).filter(
-					(pk) => !pk.aliasId && pk.isMega && reachablePokemon.some((r) => r.dex === pk.dex)
-				);
-
-		const finalCollection = [...reachablePokemon, ...mega];
+		const reachablePokemon = Array.from(
+			fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon, undefined, true)
+		);
 
 		return Array.from(
-			new Set(finalCollection.flatMap((f) => getAllChargedMoves(f, moves, gamemasterPokemon).map((m) => moves[m].type)))
+			new Set(
+				reachablePokemon.flatMap((f) => getAllChargedMoves(f, moves, gamemasterPokemon).map((m) => moves[m].type))
+			)
 		)
 			.filter((t) => t !== 'normal')
 			.map((t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PType);
@@ -194,20 +189,14 @@ const PokemonMiniature = ({
 			return { minRaidRank: Infinity, actualType: '' };
 		}
 
-		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon));
-		const exceptionPokemon = ['slowpoke_galarian', 'slowbro_galarian'];
-
-		const mega = exceptionPokemon.includes(idToUse)
-			? []
-			: Object.values(gamemasterPokemon).filter(
-					(pk) => !pk.aliasId && pk.isMega && reachablePokemon.some((r) => r.dex === pk.dex)
-				);
+		const reachablePokemon = Array.from(
+			fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon, undefined, true)
+		);
 
 		let minRaidRank = Infinity;
 		let actualType = '';
-		const finalCollection = [...reachablePokemon, ...mega];
 		allRelevantChargedMoveTypes.forEach((t) => {
-			finalCollection.forEach((pk) => {
+			reachablePokemon.forEach((pk) => {
 				const rank = Object.keys(raidDPS[t.toString().toLocaleLowerCase()]).indexOf(pk.speciesId);
 				if (rank !== -1) {
 					if (rank + 1 < minRaidRank) {

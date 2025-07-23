@@ -771,10 +771,19 @@ const isNonShadowVersion = (p: IGamemasterPokemon, original: IGamemasterPokemon)
 	p.types.length === original.types.length &&
 	p.types.every((t) => original.types.includes(t));
 
+const getMegaPokemonFromBase = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
+	const exceptions = ['slowbro_galarian', 'slowpoke_galarian'];
+
+	return Object.values(gamemasterPokemon).filter(
+		(p) => !p.aliasId && p.isMega && p.dex === pokemon.dex && !exceptions.includes(p.speciesId)
+	);
+};
+
 export const fetchReachablePokemonIncludingSelf = (
 	pokemon: IGamemasterPokemon,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
-	domainFilter?: (p: IGamemasterPokemon) => boolean
+	domainFilter?: (p: IGamemasterPokemon) => boolean,
+	includeMega?: boolean
 ) => {
 	const reachablePokemons = new Set<IGamemasterPokemon>();
 
@@ -804,6 +813,10 @@ export const fetchReachablePokemonIncludingSelf = (
 
 		if (reachablePokemons.has(currentPokemon)) {
 			continue;
+		}
+
+		if (includeMega) {
+			queue.push(...getMegaPokemonFromBase(currentPokemon, gamemasterPokemon));
 		}
 
 		reachablePokemons.add(currentPokemon);

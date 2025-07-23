@@ -80,17 +80,8 @@ const DeleteTrash = () => {
 				return true;
 			}
 
-			const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
-			const exceptionPokemon = ['slowpoke_galarian', 'slowbro_galarian'];
-
-			const mega = exceptionPokemon.includes(p.speciesId)
-				? []
-				: Object.values(gamemasterPokemon).filter(
-						(pk) => !pk.aliasId && pk.isMega && reachablePokemon.some((r) => r.dex === pk.dex)
-					);
-
 			let minRaidRank = Infinity;
-			const finalCollection = [...reachablePokemon, ...mega];
+			const finalCollection = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, undefined, true));
 			enumValues.forEach((t) => {
 				finalCollection.forEach((pk) => {
 					const rank = Object.keys(raidDPS[t.toString().toLocaleLowerCase()]).indexOf(pk.speciesId);
