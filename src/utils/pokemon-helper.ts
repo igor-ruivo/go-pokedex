@@ -757,20 +757,6 @@ export const pveDPS = (
 	return Math.max(chargedMoveUsageDPS, fastMoveDPS);
 };
 
-/*
-Set of pokémons that have the same types on different forms while also being available as shadow in some other different form but not on this form.
-*/
-const nonShadowExceptions = new Set<string>(['mewtwo_armored']);
-const isNonShadowVersion = (p: IGamemasterPokemon, original: IGamemasterPokemon) =>
-	!nonShadowExceptions.has(p.speciesId) &&
-	original.isShadow &&
-	!p.isShadow &&
-	p.speciesId !== original.speciesId &&
-	p.dex === original.dex &&
-	!p.isMega &&
-	p.types.length === original.types.length &&
-	p.types.every((t) => original.types.includes(t));
-
 const getMegaPokemonFromBase = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
 	const exceptions = ['slowbro_galarian', 'slowpoke_galarian'];
 
@@ -791,7 +777,10 @@ export const fetchReachablePokemonIncludingSelf = (
 		!pokemon.isShadow || pokemon.isMega
 			? []
 			: Object.values(gamemasterPokemon).filter(
-					(r) => !r.aliasId && isNonShadowVersion(r, pokemon) && (!domainFilter || domainFilter(r))
+					(r) =>
+						!r.aliasId &&
+						r.speciesId === pokemon.speciesId.replaceAll('_shadow', '') &&
+						(!domainFilter || domainFilter(r))
 				);
 
 	const baseVersionOfMegaPkm = !pokemon.isMega

@@ -176,7 +176,7 @@ const PokemonMiniature = ({
 		)
 			.filter((t) => t !== 'normal')
 			.map((t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PType);
-	}, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pkmToUse, idToUse]);
+	}, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pkmToUse]);
 
 	const link = useMemo(() => `/pokemon/${idToUse}/info`, [idToUse]);
 
@@ -208,15 +208,7 @@ const PokemonMiniature = ({
 		});
 
 		return { minRaidRank: minRaidRank, actualType: actualType };
-	}, [
-		allRelevantChargedMoveTypes,
-		fetchCompleted,
-		gamemasterPokemon,
-		pkmToUse,
-		raidDPS,
-		raidDPSFetchCompleted,
-		idToUse,
-	]);
+	}, [allRelevantChargedMoveTypes, fetchCompleted, gamemasterPokemon, pkmToUse, raidDPS, raidDPSFetchCompleted]);
 
 	const rankForLeague = useCallback(
 		(leagueIdx: number) => {

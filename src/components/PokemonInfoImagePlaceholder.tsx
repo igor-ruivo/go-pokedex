@@ -3,11 +3,12 @@ import './ReusableAdorners.scss';
 
 import type { PropsWithChildren } from 'react';
 import { useMemo, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
 import type { Language } from '../contexts/language-context';
 import { useLanguage } from '../contexts/language-context';
+import { usePokemon } from '../contexts/pokemon-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
@@ -47,6 +48,8 @@ export const translatedType = (type: PokemonTypes, language: Language) => {
 const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const { pathname } = useLocation();
+	const navigate = useNavigate();
+	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 
 	const isDisabled = useMemo(
 		() => pathname.endsWith('counters') || pathname.endsWith('tables') || pathname.endsWith('strings'),
@@ -170,7 +173,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
 					</span>
 				</div>
 			</div>
-			<div className='row justified aligned with-big-gap'>
+			<div className='row justified aligned with-big-gap padded-sides'>
 				{props.computedPokemonFamily && (
 					<PokemonFamily
 						pokemon={props.pokemon}
@@ -202,6 +205,40 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
 						)}
 					/>
 				</div>
+				{(() => {
+					const currentTab = props.tab.substring(props.tab.lastIndexOf('/') + 1);
+					const isShadow = props.pokemon.speciesId.includes('_shadow');
+					const baseId = isShadow ? props.pokemon.speciesId.replace('_shadow', '') : props.pokemon.speciesId;
+					const hasShadowVariant = fetchCompleted && !!gamemasterPokemon[`${baseId}_shadow`];
+
+					if (!hasShadowVariant) {
+						return <></>;
+					}
+
+					return (
+						<button
+							className={`shadow-toggle-button ${isShadow ? 'active' : ''}`}
+							type='button'
+							aria-pressed={isShadow}
+							aria-label={gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}
+							title={gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}
+							onClick={() => {
+								const destination = isShadow
+									? `/pokemon/${baseId}/${currentTab}`
+									: `/pokemon/${baseId}_shadow/${currentTab}`;
+								void navigate(destination);
+							}}
+						>
+							<img
+								src={'https://i.imgur.com/OS1Whqr.png'}
+								alt={gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}
+								className='shadow-icon img-adorner'
+								height={32}
+								width={32}
+							/>
+						</button>
+					);
+				})()}
 			</div>
 		</div>
 	);

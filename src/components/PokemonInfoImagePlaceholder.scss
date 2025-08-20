@@ -192,6 +192,42 @@
 	height: 32px;
 }
 
+.shadow-toggle-button {
+	border: 1px solid var(--borderColor2);
+	background: transparent;
+	padding: 2px;
+	display: flex;
+	height: 38px;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	border-radius: 12px;
+	margin-bottom: 6px;
+}
+
+.padded-sides {
+	padding: 0px 6px;
+}
+
+.shadow-toggle-button .shadow-icon {
+	opacity: 0.35;
+	transition:
+		opacity 120ms ease-in-out,
+		transform 120ms ease-in-out;
+	filter: drop-shadow(0 0 1px rgb(0 0 0 / 30%));
+}
+
+.shadow-toggle-button.active .shadow-icon {
+	opacity: 1;
+}
+
+@media (hover: hover) {
+	.shadow-toggle-button:hover .shadow-icon {
+		opacity: 0.7;
+		transform: scale(1.05);
+	}
+}
+
 @media (width <= 1200px) {
 	.big {
 		font-size: 15px;
