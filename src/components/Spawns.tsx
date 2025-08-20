@@ -8,7 +8,7 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IPostEntry } from '../DTOs/INews';
 import { sortPosts } from '../DTOs/INews';
-import { inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
+import { getCurrentUTCTimestamp, inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
@@ -25,7 +25,13 @@ const Spawns = () => {
 	const currPosts = useMemo(
 		() =>
 			postsFetchCompleted && posts
-				? posts.filter((p) => p && (p.wild?.length ?? 0) > 0 && p.endDate >= Date.now() && p.startDate < Date.now())
+				? posts.filter(
+						(p) =>
+							p &&
+							(p.wild?.length ?? 0) > 0 &&
+							p.endDate >= getCurrentUTCTimestamp() &&
+							p.startDate < getCurrentUTCTimestamp()
+					)
 				: [],
 		[postsFetchCompleted, posts]
 	);
@@ -63,7 +69,10 @@ const Spawns = () => {
 			const futurePosts = posts
 				.filter(
 					(p): p is IPostEntry =>
-						!!p && (p.wild?.length ?? 0) > 0 && p.endDate >= Date.now() && p.startDate > Date.now()
+						!!p &&
+						(p.wild?.length ?? 0) > 0 &&
+						p.endDate >= getCurrentUTCTimestamp() &&
+						p.startDate > getCurrentUTCTimestamp()
 				)
 				.sort(sortPosts)
 				.map(

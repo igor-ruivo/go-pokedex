@@ -15,7 +15,7 @@ import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IPostEntry } from '../DTOs/INews';
 import { sortEntries, sortPosts } from '../DTOs/INews';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import { inCamelCase, localeStringMiniature, localeStringSmallOptions } from '../utils/Misc';
+import { getCurrentUTCTimestamp, inCamelCase, localeStringMiniature, localeStringSmallOptions } from '../utils/Misc';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
@@ -77,7 +77,7 @@ const Events = () => {
 							p.eggs.length > 0 ||
 							p.incenses.length > 0 ||
 							p.lures.length > 0) &&
-						p.endDate >= Date.now()
+						p.endDate >= getCurrentUTCTimestamp()
 				)
 				.sort(sortPosts),
 		];

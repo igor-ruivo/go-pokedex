@@ -11,7 +11,7 @@ import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IEntry, IPostEntry } from '../DTOs/INews';
 import { sortEntries, sortPosts } from '../DTOs/INews';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import { inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
+import { getCurrentUTCTimestamp, inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
@@ -68,14 +68,16 @@ const Raids = () => {
 	const reducedLeekPosts = useMemo<Array<IPostEntry>>(
 		() =>
 			specialBossesFetchCompleted && specialBosses
-				? specialBosses.map(mapToPostEntry).filter((p) => (p.raids?.length ?? 0) > 0 && p.endDate >= Date.now())
+				? specialBosses
+						.map(mapToPostEntry)
+						.filter((p) => (p.raids?.length ?? 0) > 0 && p.endDate >= getCurrentUTCTimestamp())
 				: [],
 		[specialBossesFetchCompleted, specialBosses]
 	);
 	const reducedRaids = useMemo<Array<IPostEntry>>(
 		() =>
 			postsFetchCompleted && posts
-				? posts.filter((p) => p && (p.raids?.length ?? 0) > 0 && p.endDate >= Date.now())
+				? posts.filter((p) => p && (p.raids?.length ?? 0) > 0 && p.endDate >= getCurrentUTCTimestamp())
 				: [],
 		[postsFetchCompleted, posts]
 	);
@@ -137,7 +139,10 @@ const Raids = () => {
 	}, [reducedLeekPosts, reducedRaids, getDateKey]);
 
 	const remainingBosses = useMemo<Array<IPostEntry>>(
-		() => additionalBosses.filter((e) => (e.raids?.length ?? 0) > 0 && e.startDate > Date.now()).sort(sortPosts),
+		() =>
+			additionalBosses
+				.filter((e) => (e.raids?.length ?? 0) > 0 && e.startDate > getCurrentUTCTimestamp())
+				.sort(sortPosts),
 		[additionalBosses]
 	);
 
@@ -150,7 +155,7 @@ const Raids = () => {
 			const seenIds = new Set<string>([...(currentBosses ?? [])].map((e) => e.speciesId));
 			const response: Array<IEntry> = [...(currentBosses ?? [])];
 
-			const now = Date.now();
+			const now = getCurrentUTCTimestamp();
 
 			for (const entry of entries) {
 				const dateEntryStart = entry.startDate;
@@ -276,7 +281,8 @@ const Raids = () => {
 		(speciesId: string): number | undefined =>
 			[...reducedLeekPosts, ...reducedRaids]
 				.sort(sortPosts)
-				.find((d) => d.startDate <= Date.now() && (d.raids ?? []).some((f) => f.speciesId === speciesId))?.endDate,
+				.find((d) => d.startDate <= getCurrentUTCTimestamp() && (d.raids ?? []).some((f) => f.speciesId === speciesId))
+				?.endDate,
 		[reducedLeekPosts, reducedRaids]
 	);
 

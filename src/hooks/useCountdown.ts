@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { getCurrentUTCTimestamp } from '../utils/Misc';
 
 // TypeScript interface for the countdown hook return value
 interface CountdownTime {
@@ -13,12 +14,12 @@ const useCountdown = (targetDate: number): CountdownTime => {
 	const countDownDate = targetDate;
 
 	// Initialize state with remaining time
-	const [timeLeft, setTimeLeft] = useState<number>(countDownDate - Date.now());
+	const [timeLeft, setTimeLeft] = useState<number>(countDownDate - getCurrentUTCTimestamp());
 
 	useEffect(() => {
 		// Update the countdown every second
 		const interval = setInterval(() => {
-			const now = Date.now();
+			const now = getCurrentUTCTimestamp();
 			const distance = countDownDate - now;
 
 			setTimeLeft(distance);

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 import type { IPostEntry } from '../DTOs/INews';
+import { getCurrentUTCTimestamp } from '../utils/Misc';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import type { GameLanguage } from './language-context';
 import type { ILeekduckSpotlightHour } from './raid-bosses-context';
@@ -75,7 +76,7 @@ export const NotificationsProvider = (props: React.PropsWithChildren<object>) =>
 									(p.raids?.length ?? 0) > 0 ||
 									p.bonuses.en.length > 0 ||
 									(p.researches?.length ?? 0) > 0) &&
-								p.endDate >= Date.now()
+								p.endDate >= getCurrentUTCTimestamp()
 						),
 					].map((p) => p.id)
 				: [],
