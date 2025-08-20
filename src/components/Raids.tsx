@@ -84,7 +84,7 @@ const Raids = () => {
 
 	const getDateKey = useCallback((obj: IPostEntry) => {
 		const d = new Date(obj?.startDate ?? 0);
-		return `${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`;
+		return `${d.getUTCDate()}-${d.getUTCMonth()}-${d.getUTCFullYear()}`;
 	}, []);
 
 	const additionalBosses = useMemo<Array<IPostEntry>>(() => {
