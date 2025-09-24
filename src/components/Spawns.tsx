@@ -8,6 +8,7 @@ import { usePokemon } from '../contexts/pokemon-context';
 import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IPostEntry } from '../DTOs/INews';
 import { sortPosts } from '../DTOs/INews';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { getCurrentUTCTimestamp, inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
@@ -19,7 +20,7 @@ const getDateKey = (obj: IPostEntry) => String(obj?.startDate?.valueOf()) + '-' 
 
 const Spawns = () => {
 	const { gamemasterPokemon, errors, fetchCompleted } = usePokemon();
-	const { currentLanguage } = useLanguage();
+	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const { posts, postsFetchCompleted, errorLoadingPosts, season, seasonFetchCompleted, errorLoadingSeason } =
 		useCalendar();
 	const currPosts = useMemo(
@@ -198,7 +199,7 @@ const Spawns = () => {
 					</div>
 					<Section title={translator(TranslatorKeys.FeaturedSpawns, currentLanguage)}>
 						<div>
-							{currentBossDate === 'season' && (
+							{currentBossDate === 'season' && season.wild.length > 0 && (
 								<div className='raid-container'>
 									<div className='overflowing'>
 										<div className='img-family'>
@@ -258,6 +259,11 @@ const Spawns = () => {
 												</div>
 											</div>
 										))
+								)}
+								{currentBossDate === 'season' && season.wild.length === 0 && (
+									<div className='bonus-container'>
+										<span>{gameTranslator(GameTranslatorKeys.NoWildsInSeason, currentGameLanguage)}</span>
+									</div>
 								)}
 							</div>
 						</div>

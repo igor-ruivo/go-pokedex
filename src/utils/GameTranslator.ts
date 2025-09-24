@@ -23,6 +23,7 @@ export enum GameTranslatorKeys {
 	MasterLeague,
 	RetroCup,
 	HolidayCup,
+	NoWildsInSeason,
 	EliteTM,
 	ShadowSearch,
 	Shadow,
@@ -207,6 +208,17 @@ const eliteTM = new Map<GameLanguage, string>([
 	[GameLanguage.ptbr, 'MT Elite'],
 ]);
 
+const noWildsInSeason = new Map<GameLanguage, string>([
+	[
+		GameLanguage.en,
+		'Starting with Tales of Transformation, Pokémon will appear in different areas across the world, based on their natural habitat and PokéDex entry. Explore different biomes, brush up on your Pokémon knowledge, and see what discoveries await you!',
+	],
+	[
+		GameLanguage.ptbr,
+		'A partir de Histórias de Transformação, os Pokémon aparecerão em diferentes áreas do mundo, com base em seu habitat natural e na entrada do Pokédex. Explore diferentes biomas, aprimore seu conhecimento sobre Pokémon e veja quais descobertas esperam por você.',
+	],
+]);
+
 const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
 	[GameTranslatorKeys.HP, hp],
 	[GameTranslatorKeys.AttackSearch, attackSearch],
@@ -242,6 +254,7 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
 	[GameTranslatorKeys.TradeEvolve, tradeEvolve],
 	[GameTranslatorKeys.UltraBeast, ultraBeast],
 	[GameTranslatorKeys.Favorite, favorite],
+	[GameTranslatorKeys.NoWildsInSeason, noWildsInSeason],
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) =>
