@@ -27,6 +27,8 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 	parentRef,
 }) => {
 	const gridRef = useRef<Grid>(null);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const scrollTopRef = useRef(0);
 	const { x } = useResize();
 	const [parentWidth, setParentWidth] = useState<number | null>(null);
 
@@ -58,6 +60,36 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 		return () => window.removeEventListener('resize', updateWidth);
 	}, [parentRef]);
 
+	useEffect(() => {
+		const handleWheel = (e: WheelEvent) => {
+			if (!gridRef.current) return;
+
+			// Walk up from the event target. If we find a scrollable element that lives
+			// OUTSIDE our wrapper (e.g. a portal-rendered dropdown menu), let it scroll
+			// natively. Scrollable elements inside our wrapper (the Grid's own scroll
+			// container) should still be handled by us via scrollToPosition, because
+			// react-virtualized needs its JS-driven scroll path to update virtualised cells.
+			let el = e.target as Element | null;
+			while (el && el !== document.documentElement) {
+				const oy = window.getComputedStyle(el).overflowY;
+				if ((oy === 'scroll' || oy === 'auto') && el.scrollHeight > el.clientHeight + 1) {
+					if (wrapperRef.current && !wrapperRef.current.contains(el)) {
+						return;
+					}
+					break;
+				}
+				el = el.parentElement;
+			}
+
+			const newScrollTop = Math.max(0, scrollTopRef.current + e.deltaY);
+			gridRef.current.scrollToPosition({ scrollLeft: 0, scrollTop: newScrollTop });
+			e.preventDefault();
+		};
+
+		window.addEventListener('wheel', handleWheel, { passive: false });
+		return () => window.removeEventListener('wheel', handleWheel);
+	}, []);
+
 	const cellRenderer = ({ columnIndex, rowIndex, key, style }: GridCellProps): React.ReactNode => {
 		const itemsPerRow = gridRef.current?.props.columnCount ?? 3;
 		const idx = rowIndex * itemsPerRow + columnIndex;
@@ -87,24 +119,30 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 		const CARD_SIZE = getCardSize(width, computedContainerWidth, itemsPerRow);
 		const gridWidth = parentWidth !== null ? parentWidth - 12 : itemsPerRow * CARD_SIZE;
 		const rowCount = Math.ceil(pokemonList.length / itemsPerRow);
+		const gridHeight =
+			window.innerHeight -
+			(x <= 500 ? 86 : 56.13) -
+			(x <= 500 ? 49.25 : 52.13) -
+			(x <= 500 ? 99 : 119) -
+			(x <= 500 ? 55 : 65);
+
 		const grid = (
 			<div style={{ width: gridWidth }}>
 				<Grid
 					ref={gridRef}
 					columnCount={itemsPerRow}
 					rowCount={rowCount}
-					height={
-						window.innerHeight -
-						(x <= 500 ? 86 : 56.13) -
-						(x <= 500 ? 49.25 : 52.13) -
-						(x <= 500 ? 99 : 119) -
-						(x <= 500 ? 55 : 65)
-					}
+					height={Math.max(0, gridHeight)}
 					columnWidth={CARD_SIZE}
 					rowHeight={CARD_SIZE}
 					width={gridWidth}
 					cellRenderer={cellRenderer}
 					style={{ outline: 'none' }}
+					overscanRowCount={1}
+					overscanColumnCount={0}
+					onScroll={({ scrollTop }) => {
+						scrollTopRef.current = scrollTop;
+					}}
 				/>
 			</div>
 		);
@@ -115,7 +153,7 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 	};
 
 	return (
-		<div className={className} style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
+		<div ref={wrapperRef} className={className} style={{ width: '100%', height: '100%' }}>
 			<AutoSizer>{({ width }) => renderGrid(x)}</AutoSizer>
 		</div>
 	);
