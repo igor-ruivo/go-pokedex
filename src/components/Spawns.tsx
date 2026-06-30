@@ -16,7 +16,10 @@ import LoadingRenderer from './LoadingRenderer';
 import PokemonMiniature from './PokemonMiniature';
 import Section from './Template/Section';
 
-const getDateKey = (obj: IPostEntry) => String(obj?.startDate?.valueOf()) + '-' + String(obj?.endDate?.valueOf());
+const getDateKey = (obj: IPostEntry) => {
+	const d = new Date(obj?.startDate ?? 0);
+	return `${d.getUTCDate()}-${d.getUTCMonth()}-${d.getUTCFullYear()}`;
+};
 
 const Spawns = () => {
 	const { gamemasterPokemon, errors, fetchCompleted } = usePokemon();
@@ -76,12 +79,16 @@ const Spawns = () => {
 						p.startDate > getCurrentUTCTimestamp()
 				)
 				.sort(sortPosts)
-				.map(
-					(e): RaidEventDateOption => ({
-						label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)),
-						value: getDateKey(e),
-					})
-				);
+				.reduce<Array<RaidEventDateOption>>((acc, e) => {
+					const key = getDateKey(e);
+					if (!acc.some((o) => o.value === key)) {
+						acc.push({
+							label: inCamelCase(new Date(e.startDate).toLocaleString(undefined, localeStringSmallestOptions)),
+							value: key,
+						});
+					}
+					return acc;
+				}, []);
 
 			options.push(...futurePosts);
 		}
