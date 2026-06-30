@@ -1,7 +1,7 @@
 import './ReusableAdorners.scss';
 
 import type { ReactNode } from 'react';
-import { memo, useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Language, useLanguage } from '../contexts/language-context';
@@ -12,6 +12,7 @@ import { useRaidRanker } from '../contexts/raid-ranker-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { PokemonTypes as PType } from '../DTOs/PokemonTypes';
 import useCountdown from '../hooks/useCountdown';
+import useResize from '../hooks/useResize';
 import { ordinal } from '../utils/conversions';
 import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, getAllChargedMoves, needsXLCandy } from '../utils/pokemon-helper';
@@ -49,6 +50,7 @@ const PokemonMiniature = ({
 }: IPokemonMiniatureProps) => {
 	const { days, hours, minutes, seconds } = useCountdown(withCountdown ?? 0);
 	const containerWidth = useRef<HTMLDivElement>(null);
+	useResize();
 
 	const computeCountdownLabel = useCallback(() => {
 		if (days > 0) {
