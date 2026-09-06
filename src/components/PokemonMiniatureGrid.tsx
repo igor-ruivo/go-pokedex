@@ -82,7 +82,7 @@ const PokemonMiniatureGrid: React.FC<PokemonMiniatureGridProps> = ({
 			}
 
 			const { rowCount, rowHeight, height } = gridRef.current.props;
-			const maxScrollTop = Math.max(0, (rowCount as number) * (rowHeight as number) - (height as number));
+			const maxScrollTop = Math.max(0, rowCount * (rowHeight as number) - height);
 			const newScrollTop = Math.max(0, Math.min(scrollTopRef.current + e.deltaY, maxScrollTop));
 			scrollTopRef.current = newScrollTop;
 			gridRef.current.scrollToPosition({ scrollLeft: 0, scrollTop: newScrollTop });

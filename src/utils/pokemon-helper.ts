@@ -757,11 +757,11 @@ export const pveDPS = (
 	return Math.max(chargedMoveUsageDPS, fastMoveDPS);
 };
 
-const getMegaPokemonFromBase = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
-	const exceptions = ['slowbro_galarian', 'slowpoke_galarian'];
+const megaFetcherExceptions = ['slowbro_galarian', 'slowpoke_galarian', 'mewtwo_armored'];
 
+const getMegaPokemonFromBase = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
 	return Object.values(gamemasterPokemon).filter(
-		(p) => !p.aliasId && p.isMega && p.dex === pokemon.dex && !exceptions.includes(p.speciesId)
+		(p) => !p.aliasId && p.isMega && p.dex === pokemon.dex && !megaFetcherExceptions.includes(p.speciesId)
 	);
 };
 
@@ -792,7 +792,7 @@ export const fetchReachablePokemonIncludingSelf = (
 					r.dex === pokemon.dex &&
 					!r.isMega &&
 					!r.isShadow &&
-					!['slowbro_galarian', 'slowpoke_galarian'].includes(r.speciesId)
+					!megaFetcherExceptions.includes(r.speciesId)
 			);
 
 	const queue = [pokemon, ...nonShadowReplica, ...baseVersionOfMegaPkm];
