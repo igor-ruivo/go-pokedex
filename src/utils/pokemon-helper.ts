@@ -729,7 +729,7 @@ const megaFetcherExceptions = ['slowbro_galarian', 'slowpoke_galarian', 'mewtwo_
 
 const getMegaPokemonFromBase = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
 	return Object.values(gamemasterPokemon).filter(
-		(p) => !p.aliasId && p.isMega && p.dex === pokemon.dex && !megaFetcherExceptions.includes(p.speciesId)
+		(p) => !p.aliasId && p.isMega && p.dex === pokemon.dex && !megaFetcherExceptions.includes(pokemon.speciesId)
 	);
 };
 
