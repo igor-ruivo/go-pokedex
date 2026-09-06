@@ -18,8 +18,6 @@ import {
 	calculateDamage,
 	computeDPSEntry,
 	Effectiveness,
-	getAllChargedMoves,
-	getAllFastMoves,
 	translateMoveFromMoveId,
 } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
@@ -174,6 +172,11 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 			const specialComparison = (hasBuffs(m2) ? 1 : 0) - (hasBuffs(m1) ? 1 : 0);
 			if (specialComparison !== 0) {
 				return specialComparison;
+			}
+
+			const superMegaComparison = (pokemon.extraChargedMoves.includes(m2) ? 1 : 0) - (pokemon.extraChargedMoves.includes(m1) ? 1 : 0);
+			if (superMegaComparison !== 0) {
+				return superMegaComparison;
 			}
 
 			const eliteComparison = (pokemon.eliteMoves.includes(m2) ? 1 : 0) - (pokemon.eliteMoves.includes(m1) ? 1 : 0);
@@ -546,7 +549,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 									<div className='overflowing'>
 										<div className='img-family'>
 											{Array.from(
-												new Set(getAllChargedMoves(pokemon, moves, gamemasterPokemon).map((m) => moves[m].type))
+												new Set(pokemon.chargedMoves.map((m) => moves[m].type))
 											)
 												.filter((t) => t !== 'normal')
 												.map((t) => (
@@ -658,8 +661,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 							>
 								<div className='menu-item no-margin no-border-container'>
 									<ul className={`moves-list ${fastMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}>
-										{getAllFastMoves(pokemon, moves).length > 0 ? (
-											getAllFastMoves(pokemon, moves)
+										{pokemon.fastMoves.length > 0 ? (
+											pokemon.fastMoves
 												.sort(movesSorter)
 												.map((m) => {
 													const className = relevantMoveSet.includes(m)
@@ -695,8 +698,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 							>
 								<div className='menu-item no-margin no-border-container'>
 									<ul className={`moves-list ${chargedMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}>
-										{getAllChargedMoves(pokemon, moves, gamemasterPokemon).length > 0 ? (
-											getAllChargedMoves(pokemon, moves, gamemasterPokemon)
+										{pokemon.chargedMoves.length > 0 ? (
+											pokemon.chargedMoves
 												.sort(movesSorter)
 												.map((m) => {
 													const className = relevantMoveSet.includes(m)

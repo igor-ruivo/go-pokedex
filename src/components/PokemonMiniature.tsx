@@ -15,7 +15,7 @@ import useCountdown from '../hooks/useCountdown';
 import useResize from '../hooks/useResize';
 import { ordinal } from '../utils/conversions';
 import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
-import { fetchReachablePokemonIncludingSelf, getAllChargedMoves, needsXLCandy } from '../utils/pokemon-helper';
+import { fetchReachablePokemonIncludingSelf, needsXLCandy } from '../utils/pokemon-helper';
 import { ListType } from '../views/pokedex';
 import PokemonImage from './PokemonImage';
 
@@ -171,7 +171,7 @@ const PokemonMiniature = ({
 
 		return Array.from(
 			new Set(
-				reachablePokemon.flatMap((f) => getAllChargedMoves(f, moves, gamemasterPokemon).map((m) => moves[m].type))
+				reachablePokemon.flatMap((f) => f.chargedMoves.map((m) => moves[m].type))
 			)
 		)
 			.filter((t) => t !== 'normal')

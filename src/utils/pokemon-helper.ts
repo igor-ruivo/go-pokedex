@@ -200,38 +200,6 @@ export const computeNeededResources: (
 	};
 };
 
-export const getAllFastMoves = (p: IGamemasterPokemon, moves: Record<string, IGameMasterMove>) => {
-	return Array.from(
-		new Set(
-			p.fastMoves
-				.concat(p.eliteMoves.filter((m) => moves[m].isFast))
-				.concat(p.legacyMoves.filter((m) => moves[m].isFast))
-		)
-	);
-};
-
-export const getAllChargedMoves = (
-	p: IGamemasterPokemon,
-	moves: Record<string, IGameMasterMove>,
-	gamemasterPokemon: Record<string, IGamemasterPokemon>
-) => {
-	const moveSet = new Set(
-		p.chargedMoves
-			.concat(p.eliteMoves.filter((m) => !moves[m].isFast))
-			.concat(p.legacyMoves.filter((m) => !moves[m].isFast))
-	);
-
-	if (p.isShadow) {
-		moveSet.add('FRUSTRATION');
-	}
-
-	if (isNormalPokemonAndHasShadowVersion(p, gamemasterPokemon)) {
-		moveSet.add('RETURN');
-	}
-
-	return Array.from(new Set(moveSet));
-};
-
 export const computeMoveEffectiveness = (ownMoveType: string, targetType1: string, targetType2?: string) => {
 	const matrix: Record<string, Array<number>> = {};
 	matrix.normal = [
@@ -673,8 +641,8 @@ export const computeDPSEntry = (
 		};
 	}
 
-	const fastMoves = getAllFastMoves(p, moves);
-	const chargedMoves = getAllChargedMoves(p, moves, gamemasterPokemon);
+	const fastMoves = p.fastMoves;
+	const chargedMoves = p.chargedMoves;
 	let higherDPS = Number.MIN_VALUE;
 	let higherFast = '';
 	let higherFastDmg = 0;

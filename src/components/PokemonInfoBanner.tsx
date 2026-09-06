@@ -17,7 +17,6 @@ import {
 	computeMoveEffectiveness,
 	Effectiveness,
 	fetchReachablePokemonIncludingSelf,
-	getAllChargedMoves,
 } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import AppraisalBar from './AppraisalBar';
@@ -116,7 +115,7 @@ const PokemonInfoBanner = ({
 		}
 
 		return Array.from(
-			new Set(getAllChargedMoves(bestReachableRaidVersion, moves, gamemasterPokemon).map((m) => moves[m].type))
+			new Set(bestReachableRaidVersion.chargedMoves.map((m) => moves[m].type))
 		)
 			.filter((t) => t !== 'normal')
 			.map((t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as TypesDTO);

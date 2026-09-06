@@ -15,6 +15,7 @@ export interface IGamemasterPokemon {
 	};
 	fastMoves: Array<string>;
 	chargedMoves: Array<string>;
+	extraChargedMoves: Array<string>;
 	eliteMoves: Array<string>;
 	legacyMoves: Array<string>;
 	isShadow: boolean;
