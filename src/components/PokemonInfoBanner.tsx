@@ -114,12 +114,10 @@ const PokemonInfoBanner = ({
 			return [];
 		}
 
-		return Array.from(
-			new Set(bestReachableRaidVersion.chargedMoves.map((m) => moves[m].type))
-		)
+		return Array.from(new Set(bestReachableRaidVersion.chargedMoves.map((m) => moves[m].type)))
 			.filter((t) => t !== 'normal')
 			.map((t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as TypesDTO);
-	}, [fetchCompleted, movesFetchCompleted, bestReachableRaidVersion, moves, gamemasterPokemon]);
+	}, [fetchCompleted, movesFetchCompleted, bestReachableRaidVersion, moves]);
 
 	const ranksComputation = useMemo(() => {
 		if (!fetchCompleted || !movesFetchCompleted || !bestReachableRaidVersion || !raidDPSFetchCompleted) {

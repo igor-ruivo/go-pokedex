@@ -169,11 +169,7 @@ const PokemonMiniature = ({
 			fetchReachablePokemonIncludingSelf(pkmToUse, gamemasterPokemon, undefined, true)
 		);
 
-		return Array.from(
-			new Set(
-				reachablePokemon.flatMap((f) => f.chargedMoves.map((m) => moves[m].type))
-			)
-		)
+		return Array.from(new Set(reachablePokemon.flatMap((f) => f.chargedMoves.map((m) => moves[m].type))))
 			.filter((t) => t !== 'normal')
 			.map((t) => (t.substring(0, 1).toLocaleUpperCase() + t.substring(1).toLocaleLowerCase()) as unknown as PType);
 	}, [fetchCompleted, movesFetchCompleted, moves, gamemasterPokemon, pkmToUse]);

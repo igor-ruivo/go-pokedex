@@ -14,12 +14,7 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
 import { LeagueType } from '../hooks/useLeague';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import {
-	calculateDamage,
-	computeDPSEntry,
-	Effectiveness,
-	translateMoveFromMoveId,
-} from '../utils/pokemon-helper';
+import { calculateDamage, computeDPSEntry, Effectiveness, translateMoveFromMoveId } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import ListEntry from './ListEntry';
 import LoadingRenderer from './LoadingRenderer';
@@ -174,7 +169,8 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 				return specialComparison;
 			}
 
-			const superMegaComparison = (pokemon.extraChargedMoves.includes(m2) ? 1 : 0) - (pokemon.extraChargedMoves.includes(m1) ? 1 : 0);
+			const superMegaComparison =
+				(pokemon.extraChargedMoves.includes(m2) ? 1 : 0) - (pokemon.extraChargedMoves.includes(m1) ? 1 : 0);
 			if (superMegaComparison !== 0) {
 				return superMegaComparison;
 			}
@@ -548,9 +544,7 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 								<div className='raid-container item with-padding'>
 									<div className='overflowing'>
 										<div className='img-family'>
-											{Array.from(
-												new Set(pokemon.chargedMoves.map((m) => moves[m].type))
-											)
+											{Array.from(new Set(pokemon.chargedMoves.map((m) => moves[m].type)))
 												.filter((t) => t !== 'normal')
 												.map((t) => (
 													<div
@@ -662,24 +656,20 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 								<div className='menu-item no-margin no-border-container'>
 									<ul className={`moves-list ${fastMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}>
 										{pokemon.fastMoves.length > 0 ? (
-											pokemon.fastMoves
-												.sort(movesSorter)
-												.map((m) => {
-													const className = relevantMoveSet.includes(m)
-														? `background-${moves[m].type}`
-														: 'normal-entry';
-													const typeTranslatorKey =
-														TranslatorKeys[
-															(moves[m].type.substring(0, 1).toLocaleUpperCase() +
-																moves[m].type.substring(1)) as keyof typeof TranslatorKeys
-														];
-													const url = `/images/types/${moves[m]?.type}.png`;
-													return (
-														<React.Fragment key={m}>
-															{renderMove(m, typeTranslatorKey, url, className, false, false)}
-														</React.Fragment>
-													);
-												})
+											pokemon.fastMoves.sort(movesSorter).map((m) => {
+												const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : 'normal-entry';
+												const typeTranslatorKey =
+													TranslatorKeys[
+														(moves[m].type.substring(0, 1).toLocaleUpperCase() +
+															moves[m].type.substring(1)) as keyof typeof TranslatorKeys
+													];
+												const url = `/images/types/${moves[m]?.type}.png`;
+												return (
+													<React.Fragment key={m}>
+														{renderMove(m, typeTranslatorKey, url, className, false, false)}
+													</React.Fragment>
+												);
+											})
 										) : (
 											<span className='centered'>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
 										)}
@@ -699,24 +689,20 @@ const PokemonMoves = ({ pokemon, level, league }: IPokemonMoves) => {
 								<div className='menu-item no-margin no-border-container'>
 									<ul className={`moves-list ${chargedMovesCollapsed ? 'hidden' : ''} no-padding slim-list`}>
 										{pokemon.chargedMoves.length > 0 ? (
-											pokemon.chargedMoves
-												.sort(movesSorter)
-												.map((m) => {
-													const className = relevantMoveSet.includes(m)
-														? `background-${moves[m].type}`
-														: 'normal-entry';
-													const typeTranslatorKey =
-														TranslatorKeys[
-															(moves[m].type.substring(0, 1).toLocaleUpperCase() +
-																moves[m].type.substring(1)) as keyof typeof TranslatorKeys
-														];
-													const url = `/images/types/${moves[m]?.type}.png`;
-													return (
-														<React.Fragment key={m}>
-															{renderMove(m, typeTranslatorKey, url, className, true, false)}
-														</React.Fragment>
-													);
-												})
+											pokemon.chargedMoves.sort(movesSorter).map((m) => {
+												const className = relevantMoveSet.includes(m) ? `background-${moves[m].type}` : 'normal-entry';
+												const typeTranslatorKey =
+													TranslatorKeys[
+														(moves[m].type.substring(0, 1).toLocaleUpperCase() +
+															moves[m].type.substring(1)) as keyof typeof TranslatorKeys
+													];
+												const url = `/images/types/${moves[m]?.type}.png`;
+												return (
+													<React.Fragment key={m}>
+														{renderMove(m, typeTranslatorKey, url, className, true, false)}
+													</React.Fragment>
+												);
+											})
 										) : (
 											<span className='centered'>{translator(TranslatorKeys.NoResults, currentLanguage)}</span>
 										)}
