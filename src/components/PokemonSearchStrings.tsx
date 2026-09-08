@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { useBestIvs } from '../hooks/useBestIvs';
 import { LeagueType } from '../hooks/useLeague';
 import { usePokemon } from '../queries/pokemon';
 import { customCupCPLimit } from '../queries/pvp';
@@ -12,7 +13,6 @@ import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/
 import {
 	calculateCP,
 	calculateHP,
-	computeBestIVs,
 	fetchPredecessorPokemonIncludingSelf,
 	sortPokemonByBattlePowerAsc,
 } from '../utils/pokemon-helper';
@@ -104,6 +104,9 @@ const PokemonSearchStrings = ({ pokemon, league }: IPokemonSearchStringsProps) =
 			cpCap = customCupCPLimit;
 			break;
 	}
+
+	// Ranked IV spreads for the target species — computed in the worker, one entry per combo.
+	const topIVCombinations = useBestIvs(pokemon, cpCap, !!pokemon && league !== LeagueType.RAID);
 
 	// getRanges: Accepts an array of numbers, returns an array of string ranges
 	const getRanges = useCallback((array: Array<number>): Array<string> => {
@@ -212,12 +215,11 @@ const PokemonSearchStrings = ({ pokemon, league }: IPokemonSearchStringsProps) =
 			const maxCP: Array<number> = Array.from({ length: 5 }, () => 0);
 			const maxHP: Array<number> = Array.from({ length: 5 }, () => 0);
 
-			const topIVCombinations = Object.values(
-				computeBestIVs(pokemon.baseStats.atk, pokemon.baseStats.def, pokemon.baseStats.hp, cpCap)
-			).flat();
-
 			for (let i = 0; i < top; i++) {
 				const topIVCombination = topIVCombinations[i];
+				if (!topIVCombination) {
+					break;
+				}
 				const maxLevel = topIVCombination.L;
 
 				const atkBucket = topIVCombination.IVs.A === 15 ? 4 : Math.ceil(topIVCombination.IVs.A / 5);
@@ -326,11 +328,14 @@ const PokemonSearchStrings = ({ pokemon, league }: IPokemonSearchStringsProps) =
 
 			return result;
 		},
-		[cpCap, currentGameLanguage, get_matching_string, groupAttr, pokemon, top, trash, trashFlip]
+		[currentGameLanguage, get_matching_string, groupAttr, pokemon, top, topIVCombinations, trash, trashFlip]
 	);
 
 	return (
-		<LoadingRenderer errors={''} completed={fetchCompleted && !!gamemasterPokemon}>
+		<LoadingRenderer
+			errors={''}
+			completed={fetchCompleted && !!gamemasterPokemon && (league === LeagueType.RAID || topIVCombinations.length > 0)}
+		>
 			{() =>
 				fetchCompleted &&
 				!!gamemasterPokemon &&

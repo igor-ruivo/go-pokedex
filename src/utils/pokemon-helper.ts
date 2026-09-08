@@ -944,20 +944,20 @@ export const cpm = [
 	0.865299999713897,
 ];
 
-type IVs = {
+export type IVs = {
 	A: number;
 	D: number;
 	S: number;
 	star: number;
 };
 
-type BattleStats = {
+export type BattleStats = {
 	A: number;
 	D: number;
 	S: number;
 };
 
-type RankEntry = {
+export type RankEntry = {
 	IVs: IVs;
 	battle: BattleStats;
 	L: number;

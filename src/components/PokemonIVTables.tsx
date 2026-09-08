@@ -9,11 +9,11 @@ import { TableVirtuoso } from 'react-virtuoso';
 
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { useBestIvs } from '../hooks/useBestIvs';
 import { LeagueType } from '../hooks/useLeague';
 import { usePokemon } from '../queries/pokemon';
 import { customCupCPLimit } from '../queries/pvp';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import { computeBestIVs } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';
 
@@ -202,14 +202,10 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 			break;
 	}
 
-	const result = useMemo(
-		() =>
-			Object.values(computeBestIVs(pokemon.baseStats.atk, pokemon.baseStats.def, pokemon.baseStats.hp, cpCap)).flat(),
-		[pokemon, cpCap]
-	);
+	const result = useBestIvs(pokemon, cpCap, league !== LeagueType.RAID);
 
 	const highestScore = useMemo(
-		() => Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S),
+		() => (result.length > 0 ? Math.round(result[0].battle.A * result[0].battle.D * result[0].battle.S) : 1),
 		[result]
 	);
 
@@ -328,7 +324,10 @@ const PokemonIVTables: React.FC<IPokemonIVTables> = ({
 	);
 
 	return (
-		<LoadingRenderer errors={errors} completed={fetchCompleted && !!gamemasterPokemon}>
+		<LoadingRenderer
+			errors={errors}
+			completed={fetchCompleted && !!gamemasterPokemon && (league === LeagueType.RAID || result.length > 0)}
+		>
 			{() =>
 				fetchCompleted &&
 				!!gamemasterPokemon &&

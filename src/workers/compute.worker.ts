@@ -11,7 +11,7 @@ import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
-import { computeBestIVs, computeDPSEntry } from '../utils/pokemon-helper';
+import { computeBestIVs, computeDPSEntry, type RankEntry } from '../utils/pokemon-helper';
 
 // Keep in sync with `customCupCPLimit` in src/queries/pvp.ts. Duplicated (not imported)
 // so the worker bundle doesn't pull in TanStack Query.
@@ -110,6 +110,18 @@ const familyIvPercents = ({
 	return result;
 };
 
+export interface BestIvsInput {
+	atk: number;
+	def: number;
+	hp: number;
+	/** CP cap; use Number.MAX_VALUE for an uncapped (Master) ranking. */
+	league: number;
+}
+
+/** Every IV spread ranked for one base-stat line + CP cap, best first. */
+const bestIvs = ({ atk, def, hp, league }: BestIvsInput): Array<RankEntry> =>
+	Object.values(computeBestIVs(atk, def, hp, league)).flat();
+
 export interface RaidComparisonsInput {
 	candidates: Array<IGamemasterPokemon>;
 	moves: Record<string, IGameMasterMove>;
@@ -122,7 +134,7 @@ const raidComparisons = ({ candidates, moves, target }: RaidComparisonsInput): A
 	return out.sort((a, b) => (b.dps !== a.dps ? b.dps - a.dps : a.speciesId.localeCompare(b.speciesId)));
 };
 
-export const api = { familyIvPercents, raidComparisons };
+export const api = { familyIvPercents, bestIvs, raidComparisons };
 export type ComputeApi = typeof api;
 
 expose(api);

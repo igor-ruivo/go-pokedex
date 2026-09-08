@@ -10,9 +10,9 @@ import Select from 'react-select';
 
 import { ImageSource, useImageSource } from '../../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../../contexts/language-context';
-import { useNavbarSearchInput } from '../../contexts/navbar-search-context';
 import { PokemonTypes } from '../../DTOs/PokemonTypes';
 import { routes, useCurrentView } from '../../hooks/useCurrentView';
+import { useGridFilters } from '../../hooks/useGridFilters';
 import { usePokemon } from '../../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../../utils/persistent-configs-handler';
@@ -125,7 +125,7 @@ const Navbar = () => {
 		updateType1,
 		type2Filter,
 		updateType2,
-	} = useNavbarSearchInput();
+	} = useGridFilters();
 	const [scrollingDown, setScrollingDown] = useState(false);
 	//to detect direction change
 	const [prevScrollY, setPrevScrollY] = useState(0);

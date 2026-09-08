@@ -17,6 +17,7 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { type PokedexLeague, routes, useCurrentView } from '../hooks/useCurrentView';
+import { useGridFilters } from '../hooks/useGridFilters';
 import { usePokemon } from '../queries/pokemon';
 import { customCupCPLimit, usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
@@ -36,8 +37,8 @@ const Pokedex = () => {
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
 	const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted, raidDPSErrors } = useRaidRanker();
-	const { inputText, familyTree, showShadow, showMega, showXL, type1Filter, type2Filter, updateType1 } =
-		useNavbarSearchInput();
+	const { inputText } = useNavbarSearchInput();
+	const { familyTree, showShadow, showMega, showXL, type1Filter, type2Filter, updateType1 } = useGridFilters();
 
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const navigate = useNavigate();
