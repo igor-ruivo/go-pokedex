@@ -1,0 +1,160 @@
+/* ============================================================================
+   Revamp design tokens + base — everything is scoped under .rvmp so it cannot
+   collide with the legacy global stylesheet. Dark-first (that's the look we keep).
+   ============================================================================ */
+
+.rvmp {
+	/* surfaces */
+	--bg: #0b0e14;
+	--bg-elev: #121722;
+	--surface: #161d29;
+	--surface-2: #1e2735;
+	--surface-3: #26303f;
+	--border: color-mix(in srgb, #7f92ad 16%, transparent);
+	--border-strong: color-mix(in srgb, #7f92ad 30%, transparent);
+
+	/* text */
+	--text: #eef2f8;
+	--text-dim: #9fb0c4;
+	--text-faint: #64748b;
+
+	/* brand accent (overridden per-page by primary type) */
+	--accent: #58a7ff;
+	--accent-ink: #06101d;
+
+	/* radii */
+	--r-xs: 8px;
+	--r-sm: 12px;
+	--r-md: 18px;
+	--r-lg: 26px;
+	--r-pill: 999px;
+
+	/* spacing scale */
+	--s1: 4px;
+	--s2: 8px;
+	--s3: 12px;
+	--s4: 16px;
+	--s5: 24px;
+	--s6: 32px;
+	--s7: 48px;
+
+	/* elevation */
+	--shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.24);
+	--shadow-2: 0 8px 30px rgb(0 0 0 / 0.4);
+	--glow:
+		0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+		0 8px 32px color-mix(in srgb, var(--accent) 26%, transparent);
+
+	/* type palette — vivid, GO-adjacent */
+	--t-normal: #9099a1;
+	--t-fire: #ff8f43;
+	--t-water: #4d90ff;
+	--t-electric: #ffcf3f;
+	--t-grass: #52c56a;
+	--t-ice: #63d4d1;
+	--t-fighting: #e0524b;
+	--t-poison: #b562d6;
+	--t-ground: #d99a54;
+	--t-flying: #8fa9e8;
+	--t-psychic: #ff6d95;
+	--t-bug: #96c235;
+	--t-rock: #c8b478;
+	--t-ghost: #7a6ac2;
+	--t-dragon: #4f7fe0;
+	--t-dark: #6b6473;
+	--t-steel: #6fb1c9;
+	--t-fairy: #f38ad4;
+
+	/* Pokémon GO league identity colours (hints only — not the page accent) */
+	--lg-great: #3d8bde;
+	--lg-ultra: #e6b422;
+	--lg-master: #9b6bd8;
+
+	/* IV appraisal (GO style): amber fill, red when a stat is maxed at 15 */
+	--iv-fill: #f5a623;
+	--iv-max: #ff5252;
+
+	box-sizing: border-box;
+	min-height: 100dvh;
+	background: var(--bg);
+	color: var(--text);
+	font-family:
+		'Nunito Sans',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		sans-serif;
+	font-size: 16px;
+	line-height: 1.45;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+.rvmp *,
+.rvmp *::before,
+.rvmp *::after {
+	box-sizing: border-box;
+}
+
+.rvmp h1,
+.rvmp h2,
+.rvmp h3,
+.rvmp h4 {
+	font-family: Fredoka, 'Nunito Sans', sans-serif;
+	font-weight: 600;
+	line-height: 1.1;
+	margin: 0;
+	letter-spacing: -0.01em;
+}
+
+.rvmp button {
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+	background: none;
+	border: none;
+	outline: none;
+}
+.rvmp button:focus-visible,
+.rvmp a:focus-visible,
+.rvmp [role='slider']:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: var(--r-xs);
+}
+
+.rvmp a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.rvmp img {
+	max-width: 100%;
+	display: block;
+}
+
+.rvmp ::selection {
+	background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* thin, unobtrusive scrollbars for the desktop side */
+.rvmp *::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+.rvmp *::-webkit-scrollbar-thumb {
+	background: var(--surface-3);
+	border-radius: var(--r-pill);
+	border: 3px solid transparent;
+	background-clip: content-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rvmp *,
+	.rvmp *::before,
+	.rvmp *::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

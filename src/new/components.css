@@ -1,0 +1,919 @@
+/* Revamp component styles — all selectors scoped under .rvmp, class prefix r- */
+
+/* ---- shell / layout ---------------------------------------------------------- */
+/* Narrow, centred column for content pages (detail, settings…). */
+.rvmp .r-shell {
+	max-width: 680px;
+	margin-inline: auto;
+	padding: 0 var(--s4) calc(var(--s7) + env(safe-area-inset-bottom));
+}
+/* Wide, centred column for the grid. */
+.rvmp .r-shell--wide {
+	max-width: 1180px;
+}
+
+.rvmp .r-topbar {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	padding: var(--s3) var(--s4);
+	background: color-mix(in srgb, var(--bg) 82%, transparent);
+	backdrop-filter: blur(14px);
+	border-bottom: 1px solid var(--border);
+}
+.rvmp .r-topbar .r-back {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	font-size: 18px;
+	flex: none;
+}
+.rvmp .r-topbar .r-crumb {
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	color: var(--text-dim);
+	font-size: 15px;
+}
+
+/* ---- hero ------------------------------------------------------------------- */
+.rvmp .r-hero {
+	position: relative;
+	margin-top: var(--s4);
+	border-radius: var(--r-lg);
+	padding: var(--s5) var(--s4) var(--s4);
+	background:
+		radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%),
+		linear-gradient(180deg, var(--surface-2), var(--surface));
+	border: 1px solid var(--border);
+	overflow: hidden;
+}
+.rvmp .r-hero::after {
+	content: '';
+	position: absolute;
+	inset: -40% -10% auto;
+	height: 240px;
+	background: radial-gradient(50% 60% at 50% 40%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%);
+	filter: blur(10px);
+	pointer-events: none;
+}
+.rvmp .r-hero-top {
+	position: relative;
+	display: flex;
+	gap: var(--s4);
+	align-items: center;
+}
+@media (max-width: 520px) {
+	.rvmp .r-hero-top {
+		flex-direction: column;
+		text-align: center;
+	}
+}
+.rvmp .r-dexno {
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 13px;
+	color: var(--text-faint);
+	letter-spacing: 0.06em;
+}
+.rvmp .r-name {
+	font-size: clamp(26px, 7vw, 40px);
+	margin: 2px 0 var(--s2);
+}
+.rvmp .r-cp {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	color: var(--accent);
+	line-height: 1;
+}
+.rvmp .r-cp b {
+	font-size: clamp(38px, 12vw, 58px);
+	font-variant-numeric: tabular-nums;
+	text-shadow: 0 2px 18px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.rvmp .r-cp span {
+	font-size: 15px;
+	color: var(--text-dim);
+	letter-spacing: 0.08em;
+}
+
+/* sprite */
+.rvmp .r-sprite {
+	position: relative;
+	flex: none;
+	width: clamp(130px, 40vw, 190px);
+	aspect-ratio: 1;
+	display: grid;
+	place-items: center;
+}
+.rvmp .r-sprite::before {
+	content: '';
+	position: absolute;
+	inset: 12% 12% 6%;
+	border-radius: 50%;
+	background: radial-gradient(circle, color-mix(in srgb, var(--accent) 34%, transparent), transparent 68%);
+	filter: blur(6px);
+}
+.rvmp .r-sprite img {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
+	animation: r-bob 5s ease-in-out infinite;
+}
+@keyframes r-bob {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-8px);
+	}
+}
+
+/* stat row */
+.rvmp .r-stats {
+	display: flex;
+	gap: var(--s2);
+	margin-top: var(--s3);
+}
+.rvmp .r-stat {
+	flex: 1;
+	background: color-mix(in srgb, var(--bg) 45%, transparent);
+	border: 1px solid var(--border);
+	border-radius: var(--r-sm);
+	padding: var(--s2) var(--s3);
+	text-align: center;
+}
+.rvmp .r-stat i {
+	display: block;
+	font-style: normal;
+	font-size: 11px;
+	letter-spacing: 0.12em;
+	color: var(--text-faint);
+	font-weight: 700;
+}
+.rvmp .r-stat b {
+	font-family: Fredoka, sans-serif;
+	font-size: 20px;
+	font-variant-numeric: tabular-nums;
+}
+
+/* ---- badges / pills ------------------------------------------------------- */
+.rvmp .r-types {
+	display: flex;
+	gap: var(--s2);
+	flex-wrap: wrap;
+	justify-content: inherit;
+}
+.rvmp .r-type {
+	--tc: var(--t-normal);
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 5px 12px 5px 10px;
+	border-radius: var(--r-pill);
+	font-weight: 800;
+	font-size: 12.5px;
+	letter-spacing: 0.02em;
+	color: #0c1017;
+	background: var(--tc);
+	box-shadow: 0 2px 10px color-mix(in srgb, var(--tc) 40%, transparent);
+}
+.rvmp .r-type::before {
+	content: '';
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: rgb(0 0 0 / 0.28);
+}
+
+/* ---- segmented control --------------------------------------------------- */
+.rvmp .r-seg {
+	display: flex;
+	gap: 4px;
+	padding: 4px;
+	margin-top: var(--s4);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--r-pill);
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+.rvmp .r-seg::-webkit-scrollbar {
+	display: none;
+}
+.rvmp .r-seg button {
+	flex: 1 0 auto;
+	white-space: nowrap;
+	padding: 8px 16px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 13.5px;
+	color: var(--text-dim);
+	transition: all 0.18s ease;
+}
+.rvmp .r-seg button {
+	position: relative;
+}
+.rvmp .r-seg button[data-active='true'] {
+	background: var(--seg-c, var(--accent));
+	color: #0c1017;
+	box-shadow: 0 2px 14px color-mix(in srgb, var(--seg-c, var(--accent)) 45%, transparent);
+}
+/* subtle league-colour hint on the inactive league buttons */
+.rvmp .r-seg--league button:not([data-active='true'])::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: 3px;
+	width: 14px;
+	height: 3px;
+	border-radius: var(--r-pill);
+	transform: translateX(-50%);
+	background: var(--seg-c);
+	opacity: 0.5;
+}
+
+/* ---- reachable-family switcher ---- */
+.rvmp .r-reach {
+	display: flex;
+	gap: var(--s2);
+	overflow-x: auto;
+	scrollbar-width: none;
+	padding-bottom: 2px;
+	margin-bottom: var(--s2);
+}
+.rvmp .r-reach::-webkit-scrollbar {
+	display: none;
+}
+.rvmp .r-reach-chip {
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	width: 92px;
+	padding: var(--s2) 6px 6px;
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	transition: all 0.14s ease;
+}
+.rvmp .r-reach-chip[data-active='true'] {
+	border-color: var(--lg, var(--accent));
+	background: color-mix(in srgb, var(--lg, var(--accent)) 16%, var(--surface-2));
+}
+.rvmp .r-reach-chip img {
+	width: 48px;
+	height: 48px;
+	object-fit: contain;
+}
+.rvmp .r-reach-chip span {
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.1;
+	text-align: center;
+	color: var(--text-dim);
+}
+.rvmp .r-reach-chip b {
+	font-family: Fredoka, sans-serif;
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	color: var(--lg, var(--accent));
+}
+.rvmp .r-reach-chip[data-unranked='true'] b {
+	color: var(--text-faint);
+}
+
+/* ---- tabs -------------------------------------------------------------------- */
+.rvmp .r-tabs {
+	display: flex;
+	gap: var(--s5);
+	margin-top: var(--s5);
+	border-bottom: 1px solid var(--border);
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+.rvmp .r-tabs::-webkit-scrollbar {
+	display: none;
+}
+.rvmp .r-tabs button {
+	padding: 0 2px var(--s3);
+	font-weight: 700;
+	font-size: 14px;
+	color: var(--text-faint);
+	white-space: nowrap;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+	transition: color 0.15s ease;
+}
+.rvmp .r-tabs button[aria-current='page'] {
+	color: var(--text);
+	border-bottom-color: var(--text);
+}
+
+/* ---- cards / sections ---------------------------------------------------- */
+.rvmp .r-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--r-md);
+	padding: var(--s4);
+}
+.rvmp .r-section-h {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 13px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+	margin: var(--s5) 0 var(--s3);
+}
+.rvmp .r-section-h::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: var(--border);
+}
+
+/* ---- rank cards -------------------------------------------------------------- */
+.rvmp .r-rank {
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	padding: var(--s3);
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+}
+.rvmp .r-rank + .r-rank {
+	margin-top: var(--s2);
+}
+.rvmp .r-rank .r-rank-badge {
+	flex: none;
+	display: grid;
+	place-items: center;
+	min-width: 46px;
+	height: 46px;
+	padding: 0 8px;
+	border-radius: var(--r-xs);
+	background: color-mix(in srgb, var(--accent) 18%, transparent);
+	color: var(--accent);
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	font-size: 18px;
+}
+.rvmp .r-rank .r-rank-main {
+	flex: 1;
+	min-width: 0;
+}
+.rvmp .r-rank .r-rank-main b {
+	display: block;
+	font-weight: 800;
+	font-size: 14.5px;
+}
+.rvmp .r-rank .r-rank-main span {
+	font-size: 12.5px;
+	color: var(--text-dim);
+}
+.rvmp .r-delta {
+	font-weight: 800;
+	font-size: 12.5px;
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-delta[data-dir='up'] {
+	color: #4ade80;
+}
+.rvmp .r-delta[data-dir='down'] {
+	color: #f87171;
+}
+.rvmp .r-delta[data-dir='flat'] {
+	color: var(--text-faint);
+}
+
+/* ---- IV picker ------------------------------------------------------------- */
+.rvmp .r-iv {
+	display: grid;
+	gap: var(--s4);
+}
+.rvmp .r-iv-row {
+	display: grid;
+	gap: var(--s2);
+}
+.rvmp .r-iv-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	font-weight: 800;
+	font-size: 13px;
+	letter-spacing: 0.04em;
+	color: var(--text-dim);
+}
+.rvmp .r-iv-head b {
+	font-family: Fredoka, sans-serif;
+	font-size: 17px;
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-iv-head b[data-max='true'] {
+	color: var(--iv-max);
+}
+.rvmp .r-iv-track {
+	display: flex;
+	gap: 3px;
+	touch-action: none;
+}
+.rvmp .r-iv-cell {
+	flex: 1;
+	height: 22px;
+	border-radius: 5px;
+	background: var(--surface-3);
+	transition:
+		background 0.16s ease,
+		transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+/* GO-appraisal palette: amber while filling, red once the stat is maxed at 15 */
+.rvmp .r-iv-cell[data-on='true'] {
+	background: var(--iv-fill);
+}
+.rvmp .r-iv-track[data-max='true'] .r-iv-cell[data-on='true'] {
+	background: var(--iv-max);
+}
+.rvmp .r-iv-cell[data-edge='true'] {
+	transform: scaleY(1.18);
+	box-shadow: 0 0 12px color-mix(in srgb, var(--iv-fill) 60%, transparent);
+}
+.rvmp .r-iv-track[data-max='true'] .r-iv-cell[data-edge='true'] {
+	box-shadow: 0 0 14px color-mix(in srgb, var(--iv-max) 70%, transparent);
+}
+.rvmp .r-iv-presets {
+	display: flex;
+	gap: var(--s2);
+	flex-wrap: wrap;
+	margin-top: var(--s2);
+}
+.rvmp .r-chip {
+	padding: 6px 12px;
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	font-weight: 700;
+	font-size: 12.5px;
+	color: var(--text-dim);
+	transition: all 0.14s ease;
+}
+.rvmp .r-chip:hover {
+	border-color: var(--border-strong);
+	color: var(--text);
+}
+
+/* readout under the picker */
+.rvmp .r-readout {
+	display: flex;
+	gap: var(--s3);
+	margin-top: var(--s4);
+	padding-top: var(--s4);
+	border-top: 1px dashed var(--border);
+}
+.rvmp .r-readout div {
+	flex: 1;
+	text-align: center;
+}
+.rvmp .r-readout i {
+	font-style: normal;
+	display: block;
+	font-size: 11px;
+	letter-spacing: 0.1em;
+	color: var(--text-faint);
+	font-weight: 700;
+}
+.rvmp .r-readout b {
+	font-family: Fredoka, sans-serif;
+	font-size: 19px;
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-readout b.hi {
+	color: var(--accent);
+}
+
+/* ---- effectiveness -------------------------------------------------------- */
+.rvmp .r-eff {
+	display: grid;
+	gap: var(--s3);
+	grid-template-columns: 1fr;
+}
+@media (min-width: 560px) {
+	.rvmp .r-eff {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+.rvmp .r-eff-col b {
+	display: block;
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+	margin-bottom: var(--s2);
+	font-weight: 800;
+}
+.rvmp .r-eff-list {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+.rvmp .r-eff-t {
+	position: relative;
+	padding: 4px 10px;
+	border-radius: var(--r-pill);
+	font-weight: 800;
+	font-size: 11.5px;
+	color: #0c1017;
+	background: var(--tc, var(--t-normal));
+}
+.rvmp .r-eff-t sup {
+	font-size: 9px;
+	margin-left: 2px;
+	opacity: 0.8;
+}
+
+/* ---- misc ---------------------------------------------------------------- */
+.rvmp .r-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 7px 14px;
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	font-weight: 700;
+	font-size: 13px;
+	color: var(--text-dim);
+}
+.rvmp .r-toggle[data-on='true'] {
+	background: color-mix(in srgb, var(--accent) 22%, transparent);
+	border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+	color: var(--text);
+}
+.rvmp .r-muted {
+	color: var(--text-dim);
+	font-size: 13.5px;
+}
+.rvmp .r-loading {
+	display: grid;
+	place-items: center;
+	min-height: 60dvh;
+	color: var(--text-dim);
+	font-family: Fredoka, sans-serif;
+}
+.rvmp .r-spinner {
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	border: 4px solid var(--surface-3);
+	border-top-color: var(--accent);
+	animation: r-spin 0.8s linear infinite;
+	margin-bottom: var(--s3);
+}
+@keyframes r-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ===========================================================================
+   App shell — bar, search, bottom nav
+   =========================================================================== */
+.rvmp .r-appbar {
+	position: sticky;
+	top: 0;
+	z-index: 30;
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	padding: var(--s3) var(--s4);
+	background: color-mix(in srgb, var(--bg) 86%, transparent);
+	backdrop-filter: blur(16px);
+	border-bottom: 1px solid var(--border);
+}
+.rvmp .r-logo {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: none;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 15px;
+}
+.rvmp .r-logo b {
+	white-space: nowrap;
+}
+@media (max-width: 640px) {
+	.rvmp .r-logo b {
+		display: none;
+	}
+}
+.rvmp .r-logo-ball {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: linear-gradient(#ff5b5b 0 49%, #f4f4f5 51% 100%);
+	box-shadow:
+		inset 0 0 0 2px #11151c,
+		0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent);
+	position: relative;
+}
+.rvmp .r-logo-ball::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: #11151c;
+	box-shadow: 0 0 0 2px #f4f4f5;
+}
+.rvmp .r-search {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	padding: 9px 14px;
+	border-radius: var(--r-pill);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--text-faint);
+}
+.rvmp .r-search:focus-within {
+	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.rvmp .r-search input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	outline: none;
+	background: none;
+	color: var(--text);
+	font: inherit;
+	font-weight: 600;
+}
+.rvmp .r-icon-btn {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--r-pill);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	font-size: 17px;
+}
+
+.rvmp .r-main {
+	min-height: 60dvh;
+	padding-bottom: calc(94px + env(safe-area-inset-bottom));
+}
+
+.rvmp .r-bottomnav {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 30;
+	display: flex;
+	padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+	background: color-mix(in srgb, var(--bg) 92%, transparent);
+	backdrop-filter: blur(16px);
+	border-top: 1px solid var(--border);
+}
+.rvmp .r-bottomnav a {
+	flex: 1;
+	display: grid;
+	justify-items: center;
+	gap: 3px;
+	padding: 8px 4px;
+	border-radius: var(--r-sm);
+	color: var(--text-faint);
+	font-weight: 700;
+	font-size: 11px;
+}
+.rvmp .r-bottomnav a.is-active {
+	color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.rvmp .r-bn-icon {
+	font-size: 17px;
+	line-height: 1;
+}
+@media (min-width: 900px) {
+	.rvmp .r-bottomnav {
+		left: 50%;
+		right: auto;
+		bottom: 18px;
+		transform: translateX(-50%);
+		border-radius: var(--r-pill);
+		border: 1px solid var(--border);
+		box-shadow: var(--shadow-2);
+		padding: 6px;
+		gap: 4px;
+	}
+	.rvmp .r-bottomnav a {
+		flex: none;
+		grid-auto-flow: column;
+		align-items: center;
+		padding: 8px 16px;
+		font-size: 13px;
+	}
+	.rvmp .r-main {
+		padding-bottom: 96px;
+	}
+}
+
+.rvmp .r-back {
+	margin: var(--s4) 0 calc(-1 * var(--s2));
+	padding: 6px 12px 6px 8px;
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	font-weight: 700;
+	font-size: 13px;
+	color: var(--text-dim);
+}
+
+/* ===========================================================================
+   Rankings grid
+   =========================================================================== */
+.rvmp .r-rank-head {
+	position: sticky;
+	top: 57px;
+	z-index: 20;
+	padding: var(--s3) 0 var(--s2);
+	margin-top: 0;
+	background: linear-gradient(var(--bg) 70%, transparent);
+}
+.rvmp .r-seg--wrap {
+	margin-top: var(--s2);
+}
+.rvmp .r-typebar {
+	display: flex;
+	gap: 6px;
+	margin-top: var(--s2);
+	overflow-x: auto;
+	scrollbar-width: none;
+	padding-bottom: 2px;
+}
+.rvmp .r-typebar::-webkit-scrollbar {
+	display: none;
+}
+.rvmp .r-type-chip {
+	flex: none;
+	padding: 5px 11px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 12px;
+	white-space: nowrap;
+	color: var(--text-dim);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+}
+.rvmp .r-type-chip[data-active='true'] {
+	color: #0c1017;
+	background: var(--tc, var(--accent));
+	border-color: transparent;
+}
+.rvmp .r-count {
+	margin-top: var(--s2);
+	font-size: 12.5px;
+}
+
+.rvmp .r-grid-row {
+	display: grid;
+	gap: var(--s3);
+	align-items: stretch;
+}
+
+.rvmp .r-pc {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	gap: 4px;
+	height: 100%;
+	padding: var(--s3) var(--s2) var(--s2);
+	border-radius: var(--r-md);
+	background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 14%, var(--surface)), var(--surface));
+	border: 1px solid var(--border);
+	text-align: center;
+	transition:
+		transform 0.14s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-pc:hover {
+	transform: translateY(-3px);
+	border-color: color-mix(in srgb, var(--tc) 55%, transparent);
+}
+.rvmp .r-pc-rank {
+	position: absolute;
+	top: 7px;
+	left: 8px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 11px;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-pc-art {
+	width: 76px;
+	height: 76px;
+	display: grid;
+	place-items: center;
+}
+.rvmp .r-pc-art img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.4));
+}
+.rvmp .r-pc-meta {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1px;
+}
+.rvmp .r-pc-dex {
+	font-size: 10.5px;
+	font-weight: 700;
+	color: var(--text-faint);
+	letter-spacing: 0.04em;
+}
+.rvmp .r-pc-name {
+	font-size: 13px;
+	font-weight: 800;
+	line-height: 1.2;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	min-height: 2.4em;
+}
+.rvmp .r-pc-types {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	margin-top: 2px;
+}
+.rvmp .r-pc-types i {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+}
+.rvmp .r-pc-shiny {
+	color: var(--accent);
+	font-size: 11px;
+}
+.rvmp .r-pc-metric {
+	margin-top: 2px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 13px;
+	color: var(--accent);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-pc-metric em {
+	font-style: normal;
+	font-size: 9px;
+	color: var(--text-faint);
+}
+
+/* ===========================================================================
+   Detail-page desktop tightening
+   =========================================================================== */
+@media (min-width: 620px) {
+	/* full-width within the (already narrow, centred) 680px shell */
+	.rvmp .r-hero-top {
+		display: grid;
+		grid-template-columns: minmax(150px, 38%) 1fr;
+		align-items: center;
+		gap: var(--s5);
+	}
+	.rvmp .r-hero .r-sprite {
+		width: 100%;
+		max-width: 200px;
+	}
+}

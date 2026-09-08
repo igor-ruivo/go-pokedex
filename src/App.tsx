@@ -12,6 +12,7 @@ import { ImageSourceProvider } from './contexts/imageSource-context';
 import { LanguageProvider } from './contexts/language-context';
 import { NavbarSearchProvider } from './contexts/navbar-search-context';
 import { NotificationsProvider } from './contexts/notifications-context';
+import NewApp from './new/NewApp';
 import { DAY_IN_MS, QUERY_CACHE_BUSTER, queryClient, queryPersister } from './utils/query-client';
 import Calendar2 from './views/calendar2';
 import Pokedex from './views/pokedex';
@@ -30,24 +31,33 @@ const App = () => {
 					<NavbarSearchProvider>
 						<NotificationsProvider>
 							<HashRouter>
-								<div className='main-wrapper'>
-									<Navbar />
-									<Content>
-										<ErrorBoundary>
-											<Routes>
-												<Route index element={<Pokedex />} />
-												<Route path='pokemon/:speciesId' element={<Pokemon />} />
-												<Route path='pokemon/:speciesId/:tab' element={<Pokemon />} />
-												<Route path='trash-pokemon' element={<DeleteTrash />} />
-												<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
-												<Route path='calendar/:tab' element={<Calendar2 />} />
-												<Route path=':league' element={<Pokedex />} />
-												<Route path='*' element={<div>404 not found!</div>} />
-											</Routes>
-										</ErrorBoundary>
-									</Content>
-									<Footer />
-								</div>
+								<Routes>
+									{/* Revamp — self-contained, no legacy chrome. */}
+									<Route path='/new/*' element={<NewApp />} />
+									<Route
+										path='/*'
+										element={
+											<div className='main-wrapper'>
+												<Navbar />
+												<Content>
+													<ErrorBoundary>
+														<Routes>
+															<Route index element={<Pokedex />} />
+															<Route path='pokemon/:speciesId' element={<Pokemon />} />
+															<Route path='pokemon/:speciesId/:tab' element={<Pokemon />} />
+															<Route path='trash-pokemon' element={<DeleteTrash />} />
+															<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
+															<Route path='calendar/:tab' element={<Calendar2 />} />
+															<Route path=':league' element={<Pokedex />} />
+															<Route path='*' element={<div>404 not found!</div>} />
+														</Routes>
+													</ErrorBoundary>
+												</Content>
+												<Footer />
+											</div>
+										}
+									/>
+								</Routes>
 							</HashRouter>
 						</NotificationsProvider>
 					</NavbarSearchProvider>
