@@ -16,7 +16,7 @@ import { useRaidRanker } from '../queries/raid-ranker';
 import { ordinal } from '../utils/conversions';
 import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, needsXLCandy } from '../utils/pokemon-helper';
-import { ListType } from '../views/pokedex';
+import { ListType } from '../views/list-type';
 import PokemonImage from './PokemonImage';
 
 interface IPokemonMiniatureProps {

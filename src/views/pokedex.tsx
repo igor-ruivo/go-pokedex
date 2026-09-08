@@ -24,14 +24,7 @@ import { useRaidRanker } from '../queries/raid-ranker';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { fetchPokemonFamily, needsXLCandy } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
-
-export enum ListType {
-	POKEDEX,
-	GREAT_LEAGUE,
-	ULTRA_LEAGUE,
-	MASTER_LEAGUE,
-	RAID,
-}
+import { ListType } from './list-type';
 
 const Pokedex = () => {
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();

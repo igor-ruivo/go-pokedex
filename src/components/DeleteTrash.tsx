@@ -1,5 +1,6 @@
 import './DeleteTrash.scss';
 
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { GameLanguage, useLanguage } from '../contexts/language-context';
@@ -11,12 +12,9 @@ import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
-import {
-	computeBestIVs,
-	fetchReachablePokemonIncludingSelf,
-	isNormalPokemonAndHasShadowVersion,
-} from '../utils/pokemon-helper';
+import { fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
+import { getComputeWorker } from '../workers/compute-client';
 import LoadingRenderer from './LoadingRenderer';
 import PokemonHeader from './PokemonHeader';
 
@@ -56,23 +54,34 @@ const DeleteTrash = () => {
 		return rank === Infinity || rank > rankLimit;
 	}, []);
 
-	const needsLessThanFiveAttack = useCallback((p: IGamemasterPokemon, leagueIndex: number) => {
-		const bestIVs = Object.values(
-			computeBestIVs(
-				p.baseStats.atk,
-				p.baseStats.def,
-				p.baseStats.hp,
-				leagueIndex === 0 ? 1500 : leagueIndex === 1 ? 2500 : Number.MAX_VALUE
-			)
-		).flat();
-		for (let i = 0; i < 5; i++) {
-			const neededAtk = bestIVs[i].IVs.A;
-			if (neededAtk >= 5) {
-				return false;
-			}
-		}
-		return true;
-	}, []);
+	// The 16x16x16 brute force for the high-attack check runs in the worker once the
+	// user hits "Compute"; below it becomes a plain lookup.
+	const { data: lowAttackMap } = useQuery({
+		enabled: isCalculating && fetchCompleted,
+		queryKey: ['trash-low-attack'],
+		queryFn: () =>
+			getComputeWorker().lowAttackViable({
+				candidates: Object.values(gamemasterPokemon)
+					.filter((p) => !p.aliasId)
+					.map((p) => ({
+						speciesId: p.speciesId,
+						atk: p.baseStats.atk,
+						def: p.baseStats.def,
+						hp: p.baseStats.hp,
+					})),
+				caps: [1500, 2500],
+			}),
+		staleTime: Infinity,
+		gcTime: 30 * 60 * 1000,
+	});
+
+	const needsLessThanFiveAttack = useCallback(
+		(p: IGamemasterPokemon, leagueIndex: number) => {
+			const cap = leagueIndex === 0 ? 1500 : 2500;
+			return lowAttackMap?.[p.speciesId]?.[cap] ?? true;
+		},
+		[lowAttackMap]
+	);
 
 	const isGoodForRaids = useCallback(
 		(p: IGamemasterPokemon) => {
@@ -509,7 +518,14 @@ const DeleteTrash = () => {
 	]);
 
 	useEffect(() => {
-		if (!isCalculating || !raidDPSFetchCompleted || !fetchCompleted || !pvpFetchCompleted || !movesFetchCompleted) {
+		if (
+			!isCalculating ||
+			!raidDPSFetchCompleted ||
+			!fetchCompleted ||
+			!pvpFetchCompleted ||
+			!movesFetchCompleted ||
+			!lowAttackMap
+		) {
 			return;
 		}
 
@@ -530,6 +546,7 @@ const DeleteTrash = () => {
 		pvpFetchCompleted,
 		movesFetchCompleted,
 		computeStr,
+		lowAttackMap,
 		raidDPSFetchCompleted,
 		targetRef,
 		currentLanguage,
@@ -756,6 +773,10 @@ const DeleteTrash = () => {
 											className='dark-text main-btn with-big-top-margin'
 											disabled={isCalculating}
 											onClick={() => {
+												// Show feedback immediately — the worker sweep can take a while.
+												if (targetRef.current) {
+													targetRef.current.value = translator(TranslatorKeys.Loading, currentLanguage);
+												}
 												setIsCalculating(true);
 											}}
 										>

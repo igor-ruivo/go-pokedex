@@ -122,6 +122,37 @@ export interface BestIvsInput {
 const bestIvs = ({ atk, def, hp, league }: BestIvsInput): Array<RankEntry> =>
 	Object.values(computeBestIVs(atk, def, hp, league)).flat();
 
+export interface LowAttackViableInput {
+	candidates: Array<{ speciesId: string; atk: number; def: number; hp: number }>;
+	/** CP caps to evaluate (e.g. 1500 for Great, 2500 for Ultra). */
+	caps: Array<number>;
+}
+
+/**
+ * For each candidate and cap: do the top 5 best-IV spreads all get by with an
+ * attack IV below 5? Powers the "trash" analyzer's high-attack check.
+ * @returns speciesId -> cap -> boolean
+ */
+const lowAttackViable = ({ candidates, caps }: LowAttackViableInput): Record<string, Record<number, boolean>> => {
+	const out: Record<string, Record<number, boolean>> = {};
+	for (const c of candidates) {
+		const perCap: Record<number, boolean> = {};
+		for (const cap of caps) {
+			const best = Object.values(computeBestIVs(c.atk, c.def, c.hp, cap)).flat();
+			let allLow = true;
+			for (let i = 0; i < 5; i++) {
+				if ((best[i]?.IVs.A ?? 0) >= 5) {
+					allLow = false;
+					break;
+				}
+			}
+			perCap[cap] = allLow;
+		}
+		out[c.speciesId] = perCap;
+	}
+	return out;
+};
+
 export interface RaidComparisonsInput {
 	candidates: Array<IGamemasterPokemon>;
 	moves: Record<string, IGameMasterMove>;
@@ -134,7 +165,7 @@ const raidComparisons = ({ candidates, moves, target }: RaidComparisonsInput): A
 	return out.sort((a, b) => (b.dps !== a.dps ? b.dps - a.dps : a.speciesId.localeCompare(b.speciesId)));
 };
 
-export const api = { familyIvPercents, bestIvs, raidComparisons };
+export const api = { familyIvPercents, bestIvs, lowAttackViable, raidComparisons };
 export type ComputeApi = typeof api;
 
 expose(api);

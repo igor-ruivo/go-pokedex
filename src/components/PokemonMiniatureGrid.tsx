@@ -6,7 +6,7 @@ import { AutoSizer, Grid } from 'react-virtualized';
 
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import useResize from '../hooks/useResize';
-import type { ListType } from '../views/pokedex';
+import type { ListType } from '../views/list-type';
 import PokemonMiniature from './PokemonMiniature';
 
 interface PokemonMiniatureGridProps {
