@@ -1,8 +1,8 @@
 import type { GameLanguage } from '../contexts/language-context';
-import type { DPSEntry } from '../contexts/raid-ranker-context';
 import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { PokemonForms } from '../DTOs/PokemonForms';
+import type { DPSEntry } from '../queries/raid-ranker';
 
 /**
  * Computes the effective damage of a move, assuming the target pokemon has 200 defense with 15 defense IV.

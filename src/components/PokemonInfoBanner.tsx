@@ -3,13 +3,13 @@ import './PokemonInfoBanner.scss';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { useLanguage } from '../contexts/language-context';
-import { useMoves } from '../contexts/moves-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import { usePvp } from '../contexts/pvp-context';
-import { useRaidRanker } from '../contexts/raid-ranker-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { PokemonTypes as TypesDTO } from '../DTOs/PokemonTypes';
 import { LeagueType } from '../hooks/useLeague';
+import { useMoves } from '../queries/moves';
+import { usePokemon } from '../queries/pokemon';
+import { usePvp } from '../queries/pvp';
+import { useRaidRanker } from '../queries/raid-ranker';
 import { ordinal } from '../utils/conversions';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import {

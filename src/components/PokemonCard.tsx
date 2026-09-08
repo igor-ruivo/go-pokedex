@@ -4,9 +4,9 @@ import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useLanguage } from '../contexts/language-context';
-import { usePvp } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import useCountdown from '../hooks/useCountdown';
+import { usePvp } from '../queries/pvp';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { calculateCP, needsXLCandy } from '../utils/pokemon-helper';
 import { ListType } from '../views/pokedex';

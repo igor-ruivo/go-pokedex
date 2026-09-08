@@ -14,9 +14,9 @@ import PokemonIVTables from '../components/PokemonIVTables';
 import PokemonMoves from '../components/PokemonMoves';
 import PokemonSearchStrings from '../components/PokemonSearchStrings';
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
 import useComputeIVs from '../hooks/useComputeIVs';
 import useLeague from '../hooks/useLeague';
+import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import {
 	ConfigKeys,

@@ -5,14 +5,14 @@ import { useCallback, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Language, useLanguage } from '../contexts/language-context';
-import { useMoves } from '../contexts/moves-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import { usePvp } from '../contexts/pvp-context';
-import { useRaidRanker } from '../contexts/raid-ranker-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { PokemonTypes as PType } from '../DTOs/PokemonTypes';
 import useCountdown from '../hooks/useCountdown';
 import useResize from '../hooks/useResize';
+import { useMoves } from '../queries/moves';
+import { usePokemon } from '../queries/pokemon';
+import { usePvp } from '../queries/pvp';
+import { useRaidRanker } from '../queries/raid-ranker';
 import { ordinal } from '../utils/conversions';
 import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, needsXLCandy } from '../utils/pokemon-helper';

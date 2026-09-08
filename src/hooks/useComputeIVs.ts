@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import type { IIvPercents } from '../components/PokemonInfoBanner';
-import { usePokemon } from '../contexts/pokemon-context';
-import { customCupCPLimit } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { usePokemon } from '../queries/pokemon';
+import { customCupCPLimit } from '../queries/pvp';
 import { computeBestIVs, fetchReachablePokemonIncludingSelf } from '../utils/pokemon-helper';
 
 interface IUseComputeIVsProps {

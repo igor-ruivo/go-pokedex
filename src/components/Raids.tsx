@@ -5,11 +5,11 @@ import type { SingleValue } from 'react-select';
 import Select from 'react-select';
 
 import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import type { ILeekduckSpecialRaidBoss } from '../contexts/raid-bosses-context';
-import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IEntry, IPostEntry } from '../DTOs/INews';
 import { sortEntries, sortPosts } from '../DTOs/INews';
+import type { ILeekduckSpecialRaidBoss } from '../queries/calendar';
+import { useCalendar } from '../queries/calendar';
+import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { getCurrentUTCTimestamp, inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';

@@ -3,9 +3,9 @@ import './Misc.scss';
 import { useCallback, useState } from 'react';
 
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import { useCalendar } from '../contexts/raid-bosses-context';
 import { sortEntries } from '../DTOs/INews';
+import { useCalendar } from '../queries/calendar';
+import { usePokemon } from '../queries/pokemon';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import LoadingRenderer from './LoadingRenderer';

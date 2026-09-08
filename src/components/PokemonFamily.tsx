@@ -4,8 +4,8 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
-import { usePokemon } from '../contexts/pokemon-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { usePokemon } from '../queries/pokemon';
 import { shortName, sortPokemonByBattlePowerDesc } from '../utils/pokemon-helper';
 import PokemonImage from './PokemonImage';
 

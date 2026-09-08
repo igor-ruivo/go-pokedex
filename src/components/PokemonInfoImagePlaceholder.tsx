@@ -8,9 +8,9 @@ import Select from 'react-select';
 
 import type { Language } from '../contexts/language-context';
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
+import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import PokemonFamily from './PokemonFamily';

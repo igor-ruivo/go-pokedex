@@ -3,9 +3,9 @@ import './LeagueRanks.scss';
 import React, { useCallback } from 'react';
 
 import { Language, useLanguage } from '../contexts/language-context';
-import { usePvp } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { LeagueType } from '../hooks/useLeague';
+import { usePvp } from '../queries/pvp';
 import { shortName } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
 import ListEntry from './ListEntry';

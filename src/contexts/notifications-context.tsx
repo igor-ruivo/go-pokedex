@@ -1,11 +1,11 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 import type { IPostEntry } from '../DTOs/INews';
+import type { ILeekduckSpotlightHour } from '../queries/calendar';
+import { useCalendar } from '../queries/calendar';
 import { getCurrentUTCTimestamp } from '../utils/Misc';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import type { GameLanguage } from './language-context';
-import type { ILeekduckSpotlightHour } from './raid-bosses-context';
-import { useCalendar } from './raid-bosses-context';
 
 interface NotificationsContextType {
 	unseenEvents: number;

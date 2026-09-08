@@ -14,7 +14,7 @@ import Raids from '../components/Raids';
 import Rockets from '../components/Rockets';
 import Spawns from '../components/Spawns';
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
+import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
 

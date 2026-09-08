@@ -3,10 +3,10 @@ import './PokemonSearchStrings.scss';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import { customCupCPLimit } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { LeagueType } from '../hooks/useLeague';
+import { usePokemon } from '../queries/pokemon';
+import { customCupCPLimit } from '../queries/pvp';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import {

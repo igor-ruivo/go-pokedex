@@ -11,8 +11,8 @@ import Select from 'react-select';
 import { ImageSource, useImageSource } from '../../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../../contexts/language-context';
 import { useNavbarSearchInput } from '../../contexts/navbar-search-context';
-import { usePokemon } from '../../contexts/pokemon-context';
 import { PokemonTypes } from '../../DTOs/PokemonTypes';
+import { usePokemon } from '../../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import {
 	ConfigKeys,

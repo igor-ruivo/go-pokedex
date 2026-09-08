@@ -3,7 +3,7 @@ import './PokemonNumber.scss';
 import { useCallback, useMemo } from 'react';
 
 import { Language, useLanguage } from '../contexts/language-context';
-import { usePvp } from '../contexts/pvp-context';
+import { usePvp } from '../queries/pvp';
 import { ordinal } from '../utils/conversions';
 import { ListType } from '../views/pokedex';
 

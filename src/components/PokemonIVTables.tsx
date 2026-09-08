@@ -8,10 +8,10 @@ import type { TableComponents } from 'react-virtuoso';
 import { TableVirtuoso } from 'react-virtuoso';
 
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import { customCupCPLimit } from '../contexts/pvp-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { LeagueType } from '../hooks/useLeague';
+import { usePokemon } from '../queries/pokemon';
+import { customCupCPLimit } from '../queries/pvp';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { computeBestIVs } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';

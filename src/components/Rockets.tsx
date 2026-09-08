@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IRocketGrunt } from '../DTOs/INews';
 import useResize from '../hooks/useResize';
+import { useCalendar } from '../queries/calendar';
+import { usePokemon } from '../queries/pokemon';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 import ListEntry from './ListEntry';
 import LoadingRenderer from './LoadingRenderer';

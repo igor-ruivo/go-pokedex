@@ -4,10 +4,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 
 import { useLanguage } from '../contexts/language-context';
-import { usePokemon } from '../contexts/pokemon-context';
-import { useCalendar } from '../contexts/raid-bosses-context';
 import type { IPostEntry } from '../DTOs/INews';
 import { sortPosts } from '../DTOs/INews';
+import { useCalendar } from '../queries/calendar';
+import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { getCurrentUTCTimestamp, inCamelCase, localeStringSmallestOptions } from '../utils/Misc';
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
