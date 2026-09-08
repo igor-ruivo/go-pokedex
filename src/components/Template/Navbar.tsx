@@ -5,23 +5,18 @@ import '../Misc.scss';
 
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
 import { ImageSource, useImageSource } from '../../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../../contexts/language-context';
 import { useNavbarSearchInput } from '../../contexts/navbar-search-context';
 import { PokemonTypes } from '../../DTOs/PokemonTypes';
+import { routes, useCurrentView } from '../../hooks/useCurrentView';
 import { usePokemon } from '../../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
-import {
-	ConfigKeys,
-	readPersistentValue,
-	readSessionValue,
-	writePersistentValue,
-} from '../../utils/persistent-configs-handler';
+import { ConfigKeys, readPersistentValue, writePersistentValue } from '../../utils/persistent-configs-handler';
 import translator, { TranslatorKeys } from '../../utils/Translator';
-import { ListType } from '../../views/pokedex';
 import PokemonImage from '../PokemonImage';
 import { translatedType } from '../PokemonInfoImagePlaceholder';
 import SearchableDropdown from '../SearchableDropdown';
@@ -108,7 +103,12 @@ const Navbar = () => {
 	const [theme, setTheme] = useState<ThemeOptions>(getDefaultTheme());
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const navigate = useNavigate();
-	const { pathname } = useLocation();
+	const view = useCurrentView();
+	const isPvpLeaguePage =
+		view.kind === 'pokedex' && (view.league === 'great' || view.league === 'ultra' || view.league === 'master');
+	const isRaidPage = view.kind === 'pokedex' && view.league === 'raid';
+	const isXlLeaguePage = view.kind === 'pokedex' && (view.league === 'great' || view.league === 'ultra');
+	const isPokemonOrCalendarPage = view.kind === 'pokemon' || view.kind === 'calendar';
 	const [optionsOpened, setOptionsOpened] = useState(AvailableOptions.None);
 	const { currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
@@ -192,40 +192,8 @@ const Navbar = () => {
 		[setTheme]
 	);
 
-	const getDestination = useCallback((): string => {
-		if (pathname === '/') {
-			return '/';
-		}
-		let destinationPath = '';
-		const previousRankType = readSessionValue(ConfigKeys.LastListType);
-		if (
-			previousRankType === null ||
-			pathname.includes('great') ||
-			pathname.includes('ultra') ||
-			pathname.includes('master') ||
-			pathname.includes('custom') ||
-			pathname.includes('raid')
-		) {
-			return '/';
-		}
-
-		switch (Number(previousRankType) as ListType) {
-			case ListType.GREAT_LEAGUE:
-				destinationPath = 'great';
-				break;
-			case ListType.ULTRA_LEAGUE:
-				destinationPath = 'ultra';
-				break;
-			case ListType.MASTER_LEAGUE:
-				destinationPath = 'master';
-				break;
-			case ListType.RAID:
-				destinationPath = 'raid';
-				break;
-		}
-
-		return `/${destinationPath}`;
-	}, [pathname]);
+	// The logo always returns to the plain Pokédex.
+	const getDestination = useCallback((): string => '/', []);
 
 	const languageOptions: Array<Entry<Language>> = useMemo(
 		() => [
@@ -334,29 +302,9 @@ const Navbar = () => {
 		];
 	}, [currentLanguage]);
 
-	const megaDisabled = useMemo(
-		() =>
-			pathname.includes('great') ||
-			pathname.includes('ultra') ||
-			pathname.includes('master') ||
-			pathname.includes('custom'),
-		[pathname]
-	);
-	const shadowDisabled = useMemo(
-		() =>
-			!(
-				pathname.includes('great') ||
-				pathname.includes('ultra') ||
-				pathname.includes('master') ||
-				pathname.includes('custom') ||
-				pathname.includes('raid')
-			),
-		[pathname]
-	);
-	const xlDisabled = useMemo(
-		() => !(pathname.includes('great') || pathname.includes('ultra') || pathname.includes('custom')),
-		[pathname]
-	);
+	const megaDisabled = isPvpLeaguePage;
+	const shadowDisabled = !(isPvpLeaguePage || isRaidPage);
+	const xlDisabled = !isXlLeaguePage;
 
 	const handleModalClick = useCallback(
 		(e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -426,20 +374,11 @@ const Navbar = () => {
 													return false;
 												}
 
-												if (
-													pathname.startsWith('/great') ||
-													pathname.startsWith('/ultra') ||
-													pathname.startsWith('/master') ||
-													pathname.startsWith('/custom')
-												) {
+												if (isPvpLeaguePage) {
 													return !p.isMega;
 												}
 
-												if (pathname.includes('pokemon') || pathname.includes('calendar')) {
-													return true;
-												}
-
-												if (pathname.startsWith('/raid')) {
+												if (isPokemonOrCalendarPage || isRaidPage) {
 													return true;
 												}
 
@@ -459,16 +398,10 @@ const Navbar = () => {
 							isLoading={!fetchCompleted}
 							onSelection={(selectedEntry: EntryType | null) => {
 								if (!selectedEntry) return;
-								if (pathname.includes('pokemon') || pathname.includes('calendar')) {
-									void navigate(
-										`/pokemon/${selectedEntry.value}${pathname.substring(pathname.lastIndexOf('/'))}`
-											.replace('/trash-pokemon', '/info')
-											.replace('/bosses', '/info')
-											.replace('/spawns', '/info')
-											.replace('/rockets', '/info')
-											.replace('/eggs', '/info')
-											.replace('/events', '/info')
-									);
+								if (view.kind === 'pokemon') {
+									void navigate(routes.pokemon(selectedEntry.value, view.tab));
+								} else if (view.kind === 'calendar') {
+									void navigate(routes.pokemon(selectedEntry.value, 'info'));
 								}
 							}}
 							renderOption={(props: React.HTMLAttributes<HTMLLIElement>, option: EntryType) => {
@@ -623,7 +556,7 @@ const Navbar = () => {
 				</nav>
 			</aside>
 			<div
-				className={`fake-modal ${optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !(pathname.includes('pokemon') || pathname.includes('calendar'))) ? 'show' : 'hide'}`}
+				className={`fake-modal ${optionsOpened === AvailableOptions.Menu || searchOpen || (optionsOpened === AvailableOptions.Filter && !isPokemonOrCalendarPage) ? 'show' : 'hide'}`}
 				onClick={(e) => handleModalClick(e)}
 				role='button'
 				tabIndex={0}
@@ -635,7 +568,7 @@ const Navbar = () => {
 				aria-label='Close modal'
 			/>
 			<aside
-				className={`filter-menu normal-text ${optionsOpened !== AvailableOptions.Filter || pathname.includes('pokemon') || pathname.includes('calendar') ? ' hidden' : ' visible'} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}
+				className={`filter-menu normal-text ${optionsOpened !== AvailableOptions.Filter || isPokemonOrCalendarPage ? ' hidden' : ' visible'} ${hideNavbar(scrollingDown, accumulatedScrollDownDelta, true) ? 'menu-hidden' : 'menu-visible'}`}
 			>
 				<nav className='options-nav'>
 					<section>
@@ -748,7 +681,7 @@ const Navbar = () => {
 							<li className='options-li'>
 								<div className='option-entry'>
 									<span>
-										{pathname.includes('raid')
+										{isRaidPage
 											? translator(TranslatorKeys.RaidType, currentLanguage)
 											: translator(TranslatorKeys.Type, currentLanguage)}
 									</span>
@@ -756,11 +689,7 @@ const Navbar = () => {
 										className='navbar-dropdown selectable-descendants'
 										isSearchable={false}
 										options={typesOptions.filter(
-											(e) =>
-												e.value === undefined ||
-												type2Filter === undefined ||
-												pathname.includes('raid') ||
-												e.value !== type2Filter
+											(e) => e.value === undefined || type2Filter === undefined || isRaidPage || e.value !== type2Filter
 										)}
 										value={
 											type1Filter === undefined ? typesOptions[0] : typesOptions.find((l) => l.value === type1Filter)
@@ -774,7 +703,7 @@ const Navbar = () => {
 										)}
 									/>
 								</div>
-								{type1Filter !== undefined && !pathname.includes('raid') && (
+								{type1Filter !== undefined && !isRaidPage && (
 									<div className='option-entry'>
 										<span>{translator(TranslatorKeys.OrType, currentLanguage)}</span>
 										<Select

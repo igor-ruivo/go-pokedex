@@ -4,7 +4,7 @@ import './calendar.scss';
 import './calendar2.scss';
 
 import { useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Eggs from '../components/Eggs';
 import Events from '../components/Events';
@@ -14,6 +14,7 @@ import Raids from '../components/Raids';
 import Rockets from '../components/Rockets';
 import Spawns from '../components/Spawns';
 import { useLanguage } from '../contexts/language-context';
+import { type CalendarTab, routes, useCurrentView } from '../hooks/useCurrentView';
 import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
@@ -21,20 +22,18 @@ import translator, { TranslatorKeys } from '../utils/Translator';
 const Calendar2 = () => {
 	const { fetchCompleted, errors } = usePokemon();
 	const { currentLanguage, currentGameLanguage } = useLanguage();
-	const { pathname } = useLocation();
-
-	const basePath = useMemo(() => pathname.substring(0, pathname.lastIndexOf('/')), [pathname]);
-	const tab = useMemo(() => pathname.substring(pathname.lastIndexOf('/')), [pathname]);
+	const view = useCurrentView();
+	const tab: CalendarTab = view.kind === 'calendar' ? view.tab : 'events';
 
 	const imgRes = useMemo(
 		() =>
-			tab.endsWith('/bosses')
+			tab === 'bosses'
 				? 'raid-no-bg'
-				: tab.endsWith('/spawns')
+				: tab === 'spawns'
 					? 'wild-no-bg'
-					: tab.endsWith('/eggs')
+					: tab === 'eggs'
 						? 'eggs-no-bg'
-						: tab.endsWith('/rockets')
+						: tab === 'rockets'
 							? 'rocket-no-bg'
 							: 'calendar-no-bg',
 		[tab]
@@ -49,13 +48,13 @@ const Calendar2 = () => {
 							<div className='content'>
 								<PokemonHeader
 									pokemonName={
-										tab.endsWith('/bosses')
+										tab === 'bosses'
 											? gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)
-											: tab.endsWith('/spawns')
+											: tab === 'spawns'
 												? translator(TranslatorKeys.Spawns, currentLanguage)
-												: tab.endsWith('/eggs')
+												: tab === 'eggs'
 													? translator(TranslatorKeys.Eggs, currentLanguage)
-													: tab.endsWith('/rockets')
+													: tab === 'rockets'
 														? translator(TranslatorKeys.Rockets, currentLanguage)
 														: translator(TranslatorKeys.Events, currentLanguage)
 									}
@@ -75,40 +74,40 @@ const Calendar2 = () => {
 										<ul>
 											<li>
 												<Link
-													to={basePath + '/events'}
-													className={'header-tab no-full-border ' + (tab.endsWith('/events') ? 'selected' : '')}
+													to={routes.calendar('events')}
+													className={'header-tab no-full-border ' + (tab === 'events' ? 'selected' : '')}
 												>
 													<span>{translator(TranslatorKeys.Events, currentLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
-													to={basePath + '/bosses'}
-													className={'header-tab no-full-border ' + (tab.endsWith('/bosses') ? 'selected' : '')}
+													to={routes.calendar('bosses')}
+													className={'header-tab no-full-border ' + (tab === 'bosses' ? 'selected' : '')}
 												>
 													<span>{gameTranslator(GameTranslatorKeys.Raids, currentGameLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
-													to={basePath + '/spawns'}
-													className={'header-tab no-full-border ' + (tab.endsWith('/spawns') ? 'selected' : '')}
+													to={routes.calendar('spawns')}
+													className={'header-tab no-full-border ' + (tab === 'spawns' ? 'selected' : '')}
 												>
 													<span>{translator(TranslatorKeys.Spawns, currentLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
-													to={basePath + '/rockets'}
-													className={'header-tab no-full-border ' + (tab.endsWith('/rockets') ? 'selected' : '')}
+													to={routes.calendar('rockets')}
+													className={'header-tab no-full-border ' + (tab === 'rockets' ? 'selected' : '')}
 												>
 													<span>{translator(TranslatorKeys.Rockets, currentLanguage)}</span>
 												</Link>
 											</li>
 											<li>
 												<Link
-													to={basePath + '/eggs'}
-													className={'header-tab no-full-border ' + (tab.endsWith('/eggs') ? 'selected' : '')}
+													to={routes.calendar('eggs')}
+													className={'header-tab no-full-border ' + (tab === 'eggs' ? 'selected' : '')}
 												>
 													<span>{translator(TranslatorKeys.Eggs, currentLanguage)}</span>
 												</Link>
@@ -116,11 +115,11 @@ const Calendar2 = () => {
 										</ul>
 									</nav>
 
-									{tab.endsWith('/events') && <Events />}
-									{tab.endsWith('/bosses') && <Raids />}
-									{tab.endsWith('/spawns') && <Spawns />}
-									{tab.endsWith('/rockets') && <Rockets />}
-									{tab.endsWith('/eggs') && <Eggs />}
+									{tab === 'events' && <Events />}
+									{tab === 'bosses' && <Raids />}
+									{tab === 'spawns' && <Spawns />}
+									{tab === 'rockets' && <Rockets />}
+									{tab === 'eggs' && <Eggs />}
 								</div>
 							</div>
 						)}

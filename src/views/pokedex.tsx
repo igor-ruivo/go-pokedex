@@ -2,7 +2,7 @@ import './pokedex.scss';
 import '../components/PokemonNumber.scss';
 
 import { useMemo, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
 import LoadingRenderer from '../components/LoadingRenderer';
@@ -16,6 +16,7 @@ import { useNavbarSearchInput } from '../contexts/navbar-search-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
+import { type PokedexLeague, routes, useCurrentView } from '../hooks/useCurrentView';
 import { usePokemon } from '../queries/pokemon';
 import { customCupCPLimit, usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
@@ -41,7 +42,9 @@ const Pokedex = () => {
 	const { currentLanguage, currentGameLanguage } = useLanguage();
 	const navigate = useNavigate();
 
-	const { listTypeArg } = useParams();
+	const view = useCurrentView();
+	// `undefined` means the plain Pokédex; anything else is a league slug.
+	const listTypeArg = view.kind === 'pokedex' && view.league !== 'pokedex' ? view.league : undefined;
 
 	const pageToLeague = (page: string | undefined) => {
 		switch (page) {
@@ -336,7 +339,7 @@ const Pokedex = () => {
 													onChange={(option) => {
 														const selected = option as LeagueOption | null;
 														if (selected) {
-															void navigate(`/${(selected.value === 'pokedex' ? '' : selected.value) ?? ''}`);
+															void navigate(routes.pokedex(selected.value as PokedexLeague));
 														}
 													}}
 													formatOptionLabel={(data: LeagueOption) => (

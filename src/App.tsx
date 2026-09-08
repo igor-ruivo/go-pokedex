@@ -1,7 +1,7 @@
 import './App.scss';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import DeleteTrash from './components/DeleteTrash';
 import Content from './components/Template/Content';
@@ -33,21 +33,14 @@ const App = () => {
 									<Navbar />
 									<Content>
 										<Routes>
-											<Route index path='/' element={<Pokedex />} />
-											<Route path='/:listTypeArg' element={<Pokedex />} />
-											<Route path='/pokemon/:speciesId' element={<Pokemon />} />
-											<Route path='/pokemon/:speciesId/info' element={<Pokemon />} />
-											<Route path='/pokemon/:speciesId/moves' element={<Pokemon />} />
-											<Route path='/pokemon/:speciesId/counters' element={<Pokemon />} />
-											<Route path='/pokemon/:speciesId/tables' element={<Pokemon />} />
-											<Route path='/pokemon/:speciesId/strings' element={<Pokemon />} />
-											<Route path='/trash-pokemon' element={<DeleteTrash />} />
-											<Route path='/calendar/bosses' element={<Calendar2 />} />
-											<Route path='/calendar/spawns' element={<Calendar2 />} />
-											<Route path='/calendar/rockets' element={<Calendar2 />} />
-											<Route path='/calendar/eggs' element={<Calendar2 />} />
-											<Route path='/calendar/events' element={<Calendar2 />} />
-											<Route path='/*' element={<div>404 not found!</div>} />
+											<Route index element={<Pokedex />} />
+											<Route path='pokemon/:speciesId' element={<Pokemon />} />
+											<Route path='pokemon/:speciesId/:tab' element={<Pokemon />} />
+											<Route path='trash-pokemon' element={<DeleteTrash />} />
+											<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
+											<Route path='calendar/:tab' element={<Calendar2 />} />
+											<Route path=':league' element={<Pokedex />} />
+											<Route path='*' element={<div>404 not found!</div>} />
 										</Routes>
 									</Content>
 									<Footer />

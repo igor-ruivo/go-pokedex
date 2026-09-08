@@ -2,7 +2,7 @@ import './pokemon.scss';
 import '../components/PokemonImage.scss';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import LeaguePicker from '../components/LeaguePicker';
 import LoadingRenderer from '../components/LoadingRenderer';
@@ -15,6 +15,7 @@ import PokemonMoves from '../components/PokemonMoves';
 import PokemonSearchStrings from '../components/PokemonSearchStrings';
 import { useLanguage } from '../contexts/language-context';
 import useComputeIVs from '../hooks/useComputeIVs';
+import { type PokemonTab, routes, useCurrentView } from '../hooks/useCurrentView';
 import useLeague from '../hooks/useLeague';
 import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
@@ -47,8 +48,9 @@ const parseSessionCachedNumberValue = (key: ConfigKeys, defaultValue: number) =>
 const Pokemon = () => {
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
 	const { currentLanguage, currentGameLanguage } = useLanguage();
-	const { speciesId } = useParams();
-	const { pathname } = useLocation();
+	const view = useCurrentView();
+	const speciesId = view.kind === 'pokemon' ? view.speciesId : undefined;
+	const tab: PokemonTab = view.kind === 'pokemon' ? view.tab : 'info';
 	const { league, handleSetLeague } = useLeague();
 
 	const [attackIV, setAttackIV] = useState(parseSessionCachedNumberValue(ConfigKeys.AttackIV, 0));
@@ -78,9 +80,6 @@ const Pokemon = () => {
 		defenseIV,
 		hpIV,
 	});
-
-	const pokemonBasePath = useMemo(() => pathname.substring(0, pathname.lastIndexOf('/')), [pathname]);
-	const tab = useMemo(() => pathname.substring(pathname.lastIndexOf('/')), [pathname]);
 
 	const computedPokemonFamily = useMemo(
 		() => (fetchCompleted ? fetchPokemonFamily(pokemon!, gamemasterPokemon) : undefined),
@@ -139,40 +138,40 @@ const Pokemon = () => {
 											<ul>
 												<li>
 													<Link
-														to={pokemonBasePath + '/info'}
-														className={'header-tab no-full-border ' + (tab.endsWith('/info') ? 'selected' : '')}
+														to={routes.pokemon(speciesId ?? '', 'info')}
+														className={'header-tab no-full-border ' + (tab === 'info' ? 'selected' : '')}
 													>
 														<span>Ranks</span>
 													</Link>
 												</li>
 												<li>
 													<Link
-														to={pokemonBasePath + '/moves'}
-														className={'header-tab no-full-border ' + (tab.endsWith('/moves') ? 'selected' : '')}
+														to={routes.pokemon(speciesId ?? '', 'moves')}
+														className={'header-tab no-full-border ' + (tab === 'moves' ? 'selected' : '')}
 													>
 														<span>{translator(TranslatorKeys.Moves, currentLanguage)}</span>
 													</Link>
 												</li>
 												<li>
 													<Link
-														to={pokemonBasePath + '/counters'}
-														className={'header-tab no-full-border ' + (tab.endsWith('/counters') ? 'selected' : '')}
+														to={routes.pokemon(speciesId ?? '', 'counters')}
+														className={'header-tab no-full-border ' + (tab === 'counters' ? 'selected' : '')}
 													>
 														<span>{translator(TranslatorKeys.Counters, currentLanguage)}</span>
 													</Link>
 												</li>
 												<li>
 													<Link
-														to={pokemonBasePath + '/tables'}
-														className={'header-tab no-full-border ' + (tab.endsWith('/tables') ? 'selected' : '')}
+														to={routes.pokemon(speciesId ?? '', 'tables')}
+														className={'header-tab no-full-border ' + (tab === 'tables' ? 'selected' : '')}
 													>
 														<span>{translator(TranslatorKeys.IVTables, currentLanguage)}</span>
 													</Link>
 												</li>
 												<li>
 													<Link
-														to={pokemonBasePath + '/strings'}
-														className={'header-tab no-full-border ' + (tab.endsWith('/strings') ? 'selected' : '')}
+														to={routes.pokemon(speciesId ?? '', 'strings')}
+														className={'header-tab no-full-border ' + (tab === 'strings' ? 'selected' : '')}
 													>
 														<span>{translator(TranslatorKeys.SearchStrings, currentLanguage)}</span>
 													</Link>
@@ -180,7 +179,7 @@ const Pokemon = () => {
 											</ul>
 										</nav>
 
-										{tab.endsWith('/info') && (
+										{tab === 'info' && (
 											<PokemonInfo
 												pokemon={pokemon}
 												league={league}
@@ -196,11 +195,9 @@ const Pokemon = () => {
 												level={levelCap}
 											/>
 										)}
-										{tab.endsWith('/moves') && (
-											<PokemonMoves pokemon={pokemon} league={league} level={(levelCap - 1) * 2} />
-										)}
-										{tab.endsWith('/counters') && <PokemonCounters pokemon={pokemon} league={league} />}
-										{tab.endsWith('/tables') && (
+										{tab === 'moves' && <PokemonMoves pokemon={pokemon} league={league} level={(levelCap - 1) * 2} />}
+										{tab === 'counters' && <PokemonCounters pokemon={pokemon} league={league} />}
+										{tab === 'tables' && (
 											<PokemonIVTables
 												pokemon={pokemon}
 												league={league}
@@ -212,7 +209,7 @@ const Pokemon = () => {
 												setHPIV={setHPIV}
 											/>
 										)}
-										{tab.endsWith('/strings') && <PokemonSearchStrings pokemon={pokemon} league={league} />}
+										{tab === 'strings' && <PokemonSearchStrings pokemon={pokemon} league={league} />}
 									</div>
 								</div>
 							)

@@ -3,13 +3,14 @@ import './ReusableAdorners.scss';
 
 import type { PropsWithChildren } from 'react';
 import { useMemo, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 
 import type { Language } from '../contexts/language-context';
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
+import { type PokemonTab, routes } from '../hooks/useCurrentView';
 import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import translator, { TranslatorKeys } from '../utils/Translator';
@@ -21,7 +22,7 @@ interface IPokemonInfoImagePlaceholderProps {
 	computedCP: number;
 	displayLevel: number;
 	computedPokemonFamily: Set<IGamemasterPokemon> | undefined;
-	tab: string;
+	tab: PokemonTab;
 	setDisplayLevel: (newLevel: number) => void;
 }
 
@@ -47,14 +48,10 @@ export const translatedType = (type: PokemonTypes, language: Language) => {
 
 const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImagePlaceholderProps>) => {
 	const { currentLanguage, currentGameLanguage } = useLanguage();
-	const { pathname } = useLocation();
 	const navigate = useNavigate();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 
-	const isDisabled = useMemo(
-		() => pathname.endsWith('counters') || pathname.endsWith('tables') || pathname.endsWith('strings'),
-		[pathname]
-	);
+	const isDisabled = props.tab === 'counters' || props.tab === 'tables' || props.tab === 'strings';
 
 	const levelOptions: Array<LevelOption> = useMemo(
 		() =>
@@ -178,9 +175,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
 					<PokemonFamily
 						pokemon={props.pokemon}
 						similarPokemon={props.computedPokemonFamily}
-						getClickDestination={(speciesId: string) =>
-							`/pokemon/${speciesId}/${props.tab.substring(props.tab.lastIndexOf('/') + 1)}`
-						}
+						getClickDestination={(speciesId: string) => routes.pokemon(speciesId, props.tab)}
 					/>
 				)}
 				<div className='level-element'>
@@ -206,7 +201,6 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
 					/>
 				</div>
 				{(() => {
-					const currentTab = props.tab.substring(props.tab.lastIndexOf('/') + 1);
 					const isShadow = props.pokemon.speciesId.includes('_shadow');
 					const baseId = isShadow ? props.pokemon.speciesId.replace('_shadow', '') : props.pokemon.speciesId;
 					const hasShadowVariant = fetchCompleted && !!gamemasterPokemon[`${baseId}_shadow`];
@@ -223,10 +217,7 @@ const PokemonInfoImagePlaceholder = (props: PropsWithChildren<IPokemonInfoImageP
 							aria-label={gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}
 							title={gameTranslator(GameTranslatorKeys.Shadow, currentGameLanguage)}
 							onClick={() => {
-								const destination = isShadow
-									? `/pokemon/${baseId}/${currentTab}`
-									: `/pokemon/${baseId}_shadow/${currentTab}`;
-								void navigate(destination);
+								void navigate(routes.pokemon(isShadow ? baseId : `${baseId}_shadow`, props.tab));
 							}}
 						>
 							<img

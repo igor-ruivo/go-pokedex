@@ -3,13 +3,14 @@ import './PokemonMoves.scss';
 import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import type { IDetailItem } from '../DTOs/IDetailItem';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 // Removed unused import: MatchUp
+import { routes, useCurrentView } from '../hooks/useCurrentView';
 import { LeagueType } from '../hooks/useLeague';
 import useResize from '../hooks/useResize';
 import { useMoves } from '../queries/moves';
@@ -54,7 +55,8 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 	const { gamemasterPokemon, fetchCompleted, errors } = usePokemon();
 	const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
 	const { moves, movesFetchCompleted, movesErrors } = useMoves();
-	const { pathname } = useLocation();
+	const view = useCurrentView();
+	const currentTab = view.kind === 'pokemon' ? view.tab : 'counters';
 	const navigate = useNavigate();
 	const { x } = useResize();
 	const { imageSource } = useImageSource();
@@ -200,12 +202,12 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 							)}
 						</React.Fragment>,
 					]}
-					onClick={() => void navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`)}
+					onClick={() => void navigate(routes.pokemon(pokemon.speciesId, currentTab))}
 					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 100%)`}
 				/>
 			);
 		},
-		[currentGameLanguage, imageSource, navigate, pathname]
+		[currentGameLanguage, imageSource, navigate, currentTab]
 	);
 
 	const detailsClickHandler = useCallback(
@@ -317,7 +319,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 							{<span className='with-shadow with-brightness'>{Math.round(dps * 100) / 100} DPS</span>}
 						</React.Fragment>,
 					]}
-					onClick={() => void navigate(`/pokemon/${pokemon.speciesId}${pathname.substring(pathname.lastIndexOf('/'))}`)}
+					onClick={() => void navigate(routes.pokemon(pokemon.speciesId, currentTab))}
 					specificBackgroundStyle={`linear-gradient(45deg, var(--type-${type1}) 100%)`}
 					details={[
 						{
@@ -346,7 +348,7 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 				/>
 			);
 		},
-		[currentGameLanguage, detailsClickHandler, imageSource, navigate, pathname, renderBuffDetailItem]
+		[currentGameLanguage, detailsClickHandler, imageSource, navigate, currentTab, renderBuffDetailItem]
 	);
 
 	return (
