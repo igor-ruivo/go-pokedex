@@ -4,6 +4,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import DeleteTrash from './components/DeleteTrash';
+import ErrorBoundary from './components/ErrorBoundary';
 import Content from './components/Template/Content';
 import Footer from './components/Template/Footer';
 import Navbar from './components/Template/Navbar';
@@ -32,16 +33,18 @@ const App = () => {
 								<div className='main-wrapper'>
 									<Navbar />
 									<Content>
-										<Routes>
-											<Route index element={<Pokedex />} />
-											<Route path='pokemon/:speciesId' element={<Pokemon />} />
-											<Route path='pokemon/:speciesId/:tab' element={<Pokemon />} />
-											<Route path='trash-pokemon' element={<DeleteTrash />} />
-											<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
-											<Route path='calendar/:tab' element={<Calendar2 />} />
-											<Route path=':league' element={<Pokedex />} />
-											<Route path='*' element={<div>404 not found!</div>} />
-										</Routes>
+										<ErrorBoundary>
+											<Routes>
+												<Route index element={<Pokedex />} />
+												<Route path='pokemon/:speciesId' element={<Pokemon />} />
+												<Route path='pokemon/:speciesId/:tab' element={<Pokemon />} />
+												<Route path='trash-pokemon' element={<DeleteTrash />} />
+												<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
+												<Route path='calendar/:tab' element={<Calendar2 />} />
+												<Route path=':league' element={<Pokedex />} />
+												<Route path='*' element={<div>404 not found!</div>} />
+											</Routes>
+										</ErrorBoundary>
 									</Content>
 									<Footer />
 								</div>

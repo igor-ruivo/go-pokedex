@@ -8,6 +8,11 @@
 		"dev": "vite --host --port 3000",
 		"build": "vite build",
 		"preview": "vite preview",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit",
+		"lint:check": "eslint --ext .ts,.tsx ./src",
+		"format:check": "prettier --check \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs",
 		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md,scss}\" *.json *.md *.cjs",
 		"deploy": "pnpm run build && gh-pages -d dist",
 		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run format && pnpm tsc --noEmit",
@@ -47,6 +52,7 @@
 		"stylelint-config-standard-scss": "^15.0.1",
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.37.0",
-		"vite": "^7.0.5"
+		"vite": "^7.0.5",
+		"vitest": "^5.0.0"
 	}
 }
