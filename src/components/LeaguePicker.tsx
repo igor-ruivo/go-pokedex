@@ -1,5 +1,3 @@
-import './LeaguePicker.scss';
-
 import { useLanguage } from '../contexts/language-context';
 import { LeagueType } from '../hooks/useLeague';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';

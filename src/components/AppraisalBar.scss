@@ -27,10 +27,6 @@
 	flex-direction: column;
 }
 
-.vertical-combo {
-	// grid-template-rows: calc(50% - 2px) calc(50% - 2px);
-}
-
 .fitting-content {
 	flex-grow: unset;
 }
@@ -139,25 +135,6 @@
 
 .appraisal .stat-bar.max .bar.active {
 	background: #d4847c;
-}
-
-.appraisal .stat-bar.max-hover .bar {
-	background: #dea39f;
-}
-
-.appraisal .stat-bar .bar.hover.max-hover {
-	background: #dea39f;
-}
-
-.select-ivs {
-	color-scheme: var(--colorScheme);
-	padding-top: 1px;
-	margin-left: 4px;
-	background: var(--contentBackground);
-	color: var(--textColor);
-	border: 0;
-	outline: 1px solid var(--buttonsBorderColor);
-	text-shadow: 0 1px 0 rgb(0 0 0 / 40%);
 }
 
 @media (width <= 700px) {

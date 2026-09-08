@@ -29,8 +29,7 @@ code {
 	--raid-color: rgb(205 165 148);
 	--background-shadow-title: rgb(0 0 0 / 25%);
 	--entry-background-shadow: rgb(0 0 0 / 25%);
-	--empty-entry: rgb(36, 41, 47) //#26313b;
-		--hover-brightness: saturate(1.1) brightness(1.2);
+	--empty-entry: rgb(36, 41, 47) /*#26313b;*/ --hover-brightness: saturate(1.1) brightness(1.2);
 	--buff-panel-border: 2px solid var(--popup-background-color);
 	--event-buff-panel-border: 1px solid var(--borderColor2);
 	--event-buff-panel-bg: var(--popup-background-color);
@@ -120,7 +119,7 @@ code {
 	--special-header-color: #7d5656;
 }
 
-// 5e7793
+/* 5e7793*/
 .theme-light {
 	--great-color: #b0cff1;
 	--ultra-color: #cdcdad;

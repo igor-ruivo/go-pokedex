@@ -6,16 +6,6 @@
 	align-items: center;
 }
 
-.mega-container {
-	position: absolute;
-	bottom: 7.5%;
-	right: 10%;
-	width: 18%;
-	height: 18%;
-	min-height: 14px;
-	min-width: 14px;
-}
-
 @media (width >= 500px) {
 	.img-clickable {
 		&:hover {

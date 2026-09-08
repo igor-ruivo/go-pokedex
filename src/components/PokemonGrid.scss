@@ -1,20 +1,7 @@
-.grid_container {
-	// max-width: 55%;
-	// min-width: 55%;
-	// width: 55%;
-	// margin: 0 auto;  //
-	max-width: 1600px; // 1300
-	height: 100%;
-
-	a {
-		text-decoration: none;
-	}
-}
-
 .grid {
 	display: flex;
 
-	// justify-content: center;
+	/* justify-content: center;*/
 	overflow: hidden auto !important;
 	scrollbar-width: none;
 }
@@ -60,16 +47,6 @@
 	}
 }
 
-.card-wrapper {
-	width: 100%;
-	height: 100%;
-	padding: 5px;
-	background-color: var(--gridItemsBackgroundColor) !important;
-	border: 1px solid var(--borderColor2);
-	border-radius: 14px;
-	box-shadow: 0 4px 24px 0 rgb(148 148 175 / 10%);
-}
-
 .softer {
 	background-color: var(--rocket-softer);
 }
@@ -86,10 +63,6 @@
 	background-color: var(--gridItemsBackgroundColor2) !important;
 }
 
-.card-wrapper-padding {
-	padding: 4px;
-}
-
 .mini-card-wrapper-padding {
 	padding: 1px;
 }
@@ -102,30 +75,8 @@
 	}
 }
 
-@media (width <= 1600px) {
-	.grid_container {
-		max-width: 1600px;
-	}
-}
-
-@media (width <= 768px) {
-	.grid_container {
-		max-width: 100%;
-	}
-}
-
 @media (width <= 599.9px) {
-	.card-wrapper-padding {
-		padding: 2px;
-	}
-
 	.ReactVirtualized__Grid__innerScrollContainer {
 		margin-left: 1px;
-	}
-}
-
-@media (width <= 435px) {
-	.card-wrapper {
-		padding: 1px;
 	}
 }

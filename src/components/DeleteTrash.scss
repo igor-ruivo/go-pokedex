@@ -27,7 +27,7 @@
 }
 
 #readMoreText {
-	// margin: 0; /* Reset margin for the paragraph */
+	/* margin: 0; */ /* Reset margin for the paragraph */ /**/
 	&:not(.expanded) {
 		overflow: hidden;
 		text-overflow: ellipsis;

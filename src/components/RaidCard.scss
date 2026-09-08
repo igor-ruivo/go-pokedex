@@ -1,8 +1,3 @@
-.raid-img {
-	filter: drop-shadow(0 1px 0 rgb(0 0 0 / 50%)) drop-shadow(1px 0 0 rgb(0 0 0 / 50%))
-		drop-shadow(-1px 0 0 rgb(0 0 0 / 50%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 50%));
-}
-
 .raid-wrapper {
 	padding-top: 3px;
 	height: 100%;
@@ -29,11 +24,6 @@
 .hyper-size {
 	width: 120% !important;
 	height: 120% !important;
-}
-
-.raid-img {
-	filter: drop-shadow(0 1px 0 rgb(0 0 0 / 50%)) drop-shadow(1px 0 0 rgb(0 0 0 / 50%))
-		drop-shadow(-1px 0 0 rgb(0 0 0 / 50%)) drop-shadow(0 -1px 0 rgb(0 0 0 / 50%));
 }
 
 .raid-rank-types {

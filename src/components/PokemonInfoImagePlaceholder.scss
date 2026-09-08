@@ -21,69 +21,9 @@
 	margin-top: 5px;
 }
 
-.less-bright {
-	filter: brightness(0.96);
-}
-
-.left-panel {
-	display: grid;
-	background-color: var(--popup-background-color);
-	padding: 6px;
-	border-radius: 12px;
-	border: 1px solid var(--borderColor2);
-}
-
-.left-container {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-}
-
-.right-container {
-	gap: 12px;
-	display: flex;
-	padding-top: 20%;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: space-between;
-	width: 100%;
-}
-
-.top-left-item,
-.bottom-left-item {
-	box-sizing: border-box;
-}
-
-.top-left-item {
-	align-self: flex-end;
-}
-
-.bottom-left-item {
-	align-self: flex-end;
-}
-
-.top-right {
-	grid-column: 2;
-	grid-row: 1;
-}
-
-.bottom-right {
-	grid-column: 2;
-	grid-row: 2;
-}
-
 .shifted-left {
 	left: -5px;
 	position: relative;
-}
-
-.cp-stats-container {
-	width: fit-content;
-	align-items: center;
-	gap: 9px;
-	display: flex;
-	flex-direction: column;
-	align-self: center;
 }
 
 .with-margin-left {
@@ -111,14 +51,6 @@
 	text-align: center;
 }
 
-.pokemon_number {
-	font-size: clamp(40px, 14vw, 60px);
-	line-height: 1;
-	display: block;
-	opacity: 0.25;
-	font-weight: 700;
-}
-
 .pokemon_types {
 	display: flex;
 	align-items: center;
@@ -134,12 +66,6 @@
 	display: block;
 }
 
-.pokemon_stats {
-	font-weight: 500;
-	display: flex;
-	gap: 9px;
-}
-
 .weighted-font {
 	font-weight: 500;
 }
@@ -148,27 +74,8 @@
 	font-weight: 800;
 }
 
-.stats_ranks {
-	align-items: center;
-	gap: 22px;
-	display: flex;
-	flex-direction: row;
-}
-
-.pvp_stat {
-	align-items: center;
-	display: flex;
-	flex-direction: column;
-}
-
 .cp-level {
 	display: flex;
-}
-
-.big {
-	font-size: 15px;
-	font-weight: 700;
-	vertical-align: bottom;
 }
 
 .contained-big {
@@ -228,23 +135,7 @@
 	}
 }
 
-@media (width <= 1200px) {
-	.big {
-		font-size: 15px;
-	}
-}
-
-@media (width <= 700px) {
-	.big {
-		font-size: clamp(15px, 7vw, 16px);
-	}
-}
-
 @media (width <= 500px) {
-	.big {
-		font-size: clamp(10px, 3.5vw, 12px);
-	}
-
 	.contained-big {
 		font-size: 11px;
 	}

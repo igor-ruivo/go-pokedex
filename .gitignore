@@ -24,3 +24,5 @@ yarn-debug.log*
 yarn-error.log*
 
 tsconfig.tsbuildinfo
+# css refactor verification artifacts
+snapshots/

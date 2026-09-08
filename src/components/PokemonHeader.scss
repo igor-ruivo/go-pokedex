@@ -46,14 +46,6 @@
 	padding-bottom: 6px !important;
 }
 
-.baseheader-name {
-	color: var(--textColor);
-	margin: 0;
-	padding: 0;
-	font-size: clamp(28.2px, 5vw, 36px);
-	text-shadow: none;
-}
-
 .constrained {
 	max-width: 1600px;
 	margin-right: auto;
@@ -64,10 +56,6 @@
 }
 
 @media (width <= 500px) {
-	.baseheader-name {
-		font-size: clamp(18.9px, 5vw, 32px);
-	}
-
 	.pokemonheader-header {
 		border-radius: 0;
 		padding: 4px;
