@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
-import type { IIvPercents } from '../components/PokemonInfoBanner';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import type { IIvPercents } from '../DTOs/ivs';
 import { usePokemon } from '../queries/pokemon';
-import { customCupCPLimit } from '../queries/pvp';
-import { computeBestIVs, fetchReachablePokemonIncludingSelf } from '../utils/pokemon-helper';
+import { fetchReachablePokemonIncludingSelf } from '../utils/pokemon-helper';
+import type { FamilyMember } from '../workers/compute.worker';
+import { getComputeWorker } from '../workers/compute-client';
 
 interface IUseComputeIVsProps {
 	pokemon: IGamemasterPokemon;
@@ -14,105 +16,75 @@ interface IUseComputeIVsProps {
 	justForSelf?: boolean;
 }
 
-const useComputeIVs = ({ pokemon, attackIV, defenseIV, hpIV, justForSelf = false }: IUseComputeIVsProps) => {
-	const [ivPercents, setIvPercents] = useState<Record<string, IIvPercents>>({});
-	const [loading, setLoading] = useState(true);
+const EMPTY: Record<string, IIvPercents> = {};
+
+/**
+ * Ranks the given IV spread for every evolution reachable from `pokemon` (or just
+ * `pokemon` itself when `justForSelf`). The 16x16x16 x ~50-level brute force runs
+ * in a Web Worker so the main thread stays responsive.
+ *
+ * @returns `[ivPercents keyed by speciesId, loading]`
+ */
+const useComputeIVs = ({
+	pokemon,
+	attackIV,
+	defenseIV,
+	hpIV,
+	justForSelf = false,
+}: IUseComputeIVsProps): [Record<string, IIvPercents>, boolean] => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 
-	useEffect(() => {
-		setLoading(true);
-		if (!fetchCompleted) {
-			return;
+	// Walking the family graph is cheap; only the IV ranking is worth offloading.
+	const reachable = useMemo<Array<FamilyMember>>(() => {
+		if (!pokemon || !fetchCompleted) {
+			return [];
 		}
+		const members = justForSelf
+			? [pokemon]
+			: Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon));
+		return members
+			.filter((p): p is IGamemasterPokemon => !!p)
+			.map((p) => ({
+				speciesId: p.speciesId,
+				atk: p.baseStats.atk,
+				def: p.baseStats.def,
+				hp: p.baseStats.hp,
+				isShadow: p.isShadow,
+			}));
+	}, [pokemon, gamemasterPokemon, fetchCompleted, justForSelf]);
 
-		const computeIvs = () => {
-			const familyIvPercents: Record<string, IIvPercents> = {};
+	const enabled = fetchCompleted && !!pokemon && reachable.length > 0;
 
-			let reachablePokemons = new Set<IGamemasterPokemon>();
-			if (!justForSelf && fetchCompleted && pokemon) {
-				reachablePokemons = fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon);
-			} else {
-				reachablePokemons.add(pokemon);
-			}
+	const { data, isPending } = useQuery({
+		enabled,
+		queryKey: [
+			'iv-percents',
+			pokemon?.speciesId,
+			justForSelf,
+			attackIV,
+			defenseIV,
+			hpIV,
+			reachable.map((m) => m.speciesId).join(','),
+		],
+		queryFn: () =>
+			getComputeWorker().familyIvPercents({
+				reachable,
+				selfIsShadow: pokemon.isShadow,
+				attackIV,
+				defenseIV,
+				hpIV,
+			}),
+		// Keep the last result on screen while a new IV spread recomputes, so
+		// moving a slider updates in place instead of flashing the loader.
+		placeholderData: keepPreviousData,
+		// Pure function of its inputs — once computed it never goes stale.
+		staleTime: Infinity,
+		gcTime: 30 * 60 * 1000,
+	});
 
-			Array.from(reachablePokemons)
-				.filter((p) => p)
-				.forEach((p) => {
-					const effectiveAtk = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + attackIV : attackIV);
-					const effectiveDef = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + defenseIV : defenseIV);
-					const effectiveHP = Math.min(15, pokemon.isShadow && !p.isShadow ? 2 + hpIV : hpIV);
-
-					const resLC = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, customCupCPLimit);
-					const resGL = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, 1500);
-					const resUL = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, 2500);
-					const resML = computeBestIVs(p.baseStats.atk, p.baseStats.def, p.baseStats.hp, Number.MAX_VALUE);
-
-					const flatLResult = Object.values(resLC).flat();
-					const flatGLResult = Object.values(resGL).flat();
-					const flatULResult = Object.values(resUL).flat();
-					const flatMLResult = Object.values(resML).flat();
-
-					const rankLIndex = flatLResult.findIndex(
-						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
-					);
-					const rankGLIndex = flatGLResult.findIndex(
-						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
-					);
-					const rankULIndex = flatULResult.findIndex(
-						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
-					);
-					const rankMLIndex = flatMLResult.findIndex(
-						(r) => r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP
-					);
-
-					familyIvPercents[p.speciesId] = {
-						greatLeagueRank: rankGLIndex,
-						greatLeagueLvl: flatGLResult[rankGLIndex].L,
-						greatLeagueCP: flatGLResult[rankGLIndex].CP,
-						greatLeagueAttack: flatGLResult[rankGLIndex].battle.A,
-						greatLeagueDefense: flatGLResult[rankGLIndex].battle.D,
-						greatLeagueHP: flatGLResult[rankGLIndex].battle.S,
-						greatLeaguePerfect: flatGLResult[0].IVs,
-						greatLeaguePerfectLevel: flatGLResult[0].L,
-						greatLeaguePerfectCP: flatGLResult[0].CP,
-						ultraLeagueRank: rankULIndex,
-						ultraLeagueLvl: flatULResult[rankULIndex].L,
-						ultraLeagueCP: flatULResult[rankULIndex].CP,
-						ultraLeagueAttack: flatULResult[rankULIndex].battle.A,
-						ultraLeagueDefense: flatULResult[rankULIndex].battle.D,
-						ultraLeagueHP: flatULResult[rankULIndex].battle.S,
-						ultraLeaguePerfect: flatULResult[0].IVs,
-						ultraLeaguePerfectLevel: flatULResult[0].L,
-						ultraLeaguePerfectCP: flatULResult[0].CP,
-						masterLeagueRank: rankMLIndex,
-						masterLeagueLvl: flatMLResult[rankMLIndex].L,
-						masterLeagueCP: flatMLResult[rankMLIndex].CP,
-						masterLeagueAttack: flatMLResult[rankMLIndex].battle.A,
-						masterLeagueDefense: flatMLResult[rankMLIndex].battle.D,
-						masterLeagueHP: flatMLResult[rankMLIndex].battle.S,
-						masterLeaguePerfect: flatMLResult[0].IVs,
-						masterLeaguePerfectLevel: flatMLResult[0].L,
-						masterLeaguePerfectCP: flatMLResult[0].CP,
-						customLeagueRank: rankLIndex,
-						customLeagueLvl: flatLResult[rankLIndex].L,
-						customLeagueCP: flatLResult[rankLIndex].CP,
-						customLeagueAttack: flatLResult[rankLIndex].battle.A,
-						customLeagueDefense: flatLResult[rankLIndex].battle.D,
-						customLeagueHP: flatLResult[rankLIndex].battle.S,
-						customLeaguePerfect: flatLResult[0].IVs,
-						customLeaguePerfectLevel: flatLResult[0].L,
-						customLeaguePerfectCP: flatLResult[0].CP,
-					};
-				});
-			setIvPercents(familyIvPercents);
-			setLoading(false);
-		};
-		computeIvs();
-	}, [pokemon, attackIV, defenseIV, hpIV, justForSelf, gamemasterPokemon, fetchCompleted]);
-
-	const result: [Record<string, IIvPercents>, boolean] = [ivPercents, loading];
-
-	return result;
+	// `isPending` is only true on the very first computation; slider changes keep
+	// showing the previous data (isPlaceholderData) rather than dropping to a loader.
+	return [data ?? EMPTY, enabled && isPending];
 };
 
 export default useComputeIVs;

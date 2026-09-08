@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import type { IIvPercents, ILeaguePerfectStats } from '../DTOs/ivs';
 import { PokemonTypes as TypesDTO } from '../DTOs/PokemonTypes';
 import { LeagueType } from '../hooks/useLeague';
 import { useMoves } from '../queries/moves';
@@ -38,50 +39,8 @@ interface IPokemonInfoBanner {
 	level: number;
 }
 
-export interface ILeaguePerfectStats {
-	A: number;
-	D: number;
-	S: number;
-}
-
-export interface IIvPercents {
-	greatLeagueRank: number;
-	greatLeagueLvl: number;
-	greatLeagueCP: number;
-	greatLeagueAttack: number;
-	greatLeagueDefense: number;
-	greatLeagueHP: number;
-	greatLeaguePerfect: ILeaguePerfectStats;
-	greatLeaguePerfectLevel: number;
-	greatLeaguePerfectCP: number;
-	ultraLeagueRank: number;
-	ultraLeagueLvl: number;
-	ultraLeagueCP: number;
-	ultraLeagueAttack: number;
-	ultraLeagueDefense: number;
-	ultraLeagueHP: number;
-	ultraLeaguePerfect: ILeaguePerfectStats;
-	ultraLeaguePerfectLevel: number;
-	ultraLeaguePerfectCP: number;
-	masterLeagueRank: number;
-	masterLeagueLvl: number;
-	masterLeagueCP: number;
-	masterLeagueAttack: number;
-	masterLeagueDefense: number;
-	masterLeagueHP: number;
-	masterLeaguePerfect: ILeaguePerfectStats;
-	masterLeaguePerfectLevel: number;
-	masterLeaguePerfectCP: number;
-	customLeagueRank: number;
-	customLeagueLvl: number;
-	customLeagueCP: number;
-	customLeagueAttack: number;
-	customLeagueDefense: number;
-	customLeagueHP: number;
-	customLeaguePerfect: ILeaguePerfectStats;
-	customLeaguePerfectLevel: number;
-	customLeaguePerfectCP: number;
-}
+// Kept as re-exports so existing `import ... from './PokemonInfoBanner'` sites keep working.
+export type { IIvPercents, ILeaguePerfectStats };
 
 type ranksDicDTO = {
 	rank: number;

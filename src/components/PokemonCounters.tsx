@@ -1,5 +1,6 @@
 import './PokemonMoves.scss';
 
+import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -14,11 +15,11 @@ import useResize from '../hooks/useResize';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
-import type { DPSEntry } from '../queries/raid-ranker';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
-import { computeDPSEntry, shortName, translateMoveFromMoveId } from '../utils/pokemon-helper';
+import { shortName, translateMoveFromMoveId } from '../utils/pokemon-helper';
 import translator, { TranslatorKeys } from '../utils/Translator';
+import { getComputeWorker } from '../workers/compute-client';
 import ListEntry from './ListEntry';
 import LoadingRenderer from './LoadingRenderer';
 import PokemonImage from './PokemonImage';
@@ -75,24 +76,20 @@ const PokemonCounters = ({ pokemon, league }: IPokemonCounters) => {
 		writePersistentValue(ConfigKeys.Shadow, shadow.toString());
 	}, [shadow]);
 
-	const comparisons = useMemo(() => {
-		if (resourcesNotReady) {
-			return [];
-		}
-
-		const comparisons: Array<DPSEntry> = [];
-		Object.values(gamemasterPokemon)
-			.filter((p) => !p.aliasId)
-			.forEach((p) => comparisons.push(computeDPSEntry(p, gamemasterPokemon, moves, 15, 100, '', pokemon)));
-
-		return comparisons.sort((e1: DPSEntry, e2: DPSEntry) => {
-			if (e2.dps !== e1.dps) {
-				return e2.dps - e1.dps;
-			}
-
-			return e1.speciesId.localeCompare(e2.speciesId);
-		});
-	}, [resourcesNotReady, gamemasterPokemon, moves, pokemon]);
+	// Whole-dex DPS ranking against this target — offloaded to the worker, and only
+	// computed when the raid counters view actually needs it.
+	const { data: comparisons = [] } = useQuery({
+		enabled: !resourcesNotReady && league === LeagueType.RAID,
+		queryKey: ['raid-comparisons', pokemon?.speciesId],
+		queryFn: () =>
+			getComputeWorker().raidComparisons({
+				candidates: Object.values(gamemasterPokemon).filter((p) => !p.aliasId),
+				moves,
+				target: pokemon,
+			}),
+		staleTime: Infinity,
+		gcTime: 30 * 60 * 1000,
+	});
 
 	const greatLeagueMatchUps = useMemo(
 		() => (resourcesNotReady ? [] : (rankLists[0][pokemon.speciesId]?.matchups ?? [])),
