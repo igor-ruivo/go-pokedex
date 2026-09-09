@@ -1,70 +1,55 @@
-import './App.scss';
+import './rvmp.css';
+import './components.css';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import DeleteTrash from './components/DeleteTrash';
-import ErrorBoundary from './components/ErrorBoundary';
-import Content from './components/Template/Content';
-import Footer from './components/Template/Footer';
-import Navbar from './components/Template/Navbar';
+import Shell from './components/Shell';
 import { ImageSourceProvider } from './contexts/imageSource-context';
 import { LanguageProvider } from './contexts/language-context';
-import { NavbarSearchProvider } from './contexts/navbar-search-context';
-import { NotificationsProvider } from './contexts/notifications-context';
-import NewApp from './new/NewApp';
+import Calendar from './routes/Calendar';
+import MassDelete from './routes/MassDelete';
+import MoveDetail from './routes/MoveDetail';
+import Moves from './routes/Moves';
+import Placeholder from './routes/Placeholder';
+import PokemonDetail from './routes/PokemonDetail';
+import Rankings from './routes/Rankings';
+import Settings from './routes/Settings';
+import Types from './routes/Types';
 import { DAY_IN_MS, QUERY_CACHE_BUSTER, queryClient, queryPersister } from './utils/query-client';
-import Calendar2 from './views/calendar2';
-import Pokedex from './views/pokedex';
-import Pokemon from './views/pokemon';
 
 // Server state (the dex-server JSON feeds) lives in TanStack Query — see src/queries/.
-// Only genuine client state keeps a Context provider here.
-const App = () => {
-	return (
-		<PersistQueryClientProvider
-			client={queryClient}
-			persistOptions={{ persister: queryPersister, maxAge: DAY_IN_MS, buster: QUERY_CACHE_BUSTER }}
-		>
-			<ImageSourceProvider>
-				<LanguageProvider>
-					<NavbarSearchProvider>
-						<NotificationsProvider>
-							<HashRouter>
-								<Routes>
-									{/* Revamp — self-contained, no legacy chrome. */}
-									<Route path='/new/*' element={<NewApp />} />
-									<Route
-										path='/*'
-										element={
-											<div className='main-wrapper'>
-												<Navbar />
-												<Content>
-													<ErrorBoundary>
-														<Routes>
-															<Route index element={<Pokedex />} />
-															<Route path='pokemon/:speciesId' element={<Pokemon />} />
-															<Route path='pokemon/:speciesId/:tab' element={<Pokemon />} />
-															<Route path='trash-pokemon' element={<DeleteTrash />} />
-															<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
-															<Route path='calendar/:tab' element={<Calendar2 />} />
-															<Route path=':league' element={<Pokedex />} />
-															<Route path='*' element={<div>404 not found!</div>} />
-														</Routes>
-													</ErrorBoundary>
-												</Content>
-												<Footer />
-											</div>
-										}
-									/>
-								</Routes>
-							</HashRouter>
-						</NotificationsProvider>
-					</NavbarSearchProvider>
-				</LanguageProvider>
-			</ImageSourceProvider>
-		</PersistQueryClientProvider>
-	);
-};
+// Only genuine client state keeps a Context provider here. Everything is scoped
+// under the `.rvmp` root class (see Shell) — one self-contained stylesheet.
+const App = () => (
+	<PersistQueryClientProvider
+		client={queryClient}
+		persistOptions={{ persister: queryPersister, maxAge: DAY_IN_MS, buster: QUERY_CACHE_BUSTER }}
+	>
+		<ImageSourceProvider>
+			<LanguageProvider>
+				<HashRouter>
+					<Routes>
+						<Route element={<Shell />}>
+							<Route index element={<Rankings />} />
+							<Route path='rankings/:league' element={<Rankings />} />
+							<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
+							<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
+							<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
+							<Route path='calendar/:tab' element={<Calendar />} />
+							<Route path='moves' element={<Moves />} />
+							<Route path='move/:moveId' element={<MoveDetail />} />
+							<Route path='types' element={<Types />} />
+							<Route path='trash' element={<MassDelete />} />
+							<Route path='tools' element={<Placeholder title='Tools' />} />
+							<Route path='settings' element={<Settings />} />
+							<Route path='*' element={<Navigate to='/' replace />} />
+						</Route>
+					</Routes>
+				</HashRouter>
+			</LanguageProvider>
+		</ImageSourceProvider>
+	</PersistQueryClientProvider>
+);
 
 export default App;

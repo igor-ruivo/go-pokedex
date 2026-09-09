@@ -74,4 +74,7 @@ if (tsConfigs) {
 	configs.push(...allConfigs);
 }
 
+// Quarantined old site — kept for reference only, never linted or built.
+configs.push({ ignores: ['src/legacy/**', 'dist/**', 'node_modules/**'] });
+
 module.exports = configs;

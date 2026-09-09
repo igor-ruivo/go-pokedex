@@ -1,0 +1,16 @@
+/* Minimal global reset. Everything else is scoped under `.rvmp` (see rvmp.css). */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: #0b0e14;
+}
