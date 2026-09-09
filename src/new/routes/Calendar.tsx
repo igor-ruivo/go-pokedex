@@ -101,13 +101,7 @@ const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
 });
 
 /* ---------- shared bits ---------- */
-const MiniGrid = ({
-	entries,
-	endMap,
-}: {
-	entries: Array<IEntry>;
-	endMap?: Map<string, number> | undefined;
-}) => {
+const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<string, number> | undefined }) => {
 	const now = Date.now();
 	return (
 		<div className='r-minigrid'>
@@ -278,7 +272,6 @@ const EventsTab = () => {
 	if (list.length === 0) return <p className='r-muted'>No events right now.</p>;
 
 	const seasonId = seasonFetchCompleted && season ? season.id : null;
-	const activeId = openId ?? list[0]?.id;
 	return (
 		<div className='r-eventlist'>
 			{list.map((p) => (
@@ -286,8 +279,8 @@ const EventsTab = () => {
 					key={p.id}
 					post={p}
 					isSeason={p.id === seasonId}
-					open={p.id === activeId}
-					onToggle={() => setOpenId(p.id === activeId ? '' : p.id)}
+					open={p.id === openId}
+					onToggle={() => setOpenId(p.id === openId ? null : p.id)}
 					preferSubtitle={dupeTitles.has(p.title[gl]) && !!p.subtitle[gl]}
 				/>
 			))}
@@ -308,8 +301,7 @@ const RaidsTab = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const [sel, setSel] = useState('current');
 
-	const ready =
-		postsFetchCompleted && specialBossesFetchCompleted && currentBossesFetchCompleted && fetchCompleted;
+	const ready = postsFetchCompleted && specialBossesFetchCompleted && currentBossesFetchCompleted && fetchCompleted;
 
 	const { current, upcoming, endMap } = useMemo(() => {
 		const endMap = new Map<string, number>();
@@ -550,12 +542,7 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 								</u>
 								<div className='r-minigrid'>
 									{tier.map((id, j) => (
-										<PokeMini
-											key={`${id}-${j}`}
-											speciesId={id}
-											forceShadow
-											catchable={g.catchableTiers.includes(i)}
-										/>
+										<PokeMini key={`${id}-${j}`} speciesId={id} forceShadow catchable={g.catchableTiers.includes(i)} />
 									))}
 								</div>
 							</div>

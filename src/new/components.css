@@ -114,6 +114,29 @@
 	display: grid;
 	place-items: center;
 }
+.rvmp .r-sprite[data-tappable] {
+	cursor: pointer;
+}
+.rvmp .r-sprite-dots {
+	position: absolute;
+	left: 50%;
+	bottom: 2%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 5px;
+	z-index: 3;
+}
+.rvmp .r-sprite-dots i {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--text-faint) 60%, transparent);
+	transition: background 0.14s ease;
+}
+.rvmp .r-sprite-dots i[data-on='true'] {
+	background: var(--accent);
+	box-shadow: 0 0 6px var(--accent);
+}
 .rvmp .r-sprite::before {
 	content: '';
 	position: absolute;
@@ -122,7 +145,18 @@
 	background: radial-gradient(circle, color-mix(in srgb, var(--accent) 34%, transparent), transparent 68%);
 	filter: blur(6px);
 }
-.rvmp .r-sprite img {
+.rvmp .r-sprite > .r-sprite-shadow {
+	position: absolute;
+	top: auto;
+	bottom: 7%;
+	left: 4%;
+	width: 25%;
+	height: 25%;
+	z-index: 3;
+	/* bob in lockstep with the hero artwork */
+	animation: r-bob 5s ease-in-out infinite;
+}
+.rvmp .r-sprite > img:not(.r-sprite-shadow) {
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -288,8 +322,8 @@
 	position: absolute;
 	top: 6px;
 	left: 6px;
-	width: 18px;
-	height: 18px;
+	width: 22px;
+	height: 22px;
 	z-index: 2;
 }
 .rvmp .r-reach-chip span {
@@ -435,6 +469,223 @@
 	color: var(--text-faint);
 }
 
+/* ---- leaderboard — best family member per league, clickable ---------------- */
+.rvmp .r-board {
+	display: grid;
+	gap: 8px;
+}
+.rvmp .r-board-row {
+	position: relative;
+	display: grid;
+	grid-template-columns: 48px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 13px;
+	/* symmetric block padding + a fixed min-height so the sprite / label / figure
+	   stay vertically centred and every row is the same size; the pokémon-carousel
+	   pips are absolutely positioned in the bottom gap */
+	padding: 12px 16px 12px 20px;
+	min-height: 78px;
+	cursor: pointer;
+	border-radius: var(--r-md);
+	background:
+		linear-gradient(180deg, color-mix(in srgb, var(--lg) 5%, var(--surface)), var(--surface)),
+		var(--surface);
+	border: 1px solid var(--border);
+	overflow: clip;
+	text-align: left;
+	opacity: 0.6;
+	transition:
+		opacity 0.16s ease,
+		border-color 0.16s ease,
+		box-shadow 0.16s ease;
+}
+.rvmp .r-board-row::before {
+	content: '';
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 4px;
+	background: var(--lg);
+	opacity: 0.55;
+	transition:
+		opacity 0.16s ease,
+		box-shadow 0.16s ease;
+}
+.rvmp .r-board-row:hover {
+	opacity: 0.85;
+}
+.rvmp .r-board-row[data-active='true'] {
+	opacity: 1;
+	border-color: color-mix(in srgb, var(--lg) 45%, var(--border));
+	box-shadow:
+		inset 0 0 0 1px color-mix(in srgb, var(--lg) 22%, transparent),
+		0 6px 22px color-mix(in srgb, var(--lg) 16%, transparent);
+}
+.rvmp .r-board-row[data-active='true']::before {
+	opacity: 1;
+	box-shadow: 0 0 14px var(--lg);
+}
+.rvmp .r-board-sprite {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	flex: none;
+	border-radius: 50%;
+	background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--lg) 30%, var(--surface-2)), var(--surface-2) 74%);
+	/* thick league-tinted contour, same idea as the shadow / type adorners */
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.06),
+		inset 0 0 0 1px color-mix(in srgb, var(--lg) 32%, transparent),
+		0 0 0 2px var(--surface),
+		0 0 0 4px color-mix(in srgb, var(--lg) 55%, transparent);
+	filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lg) 40%, transparent));
+}
+.rvmp .r-board-row[data-active='true'] .r-board-sprite {
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.08),
+		inset 0 0 0 1px color-mix(in srgb, var(--lg) 60%, transparent),
+		0 0 0 2px var(--surface),
+		0 0 0 5px color-mix(in srgb, var(--lg) 75%, transparent),
+		0 0 16px color-mix(in srgb, var(--lg) 32%, transparent);
+	filter: drop-shadow(0 0 5px color-mix(in srgb, var(--lg) 55%, transparent));
+}
+.rvmp .r-board-sprite > img:not(.r-shadow-mark) {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.45));
+}
+.rvmp .r-board-sprite > .r-shadow-mark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 22px;
+	height: 22px;
+	z-index: 2;
+}
+/* raids: the attacking type this member is best at — a self-contained circular
+   type medallion centred on the sprite's lower edge; click to cycle types */
+.rvmp .r-board-type {
+	position: absolute;
+	/* biased toward the sprite's lower-left but kept clear of the row's left edge —
+	   a guaranteed gap matters more here than centring under the sprite */
+	left: 1px;
+	bottom: -6px;
+	display: grid;
+	place-items: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--surface);
+	/* thick raid-orange contour + glow, mirroring the shadow adorner */
+	box-shadow:
+		0 0 0 2px var(--surface),
+		0 0 0 4px color-mix(in srgb, var(--lg) 75%, transparent);
+	filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lg) 60%, transparent));
+	cursor: pointer;
+	transition: transform 0.12s ease;
+	z-index: 3;
+}
+.rvmp .r-board-type:hover {
+	transform: scale(1.12);
+}
+.rvmp .r-board-type img {
+	padding: 2px;
+	display: block;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	object-fit: contain;
+}
+/* carousel position hints (LoL skin-select style) */
+.rvmp .r-board-pips {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 5px;
+	display: flex;
+	justify-content: center;
+	gap: 4px;
+}
+.rvmp .r-board-pips i {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--text-faint) 55%, transparent);
+	transition:
+		background 0.14s ease,
+		box-shadow 0.14s ease;
+}
+.rvmp .r-board-pips i[data-on='true'] {
+	background: var(--lg);
+	box-shadow: 0 0 6px var(--lg);
+}
+/* type-carousel pips — in-flow between the "RAIDS · <type>" label and the name,
+   left-aligned with that label text */
+.rvmp .r-board-typepips {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin: 2px 0 3px;
+}
+.rvmp .r-board-typepips i {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--lg) 35%, transparent);
+}
+.rvmp .r-board-typepips i[data-on='true'] {
+	background: var(--lg);
+	box-shadow: 0 0 5px var(--lg);
+}
+.rvmp .r-board-id {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+.rvmp .r-board-lg {
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 10px;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--lg);
+}
+.rvmp .r-board-name {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--text);
+	white-space: nowrap;
+	/* `clip`, not `hidden`: an overflow:hidden box with nowrap text becomes a
+	   scroll container and can swallow touch/wheel scrolling started over it */
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+.rvmp .r-board-fig {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 2px;
+}
+.rvmp .r-board-rank {
+	font-family: Fredoka, sans-serif;
+	font-weight: 800;
+	font-size: 19px;
+	line-height: 1;
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-board-metric {
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
 /* ---- IV picker ------------------------------------------------------------- */
 .rvmp .r-iv {
 	display: grid;
@@ -547,30 +798,92 @@
 	flex-direction: column;
 	gap: var(--s2);
 	margin-top: var(--s3);
+	/* ~5 rows tall, then scroll within the card (Mew ranks in ~9 attacking types) */
+	max-height: 356px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+	scrollbar-color: var(--surface-3) transparent;
+}
+.rvmp .r-raidtypes::-webkit-scrollbar {
+	width: 6px;
+}
+.rvmp .r-raidtypes::-webkit-scrollbar-thumb {
+	background: var(--surface-3);
+	border-radius: 3px;
 }
 .rvmp .r-raidtype {
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border: 1px solid transparent;
+	border-left: 3px solid var(--tc, var(--accent));
+	overflow: clip;
+}
+.rvmp .r-raidtype[data-active] {
+	background: color-mix(in srgb, var(--tc) 14%, var(--surface-2));
+	border-color: color-mix(in srgb, var(--tc) 45%, transparent);
+	border-left-color: var(--tc, var(--accent));
+}
+.rvmp .r-raidtype-head {
 	display: grid;
 	grid-template-columns: auto 1fr auto;
 	align-items: center;
 	gap: var(--s3);
+	width: 100%;
 	padding: var(--s2) var(--s3);
-	border-radius: var(--r-sm);
-	background: var(--surface-2);
-	border-left: 3px solid var(--tc, var(--accent));
+	text-align: left;
 }
-.rvmp .r-raidtype b {
+.rvmp .r-raidtype-head b {
 	font-family: Fredoka, sans-serif;
 	font-size: 16px;
 	font-variant-numeric: tabular-nums;
 	color: var(--tc, var(--text));
 }
-.rvmp .r-raidtype em {
+.rvmp .r-raidtype-head em {
 	font-style: normal;
 	font-size: 12px;
 	font-weight: 700;
 	letter-spacing: 0.04em;
 	color: var(--text-dim);
 	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-raidtype-moves {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	width: 100%;
+	padding: 6px var(--s3) 8px;
+	border-top: 1px solid color-mix(in srgb, var(--tc) 20%, transparent);
+	text-align: left;
+}
+.rvmp .r-raidtype-mv {
+	flex: 1;
+	min-width: 0;
+	font-size: 11.5px;
+	font-weight: 700;
+	color: var(--text-dim);
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+.rvmp .r-raidtype-mv i {
+	font-style: normal;
+	color: var(--text-faint);
+}
+.rvmp .r-raidtype-pips {
+	flex: none;
+	display: flex;
+	gap: 3px;
+}
+.rvmp .r-raidtype-pips i {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--tc) 35%, transparent);
+}
+.rvmp .r-raidtype-pips i[data-on='true'] {
+	background: var(--tc, var(--accent));
+	box-shadow: 0 0 5px var(--tc, var(--accent));
 }
 
 /* ---- effectiveness -------------------------------------------------------- */
@@ -1029,7 +1342,7 @@
 	overflow: clip;
 	padding: 4%;
 	border-radius: var(--r-sm);
-	background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 12%, var(--surface)), var(--surface));
+	background: var(--surface-2);
 	border: 1px solid var(--border);
 	text-align: center;
 	transition:
@@ -1038,7 +1351,7 @@
 }
 .rvmp .r-pc:hover {
 	transform: translateY(-2px);
-	border-color: color-mix(in srgb, var(--tc) 50%, transparent);
+	border-color: var(--border-strong);
 }
 .rvmp .r-pc-rank {
 	position: absolute;
@@ -1080,10 +1393,10 @@
 }
 .rvmp .r-pc > .r-shadow-mark {
 	position: absolute;
-	top: 4%;
-	right: 4%;
-	width: 26%;
-	height: 26%;
+	top: 8%;
+	right: 8%;
+	width: 28%;
+	height: 28%;
 	z-index: 2;
 }
 .rvmp .r-pc-name {
@@ -1258,7 +1571,7 @@
 	gap: 2px;
 	padding: var(--s2) 4px 6px;
 	border-radius: var(--r-sm);
-	background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 12%, var(--surface)), var(--surface));
+	background: var(--surface-2);
 	border: 1px solid var(--border);
 	text-align: center;
 	transition: transform 0.12s ease;
@@ -1266,7 +1579,7 @@
 .rvmp .r-mini:hover {
 	transform: translateY(-2px);
 }
-.rvmp .r-mini > img {
+.rvmp .r-mini > img:not(.r-shadow-mark) {
 	width: 52px;
 	height: 52px;
 	object-fit: contain;
@@ -1277,11 +1590,23 @@
 	line-height: 1.1;
 	color: var(--text-dim);
 }
-/* shadow mark — a filled purple flame (--t-ghost), sized proportional to the
-   sprite, with a dark outline + purple glow so it pops on any background */
+/* shadow mark — the lavender Rocket flame in a round badge with a thick ghost-type
+   ring, same treatment as the raid type adorner. The interior is a deep purple so
+   the light flame silhouette reads against it on any background. */
 .rvmp .r-shadow-mark {
-	color: var(--t-ghost);
-	filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.95)) drop-shadow(0 0 4px color-mix(in srgb, var(--t-ghost) 85%, transparent));
+	object-fit: contain;
+	/* keep this a fixed length — percentage padding on these absolutely-positioned
+	   marks resolves against the containing block, not the badge, and collapses the
+	   flame to nothing on the large hero badge. */
+	padding: 2px;
+	border-radius: 50%;
+	background:
+		radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--t-ghost) 45%, transparent), transparent 72%),
+		#160b2e;
+	box-shadow:
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px color-mix(in srgb, var(--t-ghost) 70%, transparent);
+	filter: drop-shadow(0 0 2px color-mix(in srgb, var(--t-ghost) 60%, transparent));
 	pointer-events: none;
 	flex: none;
 }
@@ -1289,8 +1614,8 @@
 	position: absolute;
 	top: 5px;
 	left: 5px;
-	width: 20px;
-	height: 20px;
+	width: 24px;
+	height: 24px;
 	z-index: 2;
 }
 .rvmp .r-mini em {
@@ -1495,13 +1820,13 @@
 .rvmp .r-grunt-peek .r-mini {
 	padding: 4px 3px 5px;
 }
-.rvmp .r-grunt-peek .r-mini > img {
+.rvmp .r-grunt-peek .r-mini > img:not(.r-shadow-mark) {
 	width: 40px;
 	height: 40px;
 }
 .rvmp .r-grunt-peek .r-mini > .r-shadow-mark {
-	width: 16px;
-	height: 16px;
+	width: 19px;
+	height: 19px;
 }
 .rvmp .r-grunt-peek .r-mini > span:not(.r-mini-shiny) {
 	font-size: 9.5px;
@@ -1591,10 +1916,13 @@
 	gap: 6px;
 }
 .rvmp .r-toggle-flame {
-	width: 15px;
-	height: 15px;
-	color: var(--t-ghost);
-	filter: drop-shadow(0 0 2px color-mix(in srgb, var(--t-ghost) 70%, transparent));
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	background: none;
+	box-shadow: none;
+	object-fit: contain;
+	filter: drop-shadow(0 0 3px color-mix(in srgb, var(--t-ghost) 70%, transparent));
 }
 .rvmp .r-toggle--shadow[data-on='true'] {
 	background: color-mix(in srgb, var(--t-ghost) 24%, transparent);

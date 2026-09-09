@@ -65,9 +65,9 @@ export const useLeagueBadges = (
 	const sets = useRelevanceSets();
 	return useMemo(() => {
 		if (!pokemon || !sets.ready) return [];
-		const family = Array.from(
-			fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)
-		).map((m) => m.speciesId);
+		const family = Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map(
+			(m) => m.speciesId
+		);
 		const hits = (set: Set<string>) => family.some((id) => set.has(id));
 		const out: Array<LeagueKey> = [];
 		if (hits(sets.great)) out.push('great');

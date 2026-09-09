@@ -96,9 +96,7 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 				<div className='r-filter-panel' role='dialog' aria-label='Filters'>
 					<div className='r-filter-sec-h'>
 						<span>Type</span>
-						<span className='r-filter-hint'>
-							{single ? 'pick one' : `pick up to ${MAX_MULTI} · matches both`}
-						</span>
+						<span className='r-filter-hint'>{single ? 'pick one' : `pick up to ${MAX_MULTI} · matches both`}</span>
 					</div>
 					<div className='r-filter-types'>
 						{types.map((t) => {

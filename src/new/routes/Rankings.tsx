@@ -79,15 +79,7 @@ const Rankings = () => {
 				.map((pokemon) => ({
 					pokemon,
 					metric: {
-						cp: calculateCP(
-							pokemon.baseStats.atk,
-							15,
-							pokemon.baseStats.def,
-							15,
-							pokemon.baseStats.hp,
-							15,
-							lvl50
-						),
+						cp: calculateCP(pokemon.baseStats.atk, 15, pokemon.baseStats.def, 15, pokemon.baseStats.hp, 15, lvl50),
 					},
 				}));
 		}
