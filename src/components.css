@@ -819,7 +819,7 @@
 	.rvmp .r-raidtypes {
 		max-height: 356px; /* ~5 rows */
 		overflow-y: auto;
-		overscroll-behavior-y: auto !important; /* beats the legacy `* { …none !important }` */
+		overscroll-behavior-y: auto; /* let the wheel chain to the page at the ends */
 		scrollbar-width: thin;
 		scrollbar-color: var(--surface-3) transparent;
 	}
@@ -1650,7 +1650,7 @@
 	.rvmp .r-movelist--scroll {
 		max-height: 560px;
 		overflow-y: auto;
-		overscroll-behavior-y: auto !important;
+		overscroll-behavior-y: auto;
 		scrollbar-width: thin;
 		scrollbar-color: var(--surface-3) transparent;
 		/* bleed the scrollbar into the shell gutter so the cards stay the exact same
@@ -2413,13 +2413,12 @@
 	background: var(--surface);
 }
 /* the body scrolls inside itself once past ~50 rows; the header stays put.
-   `overscroll-behavior-y: auto !important` beats the legacy global
-   `* { overscroll-behavior: none !important }` so hitting the top / bottom of
-   the inner list chains the scroll back to the page instead of dead-ending. */
+   `overscroll-behavior-y: auto` keeps the wheel chaining back to the page when
+   the inner list hits its top / bottom instead of dead-ending. */
 .rvmp .r-ivt-scroll {
 	overflow-y: auto;
-	overscroll-behavior-x: contain !important;
-	overscroll-behavior-y: auto !important;
+	overscroll-behavior-x: contain;
+	overscroll-behavior-y: auto;
 	scrollbar-width: thin;
 	scrollbar-color: var(--surface-3) transparent;
 }
@@ -2686,8 +2685,8 @@
 	/* horizontal-only if it ever needs it; never trap the vertical wheel */
 	overflow-x: auto;
 	overflow-y: clip;
-	overscroll-behavior-x: contain !important;
-	overscroll-behavior-y: auto !important;
+	overscroll-behavior-x: contain;
+	overscroll-behavior-y: auto;
 }
 
 /* ---- mass delete (/trash) ------------------------------------------------ */
@@ -2812,15 +2811,14 @@
 /* ---- type chart (/types) --------------------------------------------- */
 .rvmp .r-tc-scroll {
 	/* horizontal-only scroller. `overflow-y: clip` keeps it from being a vertical
-	   scroll container; the `overscroll-behavior-y: auto !important` beats the
-	   legacy global `* { overscroll-behavior: none !important }` so a vertical
-	   wheel over the chart still chains to the page. clip-margin lets the hovered
-	   cell pop without being sheared. */
+	   scroll container so a vertical wheel over the chart chains to the page;
+	   `overscroll-behavior-x: contain` stops the horizontal back-nav gesture.
+	   clip-margin lets the hovered cell pop without being sheared. */
 	overflow-x: auto;
 	overflow-y: clip;
 	overflow-clip-margin: 14px;
-	overscroll-behavior-x: contain !important;
-	overscroll-behavior-y: auto !important;
+	overscroll-behavior-x: contain;
+	overscroll-behavior-y: auto;
 	display: flex;
 	justify-content: safe center;
 	margin: 0 -2px var(--s3);
@@ -3320,6 +3318,9 @@
 	border-radius: var(--r-md);
 	background: var(--surface);
 	border: 1px solid var(--border);
+	/* left accent bar in the counter's own primary-type colour — same idea as the
+	   leaderboard rows' league-coloured bar, but always on and per-type */
+	box-shadow: inset 3px 0 0 var(--tc, var(--border));
 	overflow: clip;
 	transition:
 		background 0.16s ease,
@@ -3384,8 +3385,8 @@
 	font-size: 11px;
 	color: var(--text-faint);
 	white-space: nowrap;
-	/* `clip` not `hidden` — `hidden` would make this a scroll container and trap
-	   the wheel (legacy sets `overscroll-behavior: none` globally) */
+	/* `clip` not `hidden` — `hidden` would make this a scroll container and could
+	   trap the wheel over a row */
 	overflow: clip;
 	text-overflow: ellipsis;
 }

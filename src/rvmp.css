@@ -1,6 +1,6 @@
 /* ============================================================================
-   Revamp design tokens + base — everything is scoped under .rvmp so it cannot
-   collide with the legacy global stylesheet. Dark-first (that's the look we keep).
+   Design tokens + base — everything is scoped under the `.rvmp` root class.
+   Dark-first (that's the look we keep).
    ============================================================================ */
 
 /* Always reserve the scrollbar gutter so navigating between a short page and a
