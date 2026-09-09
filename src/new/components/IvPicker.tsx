@@ -10,6 +10,7 @@ const clamp = (n: number) => Math.max(0, Math.min(15, n));
 
 const Bar = ({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) => {
 	const trackRef = useRef<HTMLDivElement>(null);
+	const dragging = useRef(false);
 
 	const setFromClientX = (clientX: number) => {
 		const el = trackRef.current;
@@ -40,11 +41,22 @@ const Bar = ({ label, value, onChange }: { label: string; value: number; onChang
 				aria-valuenow={value}
 				tabIndex={0}
 				onPointerDown={(e) => {
-					(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+					dragging.current = false;
 					setFromClientX(e.clientX);
 				}}
 				onPointerMove={(e) => {
-					if (e.buttons === 1) setFromClientX(e.clientX);
+					if (e.buttons !== 1) return;
+					// only grab pointer capture once a real drag starts — capturing on
+					// pointerdown swallows the tap on iOS so a plain tap never registers.
+					if (!dragging.current) {
+						dragging.current = true;
+						(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+					}
+					setFromClientX(e.clientX);
+				}}
+				onClick={(e) => {
+					// reliable tap-to-set on every platform, independent of the pointer/gesture dance
+					if (!dragging.current) setFromClientX(e.clientX);
 				}}
 				onKeyDown={(e) => {
 					if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {

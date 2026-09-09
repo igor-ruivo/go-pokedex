@@ -23,19 +23,33 @@ const TYPE_KEYS = Object.values(PokemonTypes)
 	.map((t) => typeKey(t))
 	.sort();
 
-const useColumns = (ref: React.RefObject<HTMLElement | null>) => {
-	const [cols, setCols] = useState(4);
+const GRID_GAP = 8;
+
+/**
+ * Column count + exact row height for the square-tile grid. Rows are uniform, so
+ * we feed the height straight to `estimateSize` and skip react-virtual's
+ * per-element `measureElement` — that ref callback calls `flushSync` during
+ * commit and warns when a route transition is still rendering.
+ */
+const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
+	const [metrics, setMetrics] = useState({ cols: 4, rowHeight: 96 });
 	useLayoutEffect(() => {
 		const el = ref.current;
 		if (!el) return;
 		const ro = new ResizeObserver(() => {
 			const w = el.clientWidth;
-			setCols(Math.min(10, Math.max(4, Math.floor(w / 88))));
+			if (!w) return;
+			const cols = Math.min(10, Math.max(4, Math.floor(w / 88)));
+			const cardWidth = (w - (cols - 1) * GRID_GAP) / cols; // tiles are squares
+			setMetrics((prev) => {
+				const rowHeight = Math.max(1, Math.round(cardWidth));
+				return prev.cols === cols && prev.rowHeight === rowHeight ? prev : { cols, rowHeight };
+			});
 		});
 		ro.observe(el);
 		return () => ro.disconnect();
 	}, [ref]);
-	return cols;
+	return metrics;
 };
 
 const Rankings = () => {
@@ -117,7 +131,7 @@ const Rankings = () => {
 	]);
 
 	const gridRef = useRef<HTMLDivElement>(null);
-	const cols = useColumns(gridRef);
+	const { cols, rowHeight } = useGridMetrics(gridRef);
 	const rowCount = Math.ceil(rows.length / cols);
 
 	const [scrollMargin, setScrollMargin] = useState(0);
@@ -127,10 +141,10 @@ const Rankings = () => {
 
 	const virt = useWindowVirtualizer({
 		count: rowCount,
-		estimateSize: () => 96,
+		estimateSize: () => rowHeight,
 		overscan: 6,
 		scrollMargin,
-		gap: 8,
+		gap: GRID_GAP,
 	});
 
 	const setTypes = (list: Array<string>) => {
@@ -189,8 +203,6 @@ const Rankings = () => {
 						return (
 							<div
 								key={vi.key}
-								data-index={vi.index}
-								ref={virt.measureElement}
 								style={{
 									position: 'absolute',
 									top: 0,

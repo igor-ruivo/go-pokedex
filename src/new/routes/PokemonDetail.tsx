@@ -100,13 +100,13 @@ const PokemonDetail = () => {
 	useEffect(() => setHeroSpriteIdx(0), [speciesId]);
 	const isRaid = league === 3;
 
-	// IV percents for this Pokémon only — the family chips navigate, they don't preview.
+	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
+	// member the league carousel is on (best reachable by default, not the URL mon).
 	const [ivPercents, ivLoading] = useComputeIVs({
 		pokemon: pokemon as never,
 		attackIV: iv.atk,
 		defenseIV: iv.def,
 		hpIV: iv.hp,
-		justForSelf: true,
 	});
 
 	// Whole evolution family for the picker — same rule as the legacy site:
@@ -285,7 +285,10 @@ const PokemonDetail = () => {
 	const hasShadow = !!gamemasterPokemon[`${baseId}_shadow`];
 	const isShadow = self.endsWith('_shadow');
 
-	const slice = !isRaid ? leagueSlice(ivPercents[self], league as PvpLeague) : undefined;
+	// "Your IVs" follows the PvP carousel (best reachable by default), not the URL mon.
+	const pvpList = boardData.pvp[isRaid ? 0 : league] ?? [];
+	const pvpMember = pvpList[Math.min(cpos(league).p, Math.max(0, pvpList.length - 1))] ?? pokemon;
+	const slice = !isRaid ? leagueSlice(ivPercents[pvpMember.speciesId], league as PvpLeague) : undefined;
 
 	// Raid card follows the raid carousel (which Pokémon + which type + which combo), not the URL mon.
 	const raidSel = boardData.raid[Math.min(cpos(3).p, Math.max(0, boardData.raid.length - 1))];
@@ -642,7 +645,7 @@ const PokemonDetail = () => {
 					) : (
 						<>
 							{/* ---- IV PICKER ---- */}
-							<div className='r-section-h'>Your IVs</div>
+							<div className='r-section-h'>Your IVs · {cleanName(pvpMember.speciesName)}</div>
 							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
 								<IvPicker
 									value={iv}
@@ -688,7 +691,7 @@ const PokemonDetail = () => {
 					)}
 
 					{/* ---- EFFECTIVENESS ---- */}
-					<div className='r-section-h'>Type effectiveness</div>
+					<div className='r-section-h'>Type effectiveness · {cleanName(pokemon.speciesName)}</div>
 					<div className='r-card'>
 						<div className='r-eff'>
 							<div className='r-eff-col'>

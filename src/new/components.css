@@ -487,39 +487,43 @@
 	min-height: 78px;
 	cursor: pointer;
 	border-radius: var(--r-md);
-	background: linear-gradient(180deg, color-mix(in srgb, var(--lg) 5%, var(--surface)), var(--surface)), var(--surface);
+	/* de-emphasis is done with the border / accent bar / glow — NOT opacity, which
+	   would just lower contrast on the whole row. Inactive rows are plain cards. */
+	background: var(--surface);
 	border: 1px solid var(--border);
 	overflow: clip;
 	text-align: left;
-	opacity: 0.6;
 	transition:
-		opacity 0.16s ease,
+		background 0.16s ease,
 		border-color 0.16s ease,
 		box-shadow 0.16s ease;
 }
+/* league-coloured accent bar — only on the selected row */
 .rvmp .r-board-row::before {
 	content: '';
 	position: absolute;
 	inset: 0 auto 0 0;
 	width: 4px;
 	background: var(--lg);
-	opacity: 0.55;
+	transform: scaleX(0);
+	transform-origin: left;
 	transition:
-		opacity 0.16s ease,
+		transform 0.16s ease,
 		box-shadow 0.16s ease;
 }
 .rvmp .r-board-row:hover {
-	opacity: 0.85;
+	border-color: var(--border-strong);
+	background: color-mix(in srgb, var(--lg) 4%, var(--surface));
 }
 .rvmp .r-board-row[data-active='true'] {
-	opacity: 1;
+	background: linear-gradient(180deg, color-mix(in srgb, var(--lg) 8%, var(--surface)), var(--surface));
 	border-color: color-mix(in srgb, var(--lg) 45%, var(--border));
 	box-shadow:
 		inset 0 0 0 1px color-mix(in srgb, var(--lg) 22%, transparent),
 		0 6px 22px color-mix(in srgb, var(--lg) 16%, transparent);
 }
 .rvmp .r-board-row[data-active='true']::before {
-	opacity: 1;
+	transform: scaleX(1);
 	box-shadow: 0 0 14px var(--lg);
 }
 .rvmp .r-board-sprite {
@@ -530,20 +534,20 @@
 	height: 48px;
 	flex: none;
 	border-radius: 50%;
+	background: radial-gradient(circle at 50% 30%, var(--surface-3), var(--surface-2) 74%);
+	/* neutral contour on inactive rows */
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.05),
+		inset 0 0 0 1px var(--border),
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
+}
+.rvmp .r-board-row[data-active='true'] .r-board-sprite {
 	background: radial-gradient(
 		circle at 50% 30%,
 		color-mix(in srgb, var(--lg) 30%, var(--surface-2)),
 		var(--surface-2) 74%
 	);
-	/* thick league-tinted contour, same idea as the shadow / type adorners */
-	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.06),
-		inset 0 0 0 1px color-mix(in srgb, var(--lg) 32%, transparent),
-		0 0 0 1.5px var(--surface),
-		0 0 0 3px color-mix(in srgb, var(--lg) 55%, transparent);
-	filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lg) 40%, transparent));
-}
-.rvmp .r-board-row[data-active='true'] .r-board-sprite {
 	box-shadow:
 		inset 0 1px 0 rgb(255 255 255 / 0.08),
 		inset 0 0 0 1px color-mix(in srgb, var(--lg) 60%, transparent),
@@ -807,22 +811,25 @@
 	flex-direction: column;
 	gap: var(--s2);
 	margin-top: var(--s3);
-	/* ~5 rows tall, then scroll within the card (Mew ranks in ~9 attacking types) */
-	max-height: 356px;
-	overflow-y: auto;
-	/* at the top/bottom edge, hand the wheel/touch scroll back to the page.
-	   `!important` + a class selector is needed to beat the legacy global
-	   `* { overscroll-behavior: none !important }` in App.scss. */
-	overscroll-behavior-y: auto !important;
-	scrollbar-width: thin;
-	scrollbar-color: var(--surface-3) transparent;
 }
-.rvmp .r-raidtypes::-webkit-scrollbar {
-	width: 6px;
-}
-.rvmp .r-raidtypes::-webkit-scrollbar-thumb {
-	background: var(--surface-3);
-	border-radius: 3px;
+/* A capped inner scroll area is great with a mouse wheel but a poor touch target —
+   on iOS the rubber-band traps the gesture at the edges. So only cap + scroll on
+   pointer-fine devices; on touch the list flows in the page and scrolls natively. */
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-raidtypes {
+		max-height: 356px; /* ~5 rows */
+		overflow-y: auto;
+		overscroll-behavior-y: auto !important; /* beats the legacy `* { …none !important }` */
+		scrollbar-width: thin;
+		scrollbar-color: var(--surface-3) transparent;
+	}
+	.rvmp .r-raidtypes::-webkit-scrollbar {
+		width: 6px;
+	}
+	.rvmp .r-raidtypes::-webkit-scrollbar-thumb {
+		background: var(--surface-3);
+		border-radius: 3px;
+	}
 }
 .rvmp .r-raidtype {
 	display: block;
@@ -1526,21 +1533,25 @@
 	display: grid;
 	gap: var(--s2);
 }
-/* long fast / charged lists scroll internally (~6 cards), same as the type-coverage panel */
-.rvmp .r-movelist--scroll {
-	max-height: 560px;
-	overflow-y: auto;
-	padding-right: 4px;
-	overscroll-behavior-y: auto !important;
-	scrollbar-width: thin;
-	scrollbar-color: var(--surface-3) transparent;
-}
-.rvmp .r-movelist--scroll::-webkit-scrollbar {
-	width: 6px;
-}
-.rvmp .r-movelist--scroll::-webkit-scrollbar-thumb {
-	background: var(--surface-3);
-	border-radius: 3px;
+/* Long fast / charged lists cap + scroll internally on pointer-fine devices only
+   (~6 cards). On touch they flow in the page — an inner scroll area is a bad touch
+   experience (iOS rubber-band traps the gesture). Same rationale as `.r-raidtypes`. */
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-movelist--scroll {
+		max-height: 560px;
+		overflow-y: auto;
+		padding-right: 4px;
+		overscroll-behavior-y: auto !important;
+		scrollbar-width: thin;
+		scrollbar-color: var(--surface-3) transparent;
+	}
+	.rvmp .r-movelist--scroll::-webkit-scrollbar {
+		width: 6px;
+	}
+	.rvmp .r-movelist--scroll::-webkit-scrollbar-thumb {
+		background: var(--surface-3);
+		border-radius: 3px;
+	}
 }
 .rvmp .r-move {
 	background: var(--surface);
@@ -1647,11 +1658,15 @@
 }
 .rvmp .r-mini {
 	position: relative;
+	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 2px;
-	padding: var(--s2) 4px 6px;
+	justify-content: center;
+	gap: 0;
+	aspect-ratio: 1; /* always a square — adorners float, they don't stretch it */
+	overflow: clip;
+	padding: 4%;
 	border-radius: var(--r-sm);
 	background: var(--surface-2);
 	border: 1px solid var(--border);
@@ -1662,15 +1677,20 @@
 	transform: translateY(-2px);
 }
 .rvmp .r-mini > img:not(.r-shadow-mark) {
-	width: 52px;
-	height: 52px;
+	width: 62%;
+	aspect-ratio: 1;
 	object-fit: contain;
 }
 .rvmp .r-mini > span:not(.r-mini-shiny) {
-	font-size: 10.5px;
+	max-width: 100%;
+	margin-top: 2%;
+	font-size: clamp(8px, 13cqi, 11px);
 	font-weight: 800;
-	line-height: 1.1;
+	line-height: 1.15;
 	color: var(--text-dim);
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
 }
 /* shadow mark — the lavender Rocket flame in a round badge with a thick ghost-type
    ring, same treatment as the raid type adorner. The interior is a deep purple so
@@ -1693,42 +1713,57 @@
 }
 .rvmp .r-mini > .r-shadow-mark {
 	position: absolute;
-	top: 5px;
-	left: 5px;
-	width: 24px;
-	height: 24px;
+	top: 5%;
+	left: 5%;
+	width: 30%;
+	height: 30%;
 	z-index: 2;
 }
+/* time-remaining — floats over the sprite / adorners so it can't deform the square */
 .rvmp .r-mini em {
+	position: absolute;
+	top: 4%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 4;
+	max-width: 94%;
+	padding: 2px 6px;
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--surface) 84%, transparent);
+	backdrop-filter: blur(2px);
 	font-style: normal;
-	font-size: 9px;
-	font-weight: 700;
+	font-size: clamp(9px, 13cqi, 12px);
+	font-weight: 800;
+	letter-spacing: 0.02em;
 	color: var(--accent);
-	letter-spacing: 0.03em;
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
 }
 .rvmp .r-mini-shiny {
 	position: absolute;
-	top: 4px;
-	right: 5px;
-	font-size: 11px;
+	top: 5%;
+	right: 6%;
+	z-index: 3;
+	font-size: clamp(8px, 11cqi, 11px);
 	color: var(--iv-fill);
 }
-/* league-relevance dots — one per league/raid the mon (or its line) matters for */
+/* league / raid relevance — vertical dots on the left, same treatment as the
+   rankings type dots (`.r-pc-types`); one per league the mon (or its line) matters for */
 .rvmp .r-lg-dots {
 	position: absolute;
-	left: 4px;
-	bottom: 4px;
+	left: 6%;
+	bottom: 8%;
 	display: flex;
-	gap: 2px;
-	padding: 2px;
-	border-radius: var(--r-pill);
-	background: color-mix(in srgb, var(--surface) 78%, transparent);
+	flex-direction: column;
+	gap: 3px;
 	z-index: 2;
 }
 .rvmp .r-lg-dots i {
-	width: 6px;
-	height: 6px;
+	width: clamp(5px, 7cqi, 8px);
+	height: clamp(5px, 7cqi, 8px);
 	border-radius: 50%;
+	box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
 }
 .rvmp .r-lg-dots i[data-lg='great'] {
 	background: var(--lg-great);
@@ -1898,20 +1933,7 @@
 	grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
 	margin-bottom: 0;
 }
-.rvmp .r-grunt-peek .r-mini {
-	padding: 4px 3px 5px;
-}
-.rvmp .r-grunt-peek .r-mini > img:not(.r-shadow-mark) {
-	width: 40px;
-	height: 40px;
-}
-.rvmp .r-grunt-peek .r-mini > .r-shadow-mark {
-	width: 19px;
-	height: 19px;
-}
-.rvmp .r-grunt-peek .r-mini > span:not(.r-mini-shiny) {
-	font-size: 9.5px;
-}
+/* narrower columns → the container-query units scale the tile contents down on their own */
 .rvmp .r-grunt {
 	cursor: pointer;
 }
