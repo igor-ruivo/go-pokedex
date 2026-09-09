@@ -4,25 +4,41 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useImageSource } from '../../contexts/imageSource-context';
 import type { IIvPercents } from '../../DTOs/ivs';
 import useComputeIVs from '../../hooks/useComputeIVs';
+import { useMoves } from '../../queries/moves';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
+import { useRaidRanker } from '../../queries/raid-ranker';
 import { calculateCP, fetchReachablePokemonIncludingSelf, levelToLevelIndex } from '../../utils/pokemon-helper';
 import { IvPicker, type IVs } from '../components/IvPicker';
+import { ShadowMark } from '../components/ShadowMark';
 import { Sprite, spriteUrl } from '../components/Sprite';
+import { Stepper } from '../components/Stepper';
 import { multBadge, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dexNo, ordinal } from '../lib/format';
+import { R } from '../lib/nav';
 import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
+import MovesTab from './pokemon/MovesTab';
 
 const LEAGUES = [
 	{ id: 0, label: 'Great', cssVar: 'var(--lg-great)' },
 	{ id: 1, label: 'Ultra', cssVar: 'var(--lg-ultra)' },
 	{ id: 2, label: 'Master', cssVar: 'var(--lg-master)' },
+	{ id: 3, label: 'Raids', cssVar: 'var(--lg-raid)' },
 ] as const;
-type LeagueId = 0 | 1 | 2;
+type LeagueId = 0 | 1 | 2 | 3;
+type PvpLeague = 0 | 1 | 2;
 
-const TABS = ['Ranks', 'Moves', 'Counters', 'IV Tables', 'Strings'] as const;
+const TABS = [
+	['Ranks', 'ranks'],
+	['Moves', 'moves'],
+	['Counters', 'counters'],
+	['IV Tables', 'iv-tables'],
+	['Strings', 'strings'],
+] as const;
+type TabLabel = (typeof TABS)[number][0];
+const SLUG_TO_TAB = Object.fromEntries(TABS.map(([label, slug]) => [slug, label])) as Record<string, TabLabel>;
 
-const leagueSlice = (ivp: IIvPercents | undefined, id: LeagueId) => {
+const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 	if (!ivp) return undefined;
 	switch (id) {
 		case 0:
@@ -56,21 +72,24 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: LeagueId) => {
 };
 
 const PokemonDetail = () => {
-	const { speciesId = '' } = useParams();
+	const { speciesId = '', tab: tabParam } = useParams();
 	const navigate = useNavigate();
 	const { imageSource } = useImageSource();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, pvpFetchCompleted } = usePvp();
+	const { moves, movesFetchCompleted } = useMoves();
+	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 
 	const pokemon = fetchCompleted ? gamemasterPokemon[speciesId] : undefined;
+	const tab: TabLabel = SLUG_TO_TAB[tabParam ?? 'ranks'] ?? 'Ranks';
 
 	const [iv, setIv] = useState<IVs>({ atk: 15, def: 15, hp: 15 });
 	const [level, setLevel] = useState(50);
 	const [league, setLeague] = useState<LeagueId>(0);
-	const [tab, setTab] = useState<(typeof TABS)[number]>('Ranks');
 	const [pickedId, setPickedId] = useState<string | null>(null);
+	const isRaid = league === 3;
 
-	// IV percents for the WHOLE reachable family, not just self.
+	// IV percents for the WHOLE reachable family, not just self (PvP only).
 	const [ivPercents, ivLoading] = useComputeIVs({
 		pokemon: pokemon as never,
 		attackIV: iv.atk,
@@ -78,17 +97,23 @@ const PokemonDetail = () => {
 		hpIV: iv.hp,
 	});
 
-	// Every evolution reachable from this Pokémon (self + forward), ordered by how
-	// well it ranks in the chosen league — this is what people actually want to see.
+	// Reachable evolutions from this Pokémon (self + forward). Raids can use megas.
 	const reachable = useMemo(
-		() => (pokemon ? Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon)) : []),
-		[pokemon, gamemasterPokemon]
+		() =>
+			pokemon
+				? Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, isRaid))
+				: [],
+		[pokemon, gamemasterPokemon, isRaid]
 	);
-	const rankFor = (id: string): number => rankLists[league]?.[id]?.rank ?? Number.POSITIVE_INFINITY;
+
+	const rankFor = (id: string): number =>
+		(isRaid ? raidDPS['']?.[id]?.rank : rankLists[league]?.[id]?.rank) ?? Number.POSITIVE_INFINITY;
+
 	const orderedReachable = useMemo(() => {
-		const rk = (id: string) => rankLists[league]?.[id]?.rank ?? Number.POSITIVE_INFINITY;
+		const rk = (id: string): number =>
+			(isRaid ? raidDPS['']?.[id]?.rank : rankLists[league]?.[id]?.rank) ?? Number.POSITIVE_INFINITY;
 		return [...reachable].sort((a, b) => rk(a.speciesId) - rk(b.speciesId) || a.dex - b.dex);
-	}, [reachable, rankLists, league]);
+	}, [reachable, rankLists, raidDPS, league, isRaid]);
 
 	// Reset the pick to "best for this league" whenever the Pokémon or league changes.
 	useEffect(() => setPickedId(null), [speciesId, league]);
@@ -115,6 +140,17 @@ const PokemonDetail = () => {
 		[active]
 	);
 
+	// Distinct charged-move types → the raid roles this Pokémon can fill.
+	const raidTypes = useMemo(() => {
+		if (!isRaid || !movesFetchCompleted || !active) return [];
+		const s = new Set<string>();
+		for (const id of [...active.chargedMoves, ...(active.extraChargedMoves ?? [])]) {
+			const t = moves[id]?.type?.toLowerCase();
+			if (t && t !== 'normal') s.add(t);
+		}
+		return [...s];
+	}, [isRaid, active, moves, movesFetchCompleted]);
+
 	if (!fetchCompleted) {
 		return (
 			<div className='r-loading'>
@@ -138,10 +174,19 @@ const PokemonDetail = () => {
 	const baseId = pokemon.speciesId.replace('_shadow', '');
 	const hasShadow = !!gamemasterPokemon[`${baseId}_shadow`];
 	const isShadow = pokemon.speciesId.endsWith('_shadow');
-
-	const slice = leagueSlice(ivPercents[activeId], league);
-	const pvpRow = pvpFetchCompleted ? rankLists[league]?.[activeId] : undefined;
 	const activeIsSelf = activeId === pokemon.speciesId;
+
+	const slice = !isRaid ? leagueSlice(ivPercents[activeId], league as PvpLeague) : undefined;
+	const pvpRow = !isRaid && pvpFetchCompleted ? rankLists[league]?.[activeId] : undefined;
+
+	const overallRaid = isRaid && raidDPSFetchCompleted ? raidDPS['']?.[activeId] : undefined;
+	const raidRows = raidTypes
+		.map((t) => ({ t, e: raidDPS[t]?.[activeId] }))
+		.filter((x): x is { t: string; e: NonNullable<(typeof x)['e']> } => !!x.e)
+		.sort((a, b) => a.e.rank - b.e.rank)
+		.slice(0, 6);
+
+	const activeSuffix = activeIsSelf ? '' : ` · ${cleanName(active.speciesName)}`;
 
 	return (
 		<div className='r-shell'>
@@ -186,30 +231,30 @@ const PokemonDetail = () => {
 				</div>
 
 				<div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-					<div className='r-toggle'>
-						<button type='button' onClick={() => setLevel((l) => Math.max(1, l - 1))} aria-label='Lower level'>
-							−
-						</button>
-						<span style={{ fontVariantNumeric: 'tabular-nums' }}>Lvl {level}</span>
-						<button type='button' onClick={() => setLevel((l) => Math.min(51, l + 1))} aria-label='Raise level'>
-							+
-						</button>
-					</div>
+					<Stepper
+						value={level}
+						min={1}
+						max={51}
+						step={0.5}
+						onChange={setLevel}
+						format={(v) => `Lvl ${Number.isInteger(v) ? v : v.toFixed(1)}`}
+					/>
 					{hasShadow && (
 						<button
 							type='button'
-							className='r-toggle'
+							className='r-toggle r-toggle--shadow'
 							data-on={isShadow}
 							onClick={() => void navigate(`/new/pokemon/${isShadow ? baseId : `${baseId}_shadow`}`)}
 						>
-							🔥 Shadow
+							<ShadowMark className='r-toggle-flame' />
+							Shadow
 						</button>
 					)}
 				</div>
 			</header>
 
 			{/* ---- LEAGUE + TABS ---- */}
-			<div className='r-seg r-seg--league' role='tablist' aria-label='League'>
+			<div className='r-seg r-seg--league' role='tablist' aria-label='League / mode'>
 				{LEAGUES.map((l) => (
 					<button
 						key={l.id}
@@ -224,14 +269,21 @@ const PokemonDetail = () => {
 			</div>
 
 			<nav className='r-tabs'>
-				{TABS.map((t) => (
-					<button key={t} type='button' aria-current={tab === t ? 'page' : undefined} onClick={() => setTab(t)}>
-						{t}
+				{TABS.map(([label, slug]) => (
+					<button
+						key={slug}
+						type='button'
+						aria-current={tab === label ? 'page' : undefined}
+						onClick={() => void navigate(R.pokemon(speciesId, slug))}
+					>
+						{label}
 					</button>
 				))}
 			</nav>
 
-			{tab !== 'Ranks' ? (
+			{tab === 'Moves' ? (
+				<MovesTab pokemon={pokemon} league={league} />
+			) : tab !== 'Ranks' ? (
 				<div className='r-card' style={{ marginTop: 24, textAlign: 'center' }}>
 					<p className='r-muted'>“{tab}” is next in the revamp.</p>
 				</div>
@@ -256,7 +308,10 @@ const PokemonDetail = () => {
 											style={{ ['--lg' as string]: LEAGUES[league].cssVar }}
 											onClick={() => setPickedId(m.speciesId)}
 										>
-											<img src={spriteUrl(m, imageSource)} alt='' loading='lazy' decoding='async' />
+											{m.isShadow && <ShadowMark />}
+											<span className='r-reach-art'>
+												<img src={spriteUrl(m, imageSource)} alt='' loading='lazy' decoding='async' />
+											</span>
 											<span>{cleanName(m.speciesName)}</span>
 											<b>{rk === Number.POSITIVE_INFINITY ? 'unranked' : ordinal(rk)}</b>
 										</button>
@@ -266,75 +321,123 @@ const PokemonDetail = () => {
 						</>
 					)}
 
-					{/* ---- IV PICKER ---- */}
-					<div className='r-section-h'>Your IVs{activeIsSelf ? '' : ` · as ${cleanName(active.speciesName)}`}</div>
-					<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
-						<IvPicker
-							value={iv}
-							onChange={setIv}
-							presets={[
-								['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
-								['Hundo', { atk: 15, def: 15, hp: 15 }],
-								...(league !== 2 && slice
-									? [
-											[
-												`Rank 1 ${LEAGUES[league].label}`,
-												{ atk: slice.perfect.A, def: slice.perfect.D, hp: slice.perfect.S },
-											] as [string, { atk: number; def: number; hp: number }],
-										]
-									: []),
-							]}
-						/>
-						<div className='r-readout'>
-							<div>
-								<i>{LEAGUES[league].label} IV rank</i>
-								<b className='hi'>{ivLoading || !slice ? '…' : `#${(slice.rank + 1).toLocaleString()}`}</b>
-							</div>
-							<div>
-								<i>Percentile</i>
-								<b>{ivLoading || !slice ? '…' : `${(((4095 - slice.rank) / 4095) * 100).toFixed(1)}%`}</b>
-							</div>
-							<div>
-								<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>
-								<b>{ivLoading || !slice ? '…' : slice.cp.toLocaleString()}</b>
-							</div>
-						</div>
-						{slice && (
-							<p className='r-muted' style={{ marginTop: 12 }}>
-								Best spread for {LEAGUES[league].label}:{' '}
-								<b>
-									{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
-								</b>{' '}
-								→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
-							</p>
-						)}
-					</div>
-
-					{/* ---- PVP LEADERBOARD ---- */}
-					{pvpRow && (
+					{isRaid ? (
+						/* ---- RAID PERFORMANCE ---- */
 						<>
-							<div className='r-section-h'>{LEAGUES[league].label} League leaderboard</div>
-							<div className='r-rank' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
-								<div className='r-rank-badge'>{ordinal(pvpRow.rank)}</div>
-								<div className='r-rank-main'>
-									<b>{cleanName(active.speciesName)}</b>
-									<span>Score {pvpRow.score.toFixed(1)}</span>
-								</div>
-								<span
-									className='r-delta'
-									data-dir={pvpRow.rankChange > 0 ? 'up' : pvpRow.rankChange < 0 ? 'down' : 'flat'}
-								>
-									{pvpRow.rankChange > 0 ? '▲' : pvpRow.rankChange < 0 ? '▼' : '–'}
-									{pvpRow.rankChange !== 0 ? Math.abs(pvpRow.rankChange) : ''}
-								</span>
+							<div className='r-section-h'>Raid performance{activeSuffix}</div>
+							<div className='r-card' style={{ ['--accent' as string]: 'var(--lg-raid)' }}>
+								{overallRaid ? (
+									<div className='r-readout'>
+										<div>
+											<i>Overall rank</i>
+											<b className='hi'>{ordinal(overallRaid.rank)}</b>
+										</div>
+										<div>
+											<i>DPS</i>
+											<b>{overallRaid.dps.toFixed(1)}</b>
+										</div>
+										<div>
+											<i>Base ATK</i>
+											<b>{active.baseStats.atk}</b>
+										</div>
+									</div>
+								) : (
+									<p className='r-muted'>Not ranked as a raid attacker.</p>
+								)}
+
+								{raidRows.length > 0 && (
+									<>
+										<div className='r-section-h' style={{ marginTop: 16 }}>
+											Type coverage
+										</div>
+										<div className='r-raidtypes'>
+											{raidRows.map(({ t, e }) => (
+												<div key={t} className='r-raidtype' style={{ ['--tc' as string]: `var(--t-${t})` }}>
+													<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
+													<b>{ordinal(e.rank)}</b>
+													<em>{e.dps.toFixed(1)} DPS</em>
+												</div>
+											))}
+										</div>
+									</>
+								)}
+
+								<p className='r-muted' style={{ marginTop: 14 }}>
+									IVs barely matter in raids — chase the highest <b>Attack</b>.
+								</p>
 							</div>
+						</>
+					) : (
+						<>
+							{/* ---- IV PICKER ---- */}
+							<div className='r-section-h'>Your IVs{activeSuffix}</div>
+							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
+								<IvPicker
+									value={iv}
+									onChange={setIv}
+									presets={[
+										['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
+										['Hundo', { atk: 15, def: 15, hp: 15 }],
+										...(league !== 2 && slice
+											? [
+													[
+														`Rank 1 ${LEAGUES[league].label}`,
+														{ atk: slice.perfect.A, def: slice.perfect.D, hp: slice.perfect.S },
+													] as [string, { atk: number; def: number; hp: number }],
+												]
+											: []),
+									]}
+								/>
+								<div className='r-readout'>
+									<div>
+										<i>{LEAGUES[league].label} IV rank</i>
+										<b className='hi'>{ivLoading || !slice ? '…' : `#${(slice.rank + 1).toLocaleString()}`}</b>
+									</div>
+									<div>
+										<i>Percentile</i>
+										<b>{ivLoading || !slice ? '…' : `${(((4095 - slice.rank) / 4095) * 100).toFixed(1)}%`}</b>
+									</div>
+									<div>
+										<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>
+										<b>{ivLoading || !slice ? '…' : slice.cp.toLocaleString()}</b>
+									</div>
+								</div>
+								{slice && (
+									<p className='r-muted' style={{ marginTop: 12 }}>
+										Best spread for {LEAGUES[league].label}:{' '}
+										<b>
+											{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
+										</b>{' '}
+										→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
+									</p>
+								)}
+							</div>
+
+							{/* ---- PVP LEADERBOARD ---- */}
+							{pvpRow && (
+								<>
+									<div className='r-section-h'>{LEAGUES[league].label} League leaderboard</div>
+									<div className='r-rank' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
+										<div className='r-rank-badge'>{ordinal(pvpRow.rank)}</div>
+										<div className='r-rank-main'>
+											<b>{cleanName(active.speciesName)}</b>
+											<span>Score {pvpRow.score.toFixed(1)}</span>
+										</div>
+										<span
+											className='r-delta'
+											data-dir={pvpRow.rankChange > 0 ? 'up' : pvpRow.rankChange < 0 ? 'down' : 'flat'}
+										>
+											{pvpRow.rankChange > 0 ? '▲' : pvpRow.rankChange < 0 ? '▼' : '–'}
+											{pvpRow.rankChange !== 0 ? Math.abs(pvpRow.rankChange) : ''}
+										</span>
+									</div>
+								</>
+							)}
 						</>
 					)}
 
 					{/* ---- EFFECTIVENESS ---- */}
-					<div className='r-section-h'>
-						Type effectiveness{activeIsSelf ? '' : ` · ${cleanName(active.speciesName)}`}
-					</div>
+					<div className='r-section-h'>Type effectiveness{activeSuffix}</div>
 					<div className='r-card'>
 						<div className='r-eff'>
 							<div className='r-eff-col'>
@@ -343,7 +446,7 @@ const PokemonDetail = () => {
 									{matchups.weak.map(({ type, mult }) => (
 										<span key={type} className='r-eff-t' style={{ ['--tc' as string]: `var(--t-${type})` }}>
 											{TYPE_LABEL[type]}
-											{multBadge(mult) && <sup>{multBadge(mult)}</sup>}
+											{multBadge(mult) && <span className='r-eff-mult'>{multBadge(mult)}</span>}
 										</span>
 									))}
 									{matchups.weak.length === 0 && <span className='r-muted'>Nothing</span>}
@@ -355,7 +458,7 @@ const PokemonDetail = () => {
 									{matchups.resist.map(({ type, mult }) => (
 										<span key={type} className='r-eff-t' style={{ ['--tc' as string]: `var(--t-${type})` }}>
 											{TYPE_LABEL[type]}
-											{multBadge(mult) && <sup>{multBadge(mult)}</sup>}
+											{multBadge(mult) && <span className='r-eff-mult'>{multBadge(mult)}</span>}
 										</span>
 									))}
 									{matchups.resist.length === 0 && <span className='r-muted'>Nothing</span>}

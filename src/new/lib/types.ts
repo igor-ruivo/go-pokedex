@@ -1,10 +1,10 @@
 import type { PokemonTypes } from '../../DTOs/PokemonTypes';
 
-/** Runtime value of a PokemonTypes entry is the capitalised name ("Water"). */
-export const typeKey = (t: PokemonTypes): string => String(t).toLowerCase();
+/** Runtime value of a PokemonTypes entry is the capitalised name ("Water"). Also accepts an already-lowercased key. */
+export const typeKey = (t: PokemonTypes | string): string => String(t).toLowerCase();
 
 /** CSS custom property holding this type's colour (defined in rvmp.css). */
-export const typeVar = (t: PokemonTypes): string => `var(--t-${typeKey(t)})`;
+export const typeVar = (t: PokemonTypes | string): string => `var(--t-${typeKey(t)})`;
 
 /**
  * Style object that sets `--accent` (+ a readable ink) for a subtree, derived

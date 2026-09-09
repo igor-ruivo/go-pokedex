@@ -51,7 +51,7 @@
 		radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%),
 		linear-gradient(180deg, var(--surface-2), var(--surface));
 	border: 1px solid var(--border);
-	overflow: hidden;
+	overflow: clip;
 }
 .rvmp .r-hero::after {
 	content: '';
@@ -198,16 +198,17 @@
 }
 
 /* ---- segmented control --------------------------------------------------- */
+/* wraps instead of scrolling — a horizontal scroll container hijacks the
+   mouse wheel on desktop and clips its last item. */
 .rvmp .r-seg {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 4px;
 	padding: 4px;
 	margin-top: var(--s4);
 	background: var(--surface);
 	border: 1px solid var(--border);
-	border-radius: var(--r-pill);
-	overflow-x: auto;
-	scrollbar-width: none;
+	border-radius: var(--r-md);
 }
 .rvmp .r-seg::-webkit-scrollbar {
 	display: none;
@@ -247,9 +248,8 @@
 /* ---- reachable-family switcher ---- */
 .rvmp .r-reach {
 	display: flex;
+	flex-wrap: wrap;
 	gap: var(--s2);
-	overflow-x: auto;
-	scrollbar-width: none;
 	padding-bottom: 2px;
 	margin-bottom: var(--s2);
 }
@@ -257,6 +257,7 @@
 	display: none;
 }
 .rvmp .r-reach-chip {
+	position: relative;
 	flex: none;
 	display: flex;
 	flex-direction: column;
@@ -273,10 +274,23 @@
 	border-color: var(--lg, var(--accent));
 	background: color-mix(in srgb, var(--lg, var(--accent)) 16%, var(--surface-2));
 }
-.rvmp .r-reach-chip img {
+.rvmp .r-reach-art {
+	position: relative;
 	width: 48px;
 	height: 48px;
+}
+.rvmp .r-reach-chip .r-reach-art img {
+	width: 100%;
+	height: 100%;
 	object-fit: contain;
+}
+.rvmp .r-reach-chip > .r-shadow-mark {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	width: 18px;
+	height: 18px;
+	z-index: 2;
 }
 .rvmp .r-reach-chip span {
 	font-size: 11px;
@@ -298,28 +312,40 @@
 /* ---- tabs -------------------------------------------------------------------- */
 .rvmp .r-tabs {
 	display: flex;
-	gap: var(--s5);
+	flex-wrap: wrap;
+	gap: var(--s3) var(--s5);
 	margin-top: var(--s5);
 	border-bottom: 1px solid var(--border);
-	overflow-x: auto;
-	scrollbar-width: none;
 }
 .rvmp .r-tabs::-webkit-scrollbar {
 	display: none;
 }
 .rvmp .r-tabs button {
+	position: relative;
 	padding: 0 2px var(--s3);
 	font-weight: 700;
 	font-size: 14px;
 	color: var(--text-faint);
 	white-space: nowrap;
-	border-bottom: 2px solid transparent;
-	margin-bottom: -1px;
 	transition: color 0.15s ease;
+}
+.rvmp .r-tabs button:hover {
+	color: var(--text-dim);
 }
 .rvmp .r-tabs button[aria-current='page'] {
 	color: var(--text);
-	border-bottom-color: var(--text);
+	font-weight: 800;
+}
+.rvmp .r-tabs button[aria-current='page']::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -1px;
+	height: 3px;
+	border-radius: var(--r-pill);
+	background: var(--accent);
+	box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 /* ---- cards / sections ---------------------------------------------------- */
@@ -346,6 +372,11 @@
 	flex: 1;
 	height: 1px;
 	background: var(--border);
+}
+.rvmp .r-section-h--big {
+	font-size: 15px;
+	color: var(--text);
+	letter-spacing: 0.04em;
 }
 
 /* ---- rank cards -------------------------------------------------------------- */
@@ -434,7 +465,8 @@
 .rvmp .r-iv-track {
 	display: flex;
 	gap: 3px;
-	touch-action: none;
+	/* capture horizontal drags for the slider, let vertical page-scroll pass through */
+	touch-action: pan-y;
 }
 .rvmp .r-iv-cell {
 	flex: 1;
@@ -509,6 +541,38 @@
 	color: var(--accent);
 }
 
+/* ---- raid type coverage ------------------------------------------------- */
+.rvmp .r-raidtypes {
+	display: flex;
+	flex-direction: column;
+	gap: var(--s2);
+	margin-top: var(--s3);
+}
+.rvmp .r-raidtype {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	gap: var(--s3);
+	padding: var(--s2) var(--s3);
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border-left: 3px solid var(--tc, var(--accent));
+}
+.rvmp .r-raidtype b {
+	font-family: Fredoka, sans-serif;
+	font-size: 16px;
+	font-variant-numeric: tabular-nums;
+	color: var(--tc, var(--text));
+}
+.rvmp .r-raidtype em {
+	font-style: normal;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	color: var(--text-dim);
+	font-variant-numeric: tabular-nums;
+}
+
 /* ---- effectiveness -------------------------------------------------------- */
 .rvmp .r-eff {
 	display: grid;
@@ -520,7 +584,7 @@
 		grid-template-columns: 1fr 1fr;
 	}
 }
-.rvmp .r-eff-col b {
+.rvmp .r-eff-col > b {
 	display: block;
 	font-size: 12px;
 	letter-spacing: 0.08em;
@@ -531,22 +595,46 @@
 }
 .rvmp .r-eff-list {
 	display: flex;
+	align-items: flex-start;
 	gap: 6px;
 	flex-wrap: wrap;
 }
 .rvmp .r-eff-t {
-	position: relative;
-	padding: 4px 10px;
+	display: inline-flex;
+	align-items: center;
+	height: 26px;
+	padding: 0 11px;
 	border-radius: var(--r-pill);
 	font-weight: 800;
-	font-size: 11.5px;
+	font-size: 12px;
+	line-height: 1;
 	color: #0c1017;
 	background: var(--tc, var(--t-normal));
 }
-.rvmp .r-eff-t sup {
-	font-size: 9px;
-	margin-left: 2px;
-	opacity: 0.8;
+/* multiplier: no box — same ink as the type name, a centred hairline divider */
+.rvmp .r-eff-t .r-eff-mult {
+	position: relative;
+	display: inline-grid;
+	place-items: center;
+	margin-left: 11px;
+	padding-left: 11px;
+	font-style: normal;
+	font-weight: 900;
+	font-size: 12px;
+	line-height: 1;
+	letter-spacing: 0.02em;
+	color: #0c1017;
+}
+.rvmp .r-eff-t .r-eff-mult::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 2px;
+	height: 14px;
+	border-radius: 1px;
+	background: rgb(12 16 23 / 0.5);
+	transform: translateY(-50%);
 }
 
 /* ---- misc ---------------------------------------------------------------- */
@@ -566,6 +654,36 @@
 	background: color-mix(in srgb, var(--accent) 22%, transparent);
 	border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 	color: var(--text);
+}
+.rvmp .r-stepper {
+	gap: 2px;
+	padding: 3px 4px;
+	user-select: none;
+}
+.rvmp .r-stepper span {
+	min-width: 62px;
+	text-align: center;
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-stepper button {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border-radius: var(--r-pill);
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--text);
+	background: var(--surface-3);
+	touch-action: none;
+}
+.rvmp .r-stepper button:disabled {
+	opacity: 0.35;
+}
+.rvmp .r-stepper button:not(:disabled):active {
+	background: var(--accent);
+	color: #0c1017;
 }
 .rvmp .r-muted {
 	color: var(--text-dim);
@@ -768,20 +886,109 @@
 .rvmp .r-seg--wrap {
 	margin-top: var(--s2);
 }
-.rvmp .r-typebar {
-	display: flex;
-	gap: 6px;
+/* ---- filter control ---- */
+.rvmp .r-filter {
+	position: relative;
 	margin-top: var(--s2);
-	overflow-x: auto;
-	scrollbar-width: none;
-	padding-bottom: 2px;
 }
-.rvmp .r-typebar::-webkit-scrollbar {
-	display: none;
+.rvmp .r-filter-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+.rvmp .r-filter-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 7px 14px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 13px;
+	color: var(--text);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+}
+.rvmp .r-filter-btn[data-on='true'] {
+	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.rvmp .r-filter-ic {
+	font-size: 12px;
+	color: var(--text-dim);
+}
+.rvmp .r-filter-count {
+	display: grid;
+	place-items: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 5px;
+	border-radius: var(--r-pill);
+	font-size: 11px;
+	font-weight: 800;
+	color: #0c1017;
+	background: var(--accent);
+}
+.rvmp .r-filter-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 12px;
+	color: #0c1017;
+	background: var(--tc, var(--accent));
+}
+.rvmp .r-filter-chip span {
+	font-size: 13px;
+	opacity: 0.75;
+}
+.rvmp .r-filter-clear {
+	padding: 6px 10px;
+	font-weight: 700;
+	font-size: 12px;
+	color: var(--text-dim);
+}
+.rvmp .r-filter-panel {
+	position: absolute;
+	z-index: 40;
+	top: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	max-width: 460px;
+	padding: var(--s4);
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+}
+.rvmp .r-filter-sec-h {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--s3);
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .r-filter-hint {
+	text-transform: none;
+	letter-spacing: 0;
+	font-weight: 700;
+	font-size: 11px;
+	color: var(--text-faint);
+}
+.rvmp .r-filter-types {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
 }
 .rvmp .r-type-chip {
 	flex: none;
-	padding: 5px 11px;
+	padding: 6px 12px;
 	border-radius: var(--r-pill);
 	font-weight: 700;
 	font-size: 12px;
@@ -794,6 +1001,9 @@
 	color: #0c1017;
 	background: var(--tc, var(--accent));
 	border-color: transparent;
+}
+.rvmp .r-type-chip:disabled {
+	opacity: 0.3;
 }
 .rvmp .r-count {
 	margin-top: var(--s2);
@@ -830,7 +1040,7 @@
 .rvmp .r-pc-rank {
 	position: absolute;
 	top: 7px;
-	left: 8px;
+	right: 9px;
 	font-family: Fredoka, sans-serif;
 	font-weight: 700;
 	font-size: 11px;
@@ -838,12 +1048,13 @@
 	font-variant-numeric: tabular-nums;
 }
 .rvmp .r-pc-art {
+	position: relative;
 	width: 76px;
 	height: 76px;
 	display: grid;
 	place-items: center;
 }
-.rvmp .r-pc-art img {
+.rvmp .r-pc-art > img {
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
@@ -916,4 +1127,496 @@
 		width: 100%;
 		max-width: 200px;
 	}
+}
+
+/* ===========================================================================
+   Page titles / calendar sub-nav
+   =========================================================================== */
+.rvmp .r-page-title {
+	font-size: clamp(24px, 6vw, 32px);
+	margin: var(--s5) 0 var(--s3);
+}
+.rvmp .r-tabs--cal {
+	margin-top: 0;
+}
+.rvmp .r-tabs a {
+	position: relative;
+	padding: 0 2px var(--s3);
+	font-weight: 700;
+	font-size: 14px;
+	color: var(--text-faint);
+	white-space: nowrap;
+}
+.rvmp .r-tabs a.is-active {
+	color: var(--text);
+	font-weight: 800;
+}
+.rvmp .r-tabs a.is-active::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -1px;
+	height: 3px;
+	border-radius: var(--r-pill);
+	background: var(--accent);
+	box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* ===========================================================================
+   Moves tab
+   =========================================================================== */
+.rvmp .r-movecontent {
+	margin-top: var(--s3);
+}
+/* recommended-moveset rows get a brighter surface + full accent border */
+.rvmp .r-move[data-best] {
+	background: color-mix(in srgb, var(--tc, var(--accent)) 10%, var(--surface));
+	border-color: color-mix(in srgb, var(--tc, var(--accent)) 40%, var(--border));
+	border-left-width: 3px;
+}
+.rvmp .r-movelist {
+	display: grid;
+	gap: var(--s2);
+}
+.rvmp .r-move {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--tc, var(--accent));
+	border-radius: var(--r-sm);
+	padding: var(--s3);
+}
+.rvmp .r-move-head {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	flex-wrap: wrap;
+}
+.rvmp .r-move-head b {
+	font-size: 14.5px;
+	font-weight: 800;
+}
+.rvmp .r-move-type {
+	padding: 3px 9px;
+	border-radius: var(--r-pill);
+	font-size: 10.5px;
+	font-weight: 800;
+	color: #0c1017;
+	background: var(--tc, var(--t-normal));
+}
+.rvmp .r-move-tag {
+	font-style: normal;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	padding: 2px 7px;
+	border-radius: var(--r-pill);
+	color: var(--text-dim);
+	background: var(--surface-3);
+}
+.rvmp .r-move-stats {
+	display: flex;
+	gap: var(--s4);
+	margin-top: var(--s2);
+	flex-wrap: wrap;
+}
+.rvmp .r-move-stats > div {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+}
+.rvmp .r-move-stats u {
+	text-decoration: none;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	color: var(--text-faint);
+}
+.rvmp .r-move-stats span {
+	font-size: 11px;
+	color: var(--text-dim);
+	font-weight: 600;
+}
+.rvmp .r-move-stats span b {
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+	font-weight: 800;
+}
+
+/* ===========================================================================
+   Calendar
+   =========================================================================== */
+.rvmp .r-minigrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+	gap: var(--s2);
+	margin-bottom: var(--s3);
+}
+.rvmp .r-mini {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	padding: var(--s2) 4px 6px;
+	border-radius: var(--r-sm);
+	background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 12%, var(--surface)), var(--surface));
+	border: 1px solid var(--border);
+	text-align: center;
+	transition: transform 0.12s ease;
+}
+.rvmp .r-mini:hover {
+	transform: translateY(-2px);
+}
+.rvmp .r-mini > img {
+	width: 52px;
+	height: 52px;
+	object-fit: contain;
+}
+.rvmp .r-mini > span:not(.r-mini-shiny) {
+	font-size: 10.5px;
+	font-weight: 800;
+	line-height: 1.1;
+	color: var(--text-dim);
+}
+/* shadow mark — a filled purple flame (--t-ghost), sized proportional to the
+   sprite, with a dark outline + purple glow so it pops on any background */
+.rvmp .r-shadow-mark {
+	color: var(--t-ghost);
+	filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.95)) drop-shadow(0 0 4px color-mix(in srgb, var(--t-ghost) 85%, transparent));
+	pointer-events: none;
+	flex: none;
+}
+.rvmp .r-mini > .r-shadow-mark {
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	width: 20px;
+	height: 20px;
+	z-index: 2;
+}
+.rvmp .r-mini em {
+	font-style: normal;
+	font-size: 9px;
+	font-weight: 700;
+	color: var(--accent);
+	letter-spacing: 0.03em;
+}
+.rvmp .r-mini-shiny {
+	position: absolute;
+	top: 4px;
+	right: 5px;
+	font-size: 11px;
+	color: var(--iv-fill);
+}
+
+.rvmp .r-eventlist {
+	display: grid;
+	gap: var(--s3);
+}
+.rvmp .r-event {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--r-md);
+	overflow: clip;
+}
+.rvmp .r-event[data-open='true'] {
+	border-color: var(--border-strong);
+}
+.rvmp .r-event-head {
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	width: 100%;
+	padding: var(--s3);
+	text-align: left;
+}
+.rvmp .r-event-head img {
+	width: 96px;
+	height: 60px;
+	object-fit: cover;
+	border-radius: var(--r-xs);
+	flex: none;
+}
+.rvmp .r-event-head > div {
+	flex: 1;
+	min-width: 0;
+}
+.rvmp .r-event-head b {
+	display: block;
+	font-size: 14.5px;
+	font-weight: 800;
+	line-height: 1.2;
+}
+.rvmp .r-event-head span {
+	font-size: 12px;
+	color: var(--text-dim);
+}
+.rvmp .r-phase {
+	flex: none;
+	font-style: normal;
+	font-size: 11px;
+	font-weight: 800;
+	padding: 3px 9px;
+	border-radius: var(--r-pill);
+}
+.rvmp .r-phase[data-phase='live'] {
+	color: #0c1017;
+	background: #4ade80;
+}
+.rvmp .r-phase[data-phase='soon'] {
+	color: var(--text);
+	background: var(--surface-3);
+}
+.rvmp .r-phase[data-phase='ended'] {
+	color: var(--text-faint);
+	background: transparent;
+}
+.rvmp .r-phase[data-phase='season'] {
+	color: #0c1017;
+	background: linear-gradient(120deg, var(--lg-master), #c58bff);
+}
+.rvmp .r-event-body {
+	padding: 0 var(--s3) var(--s3);
+}
+.rvmp .r-event-body .r-section-h:first-child {
+	margin-top: var(--s2);
+}
+.rvmp .r-bonuses {
+	margin: 0 0 var(--s3);
+	padding-left: 18px;
+	display: grid;
+	gap: 3px;
+}
+.rvmp .r-bonuses li {
+	font-size: 12.5px;
+	color: var(--text-dim);
+}
+
+.rvmp .r-rocket-tier {
+	margin-top: var(--s3);
+}
+.rvmp .r-rocket-tier u {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	text-decoration: none;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	color: var(--text-faint);
+	margin-bottom: 4px;
+}
+
+/* ---- collapsible rocket grunts ---- */
+.rvmp .r-grunt-head {
+	align-items: center;
+}
+.rvmp .r-grunt-head img.r-grunt-av {
+	width: 40px;
+	height: 40px;
+	flex: none;
+	border-radius: 50%;
+	object-fit: contain;
+	padding: 6px;
+	background: color-mix(in srgb, var(--tc, var(--surface-3)) 22%, var(--surface-2));
+}
+.rvmp .r-grunt-head img.r-grunt-av[data-portrait] {
+	object-fit: cover;
+	padding: 0;
+	background: var(--surface-3);
+}
+.rvmp .r-grunt-id {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+}
+.rvmp .r-grunt-id b {
+	font-size: 14px;
+	font-weight: 800;
+	line-height: 1.25;
+}
+.rvmp .r-grunt-id i {
+	font-style: normal;
+	font-size: 13px;
+	color: var(--text-dim);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* collapsed catchable peek — one tier, compact minis */
+.rvmp .r-grunt-peek {
+	padding: 0 var(--s3) var(--s3);
+}
+.rvmp .r-grunt-peek u {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	text-decoration: none;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	color: var(--text-faint);
+	margin-bottom: var(--s2);
+}
+.rvmp .r-grunt-peek .r-minigrid {
+	grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+	margin-bottom: 0;
+}
+.rvmp .r-grunt-peek .r-mini {
+	padding: 4px 3px 5px;
+}
+.rvmp .r-grunt-peek .r-mini > img {
+	width: 40px;
+	height: 40px;
+}
+.rvmp .r-grunt-peek .r-mini > .r-shadow-mark {
+	width: 16px;
+	height: 16px;
+}
+.rvmp .r-grunt-peek .r-mini > span:not(.r-mini-shiny) {
+	font-size: 9.5px;
+}
+.rvmp .r-grunt {
+	cursor: pointer;
+}
+.rvmp .r-grunt:hover {
+	border-color: var(--border-strong);
+}
+.rvmp .r-grunt[data-open='true'] {
+	border-color: color-mix(in srgb, var(--tc, var(--accent)) 40%, var(--border-strong));
+}
+
+/* ---- date picker (raids / spawns) ---- */
+.rvmp .r-datepick {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--s2);
+	margin-top: var(--s3);
+	margin-bottom: var(--s4);
+}
+.rvmp .r-datepick-ic {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	font-size: 16px;
+	line-height: 1;
+}
+.rvmp .r-datepick-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding-top: 2px;
+}
+.rvmp .r-datepick-chips button {
+	padding: 6px 12px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 12.5px;
+	white-space: nowrap;
+	color: var(--text-dim);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	transition:
+		background 0.14s ease,
+		color 0.14s ease;
+}
+.rvmp .r-datepick-chips button[data-active='true'] {
+	color: #0c1017;
+	background: var(--accent);
+	border-color: transparent;
+}
+.rvmp .r-catch-tag {
+	letter-spacing: 0.04em;
+	padding: 1px 7px;
+	border-radius: var(--r-pill);
+	color: #0c1017;
+	background: var(--iv-fill);
+}
+
+/* external link out of an event card */
+.rvmp .r-ext-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: var(--s3);
+	padding: 8px 14px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 12.5px;
+	color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 12%, transparent);
+	border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.rvmp .r-ext-link span {
+	font-size: 13px;
+}
+
+/* hero shadow toggle — purple/shadow themed, never type-tinted */
+.rvmp .r-toggle--shadow {
+	gap: 6px;
+}
+.rvmp .r-toggle-flame {
+	width: 15px;
+	height: 15px;
+	color: var(--t-ghost);
+	filter: drop-shadow(0 0 2px color-mix(in srgb, var(--t-ghost) 70%, transparent));
+}
+.rvmp .r-toggle--shadow[data-on='true'] {
+	background: color-mix(in srgb, var(--t-ghost) 24%, transparent);
+	border-color: color-mix(in srgb, var(--t-ghost) 55%, transparent);
+	color: var(--text);
+}
+
+/* darker treatment for the shadow raid sub-sections */
+.rvmp .r-section-h[data-darker] {
+	color: var(--t-ghost);
+}
+
+/* eggs */
+.rvmp .r-egglist {
+	display: grid;
+	gap: var(--s5);
+}
+.rvmp .r-eggsec-head {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	margin-bottom: var(--s3);
+}
+.rvmp .r-eggsec-head img {
+	width: 30px;
+	height: 30px;
+	object-fit: contain;
+	filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.4));
+}
+.rvmp .r-eggsec-head b {
+	font-family: Fredoka, sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+/* flame floats in the top-left corner (like r-mini); the rank number moves to the right */
+.rvmp .r-pc > .r-shadow-mark {
+	position: absolute;
+	top: 9px;
+	left: 9px;
+	width: 26px;
+	height: 26px;
+	z-index: 2;
+}
+/* catchable — a quiet amber wash, in the rvmp style */
+.rvmp .r-mini[data-catchable] {
+	border-color: color-mix(in srgb, var(--iv-fill) 50%, var(--border));
+	background: linear-gradient(180deg, color-mix(in srgb, var(--iv-fill) 14%, var(--surface)), var(--surface));
+}
+.rvmp .r-mini[data-catchable] em {
+	color: var(--iv-fill);
 }

@@ -7,16 +7,20 @@ import { PokemonTypes } from '../../DTOs/PokemonTypes';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
 import { useRaidRanker } from '../../queries/raid-ranker';
+import { FilterBar } from '../components/FilterBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
-import { MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
-import { TYPE_LABEL, typeKey, typeVar } from '../lib/types';
+import { MODE_COLOR, MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
+import { TYPE_LABEL, typeKey } from '../lib/types';
 
 interface Row {
 	pokemon: IGamemasterPokemon;
 	metric?: CardMetric;
 }
 
-const TYPES = Object.values(PokemonTypes).filter((v): v is PokemonTypes => typeof v === 'string');
+const TYPE_KEYS = Object.values(PokemonTypes)
+	.filter((v): v is string => typeof v === 'string')
+	.map((t) => typeKey(t))
+	.sort();
 
 const useColumns = (ref: React.RefObject<HTMLElement | null>) => {
 	const [cols, setCols] = useState(2);
@@ -41,15 +45,29 @@ const Rankings = () => {
 	const navigate = useNavigate();
 	const [params, setParams] = useSearchParams();
 	const q = (params.get('q') ?? '').toLowerCase().trim();
-	const typeFilter = params.get('type') ?? '';
+	const isRaid = mode === 'raid';
+	const selectedTypes = (params.get('type') ?? '')
+		.split(',')
+		.map((t) => t.trim())
+		.filter(Boolean)
+		.filter((t) => TYPE_KEYS.includes(t))
+		.slice(0, isRaid ? 1 : 2);
+	const raidType = isRaid ? (selectedTypes[0] ?? '') : '';
 
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 
+	const typeCsv = selectedTypes.join(',');
 	const rows: Array<Row> = useMemo(() => {
 		if (!fetchCompleted) return [];
-		const byType = (p: IGamemasterPokemon) => !typeFilter || p.types.some((t) => typeKey(t) === typeFilter);
+		const wanted = typeCsv ? typeCsv.split(',') : [];
+		// two types → the mon must have BOTH
+		const byType = (p: IGamemasterPokemon) => {
+			if (wanted.length === 0) return true;
+			const has = p.types.map((t) => typeKey(t));
+			return wanted.every((w) => has.includes(w));
+		};
 		const byName = (p: IGamemasterPokemon) => !q || p.speciesName.toLowerCase().includes(q);
 
 		if (mode === 'pokedex') {
@@ -61,7 +79,7 @@ const Rankings = () => {
 
 		if (mode === 'raid') {
 			if (!raidDPSFetchCompleted) return [];
-			const list = raidDPS[typeFilter] ?? raidDPS[''] ?? {};
+			const list = raidDPS[wanted[0] ?? ''] ?? raidDPS[''] ?? {};
 			return Object.values(list)
 				.filter((e) => {
 					const p = gamemasterPokemon[e.speciesId];
@@ -82,7 +100,7 @@ const Rankings = () => {
 	}, [
 		mode,
 		q,
-		typeFilter,
+		typeCsv,
 		gamemasterPokemon,
 		fetchCompleted,
 		rankLists,
@@ -108,9 +126,10 @@ const Rankings = () => {
 		gap: 12,
 	});
 
-	const setType = (t: string) => {
+	const setTypes = (list: Array<string>) => {
 		const next = new URLSearchParams(params);
-		if (t) next.set('type', t);
+		const capped = list.slice(0, isRaid ? 1 : 2);
+		if (capped.length) next.set('type', capped.join(','));
 		else next.delete('type');
 		setParams(next, { replace: true });
 	};
@@ -123,12 +142,13 @@ const Rankings = () => {
 	return (
 		<div className='r-shell r-shell--wide'>
 			<div className='r-rank-head'>
-				<div className='r-seg r-seg--wrap'>
+				<div className='r-seg r-seg--wrap r-seg--league'>
 					{RANKING_MODES.map((m) => (
 						<button
 							key={m}
 							type='button'
 							data-active={mode === m}
+							style={{ ['--seg-c' as string]: MODE_COLOR[m] }}
 							onClick={() => {
 								void navigate(m === 'pokedex' ? R.pokedex : R.rankings(m));
 							}}
@@ -137,26 +157,15 @@ const Rankings = () => {
 						</button>
 					))}
 				</div>
-				<div className='r-typebar'>
-					<button type='button' className='r-type-chip' data-active={!typeFilter} onClick={() => setType('')}>
-						All
-					</button>
-					{TYPES.map((t) => (
-						<button
-							key={typeKey(t)}
-							type='button'
-							className='r-type-chip'
-							data-active={typeFilter === typeKey(t)}
-							style={{ ['--tc' as string]: typeVar(t) }}
-							onClick={() => setType(typeKey(t))}
-						>
-							{TYPE_LABEL[typeKey(t)]}
-						</button>
-					))}
-				</div>
+				<FilterBar
+					types={TYPE_KEYS}
+					selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes}
+					onChange={setTypes}
+					single={isRaid}
+				/>
 				<p className='r-muted r-count'>
 					{loading ? 'Loading…' : `${rows.length.toLocaleString()} Pokémon`}
-					{mode === 'raid' && typeFilter && ` · best ${TYPE_LABEL[typeFilter]} attackers`}
+					{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
 				</p>
 			</div>
 

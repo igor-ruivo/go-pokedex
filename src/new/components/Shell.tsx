@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { R } from '../lib/nav';
 
-const NAV = [
-	{ to: R.pokedex, label: 'Pokédex', icon: '▦', end: true },
-	{ to: R.rankings('great'), label: 'Rankings', icon: '🏆', end: false },
-	{ to: R.calendar(), label: 'Calendar', icon: '🗓', end: false },
-	{ to: R.tools, label: 'Tools', icon: '🛠', end: false },
+const NAV: Array<{ to: string; label: string; icon: string; match: (p: string) => boolean }> = [
+	{ to: R.pokedex, label: 'Pokédex', icon: '▦', match: (p) => p === '/new' || p.startsWith('/new/pokemon') },
+	{ to: R.rankings('great'), label: 'Rankings', icon: '🏆', match: (p) => p.startsWith('/new/rankings') },
+	{ to: R.calendar(), label: 'Calendar', icon: '🗓', match: (p) => p.startsWith('/new/calendar') },
+	{ to: R.tools, label: 'Tools', icon: '🛠', match: (p) => p.startsWith('/new/tools') },
 ];
 
 const Shell = () => {
 	const navigate = useNavigate();
+	const { pathname } = useLocation();
 	const [params] = useSearchParams();
 	const [q, setQ] = useState(params.get('q') ?? '');
 
@@ -58,7 +59,7 @@ const Shell = () => {
 
 			<nav className='r-bottomnav'>
 				{NAV.map((n) => (
-					<NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => (isActive ? 'is-active' : '')}>
+					<NavLink key={n.to} to={n.to} className={n.match(pathname) ? 'is-active' : ''}>
 						<span className='r-bn-icon' aria-hidden>
 							{n.icon}
 						</span>

@@ -3,6 +3,12 @@
    collide with the legacy global stylesheet. Dark-first (that's the look we keep).
    ============================================================================ */
 
+/* Always reserve the scrollbar gutter so navigating between a short page and a
+   tall one doesn't shift the layout sideways a few pixels. */
+html:has(.rvmp) {
+	scrollbar-gutter: stable;
+}
+
 .rvmp {
 	/* surfaces */
 	--bg: #0b0e14;
@@ -69,6 +75,7 @@
 	--lg-great: #3d8bde;
 	--lg-ultra: #e6b422;
 	--lg-master: #9b6bd8;
+	--lg-raid: #f2683c;
 
 	/* IV appraisal (GO style): amber fill, red when a stat is maxed at 15 */
 	--iv-fill: #f5a623;
@@ -122,6 +129,13 @@
 	outline: 2px solid var(--accent);
 	outline-offset: 2px;
 	border-radius: var(--r-xs);
+}
+/* nav elements have strong active states already — no ring needed */
+.rvmp .r-tabs button:focus-visible,
+.rvmp .r-tabs a:focus-visible,
+.rvmp .r-seg button:focus-visible,
+.rvmp .r-bottomnav a:focus-visible {
+	outline: none;
 }
 
 .rvmp a {

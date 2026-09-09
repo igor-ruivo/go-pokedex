@@ -4,6 +4,7 @@ import './components.css';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import Shell from './components/Shell';
+import Calendar from './routes/Calendar';
 import Placeholder from './routes/Placeholder';
 import PokemonDetail from './routes/PokemonDetail';
 import Rankings from './routes/Rankings';
@@ -20,7 +21,7 @@ const NewApp = () => (
 			<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
 			<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
 			<Route path='calendar' element={<Navigate to='/new/calendar/events' replace />} />
-			<Route path='calendar/:tab' element={<Placeholder title='Calendar' />} />
+			<Route path='calendar/:tab' element={<Calendar />} />
 			<Route path='tools' element={<Placeholder title='Tools' />} />
 			<Route path='settings' element={<Placeholder title='Settings' />} />
 			<Route path='*' element={<Navigate to='/new' replace />} />

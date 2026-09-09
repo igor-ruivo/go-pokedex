@@ -5,6 +5,7 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
 import { typeKey, typeVar } from '../lib/types';
+import { ShadowMark } from './ShadowMark';
 import { spriteUrl } from './Sprite';
 
 export interface CardMetric {
@@ -17,8 +18,14 @@ export const PokeCard = ({ pokemon, metric }: { pokemon: IGamemasterPokemon; met
 	const { imageSource } = useImageSource();
 	const primary = pokemon.types[0];
 	return (
-		<Link to={R.pokemon(pokemon.speciesId)} className='r-pc' style={{ ['--tc' as string]: typeVar(primary) }}>
+		<Link
+			to={R.pokemon(pokemon.speciesId)}
+			className='r-pc'
+			data-shadow={pokemon.isShadow ? '' : undefined}
+			style={{ ['--tc' as string]: typeVar(primary) }}
+		>
 			{metric?.rank != null && <span className='r-pc-rank'>{metric.rank}</span>}
+			{pokemon.isShadow && <ShadowMark />}
 			<div className='r-pc-art'>
 				<img src={spriteUrl(pokemon, imageSource)} alt='' loading='lazy' decoding='async' />
 			</div>
