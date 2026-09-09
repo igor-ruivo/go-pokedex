@@ -7,6 +7,7 @@ import { PokemonTypes } from '../../DTOs/PokemonTypes';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
 import { useRaidRanker } from '../../queries/raid-ranker';
+import { calculateCP, levelToLevelIndex } from '../../utils/pokemon-helper';
 import { FilterBar } from '../components/FilterBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { MODE_COLOR, MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
@@ -23,13 +24,13 @@ const TYPE_KEYS = Object.values(PokemonTypes)
 	.sort();
 
 const useColumns = (ref: React.RefObject<HTMLElement | null>) => {
-	const [cols, setCols] = useState(2);
+	const [cols, setCols] = useState(4);
 	useLayoutEffect(() => {
 		const el = ref.current;
 		if (!el) return;
 		const ro = new ResizeObserver(() => {
 			const w = el.clientWidth;
-			setCols(Math.min(6, Math.max(2, Math.floor(w / 172))));
+			setCols(Math.min(10, Math.max(4, Math.floor(w / 88))));
 		});
 		ro.observe(el);
 		return () => ro.disconnect();
@@ -71,10 +72,24 @@ const Rankings = () => {
 		const byName = (p: IGamemasterPokemon) => !q || p.speciesName.toLowerCase().includes(q);
 
 		if (mode === 'pokedex') {
+			const lvl50 = levelToLevelIndex(50);
 			return Object.values(gamemasterPokemon)
 				.filter((p) => !p.aliasId && !p.isShadow && !p.isMega && byType(p) && byName(p))
 				.sort((a, b) => a.dex - b.dex || a.speciesName.localeCompare(b.speciesName))
-				.map((pokemon) => ({ pokemon }));
+				.map((pokemon) => ({
+					pokemon,
+					metric: {
+						cp: calculateCP(
+							pokemon.baseStats.atk,
+							15,
+							pokemon.baseStats.def,
+							15,
+							pokemon.baseStats.hp,
+							15,
+							lvl50
+						),
+					},
+				}));
 		}
 
 		if (mode === 'raid') {
@@ -120,10 +135,10 @@ const Rankings = () => {
 
 	const virt = useWindowVirtualizer({
 		count: rowCount,
-		estimateSize: () => 182,
-		overscan: 5,
+		estimateSize: () => 96,
+		overscan: 6,
 		scrollMargin,
-		gap: 12,
+		gap: 8,
 	});
 
 	const setTypes = (list: Array<string>) => {

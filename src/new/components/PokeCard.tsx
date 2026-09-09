@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { ImageSource, useImageSource } from '../../contexts/imageSource-context';
+import { useImageSource } from '../../contexts/imageSource-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
@@ -12,34 +12,40 @@ export interface CardMetric {
 	rank?: number;
 	score?: number;
 	dps?: number;
+	cp?: number;
 }
 
+/** Compact grid tile — same footprint as the calendar / evolution minis. */
 export const PokeCard = ({ pokemon, metric }: { pokemon: IGamemasterPokemon; metric?: CardMetric | undefined }) => {
 	const { imageSource } = useImageSource();
-	const primary = pokemon.types[0];
 	return (
 		<Link
 			to={R.pokemon(pokemon.speciesId)}
 			className='r-pc'
 			data-shadow={pokemon.isShadow ? '' : undefined}
-			style={{ ['--tc' as string]: typeVar(primary) }}
+			style={{ ['--tc' as string]: typeVar(pokemon.types[0]) }}
 		>
-			{metric?.rank != null && <span className='r-pc-rank'>{metric.rank}</span>}
+			<span className='r-pc-rank'>{metric?.rank ?? dexNo(pokemon.dex)}</span>
 			{pokemon.isShadow && <ShadowMark />}
-			<div className='r-pc-art'>
+			<span className='r-pc-types' aria-hidden='true'>
+				{pokemon.types.map((t) => (
+					<i key={typeKey(t)} style={{ background: typeVar(t) }} />
+				))}
+			</span>
+			<span className='r-pc-art'>
 				<img src={spriteUrl(pokemon, imageSource)} alt='' loading='lazy' decoding='async' />
-			</div>
-			<div className='r-pc-meta'>
-				<span className='r-pc-dex'>{dexNo(pokemon.dex)}</span>
-				<b className='r-pc-name'>{cleanName(pokemon.speciesName)}</b>
-				<div className='r-pc-types'>
-					{pokemon.types.map((t) => (
-						<i key={typeKey(t)} style={{ background: typeVar(t) }} title={typeKey(t)} />
-					))}
-					{imageSource === ImageSource.Shiny && <span className='r-pc-shiny'>✦</span>}
-				</div>
-			</div>
-			{metric?.score != null && <span className='r-pc-metric'>{metric.score.toFixed(1)}</span>}
+			</span>
+			<b className='r-pc-name'>{cleanName(pokemon.speciesName)}</b>
+			{metric?.cp != null && (
+				<span className='r-pc-metric'>
+					{metric.cp.toLocaleString()} <em>CP</em>
+				</span>
+			)}
+			{metric?.score != null && (
+				<span className='r-pc-metric'>
+					{metric.score.toFixed(1)} <em>Pts</em>
+				</span>
+			)}
 			{metric?.dps != null && (
 				<span className='r-pc-metric'>
 					{metric.dps.toFixed(1)} <em>DPS</em>
