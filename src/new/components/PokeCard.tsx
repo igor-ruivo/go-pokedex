@@ -18,11 +18,20 @@ export interface CardMetric {
 }
 
 /** Compact grid tile — same footprint as the calendar / evolution minis. */
-export const PokeCard = ({ pokemon, metric }: { pokemon: IGamemasterPokemon; metric?: CardMetric | undefined }) => {
+export const PokeCard = ({
+	pokemon,
+	metric,
+	league,
+}: {
+	pokemon: IGamemasterPokemon;
+	metric?: CardMetric | undefined;
+	/** When set, the detail page opens with this league/raid pre-selected. */
+	league?: string | undefined;
+}) => {
 	const { imageSource } = useImageSource();
 	return (
 		<Link
-			to={R.pokemon(pokemon.speciesId)}
+			to={league ? `${R.pokemon(pokemon.speciesId)}?lg=${league}` : R.pokemon(pokemon.speciesId)}
 			className='r-pc'
 			data-shadow={pokemon.isShadow ? '' : undefined}
 			style={{ ['--tc' as string]: typeVar(pokemon.types[0]) }}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { useLanguage } from '../../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../../DTOs/IGamemasterPokemon';
@@ -7,6 +8,7 @@ import { usePvp } from '../../../queries/pvp';
 import { type RaidRecommendation, RaidTypeCoverage } from '../../components/RaidTypeCoverage';
 import { cleanName } from '../../lib/format';
 import { type Arena, buffText, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
+import { R } from '../../lib/nav';
 import { TYPE_LABEL } from '../../lib/types';
 
 const LEAGUE_LABEL = ['Great League', 'Ultra League', 'Master League', 'Raids'] as const;
@@ -60,7 +62,12 @@ const MoveRow = ({
 	const fx = arena === 'pvp' && kind === 'charged' ? buffText(m.buffs) : null;
 
 	return (
-		<div className='r-move' data-best={best ? '' : undefined} style={{ ['--tc' as string]: `var(--t-${type})` }}>
+		<Link
+			to={R.move(moveId)}
+			className='r-move r-move--link'
+			data-best={best ? '' : undefined}
+			style={{ ['--tc' as string]: `var(--t-${type})` }}
+		>
 			<div className='r-move-head'>
 				<span className='r-move-type'>{TYPE_LABEL[type] ?? m.type}</span>
 				<b>{m.moveName[currentGameLanguage] ?? cleanName(moveId)}</b>
@@ -88,7 +95,7 @@ const MoveRow = ({
 				</div>
 			</div>
 			{fx && <p className='r-move-buff'>{fx}</p>}
-		</div>
+		</Link>
 	);
 };
 

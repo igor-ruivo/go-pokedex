@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
@@ -7,6 +8,7 @@ import { usePokemon } from '../../queries/pokemon';
 import { type DPSEntry, useRaidRanker } from '../../queries/raid-ranker';
 import { computeDPSEntry } from '../../utils/pokemon-helper';
 import { cleanName, ordinal } from '../lib/format';
+import { R } from '../lib/nav';
 import { TYPE_LABEL } from '../lib/types';
 
 type Combo = { f: string; c: string; dps: number };
@@ -144,45 +146,61 @@ export const RaidTypeCoverage = ({
 				Best moveset by type coverage
 			</div>
 			<div className='r-raidtypes'>
-				{rows.map(({ t, e, on, combos, mIdx, combo }, i) => (
-					<button
-						key={t}
-						type='button'
-						className='r-raidtype'
-						data-active={on ? '' : undefined}
-						aria-pressed={on}
-						title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
-						style={{ ['--tc' as string]: `var(--t-${t})` }}
-						onClick={() => (on ? cycleCombo(t, combos.length) : selectType(i))}
-					>
-						<span className='r-raidtype-head'>
-							<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
-							<b>{ordinal(e.rank)}</b>
-							<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
-						</span>
-						{combo && (
-							<span className='r-raidtype-moves'>
-								<span className='r-raidtype-mv'>
-									{moveName(combo.f)} <i>+</i> {moveName(combo.c)}
-								</span>
-								{[...new Set([moveTag(combo.f), moveTag(combo.c)])]
-									.filter((tg): tg is string => !!tg)
-									.map((tg) => (
-										<i key={tg} className='r-move-tag r-raidtype-tag'>
-											{tg}
-										</i>
-									))}
-								{combos.length > 1 && (
-									<span className='r-raidtype-pips' aria-hidden='true'>
-										{combos.map((_, j) => (
-											<i key={j} data-on={j === mIdx} />
-										))}
-									</span>
-								)}
+				{rows.map(({ t, e, on, combos, mIdx, combo }, i) => {
+					const activate = () => (on ? cycleCombo(t, combos.length) : selectType(i));
+					return (
+						<div
+							key={t}
+							className='r-raidtype'
+							role='button'
+							tabIndex={0}
+							data-active={on ? '' : undefined}
+							aria-pressed={on}
+							title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
+							style={{ ['--tc' as string]: `var(--t-${t})` }}
+							onClick={activate}
+							onKeyDown={(ev) => {
+								if (ev.key === 'Enter' || ev.key === ' ') {
+									ev.preventDefault();
+									activate();
+								}
+							}}
+						>
+							<span className='r-raidtype-head'>
+								<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
+								<b>{ordinal(e.rank)}</b>
+								<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
 							</span>
-						)}
-					</button>
-				))}
+							{combo && (
+								<span className='r-raidtype-moves'>
+									<span className='r-raidtype-mv'>
+										<Link to={R.move(combo.f)} onClick={(ev) => ev.stopPropagation()}>
+											{moveName(combo.f)}
+										</Link>
+										<i>+</i>
+										<Link to={R.move(combo.c)} onClick={(ev) => ev.stopPropagation()}>
+											{moveName(combo.c)}
+										</Link>
+									</span>
+									{[...new Set([moveTag(combo.f), moveTag(combo.c)])]
+										.filter((tg): tg is string => !!tg)
+										.map((tg) => (
+											<i key={tg} className='r-move-tag r-raidtype-tag'>
+												{tg}
+											</i>
+										))}
+									{combos.length > 1 && (
+										<span className='r-raidtype-pips' aria-hidden='true'>
+											{combos.map((_, j) => (
+												<i key={j} data-on={j === mIdx} />
+											))}
+										</span>
+									)}
+								</span>
+							)}
+						</div>
+					);
+				})}
 			</div>
 		</>
 	);

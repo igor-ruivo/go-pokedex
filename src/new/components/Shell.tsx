@@ -1,35 +1,27 @@
-import { useEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { R } from '../lib/nav';
+import { SearchBox } from './SearchBox';
+import { SettingsMenu } from './SettingsMenu';
 
 const NAV: Array<{ to: string; label: string; icon: string; match: (p: string) => boolean }> = [
 	{ to: R.pokedex, label: 'Pokédex', icon: '▦', match: (p) => p === '/new' || p.startsWith('/new/pokemon') },
 	{ to: R.rankings('great'), label: 'Rankings', icon: '🏆', match: (p) => p.startsWith('/new/rankings') },
 	{ to: R.calendar(), label: 'Calendar', icon: '🗓', match: (p) => p.startsWith('/new/calendar') },
-	{ to: R.tools, label: 'Tools', icon: '🛠', match: (p) => p.startsWith('/new/tools') },
+	{ to: R.moves, label: 'Moves', icon: '⚡', match: (p) => p.startsWith('/new/move') },
+	{ to: R.types, label: 'Types', icon: '🛡', match: (p) => p.startsWith('/new/types') },
+	{ to: R.trash, label: 'Delete', icon: '🗑', match: (p) => p.startsWith('/new/trash') },
 ];
 
 const Shell = () => {
-	const navigate = useNavigate();
 	const { pathname } = useLocation();
-	const [params] = useSearchParams();
-	const [q, setQ] = useState(params.get('q') ?? '');
 
-	// keep the box in sync when the url changes elsewhere (e.g. clearing filters)
-	useEffect(() => {
-		setQ(params.get('q') ?? '');
-	}, [params]);
-
-	useEffect(() => {
-		const id = setTimeout(() => {
-			const next = q.trim();
-			const current = new URLSearchParams(window.location.hash.split('?')[1] ?? '');
-			if ((current.get('q') ?? '') === next) return;
-			void navigate(next ? `${R.pokedex}?q=${encodeURIComponent(next)}` : R.pokedex, { replace: true });
-		}, 220);
-		return () => clearTimeout(id);
-	}, [q, navigate]);
+	// Every route is a fresh view — jump to the top on navigation. Keyed on the
+	// path only, so the grid's live `?q=` filtering doesn't yank the scroll.
+	useLayoutEffect(() => {
+		window.scrollTo(0, 0);
+	}, [pathname]);
 
 	return (
 		<div className='rvmp'>
@@ -38,19 +30,8 @@ const Shell = () => {
 					<span className='r-logo-ball' />
 					<b>GO&nbsp;Pokédex</b>
 				</Link>
-				<div className='r-search'>
-					<span aria-hidden>⌕</span>
-					<input
-						value={q}
-						onChange={(e) => setQ(e.target.value)}
-						placeholder='Search Pokémon…'
-						aria-label='Search Pokémon'
-						enterKeyHint='search'
-					/>
-				</div>
-				<Link to={R.settings} className='r-icon-btn' aria-label='Settings'>
-					⚙
-				</Link>
+				<SearchBox />
+				<SettingsMenu />
 			</header>
 
 			<main className='r-main'>

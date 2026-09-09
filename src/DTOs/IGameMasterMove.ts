@@ -5,6 +5,7 @@ export interface IGameMasterMove {
 	vId: string;
 	type: string;
 	isFast: boolean;
+	isSuperMega?: boolean;
 	pvpPower: number;
 	pvePower: number;
 	pvpCooldown: number;

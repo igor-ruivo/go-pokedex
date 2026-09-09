@@ -22,18 +22,28 @@ const seconds = (m: IGameMasterMove, a: Arena) => (a === 'pve' ? m.pveCooldown :
  * level / target defense scale every move equally, so they're left out of these
  * per-move comparison metrics (they don't change ordering or ratios).
  */
-const dmgMult = (m: IGameMasterMove, pokemon: IGamemasterPokemon): number =>
-	(pokemon.types.some((t) => String(t).toLowerCase() === m.type.toLowerCase()) ? STAB : 1) *
-	(pokemon.isShadow ? SHADOW_ATK : 1);
+const dmgMult = (m: IGameMasterMove, pokemon?: IGamemasterPokemon): number =>
+	pokemon
+		? (pokemon.types.some((t) => String(t).toLowerCase() === m.type.toLowerCase()) ? STAB : 1) *
+			(pokemon.isShadow ? SHADOW_ATK : 1)
+		: 1;
 
-/** Effective damage per second for a fast move, STAB + shadow applied. */
-export const moveDPS = (m: IGameMasterMove, a: Arena, pokemon: IGamemasterPokemon): number =>
+/** Damage per second for a fast move. STAB + shadow applied when a `pokemon` is given. */
+export const moveDPS = (m: IGameMasterMove, a: Arena, pokemon?: IGamemasterPokemon): number =>
 	(power(m, a) * dmgMult(m, pokemon)) / seconds(m, a);
 /** Energy generated per second (fast moves) — energy isn't boosted by STAB / shadow. */
 export const moveEPS = (m: IGameMasterMove, a: Arena): number => energy(m, a) / seconds(m, a);
-/** Effective damage per energy spent for a charged move, STAB + shadow applied. */
-export const moveDPE = (m: IGameMasterMove, a: Arena, pokemon: IGamemasterPokemon): number =>
+/** Damage per energy spent for a charged move. STAB + shadow applied when a `pokemon` is given. */
+export const moveDPE = (m: IGameMasterMove, a: Arena, pokemon?: IGamemasterPokemon): number =>
 	(power(m, a) * dmgMult(m, pokemon)) / (Math.abs(energy(m, a)) || 1);
+
+/** Every non-alias Pokémon that can learn this move (any slot). */
+export const moveOwners = (moveId: string, gm: Record<string, IGamemasterPokemon>): Array<IGamemasterPokemon> =>
+	Object.values(gm).filter(
+		(p) =>
+			!p.aliasId &&
+			(p.fastMoves.includes(moveId) || p.chargedMoves.includes(moveId) || p.extraChargedMoves.includes(moveId))
+	);
 
 const STAT_EFFECTS: Array<{ key: string; who: 'own' | 'foe'; stat: 'Attack' | 'Defense' }> = [
 	{ key: 'attackerAttackStatStageChange', who: 'own', stat: 'Attack' },

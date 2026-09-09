@@ -3,25 +3,27 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
-import { PokemonTypes } from '../../DTOs/PokemonTypes';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
 import { useRaidRanker } from '../../queries/raid-ranker';
 import { calculateCP, levelToLevelIndex } from '../../utils/pokemon-helper';
 import { FilterBar } from '../components/FilterBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
+import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { MODE_COLOR, MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
-import { TYPE_LABEL, typeKey } from '../lib/types';
+import { TYPE_KEYS, TYPE_LABEL, typeKey } from '../lib/types';
+
+const POKEDEX_SORTS: ReadonlyArray<SortOption> = [
+	{ key: 'dex', label: 'Dex number', defaultDir: 'asc' },
+	{ key: 'name', label: 'Name', defaultDir: 'asc' },
+	{ key: 'cp', label: 'Max CP', defaultDir: 'desc' },
+	{ key: 'type', label: 'Type', defaultDir: 'asc' },
+];
 
 interface Row {
 	pokemon: IGamemasterPokemon;
 	metric?: CardMetric;
 }
-
-const TYPE_KEYS = Object.values(PokemonTypes)
-	.filter((v): v is string => typeof v === 'string')
-	.map((t) => typeKey(t))
-	.sort();
 
 const GRID_GAP = 8;
 
@@ -69,6 +71,9 @@ const Rankings = () => {
 		.slice(0, isRaid ? 1 : 2);
 	const raidType = isRaid ? (selectedTypes[0] ?? '') : '';
 
+	const sortKey = params.get('sort') ?? 'dex';
+	const sortDir: SortDir = params.get('dir') === 'desc' ? 'desc' : 'asc';
+
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
@@ -87,15 +92,31 @@ const Rankings = () => {
 
 		if (mode === 'pokedex') {
 			const lvl50 = levelToLevelIndex(50);
-			return Object.values(gamemasterPokemon)
+			const arr = Object.values(gamemasterPokemon)
 				.filter((p) => !p.aliasId && !p.isShadow && !p.isMega && byType(p) && byName(p))
-				.sort((a, b) => a.dex - b.dex || a.speciesName.localeCompare(b.speciesName))
 				.map((pokemon) => ({
 					pokemon,
 					metric: {
 						cp: calculateCP(pokemon.baseStats.atk, 15, pokemon.baseStats.def, 15, pokemon.baseStats.hp, 15, lvl50),
 					},
 				}));
+			const s = sortDir === 'asc' ? 1 : -1;
+			arr.sort((a, b) => {
+				switch (sortKey) {
+					case 'name':
+						return s * a.pokemon.speciesName.localeCompare(b.pokemon.speciesName);
+					case 'cp':
+						return s * ((a.metric.cp ?? 0) - (b.metric.cp ?? 0)) || a.pokemon.dex - b.pokemon.dex;
+					case 'type': {
+						const at = a.pokemon.types.map((t) => typeKey(t)).join('/');
+						const bt = b.pokemon.types.map((t) => typeKey(t)).join('/');
+						return s * at.localeCompare(bt) || a.pokemon.dex - b.pokemon.dex;
+					}
+					default:
+						return s * (a.pokemon.dex - b.pokemon.dex || a.pokemon.speciesName.localeCompare(b.pokemon.speciesName));
+				}
+			});
+			return arr;
 		}
 
 		if (mode === 'raid') {
@@ -122,6 +143,8 @@ const Rankings = () => {
 		mode,
 		q,
 		typeCsv,
+		sortKey,
+		sortDir,
 		gamemasterPokemon,
 		fetchCompleted,
 		rankLists,
@@ -155,6 +178,18 @@ const Rankings = () => {
 		setParams(next, { replace: true });
 	};
 
+	const setSort = (key: string, dir: SortDir) => {
+		const next = new URLSearchParams(params);
+		if (key === 'dex' && dir === 'asc') {
+			next.delete('sort');
+			next.delete('dir');
+		} else {
+			next.set('sort', key);
+			next.set('dir', dir);
+		}
+		setParams(next, { replace: true });
+	};
+
 	const loading =
 		!fetchCompleted ||
 		(mode === 'raid' && !raidDPSFetchCompleted) ||
@@ -178,12 +213,15 @@ const Rankings = () => {
 						</button>
 					))}
 				</div>
-				<FilterBar
-					types={TYPE_KEYS}
-					selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes}
-					onChange={setTypes}
-					single={isRaid}
-				/>
+				<div className='r-controls'>
+					<FilterBar
+						types={TYPE_KEYS}
+						selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes}
+						onChange={setTypes}
+						single={isRaid}
+					/>
+					{mode === 'pokedex' && <SortBar options={POKEDEX_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />}
+				</div>
 				<p className='r-muted r-count'>
 					{loading ? 'Loading…' : `${rows.length.toLocaleString()} Pokémon`}
 					{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
@@ -213,7 +251,12 @@ const Rankings = () => {
 							>
 								<div className='r-grid-row' style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
 									{slice.map((row) => (
-										<PokeCard key={row.pokemon.speciesId} pokemon={row.pokemon} metric={row.metric} />
+										<PokeCard
+											key={row.pokemon.speciesId}
+											pokemon={row.pokemon}
+											metric={row.metric}
+											league={mode === 'pokedex' ? undefined : mode}
+										/>
 									))}
 								</div>
 							</div>

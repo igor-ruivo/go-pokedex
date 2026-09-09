@@ -23,9 +23,8 @@ export const typeMatchups = (defenderTypes: Array<string>): { weak: Array<EffEnt
 	return { weak, resist };
 };
 
-export const multBadge = (mult: number): string | null => {
-	if (mult > 1) return mult > 2 ? '2×' : null;
-	if (mult < 0.3) return '3×';
-	if (mult < 0.5) return '2×';
-	return null;
-};
+/** "1.60×" style label for a matchup multiplier. */
+export const fmtMult = (mult: number): string => `${mult.toFixed(2)}×`;
+
+/** A stacked matchup — both types push the same way (×2.56 up, or ×0.39 / ×0.24 down). */
+export const isDoubleMult = (mult: number): boolean => mult > 2 || mult < 0.45;

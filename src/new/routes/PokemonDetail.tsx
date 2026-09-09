@@ -1,6 +1,6 @@
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
@@ -22,11 +22,14 @@ import { IvPicker, type IVs } from '../components/IvPicker';
 import { ShadowMark } from '../components/ShadowMark';
 import { goSpriteUrl, Sprite, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
-import { multBadge, typeMatchups } from '../lib/effectiveness';
+import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dexNo, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
 import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
+import CountersTab from './pokemon/CountersTab';
+import IvTableTab from './pokemon/IvTableTab';
 import MovesTab from './pokemon/MovesTab';
+import SearchStringsTab from './pokemon/SearchStringsTab';
 
 const LEAGUES = [
 	{ id: 0, label: 'Great', full: 'Great League', cssVar: 'var(--lg-great)' },
@@ -37,11 +40,14 @@ const LEAGUES = [
 type LeagueId = 0 | 1 | 2 | 3;
 type PvpLeague = 0 | 1 | 2;
 
+/** `?lg=` on the URL — set when you arrive from a league / raid ranking. */
+const LG_PARAM: Record<string, LeagueId> = { great: 0, ultra: 1, master: 2, raid: 3 };
+
 const TABS = [
 	['Ranks', 'ranks'],
 	['Moves', 'moves'],
 	['Counters', 'counters'],
-	['IV Tables', 'iv-tables'],
+	['IV Table', 'iv-table'],
 	['Strings', 'strings'],
 ] as const;
 type TabLabel = (typeof TABS)[number][0];
@@ -82,6 +88,7 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 
 const PokemonDetail = () => {
 	const { speciesId = '', tab: tabParam } = useParams();
+	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
 	const { imageSource } = useImageSource();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
@@ -93,11 +100,17 @@ const PokemonDetail = () => {
 	const pokemon = fetchCompleted ? gamemasterPokemon[speciesId] : undefined;
 	const tab: TabLabel = SLUG_TO_TAB[tabParam ?? 'ranks'] ?? 'Ranks';
 
+	const lgParam = searchParams.get('lg') ?? '';
 	const [iv, setIv] = useState<IVs>({ atk: 15, def: 15, hp: 15 });
 	const [level, setLevel] = useState(50);
-	const [league, setLeague] = useState<LeagueId>(0);
+	const [league, setLeague] = useState<LeagueId>(LG_PARAM[lgParam] ?? 0);
 	const [heroSpriteIdx, setHeroSpriteIdx] = useState(0);
 	useEffect(() => setHeroSpriteIdx(0), [speciesId]);
+	// arriving from a league / raid ranking (`?lg=`) opens that league selected
+	useEffect(() => {
+		const l = LG_PARAM[lgParam];
+		if (l != null) setLeague(l);
+	}, [lgParam, speciesId]);
 	const isRaid = league === 3;
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
@@ -169,6 +182,23 @@ const PokemonDetail = () => {
 	useEffect(() => setCarousel({}), [speciesId]);
 	const cpos = (id: number): Cpos => carousel[id] ?? { p: 0, t: 0, m: {} };
 	const candLen = (id: number) => (id === 3 ? boardData.raid.length : (boardData.pvp[id]?.length ?? 0));
+
+	// "Your IVs" follows the PvP carousel (best reachable by default), not the URL mon.
+	const pvpLeague: PvpLeague = isRaid ? 0 : (league as PvpLeague);
+	const pvpCandidates = boardData.pvp[pvpLeague] ?? [];
+	const pvpMember = pvpCandidates[Math.min(cpos(league).p, Math.max(0, pvpCandidates.length - 1))] ?? pokemon;
+	const slice = !isRaid ? leagueSlice(ivPercents[pvpMember?.speciesId ?? ''], pvpLeague) : undefined;
+
+	// On load and whenever the league (or carouseled member) changes, snap the IV
+	// spread to that league's rank-1 spread AND the level that hits its CP cap with
+	// that spread (the "… CP at LX" from the readout). The user can still drag both.
+	const perfectKey = slice ? `${slice.perfect.A}-${slice.perfect.D}-${slice.perfect.S}-${slice.perfectLvl}` : '';
+	useEffect(() => {
+		if (!slice?.perfect) return;
+		setIv({ atk: slice.perfect.A, def: slice.perfect.D, hp: slice.perfect.S });
+		if (slice.perfectLvl) setLevel(slice.perfectLvl);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [league, pvpMember?.speciesId, perfectKey]);
 
 	const cycleRow = (id: LeagueId) => {
 		if (league === id) {
@@ -284,11 +314,6 @@ const PokemonDetail = () => {
 	const baseId = self.replace('_shadow', '');
 	const hasShadow = !!gamemasterPokemon[`${baseId}_shadow`];
 	const isShadow = self.endsWith('_shadow');
-
-	// "Your IVs" follows the PvP carousel (best reachable by default), not the URL mon.
-	const pvpList = boardData.pvp[isRaid ? 0 : league] ?? [];
-	const pvpMember = pvpList[Math.min(cpos(league).p, Math.max(0, pvpList.length - 1))] ?? pokemon;
-	const slice = !isRaid ? leagueSlice(ivPercents[pvpMember.speciesId], league as PvpLeague) : undefined;
 
 	// Raid card follows the raid carousel (which Pokémon + which type + which combo), not the URL mon.
 	const raidSel = boardData.raid[Math.min(cpos(3).p, Math.max(0, boardData.raid.length - 1))];
@@ -427,7 +452,7 @@ const PokemonDetail = () => {
 				{family.map((m) => (
 					<Link
 						key={m.speciesId}
-						to={R.pokemon(m.speciesId)}
+						to={`${R.pokemon(m.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`}
 						className='r-reach-chip'
 						data-active={m.speciesId === self}
 					>
@@ -470,6 +495,12 @@ const PokemonDetail = () => {
 
 			{tab === 'Moves' ? (
 				<MovesTab pokemon={pokemon} league={league} />
+			) : tab === 'IV Table' ? (
+				<IvTableTab pokemon={pokemon} league={league} />
+			) : tab === 'Strings' ? (
+				<SearchStringsTab pokemon={pokemon} league={league} />
+			) : tab === 'Counters' ? (
+				<CountersTab pokemon={pokemon} league={league} />
 			) : tab !== 'Ranks' ? (
 				<div className='r-card' style={{ marginTop: 24, textAlign: 'center' }}>
 					<p className='r-muted'>“{tab}” is next in the revamp.</p>
@@ -594,45 +625,61 @@ const PokemonDetail = () => {
 											Best moveset by type coverage
 										</div>
 										<div className='r-raidtypes'>
-											{raidRows.map(({ t, e, on, combos, mIdx, combo }, i) => (
-												<button
-													key={t}
-													type='button'
-													className='r-raidtype'
-													data-active={on ? '' : undefined}
-													aria-pressed={on}
-													title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
-													style={{ ['--tc' as string]: `var(--t-${t})` }}
-													onClick={() => (on ? cycleMove(t, combos.length) : selectType(i))}
-												>
-													<span className='r-raidtype-head'>
-														<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
-														<b>{ordinal(e.rank)}</b>
-														<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
-													</span>
-													{combo && (
-														<span className='r-raidtype-moves'>
-															<span className='r-raidtype-mv'>
-																{moveName(combo.f)} <i>+</i> {moveName(combo.c)}
-															</span>
-															{[...new Set([raidMoveTag(combo.f), raidMoveTag(combo.c)])]
-																.filter((tg): tg is string => !!tg)
-																.map((tg) => (
-																	<i key={tg} className='r-move-tag r-raidtype-tag'>
-																		{tg}
-																	</i>
-																))}
-															{combos.length > 1 && (
-																<span className='r-raidtype-pips' aria-hidden='true'>
-																	{combos.map((_, j) => (
-																		<i key={j} data-on={j === mIdx} />
-																	))}
-																</span>
-															)}
+											{raidRows.map(({ t, e, on, combos, mIdx, combo }, i) => {
+												const activate = () => (on ? cycleMove(t, combos.length) : selectType(i));
+												return (
+													<div
+														key={t}
+														className='r-raidtype'
+														role='button'
+														tabIndex={0}
+														data-active={on ? '' : undefined}
+														aria-pressed={on}
+														title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
+														style={{ ['--tc' as string]: `var(--t-${t})` }}
+														onClick={activate}
+														onKeyDown={(ev) => {
+															if (ev.key === 'Enter' || ev.key === ' ') {
+																ev.preventDefault();
+																activate();
+															}
+														}}
+													>
+														<span className='r-raidtype-head'>
+															<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
+															<b>{ordinal(e.rank)}</b>
+															<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
 														</span>
-													)}
-												</button>
-											))}
+														{combo && (
+															<span className='r-raidtype-moves'>
+																<span className='r-raidtype-mv'>
+																	<Link to={R.move(combo.f)} onClick={(ev) => ev.stopPropagation()}>
+																		{moveName(combo.f)}
+																	</Link>
+																	<i>+</i>
+																	<Link to={R.move(combo.c)} onClick={(ev) => ev.stopPropagation()}>
+																		{moveName(combo.c)}
+																	</Link>
+																</span>
+																{[...new Set([raidMoveTag(combo.f), raidMoveTag(combo.c)])]
+																	.filter((tg): tg is string => !!tg)
+																	.map((tg) => (
+																		<i key={tg} className='r-move-tag r-raidtype-tag'>
+																			{tg}
+																		</i>
+																	))}
+																{combos.length > 1 && (
+																	<span className='r-raidtype-pips' aria-hidden='true'>
+																		{combos.map((_, j) => (
+																			<i key={j} data-on={j === mIdx} />
+																		))}
+																	</span>
+																)}
+															</span>
+														)}
+													</div>
+												);
+											})}
 										</div>
 									</>
 								)}
@@ -645,7 +692,7 @@ const PokemonDetail = () => {
 					) : (
 						<>
 							{/* ---- IV PICKER ---- */}
-							<div className='r-section-h'>Your IVs · {cleanName(pvpMember.speciesName)}</div>
+							<div className='r-section-h'>Your IVs · {cleanName((pvpMember ?? pokemon).speciesName)}</div>
 							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
 								<IvPicker
 									value={iv}
@@ -698,9 +745,14 @@ const PokemonDetail = () => {
 								<b>Weak to</b>
 								<div className='r-eff-list'>
 									{matchups.weak.map(({ type, mult }) => (
-										<span key={type} className='r-eff-t' style={{ ['--tc' as string]: `var(--t-${type})` }}>
+										<span
+											key={type}
+											className='r-eff-t'
+											data-double={isDoubleMult(mult) ? '' : undefined}
+											style={{ ['--tc' as string]: `var(--t-${type})` }}
+										>
 											{TYPE_LABEL[type]}
-											{multBadge(mult) && <span className='r-eff-mult'>{multBadge(mult)}</span>}
+											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))}
 									{matchups.weak.length === 0 && <span className='r-muted'>Nothing</span>}
@@ -710,9 +762,14 @@ const PokemonDetail = () => {
 								<b>Resists</b>
 								<div className='r-eff-list'>
 									{matchups.resist.map(({ type, mult }) => (
-										<span key={type} className='r-eff-t' style={{ ['--tc' as string]: `var(--t-${type})` }}>
+										<span
+											key={type}
+											className='r-eff-t'
+											data-double={isDoubleMult(mult) ? '' : undefined}
+											style={{ ['--tc' as string]: `var(--t-${type})` }}
+										>
 											{TYPE_LABEL[type]}
-											{multBadge(mult) && <span className='r-eff-mult'>{multBadge(mult)}</span>}
+											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))}
 									{matchups.resist.length === 0 && <span className='r-muted'>Nothing</span>}

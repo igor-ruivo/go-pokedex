@@ -894,6 +894,16 @@
 .rvmp .r-raidtype-mv i {
 	font-style: normal;
 	color: var(--text-faint);
+	margin: 0 4px;
+}
+/* the move names are links to the move page — the rest of the row cycles the combo */
+.rvmp .r-raidtype-mv a {
+	color: inherit;
+	text-decoration: none;
+}
+.rvmp .r-raidtype-mv a:hover {
+	color: var(--tc, var(--accent));
+	text-decoration: underline;
 }
 .rvmp .r-raidtype-pips {
 	flex: none;
@@ -914,12 +924,24 @@
 /* ---- effectiveness -------------------------------------------------------- */
 .rvmp .r-eff {
 	display: grid;
-	gap: var(--s3);
+	gap: var(--s4);
 	grid-template-columns: 1fr;
+}
+/* divider between "Weak to" and "Resists" — a line down the gap on wide layouts,
+   across the top when the columns stack */
+.rvmp .r-eff-col + .r-eff-col {
+	border-top: 1px solid var(--border);
+	padding-top: var(--s4);
 }
 @media (min-width: 560px) {
 	.rvmp .r-eff {
 		grid-template-columns: 1fr 1fr;
+	}
+	.rvmp .r-eff-col + .r-eff-col {
+		border-top: 0;
+		border-left: 1px solid var(--border);
+		padding-top: 0;
+		padding-left: var(--s4);
 	}
 }
 .rvmp .r-eff-col > b {
@@ -934,17 +956,17 @@
 .rvmp .r-eff-list {
 	display: flex;
 	align-items: flex-start;
-	gap: 6px;
+	gap: 7px;
 	flex-wrap: wrap;
 }
 .rvmp .r-eff-t {
 	display: inline-flex;
 	align-items: center;
-	height: 26px;
-	padding: 0 11px;
+	height: 22px;
+	padding: 0 8px;
 	border-radius: var(--r-pill);
 	font-weight: 800;
-	font-size: 12px;
+	font-size: 11px;
 	line-height: 1;
 	color: #0c1017;
 	background: var(--tc, var(--t-normal));
@@ -954,11 +976,11 @@
 	position: relative;
 	display: inline-grid;
 	place-items: center;
-	margin-left: 11px;
-	padding-left: 11px;
+	margin-left: 7px;
+	padding-left: 7px;
 	font-style: normal;
 	font-weight: 900;
-	font-size: 12px;
+	font-size: 11px;
 	line-height: 1;
 	letter-spacing: 0.02em;
 	color: #0c1017;
@@ -969,7 +991,7 @@
 	left: 0;
 	top: 50%;
 	width: 2px;
-	height: 14px;
+	height: 11px;
 	border-radius: 1px;
 	background: rgb(12 16 23 / 0.5);
 	transform: translateY(-50%);
@@ -1103,6 +1125,7 @@
 	box-shadow: 0 0 0 2px #f4f4f5;
 }
 .rvmp .r-search {
+	position: relative;
 	flex: 1;
 	display: flex;
 	align-items: center;
@@ -1113,6 +1136,93 @@
 	background: var(--surface);
 	border: 1px solid var(--border);
 	color: var(--text-faint);
+}
+.rvmp .r-search-clear {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	font-size: 15px;
+	line-height: 1;
+	color: var(--text-dim);
+	background: var(--surface-3);
+}
+.rvmp .r-search-menu {
+	position: absolute;
+	top: calc(100% + 8px);
+	left: 0;
+	right: 0;
+	z-index: 40;
+	max-height: min(60vh, 460px);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	list-style: none;
+	margin: 0;
+	padding: 6px;
+	border-radius: var(--r-md);
+	background: color-mix(in srgb, var(--surface) 96%, transparent);
+	backdrop-filter: blur(16px);
+	border: 1px solid var(--border-strong);
+	box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+}
+.rvmp .r-search-menu button {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 7px 8px;
+	border-radius: var(--r-sm);
+	text-align: left;
+}
+.rvmp .r-search-menu button[data-active] {
+	background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
+}
+.rvmp .r-search-sprite {
+	position: relative;
+	flex: none;
+	width: 34px;
+	height: 34px;
+	display: grid;
+	place-items: center;
+	border-radius: 50%;
+	background: var(--surface-3);
+}
+.rvmp .r-search-sprite > img {
+	width: 28px;
+	height: 28px;
+	object-fit: contain;
+}
+.rvmp .r-search-sprite > .r-shadow-mark {
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	width: 16px;
+	height: 16px;
+}
+.rvmp .r-search-name {
+	flex: 1;
+	min-width: 0;
+	font-weight: 800;
+	font-size: 13px;
+	color: var(--text);
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+.rvmp .r-search-dex {
+	flex: none;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 11px;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-search-shadow {
+	font-style: normal;
+	font-weight: 700;
+	color: var(--t-ghost);
 }
 .rvmp .r-search:focus-within {
 	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
@@ -2094,4 +2204,1245 @@
 	filter: drop-shadow(1.5px 0 0 rgb(0 0 0 / 0.92)) drop-shadow(-1.5px 0 0 rgb(0 0 0 / 0.92))
 		drop-shadow(0 1.5px 0 rgb(0 0 0 / 0.92)) drop-shadow(0 -1.5px 0 rgb(0 0 0 / 0.92))
 		drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
+}
+
+/* ---- Moves list + Move detail --------------------------------------------- */
+.rvmp .r-move--link {
+	display: block;
+	height: 100%;
+	/* `clip`, not `hidden` — `hidden` would make the row a scroll container and
+	   swallow wheel/touch scrolling started over it */
+	overflow: clip;
+	transition:
+		transform 0.12s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-move--link:hover {
+	transform: translateY(-2px);
+	border-color: color-mix(in srgb, var(--tc, var(--accent)) 45%, var(--border-strong));
+}
+/* keep list rows to a fixed height — one line each, no wrapping — so the
+   virtualizer's size estimates are exact (no scroll drift). */
+.rvmp .r-move--link .r-move-head {
+	flex-wrap: nowrap;
+}
+.rvmp .r-move--link .r-move-head b {
+	min-width: 0;
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+.rvmp .r-move--link .r-move-stats--stack > div {
+	flex-wrap: nowrap;
+	overflow: clip;
+}
+.rvmp .r-move--link .r-move-buff {
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+/* two PvE / PvP stat lines stacked, not wrapped side-by-side */
+.rvmp .r-move-stats--stack {
+	flex-direction: column;
+	gap: 5px 0;
+}
+.rvmp .r-move-stats--stack > div {
+	width: 100%;
+}
+.rvmp .r-readout--wrap {
+	flex-wrap: wrap;
+	row-gap: 12px;
+}
+.rvmp .r-readout--wrap > div {
+	flex: 1 1 30%;
+}
+/* move-detail Pokémon grids fill the column edge-to-edge (no ragged right gutter) */
+.rvmp .r-minigrid--fill {
+	grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+}
+.rvmp .r-search-movetype {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--surface-3);
+}
+.rvmp .r-search-movetype > img {
+	width: 22px;
+	height: 22px;
+	object-fit: contain;
+}
+/* divider between the Pokémon and Move groups in the search dropdown */
+.rvmp .r-search-div {
+	height: 1px;
+	margin: 5px 6px;
+	background: var(--border-strong);
+}
+.rvmp .r-move-hero {
+	text-align: left;
+}
+.rvmp .r-move-hero .r-name {
+	margin-top: 8px;
+}
+.rvmp .r-move-hero-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	align-items: center;
+}
+
+/* ---- Settings ----------------------------------------------------------------- */
+.rvmp .r-set {
+	display: flex;
+	flex-direction: column;
+	gap: var(--s4);
+}
+.rvmp .r-set-row {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+.rvmp .r-set-head b {
+	display: block;
+	font-size: 14px;
+	font-weight: 800;
+}
+.rvmp .r-set-head span {
+	display: block;
+	margin-top: 2px;
+	font-size: 12px;
+	color: var(--text-faint);
+}
+.rvmp .r-set-opts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+.rvmp .r-set-opts button {
+	padding: 8px 14px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 13px;
+	color: var(--text-dim);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	transition: all 0.14s ease;
+}
+.rvmp .r-set-opts button[data-active] {
+	color: #0c1017;
+	background: var(--accent);
+	border-color: transparent;
+}
+.rvmp .r-set-opts button i {
+	font-style: normal;
+	opacity: 0.7;
+	margin-left: 6px;
+}
+
+/* ---- IV Table tab ------------------------------------------------------------- */
+.rvmp .r-iv-search {
+	margin-bottom: 10px;
+}
+.rvmp .r-iv-search input {
+	width: 100%;
+	padding: 10px 14px;
+	border-radius: var(--r-pill);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--text);
+	font: inherit;
+	font-weight: 600;
+}
+.rvmp .r-iv-search input:focus {
+	outline: none;
+	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+/* the one matched spread, pulled out above the (virtualised) table */
+.rvmp .r-ivt-found {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 14px;
+	margin-bottom: 12px;
+	padding: 12px 14px;
+	border-radius: var(--r-md);
+	background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 16%, var(--surface)), var(--surface));
+	border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.rvmp .r-ivt-found-rank {
+	font-family: Fredoka, sans-serif;
+	font-weight: 800;
+	font-size: 20px;
+	color: var(--accent);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-ivt-found-iv {
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 15px;
+}
+.rvmp .r-ivt-found-stats {
+	display: flex;
+	gap: 12px;
+	font-size: 11.5px;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-ivt-found-stats b {
+	color: var(--text);
+	font-weight: 800;
+}
+.rvmp .r-ivt-found-meta {
+	flex-basis: 100%;
+	font-size: 12px;
+	color: var(--text-dim);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-ivt-none {
+	margin: 0 2px 12px;
+	font-size: 12.5px;
+}
+.rvmp .r-ivt {
+	border: 1px solid var(--border);
+	border-radius: var(--r-md);
+	/* `clip` (not `hidden`) so the box isn't a scroll container — a vertical
+	   wheel over the table then still scrolls the page */
+	overflow: clip;
+	background: var(--surface);
+}
+/* the body scrolls inside itself once past ~50 rows; the header stays put.
+   `overscroll-behavior-y: auto !important` beats the legacy global
+   `* { overscroll-behavior: none !important }` so hitting the top / bottom of
+   the inner list chains the scroll back to the page instead of dead-ending. */
+.rvmp .r-ivt-scroll {
+	overflow-y: auto;
+	overscroll-behavior-x: contain !important;
+	overscroll-behavior-y: auto !important;
+	scrollbar-width: thin;
+	scrollbar-color: var(--surface-3) transparent;
+}
+.rvmp .r-ivt-scroll::-webkit-scrollbar {
+	width: 8px;
+}
+.rvmp .r-ivt-scroll::-webkit-scrollbar-thumb {
+	background: var(--surface-3);
+	border-radius: 4px;
+}
+.rvmp .r-ivt-head,
+.rvmp .r-ivt-row {
+	display: grid;
+	/* fixed left tracks + a flexible bar column that always ends right before CP,
+	   so the bar has a fixed start / end and just fills whatever room it has */
+	grid-template-columns: 30px 56px 94px 40px 1fr 40px 24px;
+	align-items: center;
+	gap: 4px;
+	padding: 0 4px;
+}
+.rvmp .r-ivt-head {
+	height: 34px;
+	background: var(--surface-2);
+	border-bottom: 1px solid var(--border);
+	font-size: 9.5px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+/* every cell fills its track and centres its content (rank stays left), so the
+   headers line up with the values AND the column-hover tint covers the whole cell */
+.rvmp .r-ivt-head > *,
+.rvmp .r-ivt-row > * {
+	justify-self: stretch;
+	min-width: 0;
+	text-align: center;
+	transition:
+		background-color 0.12s ease,
+		transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1),
+		color 0.12s ease;
+}
+.rvmp .r-ivt-head > :first-child,
+.rvmp .r-ivt-rank {
+	text-align: left;
+}
+.rvmp .r-ivt-row {
+	border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	transition: background-color 0.12s ease;
+}
+.rvmp .r-ivt-row[data-match] {
+	background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+	box-shadow: inset 3px 0 0 var(--accent);
+}
+/* hover: gently light up the row and the column, pop the exact cell */
+.rvmp .r-ivt-row[data-hot] {
+	background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+.rvmp .r-ivt-row > [data-colhot],
+.rvmp .r-ivt-head > [data-colhot] {
+	background: color-mix(in srgb, var(--accent) 11%, transparent);
+}
+.rvmp .r-ivt-head > [data-colhot] {
+	color: var(--text);
+}
+.rvmp .r-ivt-row[data-hot] > [data-colhot] {
+	background: color-mix(in srgb, var(--accent) 24%, transparent);
+	border-radius: 5px;
+	transform: scale(1.07);
+	position: relative;
+	z-index: 1;
+}
+/* don't scale the progress bar itself — just tint it */
+.rvmp .r-ivt-row[data-hot] > .r-ivt-bar[data-colhot] {
+	transform: none;
+	background: var(--surface-3);
+}
+.rvmp .r-ivt-rank {
+	color: var(--text-faint);
+	font-weight: 700;
+}
+.rvmp .r-ivt-iv {
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
+	gap: 2px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+}
+.rvmp .r-ivt-iv i,
+.rvmp .r-ivt-stats i {
+	font-style: normal;
+	color: var(--text-faint);
+}
+.rvmp .r-ivt-stats {
+	color: var(--text-dim);
+	font-weight: 600;
+	font-size: 10px;
+	letter-spacing: -0.01em;
+	white-space: nowrap;
+}
+.rvmp .r-ivt-pct {
+	color: var(--iv-fill, var(--accent));
+	font-weight: 800;
+}
+/* proximity bar — small, fixed-width column so nothing after it shifts */
+.rvmp .r-ivt-bar {
+	width: 100%;
+	align-self: center;
+	height: 6px;
+	border-radius: 3px;
+	background: var(--surface-3);
+	overflow: hidden;
+}
+.rvmp .r-ivt-bar-fill {
+	display: block;
+	height: 100%;
+	border-radius: 3px;
+	background: linear-gradient(90deg, #3d7ffb, #5cc6ff);
+}
+.rvmp .r-ivt-row[data-match] .r-ivt-bar-fill {
+	background: linear-gradient(90deg, #6aa8ff, #8fe0ff);
+}
+.rvmp .r-ivt-cp {
+	font-weight: 700;
+}
+.rvmp .r-ivt-lvl {
+	color: var(--text-dim);
+}
+
+/* ---- Search strings tab -------------------------------------------------------- */
+.rvmp .r-ss-controls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 14px;
+	margin-bottom: 10px;
+}
+.rvmp .r-ss-cut {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text-dim);
+}
+.rvmp .r-ss-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--text-dim);
+}
+.rvmp .r-ss-toggle em {
+	font-style: normal;
+	font-weight: 800;
+	color: var(--text);
+}
+.rvmp .r-ss-box {
+	width: 18px;
+	height: 18px;
+	flex: none;
+	border-radius: 5px;
+	border: 1.5px solid var(--border-strong);
+	background: var(--surface);
+	transition: all 0.14s ease;
+}
+.rvmp .r-ss-toggle[data-on] .r-ss-box {
+	background: var(--accent);
+	border-color: var(--accent);
+	box-shadow: inset 0 0 0 3px var(--surface);
+}
+.rvmp .r-ss-block {
+	margin-bottom: 12px;
+	padding: 12px;
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border);
+}
+.rvmp .r-ss-sentence {
+	margin: 0 0 10px;
+	font-size: 13px;
+	line-height: 1.45;
+	color: var(--text);
+}
+.rvmp .r-ss-actions {
+	display: flex;
+	align-items: stretch;
+	gap: 8px;
+	min-width: 0;
+}
+.rvmp .r-ss-copybtn {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 8px 12px;
+	border-radius: var(--r-sm);
+	font-size: 12px;
+	font-weight: 800;
+	color: var(--accent-ink, #06101d);
+	background: var(--accent);
+	border: 0;
+	cursor: pointer;
+}
+.rvmp .r-ss-copybtn:active {
+	transform: translateY(1px);
+}
+.rvmp .r-ss-reveal {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	cursor: pointer;
+	text-align: left;
+}
+.rvmp .r-ss-reveal:hover {
+	border-color: var(--border-strong);
+}
+.rvmp .r-ss-preview {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+	font-size: 11px;
+	color: var(--text-faint);
+}
+.rvmp .r-ss-chev {
+	flex: none;
+	font-size: 14px;
+	line-height: 1;
+	color: var(--text-faint);
+	transition: transform 0.16s ease;
+}
+.rvmp .r-ss-reveal[data-on] .r-ss-chev {
+	transform: rotate(180deg);
+}
+.rvmp .r-ss-raw {
+	display: block;
+	width: 100%;
+	margin: 8px 0 0;
+	padding: 10px 12px;
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+	font-size: 11px;
+	line-height: 1.5;
+	color: var(--text);
+	text-align: left;
+	white-space: pre-wrap;
+	word-break: break-all;
+	cursor: pointer;
+	/* horizontal-only if it ever needs it; never trap the vertical wheel */
+	overflow-x: auto;
+	overflow-y: clip;
+	overscroll-behavior-x: contain !important;
+	overscroll-behavior-y: auto !important;
+}
+
+/* ---- mass delete (/new/trash) ------------------------------------------------ */
+.rvmp .r-md-help {
+	margin-bottom: var(--s4);
+}
+.rvmp .r-md-help p {
+	margin: 0;
+	font-size: 12.5px;
+	line-height: 1.55;
+	color: var(--text-dim);
+}
+.rvmp .r-md-help-clamp {
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.rvmp .r-md-more {
+	margin-top: 6px;
+	padding: 0;
+	border: 0;
+	background: none;
+	font: inherit;
+	font-size: 12px;
+	font-weight: 800;
+	color: var(--accent);
+	text-decoration: underline;
+	cursor: pointer;
+}
+.rvmp .r-md-knobs {
+	display: grid;
+	gap: 4px;
+}
+.rvmp .r-md-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 8px 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+.rvmp .r-md-row:last-child {
+	border-bottom: 0;
+}
+.rvmp .r-md-k {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text);
+}
+.rvmp .r-md-k img {
+	flex: none;
+	object-fit: contain;
+}
+.rvmp .r-md-select {
+	flex: none;
+	min-width: 74px;
+	padding: 7px 10px;
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	color: var(--text);
+	font: inherit;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-md-compute {
+	width: 100%;
+	margin-top: var(--s4);
+	padding: 13px 18px;
+	border-radius: var(--r-md);
+	border: 0;
+	font-family: Fredoka, sans-serif;
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--accent-ink, #06101d);
+	background: var(--accent);
+	cursor: pointer;
+}
+.rvmp .r-md-compute:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+.rvmp .r-md-out {
+	width: 100%;
+	min-height: 128px;
+	margin-top: var(--s3);
+	padding: 12px;
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--text);
+	font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+	font-size: 11px;
+	line-height: 1.5;
+	resize: vertical;
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+.rvmp .r-md-out::placeholder {
+	color: var(--text-faint);
+	font-family: inherit;
+}
+.rvmp .r-md-copy {
+	width: 100%;
+	margin-top: var(--s2);
+	padding: 10px 14px;
+	border-radius: var(--r-md);
+	border: 1px solid var(--border);
+	background: color-mix(in srgb, var(--accent) 12%, var(--surface-2));
+	color: var(--accent);
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+/* ---- type chart (/new/types) --------------------------------------------- */
+.rvmp .r-tc-scroll {
+	/* horizontal-only scroller. `overflow-y: clip` keeps it from being a vertical
+	   scroll container; the `overscroll-behavior-y: auto !important` beats the
+	   legacy global `* { overscroll-behavior: none !important }` so a vertical
+	   wheel over the chart still chains to the page. clip-margin lets the hovered
+	   cell pop without being sheared. */
+	overflow-x: auto;
+	overflow-y: clip;
+	overflow-clip-margin: 14px;
+	overscroll-behavior-x: contain !important;
+	overscroll-behavior-y: auto !important;
+	display: flex;
+	justify-content: safe center;
+	margin: 0 -2px var(--s3);
+	padding-bottom: var(--s2);
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: thin;
+	scrollbar-color: var(--surface-3) transparent;
+}
+@media (min-width: 900px) {
+	/* wide screens: the whole grid fits, so drop the scroller entirely — no
+	   scroll container at all means nothing can ever trap the wheel */
+	.rvmp .r-tc-scroll {
+		overflow: visible;
+	}
+}
+.rvmp .r-tc-scroll::-webkit-scrollbar {
+	height: 6px;
+}
+.rvmp .r-tc-scroll::-webkit-scrollbar-thumb {
+	background: var(--surface-3);
+	border-radius: 3px;
+}
+.rvmp .r-tc-grid {
+	display: grid;
+	gap: 2px;
+	width: max-content;
+	grid-template-columns: 38px repeat(18, 28px);
+	grid-auto-rows: 28px;
+}
+@media (min-width: 760px) {
+	.rvmp .r-tc-grid {
+		grid-template-columns: 46px repeat(18, 36px);
+		grid-auto-rows: 36px;
+	}
+}
+.rvmp .r-tc-corner {
+	background: var(--surface);
+}
+.rvmp .r-tc-colh,
+.rvmp .r-tc-rowh {
+	display: grid;
+	place-items: center;
+	background: var(--surface-2);
+	border-radius: 5px;
+	transition:
+		filter 0.12s ease,
+		box-shadow 0.12s ease;
+}
+.rvmp .r-tc-colh[data-hot],
+.rvmp .r-tc-rowh[data-hot] {
+	filter: brightness(1.35);
+	box-shadow: inset 0 0 0 1.6px var(--tc, var(--accent));
+}
+.rvmp .r-tc-ic {
+	object-fit: contain;
+	display: block;
+}
+.rvmp .r-tc-cell {
+	display: grid;
+	place-items: center;
+	border-radius: 5px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 10.5px;
+	color: var(--text-dim);
+	background: var(--surface-2);
+	transition:
+		filter 0.12s ease,
+		transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1),
+		box-shadow 0.12s ease;
+}
+.rvmp .r-tc-cell[data-t='se'] {
+	color: #08130a;
+	background: var(--t-grass);
+}
+.rvmp .r-tc-cell[data-t='nve'] {
+	color: #180a0a;
+	background: color-mix(in srgb, var(--t-fire) 78%, var(--surface));
+}
+.rvmp .r-tc-cell[data-t='imm'] {
+	color: var(--text-faint);
+	background: var(--surface-3);
+}
+.rvmp .r-tc-cell[data-axis] {
+	filter: brightness(1.16);
+}
+.rvmp .r-tc-cell[data-hot] {
+	position: relative;
+	z-index: 3;
+	filter: brightness(1.28);
+	transform: scale(1.16);
+	box-shadow: 0 4px 16px rgb(0 0 0 / 0.5);
+}
+.rvmp .r-tc-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--s3);
+	margin-bottom: var(--s5);
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--text-dim);
+}
+.rvmp .r-tc-legend span {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.rvmp .r-tc-legend span::before {
+	content: '';
+	width: 14px;
+	height: 14px;
+	border-radius: 4px;
+}
+.rvmp .r-tc-legend span[data-t='se']::before {
+	background: var(--t-grass);
+}
+.rvmp .r-tc-legend span[data-t='nve']::before {
+	background: color-mix(in srgb, var(--t-fire) 78%, var(--surface));
+}
+.rvmp .r-tc-legend span[data-t='imm']::before {
+	background: var(--surface-3);
+}
+.rvmp .r-tc-calc {
+	display: grid;
+	gap: var(--s4);
+}
+.rvmp .r-tc-pick-l {
+	display: block;
+	margin-bottom: var(--s2);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+/* picker chips reuse the solid .r-eff-t type pill; dimmed until selected */
+.rvmp .r-tc-pchip {
+	border: 0;
+	font-family: inherit;
+	cursor: pointer;
+	opacity: 0.44;
+	filter: grayscale(0.5);
+	transition:
+		opacity 0.14s ease,
+		filter 0.14s ease,
+		transform 0.14s ease;
+}
+.rvmp .r-tc-pchip:hover {
+	opacity: 0.7;
+	filter: grayscale(0.2);
+}
+.rvmp .r-tc-pchip[data-active] {
+	opacity: 1;
+	filter: none;
+}
+.rvmp .r-tc-pchip[data-active]:hover {
+	transform: translateY(-1px);
+}
+.rvmp .r-tc-results {
+	display: grid;
+	gap: var(--s4);
+	grid-template-columns: 1fr;
+}
+@media (min-width: 560px) {
+	.rvmp .r-tc-results {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+.rvmp .r-tc-res h4 {
+	margin: 0 0 var(--s2);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+/* stacked matchup (×2.56 up, ×0.39 / ×0.24 down): the .r-eff-t pill gets a
+   ring + a small scale bump so it reads as "doubled". shared by the Pokémon
+   info page and the type-chart calculator. */
+.rvmp .r-eff-t[data-double] {
+	transform: scale(1.02);
+	box-shadow:
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px var(--tc, var(--accent)),
+		0 3px 10px color-mix(in srgb, var(--tc, var(--accent)) 40%, transparent);
+}
+.rvmp .r-eff-t[data-double] .r-eff-mult {
+	font-weight: 900;
+}
+
+/* ---- filter + sort row ----------------------------------------------------- */
+.rvmp .r-controls {
+	/* the popover anchor for BOTH children: each child only spans its own
+	   button width, so anchoring the panels here keeps them full-width /
+	   right-aligned instead of squished to the button. */
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 8px;
+	margin-top: var(--s2);
+}
+.rvmp .r-controls > .r-filter,
+.rvmp .r-controls > .r-sort {
+	position: static;
+	margin-top: 0;
+}
+.rvmp .r-controls .r-filter-panel {
+	top: calc(100% + 6px);
+	left: 0;
+	right: 0;
+}
+.rvmp .r-sort {
+	position: relative;
+}
+.rvmp .r-sort-btn {
+	white-space: nowrap;
+}
+.rvmp .r-sort-dir {
+	font-size: 13px;
+	font-weight: 800;
+	color: var(--accent);
+}
+.rvmp .r-sort-panel {
+	left: auto;
+	right: 0;
+	min-width: 240px;
+	max-width: 360px;
+}
+@media (max-width: 560px) {
+	.rvmp .r-sort-panel {
+		left: 0;
+		right: 0;
+		max-width: none;
+	}
+}
+.rvmp .r-sort-dirseg {
+	display: inline-flex;
+	gap: 4px;
+}
+.rvmp .r-sort-dirseg button {
+	padding: 5px 10px;
+	border-radius: var(--r-pill);
+	font-size: 11px;
+	font-weight: 800;
+	color: var(--text-dim);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+}
+.rvmp .r-sort-dirseg button[data-active] {
+	color: #0c1017;
+	background: var(--accent);
+	border-color: transparent;
+}
+.rvmp .r-sort-opts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+/* ---- app-bar language / settings popover --------------------------------- */
+.rvmp .r-setmenu {
+	position: relative;
+	flex: none;
+}
+.rvmp .r-setmenu-flag {
+	font-family: Fredoka, sans-serif;
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	color: var(--text);
+}
+.rvmp .r-setmenu-fl {
+	display: inline-grid;
+	place-items: center;
+	min-width: 22px;
+	height: 16px;
+	margin-right: 8px;
+	padding: 0 4px;
+	border-radius: 4px;
+	font-size: 9.5px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	color: var(--text-dim);
+	background: var(--surface-3);
+	border: 1px solid var(--border);
+}
+.rvmp .r-set-opts button[data-active] .r-setmenu-fl {
+	color: #0c1017;
+	background: rgb(255 255 255 / 0.6);
+	border-color: transparent;
+}
+.rvmp .r-setmenu-pop {
+	position: absolute;
+	z-index: 50;
+	top: calc(100% + 8px);
+	right: 0;
+	width: min(280px, calc(100vw - 24px));
+	padding: var(--s4);
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+	display: grid;
+	gap: var(--s3);
+}
+.rvmp .r-setmenu-grp {
+	display: grid;
+	gap: 8px;
+}
+.rvmp .r-setmenu-h {
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 11px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .r-setmenu-more {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 9px 12px;
+	border-radius: var(--r-sm);
+	font-size: 12.5px;
+	font-weight: 800;
+	color: var(--text);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	cursor: pointer;
+}
+.rvmp .r-setmenu-chev {
+	transition: transform 0.16s ease;
+	color: var(--text-faint);
+}
+.rvmp .r-setmenu-more[data-on] .r-setmenu-chev {
+	transform: rotate(180deg);
+}
+.rvmp .r-setmenu-foot {
+	margin: 2px 0 0;
+	font-size: 11px;
+	color: var(--text-faint);
+}
+
+/* ---- bottom nav: 6 items, tighten on phones ---------------------------------- */
+@media (max-width: 560px) {
+	.rvmp .r-bottomnav a {
+		padding: 8px 2px;
+		font-size: 10px;
+	}
+	.rvmp .r-bn-icon {
+		font-size: 16px;
+	}
+}
+
+/* ---- move detail: stats + usage ------------------------------------------- */
+.rvmp .r-mstat {
+	display: grid;
+	gap: var(--s4);
+	grid-template-columns: 1fr;
+}
+.rvmp .r-mstat-col + .r-mstat-col {
+	border-top: 1px solid var(--border);
+	padding-top: var(--s4);
+}
+@media (min-width: 520px) {
+	.rvmp .r-mstat {
+		grid-template-columns: 1fr 1fr;
+	}
+	.rvmp .r-mstat-col + .r-mstat-col {
+		border-top: 0;
+		border-left: 1px solid var(--border);
+		padding-top: 0;
+		padding-left: var(--s4);
+	}
+}
+.rvmp .r-mstat-arena {
+	display: block;
+	margin-bottom: 10px;
+	font-family: Fredoka, sans-serif;
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .r-mstat-tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+	gap: 6px;
+}
+.rvmp .r-mstat-tile {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 9px 6px;
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	text-align: center;
+}
+.rvmp .r-mstat-tile b {
+	font-family: Fredoka, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-mstat-tile i {
+	font-style: normal;
+	font-size: 9px;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .r-mstat-buff {
+	margin: var(--s4) 0 0;
+	padding: 10px 12px;
+	border-radius: var(--r-sm);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--text-dim);
+	background: color-mix(in srgb, var(--tc, var(--accent)) 10%, var(--surface-2));
+	border-left: 3px solid var(--tc, var(--accent));
+}
+.rvmp .r-usage {
+	display: grid;
+	gap: var(--s3);
+}
+.rvmp .r-usage-lead {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+}
+.rvmp .r-usage-lead b {
+	font-family: Fredoka, sans-serif;
+	font-size: 30px;
+	font-weight: 700;
+	line-height: 1;
+	color: var(--accent);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-usage-lead i {
+	font-style: normal;
+	font-size: 12.5px;
+	color: var(--text-dim);
+}
+.rvmp .r-usage-tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+	gap: 6px;
+}
+.rvmp .r-usage-tile {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 3px;
+	padding: 10px 6px;
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+}
+.rvmp .r-usage-tile b {
+	font-family: Fredoka, sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-usage-tile[data-hi] b {
+	color: var(--accent);
+}
+.rvmp .r-usage-tile i {
+	font-style: normal;
+	font-size: 9px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+
+/* ---- Counters tab --------------------------------------------------------- */
+.rvmp .r-ctr-list {
+	display: grid;
+	gap: 6px;
+	margin-bottom: var(--s5);
+}
+/* row card + sprite lifted from the leaderboard's inactive .r-board-row / .r-board-sprite */
+.rvmp .r-ctr-row {
+	position: relative;
+	display: grid;
+	grid-template-columns: 18px 48px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 14px;
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	overflow: clip;
+	transition:
+		background 0.16s ease,
+		border-color 0.16s ease;
+}
+.rvmp a.r-ctr-row {
+	text-decoration: none;
+	color: inherit;
+}
+.rvmp a.r-ctr-row:hover {
+	border-color: var(--border-strong);
+}
+.rvmp .r-ctr-rank {
+	font-family: Fredoka, sans-serif;
+	font-weight: 800;
+	font-size: 12px;
+	color: var(--text-faint);
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-ctr-art {
+	position: relative;
+	display: grid;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	flex: none;
+	border-radius: 50%;
+	background: radial-gradient(circle at 50% 30%, var(--surface-3), var(--surface-2) 74%);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.05),
+		inset 0 0 0 1px var(--border),
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
+}
+.rvmp .r-ctr-art img {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.45));
+}
+.rvmp .r-ctr-name {
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 13.5px;
+	color: var(--text);
+	text-decoration: none;
+}
+.rvmp a.r-ctr-name:hover {
+	color: var(--tc, var(--accent));
+}
+.rvmp .r-ctr-mid {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+.rvmp .r-ctr-moves {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 11px;
+	color: var(--text-faint);
+	white-space: nowrap;
+	/* `clip` not `hidden` — `hidden` would make this a scroll container and trap
+	   the wheel (legacy sets `overscroll-behavior: none` globally) */
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+.rvmp .r-ctr-moves a {
+	color: var(--text-dim);
+	text-decoration: none;
+}
+.rvmp .r-ctr-moves a:hover {
+	color: var(--tc, var(--accent));
+	text-decoration: underline;
+}
+.rvmp .r-ctr-moves i {
+	font-style: normal;
+	opacity: 0.6;
+}
+.rvmp .r-ctr-score {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 4px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 800;
+	font-size: 15px;
+	font-variant-numeric: tabular-nums;
+	color: var(--text);
+}
+.rvmp .r-ctr-score i {
+	font-style: normal;
+	font-size: 9px;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	color: var(--text-faint);
+}
+.rvmp .r-ctr-score[data-tone='win'] {
+	color: var(--t-grass);
+}
+.rvmp .r-ctr-score[data-tone='lose'] {
+	color: color-mix(in srgb, var(--t-fire) 82%, var(--text));
+}
+.rvmp .r-ctr-toggles {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-bottom: 12px;
+}
+.rvmp .r-ctr-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--text-dim);
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+.rvmp .r-ctr-toggle[data-on] .r-ss-box {
+	background: var(--accent);
+	border-color: var(--accent);
+	box-shadow: inset 0 0 0 3px var(--surface);
 }

@@ -4,6 +4,10 @@ export const R = {
 	pokemon: (speciesId: string, tab?: string): string =>
 		tab && tab !== 'ranks' ? `/new/pokemon/${speciesId}/${tab}` : `/new/pokemon/${speciesId}`,
 	calendar: (tab = 'events'): string => `/new/calendar/${tab}`,
+	moves: '/new/moves',
+	move: (moveId: string): string => `/new/move/${encodeURIComponent(moveId)}`,
+	types: '/new/types',
+	trash: '/new/trash',
 	tools: '/new/tools',
 	settings: '/new/settings',
 };

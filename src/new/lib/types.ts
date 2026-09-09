@@ -17,6 +17,28 @@ export const accentStyle = (primaryType: PokemonTypes | undefined): React.CSSPro
 	return vars as React.CSSProperties;
 };
 
+/** All 18 type keys (lowercase), alphabetical — the shared filter list. */
+export const TYPE_KEYS: ReadonlyArray<string> = [
+	'bug',
+	'dark',
+	'dragon',
+	'electric',
+	'fairy',
+	'fighting',
+	'fire',
+	'flying',
+	'ghost',
+	'grass',
+	'ground',
+	'ice',
+	'normal',
+	'poison',
+	'psychic',
+	'rock',
+	'steel',
+	'water',
+];
+
 export const TYPE_LABEL: Record<string, string> = {
 	normal: 'Normal',
 	fire: 'Fire',

@@ -3,14 +3,22 @@ import { useMemo } from 'react';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { usePvp } from '../../queries/pvp';
 import { useRaidRanker } from '../../queries/raid-ranker';
+import { ConfigKeys, readPersistentValue } from '../../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf } from '../../utils/pokemon-helper';
 
 export type LeagueKey = 'great' | 'ultra' | 'master' | 'raid';
 export const LEAGUE_KEYS: ReadonlyArray<LeagueKey> = ['great', 'ultra', 'master', 'raid'];
 
-/** A Pokémon "counts" for a PvP league at top-100, or for raids at top-10 in any type. */
-const PVP_CUTOFF = 100;
-const RAID_CUTOFF = 10;
+/**
+ * Relevance cut-offs are whatever the user set on the Mass-delete (/trash) page —
+ * "keep top N …" — so a mon is relevant exactly when it wouldn't be trashed.
+ * Defaults match that page's defaults.
+ */
+const cfgNum = (key: ConfigKeys, fallback: number): number => {
+	const raw = readPersistentValue(key);
+	const n = raw == null ? NaN : Number(raw);
+	return Number.isFinite(n) && n > 0 ? n : fallback;
+};
 
 export interface RelevanceSets {
 	great: Set<string>;
@@ -33,25 +41,32 @@ export const useRelevanceSets = (): RelevanceSets => {
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 
+	// Read fresh every render so edits on /trash take effect on the next navigation.
+	const greatCut = cfgNum(ConfigKeys.TrashGreat, 50);
+	const ultraCut = cfgNum(ConfigKeys.TrashUltra, 50);
+	const masterCut = cfgNum(ConfigKeys.TrashMaster, 110);
+	const raidCut = cfgNum(ConfigKeys.TrashRaid, 5);
+
 	return useMemo(() => {
 		if (!pvpFetchCompleted || !raidDPSFetchCompleted) return EMPTY;
-		const pvpSet = (list: Record<string, { speciesId: string; rank: number }> | undefined) => {
+		const pvpSet = (list: Record<string, { speciesId: string; rank: number }> | undefined, cutoff: number) => {
 			const s = new Set<string>();
-			for (const r of Object.values(list ?? {})) if (r.rank <= PVP_CUTOFF) s.add(r.speciesId);
+			for (const r of Object.values(list ?? {})) if (r.rank <= cutoff) s.add(r.speciesId);
 			return s;
 		};
 		const raid = new Set<string>();
-		for (const list of Object.values(raidDPS)) {
-			for (const e of Object.values(list)) if (e.rank <= RAID_CUTOFF) raid.add(e.speciesId);
+		for (const [key, list] of Object.entries(raidDPS)) {
+			if (key === '') continue; // the '' key is the type-agnostic overall list; we want "top N of any type"
+			for (const e of Object.values(list)) if (e.rank <= raidCut) raid.add(e.speciesId);
 		}
 		return {
-			great: pvpSet(rankLists[0]),
-			ultra: pvpSet(rankLists[1]),
-			master: pvpSet(rankLists[2]),
+			great: pvpSet(rankLists[0], greatCut),
+			ultra: pvpSet(rankLists[1], ultraCut),
+			master: pvpSet(rankLists[2], masterCut),
 			raid,
 			ready: true,
 		};
-	}, [rankLists, raidDPS, pvpFetchCompleted, raidDPSFetchCompleted]);
+	}, [rankLists, raidDPS, pvpFetchCompleted, raidDPSFetchCompleted, greatCut, ultraCut, masterCut, raidCut]);
 };
 
 /**
