@@ -1,28 +1,34 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 
 import { useLanguage } from '../../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../../DTOs/IGamemasterPokemon';
 import { useMoves } from '../../../queries/moves';
-import { usePokemon } from '../../../queries/pokemon';
 import { usePvp } from '../../../queries/pvp';
-import { computeDPSEntry } from '../../../utils/pokemon-helper';
+import { type RaidRecommendation, RaidTypeCoverage } from '../../components/RaidTypeCoverage';
 import { cleanName } from '../../lib/format';
+import { type Arena, buffText, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
 import { TYPE_LABEL } from '../../lib/types';
 
-const round = (n: number, d = 1) => Math.round(n * 10 ** d) / 10 ** d;
-
 const LEAGUE_LABEL = ['Great League', 'Ultra League', 'Master League', 'Raids'] as const;
+const EPS = 1e-9;
 
 const MoveRow = ({
+	pokemon,
 	moveId,
 	kind,
+	arena,
 	tags,
 	best,
+	recommended,
 }: {
+	pokemon: IGamemasterPokemon;
 	moveId: string;
 	kind: 'fast' | 'charged';
+	/** Which stat set to show — PvP for a battle league, PvE for raids. */
+	arena: Arena;
 	tags: Array<string>;
 	best?: boolean;
+	recommended?: boolean;
 }) => {
 	const { currentGameLanguage } = useLanguage();
 	const { moves } = useMoves();
@@ -30,36 +36,35 @@ const MoveRow = ({
 	if (!m) return null;
 	const type = m.type.toLowerCase();
 
-	const pveStats =
+	const pow = arena === 'pve' ? m.pvePower : m.pvpPower;
+	const nrg = arena === 'pve' ? m.pveEnergy : m.pvpEnergy;
+	const cd = arena === 'pve' ? m.pveCooldown : m.pvpCooldown;
+
+	const base: Array<[string, string | number]> = [
+		['DMG', pow],
+		['NRG', kind === 'fast' ? `+${nrg}` : nrg],
+		...(arena === 'pve'
+			? ([['CD', `${cd}s`]] as Array<[string, string | number]>)
+			: kind === 'fast'
+				? ([['TURNS', fastMoveTurns(m)]] as Array<[string, string | number]>)
+				: []),
+	];
+	const derived: Array<[string, string | number]> =
 		kind === 'fast'
 			? [
-					['DMG', m.pvePower],
-					['NRG', `+${m.pveEnergy}`],
-					['CD', `${m.pveCooldown}s`],
+					['DPS', moveDPS(m, arena, pokemon).toFixed(1)],
+					['EPS', moveEPS(m, arena).toFixed(1)],
 				]
-			: [
-					['DMG', m.pvePower],
-					['NRG', m.pveEnergy],
-					['CD', `${m.pveCooldown}s`],
-				];
-	const pvpStats =
-		kind === 'fast'
-			? [
-					['DMG', m.pvpPower],
-					['NRG', `+${m.pvpEnergy}`],
-					['TURNS', Math.max(1, Math.round(m.pvpCooldown / 0.5))],
-				]
-			: [
-					['DMG', m.pvpPower],
-					['NRG', m.pvpEnergy],
-					m.buffs ? ['FX', `${Math.round((m.buffs.buffActivationChance ?? 0) * 100)}%`] : null,
-				].filter(Boolean);
+			: [['DPE', moveDPE(m, arena, pokemon).toFixed(2)]];
+	// stat-stage buffs are a PvP-only mechanic
+	const fx = arena === 'pvp' && kind === 'charged' ? buffText(m.buffs) : null;
 
 	return (
 		<div className='r-move' data-best={best ? '' : undefined} style={{ ['--tc' as string]: `var(--t-${type})` }}>
 			<div className='r-move-head'>
 				<span className='r-move-type'>{TYPE_LABEL[type] ?? m.type}</span>
 				<b>{m.moveName[currentGameLanguage] ?? cleanName(moveId)}</b>
+				{recommended && <i className='r-move-tag r-move-tag--rec'>Recommended</i>}
 				{tags.map((t) => (
 					<i key={t} className='r-move-tag'>
 						{t}
@@ -68,37 +73,33 @@ const MoveRow = ({
 			</div>
 			<div className='r-move-stats'>
 				<div>
-					<u>PvE</u>
-					{pveStats.map(([k, v]) => (
+					<u>{arena === 'pve' ? 'PvE' : 'PvP'}</u>
+					{base.map(([k, v]) => (
 						<span key={k}>
 							{k} <b>{v}</b>
 						</span>
 					))}
-				</div>
-				<div>
-					<u>PvP</u>
-					{(pvpStats as Array<[string, string | number]>).map(([k, v]) => (
+					<span className='r-move-sep' aria-hidden='true' />
+					{derived.map(([k, v]) => (
 						<span key={k}>
 							{k} <b>{v}</b>
 						</span>
 					))}
 				</div>
 			</div>
+			{fx && <p className='r-move-buff'>{fx}</p>}
 		</div>
 	);
 };
 
 const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
-	const { gamemasterPokemon } = usePokemon();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { rankLists, pvpFetchCompleted } = usePvp();
+	const { currentGameLanguage } = useLanguage();
 
 	const isRaid = league === 3;
-
-	const raidBest = useMemo(() => {
-		if (!isRaid || !movesFetchCompleted || Object.keys(moves).length === 0) return null;
-		return computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, 100);
-	}, [isRaid, pokemon, gamemasterPokemon, moves, movesFetchCompleted]);
+	const arena: Arena = isRaid ? 'pve' : 'pvp';
+	const [raidRec, setRaidRec] = useState<RaidRecommendation | null>(null);
 
 	if (!movesFetchCompleted) {
 		return (
@@ -113,42 +114,99 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 	const tagsFor = (id: string) => [elite.has(id) ? 'Elite' : '', legacy.has(id) ? 'Legacy' : ''].filter(Boolean);
 	const charged = Array.from(new Set([...pokemon.chargedMoves, ...pokemon.extraChargedMoves]));
 
-	// The single moveset that matters for the league the user is looking at.
-	// PvP: [fast, charged1, charged2] from the ranking data. Raids: [fast, charged].
+	// Moveset recommended for the league the user is looking at.
+	// PvP: [fast, charged1, charged2] from the ranking data. Raids: the selected
+	// type's active combo, reported up by <RaidTypeCoverage>.
 	const pvpMoveset = pvpFetchCompleted ? (rankLists[league]?.[pokemon.speciesId]?.moveset ?? []) : [];
-	const bestFast = isRaid ? (raidBest?.fastMove ?? '') : (pvpMoveset[0] ?? '');
-	const bestCharged = isRaid ? (raidBest ? [raidBest.chargedMove] : []) : pvpMoveset.slice(1);
-	const hasBest = !!bestFast && bestCharged.length > 0;
-	const bestSet = new Set([bestFast, ...bestCharged]);
+	const recFast = isRaid ? (raidRec?.fast ?? '') : (pvpMoveset[0] ?? '');
+	const recCharged = isRaid ? (raidRec ? [raidRec.charged] : []) : pvpMoveset.slice(1);
+	const hasBest = !isRaid && !!recFast && recCharged.length > 0;
+	const recSet = new Set([recFast, ...recCharged].filter(Boolean));
+
+	const name = (id: string) => moves[id]?.moveName[currentGameLanguage] ?? id;
+	const byTypeThenName = (a: string, b: string) =>
+		(moves[a]?.type ?? '').localeCompare(moves[b]?.type ?? '') || name(a).localeCompare(name(b));
+
+	// Fast: recommended → EPS → DPS → type → name.
+	const fastCmp = (a: string, b: string) => {
+		const rec = (recSet.has(a) ? 0 : 1) - (recSet.has(b) ? 0 : 1);
+		if (rec) return rec;
+		const ma = moves[a];
+		const mb = moves[b];
+		if (!ma || !mb) return 0;
+		const eps = moveEPS(mb, arena) - moveEPS(ma, arena);
+		if (Math.abs(eps) > EPS) return eps;
+		const dps = moveDPS(mb, arena, pokemon) - moveDPS(ma, arena, pokemon);
+		if (Math.abs(dps) > EPS) return dps;
+		return byTypeThenName(a, b);
+	};
+
+	// Charged: recommended → (legacies sink to the bottom) → DPE → elites → type → name.
+	const chargedCmp = (a: string, b: string) => {
+		const rec = (recSet.has(a) ? 0 : 1) - (recSet.has(b) ? 0 : 1);
+		if (rec) return rec;
+		const leg = (legacy.has(a) ? 1 : 0) - (legacy.has(b) ? 1 : 0);
+		if (leg) return leg;
+		const ma = moves[a];
+		const mb = moves[b];
+		if (!ma || !mb) return 0;
+		const dpe = moveDPE(mb, arena, pokemon) - moveDPE(ma, arena, pokemon);
+		if (Math.abs(dpe) > EPS) return dpe;
+		const el = (elite.has(a) ? 0 : 1) - (elite.has(b) ? 0 : 1);
+		if (el) return el;
+		return byTypeThenName(a, b);
+	};
+
+	const fastSorted = [...pokemon.fastMoves].sort(fastCmp);
+	const chargedSorted = [...charged].sort(chargedCmp);
 
 	return (
 		<div className='r-movecontent'>
-			{hasBest && (
-				<>
-					<div className='r-section-h'>
-						Best {LEAGUE_LABEL[league] ?? 'league'} moveset
-						{isRaid && raidBest ? ` · ${round(raidBest.dps)} DPS` : ''}
-					</div>
-					<div className='r-movelist'>
-						<MoveRow moveId={bestFast} kind='fast' tags={tagsFor(bestFast)} best />
-						{bestCharged.map((id) => (
-							<MoveRow key={id} moveId={id} kind='charged' tags={tagsFor(id)} best />
-						))}
-					</div>
-				</>
+			{isRaid ? (
+				<RaidTypeCoverage pokemon={pokemon} showReadout={false} onRecommend={setRaidRec} />
+			) : (
+				hasBest && (
+					<>
+						<div className='r-section-h'>Best {LEAGUE_LABEL[league] ?? 'league'} moveset</div>
+						<div className='r-movelist'>
+							<MoveRow pokemon={pokemon} moveId={recFast} kind='fast' arena={arena} tags={tagsFor(recFast)} best />
+							{recCharged.map((id) => (
+								<MoveRow key={id} pokemon={pokemon} moveId={id} kind='charged' arena={arena} tags={tagsFor(id)} best />
+							))}
+						</div>
+					</>
+				)
 			)}
 
 			<div className='r-section-h'>Fast moves</div>
-			<div className='r-movelist'>
-				{pokemon.fastMoves.map((id) => (
-					<MoveRow key={id} moveId={id} kind='fast' tags={tagsFor(id)} best={bestSet.has(id)} />
+			<div className='r-movelist r-movelist--scroll'>
+				{fastSorted.map((id) => (
+					<MoveRow
+						key={id}
+						pokemon={pokemon}
+						moveId={id}
+						kind='fast'
+						arena={arena}
+						tags={tagsFor(id)}
+						best={recSet.has(id)}
+						recommended={recSet.has(id)}
+					/>
 				))}
 			</div>
 
 			<div className='r-section-h'>Charged moves</div>
-			<div className='r-movelist'>
-				{charged.map((id) => (
-					<MoveRow key={id} moveId={id} kind='charged' tags={tagsFor(id)} best={bestSet.has(id)} />
+			<div className='r-movelist r-movelist--scroll'>
+				{chargedSorted.map((id) => (
+					<MoveRow
+						key={id}
+						pokemon={pokemon}
+						moveId={id}
+						kind='charged'
+						arena={arena}
+						tags={tagsFor(id)}
+						best={recSet.has(id)}
+						recommended={recSet.has(id)}
+					/>
 				))}
 			</div>
 		</div>

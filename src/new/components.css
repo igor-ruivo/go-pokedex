@@ -487,9 +487,7 @@
 	min-height: 78px;
 	cursor: pointer;
 	border-radius: var(--r-md);
-	background:
-		linear-gradient(180deg, color-mix(in srgb, var(--lg) 5%, var(--surface)), var(--surface)),
-		var(--surface);
+	background: linear-gradient(180deg, color-mix(in srgb, var(--lg) 5%, var(--surface)), var(--surface)), var(--surface);
 	border: 1px solid var(--border);
 	overflow: clip;
 	text-align: left;
@@ -532,21 +530,25 @@
 	height: 48px;
 	flex: none;
 	border-radius: 50%;
-	background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--lg) 30%, var(--surface-2)), var(--surface-2) 74%);
+	background: radial-gradient(
+		circle at 50% 30%,
+		color-mix(in srgb, var(--lg) 30%, var(--surface-2)),
+		var(--surface-2) 74%
+	);
 	/* thick league-tinted contour, same idea as the shadow / type adorners */
 	box-shadow:
 		inset 0 1px 0 rgb(255 255 255 / 0.06),
 		inset 0 0 0 1px color-mix(in srgb, var(--lg) 32%, transparent),
-		0 0 0 2px var(--surface),
-		0 0 0 4px color-mix(in srgb, var(--lg) 55%, transparent);
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px color-mix(in srgb, var(--lg) 55%, transparent);
 	filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lg) 40%, transparent));
 }
 .rvmp .r-board-row[data-active='true'] .r-board-sprite {
 	box-shadow:
 		inset 0 1px 0 rgb(255 255 255 / 0.08),
 		inset 0 0 0 1px color-mix(in srgb, var(--lg) 60%, transparent),
-		0 0 0 2px var(--surface),
-		0 0 0 5px color-mix(in srgb, var(--lg) 75%, transparent),
+		0 0 0 1.5px var(--surface),
+		0 0 0 3.5px color-mix(in srgb, var(--lg) 75%, transparent),
 		0 0 16px color-mix(in srgb, var(--lg) 32%, transparent);
 	filter: drop-shadow(0 0 5px color-mix(in srgb, var(--lg) 55%, transparent));
 }
@@ -578,10 +580,10 @@
 	height: 20px;
 	border-radius: 50%;
 	background: var(--surface);
-	/* thick raid-orange contour + glow, mirroring the shadow adorner */
+	/* raid-orange contour + glow, mirroring the shadow adorner */
 	box-shadow:
-		0 0 0 2px var(--surface),
-		0 0 0 4px color-mix(in srgb, var(--lg) 75%, transparent);
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px color-mix(in srgb, var(--lg) 75%, transparent);
 	filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lg) 60%, transparent));
 	cursor: pointer;
 	transition: transform 0.12s ease;
@@ -677,6 +679,12 @@
 	color: var(--text);
 	font-variant-numeric: tabular-nums;
 }
+/* rank climbed / dropped since the last ranking update */
+.rvmp .r-board-rank .r-delta {
+	margin-left: 5px;
+	font-size: 11px;
+	vertical-align: 1px;
+}
 .rvmp .r-board-metric {
 	font-size: 10.5px;
 	font-weight: 700;
@@ -689,24 +697,24 @@
 /* ---- IV picker ------------------------------------------------------------- */
 .rvmp .r-iv {
 	display: grid;
-	gap: var(--s4);
+	gap: var(--s3);
 }
 .rvmp .r-iv-row {
 	display: grid;
-	gap: var(--s2);
+	gap: 5px;
 }
 .rvmp .r-iv-head {
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
 	font-weight: 800;
-	font-size: 13px;
+	font-size: 12px;
 	letter-spacing: 0.04em;
 	color: var(--text-dim);
 }
 .rvmp .r-iv-head b {
 	font-family: Fredoka, sans-serif;
-	font-size: 17px;
+	font-size: 15px;
 	color: var(--text);
 	font-variant-numeric: tabular-nums;
 }
@@ -716,13 +724,14 @@
 .rvmp .r-iv-track {
 	display: flex;
 	gap: 3px;
+	cursor: pointer;
 	/* capture horizontal drags for the slider, let vertical page-scroll pass through */
 	touch-action: pan-y;
 }
 .rvmp .r-iv-cell {
 	flex: 1;
-	height: 22px;
-	border-radius: 5px;
+	height: 15px;
+	border-radius: 4px;
 	background: var(--surface-3);
 	transition:
 		background 0.16s ease,
@@ -801,7 +810,10 @@
 	/* ~5 rows tall, then scroll within the card (Mew ranks in ~9 attacking types) */
 	max-height: 356px;
 	overflow-y: auto;
-	overscroll-behavior: contain;
+	/* at the top/bottom edge, hand the wheel/touch scroll back to the page.
+	   `!important` + a class selector is needed to beat the legacy global
+	   `* { overscroll-behavior: none !important }` in App.scss. */
+	overscroll-behavior-y: auto !important;
 	scrollbar-width: thin;
 	scrollbar-color: var(--surface-3) transparent;
 }
@@ -813,6 +825,12 @@
 	border-radius: 3px;
 }
 .rvmp .r-raidtype {
+	display: block;
+	width: 100%;
+	text-align: left;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
 	border-radius: var(--r-sm);
 	background: var(--surface-2);
 	border: 1px solid transparent;
@@ -1391,13 +1409,31 @@
 	object-fit: contain;
 	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
 }
+/* shadow adorner — bottom-right corner (the rank-change chevron takes top-right) */
 .rvmp .r-pc > .r-shadow-mark {
 	position: absolute;
-	top: 8%;
-	right: 8%;
-	width: 28%;
-	height: 28%;
+	bottom: 4%;
+	right: 4%;
+	width: 22%;
+	height: 22%;
 	z-index: 2;
+}
+/* rank climbed / dropped since the last PvP ranking update — top-right corner */
+.rvmp .r-pc-delta {
+	position: absolute;
+	top: 5%;
+	right: 6%;
+	font-weight: 800;
+	font-size: clamp(6.5px, 9cqi, 9px);
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+	z-index: 2;
+}
+.rvmp .r-pc-delta[data-dir='up'] {
+	color: #4ade80;
+}
+.rvmp .r-pc-delta[data-dir='down'] {
+	color: #f87171;
 }
 .rvmp .r-pc-name {
 	max-width: 100%;
@@ -1490,6 +1526,22 @@
 	display: grid;
 	gap: var(--s2);
 }
+/* long fast / charged lists scroll internally (~6 cards), same as the type-coverage panel */
+.rvmp .r-movelist--scroll {
+	max-height: 560px;
+	overflow-y: auto;
+	padding-right: 4px;
+	overscroll-behavior-y: auto !important;
+	scrollbar-width: thin;
+	scrollbar-color: var(--surface-3) transparent;
+}
+.rvmp .r-movelist--scroll::-webkit-scrollbar {
+	width: 6px;
+}
+.rvmp .r-movelist--scroll::-webkit-scrollbar-thumb {
+	background: var(--surface-3);
+	border-radius: 3px;
+}
 .rvmp .r-move {
 	background: var(--surface);
 	border: 1px solid var(--border);
@@ -1525,6 +1577,18 @@
 	color: var(--text-dim);
 	background: var(--surface-3);
 }
+/* the move that's recommended for the current league / raid+type */
+.rvmp .r-move-tag--rec {
+	color: var(--tc, var(--accent));
+	background: color-mix(in srgb, var(--tc, var(--accent)) 20%, var(--surface-3));
+}
+/* Legacy / Elite tag squeezed into the type-coverage move row */
+.rvmp .r-raidtype-tag {
+	flex: none;
+	font-size: 8.5px;
+	padding: 1px 5px;
+	letter-spacing: 0.02em;
+}
 .rvmp .r-move-stats {
 	display: flex;
 	gap: var(--s4);
@@ -1534,7 +1598,8 @@
 .rvmp .r-move-stats > div {
 	display: flex;
 	align-items: baseline;
-	gap: 10px;
+	flex-wrap: wrap;
+	gap: 6px 10px;
 }
 .rvmp .r-move-stats u {
 	text-decoration: none;
@@ -1552,6 +1617,23 @@
 	color: var(--text);
 	font-variant-numeric: tabular-nums;
 	font-weight: 800;
+}
+/* divider between the raw stats and the derived ones (DPS / EPS / DPE) */
+.rvmp .r-move-sep {
+	align-self: center;
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: var(--text-faint);
+	opacity: 0.7;
+}
+/* PvP stat-stage effect line on charged moves */
+.rvmp .r-move-buff {
+	margin-top: var(--s2);
+	font-size: 10.5px;
+	font-weight: 700;
+	line-height: 1.35;
+	color: color-mix(in srgb, var(--tc, var(--accent)) 55%, var(--text-dim));
 }
 
 /* ===========================================================================
@@ -1601,8 +1683,7 @@
 	padding: 2px;
 	border-radius: 50%;
 	background:
-		radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--t-ghost) 45%, transparent), transparent 72%),
-		#160b2e;
+		radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--t-ghost) 45%, transparent), transparent 72%), #160b2e;
 	box-shadow:
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--t-ghost) 70%, transparent);
@@ -1964,4 +2045,27 @@
 }
 .rvmp .r-mini[data-catchable] em {
 	color: var(--iv-fill);
+}
+
+/* ---- GO / shiny-GO sprite contour ---------------------------------------------
+   The Pokémon GO icon PNGs are flat cut-outs with no built-in outline, so they
+   read poorly on dark surfaces. Trace a crisp dark edge with stacked drop-shadows
+   (plus a soft ground shadow). Scoped to the PokeMiners asset host so the
+   pokemon.com official artwork — which has its own outline — is left untouched.
+   The `[src*=...]` bumps specificity past each base `img` rule; if `onError`
+   swaps back to the official URL the selector simply stops matching. */
+.rvmp .r-sprite > img:not(.r-sprite-shadow)[src*='pogo_assets'],
+.rvmp .r-pc-art > img[src*='pogo_assets'],
+.rvmp .r-mini > img:not(.r-shadow-mark)[src*='pogo_assets'],
+.rvmp .r-board-sprite > img:not(.r-shadow-mark)[src*='pogo_assets'],
+.rvmp .r-reach-chip .r-reach-art img[src*='pogo_assets'] {
+	filter: drop-shadow(1px 0 0 rgb(0 0 0 / 0.9)) drop-shadow(-1px 0 0 rgb(0 0 0 / 0.9))
+		drop-shadow(0 1px 0 rgb(0 0 0 / 0.9)) drop-shadow(0 -1px 0 rgb(0 0 0 / 0.9))
+		drop-shadow(0 3px 5px rgb(0 0 0 / 0.45));
+}
+/* the hero sprite is larger — a slightly heavier outline keeps it crisp */
+.rvmp .r-sprite > img:not(.r-sprite-shadow)[src*='pogo_assets'] {
+	filter: drop-shadow(1.5px 0 0 rgb(0 0 0 / 0.92)) drop-shadow(-1.5px 0 0 rgb(0 0 0 / 0.92))
+		drop-shadow(0 1.5px 0 rgb(0 0 0 / 0.92)) drop-shadow(0 -1.5px 0 rgb(0 0 0 / 0.92))
+		drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
 }

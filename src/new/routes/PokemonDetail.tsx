@@ -20,7 +20,7 @@ import {
 } from '../../utils/pokemon-helper';
 import { IvPicker, type IVs } from '../components/IvPicker';
 import { ShadowMark } from '../components/ShadowMark';
-import { Sprite, spriteUrl } from '../components/Sprite';
+import { goSpriteUrl, Sprite, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
 import { multBadge, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dexNo, ordinal } from '../lib/format';
@@ -29,10 +29,10 @@ import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
 import MovesTab from './pokemon/MovesTab';
 
 const LEAGUES = [
-	{ id: 0, label: 'Great', cssVar: 'var(--lg-great)' },
-	{ id: 1, label: 'Ultra', cssVar: 'var(--lg-ultra)' },
-	{ id: 2, label: 'Master', cssVar: 'var(--lg-master)' },
-	{ id: 3, label: 'Raids', cssVar: 'var(--lg-raid)' },
+	{ id: 0, label: 'Great', full: 'Great League', cssVar: 'var(--lg-great)' },
+	{ id: 1, label: 'Ultra', full: 'Ultra League', cssVar: 'var(--lg-ultra)' },
+	{ id: 2, label: 'Master', full: 'Master League', cssVar: 'var(--lg-master)' },
+	{ id: 3, label: 'Raids', full: 'Raids', cssVar: 'var(--lg-raid)' },
 ] as const;
 type LeagueId = 0 | 1 | 2 | 3;
 type PvpLeague = 0 | 1 | 2;
@@ -114,10 +114,7 @@ const PokemonDetail = () => {
 	const family = useMemo(() => {
 		if (!pokemon) return [];
 		return [...fetchPokemonFamily(pokemon, gamemasterPokemon)].sort(
-			(a, b) =>
-				a.dex - b.dex ||
-				(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) ||
-				a.speciesName.localeCompare(b.speciesName)
+			(a, b) => a.dex - b.dex || (a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) || a.speciesName.localeCompare(b.speciesName)
 		);
 	}, [pokemon, gamemasterPokemon]);
 
@@ -182,6 +179,15 @@ const PokemonDetail = () => {
 			setLeague(id);
 		}
 	};
+	// leaving a raid type resets its fast+charged combo back to the best one
+	const withTypeLeft = (cur: Cpos, nextT: number): Record<string, number> => {
+		const types = boardData.raid[cur.p]?.types ?? [];
+		if (!types.length) return cur.m;
+		const leftIdx = Math.min(cur.t, types.length - 1);
+		const nextIdx = Math.min(nextT, types.length - 1);
+		const left = types[leftIdx]?.type;
+		return left && leftIdx !== nextIdx ? { ...cur.m, [left]: 0 } : cur.m;
+	};
 	const cycleType = (e: ReactMouseEvent, id: LeagueId) => {
 		e.stopPropagation();
 		if (id !== 3) return;
@@ -193,12 +199,16 @@ const PokemonDetail = () => {
 		const len = boardData.raid[cpos(3).p]?.types.length ?? 0;
 		setCarousel((c) => {
 			const cur = c[3] ?? { p: 0, t: 0, m: {} };
-			return { ...c, [3]: { ...cur, t: len ? (cur.t + 1) % len : 0 } };
+			const nextT = len ? (cur.t + 1) % len : 0;
+			return { ...c, [3]: { ...cur, t: nextT, m: withTypeLeft(cur, nextT) } };
 		});
 	};
 	const selectType = (i: number) => {
 		if (league !== 3) setLeague(3);
-		setCarousel((c) => ({ ...c, [3]: { ...(c[3] ?? { p: 0, t: 0, m: {} }), t: i } }));
+		setCarousel((c) => {
+			const cur = c[3] ?? { p: 0, t: 0, m: {} };
+			return { ...c, [3]: { ...cur, t: i, m: withTypeLeft(cur, i) } };
+		});
 	};
 	const cycleMove = (type: string, len: number) => {
 		setCarousel((c) => {
@@ -282,6 +292,9 @@ const PokemonDetail = () => {
 	const raidMember = raidSel?.p ?? pokemon;
 	const raidSelTypeIdx = Math.min(cpos(3).t, Math.max(0, (raidSel?.types.length ?? 1) - 1));
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
+	const raidElite = new Set(raidMember.eliteMoves);
+	const raidLegacy = new Set(raidMember.legacyMoves);
+	const raidMoveTag = (id: string) => (raidLegacy.has(id) ? 'Legacy' : raidElite.has(id) ? 'Elite' : null);
 	const raidRows = (raidSel?.types ?? []).map(({ type, entry }, i) => {
 		const combos = comboLists[type] ?? [];
 		const mIdx = Math.min(cpos(3).m[type] ?? 0, Math.max(0, combos.length - 1));
@@ -290,7 +303,11 @@ const PokemonDetail = () => {
 	const raidSelRow = raidRows[raidSelTypeIdx];
 
 	// Hero sprite carousel — cycle the official / GO / shiny-GO artwork by tapping.
-	const heroSprites = [...new Set([pokemon.imageUrl, pokemon.goImageUrl, pokemon.shinyGoImageUrl].filter(Boolean))];
+	const heroSprites = [
+		...new Set(
+			[pokemon.imageUrl, goSpriteUrl(pokemon.goImageUrl), goSpriteUrl(pokemon.shinyGoImageUrl)].filter(Boolean)
+		),
+	];
 	const heroIdx = heroSprites.length ? heroSpriteIdx % heroSprites.length : 0;
 
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
@@ -304,6 +321,7 @@ const PokemonDetail = () => {
 		let bestType: string | undefined;
 		let typeCount = 0;
 		let typeIdx = 0;
+		let rankChange = 0;
 		const total = raidRow ? boardData.raid.length : (boardData.pvp[l.id]?.length ?? 0);
 		const pIdx = total ? Math.min(p, total - 1) : 0;
 
@@ -324,9 +342,10 @@ const PokemonDetail = () => {
 			if (e) {
 				rank = e.rank;
 				metric = `${e.score.toFixed(1)} pts`;
+				rankChange = e.rankChange ?? 0;
 			}
 		}
-		return { l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx };
+		return { l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange };
 	});
 
 	return (
@@ -399,6 +418,25 @@ const PokemonDetail = () => {
 				</div>
 			</header>
 
+			{/* ---- FAMILY LINE (shared across every tab — click to open that Pokémon) ---- */}
+			<div className='r-section-h'>{cleanName(pokemon.speciesName)}’s family line</div>
+			<div className='r-reach'>
+				{family.map((m) => (
+					<Link
+						key={m.speciesId}
+						to={R.pokemon(m.speciesId)}
+						className='r-reach-chip'
+						data-active={m.speciesId === self}
+					>
+						{m.isShadow && <ShadowMark />}
+						<span className='r-reach-art'>
+							<img src={spriteUrl(m, imageSource)} alt='' loading='lazy' decoding='async' />
+						</span>
+						<span>{cleanName(m.speciesName)}</span>
+					</Link>
+				))}
+			</div>
+
 			{/* ---- LEAGUE + TABS ---- */}
 			<div className='r-seg r-seg--league' role='tablist' aria-label='League / mode'>
 				{LEAGUES.map((l) => (
@@ -435,100 +473,89 @@ const PokemonDetail = () => {
 				</div>
 			) : (
 				<>
-					{/* ---- FAMILY LINE (always — click to open that Pokémon) ---- */}
-					<div className='r-section-h'>{cleanName(pokemon.speciesName)}’s family line</div>
-					<div className='r-reach'>
-						{family.map((m) => (
-							<Link
-								key={m.speciesId}
-								to={R.pokemon(m.speciesId)}
-								className='r-reach-chip'
-								data-active={m.speciesId === self}
-							>
-								{m.isShadow && <ShadowMark />}
-								<span className='r-reach-art'>
-									<img src={spriteUrl(m, imageSource)} alt='' loading='lazy' decoding='async' />
-								</span>
-								<span>{cleanName(m.speciesName)}</span>
-							</Link>
-						))}
-					</div>
-
 					{/* ---- LEADERBOARD — best reachable per league; click active row to cycle ---- */}
 					<div className='r-section-h'>Leaderboard · best reachable</div>
 					<div className='r-board'>
-						{boardRows.map(({ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx }) => {
-							const active = league === l.id;
-							return (
-								<div
-									key={l.id}
-									className='r-board-row'
-									role='button'
-									tabIndex={0}
-									aria-pressed={active}
-									data-active={active}
-									style={{ ['--lg' as string]: l.cssVar }}
-									onClick={() => cycleRow(l.id as LeagueId)}
-									onKeyDown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
-											e.preventDefault();
-											cycleRow(l.id as LeagueId);
-										}
-									}}
-								>
-									<span className='r-board-sprite'>
-										{member?.isShadow && <ShadowMark />}
-										{member && (
-											<img src={spriteUrl(member, imageSource)} alt='' loading='lazy' decoding='async' />
-										)}
-										{bestType && (
-											<span
-												className='r-board-type'
-												role='button'
-												tabIndex={0}
-												title={`${TYPE_LABEL[bestType] ?? bestType} — tap for next type`}
-												onClick={(e) => cycleType(e, l.id as LeagueId)}
-												onKeyDown={(e) => {
-													if (e.key === 'Enter' || e.key === ' ') {
-														e.preventDefault();
-														cycleType(e as unknown as ReactMouseEvent, l.id as LeagueId);
-													}
-												}}
-											>
-												<img src={`/images/types/${bestType}.png`} alt={TYPE_LABEL[bestType] ?? bestType} />
-											</span>
-										)}
-									</span>
-									<span className='r-board-id'>
-										<span className='r-board-lg'>
-											{l.label}
-											{bestType && ` · ${TYPE_LABEL[bestType] ?? bestType}`}
+						{boardRows.map(
+							({ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange }) => {
+								const active = league === l.id;
+								return (
+									<div
+										key={l.id}
+										className='r-board-row'
+										role='button'
+										tabIndex={0}
+										aria-pressed={active}
+										data-active={active}
+										style={{ ['--lg' as string]: l.cssVar }}
+										onClick={() => cycleRow(l.id as LeagueId)}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												cycleRow(l.id as LeagueId);
+											}
+										}}
+									>
+										<span className='r-board-sprite'>
+											{member?.isShadow && <ShadowMark />}
+											{member && <img src={spriteUrl(member, imageSource)} alt='' loading='lazy' decoding='async' />}
+											{bestType && (
+												<span
+													className='r-board-type'
+													role='button'
+													tabIndex={0}
+													title={`${TYPE_LABEL[bestType] ?? bestType} — tap for next type`}
+													onClick={(e) => cycleType(e, l.id as LeagueId)}
+													onKeyDown={(e) => {
+														if (e.key === 'Enter' || e.key === ' ') {
+															e.preventDefault();
+															cycleType(e as unknown as ReactMouseEvent, l.id as LeagueId);
+														}
+													}}
+												>
+													<img src={`/images/types/${bestType}.png`} alt={TYPE_LABEL[bestType] ?? bestType} />
+												</span>
+											)}
 										</span>
-										{l.id === 3 && typeCount > 1 && (
-											<span className='r-board-typepips' aria-hidden='true'>
-												{Array.from({ length: typeCount }, (_, i) => (
-													<i key={i} data-on={i === typeIdx} />
+										<span className='r-board-id'>
+											<span className='r-board-lg'>
+												{l.full}
+												{bestType && ` · ${TYPE_LABEL[bestType] ?? bestType} attackers`}
+											</span>
+											{l.id === 3 && typeCount > 1 && (
+												<span className='r-board-typepips' aria-hidden='true'>
+													{Array.from({ length: typeCount }, (_, i) => (
+														<i key={i} data-on={i === typeIdx} />
+													))}
+												</span>
+											)}
+											<span className='r-board-name'>
+												{member ? cleanName(member.speciesName) : ready ? 'Not ranked' : 'Loading…'}
+											</span>
+										</span>
+										<span className='r-board-fig'>
+											<span className='r-board-rank'>
+												{rank != null ? ordinal(rank) : '—'}
+												{l.id !== 3 && rankChange !== 0 && (
+													<span className='r-delta' data-dir={rankChange > 0 ? 'up' : 'down'}>
+														{rankChange > 0 ? '▲' : '▼'}
+														{Math.abs(rankChange)}
+													</span>
+												)}
+											</span>
+											{metric && <span className='r-board-metric'>{metric}</span>}
+										</span>
+										{total > 1 && (
+											<span className='r-board-pips' aria-hidden='true'>
+												{Array.from({ length: total }, (_, i) => (
+													<i key={i} data-on={i === pIdx} />
 												))}
 											</span>
 										)}
-										<span className='r-board-name'>
-											{member ? cleanName(member.speciesName) : ready ? 'Not ranked' : 'Loading…'}
-										</span>
-									</span>
-									<span className='r-board-fig'>
-										<span className='r-board-rank'>{rank != null ? ordinal(rank) : '—'}</span>
-										{metric && <span className='r-board-metric'>{metric}</span>}
-									</span>
-									{total > 1 && (
-										<span className='r-board-pips' aria-hidden='true'>
-											{Array.from({ length: total }, (_, i) => (
-												<i key={i} data-on={i === pIdx} />
-											))}
-										</span>
-									)}
-								</div>
-							);
-						})}
+									</div>
+								);
+							}
+						)}
 					</div>
 
 					{isRaid ? (
@@ -561,35 +588,37 @@ const PokemonDetail = () => {
 								{raidRows.length > 0 && (
 									<>
 										<div className='r-section-h' style={{ marginTop: 16 }}>
-											Type coverage
+											Best moveset by type coverage
 										</div>
 										<div className='r-raidtypes'>
 											{raidRows.map(({ t, e, on, combos, mIdx, combo }, i) => (
-												<div
+												<button
 													key={t}
+													type='button'
 													className='r-raidtype'
 													data-active={on ? '' : undefined}
+													aria-pressed={on}
+													title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
 													style={{ ['--tc' as string]: `var(--t-${t})` }}
+													onClick={() => (on ? cycleMove(t, combos.length) : selectType(i))}
 												>
-													<button
-														type='button'
-														className='r-raidtype-head'
-														onClick={() => selectType(i)}
-													>
+													<span className='r-raidtype-head'>
 														<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
 														<b>{ordinal(e.rank)}</b>
 														<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
-													</button>
+													</span>
 													{combo && (
-														<button
-															type='button'
-															className='r-raidtype-moves'
-															title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
-															onClick={() => (on ? cycleMove(t, combos.length) : selectType(i))}
-														>
+														<span className='r-raidtype-moves'>
 															<span className='r-raidtype-mv'>
 																{moveName(combo.f)} <i>+</i> {moveName(combo.c)}
 															</span>
+															{[...new Set([raidMoveTag(combo.f), raidMoveTag(combo.c)])]
+																.filter((tg): tg is string => !!tg)
+																.map((tg) => (
+																	<i key={tg} className='r-move-tag r-raidtype-tag'>
+																		{tg}
+																	</i>
+																))}
 															{combos.length > 1 && (
 																<span className='r-raidtype-pips' aria-hidden='true'>
 																	{combos.map((_, j) => (
@@ -597,9 +626,9 @@ const PokemonDetail = () => {
 																	))}
 																</span>
 															)}
-														</button>
+														</span>
 													)}
-												</div>
+												</button>
 											))}
 										</div>
 									</>

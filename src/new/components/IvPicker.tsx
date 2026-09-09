@@ -15,8 +15,10 @@ const Bar = ({ label, value, onChange }: { label: string; value: number; onChang
 		const el = trackRef.current;
 		if (!el) return;
 		const rect = el.getBoundingClientRect();
-		const ratio = (clientX - rect.left) / rect.width;
-		onChange(clamp(Math.round(ratio * 15)));
+		const raw = ((clientX - rect.left) / rect.width) * 15;
+		// clicking anywhere inside a segment fills that segment; the sliver before the
+		// first one — or dragging past the left edge — sets 0.
+		onChange(clamp(raw < 0.35 ? 0 : Math.floor(raw) + 1));
 	};
 
 	const maxed = value === 15;

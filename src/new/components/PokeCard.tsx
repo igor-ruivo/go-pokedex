@@ -13,6 +13,8 @@ export interface CardMetric {
 	score?: number;
 	dps?: number;
 	cp?: number;
+	/** PvP rank movement since the last update (+ climbed, − dropped). */
+	rankChange?: number;
 }
 
 /** Compact grid tile — same footprint as the calendar / evolution minis. */
@@ -26,6 +28,12 @@ export const PokeCard = ({ pokemon, metric }: { pokemon: IGamemasterPokemon; met
 			style={{ ['--tc' as string]: typeVar(pokemon.types[0]) }}
 		>
 			<span className='r-pc-rank'>{metric?.rank ?? dexNo(pokemon.dex)}</span>
+			{metric?.rankChange != null && metric.rankChange !== 0 && (
+				<span className='r-pc-delta' data-dir={metric.rankChange > 0 ? 'up' : 'down'}>
+					{metric.rankChange > 0 ? '▲' : '▼'}
+					{Math.abs(metric.rankChange)}
+				</span>
+			)}
 			{pokemon.isShadow && <ShadowMark />}
 			<span className='r-pc-types' aria-hidden='true'>
 				{pokemon.types.map((t) => (

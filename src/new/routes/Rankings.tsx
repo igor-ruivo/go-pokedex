@@ -103,7 +103,7 @@ const Rankings = () => {
 			.map((r) => ({ r, p: gamemasterPokemon[r.speciesId] }))
 			.filter((x) => x.p && !x.p.aliasId && byType(x.p) && byName(x.p))
 			.sort((a, b) => a.r.rank - b.r.rank)
-			.map(({ r, p }) => ({ pokemon: p, metric: { rank: r.rank, score: r.score } }));
+			.map(({ r, p }) => ({ pokemon: p, metric: { rank: r.rank, score: r.score, rankChange: r.rankChange } }));
 	}, [
 		mode,
 		q,
