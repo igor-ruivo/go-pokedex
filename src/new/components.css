@@ -1540,10 +1540,13 @@
 	.rvmp .r-movelist--scroll {
 		max-height: 560px;
 		overflow-y: auto;
-		padding-right: 4px;
 		overscroll-behavior-y: auto !important;
 		scrollbar-width: thin;
 		scrollbar-color: var(--surface-3) transparent;
+		/* bleed the scrollbar into the shell gutter so the cards stay the exact same
+		   width as the non-scrolling "Best moveset" list above */
+		margin-right: -12px;
+		padding-right: 12px;
 	}
 	.rvmp .r-movelist--scroll::-webkit-scrollbar {
 		width: 6px;
@@ -1652,7 +1655,11 @@
    =========================================================================== */
 .rvmp .r-minigrid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+	/* fixed tile size (not 1fr) so the squares are identical in every context —
+	   spawns / raids / eggs / rockets, collapsed or expanded — regardless of how
+	   wide the surrounding container happens to be */
+	grid-template-columns: repeat(auto-fill, 86px);
+	justify-content: start;
 	gap: var(--s2);
 	margin-bottom: var(--s3);
 }
@@ -1930,10 +1937,10 @@
 	margin-bottom: var(--s2);
 }
 .rvmp .r-grunt-peek .r-minigrid {
-	grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
 	margin-bottom: 0;
+	/* same tile size as the rest of the calendar; collapsed peek and expanded
+	   tiers use the identical grid so the squares never resize on toggle */
 }
-/* narrower columns → the container-query units scale the tile contents down on their own */
 .rvmp .r-grunt {
 	cursor: pointer;
 }
@@ -1988,12 +1995,15 @@
 	background: var(--accent);
 	border-color: transparent;
 }
+/* "catchable" — a plain tag like `.r-move-tag--rec`, not a border wash on the tile */
 .rvmp .r-catch-tag {
+	font-size: 10px;
+	font-weight: 800;
 	letter-spacing: 0.04em;
-	padding: 1px 7px;
+	padding: 2px 7px;
 	border-radius: var(--r-pill);
-	color: #0c1017;
-	background: var(--iv-fill);
+	color: var(--iv-fill);
+	background: color-mix(in srgb, var(--iv-fill) 20%, var(--surface-3));
 }
 
 /* external link out of an event card */
@@ -2060,14 +2070,8 @@
 	font-size: 16px;
 	font-weight: 600;
 }
-/* catchable — a quiet amber wash, in the rvmp style */
-.rvmp .r-mini[data-catchable] {
-	border-color: color-mix(in srgb, var(--iv-fill) 50%, var(--border));
-	background: linear-gradient(180deg, color-mix(in srgb, var(--iv-fill) 14%, var(--surface)), var(--surface));
-}
-.rvmp .r-mini[data-catchable] em {
-	color: var(--iv-fill);
-}
+/* "catchable" is signalled by the `.r-catch-tag` on the tier label — the tile
+   itself stays a plain square (no border / background wash). */
 
 /* ---- GO / shiny-GO sprite contour ---------------------------------------------
    The Pokémon GO icon PNGs are flat cut-outs with no built-in outline, so they

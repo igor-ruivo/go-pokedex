@@ -711,7 +711,10 @@ export const pveDPS = (
 ) => {
 	const fastMoveDPS = fastMoveDamage / fastMoveCooldown;
 
-	if (fastMoveEnergy === 0 && chargedMoveRequiredEnergy !== 0) {
+	// No usable rotation: a fast move that generates no energy can never charge a
+	// move, and a charged move with 0 required energy makes the load-time maths
+	// blow up (e.g. Cramorant). Fall back to spamming the fast move.
+	if (chargedMoveRequiredEnergy === 0 || fastMoveEnergy === 0) {
 		return fastMoveDPS;
 	}
 
