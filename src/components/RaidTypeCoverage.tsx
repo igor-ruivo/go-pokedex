@@ -9,7 +9,7 @@ import { TYPE_LABEL } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
-import { computeDPSEntry } from '../utils/pokemon-helper';
+import { computeDPSEntry, MAX_LEVEL_INDEX } from '../utils/pokemon-helper';
 
 type Combo = { f: string; c: string; dps: number };
 export type RaidRecommendation = { fast: string; charged: string; type: string };
@@ -69,7 +69,7 @@ export const RaidTypeCoverage = ({
 					tc.map((c) => ({
 						f,
 						c,
-						dps: computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, 100, '', undefined, [f, c]).dps,
+						dps: computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, MAX_LEVEL_INDEX, '', undefined, [f, c]).dps,
 					}))
 				)
 				.sort((a, b) => b.dps - a.dps)

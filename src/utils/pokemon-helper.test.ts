@@ -8,6 +8,8 @@ import {
 	computeMoveEffectiveness,
 	Effectiveness,
 	levelToLevelIndex,
+	MAX_LEVEL,
+	MAX_LEVEL_INDEX,
 	needsXLCandy,
 	pveDPS,
 	shortName,
@@ -17,7 +19,12 @@ describe('levelToLevelIndex', () => {
 	it('maps game levels to half-level CPM indices', () => {
 		expect(levelToLevelIndex(1)).toBe(0);
 		expect(levelToLevelIndex(40)).toBe(78);
-		expect(levelToLevelIndex(51)).toBe(100);
+		expect(levelToLevelIndex(50)).toBe(98);
+	});
+
+	it('exposes the evaluation ceiling as level 50', () => {
+		expect(MAX_LEVEL).toBe(50);
+		expect(MAX_LEVEL_INDEX).toBe(levelToLevelIndex(50));
 	});
 });
 
@@ -85,7 +92,7 @@ describe('computeBestIVs', () => {
 		for (const entry of entries) {
 			expect(entry.CP).toBeLessThanOrEqual(1500);
 			expect(entry.L).toBeGreaterThanOrEqual(1);
-			expect(entry.L).toBeLessThanOrEqual(51);
+			expect(entry.L).toBeLessThanOrEqual(MAX_LEVEL);
 			expect(entry.IVs.A).toBeGreaterThanOrEqual(0);
 			expect(entry.IVs.A).toBeLessThanOrEqual(15);
 		}

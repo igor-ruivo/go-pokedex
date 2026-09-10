@@ -157,6 +157,15 @@ type NeededResources = {
 
 export const levelToLevelIndex = (level: number) => (level - 1) * 2;
 
+/**
+ * The level ceiling the app evaluates to. In-game a Pokémon can reach 51 (Best
+ * Buddy) or beyond (Super Mega L4), but those are edge cases we deliberately
+ * ignore so every ranking, CP and trash string is expressed against level 50.
+ */
+export const MAX_LEVEL = 50;
+/** {@link MAX_LEVEL} as a half-level CPM index. */
+export const MAX_LEVEL_INDEX = levelToLevelIndex(MAX_LEVEL);
+
 export const needsXLCandy = (pokemon: IGamemasterPokemon, cpThreshold: number) => {
 	if (!cpThreshold) {
 		return false;
@@ -591,7 +600,7 @@ export const computeDPSEntry = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
 	moves: Record<string, IGameMasterMove>,
 	attackIV = 15,
-	level = 100,
+	level = MAX_LEVEL_INDEX,
 	forcedType = '',
 	target?: IGamemasterPokemon,
 	movesetOverride?: [string, string]
@@ -686,7 +695,7 @@ export const calculateDamage = (
 	targetShadow = false,
 	effectiveness: Effectiveness = Effectiveness.Effective,
 	attackIV = 15,
-	level = 100,
+	level = MAX_LEVEL_INDEX,
 	targetDef = 200
 ) => {
 	return (
@@ -975,7 +984,7 @@ export const computeBestIVs = (
 ): Record<string, Array<RankEntry>> => {
 	const floor = 0;
 	let minLvl = 1;
-	let maxLvl = 51;
+	let maxLvl = MAX_LEVEL;
 
 	const ranks: Record<string, Array<RankEntry>> = {};
 

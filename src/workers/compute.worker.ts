@@ -11,7 +11,7 @@ import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
-import { computeBestIVs, computeDPSEntry, type RankEntry } from '../utils/pokemon-helper';
+import { computeBestIVs, computeDPSEntry, MAX_LEVEL_INDEX, type RankEntry } from '../utils/pokemon-helper';
 
 // Keep in sync with `customCupCPLimit` in src/queries/pvp.ts. Duplicated (not imported)
 // so the worker bundle doesn't pull in TanStack Query.
@@ -161,7 +161,7 @@ export interface RaidComparisonsInput {
 
 /** Best-moveset DPS of every candidate against `target`, sorted strongest first. */
 const raidComparisons = ({ candidates, moves, target }: RaidComparisonsInput): Array<DPSEntry> => {
-	const out: Array<DPSEntry> = candidates.map((p) => computeDPSEntry(p, {}, moves, 15, 100, '', target));
+	const out: Array<DPSEntry> = candidates.map((p) => computeDPSEntry(p, {}, moves, 15, MAX_LEVEL_INDEX, '', target));
 	return out.sort((a, b) => (b.dps !== a.dps ? b.dps - a.dps : a.speciesId.localeCompare(b.speciesId)));
 };
 

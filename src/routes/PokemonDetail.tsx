@@ -25,6 +25,8 @@ import {
 	fetchPokemonFamily,
 	fetchReachablePokemonIncludingSelf,
 	levelToLevelIndex,
+	MAX_LEVEL,
+	MAX_LEVEL_INDEX,
 } from '../utils/pokemon-helper';
 import CountersTab from './pokemon/CountersTab';
 import IvTableTab from './pokemon/IvTableTab';
@@ -102,7 +104,7 @@ const PokemonDetail = () => {
 
 	const lgParam = searchParams.get('lg') ?? '';
 	const [iv, setIv] = useState<IVs>({ atk: 15, def: 15, hp: 15 });
-	const [level, setLevel] = useState(50);
+	const [level, setLevel] = useState(MAX_LEVEL);
 	const [league, setLeague] = useState<LeagueId>(LG_PARAM[lgParam] ?? 0);
 	const [heroSpriteIdx, setHeroSpriteIdx] = useState(0);
 	useEffect(() => setHeroSpriteIdx(0), [speciesId]);
@@ -262,7 +264,7 @@ const PokemonDetail = () => {
 					tc.map((c) => ({
 						f,
 						c,
-						dps: computeDPSEntry(member, gamemasterPokemon, moves, 15, 100, '', undefined, [f, c]).dps,
+						dps: computeDPSEntry(member, gamemasterPokemon, moves, 15, MAX_LEVEL_INDEX, '', undefined, [f, c]).dps,
 					}))
 				)
 				.sort((a, b) => b.dps - a.dps)
@@ -427,7 +429,7 @@ const PokemonDetail = () => {
 					<Stepper
 						value={level}
 						min={1}
-						max={51}
+						max={MAX_LEVEL}
 						step={0.5}
 						onChange={setLevel}
 						format={(v) => `Lvl ${Number.isInteger(v) ? v : v.toFixed(1)}`}

@@ -11,7 +11,7 @@ import { TYPE_KEYS, TYPE_LABEL, typeKey } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
-import { calculateCP, levelToLevelIndex } from '../utils/pokemon-helper';
+import { calculateCP, MAX_LEVEL_INDEX } from '../utils/pokemon-helper';
 
 const POKEDEX_SORTS: ReadonlyArray<SortOption> = [
 	{ key: 'dex', label: 'Dex number', defaultDir: 'asc' },
@@ -91,13 +91,20 @@ const Rankings = () => {
 		const byName = (p: IGamemasterPokemon) => !q || p.speciesName.toLowerCase().includes(q);
 
 		if (mode === 'pokedex') {
-			const lvl50 = levelToLevelIndex(50);
 			const arr = Object.values(gamemasterPokemon)
 				.filter((p) => !p.aliasId && !p.isShadow && !p.isMega && byType(p) && byName(p))
 				.map((pokemon) => ({
 					pokemon,
 					metric: {
-						cp: calculateCP(pokemon.baseStats.atk, 15, pokemon.baseStats.def, 15, pokemon.baseStats.hp, 15, lvl50),
+						cp: calculateCP(
+							pokemon.baseStats.atk,
+							15,
+							pokemon.baseStats.def,
+							15,
+							pokemon.baseStats.hp,
+							15,
+							MAX_LEVEL_INDEX
+						),
 					},
 				}));
 			const s = sortDir === 'asc' ? 1 : -1;
