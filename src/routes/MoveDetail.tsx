@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
 import { useLanguage } from '../contexts/language-context';
@@ -13,7 +13,6 @@ import { useRaidRanker } from '../queries/raid-ranker';
 
 const MoveDetail = () => {
 	const { moveId = '' } = useParams();
-	const navigate = useNavigate();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists } = usePvp();
@@ -94,10 +93,6 @@ const MoveDetail = () => {
 
 	return (
 		<div className='r-shell'>
-			<button className='r-back' type='button' onClick={() => void navigate(-1)} aria-label='Back'>
-				‹ Back
-			</button>
-
 			<header
 				className='r-hero r-move-hero'
 				style={{ ['--tc' as string]: `var(--t-${type})`, ['--accent' as string]: `var(--t-${type})` }}

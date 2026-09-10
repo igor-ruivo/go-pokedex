@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
+import { useDismiss } from '../hooks/useDismiss';
 import { TYPE_LABEL, typeVar } from '../lib/types';
 
 interface FilterBarProps {
@@ -21,21 +22,7 @@ const MAX_MULTI = 2;
  */
 export const FilterBar = ({ types, selected, onChange, single = false }: FilterBarProps) => {
 	const [open, setOpen] = useState(false);
-	const rootRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		if (!open) return;
-		const onDown = (e: PointerEvent) => {
-			if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-		};
-		const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
-		document.addEventListener('pointerdown', onDown);
-		document.addEventListener('keydown', onKey);
-		return () => {
-			document.removeEventListener('pointerdown', onDown);
-			document.removeEventListener('keydown', onKey);
-		};
-	}, [open]);
+	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	const cap = single ? 1 : MAX_MULTI;
 	const toggle = (t: string) => {

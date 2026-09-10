@@ -172,19 +172,25 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 			{isRaid ? (
 				<RaidTypeCoverage pokemon={pokemon} showReadout={false} onRecommend={setRaidRec} />
 			) : (
-				hasBest && (
-					<>
-						<div className='r-section-h'>Best {LEAGUE_LABEL[league] ?? 'league'} moveset</div>
+				<>
+					<div className='r-section-h'>Best {LEAGUE_LABEL[league] ?? 'league'} moveset</div>
+					{hasBest ? (
 						<div className='r-movelist'>
 							<MoveRow pokemon={pokemon} moveId={recFast} kind='fast' arena={arena} tags={tagsFor(recFast)} best />
 							{recCharged.map((id) => (
 								<MoveRow key={id} pokemon={pokemon} moveId={id} kind='charged' arena={arena} tags={tagsFor(id)} best />
 							))}
 						</div>
-					</>
-				)
+					) : (
+						<p className='r-moves-unranked'>
+							{cleanName(pokemon.speciesName)} isn’t ranked for the {LEAGUE_LABEL[league] ?? 'selected league'} — no
+							recommended moveset. Every move it can learn is listed below.
+						</p>
+					)}
+				</>
 			)}
 
+			<div className='r-section-h r-section-h--big'>All moves {cleanName(pokemon.speciesName)} can learn</div>
 			<div className='r-section-h'>Fast moves</div>
 			<div className='r-movelist r-movelist--scroll'>
 				{fastSorted.map((id) => (
@@ -195,7 +201,6 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 						kind='fast'
 						arena={arena}
 						tags={tagsFor(id)}
-						best={recSet.has(id)}
 						recommended={recSet.has(id)}
 					/>
 				))}
@@ -211,7 +216,6 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 						kind='charged'
 						arena={arena}
 						tags={tagsFor(id)}
-						best={recSet.has(id)}
 						recommended={recSet.has(id)}
 					/>
 				))}

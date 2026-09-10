@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+
+import { useDismiss } from '../hooks/useDismiss';
 
 export type SortDir = 'asc' | 'desc';
 
@@ -22,21 +24,7 @@ interface SortBarProps {
  */
 export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
 	const [open, setOpen] = useState(false);
-	const rootRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		if (!open) return;
-		const onDown = (e: PointerEvent) => {
-			if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-		};
-		const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
-		document.addEventListener('pointerdown', onDown);
-		document.addEventListener('keydown', onKey);
-		return () => {
-			document.removeEventListener('pointerdown', onDown);
-			document.removeEventListener('keydown', onKey);
-		};
-	}, [open]);
+	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	const active = options.find((o) => o.key === sortKey) ?? options[0];
 

@@ -8,9 +8,6 @@ export interface IVs {
 
 const clamp = (n: number) => Math.max(0, Math.min(15, n));
 
-// px of finger travel before we decide whether this gesture is a horizontal
-// slider drag or a vertical page scroll.
-const AXIS_LOCK_THRESHOLD = 8;
 // after any scroll, ignore taps on the track for this long so the tap that
 // stops a momentum scroll can't nudge an IV bar by mistake.
 const SCROLL_GUARD_MS = 140;
@@ -31,14 +28,8 @@ const scrolledRecently = () => performance.now() - lastScrollAt < SCROLL_GUARD_M
 
 const Bar = ({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) => {
 	const trackRef = useRef<HTMLDivElement>(null);
-	// 'none' until we've moved far enough to commit; 'x' = dragging the slider,
-	// 'y' = the user is scrolling and this gesture must not touch the value.
-	const axis = useRef<'none' | 'x' | 'y'>('none');
-	const start = useRef<{ x: number; y: number } | null>(null);
-	// these survive pointerup so the trailing synthetic click can be told apart
-	// from a real tap. Both cleared on the next pointerdown.
-	const gestureMovedValue = useRef(false); // an 'x' drag already applied a value
-	const gestureWasScroll = useRef(false); // gesture resolved to a vertical scroll
+	// true when this press is really a tap meant to stop a momentum scroll.
+	const ignore = useRef(false);
 
 	const setFromClientX = (clientX: number) => {
 		const el = trackRef.current;
@@ -51,8 +42,7 @@ const Bar = ({ label, value, onChange }: { label: string; value: number; onChang
 	};
 
 	const endGesture = () => {
-		start.current = null;
-		axis.current = 'none';
+		ignore.current = false;
 	};
 
 	const maxed = value === 15;
@@ -74,55 +64,24 @@ const Bar = ({ label, value, onChange }: { label: string; value: number; onChang
 				aria-valuenow={value}
 				tabIndex={0}
 				onPointerDown={(e) => {
-					start.current = { x: e.clientX, y: e.clientY };
-					axis.current = 'none';
-					gestureMovedValue.current = false;
-					gestureWasScroll.current = false;
-					// a tap that lands while the page is still settling from a scroll
-					// isn't meant for the slider — swallow the whole gesture.
-					if (scrolledRecently()) {
-						axis.current = 'y';
-						gestureWasScroll.current = true;
-					}
-					// mouse has no scroll ambiguity — respond on press like before.
-					else if (e.pointerType === 'mouse') {
-						axis.current = 'x';
-						setFromClientX(e.clientX);
-					}
+					// a tap landing while the page is still gliding from a scroll is
+					// meant to stop that scroll, not to set an IV.
+					ignore.current = e.pointerType !== 'mouse' && scrolledRecently();
+					if (ignore.current) return;
+					// the track owns this gesture from here on — `touch-action: none`
+					// (see CSS) means the page never scrolls while a bar is being
+					// dragged, even diagonally. Capture so the drag keeps tracking if
+					// the finger strays off the 15px-tall strip.
+					(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+					setFromClientX(e.clientX);
 				}}
 				onPointerMove={(e) => {
-					if (e.buttons !== 1 || !start.current) return;
-
-					if (axis.current === 'none') {
-						const dx = e.clientX - start.current.x;
-						const dy = e.clientY - start.current.y;
-						if (Math.abs(dx) < AXIS_LOCK_THRESHOLD && Math.abs(dy) < AXIS_LOCK_THRESHOLD) return;
-						// bias ties toward 'y' so an almost-vertical swipe still scrolls
-						axis.current = Math.abs(dx) > Math.abs(dy) + 2 ? 'x' : 'y';
-						if (axis.current === 'x') {
-							// keep the whole horizontal drag on this element even if the
-							// finger strays vertically off the track
-							(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-						} else {
-							gestureWasScroll.current = true;
-						}
-					}
-
-					if (axis.current !== 'x') return; // 'y' → let the page scroll, never touch the value
-					// stop the browser from also scrolling on a diagonal drag
+					if (ignore.current || e.buttons !== 1) return;
 					e.preventDefault();
-					gestureMovedValue.current = true;
 					setFromClientX(e.clientX);
 				}}
 				onPointerUp={endGesture}
 				onPointerCancel={endGesture}
-				onClick={(e) => {
-					// a drag already set the value on move; a scroll gesture must never
-					// set it — both leave a trailing synthetic click to ignore here.
-					if (gestureMovedValue.current || gestureWasScroll.current || scrolledRecently()) return;
-					// genuine tap-to-set
-					setFromClientX(e.clientX);
-				}}
 				onKeyDown={(e) => {
 					if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
 						e.preventDefault();

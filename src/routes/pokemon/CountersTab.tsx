@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
+import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import { spriteUrl } from '../../components/Sprite';
 import { useImageSource } from '../../contexts/imageSource-context';
@@ -157,6 +158,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		gcTime: 30 * 60 * 1000,
 	});
 
+	const navigate = useNavigate();
 	const link = (speciesId: string) => `${R.pokemon(speciesId, 'counters')}?lg=${LG_SLUG[league]}`;
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
 
@@ -200,6 +202,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 							>
 								<span className='r-ctr-rank'>{i + 1}</span>
 								<span className='r-ctr-art'>
+									{p.isShadow && <ShadowMark />}
 									<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
 								</span>
 								<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>
@@ -451,24 +454,37 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 					{list.map((e, i) => {
 						const p = gamemasterPokemon[e.speciesId];
 						if (!p) return null;
+						const goToPokemon = () => void navigate(link(e.speciesId));
 						return (
 							<div
 								key={e.speciesId}
 								className='r-ctr-row r-ctr-row--raid'
 								style={{ ['--tc' as string]: typeVar(p.types[0]) }}
+								role='link'
+								tabIndex={0}
+								onClick={goToPokemon}
+								onKeyDown={(ev) => {
+									if (ev.key === 'Enter' || ev.key === ' ') {
+										ev.preventDefault();
+										goToPokemon();
+									}
+								}}
 							>
 								<span className='r-ctr-rank'>{i + 1}</span>
-								<Link to={link(e.speciesId)} className='r-ctr-art'>
+								<span className='r-ctr-art'>
+									{p.isShadow && <ShadowMark />}
 									<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
-								</Link>
+								</span>
 								<div className='r-ctr-mid'>
-									<Link to={link(e.speciesId)} className='r-ctr-name'>
-										{cleanName(p.speciesName)}
-									</Link>
+									<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>
 									<span className='r-ctr-moves'>
-										<Link to={R.move(e.fastMove)}>{moveName(e.fastMove)}</Link>
+										<Link to={R.move(e.fastMove)} onClick={(ev) => ev.stopPropagation()}>
+											{moveName(e.fastMove)}
+										</Link>
 										<i>+</i>
-										<Link to={R.move(e.chargedMove)}>{moveName(e.chargedMove)}</Link>
+										<Link to={R.move(e.chargedMove)} onClick={(ev) => ev.stopPropagation()}>
+											{moveName(e.chargedMove)}
+										</Link>
 									</span>
 								</div>
 								<span className='r-ctr-score'>

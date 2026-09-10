@@ -626,15 +626,21 @@ export const RAID_BOSS_STATS: Record<RaidTier, { hp: number; cpm: number }> = {
 };
 
 /**
- * Best-effort raid tier from Game Master flags: primal (`*_primal` + mega) →
- * Primal, super mega → T6, mega → Mega, legendary/mythical/ultra-beast → T5, an
- * evolved form (or a standalone with no evo line) → T3, the base of an evo line
- * → T1. Elite Raids are event-scheduled, not intrinsic — pass `tier: 'ELITE'`
+ * Best-effort raid tier from Game Master flags:
+ *  - Primal (`*_primal`) → Primal
+ *  - a Mega/Primal of a Legendary or Mythical (Mega Rayquaza, Mega Mewtwo…) → T6
+ *  - any other Mega → Mega
+ *  - Legendary / Mythical / Ultra Beast → T5
+ *  - an evolved form, or a standalone with no evo line → T3
+ *  - the base of an evo line → T1
+ *
+ * The site's speculative `isSuperMega` flag is NOT a raid tier and is ignored
+ * here. Elite Raids are event-scheduled, not intrinsic — pass `tier: 'ELITE'`
  * explicitly when you know it's one.
  */
 export const guessRaidTier = (p: IGamemasterPokemon): RaidTier => {
 	if (p.isMega && p.speciesId.includes('_primal')) return 'PRIMAL';
-	if (p.isSuperMega) return 'T6';
+	if (p.isMega && (p.isLegendary || p.isMythical)) return 'T6';
 	if (p.isMega) return 'MEGA';
 	if (p.isLegendary || p.isMythical || p.isBeast) return 'T5';
 	if (p.family?.parent) return 'T3';

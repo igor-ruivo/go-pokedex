@@ -380,10 +380,6 @@ const PokemonDetail = () => {
 
 	return (
 		<div className='r-shell'>
-			<button className='r-back' type='button' onClick={() => void navigate(-1)} aria-label='Back'>
-				‹ Back
-			</button>
-
 			{/* ---- HERO (the only place the primary-type colour leaks) ---- */}
 			<header className='r-hero' style={accentStyle(primary)}>
 				<div className='r-hero-top'>
@@ -425,7 +421,7 @@ const PokemonDetail = () => {
 					</div>
 				</div>
 
-				<div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+				<div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
 					<Stepper
 						value={level}
 						min={1}

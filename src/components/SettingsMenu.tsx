@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
+import { useDismiss } from '../hooks/useDismiss';
 
 // Regional-indicator flag emoji don't render on Windows, so a crisp 2-letter
 // ISO badge is the reliable cross-platform "flag".
@@ -32,21 +33,7 @@ export const SettingsMenu = () => {
 	const { imageSource, updateImageSource } = useImageSource();
 	const [open, setOpen] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
-	const rootRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		if (!open) return;
-		const onDown = (e: PointerEvent) => {
-			if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-		};
-		const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
-		document.addEventListener('pointerdown', onDown);
-		document.addEventListener('keydown', onKey);
-		return () => {
-			document.removeEventListener('pointerdown', onDown);
-			document.removeEventListener('keydown', onKey);
-		};
-	}, [open]);
+	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	const curFlag = APP_LANGS.find((l) => l[0] === currentLanguage)?.[1] ?? 'EN';
 

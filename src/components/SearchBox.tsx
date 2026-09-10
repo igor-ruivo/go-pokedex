@@ -1,10 +1,11 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
 import { useMoves } from '../queries/moves';
@@ -35,7 +36,7 @@ export const SearchBox = () => {
 	const [q, setQ] = useState(params.get('q') ?? '');
 	const [open, setOpen] = useState(false);
 	const [active, setActive] = useState(0);
-	const rootRef = useRef<HTMLDivElement>(null);
+	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	useEffect(() => {
 		setQ(params.get('q') ?? '');
@@ -107,15 +108,6 @@ export const SearchBox = () => {
 	}, [q, allPokemon, allMoves, gl]);
 
 	useEffect(() => setActive(0), [q]);
-
-	useEffect(() => {
-		if (!open) return;
-		const onDoc = (e: MouseEvent) => {
-			if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-		};
-		document.addEventListener('mousedown', onDoc);
-		return () => document.removeEventListener('mousedown', onDoc);
-	}, [open]);
 
 	const pick = (hit: Hit) => {
 		setOpen(false);

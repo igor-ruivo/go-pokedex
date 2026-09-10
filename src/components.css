@@ -69,9 +69,34 @@
 	align-items: center;
 }
 @media (max-width: 520px) {
+	/* keep the sprite beside the name / CP / types on phones — stacking them
+	   wastes a lot of vertical space above the fold. Split the row ~50 / 50. */
+	.rvmp .r-hero {
+		padding: var(--s4) var(--s3) var(--s3);
+	}
 	.rvmp .r-hero-top {
-		flex-direction: column;
-		text-align: center;
+		gap: var(--s3);
+		/* bottom-align the two columns: the sprite's bottom edge then always
+		   lines up with the type chips (the last row of the text column),
+		   regardless of whether the name wraps to one line or two */
+		align-items: flex-end;
+		margin-bottom: 10px;
+	}
+	.rvmp .r-hero .r-sprite {
+		width: clamp(108px, 36vw, 158px);
+	}
+	.rvmp .r-hero-top > div:not(.r-sprite) {
+		min-width: 0;
+	}
+	.rvmp .r-name {
+		font-size: clamp(21px, 6.2vw, 30px);
+	}
+	.rvmp .r-cp b {
+		font-size: clamp(30px, 10vw, 44px);
+	}
+	/* pinned to the sprite's bottom edge → level with the type chips */
+	.rvmp .r-hero .r-sprite-dots {
+		bottom: -2px;
 	}
 }
 .rvmp .r-dexno {
@@ -260,6 +285,10 @@
 .rvmp .r-seg button {
 	position: relative;
 }
+.rvmp .r-seg button:not([data-active='true']):hover {
+	color: var(--text);
+	background: var(--surface-2);
+}
 .rvmp .r-seg button[data-active='true'] {
 	background: var(--seg-c, var(--accent));
 	color: #0c1017;
@@ -281,8 +310,10 @@
 
 /* ---- reachable-family switcher ---- */
 .rvmp .r-reach {
-	display: flex;
-	flex-wrap: wrap;
+	/* same "at least 4 columns, then ~92px tiles" grid as every other tile grid
+	   on the site (rankings / calendar minis) */
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(calc((100% - 3 * var(--s2)) / 4), 92px), 1fr));
 	gap: var(--s2);
 	padding-bottom: 2px;
 	margin-bottom: var(--s2);
@@ -290,15 +321,32 @@
 .rvmp .r-reach::-webkit-scrollbar {
 	display: none;
 }
+/* mobile: a single swipeable row instead of wrapping to a second line */
+@media (max-width: 520px) {
+	.rvmp .r-reach {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		scrollbar-width: none;
+		scroll-snap-type: x proximity;
+		overscroll-behavior-x: contain;
+	}
+	.rvmp .r-reach-chip {
+		flex: 0 0 calc((100% - 3 * var(--s2)) / 4);
+		scroll-snap-align: start;
+	}
+}
 .rvmp .r-reach-chip {
 	position: relative;
-	flex: none;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 2px;
-	width: 92px;
+	width: auto;
+	/* stop a long name from stretching the tile — the flex-basis / grid track is
+	   the only thing that sets its width, so it stays a square everywhere */
+	min-width: 0;
 	aspect-ratio: 1; /* always a square, like the calendar minis */
 	padding: 6px;
 	border-radius: var(--r-sm);
@@ -306,6 +354,9 @@
 	border: 1px solid var(--border);
 	overflow: clip;
 	transition: all 0.14s ease;
+}
+.rvmp .r-reach-chip:not([data-active='true']):hover {
+	border-color: var(--border-strong);
 }
 .rvmp .r-reach-chip[data-active='true'] {
 	border-color: var(--lg, var(--accent));
@@ -418,6 +469,10 @@
 	font-size: 15px;
 	color: var(--text);
 	letter-spacing: 0.04em;
+}
+/* a group title immediately followed by its first sub-section — tighten the gap */
+.rvmp .r-section-h--big + .r-section-h {
+	margin-top: var(--s2);
 }
 
 /* ---- rank cards -------------------------------------------------------------- */
@@ -736,8 +791,9 @@
 	display: flex;
 	gap: 3px;
 	cursor: pointer;
-	/* capture horizontal drags for the slider, let vertical page-scroll pass through */
-	touch-action: pan-y;
+	/* the track owns every gesture that starts on it — a drag (even diagonal)
+	   only moves the slider, the page never scrolls out from under your finger */
+	touch-action: none;
 }
 .rvmp .r-iv-cell {
 	flex: 1;
@@ -747,6 +803,13 @@
 	transition:
 		background 0.16s ease,
 		transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+/* hovering a cell previews the value you'd set by clicking it — desktop only, a
+   sticky :hover on touch would fight the swipe / vertical-scroll handling */
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-iv-cell:not([data-on='true']):hover {
+		background: color-mix(in srgb, var(--iv-fill) 40%, var(--surface-3));
+	}
 }
 /* GO-appraisal palette: amber while filling, red once the stat is maxed at 15 */
 .rvmp .r-iv-cell[data-on='true'] {
@@ -962,9 +1025,15 @@
 }
 .rvmp .r-eff-list {
 	display: flex;
-	align-items: flex-start;
-	gap: 7px;
+	align-items: center;
+	justify-content: center;
+	/* the ×2.56 / ×0.39 "doubled" pills carry a 3px ring + soft glow — keep the
+	   gap wide enough that adjacent pills never touch it */
+	gap: 10px 12px;
 	flex-wrap: wrap;
+}
+.rvmp .r-eff-col {
+	text-align: center;
 }
 .rvmp .r-eff-t {
 	display: inline-flex;
@@ -1016,6 +1085,10 @@
 	font-weight: 700;
 	font-size: 13px;
 	color: var(--text-dim);
+	transition: border-color 0.14s ease;
+}
+.rvmp .r-toggle:not(.r-stepper):not([data-on='true']):hover {
+	border-color: var(--border-strong);
 }
 .rvmp .r-toggle[data-on='true'] {
 	background: color-mix(in srgb, var(--accent) 22%, transparent);
@@ -1044,13 +1117,20 @@
 	color: var(--text);
 	background: var(--surface-3);
 	touch-action: none;
+	transition:
+		box-shadow 0.14s ease,
+		background 0.14s ease;
 }
 .rvmp .r-stepper button:disabled {
 	opacity: 0.35;
 }
+.rvmp .r-stepper button:not(:disabled):hover {
+	box-shadow: inset 0 0 0 1px var(--border-strong);
+}
 .rvmp .r-stepper button:not(:disabled):active {
 	background: var(--accent);
 	color: #0c1017;
+	box-shadow: none;
 }
 .rvmp .r-muted {
 	color: var(--text-dim);
@@ -1451,6 +1531,10 @@
 	color: var(--text-dim);
 	background: var(--surface-2);
 	border: 1px solid var(--border);
+	transition: border-color 0.14s ease;
+}
+.rvmp .r-type-chip:not([data-active='true']):not(:disabled):hover {
+	border-color: var(--border-strong);
 }
 .rvmp .r-type-chip[data-active='true'] {
 	color: #0c1017;
@@ -1494,12 +1578,9 @@
 	background: var(--surface-2);
 	border: 1px solid var(--border);
 	text-align: center;
-	transition:
-		transform 0.12s ease,
-		border-color 0.14s ease;
+	transition: border-color 0.14s ease;
 }
 .rvmp .r-pc:hover {
-	transform: translateY(-2px);
 	border-color: var(--border-strong);
 }
 .rvmp .r-pc-rank {
@@ -1594,16 +1675,18 @@
    Detail-page desktop tightening
    =========================================================================== */
 @media (min-width: 620px) {
-	/* full-width within the (already narrow, centred) 680px shell */
+	/* centre the sprite + metadata pair within the (narrow, centred) shell
+	   instead of letting it hug the left edge */
 	.rvmp .r-hero-top {
 		display: grid;
-		grid-template-columns: minmax(150px, 38%) 1fr;
+		grid-template-columns: minmax(0, 190px) minmax(0, max-content);
+		justify-content: center;
 		align-items: center;
 		gap: var(--s5);
 	}
 	.rvmp .r-hero .r-sprite {
 		width: 100%;
-		max-width: 200px;
+		max-width: 190px;
 	}
 }
 
@@ -1656,6 +1739,18 @@
 .rvmp .r-movelist {
 	display: grid;
 	gap: var(--s2);
+}
+/* shown in place of the recommended list when the Pokémon isn't ranked */
+.rvmp .r-moves-unranked {
+	margin: 0 0 var(--s2);
+	padding: 12px 14px;
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--border-strong);
+	border-radius: var(--r-sm);
+	background: var(--surface);
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: var(--text-dim);
 }
 /* Long fast / charged lists cap + scroll internally on pointer-fine devices only
    (~6 cards). On touch they flow in the page — an inner scroll area is a bad touch
@@ -1719,6 +1814,8 @@
 .rvmp .r-move-tag--rec {
 	color: var(--tc, var(--accent));
 	background: color-mix(in srgb, var(--tc, var(--accent)) 20%, var(--surface-3));
+	/* a permanent outline (same look as the hover border) so it stands out */
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tc, var(--accent)) 55%, var(--border-strong));
 }
 /* Legacy / Elite tag squeezed into the type-coverage move row */
 .rvmp .r-raidtype-tag {
@@ -1751,19 +1848,27 @@
 	color: var(--text-dim);
 	font-weight: 600;
 }
+/* each stat keeps its size and stays on one line — only the separator flexes */
+.rvmp .r-move-stats u,
+.rvmp .r-move-stats span:not(.r-move-sep) {
+	flex: none;
+	white-space: nowrap;
+}
 .rvmp .r-move-stats span b {
 	color: var(--text);
 	font-variant-numeric: tabular-nums;
 	font-weight: 800;
 }
-/* divider between the raw stats and the derived ones (DPS / EPS / DPE) */
+/* divider between the raw stats (DMG / NRG / CD) and the derived ones
+   (DPS / EPS / DPE) — a hairline that grows to push the two groups apart, and
+   collapses to nothing on a card too narrow to spare the room */
 .rvmp .r-move-sep {
+	flex: 1 1 0;
+	min-width: 0;
 	align-self: center;
-	width: 3px;
-	height: 3px;
-	border-radius: 50%;
-	background: var(--text-faint);
-	opacity: 0.7;
+	height: 1px;
+	background: var(--border);
+	margin: 0 2px;
 }
 /* PvP stat-stage effect line on charged moves */
 .rvmp .r-move-buff {
@@ -1802,10 +1907,10 @@
 	background: var(--surface-2);
 	border: 1px solid var(--border);
 	text-align: center;
-	transition: transform 0.12s ease;
+	transition: border-color 0.14s ease;
 }
 .rvmp .r-mini:hover {
-	transform: translateY(-2px);
+	border-color: var(--border-strong);
 }
 .rvmp .r-mini > img:not(.r-shadow-mark) {
 	width: 62%;
@@ -1918,8 +2023,10 @@
 	border: 1px solid var(--border);
 	border-radius: var(--r-md);
 	overflow: clip;
+	transition: border-color 0.14s ease;
 }
-.rvmp .r-event[data-open='true'] {
+.rvmp .r-event[data-open='true'],
+.rvmp .r-event:hover {
 	border-color: var(--border-strong);
 }
 .rvmp .r-event-head {
@@ -2081,7 +2188,10 @@
 	align-items: flex-start;
 	gap: var(--s2);
 	margin-top: var(--s3);
+	/* it's a picker/configurer — rule it off from the list it drives */
+	padding-bottom: var(--s4);
 	margin-bottom: var(--s4);
+	border-bottom: 1px solid var(--border);
 }
 .rvmp .r-datepick-ic {
 	flex: none;
@@ -2112,7 +2222,11 @@
 	border: 1px solid var(--border);
 	transition:
 		background 0.14s ease,
-		color 0.14s ease;
+		color 0.14s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-datepick-chips button:not([data-active='true']):hover {
+	border-color: var(--border-strong);
 }
 .rvmp .r-datepick-chips button[data-active='true'] {
 	color: #0c1017;
@@ -2183,6 +2297,13 @@
 	gap: var(--s2);
 	margin-bottom: var(--s3);
 }
+/* trailing rule, same as .r-section-h — these are chapter headings too */
+.rvmp .r-eggsec-head::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: var(--border);
+}
 .rvmp .r-eggsec-head img {
 	width: 30px;
 	height: 30px;
@@ -2190,6 +2311,7 @@
 	filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.4));
 }
 .rvmp .r-eggsec-head b {
+	flex: none;
 	font-family: Fredoka, sans-serif;
 	font-size: 16px;
 	font-weight: 600;
@@ -2215,6 +2337,7 @@
 .rvmp .r-pc-art > img[src*='pogo_assets'],
 .rvmp .r-mini > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-board-sprite > img:not(.r-shadow-mark)[src*='pogo_assets'],
+.rvmp .r-ctr-art > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-reach-chip .r-reach-art img[src*='pogo_assets'] {
 	filter: drop-shadow(1px 0 0 rgb(0 0 0 / 0.9)) drop-shadow(-1px 0 0 rgb(0 0 0 / 0.9))
 		drop-shadow(0 1px 0 rgb(0 0 0 / 0.9)) drop-shadow(0 -1px 0 rgb(0 0 0 / 0.9))
@@ -2234,12 +2357,9 @@
 	/* `clip`, not `hidden` — `hidden` would make the row a scroll container and
 	   swallow wheel/touch scrolling started over it */
 	overflow: clip;
-	transition:
-		transform 0.12s ease,
-		border-color 0.14s ease;
+	transition: border-color 0.14s ease;
 }
 .rvmp .r-move--link:hover {
-	transform: translateY(-2px);
 	border-color: color-mix(in srgb, var(--tc, var(--accent)) 45%, var(--border-strong));
 }
 /* keep list rows to a fixed height — one line each, no wrapping — so the
@@ -2253,7 +2373,11 @@
 	overflow: clip;
 	text-overflow: ellipsis;
 }
-.rvmp .r-move--link .r-move-stats--stack > div {
+/* on a card (moves list + a Pokémon's Moves tab) the stat line spans the full
+   card width and stays on one row, so the growing `.r-move-sep` can push the
+   derived metrics out to the right */
+.rvmp .r-move--link .r-move-stats > div {
+	width: 100%;
 	flex-wrap: nowrap;
 	overflow: clip;
 }
@@ -2363,22 +2487,72 @@
 }
 
 /* ---- IV Table tab ------------------------------------------------------------- */
+/* three tiny 0–15 fields — no "/" to type, so the mobile numeric keypad works */
 .rvmp .r-iv-search {
+	display: flex;
+	align-items: stretch;
+	gap: 8px;
 	margin-bottom: 10px;
 }
-.rvmp .r-iv-search input {
-	width: 100%;
-	padding: 10px 14px;
+.rvmp .r-iv-search label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+	min-width: 0;
+	padding: 6px 10px 6px 14px;
 	border-radius: var(--r-pill);
 	background: var(--surface);
 	border: 1px solid var(--border);
+	transition: border-color 0.14s ease;
+}
+.rvmp .r-iv-search label:hover {
+	border-color: var(--border-strong);
+}
+.rvmp .r-iv-search label:focus-within {
+	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.rvmp .r-iv-search label > span {
+	flex: none;
+	font-size: 10.5px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	color: var(--text-faint);
+}
+.rvmp .r-iv-search input {
+	width: 100%;
+	min-width: 0;
+	padding: 6px 0;
+	border: 0;
+	background: none;
 	color: var(--text);
 	font: inherit;
-	font-weight: 600;
-}
-.rvmp .r-iv-search input:focus {
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
 	outline: none;
-	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.rvmp .r-iv-search-clear {
+	flex: none;
+	align-self: center;
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	color: var(--text-dim);
+	font-size: 17px;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		border-color 0.14s ease,
+		color 0.14s ease;
+}
+.rvmp .r-iv-search-clear:hover {
+	border-color: var(--border-strong);
+	color: var(--text);
 }
 /* the one matched spread, pulled out above the (virtualised) table */
 .rvmp .r-ivt-found {
@@ -2995,9 +3169,6 @@
 	opacity: 1;
 	filter: none;
 }
-.rvmp .r-tc-pchip[data-active]:hover {
-	transform: translateY(-1px);
-}
 .rvmp .r-tc-results {
 	display: grid;
 	gap: var(--s4);
@@ -3088,6 +3259,10 @@
 	color: var(--text-dim);
 	background: var(--surface-2);
 	border: 1px solid var(--border);
+	transition: border-color 0.14s ease;
+}
+.rvmp .r-sort-dirseg button:not([data-active]):hover {
+	border-color: var(--border-strong);
 }
 .rvmp .r-sort-dirseg button[data-active] {
 	color: #0c1017;
@@ -3354,6 +3529,27 @@
 .rvmp a.r-ctr-row:hover {
 	border-color: var(--border-strong);
 }
+/* the raid row is a div acting as a link — whole surface is clickable, the
+   move links inside opt out via stopPropagation */
+.rvmp .r-ctr-row--raid {
+	cursor: pointer;
+}
+.rvmp .r-ctr-row--raid:hover {
+	border-color: color-mix(in srgb, var(--tc, var(--accent)) 45%, var(--border-strong));
+}
+.rvmp .r-ctr-row--raid:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+}
+/* hovering anywhere on the row highlights the Pokémon name (the whole row
+   navigates to it) … */
+.rvmp .r-ctr-row--raid:hover .r-ctr-name {
+	color: var(--tc, var(--accent));
+}
+/* … but not while the pointer is on a move link, which has its own destination */
+.rvmp .r-ctr-row--raid:has(.r-ctr-moves a:hover) .r-ctr-name {
+	color: var(--text);
+}
 .rvmp .r-ctr-rank {
 	font-family: Fredoka, sans-serif;
 	font-weight: 800;
@@ -3377,11 +3573,20 @@
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
 }
-.rvmp .r-ctr-art img {
+.rvmp .r-ctr-art > img:not(.r-shadow-mark) {
 	width: 40px;
 	height: 40px;
 	object-fit: contain;
 	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.45));
+}
+/* shadow adorner — same placement as the leaderboard's .r-board-sprite */
+.rvmp .r-ctr-art > .r-shadow-mark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 22px;
+	height: 22px;
+	z-index: 2;
 }
 .rvmp .r-ctr-name {
 	font-family: Fredoka, sans-serif;
@@ -3417,7 +3622,6 @@
 }
 .rvmp .r-ctr-moves a:hover {
 	color: var(--tc, var(--accent));
-	text-decoration: underline;
 }
 .rvmp .r-ctr-moves i {
 	font-style: normal;
@@ -3619,12 +3823,10 @@
 	transition:
 		border-color 0.12s ease,
 		box-shadow 0.12s ease,
-		background 0.12s ease,
-		transform 0.08s ease;
+		background 0.12s ease;
 }
 .rvmp .r-ctr-iconbtn:hover {
 	border-color: var(--border-strong);
-	transform: translateY(-1px);
 }
 .rvmp .r-ctr-iconbtn[data-active='true'] {
 	border-color: var(--accent);

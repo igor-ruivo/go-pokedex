@@ -9,20 +9,49 @@ const LEAGUE_NAME = ['Great', 'Ultra', 'Master'] as const;
 const ROW_H = 44;
 const VISIBLE_ROWS = 50; // show ~50 spreads, then the list scrolls inside itself
 
-const parseTriplet = (raw: string): [number, number, number] | null => {
-	const nums = raw.match(/\d+/g)?.map(Number) ?? [];
-	if (nums.length !== 3) return null;
-	if (nums.some((n) => n < 0 || n > 15)) return null;
-	return [nums[0], nums[1], nums[2]];
+type IvFields = [string, string, string];
+const FIELD_LABEL = ['ATK', 'DEF', 'HP'] as const;
+
+const clamp15 = (s: string) => {
+	const n = Number.parseInt(s, 10);
+	return Number.isNaN(n) ? '' : String(Math.max(0, Math.min(15, n)));
 };
 
 const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const isPvp = league === 0 || league === 1 || league === 2;
 	const rows = useBestIvs(pokemon, isPvp ? CAP[league] : 1500, isPvp);
 
-	const [q, setQ] = useState('');
+	const [fields, setFields] = useState<IvFields>(['', '', '']);
 	const [hover, setHover] = useState<{ r: number; c: number } | null>(null);
-	const triplet = parseTriplet(q);
+
+	const triplet = useMemo<[number, number, number] | null>(() => {
+		if (fields.some((v) => v === '')) return null;
+		const nums = fields.map(Number) as [number, number, number];
+		return nums.some((n) => n < 0 || n > 15) ? null : nums;
+	}, [fields]);
+	const anyEntered = fields.some((v) => v !== '');
+
+	// Typing/pasting a whole spread ("15 / 14 / 15", "151415", "15,14,15") into
+	// ANY box splits it across all three — so the mobile numeric keypad, which
+	// has no "/", still works.
+	const setField = (idx: number, raw: string) => {
+		const groups = raw.match(/\d{1,2}/g);
+		if (/\D/.test(raw) && groups && groups.length >= 3) {
+			setFields([clamp15(groups[0]), clamp15(groups[1]), clamp15(groups[2])]);
+			return;
+		}
+		const digits = raw.replace(/\D/g, '');
+		if (digits.length === 6) {
+			setFields([clamp15(digits.slice(0, 2)), clamp15(digits.slice(2, 4)), clamp15(digits.slice(4, 6))]);
+			return;
+		}
+		setFields((prev) => {
+			const next = [...prev] as IvFields;
+			next[idx] = digits.slice(0, 2);
+			return next;
+		});
+	};
+
 	const matchIdx = useMemo(() => {
 		if (!triplet) return -1;
 		return rows.findIndex((r) => r.IVs.A === triplet[0] && r.IVs.D === triplet[1] && r.IVs.S === triplet[2]);
@@ -71,16 +100,33 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 			<div className='r-section-h'>{LEAGUE_NAME[league]} League · all 4,096 IV spreads</div>
 
 			<div className='r-iv-search'>
-				<input
-					value={q}
-					onChange={(e) => setQ(e.target.value)}
-					placeholder='Find a spread, e.g. 15 / 14 / 15'
-					aria-label='Find an IV spread'
-					inputMode='numeric'
-				/>
+				{FIELD_LABEL.map((label, i) => (
+					<label key={label}>
+						<span>{label}</span>
+						<input
+							value={fields[i] ?? ''}
+							onChange={(e) => setField(i, e.target.value)}
+							inputMode='numeric'
+							pattern='[0-9]*'
+							maxLength={2}
+							placeholder='–'
+							aria-label={`${label} IV, 0 to 15`}
+						/>
+					</label>
+				))}
+				{anyEntered && (
+					<button
+						type='button'
+						className='r-iv-search-clear'
+						onClick={() => setFields(['', '', ''])}
+						aria-label='Clear'
+					>
+						×
+					</button>
+				)}
 			</div>
 
-			{q.trim().length > 0 &&
+			{anyEntered &&
 				(match ? (
 					<div className='r-ivt-found'>
 						<span className='r-ivt-found-rank'>#{(matchIdx + 1).toLocaleString()}</span>
@@ -104,7 +150,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 					</div>
 				) : (
 					<p className='r-muted r-ivt-none'>
-						{triplet ? 'That spread isn’t in the ranking.' : 'Enter three numbers 0–15.'}
+						{triplet ? 'That spread isn’t in the ranking.' : 'Fill in all three (0–15).'}
 					</p>
 				))}
 
