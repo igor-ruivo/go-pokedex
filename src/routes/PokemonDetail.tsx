@@ -453,6 +453,7 @@ const PokemonDetail = () => {
 						to={`${R.pokemon(m.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`}
 						className='r-reach-chip'
 						data-active={m.speciesId === self}
+						style={{ ['--tc' as string]: typeVar(m.types[0]) }}
 					>
 						{m.isShadow && <ShadowMark />}
 						<span className='r-reach-art'>

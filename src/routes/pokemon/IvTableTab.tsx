@@ -17,6 +17,13 @@ const clamp15 = (s: string) => {
 	return Number.isNaN(n) ? '' : String(Math.max(0, Math.min(15, n)));
 };
 
+// Truncate to one decimal (no rounding — matches pvpivs.com), then drop a
+// trailing ".0" so a whole value like 178.0 reads "178" and 100.0% reads "100%".
+const dec1 = (n: number) => {
+	const t = Math.trunc(n * 10) / 10;
+	return Number.isInteger(t) ? String(t) : t.toFixed(1);
+};
+
 const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const isPvp = league === 0 || league === 1 || league === 2;
 	const rows = useBestIvs(pokemon, isPvp ? CAP[league] : 1500, isPvp);
@@ -85,6 +92,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 		);
 	}
 
+	// Stat-product percentile vs the #1 spread (formatted with `dec1`).
 	const pctOf = (r: (typeof rows)[number]) => (r.battle.A * r.battle.D * r.battle.S * 100) / bestProd;
 	// The bar shows where a spread sits *within the possible range*: the #1 spread
 	// fills it, the #4096 (worst) spread empties it. The number still reports the
@@ -135,17 +143,17 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 						</span>
 						<span className='r-ivt-found-stats'>
 							<span>
-								ATK <b>{match.battle.A.toFixed(1)}</b>
+								ATK <b>{dec1(match.battle.A)}</b>
 							</span>
 							<span>
-								DEF <b>{match.battle.D.toFixed(1)}</b>
+								DEF <b>{dec1(match.battle.D)}</b>
 							</span>
 							<span>
 								HP <b>{Math.floor(match.battle.S)}</b>
 							</span>
 						</span>
 						<span className='r-ivt-found-meta'>
-							{match.CP} CP · L{match.L} · {pctOf(match).toFixed(1)}%
+							{match.CP} CP · L{match.L} · {dec1(pctOf(match))}%
 						</span>
 					</div>
 				) : (
@@ -200,10 +208,10 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 										<b>{r.IVs.S}</b>
 									</span>
 									<span className='r-ivt-stats' data-colhot={hot(2)} onMouseEnter={on(2)}>
-										{r.battle.A.toFixed(1)} <i>·</i> {r.battle.D.toFixed(1)} <i>·</i> {Math.floor(r.battle.S)}
+										{dec1(r.battle.A)} <i>·</i> {dec1(r.battle.D)} <i>·</i> {Math.floor(r.battle.S)}
 									</span>
 									<span className='r-ivt-pct' data-colhot={hot(3)} onMouseEnter={on(3)}>
-										{pctOf(r).toFixed(1)}%
+										{dec1(pctOf(r))}%
 									</span>
 									<span className='r-ivt-bar' data-colhot={hot(4)} onMouseEnter={on(4)}>
 										<span className='r-ivt-bar-fill' style={{ width: `${barOf(r)}%` }} />

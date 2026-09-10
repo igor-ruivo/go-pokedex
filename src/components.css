@@ -358,6 +358,9 @@
 .rvmp .r-reach-chip:not([data-active='true']):hover {
 	border-color: var(--border-strong);
 }
+.rvmp .r-reach-chip:hover span {
+	color: var(--tc, var(--accent));
+}
 .rvmp .r-reach-chip[data-active='true'] {
 	border-color: var(--lg, var(--accent));
 	background: color-mix(in srgb, var(--lg, var(--accent)) 16%, var(--surface-2));
@@ -390,6 +393,7 @@
 	white-space: nowrap;
 	overflow: clip;
 	text-overflow: ellipsis;
+	transition: color 0.14s ease;
 }
 .rvmp .r-reach-chip b {
 	font-family: Fredoka, sans-serif;
@@ -646,14 +650,24 @@
 	height: 20px;
 	border-radius: 50%;
 	background: var(--surface);
-	/* raid-orange contour + glow, mirroring the shadow adorner */
+	/* inactive rows: neutral contour matching the sprite's own outline */
+	box-shadow:
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
+	filter: none;
+	cursor: pointer;
+	transition:
+		transform 0.12s ease,
+		box-shadow 0.14s ease,
+		filter 0.14s ease;
+	z-index: 3;
+}
+.rvmp .r-board-row[data-active='true'] .r-board-type {
+	/* selected raid league: raid-league contour + glow, mirroring the shadow adorner */
 	box-shadow:
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--lg) 75%, transparent);
 	filter: drop-shadow(0 0 3px color-mix(in srgb, var(--lg) 60%, transparent));
-	cursor: pointer;
-	transition: transform 0.12s ease;
-	z-index: 3;
 }
 .rvmp .r-board-type:hover {
 	transform: scale(1.12);
@@ -719,6 +733,12 @@
 	font-size: 10px;
 	letter-spacing: 0.09em;
 	text-transform: uppercase;
+	/* neutral until the row is hovered or selected */
+	color: var(--text-faint);
+	transition: color 0.14s ease;
+}
+.rvmp .r-board-row:hover .r-board-lg,
+.rvmp .r-board-row[data-active='true'] .r-board-lg {
 	color: var(--lg);
 }
 .rvmp .r-board-name {
@@ -910,9 +930,13 @@
 	cursor: pointer;
 	border-radius: var(--r-sm);
 	background: var(--surface-2);
-	border: 1px solid transparent;
+	border: 1px solid var(--border);
 	border-left: 3px solid var(--tc, var(--accent));
 	overflow: clip;
+	transition: border-color 0.14s ease;
+}
+.rvmp .r-raidtype:not([data-active]):hover {
+	border-color: color-mix(in srgb, var(--tc, var(--accent)) 45%, var(--border-strong));
 }
 .rvmp .r-raidtype[data-active] {
 	background: color-mix(in srgb, var(--tc) 14%, var(--surface-2));
@@ -932,6 +956,12 @@
 	font-family: Fredoka, sans-serif;
 	font-size: 16px;
 	font-variant-numeric: tabular-nums;
+	/* neutral until the row is hovered or selected */
+	color: var(--text);
+	transition: color 0.14s ease;
+}
+.rvmp .r-raidtype:not([data-active]):hover .r-raidtype-head b,
+.rvmp .r-raidtype[data-active] .r-raidtype-head b {
 	color: var(--tc, var(--text));
 }
 .rvmp .r-raidtype-head em {
@@ -973,7 +1003,6 @@
 }
 .rvmp .r-raidtype-mv a:hover {
 	color: var(--tc, var(--accent));
-	text-decoration: underline;
 }
 .rvmp .r-raidtype-pips {
 	flex: none;
@@ -1123,6 +1152,7 @@
 }
 .rvmp .r-stepper button:disabled {
 	opacity: 0.35;
+	cursor: default;
 }
 .rvmp .r-stepper button:not(:disabled):hover {
 	box-shadow: inset 0 0 0 1px var(--border-strong);
@@ -1657,6 +1687,10 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	transition: color 0.14s ease;
+}
+.rvmp .r-pc:hover .r-pc-name {
+	color: var(--tc, var(--accent));
 }
 .rvmp .r-pc-metric {
 	font-family: Fredoka, sans-serif;
@@ -1791,6 +1825,7 @@
 .rvmp .r-move-head b {
 	font-size: 14.5px;
 	font-weight: 800;
+	transition: color 0.14s ease;
 }
 .rvmp .r-move-type {
 	padding: 3px 9px;
@@ -1927,6 +1962,10 @@
 	white-space: nowrap;
 	overflow: clip;
 	text-overflow: ellipsis;
+	transition: color 0.14s ease;
+}
+.rvmp .r-mini:hover > span:not(.r-mini-shiny) {
+	color: var(--tc, var(--accent));
 }
 /* shadow mark — the lavender Rocket flame in a round badge with a thick ghost-type
    ring, same treatment as the raid type adorner. The interior is a deep purple so
@@ -2143,6 +2182,12 @@
 	font-size: 14px;
 	font-weight: 800;
 	line-height: 1.25;
+	transition: color 0.14s ease;
+}
+/* hovering the card colours the trainer name — its type colour for a
+   type-specific grunt, the raid orange for named / plain grunts (no `--tc`) */
+.rvmp .r-grunt:hover .r-grunt-id b {
+	color: var(--tc, var(--lg-raid));
 }
 .rvmp .r-grunt-id i {
 	font-style: normal;
@@ -2361,6 +2406,10 @@
 }
 .rvmp .r-move--link:hover {
 	border-color: color-mix(in srgb, var(--tc, var(--accent)) 45%, var(--border-strong));
+}
+/* hovering the row also colours the move name (the whole card links to the move) */
+.rvmp .r-move--link:hover .r-move-head b {
+	color: var(--tc, var(--accent));
 }
 /* keep list rows to a fixed height — one line each, no wrapping — so the
    virtualizer's size estimates are exact (no scroll drift). */
@@ -2634,6 +2683,30 @@
 	gap: 4px;
 	padding: 0 4px;
 }
+/* desktop: the bar was sprawling — cap it and spend the freed width on bigger,
+   more legible figures. Mobile keeps the compact layout above. */
+@media (min-width: 620px) {
+	.rvmp .r-ivt .r-ivt-head,
+	.rvmp .r-ivt .r-ivt-row {
+		grid-template-columns: 36px 78px 152px 46px 1fr 58px 36px;
+		gap: 8px;
+	}
+	/* descendant selectors (`.r-ivt ...`) so these win over the base
+	   `.rvmp .r-ivt-*` rules that follow later in the file */
+	.rvmp .r-ivt .r-ivt-head {
+		font-size: 10.5px;
+	}
+	.rvmp .r-ivt .r-ivt-row {
+		font-size: 13.5px;
+	}
+	.rvmp .r-ivt .r-ivt-stats {
+		font-size: 12px;
+	}
+	.rvmp .r-ivt .r-ivt-bar {
+		max-width: 150px;
+		margin-right: auto;
+	}
+}
 .rvmp .r-ivt-head {
 	height: 34px;
 	background: var(--surface-2);
@@ -2697,12 +2770,16 @@
 	color: var(--text-faint);
 	font-weight: 700;
 }
+/* IVs: styled to look identical to the CP column — inherit its size/family from
+   .r-ivt-row and match its weight (700). Only the flex bits are for the "/" gaps. */
 .rvmp .r-ivt-iv {
 	display: flex;
 	justify-content: center;
 	align-items: baseline;
 	gap: 2px;
-	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+}
+.rvmp .r-ivt-iv b {
 	font-weight: 700;
 }
 .rvmp .r-ivt-iv i,
@@ -3529,6 +3606,10 @@
 .rvmp a.r-ctr-row:hover {
 	border-color: var(--border-strong);
 }
+/* hovering the row highlights the opponent's name — same as the raid counters */
+.rvmp a.r-ctr-row:hover .r-ctr-name {
+	color: var(--tc, var(--accent));
+}
 /* the raid row is a div acting as a link — whole surface is clickable, the
    move links inside opt out via stopPropagation */
 .rvmp .r-ctr-row--raid {
@@ -3594,6 +3675,7 @@
 	font-size: 13.5px;
 	color: var(--text);
 	text-decoration: none;
+	transition: color 0.14s ease;
 }
 .rvmp a.r-ctr-name:hover {
 	color: var(--tc, var(--accent));
