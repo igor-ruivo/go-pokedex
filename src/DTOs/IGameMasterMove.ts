@@ -10,6 +10,9 @@ export interface IGameMasterMove {
 	pvePower: number;
 	pvpCooldown: number;
 	pveCooldown: number;
+	/** Seconds into the PvE animation before the hit lands. Absent for synthetic moves. */
+	pveDamageWindowStart?: number;
+	pveDamageWindowEnd?: number;
 	pvpEnergy: number;
 	pveEnergy: number;
 	buffs?: BuffsType;

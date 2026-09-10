@@ -1,4 +1,3 @@
-import { useLayoutEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { R } from '../lib/nav';
@@ -16,12 +15,6 @@ const NAV: Array<{ to: string; label: string; icon: string; match: (p: string) =
 
 const Shell = () => {
 	const { pathname } = useLocation();
-
-	// Every route is a fresh view — jump to the top on navigation. Keyed on the
-	// path only, so the grid's live `?q=` filtering doesn't yank the scroll.
-	useLayoutEffect(() => {
-		window.scrollTo(0, 0);
-	}, [pathname]);
 
 	return (
 		<div className='rvmp'>

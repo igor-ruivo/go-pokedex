@@ -13,6 +13,14 @@ import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
 import { calculateCP, MAX_LEVEL_INDEX } from '../utils/pokemon-helper';
 
+const RAID_SORTS: ReadonlyArray<SortOption> = [
+	{ key: 'dps', label: 'DPS', defaultDir: 'desc' },
+	{ key: 'tdo', label: 'TDO', defaultDir: 'desc' },
+	{ key: 'edps', label: 'eDPS', defaultDir: 'desc' },
+];
+const RAID_METRIC_KEYS = RAID_SORTS.map((o) => o.key);
+type RaidMetric = 'dps' | 'tdo' | 'edps';
+
 const POKEDEX_SORTS: ReadonlyArray<SortOption> = [
 	{ key: 'dex', label: 'Dex number', defaultDir: 'asc' },
 	{ key: 'name', label: 'Name', defaultDir: 'asc' },
@@ -74,6 +82,12 @@ const Rankings = () => {
 	const sortKey = params.get('sort') ?? 'dex';
 	const sortDir: SortDir = params.get('dir') === 'desc' ? 'desc' : 'asc';
 
+	const raidMetric: RaidMetric = (RAID_METRIC_KEYS as ReadonlyArray<string>).includes(params.get('metric') ?? '')
+		? (params.get('metric') as RaidMetric)
+		: 'dps';
+	// raid rankings default to descending (best first); pokedex defaults to asc.
+	const raidDir: SortDir = params.get('dir') === 'asc' ? 'asc' : 'desc';
+
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
@@ -127,15 +141,20 @@ const Rankings = () => {
 		}
 
 		if (mode === 'raid') {
-			if (!raidDPSFetchCompleted) return [];
-			const list = raidDPS[wanted[0] ?? ''] ?? raidDPS[''] ?? {};
+			// No generic "all types" list any more — a type must be picked.
+			if (!raidDPSFetchCompleted || !wanted[0]) return [];
+			const list = raidDPS[wanted[0]] ?? {};
+			const s = raidDir === 'asc' ? 1 : -1;
 			return Object.values(list)
 				.filter((e) => {
 					const p = gamemasterPokemon[e.speciesId];
 					return p && !p.aliasId && byName(p);
 				})
-				.sort((a, b) => b.dps - a.dps)
-				.map((e, i) => ({ pokemon: gamemasterPokemon[e.speciesId], metric: { rank: i + 1, dps: e.dps } }));
+				.sort((a, b) => s * ((a[raidMetric] ?? 0) - (b[raidMetric] ?? 0)))
+				.map((e, i) => ({
+					pokemon: gamemasterPokemon[e.speciesId],
+					metric: { rank: i + 1, [raidMetric]: e[raidMetric] },
+				}));
 		}
 
 		// pvp league
@@ -152,6 +171,8 @@ const Rankings = () => {
 		typeCsv,
 		sortKey,
 		sortDir,
+		raidMetric,
+		raidDir,
 		gamemasterPokemon,
 		fetchCompleted,
 		rankLists,
@@ -228,15 +249,33 @@ const Rankings = () => {
 						single={isRaid}
 					/>
 					{mode === 'pokedex' && <SortBar options={POKEDEX_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />}
+					{isRaid && (
+						<SortBar
+							options={RAID_SORTS}
+							sortKey={raidMetric}
+							dir={raidDir}
+							onChange={(k, d) => {
+								const next = new URLSearchParams(params);
+								if (k === 'dps') next.delete('metric');
+								else next.set('metric', k);
+								if (d === 'desc') next.delete('dir');
+								else next.set('dir', d);
+								setParams(next, { replace: true });
+							}}
+						/>
+					)}
 				</div>
 				<p className='r-muted r-count'>
-					{loading ? 'Loading…' : `${rows.length.toLocaleString()} Pokémon`}
+					{loading ? 'Loading…' : isRaid && !raidType ? 'Choose a type' : `${rows.length.toLocaleString()} Pokémon`}
 					{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
 				</p>
 			</div>
 
 			<div ref={gridRef} className='r-grid-vp'>
-				{!loading && rows.length === 0 && (
+				{!loading && isRaid && !raidType && (
+					<p className='r-muted r-rank-empty'>Pick a type in the filter to see the best raid attackers of that type.</p>
+				)}
+				{!loading && rows.length === 0 && !(isRaid && !raidType) && (
 					<p className='r-muted' style={{ padding: 24 }}>
 						Nothing matches.
 					</p>

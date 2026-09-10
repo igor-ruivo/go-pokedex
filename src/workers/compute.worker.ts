@@ -11,7 +11,15 @@ import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
-import { computeBestIVs, computeDPSEntry, MAX_LEVEL_INDEX, type RankEntry } from '../utils/pokemon-helper';
+import {
+	computeBestIVs,
+	computeDPSEntry,
+	guessRaidTier,
+	MAX_LEVEL_INDEX,
+	type RaidOpts,
+	type RaidTier,
+	type RankEntry,
+} from '../utils/pokemon-helper';
 
 // Keep in sync with `customCupCPLimit` in src/queries/pvp.ts. Duplicated (not imported)
 // so the worker bundle doesn't pull in TanStack Query.
@@ -157,11 +165,33 @@ export interface RaidComparisonsInput {
 	candidates: Array<IGamemasterPokemon>;
 	moves: Record<string, IGameMasterMove>;
 	target: IGamemasterPokemon;
+	/** Weather / friendship / party-power / mega-aura / tier knobs from the Counters UI. */
+	opts?: {
+		weatherBoostedTypes?: Array<string> | undefined;
+		friendship?: number | undefined;
+		partySize?: number | undefined;
+		megaBoostType?: string | undefined;
+		/** Explicit tier override; falls back to `guessRaidTier(target)`. */
+		tier?: RaidTier | undefined;
+	};
 }
 
-/** Best-moveset DPS of every candidate against `target`, sorted strongest first. */
-const raidComparisons = ({ candidates, moves, target }: RaidComparisonsInput): Array<DPSEntry> => {
-	const out: Array<DPSEntry> = candidates.map((p) => computeDPSEntry(p, {}, moves, 15, MAX_LEVEL_INDEX, '', target));
+/**
+ * Every candidate's best-moveset DPS / TDO / eDPS against the real `target`
+ * (tier inferred from Game Master flags unless `opts.tier` overrides it),
+ * sorted strongest DPS first.
+ */
+const raidComparisons = ({ candidates, moves, target, opts }: RaidComparisonsInput): Array<DPSEntry> => {
+	const raidOpts: RaidOpts = {
+		tier: opts?.tier ?? guessRaidTier(target),
+		friendship: opts?.friendship,
+		partySize: opts?.partySize,
+		megaBoostType: opts?.megaBoostType,
+		weatherBoostedTypes: opts?.weatherBoostedTypes ? new Set(opts.weatherBoostedTypes) : undefined,
+	};
+	const out: Array<DPSEntry> = candidates.map((p) =>
+		computeDPSEntry(p, {}, moves, 15, MAX_LEVEL_INDEX, '', target, undefined, raidOpts)
+	);
 	return out.sort((a, b) => (b.dps !== a.dps ? b.dps - a.dps : a.speciesId.localeCompare(b.speciesId)));
 };
 

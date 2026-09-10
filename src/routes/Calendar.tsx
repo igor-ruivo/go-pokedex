@@ -35,10 +35,10 @@ const EGG_TIERS: ReadonlyArray<readonly [string, string]> = [
 	['12', '12 km'],
 ];
 
-const RAID_TIERS: ReadonlyArray<{ label: string; match: (k?: string) => boolean }> = [
-	{ label: 'Mega & 5★ Raids', match: (k) => k === '5' || k === 'mega' },
-	{ label: 'Tier 3 Raids', match: (k) => k === '3' },
-	{ label: 'Tier 1 Raids', match: (k) => k === '1' },
+const RAID_TIERS: ReadonlyArray<{ label: string; egg: string; match: (k?: string) => boolean }> = [
+	{ label: 'Higher Tier Raids', egg: 'tier-5', match: (k) => k === '5' || k === 'mega' },
+	{ label: 'Tier 3 Raids', egg: 'tier-3', match: (k) => k === '3' },
+	{ label: 'Tier 1 Raids', egg: 'tier-1', match: (k) => k === '1' },
 ];
 
 const isActive = (p: { startDate: number; endDate: number }, now: number) => now >= p.startDate && now < p.endDate;
@@ -125,17 +125,27 @@ const Group = ({
 	entries,
 	endMap,
 	darker,
+	egg,
 }: {
 	title: string;
 	entries: Array<IEntry>;
 	endMap?: Map<string, number> | undefined;
 	darker?: boolean | undefined;
+	/** Raid-egg icon key in /public/images/raids (raid groups only). */
+	egg?: string | undefined;
 }) =>
 	entries.length ? (
 		<>
-			<div className='r-section-h' data-darker={darker ? '' : undefined}>
-				{title}
-			</div>
+			{egg ? (
+				<div className='r-eggsec-head' data-darker={darker ? '' : undefined}>
+					<img src={`/images/raids/${egg}.png`} alt='' loading='lazy' />
+					<b>{title}</b>
+				</div>
+			) : (
+				<div className='r-section-h' data-darker={darker ? '' : undefined}>
+					{title}
+				</div>
+			)}
 			<MiniGrid entries={entries} endMap={endMap} />
 		</>
 	) : null;
@@ -364,6 +374,7 @@ const RaidsTab = () => {
 						<Group
 							key={t.label}
 							title={t.label}
+							egg={t.egg}
 							entries={activeEntries.filter((e) => t.match(e.kind) && !shadow(e.speciesId))}
 							endMap={showEnd ? endMap : undefined}
 						/>
@@ -372,6 +383,7 @@ const RaidsTab = () => {
 						<Group
 							key={`${t.label}-shadow`}
 							title={`Shadow · ${t.label.replace(' Raids', '')}`}
+							egg={t.egg}
 							entries={activeEntries.filter((e) => t.match(e.kind) && shadow(e.speciesId))}
 							endMap={showEnd ? endMap : undefined}
 							darker

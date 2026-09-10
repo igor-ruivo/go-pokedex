@@ -20,6 +20,7 @@ export interface IGamemasterPokemon {
 	legacyMoves: Array<string>;
 	isShadow: boolean;
 	isMega: boolean;
+	isSuperMega: boolean;
 	family?: {
 		id: string;
 		parent?: string;

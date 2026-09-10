@@ -12,6 +12,8 @@ export interface CardMetric {
 	rank?: number;
 	score?: number;
 	dps?: number;
+	tdo?: number;
+	edps?: number;
 	cp?: number;
 	/** PvP rank movement since the last update (+ climbed, − dropped). */
 	rankChange?: number;
@@ -66,6 +68,16 @@ export const PokeCard = ({
 			{metric?.dps != null && (
 				<span className='r-pc-metric'>
 					{metric.dps.toFixed(1)} <em>DPS</em>
+				</span>
+			)}
+			{metric?.tdo != null && (
+				<span className='r-pc-metric'>
+					{Math.round(metric.tdo).toLocaleString()} <em>TDO</em>
+				</span>
+			)}
+			{metric?.edps != null && (
+				<span className='r-pc-metric'>
+					{metric.edps.toFixed(1)} <em>eDPS</em>
 				</span>
 			)}
 		</Link>

@@ -6,7 +6,12 @@ import { dpsUrl } from '../utils/Configs';
 import { fetchJson } from '../utils/fetch-json';
 
 export type DPSEntry = {
+	/** Weave DPS with the comprehensive / energy-from-damage corrections. */
 	dps: number;
+	/** Total damage output = dps × time-on-field (bulk-weighted). */
+	tdo: number;
+	/** Effective DPS: bossHP ÷ time-to-win, incl. faints + relobby downtime. */
+	edps: number;
 	fastMove: string;
 	fastMoveDmg: number;
 	chargedMove: string;
@@ -30,9 +35,10 @@ const TYPE_KEYS = Object.values(PokemonTypes)
 	.filter((v): v is string => typeof v === 'string')
 	.map((t) => t.toLocaleLowerCase());
 
-// The overall ranking lives under the '' key and is served by `default-raid-dps-rank.json`.
-const RAID_DPS_KEYS = [...TYPE_KEYS, ''];
-const RAID_DPS_URLS = [...TYPE_KEYS.map((t) => dpsUrl(t)), dpsUrl('default')];
+// One list per attacking type. The old generic "" list was dropped — a raid
+// ranking only means something once you pick a type.
+const RAID_DPS_KEYS = TYPE_KEYS;
+const RAID_DPS_URLS = TYPE_KEYS.map((t) => dpsUrl(t));
 
 const combine = (results: Array<UseQueryResult<DPSRank, Error>>): RaidRankerData => {
 	const raidDPS: Record<string, DPSRank> = {};
@@ -46,7 +52,7 @@ const combine = (results: Array<UseQueryResult<DPSRank, Error>>): RaidRankerData
 	};
 };
 
-/** Pre-computed raid DPS rankings, one list per attacking type plus an overall list. */
+/** Pre-computed raid DPS/TDO/eDPS rankings, one list per attacking type. */
 export const useRaidRanker = (): RaidRankerData =>
 	useQueries({
 		queries: RAID_DPS_URLS.map((url) => ({

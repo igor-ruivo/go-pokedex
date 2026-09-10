@@ -595,6 +595,139 @@ export const computeMoveEffectiveness = (ownMoveType: string, targetType1: strin
 	return matrix[ownMoveType][targetType1Index] * (targetType2 ? matrix[ownMoveType][targetType2Index] : 1);
 };
 
+/* ---- raid model constants ---------------------------------------------------
+ * See the DPS/TDO methodology notes: the offensive side is exact game math; the
+ * defensive side (TDO / eDPS) uses one fitted "incoming DPS" constant that is
+ * the same for every boss, matching GamePress / DialgaDex / GO Hub.
+ */
+
+/** GamePress "y": incoming DPS ≈ Y / attacker_def_eff. Boss-agnostic. */
+export const RAID_INCOMING_DPS_NUMERATOR = 900;
+/** Companion: one absorbed boss charged hit, for the energy-from-damage term. */
+export const RAID_INCOMING_CM_POWER = 11700;
+export const RAID_RESPAWN_SECONDS = 1;
+export const RAID_RELOBBY_SECONDS = 10;
+export const RAID_PARTY_SIZE = 6;
+
+export type RaidTier = 'T1' | 'T3' | 'T5' | 'MEGA' | 'T6' | 'PRIMAL' | 'ELITE';
+
+/**
+ * Boss HP + the CPM applied to the boss's base defense, per tier. HP and CPM are
+ * datamined game constants (not estimates). T6 = Mega-Legendary raids.
+ */
+export const RAID_BOSS_STATS: Record<RaidTier, { hp: number; cpm: number }> = {
+	T1: { hp: 600, cpm: 0.5974 },
+	T3: { hp: 3600, cpm: 0.73 },
+	T5: { hp: 15000, cpm: 0.79 },
+	MEGA: { hp: 9000, cpm: 0.79 },
+	T6: { hp: 22500, cpm: 0.79 },
+	PRIMAL: { hp: 22500, cpm: 0.79 },
+	ELITE: { hp: 20000, cpm: 0.79 },
+};
+
+/**
+ * Best-effort raid tier from Game Master flags: primal (`*_primal` + mega) →
+ * Primal, super mega → T6, mega → Mega, legendary/mythical/ultra-beast → T5, an
+ * evolved form (or a standalone with no evo line) → T3, the base of an evo line
+ * → T1. Elite Raids are event-scheduled, not intrinsic — pass `tier: 'ELITE'`
+ * explicitly when you know it's one.
+ */
+export const guessRaidTier = (p: IGamemasterPokemon): RaidTier => {
+	if (p.isMega && p.speciesId.includes('_primal')) return 'PRIMAL';
+	if (p.isSuperMega) return 'T6';
+	if (p.isMega) return 'MEGA';
+	if (p.isLegendary || p.isMythical || p.isBeast) return 'T5';
+	if (p.family?.parent) return 'T3';
+	if (p.family?.evolutions && p.family.evolutions.length > 0) return 'T1';
+	return 'T3';
+};
+
+/** PvE battles resolve on a 500 ms server tick, so every duration snaps to it. */
+const roundToPveTurn = (seconds: number) => Math.round(seconds * 2) / 2;
+
+/** DialgaDex Party Power model: 0..1 boost on the charged move. */
+const partyPowerBoost = (fastPerCharged: number, partySize: number) => {
+	if (!partySize || partySize <= 1) return 0;
+	const perBoost = partySize === 2 ? 18 : partySize === 3 ? 9 : 6;
+	return Math.max(0, Math.min(fastPerCharged / perBoost, 1));
+};
+
+export interface WeaveDpsInput {
+	fastDmg: number;
+	fastDurationSec: number;
+	fastEnergy: number;
+	chargedDmg: number;
+	chargedDurationSec: number;
+	/** Energy the charged move costs, as a positive number. */
+	chargedEnergyCost: number;
+	attackerHpEff: number;
+	incomingDps: number;
+	incomingChargedHit?: number;
+	partyBoost?: number;
+}
+
+/**
+ * Weave DPS with the GamePress "comprehensive" corrections layered on the
+ * steady-state cycle: 0.5 s tick rounding, a 1-bar energy-cap penalty, the
+ * energy handed to you by incoming damage, the finite-fight `(0.5 − x/hp)·y`
+ * correction (slow ramp early, energy dump as you faint), and Party Power.
+ */
+export const weaveDps = ({
+	fastDmg,
+	fastDurationSec,
+	fastEnergy,
+	chargedDmg,
+	chargedDurationSec,
+	chargedEnergyCost,
+	attackerHpEff,
+	incomingDps,
+	incomingChargedHit = 0,
+	partyBoost = 0,
+}: WeaveDpsInput): number => {
+	const d_f = roundToPveTurn(fastDurationSec);
+	const d_c = roundToPveTurn(chargedDurationSec);
+
+	if (d_f <= 0 || fastEnergy <= 0 || chargedEnergyCost <= 0) {
+		return d_f > 0 ? fastDmg / d_f : 0;
+	}
+
+	const fm_dps = fastDmg / d_f;
+	const fm_eps = fastEnergy / d_f;
+	const cm_dps = chargedDmg / d_c;
+	const cm_dps_adj = cm_dps * (1 + partyBoost);
+
+	// energy-cap waste on a 1-bar move: it sits pinned near the 100 ceiling, so a
+	// fast move's worth of energy overflows every cycle. This is DialgaDex's
+	// turn-based form `(100 + 0.5·E_f) / d_c` — its extra `0.5·y·dws` term only
+	// applies in continuous mode, which we are not.
+	let cm_eps = chargedEnergyCost / d_c;
+	if (chargedEnergyCost >= 100) {
+		cm_eps = (chargedEnergyCost + 0.5 * fastEnergy) / d_c;
+	}
+
+	const x = 0.5 * chargedEnergyCost + 0.5 * fastEnergy + 0.5 * incomingChargedHit;
+
+	if (fm_dps > cm_dps) return fm_dps;
+
+	const dps0 = (fm_dps * cm_eps + cm_dps_adj * fm_eps) / (cm_eps + fm_eps);
+	const dps = dps0 + ((cm_dps_adj - fm_dps) / (cm_eps + fm_eps)) * (0.5 - x / attackerHpEff) * incomingDps;
+
+	return fm_dps > dps ? fm_dps : Math.max(dps, 0);
+};
+
+export interface RaidOpts {
+	/** Boss tier — sets boss HP (eDPS) and the CPM on the boss's defense. */
+	tier?: RaidTier | undefined;
+	/** Attacker move types boosted ×1.2 by the current weather. */
+	weatherBoostedTypes?: ReadonlySet<string> | undefined;
+	/** Friendship damage multiplier (1 = none … 1.11 = best friend). */
+	friendship?: number | undefined;
+	/** Trainers fast-attacking together, for Party Power (1 = off). */
+	partySize?: number | undefined;
+	/** A Mega of this type on your team: ×1.3 same type, ×1.1 others. */
+	megaBoostType?: string | undefined;
+}
+
 export const computeDPSEntry = (
 	p: IGamemasterPokemon,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
@@ -603,88 +736,127 @@ export const computeDPSEntry = (
 	level = MAX_LEVEL_INDEX,
 	forcedType = '',
 	target?: IGamemasterPokemon,
-	movesetOverride?: [string, string]
+	movesetOverride?: [string, string],
+	opts: RaidOpts = {}
 ): DPSEntry => {
-	const computeDamageCalculation = (moveId: string) =>
-		calculateDamage(
+	// Real boss for Counters; a generic T5 raid for the pre-computed type list.
+	const tier: RaidTier = opts.tier ?? (target ? guessRaidTier(target) : 'T5');
+	const boss = RAID_BOSS_STATS[tier];
+
+	const attackerDefEff = (p.baseStats.def + 15) * cpm[level] * (p.isShadow ? 0.8333333 : 1);
+	const attackerHpEff = Math.floor((p.baseStats.hp + 15) * cpm[level]);
+	const incomingDps = RAID_INCOMING_DPS_NUMERATOR / attackerDefEff;
+	const incomingChargedHit = RAID_INCOMING_CM_POWER / attackerDefEff;
+
+	const moveBonus = (moveType: string) => {
+		let m = opts.friendship && opts.friendship > 1 ? opts.friendship : 1;
+		if (opts.weatherBoostedTypes?.has(moveType)) m *= 1.2;
+		if (opts.megaBoostType) m *= moveType === opts.megaBoostType ? 1.3 : 1.1;
+		return m;
+	};
+
+	const dmg = (moveId: string) => {
+		const mv = moves[moveId];
+		const mType = mv.type.toLocaleLowerCase();
+		const stab = p.types.map((t) => t.toString().toLocaleLowerCase()).includes(mType);
+		const eff = target
+			? computeMoveEffectiveness(
+					mv.type,
+					target.types[0].toString().toLocaleLowerCase(),
+					target.types[1]?.toString().toLocaleLowerCase()
+				)
+			: forcedType && forcedType !== 'normal' && mType === forcedType
+				? Effectiveness.Effective
+				: Effectiveness.Normal;
+		return calculateDamage(
 			p.baseStats.atk,
-			moves[moveId].pvePower,
-			p.types.map((t) => t.toString().toLocaleLowerCase()).includes(moves[moveId].type.toLocaleLowerCase()),
+			mv.pvePower,
+			stab,
 			p.isShadow,
 			target ? target.isShadow : false,
-			target
-				? computeMoveEffectiveness(
-						moves[moveId].type,
-						target.types[0].toString().toLocaleLowerCase(),
-						target.types[1]?.toString().toLocaleLowerCase()
-					)
-				: forcedType && forcedType !== 'normal' && moves[moveId].type === forcedType
-					? Effectiveness.Effective
-					: Effectiveness.Normal,
+			eff,
 			attackIV,
 			level,
-			target ? target.baseStats.def : 200
+			target ? target.baseStats.def : 200,
+			moveBonus(mType),
+			boss.cpm
 		);
-	const computePveDPS = (chargedMoveDmg: number, fastMoveDmg: number, fastMoveId: string, chargedMoveId: string) =>
-		pveDPS(
-			chargedMoveDmg,
-			fastMoveDmg,
-			moves[fastMoveId].pveCooldown,
-			moves[chargedMoveId].pveEnergy * -1,
-			moves[fastMoveId].pveEnergy,
-			moves[chargedMoveId].pveCooldown
-		);
+	};
 
-	if (movesetOverride) {
-		const fastMoveDmg = computeDamageCalculation(movesetOverride[0]);
-		const chargedMoveDmg = computeDamageCalculation(movesetOverride[1]);
-		const dps = computePveDPS(chargedMoveDmg, fastMoveDmg, movesetOverride[0], movesetOverride[1]);
+	const finalize = (fast: string, charged: string, fastDmg: number, chargedDmg: number, dps: number): DPSEntry => {
+		const safeDps = Number.isFinite(dps) && dps > 0 ? dps : 0;
+		const tof = incomingDps > 0 ? attackerHpEff / incomingDps : 0;
+		const tdo = safeDps * tof;
+		let edps = 0;
+		if (tdo > 0 && tof > 0) {
+			const lives = boss.hp / tdo;
+			const deaths = Math.max(0, Math.ceil(lives) - 1);
+			const relobbies = Math.floor(deaths / RAID_PARTY_SIZE);
+			const ttw = lives * tof + (deaths - relobbies) * RAID_RESPAWN_SECONDS + relobbies * RAID_RELOBBY_SECONDS;
+			edps = ttw > 0 ? boss.hp / ttw : 0;
+		}
 		return {
-			fastMove: movesetOverride[0],
-			chargedMove: movesetOverride[1],
-			dps: dps,
+			fastMove: fast,
+			chargedMove: charged,
+			dps: safeDps,
+			tdo,
+			edps,
 			speciesId: p.speciesId,
-			fastMoveDmg: fastMoveDmg,
-			chargedMoveDmg: chargedMoveDmg,
+			fastMoveDmg: fastDmg,
+			chargedMoveDmg: chargedDmg,
 			rank: -1,
 		};
+	};
+
+	const oneWeave = (fastId: string, chargedId: string, fastDmg: number, chargedDmg: number) => {
+		const fm = moves[fastId];
+		const cm = moves[chargedId];
+		const chargedEnergyCost = -cm.pveEnergy;
+		const fastEnergy = fm.pveEnergy;
+		const fastPerCharged = fastEnergy > 0 ? chargedEnergyCost / fastEnergy : 0;
+		return weaveDps({
+			fastDmg,
+			fastDurationSec: fm.pveCooldown,
+			fastEnergy,
+			chargedDmg,
+			chargedDurationSec: cm.pveCooldown,
+			chargedEnergyCost,
+			attackerHpEff,
+			incomingDps,
+			incomingChargedHit,
+			partyBoost: partyPowerBoost(fastPerCharged, opts.partySize ?? 1),
+		});
+	};
+
+	if (movesetOverride) {
+		const [f, c] = movesetOverride;
+		const fastMoveDmg = dmg(f);
+		const chargedMoveDmg = dmg(c);
+		return finalize(f, c, fastMoveDmg, chargedMoveDmg, oneWeave(f, c, fastMoveDmg, chargedMoveDmg));
 	}
 
-	const fastMoves = p.fastMoves;
-	const chargedMoves = p.chargedMoves;
-	let higherDPS = Number.MIN_VALUE;
-	let higherFast = '';
-	let higherFastDmg = 0;
-	let higherCharged = '';
-	let higherChargedDmg = 0;
-	for (const currentFastMove of fastMoves) {
-		for (const currentChargedMove of chargedMoves) {
-			const fastMove = moves[currentFastMove];
+	let best = { dps: -Infinity, fast: '', fastDmg: 0, charged: '', chargedDmg: 0 };
+	for (const currentFastMove of p.fastMoves) {
+		for (const currentChargedMove of p.chargedMoves) {
 			const chargedMove = moves[currentChargedMove];
 			if (forcedType && chargedMove.type !== forcedType) {
 				continue;
 			}
-			const fastMoveDmg = computeDamageCalculation(currentFastMove);
-			const chargedMoveDmg = computeDamageCalculation(currentChargedMove);
-			const dps = computePveDPS(chargedMoveDmg, fastMoveDmg, currentFastMove, currentChargedMove);
-			if (dps > higherDPS) {
-				higherDPS = dps;
-				higherFast = fastMove.moveId;
-				higherFastDmg = fastMoveDmg;
-				higherCharged = chargedMove.moveId;
-				higherChargedDmg = chargedMoveDmg;
+			const fastMoveDmg = dmg(currentFastMove);
+			const chargedMoveDmg = dmg(currentChargedMove);
+			const dps = oneWeave(currentFastMove, currentChargedMove, fastMoveDmg, chargedMoveDmg);
+			if (dps > best.dps) {
+				best = {
+					dps,
+					fast: moves[currentFastMove].moveId,
+					fastDmg: fastMoveDmg,
+					charged: chargedMove.moveId,
+					chargedDmg: chargedMoveDmg,
+				};
 			}
 		}
 	}
-	return {
-		fastMove: higherFast,
-		chargedMove: higherCharged,
-		dps: higherDPS,
-		speciesId: p.speciesId,
-		fastMoveDmg: higherFastDmg,
-		chargedMoveDmg: higherChargedDmg,
-		rank: -1,
-	};
+	return finalize(best.fast, best.charged, best.fastDmg, best.chargedDmg, best.dps);
 };
 
 export const calculateDamage = (
@@ -696,16 +868,21 @@ export const calculateDamage = (
 	effectiveness: Effectiveness = Effectiveness.Effective,
 	attackIV = 15,
 	level = MAX_LEVEL_INDEX,
-	targetDef = 200
+	targetDef = 200,
+	/** Weather × friendship × mega-aura, applied on top. */
+	bonusMultiplier = 1,
+	/** CPM applied to the defender's base defense (raid tier CPM, or L40). */
+	defenderCpm = cpm[78]
 ) => {
 	return (
 		Math.floor(
 			0.5 *
 				moveDamage *
 				(((baseAtk + attackIV) * cpm[level] * (selfShadow ? 1.2 : 1)) /
-					((targetDef + 15) * cpm[78] * (targetShadow ? 0.8333333 : 1))) *
+					((targetDef + 15) * defenderCpm * (targetShadow ? 0.8333333 : 1))) *
 				(stab ? 1.2 : 1) *
-				effectiveness
+				effectiveness *
+				bonusMultiplier
 		) + 1
 	);
 };
