@@ -847,7 +847,9 @@ const PokemonDetail = () => {
 									<div className='r-readout'>
 										<div>
 											<i>{TYPE_LABEL[raidSelRow.t] ?? raidSelRow.t} rank</i>
-											<b className='hi'>{ordinal(raidSelRow.rank)}</b>
+											<b className='hi' style={{ ['--tc' as string]: typeVar(raidSelRow.t) }}>
+												{ordinal(raidSelRow.rank)}
+											</b>
 										</div>
 										<div>
 											<i>{RAID_METRIC_LABEL[raidMetric]}</i>

@@ -539,20 +539,27 @@
 	aspect-ratio: 1; /* always a square, like the calendar minis */
 	padding: 6px;
 	border-radius: var(--r-sm);
+	/* the standard tile treatment — solid fill, plain border, same as every
+	   other tile grid on the site. */
 	background: var(--surface-2);
 	border: 1px solid var(--border);
 	overflow: clip;
 	transition: all 0.14s ease;
 }
-.rvmp .r-reach-chip:not([data-active='true']):hover {
+.rvmp .r-reach-chip:hover {
 	border-color: var(--border-strong);
 }
 .rvmp .r-reach-chip:hover span {
 	color: var(--tc, var(--accent));
 }
+/* the Pokémon you're currently on: its name stays in its own type colour
+   (not just on hover), and its border matches the same hover-strength
+   border every other tile uses — hovering it doesn't change anything. */
 .rvmp .r-reach-chip[data-active='true'] {
-	border-color: var(--lg, var(--accent));
-	background: color-mix(in srgb, var(--lg, var(--accent)) 16%, var(--surface-2));
+	border-color: var(--border-strong);
+}
+.rvmp .r-reach-chip[data-active='true'] span {
+	color: var(--tc, var(--accent));
 }
 .rvmp .r-reach-art {
 	position: relative;
@@ -563,6 +570,8 @@
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
+	/* same understated drop-shadow the rankings grid's own sprites use */
+	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
 }
 .rvmp .r-reach-chip > .r-shadow-mark {
 	position: absolute;
@@ -1081,7 +1090,13 @@
 	font-variant-numeric: tabular-nums;
 }
 .rvmp .r-readout b.hi {
-	color: var(--accent);
+	/* the raid-performance card sets `--accent` to the raid-league colour for
+	   its other chips, so this needs its own escape hatch: the type-rank
+	   figure sets `--tc` (see PokemonDetail.tsx) to the actual selected raid
+	   type's colour and takes priority over that when present; every other
+	   `.hi` readout (e.g. the IV-picker's rank) has no `--tc` and falls back
+	   to `--accent` exactly as before. */
+	color: var(--tc, var(--accent));
 }
 
 /* ---- raid type coverage ------------------------------------------------- */
