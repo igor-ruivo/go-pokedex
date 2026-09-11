@@ -11,11 +11,12 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"typecheck": "tsc --noEmit",
-		"lint:check": "eslint --ext .ts,.tsx ./src",
-		"format:check": "prettier --check \"src/**/*.{ts,tsx,js,json,css,md}\" *.json *.md *.cjs",
-		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md}\" *.json *.md *.cjs",
-		"deploy": "pnpm run build && gh-pages -d dist",
-		"lint": "npx eslint --fix --ext .ts,.tsx ./src ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run format && pnpm tsc --noEmit"
+		"lint:check": "eslint --ext .ts,.tsx,.mjs ./src ./scripts",
+		"format:check": "prettier --check \"src/**/*.{ts,tsx,js,json,css,md}\" \"scripts/**/*.mjs\" *.json *.md *.cjs",
+		"format": "npx prettier --write \"src/**/*.{ts,tsx,js,json,css,md}\" \"scripts/**/*.mjs\" *.json *.md *.cjs",
+		"prerender": "node scripts/prerender.mjs",
+		"deploy": "pnpm run build && pnpm run prerender && gh-pages -d dist",
+		"lint": "npx eslint --fix --ext .ts,.tsx,.mjs ./src ./scripts ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run format && pnpm tsc --noEmit"
 	},
 	"dependencies": {
 		"@tanstack/query-sync-storage-persister": "^5.102.8",
