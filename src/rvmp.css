@@ -4,9 +4,15 @@
    ============================================================================ */
 
 /* Always reserve the scrollbar gutter so navigating between a short page and a
-   tall one doesn't shift the layout sideways a few pixels. */
+   tall one doesn't shift the layout sideways a few pixels. Also kill the
+   browser's native rubber-band overscroll on the page itself — on a Pokémon's
+   page, `position: fixed` elements (.r-hero-mini, its flying sprite/name/CP
+   clones) get visibly dragged down past the app bar when you swipe past the
+   bottom of the page and the whole viewport does its elastic bounce; this
+   stops that bounce from happening at all. */
 html:has(.rvmp) {
 	scrollbar-gutter: stable;
+	overscroll-behavior-y: none;
 }
 
 .rvmp {

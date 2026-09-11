@@ -322,57 +322,37 @@ const PokemonDetail = () => {
 		[pokemon]
 	);
 
-	// Collapsing hero → the actual hero sprite flies and shrinks into the mini
-	// bar's sprite slot as you scroll, instead of one copy fading out while an
-	// unrelated small copy fades in elsewhere. Classic FLIP: each frame we read
-	// the *live* on-screen rect of the real sprite (it's still normal, scrolling
-	// page content) and the mini slot's rect (fixed, so effectively constant),
-	// and place one floating clone image somewhere between the two, weighted by
-	// scroll progress — so it visibly travels and resizes, not just cross-fades.
-	// Name/CP/level don't have a sane "shared element" equivalent (different
-	// layouts entirely), so those stay a simple in-place cross-fade on `--p`.
-	// Everything here is ref/style-driven, not React state — zero re-renders
-	// while scrolling, however fast.
+	// Collapsing hero → a compact bar fades in under the app bar once you've
+	// almost finished scrolling past the *whole* hero card, and fades back out
+	// if you scroll back up past it. Plain boolean crossing of a single line
+	// (the hero's bottom edge vs. the app bar), applied via a `data-visible`
+	// attribute — the actual fade is a CSS transition, not JS interpolation.
+	// That's deliberate: a value that only flips at one edge and lets CSS own
+	// the animation can't flicker the way live 1:1 scroll-tracking could (a
+	// tiny extra scroll right at the boundary used to interrupt an in-flight
+	// tween and snap instead of finishing it) — restarting a CSS transition
+	// mid-flight just reverses it smoothly, and if the page is too short to
+	// ever cross the line, `data-visible` simply never flips and the bar never
+	// renders at all, with no extra "is this page tall enough" check needed.
 	const heroRef = useRef<HTMLElement>(null);
 	const heroMiniRef = useRef<HTMLDivElement>(null);
-	const heroFlyRef = useRef<HTMLImageElement>(null);
-	const heroMiniSlotRef = useRef<HTMLSpanElement>(null);
 	useEffect(() => {
 		const heroEl = heroRef.current;
 		const miniEl = heroMiniRef.current;
-		const flyEl = heroFlyRef.current;
-		const slotEl = heroMiniSlotRef.current;
-		if (!heroEl || !miniEl || !flyEl || !slotEl) return;
-		const COLLAPSE_DISTANCE = 160;
+		if (!heroEl || !miniEl) return;
+		const isDesktop = () => window.innerWidth >= 900;
+
 		let raf = 0;
 		const update = () => {
 			raf = 0;
 			const appbarH = document.querySelector('.r-appbar')?.getBoundingClientRect().height ?? 60;
-			// how far the hero's top edge has slid up past the app bar's bottom edge
-			const past = appbarH - heroEl.getBoundingClientRect().top;
-			const progress = Math.max(0, Math.min(1, past / COLLAPSE_DISTANCE));
-			miniEl.style.setProperty('--p', String(progress));
-			miniEl.style.pointerEvents = progress > 0.4 ? 'auto' : 'none';
-
-			if (progress <= 0) {
-				flyEl.style.opacity = '0';
-			} else {
-				const realImg = heroEl.querySelector('.r-sprite img');
-				if (realImg) {
-					const from = realImg.getBoundingClientRect();
-					const to = slotEl.getBoundingClientRect();
-					const lerp = (a: number, b: number) => a + (b - a) * progress;
-					flyEl.style.left = `${lerp(from.left, to.left)}px`;
-					flyEl.style.top = `${lerp(from.top, to.top)}px`;
-					flyEl.style.width = `${lerp(from.width, to.width)}px`;
-					flyEl.style.height = `${lerp(from.height, to.height)}px`;
-					flyEl.style.opacity = String(progress);
-				}
-			}
+			const gap = isDesktop() ? 10 : 0;
+			miniEl.style.top = `${appbarH + gap}px`;
+			const heroShown = heroEl.getBoundingClientRect().bottom <= appbarH;
+			miniEl.dataset.visible = String(heroShown);
 		};
 		const onScroll = () => {
-			if (raf) return;
-			raf = requestAnimationFrame(update);
+			if (!raf) raf = requestAnimationFrame(update);
 		};
 		update();
 		window.addEventListener('scroll', onScroll, { passive: true });
@@ -382,7 +362,14 @@ const PokemonDetail = () => {
 			window.removeEventListener('scroll', onScroll);
 			window.removeEventListener('resize', onScroll);
 		};
-	}, [speciesId]);
+		// `pokemon` (not just `speciesId`) matters: on a cold load this effect's
+		// first run lands while the page is still showing the loading/"not found"
+		// placeholder — none of the hero refs exist yet, so it bails out and,
+		// since `speciesId` alone doesn't change once the real data arrives, it
+		// would otherwise never retry and the whole thing would stay dead for
+		// that visit. Re-running once `pokemon` itself shows up fixes that.
+	}, [speciesId, pokemon]);
+	const cycleLeague = () => setLeague((l) => ((l + 1) % LEAGUES.length) as LeagueId);
 
 	if (!fetchCompleted) {
 		return (
@@ -408,6 +395,14 @@ const PokemonDetail = () => {
 	const baseId = self.replace('_shadow', '');
 	const hasShadow = !!gamemasterPokemon[`${baseId}_shadow`];
 	const isShadow = self.endsWith('_shadow');
+	// the topbar sprite/name double as "next in the family line" — same cyclic
+	// order the family-line strip itself is rendered in
+	const familyIdx = family.findIndex((m) => m.speciesId === self);
+	const nextFamilyMember = family.length > 1 ? family[(familyIdx + 1) % family.length] : undefined;
+	const goToNextFamilyMember = () => {
+		if (!nextFamilyMember) return;
+		void navigate(`${R.pokemon(nextFamilyMember.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
+	};
 
 	// Raid card follows the raid carousel (which Pokémon + which type + which combo), not the URL mon.
 	const raidSel = boardData.raid[Math.min(cpos(3).p, Math.max(0, boardData.raid.length - 1))];
@@ -476,33 +471,54 @@ const PokemonDetail = () => {
 
 	return (
 		<div className='r-shell'>
-			{/* ---- collapsed hero: the sprite below physically flies in here as you scroll ---- */}
-			{/* decorative echo of the hero above — screen readers get the real thing */}
-			<div className='r-hero-mini' ref={heroMiniRef} aria-hidden='true' style={accentStyle(primary)}>
-				{/* empty — just reserves the landing spot the flying sprite (below) aims for */}
-				<span className='r-hero-mini-sprite' ref={heroMiniSlotRef} />
-				<span className='r-hero-mini-name'>{cleanName(pokemon.speciesName)}</span>
-				<span className='r-hero-mini-types' aria-hidden='true'>
-					{pokemon.types.map((t) => (
-						<i key={String(t)} style={{ background: typeVar(t) }} />
-					))}
-				</span>
-				<span className='r-hero-mini-cp'>
+			{/* ---- collapsed hero: sits under the app bar (search stays put) — the sprite
+			    below physically flies in as you scroll (see the effect above); name /
+			    types / CP are simple, always-there text that cross-fades with the bar
+			    itself (a flown/scaled clone of a whole paragraph of text read badly —
+			    blurry at a shrunk size, and it can't ellipsis since its box never
+			    actually resizes, only its transform does) ---- */}
+			{/* decorative echo of the hero above — screen readers get the real thing.
+			    Sprite/name double as "go to the next Pokémon in the family line". */}
+			<div className='r-hero-mini' ref={heroMiniRef} data-visible='false' style={accentStyle(primary)}>
+				<button
+					type='button'
+					className='r-hero-mini-sprite'
+					onClick={goToNextFamilyMember}
+					disabled={!nextFamilyMember}
+					aria-label={nextFamilyMember ? `Next in family line: ${cleanName(nextFamilyMember.speciesName)}` : undefined}
+				>
+					{isShadow && <ShadowMark className='r-shadow-mark' />}
+					<img src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)} alt='' aria-hidden='true' />
+				</button>
+				<button
+					type='button'
+					className='r-hero-mini-name'
+					onClick={goToNextFamilyMember}
+					disabled={!nextFamilyMember}
+					aria-label={
+						nextFamilyMember
+							? `${cleanName(pokemon.speciesName)} — next: ${cleanName(nextFamilyMember.speciesName)}`
+							: undefined
+					}
+				>
+					{cleanName(pokemon.speciesName)}
+				</button>
+				<span className='r-hero-mini-cp' aria-hidden='true'>
 					{heroCp.toLocaleString()}
 					<em>CP</em>
 				</span>
-				<span className='r-hero-mini-lvl'>L{Number.isInteger(level) ? level : level.toFixed(1)}</span>
+				<button
+					type='button'
+					className='r-hero-mini-lg'
+					style={{ ['--seg-c' as string]: LEAGUES[league].cssVar }}
+					onClick={cycleLeague}
+					aria-label={`Currently showing ${LEAGUES[league].full}. Tap to switch league.`}
+				>
+					<i aria-hidden='true' />
+					{LEAGUES[league].label}
+					{league !== 3 && ' League'}
+				</button>
 			</div>
-			{/* the shared-element clone: positioned/sized every frame between the real
-			    hero sprite's live rect and the mini slot's rect above (see the effect) */}
-			<img
-				ref={heroFlyRef}
-				className='r-hero-fly'
-				src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)}
-				alt=''
-				aria-hidden='true'
-				style={{ opacity: 0 }}
-			/>
 
 			{/* ---- HERO (the only place the primary-type colour leaks) ---- */}
 			<header className='r-hero' ref={heroRef} style={accentStyle(primary)}>

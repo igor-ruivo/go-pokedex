@@ -99,19 +99,21 @@
 		bottom: -2px;
 	}
 }
-/* collapsed hero — a condensed 1-line summary (sprite · name · types · CP ·
-   level) that morphs in over the app bar, tracking scroll position 1:1 via the
-   `--p` custom property (0 = fully the big hero, 1 = fully collapsed) that
-   PokemonDetail writes every animation frame. No CSS transition here on
-   purpose — the point is that it tracks the scroll *continuously*, not that it
-   catches up after the fact. */
+/* collapsed hero — sits right under the app bar (search stays put above it —
+   see `top`, written every frame in JS since the real app bar height varies).
+   Fades in via `[data-visible]` + a plain CSS transition once you've scrolled
+   almost all the way past the real hero (see the effect in PokemonDetail) —
+   deliberately NOT driven by a continuous scroll-linked progress value:
+   restarting a CSS transition mid-flight just reverses it smoothly, so there's
+   no flicker if you scroll a hair further right at the boundary, and nothing
+   extra to write for "the page is too short to ever fully reveal this" — the
+   attribute simply never flips in that case. */
 .rvmp .r-hero-mini {
-	--p: 0;
 	position: fixed;
-	top: 0;
+	top: 60px; /* JS overwrites this with the real app bar height on mount */
 	left: 0;
 	right: 0;
-	z-index: 35; /* above .r-appbar (30) */
+	z-index: 25; /* below .r-appbar (30) — it sits under it, doesn't cover it */
 	display: flex;
 	align-items: center;
 	gap: var(--s3);
@@ -121,51 +123,66 @@
 		color-mix(in srgb, var(--bg) 92%, transparent);
 	backdrop-filter: blur(16px);
 	border-bottom: 1px solid var(--border);
-	opacity: var(--p);
-	/* a little downward drift at low progress + a gentle overshoot-settle curve
-	   on the vertical offset only — opacity stays a clean linear fade */
-	transform: translateY(calc((var(--p) - 1) * 10px));
+	opacity: 0;
+	transform: translateY(-6px);
 	pointer-events: none;
+	transition:
+		opacity 0.22s ease,
+		transform 0.22s ease;
 }
-/* empty on purpose — just a fixed-size, fixed-position landing spot; its rect
-   is what `.r-hero-fly` (the actual visible sprite mid-flight) flies toward */
+.rvmp .r-hero-mini[data-visible='true'] {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
 .rvmp .r-hero-mini-sprite {
 	flex: none;
 	width: 34px;
 	height: 34px;
+	position: relative;
+	display: grid;
+	place-items: center;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: pointer;
 }
-/* the shared-element clone — one real sprite image, repositioned/resized every
-   scroll frame from wherever the hero sprite currently sits (live, since it's
-   normal scrolling content) toward `.r-hero-mini-sprite`'s slot above. No
-   transition: the point is that it tracks the scroll motion directly, the way
-   a physical object being carried along would, not that it eases in after. */
-.rvmp .r-hero-fly {
-	position: fixed;
-	z-index: 40; /* above .r-hero-mini (35) */
+.rvmp .r-hero-mini-sprite:disabled {
+	cursor: default;
+}
+.rvmp .r-hero-mini-sprite img {
+	width: 100%;
+	height: 100%;
 	object-fit: contain;
 	pointer-events: none;
 	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.4));
 }
+.rvmp .r-hero-mini-sprite > .r-shadow-mark {
+	position: absolute;
+	top: -10%;
+	left: -10%;
+	width: 42%;
+	height: 42%;
+	z-index: 2;
+}
 .rvmp .r-hero-mini-name {
 	min-width: 0;
 	flex: 1 1 auto;
-	font-family: Fredoka, sans-serif;
+	/* guarantees breathing room before the CP figure even when the name is
+	   short (flex:1 alone only reserves it when the name is long enough to
+	   need the space) */
+	margin-right: var(--s3);
+	text-align: left;
+	font-family: Fredoka, 'Nunito Sans', sans-serif;
 	font-weight: 700;
 	font-size: 14px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	cursor: pointer;
 }
-.rvmp .r-hero-mini-types {
-	display: flex;
-	flex: none;
-	gap: 3px;
-}
-.rvmp .r-hero-mini-types i {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+.rvmp .r-hero-mini-name:disabled {
+	cursor: default;
 }
 .rvmp .r-hero-mini-cp {
 	flex: none;
@@ -174,26 +191,52 @@
 	gap: 3px;
 	font-family: Fredoka, sans-serif;
 	font-weight: 700;
-	font-size: 13px;
+	font-size: 15px;
 	color: var(--accent);
 	font-variant-numeric: tabular-nums;
 }
 .rvmp .r-hero-mini-cp em {
 	font-style: normal;
-	font-size: 10px;
+	font-size: 12px;
 	color: var(--text-faint);
 }
-.rvmp .r-hero-mini-lvl {
+/* current league — a small tappable badge, cycles league on tap (same action
+   as the bigger league-hint strip below, or tapping an active leaderboard row) */
+.rvmp .r-hero-mini-lg {
 	flex: none;
-	font-size: 12px;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-family: Fredoka, sans-serif;
 	font-weight: 700;
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
 	color: var(--text-dim);
-	font-variant-numeric: tabular-nums;
 }
-@media (max-width: 400px) {
-	/* tight on small phones — sprite / name / CP / level matter more than the dots */
-	.rvmp .r-hero-mini-types {
-		display: none;
+.rvmp .r-hero-mini-lg i {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--seg-c, var(--accent));
+	box-shadow: 0 0 6px color-mix(in srgb, var(--seg-c, var(--accent)) 70%, transparent);
+	flex: none;
+}
+@media (min-width: 900px) {
+	/* desktop: imitate `.r-bottomnav`'s own desktop treatment — a detached,
+	   centred, pill-shaped floating bar instead of a full-width strip */
+	.rvmp .r-hero-mini {
+		left: 50%;
+		right: auto;
+		width: max-content;
+		max-width: min(560px, calc(100vw - 32px));
+		border: 1px solid var(--border);
+		border-radius: var(--r-pill);
+		box-shadow: var(--shadow-2);
+		transform: translateX(-50%) translateY(-6px);
+	}
+	.rvmp .r-hero-mini[data-visible='true'] {
+		transform: translateX(-50%) translateY(0);
 	}
 }
 
