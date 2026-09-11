@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
+import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useDismiss } from '../hooks/useDismiss';
+import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
 
 // Regional-indicator flag emoji don't render on Windows, so a crisp 2-letter
 // ISO badge is the reliable cross-platform "flag".
@@ -31,6 +33,7 @@ const SPRITES: Array<[ImageSource, string]> = [
 export const SettingsMenu = () => {
 	const { currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
+	const { raidMetric, updateRaidMetric } = useRaidMetric();
 	const [open, setOpen] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
@@ -99,21 +102,39 @@ export const SettingsMenu = () => {
 					</button>
 
 					{moreOpen && (
-						<div className='r-setmenu-grp'>
-							<span className='r-setmenu-h'>Sprites</span>
-							<div className='r-set-opts'>
-								{SPRITES.map(([v, label]) => (
-									<button
-										key={String(v)}
-										type='button'
-										data-active={v === imageSource ? '' : undefined}
-										onClick={() => updateImageSource(v)}
-									>
-										{label}
-									</button>
-								))}
+						<>
+							<div className='r-setmenu-grp'>
+								<span className='r-setmenu-h'>Sprites</span>
+								<div className='r-set-opts'>
+									{SPRITES.map(([v, label]) => (
+										<button
+											key={String(v)}
+											type='button'
+											data-active={v === imageSource ? '' : undefined}
+											onClick={() => updateImageSource(v)}
+										>
+											{label}
+										</button>
+									))}
+								</div>
 							</div>
-						</div>
+
+							<div className='r-setmenu-grp'>
+								<span className='r-setmenu-h'>Raid ranking</span>
+								<div className='r-set-opts'>
+									{RAID_METRICS.map((m) => (
+										<button
+											key={m}
+											type='button'
+											data-active={m === raidMetric ? '' : undefined}
+											onClick={() => updateRaidMetric(m)}
+										>
+											{RAID_METRIC_LABEL[m]}
+										</button>
+									))}
+								</div>
+							</div>
+						</>
 					)}
 
 					<p className='r-setmenu-foot'>Saved on this device.</p>

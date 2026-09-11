@@ -3,13 +3,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { ShadowMark } from '../../components/ShadowMark';
-import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
+import { SortBar, type SortDir } from '../../components/SortBar';
 import { spriteUrl } from '../../components/Sprite';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
+import { useRaidMetric } from '../../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
 import { R } from '../../lib/nav';
+import { fmtRaidMetric, RAID_METRIC_BLURB, RAID_METRIC_SORTS, type RaidMetric } from '../../lib/raid-metric';
 import { TYPE_KEYS, TYPE_LABEL, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { usePokemon } from '../../queries/pokemon';
@@ -22,18 +24,6 @@ const LEAGUE_NAME = ['Great', 'Ultra', 'Master', 'Raid'] as const;
 const LG_SLUG = ['great', 'ultra', 'master', 'raid'] as const;
 const PVP_TOP = 5;
 const RAID_TOP = 10;
-
-type Metric = 'dps' | 'tdo' | 'edps';
-const METRIC_SORTS: ReadonlyArray<SortOption> = [
-	{ key: 'dps', label: 'DPS', defaultDir: 'desc' },
-	{ key: 'tdo', label: 'TDO', defaultDir: 'desc' },
-	{ key: 'edps', label: 'eDPS', defaultDir: 'desc' },
-];
-const METRIC_BLURB: Record<Metric, string> = {
-	dps: 'Damage per second while alive. Ignores bulk and downtime — favours glass cannons.',
-	tdo: 'Total damage one copy deals before fainting (DPS × survival). Rewards bulk; ignores boss HP and lobby time.',
-	edps: 'Damage per real second vs this exact boss, counting faints and the walk back from the lobby. The “will I beat the timer” number.',
-};
 
 const TIER_LABEL: Record<RaidTier, string> = {
 	T1: 'Tier 1',
@@ -95,7 +85,9 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 
 	// Raid battle-condition knobs (not persisted — session-local tuning).
 	const [cfgOpen, setCfgOpen] = useState(false);
-	const [metric, setMetric] = useState<Metric>('dps');
+	// which figure to rank by is a device-wide setting shared with Rankings and
+	// Settings, not local to this tab.
+	const { raidMetric: metric, updateRaidMetric: setMetric } = useRaidMetric();
 	const [metricDir, setMetricDir] = useState<SortDir>('desc');
 	const [weatherKey, setWeatherKey] = useState('');
 	const [partySize, setPartySize] = useState(1);
@@ -240,15 +232,15 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 
 			<div className='r-ctr-metricbar'>
 				<SortBar
-					options={METRIC_SORTS}
+					options={RAID_METRIC_SORTS}
 					sortKey={metric}
 					dir={metricDir}
 					onChange={(k, d) => {
-						setMetric(k as Metric);
+						setMetric(k as RaidMetric);
 						setMetricDir(d);
 					}}
 				/>
-				<p className='r-ctr-blurb'>{METRIC_BLURB[metric]}</p>
+				<p className='r-ctr-blurb'>{RAID_METRIC_BLURB[metric]}</p>
 			</div>
 
 			<div className='r-ctr-config' data-open={cfgOpen}>
@@ -402,11 +394,11 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 							<summary>What do these mean?</summary>
 							<dl>
 								<dt>DPS</dt>
-								<dd>{METRIC_BLURB.dps}</dd>
+								<dd>{RAID_METRIC_BLURB.dps}</dd>
 								<dt>TDO</dt>
-								<dd>{METRIC_BLURB.tdo}</dd>
+								<dd>{RAID_METRIC_BLURB.tdo}</dd>
 								<dt>eDPS</dt>
-								<dd>{METRIC_BLURB.edps}</dd>
+								<dd>{RAID_METRIC_BLURB.edps}</dd>
 								<dt>Weather · Friendship · Mega aura</dt>
 								<dd>
 									Damage multipliers on your attackers. Incoming damage always uses one fixed constant, so the boss’s
@@ -488,8 +480,8 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 									</span>
 								</div>
 								<span className='r-ctr-score'>
-									{metric === 'tdo' ? Math.round(e.tdo).toLocaleString() : e[metric].toFixed(1)}
-									<i>{METRIC_SORTS.find((o) => o.key === metric)?.label}</i>
+									{fmtRaidMetric(e[metric], metric)}
+									<i>{RAID_METRIC_SORTS.find((o) => o.key === metric)?.label}</i>
 								</span>
 							</div>
 						);

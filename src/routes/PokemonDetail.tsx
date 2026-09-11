@@ -8,12 +8,14 @@ import { goSpriteUrl, Sprite, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
 import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
+import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import useComputeIVs from '../hooks/useComputeIVs';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dexNo, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
+import { fmtRaidMetric, RAID_METRIC_LABEL } from '../lib/raid-metric';
 import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
@@ -98,6 +100,9 @@ const PokemonDetail = () => {
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { currentGameLanguage: gl } = useLanguage();
+	// which figure (DPS/TDO/eDPS) ranks raid attackers — the same device-wide
+	// setting Rankings' raid tab and the Counters tab use.
+	const { raidMetric } = useRaidMetric();
 
 	const pokemon = fetchCompleted ? gamemasterPokemon[speciesId] : undefined;
 	const tab: TabLabel = SLUG_TO_TAB[tabParam ?? 'ranks'] ?? 'Ranks';
@@ -158,24 +163,40 @@ const PokemonDetail = () => {
 					return ra - rb;
 				});
 
+		// The dataset's baked-in `rank` is DPS-only — re-rank each type's list by
+		// whichever metric is chosen so switching it actually reorders things
+		// (the raid tab, "best moveset by type coverage", all of it).
+		const metricRankByType: Record<string, Record<string, number>> = {};
+		for (const [type, list] of Object.entries(raidDPS)) {
+			if (type === '') continue;
+			const ranks: Record<string, number> = {};
+			Object.values(list)
+				.sort((a, b) => b[raidMetric] - a[raidMetric])
+				.forEach((entry, i) => {
+					ranks[entry.speciesId] = i + 1;
+				});
+			metricRankByType[type] = ranks;
+		}
+
 		// every attacking-type list this species is ranked in, best rank first
 		const rankedTypes = (sid: string) =>
 			Object.entries(raidDPS)
 				.filter(([t]) => t !== '')
 				.map(([type, list]) => ({ type, entry: list[sid] as DPSEntry | undefined }))
 				.filter((x): x is { type: string; entry: DPSEntry } => !!x.entry)
-				.sort((a, b) => a.entry.rank - b.entry.rank);
+				.map((x) => ({ ...x, rank: metricRankByType[x.type]?.[sid] ?? x.entry.rank }))
+				.sort((a, b) => a.rank - b.rank);
 
 		const raid = [...reachableRaid]
 			.map((p) => ({ p, types: rankedTypes(p.speciesId) }))
 			.sort((a, b) => {
-				const ra = a.types[0]?.entry.rank ?? Number.POSITIVE_INFINITY;
-				const rb = b.types[0]?.entry.rank ?? Number.POSITIVE_INFINITY;
+				const ra = a.types[0]?.rank ?? Number.POSITIVE_INFINITY;
+				const rb = b.types[0]?.rank ?? Number.POSITIVE_INFINITY;
 				return ra - rb || a.p.speciesId.localeCompare(b.p.speciesId);
 			});
 
 		return { pvp: [pvpList(0), pvpList(1), pvpList(2)], raid };
-	}, [pokemon, reachablePvp, reachableRaid, rankLists, raidDPS]);
+	}, [pokemon, reachablePvp, reachableRaid, rankLists, raidDPS, raidMetric]);
 
 	// Carousel positions: p = which reachable Pokémon, t = which raid type,
 	// m[type] = which fast+charged combo for that type.
@@ -258,9 +279,10 @@ const PokemonDetail = () => {
 		});
 	};
 
-	// fast+charged combos per attacking type for the carouseled raid member, best DPS first.
+	// fast+charged combos per attacking type for the carouseled raid member,
+	// best-first by whichever metric is chosen.
 	const comboLists = useMemo(() => {
-		const out: Record<string, Array<{ f: string; c: string; dps: number }>> = {};
+		const out: Record<string, Array<{ f: string; c: string; dps: number; tdo: number; edps: number }>> = {};
 		const raid = boardData.raid;
 		const sel = raid[Math.min(carousel[3]?.p ?? 0, Math.max(0, raid.length - 1))];
 		if (!sel?.p || !movesFetchCompleted || Object.keys(moves).length === 0) return out;
@@ -270,18 +292,17 @@ const PokemonDetail = () => {
 			const tc = charged.filter((id) => moves[id]?.type?.toLowerCase() === type);
 			out[type] = member.fastMoves
 				.flatMap((f) =>
-					tc.map((c) => ({
-						f,
-						c,
-						dps: computeDPSEntry(member, gamemasterPokemon, moves, 15, MAX_LEVEL_INDEX, '', undefined, [f, c]).dps,
-					}))
+					tc.map((c) => {
+						const e = computeDPSEntry(member, gamemasterPokemon, moves, 15, MAX_LEVEL_INDEX, '', undefined, [f, c]);
+						return { f, c, dps: e.dps, tdo: e.tdo, edps: e.edps };
+					})
 				)
-				.sort((a, b) => b.dps - a.dps)
+				.sort((a, b) => b[raidMetric] - a[raidMetric])
 				// only the best few combos — enough to compare, without an unreadable pip strip
 				.slice(0, 5);
 		}
 		return out;
-	}, [boardData, carousel, moves, movesFetchCompleted, gamemasterPokemon]);
+	}, [boardData, carousel, moves, movesFetchCompleted, gamemasterPokemon, raidMetric]);
 
 	const heroCp = useMemo(() => {
 		if (!pokemon) return 0;
@@ -334,10 +355,10 @@ const PokemonDetail = () => {
 	const raidElite = new Set(raidMember.eliteMoves);
 	const raidLegacy = new Set(raidMember.legacyMoves);
 	const raidMoveTag = (id: string) => (raidLegacy.has(id) ? 'Legacy' : raidElite.has(id) ? 'Elite' : null);
-	const raidRows = (raidSel?.types ?? []).map(({ type, entry }, i) => {
+	const raidRows = (raidSel?.types ?? []).map(({ type, entry, rank }, i) => {
 		const combos = comboLists[type] ?? [];
 		const mIdx = Math.min(cpos(3).m[type] ?? 0, Math.max(0, combos.length - 1));
-		return { t: type, e: entry, on: i === raidSelTypeIdx, combos, mIdx, combo: combos[mIdx] };
+		return { t: type, e: entry, rank, on: i === raidSelTypeIdx, combos, mIdx, combo: combos[mIdx] };
 	});
 	const raidSelRow = raidRows[raidSelTypeIdx];
 
@@ -371,8 +392,8 @@ const PokemonDetail = () => {
 			typeIdx = typeCount ? Math.min(t, typeCount - 1) : 0;
 			const tr = cand?.types[typeIdx];
 			if (tr) {
-				rank = tr.entry.rank;
-				metric = `${tr.entry.dps.toFixed(1)} DPS`;
+				rank = tr.rank;
+				metric = `${fmtRaidMetric(tr.entry[raidMetric], raidMetric)} ${RAID_METRIC_LABEL[raidMetric]}`;
 				bestType = tr.type;
 			}
 		} else {
@@ -619,11 +640,11 @@ const PokemonDetail = () => {
 									<div className='r-readout'>
 										<div>
 											<i>{TYPE_LABEL[raidSelRow.t] ?? raidSelRow.t} rank</i>
-											<b className='hi'>{ordinal(raidSelRow.e.rank)}</b>
+											<b className='hi'>{ordinal(raidSelRow.rank)}</b>
 										</div>
 										<div>
-											<i>DPS</i>
-											<b>{(raidSelRow.combo?.dps ?? raidSelRow.e.dps).toFixed(1)}</b>
+											<i>{RAID_METRIC_LABEL[raidMetric]}</i>
+											<b>{fmtRaidMetric(raidSelRow.combo?.[raidMetric] ?? raidSelRow.e[raidMetric], raidMetric)}</b>
 										</div>
 										<div>
 											<i>Base ATK</i>
@@ -640,7 +661,7 @@ const PokemonDetail = () => {
 											Best moveset by type coverage
 										</div>
 										<div className='r-raidtypes'>
-											{raidRows.map(({ t, e, on, combos, mIdx, combo }, i) => {
+											{raidRows.map(({ t, e, rank, on, combos, mIdx, combo }, i) => {
 												const activate = () => (on ? cycleMove(t, combos.length) : selectType(i));
 												return (
 													<div
@@ -662,8 +683,11 @@ const PokemonDetail = () => {
 													>
 														<span className='r-raidtype-head'>
 															<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
-															<b>{ordinal(e.rank)}</b>
-															<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
+															<b>{ordinal(rank)}</b>
+															<em>
+																{fmtRaidMetric(combo?.[raidMetric] ?? e[raidMetric], raidMetric)}{' '}
+																{RAID_METRIC_LABEL[raidMetric]}
+															</em>
 														</span>
 														{combo && (
 															<span className='r-raidtype-moves'>

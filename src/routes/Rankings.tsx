@@ -5,21 +5,15 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FilterBar } from '../components/FilterBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
+import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { MODE_COLOR, MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
+import { RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
 import { TYPE_KEYS, TYPE_LABEL, typeKey } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
 import { calculateCP, MAX_LEVEL_INDEX } from '../utils/pokemon-helper';
-
-const RAID_SORTS: ReadonlyArray<SortOption> = [
-	{ key: 'dps', label: 'DPS', defaultDir: 'desc' },
-	{ key: 'tdo', label: 'TDO', defaultDir: 'desc' },
-	{ key: 'edps', label: 'eDPS', defaultDir: 'desc' },
-];
-const RAID_METRIC_KEYS = RAID_SORTS.map((o) => o.key);
-type RaidMetric = 'dps' | 'tdo' | 'edps';
 
 const POKEDEX_SORTS: ReadonlyArray<SortOption> = [
 	{ key: 'dex', label: 'Dex number', defaultDir: 'asc' },
@@ -88,9 +82,9 @@ const Rankings = () => {
 	const sortKey = params.get('sort') ?? 'dex';
 	const sortDir: SortDir = params.get('dir') === 'desc' ? 'desc' : 'asc';
 
-	const raidMetric: RaidMetric = (RAID_METRIC_KEYS as ReadonlyArray<string>).includes(params.get('metric') ?? '')
-		? (params.get('metric') as RaidMetric)
-		: 'dps';
+	// which figure (DPS/TDO/eDPS) to rank by is a device-wide setting, shared with
+	// the Counters tab and Settings — not a per-page URL param.
+	const { raidMetric, updateRaidMetric } = useRaidMetric();
 	// raid rankings default to descending (best first); pokedex defaults to asc.
 	const raidDir: SortDir = params.get('dir') === 'asc' ? 'asc' : 'desc';
 
@@ -267,13 +261,12 @@ const Rankings = () => {
 					{mode === 'pokedex' && <SortBar options={POKEDEX_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />}
 					{isRaid && (
 						<SortBar
-							options={RAID_SORTS}
+							options={RAID_METRIC_SORTS}
 							sortKey={raidMetric}
 							dir={raidDir}
 							onChange={(k, d) => {
+								updateRaidMetric(k as RaidMetric);
 								const next = new URLSearchParams(params);
-								if (k === 'dps') next.delete('metric');
-								else next.set('metric', k);
 								if (d === 'desc') next.delete('dir');
 								else next.set('dir', d);
 								setParams(next, { replace: true });
