@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+	<!-- faithful vector re-creation of .r-logo-ball (src/components.css) -->
+	<circle cx="256" cy="256" r="224" fill="none" stroke="#58a7ff" stroke-width="32" />
+	<path d="M 48 256 A 208 208 0 0 1 464 256 Z" fill="#ff5b5b" />
+	<path d="M 48 256 A 208 208 0 0 0 464 256 Z" fill="#f4f4f5" />
+	<circle cx="256" cy="256" r="189" fill="none" stroke="#11151c" stroke-width="38" />
+	<circle cx="256" cy="256" r="104" fill="#f4f4f5" />
+	<circle cx="256" cy="256" r="66" fill="#11151c" />
+</svg>

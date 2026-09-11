@@ -119,7 +119,10 @@ export const SearchBox = () => {
 
 	return (
 		<div className='r-search' ref={rootRef}>
-			<span aria-hidden>⌕</span>
+			<svg className='r-search-icon' viewBox='0 0 24 24' aria-hidden='true'>
+				<circle cx='11' cy='11' r='7' />
+				<line x1='21' y1='21' x2='16.2' y2='16.2' />
+			</svg>
 			<input
 				value={q}
 				onChange={(e) => {

@@ -43,6 +43,10 @@ export enum ConfigKeys {
 	ExpandedRaidTier,
 	ExpandedSpawnDate,
 	RaidMetric,
+	RaidWeather,
+	RaidPartySize,
+	RaidFriendship,
+	RaidMegaBoostType,
 }
 
 export const readSessionValue = (key: ConfigKeys) => {

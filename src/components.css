@@ -122,7 +122,8 @@
 		radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
 		color-mix(in srgb, var(--bg) 92%, transparent);
 	backdrop-filter: blur(16px);
-	border-bottom: 1px solid var(--border);
+	/* the standard card border, same as everywhere else on the site */
+	border: 1px solid var(--border);
 	opacity: 0;
 	transform: translateY(-6px);
 	pointer-events: none;
@@ -135,6 +136,29 @@
 	transform: translateY(0);
 	pointer-events: auto;
 }
+/* sprite + name are one clickable target — hovering either half colours the
+   name (the same "name colours on hover" language every other tile / row on
+   the site uses; `--accent` is this Pokémon's own type colour here, see the
+   `accentStyle()` on `.r-hero-mini` itself). No border/ring on the sprite. */
+.rvmp .r-hero-mini-id {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	min-width: 0;
+	flex: 1 1 auto;
+	/* guarantees breathing room before the league badge even when the name is
+	   short (flex:1 alone only reserves it when the name is long enough to
+	   need the space) */
+	margin-right: var(--s3);
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: pointer;
+	text-align: left;
+}
+.rvmp .r-hero-mini-id:disabled {
+	cursor: default;
+}
 .rvmp .r-hero-mini-sprite {
 	flex: none;
 	width: 34px;
@@ -142,13 +166,6 @@
 	position: relative;
 	display: grid;
 	place-items: center;
-	padding: 0;
-	border: none;
-	background: none;
-	cursor: pointer;
-}
-.rvmp .r-hero-mini-sprite:disabled {
-	cursor: default;
 }
 .rvmp .r-hero-mini-sprite img {
 	width: 100%;
@@ -168,36 +185,43 @@
 .rvmp .r-hero-mini-name {
 	min-width: 0;
 	flex: 1 1 auto;
-	/* guarantees breathing room before the league badge even when the name is
-	   short (flex:1 alone only reserves it when the name is long enough to
-	   need the space) */
-	margin-right: var(--s3);
-	text-align: left;
 	font-family: Fredoka, 'Nunito Sans', sans-serif;
 	font-weight: 700;
 	font-size: 14px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	cursor: pointer;
+	color: var(--text);
+	transition: color 0.14s ease;
 }
-.rvmp .r-hero-mini-name:disabled {
-	cursor: default;
+.rvmp .r-hero-mini-id:not(:disabled):hover .r-hero-mini-name {
+	color: var(--accent);
 }
 /* current league — a small tappable badge, cycles league on tap (same action
    as the bigger league-hint strip below, or tapping an active leaderboard row).
    Icon + name both carry the league's own colour, same as the leaderboard. */
 .rvmp .r-hero-mini-lg {
 	flex: none;
+	align-self: stretch; /* nearly the full height of the bar, not just a thin chip */
 	display: flex;
 	align-items: center;
-	gap: 5px;
+	gap: 8px;
+	padding: 0 12px;
+	border-radius: var(--r-pill);
+	border: 1px solid transparent;
 	font-family: Fredoka, sans-serif;
 	font-weight: 700;
 	font-size: 11px;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	color: var(--seg-c, var(--accent));
+	transition:
+		border-color 0.14s ease,
+		background 0.14s ease;
+}
+.rvmp .r-hero-mini-lg:hover {
+	border-color: color-mix(in srgb, var(--seg-c, var(--accent)) 45%, var(--border-strong));
+	background: color-mix(in srgb, var(--seg-c, var(--accent)) 12%, transparent);
 }
 .rvmp .r-hero-mini-lg img {
 	width: 16px;
@@ -214,7 +238,6 @@
 		right: auto;
 		width: max-content;
 		max-width: min(560px, calc(100vw - 32px));
-		border: 1px solid var(--border);
 		border-radius: var(--r-pill);
 		box-shadow: var(--shadow-2);
 		transform: translateX(-50%) translateY(-6px);
@@ -1403,6 +1426,18 @@
 	border: 1px solid var(--border);
 	color: var(--text-faint);
 }
+/* a proper vector glass instead of the old ⌕ glyph — that rendered barely
+   visible (thin, inconsistent glyph coverage across fonts); this is crisp at
+   any size and always exactly as bold as the border it's drawn with */
+.rvmp .r-search-icon {
+	flex: none;
+	width: 19px;
+	height: 19px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2.2;
+	stroke-linecap: round;
+}
 .rvmp .r-search-clear {
 	flex: none;
 	width: 20px;
@@ -1560,6 +1595,15 @@
 .rvmp .r-bn-icon {
 	font-size: 17px;
 	line-height: 1;
+}
+/* icon-image nav items (Pokédex / Rankings / Moves / Types) — sized off `em`
+   so they automatically track the same responsive font-size as the emoji
+   ones (below, on phones) without a separate breakpoint of their own */
+.rvmp .r-bn-icon img {
+	display: block;
+	width: 1.15em;
+	height: 1.15em;
+	object-fit: contain;
 }
 @media (min-width: 900px) {
 	.rvmp .r-bottomnav {
@@ -3877,6 +3921,7 @@
 	font-size: 15px;
 	font-variant-numeric: tabular-nums;
 	color: var(--text);
+	transition: color 0.14s ease;
 }
 .rvmp .r-ctr-score i {
 	font-style: normal;
@@ -3885,10 +3930,12 @@
 	letter-spacing: 0.05em;
 	color: var(--text-faint);
 }
-.rvmp .r-ctr-score[data-tone='win'] {
+/* win/lose colour only paints in on hover — the row itself carries no colour
+   language at rest, so a whole list doesn't read as a wall of green/red. */
+.rvmp .r-ctr-row:hover .r-ctr-score[data-tone='win'] {
 	color: var(--t-grass);
 }
-.rvmp .r-ctr-score[data-tone='lose'] {
+.rvmp .r-ctr-row:hover .r-ctr-score[data-tone='lose'] {
 	color: color-mix(in srgb, var(--t-fire) 82%, var(--text));
 }
 .rvmp .r-ctr-toggles {

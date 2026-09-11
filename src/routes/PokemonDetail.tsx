@@ -559,21 +559,12 @@ const PokemonDetail = () => {
 			    blurry at a shrunk size, and it can't ellipsis since its box never
 			    actually resizes, only its transform does) ---- */}
 			{/* decorative echo of the hero above — screen readers get the real thing.
-			    Sprite/name double as "go to the next Pokémon in the family line". */}
+			    Sprite+name double as "go to the next Pokémon in the family line",
+			    as one combined target — hovering either half highlights the name. */}
 			<div className='r-hero-mini' ref={heroMiniRef} data-visible='false' style={accentStyle(primary)}>
 				<button
 					type='button'
-					className='r-hero-mini-sprite'
-					onClick={goToNextFamilyMember}
-					disabled={!nextFamilyMember}
-					aria-label={nextFamilyMember ? `Next in family line: ${cleanName(nextFamilyMember.speciesName)}` : undefined}
-				>
-					{isShadow && <ShadowMark className='r-shadow-mark' />}
-					<img src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)} alt='' aria-hidden='true' />
-				</button>
-				<button
-					type='button'
-					className='r-hero-mini-name'
+					className='r-hero-mini-id'
 					onClick={goToNextFamilyMember}
 					disabled={!nextFamilyMember}
 					aria-label={
@@ -582,7 +573,11 @@ const PokemonDetail = () => {
 							: undefined
 					}
 				>
-					{cleanName(pokemon.speciesName)}
+					<span className='r-hero-mini-sprite'>
+						{isShadow && <ShadowMark className='r-shadow-mark' />}
+						<img src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)} alt='' aria-hidden='true' />
+					</span>
+					<span className='r-hero-mini-name'>{cleanName(pokemon.speciesName)}</span>
 				</button>
 				<button
 					type='button'

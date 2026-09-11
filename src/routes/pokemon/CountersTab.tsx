@@ -83,17 +83,24 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 	useEffect(() => void writePersistentValue(ConfigKeys.Mega, String(mega)), [mega]);
 	useEffect(() => void writePersistentValue(ConfigKeys.Shadow, String(shadow)), [shadow]);
 
-	// Raid battle-condition knobs (not persisted — session-local tuning).
+	// Raid battle-condition knobs. Weather/party/friendship/mega-aura are device
+	// settings (you tend to fight under the same conditions every time) — boss
+	// tier isn't, since it's inferred fresh per-boss below.
 	const [cfgOpen, setCfgOpen] = useState(false);
 	// which figure to rank by is a device-wide setting shared with Rankings and
 	// Settings, not local to this tab.
 	const { raidMetric: metric, updateRaidMetric: setMetric } = useRaidMetric();
 	const [metricDir, setMetricDir] = useState<SortDir>('desc');
-	const [weatherKey, setWeatherKey] = useState('');
-	const [partySize, setPartySize] = useState(1);
-	const [friendship, setFriendship] = useState(1);
-	const [megaBoostType, setMegaBoostType] = useState('');
+	const [weatherKey, setWeatherKey] = useState(() => readPersistentValue(ConfigKeys.RaidWeather) ?? '');
+	const [partySize, setPartySize] = useState(() => Number(readPersistentValue(ConfigKeys.RaidPartySize)) || 1);
+	const [friendship, setFriendship] = useState(() => Number(readPersistentValue(ConfigKeys.RaidFriendship)) || 1);
+	const [megaBoostType, setMegaBoostType] = useState(() => readPersistentValue(ConfigKeys.RaidMegaBoostType) ?? '');
+	useEffect(() => void writePersistentValue(ConfigKeys.RaidWeather, weatherKey), [weatherKey]);
+	useEffect(() => void writePersistentValue(ConfigKeys.RaidPartySize, String(partySize)), [partySize]);
+	useEffect(() => void writePersistentValue(ConfigKeys.RaidFriendship, String(friendship)), [friendship]);
+	useEffect(() => void writePersistentValue(ConfigKeys.RaidMegaBoostType, megaBoostType), [megaBoostType]);
 	// Starts on the inferred tier for this boss; re-syncs when you open another one.
+	// (not persisted — the boss tier is a property of the raid you're looking at)
 	const [tier, setTier] = useState<RaidTier>(() => guessRaidTier(pokemon));
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => setTier(guessRaidTier(pokemon)), [pokemon.speciesId]);

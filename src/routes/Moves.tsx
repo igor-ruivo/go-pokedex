@@ -19,7 +19,7 @@ const MOVE_SORTS: ReadonlyArray<SortOption> = [
 	{ key: 'dmg_pvp', label: 'DMG · PvP', defaultDir: 'desc' },
 	{ key: 'nrg_pve', label: 'NRG · PvE', defaultDir: 'desc' },
 	{ key: 'nrg_pvp', label: 'NRG · PvP', defaultDir: 'desc' },
-	{ key: 'cd_pve', label: 'DUR · PvE', defaultDir: 'asc' },
+	{ key: 'cd_pve', label: 'DUR. · PvE', defaultDir: 'asc' },
 	{ key: 'cd_pvp', label: 'TURNS · PvP', defaultDir: 'asc' },
 	{ key: 'dps_pve', label: 'DPS · PvE', defaultDir: 'desc' },
 	{ key: 'dps_pvp', label: 'DPS · PvP', defaultDir: 'desc' },
@@ -39,17 +39,51 @@ type Kind = 'all' | 'fast' | 'charged';
 const Moves = () => {
 	const { moves, movesFetchCompleted } = useMoves();
 	const { currentGameLanguage: gl } = useLanguage();
-	const [kind, setKind] = useState<Kind>('all');
-	const [type, setType] = useState<Array<string>>([]);
-	const [sortKey, setSortKey] = useState('name');
-	const [sortDir, setSortDir] = useState<SortDir>('asc');
+	// kind/type/sort/dir live in the URL (same as Rankings) — reloading,
+	// bookmarking or sharing a filtered/sorted view keeps it, instead of
+	// always resetting.
+	const [params, setParams] = useSearchParams();
 	// the app-bar search box writes `?q=` live as you type (same as the
 	// Pokédex/Rankings grids) — this page just reads it back.
-	const [params] = useSearchParams();
 	const q = (params.get('q') ?? '').toLowerCase().trim();
+	const kindParam = params.get('kind');
+	const kind: Kind = kindParam === 'fast' || kindParam === 'charged' ? kindParam : 'all';
+	const setKind = (next: Kind) => {
+		const p = new URLSearchParams(params);
+		if (next === 'all') p.delete('kind');
+		else p.set('kind', next);
+		setParams(p, { replace: true });
+	};
+	const typeCsv = params.get('type') ?? '';
+	const type = typeCsv
+		.split(',')
+		.map((t) => t.trim())
+		.filter(Boolean)
+		.filter((t) => TYPE_KEYS.includes(t))
+		.slice(0, 1);
+	const sortKey = params.get('sort') ?? 'name';
+	const sortDir: SortDir = params.get('dir') === 'desc' ? 'desc' : 'asc';
+	const setType = (list: Array<string>) => {
+		const next = new URLSearchParams(params);
+		const capped = list.slice(0, 1);
+		if (capped.length) next.set('type', capped.join(','));
+		else next.delete('type');
+		setParams(next, { replace: true });
+	};
+	const setSort = (key: string, dir: SortDir) => {
+		const next = new URLSearchParams(params);
+		if (key === 'name' && dir === 'asc') {
+			next.delete('sort');
+			next.delete('dir');
+		} else {
+			next.set('sort', key);
+			next.set('dir', dir);
+		}
+		setParams(next, { replace: true });
+	};
 
 	const list = useMemo(() => {
-		const t = type[0];
+		const t = typeCsv.split(',')[0];
 		const seen = new Set<string>();
 		const filtered = Object.values(moves).filter((m) => {
 			if (kind === 'fast' && !m.isFast) return false;
@@ -93,7 +127,7 @@ const Moves = () => {
 				: s * (num(sortKey, a) - num(sortKey, b)) || name(a).localeCompare(name(b))
 		);
 		return filtered;
-	}, [moves, kind, type, gl, sortKey, sortDir, q]);
+	}, [moves, kind, typeCsv, gl, sortKey, sortDir, q]);
 
 	const listRef = useRef<HTMLDivElement>(null);
 	const [scrollMargin, setScrollMargin] = useState(0);
@@ -142,15 +176,7 @@ const Moves = () => {
 
 			<div className='r-controls'>
 				<FilterBar types={TYPE_KEYS} selected={type} onChange={setType} single />
-				<SortBar
-					options={MOVE_SORTS}
-					sortKey={sortKey}
-					dir={sortDir}
-					onChange={(k, d) => {
-						setSortKey(k);
-						setSortDir(d);
-					}}
-				/>
+				<SortBar options={MOVE_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />
 			</div>
 
 			<p className='r-muted r-count'>{list.length.toLocaleString()} moves</p>
