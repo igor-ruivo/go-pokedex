@@ -1,11 +1,11 @@
 <!DOCTYPE html><html lang="en"><head>
-        <!--
+		<!--
             Decodes the redirect 404.html issues for a real in-app path (e.g. a
             hard load of /pokemon/pikachu) back into that path via
             history.replaceState, before React Router mounts and reads the URL.
             Must run first, before any other script. See public/404.html.
         -->
-        <script type="text/javascript">
+		<script type="text/javascript">
 			(function (l) {
 				if (l.search[1] === '/') {
 					var decoded = l.search
@@ -18,15 +18,27 @@
 					window.history.replaceState(null, '', l.pathname.slice(0, -1) + decoded + l.hash);
 				}
 			})(window.location);
-        </script>
-        <meta charset="utf-8">
-        <link rel="icon" href="/favicon.ico">
-        <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1 user-scalable=no">
-        <meta name="theme-color" content="#202023">
-        <meta name="description" content="Flying Press (Fighting · Charged move) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.">
-        <!-- Google tag (gtag.js) -->
-        <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-2N9E93LMRT"></script>
-        <script>
+		</script>
+		<meta charset="utf-8">
+		<link rel="icon" href="/favicon.ico">
+		<meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1 user-scalable=no">
+		<meta name="theme-color" content="#202023">
+		<meta name="description" content="Flying Press (Fighting · Charged move) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.">
+		<!--
+            Baseline Open Graph/Twitter Card tags — a real, crisp 512x512 image
+            instead of leaving link-preview crawlers (WhatsApp, Discord, …) to
+            fall back to favicon.ico (32x32, blurry once stretched to a preview
+            thumbnail). scripts/prerender.mjs and usePageMeta.ts override these
+            per page (a Pokémon/move's own sprite, etc.) — this is just the
+            floor so nothing is ever left without a decent one.
+        -->
+		<meta property="og:type" content="website">
+		<meta property="og:image" content="https://go-pokedex.com/images/types/fighting.png">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:image" content="https://go-pokedex.com/images/types/fighting.png">
+		<!-- Google tag (gtag.js) -->
+		<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-2N9E93LMRT"></script>
+		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag() {
 				dataLayer.push(arguments);
@@ -34,25 +46,25 @@
 			gtag('js', new Date());
 
 			gtag('config', 'G-2N9E93LMRT');
-        </script>
-        <link rel="apple-touch-icon" href="/logo192.png">
-        <!-- app typefaces -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&amp;display=swap" rel="stylesheet">
-        <!--
+		</script>
+		<link rel="apple-touch-icon" href="/logo192.png">
+		<!-- app typefaces -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+		<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&amp;display=swap" rel="stylesheet">
+		<!--
             manifest.json provides metadata used when your web app is installed on a
             user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
         -->
-        <link rel="manifest" href="/manifest.json">
-        <title>Flying Press — GO Pokédex</title>
-      <script type="module" crossorigin="" src="/assets/index-CSG1Zt4N.js"></script>
-      <link rel="stylesheet" crossorigin="" href="/assets/index-DKXVpA9-.css">
-    <link rel="canonical" href="https://go-pokedex.com/move/FLYING_PRESS"><meta property="og:title" content="Flying Press — GO Pokédex"><meta property="og:description" content="Flying Press (Fighting · Charged move) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it."><meta property="og:url" content="https://go-pokedex.com/move/FLYING_PRESS"><meta name="twitter:title" content="Flying Press — GO Pokédex"><meta name="twitter:description" content="Flying Press (Fighting · Charged move) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it."><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"></head>
-    <body>
-        <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root"><div class="rvmp" data-theme="dark"><header class="r-appbar"><a class="r-logo" aria-label="Home" href="/" data-discover="true"><span class="r-logo-ball"></span><b>GO&nbsp;Pokédex</b></a><div class="r-search"><svg class="r-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg><input placeholder="Search Pokémon or moves…" aria-label="Search Pokémon or moves" enterkeyhint="search" role="combobox" aria-expanded="false" aria-controls="r-search-list" autocomplete="off" value=""></div><div class="r-setmenu"><button type="button" class="r-icon-btn r-setmenu-trigger" aria-label="Language &amp; settings" aria-expanded="false"><span class="r-setmenu-flag">EN</span></button></div></header><main class="r-main"><div class="r-shell"><header class="r-hero r-move-hero" style="--tc: var(--t-fighting); --accent: var(--t-fighting);"><div class="r-move-hero-badges"><span class="r-move-type">Fighting</span><span class="r-chip">Charged move</span></div><h1 class="r-name">Flying Press</h1></header><div class="r-section-h">Stats</div><div class="r-card" style="--tc: var(--t-fighting);"><div class="r-mstat"><div class="r-mstat-col"><span class="r-mstat-arena">PvE · Raids &amp; Gyms</span><div class="r-mstat-tiles"><div class="r-mstat-tile"><b>115</b><i>DMG</i></div><div class="r-mstat-tile"><b>-50</b><i>NRG</i></div><div class="r-mstat-tile"><b>2.5s</b><i>DUR</i></div><div class="r-mstat-tile"><b>2.30</b><i>DPE</i></div></div></div><div class="r-mstat-col"><span class="r-mstat-arena">PvP · Leagues</span><div class="r-mstat-tiles"><div class="r-mstat-tile"><b>90</b><i>DMG</i></div><div class="r-mstat-tile"><b>-40</b><i>NRG</i></div><div class="r-mstat-tile"><b>2.25</b><i>DPE</i></div></div></div></div></div><div class="r-section-h">Usage</div><div class="r-card"><div class="r-usage"><div class="r-usage-lead"><b>2</b><i>Pokémon can learn Flying Press</i></div><div class="r-usage-tiles"><div class="r-usage-tile" data-hi=""><b>2</b><i>Recommended</i></div><div class="r-usage-tile"><b>0</b><i>Mega</i></div><div class="r-usage-tile"><b>0</b><i>Elite move</i></div><div class="r-usage-tile"><b>0</b><i>Legacy move</i></div></div></div></div><div class="r-section-h">Recommended</div><div class="r-minigrid r-minigrid--fill"><a class="r-mini" href="/pokemon/smeargle" data-discover="true" style="--tc: var(--t-normal);"><img alt="" loading="lazy" decoding="async" src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/235.png"><span>Smeargle</span></a><a class="r-mini" href="/pokemon/hawlucha" data-discover="true" style="--tc: var(--t-fighting);"><img alt="" loading="lazy" decoding="async" src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/701.png"><span>Hawlucha</span></a></div><div class="r-section-h">Also learned by</div><div class="r-minigrid r-minigrid--fill"></div></div></main><nav class="r-bottomnav"><a title="Browse every Pokémon" class="" href="/" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/pokedex.png"></span><span class="r-bn-label">Pokédex</span></a><a title="Best attackers per league and raid type" class="" href="/rankings/great" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/rankings.webp"></span><span class="r-bn-label">Rankings</span></a><a title="Events, raids, spawns and eggs" class="" href="/calendar/events" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/calendar.png"></span><span class="r-bn-label">Calendar</span></a><a title="Every fast and charged move" class="is-active" href="/moves" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/moves.png"></span><span class="r-bn-label">Moves</span></a><a title="Type effectiveness chart" class="" href="/types" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/types/psychic.png"></span><span class="r-bn-label">Types</span></a><a title="Mass-appraise trash candidates" class="" href="/trash" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/trash.png"></span><span class="r-bn-label">Delete</span></a></nav></div></div>
-        <!--
+		<link rel="manifest" href="/manifest.json">
+		<title>Flying Press — GO Pokédex</title>
+		<script type="module" crossorigin="" src="/assets/index-DyNXK_Er.js"></script>
+		<link rel="stylesheet" crossorigin="" href="/assets/index-DKXVpA9-.css">
+	<link rel="canonical" href="https://go-pokedex.com/move/FLYING_PRESS"><meta property="og:title" content="Flying Press — GO Pokédex"><meta property="og:description" content="Flying Press (Fighting · Charged move) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it."><meta property="og:url" content="https://go-pokedex.com/move/FLYING_PRESS"><meta name="twitter:title" content="Flying Press — GO Pokédex"><meta name="twitter:description" content="Flying Press (Fighting · Charged move) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it."></head>
+	<body>
+		<noscript>You need to enable JavaScript to run this app.</noscript>
+		<div id="root"><div class="rvmp" data-theme="dark"><header class="r-appbar"><a class="r-logo" aria-label="Home" href="/" data-discover="true"><span class="r-logo-ball"></span><b>GO&nbsp;Pokédex</b></a><div class="r-search"><svg class="r-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg><input placeholder="Search Pokémon or moves…" aria-label="Search Pokémon or moves" enterkeyhint="search" role="combobox" aria-expanded="false" aria-controls="r-search-list" autocomplete="off" value=""></div><div class="r-setmenu"><button type="button" class="r-icon-btn r-setmenu-trigger" aria-label="Language &amp; settings" aria-expanded="false"><span class="r-setmenu-flag">EN</span></button></div></header><main class="r-main"><div class="r-shell"><header class="r-hero r-move-hero" style="--tc: var(--t-fighting); --accent: var(--t-fighting);"><div class="r-move-hero-badges"><span class="r-move-type">Fighting</span><span class="r-chip">Charged move</span></div><h1 class="r-name">Flying Press</h1></header><div class="r-section-h">Stats</div><div class="r-card" style="--tc: var(--t-fighting);"><div class="r-mstat"><div class="r-mstat-col"><span class="r-mstat-arena">PvE · Raids &amp; Gyms</span><div class="r-mstat-tiles"><div class="r-mstat-tile"><b>115</b><i>DMG</i></div><div class="r-mstat-tile"><b>-50</b><i>NRG</i></div><div class="r-mstat-tile"><b>2.5s</b><i>DUR</i></div><div class="r-mstat-tile"><b>2.30</b><i>DPE</i></div></div></div><div class="r-mstat-col"><span class="r-mstat-arena">PvP · Leagues</span><div class="r-mstat-tiles"><div class="r-mstat-tile"><b>90</b><i>DMG</i></div><div class="r-mstat-tile"><b>-40</b><i>NRG</i></div><div class="r-mstat-tile"><b>2.25</b><i>DPE</i></div></div></div></div></div><div class="r-section-h">Usage</div><div class="r-card"><div class="r-usage"><div class="r-usage-lead"><b>2</b><i>Pokémon can learn Flying Press</i></div><div class="r-usage-tiles"><div class="r-usage-tile" data-hi=""><b>2</b><i>Recommended</i></div><div class="r-usage-tile"><b>0</b><i>Mega</i></div><div class="r-usage-tile"><b>0</b><i>Elite move</i></div><div class="r-usage-tile"><b>0</b><i>Legacy move</i></div></div></div></div><div class="r-section-h">Recommended</div><div class="r-minigrid r-minigrid--fill"><a class="r-mini" href="/pokemon/smeargle" data-discover="true" style="--tc: var(--t-normal);"><img alt="" loading="lazy" decoding="async" src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/235.png"><span>Smeargle</span></a><a class="r-mini" href="/pokemon/hawlucha" data-discover="true" style="--tc: var(--t-fighting);"><img alt="" loading="lazy" decoding="async" src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/701.png"><span>Hawlucha</span></a></div><div class="r-section-h">Also learned by</div><div class="r-minigrid r-minigrid--fill"></div></div></main><nav class="r-bottomnav"><a title="Browse every Pokémon" class="" href="/" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/pokedex.png"></span><span class="r-bn-label">Pokédex</span></a><a title="Best attackers per league and raid type" class="" href="/rankings/great" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/rankings.webp"></span><span class="r-bn-label">Rankings</span></a><a title="Events, raids, spawns and eggs" class="" href="/calendar/events" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/calendar.png"></span><span class="r-bn-label">Calendar</span></a><a title="Every fast and charged move" class="is-active" href="/moves" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/moves.png"></span><span class="r-bn-label">Moves</span></a><a title="Type effectiveness chart" class="" href="/types" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/types/psychic.png"></span><span class="r-bn-label">Types</span></a><a title="Mass-appraise trash candidates" class="" href="/trash" data-discover="true"><span class="r-bn-icon" aria-hidden="true"><img alt="" src="/images/nav/trash.png"></span><span class="r-bn-label">Delete</span></a></nav></div></div>
+		<!--
             This HTML file is a template.
             If you open it directly in the browser, you will see an empty page.
 
@@ -62,6 +74,6 @@
             To begin the development, run `npm start` or `yarn start`.
             To create a production bundle, use `npm run build` or `yarn build`.
         -->
-    
+	
 
 </body></html>
