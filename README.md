@@ -13,7 +13,7 @@ GO Pokédex is my answer to that: one app, built with real engineering rather th
 ## What it does
 
 - **Pokédex** — every Pokémon (including Shadow and Mega forms), with base stats, type matchups, and a searchable, filterable grid.
-- **IV picker** — enter a Pokémon's IVs (or auto-snap to a target rank) and see its PvP percentile, best level, and CP for every league — including, for a Shadow, the IVs it needs to reach a given rank *after* purifying.
+- **IV picker** — enter a Pokémon's IVs (or auto-snap to a target rank) and see its PvP percentile, best level, and CP for every league — including, for a Shadow, the IVs it needs to reach a given rank _after_ purifying.
 - **PvP rankings** — Great, Ultra and Master League attacker rankings, with each Pokémon's strong/weak matchups.
 - **Raid rankings** — best raid attackers per type, ranked by DPS, TDO or eDPS, with configurable battle conditions (weather, friendship, party size, mega boost).
 - **Move database** — every fast and charged move, with full PvE/PvP stats, searchable and sortable.
