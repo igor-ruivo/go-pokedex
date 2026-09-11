@@ -426,10 +426,16 @@ const PokemonDetail = () => {
 			const appbarH = document.querySelector('.r-appbar')?.getBoundingClientRect().height ?? 60;
 			const gap = isDesktop() ? 10 : 0;
 			miniEl.style.top = `${appbarH + gap}px`;
-			// `window.scrollY > 0` first, unconditionally: whatever the hero's
-			// measured position says, the bar has no business showing while the
-			// page hasn't actually scrolled at all.
-			const heroShown = window.scrollY > 0 && heroEl.getBoundingClientRect().bottom <= appbarH;
+			// Hard floor, unconditionally, before anything else: below this
+			// depth the bar never renders, full stop — no matter what the
+			// hero's measured position claims. A tiny scrollY blip (a mobile
+			// browser's chrome collapsing on load, a leftover restoration
+			// stub, whatever) is comfortably under this; a page genuinely
+			// scrolled down past the whole hero card is comfortably over it.
+			// Reusing `appbarH` itself as that floor rather than a made-up
+			// number — it's already the one other "how far down are we"
+			// constant this component cares about.
+			const heroShown = window.scrollY > appbarH && heroEl.getBoundingClientRect().bottom <= appbarH;
 			miniEl.dataset.visible = String(heroShown);
 		};
 		const onScroll = () => {
@@ -438,7 +444,15 @@ const PokemonDetail = () => {
 		// Deferred, not called synchronously: the JSX default (`data-visible=
 		// 'false'`) always paints first this way, guaranteed — this only ever
 		// *corrects* that a frame later, never replaces the very first paint.
-		raf = requestAnimationFrame(update);
+		// The fade transition itself (see `[data-anim]` in components.css)
+		// only gets switched on right after, in the same frame: that first
+		// correction always lands with no transition capable of animating it,
+		// no matter what the element's style briefly was before this ran —
+		// every fade from here on is a real, deliberate scroll-driven one.
+		raf = requestAnimationFrame(() => {
+			update();
+			miniEl.dataset.anim = 'true';
+		});
 		window.addEventListener('scroll', onScroll, { passive: true });
 		window.addEventListener('resize', onScroll);
 		return () => {

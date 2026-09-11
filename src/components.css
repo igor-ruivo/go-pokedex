@@ -129,6 +129,18 @@
 	opacity: 0;
 	transform: translateY(-6px);
 	pointer-events: none;
+}
+/* The fade only turns on once JS has set the first real `data-visible` value
+   (see the scroll effect) — never from the moment the element first exists.
+   A `transition` active on an element's very first style resolution can
+   itself animate through whatever the browser had before this stylesheet
+   fully settled (its UA-default `opacity: 1`), gliding it down to this
+   rule's `opacity: 0` over the full transition duration instead of snapping
+   — a fake few-hundred-ms "flash" where `data-visible` was 'false' the
+   entire time, never once 'true'. Scoping the transition itself behind a
+   flag JS only adds after that first snap-instant correction closes that
+   window off completely, instead of chasing exactly when it can happen. */
+.rvmp .r-hero-mini[data-anim] {
 	transition:
 		opacity 0.22s ease,
 		transform 0.22s ease;
