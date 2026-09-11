@@ -147,6 +147,7 @@ export const usePageMeta = () => {
 				const typeLabel = m.type ? m.type[0].toUpperCase() + m.type.slice(1) : '';
 				title = `${name} — GO Pokédex`;
 				description = `${name} (${typeLabel}${m.isFast ? ' · Fast move' : ' · Charged move'}) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.`;
+				image = m.type ? `/images/types/${m.type}.png` : undefined;
 			}
 		} else if (pathname.startsWith('/rankings/raid')) {
 			const page = raidTypePage(typeParam, queryType);

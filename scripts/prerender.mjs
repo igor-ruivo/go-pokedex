@@ -329,6 +329,7 @@ const main = async () => {
 			url: `${SITE}${routePath}`,
 			title: `${name} — GO Pokédex`,
 			description: `${name} (${typeLabel}${m.isFast ? ' · Fast move' : ' · Charged move'}) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.`,
+			image: m.type ? `${SITE}/images/types/${m.type}.png` : undefined,
 		});
 		const html = await page.content();
 		await page.close();
