@@ -174,9 +174,14 @@ const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
 
 /** Rewrites <title>/meta/canonical/Open-Graph tags in the page's own <head>
  *  to match this specific Pokémon or move, then returns the full HTML. */
+// The generic logo (a square icon) isn't really "large image" material the
+// way a Pokémon/move's own sprite is — `summary` suits it better than
+// `summary_large_image`, which some clients render as a big banner crop.
+const LOGO_IMAGE = `${SITE}/logo512.png`;
+
 const applyMeta = (page, { url, title, description, image }) =>
 	page.evaluate(
-		({ url, title, description, image }) => {
+		({ url, title, description, image, isCustomImage }) => {
 			document.title = title;
 			const upsert = (selector, attrs) => {
 				let el = document.querySelector(selector);
@@ -192,15 +197,16 @@ const applyMeta = (page, { url, title, description, image }) =>
 			upsert('meta[property="og:description"]', { property: 'og:description', content: description });
 			upsert('meta[property="og:url"]', { property: 'og:url', content: url });
 			upsert('meta[property="og:type"]', { property: 'og:type', content: 'website' });
-			upsert('meta[name="twitter:card"]', { name: 'twitter:card', content: image ? 'summary' : 'summary_large_image' });
+			upsert('meta[name="twitter:card"]', {
+				name: 'twitter:card',
+				content: isCustomImage ? 'summary_large_image' : 'summary',
+			});
 			upsert('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
 			upsert('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
-			if (image) {
-				upsert('meta[property="og:image"]', { property: 'og:image', content: image });
-				upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: image });
-			}
+			upsert('meta[property="og:image"]', { property: 'og:image', content: image });
+			upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: image });
 		},
-		{ url, title, description, image }
+		{ url, title, description, image: image || LOGO_IMAGE, isCustomImage: Boolean(image) }
 	);
 
 const savePage = async (routePath, html) => {

@@ -147,17 +147,26 @@ export const usePageMeta = () => {
 			}
 		}
 
+		// The generic logo (a square icon) isn't really "large image" material
+		// the way a Pokémon/move's own sprite is — `summary` suits it better
+		// than `summary_large_image`, which some clients render as a big
+		// banner crop.
+		const isCustomImage = Boolean(image);
+		const resolvedImage = image ?? `${origin}/logo512.png`;
+
 		document.title = title;
 		upsert('meta[name="description"]', { name: 'description', content: description });
 		upsert('link[rel="canonical"]', { rel: 'canonical', href: origin + canonicalPath });
 		upsert('meta[property="og:title"]', { property: 'og:title', content: title });
 		upsert('meta[property="og:description"]', { property: 'og:description', content: description });
 		upsert('meta[property="og:url"]', { property: 'og:url', content: origin + canonicalPath });
+		upsert('meta[name="twitter:card"]', {
+			name: 'twitter:card',
+			content: isCustomImage ? 'summary_large_image' : 'summary',
+		});
 		upsert('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
 		upsert('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
-		if (image) {
-			upsert('meta[property="og:image"]', { property: 'og:image', content: image });
-			upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: image });
-		}
+		upsert('meta[property="og:image"]', { property: 'og:image', content: resolvedImage });
+		upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: resolvedImage });
 	}, [pathname, speciesId, moveId, typeParam, queryType, gamemasterPokemon, moves]);
 };
