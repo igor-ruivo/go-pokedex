@@ -235,6 +235,15 @@ const PokemonDetail = () => {
 			return { ...c, [3]: { ...cur, t: nextT, m: withTypeLeft(cur, nextT) } };
 		});
 	};
+	// mobile-only: `.r-board-type`'s medallion is a ~20px target — enough for a
+	// mouse pointer, uncomfortably small for a fingertip. On a touch/no-hover
+	// device, treat a tap anywhere on the sprite circle around it the same as
+	// tapping the medallion; a mouse still only hits it directly, since the rest
+	// of the sprite is still the row's own "cycle member" target there.
+	const spriteClick = (e: ReactMouseEvent, id: LeagueId) => {
+		if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+		cycleType(e, id);
+	};
 	const selectType = (i: number) => {
 		if (league !== 3) setLeague(3);
 		setCarousel((c) => {
@@ -529,7 +538,14 @@ const PokemonDetail = () => {
 											}
 										}}
 									>
-										<span className='r-board-sprite'>
+										{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events --
+											   touch-only convenience wrapper enlarging `.r-board-type`'s tap target; that
+											   button (and the row itself) already carry full keyboard support, so this
+											   isn't a new independent interactive element to make focusable. */}
+										<span
+											className='r-board-sprite'
+											onClick={bestType ? (e) => spriteClick(e, l.id as LeagueId) : undefined}
+										>
 											{member?.isShadow && <ShadowMark />}
 											{member && <img src={spriteUrl(member, imageSource)} alt='' loading='lazy' decoding='async' />}
 											{bestType && (
