@@ -10,7 +10,7 @@ const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 /** Static, non-parameterised pages — kept in sync by hand with
  *  scripts/prerender.mjs's STATIC_PAGES (that script can't import this file:
  *  it runs under plain Node, this runs in the browser). */
-const STATIC_PAGES: Record<string, { title: string; description: string }> = {
+const STATIC_PAGES: Record<string, { title: string; description: string; image?: string }> = {
 	'/': {
 		title: 'GO Pokédex',
 		description:
@@ -19,43 +19,56 @@ const STATIC_PAGES: Record<string, { title: string; description: string }> = {
 	'/rankings/great': {
 		title: 'Great League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Great League (1500 CP), with counters and matchups.',
+		image: '/images/leagues/great.png',
 	},
 	'/rankings/ultra': {
 		title: 'Ultra League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Ultra League (2500 CP), with counters and matchups.',
+		image: '/images/leagues/ultra.png',
 	},
 	'/rankings/master': {
 		title: 'Master League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Master League, with counters and matchups.',
+		image: '/images/leagues/master.png',
 	},
 	'/rankings/raid': {
 		title: 'Best Raid Attackers — GO Pokédex',
 		description: 'Top Pokémon GO raid attackers ranked by DPS, TDO and eDPS, per type.',
+		image: '/images/raids/tier-5.png',
 	},
 	'/moves': {
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',
 	},
-	'/types': { title: 'Type Chart — GO Pokédex', description: 'The full Pokémon GO type-effectiveness chart.' },
+	'/types': {
+		title: 'Type Chart — GO Pokédex',
+		description: 'The full Pokémon GO type-effectiveness chart.',
+		image: '/images/types/psychic.png',
+	},
 	'/calendar/events': {
 		title: 'Events Calendar — GO Pokédex',
 		description: 'Current and upcoming Pokémon GO events, raid bosses, spawns and eggs.',
+		image: '/images/nav/calendar.png',
 	},
 	'/calendar/bosses': {
 		title: 'Current Raid Bosses — GO Pokédex',
 		description: 'The current Pokémon GO raid boss lineup, by tier.',
+		image: '/images/raids/mega.png',
 	},
 	'/calendar/spawns': {
 		title: 'Current Spawns — GO Pokédex',
 		description: 'What’s currently spawning in the wild in Pokémon GO.',
+		image: '/images/nav/spawns.png',
 	},
 	'/calendar/rockets': {
 		title: 'Team GO Rocket Lineups — GO Pokédex',
 		description: 'Current Team GO Rocket grunt, leader and boss Pokémon lineups.',
+		image: '/images/NPC/giovanni.webp',
 	},
 	'/calendar/eggs': {
 		title: 'Egg Chart — GO Pokédex',
 		description: 'The current Pokémon GO egg-hatch chart, by distance.',
+		image: '/images/eggs/10km.png',
 	},
 };
 
@@ -74,6 +87,7 @@ const raidTypePage = (typeParam: string | undefined, queryType: string | null) =
 		path: `/rankings/raid/${t}`,
 		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,
 		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS, TDO and eDPS.`,
+		image: `/images/types/${t}.png`,
 	};
 };
 
@@ -139,20 +153,24 @@ export const usePageMeta = () => {
 			canonicalPath = page.path;
 			title = page.title;
 			description = page.description;
+			image = page.image;
 		} else {
 			const hit = STATIC_PAGES[pathname];
 			if (hit) {
 				title = hit.title;
 				description = hit.description;
+				image = hit.image;
 			}
 		}
 
 		// The generic logo (a square icon) isn't really "large image" material
 		// the way a Pokémon/move's own sprite is — `summary` suits it better
 		// than `summary_large_image`, which some clients render as a big
-		// banner crop.
+		// banner crop. Pokémon/move images are already absolute (pokemon.com
+		// URLs); everything else above is one of our own `/images/...` paths,
+		// so it needs the origin prefixed on to make an absolute URL too.
 		const isCustomImage = Boolean(image);
-		const resolvedImage = image ?? `${origin}/logo512.png`;
+		const resolvedImage = image ? (image.startsWith('http') ? image : origin + image) : `${origin}/logo512.png`;
 
 		document.title = title;
 		upsert('meta[name="description"]', { name: 'description', content: description });

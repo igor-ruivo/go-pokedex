@@ -48,52 +48,66 @@ const STATIC_PAGES = [
 		path: '/rankings/great',
 		title: 'Great League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Great League (1500 CP), with counters and matchups.',
+		image: `${SITE}/images/leagues/great.png`,
 	},
 	{
 		path: '/rankings/ultra',
 		title: 'Ultra League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Ultra League (2500 CP), with counters and matchups.',
+		image: `${SITE}/images/leagues/ultra.png`,
 	},
 	{
 		path: '/rankings/master',
 		title: 'Master League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Master League, with counters and matchups.',
+		image: `${SITE}/images/leagues/master.png`,
 	},
 	{
 		path: '/rankings/raid',
 		title: 'Best Raid Attackers — GO Pokédex',
 		description: 'Top Pokémon GO raid attackers ranked by DPS, TDO and eDPS, per type.',
+		image: `${SITE}/images/raids/tier-5.png`,
 	},
 	{
 		path: '/moves',
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',
 	},
-	{ path: '/types', title: 'Type Chart — GO Pokédex', description: 'The full Pokémon GO type-effectiveness chart.' },
+	{
+		path: '/types',
+		title: 'Type Chart — GO Pokédex',
+		description: 'The full Pokémon GO type-effectiveness chart.',
+		image: `${SITE}/images/types/psychic.png`,
+	},
 	{
 		path: '/calendar/events',
 		title: 'Events Calendar — GO Pokédex',
 		description: 'Current and upcoming Pokémon GO events, raid bosses, spawns and eggs.',
+		image: `${SITE}/images/nav/calendar.png`,
 	},
 	{
 		path: '/calendar/bosses',
 		title: 'Current Raid Bosses — GO Pokédex',
 		description: 'The current Pokémon GO raid boss lineup, by tier.',
+		image: `${SITE}/images/raids/mega.png`,
 	},
 	{
 		path: '/calendar/spawns',
 		title: 'Current Spawns — GO Pokédex',
 		description: 'What’s currently spawning in the wild in Pokémon GO.',
+		image: `${SITE}/images/nav/spawns.png`,
 	},
 	{
 		path: '/calendar/rockets',
 		title: 'Team GO Rocket Lineups — GO Pokédex',
 		description: 'Current Team GO Rocket grunt, leader and boss Pokémon lineups.',
+		image: `${SITE}/images/NPC/giovanni.webp`,
 	},
 	{
 		path: '/calendar/eggs',
 		title: 'Egg Chart — GO Pokédex',
 		description: 'The current Pokémon GO egg-hatch chart, by distance.',
+		image: `${SITE}/images/eggs/10km.png`,
 	},
 ];
 
@@ -133,6 +147,7 @@ for (const t of TYPE_KEYS) {
 		path: `/rankings/raid/${t}`,
 		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,
 		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS, TDO and eDPS.`,
+		image: `${SITE}/images/types/${t}.png`,
 	});
 }
 
@@ -271,10 +286,10 @@ const main = async () => {
 		if (done % 100 === 0 || done === total) console.log(`  ${done}/${total}`);
 	};
 
-	const staticTasks = STATIC_PAGES.map(({ path: routePath, title, description }) => async () => {
+	const staticTasks = STATIC_PAGES.map(({ path: routePath, title, description, image }) => async () => {
 		const page = await context.newPage();
 		await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
-		await applyMeta(page, { url: `${SITE}${routePath}`, title, description });
+		await applyMeta(page, { url: `${SITE}${routePath}`, title, description, image });
 		const html = await page.content();
 		await page.close();
 		await savePage(routePath, html);
