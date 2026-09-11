@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>GO Pokédex</title>
+		<!--
+            GitHub Pages serves this file for any path it doesn't recognise as a
+            real file — which, now that the app uses real paths instead of `#/`
+            hash routing, is every in-app route on a hard load or refresh
+            (e.g. go-pokedex.com/pokemon/pikachu). Rather than a dead end, encode
+            the intended path into a query string and redirect to `/`, where the
+            inline script in index.html's <head> decodes it back into the real
+            path via history.replaceState before React Router ever mounts — so
+            the app boots straight into the right route with no visible bounce.
+            Technique: https://github.com/rafgraph/spa-github-pages
+        -->
+		<script type="text/javascript">
+			var l = window.location;
+			l.replace(
+				l.protocol +
+					'//' +
+					l.hostname +
+					(l.port ? ':' + l.port : '') +
+					'/?/' +
+					l.pathname.slice(1).replace(/&/g, '~and~') +
+					(l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+					l.hash
+			);
+		</script>
+	</head>
+	<body></body>
+</html>
