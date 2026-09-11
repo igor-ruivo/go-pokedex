@@ -52,7 +52,13 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 			const cols = Math.min(10, Math.max(4, Math.floor(w / 88)));
 			const cardWidth = (w - (cols - 1) * GRID_GAP) / cols; // tiles are squares
 			setMetrics((prev) => {
-				const rowHeight = Math.max(1, Math.round(cardWidth));
+				// `Math.ceil`, not `round`: the CSS grid's `1fr` columns don't divide
+				// evenly, so the browser hands any leftover pixel(s) to one column —
+				// that column's square (aspect-ratio: 1) tile ends up a pixel taller
+				// than this average. Rounding down sometimes made the virtualizer's
+				// single fixed row height fall a pixel short of that, which is what
+				// let rows overlap or gap unevenly depending on the exact width.
+				const rowHeight = Math.max(1, Math.ceil(cardWidth));
 				return prev.cols === cols && prev.rowHeight === rowHeight ? prev : { cols, rowHeight };
 			});
 		});
@@ -197,6 +203,16 @@ const Rankings = () => {
 		scrollMargin,
 		gap: GRID_GAP,
 	});
+	// `estimateSize` is only consulted the first time a given row index is
+	// measured, then cached per index. Rows measured before a ResizeObserver
+	// tick landed a new `rowHeight` (the very first paint, using the 96px
+	// placeholder, or after any later resize) stay pinned to that stale value
+	// forever — mixing row heights within one scrolled list, which is the
+	// other half of the uneven-gap bug. Force a full remeasure whenever the
+	// real row height changes.
+	useEffect(() => {
+		virt.measure();
+	}, [rowHeight, virt]);
 
 	const setTypes = (list: Array<string>) => {
 		const next = new URLSearchParams(params);
