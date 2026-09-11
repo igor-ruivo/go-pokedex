@@ -109,6 +109,12 @@ const STATIC_PAGES = [
 		description: 'The current Pokémon GO egg-hatch chart, by distance.',
 		image: `${SITE}/images/eggs/10km.png`,
 	},
+	{
+		path: '/trash',
+		title: 'Mass Delete Pokémon',
+		description: 'Mass-appraise your Pokémon GO collection and find the best candidates to trade or transfer.',
+		image: `${SITE}/images/nav/trash-candy.png`,
+	},
 ];
 
 // Must match src/lib/types.ts's TYPE_KEYS — duplicated for the same reason as

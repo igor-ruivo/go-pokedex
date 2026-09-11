@@ -70,6 +70,11 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 		description: 'The current Pokémon GO egg-hatch chart, by distance.',
 		image: '/images/eggs/10km.png',
 	},
+	'/trash': {
+		title: 'Mass Delete Pokémon',
+		description: 'Mass-appraise your Pokémon GO collection and find the best candidates to trade or transfer.',
+		image: '/images/nav/trash-candy.png',
+	},
 };
 
 /** `/rankings/raid` — title/canonical for a specific type, one real page
@@ -89,6 +94,31 @@ const raidTypePage = (typeParam: string | undefined, queryType: string | null) =
 		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS, TDO and eDPS.`,
 		image: `/images/types/${t}.png`,
 	};
+};
+
+/** The tab-specific part of a Pokémon page's title — kept distinct from the
+ *  canonical URL/description (those still always collapse to the one real
+ *  prerendered `/pokemon/:speciesId` page, unchanged) so a search result or
+ *  a browser tab reflects which tab you're actually looking at, e.g.
+ *  "Bulbasaur IV Table" rather than a generic title frozen at whichever tab
+ *  the page happened to load on first. */
+const pokemonTabTitle = (name: string, tab: string | undefined, kind: string | null) => {
+	switch (tab) {
+		case 'moves':
+			return kind === 'fast'
+				? `${name} Fast Moves`
+				: kind === 'charged'
+					? `${name} Charged Moves`
+					: `All ${name} Moves`;
+		case 'counters':
+			return `Top ${name} Counters`;
+		case 'iv-table':
+			return `${name} IV Table`;
+		case 'strings':
+			return `${name} Search Strings`;
+		default:
+			return `${name} League Rankings`;
+	}
 };
 
 const upsert = (selector: string, attrs: Record<string, string>) => {
@@ -116,9 +146,10 @@ const upsert = (selector: string, attrs: Record<string, string>) => {
  */
 export const usePageMeta = () => {
 	const { pathname } = useLocation();
-	const { speciesId, moveId, type: typeParam } = useParams();
+	const { speciesId, moveId, type: typeParam, tab: tabParam } = useParams();
 	const [searchParams] = useSearchParams();
 	const queryType = searchParams.get('type');
+	const queryKind = searchParams.get('kind');
 	const { gamemasterPokemon } = usePokemon();
 	const { moves } = useMoves();
 
@@ -135,7 +166,7 @@ export const usePageMeta = () => {
 			const p = gamemasterPokemon[speciesId];
 			if (p) {
 				const types = (p.types ?? []).join('/');
-				title = `${p.speciesName} — GO Pokédex`;
+				title = pokemonTabTitle(p.speciesName, tabParam, queryKind);
 				description = `${p.speciesName}${types ? ` (${types})` : ''} in Pokémon GO — IVs, best moveset, PvP rankings and raid counters.`;
 				image = p.imageUrl || undefined;
 			}
@@ -187,5 +218,5 @@ export const usePageMeta = () => {
 		upsert('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
 		upsert('meta[property="og:image"]', { property: 'og:image', content: resolvedImage });
 		upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: resolvedImage });
-	}, [pathname, speciesId, moveId, typeParam, queryType, gamemasterPokemon, moves]);
+	}, [pathname, speciesId, moveId, typeParam, tabParam, queryType, queryKind, gamemasterPokemon, moves]);
 };
