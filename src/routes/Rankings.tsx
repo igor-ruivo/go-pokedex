@@ -63,7 +63,7 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 };
 
 const Rankings = () => {
-	const { league } = useParams();
+	const { league, type: typeParam } = useParams();
 	const mode: RankingMode = (RANKING_MODES as ReadonlyArray<string>).includes(league ?? 'pokedex')
 		? ((league ?? 'pokedex') as RankingMode)
 		: 'pokedex';
@@ -71,7 +71,12 @@ const Rankings = () => {
 	const [params, setParams] = useSearchParams();
 	const q = (params.get('q') ?? '').toLowerCase().trim();
 	const isRaid = mode === 'raid';
-	const selectedTypes = (params.get('type') ?? '')
+	// `/rankings/raid/:type` (a real, crawlable URL per type — see R.rankings)
+	// only ever *seeds* the type when `?type=` isn't already set; from then on
+	// the query param — what the FilterBar actually writes to — is the single
+	// source of truth, so the two never end up fighting each other.
+	const typeSeed = isRaid && typeParam && TYPE_KEYS.includes(typeParam) ? typeParam : '';
+	const selectedTypes = (params.get('type') ?? typeSeed)
 		.split(',')
 		.map((t) => t.trim())
 		.filter(Boolean)

@@ -37,6 +37,7 @@ const App = () => (
 								<Route element={<Shell />}>
 									<Route index element={<Rankings />} />
 									<Route path='rankings/:league' element={<Rankings />} />
+									<Route path='rankings/:league/:type' element={<Rankings />} />
 									<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
 									<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
 									<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />

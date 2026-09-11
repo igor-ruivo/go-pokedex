@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useTheme } from '../contexts/theme-context';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { R } from '../lib/nav';
 import { SearchBox } from './SearchBox';
 import { SettingsMenu } from './SettingsMenu';
@@ -56,6 +57,7 @@ const NAV: Array<{ to: string; label: string; icon: string; hint: string; match:
 const Shell = () => {
 	const { pathname } = useLocation();
 	const { dataTheme } = useTheme();
+	usePageMeta();
 
 	return (
 		<div className='rvmp' data-theme={dataTheme}>

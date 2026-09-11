@@ -1,6 +1,11 @@
 export const R = {
 	pokedex: '/',
-	rankings: (league: string): string => `/rankings/${league}`,
+	// `type` is only meaningful for the raid mode — a real, shareable/crawlable
+	// URL per type (e.g. /rankings/raid/fire), separate from the `?type=`
+	// query param the interactive FilterBar keeps using once you're on the
+	// page (see Rankings.tsx: the path segment only ever seeds that query
+	// param when it's otherwise empty, never fights it).
+	rankings: (league: string, type?: string): string => (type ? `/rankings/${league}/${type}` : `/rankings/${league}`),
 	pokemon: (speciesId: string, tab?: string): string =>
 		tab && tab !== 'ranks' ? `/pokemon/${speciesId}/${tab}` : `/pokemon/${speciesId}`,
 	calendar: (tab = 'events'): string => `/calendar/${tab}`,

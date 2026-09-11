@@ -75,7 +75,66 @@ const STATIC_PAGES = [
 		title: 'Events Calendar — GO Pokédex',
 		description: 'Current and upcoming Pokémon GO events, raid bosses, spawns and eggs.',
 	},
+	{
+		path: '/calendar/bosses',
+		title: 'Current Raid Bosses — GO Pokédex',
+		description: 'The current Pokémon GO raid boss lineup, by tier.',
+	},
+	{
+		path: '/calendar/spawns',
+		title: 'Current Spawns — GO Pokédex',
+		description: 'What’s currently spawning in the wild in Pokémon GO.',
+	},
+	{
+		path: '/calendar/rockets',
+		title: 'Team GO Rocket Lineups — GO Pokédex',
+		description: 'Current Team GO Rocket grunt, leader and boss Pokémon lineups.',
+	},
+	{
+		path: '/calendar/eggs',
+		title: 'Egg Chart — GO Pokédex',
+		description: 'The current Pokémon GO egg-hatch chart, by distance.',
+	},
 ];
+
+// Must match src/lib/types.ts's TYPE_KEYS — duplicated for the same reason as
+// GAMEMASTER_URL above (this script can't import a .ts file directly).
+const TYPE_KEYS = [
+	'bug',
+	'dark',
+	'dragon',
+	'electric',
+	'fairy',
+	'fighting',
+	'fire',
+	'flying',
+	'ghost',
+	'grass',
+	'ground',
+	'ice',
+	'normal',
+	'poison',
+	'psychic',
+	'rock',
+	'steel',
+	'water',
+];
+
+// One real, shareable/crawlable URL per raid type (e.g. /rankings/raid/fire)
+// — "best fire type attackers" is a real search, and a query param alone
+// (`?type=fire`) can't be prerendered as a distinct page on a static host:
+// GitHub Pages only looks at the URL *path* to pick a file, so every
+// `?type=` variant of `/rankings/raid` would resolve to the exact same file
+// and silently overwrite each other. See Rankings.tsx for how the path
+// segment and the `?type=` query param coexist without fighting.
+const capitalize = (s) => s[0].toUpperCase() + s.slice(1);
+for (const t of TYPE_KEYS) {
+	STATIC_PAGES.push({
+		path: `/rankings/raid/${t}`,
+		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,
+		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS, TDO and eDPS.`,
+	});
+}
 
 // -- tiny static file server, mirroring GitHub Pages (exact file, else 404.html) --
 const TYPES = {
