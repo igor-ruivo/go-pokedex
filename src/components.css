@@ -2510,6 +2510,12 @@
 	object-fit: contain;
 	padding: 6px;
 	background: color-mix(in srgb, var(--tc, var(--surface-3)) 22%, var(--surface-2));
+	/* same contour ring as the leaderboard/counters sprites (.r-board-sprite, .r-ctr-art) */
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.05),
+		inset 0 0 0 1px var(--border),
+		0 0 0 1.5px var(--surface),
+		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
 }
 .rvmp .r-grunt-head img.r-grunt-av[data-portrait] {
 	object-fit: cover;
@@ -2529,10 +2535,22 @@
 	line-height: 1.25;
 	transition: color 0.14s ease;
 }
-/* hovering the card colours the trainer name — its type colour for a
-   type-specific grunt, the raid orange for named / plain grunts (no `--tc`) */
-.rvmp .r-grunt:hover .r-grunt-id b {
+/* hovering (or opening) the card colours the trainer name and the avatar's
+   outer ring — its type colour for a type-specific grunt, the raid orange
+   for named / plain grunts (no `--tc`); same pairing the leaderboard uses
+   for its own active-row sprite (.r-board-row[data-active='true']
+   .r-board-sprite) below. */
+.rvmp .r-grunt:hover .r-grunt-id b,
+.rvmp .r-grunt[data-open='true'] .r-grunt-id b {
 	color: var(--tc, var(--lg-raid));
+}
+.rvmp .r-grunt:hover .r-grunt-head img.r-grunt-av,
+.rvmp .r-grunt[data-open='true'] .r-grunt-head img.r-grunt-av {
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.08),
+		inset 0 0 0 1px color-mix(in srgb, var(--tc, var(--lg-raid)) 60%, transparent),
+		0 0 0 1.5px var(--surface),
+		0 0 0 3.5px color-mix(in srgb, var(--tc, var(--lg-raid)) 75%, transparent);
 }
 .rvmp .r-grunt-id i {
 	font-style: normal;

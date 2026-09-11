@@ -24,6 +24,8 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { padImage } from './pad-image.mjs';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
@@ -73,7 +75,7 @@ const STATIC_PAGES = [
 		path: '/rankings/raid',
 		title: 'Best Raid Attackers — GO Pokédex',
 		description: 'Top Pokémon GO raid attackers ranked by DPS, TDO and eDPS, per type.',
-		image: `${SITE}/images/raids/tier-5.png`,
+		image: `${SITE}/images/og/raids/tier-5.png`,
 	},
 	{
 		path: '/moves',
@@ -84,43 +86,43 @@ const STATIC_PAGES = [
 		path: '/types',
 		title: 'Type Chart — GO Pokédex',
 		description: 'The full Pokémon GO type-effectiveness chart.',
-		image: `${SITE}/images/types/psychic.png`,
+		image: `${SITE}/images/og/types/psychic.png`,
 	},
 	{
 		path: '/calendar/events',
 		title: 'Events Calendar — GO Pokédex',
 		description: 'Current and upcoming Pokémon GO events, raid bosses, spawns and eggs.',
-		image: `${SITE}/images/nav/calendar.png`,
+		image: `${SITE}/images/og/nav/calendar.png`,
 	},
 	{
 		path: '/calendar/bosses',
 		title: 'Current Raid Bosses — GO Pokédex',
 		description: 'The current Pokémon GO raid boss lineup, by tier.',
-		image: `${SITE}/images/raids/mega.png`,
+		image: `${SITE}/images/og/raids/mega.png`,
 	},
 	{
 		path: '/calendar/spawns',
 		title: 'Current Spawns — GO Pokédex',
 		description: 'What’s currently spawning in the wild in Pokémon GO.',
-		image: `${SITE}/images/nav/spawns.png`,
+		image: `${SITE}/images/og/nav/spawns.png`,
 	},
 	{
 		path: '/calendar/rockets',
 		title: 'Team GO Rocket Lineups — GO Pokédex',
 		description: 'Current Team GO Rocket grunt, leader and boss Pokémon lineups.',
-		image: `${SITE}/images/NPC/giovanni.webp`,
+		image: `${SITE}/images/og/NPC/giovanni.png`,
 	},
 	{
 		path: '/calendar/eggs',
 		title: 'Egg Chart — GO Pokédex',
 		description: 'The current Pokémon GO egg-hatch chart, by distance.',
-		image: `${SITE}/images/eggs/10km.png`,
+		image: `${SITE}/images/og/eggs/10km.png`,
 	},
 	{
 		path: '/trash',
 		title: 'Mass Delete Pokémon',
 		description: 'Mass-appraise your Pokémon GO collection and find the best candidates to trade or transfer.',
-		image: `${SITE}/images/nav/trash-candy.png`,
+		// No image of its own — falls back to LOGO_IMAGE in applyMeta().
 	},
 ];
 
@@ -160,7 +162,7 @@ for (const t of TYPE_KEYS) {
 		path: `/rankings/raid/${t}`,
 		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,
 		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS, TDO and eDPS.`,
-		image: `${SITE}/images/types/${t}.png`,
+		image: `${SITE}/images/og/types/${t}.png`,
 	});
 }
 
@@ -398,9 +400,25 @@ const main = async () => {
 		report();
 	});
 
+	// Pokémon sprites come from an external per-species URL (pokemon.imageUrl,
+	// hosted off dex-server's own data) — unlike the local icons above, there's
+	// no fixed set of these to pre-pad once by hand, so each one is fetched
+	// and padded here, at prerender time, and saved alongside the page's own
+	// static HTML under dist/images/og/pokemon/<speciesId>.png.
+	const pokemonOgImage = async (p) => {
+		if (!p.imageUrl) return undefined;
+		const res = await fetch(p.imageUrl);
+		if (!res.ok) return p.imageUrl; // fall back to the unpadded sprite rather than drop the image entirely
+		const padded = await padImage(Buffer.from(await res.arrayBuffer()));
+		const outDir = path.join(DIST, 'images', 'og', 'pokemon');
+		await mkdir(outDir, { recursive: true });
+		await writeFile(path.join(outDir, `${p.speciesId}.png`), padded);
+		return `${SITE}/images/og/pokemon/${p.speciesId}.png`;
+	};
+
 	const pokemonTasks = pokemonList.map((p) => async () => {
 		const routePath = `/pokemon/${p.speciesId}`;
-		const page = await context.newPage();
+		const [page, image] = await Promise.all([context.newPage(), pokemonOgImage(p)]);
 		await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
 		await page.waitForFunction(() => (document.querySelector('h1.r-name')?.textContent ?? '').trim().length > 0, {
 			timeout: 15000,
@@ -410,7 +428,7 @@ const main = async () => {
 			url: `${SITE}${routePath}`,
 			title: `${p.speciesName} — GO Pokédex`,
 			description: `${p.speciesName}${types ? ` (${types})` : ''} in Pokémon GO — IVs, best moveset, PvP rankings and raid counters.`,
-			image: p.imageUrl || undefined,
+			image,
 			jsonLd: [breadcrumbList([{ name: p.speciesName, path: routePath }])],
 		});
 		const html = await page.content();
@@ -432,7 +450,7 @@ const main = async () => {
 			url: `${SITE}${routePath}`,
 			title: `${name} — GO Pokédex`,
 			description: `${name} (${typeLabel}${m.isFast ? ' · Fast move' : ' · Charged move'}) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.`,
-			image: m.type ? `${SITE}/images/types/${m.type}.png` : undefined,
+			image: m.type ? `${SITE}/images/og/types/${m.type}.png` : undefined,
 			jsonLd: [
 				breadcrumbList([
 					{ name: 'Moves', path: '/moves' },

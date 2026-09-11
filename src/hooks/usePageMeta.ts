@@ -34,7 +34,7 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 	'/rankings/raid': {
 		title: 'Best Raid Attackers — GO Pokédex',
 		description: 'Top Pokémon GO raid attackers ranked by DPS, TDO and eDPS, per type.',
-		image: '/images/raids/tier-5.png',
+		image: '/images/og/raids/tier-5.png',
 	},
 	'/moves': {
 		title: 'Moves — GO Pokédex',
@@ -43,37 +43,37 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 	'/types': {
 		title: 'Type Chart — GO Pokédex',
 		description: 'The full Pokémon GO type-effectiveness chart.',
-		image: '/images/types/psychic.png',
+		image: '/images/og/types/psychic.png',
 	},
 	'/calendar/events': {
 		title: 'Events Calendar — GO Pokédex',
 		description: 'Current and upcoming Pokémon GO events, raid bosses, spawns and eggs.',
-		image: '/images/nav/calendar.png',
+		image: '/images/og/nav/calendar.png',
 	},
 	'/calendar/bosses': {
 		title: 'Current Raid Bosses — GO Pokédex',
 		description: 'The current Pokémon GO raid boss lineup, by tier.',
-		image: '/images/raids/mega.png',
+		image: '/images/og/raids/mega.png',
 	},
 	'/calendar/spawns': {
 		title: 'Current Spawns — GO Pokédex',
 		description: 'What’s currently spawning in the wild in Pokémon GO.',
-		image: '/images/nav/spawns.png',
+		image: '/images/og/nav/spawns.png',
 	},
 	'/calendar/rockets': {
 		title: 'Team GO Rocket Lineups — GO Pokédex',
 		description: 'Current Team GO Rocket grunt, leader and boss Pokémon lineups.',
-		image: '/images/NPC/giovanni.webp',
+		image: '/images/og/NPC/giovanni.png',
 	},
 	'/calendar/eggs': {
 		title: 'Egg Chart — GO Pokédex',
 		description: 'The current Pokémon GO egg-hatch chart, by distance.',
-		image: '/images/eggs/10km.png',
+		image: '/images/og/eggs/10km.png',
 	},
 	'/trash': {
 		title: 'Mass Delete Pokémon',
 		description: 'Mass-appraise your Pokémon GO collection and find the best candidates to trade or transfer.',
-		image: '/images/nav/trash-candy.png',
+		// No image of its own — falls back to the logo (see resolvedImage below).
 	},
 };
 
@@ -92,7 +92,7 @@ const raidTypePage = (typeParam: string | undefined, queryType: string | null) =
 		path: `/rankings/raid/${t}`,
 		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,
 		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS, TDO and eDPS.`,
-		image: `/images/types/${t}.png`,
+		image: `/images/og/types/${t}.png`,
 	};
 };
 
@@ -168,7 +168,11 @@ export const usePageMeta = () => {
 				const types = (p.types ?? []).join('/');
 				title = pokemonTabTitle(p.speciesName, tabParam, queryKind);
 				description = `${p.speciesName}${types ? ` (${types})` : ''} in Pokémon GO — IVs, best moveset, PvP rankings and raid counters.`;
-				image = p.imageUrl || undefined;
+				// Points at the padded copy scripts/prerender.mjs bakes for this
+				// species (see pad-image.mjs) rather than p.imageUrl's raw sprite
+				// directly, so a client-side nav's tags stay visually consistent
+				// with what a crawler sees on the prerendered page itself.
+				image = p.imageUrl ? `/images/og/pokemon/${p.speciesId}.png` : undefined;
 			}
 		} else if (moveId && pathname.startsWith('/move/')) {
 			canonicalPath = `/move/${encodeURIComponent(moveId)}`;
@@ -178,7 +182,7 @@ export const usePageMeta = () => {
 				const typeLabel = m.type ? m.type[0].toUpperCase() + m.type.slice(1) : '';
 				title = `${name} — GO Pokédex`;
 				description = `${name} (${typeLabel}${m.isFast ? ' · Fast move' : ' · Charged move'}) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.`;
-				image = m.type ? `/images/types/${m.type}.png` : undefined;
+				image = m.type ? `/images/og/types/${m.type}.png` : undefined;
 			}
 		} else if (pathname.startsWith('/rankings/raid')) {
 			const page = raidTypePage(typeParam, queryType);

@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useTheme } from '../contexts/theme-context';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useScrollToTopOnNavigate } from '../hooks/useScrollToTopOnNavigate';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { R } from '../lib/nav';
 import { InstallPrompt } from './InstallPrompt';
@@ -60,6 +61,7 @@ const Shell = () => {
 	const { pathname } = useLocation();
 	const { dataTheme } = useTheme();
 	usePageMeta();
+	useScrollToTopOnNavigate();
 	const unseenEvents = useUnseenEventsCount();
 
 	return (

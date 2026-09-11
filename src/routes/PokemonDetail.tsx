@@ -148,7 +148,22 @@ const PokemonDetail = () => {
 	// Ordered like the evolution chain reads — base stage first, then each
 	// next evolution, form variants (e.g. a regional form) sitting alongside
 	// their stage rather than after the whole line, Megas always last — not by
-	// dex number, which interleaves unrelated regional dex ranges.
+	// dex number *across* stages, which would interleave unrelated regional
+	// dex ranges. Dex order only kicks in as the tiebreak *within* a shared
+	// stage, e.g. the Eeveelutions (Flareon, Umbreon, Leafeon, …), which all
+	// sit at the same depth with nothing else to order them by.
+	//
+	// One thing depth-then-alphabetical alone gets wrong: a shared dex number
+	// can pull in two genuinely *separate* evolution branches (same species,
+	// different regional forms — Wooper→Quagsire and Wooper (Paldean)→
+	// Clodsire share dex 194 but don't share a `family.id`), and sorting
+	// purely by depth interleaves them by stage — Wooper, Wooper (Paldean),
+	// Clodsire, Quagsire — instead of reading as two lines — Wooper,
+	// Quagsire, Wooper (Paldean), Clodsire. `branchRankOf` groups every
+	// member by which depth-0 ancestor it ultimately descends from *before*
+	// sorting by depth, so each branch's whole line stays together; a normal
+	// single-root family (the vast majority) has only one branch, so this is
+	// a no-op for them — same output as before.
 	const family = useMemo(() => {
 		if (!pokemon) return [];
 		const members = fetchPokemonFamily(pokemon, gamemasterPokemon);
@@ -169,12 +184,43 @@ const PokemonDetail = () => {
 			return depth;
 		};
 
+		const rootCache = new Map<string, IGamemasterPokemon>();
+		const rootOf = (m: IGamemasterPokemon): IGamemasterPokemon => {
+			const cached = rootCache.get(m.speciesId);
+			if (cached) return cached;
+			let cur = m;
+			const seen = new Set<string>();
+			while (cur.family?.parent && !seen.has(cur.speciesId)) {
+				seen.add(cur.speciesId);
+				const parent: IGamemasterPokemon | undefined = gamemasterPokemon[cur.family.parent];
+				if (!parent) break;
+				cur = parent;
+			}
+			rootCache.set(m.speciesId, cur);
+			return cur;
+		};
+
+		// Every distinct root present, ranked by the same tiebreak rules a
+		// depth-0 member would use against its siblings — that ranking then
+		// becomes each branch's position in the final list.
+		const roots = [...new Set([...members].map(rootOf))].sort(
+			(a, b) =>
+				(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) ||
+				(a.isShadow ? 1 : 0) - (b.isShadow ? 1 : 0) ||
+				a.dex - b.dex ||
+				a.speciesName.localeCompare(b.speciesName)
+		);
+		const branchRank = new Map(roots.map((r, i) => [r.speciesId, i]));
+		const branchRankOf = (m: IGamemasterPokemon): number => branchRank.get(rootOf(m).speciesId) ?? 0;
+
 		return [...members].sort(
 			(a, b) =>
 				(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) || // Megas always last
-				depthOf(a) - depthOf(b) || // then by evolutionary stage
+				branchRankOf(a) - branchRankOf(b) || // then keep each evolution branch's whole line together
+				depthOf(a) - depthOf(b) || // within a branch, by evolutionary stage
 				(a.isShadow ? 1 : 0) - (b.isShadow ? 1 : 0) || // non-shadow before shadow
-				a.speciesName.localeCompare(b.speciesName) // ties: alphabetical
+				a.dex - b.dex || // same stage (e.g. the Eeveelutions): by dex number
+				a.speciesName.localeCompare(b.speciesName) // still tied (same dex, e.g. forms): alphabetical
 		);
 	}, [pokemon, gamemasterPokemon]);
 
