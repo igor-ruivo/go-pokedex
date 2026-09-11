@@ -1,5 +1,5 @@
 import type { MouseEvent as ReactMouseEvent } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { IvPicker, type IVs } from '../components/IvPicker';
@@ -46,6 +46,13 @@ type PvpLeague = 0 | 1 | 2;
 
 /** `?lg=` on the URL — set when you arrive from a league / raid ranking. */
 const LG_PARAM: Record<string, LeagueId> = { great: 0, ultra: 1, master: 2, raid: 3 };
+const LG_SLUG: Record<LeagueId, string> = { 0: 'great', 1: 'ultra', 2: 'master', 3: 'raid' };
+const LG_ICON: Record<LeagueId, string> = {
+	0: '/images/leagues/great.png',
+	1: '/images/leagues/ultra.png',
+	2: '/images/leagues/master.png',
+	3: '/images/raids/tier-5.png',
+};
 
 const TABS = [
 	['Ranks', 'ranks'],
@@ -92,7 +99,7 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 
 const PokemonDetail = () => {
 	const { speciesId = '', tab: tabParam } = useParams();
-	const [searchParams] = useSearchParams();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
 	const { imageSource } = useImageSource();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
@@ -110,14 +117,20 @@ const PokemonDetail = () => {
 	const lgParam = searchParams.get('lg') ?? '';
 	const [iv, setIv] = useState<IVs>({ atk: 15, def: 15, hp: 15 });
 	const [level, setLevel] = useState(MAX_LEVEL);
-	const [league, setLeague] = useState<LeagueId>(LG_PARAM[lgParam] ?? 0);
+	// The league lives in `?lg=`, not local state — reloading (or sharing/
+	// bookmarking the URL) lands back on whichever league you were last
+	// looking at, not always Great. Arriving from a league/raid ranking sets
+	// this the same way (it's the same param), and any in-page switch (tabs,
+	// leaderboard rows, cycling the sprite type on a raid row…) just rewrites
+	// it via `setLeague` below instead of touching separate component state.
+	const league: LeagueId = LG_PARAM[lgParam] ?? 0;
+	const setLeague = (id: LeagueId) => {
+		const next = new URLSearchParams(searchParams);
+		next.set('lg', LG_SLUG[id]);
+		setSearchParams(next, { replace: true });
+	};
 	const [heroSpriteIdx, setHeroSpriteIdx] = useState(0);
 	useEffect(() => setHeroSpriteIdx(0), [speciesId]);
-	// arriving from a league / raid ranking (`?lg=`) opens that league selected
-	useEffect(() => {
-		const l = LG_PARAM[lgParam];
-		if (l != null) setLeague(l);
-	}, [lgParam, speciesId]);
 	const isRaid = league === 3;
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
@@ -131,10 +144,37 @@ const PokemonDetail = () => {
 
 	// Whole evolution family for the picker — same rule as the legacy site:
 	// predecessors + the full line, restricted to this Pokémon's shadow-ness.
+	//
+	// Ordered like the evolution chain reads — base stage first, then each
+	// next evolution, form variants (e.g. a regional form) sitting alongside
+	// their stage rather than after the whole line, Megas always last — not by
+	// dex number, which interleaves unrelated regional dex ranges.
 	const family = useMemo(() => {
 		if (!pokemon) return [];
-		return [...fetchPokemonFamily(pokemon, gamemasterPokemon)].sort(
-			(a, b) => a.dex - b.dex || (a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) || a.speciesName.localeCompare(b.speciesName)
+		const members = fetchPokemonFamily(pokemon, gamemasterPokemon);
+
+		const depthCache = new Map<string, number>();
+		const depthOf = (m: IGamemasterPokemon): number => {
+			const cached = depthCache.get(m.speciesId);
+			if (cached != null) return cached;
+			let depth = 0;
+			let cur: IGamemasterPokemon | undefined = m;
+			const seen = new Set<string>();
+			while (cur?.family?.parent && !seen.has(cur.speciesId)) {
+				seen.add(cur.speciesId);
+				cur = gamemasterPokemon[cur.family.parent];
+				if (cur) depth++;
+			}
+			depthCache.set(m.speciesId, depth);
+			return depth;
+		};
+
+		return [...members].sort(
+			(a, b) =>
+				(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) || // Megas always last
+				depthOf(a) - depthOf(b) || // then by evolutionary stage
+				(a.isShadow ? 1 : 0) - (b.isShadow ? 1 : 0) || // non-shadow before shadow
+				a.speciesName.localeCompare(b.speciesName) // ties: alphabetical
 		);
 	}, [pokemon, gamemasterPokemon]);
 
@@ -207,10 +247,20 @@ const PokemonDetail = () => {
 	const candLen = (id: number) => (id === 3 ? boardData.raid.length : (boardData.pvp[id]?.length ?? 0));
 
 	// "Your IVs" follows the PvP carousel (best reachable by default), not the URL mon.
+	// Index with `pvpLeague`, not `league` — while on the raid tab `league` is 3,
+	// which would index into `pvpCandidates` (always a PvP league's list) with
+	// whatever position the *raid* carousel happens to be on, picking an
+	// unrelated species out of the PvP list.
 	const pvpLeague: PvpLeague = isRaid ? 0 : (league as PvpLeague);
 	const pvpCandidates = boardData.pvp[pvpLeague] ?? [];
-	const pvpMember = pvpCandidates[Math.min(cpos(league).p, Math.max(0, pvpCandidates.length - 1))] ?? pokemon;
+	const pvpMember = pvpCandidates[Math.min(cpos(pvpLeague).p, Math.max(0, pvpCandidates.length - 1))] ?? pokemon;
 	const slice = !isRaid ? leagueSlice(ivPercents[pvpMember?.speciesId ?? ''], pvpLeague) : undefined;
+	// Viewing a Shadow whose best reachable candidate isn't one: the picker
+	// asks for *this Shadow's own* IVs, not the target's — so the IV/CP/rank
+	// math already assumes the +2-per-stat purification bonus (see the worker),
+	// and the default/preset spread has to subtract it back out, or "the
+	// Shadow's IVs to reach a 100% target" would show the target's own IVs.
+	const purifyOffset = pokemon?.isShadow && pvpMember && !pvpMember.isShadow ? 2 : 0;
 
 	// On load and whenever the league (or carouseled member) changes, snap the IV
 	// spread to that league's rank-1 spread AND the level that hits its CP cap with
@@ -218,18 +268,30 @@ const PokemonDetail = () => {
 	const perfectKey = slice ? `${slice.perfect.A}-${slice.perfect.D}-${slice.perfect.S}-${slice.perfectLvl}` : '';
 	useEffect(() => {
 		if (!slice?.perfect) return;
-		setIv({ atk: slice.perfect.A, def: slice.perfect.D, hp: slice.perfect.S });
+		setIv({
+			atk: Math.max(0, slice.perfect.A - purifyOffset),
+			def: Math.max(0, slice.perfect.D - purifyOffset),
+			hp: Math.max(0, slice.perfect.S - purifyOffset),
+		});
 		if (slice.perfectLvl) setLevel(slice.perfectLvl);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [league, pvpMember?.speciesId, perfectKey]);
+	}, [league, pvpMember?.speciesId, perfectKey, purifyOffset]);
 
+	// Switching to a different league always lands on its rank-1 (best reachable)
+	// candidate — any carousel position cycled into on a *previous* visit to
+	// that league gets cleared, not just the currently active one, so nothing
+	// stale carries over regardless of which control (leaderboard row, or the
+	// league tabs below) you use to switch.
+	const selectLeague = (id: LeagueId) => {
+		setCarousel({});
+		setLeague(id);
+	};
 	const cycleRow = (id: LeagueId) => {
 		if (league === id) {
 			const len = candLen(id);
 			setCarousel((c) => ({ ...c, [id]: { p: len ? ((c[id]?.p ?? 0) + 1) % len : 0, t: 0, m: {} } }));
 		} else {
-			setCarousel({});
-			setLeague(id);
+			selectLeague(id);
 		}
 	};
 	// leaving a raid type resets its fast+charged combo back to the best one
@@ -336,7 +398,18 @@ const PokemonDetail = () => {
 	// renders at all, with no extra "is this page tall enough" check needed.
 	const heroRef = useRef<HTMLElement>(null);
 	const heroMiniRef = useRef<HTMLDivElement>(null);
-	useEffect(() => {
+	// The bar's JSX default is `data-visible='false'`, so the very first paint
+	// is always hidden — the first real `update()` call is deliberately
+	// deferred a frame (see below) rather than run synchronously, so nothing
+	// ever overwrites that first paint before the browser has actually shown
+	// it. `useLayoutEffect`, not `useEffect`, for the *listener setup*: this
+	// component instance is reused across Pokémon (same route, React Router
+	// doesn't remount it), and the bar's visibility lives on the DOM node
+	// itself (`dataset.visible`, set imperatively — React never learns about
+	// that mutation, so its own reconciliation never resets it), so the sooner
+	// the scroll listener is attached the sooner a stale value from a previous
+	// page gets corrected.
+	useLayoutEffect(() => {
 		const heroEl = heroRef.current;
 		const miniEl = heroMiniRef.current;
 		if (!heroEl || !miniEl) return;
@@ -348,13 +421,19 @@ const PokemonDetail = () => {
 			const appbarH = document.querySelector('.r-appbar')?.getBoundingClientRect().height ?? 60;
 			const gap = isDesktop() ? 10 : 0;
 			miniEl.style.top = `${appbarH + gap}px`;
-			const heroShown = heroEl.getBoundingClientRect().bottom <= appbarH;
+			// `window.scrollY > 0` first, unconditionally: whatever the hero's
+			// measured position says, the bar has no business showing while the
+			// page hasn't actually scrolled at all.
+			const heroShown = window.scrollY > 0 && heroEl.getBoundingClientRect().bottom <= appbarH;
 			miniEl.dataset.visible = String(heroShown);
 		};
 		const onScroll = () => {
 			if (!raf) raf = requestAnimationFrame(update);
 		};
-		update();
+		// Deferred, not called synchronously: the JSX default (`data-visible=
+		// 'false'`) always paints first this way, guaranteed — this only ever
+		// *corrects* that a frame later, never replaces the very first paint.
+		raf = requestAnimationFrame(update);
 		window.addEventListener('scroll', onScroll, { passive: true });
 		window.addEventListener('resize', onScroll);
 		return () => {
@@ -369,7 +448,7 @@ const PokemonDetail = () => {
 		// would otherwise never retry and the whole thing would stay dead for
 		// that visit. Re-running once `pokemon` itself shows up fixes that.
 	}, [speciesId, pokemon]);
-	const cycleLeague = () => setLeague((l) => ((l + 1) % LEAGUES.length) as LeagueId);
+	const cycleLeague = () => setLeague(((league + 1) % LEAGUES.length) as LeagueId);
 
 	if (!fetchCompleted) {
 		return (
@@ -503,10 +582,6 @@ const PokemonDetail = () => {
 				>
 					{cleanName(pokemon.speciesName)}
 				</button>
-				<span className='r-hero-mini-cp' aria-hidden='true'>
-					{heroCp.toLocaleString()}
-					<em>CP</em>
-				</span>
 				<button
 					type='button'
 					className='r-hero-mini-lg'
@@ -514,7 +589,7 @@ const PokemonDetail = () => {
 					onClick={cycleLeague}
 					aria-label={`Currently showing ${LEAGUES[league].full}. Tap to switch league.`}
 				>
-					<i aria-hidden='true' />
+					<img src={LG_ICON[league]} alt='' aria-hidden='true' />
 					{LEAGUES[league].label}
 					{league !== 3 && ' League'}
 				</button>
@@ -577,7 +652,11 @@ const PokemonDetail = () => {
 							type='button'
 							className='r-toggle r-toggle--shadow'
 							data-on={isShadow}
-							onClick={() => void navigate(R.pokemon(isShadow ? baseId : `${baseId}_shadow`))}
+							onClick={() =>
+								void navigate(
+									`${R.pokemon(isShadow ? baseId : `${baseId}_shadow`, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`
+								)
+							}
 						>
 							<ShadowMark className='r-toggle-flame' />
 							Shadow
@@ -614,7 +693,7 @@ const PokemonDetail = () => {
 						type='button'
 						data-active={league === l.id}
 						style={{ ['--seg-c' as string]: l.cssVar }}
-						onClick={() => setLeague(l.id as LeagueId)}
+						onClick={() => selectLeague(l.id as LeagueId)}
 					>
 						{l.label}
 					</button>
@@ -843,7 +922,11 @@ const PokemonDetail = () => {
 					) : (
 						<>
 							{/* ---- IV PICKER ---- */}
-							<div className='r-section-h'>Your IVs · {cleanName((pvpMember ?? pokemon).speciesName)}</div>
+							<div className='r-section-h'>
+								{purifyOffset > 0
+									? `Shadow ${cleanName(pokemon.speciesName)} IVs to reach ${cleanName((pvpMember ?? pokemon).speciesName)}`
+									: `Your IVs · ${cleanName((pvpMember ?? pokemon).speciesName)}`}
+							</div>
 							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
 								<IvPicker
 									value={iv}
@@ -855,7 +938,11 @@ const PokemonDetail = () => {
 											? [
 													[
 														`Rank 1 ${LEAGUES[league].label}`,
-														{ atk: slice.perfect.A, def: slice.perfect.D, hp: slice.perfect.S },
+														{
+															atk: Math.max(0, slice.perfect.A - purifyOffset),
+															def: Math.max(0, slice.perfect.D - purifyOffset),
+															hp: Math.max(0, slice.perfect.S - purifyOffset),
+														},
 													] as [string, { atk: number; def: number; hp: number }],
 												]
 											: []),
@@ -882,6 +969,17 @@ const PokemonDetail = () => {
 											{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
 										</b>{' '}
 										→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
+									</p>
+								)}
+								{purifyOffset > 0 && (
+									<p className='r-muted' style={{ marginTop: 8 }}>
+										⚠️ Be aware that purifying gains you +2 IVs on each stat.
+									</p>
+								)}
+								{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
+									<p className='r-muted' style={{ marginTop: 8 }}>
+										⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to
+										at least 2, so a Shadow can never land below that no matter its own IVs.
 									</p>
 								)}
 							</div>

@@ -35,6 +35,12 @@ export interface FamilyMember {
 
 export interface FamilyIvPercentsInput {
 	reachable: Array<FamilyMember>;
+	/** Is the species whose page this is (not `p` below — the family member
+	 * being ranked) a Shadow? Its non-shadow relatives can only ever be reached
+	 * by purifying first, which adds +2 to every IV — so the queried spread
+	 * (the Shadow's own, unpurified IVs) is projected through that bonus
+	 * before ranking, matching what the family member will actually end up
+	 * with. */
 	selfIsShadow: boolean;
 	attackIV: number;
 	defenseIV: number;
@@ -51,7 +57,7 @@ const familyIvPercents = ({
 	const result: Record<string, IIvPercents> = {};
 
 	for (const p of reachable) {
-		// A shadow's non-shadow relatives get a +2 floor on every IV.
+		// A shadow's non-shadow relatives get a +2 bonus on every IV once purified.
 		const effIV = (iv: number) => Math.min(15, selfIsShadow && !p.isShadow ? 2 + iv : iv);
 		const effectiveAtk = effIV(attackIV);
 		const effectiveDef = effIV(defenseIV);

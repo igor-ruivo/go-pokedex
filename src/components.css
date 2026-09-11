@@ -168,7 +168,7 @@
 .rvmp .r-hero-mini-name {
 	min-width: 0;
 	flex: 1 1 auto;
-	/* guarantees breathing room before the CP figure even when the name is
+	/* guarantees breathing room before the league badge even when the name is
 	   short (flex:1 alone only reserves it when the name is long enough to
 	   need the space) */
 	margin-right: var(--s3);
@@ -184,24 +184,9 @@
 .rvmp .r-hero-mini-name:disabled {
 	cursor: default;
 }
-.rvmp .r-hero-mini-cp {
-	flex: none;
-	display: flex;
-	align-items: baseline;
-	gap: 3px;
-	font-family: Fredoka, sans-serif;
-	font-weight: 700;
-	font-size: 15px;
-	color: var(--accent);
-	font-variant-numeric: tabular-nums;
-}
-.rvmp .r-hero-mini-cp em {
-	font-style: normal;
-	font-size: 12px;
-	color: var(--text-faint);
-}
 /* current league — a small tappable badge, cycles league on tap (same action
-   as the bigger league-hint strip below, or tapping an active leaderboard row) */
+   as the bigger league-hint strip below, or tapping an active leaderboard row).
+   Icon + name both carry the league's own colour, same as the leaderboard. */
 .rvmp .r-hero-mini-lg {
 	flex: none;
 	display: flex;
@@ -212,15 +197,14 @@
 	font-size: 11px;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
-	color: var(--text-dim);
+	color: var(--seg-c, var(--accent));
 }
-.rvmp .r-hero-mini-lg i {
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: var(--seg-c, var(--accent));
-	box-shadow: 0 0 6px color-mix(in srgb, var(--seg-c, var(--accent)) 70%, transparent);
+.rvmp .r-hero-mini-lg img {
+	width: 16px;
+	height: 16px;
+	object-fit: contain;
 	flex: none;
+	filter: drop-shadow(0 0 4px color-mix(in srgb, var(--seg-c, var(--accent)) 55%, transparent));
 }
 @media (min-width: 900px) {
 	/* desktop: imitate `.r-bottomnav`'s own desktop treatment — a detached,
