@@ -2185,6 +2185,8 @@
 	width: 62%;
 	aspect-ratio: 1;
 	object-fit: contain;
+	/* same understated drop-shadow every other sprite on the site uses */
+	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
 }
 .rvmp .r-mini > span:not(.r-mini-shiny) {
 	max-width: 100%;
