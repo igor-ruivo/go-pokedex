@@ -219,8 +219,20 @@ const Rankings = () => {
 	}, [rowHeight, virt]);
 
 	const setTypes = (list: Array<string>) => {
-		const next = new URLSearchParams(params);
 		const capped = list.slice(0, isRaid ? 1 : 2);
+		if (isRaid) {
+			// Picking a type through the UI writes the real, shareable path
+			// (/rankings/raid/fire — see R.rankings), not just `?type=`: the path
+			// segment only *seeds* that query param on an initial load (see the
+			// `typeSeed` fallback above), so without this, normal use of the
+			// filter would never actually produce the pretty URL it exists for.
+			const rest = new URLSearchParams(params);
+			rest.delete('type');
+			const search = rest.toString();
+			void navigate({ pathname: R.rankings('raid', capped[0]), search: search ? `?${search}` : '' }, { replace: true });
+			return;
+		}
+		const next = new URLSearchParams(params);
 		if (capped.length) next.set('type', capped.join(','));
 		else next.delete('type');
 		setParams(next, { replace: true });
