@@ -2,7 +2,7 @@ import './rvmp.css';
 import './components.css';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Shell from './components/Shell';
 import { ImageSourceProvider } from './contexts/imageSource-context';
@@ -32,7 +32,7 @@ const App = () => (
 			<ImageSourceProvider>
 				<RaidMetricProvider>
 					<LanguageProvider>
-						<HashRouter>
+						<BrowserRouter>
 							<Routes>
 								<Route element={<Shell />}>
 									<Route index element={<Rankings />} />
@@ -50,7 +50,7 @@ const App = () => (
 									<Route path='*' element={<Navigate to='/' replace />} />
 								</Route>
 							</Routes>
-						</HashRouter>
+						</BrowserRouter>
 					</LanguageProvider>
 				</RaidMetricProvider>
 			</ImageSourceProvider>
