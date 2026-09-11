@@ -4,13 +4,37 @@ import { R } from '../lib/nav';
 import { SearchBox } from './SearchBox';
 import { SettingsMenu } from './SettingsMenu';
 
-const NAV: Array<{ to: string; label: string; icon: string; match: (p: string) => boolean }> = [
-	{ to: R.pokedex, label: 'Pokédex', icon: '▦', match: (p) => p === '/' || p.startsWith('/pokemon') },
-	{ to: R.rankings('great'), label: 'Rankings', icon: '🏆', match: (p) => p.startsWith('/rankings') },
-	{ to: R.calendar(), label: 'Calendar', icon: '🗓', match: (p) => p.startsWith('/calendar') },
-	{ to: R.moves, label: 'Moves', icon: '⚡', match: (p) => p.startsWith('/move') },
-	{ to: R.types, label: 'Types', icon: '🛡', match: (p) => p.startsWith('/types') },
-	{ to: R.trash, label: 'Delete', icon: '🗑', match: (p) => p.startsWith('/trash') },
+const NAV: Array<{ to: string; label: string; icon: string; hint: string; match: (p: string) => boolean }> = [
+	{
+		to: R.pokedex,
+		label: 'Pokédex',
+		icon: '▦',
+		hint: 'Browse every Pokémon',
+		match: (p) => p === '/' || p.startsWith('/pokemon'),
+	},
+	{
+		to: R.rankings('great'),
+		label: 'Rankings',
+		icon: '🏆',
+		hint: 'Best attackers per league and raid type',
+		match: (p) => p.startsWith('/rankings'),
+	},
+	{
+		to: R.calendar(),
+		label: 'Calendar',
+		icon: '🗓',
+		hint: 'Events, raids, spawns and eggs',
+		match: (p) => p.startsWith('/calendar'),
+	},
+	{ to: R.moves, label: 'Moves', icon: '⚡', hint: 'Every fast and charged move', match: (p) => p.startsWith('/move') },
+	{ to: R.types, label: 'Types', icon: '🛡', hint: 'Type effectiveness chart', match: (p) => p.startsWith('/types') },
+	{
+		to: R.trash,
+		label: 'Delete',
+		icon: '🗑',
+		hint: 'Mass-appraise trash candidates',
+		match: (p) => p.startsWith('/trash'),
+	},
 ];
 
 const Shell = () => {
@@ -33,7 +57,7 @@ const Shell = () => {
 
 			<nav className='r-bottomnav'>
 				{NAV.map((n) => (
-					<NavLink key={n.to} to={n.to} className={n.match(pathname) ? 'is-active' : ''}>
+					<NavLink key={n.to} to={n.to} className={n.match(pathname) ? 'is-active' : ''} title={n.hint}>
 						<span className='r-bn-icon' aria-hidden>
 							{n.icon}
 						</span>

@@ -1,7 +1,12 @@
+import { useRef } from 'react';
+
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { goBaseUrl } from '../utils/Configs';
 import { ShadowMark } from './ShadowMark';
+
+/** Horizontal drag past this many px, more horizontal than vertical, counts as a swipe. */
+const SWIPE_THRESHOLD = 32;
 
 /**
  * `goImageUrl` / `shinyGoImageUrl` in the game-master are repo-relative
@@ -25,6 +30,8 @@ export const Sprite = ({
 	alt,
 	src,
 	onTap,
+	onSwipeLeft,
+	onSwipeRight,
 	hint,
 }: {
 	pokemon: IGamemasterPokemon;
@@ -33,11 +40,23 @@ export const Sprite = ({
 	src?: string;
 	/** Makes the sprite tappable (cycles the sprite source on the hero). */
 	onTap?: () => void;
+	/** Touch only — swipe left/right to move through the carousel instead of tapping. */
+	onSwipeLeft?: () => void;
+	onSwipeRight?: () => void;
 	/** Carousel position hint dots under the sprite. */
 	hint?: { count: number; active: number };
 }) => {
 	const { imageSource } = useImageSource();
 	const resolved = src ?? spriteUrl(pokemon, imageSource);
+
+	// Touch drag tracking. `touch-action: pan-y` (CSS) hands horizontal drags to
+	// us untouched while leaving vertical page scrolling to the browser, so no
+	// axis-lock dance is needed here — a gesture that turns out to be mostly
+	// vertical just never crosses SWIPE_THRESHOLD on the X axis.
+	const startRef = useRef<{ x: number; y: number } | null>(null);
+	const swipedRef = useRef(false);
+	const canSwipe = !!(onSwipeLeft ?? onSwipeRight);
+
 	return (
 		<div
 			className='r-sprite'
@@ -46,12 +65,42 @@ export const Sprite = ({
 				? {
 						role: 'button',
 						tabIndex: 0,
-						onClick: onTap,
+						onClick: () => {
+							// swallow the click a touch swipe leaves in its wake — only a
+							// genuine tap (no meaningful drag) should cycle via `onTap`
+							if (swipedRef.current) {
+								swipedRef.current = false;
+								return;
+							}
+							onTap();
+						},
 						onKeyDown: (e: React.KeyboardEvent) => {
 							if (e.key === 'Enter' || e.key === ' ') {
 								e.preventDefault();
 								onTap();
 							}
+						},
+					}
+				: {})}
+			{...(canSwipe
+				? {
+						onPointerDown: (e: React.PointerEvent) => {
+							if (e.pointerType === 'mouse') return;
+							startRef.current = { x: e.clientX, y: e.clientY };
+						},
+						onPointerUp: (e: React.PointerEvent) => {
+							const start = startRef.current;
+							startRef.current = null;
+							if (!start) return;
+							const dx = e.clientX - start.x;
+							const dy = e.clientY - start.y;
+							if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+							swipedRef.current = true;
+							if (dx < 0) onSwipeLeft?.();
+							else onSwipeRight?.();
+						},
+						onPointerCancel: () => {
+							startRef.current = null;
 						},
 					}
 				: {})}

@@ -1,5 +1,5 @@
 import type { MouseEvent as ReactMouseEvent } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { IvPicker, type IVs } from '../components/IvPicker';
@@ -322,6 +322,68 @@ const PokemonDetail = () => {
 		[pokemon]
 	);
 
+	// Collapsing hero → the actual hero sprite flies and shrinks into the mini
+	// bar's sprite slot as you scroll, instead of one copy fading out while an
+	// unrelated small copy fades in elsewhere. Classic FLIP: each frame we read
+	// the *live* on-screen rect of the real sprite (it's still normal, scrolling
+	// page content) and the mini slot's rect (fixed, so effectively constant),
+	// and place one floating clone image somewhere between the two, weighted by
+	// scroll progress — so it visibly travels and resizes, not just cross-fades.
+	// Name/CP/level don't have a sane "shared element" equivalent (different
+	// layouts entirely), so those stay a simple in-place cross-fade on `--p`.
+	// Everything here is ref/style-driven, not React state — zero re-renders
+	// while scrolling, however fast.
+	const heroRef = useRef<HTMLElement>(null);
+	const heroMiniRef = useRef<HTMLDivElement>(null);
+	const heroFlyRef = useRef<HTMLImageElement>(null);
+	const heroMiniSlotRef = useRef<HTMLSpanElement>(null);
+	useEffect(() => {
+		const heroEl = heroRef.current;
+		const miniEl = heroMiniRef.current;
+		const flyEl = heroFlyRef.current;
+		const slotEl = heroMiniSlotRef.current;
+		if (!heroEl || !miniEl || !flyEl || !slotEl) return;
+		const COLLAPSE_DISTANCE = 160;
+		let raf = 0;
+		const update = () => {
+			raf = 0;
+			const appbarH = document.querySelector('.r-appbar')?.getBoundingClientRect().height ?? 60;
+			// how far the hero's top edge has slid up past the app bar's bottom edge
+			const past = appbarH - heroEl.getBoundingClientRect().top;
+			const progress = Math.max(0, Math.min(1, past / COLLAPSE_DISTANCE));
+			miniEl.style.setProperty('--p', String(progress));
+			miniEl.style.pointerEvents = progress > 0.4 ? 'auto' : 'none';
+
+			if (progress <= 0) {
+				flyEl.style.opacity = '0';
+			} else {
+				const realImg = heroEl.querySelector('.r-sprite img');
+				if (realImg) {
+					const from = realImg.getBoundingClientRect();
+					const to = slotEl.getBoundingClientRect();
+					const lerp = (a: number, b: number) => a + (b - a) * progress;
+					flyEl.style.left = `${lerp(from.left, to.left)}px`;
+					flyEl.style.top = `${lerp(from.top, to.top)}px`;
+					flyEl.style.width = `${lerp(from.width, to.width)}px`;
+					flyEl.style.height = `${lerp(from.height, to.height)}px`;
+					flyEl.style.opacity = String(progress);
+				}
+			}
+		};
+		const onScroll = () => {
+			if (raf) return;
+			raf = requestAnimationFrame(update);
+		};
+		update();
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll);
+		return () => {
+			if (raf) cancelAnimationFrame(raf);
+			window.removeEventListener('scroll', onScroll);
+			window.removeEventListener('resize', onScroll);
+		};
+	}, [speciesId]);
+
 	if (!fetchCompleted) {
 		return (
 			<div className='r-loading'>
@@ -362,13 +424,17 @@ const PokemonDetail = () => {
 	});
 	const raidSelRow = raidRows[raidSelTypeIdx];
 
-	// Hero sprite carousel — cycle the official / GO / shiny-GO artwork by tapping.
+	// Hero sprite carousel — cycle the official / GO / shiny-GO artwork by tapping
+	// (mouse) or swiping left/right (touch). `heroSpriteIdx` can go negative
+	// (swipe-right/previous), hence the double-mod wrap instead of a plain `%`.
 	const heroSprites = [
 		...new Set(
 			[pokemon.imageUrl, goSpriteUrl(pokemon.goImageUrl), goSpriteUrl(pokemon.shinyGoImageUrl)].filter(Boolean)
 		),
 	];
-	const heroIdx = heroSprites.length ? heroSpriteIdx % heroSprites.length : 0;
+	const heroIdx = heroSprites.length
+		? ((heroSpriteIdx % heroSprites.length) + heroSprites.length) % heroSprites.length
+		: 0;
 
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
 	const boardRows = LEAGUES.map((l) => {
@@ -410,13 +476,43 @@ const PokemonDetail = () => {
 
 	return (
 		<div className='r-shell'>
+			{/* ---- collapsed hero: the sprite below physically flies in here as you scroll ---- */}
+			{/* decorative echo of the hero above — screen readers get the real thing */}
+			<div className='r-hero-mini' ref={heroMiniRef} aria-hidden='true' style={accentStyle(primary)}>
+				{/* empty — just reserves the landing spot the flying sprite (below) aims for */}
+				<span className='r-hero-mini-sprite' ref={heroMiniSlotRef} />
+				<span className='r-hero-mini-name'>{cleanName(pokemon.speciesName)}</span>
+				<span className='r-hero-mini-types' aria-hidden='true'>
+					{pokemon.types.map((t) => (
+						<i key={String(t)} style={{ background: typeVar(t) }} />
+					))}
+				</span>
+				<span className='r-hero-mini-cp'>
+					{heroCp.toLocaleString()}
+					<em>CP</em>
+				</span>
+				<span className='r-hero-mini-lvl'>L{Number.isInteger(level) ? level : level.toFixed(1)}</span>
+			</div>
+			{/* the shared-element clone: positioned/sized every frame between the real
+			    hero sprite's live rect and the mini slot's rect above (see the effect) */}
+			<img
+				ref={heroFlyRef}
+				className='r-hero-fly'
+				src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)}
+				alt=''
+				aria-hidden='true'
+				style={{ opacity: 0 }}
+			/>
+
 			{/* ---- HERO (the only place the primary-type colour leaks) ---- */}
-			<header className='r-hero' style={accentStyle(primary)}>
+			<header className='r-hero' ref={heroRef} style={accentStyle(primary)}>
 				<div className='r-hero-top'>
 					<Sprite
 						pokemon={pokemon}
 						src={heroSprites[heroIdx]}
 						onTap={() => setHeroSpriteIdx((i) => i + 1)}
+						onSwipeLeft={() => setHeroSpriteIdx((i) => i + 1)}
+						onSwipeRight={() => setHeroSpriteIdx((i) => i - 1)}
 						hint={{ count: heroSprites.length, active: heroIdx }}
 					/>
 					<div style={{ flex: 1 }}>

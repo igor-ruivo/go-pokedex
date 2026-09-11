@@ -99,6 +99,104 @@
 		bottom: -2px;
 	}
 }
+/* collapsed hero — a condensed 1-line summary (sprite · name · types · CP ·
+   level) that morphs in over the app bar, tracking scroll position 1:1 via the
+   `--p` custom property (0 = fully the big hero, 1 = fully collapsed) that
+   PokemonDetail writes every animation frame. No CSS transition here on
+   purpose — the point is that it tracks the scroll *continuously*, not that it
+   catches up after the fact. */
+.rvmp .r-hero-mini {
+	--p: 0;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 35; /* above .r-appbar (30) */
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	padding: var(--s2) var(--s4);
+	background:
+		radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+		color-mix(in srgb, var(--bg) 92%, transparent);
+	backdrop-filter: blur(16px);
+	border-bottom: 1px solid var(--border);
+	opacity: var(--p);
+	/* a little downward drift at low progress + a gentle overshoot-settle curve
+	   on the vertical offset only — opacity stays a clean linear fade */
+	transform: translateY(calc((var(--p) - 1) * 10px));
+	pointer-events: none;
+}
+/* empty on purpose — just a fixed-size, fixed-position landing spot; its rect
+   is what `.r-hero-fly` (the actual visible sprite mid-flight) flies toward */
+.rvmp .r-hero-mini-sprite {
+	flex: none;
+	width: 34px;
+	height: 34px;
+}
+/* the shared-element clone — one real sprite image, repositioned/resized every
+   scroll frame from wherever the hero sprite currently sits (live, since it's
+   normal scrolling content) toward `.r-hero-mini-sprite`'s slot above. No
+   transition: the point is that it tracks the scroll motion directly, the way
+   a physical object being carried along would, not that it eases in after. */
+.rvmp .r-hero-fly {
+	position: fixed;
+	z-index: 40; /* above .r-hero-mini (35) */
+	object-fit: contain;
+	pointer-events: none;
+	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.4));
+}
+.rvmp .r-hero-mini-name {
+	min-width: 0;
+	flex: 1 1 auto;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 14px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.rvmp .r-hero-mini-types {
+	display: flex;
+	flex: none;
+	gap: 3px;
+}
+.rvmp .r-hero-mini-types i {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+}
+.rvmp .r-hero-mini-cp {
+	flex: none;
+	display: flex;
+	align-items: baseline;
+	gap: 3px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 13px;
+	color: var(--accent);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-hero-mini-cp em {
+	font-style: normal;
+	font-size: 10px;
+	color: var(--text-faint);
+}
+.rvmp .r-hero-mini-lvl {
+	flex: none;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text-dim);
+	font-variant-numeric: tabular-nums;
+}
+@media (max-width: 400px) {
+	/* tight on small phones — sprite / name / CP / level matter more than the dots */
+	.rvmp .r-hero-mini-types {
+		display: none;
+	}
+}
+
 .rvmp .r-dexno {
 	font-family: Fredoka, sans-serif;
 	font-weight: 600;
@@ -141,6 +239,9 @@
 }
 .rvmp .r-sprite[data-tappable] {
 	cursor: pointer;
+	/* let the browser keep handling vertical page scroll natively; horizontal
+	   drags (the swipe-to-cycle-sprites gesture) are read in JS instead */
+	touch-action: pan-y;
 }
 .rvmp .r-sprite-dots {
 	position: absolute;
@@ -1389,9 +1490,19 @@
 	gap: 3px;
 	padding: 8px 4px;
 	border-radius: var(--r-sm);
+	border: 1px solid transparent;
 	color: var(--text-faint);
 	font-weight: 700;
 	font-size: 11px;
+	transition:
+		border-color 0.14s ease,
+		background 0.14s ease,
+		color 0.14s ease;
+}
+.rvmp .r-bottomnav a:not(.is-active):hover {
+	border-color: var(--border-strong);
+	background: var(--surface-2);
+	color: var(--text);
 }
 .rvmp .r-bottomnav a.is-active {
 	color: var(--accent);
