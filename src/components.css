@@ -901,25 +901,24 @@
 	flex-direction: column;
 	gap: var(--s2);
 	margin-top: var(--s3);
+	/* capped on every device, not just pointer-fine ones — a type can have a
+	   dozen-plus entries and letting them all flow would blow the page out.
+	   `overscroll-behavior-y: auto` (not `contain`) lets the gesture chain to
+	   the page once this inner list hits its own scroll boundary, instead of
+	   getting trapped there — the thing that makes a capped area workable on
+	   an iOS rubber-band scroll in the first place. */
+	max-height: 356px; /* ~5 rows */
+	overflow-y: auto;
+	overscroll-behavior-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--surface-3) transparent;
 }
-/* A capped inner scroll area is great with a mouse wheel but a poor touch target —
-   on iOS the rubber-band traps the gesture at the edges. So only cap + scroll on
-   pointer-fine devices; on touch the list flows in the page and scrolls natively. */
-@media (hover: hover) and (pointer: fine) {
-	.rvmp .r-raidtypes {
-		max-height: 356px; /* ~5 rows */
-		overflow-y: auto;
-		overscroll-behavior-y: auto; /* let the wheel chain to the page at the ends */
-		scrollbar-width: thin;
-		scrollbar-color: var(--surface-3) transparent;
-	}
-	.rvmp .r-raidtypes::-webkit-scrollbar {
-		width: 6px;
-	}
-	.rvmp .r-raidtypes::-webkit-scrollbar-thumb {
-		background: var(--surface-3);
-		border-radius: 3px;
-	}
+.rvmp .r-raidtypes::-webkit-scrollbar {
+	width: 6px;
+}
+.rvmp .r-raidtypes::-webkit-scrollbar-thumb {
+	background: var(--surface-3);
+	border-radius: 3px;
 }
 .rvmp .r-raidtype {
 	display: block;
