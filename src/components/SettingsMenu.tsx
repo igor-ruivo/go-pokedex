@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
+// Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
 import { useDismiss } from '../hooks/useDismiss';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
 

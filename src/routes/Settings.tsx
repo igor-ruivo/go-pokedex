@@ -1,5 +1,6 @@
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
+// Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
 
 type Option<T> = { value: T; label: string; hint?: string };
 

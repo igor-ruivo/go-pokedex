@@ -81,7 +81,7 @@ const MoveDetail = () => {
 			['DMG', String(pow)],
 			['NRG', kind === 'fast' ? `+${nrg}` : String(nrg)],
 		];
-		if (a === 'pve') out.push(['DUR.', `${cd}s`]);
+		if (a === 'pve') out.push(['DUR', `${cd}s`]);
 		else if (kind === 'fast') out.push(['Turns', String(fastMoveTurns(m))]);
 		if (kind === 'fast') {
 			out.push(['DPS', moveDPS(m, a).toFixed(1)], ['EPS', moveEPS(m, a).toFixed(1)]);

@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
+import { useTheme } from '../contexts/theme-context';
 import { R } from '../lib/nav';
 import { SearchBox } from './SearchBox';
 import { SettingsMenu } from './SettingsMenu';
@@ -54,9 +55,10 @@ const NAV: Array<{ to: string; label: string; icon: string; hint: string; match:
 
 const Shell = () => {
 	const { pathname } = useLocation();
+	const { dataTheme } = useTheme();
 
 	return (
-		<div className='rvmp'>
+		<div className='rvmp' data-theme={dataTheme}>
 			<header className='r-appbar'>
 				<Link to={R.pokedex} className='r-logo' aria-label='Home'>
 					<span className='r-logo-ball' />

@@ -1,6 +1,14 @@
 /* ============================================================================
    Design tokens + base — everything is scoped under the `.rvmp` root class.
-   Dark-first (that's the look we keep).
+   Dark-first (that's the look we keep) with a full light-mode counterpart.
+
+   Theme resolution — three states, same convention used across the app:
+     - no `data-theme` attribute at all → follow the OS/browser preference
+       (the `prefers-color-scheme` block below)
+     - `data-theme="light"` / `="dark"` → the user's explicit choice from
+       Settings (see contexts/theme-context.tsx), wins either direction.
+   Only colour tokens change between themes — spacing, radii, type scale etc
+   stay identical so nothing reflows when you switch.
    ============================================================================ */
 
 /* Always reserve the scrollbar gutter so navigating between a short page and a
@@ -81,14 +89,18 @@ html:has(.rvmp) {
 	--iv-fill: #f5a623;
 	--iv-max: #ff5252;
 
+	/* generic positive/negative (rank deltas, win/lose)… kept vivid, readable text-on-bg */
+	--pos: #4ade80;
+	--neg: #f87171;
+
 	box-sizing: border-box;
 	min-height: 100dvh;
 	background: var(--bg);
 	color: var(--text);
-	/* dark-only design, but without this the browser still renders native form
-	   controls (a <select>'s dropdown chevron, checkboxes…) with light-mode
-	   assumptions — a dark chevron on our dark surfaces, unreadable. This tells
-	   it to use its own dark-mode control rendering instead. */
+	/* tells the browser which native-control rendering (a <select>'s dropdown
+	   chevron, checkboxes, the scrollbar…) matches the theme actually in use,
+	   so it doesn't default to light chrome on our dark surfaces or vice versa.
+	   The two override blocks below flip it to `light` alongside the tokens. */
 	color-scheme: dark;
 	font-family:
 		'Nunito Sans',
@@ -101,6 +113,123 @@ html:has(.rvmp) {
 	line-height: 1.45;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
+}
+
+/* ----------------------------------------------------------------------------
+   Light mode — a bright, professional counterpart to the dark palette above.
+   Surfaces move from near-black navy to a soft cool white; every type/league/
+   status colour is independently re-tuned (not just inverted) since a hue
+   tuned to pop on near-black reads muddy or low-contrast on white — most are
+   deepened and pushed more saturated to stay vivid and legible on a light
+   ground. Written twice on purpose (once for "OS says light, user hasn't
+   overridden it", once for "user explicitly chose light") since a plain
+   media query can't be combined with an attribute selector in one CSS rule.
+   ---------------------------------------------------------------------------- */
+@media (prefers-color-scheme: light) {
+	.rvmp:not([data-theme='dark']) {
+		--bg: #f5f7fb;
+		--bg-elev: #ffffff;
+		--surface: #ffffff;
+		--surface-2: #eef1f7;
+		--surface-3: #e1e6f0;
+		--border: color-mix(in srgb, #2b3550 12%, transparent);
+		--border-strong: color-mix(in srgb, #2b3550 27%, transparent);
+
+		--text: #161a23;
+		--text-dim: #4c5568;
+		--text-faint: #8993a6;
+
+		--accent: #2b6fd6;
+		--accent-ink: #ffffff;
+
+		--shadow-1:
+			0 1px 2px color-mix(in srgb, #1e293b 8%, transparent), 0 2px 8px color-mix(in srgb, #1e293b 6%, transparent);
+		--shadow-2: 0 8px 30px color-mix(in srgb, #1e293b 14%, transparent);
+
+		--t-normal: #6b7280;
+		--t-fire: #e8590c;
+		--t-water: #1c64d1;
+		--t-electric: #c98a00;
+		--t-grass: #1f9d49;
+		--t-ice: #0891a3;
+		--t-fighting: #c4291f;
+		--t-poison: #9333c7;
+		--t-ground: #b06a1e;
+		--t-flying: #4a68c9;
+		--t-psychic: #e0186b;
+		--t-bug: #6b9316;
+		--t-rock: #93783c;
+		--t-ghost: #5b3fae;
+		--t-dragon: #2952c9;
+		--t-dark: #3f3a48;
+		--t-steel: #1f7f9e;
+		--t-fairy: #d93fa0;
+
+		--lg-great: #1a63b8;
+		--lg-ultra: #b8860a;
+		--lg-master: #6f3fc4;
+		--lg-raid: #d1481b;
+
+		--iv-fill: #d1820a;
+		--iv-max: #e0322f;
+
+		--pos: #16a34a;
+		--neg: #dc2626;
+
+		color-scheme: light;
+	}
+}
+.rvmp[data-theme='light'] {
+	--bg: #f5f7fb;
+	--bg-elev: #ffffff;
+	--surface: #ffffff;
+	--surface-2: #eef1f7;
+	--surface-3: #e1e6f0;
+	--border: color-mix(in srgb, #2b3550 12%, transparent);
+	--border-strong: color-mix(in srgb, #2b3550 27%, transparent);
+
+	--text: #161a23;
+	--text-dim: #4c5568;
+	--text-faint: #8993a6;
+
+	--accent: #2b6fd6;
+	--accent-ink: #ffffff;
+
+	--shadow-1:
+		0 1px 2px color-mix(in srgb, #1e293b 8%, transparent), 0 2px 8px color-mix(in srgb, #1e293b 6%, transparent);
+	--shadow-2: 0 8px 30px color-mix(in srgb, #1e293b 14%, transparent);
+
+	--t-normal: #6b7280;
+	--t-fire: #e8590c;
+	--t-water: #1c64d1;
+	--t-electric: #c98a00;
+	--t-grass: #1f9d49;
+	--t-ice: #0891a3;
+	--t-fighting: #c4291f;
+	--t-poison: #9333c7;
+	--t-ground: #b06a1e;
+	--t-flying: #4a68c9;
+	--t-psychic: #e0186b;
+	--t-bug: #6b9316;
+	--t-rock: #93783c;
+	--t-ghost: #5b3fae;
+	--t-dragon: #2952c9;
+	--t-dark: #3f3a48;
+	--t-steel: #1f7f9e;
+	--t-fairy: #d93fa0;
+
+	--lg-great: #1a63b8;
+	--lg-ultra: #b8860a;
+	--lg-master: #6f3fc4;
+	--lg-raid: #d1481b;
+
+	--iv-fill: #d1820a;
+	--iv-max: #e0322f;
+
+	--pos: #16a34a;
+	--neg: #dc2626;
+
+	color-scheme: light;
 }
 
 .rvmp *,

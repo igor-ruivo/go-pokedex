@@ -122,8 +122,10 @@
 		radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
 		color-mix(in srgb, var(--bg) 92%, transparent);
 	backdrop-filter: blur(16px);
-	/* the standard card border, same as everywhere else on the site */
-	border: 1px solid var(--border);
+	/* no border on mobile — the full-width strip already reads as a distinct
+	   layer against the page via the blur + gradient alone; the border comes
+	   back on desktop below, where it's a detached floating pill instead. */
+	border: 1px solid transparent;
 	opacity: 0;
 	transform: translateY(-6px);
 	pointer-events: none;
@@ -239,6 +241,8 @@
 		width: max-content;
 		max-width: min(560px, calc(100vw - 32px));
 		border-radius: var(--r-pill);
+		/* the standard card border, same as everywhere else on the site */
+		border-color: var(--border);
 		box-shadow: var(--shadow-2);
 		transform: translateX(-50%) translateY(-6px);
 	}
@@ -699,10 +703,10 @@
 	font-variant-numeric: tabular-nums;
 }
 .rvmp .r-delta[data-dir='up'] {
-	color: #4ade80;
+	color: var(--pos);
 }
 .rvmp .r-delta[data-dir='down'] {
-	color: #f87171;
+	color: var(--neg);
 }
 .rvmp .r-delta[data-dir='flat'] {
 	color: var(--text-faint);
@@ -1875,10 +1879,10 @@
 	z-index: 2;
 }
 .rvmp .r-pc-delta[data-dir='up'] {
-	color: #4ade80;
+	color: var(--pos);
 }
 .rvmp .r-pc-delta[data-dir='down'] {
-	color: #f87171;
+	color: var(--neg);
 }
 .rvmp .r-pc-name {
 	max-width: 100%;

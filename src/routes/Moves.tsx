@@ -19,7 +19,7 @@ const MOVE_SORTS: ReadonlyArray<SortOption> = [
 	{ key: 'dmg_pvp', label: 'DMG · PvP', defaultDir: 'desc' },
 	{ key: 'nrg_pve', label: 'NRG · PvE', defaultDir: 'desc' },
 	{ key: 'nrg_pvp', label: 'NRG · PvP', defaultDir: 'desc' },
-	{ key: 'cd_pve', label: 'DUR. · PvE', defaultDir: 'asc' },
+	{ key: 'cd_pve', label: 'DUR · PvE', defaultDir: 'asc' },
 	{ key: 'cd_pvp', label: 'TURNS · PvP', defaultDir: 'asc' },
 	{ key: 'dps_pve', label: 'DPS · PvE', defaultDir: 'desc' },
 	{ key: 'dps_pvp', label: 'DPS · PvP', defaultDir: 'desc' },
