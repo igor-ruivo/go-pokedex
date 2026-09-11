@@ -296,10 +296,10 @@ const Rankings = () => {
 						/>
 					)}
 				</div>
-				<p className='r-muted r-count'>
+				<div className='r-section-h'>
 					{loading ? 'Loading…' : isRaid && !raidType ? 'Choose a type' : `${rows.length.toLocaleString()} Pokémon`}
 					{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
-				</p>
+				</div>
 			</div>
 
 			<div ref={gridRef} className='r-grid-vp'>

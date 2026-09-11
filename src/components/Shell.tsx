@@ -2,7 +2,9 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import { useTheme } from '../contexts/theme-context';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { R } from '../lib/nav';
+import { InstallPrompt } from './InstallPrompt';
 import { SearchBox } from './SearchBox';
 import { SettingsMenu } from './SettingsMenu';
 
@@ -58,6 +60,7 @@ const Shell = () => {
 	const { pathname } = useLocation();
 	const { dataTheme } = useTheme();
 	usePageMeta();
+	const unseenEvents = useUnseenEventsCount();
 
 	return (
 		<div className='rvmp' data-theme={dataTheme}>
@@ -76,14 +79,31 @@ const Shell = () => {
 
 			<nav className='r-bottomnav'>
 				{NAV.map((n) => (
-					<NavLink key={n.to} to={n.to} className={n.match(pathname) ? 'is-active' : ''} title={n.hint}>
+					<NavLink
+						key={n.to}
+						to={n.to}
+						className={n.match(pathname) ? 'is-active' : ''}
+						title={n.hint}
+						aria-label={
+							n.to === R.calendar() && unseenEvents > 0
+								? `${n.label} — ${unseenEvents} new event${unseenEvents === 1 ? '' : 's'}`
+								: undefined
+						}
+					>
 						<span className='r-bn-icon' aria-hidden>
 							{n.icon.startsWith('/') ? <img src={n.icon} alt='' /> : n.icon}
+							{n.to === R.calendar() && unseenEvents > 0 && (
+								<span className='r-bn-badge' aria-hidden='true'>
+									{unseenEvents > 9 ? '9+' : unseenEvents}
+								</span>
+							)}
 						</span>
 						<span className='r-bn-label'>{n.label}</span>
 					</NavLink>
 				))}
 			</nav>
+
+			<InstallPrompt />
 		</div>
 	);
 };

@@ -90,37 +90,93 @@ export const ordinal = (n: number): string => {
 	return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
 };
 
-const dfShort = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
-const dfTime = new Intl.DateTimeFormat(undefined, {
+// Events (and the special-raid-boss windows folded into the same feed) are
+// published as "local time" — the same wall-clock hour in every timezone,
+// not one fixed real-world instant (a Community Day at "2pm–5pm local" starts
+// at 2pm in Portugal AND, separately, at 2pm in Spain, an hour apart in real
+// UTC terms). dex-server has nowhere to put a real timezone for that (there
+// isn't one — it depends on whoever's looking), so it encodes those wall-clock
+// numbers *as if* they were UTC (e.g. "2:00 PM" becomes the UTC instant
+// 14:00:00Z) — a neutral carrier, not a real moment. Reading them back with
+// the default (browser-local) formatter re-applies a real timezone conversion
+// on top of that, shifting the displayed hour by the viewer's own UTC offset
+// — which is where the "3pm–6pm" (should be 2pm–5pm) bug came from. Reading
+// them with `timeZone: 'UTC'` instead just echoes the encoded wall-clock
+// numbers back out unchanged, which is what "local time" actually means here.
+const dfEventShort = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const dfEventTime = new Intl.DateTimeFormat(undefined, {
 	month: 'short',
 	day: 'numeric',
 	hour: 'numeric',
 	minute: '2-digit',
+	timeZone: 'UTC',
 });
+const dfEventTimeOnly = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' });
+
+/** The same "wall-clock numbers encoded as UTC" scheme events use, applied to
+ *  *now* — lets `now` be compared directly against `startDate`/`endDate`
+ *  without a second, opposite timezone bug: a raw `Date.now()` is a real
+ *  instant, and comparing a real instant against these faked-UTC numbers is
+ *  exactly as wrong as formatting them with the browser's real timezone is.
+ *  This shifts "now" by the *viewer's own* current UTC offset instead, so the
+ *  comparison lines up — the event goes live/ends at 2pm/5pm on each
+ *  viewer's own clock, wherever they are. */
+export const nowAsEventTime = (): number => {
+	const d = new Date();
+	return d.getTime() - d.getTimezoneOffset() * 60_000;
+};
 
 export const dateRange = (start: number, end: number): string => {
 	if (!start && !end) return '';
 	const s = new Date(start);
 	const e = new Date(end);
-	const sameDay = s.toDateString() === e.toDateString();
+	// UTC fields, not `.toDateString()` (browser-local) — has to agree with
+	// the UTC-anchored formatters below on what "the same day" means, or a
+	// viewer whose local date would differ from the encoded one gets a
+	// same-day range rendered as if it crossed midnight, or vice versa.
+	const sameDay =
+		s.getUTCFullYear() === e.getUTCFullYear() &&
+		s.getUTCMonth() === e.getUTCMonth() &&
+		s.getUTCDate() === e.getUTCDate();
 	return sameDay
-		? `${dfTime.format(s)} – ${dfTime.format(e).split(', ').pop()}`
-		: `${dfShort.format(s)} – ${dfShort.format(e)}`;
+		? `${dfEventTime.format(s)} – ${dfEventTimeOnly.format(e)}`
+		: `${dfEventShort.format(s)} – ${dfEventShort.format(e)}`;
 };
 
-/** Day/month only, no time — used for the raid/spawn date picker labels. */
+/** Explicit "Starts … · Ends …" line for an expanded event card — the
+ *  compact `dateRange` above collapses a same-day range to "2:00 PM – 5:00
+ *  PM"; this spells both ends out in full, always. */
+export const eventStartEnd = (start: number, end: number): string =>
+	`Starts ${dfEventTime.format(new Date(start))} · Ends ${dfEventTime.format(new Date(end))}`;
+
+/** Day/month only, no time — used for the raid/spawn date-picker tab labels.
+ *  Its only callers (groupByRange, for RaidsTab/SpawnsTab's upcoming-window
+ *  tabs) bucket the same local-time-encoded event feed `dateRange` above
+ *  does, so this needs the identical UTC-anchored treatment — otherwise an
+ *  event starting late at night local time could get bucketed under the
+ *  *next* calendar day for a viewer east of it, or the previous one west of
+ *  it, instead of the day it's actually local to. */
 export const dayRange = (start: number, end: number): string => {
 	if (!start && !end) return '';
 	const s = new Date(start);
 	const e = new Date(end);
-	return s.toDateString() === e.toDateString() ? dfShort.format(s) : `${dfShort.format(s)} – ${dfShort.format(e)}`;
+	const sameDay =
+		s.getUTCFullYear() === e.getUTCFullYear() &&
+		s.getUTCMonth() === e.getUTCMonth() &&
+		s.getUTCDate() === e.getUTCDate();
+	return sameDay ? dfEventShort.format(s) : `${dfEventShort.format(s)} – ${dfEventShort.format(e)}`;
 };
 
 export type EventPhase = 'live' | 'soon' | 'ended';
-export const eventPhase = (start: number, end: number, now = Date.now()): EventPhase =>
+// `start`/`end` are in the same faked-UTC "local wall clock" scheme as
+// everything else on this page — the default `now` has to match that scheme
+// (see `nowAsEventTime`), not a raw `Date.now()`, or "live" would keep
+// tracking the viewer's *real* UTC offset from the event instead of their
+// wall clock actually reading between the two times.
+export const eventPhase = (start: number, end: number, now = nowAsEventTime()): EventPhase =>
 	now < start ? 'soon' : now > end ? 'ended' : 'live';
 
-export const relativeDays = (ts: number, now = Date.now()): string => {
+export const relativeDays = (ts: number, now = nowAsEventTime()): string => {
 	const d = Math.round((ts - now) / 86_400_000);
 	if (d <= 0) return 'today';
 	if (d === 1) return 'tomorrow';

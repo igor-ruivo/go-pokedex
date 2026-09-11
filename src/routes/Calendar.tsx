@@ -4,8 +4,9 @@ import { NavLink, useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
+import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
-import { dateRange, dayRange, eventPhase, relativeDays } from '../lib/format';
+import { dateRange, dayRange, eventPhase, eventStartEnd, nowAsEventTime, relativeDays } from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { type ILeekduckSpecialRaidBoss, useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
@@ -102,7 +103,9 @@ const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
 
 /* ---------- shared bits ---------- */
 const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<string, number> | undefined }) => {
-	const now = Date.now();
+	// `endMap` values come from the same local-time-encoded event feed
+	// everything else on this page does — see nowAsEventTime()'s doc comment.
+	const now = nowAsEventTime();
 	return (
 		<div className='r-minigrid'>
 			{entries.map((e, i) => {
@@ -194,12 +197,16 @@ const EventCard = ({
 	onToggle,
 	preferSubtitle,
 	isSeason,
+	unseen,
 }: {
 	post: IPostEntry;
 	open: boolean;
 	onToggle: () => void;
 	preferSubtitle: boolean;
 	isSeason: boolean;
+	/** Never expanded on this device — see the Calendar nav badge, same idea
+	 *  and same colour, just per-row instead of a total count. */
+	unseen: boolean;
 }) => {
 	const { currentGameLanguage: gl } = useLanguage();
 	const phase = eventPhase(post.startDate, post.endDate);
@@ -210,7 +217,10 @@ const EventCard = ({
 			<button type='button' className='r-event-head' onClick={onToggle}>
 				{post.imageUrl && !post.isSpotlight && <img src={post.imageUrl} alt='' loading='lazy' />}
 				<div>
-					<b>{title}</b>
+					<b>
+						{unseen && <i className='r-event-new' aria-label='Not yet opened' />}
+						{title}
+					</b>
 					<span>{dateRange(post.startDate, post.endDate)}</span>
 				</div>
 				{isSeason ? (
@@ -225,6 +235,7 @@ const EventCard = ({
 			</button>
 			{open && (
 				<div className='r-event-body'>
+					{!isSeason && <p className='r-event-when'>{eventStartEnd(post.startDate, post.endDate)}</p>}
 					{bonuses.length > 0 && (
 						<>
 							<div className='r-section-h'>Bonuses</div>
@@ -263,9 +274,13 @@ const EventsTab = () => {
 	const { posts, season, postsFetchCompleted, seasonFetchCompleted } = useCalendar();
 	const [openId, setOpenId] = useState<string | null>(null);
 	const { currentGameLanguage: gl } = useLanguage();
+	const { seenIds, markSeen } = useSeenEvents();
 
 	const list = useMemo(() => {
-		const now = Date.now();
+		// Not a raw `Date.now()` — see nowAsEventTime()'s own doc comment.
+		// Getting this wrong is exactly what made events linger an hour past
+		// their real (local-time) end before disappearing.
+		const now = nowAsEventTime();
 		const events = (postsFetchCompleted ? posts : [])
 			.filter((p) => p && p.endDate >= now)
 			.sort((a, b) => a.startDate - b.startDate);
@@ -283,18 +298,28 @@ const EventsTab = () => {
 
 	const seasonId = seasonFetchCompleted && season ? season.id : null;
 	return (
-		<div className='r-eventlist'>
-			{list.map((p) => (
-				<EventCard
-					key={p.id}
-					post={p}
-					isSeason={p.id === seasonId}
-					open={p.id === openId}
-					onToggle={() => setOpenId(p.id === openId ? null : p.id)}
-					preferSubtitle={dupeTitles.has(p.title[gl]) && !!p.subtitle[gl]}
-				/>
-			))}
-		</div>
+		<>
+			<div className='r-section-h'>{list.length.toLocaleString()} Scheduled events</div>
+			<div className='r-eventlist'>
+				{list.map((p) => (
+					<EventCard
+						key={p.id}
+						post={p}
+						isSeason={p.id === seasonId}
+						unseen={!seenIds.has(p.id)}
+						open={p.id === openId}
+						onToggle={() => {
+							const opening = p.id !== openId;
+							setOpenId(opening ? p.id : null);
+							// Only marking it seen on *open* (not close) — that's the
+							// action that actually means "you looked at this one".
+							if (opening) markSeen(p.id);
+						}}
+						preferSubtitle={dupeTitles.has(p.title[gl]) && !!p.subtitle[gl]}
+					/>
+				))}
+			</div>
+		</>
 	);
 };
 
@@ -316,7 +341,9 @@ const RaidsTab = () => {
 	const { current, upcoming, endMap } = useMemo(() => {
 		const endMap = new Map<string, number>();
 		if (!ready) return { current: [] as Array<IEntry>, upcoming: [] as Array<IPostEntry>, endMap };
-		const now = Date.now();
+		// `raidPosts` below is the same local-time-encoded event feed as the
+		// Events tab (any post with raids listed) — see nowAsEventTime().
+		const now = nowAsEventTime();
 
 		const raidPosts: Array<IPostEntry> = [
 			...posts.filter((p) => p && (p.raids?.length ?? 0) > 0),
@@ -409,7 +436,8 @@ const SpawnsTab = () => {
 
 	if (!seasonFetchCompleted || !postsFetchCompleted || !fetchCompleted) return <Spinner />;
 
-	const now = Date.now();
+	// Same local-time-encoded event feed as the Events tab — see nowAsEventTime().
+	const now = nowAsEventTime();
 	const withWild = (posts ?? [])
 		.filter((p) => p && (p.wild?.length ?? 0) > 0 && p.endDate >= now)
 		.sort((a, b) => a.startDate - b.startDate);

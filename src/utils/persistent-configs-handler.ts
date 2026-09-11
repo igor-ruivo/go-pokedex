@@ -47,28 +47,46 @@ export enum ConfigKeys {
 	RaidPartySize,
 	RaidFriendship,
 	RaidMegaBoostType,
+	InstallPromptDismissed,
 }
 
+// A storage read/write can throw for reasons that have nothing to do with
+// this app's own logic being wrong — the origin's quota is full (the actual
+// incident this guards: the persisted query cache alone once grew past 5MB,
+// and the very next unrelated write, marking an event seen, threw
+// QuotaExceededError uncaught and took the whole page down with it), Safari
+// private-mode blocks storage entirely, a browser extension interferes, etc.
+// None of what's stored here is essential — every caller already has a
+// sensible in-memory default — so failing silently and carrying on beats
+// crashing the app over a lost preference, every time.
+const safeStorageOp = <T>(op: () => T, fallback: T): T => {
+	try {
+		return op();
+	} catch {
+		return fallback;
+	}
+};
+
 export const readSessionValue = (key: ConfigKeys) => {
-	return sessionStorage.getItem(key.toString());
+	return safeStorageOp(() => sessionStorage.getItem(key.toString()), null);
 };
 
 export const readPersistentValue = (key: ConfigKeys) => {
-	return localStorage.getItem(key.toString());
+	return safeStorageOp(() => localStorage.getItem(key.toString()), null);
 };
 
 export const writeSessionValue = (key: ConfigKeys, value: string) => {
-	sessionStorage.setItem(key.toString(), value);
+	safeStorageOp(() => sessionStorage.setItem(key.toString(), value), undefined);
 };
 
 export const writePersistentValue = (key: ConfigKeys, value: string) => {
-	localStorage.setItem(key.toString(), value);
+	safeStorageOp(() => localStorage.setItem(key.toString(), value), undefined);
 };
 
 export const writePersistentCostumKeyValue = (customKey: string, value: string) => {
-	localStorage.setItem(customKey, value);
+	safeStorageOp(() => localStorage.setItem(customKey, value), undefined);
 };
 
 export const readPersistentCostumKeyValue = (customKey: string) => {
-	return localStorage.getItem(customKey);
+	return safeStorageOp(() => localStorage.getItem(customKey), null);
 };

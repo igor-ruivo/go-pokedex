@@ -1624,8 +1624,33 @@
 	background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .rvmp .r-bn-icon {
+	position: relative;
 	font-size: 17px;
 	line-height: 1;
+}
+/* unseen-events notification dot on the Calendar nav icon — dark ink on a
+   solid, deepened red (not `--neg` directly: that's a pastel salmon built
+   for text-on-surface, not for something this small carrying its own text).
+   Nunito Sans, not Fredoka — Fredoka's rounded, curvy digits are exactly
+   the wrong shape to tell apart at 10px; a plainer sans reads cleaner here. */
+.rvmp .r-bn-badge {
+	position: absolute;
+	top: -5px;
+	right: -7px;
+	min-width: 17px;
+	height: 17px;
+	padding: 0 4px;
+	display: grid;
+	place-items: center;
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--neg) 80%, #b91c1c);
+	color: #0c1017;
+	font-family: 'Nunito Sans', sans-serif;
+	font-variant-numeric: tabular-nums;
+	font-size: 10.5px;
+	font-weight: 800;
+	line-height: 1;
+	box-shadow: 0 0 0 2px var(--bg);
 }
 /* icon-image nav items (Pokédex / Rankings / Moves / Types) — sized off `em`
    so they automatically track the same responsive font-size as the emoji
@@ -1658,6 +1683,77 @@
 	.rvmp .r-main {
 		padding-bottom: 96px;
 	}
+}
+
+/* mobile-only install nudge — floats just above the bottom nav bar, never
+   rendered at all on desktop (InstallPrompt.tsx gates it on a mobile UA) */
+.rvmp .r-install {
+	position: fixed;
+	left: var(--s3);
+	right: var(--s3);
+	bottom: calc(64px + env(safe-area-inset-bottom));
+	z-index: 29; /* just under .r-bottomnav (30) */
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	padding: var(--s3);
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	box-shadow: var(--shadow-2);
+	animation: r-install-in 0.22s ease;
+}
+@keyframes r-install-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}
+.rvmp .r-install-ic {
+	flex: none;
+	width: 36px;
+	height: 36px;
+	border-radius: var(--r-sm);
+}
+.rvmp .r-install-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+.rvmp .r-install-copy b {
+	font-family: Fredoka, sans-serif;
+	font-size: 13.5px;
+}
+.rvmp .r-install-copy span {
+	font-size: 11.5px;
+	color: var(--text-dim);
+	line-height: 1.3;
+}
+.rvmp .r-install-btn {
+	flex: none;
+	padding: 8px 14px;
+	border-radius: var(--r-pill);
+	background: var(--accent);
+	color: var(--accent-ink);
+	font-weight: 700;
+	font-size: 12.5px;
+}
+.rvmp .r-install-close {
+	flex: none;
+	width: 26px;
+	height: 26px;
+	display: grid;
+	place-items: center;
+	border-radius: 50%;
+	color: var(--text-faint);
+	font-size: 18px;
+	line-height: 1;
+}
+.rvmp .r-install-close:hover {
+	background: var(--surface-2);
+	color: var(--text);
 }
 
 .rvmp .r-back {
@@ -1807,10 +1903,6 @@
 }
 .rvmp .r-type-chip:disabled {
 	opacity: 0.3;
-}
-.rvmp .r-count {
-	margin-top: var(--s2);
-	font-size: 12.5px;
 }
 
 .rvmp .r-rank-empty {
@@ -2329,6 +2421,17 @@
 	font-weight: 800;
 	line-height: 1.2;
 }
+/* never-opened-yet dot — same colour as the Calendar nav badge (.r-bn-badge),
+   just a plain dot per-row instead of a count */
+.rvmp .r-event-new {
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	margin-right: 6px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--neg) 80%, #b91c1c);
+	flex: none;
+}
 .rvmp .r-event-head span {
 	font-size: 12px;
 	color: var(--text-dim);
@@ -2362,6 +2465,12 @@
 }
 .rvmp .r-event-body .r-section-h:first-child {
 	margin-top: var(--s2);
+}
+.rvmp .r-event-when {
+	margin: var(--s2) 0 var(--s3);
+	font-size: 12.5px;
+	font-weight: 700;
+	color: var(--text-dim);
 }
 .rvmp .r-bonuses {
 	margin: 0 0 var(--s3);

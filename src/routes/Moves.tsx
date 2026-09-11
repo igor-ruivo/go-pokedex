@@ -179,7 +179,7 @@ const Moves = () => {
 				<SortBar options={MOVE_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />
 			</div>
 
-			<p className='r-muted r-count'>{list.length.toLocaleString()} moves</p>
+			<div className='r-section-h'>{list.length.toLocaleString()} Moves</div>
 
 			<div ref={listRef}>
 				<div style={{ height: virt.getTotalSize(), position: 'relative' }}>

@@ -24,7 +24,22 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1 user-scalable=no" />
-		<meta name="theme-color" content="#202023" />
+		<meta name="theme-color" content="#0b0e14" />
+		<!--
+            Makes "Add to Home Screen" on iOS launch fullscreen (no Safari
+            address bar/tab chrome) instead of reopening as a normal browser
+            tab — iOS ignores manifest.json's `display: standalone` entirely
+            without this. `apple-mobile-web-app-capable` is Apple-specific and
+            still the only thing Safari actually honours, deprecated warning
+            or not — `mobile-web-app-capable` is the standard replacement
+            Chrome/Android expects instead, so both stay in, one per platform.
+            The service worker (see vite.config.ts) is what makes Chrome
+            offer its own native install prompt there.
+        -->
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="GO Pokédex" />
 		<meta
 			name="description"
 			content="A complete Pokémon GO Pokédex where you can search and analyse Pokémon IVs, stats and more."

@@ -34,6 +34,13 @@ const PORT = 4321;
 // under plain Node (no Vite/TS transform), not imported from the app itself.
 const GAMEMASTER_URL = 'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/game-master.json';
 const MOVES_URL = 'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/moves.json';
+const PVP_URLS = [
+	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/great-league-pvp.json',
+	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/ultra-league-pvp.json',
+	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/master-league-pvp.json',
+];
+const dpsUrl = (type) =>
+	`https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${type}-raid-dps-rank.json`;
 
 const CONCURRENCY = 8;
 
@@ -200,9 +207,56 @@ const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace
 // `summary_large_image`, which some clients render as a big banner crop.
 const LOGO_IMAGE = `${SITE}/logo512.png`;
 
-const applyMeta = (page, { url, title, description, image }) =>
+// ---- structured data (schema.org / JSON-LD) --------------------------------
+// A `<script type="application/ld+json">` block describing the page in a
+// vocabulary search engines understand, alongside (not instead of) the
+// title/meta tags above. It doesn't move rankings on its own, but it's how
+// Google knows to render a breadcrumb trail instead of a raw URL under a
+// result, and it's what a `WebSite` + `SearchAction` entry needs to be
+// eligible for a sitelinks search box. Only baked into the prerendered HTML
+// (not mirrored client-side in usePageMeta.ts) — this is exclusively for
+// crawlers reading the static response, unlike the title/OG tags which also
+// matter for what a real visitor's tab shows after client-side navigation.
+const BREADCRUMB_BASE = { '@type': 'ListItem', 'position': 1, 'name': 'GO Pokédex', 'item': SITE };
+const breadcrumbList = (crumbs) => ({
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	'itemListElement': [
+		BREADCRUMB_BASE,
+		...crumbs.map((c, i) => ({ '@type': 'ListItem', 'position': i + 2, 'name': c.name, 'item': `${SITE}${c.path}` })),
+	],
+});
+const websiteSchema = () => ({
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	'name': 'GO Pokédex',
+	'url': SITE,
+	'potentialAction': {
+		'@type': 'SearchAction',
+		'target': { '@type': 'EntryPoint', 'urlTemplate': `${SITE}/?q={search_term_string}` },
+		'query-input': 'required name=search_term_string',
+	},
+});
+/** Top-10 `ItemList` for a ranking page — `entries` is speciesId, already
+ *  ranked (as every rank feed this script fetches already comes sorted). */
+const rankingItemList = (name, entries, gamemaster) => ({
+	'@context': 'https://schema.org',
+	'@type': 'ItemList',
+	name,
+	'itemListElement': entries
+		.filter((e) => gamemaster[e.speciesId] && !gamemaster[e.speciesId].aliasId)
+		.slice(0, 10)
+		.map((e, i) => ({
+			'@type': 'ListItem',
+			'position': i + 1,
+			'name': gamemaster[e.speciesId].speciesName,
+			'url': `${SITE}/pokemon/${e.speciesId}`,
+		})),
+});
+
+const applyMeta = (page, { url, title, description, image, jsonLd }) =>
 	page.evaluate(
-		({ url, title, description, image, isCustomImage }) => {
+		({ url, title, description, image, isCustomImage, jsonLd }) => {
 			document.title = title;
 			const upsert = (selector, attrs) => {
 				let el = document.querySelector(selector);
@@ -226,8 +280,16 @@ const applyMeta = (page, { url, title, description, image }) =>
 			upsert('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
 			upsert('meta[property="og:image"]', { property: 'og:image', content: image });
 			upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: image });
+			document.querySelectorAll('script[data-ld]').forEach((el) => el.remove());
+			for (const graph of jsonLd ?? []) {
+				const script = document.createElement('script');
+				script.type = 'application/ld+json';
+				script.dataset.ld = 'true';
+				script.textContent = JSON.stringify(graph);
+				document.head.appendChild(script);
+			}
 		},
-		{ url, title, description, image: image || LOGO_IMAGE, isCustomImage: Boolean(image) }
+		{ url, title, description, image: image || LOGO_IMAGE, isCustomImage: Boolean(image), jsonLd: jsonLd ?? [] }
 	);
 
 const savePage = async (routePath, html) => {
@@ -267,6 +329,19 @@ const main = async () => {
 		fetch(MOVES_URL).then((r) => r.json()),
 	]);
 
+	// Precomputed rank feeds for the ranking pages' `ItemList` structured
+	// data — already sorted by rank, so no need to replicate the app's own
+	// (much heavier, worker-based) ranking computation here.
+	console.log('Fetching ranking data for structured data…');
+	const [greatPvp, ultraPvp, masterPvp, ...raidDpsByType] = await Promise.all([
+		...PVP_URLS.map((u) => fetch(u).then((r) => r.json())),
+		...TYPE_KEYS.map((t) => fetch(dpsUrl(t)).then((r) => r.json())),
+	]);
+	const pvpTop10 = [greatPvp, ultraPvp, masterPvp].map((list) => Object.values(list).sort((a, b) => a.rank - b.rank));
+	const raidTop10ByType = Object.fromEntries(
+		TYPE_KEYS.map((t, i) => [t, Object.values(raidDpsByType[i]).sort((a, b) => a.rank - b.rank)])
+	);
+
 	// For a quick local smoke test without paying the full ~1,900-page cost:
 	// `PRERENDER_LIMIT=20 pnpm run prerender`.
 	const limit = process.env.PRERENDER_LIMIT ? Number(process.env.PRERENDER_LIMIT) : undefined;
@@ -292,10 +367,31 @@ const main = async () => {
 		if (done % 100 === 0 || done === total) console.log(`  ${done}/${total}`);
 	};
 
+	// Home doubles as the Pokédex index (R.pokedex === '/'), so a Pokémon's
+	// breadcrumb skips straight to Home > {name} — an intermediate "Pokédex"
+	// crumb would just repeat the home URL. Moves does have its own real
+	// `/moves` page, so that gets a real 3-level trail.
+	const stripSuffix = (title) => title.replace(/ — GO Pokédex$/, '');
+	const jsonLdForStaticPage = (routePath, title) => {
+		if (routePath === '/') return [websiteSchema()];
+		const graphs = [breadcrumbList([{ name: stripSuffix(title), path: routePath }])];
+		const leagueIdx = { '/rankings/great': 0, '/rankings/ultra': 1, '/rankings/master': 2 }[routePath];
+		if (leagueIdx !== undefined) graphs.push(rankingItemList(stripSuffix(title), pvpTop10[leagueIdx], gamemaster));
+		const raidType = /^\/rankings\/raid\/(\w+)$/.exec(routePath)?.[1];
+		if (raidType) graphs.push(rankingItemList(stripSuffix(title), raidTop10ByType[raidType], gamemaster));
+		return graphs;
+	};
+
 	const staticTasks = STATIC_PAGES.map(({ path: routePath, title, description, image }) => async () => {
 		const page = await context.newPage();
 		await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
-		await applyMeta(page, { url: `${SITE}${routePath}`, title, description, image });
+		await applyMeta(page, {
+			url: `${SITE}${routePath}`,
+			title,
+			description,
+			image,
+			jsonLd: jsonLdForStaticPage(routePath, title),
+		});
 		const html = await page.content();
 		await page.close();
 		await savePage(routePath, html);
@@ -315,6 +411,7 @@ const main = async () => {
 			title: `${p.speciesName} — GO Pokédex`,
 			description: `${p.speciesName}${types ? ` (${types})` : ''} in Pokémon GO — IVs, best moveset, PvP rankings and raid counters.`,
 			image: p.imageUrl || undefined,
+			jsonLd: [breadcrumbList([{ name: p.speciesName, path: routePath }])],
 		});
 		const html = await page.content();
 		await page.close();
@@ -336,6 +433,12 @@ const main = async () => {
 			title: `${name} — GO Pokédex`,
 			description: `${name} (${typeLabel}${m.isFast ? ' · Fast move' : ' · Charged move'}) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.`,
 			image: m.type ? `${SITE}/images/types/${m.type}.png` : undefined,
+			jsonLd: [
+				breadcrumbList([
+					{ name: 'Moves', path: '/moves' },
+					{ name, path: routePath },
+				]),
+			],
 		});
 		const html = await page.content();
 		await page.close();
