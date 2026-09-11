@@ -1,6 +1,6 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import { FilterBar } from '../components/FilterBar';
 import { MoveStatRows } from '../components/MoveStatRows';
@@ -19,8 +19,8 @@ const MOVE_SORTS: ReadonlyArray<SortOption> = [
 	{ key: 'dmg_pvp', label: 'DMG · PvP', defaultDir: 'desc' },
 	{ key: 'nrg_pve', label: 'NRG · PvE', defaultDir: 'desc' },
 	{ key: 'nrg_pvp', label: 'NRG · PvP', defaultDir: 'desc' },
-	{ key: 'cd_pve', label: 'CD · PvE', defaultDir: 'asc' },
-	{ key: 'cd_pvp', label: 'CD · PvP', defaultDir: 'asc' },
+	{ key: 'cd_pve', label: 'DUR · PvE', defaultDir: 'asc' },
+	{ key: 'cd_pvp', label: 'TURNS · PvP', defaultDir: 'asc' },
 	{ key: 'dps_pve', label: 'DPS · PvE', defaultDir: 'desc' },
 	{ key: 'dps_pvp', label: 'DPS · PvP', defaultDir: 'desc' },
 	{ key: 'eps_pve', label: 'EPS · PvE', defaultDir: 'desc' },
@@ -43,6 +43,10 @@ const Moves = () => {
 	const [type, setType] = useState<Array<string>>([]);
 	const [sortKey, setSortKey] = useState('name');
 	const [sortDir, setSortDir] = useState<SortDir>('asc');
+	// the app-bar search box writes `?q=` live as you type (same as the
+	// Pokédex/Rankings grids) — this page just reads it back.
+	const [params] = useSearchParams();
+	const q = (params.get('q') ?? '').toLowerCase().trim();
 
 	const list = useMemo(() => {
 		const t = type[0];
@@ -51,6 +55,7 @@ const Moves = () => {
 			if (kind === 'fast' && !m.isFast) return false;
 			if (kind === 'charged' && m.isFast) return false;
 			if (t && m.type.toLowerCase() !== t) return false;
+			if (q && !(m.moveName[gl] ?? m.moveId).toLowerCase().includes(q)) return false;
 			// collapse only exact cosmetic clones — same name AND identical stats
 			// (Wrap Green/Pink, Scald Blastoise…). Anything with different stats
 			// (incl. the Aegislash stance-change variants) is kept.
@@ -88,7 +93,7 @@ const Moves = () => {
 				: s * (num(sortKey, a) - num(sortKey, b)) || name(a).localeCompare(name(b))
 		);
 		return filtered;
-	}, [moves, kind, type, gl, sortKey, sortDir]);
+	}, [moves, kind, type, gl, sortKey, sortDir, q]);
 
 	const listRef = useRef<HTMLDivElement>(null);
 	const [scrollMargin, setScrollMargin] = useState(0);

@@ -261,6 +261,11 @@ const PokemonDetail = () => {
 	// and the default/preset spread has to subtract it back out, or "the
 	// Shadow's IVs to reach a 100% target" would show the target's own IVs.
 	const purifyOffset = pokemon?.isShadow && pvpMember && !pvpMember.isShadow ? 2 : 0;
+	// A target IV of 15 is still reached by a Shadow IV of 13, 14, *or* 15 —
+	// purification caps at 15, it doesn't overflow past it. Showing 15 (not 13)
+	// in that case reads as "needs max", which is what's actually true, instead
+	// of implying 13 is the one exact value required.
+	const purifiedIv = (v: number) => (v >= 15 ? 15 : Math.max(0, v - purifyOffset));
 
 	// On load and whenever the league (or carouseled member) changes, snap the IV
 	// spread to that league's rank-1 spread AND the level that hits its CP cap with
@@ -269,9 +274,9 @@ const PokemonDetail = () => {
 	useEffect(() => {
 		if (!slice?.perfect) return;
 		setIv({
-			atk: Math.max(0, slice.perfect.A - purifyOffset),
-			def: Math.max(0, slice.perfect.D - purifyOffset),
-			hp: Math.max(0, slice.perfect.S - purifyOffset),
+			atk: purifiedIv(slice.perfect.A),
+			def: purifiedIv(slice.perfect.D),
+			hp: purifiedIv(slice.perfect.S),
 		});
 		if (slice.perfectLvl) setLevel(slice.perfectLvl);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -462,9 +467,6 @@ const PokemonDetail = () => {
 		return (
 			<div className='r-loading'>
 				<p>No Pokémon “{speciesId}”.</p>
-				<Link to={R.pokemon('dialga')} className='r-chip' style={{ marginTop: 12 }}>
-					Go to Dialga
-				</Link>
 			</div>
 		);
 	}
@@ -665,25 +667,30 @@ const PokemonDetail = () => {
 				</div>
 			</header>
 
-			{/* ---- FAMILY LINE (shared across every tab — click to open that Pokémon) ---- */}
-			<div className='r-section-h'>{cleanName(pokemon.speciesName)}’s family line</div>
-			<div className='r-reach'>
-				{family.map((m) => (
-					<Link
-						key={m.speciesId}
-						to={`${R.pokemon(m.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`}
-						className='r-reach-chip'
-						data-active={m.speciesId === self}
-						style={{ ['--tc' as string]: typeVar(m.types[0]) }}
-					>
-						{m.isShadow && <ShadowMark />}
-						<span className='r-reach-art'>
-							<img src={spriteUrl(m, imageSource)} alt='' loading='lazy' decoding='async' />
-						</span>
-						<span>{cleanName(m.speciesName)}</span>
-					</Link>
-				))}
-			</div>
+			{/* ---- FAMILY LINE (shared across every tab — click to open that Pokémon) ----
+			    skipped entirely when it's just this one mon on its own — nothing to switch to */}
+			{family.length > 1 && (
+				<>
+					<div className='r-section-h'>{cleanName(pokemon.speciesName)}’s family line</div>
+					<div className='r-reach'>
+						{family.map((m) => (
+							<Link
+								key={m.speciesId}
+								to={`${R.pokemon(m.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`}
+								className='r-reach-chip'
+								data-active={m.speciesId === self}
+								style={{ ['--tc' as string]: typeVar(m.types[0]) }}
+							>
+								{m.isShadow && <ShadowMark />}
+								<span className='r-reach-art'>
+									<img src={spriteUrl(m, imageSource)} alt='' loading='lazy' decoding='async' />
+								</span>
+								<span>{cleanName(m.speciesName)}</span>
+							</Link>
+						))}
+					</div>
+				</>
+			)}
 
 			{/* ---- LEAGUE + TABS ---- */}
 			<div className='r-seg r-seg--league' role='tablist' aria-label='League / mode'>
@@ -706,7 +713,7 @@ const PokemonDetail = () => {
 						key={slug}
 						type='button'
 						aria-current={tab === label ? 'page' : undefined}
-						onClick={() => void navigate(R.pokemon(speciesId, slug))}
+						onClick={() => void navigate(`${R.pokemon(speciesId, slug)}${lgParam ? `?lg=${lgParam}` : ''}`)}
 					>
 						{label}
 					</button>
@@ -939,9 +946,9 @@ const PokemonDetail = () => {
 													[
 														`Rank 1 ${LEAGUES[league].label}`,
 														{
-															atk: Math.max(0, slice.perfect.A - purifyOffset),
-															def: Math.max(0, slice.perfect.D - purifyOffset),
-															hp: Math.max(0, slice.perfect.S - purifyOffset),
+															atk: purifiedIv(slice.perfect.A),
+															def: purifiedIv(slice.perfect.D),
+															hp: purifiedIv(slice.perfect.S),
 														},
 													] as [string, { atk: number; def: number; hp: number }],
 												]

@@ -42,7 +42,7 @@ export const SearchBox = () => {
 		setQ(params.get('q') ?? '');
 	}, [params]);
 
-	const onGrid = pathname === R.pokedex || pathname.startsWith('/rankings');
+	const onGrid = pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.moves;
 	const detailTab = /^\/pokemon\/[^/]+\/([^/]+)/.exec(pathname)?.[1];
 
 	useEffect(() => {

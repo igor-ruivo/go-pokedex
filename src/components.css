@@ -435,6 +435,28 @@
 	background: var(--seg-c);
 	opacity: 0.5;
 }
+/* mobile: a single swipeable row, same "always exactly 4 across, integer
+   snap" mechanism `.r-reach` (the family line) uses — never wraps a league
+   onto its own second line, and stays exactly this way how ever many leagues
+   get added later, since it's sized off a constant (4 visible), not the
+   actual count. Desktop keeps wrapping — seg's own note above still applies
+   there (scrolling would hijack the mouse wheel). */
+@media (max-width: 520px) {
+	.rvmp .r-seg--league {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		scrollbar-width: none;
+		scroll-snap-type: x proximity;
+		overscroll-behavior-x: contain;
+	}
+	.rvmp .r-seg--league::-webkit-scrollbar {
+		display: none;
+	}
+	.rvmp .r-seg--league button {
+		flex: 0 0 calc((100% - 3 * 4px) / 4);
+		scroll-snap-align: start;
+	}
+}
 
 /* ---- reachable-family switcher ---- */
 .rvmp .r-reach {

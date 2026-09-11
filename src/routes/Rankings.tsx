@@ -145,16 +145,21 @@ const Rankings = () => {
 			if (!raidDPSFetchCompleted || !wanted[0]) return [];
 			const list = raidDPS[wanted[0]] ?? {};
 			const s = raidDir === 'asc' ? 1 : -1;
+			// Rank has to come from position in the *full* sorted list — filtering
+			// by the search term first and then numbering what's left 1, 2, 3…
+			// gives a search hit its position among just the other search hits,
+			// not its actual rank among every attacker of this type.
 			return Object.values(list)
 				.filter((e) => {
 					const p = gamemasterPokemon[e.speciesId];
-					return p && !p.aliasId && byName(p);
+					return p && !p.aliasId;
 				})
 				.sort((a, b) => s * ((a[raidMetric] ?? 0) - (b[raidMetric] ?? 0)))
 				.map((e, i) => ({
 					pokemon: gamemasterPokemon[e.speciesId],
 					metric: { rank: i + 1, [raidMetric]: e[raidMetric] },
-				}));
+				}))
+				.filter((row) => byName(row.pokemon));
 		}
 
 		// pvp league

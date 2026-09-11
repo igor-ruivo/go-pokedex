@@ -15,7 +15,7 @@ export const MoveStatRows = ({ m }: { m: IGameMasterMove }) => {
 			// fast: PvE cooldown in seconds / PvP duration in turns. charged: PvE
 			// animation length only — PvP charged moves have no cooldown.
 			...(arena === 'pve'
-				? ([['CD', `${cd}s`]] as Array<[string, string | number]>)
+				? ([['DUR.', `${cd}s`]] as Array<[string, string | number]>)
 				: kind === 'fast'
 					? ([['TURNS', fastMoveTurns(m)]] as Array<[string, string | number]>)
 					: []),

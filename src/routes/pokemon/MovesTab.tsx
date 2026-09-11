@@ -46,7 +46,7 @@ const MoveRow = ({
 		['DMG', pow],
 		['NRG', kind === 'fast' ? `+${nrg}` : nrg],
 		...(arena === 'pve'
-			? ([['CD', `${cd}s`]] as Array<[string, string | number]>)
+			? ([['DUR.', `${cd}s`]] as Array<[string, string | number]>)
 			: kind === 'fast'
 				? ([['TURNS', fastMoveTurns(m)]] as Array<[string, string | number]>)
 				: []),

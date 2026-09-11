@@ -85,6 +85,11 @@ html:has(.rvmp) {
 	min-height: 100dvh;
 	background: var(--bg);
 	color: var(--text);
+	/* dark-only design, but without this the browser still renders native form
+	   controls (a <select>'s dropdown chevron, checkboxes…) with light-mode
+	   assumptions — a dark chevron on our dark surfaces, unreadable. This tells
+	   it to use its own dark-mode control rendering instead. */
+	color-scheme: dark;
 	font-family:
 		'Nunito Sans',
 		-apple-system,
