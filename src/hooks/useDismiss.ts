@@ -1,10 +1,14 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * "Click outside / press Escape closes this popover" — with one extra guarantee:
- * the dismissing pointer press is **swallowed**. It closes the popover and does
- * nothing else, so you never accidentally trigger whatever sat under the pointer
- * (a nav link, another button, a grid tile…).
+ * "Click outside / press Escape closes this popover" — with one extra guarantee
+ * on touch devices: the dismissing press is **swallowed**. It closes the
+ * popover and does nothing else, so a fat-finger mis-tap never also triggers
+ * whatever sat under it (a nav link, another button, a grid tile…). On desktop
+ * (a fine pointer with hover) that swallow is skipped — there's normally
+ * enough room around a popover that an outside click landing on something else
+ * is a deliberate second action, not a mis-tap, so it closes the popover and
+ * still reaches that target.
  *
  * @param open   whether the popover is currently shown
  * @param onClose called to close it (outside press or Escape)
@@ -19,6 +23,15 @@ export const useDismiss = <T extends HTMLElement = HTMLDivElement>(open: boolean
 
 	useEffect(() => {
 		if (!open) return;
+		// Desktop has room to spare around a popover, so an outside click is
+		// rarely also a press on some other control by accident — swallowing it
+		// there would just force a second click on whatever it landed on, when
+		// that first one might well have been aimed there on purpose. Close
+		// plainly and let it through; the swallow-and-eat-the-follow-ups dance
+		// below stays reserved for touch, where a fat-finger mis-tap is the
+		// actual risk being guarded against.
+		const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
 		// A press that's already been handled this tick (pointerdown fires, then
 		// the browser also dispatches touchstart for the same touch) — without
 		// this a single tap would call `close` and re-arm the click-swallower
@@ -30,6 +43,7 @@ export const useDismiss = <T extends HTMLElement = HTMLDivElement>(open: boolean
 			if (e.timeStamp === handledAt) return;
 			handledAt = e.timeStamp;
 			close.current();
+			if (isDesktop) return;
 
 			// Stop this exact press from reaching whatever it landed on — not just
 			// eat a *future* click. A lot of controls act straight off pointerdown

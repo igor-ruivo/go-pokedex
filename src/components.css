@@ -3725,11 +3725,13 @@
 	position: relative;
 	flex: none;
 }
-.rvmp .r-setmenu-flag {
-	font-family: Fredoka, sans-serif;
-	font-size: 12px;
-	font-weight: 800;
-	letter-spacing: 0.06em;
+.rvmp .r-setmenu-gear {
+	width: 20px;
+	height: 20px;
+	color: var(--text-dim);
+	transition: color 0.14s ease;
+}
+.rvmp .r-setmenu-trigger:hover .r-setmenu-gear {
 	color: var(--text);
 }
 .rvmp .r-setmenu-fl {
