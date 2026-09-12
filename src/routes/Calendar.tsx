@@ -8,6 +8,7 @@ import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { dateRange, dayRange, eventPhase, eventStartEnd, nowAsEventTime, relativeDays } from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
+import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { type ILeekduckSpecialRaidBoss, useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
 
@@ -106,9 +107,16 @@ const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<st
 	// `endMap` values come from the same local-time-encoded event feed
 	// everything else on this page does — see nowAsEventTime()'s doc comment.
 	const now = nowAsEventTime();
+	const { gamemasterPokemon } = usePokemon();
+	const sets = useRelevanceSets();
+	// Most relevant first (most league/raid dots), family-line order as tiebreak.
+	const sorted = useMemo(
+		() => sortByCalendarRelevance(entries, (e) => e.speciesId, gamemasterPokemon, sets),
+		[entries, gamemasterPokemon, sets]
+	);
 	return (
 		<div className='r-minigrid'>
-			{entries.map((e, i) => {
+			{sorted.map((e, i) => {
 				const end = endMap?.get(e.speciesId);
 				return (
 					<PokeMini
@@ -521,10 +529,15 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; onToggle: () => void }) => {
 	const { currentGameLanguage: gl } = useLanguage();
+	const { gamemasterPokemon } = usePokemon();
+	const sets = useRelevanceSets();
 	const t = g.type?.toLowerCase();
 	const isNamed = !t && /Sierra|Cliff|Giovanni|Arlo/.test(g.trainerId);
 	const avatar = t ? `/images/types/${t}.png` : npcAvatar(g.trainerId);
-	const tiers = [g.tier1, g.tier2, g.tier3];
+	// Most relevant first (most league/raid dots), family-line order as tiebreak —
+	// same rule the Calendar's other Pokémon chip grids use (see `MiniGrid`).
+	const sortIds = (ids: Array<string>) => sortByCalendarRelevance(ids, (id) => id, gamemasterPokemon, sets);
+	const tiers = [sortIds(g.tier1), sortIds(g.tier2), sortIds(g.tier3)];
 	const firstCatch = [...g.catchableTiers].sort((a, b) => a - b)[0];
 	const reward = firstCatch != null ? (tiers[firstCatch] ?? []) : [];
 	const title = g.type ? `${cap(g.type)} Grunt` : isNamed ? prettyTrainer(g.trainerId) : 'Grunt';

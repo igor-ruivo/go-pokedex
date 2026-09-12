@@ -166,20 +166,22 @@ const Moves = () => {
 		<div className='r-shell'>
 			<h1 className='r-page-title'>Moves</h1>
 
-			<div className='r-seg' role='tablist' aria-label='Move kind'>
-				{(['all', 'fast', 'charged'] as const).map((k) => (
-					<button key={k} type='button' data-active={kind === k} onClick={() => setKind(k)}>
-						{k === 'all' ? 'All' : k === 'fast' ? 'Fast' : 'Charged'}
-					</button>
-				))}
-			</div>
+			<div className='r-rank-head'>
+				<div className='r-seg' role='tablist' aria-label='Move kind'>
+					{(['all', 'fast', 'charged'] as const).map((k) => (
+						<button key={k} type='button' data-active={kind === k} onClick={() => setKind(k)}>
+							{k === 'all' ? 'All' : k === 'fast' ? 'Fast' : 'Charged'}
+						</button>
+					))}
+				</div>
 
-			<div className='r-controls'>
-				<FilterBar types={TYPE_KEYS} selected={type} onChange={setType} single />
-				<SortBar options={MOVE_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />
-			</div>
+				<div className='r-controls'>
+					<FilterBar types={TYPE_KEYS} selected={type} onChange={setType} single />
+					<SortBar options={MOVE_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />
+				</div>
 
-			<div className='r-section-h'>{list.length.toLocaleString()} Moves</div>
+				<div className='r-section-h'>{list.length.toLocaleString()} Moves</div>
+			</div>
 
 			<div ref={listRef}>
 				<div style={{ height: virt.getTotalSize(), position: 'relative' }}>

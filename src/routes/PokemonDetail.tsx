@@ -17,7 +17,7 @@ import { suppressNextScrollReset } from '../hooks/useScrollToTopOnNavigate';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dexNo, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
-import { fmtRaidMetric, RAID_METRIC_LABEL } from '../lib/raid-metric';
+import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
 import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
@@ -30,6 +30,7 @@ import {
 	fetchReachablePokemonIncludingSelf,
 	levelToLevelIndex,
 	MAX_LEVEL,
+	sortByFamilyLine,
 } from '../utils/pokemon-helper';
 import CountersTab from './pokemon/CountersTab';
 import IvTableTab from './pokemon/IvTableTab';
@@ -164,85 +165,13 @@ const PokemonDetail = () => {
 	});
 
 	// Whole evolution family for the picker — same rule as the legacy site:
-	// predecessors + the full line, restricted to this Pokémon's shadow-ness.
-	//
-	// Ordered like the evolution chain reads — base stage first, then each
-	// next evolution, form variants (e.g. a regional form) sitting alongside
-	// their stage rather than after the whole line, Megas always last — not by
-	// dex number *across* stages, which would interleave unrelated regional
-	// dex ranges. Dex order only kicks in as the tiebreak *within* a shared
-	// stage, e.g. the Eeveelutions (Flareon, Umbreon, Leafeon, …), which all
-	// sit at the same depth with nothing else to order them by.
-	//
-	// One thing depth-then-alphabetical alone gets wrong: a shared dex number
-	// can pull in two genuinely *separate* evolution branches (same species,
-	// different regional forms — Wooper→Quagsire and Wooper (Paldean)→
-	// Clodsire share dex 194 but don't share a `family.id`), and sorting
-	// purely by depth interleaves them by stage — Wooper, Wooper (Paldean),
-	// Clodsire, Quagsire — instead of reading as two lines — Wooper,
-	// Quagsire, Wooper (Paldean), Clodsire. `branchRankOf` groups every
-	// member by which depth-0 ancestor it ultimately descends from *before*
-	// sorting by depth, so each branch's whole line stays together; a normal
-	// single-root family (the vast majority) has only one branch, so this is
-	// a no-op for them — same output as before.
+	// predecessors + the full line, restricted to this Pokémon's shadow-ness —
+	// ordered like the evolution chain reads (see `sortByFamilyLine`'s own doc
+	// comment for the full "why" — branches, depth, Megas-last, the Wooper/
+	// Clodsire shared-dex edge case).
 	const family = useMemo(() => {
 		if (!pokemon) return [];
-		const members = fetchPokemonFamily(pokemon, gamemasterPokemon);
-
-		const depthCache = new Map<string, number>();
-		const depthOf = (m: IGamemasterPokemon): number => {
-			const cached = depthCache.get(m.speciesId);
-			if (cached != null) return cached;
-			let depth = 0;
-			let cur: IGamemasterPokemon | undefined = m;
-			const seen = new Set<string>();
-			while (cur?.family?.parent && !seen.has(cur.speciesId)) {
-				seen.add(cur.speciesId);
-				cur = gamemasterPokemon[cur.family.parent];
-				if (cur) depth++;
-			}
-			depthCache.set(m.speciesId, depth);
-			return depth;
-		};
-
-		const rootCache = new Map<string, IGamemasterPokemon>();
-		const rootOf = (m: IGamemasterPokemon): IGamemasterPokemon => {
-			const cached = rootCache.get(m.speciesId);
-			if (cached) return cached;
-			let cur = m;
-			const seen = new Set<string>();
-			while (cur.family?.parent && !seen.has(cur.speciesId)) {
-				seen.add(cur.speciesId);
-				const parent: IGamemasterPokemon | undefined = gamemasterPokemon[cur.family.parent];
-				if (!parent) break;
-				cur = parent;
-			}
-			rootCache.set(m.speciesId, cur);
-			return cur;
-		};
-
-		// Every distinct root present, ranked by the same tiebreak rules a
-		// depth-0 member would use against its siblings — that ranking then
-		// becomes each branch's position in the final list.
-		const roots = [...new Set([...members].map(rootOf))].sort(
-			(a, b) =>
-				(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) ||
-				(a.isShadow ? 1 : 0) - (b.isShadow ? 1 : 0) ||
-				a.dex - b.dex ||
-				a.speciesName.localeCompare(b.speciesName)
-		);
-		const branchRank = new Map(roots.map((r, i) => [r.speciesId, i]));
-		const branchRankOf = (m: IGamemasterPokemon): number => branchRank.get(rootOf(m).speciesId) ?? 0;
-
-		return [...members].sort(
-			(a, b) =>
-				(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) || // Megas always last
-				branchRankOf(a) - branchRankOf(b) || // then keep each evolution branch's whole line together
-				depthOf(a) - depthOf(b) || // within a branch, by evolutionary stage
-				(a.isShadow ? 1 : 0) - (b.isShadow ? 1 : 0) || // non-shadow before shadow
-				a.dex - b.dex || // same stage (e.g. the Eeveelutions): by dex number
-				a.speciesName.localeCompare(b.speciesName) // still tied (same dex, e.g. forms): alphabetical
-		);
+		return sortByFamilyLine([...fetchPokemonFamily(pokemon, gamemasterPokemon)], gamemasterPokemon);
 	}, [pokemon, gamemasterPokemon]);
 
 	// Forward-reachable only (you can't devolve) — what "best reachable" means.
@@ -270,28 +199,16 @@ const PokemonDetail = () => {
 					return ra - rb;
 				});
 
-		// The dataset's baked-in `rank` is DPS-only — re-rank each type's list by
-		// whichever metric is chosen so switching it actually reorders things
-		// (the raid tab, "best moveset by type coverage", all of it).
-		const metricRankByType: Record<string, Record<string, number>> = {};
-		for (const [type, list] of Object.entries(raidDPS)) {
-			if (type === '') continue;
-			const ranks: Record<string, number> = {};
-			Object.values(list)
-				.sort((a, b) => b[raidMetric] - a[raidMetric])
-				.forEach((entry, i) => {
-					ranks[entry.speciesId] = i + 1;
-				});
-			metricRankByType[type] = ranks;
-		}
-
 		// every attacking-type list this species is ranked in, best rank first
+		// under whichever figure (DPS/TDO/eDPS) is currently chosen — dex-server
+		// bakes in all three per entry precisely so this doesn't have to re-rank
+		// the list itself just to switch metrics (see `raidRankOf`).
 		const rankedTypes = (sid: string) =>
 			Object.entries(raidDPS)
 				.filter(([t]) => t !== '')
 				.map(([type, list]) => ({ type, entry: list[sid] as DPSEntry | undefined }))
 				.filter((x): x is { type: string; entry: DPSEntry } => !!x.entry)
-				.map((x) => ({ ...x, rank: metricRankByType[x.type]?.[sid] ?? x.entry.rank }))
+				.map((x) => ({ ...x, rank: raidRankOf(x.entry, raidMetric) ?? Number.POSITIVE_INFINITY }))
 				.sort((a, b) => a.rank - b.rank);
 
 		const raid = [...reachableRaid]
@@ -820,7 +737,7 @@ const PokemonDetail = () => {
 			) : (
 				<>
 					{/* ---- LEADERBOARD — best reachable per league; click active row to cycle ---- */}
-					<div className='r-section-h'>Leaderboard · best reachable</div>
+					<div className='r-section-h'>best reachable stage per league</div>
 					<div className='r-board'>
 						{boardRows.map(
 							({ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange }) => {
@@ -915,8 +832,7 @@ const PokemonDetail = () => {
 						/* ---- RAID PERFORMANCE ---- */
 						<>
 							<div className='r-section-h'>
-								Raid performance
-								{raidMember.speciesId !== self && ` · ${cleanName(raidMember.speciesName)}`}
+								{`Raid performance · ${raidMember.speciesId === self ? '' : 'as '}${raidMember.isShadow ? 'Shadow ' : ''}${cleanName(raidMember.speciesName)}`}
 							</div>
 							<div className='r-card' style={{ ['--accent' as string]: 'var(--lg-raid)' }}>
 								{raidSelRow ? (
@@ -943,7 +859,7 @@ const PokemonDetail = () => {
 								{raidRows.length > 0 && (
 									<>
 										<div className='r-section-h' style={{ marginTop: 16 }}>
-											Best moveset by type coverage
+											Best moveset by type
 										</div>
 										<div className='r-raidtypes'>
 											{raidRows.map(({ t, e, rank, on, combos, mIdx, combo }, i) => {
@@ -1018,8 +934,8 @@ const PokemonDetail = () => {
 							{/* ---- IV PICKER ---- */}
 							<div className='r-section-h'>
 								{purifyOffset > 0
-									? `Your IVs · as Purified ${cleanName((pvpMember ?? pokemon).speciesName)}`
-									: `Your IVs · as ${(pvpMember ?? pokemon).isShadow ? 'Shadow ' : ''}${cleanName((pvpMember ?? pokemon).speciesName)}`}
+									? `Your IVs Percentile · as Purified ${cleanName((pvpMember ?? pokemon).speciesName)}`
+									: `Your IVs Percentile · ${(pvpMember ?? pokemon).speciesId === self ? '' : 'as '}${(pvpMember ?? pokemon).isShadow ? 'Shadow ' : ''}${cleanName((pvpMember ?? pokemon).speciesName)}`}
 							</div>
 							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
 								<IvPicker

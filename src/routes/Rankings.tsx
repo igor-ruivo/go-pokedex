@@ -270,13 +270,20 @@ const Rankings = () => {
 							style={{ ['--seg-c' as string]: MODE_COLOR[m] }}
 							onClick={() => {
 								const pathname = m === 'pokedex' ? R.pokedex : R.rankings(m);
+								const search = new URLSearchParams();
 								// Pokédex and the PvP leagues all treat "type" the same way (up to 2,
 								// AND-matched) — carry the current filter across switches among them.
 								// Raid's is a different shape entirely (exactly one, baked into the
 								// path segment), so it neither takes one from, nor hands one to, those.
 								const carryType = mode !== 'raid' && m !== 'raid' && typeCsv;
-								const search = new URLSearchParams();
 								if (carryType) search.set('type', typeCsv);
+								// The search term, though, is the same free-text name filter
+								// everywhere — Pokédex, every league and raids alike — so it always
+								// carries over regardless of which of those you're switching between.
+								// The raw param (not the lowercased/trimmed `q` above), so the
+								// search box's own displayed casing doesn't get mangled by this.
+								const rawQ = params.get('q');
+								if (rawQ) search.set('q', rawQ);
 								void navigate({ pathname, search: search.toString() ? `?${search.toString()}` : '' });
 							}}
 						>

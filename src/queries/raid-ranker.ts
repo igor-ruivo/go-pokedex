@@ -17,7 +17,16 @@ export type DPSEntry = {
 	chargedMove: string;
 	chargedMoveDmg: number;
 	speciesId: string;
-	rank: number;
+	// Only present on the pre-generated per-type feed below — dex-server ranks
+	// each type's list three separate ways since "best" means something
+	// different per metric (see `RaidMetric`); pick the one matching whichever
+	// the app is currently ranking by (`raidRankOf` in lib/raid-metric.ts), never
+	// just one of these unconditionally. A live-computed entry (a specific
+	// boss's counters, a moveset combo's DPS — see `computeDPSEntry`) has no
+	// fixed rank of its own, hence optional.
+	dpsRank?: number;
+	tdoRank?: number;
+	edpsRank?: number;
 };
 
 type DPSRank = Record<string, DPSEntry>;

@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useLanguage } from '../contexts/language-context';
+import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { cleanName, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
+import { raidRankOf } from '../lib/raid-metric';
 import { TYPE_LABEL } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
@@ -40,6 +42,7 @@ export const RaidTypeCoverage = ({
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { currentGameLanguage: gl } = useLanguage();
 	const { maxLevelIndex } = useBestBuddy();
+	const { raidMetric } = useRaidMetric();
 
 	const [typeIdx, setTypeIdx] = useState(0);
 	const [comboIdx, setComboIdx] = useState<Record<string, number>>({});
@@ -49,14 +52,15 @@ export const RaidTypeCoverage = ({
 	}, [pokemon.speciesId]);
 
 	// every attacking-type list this species is ranked in, best rank first
+	// (under whichever figure — DPS/TDO/eDPS — the app is currently ranking by)
 	const types = useMemo(
 		() =>
 			Object.entries(raidDPS)
 				.filter(([t]) => t !== '')
 				.map(([type, list]) => ({ type, entry: list[pokemon.speciesId] as DPSEntry | undefined }))
 				.filter((x): x is { type: string; entry: DPSEntry } => !!x.entry)
-				.sort((a, b) => a.entry.rank - b.entry.rank),
-		[raidDPS, pokemon.speciesId]
+				.sort((a, b) => (raidRankOf(a.entry, raidMetric) ?? Infinity) - (raidRankOf(b.entry, raidMetric) ?? Infinity)),
+		[raidDPS, pokemon.speciesId, raidMetric]
 	);
 
 	// fast+charged combos per attacking type, best DPS first (top 5)
@@ -131,7 +135,7 @@ export const RaidTypeCoverage = ({
 				<div className='r-readout'>
 					<div>
 						<i>{TYPE_LABEL[selRow.t] ?? selRow.t} rank</i>
-						<b className='hi'>{ordinal(selRow.e.rank)}</b>
+						<b className='hi'>{ordinal(raidRankOf(selRow.e, raidMetric) ?? 0)}</b>
 					</div>
 					<div>
 						<i>DPS</i>
@@ -145,7 +149,7 @@ export const RaidTypeCoverage = ({
 			)}
 
 			<div className='r-section-h' style={showReadout ? { marginTop: 16 } : undefined}>
-				Best moveset by type coverage
+				Best moveset by type
 			</div>
 			<div className='r-raidtypes'>
 				{rows.map(({ t, e, on, combos, mIdx, combo }, i) => {
@@ -170,7 +174,7 @@ export const RaidTypeCoverage = ({
 						>
 							<span className='r-raidtype-head'>
 								<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
-								<b>{ordinal(e.rank)}</b>
+								<b>{ordinal(raidRankOf(e, raidMetric) ?? 0)}</b>
 								<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
 							</span>
 							{combo && (

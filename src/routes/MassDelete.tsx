@@ -3,12 +3,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
+import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
+import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
-import { useRaidRanker } from '../queries/raid-ranker';
+import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from '../utils/pokemon-helper';
@@ -36,7 +38,8 @@ const HELP_TEXT =
 interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	rankLists: Array<Record<string, { rank: number } | undefined>>;
-	raidDPS: Record<string, Record<string, unknown>>;
+	raidDPS: Record<string, Record<string, DPSEntry>>;
+	raidMetric: RaidMetric;
 	lowAttackMap: Record<string, Record<number, boolean>> | undefined;
 	gl: GameLanguage;
 	cp: number;
@@ -52,6 +55,7 @@ const computeTrashString = (a: ComputeArgs): string => {
 		gamemasterPokemon,
 		rankLists,
 		raidDPS,
+		raidMetric,
 		lowAttackMap,
 		gl,
 		cp,
@@ -76,10 +80,12 @@ const computeTrashString = (a: ComputeArgs): string => {
 		let minRaidRank = Infinity;
 		const finalCollection = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, undefined, true));
 		enumValues.forEach((t) => {
+			const list = raidDPS[t.toString().toLocaleLowerCase()];
 			finalCollection.forEach((pk) => {
-				const rank = Object.keys(raidDPS[t.toString().toLocaleLowerCase()] ?? {}).indexOf(pk.speciesId);
-				if (rank !== -1) {
-					minRaidRank = Math.min(minRaidRank, rank + 1);
+				const entry = list?.[pk.speciesId];
+				const rank = entry && raidRankOf(entry, raidMetric);
+				if (rank != null) {
+					minRaidRank = Math.min(minRaidRank, rank);
 				}
 			});
 		});
@@ -385,6 +391,7 @@ const MassDelete = () => {
 	const { maxLevel } = useBestBuddy();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
+	const { raidMetric } = useRaidMetric();
 	const { currentGameLanguage: gl } = useLanguage();
 
 	const [trashGreat, setTrashGreat] = useState(() => numCfg(ConfigKeys.TrashGreat, 50));
@@ -409,7 +416,7 @@ const MassDelete = () => {
 	// changing any knob invalidates a stale result
 	useEffect(() => {
 		setResult('');
-	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl]);
+	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric]);
 
 	const candidates = useMemo(
 		() =>
@@ -448,7 +455,8 @@ const MassDelete = () => {
 				computeTrashString({
 					gamemasterPokemon,
 					rankLists: rankLists as unknown as ComputeArgs['rankLists'],
-					raidDPS: raidDPS as unknown as ComputeArgs['raidDPS'],
+					raidDPS,
+					raidMetric,
 					lowAttackMap,
 					gl,
 					cp,
@@ -471,6 +479,7 @@ const MassDelete = () => {
 		gamemasterPokemon,
 		rankLists,
 		raidDPS,
+		raidMetric,
 		gl,
 		cp,
 		trashGreat,

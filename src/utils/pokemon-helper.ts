@@ -816,7 +816,6 @@ export const computeDPSEntry = (
 			speciesId: p.speciesId,
 			fastMoveDmg: fastDmg,
 			chargedMoveDmg: chargedDmg,
-			rank: -1,
 		};
 	};
 
@@ -1102,6 +1101,81 @@ export const fetchPokemonFamily = (
 	}
 
 	return family;
+};
+
+/**
+ * "Family line" ordering — groups every member by which depth-0 ancestor it
+ * ultimately descends from (its "branch") before ranking branches against
+ * each other, so a shared dex number that actually spans two unrelated
+ * evolution lines (same species, different regional forms — Wooper→Quagsire
+ * and Wooper (Paldean)→Clodsire share dex 194 but not `family.id`) doesn't
+ * interleave them by stage; each branch's whole line stays together, ordered
+ * base-stage first, Megas always last. A normal single-root family (the vast
+ * majority) has only one branch, so this is a no-op for them.
+ *
+ * Not just for an actual evolution family, either — reusing it as a plain
+ * ordering (e.g. a Calendar tie-break for otherwise-unrelated Pokémon) is
+ * fine: unrelated species just resolve to distinct single-member branches
+ * and effectively sort by dex/name after that.
+ */
+export const sortByFamilyLine = <T extends IGamemasterPokemon>(
+	members: ReadonlyArray<T>,
+	gamemasterPokemon: Record<string, IGamemasterPokemon>
+): Array<T> => {
+	const depthCache = new Map<string, number>();
+	const depthOf = (m: IGamemasterPokemon): number => {
+		const cached = depthCache.get(m.speciesId);
+		if (cached != null) return cached;
+		let depth = 0;
+		let cur: IGamemasterPokemon | undefined = m;
+		const seen = new Set<string>();
+		while (cur?.family?.parent && !seen.has(cur.speciesId)) {
+			seen.add(cur.speciesId);
+			cur = gamemasterPokemon[cur.family.parent];
+			if (cur) depth++;
+		}
+		depthCache.set(m.speciesId, depth);
+		return depth;
+	};
+
+	const rootCache = new Map<string, IGamemasterPokemon>();
+	const rootOf = (m: IGamemasterPokemon): IGamemasterPokemon => {
+		const cached = rootCache.get(m.speciesId);
+		if (cached) return cached;
+		let cur = m;
+		const seen = new Set<string>();
+		while (cur.family?.parent && !seen.has(cur.speciesId)) {
+			seen.add(cur.speciesId);
+			const parent: IGamemasterPokemon | undefined = gamemasterPokemon[cur.family.parent];
+			if (!parent) break;
+			cur = parent;
+		}
+		rootCache.set(m.speciesId, cur);
+		return cur;
+	};
+
+	// Every distinct root present, ranked by the same tiebreak rules a depth-0
+	// member would use against its siblings — that ranking then becomes each
+	// branch's position in the final list.
+	const roots = [...new Set(members.map(rootOf))].sort(
+		(a, b) =>
+			(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) ||
+			(a.isShadow ? 1 : 0) - (b.isShadow ? 1 : 0) ||
+			a.dex - b.dex ||
+			a.speciesName.localeCompare(b.speciesName)
+	);
+	const branchRank = new Map(roots.map((r, i) => [r.speciesId, i]));
+	const branchRankOf = (m: IGamemasterPokemon): number => branchRank.get(rootOf(m).speciesId) ?? 0;
+
+	return [...members].sort(
+		(a, b) =>
+			(a.isMega ? 1 : 0) - (b.isMega ? 1 : 0) || // Megas always last
+			branchRankOf(a) - branchRankOf(b) || // then keep each evolution branch's whole line together
+			depthOf(a) - depthOf(b) || // within a branch, by evolutionary stage
+			(a.isShadow ? 1 : 0) - (b.isShadow ? 1 : 0) || // non-shadow before shadow
+			a.dex - b.dex || // same stage (e.g. the Eeveelutions): by dex number
+			a.speciesName.localeCompare(b.speciesName) // still tied (same dex, e.g. forms): alphabetical
+	);
 };
 
 export const calculateCP = (
