@@ -48,6 +48,7 @@ export enum ConfigKeys {
 	RaidFriendship,
 	RaidMegaBoostType,
 	InstallPromptDismissed,
+	BestBuddy,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

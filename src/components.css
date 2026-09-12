@@ -3609,6 +3609,11 @@
 	opacity: 1;
 	filter: none;
 }
+.rvmp .r-tc-pchip:disabled {
+	opacity: 0.18;
+	filter: grayscale(0.8);
+	cursor: default;
+}
 .rvmp .r-tc-results {
 	display: grid;
 	gap: var(--s4);

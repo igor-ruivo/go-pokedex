@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
@@ -35,6 +36,7 @@ export const SettingsMenu = () => {
 	const { currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
+	const { bestBuddy, updateBestBuddy } = useBestBuddy();
 	const [open, setOpen] = useState(false);
 	const [moreOpen, setMoreOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
@@ -133,6 +135,22 @@ export const SettingsMenu = () => {
 											{RAID_METRIC_LABEL[m]}
 										</button>
 									))}
+								</div>
+							</div>
+
+							<div className='r-setmenu-grp'>
+								<span className='r-setmenu-h'>Account for Best Buddy</span>
+								<div className='r-set-opts'>
+									<button
+										type='button'
+										data-active={!bestBuddy ? '' : undefined}
+										onClick={() => updateBestBuddy(false)}
+									>
+										Off
+									</button>
+									<button type='button' data-active={bestBuddy ? '' : undefined} onClick={() => updateBestBuddy(true)}>
+										On
+									</button>
 								</div>
 							</div>
 						</>

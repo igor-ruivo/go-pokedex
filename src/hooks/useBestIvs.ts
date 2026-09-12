@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { RankEntry } from '../utils/pokemon-helper';
 import { getComputeWorker } from '../workers/compute-client';
@@ -15,15 +16,17 @@ export const useBestIvs = (
 	cpCap: number,
 	enabled = true
 ): ReadonlyArray<RankEntry> => {
+	const { maxLevel } = useBestBuddy();
 	const { data } = useQuery({
 		enabled: enabled && !!pokemon,
-		queryKey: ['best-ivs', pokemon?.speciesId, cpCap],
+		queryKey: ['best-ivs', pokemon?.speciesId, cpCap, maxLevel],
 		queryFn: () =>
 			getComputeWorker().bestIvs({
 				atk: pokemon!.baseStats.atk,
 				def: pokemon!.baseStats.def,
 				hp: pokemon!.baseStats.hp,
 				league: cpCap,
+				maxLevel,
 			}),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,

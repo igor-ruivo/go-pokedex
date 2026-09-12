@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir } from '../../components/SortBar';
 import { spriteUrl } from '../../components/Sprite';
+import { useBestBuddy } from '../../contexts/best-buddy-context';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
 import { useRaidMetric } from '../../contexts/raid-metric-context';
@@ -90,6 +91,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 	// which figure to rank by is a device-wide setting shared with Rankings and
 	// Settings, not local to this tab.
 	const { raidMetric: metric, updateRaidMetric: setMetric } = useRaidMetric();
+	const { maxLevel } = useBestBuddy();
 	const [metricDir, setMetricDir] = useState<SortDir>('desc');
 	const [weatherKey, setWeatherKey] = useState(() => readPersistentValue(ConfigKeys.RaidWeather) ?? '');
 	const [partySize, setPartySize] = useState(() => Number(readPersistentValue(ConfigKeys.RaidPartySize)) || 1);
@@ -139,7 +141,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 
 	const { data: raidCounters = [], isFetching: raidLoading } = useQuery({
 		enabled: isRaid && ready,
-		queryKey: ['raid-counters', pokemon.speciesId, weatherKey, partySize, friendship, megaBoostType, tier],
+		queryKey: ['raid-counters', pokemon.speciesId, weatherKey, partySize, friendship, megaBoostType, tier, maxLevel],
 		queryFn: () =>
 			getComputeWorker().raidComparisons({
 				candidates: Object.values(gamemasterPokemon).filter((p) => !p.aliasId),
@@ -152,6 +154,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 					megaBoostType: megaBoostType || undefined,
 					tier,
 				},
+				maxLevel,
 			}),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,

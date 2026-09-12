@@ -5,6 +5,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FilterBar } from '../components/FilterBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { MODE_COLOR, MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
@@ -13,7 +14,7 @@ import { TYPE_KEYS, TYPE_LABEL, typeKey } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
-import { calculateCP, MAX_LEVEL_INDEX } from '../utils/pokemon-helper';
+import { calculateCP } from '../utils/pokemon-helper';
 
 const POKEDEX_SORTS: ReadonlyArray<SortOption> = [
 	{ key: 'dex', label: 'Dex number', defaultDir: 'asc' },
@@ -90,6 +91,7 @@ const Rankings = () => {
 	// which figure (DPS/TDO/eDPS) to rank by is a device-wide setting, shared with
 	// the Counters tab and Settings — not a per-page URL param.
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
+	const { maxLevelIndex } = useBestBuddy();
 	// raid rankings default to descending (best first); pokedex defaults to asc.
 	const raidDir: SortDir = params.get('dir') === 'asc' ? 'asc' : 'desc';
 
@@ -122,7 +124,7 @@ const Rankings = () => {
 							15,
 							pokemon.baseStats.hp,
 							15,
-							MAX_LEVEL_INDEX
+							maxLevelIndex
 						),
 					},
 				}));
@@ -189,6 +191,7 @@ const Rankings = () => {
 		pvpFetchCompleted,
 		raidDPS,
 		raidDPSFetchCompleted,
+		maxLevelIndex,
 	]);
 
 	const gridRef = useRef<HTMLDivElement>(null);

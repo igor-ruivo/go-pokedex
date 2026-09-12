@@ -158,13 +158,19 @@ type NeededResources = {
 export const levelToLevelIndex = (level: number) => (level - 1) * 2;
 
 /**
- * The level ceiling the app evaluates to. In-game a Pokémon can reach 51 (Best
- * Buddy) or beyond (Super Mega L4), but those are edge cases we deliberately
- * ignore so every ranking, CP and trash string is expressed against level 50.
+ * The default level ceiling the app evaluates to. In-game a Pokémon can reach
+ * 51 (Best Buddy) or beyond (Super Mega L4); the latter is an edge case we
+ * deliberately ignore, but the former is opt-in via the "Best Buddy" setting
+ * (see `useBestBuddy`) — every ranking, CP and trash string that setting
+ * covers is then expressed against level 51 instead of this default 50.
  */
 export const MAX_LEVEL = 50;
 /** {@link MAX_LEVEL} as a half-level CPM index. */
 export const MAX_LEVEL_INDEX = levelToLevelIndex(MAX_LEVEL);
+/** The level a Best Buddy Pokémon can reach — {@link MAX_LEVEL} + 1. */
+export const BEST_BUDDY_LEVEL = MAX_LEVEL + 1;
+/** {@link BEST_BUDDY_LEVEL} as a half-level CPM index. */
+export const BEST_BUDDY_LEVEL_INDEX = levelToLevelIndex(BEST_BUDDY_LEVEL);
 
 export const needsXLCandy = (pokemon: IGamemasterPokemon, cpThreshold: number) => {
 	if (!cpThreshold) {
@@ -1163,11 +1169,12 @@ export const computeBestIVs = (
 	baseatk: number,
 	basedef: number,
 	basesta: number,
-	league: number
+	league: number,
+	maxLevel: number = MAX_LEVEL
 ): Record<string, Array<RankEntry>> => {
 	const floor = 0;
 	let minLvl = 1;
-	let maxLvl = MAX_LEVEL;
+	let maxLvl = maxLevel;
 
 	const ranks: Record<string, Array<RankEntry>> = {};
 

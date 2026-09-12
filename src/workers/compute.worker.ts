@@ -15,6 +15,8 @@ import {
 	computeBestIVs,
 	computeDPSEntry,
 	guessRaidTier,
+	levelToLevelIndex,
+	MAX_LEVEL,
 	MAX_LEVEL_INDEX,
 	type RaidOpts,
 	type RaidTier,
@@ -45,6 +47,8 @@ export interface FamilyIvPercentsInput {
 	attackIV: number;
 	defenseIV: number;
 	hpIV: number;
+	/** Level ceiling to rank against — {@link MAX_LEVEL} unless Best Buddy (51) is on. */
+	maxLevel?: number;
 }
 
 const familyIvPercents = ({
@@ -53,6 +57,7 @@ const familyIvPercents = ({
 	attackIV,
 	defenseIV,
 	hpIV,
+	maxLevel = MAX_LEVEL,
 }: FamilyIvPercentsInput): Record<string, IIvPercents> => {
 	const result: Record<string, IIvPercents> = {};
 
@@ -63,10 +68,10 @@ const familyIvPercents = ({
 		const effectiveDef = effIV(defenseIV);
 		const effectiveHP = effIV(hpIV);
 
-		const resLC = computeBestIVs(p.atk, p.def, p.hp, CUSTOM_CUP_CP_LIMIT);
-		const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500);
-		const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500);
-		const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE);
+		const resLC = computeBestIVs(p.atk, p.def, p.hp, CUSTOM_CUP_CP_LIMIT, maxLevel);
+		const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, maxLevel);
+		const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500, maxLevel);
+		const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE, maxLevel);
 
 		const flatLResult = Object.values(resLC).flat();
 		const flatGLResult = Object.values(resGL).flat();
@@ -130,16 +135,20 @@ export interface BestIvsInput {
 	hp: number;
 	/** CP cap; use Number.MAX_VALUE for an uncapped (Master) ranking. */
 	league: number;
+	/** Level ceiling to rank against — {@link MAX_LEVEL} unless Best Buddy (51) is on. */
+	maxLevel?: number;
 }
 
 /** Every IV spread ranked for one base-stat line + CP cap, best first. */
-const bestIvs = ({ atk, def, hp, league }: BestIvsInput): Array<RankEntry> =>
-	Object.values(computeBestIVs(atk, def, hp, league)).flat();
+const bestIvs = ({ atk, def, hp, league, maxLevel = MAX_LEVEL }: BestIvsInput): Array<RankEntry> =>
+	Object.values(computeBestIVs(atk, def, hp, league, maxLevel)).flat();
 
 export interface LowAttackViableInput {
 	candidates: Array<{ speciesId: string; atk: number; def: number; hp: number }>;
 	/** CP caps to evaluate (e.g. 1500 for Great, 2500 for Ultra). */
 	caps: Array<number>;
+	/** Level ceiling to rank against — {@link MAX_LEVEL} unless Best Buddy (51) is on. */
+	maxLevel?: number;
 }
 
 /**
@@ -147,12 +156,16 @@ export interface LowAttackViableInput {
  * attack IV below 5? Powers the "trash" analyzer's high-attack check.
  * @returns speciesId -> cap -> boolean
  */
-const lowAttackViable = ({ candidates, caps }: LowAttackViableInput): Record<string, Record<number, boolean>> => {
+const lowAttackViable = ({
+	candidates,
+	caps,
+	maxLevel = MAX_LEVEL,
+}: LowAttackViableInput): Record<string, Record<number, boolean>> => {
 	const out: Record<string, Record<number, boolean>> = {};
 	for (const c of candidates) {
 		const perCap: Record<number, boolean> = {};
 		for (const cap of caps) {
-			const best = Object.values(computeBestIVs(c.atk, c.def, c.hp, cap)).flat();
+			const best = Object.values(computeBestIVs(c.atk, c.def, c.hp, cap, maxLevel)).flat();
 			let allLow = true;
 			for (let i = 0; i < 5; i++) {
 				if ((best[i]?.IVs.A ?? 0) >= 5) {
@@ -180,6 +193,8 @@ export interface RaidComparisonsInput {
 		/** Explicit tier override; falls back to `guessRaidTier(target)`. */
 		tier?: RaidTier | undefined;
 	};
+	/** Level ceiling to evaluate attackers at — {@link MAX_LEVEL} unless Best Buddy (51) is on. */
+	maxLevel?: number;
 }
 
 /**
@@ -187,7 +202,13 @@ export interface RaidComparisonsInput {
  * (tier inferred from Game Master flags unless `opts.tier` overrides it),
  * sorted strongest DPS first.
  */
-const raidComparisons = ({ candidates, moves, target, opts }: RaidComparisonsInput): Array<DPSEntry> => {
+const raidComparisons = ({
+	candidates,
+	moves,
+	target,
+	opts,
+	maxLevel = MAX_LEVEL,
+}: RaidComparisonsInput): Array<DPSEntry> => {
 	const raidOpts: RaidOpts = {
 		tier: opts?.tier ?? guessRaidTier(target),
 		friendship: opts?.friendship,
@@ -195,8 +216,9 @@ const raidComparisons = ({ candidates, moves, target, opts }: RaidComparisonsInp
 		megaBoostType: opts?.megaBoostType,
 		weatherBoostedTypes: opts?.weatherBoostedTypes ? new Set(opts.weatherBoostedTypes) : undefined,
 	};
+	const levelIndex = maxLevel === MAX_LEVEL ? MAX_LEVEL_INDEX : levelToLevelIndex(maxLevel);
 	const out: Array<DPSEntry> = candidates.map((p) =>
-		computeDPSEntry(p, {}, moves, 15, MAX_LEVEL_INDEX, '', target, undefined, raidOpts)
+		computeDPSEntry(p, {}, moves, 15, levelIndex, '', target, undefined, raidOpts)
 	);
 	return out.sort((a, b) => (b.dps !== a.dps ? b.dps - a.dps : a.speciesId.localeCompare(b.speciesId)));
 };

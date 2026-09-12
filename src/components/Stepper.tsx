@@ -7,13 +7,21 @@ interface StepperProps {
 	step: number;
 	onChange: (v: number) => void;
 	format?: (v: number) => string;
+	/**
+	 * Overrides the default step/round arithmetic for a single bump — return the
+	 * next value given the current one and the pressed direction. For a scale
+	 * that isn't evenly spaced by `step` throughout its whole range (e.g. a
+	 * level picker whose Best Buddy ceiling is a flat +1 past the last regular
+	 * half-level, not another half-level itself).
+	 */
+	nextValue?: (current: number, dir: 1 | -1) => number;
 }
 
 /**
  * −/+ stepper with press-and-hold auto-repeat that accelerates after ~0.6s,
  * like a native numeric stepper. Supports fractional steps.
  */
-export const Stepper = ({ value, min, max, step, onChange, format = String }: StepperProps) => {
+export const Stepper = ({ value, min, max, step, onChange, format = String, nextValue }: StepperProps) => {
 	const vRef = useRef(value);
 	vRef.current = value;
 	const timers = useRef<Array<number>>([]);
@@ -28,7 +36,8 @@ export const Stepper = ({ value, min, max, step, onChange, format = String }: St
 		const s = Math.round(v / step) * step;
 		return Math.min(max, Math.max(min, Number(s.toFixed(2))));
 	};
-	const bump = (dir: 1 | -1) => onChange(snap(vRef.current + dir * step));
+	const bump = (dir: 1 | -1) =>
+		onChange(nextValue ? Math.min(max, Math.max(min, nextValue(vRef.current, dir))) : snap(vRef.current + dir * step));
 
 	const press = (dir: 1 | -1) => {
 		clearTimers();

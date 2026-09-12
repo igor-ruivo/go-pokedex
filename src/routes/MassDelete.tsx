@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
@@ -381,6 +382,7 @@ const NumSelect = ({
 const MassDelete = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { movesFetchCompleted } = useMoves();
+	const { maxLevel } = useBestBuddy();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { currentGameLanguage: gl } = useLanguage();
@@ -424,8 +426,8 @@ const MassDelete = () => {
 
 	const { data: lowAttackMap } = useQuery({
 		enabled: isCalculating && fetchCompleted,
-		queryKey: ['trash-low-attack'],
-		queryFn: () => getComputeWorker().lowAttackViable({ candidates, caps: [1500, 2500] }),
+		queryKey: ['trash-low-attack', maxLevel],
+		queryFn: () => getComputeWorker().lowAttackViable({ candidates, caps: [1500, 2500], maxLevel }),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});

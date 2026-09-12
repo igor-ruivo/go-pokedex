@@ -1,3 +1,4 @@
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
 // Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
@@ -43,6 +44,7 @@ const OptionRow = <T,>({
 const Settings = () => {
 	const { currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
+	const { bestBuddy, updateBestBuddy } = useBestBuddy();
 
 	return (
 		<div className='r-shell'>
@@ -79,6 +81,16 @@ const Settings = () => {
 						{ value: ImageSource.Official, label: 'Official' },
 						{ value: ImageSource.GO, label: 'Pokémon GO' },
 						{ value: ImageSource.Shiny, label: 'GO shiny' },
+					]}
+				/>
+				<OptionRow<boolean>
+					title='Account for Best Buddy'
+					desc='Treat level 51 as reachable — the IV table, trash/search strings, max CP, level picker, best IVs/percentile, raid counters and DPS/TDO/eDPS all evaluate up to level 51 instead of 50.'
+					value={bestBuddy}
+					onChange={updateBestBuddy}
+					options={[
+						{ value: false, label: 'Off' },
+						{ value: true, label: 'On' },
 					]}
 				/>
 			</div>

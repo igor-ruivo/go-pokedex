@@ -6,12 +6,14 @@ import { IvPicker, type IVs } from '../components/IvPicker';
 import { ShadowMark } from '../components/ShadowMark';
 import { goSpriteUrl, Sprite, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import useComputeIVs from '../hooks/useComputeIVs';
+import { suppressNextScrollReset } from '../hooks/useScrollToTopOnNavigate';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dexNo, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
@@ -28,7 +30,6 @@ import {
 	fetchReachablePokemonIncludingSelf,
 	levelToLevelIndex,
 	MAX_LEVEL,
-	MAX_LEVEL_INDEX,
 } from '../utils/pokemon-helper';
 import CountersTab from './pokemon/CountersTab';
 import IvTableTab from './pokemon/IvTableTab';
@@ -110,13 +111,17 @@ const PokemonDetail = () => {
 	// which figure (DPS/TDO/eDPS) ranks raid attackers — the same device-wide
 	// setting Rankings' raid tab and the Counters tab use.
 	const { raidMetric } = useRaidMetric();
+	const { maxLevel, maxLevelIndex } = useBestBuddy();
 
 	const pokemon = fetchCompleted ? gamemasterPokemon[speciesId] : undefined;
 	const tab: TabLabel = SLUG_TO_TAB[tabParam ?? 'ranks'] ?? 'Ranks';
 
 	const lgParam = searchParams.get('lg') ?? '';
 	const [iv, setIv] = useState<IVs>({ atk: 15, def: 15, hp: 15 });
-	const [level, setLevel] = useState(MAX_LEVEL);
+	const [level, setLevel] = useState(maxLevel);
+	// Best Buddy toggled off mid-session with the picker above the old ceiling —
+	// clamp back down rather than leaving it at an unreachable level.
+	useEffect(() => setLevel((l) => Math.min(l, maxLevel)), [maxLevel]);
 	// The league lives in `?lg=`, not local state — reloading (or sharing/
 	// bookmarking the URL) lands back on whichever league you were last
 	// looking at, not always Great. Arriving from a league/raid ranking sets
@@ -130,7 +135,23 @@ const PokemonDetail = () => {
 		setSearchParams(next, { replace: true });
 	};
 	const [heroSpriteIdx, setHeroSpriteIdx] = useState(0);
-	useEffect(() => setHeroSpriteIdx(0), [speciesId]);
+	// Default (and re-sync point) for the hero carousel: whichever sprite the
+	// "Sprites" setting prefers, not always the official artwork — landing on a
+	// new Pokémon, or flipping the setting while already here, both snap the
+	// hero (and its mini topbar echo, and the hint dots below it, which just
+	// track this same index) back to that preference. A manual tap/swipe still
+	// freely cycles from there. Guarded for `pokemon` still being undefined
+	// mid-fetch — `fetchCompleted` in the deps re-fires this once it lands.
+	useLayoutEffect(() => {
+		if (!pokemon) return;
+		const sprites = [
+			...new Set(
+				[pokemon.imageUrl, goSpriteUrl(pokemon.goImageUrl), goSpriteUrl(pokemon.shinyGoImageUrl)].filter(Boolean)
+			),
+		];
+		setHeroSpriteIdx(Math.max(0, sprites.indexOf(spriteUrl(pokemon, imageSource))));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [speciesId, imageSource, fetchCompleted]);
 	const isRaid = league === 3;
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
@@ -406,7 +427,7 @@ const PokemonDetail = () => {
 			out[type] = member.fastMoves
 				.flatMap((f) =>
 					tc.map((c) => {
-						const e = computeDPSEntry(member, gamemasterPokemon, moves, 15, MAX_LEVEL_INDEX, '', undefined, [f, c]);
+						const e = computeDPSEntry(member, gamemasterPokemon, moves, 15, maxLevelIndex, '', undefined, [f, c]);
 						return { f, c, dps: e.dps, tdo: e.tdo, edps: e.edps };
 					})
 				)
@@ -415,7 +436,7 @@ const PokemonDetail = () => {
 				.slice(0, 5);
 		}
 		return out;
-	}, [boardData, carousel, moves, movesFetchCompleted, gamemasterPokemon, raidMetric]);
+	}, [boardData, carousel, moves, movesFetchCompleted, gamemasterPokemon, raidMetric, maxLevelIndex]);
 
 	const heroCp = useMemo(() => {
 		if (!pokemon) return 0;
@@ -542,6 +563,7 @@ const PokemonDetail = () => {
 	const nextFamilyMember = family.length > 1 ? family[(familyIdx + 1) % family.length] : undefined;
 	const goToNextFamilyMember = () => {
 		if (!nextFamilyMember) return;
+		suppressNextScrollReset();
 		void navigate(`${R.pokemon(nextFamilyMember.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
 	};
 
@@ -699,9 +721,15 @@ const PokemonDetail = () => {
 					<Stepper
 						value={level}
 						min={1}
-						max={MAX_LEVEL}
+						max={maxLevel}
 						step={0.5}
 						onChange={setLevel}
+						// Best Buddy's level 51 is a flat +1 past 50, not another half-level —
+						// skip the nonexistent 50.5 rung right below it either direction.
+						nextValue={(cur, dir) => {
+							if (dir > 0) return cur === MAX_LEVEL && maxLevel > MAX_LEVEL ? maxLevel : cur + 0.5;
+							return cur === maxLevel && maxLevel > MAX_LEVEL ? MAX_LEVEL : cur - 0.5;
+						}}
 						format={(v) => `Lvl ${Number.isInteger(v) ? v : v.toFixed(1)}`}
 					/>
 					{hasShadow && (
@@ -709,11 +737,12 @@ const PokemonDetail = () => {
 							type='button'
 							className='r-toggle r-toggle--shadow'
 							data-on={isShadow}
-							onClick={() =>
+							onClick={() => {
+								suppressNextScrollReset();
 								void navigate(
 									`${R.pokemon(isShadow ? baseId : `${baseId}_shadow`, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`
-								)
-							}
+								);
+							}}
 						>
 							<ShadowMark className='r-toggle-flame' />
 							Shadow
@@ -735,6 +764,7 @@ const PokemonDetail = () => {
 								className='r-reach-chip'
 								data-active={m.speciesId === self}
 								style={{ ['--tc' as string]: typeVar(m.types[0]) }}
+								onClick={suppressNextScrollReset}
 							>
 								{m.isShadow && <ShadowMark />}
 								<span className='r-reach-art'>
@@ -988,8 +1018,8 @@ const PokemonDetail = () => {
 							{/* ---- IV PICKER ---- */}
 							<div className='r-section-h'>
 								{purifyOffset > 0
-									? `Shadow ${cleanName(pokemon.speciesName)} IVs to reach ${cleanName((pvpMember ?? pokemon).speciesName)}`
-									: `Your IVs · ${cleanName((pvpMember ?? pokemon).speciesName)}`}
+									? `Your IVs · as Purified ${cleanName((pvpMember ?? pokemon).speciesName)}`
+									: `Your IVs · as ${(pvpMember ?? pokemon).isShadow ? 'Shadow ' : ''}${cleanName((pvpMember ?? pokemon).speciesName)}`}
 							</div>
 							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
 								<IvPicker

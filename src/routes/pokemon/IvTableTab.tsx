@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs } from '../../hooks/useBestIvs';
+import { cleanName } from '../../lib/format';
 
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
 const LEAGUE_NAME = ['Great', 'Ultra', 'Master'] as const;
@@ -105,7 +106,10 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 
 	return (
 		<div className='r-movecontent'>
-			<div className='r-section-h'>{LEAGUE_NAME[league]} League · all 4,096 IV spreads</div>
+			<div className='r-section-h'>
+				{LEAGUE_NAME[league]} League · all 4,096 IV spreads for {pokemon.isShadow ? 'Shadow ' : ''}
+				{cleanName(pokemon.speciesName)}
+			</div>
 
 			<div className='r-iv-search'>
 				{FIELD_LABEL.map((label, i) => (

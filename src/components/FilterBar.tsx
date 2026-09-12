@@ -92,8 +92,8 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 								<button
 									key={t}
 									type='button'
-									className='r-type-chip'
-									data-active={on}
+									className='r-eff-t r-tc-pchip'
+									data-active={on ? '' : undefined}
 									disabled={atCap && !on}
 									style={{ ['--tc' as string]: typeVar(t) }}
 									onClick={() => toggle(t)}

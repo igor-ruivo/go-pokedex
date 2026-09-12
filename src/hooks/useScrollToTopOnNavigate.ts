@@ -19,6 +19,20 @@ const pageFamily = (pathname: string): string => {
 };
 
 /**
+ * Set by a navigation trigger that changes the URL's `pageFamily` (e.g.
+ * switching to a different species via a Pokémon's family-line strip or its
+ * shadow toggle) but that the caller considers conceptually the *same* page
+ * for scroll purposes — call this right before triggering that navigation to
+ * suppress the next scroll-to-top. Consumed (and cleared) by the first
+ * navigation effect that runs afterwards, whether or not it would have
+ * scrolled.
+ */
+let suppressNext = false;
+export const suppressNextScrollReset = () => {
+	suppressNext = true;
+};
+
+/**
  * Scrolls to the top on navigating to a genuinely different page (see
  * `pageFamily` above) — the browser gives you this for free on a real
  * multi-page site, but an SPA route change never actually reloads the
@@ -42,7 +56,9 @@ export const useScrollToTopOnNavigate = () => {
 		const family = pageFamily(pathname);
 		const changed = lastFamily.current !== null && lastFamily.current !== family;
 		lastFamily.current = family;
-		if (changed && String(navigationType) !== 'POP') {
+		const suppressed = suppressNext;
+		suppressNext = false;
+		if (changed && !suppressed && String(navigationType) !== 'POP') {
 			window.scrollTo(0, 0);
 		}
 	}, [pathname, navigationType]);

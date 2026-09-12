@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { cleanName, ordinal } from '../lib/format';
@@ -9,7 +10,7 @@ import { TYPE_LABEL } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
-import { computeDPSEntry, MAX_LEVEL_INDEX } from '../utils/pokemon-helper';
+import { computeDPSEntry } from '../utils/pokemon-helper';
 
 type Combo = { f: string; c: string; dps: number };
 export type RaidRecommendation = { fast: string; charged: string; type: string };
@@ -38,6 +39,7 @@ export const RaidTypeCoverage = ({
 	const { moves, movesFetchCompleted } = useMoves();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { currentGameLanguage: gl } = useLanguage();
+	const { maxLevelIndex } = useBestBuddy();
 
 	const [typeIdx, setTypeIdx] = useState(0);
 	const [comboIdx, setComboIdx] = useState<Record<string, number>>({});
@@ -69,14 +71,14 @@ export const RaidTypeCoverage = ({
 					tc.map((c) => ({
 						f,
 						c,
-						dps: computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, MAX_LEVEL_INDEX, '', undefined, [f, c]).dps,
+						dps: computeDPSEntry(pokemon, gamemasterPokemon, moves, 15, maxLevelIndex, '', undefined, [f, c]).dps,
 					}))
 				)
 				.sort((a, b) => b.dps - a.dps)
 				.slice(0, 5);
 		}
 		return out;
-	}, [types, moves, movesFetchCompleted, gamemasterPokemon, pokemon]);
+	}, [types, moves, movesFetchCompleted, gamemasterPokemon, pokemon, maxLevelIndex]);
 
 	const selIdx = types.length ? Math.min(typeIdx, types.length - 1) : 0;
 	const rows = useMemo(

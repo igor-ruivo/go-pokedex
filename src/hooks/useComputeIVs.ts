@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import { usePokemon } from '../queries/pokemon';
@@ -33,6 +34,7 @@ const useComputeIVs = ({
 	justForSelf = false,
 }: IUseComputeIVsProps): [Record<string, IIvPercents>, boolean] => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
+	const { maxLevel } = useBestBuddy();
 
 	// Walking the family graph is cheap; only the IV ranking is worth offloading.
 	const reachable = useMemo<Array<FamilyMember>>(() => {
@@ -64,6 +66,7 @@ const useComputeIVs = ({
 			attackIV,
 			defenseIV,
 			hpIV,
+			maxLevel,
 			reachable.map((m) => m.speciesId).join(','),
 		],
 		queryFn: () =>
@@ -73,6 +76,7 @@ const useComputeIVs = ({
 				attackIV,
 				defenseIV,
 				hpIV,
+				maxLevel,
 			}),
 		// Keep the last result on screen while a new IV spread recomputes, so
 		// moving a slider updates in place instead of flashing the loader.
