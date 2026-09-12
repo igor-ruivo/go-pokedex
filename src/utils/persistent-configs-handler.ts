@@ -49,6 +49,7 @@ export enum ConfigKeys {
 	RaidMegaBoostType,
 	InstallPromptDismissed,
 	BestBuddy,
+	TrashKeepForTrade,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

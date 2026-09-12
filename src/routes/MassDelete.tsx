@@ -47,6 +47,8 @@ interface ComputeArgs {
 	trashUltra: number;
 	trashMaster: number;
 	trashRaid: number;
+	/** See `isBadForEverythingIfItHasHighAttack`'s doc comment. */
+	keepForTrade: boolean;
 }
 
 /* ---- verbatim port of the legacy DeleteTrash `computeStr` ------------------- */
@@ -63,6 +65,7 @@ const computeTrashString = (a: ComputeArgs): string => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		keepForTrade,
 	} = a;
 
 	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
@@ -92,6 +95,16 @@ const computeTrashString = (a: ComputeArgs): string => {
 		return minRaidRank <= trashRaid;
 	};
 
+	// A Great/Ultra-relevant reachable stage that doesn't need a sub-5 Attack IV
+	// to earn that relevance can always be fixed later by a Best Friend trade
+	// (which floors every stat at 5) — so with `keepForTrade` on (the default,
+	// matching the pre-revamp behavior), a currently-bad-IV catch of it is kept
+	// unconditionally rather than trashed, on the assumption it'll get traded up
+	// eventually. With it off, that assumption is disregarded entirely: those
+	// two checks are skipped, so such a species falls through to the same
+	// "only the naturally low-Attack catches survive" bucket as a species that
+	// actually needs low Attack — for someone who knows they won't trade it,
+	// not `alwaysGood`.
 	const isBadForEverythingIfItHasHighAttack = (p: IGamemasterPokemon) => {
 		if (isGoodForRaids(p)) {
 			return false;
@@ -101,6 +114,7 @@ const computeTrashString = (a: ComputeArgs): string => {
 			return false;
 		}
 		if (
+			keepForTrade &&
 			reachablePokemon.some(
 				(k) => !isBadRank(rankLists[0][k.speciesId]?.rank ?? Infinity, trashGreat) && !needsLessThanFiveAttack(k, 0)
 			)
@@ -108,6 +122,7 @@ const computeTrashString = (a: ComputeArgs): string => {
 			return false;
 		}
 		if (
+			keepForTrade &&
 			reachablePokemon.some(
 				(k) => !isBadRank(rankLists[1][k.speciesId]?.rank ?? Infinity, trashUltra) && !needsLessThanFiveAttack(k, 1)
 			)
@@ -399,6 +414,10 @@ const MassDelete = () => {
 	const [trashMaster, setTrashMaster] = useState(() => numCfg(ConfigKeys.TrashMaster, 110));
 	const [trashRaid, setTrashRaid] = useState(() => numCfg(ConfigKeys.TrashRaid, 5));
 	const [cp, setCp] = useState(() => numCfg(ConfigKeys.TrashCP, 2500));
+	// Default true: a wild catch that only needs a future Best Friend trade
+	// (floors every stat at 5) to become meta-relevant is kept, not trashed —
+	// see `isBadForEverythingIfItHasHighAttack`'s doc comment.
+	const [keepForTrade, setKeepForTrade] = useState(() => readPersistentValue(ConfigKeys.TrashKeepForTrade) !== 'false');
 
 	const [isCalculating, setIsCalculating] = useState(false);
 	const [result, setResult] = useState('');
@@ -412,11 +431,12 @@ const MassDelete = () => {
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashMaster, String(trashMaster)), [trashMaster]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashRaid, String(trashRaid)), [trashRaid]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashCP, String(cp)), [cp]);
+	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepForTrade, String(keepForTrade)), [keepForTrade]);
 
 	// changing any knob invalidates a stale result
 	useEffect(() => {
 		setResult('');
-	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric]);
+	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric, keepForTrade]);
 
 	const candidates = useMemo(
 		() =>
@@ -464,6 +484,7 @@ const MassDelete = () => {
 					trashUltra,
 					trashMaster,
 					trashRaid,
+					keepForTrade,
 				})
 			);
 			setIsCalculating(false);
@@ -486,6 +507,7 @@ const MassDelete = () => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		keepForTrade,
 	]);
 
 	const copy = () => {
@@ -553,6 +575,18 @@ const MassDelete = () => {
 						Keep top raid attackers
 					</span>
 					<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+				</div>
+				<div className='r-md-row'>
+					<button
+						type='button'
+						className='r-ss-toggle'
+						data-on={keepForTrade ? '' : undefined}
+						aria-pressed={keepForTrade}
+						onClick={() => setKeepForTrade((v) => !v)}
+					>
+						<span className='r-ss-box' aria-hidden='true' />
+						Keep pokémon relevant for trade
+					</button>
 				</div>
 			</div>
 
