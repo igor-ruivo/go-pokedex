@@ -57,10 +57,6 @@ export const ivBucket = (iv: number): number => (iv === 15 ? 4 : Math.ceil(iv / 
 /** Every bucket except `b`, for negating "IV is in bucket b" into a search term via `groupAttr`. */
 export const complementOfBucket = (b: number): Set<number> => new Set([0, 1, 2, 3, 4].filter((x) => x !== b));
 
-/** Every bucket except those in `buckets`, for negating a whole *shape* (e.g. "attack is low", buckets {0,1}) at once. */
-export const complementOfBuckets = (buckets: Set<number>): Set<number> =>
-	new Set([0, 1, 2, 3, 4].filter((x) => !buckets.has(x)));
-
 export type PokemonForm = { dexNumber: number; types: Array<string>; isShadow: boolean; p: IGamemasterPokemon };
 export type UniqueTypes = Record<number, Set<string>>;
 
