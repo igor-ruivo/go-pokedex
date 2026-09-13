@@ -50,6 +50,7 @@ export enum ConfigKeys {
 	InstallPromptDismissed,
 	BestBuddy,
 	TrashKeepForTrade,
+	MassDeleteMode,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

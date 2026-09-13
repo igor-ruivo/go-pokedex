@@ -1022,6 +1022,13 @@
 		background 0.16s ease,
 		transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+/* a touch more breathing room after cells 5 and 10 — just enough to read the
+   bar as three groups of 5 (1-5 / 6-10 / 11-15) without widening the gap so
+   much it costs click accuracy or crowds the track on a narrow phone screen */
+.rvmp .r-iv-cell:nth-child(5),
+.rvmp .r-iv-cell:nth-child(10) {
+	margin-right: 4px;
+}
 /* hovering a cell previews the value you'd set by clicking it — desktop only, a
    sticky :hover on touch would fight the swipe / vertical-scroll handling */
 @media (hover: hover) and (pointer: fine) {
@@ -3328,6 +3335,9 @@
 }
 
 /* ---- mass delete (/trash) ------------------------------------------------ */
+.rvmp .r-md-mode-seg {
+	margin-bottom: var(--s4);
+}
 .rvmp .r-md-help {
 	margin-bottom: var(--s4);
 }

@@ -1,0 +1,207 @@
+
+=== 1500 CP cap ===
+  total exceptions (non-legendary/mythical/UB): 190
+  of which best combo IS a hundo (already protected by !4*): 75
+  REMAINING real exceptions needing a custom bucket clause: 115
+
+  -- remaining exceptions --
+  #32	nidoran_male	(Nidoran ♂)  best: A8 D15 S15
+  #33	nidorino	(Nidorino)  best: A8 D15 S15
+  #54	psyduck	(Psyduck)  best: A0 D10 S14
+  #55	golduck	(Golduck)  best: A0 D10 S14
+  #59	arcanine_hisuian	(Arcanine (Hisuian))  best: A0 D14 S10
+  #60	poliwag	(Poliwag)  best: A6 D15 S15
+  #61	poliwhirl	(Poliwhirl)  best: A6 D15 S15
+  #81	magnemite	(Magnemite)  best: A12 D15 S13
+  #88	grimer	(Grimer)  best: A10 D15 S14
+  #88	grimer_alolan	(Grimer (Alolan))  best: A10 D15 S14
+  #98	krabby	(Krabby)  best: A0 D9 S15
+  #99	kingler	(Kingler)  best: A0 D9 S15
+  #108	lickitung	(Lickitung)  best: A8 D14 S15
+  #123	scyther	(Scyther)  best: A0 D15 S8
+  #126	magmar	(Magmar)  best: A0 D10 S15
+  #131	lapras	(Lapras)  best: A0 D10 S14
+  #138	omanyte	(Omanyte)  best: A0 D9 S15
+  #139	omastar	(Omastar)  best: A0 D9 S15
+  #140	kabuto	(Kabuto)  best: A10 D15 S15
+  #141	kabutops	(Kabutops)  best: A0 D14 S10
+  #152	chikorita	(Chikorita)  best: A0 D10 S15
+  #153	bayleef	(Bayleef)  best: A0 D10 S15
+  #154	meganium	(Meganium)  best: A0 D10 S15
+  #165	ledyba	(Ledyba)  best: A13 D15 S15
+  #166	ledian	(Ledian)  best: A13 D15 S15
+  #190	aipom	(Aipom)  best: A14 D15 S14
+  #204	pineco	(Pineco)  best: A0 D9 S15
+  #205	forretress	(Forretress)  best: A0 D9 S15
+  #206	dunsparce	(Dunsparce)  best: A0 D15 S7
+  #215	sneasel_hisuian	(Sneasel (Hisuian))  best: A0 D15 S9
+  #216	teddiursa	(Teddiursa)  best: A15 D15 S14
+  #220	swinub	(Swinub)  best: A0 D15 S10
+  #221	piloswine	(Piloswine)  best: A0 D15 S10
+  #222	corsola	(Corsola)  best: A10 D15 S15
+  #232	donphan	(Donphan)  best: A0 D14 S8
+  #242	blissey	(Blissey)  best: A0 D15 S3
+  #295	exploud	(Exploud)  best: A0 D15 S10
+  #330	flygon	(Flygon)  best: A0 D15 S9
+  #335	zangoose	(Zangoose)  best: A0 D15 S10
+  #347	anorith	(Anorith)  best: A0 D9 S15
+  #348	armaldo	(Armaldo)  best: A0 D9 S15
+  #371	bagon	(Bagon)  best: A0 D10 S14
+  #372	shelgon	(Shelgon)  best: A0 D10 S14
+  #373	salamence	(Salamence)  best: A0 D10 S14
+  #408	cranidos	(Cranidos)  best: A1 D14 S8
+  #409	rampardos	(Rampardos)  best: A1 D14 S8
+  #449	hippopotas	(Hippopotas)  best: A13 D15 S14
+  #450	hippowdon	(Hippowdon)  best: A0 D14 S10
+  #463	lickilicky	(Lickilicky)  best: A0 D15 S10
+  #467	magmortar	(Magmortar)  best: A0 D10 S15
+  #473	mamoswine	(Mamoswine)  best: A0 D15 S7
+  #495	snivy	(Snivy)  best: A0 D10 S15
+  #496	servine	(Servine)  best: A0 D10 S15
+  #497	serperior	(Serperior)  best: A0 D10 S15
+  #498	tepig	(Tepig)  best: A0 D14 S9
+  #499	pignite	(Pignite)  best: A0 D14 S9
+  #500	emboar	(Emboar)  best: A0 D14 S9
+  #522	blitzle	(Blitzle)  best: A0 D15 S9
+  #523	zebstrika	(Zebstrika)  best: A0 D15 S9
+  #527	woobat	(Woobat)  best: A0 D15 S9
+  #528	swoobat	(Swoobat)  best: A0 D15 S9
+  #529	drilbur	(Drilbur)  best: A10 D15 S15
+  #535	tympole	(Tympole)  best: A9 D15 S15
+  #536	palpitoad	(Palpitoad)  best: A9 D15 S15
+  #540	sewaddle	(Sewaddle)  best: A12 D15 S14
+  #541	swadloon	(Swadloon)  best: A12 D15 S14
+  #551	sandile	(Sandile)  best: A6 D15 S15
+  #552	krokorok	(Krokorok)  best: A6 D15 S15
+  #559	scraggy	(Scraggy)  best: A11 D15 S15
+  #560	scrafty	(Scrafty)  best: A0 D8 S15
+  #577	solosis	(Solosis)  best: A9 D15 S15
+  #605	elgyem	(Elgyem)  best: A8 D15 S15
+  #610	axew	(Axew)  best: A10 D15 S14
+  #619	mienfoo	(Mienfoo)  best: A7 D15 S15
+  #633	deino	(Deino)  best: A0 D15 S10
+  #634	zweilous	(Zweilous)  best: A0 D15 S10
+  #635	hydreigon	(Hydreigon)  best: A0 D15 S10
+  #636	larvesta	(Larvesta)  best: A0 D9 S15
+  #637	volcarona	(Volcarona)  best: A0 D9 S15
+  #667	litleo	(Litleo)  best: A0 D15 S10
+  #668	pyroar	(Pyroar)  best: A0 D15 S10
+  #679	honedge	(Honedge)  best: A8 D15 S15
+  #686	inkay	(Inkay)  best: A0 D15 S9
+  #687	malamar	(Malamar)  best: A0 D15 S9
+  #688	binacle	(Binacle)  best: A0 D10 S13
+  #689	barbaracle	(Barbaracle)  best: A0 D10 S13
+  #698	amaura	(Amaura)  best: A11 D15 S15
+  #713	avalugg_hisuian	(Avalugg (Hisuian))  best: A0 D14 S9
+  #725	litten	(Litten)  best: A0 D15 S9
+  #726	torracat	(Torracat)  best: A0 D15 S9
+  #727	incineroar	(Incineroar)  best: A0 D15 S9
+  #739	crabrawler	(Crabrawler)  best: A11 D15 S15
+  #751	dewpider	(Dewpider)  best: A0 D10 S15
+  #752	araquanid	(Araquanid)  best: A0 D10 S15
+  #759	stufful	(Stufful)  best: A12 D15 S15
+  #767	wimpod	(Wimpod)  best: A0 D8 S15
+  #768	golisopod	(Golisopod)  best: A0 D8 S15
+  #789	cosmog	(Cosmog)  best: A0 D12 S9
+  #790	cosmoem	(Cosmoem)  best: A0 D12 S9
+  #821	rookidee	(Rookidee)  best: A12 D15 S15
+  #822	corvisquire	(Corvisquire)  best: A12 D15 S15
+  #850	sizzlipede	(Sizzlipede)  best: A0 D15 S9
+  #851	centiskorch	(Centiskorch)  best: A0 D15 S9
+  #900	kleavor	(Kleavor)  best: A0 D15 S8
+  #903	sneasler	(Sneasler)  best: A0 D15 S9
+  #909	fuecoco	(Fuecoco)  best: A0 D15 S10
+  #910	crocalor	(Crocalor)  best: A0 D15 S10
+  #912	quaxly	(Quaxly)  best: A0 D15 S10
+  #913	quaxwell	(Quaxwell)  best: A0 D15 S10
+  #942	maschiff	(Maschiff)  best: A7 D15 S15
+  #982	dudunsparce	(Dudunsparce)  best: A0 D15 S7
+  #997	arctibax	(Arctibax)  best: A0 D15 S5
+  #998	baxcalibur	(Baxcalibur)  best: A0 D15 S5
+  #999	gimmighoul	(Gimmighoul)  best: A0 D15 S10
+  #1000	gholdengo	(Gholdengo)  best: A0 D15 S10
+
+=== 2500 CP cap ===
+  total exceptions (non-legendary/mythical/UB): 212
+  of which best combo IS a hundo (already protected by !4*): 134
+  REMAINING real exceptions needing a custom bucket clause: 78
+
+  -- remaining exceptions --
+  #26	raichu_alolan	(Raichu (Alolan))  best: A8 D15 S14
+  #37	vulpix	(Vulpix)  best: A9 D15 S15
+  #37	vulpix_alolan	(Vulpix (Alolan))  best: A7 D15 S15
+  #38	ninetales	(Ninetales)  best: A9 D15 S15
+  #38	ninetales_alolan	(Ninetales (Alolan))  best: A7 D15 S15
+  #43	oddish	(Oddish)  best: A9 D15 S15
+  #44	gloom	(Gloom)  best: A9 D15 S15
+  #56	mankey	(Mankey)  best: A7 D15 S15
+  #57	primeape	(Primeape)  best: A7 D15 S15
+  #58	growlithe_hisuian	(Growlithe (Hisuian))  best: A0 D10 S15
+  #59	arcanine_hisuian	(Arcanine (Hisuian))  best: A0 D10 S15
+  #109	koffing	(Koffing)  best: A8 D15 S15
+  #110	weezing	(Weezing)  best: A8 D15 S15
+  #110	weezing_galarian	(Weezing (Galarian))  best: A8 D15 S15
+  #114	tangela	(Tangela)  best: A12 D15 S15
+  #122	mr_mime	(Mr. Mime)  best: A13 D15 S15
+  #182	bellossom	(Bellossom)  best: A9 D15 S15
+  #204	pineco	(Pineco)  best: A9 D15 S15
+  #205	forretress	(Forretress)  best: A9 D15 S15
+  #270	lotad	(Lotad)  best: A6 D14 S15
+  #271	lombre	(Lombre)  best: A6 D14 S15
+  #272	ludicolo	(Ludicolo)  best: A6 D14 S15
+  #283	surskit	(Surskit)  best: A9 D15 S15
+  #284	masquerain	(Masquerain)  best: A9 D15 S15
+  #320	wailmer	(Wailmer)  best: A9 D15 S15
+  #321	wailord	(Wailord)  best: A9 D15 S15
+  #331	cacnea	(Cacnea)  best: A6 D15 S15
+  #332	cacturne	(Cacturne)  best: A6 D15 S15
+  #353	shuppet	(Shuppet)  best: A6 D15 S15
+  #354	banette	(Banette)  best: A6 D15 S15
+  #358	chimecho	(Chimecho)  best: A11 D15 S15
+  #422	shellos	(Shellos)  best: A6 D15 S15
+  #423	gastrodon	(Gastrodon)  best: A6 D15 S15
+  #433	chingling	(Chingling)  best: A11 D15 S15
+  #436	bronzor	(Bronzor)  best: A13 D15 S14
+  #437	bronzong	(Bronzong)  best: A13 D15 S14
+  #439	mime_jr	(Mime (Jr))  best: A13 D15 S15
+  #495	snivy	(Snivy)  best: A10 D14 S15
+  #496	servine	(Servine)  best: A10 D14 S15
+  #497	serperior	(Serperior)  best: A10 D14 S15
+  #556	maractus	(Maractus)  best: A9 D15 S15
+  #559	scraggy	(Scraggy)  best: A9 D15 S15
+  #560	scrafty	(Scrafty)  best: A9 D15 S15
+  #562	yamask	(Yamask)  best: A10 D15 S15
+  #562	yamask_galarian	(Yamask (Galarian))  best: A10 D15 S15
+  #563	cofagrigus	(Cofagrigus)  best: A10 D15 S15
+  #572	minccino	(Minccino)  best: A12 D15 S15
+  #573	cinccino	(Cinccino)  best: A12 D15 S15
+  #592	frillish	(Frillish)  best: A6 D14 S15
+  #593	jellicent	(Jellicent)  best: A6 D14 S15
+  #597	ferroseed	(Ferroseed)  best: A7 D14 S15
+  #598	ferrothorn	(Ferrothorn)  best: A7 D14 S15
+  #610	axew	(Axew)  best: A12 D15 S15
+  #611	fraxure	(Fraxure)  best: A12 D15 S15
+  #624	pawniard	(Pawniard)  best: A0 D15 S10
+  #625	bisharp	(Bisharp)  best: A0 D15 S10
+  #682	spritzee	(Spritzee)  best: A6 D15 S14
+  #683	aromatisse	(Aromatisse)  best: A6 D15 S14
+  #710	pumpkaboo_small	(Pumpkaboo (Small))  best: A11 D15 S15
+  #711	gourgeist_small	(Gourgeist (Small))  best: A11 D15 S15
+  #776	turtonator	(Turtonator)  best: A15 D14 S14
+  #778	mimikyu	(Mimikyu)  best: A14 D14 S15
+  #824	blipbug	(Blipbug)  best: A14 D15 S15
+  #825	dottler	(Dottler)  best: A14 D15 S15
+  #826	orbeetle	(Orbeetle)  best: A14 D15 S15
+  #837	rolycoly	(Rolycoly)  best: A6 D14 S14
+  #838	carkol	(Carkol)  best: A6 D14 S14
+  #839	coalossal	(Coalossal)  best: A6 D14 S14
+  #867	runerigus	(Runerigus)  best: A10 D15 S15
+  #938	tadbulb	(Tadbulb)  best: A0 D15 S10
+  #939	bellibolt	(Bellibolt)  best: A0 D15 S10
+  #944	shroodle	(Shroodle)  best: A10 D15 S15
+  #945	grafaiai	(Grafaiai)  best: A10 D15 S15
+  #957	tinkatink	(Tinkatink)  best: A13 D15 S15
+  #958	tinkatuff	(Tinkatuff)  best: A13 D15 S15
+  #959	tinkaton	(Tinkaton)  best: A13 D15 S15
+  #968	orthworm	(Orthworm)  best: A8 D15 S15
+  #983	kingambit	(Kingambit)  best: A0 D15 S10

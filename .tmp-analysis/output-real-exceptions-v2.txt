@@ -1,0 +1,118 @@
+956 candidates total
+855 need no carve-out at all (blanket-protected for both caps)
+96 need a carve-out for exactly one cap
+5 need a carve-out for BOTH caps
+
+1500 CP: 55 species need a carve-out
+2500 CP: 51 species need a carve-out
+UNION (species needing at least one carve-out): 101
+
+=== 1500 carve-outs ===
+  #54	psyduck	(Psyduck)  via golduck: A0D10S14
+  #55	golduck	(Golduck)  via golduck: A0D10S14
+  #59	arcanine_hisuian	(Arcanine (Hisuian))  via arcanine_hisuian: A0D14S10
+  #99	kingler	(Kingler)  via kingler: A0D9S15
+  #108	lickitung	(Lickitung)  via lickitung: A8D14S15
+  #131	lapras	(Lapras)  via lapras: A0D10S14
+  #139	omastar	(Omastar)  via omastar: A0D9S15
+  #140	kabuto	(Kabuto)  via kabuto: A10D15S15
+  #141	kabutops	(Kabutops)  via kabutops: A0D14S10
+  #154	meganium	(Meganium)  via meganium: A0D10S15
+  #204	pineco	(Pineco)  via forretress: A0D9S15
+  #205	forretress	(Forretress)  via forretress: A0D9S15
+  #220	swinub	(Swinub)  via piloswine: A0D15S10
+  #221	piloswine	(Piloswine)  via piloswine: A0D15S10
+  #222	corsola	(Corsola)  via corsola: A10D15S15
+  #232	donphan	(Donphan)  via donphan: A0D14S8
+  #242	blissey	(Blissey)  via blissey: A0D15S3
+  #295	exploud	(Exploud)  via exploud: A0D15S10
+  #330	flygon	(Flygon)  via flygon: A0D15S9
+  #335	zangoose	(Zangoose)  via zangoose: A0D15S10
+  #348	armaldo	(Armaldo)  via armaldo: A0D9S15
+  #373	salamence	(Salamence)  via salamence: A0D10S14
+  #409	rampardos	(Rampardos)  via rampardos: A1D14S8
+  #450	hippowdon	(Hippowdon)  via hippowdon: A0D14S10
+  #463	lickilicky	(Lickilicky)  via lickilicky: A0D15S10
+  #467	magmortar	(Magmortar)  via magmortar: A0D10S15
+  #473	mamoswine	(Mamoswine)  via mamoswine: A0D15S7
+  #497	serperior	(Serperior)  via serperior: A0D10S15
+  #500	emboar	(Emboar)  via emboar: A0D14S9
+  #522	blitzle	(Blitzle)  via zebstrika: A0D15S9
+  #523	zebstrika	(Zebstrika)  via zebstrika: A0D15S9
+  #527	woobat	(Woobat)  via swoobat: A0D15S9
+  #528	swoobat	(Swoobat)  via swoobat: A0D15S9
+  #560	scrafty	(Scrafty)  via scrafty: A0D8S15
+  #635	hydreigon	(Hydreigon)  via hydreigon: A0D15S10
+  #637	volcarona	(Volcarona)  via volcarona: A0D9S15
+  #668	pyroar	(Pyroar)  via pyroar: A0D15S10
+  #686	inkay	(Inkay)  via malamar: A0D15S9
+  #687	malamar	(Malamar)  via malamar: A0D15S9
+  #688	binacle	(Binacle)  via barbaracle: A0D10S13
+  #689	barbaracle	(Barbaracle)  via barbaracle: A0D10S13
+  #713	avalugg_hisuian	(Avalugg (Hisuian))  via avalugg_hisuian: A0D14S9
+  #727	incineroar	(Incineroar)  via incineroar: A0D15S9
+  #751	dewpider	(Dewpider)  via araquanid: A0D10S15
+  #752	araquanid	(Araquanid)  via araquanid: A0D10S15
+  #767	wimpod	(Wimpod)  via golisopod: A0D8S15
+  #768	golisopod	(Golisopod)  via golisopod: A0D8S15
+  #850	sizzlipede	(Sizzlipede)  via centiskorch: A0D15S9
+  #851	centiskorch	(Centiskorch)  via centiskorch: A0D15S9
+  #900	kleavor	(Kleavor)  via kleavor: A0D15S8
+  #903	sneasler	(Sneasler)  via sneasler: A0D15S9
+  #982	dudunsparce	(Dudunsparce)  via dudunsparce: A0D15S7
+  #998	baxcalibur	(Baxcalibur)  via baxcalibur: A0D15S5
+  #999	gimmighoul	(Gimmighoul)  via gholdengo: A0D15S10
+  #1000	gholdengo	(Gholdengo)  via gholdengo: A0D15S10
+
+=== 2500 carve-outs ===
+  #26	raichu_alolan	(Raichu (Alolan))  via raichu_alolan: A8D15S14
+  #37	vulpix	(Vulpix)  via ninetales: A9D15S15
+  #37	vulpix_alolan	(Vulpix (Alolan))  via ninetales_alolan: A7D15S15
+  #38	ninetales	(Ninetales)  via ninetales: A9D15S15
+  #38	ninetales_alolan	(Ninetales (Alolan))  via ninetales_alolan: A7D15S15
+  #58	growlithe_hisuian	(Growlithe (Hisuian))  via arcanine_hisuian: A0D10S15
+  #59	arcanine_hisuian	(Arcanine (Hisuian))  via arcanine_hisuian: A0D10S15
+  #109	koffing	(Koffing)  via weezing: A8D15S15
+  #110	weezing	(Weezing)  via weezing: A8D15S15
+  #110	weezing_galarian	(Weezing (Galarian))  via weezing_galarian: A8D15S15
+  #182	bellossom	(Bellossom)  via bellossom: A9D15S15
+  #204	pineco	(Pineco)  via forretress: A9D15S15
+  #205	forretress	(Forretress)  via forretress: A9D15S15
+  #270	lotad	(Lotad)  via ludicolo: A6D14S15
+  #271	lombre	(Lombre)  via ludicolo: A6D14S15
+  #272	ludicolo	(Ludicolo)  via ludicolo: A6D14S15
+  #283	surskit	(Surskit)  via masquerain: A9D15S15
+  #284	masquerain	(Masquerain)  via masquerain: A9D15S15
+  #320	wailmer	(Wailmer)  via wailord: A9D15S15
+  #321	wailord	(Wailord)  via wailord: A9D15S15
+  #331	cacnea	(Cacnea)  via cacturne: A6D15S15
+  #332	cacturne	(Cacturne)  via cacturne: A6D15S15
+  #353	shuppet	(Shuppet)  via banette: A6D15S15
+  #354	banette	(Banette)  via banette: A6D15S15
+  #422	shellos	(Shellos)  via gastrodon: A6D15S15
+  #423	gastrodon	(Gastrodon)  via gastrodon: A6D15S15
+  #495	snivy	(Snivy)  via serperior: A10D14S15
+  #496	servine	(Servine)  via serperior: A10D14S15
+  #497	serperior	(Serperior)  via serperior: A10D14S15
+  #556	maractus	(Maractus)  via maractus: A9D15S15
+  #559	scraggy	(Scraggy)  via scrafty: A9D15S15
+  #560	scrafty	(Scrafty)  via scrafty: A9D15S15
+  #562	yamask	(Yamask)  via cofagrigus: A10D15S15
+  #562	yamask_galarian	(Yamask (Galarian))  via runerigus: A10D15S15
+  #563	cofagrigus	(Cofagrigus)  via cofagrigus: A10D15S15
+  #592	frillish	(Frillish)  via jellicent: A6D14S15
+  #593	jellicent	(Jellicent)  via jellicent: A6D14S15
+  #597	ferroseed	(Ferroseed)  via ferrothorn: A7D14S15
+  #598	ferrothorn	(Ferrothorn)  via ferrothorn: A7D14S15
+  #682	spritzee	(Spritzee)  via aromatisse: A6D15S14
+  #683	aromatisse	(Aromatisse)  via aromatisse: A6D15S14
+  #837	rolycoly	(Rolycoly)  via coalossal: A6D14S14
+  #838	carkol	(Carkol)  via coalossal: A6D14S14
+  #839	coalossal	(Coalossal)  via coalossal: A6D14S14
+  #867	runerigus	(Runerigus)  via runerigus: A10D15S15
+  #938	tadbulb	(Tadbulb)  via bellibolt: A0D15S10
+  #939	bellibolt	(Bellibolt)  via bellibolt: A0D15S10
+  #944	shroodle	(Shroodle)  via grafaiai: A10D15S15
+  #945	grafaiai	(Grafaiai)  via grafaiai: A10D15S15
+  #968	orthworm	(Orthworm)  via orthworm: A8D15S15
+  #983	kingambit	(Kingambit)  via kingambit: A0D15S10

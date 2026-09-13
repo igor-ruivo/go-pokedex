@@ -1,0 +1,914 @@
+1068 candidate (non-alias, non-mega, non-shadow) species.
+
+=== 1500 CP cap: 552 exceptions out of 1068 ===
+  #1	bulbasaur	(Bulbasaur)  [via reachable venusaur]
+  #2	ivysaur	(Ivysaur)  [via reachable venusaur]
+  #3	venusaur	(Venusaur)
+  #7	squirtle	(Squirtle)  [via reachable blastoise]
+  #8	wartortle	(Wartortle)  [via reachable blastoise]
+  #9	blastoise	(Blastoise)
+  #16	pidgey	(Pidgey)  [via reachable pidgeotto]
+  #17	pidgeotto	(Pidgeotto)
+  #19	rattata_alolan	(Rattata (Alolan))  [via reachable raticate_alolan]
+  #20	raticate_alolan	(Raticate (Alolan))
+  #21	spearow	(Spearow)  [via reachable fearow]
+  #22	fearow	(Fearow)
+  #26	raichu_alolan	(Raichu (Alolan))
+  #27	sandshrew	(Sandshrew)
+  #27	sandshrew_alolan	(Sandshrew (Alolan))
+  #29	nidoran_female	(Nidoran ♀)  [via reachable nidorina]
+  #30	nidorina	(Nidorina)
+  #31	nidoqueen	(Nidoqueen)
+  #32	nidoran_male	(Nidoran ♂)  [via reachable nidorino]
+  #33	nidorino	(Nidorino)
+  #37	vulpix	(Vulpix)  [via reachable ninetales]
+  #37	vulpix_alolan	(Vulpix (Alolan))  [via reachable ninetales_alolan]
+  #38	ninetales	(Ninetales)
+  #38	ninetales_alolan	(Ninetales (Alolan))
+  #39	jigglypuff	(Jigglypuff)  [via reachable wigglytuff]
+  #40	wigglytuff	(Wigglytuff)
+  #41	zubat	(Zubat)  [via reachable golbat]
+  #42	golbat	(Golbat)
+  #43	oddish	(Oddish)
+  #44	gloom	(Gloom)  [via reachable vileplume]
+  #45	vileplume	(Vileplume)
+  #46	paras	(Paras)  [via reachable parasect]
+  #47	parasect	(Parasect)
+  #52	meowth	(Meowth)  [via reachable persian]
+  #52	meowth_galarian	(Meowth (Galarian))  [via reachable perrserker]
+  #53	persian	(Persian)
+  #54	psyduck	(Psyduck)  [via reachable golduck]
+  #55	golduck	(Golduck)
+  #56	mankey	(Mankey)  [via reachable annihilape]
+  #57	primeape	(Primeape)  [via reachable annihilape]
+  #58	growlithe	(Growlithe)
+  #58	growlithe_hisuian	(Growlithe (Hisuian))
+  #59	arcanine_hisuian	(Arcanine (Hisuian))
+  #60	poliwag	(Poliwag)  [via reachable poliwhirl]
+  #61	poliwhirl	(Poliwhirl)
+  #63	abra	(Abra)
+  #66	machop	(Machop)
+  #67	machoke	(Machoke)  [via reachable machamp]
+  #68	machamp	(Machamp)
+  #72	tentacool	(Tentacool)  [via reachable tentacruel]
+  #73	tentacruel	(Tentacruel)
+  #74	geodude	(Geodude)
+  #74	geodude_alolan	(Geodude (Alolan))
+  #79	slowpoke	(Slowpoke)
+  #79	slowpoke_galarian	(Slowpoke (Galarian))
+  #80	slowbro	(Slowbro)
+  #80	slowbro_galarian	(Slowbro (Galarian))
+  #81	magnemite	(Magnemite)
+  #82	magneton	(Magneton)
+  #83	farfetchd	(Farfetch'd)
+  #83	farfetchd_galarian	(Farfetch'd (Galarian))  [via reachable sirfetchd]
+  #84	doduo	(Doduo)
+  #88	grimer	(Grimer)
+  #88	grimer_alolan	(Grimer (Alolan))
+  #90	shellder	(Shellder)  [via reachable cloyster]
+  #91	cloyster	(Cloyster)
+  #92	gastly	(Gastly)
+  #93	haunter	(Haunter)  [via reachable gengar]
+  #94	gengar	(Gengar)
+  #95	onix	(Onix)  [via reachable steelix]
+  #98	krabby	(Krabby)  [via reachable kingler]
+  #99	kingler	(Kingler)
+  #100	voltorb_hisuian	(Voltorb (Hisuian))  [via reachable electrode_hisuian]
+  #101	electrode_hisuian	(Electrode (Hisuian))
+  #106	hitmonlee	(Hitmonlee)
+  #107	hitmonchan	(Hitmonchan)
+  #108	lickitung	(Lickitung)
+  #109	koffing	(Koffing)
+  #111	rhyhorn	(Rhyhorn)  [via reachable rhydon]
+  #112	rhydon	(Rhydon)
+  #113	chansey	(Chansey)
+  #114	tangela	(Tangela)  [via reachable tangrowth]
+  #116	horsea	(Horsea)  [via reachable seadra]
+  #117	seadra	(Seadra)
+  #123	scyther	(Scyther)
+  #125	electabuzz	(Electabuzz)
+  #126	magmar	(Magmar)  [via reachable magmortar]
+  #128	tauros_aqua	(Tauros (Aqua))
+  #128	tauros_blaze	(Tauros (Blaze))
+  #128	tauros_combat	(Tauros (Combat))
+  #131	lapras	(Lapras)
+  #133	eevee	(Eevee)  [via reachable vaporeon]
+  #134	vaporeon	(Vaporeon)
+  #135	jolteon	(Jolteon)
+  #138	omanyte	(Omanyte)  [via reachable omastar]
+  #139	omastar	(Omastar)
+  #140	kabuto	(Kabuto)
+  #141	kabutops	(Kabutops)
+  #142	aerodactyl	(Aerodactyl)
+  #143	snorlax	(Snorlax)
+  #145	zapdos	(Zapdos)
+  #145	zapdos_galarian	(Zapdos (Galarian))
+  #147	dratini	(Dratini)  [via reachable dragonite]
+  #148	dragonair	(Dragonair)  [via reachable dragonite]
+  #149	dragonite	(Dragonite)
+  #150	mewtwo	(Mewtwo)
+  #150	mewtwo_armored	(Mewtwo (Armored))
+  #151	mew	(Mew)
+  #152	chikorita	(Chikorita)  [via reachable meganium]
+  #153	bayleef	(Bayleef)  [via reachable meganium]
+  #154	meganium	(Meganium)
+  #157	typhlosion_hisuian	(Typhlosion (Hisuian))
+  #158	totodile	(Totodile)  [via reachable feraligatr]
+  #159	croconaw	(Croconaw)  [via reachable feraligatr]
+  #160	feraligatr	(Feraligatr)
+  #161	sentret	(Sentret)  [via reachable furret]
+  #162	furret	(Furret)
+  #163	hoothoot	(Hoothoot)  [via reachable noctowl]
+  #164	noctowl	(Noctowl)
+  #165	ledyba	(Ledyba)  [via reachable ledian]
+  #166	ledian	(Ledian)
+  #167	spinarak	(Spinarak)  [via reachable ariados]
+  #168	ariados	(Ariados)
+  #170	chinchou	(Chinchou)  [via reachable lanturn]
+  #171	lanturn	(Lanturn)
+  #174	igglybuff	(Igglybuff)  [via reachable wigglytuff]
+  #175	togepi	(Togepi)  [via reachable togetic]
+  #176	togetic	(Togetic)
+  #179	mareep	(Mareep)  [via reachable ampharos]
+  #180	flaaffy	(Flaaffy)  [via reachable ampharos]
+  #181	ampharos	(Ampharos)
+  #182	bellossom	(Bellossom)
+  #185	sudowoodo	(Sudowoodo)
+  #190	aipom	(Aipom)
+  #191	sunkern	(Sunkern)  [via reachable sunflora]
+  #192	sunflora	(Sunflora)
+  #198	murkrow	(Murkrow)
+  #199	slowking	(Slowking)
+  #200	misdreavus	(Misdreavus)
+  #204	pineco	(Pineco)  [via reachable forretress]
+  #205	forretress	(Forretress)
+  #206	dunsparce	(Dunsparce)  [via reachable dudunsparce]
+  #207	gligar	(Gligar)  [via reachable gliscor]
+  #208	steelix	(Steelix)
+  #209	snubbull	(Snubbull)
+  #212	scizor	(Scizor)
+  #215	sneasel	(Sneasel)
+  #215	sneasel_hisuian	(Sneasel (Hisuian))
+  #216	teddiursa	(Teddiursa)
+  #220	swinub	(Swinub)  [via reachable piloswine]
+  #221	piloswine	(Piloswine)
+  #222	corsola	(Corsola)
+  #222	corsola_galarian	(Corsola (Galarian))  [via reachable cursola]
+  #226	mantine	(Mantine)
+  #227	skarmory	(Skarmory)
+  #228	houndour	(Houndour)
+  #229	houndoom	(Houndoom)
+  #231	phanpy	(Phanpy)
+  #232	donphan	(Donphan)
+  #236	tyrogue	(Tyrogue)  [via reachable hitmonlee]
+  #237	hitmontop	(Hitmontop)
+  #238	smoochum	(Smoochum)
+  #239	elekid	(Elekid)
+  #240	magby	(Magby)
+  #242	blissey	(Blissey)
+  #243	raikou	(Raikou)
+  #249	lugia	(Lugia)
+  #251	celebi	(Celebi)
+  #252	treecko	(Treecko)  [via reachable sceptile]
+  #253	grovyle	(Grovyle)  [via reachable sceptile]
+  #254	sceptile	(Sceptile)
+  #255	torchic	(Torchic)  [via reachable blaziken]
+  #256	combusken	(Combusken)  [via reachable blaziken]
+  #257	blaziken	(Blaziken)
+  #261	poochyena	(Poochyena)  [via reachable mightyena]
+  #262	mightyena	(Mightyena)
+  #263	zigzagoon	(Zigzagoon)  [via reachable linoone]
+  #263	zigzagoon_galarian	(Zigzagoon (Galarian))  [via reachable linoone_galarian]
+  #264	linoone	(Linoone)
+  #264	linoone_galarian	(Linoone (Galarian))
+  #265	wurmple	(Wurmple)  [via reachable dustox]
+  #268	cascoon	(Cascoon)  [via reachable dustox]
+  #269	dustox	(Dustox)
+  #270	lotad	(Lotad)  [via reachable lombre]
+  #271	lombre	(Lombre)
+  #272	ludicolo	(Ludicolo)
+  #273	seedot	(Seedot)  [via reachable nuzleaf]
+  #274	nuzleaf	(Nuzleaf)
+  #278	wingull	(Wingull)  [via reachable pelipper]
+  #279	pelipper	(Pelipper)
+  #287	slakoth	(Slakoth)  [via reachable vigoroth]
+  #288	vigoroth	(Vigoroth)
+  #290	nincada	(Nincada)  [via reachable ninjask]
+  #291	ninjask	(Ninjask)
+  #293	whismur	(Whismur)  [via reachable loudred]
+  #294	loudred	(Loudred)
+  #295	exploud	(Exploud)
+  #296	makuhita	(Makuhita)  [via reachable hariyama]
+  #297	hariyama	(Hariyama)
+  #299	nosepass	(Nosepass)  [via reachable probopass]
+  #304	aron	(Aron)
+  #305	lairon	(Lairon)  [via reachable aggron]
+  #306	aggron	(Aggron)
+  #307	meditite	(Meditite)  [via reachable medicham]
+  #308	medicham	(Medicham)
+  #315	roselia	(Roselia)  [via reachable roserade]
+  #325	spoink	(Spoink)
+  #327	spinda	(Spinda)
+  #328	trapinch	(Trapinch)
+  #329	vibrava	(Vibrava)
+  #330	flygon	(Flygon)
+  #331	cacnea	(Cacnea)
+  #333	swablu	(Swablu)  [via reachable altaria]
+  #334	altaria	(Altaria)
+  #335	zangoose	(Zangoose)
+  #339	barboach	(Barboach)  [via reachable whiscash]
+  #340	whiscash	(Whiscash)
+  #341	corphish	(Corphish)
+  #342	crawdaunt	(Crawdaunt)
+  #345	lileep	(Lileep)
+  #346	cradily	(Cradily)
+  #347	anorith	(Anorith)  [via reachable armaldo]
+  #348	armaldo	(Armaldo)
+  #355	duskull	(Duskull)  [via reachable dusknoir]
+  #356	dusclops	(Dusclops)  [via reachable dusknoir]
+  #359	absol	(Absol)
+  #361	snorunt	(Snorunt)  [via reachable glalie]
+  #362	glalie	(Glalie)
+  #363	spheal	(Spheal)  [via reachable walrein]
+  #364	sealeo	(Sealeo)  [via reachable walrein]
+  #365	walrein	(Walrein)
+  #366	clamperl	(Clamperl)
+  #367	huntail	(Huntail)
+  #369	relicanth	(Relicanth)
+  #371	bagon	(Bagon)  [via reachable shelgon]
+  #372	shelgon	(Shelgon)
+  #373	salamence	(Salamence)
+  #374	beldum	(Beldum)  [via reachable metagross]
+  #375	metang	(Metang)  [via reachable metagross]
+  #376	metagross	(Metagross)
+  #377	regirock	(Regirock)
+  #378	regice	(Regice)
+  #379	registeel	(Registeel)
+  #384	rayquaza	(Rayquaza)
+  #385	jirachi	(Jirachi)
+  #386	deoxys	(Deoxys)
+  #386	deoxys_defense	(Deoxys (Defense))
+  #387	turtwig	(Turtwig)  [via reachable torterra]
+  #388	grotle	(Grotle)  [via reachable torterra]
+  #389	torterra	(Torterra)
+  #396	starly	(Starly)  [via reachable staravia]
+  #397	staravia	(Staravia)
+  #398	staraptor	(Staraptor)
+  #406	budew	(Budew)  [via reachable roserade]
+  #407	roserade	(Roserade)
+  #408	cranidos	(Cranidos)
+  #409	rampardos	(Rampardos)
+  #412	burmy_plant	(Burmy (Plant))  [via reachable wormadam_plant]
+  #412	burmy_sandy	(Burmy (Sandy))  [via reachable wormadam_sandy]
+  #413	wormadam_plant	(Wormadam (Plant))
+  #413	wormadam_sandy	(Wormadam (Sandy))
+  #417	pachirisu	(Pachirisu)
+  #422	shellos	(Shellos)  [via reachable gastrodon]
+  #423	gastrodon	(Gastrodon)
+  #425	drifloon	(Drifloon)
+  #427	buneary	(Buneary)
+  #430	honchkrow	(Honchkrow)
+  #436	bronzor	(Bronzor)  [via reachable bronzong]
+  #437	bronzong	(Bronzong)
+  #438	bonsly	(Bonsly)
+  #440	happiny	(Happiny)  [via reachable chansey]
+  #443	gible	(Gible)  [via reachable gabite]
+  #444	gabite	(Gabite)
+  #446	munchlax	(Munchlax)  [via reachable snorlax]
+  #447	riolu	(Riolu)  [via reachable lucario]
+  #448	lucario	(Lucario)
+  #449	hippopotas	(Hippopotas)
+  #450	hippowdon	(Hippowdon)
+  #451	skorupi	(Skorupi)  [via reachable drapion]
+  #452	drapion	(Drapion)
+  #458	mantyke	(Mantyke)
+  #459	snover	(Snover)  [via reachable abomasnow]
+  #460	abomasnow	(Abomasnow)
+  #463	lickilicky	(Lickilicky)
+  #465	tangrowth	(Tangrowth)
+  #467	magmortar	(Magmortar)
+  #468	togekiss	(Togekiss)
+  #470	leafeon	(Leafeon)
+  #472	gliscor	(Gliscor)
+  #473	mamoswine	(Mamoswine)
+  #476	probopass	(Probopass)
+  #477	dusknoir	(Dusknoir)
+  #480	uxie	(Uxie)
+  #482	azelf	(Azelf)
+  #483	dialga	(Dialga)
+  #484	palkia	(Palkia)
+  #484	palkia_origin	(Palkia (Origin))
+  #485	heatran	(Heatran)
+  #486	regigigas	(Regigigas)
+  #487	giratina_altered	(Giratina (Altered))
+  #487	giratina_origin	(Giratina (Origin))
+  #488	cresselia	(Cresselia)
+  #491	darkrai	(Darkrai)
+  #492	shaymin_land	(Shaymin (Land))
+  #494	victini	(Victini)
+  #495	snivy	(Snivy)  [via reachable servine]
+  #496	servine	(Servine)
+  #497	serperior	(Serperior)
+  #498	tepig	(Tepig)  [via reachable pignite]
+  #499	pignite	(Pignite)
+  #500	emboar	(Emboar)
+  #501	oshawott	(Oshawott)  [via reachable samurott]
+  #502	dewott	(Dewott)  [via reachable samurott]
+  #503	samurott	(Samurott)
+  #522	blitzle	(Blitzle)  [via reachable zebstrika]
+  #523	zebstrika	(Zebstrika)
+  #524	roggenrola	(Roggenrola)
+  #525	boldore	(Boldore)  [via reachable gigalith]
+  #526	gigalith	(Gigalith)
+  #527	woobat	(Woobat)  [via reachable swoobat]
+  #528	swoobat	(Swoobat)
+  #529	drilbur	(Drilbur)
+  #532	timburr	(Timburr)
+  #533	gurdurr	(Gurdurr)
+  #534	conkeldurr	(Conkeldurr)
+  #535	tympole	(Tympole)  [via reachable palpitoad]
+  #536	palpitoad	(Palpitoad)
+  #540	sewaddle	(Sewaddle)  [via reachable swadloon]
+  #541	swadloon	(Swadloon)
+  #551	sandile	(Sandile)  [via reachable krokorok]
+  #552	krokorok	(Krokorok)
+  #554	darumaka	(Darumaka)  [via reachable darmanitan_standard]
+  #554	darumaka_galarian	(Darumaka (Galarian))  [via reachable darmanitan_galarian_standard]
+  #555	darmanitan_galarian_standard	(Darmanitan (Galarian))
+  #555	darmanitan_standard	(Darmanitan)
+  #557	dwebble	(Dwebble)
+  #559	scraggy	(Scraggy)
+  #560	scrafty	(Scrafty)
+  #562	yamask	(Yamask)  [via reachable cofagrigus]
+  #562	yamask_galarian	(Yamask (Galarian))  [via reachable runerigus]
+  #563	cofagrigus	(Cofagrigus)
+  #564	tirtouga	(Tirtouga)  [via reachable carracosta]
+  #565	carracosta	(Carracosta)
+  #566	archen	(Archen)
+  #568	trubbish	(Trubbish)  [via reachable garbodor]
+  #569	garbodor	(Garbodor)
+  #570	zorua_hisuian	(Zorua (Hisuian))
+  #574	gothita	(Gothita)  [via reachable gothitelle]
+  #575	gothorita	(Gothorita)  [via reachable gothitelle]
+  #576	gothitelle	(Gothitelle)
+  #577	solosis	(Solosis)
+  #578	duosion	(Duosion)  [via reachable reuniclus]
+  #579	reuniclus	(Reuniclus)
+  #582	vanillite	(Vanillite)  [via reachable vanillish]
+  #583	vanillish	(Vanillish)
+  #592	frillish	(Frillish)
+  #593	jellicent	(Jellicent)
+  #594	alomomola	(Alomomola)
+  #597	ferroseed	(Ferroseed)  [via reachable ferrothorn]
+  #598	ferrothorn	(Ferrothorn)
+  #599	klink	(Klink)  [via reachable klang]
+  #600	klang	(Klang)
+  #605	elgyem	(Elgyem)
+  #610	axew	(Axew)
+  #611	fraxure	(Fraxure)
+  #615	cryogonal	(Cryogonal)
+  #618	stunfisk	(Stunfisk)
+  #618	stunfisk_galarian	(Stunfisk (Galarian))
+  #619	mienfoo	(Mienfoo)
+  #621	druddigon	(Druddigon)
+  #622	golett	(Golett)  [via reachable golurk]
+  #623	golurk	(Golurk)
+  #626	bouffalant	(Bouffalant)
+  #627	rufflet	(Rufflet)  [via reachable braviary]
+  #628	braviary	(Braviary)
+  #629	vullaby	(Vullaby)
+  #632	durant	(Durant)
+  #633	deino	(Deino)  [via reachable zweilous]
+  #634	zweilous	(Zweilous)
+  #635	hydreigon	(Hydreigon)
+  #636	larvesta	(Larvesta)  [via reachable volcarona]
+  #637	volcarona	(Volcarona)
+  #638	cobalion	(Cobalion)
+  #640	virizion	(Virizion)
+  #643	reshiram	(Reshiram)
+  #644	zekrom	(Zekrom)
+  #650	chespin	(Chespin)  [via reachable chesnaught]
+  #651	quilladin	(Quilladin)  [via reachable chesnaught]
+  #652	chesnaught	(Chesnaught)
+  #656	froakie	(Froakie)  [via reachable greninja]
+  #657	frogadier	(Frogadier)  [via reachable greninja]
+  #658	greninja	(Greninja)
+  #667	litleo	(Litleo)
+  #668	pyroar	(Pyroar)
+  #669	flabebe	(Flabebe)  [via reachable floette]
+  #670	floette	(Floette)
+  #672	skiddo	(Skiddo)
+  #673	gogoat	(Gogoat)
+  #674	pancham	(Pancham)  [via reachable pangoro]
+  #675	pangoro	(Pangoro)
+  #677	espurr	(Espurr)
+  #679	honedge	(Honedge)
+  #680	doublade	(Doublade)
+  #682	spritzee	(Spritzee)
+  #686	inkay	(Inkay)  [via reachable malamar]
+  #687	malamar	(Malamar)
+  #688	binacle	(Binacle)  [via reachable barbaracle]
+  #689	barbaracle	(Barbaracle)
+  #694	helioptile	(Helioptile)  [via reachable heliolisk]
+  #695	heliolisk	(Heliolisk)
+  #696	tyrunt	(Tyrunt)  [via reachable tyrantrum]
+  #697	tyrantrum	(Tyrantrum)
+  #698	amaura	(Amaura)
+  #699	aurorus	(Aurorus)
+  #703	carbink	(Carbink)
+  #707	klefki	(Klefki)
+  #708	phantump	(Phantump)  [via reachable trevenant]
+  #709	trevenant	(Trevenant)
+  #710	pumpkaboo_average	(Pumpkaboo (Average))
+  #710	pumpkaboo_large	(Pumpkaboo (Large))
+  #710	pumpkaboo_small	(Pumpkaboo (Small))
+  #710	pumpkaboo_super	(Pumpkaboo (Super))
+  #711	gourgeist_super	(Gourgeist (Super))
+  #712	bergmite	(Bergmite)
+  #713	avalugg	(Avalugg)
+  #713	avalugg_hisuian	(Avalugg (Hisuian))
+  #716	xerneas	(Xerneas)
+  #717	yveltal	(Yveltal)
+  #718	zygarde_10	(Zygarde (10% Forme))
+  #718	zygarde_complete	(Zygarde (Complete Forme))
+  #719	diancie	(Diancie)
+  #720	hoopa_unbound	(Hoopa (Unbound))
+  #721	volcanion	(Volcanion)
+  #725	litten	(Litten)  [via reachable incineroar]
+  #726	torracat	(Torracat)  [via reachable incineroar]
+  #727	incineroar	(Incineroar)
+  #739	crabrawler	(Crabrawler)
+  #740	crabominable	(Crabominable)
+  #741	oricorio_baile	(Oricorio (Baile))
+  #741	oricorio_pau	(Oricorio (Pa'u))
+  #741	oricorio_pom_pom	(Oricorio (Pom-Pom))
+  #741	oricorio_sensu	(Oricorio (Sensu))
+  #745	lycanroc_dusk	(Lycanroc (Dusk))
+  #749	mudbray	(Mudbray)
+  #751	dewpider	(Dewpider)  [via reachable araquanid]
+  #752	araquanid	(Araquanid)
+  #753	fomantis	(Fomantis)  [via reachable lurantis]
+  #754	lurantis	(Lurantis)
+  #757	salandit	(Salandit)  [via reachable salazzle]
+  #758	salazzle	(Salazzle)
+  #759	stufful	(Stufful)
+  #764	comfey	(Comfey)
+  #766	passimian	(Passimian)
+  #767	wimpod	(Wimpod)  [via reachable golisopod]
+  #768	golisopod	(Golisopod)
+  #769	sandygast	(Sandygast)
+  #770	palossand	(Palossand)
+  #778	mimikyu	(Mimikyu)
+  #785	tapu_koko	(Tapu Koko)
+  #787	tapu_bulu	(Tapu Bulu)
+  #788	tapu_fini	(Tapu Fini)
+  #789	cosmog	(Cosmog)  [via reachable solgaleo]
+  #790	cosmoem	(Cosmoem)  [via reachable solgaleo]
+  #791	solgaleo	(Solgaleo)
+  #792	lunala	(Lunala)
+  #794	buzzwole	(Buzzwole)
+  #795	pheromosa	(Pheromosa)
+  #797	celesteela	(Celesteela)
+  #802	marshadow	(Marshadow)
+  #806	blacephalon	(Blacephalon)
+  #807	zeraora	(Zeraora)
+  #810	grookey	(Grookey)  [via reachable rillaboom]
+  #811	thwackey	(Thwackey)  [via reachable rillaboom]
+  #812	rillaboom	(Rillaboom)
+  #813	scorbunny	(Scorbunny)  [via reachable raboot]
+  #814	raboot	(Raboot)
+  #819	skwovet	(Skwovet)  [via reachable greedent]
+  #820	greedent	(Greedent)
+  #821	rookidee	(Rookidee)  [via reachable corvisquire]
+  #822	corvisquire	(Corvisquire)
+  #831	wooloo	(Wooloo)  [via reachable dubwool]
+  #832	dubwool	(Dubwool)
+  #835	yamper	(Yamper)  [via reachable boltund]
+  #836	boltund	(Boltund)
+  #837	rolycoly	(Rolycoly)  [via reachable coalossal]
+  #838	carkol	(Carkol)  [via reachable coalossal]
+  #839	coalossal	(Coalossal)
+  #840	applin	(Applin)  [via reachable appletun]
+  #842	appletun	(Appletun)
+  #843	silicobra	(Silicobra)  [via reachable sandaconda]
+  #844	sandaconda	(Sandaconda)
+  #845	cramorant	(Cramorant)
+  #850	sizzlipede	(Sizzlipede)  [via reachable centiskorch]
+  #851	centiskorch	(Centiskorch)
+  #852	clobbopus	(Clobbopus)  [via reachable grapploct]
+  #853	grapploct	(Grapploct)
+  #854	sinistea	(Sinistea)  [via reachable polteageist]
+  #855	polteageist	(Polteageist)
+  #856	hatenna	(Hatenna)  [via reachable hatterene]
+  #857	hattrem	(Hattrem)  [via reachable hatterene]
+  #858	hatterene	(Hatterene)
+  #863	perrserker	(Perrserker)
+  #864	cursola	(Cursola)
+  #865	sirfetchd	(Sirfetch'd)
+  #867	runerigus	(Runerigus)
+  #870	falinks	(Falinks)
+  #876	indeedee_female	(Indeedee (♀))
+  #876	indeedee_male	(Indeedee (♂))
+  #884	duraludon	(Duraludon)
+  #885	dreepy	(Dreepy)  [via reachable dragapult]
+  #886	drakloak	(Drakloak)  [via reachable dragapult]
+  #887	dragapult	(Dragapult)
+  #889	zamazenta_crowned_shield	(Zamazenta (Crowned Shield))
+  #895	regidrago	(Regidrago)
+  #900	kleavor	(Kleavor)
+  #903	sneasler	(Sneasler)
+  #905	enamorus_incarnate	(Enamorus (Incarnate))
+  #906	sprigatito	(Sprigatito)  [via reachable floragato]
+  #907	floragato	(Floragato)
+  #908	meowscarada	(Meowscarada)
+  #909	fuecoco	(Fuecoco)  [via reachable crocalor]
+  #910	crocalor	(Crocalor)
+  #912	quaxly	(Quaxly)  [via reachable quaxwell]
+  #913	quaxwell	(Quaxwell)
+  #921	pawmi	(Pawmi)  [via reachable pawmo]
+  #922	pawmo	(Pawmo)
+  #928	smoliv	(Smoliv)  [via reachable dolliv]
+  #929	dolliv	(Dolliv)
+  #932	nacli	(Nacli)  [via reachable naclstack]
+  #933	naclstack	(Naclstack)
+  #934	garganacl	(Garganacl)
+  #935	charcadet	(Charcadet)  [via reachable ceruledge]
+  #937	ceruledge	(Ceruledge)
+  #942	maschiff	(Maschiff)
+  #948	toedscool	(Toedscool)  [via reachable toedscruel]
+  #949	toedscruel	(Toedscruel)
+  #955	flittle	(Flittle)  [via reachable espathra]
+  #956	espathra	(Espathra)
+  #957	tinkatink	(Tinkatink)  [via reachable tinkatuff]
+  #958	tinkatuff	(Tinkatuff)
+  #959	tinkaton	(Tinkaton)
+  #962	bombirdier	(Bombirdier)
+  #968	orthworm	(Orthworm)
+  #973	flamigo	(Flamigo)
+  #974	cetoddle	(Cetoddle)
+  #979	annihilape	(Annihilape)
+  #982	dudunsparce	(Dudunsparce)
+  #996	frigibax	(Frigibax)
+  #997	arctibax	(Arctibax)
+  #998	baxcalibur	(Baxcalibur)
+  #999	gimmighoul	(Gimmighoul)  [via reachable gholdengo]
+  #1000	gholdengo	(Gholdengo)
+
+=== 2500 CP cap: 357 exceptions out of 1068 ===
+  #1	bulbasaur	(Bulbasaur)  [via reachable venusaur]
+  #2	ivysaur	(Ivysaur)  [via reachable venusaur]
+  #3	venusaur	(Venusaur)
+  #16	pidgey	(Pidgey)  [via reachable pidgeot]
+  #17	pidgeotto	(Pidgeotto)  [via reachable pidgeot]
+  #18	pidgeot	(Pidgeot)
+  #21	spearow	(Spearow)  [via reachable fearow]
+  #22	fearow	(Fearow)
+  #25	pikachu	(Pikachu)  [via reachable raichu]
+  #26	raichu	(Raichu)
+  #26	raichu_alolan	(Raichu (Alolan))
+  #29	nidoran_female	(Nidoran ♀)  [via reachable nidoqueen]
+  #30	nidorina	(Nidorina)  [via reachable nidoqueen]
+  #31	nidoqueen	(Nidoqueen)
+  #35	clefairy	(Clefairy)  [via reachable clefable]
+  #36	clefable	(Clefable)
+  #37	vulpix	(Vulpix)  [via reachable ninetales]
+  #37	vulpix_alolan	(Vulpix (Alolan))  [via reachable ninetales_alolan]
+  #38	ninetales	(Ninetales)
+  #38	ninetales_alolan	(Ninetales (Alolan))
+  #43	oddish	(Oddish)  [via reachable bellossom]
+  #44	gloom	(Gloom)  [via reachable bellossom]
+  #48	venonat	(Venonat)  [via reachable venomoth]
+  #49	venomoth	(Venomoth)
+  #54	psyduck	(Psyduck)  [via reachable golduck]
+  #55	golduck	(Golduck)
+  #56	mankey	(Mankey)  [via reachable primeape]
+  #57	primeape	(Primeape)
+  #58	growlithe_hisuian	(Growlithe (Hisuian))  [via reachable arcanine_hisuian]
+  #59	arcanine_hisuian	(Arcanine (Hisuian))
+  #63	abra	(Abra)  [via reachable kadabra]
+  #64	kadabra	(Kadabra)
+  #66	machop	(Machop)  [via reachable machoke]
+  #67	machoke	(Machoke)
+  #79	slowpoke	(Slowpoke)  [via reachable slowbro]
+  #79	slowpoke_galarian	(Slowpoke (Galarian))  [via reachable slowking_galarian]
+  #80	slowbro	(Slowbro)
+  #90	shellder	(Shellder)  [via reachable cloyster]
+  #91	cloyster	(Cloyster)
+  #96	drowzee	(Drowzee)  [via reachable hypno]
+  #97	hypno	(Hypno)
+  #100	voltorb	(Voltorb)  [via reachable electrode]
+  #100	voltorb_hisuian	(Voltorb (Hisuian))  [via reachable electrode_hisuian]
+  #101	electrode	(Electrode)
+  #101	electrode_hisuian	(Electrode (Hisuian))
+  #107	hitmonchan	(Hitmonchan)
+  #109	koffing	(Koffing)  [via reachable weezing]
+  #110	weezing	(Weezing)
+  #110	weezing_galarian	(Weezing (Galarian))
+  #113	chansey	(Chansey)  [via reachable blissey]
+  #114	tangela	(Tangela)
+  #115	kangaskhan	(Kangaskhan)
+  #116	horsea	(Horsea)  [via reachable seadra]
+  #117	seadra	(Seadra)
+  #118	goldeen	(Goldeen)  [via reachable seaking]
+  #119	seaking	(Seaking)
+  #122	mr_mime	(Mr. Mime)
+  #122	mr_mime_galarian	(Mr. Mime (Galarian))
+  #133	eevee	(Eevee)  [via reachable umbreon]
+  #137	porygon	(Porygon)  [via reachable porygon2]
+  #144	articuno	(Articuno)
+  #146	moltres	(Moltres)
+  #151	mew	(Mew)
+  #158	totodile	(Totodile)  [via reachable feraligatr]
+  #159	croconaw	(Croconaw)  [via reachable feraligatr]
+  #160	feraligatr	(Feraligatr)
+  #163	hoothoot	(Hoothoot)  [via reachable noctowl]
+  #164	noctowl	(Noctowl)
+  #170	chinchou	(Chinchou)  [via reachable lanturn]
+  #171	lanturn	(Lanturn)
+  #172	pichu	(Pichu)  [via reachable raichu]
+  #173	cleffa	(Cleffa)  [via reachable clefable]
+  #175	togepi	(Togepi)  [via reachable togekiss]
+  #176	togetic	(Togetic)  [via reachable togekiss]
+  #177	natu	(Natu)  [via reachable xatu]
+  #178	xatu	(Xatu)
+  #182	bellossom	(Bellossom)
+  #185	sudowoodo	(Sudowoodo)
+  #190	aipom	(Aipom)  [via reachable ambipom]
+  #191	sunkern	(Sunkern)  [via reachable sunflora]
+  #192	sunflora	(Sunflora)
+  #194	wooper	(Wooper)  [via reachable quagsire]
+  #195	quagsire	(Quagsire)
+  #197	umbreon	(Umbreon)
+  #199	slowking	(Slowking)
+  #199	slowking_galarian	(Slowking (Galarian))
+  #203	girafarig	(Girafarig)
+  #204	pineco	(Pineco)  [via reachable forretress]
+  #205	forretress	(Forretress)
+  #211	qwilfish	(Qwilfish)
+  #211	qwilfish_hisuian	(Qwilfish (Hisuian))
+  #215	sneasel	(Sneasel)
+  #215	sneasel_hisuian	(Sneasel (Hisuian))
+  #223	remoraid	(Remoraid)  [via reachable octillery]
+  #224	octillery	(Octillery)
+  #226	mantine	(Mantine)
+  #227	skarmory	(Skarmory)
+  #233	porygon2	(Porygon2)
+  #234	stantler	(Stantler)
+  #236	tyrogue	(Tyrogue)  [via reachable hitmonchan]
+  #237	hitmontop	(Hitmontop)
+  #242	blissey	(Blissey)
+  #246	larvitar	(Larvitar)  [via reachable tyranitar]
+  #247	pupitar	(Pupitar)  [via reachable tyranitar]
+  #248	tyranitar	(Tyranitar)
+  #250	ho_oh	(Ho-Oh)
+  #251	celebi	(Celebi)
+  #270	lotad	(Lotad)  [via reachable ludicolo]
+  #271	lombre	(Lombre)  [via reachable ludicolo]
+  #272	ludicolo	(Ludicolo)
+  #278	wingull	(Wingull)  [via reachable pelipper]
+  #279	pelipper	(Pelipper)
+  #280	ralts	(Ralts)  [via reachable gallade]
+  #281	kirlia	(Kirlia)  [via reachable gallade]
+  #282	gardevoir	(Gardevoir)
+  #283	surskit	(Surskit)  [via reachable masquerain]
+  #284	masquerain	(Masquerain)
+  #287	slakoth	(Slakoth)  [via reachable slaking]
+  #288	vigoroth	(Vigoroth)  [via reachable slaking]
+  #289	slaking	(Slaking)
+  #299	nosepass	(Nosepass)  [via reachable probopass]
+  #304	aron	(Aron)  [via reachable lairon]
+  #305	lairon	(Lairon)
+  #306	aggron	(Aggron)
+  #318	carvanha	(Carvanha)  [via reachable sharpedo]
+  #319	sharpedo	(Sharpedo)
+  #320	wailmer	(Wailmer)  [via reachable wailord]
+  #321	wailord	(Wailord)
+  #322	numel	(Numel)  [via reachable camerupt]
+  #323	camerupt	(Camerupt)
+  #324	torkoal	(Torkoal)
+  #331	cacnea	(Cacnea)  [via reachable cacturne]
+  #332	cacturne	(Cacturne)
+  #333	swablu	(Swablu)  [via reachable altaria]
+  #334	altaria	(Altaria)
+  #335	zangoose	(Zangoose)
+  #336	seviper	(Seviper)
+  #337	lunatone	(Lunatone)
+  #338	solrock	(Solrock)
+  #339	barboach	(Barboach)  [via reachable whiscash]
+  #340	whiscash	(Whiscash)
+  #345	lileep	(Lileep)  [via reachable cradily]
+  #346	cradily	(Cradily)
+  #352	kecleon	(Kecleon)
+  #353	shuppet	(Shuppet)  [via reachable banette]
+  #354	banette	(Banette)
+  #358	chimecho	(Chimecho)
+  #359	absol	(Absol)
+  #361	snorunt	(Snorunt)  [via reachable froslass]
+  #362	glalie	(Glalie)
+  #371	bagon	(Bagon)  [via reachable shelgon]
+  #372	shelgon	(Shelgon)
+  #373	salamence	(Salamence)
+  #377	regirock	(Regirock)
+  #378	regice	(Regice)
+  #379	registeel	(Registeel)
+  #380	latias	(Latias)
+  #381	latios	(Latios)
+  #385	jirachi	(Jirachi)
+  #386	deoxys_defense	(Deoxys (Defense))
+  #415	combee	(Combee)  [via reachable vespiquen]
+  #416	vespiquen	(Vespiquen)
+  #420	cherubi	(Cherubi)  [via reachable cherrim_overcast]
+  #421	cherrim_overcast	(Cherrim (Overcast))
+  #421	cherrim_sunny	(Cherrim (Sunshine))
+  #422	shellos	(Shellos)  [via reachable gastrodon]
+  #423	gastrodon	(Gastrodon)
+  #424	ambipom	(Ambipom)
+  #427	buneary	(Buneary)  [via reachable lopunny]
+  #428	lopunny	(Lopunny)
+  #433	chingling	(Chingling)  [via reachable chimecho]
+  #436	bronzor	(Bronzor)  [via reachable bronzong]
+  #437	bronzong	(Bronzong)
+  #438	bonsly	(Bonsly)  [via reachable sudowoodo]
+  #439	mime_jr	(Mime (Jr))  [via reachable mr_mime]
+  #440	happiny	(Happiny)  [via reachable blissey]
+  #442	spiritomb	(Spiritomb)
+  #443	gible	(Gible)  [via reachable garchomp]
+  #444	gabite	(Gabite)  [via reachable garchomp]
+  #445	garchomp	(Garchomp)
+  #451	skorupi	(Skorupi)  [via reachable drapion]
+  #452	drapion	(Drapion)
+  #455	carnivine	(Carnivine)
+  #458	mantyke	(Mantyke)  [via reachable mantine]
+  #468	togekiss	(Togekiss)
+  #470	leafeon	(Leafeon)
+  #471	glaceon	(Glaceon)
+  #475	gallade	(Gallade)
+  #476	probopass	(Probopass)
+  #478	froslass	(Froslass)
+  #479	rotom	(Rotom)
+  #479	rotom_fan	(Rotom (Fan))
+  #479	rotom_frost	(Rotom (Frost))
+  #479	rotom_heat	(Rotom (Heat))
+  #479	rotom_mow	(Rotom (Mow))
+  #479	rotom_wash	(Rotom (Wash))
+  #480	uxie	(Uxie)
+  #483	dialga_origin	(Dialga (Origin))
+  #484	palkia_origin	(Palkia (Origin))
+  #486	regigigas	(Regigigas)
+  #491	darkrai	(Darkrai)
+  #492	shaymin_land	(Shaymin (Land))
+  #492	shaymin_sky	(Shaymin (Sky))
+  #494	victini	(Victini)
+  #495	snivy	(Snivy)  [via reachable serperior]
+  #496	servine	(Servine)  [via reachable serperior]
+  #497	serperior	(Serperior)
+  #524	roggenrola	(Roggenrola)  [via reachable boldore]
+  #525	boldore	(Boldore)
+  #532	timburr	(Timburr)  [via reachable gurdurr]
+  #533	gurdurr	(Gurdurr)
+  #546	cottonee	(Cottonee)  [via reachable whimsicott]
+  #547	whimsicott	(Whimsicott)
+  #550	basculin	(Basculin)
+  #556	maractus	(Maractus)
+  #559	scraggy	(Scraggy)  [via reachable scrafty]
+  #560	scrafty	(Scrafty)
+  #562	yamask	(Yamask)  [via reachable cofagrigus]
+  #562	yamask_galarian	(Yamask (Galarian))  [via reachable runerigus]
+  #563	cofagrigus	(Cofagrigus)
+  #568	trubbish	(Trubbish)  [via reachable garbodor]
+  #569	garbodor	(Garbodor)
+  #572	minccino	(Minccino)  [via reachable cinccino]
+  #573	cinccino	(Cinccino)
+  #577	solosis	(Solosis)  [via reachable duosion]
+  #578	duosion	(Duosion)
+  #580	ducklett	(Ducklett)  [via reachable swanna]
+  #581	swanna	(Swanna)
+  #585	deerling	(Deerling)  [via reachable sawsbuck]
+  #586	sawsbuck	(Sawsbuck)
+  #588	karrablast	(Karrablast)  [via reachable escavalier]
+  #589	escavalier	(Escavalier)
+  #590	foongus	(Foongus)  [via reachable amoonguss]
+  #591	amoonguss	(Amoonguss)
+  #592	frillish	(Frillish)  [via reachable jellicent]
+  #593	jellicent	(Jellicent)
+  #594	alomomola	(Alomomola)
+  #595	joltik	(Joltik)  [via reachable galvantula]
+  #596	galvantula	(Galvantula)
+  #597	ferroseed	(Ferroseed)  [via reachable ferrothorn]
+  #598	ferrothorn	(Ferrothorn)
+  #610	axew	(Axew)  [via reachable fraxure]
+  #611	fraxure	(Fraxure)
+  #612	haxorus	(Haxorus)
+  #618	stunfisk	(Stunfisk)
+  #618	stunfisk_galarian	(Stunfisk (Galarian))
+  #624	pawniard	(Pawniard)  [via reachable kingambit]
+  #625	bisharp	(Bisharp)  [via reachable kingambit]
+  #628	braviary_hisuian	(Braviary (Hisuian))
+  #629	vullaby	(Vullaby)  [via reachable mandibuzz]
+  #630	mandibuzz	(Mandibuzz)
+  #639	terrakion	(Terrakion)
+  #647	keldeo_ordinary	(Keldeo (Ordinary))
+  #647	keldeo_resolute	(Keldeo (Resolute))
+  #649	genesect	(Genesect)
+  #649	genesect_burn	(Genesect (Burn))
+  #649	genesect_chill	(Genesect (Chill))
+  #649	genesect_douse	(Genesect (Douse))
+  #649	genesect_shock	(Genesect (Shock))
+  #661	fletchling	(Fletchling)  [via reachable talonflame]
+  #662	fletchinder	(Fletchinder)  [via reachable talonflame]
+  #663	talonflame	(Talonflame)
+  #674	pancham	(Pancham)  [via reachable pangoro]
+  #675	pangoro	(Pangoro)
+  #676	furfrou	(Furfrou)
+  #677	espurr	(Espurr)  [via reachable meowstic]
+  #678	meowstic	(Meowstic (♂))
+  #678	meowstic_female	(Meowstic (♀))
+  #682	spritzee	(Spritzee)  [via reachable aromatisse]
+  #683	aromatisse	(Aromatisse)
+  #684	swirlix	(Swirlix)  [via reachable slurpuff]
+  #685	slurpuff	(Slurpuff)
+  #696	tyrunt	(Tyrunt)  [via reachable tyrantrum]
+  #697	tyrantrum	(Tyrantrum)
+  #704	goomy	(Goomy)  [via reachable sliggoo]
+  #705	sliggoo	(Sliggoo)
+  #706	goodra	(Goodra)
+  #710	pumpkaboo_small	(Pumpkaboo (Small))  [via reachable gourgeist_small]
+  #711	gourgeist_small	(Gourgeist (Small))
+  #718	zygarde	(Zygarde (50% Forme))
+  #718	zygarde_complete	(Zygarde (Complete Forme))
+  #719	diancie	(Diancie)
+  #728	popplio	(Popplio)  [via reachable primarina]
+  #729	brionne	(Brionne)  [via reachable primarina]
+  #730	primarina	(Primarina)
+  #734	yungoos	(Yungoos)  [via reachable gumshoos]
+  #735	gumshoos	(Gumshoos)
+  #736	grubbin	(Grubbin)  [via reachable vikavolt]
+  #737	charjabug	(Charjabug)  [via reachable vikavolt]
+  #738	vikavolt	(Vikavolt)
+  #742	cutiefly	(Cutiefly)  [via reachable ribombee]
+  #743	ribombee	(Ribombee)
+  #764	comfey	(Comfey)
+  #766	passimian	(Passimian)
+  #776	turtonator	(Turtonator)
+  #777	togedemaru	(Togedemaru)
+  #778	mimikyu	(Mimikyu)
+  #782	jangmo_o	(Jangmo-o)  [via reachable kommo_o]
+  #783	hakamo_o	(Hakamo-o)  [via reachable kommo_o]
+  #784	kommo_o	(Kommo-o)
+  #787	tapu_bulu	(Tapu Bulu)
+  #788	tapu_fini	(Tapu Fini)
+  #796	xurkitree	(Xurkitree)
+  #799	guzzlord	(Guzzlord)
+  #800	necrozma	(Necrozma)
+  #802	marshadow	(Marshadow)
+  #805	stakataka	(Stakataka)
+  #807	zeraora	(Zeraora)
+  #813	scorbunny	(Scorbunny)  [via reachable cinderace]
+  #814	raboot	(Raboot)  [via reachable cinderace]
+  #815	cinderace	(Cinderace)
+  #824	blipbug	(Blipbug)  [via reachable orbeetle]
+  #825	dottler	(Dottler)  [via reachable orbeetle]
+  #826	orbeetle	(Orbeetle)
+  #827	nickit	(Nickit)  [via reachable thievul]
+  #828	thievul	(Thievul)
+  #829	gossifleur	(Gossifleur)  [via reachable eldegoss]
+  #830	eldegoss	(Eldegoss)
+  #831	wooloo	(Wooloo)  [via reachable dubwool]
+  #832	dubwool	(Dubwool)
+  #835	yamper	(Yamper)  [via reachable boltund]
+  #836	boltund	(Boltund)
+  #837	rolycoly	(Rolycoly)  [via reachable coalossal]
+  #838	carkol	(Carkol)  [via reachable coalossal]
+  #839	coalossal	(Coalossal)
+  #845	cramorant	(Cramorant)
+  #867	runerigus	(Runerigus)
+  #888	zacian_hero	(Zacian (Hero))
+  #889	zamazenta_crowned_shield	(Zamazenta (Crowned Shield))
+  #889	zamazenta_hero	(Zamazenta (Hero))
+  #890	eternatus	(Eternatus)
+  #891	kubfu	(Kubfu)  [via reachable urshifu_rapid_strike]
+  #892	urshifu_rapid_strike	(Urshifu (Rapid Strike))
+  #892	urshifu_single_strike	(Urshifu (Single Strike))
+  #893	zarude	(Zarude)
+  #895	regidrago	(Regidrago)
+  #904	overqwil	(Overqwil)
+  #919	nymble	(Nymble)  [via reachable lokix]
+  #920	lokix	(Lokix)
+  #926	fidough	(Fidough)  [via reachable dachsbun]
+  #927	dachsbun	(Dachsbun)
+  #928	smoliv	(Smoliv)  [via reachable arboliva]
+  #929	dolliv	(Dolliv)  [via reachable arboliva]
+  #930	arboliva	(Arboliva)
+  #938	tadbulb	(Tadbulb)  [via reachable bellibolt]
+  #939	bellibolt	(Bellibolt)
+  #944	shroodle	(Shroodle)  [via reachable grafaiai]
+  #945	grafaiai	(Grafaiai)
+  #957	tinkatink	(Tinkatink)  [via reachable tinkaton]
+  #958	tinkatuff	(Tinkatuff)  [via reachable tinkaton]
+  #959	tinkaton	(Tinkaton)
+  #968	orthworm	(Orthworm)
+  #979	annihilape	(Annihilape)
+  #983	kingambit	(Kingambit)
+  #996	frigibax	(Frigibax)  [via reachable arctibax]
+  #997	arctibax	(Arctibax)
+  #998	baxcalibur	(Baxcalibur)

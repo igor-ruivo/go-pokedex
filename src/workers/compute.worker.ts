@@ -12,8 +12,10 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
 import {
+	calculateCP,
 	computeBestIVs,
 	computeDPSEntry,
+	fetchReachablePokemonIncludingSelf,
 	guessRaidTier,
 	levelToLevelIndex,
 	MAX_LEVEL,
@@ -223,7 +225,98 @@ const raidComparisons = ({
 	return out.sort((a, b) => (b.dps !== a.dps ? b.dps - a.dps : a.speciesId.localeCompare(b.speciesId)));
 };
 
-export const api = { familyIvPercents, bestIvs, lowAttackViable, raidComparisons };
+export interface BadIvPattern {
+	A: number;
+	D: number;
+	S: number;
+}
+
+export interface BadIvCarveOut {
+	speciesId: string;
+	cap: number;
+	pattern: BadIvPattern;
+}
+
+export interface BadIvCarveOutsInput {
+	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+	/** CP caps to evaluate (e.g. [1500, 2500]). */
+	caps: Array<number>;
+}
+
+// Always level 50 (`MAX_LEVEL`), deliberately never the Best Buddy toggle —
+// this whole mode is meta-agnostic and CP-cap-driven, not a ranking, and its
+// "reaches 90% of the cap at 15/15/15" pre-filter is defined against 50.
+const LEVEL_50_INDEX = MAX_LEVEL_INDEX;
+const CP_THRESHOLD_RATIO = 0.9;
+
+const ivBucket = (iv: number) => (iv === 15 ? 4 : Math.ceil(iv / 5));
+// Keep the top spread only if Attack is bucket 0-1 (IV 0-5) AND Defense/HP are
+// bucket 3-4 (IV 11-15) — the classic low-Attack/max-bulk CP-cap spread.
+const matchesDefault = (ivs: BadIvPattern) => {
+	const a = ivBucket(ivs.A),
+		d = ivBucket(ivs.D),
+		s = ivBucket(ivs.S);
+	return a <= 1 && d >= 3 && s >= 3;
+};
+// An exact hundo is already unconditionally protected by `!4*` regardless of
+// league — nothing short of it gets a free pass from this check.
+const isExactHundo = (ivs: BadIvPattern) => ivBucket(ivs.A) === 4 && ivBucket(ivs.D) === 4 && ivBucket(ivs.S) === 4;
+const isProtectedByBlanket = (ivs: BadIvPattern) => matchesDefault(ivs) || isExactHundo(ivs);
+
+/**
+ * Meta-agnostic "bad IV" carve-outs — see the "Mass Delete only Bad IV
+ * Pokémon" tab. For every non-alias/mega/shadow/legendary/mythical/UB species
+ * and every requested CP cap, walks that species' whole *forward*-reachable
+ * family (raw IVs never change through evolution, so a wild catch's fate
+ * depends on every stage it could become, not just itself) looking for
+ * reachable stages that both (a) clear 90% of the cap at 15/15/15/L50 — below
+ * that the cap doesn't meaningfully bind, so there's nothing to compromise —
+ * and (b) have a genuinely optimal top-1 spread that `isProtectedByBlanket`
+ * doesn't already cover. Collects every *distinct* such pattern (not just the
+ * first one found) — an earlier stage being unprotected isn't excused by a
+ * later one being fine, since bucket-matching is purely about a wild catch's
+ * own fixed IVs, not which species it currently is.
+ */
+const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
+	const isExcludedCategory = (p: IGamemasterPokemon) =>
+		!!p.aliasId || !!p.isMega || !!p.isShadow || !!p.isLegendary || !!p.isMythical || !!p.isBeast;
+	const candidates = Object.values(gamemasterPokemon).filter((p) => !isExcludedCategory(p));
+	const domainFilter = (r: IGamemasterPokemon) => !isExcludedCategory(r);
+
+	const bestCache = new Map<string, BadIvPattern | null>();
+	const getBest = (r: IGamemasterPokemon, cap: number): BadIvPattern | null => {
+		const key = `${r.speciesId}|${cap}`;
+		const cached = bestCache.get(key);
+		if (cached !== undefined) return cached;
+		const maxCP = calculateCP(r.baseStats.atk, 15, r.baseStats.def, 15, r.baseStats.hp, 15, LEVEL_50_INDEX);
+		if (maxCP < CP_THRESHOLD_RATIO * cap) {
+			bestCache.set(key, null);
+			return null;
+		}
+		const best = Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap)).flat()[0];
+		const pattern: BadIvPattern = { A: best.IVs.A, D: best.IVs.D, S: best.IVs.S };
+		bestCache.set(key, pattern);
+		return pattern;
+	};
+
+	const carveOuts: Array<BadIvCarveOut> = [];
+	for (const p of candidates) {
+		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, domainFilter));
+		for (const cap of caps) {
+			const distinctPatterns = new Map<string, BadIvPattern>();
+			for (const r of reachable) {
+				const best = getBest(r, cap);
+				if (!best || isProtectedByBlanket(best)) continue;
+				const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+				if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+			}
+			for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });
+		}
+	}
+	return carveOuts;
+};
+
+export const api = { familyIvPercents, bestIvs, lowAttackViable, raidComparisons, findBadIvCarveOuts };
 export type ComputeApi = typeof api;
 
 expose(api);

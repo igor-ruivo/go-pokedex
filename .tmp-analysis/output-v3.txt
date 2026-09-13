@@ -1,0 +1,440 @@
+
+=== 1500 CP cap (best-combo-only, full rule): 212 exceptions out of 1068 ===
+  #16	pidgey	(Pidgey)  best@pidgeotto: A15 D15 S15  [via reachable]
+  #17	pidgeotto	(Pidgeotto)  best@pidgeotto: A15 D15 S15
+  #27	sandshrew	(Sandshrew)  best@sandshrew: A15 D15 S15
+  #27	sandshrew_alolan	(Sandshrew (Alolan))  best@sandshrew_alolan: A15 D15 S15
+  #29	nidoran_female	(Nidoran ♀)  best@nidorina: A15 D15 S15  [via reachable]
+  #30	nidorina	(Nidorina)  best@nidorina: A15 D15 S15
+  #32	nidoran_male	(Nidoran ♂)  best@nidorino: A8 D15 S15  [via reachable]
+  #33	nidorino	(Nidorino)  best@nidorino: A8 D15 S15
+  #43	oddish	(Oddish)  best@oddish: A15 D15 S15
+  #54	psyduck	(Psyduck)  best@golduck: A0 D10 S14  [via reachable]
+  #55	golduck	(Golduck)  best@golduck: A0 D10 S14
+  #58	growlithe	(Growlithe)  best@growlithe: A15 D15 S15
+  #58	growlithe_hisuian	(Growlithe (Hisuian))  best@growlithe_hisuian: A15 D15 S15
+  #59	arcanine_hisuian	(Arcanine (Hisuian))  best@arcanine_hisuian: A0 D14 S10
+  #60	poliwag	(Poliwag)  best@poliwhirl: A6 D15 S15  [via reachable]
+  #61	poliwhirl	(Poliwhirl)  best@poliwhirl: A6 D15 S15
+  #63	abra	(Abra)  best@abra: A15 D15 S15
+  #66	machop	(Machop)  best@machop: A15 D15 S15
+  #74	geodude	(Geodude)  best@geodude: A15 D15 S15
+  #74	geodude_alolan	(Geodude (Alolan))  best@geodude_alolan: A15 D15 S15
+  #79	slowpoke	(Slowpoke)  best@slowpoke: A15 D15 S15
+  #79	slowpoke_galarian	(Slowpoke (Galarian))  best@slowpoke_galarian: A15 D15 S15
+  #81	magnemite	(Magnemite)  best@magnemite: A12 D15 S13
+  #83	farfetchd	(Farfetch'd)  best@farfetchd: A15 D15 S15
+  #84	doduo	(Doduo)  best@doduo: A15 D15 S15
+  #88	grimer	(Grimer)  best@grimer: A10 D15 S14
+  #88	grimer_alolan	(Grimer (Alolan))  best@grimer_alolan: A10 D15 S14
+  #92	gastly	(Gastly)  best@gastly: A15 D15 S15
+  #98	krabby	(Krabby)  best@kingler: A0 D9 S15  [via reachable]
+  #99	kingler	(Kingler)  best@kingler: A0 D9 S15
+  #108	lickitung	(Lickitung)  best@lickitung: A8 D14 S15
+  #109	koffing	(Koffing)  best@koffing: A15 D15 S15
+  #113	chansey	(Chansey)  best@chansey: A15 D15 S15
+  #123	scyther	(Scyther)  best@kleavor: A0 D15 S8  [via reachable]
+  #126	magmar	(Magmar)  best@magmortar: A0 D10 S15  [via reachable]
+  #131	lapras	(Lapras)  best@lapras: A0 D10 S14
+  #138	omanyte	(Omanyte)  best@omastar: A0 D9 S15  [via reachable]
+  #139	omastar	(Omastar)  best@omastar: A0 D9 S15
+  #140	kabuto	(Kabuto)  best@kabuto: A10 D15 S15
+  #141	kabutops	(Kabutops)  best@kabutops: A0 D14 S10
+  #151	mew	(Mew)  best@mew: A0 D10 S13
+  #152	chikorita	(Chikorita)  best@meganium: A0 D10 S15  [via reachable]
+  #153	bayleef	(Bayleef)  best@meganium: A0 D10 S15  [via reachable]
+  #154	meganium	(Meganium)  best@meganium: A0 D10 S15
+  #165	ledyba	(Ledyba)  best@ledian: A13 D15 S15  [via reachable]
+  #166	ledian	(Ledian)  best@ledian: A13 D15 S15
+  #190	aipom	(Aipom)  best@aipom: A14 D15 S14
+  #204	pineco	(Pineco)  best@forretress: A0 D9 S15  [via reachable]
+  #205	forretress	(Forretress)  best@forretress: A0 D9 S15
+  #206	dunsparce	(Dunsparce)  best@dudunsparce: A0 D15 S7  [via reachable]
+  #209	snubbull	(Snubbull)  best@snubbull: A15 D15 S15
+  #215	sneasel_hisuian	(Sneasel (Hisuian))  best@sneasler: A0 D15 S9  [via reachable]
+  #216	teddiursa	(Teddiursa)  best@teddiursa: A15 D15 S14
+  #220	swinub	(Swinub)  best@piloswine: A0 D15 S10  [via reachable]
+  #221	piloswine	(Piloswine)  best@piloswine: A0 D15 S10
+  #222	corsola	(Corsola)  best@corsola: A10 D15 S15
+  #228	houndour	(Houndour)  best@houndour: A15 D15 S15
+  #231	phanpy	(Phanpy)  best@phanpy: A15 D15 S15
+  #232	donphan	(Donphan)  best@donphan: A0 D14 S8
+  #238	smoochum	(Smoochum)  best@smoochum: A15 D15 S15
+  #239	elekid	(Elekid)  best@elekid: A15 D15 S15
+  #240	magby	(Magby)  best@magby: A15 D15 S15
+  #242	blissey	(Blissey)  best@blissey: A0 D15 S3
+  #251	celebi	(Celebi)  best@celebi: A0 D10 S13
+  #265	wurmple	(Wurmple)  best@dustox: A15 D15 S15  [via reachable]
+  #268	cascoon	(Cascoon)  best@dustox: A15 D15 S15  [via reachable]
+  #269	dustox	(Dustox)  best@dustox: A15 D15 S15
+  #270	lotad	(Lotad)  best@lombre: A15 D15 S15  [via reachable]
+  #271	lombre	(Lombre)  best@lombre: A15 D15 S15
+  #273	seedot	(Seedot)  best@nuzleaf: A15 D15 S15  [via reachable]
+  #274	nuzleaf	(Nuzleaf)  best@nuzleaf: A15 D15 S15
+  #293	whismur	(Whismur)  best@loudred: A15 D15 S15  [via reachable]
+  #294	loudred	(Loudred)  best@loudred: A15 D15 S15
+  #295	exploud	(Exploud)  best@exploud: A0 D15 S10
+  #304	aron	(Aron)  best@aron: A15 D15 S15
+  #325	spoink	(Spoink)  best@spoink: A15 D15 S15
+  #327	spinda	(Spinda)  best@spinda: A15 D15 S15
+  #328	trapinch	(Trapinch)  best@trapinch: A15 D15 S15
+  #329	vibrava	(Vibrava)  best@vibrava: A15 D15 S15
+  #330	flygon	(Flygon)  best@flygon: A0 D15 S9
+  #331	cacnea	(Cacnea)  best@cacnea: A15 D15 S15
+  #335	zangoose	(Zangoose)  best@zangoose: A0 D15 S10
+  #341	corphish	(Corphish)  best@corphish: A15 D15 S15
+  #345	lileep	(Lileep)  best@lileep: A15 D15 S15
+  #347	anorith	(Anorith)  best@armaldo: A0 D9 S15  [via reachable]
+  #348	armaldo	(Armaldo)  best@armaldo: A0 D9 S15
+  #366	clamperl	(Clamperl)  best@clamperl: A15 D15 S15
+  #371	bagon	(Bagon)  best@salamence: A0 D10 S14  [via reachable]
+  #372	shelgon	(Shelgon)  best@salamence: A0 D10 S14  [via reachable]
+  #373	salamence	(Salamence)  best@salamence: A0 D10 S14
+  #377	regirock	(Regirock)  best@regirock: A0 D10 S12
+  #378	regice	(Regice)  best@regice: A0 D10 S12
+  #379	registeel	(Registeel)  best@registeel: A0 D8 S15
+  #385	jirachi	(Jirachi)  best@jirachi: A0 D10 S13
+  #396	starly	(Starly)  best@staravia: A15 D15 S15  [via reachable]
+  #397	staravia	(Staravia)  best@staravia: A15 D15 S15
+  #408	cranidos	(Cranidos)  best@rampardos: A1 D14 S8  [via reachable]
+  #409	rampardos	(Rampardos)  best@rampardos: A1 D14 S8
+  #417	pachirisu	(Pachirisu)  best@pachirisu: A15 D15 S15
+  #425	drifloon	(Drifloon)  best@drifloon: A15 D15 S15
+  #427	buneary	(Buneary)  best@buneary: A15 D15 S15
+  #438	bonsly	(Bonsly)  best@bonsly: A15 D15 S15
+  #440	happiny	(Happiny)  best@chansey: A15 D15 S15  [via reachable]
+  #449	hippopotas	(Hippopotas)  best@hippopotas: A13 D15 S14
+  #450	hippowdon	(Hippowdon)  best@hippowdon: A0 D14 S10
+  #458	mantyke	(Mantyke)  best@mantyke: A15 D15 S15
+  #463	lickilicky	(Lickilicky)  best@lickilicky: A0 D15 S10
+  #467	magmortar	(Magmortar)  best@magmortar: A0 D10 S15
+  #473	mamoswine	(Mamoswine)  best@mamoswine: A0 D15 S7
+  #483	dialga	(Dialga)  best@dialga: A0 D13 S8
+  #485	heatran	(Heatran)  best@heatran: A0 D14 S10
+  #486	regigigas	(Regigigas)  best@regigigas: A0 D8 S12
+  #487	giratina_origin	(Giratina (Origin))  best@giratina_origin: A0 D10 S11
+  #491	darkrai	(Darkrai)  best@darkrai: A0 D10 S14
+  #492	shaymin_land	(Shaymin (Land))  best@shaymin_land: A0 D10 S13
+  #494	victini	(Victini)  best@victini: A0 D10 S13
+  #495	snivy	(Snivy)  best@serperior: A0 D10 S15  [via reachable]
+  #496	servine	(Servine)  best@serperior: A0 D10 S15  [via reachable]
+  #497	serperior	(Serperior)  best@serperior: A0 D10 S15
+  #498	tepig	(Tepig)  best@emboar: A0 D14 S9  [via reachable]
+  #499	pignite	(Pignite)  best@emboar: A0 D14 S9  [via reachable]
+  #500	emboar	(Emboar)  best@emboar: A0 D14 S9
+  #522	blitzle	(Blitzle)  best@zebstrika: A0 D15 S9  [via reachable]
+  #523	zebstrika	(Zebstrika)  best@zebstrika: A0 D15 S9
+  #524	roggenrola	(Roggenrola)  best@roggenrola: A15 D15 S15
+  #527	woobat	(Woobat)  best@swoobat: A0 D15 S9  [via reachable]
+  #528	swoobat	(Swoobat)  best@swoobat: A0 D15 S9
+  #529	drilbur	(Drilbur)  best@drilbur: A10 D15 S15
+  #532	timburr	(Timburr)  best@timburr: A15 D15 S15
+  #535	tympole	(Tympole)  best@palpitoad: A9 D15 S15  [via reachable]
+  #536	palpitoad	(Palpitoad)  best@palpitoad: A9 D15 S15
+  #540	sewaddle	(Sewaddle)  best@swadloon: A12 D15 S14  [via reachable]
+  #541	swadloon	(Swadloon)  best@swadloon: A12 D15 S14
+  #551	sandile	(Sandile)  best@krokorok: A6 D15 S15  [via reachable]
+  #552	krokorok	(Krokorok)  best@krokorok: A6 D15 S15
+  #557	dwebble	(Dwebble)  best@dwebble: A15 D15 S15
+  #559	scraggy	(Scraggy)  best@scraggy: A11 D15 S15
+  #560	scrafty	(Scrafty)  best@scrafty: A0 D8 S15
+  #570	zorua_hisuian	(Zorua (Hisuian))  best@zorua_hisuian: A15 D15 S15
+  #577	solosis	(Solosis)  best@solosis: A9 D15 S15
+  #592	frillish	(Frillish)  best@frillish: A15 D15 S15
+  #605	elgyem	(Elgyem)  best@elgyem: A8 D15 S15
+  #610	axew	(Axew)  best@axew: A10 D15 S14
+  #619	mienfoo	(Mienfoo)  best@mienfoo: A7 D15 S15
+  #629	vullaby	(Vullaby)  best@vullaby: A15 D15 S15
+  #633	deino	(Deino)  best@hydreigon: A0 D15 S10  [via reachable]
+  #634	zweilous	(Zweilous)  best@hydreigon: A0 D15 S10  [via reachable]
+  #635	hydreigon	(Hydreigon)  best@hydreigon: A0 D15 S10
+  #636	larvesta	(Larvesta)  best@volcarona: A0 D9 S15  [via reachable]
+  #637	volcarona	(Volcarona)  best@volcarona: A0 D9 S15
+  #643	reshiram	(Reshiram)  best@reshiram: A0 D13 S8
+  #644	zekrom	(Zekrom)  best@zekrom: A0 D13 S8
+  #667	litleo	(Litleo)  best@pyroar: A0 D15 S10  [via reachable]
+  #668	pyroar	(Pyroar)  best@pyroar: A0 D15 S10
+  #672	skiddo	(Skiddo)  best@skiddo: A15 D15 S15
+  #677	espurr	(Espurr)  best@espurr: A15 D15 S15
+  #679	honedge	(Honedge)  best@honedge: A8 D15 S15
+  #682	spritzee	(Spritzee)  best@spritzee: A15 D15 S15
+  #686	inkay	(Inkay)  best@malamar: A0 D15 S9  [via reachable]
+  #687	malamar	(Malamar)  best@malamar: A0 D15 S9
+  #688	binacle	(Binacle)  best@barbaracle: A0 D10 S13  [via reachable]
+  #689	barbaracle	(Barbaracle)  best@barbaracle: A0 D10 S13
+  #698	amaura	(Amaura)  best@amaura: A11 D15 S15
+  #710	pumpkaboo_average	(Pumpkaboo (Average))  best@pumpkaboo_average: A15 D15 S15
+  #710	pumpkaboo_large	(Pumpkaboo (Large))  best@pumpkaboo_large: A15 D15 S15
+  #710	pumpkaboo_small	(Pumpkaboo (Small))  best@pumpkaboo_small: A15 D15 S15
+  #710	pumpkaboo_super	(Pumpkaboo (Super))  best@pumpkaboo_super: A15 D15 S15
+  #712	bergmite	(Bergmite)  best@bergmite: A15 D15 S15
+  #713	avalugg_hisuian	(Avalugg (Hisuian))  best@avalugg_hisuian: A0 D14 S9
+  #716	xerneas	(Xerneas)  best@xerneas: A0 D9 S13
+  #717	yveltal	(Yveltal)  best@yveltal: A0 D9 S13
+  #719	diancie	(Diancie)  best@diancie: A0 D7 S15
+  #725	litten	(Litten)  best@incineroar: A0 D15 S9  [via reachable]
+  #726	torracat	(Torracat)  best@incineroar: A0 D15 S9  [via reachable]
+  #727	incineroar	(Incineroar)  best@incineroar: A0 D15 S9
+  #739	crabrawler	(Crabrawler)  best@crabrawler: A11 D15 S15
+  #751	dewpider	(Dewpider)  best@araquanid: A0 D10 S15  [via reachable]
+  #752	araquanid	(Araquanid)  best@araquanid: A0 D10 S15
+  #759	stufful	(Stufful)  best@stufful: A12 D15 S15
+  #767	wimpod	(Wimpod)  best@golisopod: A0 D8 S15  [via reachable]
+  #768	golisopod	(Golisopod)  best@golisopod: A0 D8 S15
+  #769	sandygast	(Sandygast)  best@sandygast: A15 D15 S15
+  #789	cosmog	(Cosmog)  best@solgaleo: A0 D12 S9  [via reachable]
+  #790	cosmoem	(Cosmoem)  best@solgaleo: A0 D12 S9  [via reachable]
+  #791	solgaleo	(Solgaleo)  best@solgaleo: A0 D12 S9
+  #792	lunala	(Lunala)  best@lunala: A0 D12 S9
+  #807	zeraora	(Zeraora)  best@zeraora: A0 D14 S10
+  #821	rookidee	(Rookidee)  best@corvisquire: A12 D15 S15  [via reachable]
+  #822	corvisquire	(Corvisquire)  best@corvisquire: A12 D15 S15
+  #850	sizzlipede	(Sizzlipede)  best@centiskorch: A0 D15 S9  [via reachable]
+  #851	centiskorch	(Centiskorch)  best@centiskorch: A0 D15 S9
+  #889	zamazenta_crowned_shield	(Zamazenta (Crowned Shield))  best@zamazenta_crowned_shield: A0 D9 S14
+  #900	kleavor	(Kleavor)  best@kleavor: A0 D15 S8
+  #903	sneasler	(Sneasler)  best@sneasler: A0 D15 S9
+  #909	fuecoco	(Fuecoco)  best@crocalor: A0 D15 S10  [via reachable]
+  #910	crocalor	(Crocalor)  best@crocalor: A0 D15 S10
+  #912	quaxly	(Quaxly)  best@quaxwell: A0 D15 S10  [via reachable]
+  #913	quaxwell	(Quaxwell)  best@quaxwell: A0 D15 S10
+  #921	pawmi	(Pawmi)  best@pawmo: A15 D15 S15  [via reachable]
+  #922	pawmo	(Pawmo)  best@pawmo: A15 D15 S15
+  #932	nacli	(Nacli)  best@naclstack: A15 D15 S15  [via reachable]
+  #933	naclstack	(Naclstack)  best@naclstack: A15 D15 S15
+  #942	maschiff	(Maschiff)  best@maschiff: A7 D15 S15
+  #957	tinkatink	(Tinkatink)  best@tinkatuff: A15 D15 S15  [via reachable]
+  #958	tinkatuff	(Tinkatuff)  best@tinkatuff: A15 D15 S15
+  #974	cetoddle	(Cetoddle)  best@cetoddle: A15 D15 S15
+  #982	dudunsparce	(Dudunsparce)  best@dudunsparce: A0 D15 S7
+  #996	frigibax	(Frigibax)  best@frigibax: A15 D15 S15
+  #997	arctibax	(Arctibax)  best@baxcalibur: A0 D15 S5  [via reachable]
+  #998	baxcalibur	(Baxcalibur)  best@baxcalibur: A0 D15 S5
+  #999	gimmighoul	(Gimmighoul)  best@gholdengo: A0 D15 S10  [via reachable]
+  #1000	gholdengo	(Gholdengo)  best@gholdengo: A0 D15 S10
+
+=== 2500 CP cap (best-combo-only, full rule): 224 exceptions out of 1068 ===
+  #16	pidgey	(Pidgey)  best@pidgeot: A15 D15 S15  [via reachable]
+  #17	pidgeotto	(Pidgeotto)  best@pidgeot: A15 D15 S15  [via reachable]
+  #18	pidgeot	(Pidgeot)  best@pidgeot: A15 D15 S15
+  #21	spearow	(Spearow)  best@fearow: A15 D15 S15  [via reachable]
+  #22	fearow	(Fearow)  best@fearow: A15 D15 S15
+  #25	pikachu	(Pikachu)  best@raichu: A15 D15 S15  [via reachable]
+  #26	raichu	(Raichu)  best@raichu: A15 D15 S15
+  #26	raichu_alolan	(Raichu (Alolan))  best@raichu_alolan: A8 D15 S14
+  #37	vulpix	(Vulpix)  best@ninetales: A9 D15 S15  [via reachable]
+  #37	vulpix_alolan	(Vulpix (Alolan))  best@ninetales_alolan: A7 D15 S15  [via reachable]
+  #38	ninetales	(Ninetales)  best@ninetales: A9 D15 S15
+  #38	ninetales_alolan	(Ninetales (Alolan))  best@ninetales_alolan: A7 D15 S15
+  #43	oddish	(Oddish)  best@bellossom: A9 D15 S15  [via reachable]
+  #44	gloom	(Gloom)  best@bellossom: A9 D15 S15  [via reachable]
+  #48	venonat	(Venonat)  best@venomoth: A15 D15 S15  [via reachable]
+  #49	venomoth	(Venomoth)  best@venomoth: A15 D15 S15
+  #56	mankey	(Mankey)  best@primeape: A7 D15 S15  [via reachable]
+  #57	primeape	(Primeape)  best@primeape: A7 D15 S15
+  #58	growlithe_hisuian	(Growlithe (Hisuian))  best@arcanine_hisuian: A0 D10 S15  [via reachable]
+  #59	arcanine_hisuian	(Arcanine (Hisuian))  best@arcanine_hisuian: A0 D10 S15
+  #63	abra	(Abra)  best@kadabra: A15 D15 S15  [via reachable]
+  #64	kadabra	(Kadabra)  best@kadabra: A15 D15 S15
+  #66	machop	(Machop)  best@machoke: A15 D15 S15  [via reachable]
+  #67	machoke	(Machoke)  best@machoke: A15 D15 S15
+  #96	drowzee	(Drowzee)  best@hypno: A15 D15 S15  [via reachable]
+  #97	hypno	(Hypno)  best@hypno: A15 D15 S15
+  #100	voltorb	(Voltorb)  best@electrode: A15 D15 S15  [via reachable]
+  #100	voltorb_hisuian	(Voltorb (Hisuian))  best@electrode_hisuian: A15 D15 S15  [via reachable]
+  #101	electrode	(Electrode)  best@electrode: A15 D15 S15
+  #101	electrode_hisuian	(Electrode (Hisuian))  best@electrode_hisuian: A15 D15 S15
+  #109	koffing	(Koffing)  best@weezing: A8 D15 S15  [via reachable]
+  #110	weezing	(Weezing)  best@weezing: A8 D15 S15
+  #110	weezing_galarian	(Weezing (Galarian))  best@weezing_galarian: A8 D15 S15
+  #114	tangela	(Tangela)  best@tangela: A12 D15 S15
+  #116	horsea	(Horsea)  best@seadra: A15 D15 S15  [via reachable]
+  #117	seadra	(Seadra)  best@seadra: A15 D15 S15
+  #118	goldeen	(Goldeen)  best@seaking: A15 D15 S15  [via reachable]
+  #119	seaking	(Seaking)  best@seaking: A15 D15 S15
+  #122	mr_mime	(Mr. Mime)  best@mr_mime: A13 D15 S15
+  #122	mr_mime_galarian	(Mr. Mime (Galarian))  best@mr_mime_galarian: A15 D15 S15
+  #133	eevee	(Eevee)  best@umbreon: A15 D15 S15  [via reachable]
+  #151	mew	(Mew)  best@mew: A0 D15 S10
+  #163	hoothoot	(Hoothoot)  best@noctowl: A15 D15 S15  [via reachable]
+  #164	noctowl	(Noctowl)  best@noctowl: A15 D15 S15
+  #170	chinchou	(Chinchou)  best@lanturn: A15 D15 S15  [via reachable]
+  #171	lanturn	(Lanturn)  best@lanturn: A15 D15 S15
+  #172	pichu	(Pichu)  best@raichu: A15 D15 S15  [via reachable]
+  #177	natu	(Natu)  best@xatu: A15 D15 S15  [via reachable]
+  #178	xatu	(Xatu)  best@xatu: A15 D15 S15
+  #182	bellossom	(Bellossom)  best@bellossom: A9 D15 S15
+  #185	sudowoodo	(Sudowoodo)  best@sudowoodo: A15 D15 S15
+  #191	sunkern	(Sunkern)  best@sunflora: A15 D15 S15  [via reachable]
+  #192	sunflora	(Sunflora)  best@sunflora: A15 D15 S15
+  #194	wooper	(Wooper)  best@quagsire: A15 D15 S15  [via reachable]
+  #195	quagsire	(Quagsire)  best@quagsire: A15 D15 S15
+  #197	umbreon	(Umbreon)  best@umbreon: A15 D15 S15
+  #203	girafarig	(Girafarig)  best@girafarig: A15 D15 S15
+  #204	pineco	(Pineco)  best@forretress: A9 D15 S15  [via reachable]
+  #205	forretress	(Forretress)  best@forretress: A9 D15 S15
+  #211	qwilfish	(Qwilfish)  best@qwilfish: A15 D15 S15
+  #211	qwilfish_hisuian	(Qwilfish (Hisuian))  best@qwilfish_hisuian: A15 D15 S15
+  #215	sneasel	(Sneasel)  best@sneasel: A15 D15 S15
+  #215	sneasel_hisuian	(Sneasel (Hisuian))  best@sneasel_hisuian: A15 D15 S15
+  #226	mantine	(Mantine)  best@mantine: A15 D15 S15
+  #227	skarmory	(Skarmory)  best@skarmory: A15 D15 S15
+  #234	stantler	(Stantler)  best@stantler: A15 D15 S15
+  #236	tyrogue	(Tyrogue)  best@hitmontop: A15 D15 S15  [via reachable]
+  #237	hitmontop	(Hitmontop)  best@hitmontop: A15 D15 S15
+  #251	celebi	(Celebi)  best@celebi: A0 D15 S10
+  #270	lotad	(Lotad)  best@ludicolo: A6 D14 S15  [via reachable]
+  #271	lombre	(Lombre)  best@ludicolo: A6 D14 S15  [via reachable]
+  #272	ludicolo	(Ludicolo)  best@ludicolo: A6 D14 S15
+  #278	wingull	(Wingull)  best@pelipper: A15 D15 S15  [via reachable]
+  #279	pelipper	(Pelipper)  best@pelipper: A15 D15 S15
+  #283	surskit	(Surskit)  best@masquerain: A9 D15 S15  [via reachable]
+  #284	masquerain	(Masquerain)  best@masquerain: A9 D15 S15
+  #299	nosepass	(Nosepass)  best@probopass: A15 D15 S15  [via reachable]
+  #304	aron	(Aron)  best@lairon: A15 D15 S15  [via reachable]
+  #305	lairon	(Lairon)  best@lairon: A15 D15 S15
+  #318	carvanha	(Carvanha)  best@sharpedo: A15 D15 S15  [via reachable]
+  #319	sharpedo	(Sharpedo)  best@sharpedo: A15 D15 S15
+  #320	wailmer	(Wailmer)  best@wailord: A9 D15 S15  [via reachable]
+  #321	wailord	(Wailord)  best@wailord: A9 D15 S15
+  #322	numel	(Numel)  best@camerupt: A15 D15 S15  [via reachable]
+  #323	camerupt	(Camerupt)  best@camerupt: A15 D15 S15
+  #324	torkoal	(Torkoal)  best@torkoal: A15 D15 S15
+  #331	cacnea	(Cacnea)  best@cacturne: A6 D15 S15  [via reachable]
+  #332	cacturne	(Cacturne)  best@cacturne: A6 D15 S15
+  #333	swablu	(Swablu)  best@altaria: A15 D15 S15  [via reachable]
+  #334	altaria	(Altaria)  best@altaria: A15 D15 S15
+  #336	seviper	(Seviper)  best@seviper: A15 D15 S15
+  #339	barboach	(Barboach)  best@whiscash: A15 D15 S15  [via reachable]
+  #340	whiscash	(Whiscash)  best@whiscash: A15 D15 S15
+  #345	lileep	(Lileep)  best@cradily: A15 D15 S15  [via reachable]
+  #346	cradily	(Cradily)  best@cradily: A15 D15 S15
+  #352	kecleon	(Kecleon)  best@kecleon: A15 D15 S15
+  #353	shuppet	(Shuppet)  best@banette: A6 D15 S15  [via reachable]
+  #354	banette	(Banette)  best@banette: A6 D15 S15
+  #358	chimecho	(Chimecho)  best@chimecho: A11 D15 S15
+  #361	snorunt	(Snorunt)  best@froslass: A15 D15 S15  [via reachable]
+  #362	glalie	(Glalie)  best@glalie: A15 D15 S15
+  #371	bagon	(Bagon)  best@shelgon: A15 D15 S15  [via reachable]
+  #372	shelgon	(Shelgon)  best@shelgon: A15 D15 S15
+  #385	jirachi	(Jirachi)  best@jirachi: A0 D15 S10
+  #386	deoxys_defense	(Deoxys (Defense))  best@deoxys_defense: A12 D13 S15
+  #415	combee	(Combee)  best@vespiquen: A15 D15 S15  [via reachable]
+  #416	vespiquen	(Vespiquen)  best@vespiquen: A15 D15 S15
+  #420	cherubi	(Cherubi)  best@cherrim_overcast: A15 D15 S15  [via reachable]
+  #421	cherrim_overcast	(Cherrim (Overcast))  best@cherrim_overcast: A15 D15 S15
+  #421	cherrim_sunny	(Cherrim (Sunshine))  best@cherrim_sunny: A15 D15 S15
+  #422	shellos	(Shellos)  best@gastrodon: A6 D15 S15  [via reachable]
+  #423	gastrodon	(Gastrodon)  best@gastrodon: A6 D15 S15
+  #427	buneary	(Buneary)  best@lopunny: A15 D15 S15  [via reachable]
+  #428	lopunny	(Lopunny)  best@lopunny: A15 D15 S15
+  #433	chingling	(Chingling)  best@chimecho: A11 D15 S15  [via reachable]
+  #436	bronzor	(Bronzor)  best@bronzong: A13 D15 S14  [via reachable]
+  #437	bronzong	(Bronzong)  best@bronzong: A13 D15 S14
+  #438	bonsly	(Bonsly)  best@sudowoodo: A15 D15 S15  [via reachable]
+  #439	mime_jr	(Mime (Jr))  best@mr_mime: A13 D15 S15  [via reachable]
+  #442	spiritomb	(Spiritomb)  best@spiritomb: A15 D15 S15
+  #455	carnivine	(Carnivine)  best@carnivine: A15 D15 S15
+  #458	mantyke	(Mantyke)  best@mantine: A15 D15 S15  [via reachable]
+  #476	probopass	(Probopass)  best@probopass: A15 D15 S15
+  #478	froslass	(Froslass)  best@froslass: A15 D15 S15
+  #479	rotom	(Rotom)  best@rotom: A15 D15 S15
+  #484	palkia_origin	(Palkia (Origin))  best@palkia_origin: A0 D15 S10
+  #486	regigigas	(Regigigas)  best@regigigas: A0 D13 S10
+  #491	darkrai	(Darkrai)  best@darkrai: A0 D10 S14
+  #492	shaymin_land	(Shaymin (Land))  best@shaymin_land: A0 D15 S10
+  #494	victini	(Victini)  best@victini: A0 D15 S10
+  #495	snivy	(Snivy)  best@serperior: A10 D14 S15  [via reachable]
+  #496	servine	(Servine)  best@serperior: A10 D14 S15  [via reachable]
+  #497	serperior	(Serperior)  best@serperior: A10 D14 S15
+  #524	roggenrola	(Roggenrola)  best@boldore: A15 D15 S15  [via reachable]
+  #525	boldore	(Boldore)  best@boldore: A15 D15 S15
+  #532	timburr	(Timburr)  best@gurdurr: A15 D15 S15  [via reachable]
+  #533	gurdurr	(Gurdurr)  best@gurdurr: A15 D15 S15
+  #546	cottonee	(Cottonee)  best@whimsicott: A15 D15 S15  [via reachable]
+  #547	whimsicott	(Whimsicott)  best@whimsicott: A15 D15 S15
+  #550	basculin	(Basculin)  best@basculin: A15 D15 S15
+  #556	maractus	(Maractus)  best@maractus: A9 D15 S15
+  #559	scraggy	(Scraggy)  best@scrafty: A9 D15 S15  [via reachable]
+  #560	scrafty	(Scrafty)  best@scrafty: A9 D15 S15
+  #562	yamask	(Yamask)  best@cofagrigus: A10 D15 S15  [via reachable]
+  #562	yamask_galarian	(Yamask (Galarian))  best@runerigus: A10 D15 S15  [via reachable]
+  #563	cofagrigus	(Cofagrigus)  best@cofagrigus: A10 D15 S15
+  #572	minccino	(Minccino)  best@cinccino: A12 D15 S15  [via reachable]
+  #573	cinccino	(Cinccino)  best@cinccino: A12 D15 S15
+  #577	solosis	(Solosis)  best@duosion: A15 D15 S15  [via reachable]
+  #578	duosion	(Duosion)  best@duosion: A15 D15 S15
+  #580	ducklett	(Ducklett)  best@swanna: A15 D15 S15  [via reachable]
+  #581	swanna	(Swanna)  best@swanna: A15 D15 S15
+  #590	foongus	(Foongus)  best@amoonguss: A15 D15 S15  [via reachable]
+  #591	amoonguss	(Amoonguss)  best@amoonguss: A15 D15 S15
+  #592	frillish	(Frillish)  best@jellicent: A6 D14 S15  [via reachable]
+  #593	jellicent	(Jellicent)  best@jellicent: A6 D14 S15
+  #594	alomomola	(Alomomola)  best@alomomola: A15 D15 S15
+  #595	joltik	(Joltik)  best@galvantula: A15 D15 S15  [via reachable]
+  #596	galvantula	(Galvantula)  best@galvantula: A15 D15 S15
+  #597	ferroseed	(Ferroseed)  best@ferrothorn: A7 D14 S15  [via reachable]
+  #598	ferrothorn	(Ferrothorn)  best@ferrothorn: A7 D14 S15
+  #610	axew	(Axew)  best@fraxure: A12 D15 S15  [via reachable]
+  #611	fraxure	(Fraxure)  best@fraxure: A12 D15 S15
+  #618	stunfisk	(Stunfisk)  best@stunfisk: A15 D15 S15
+  #618	stunfisk_galarian	(Stunfisk (Galarian))  best@stunfisk_galarian: A15 D15 S15
+  #624	pawniard	(Pawniard)  best@kingambit: A0 D15 S10  [via reachable]
+  #625	bisharp	(Bisharp)  best@kingambit: A0 D15 S10  [via reachable]
+  #629	vullaby	(Vullaby)  best@mandibuzz: A15 D15 S15  [via reachable]
+  #630	mandibuzz	(Mandibuzz)  best@mandibuzz: A15 D15 S15
+  #661	fletchling	(Fletchling)  best@talonflame: A15 D15 S15  [via reachable]
+  #662	fletchinder	(Fletchinder)  best@talonflame: A15 D15 S15  [via reachable]
+  #663	talonflame	(Talonflame)  best@talonflame: A15 D15 S15
+  #676	furfrou	(Furfrou)  best@furfrou: A15 D15 S15
+  #677	espurr	(Espurr)  best@meowstic: A15 D15 S15  [via reachable]
+  #678	meowstic	(Meowstic (♂))  best@meowstic: A15 D15 S15
+  #678	meowstic_female	(Meowstic (♀))  best@meowstic_female: A15 D15 S15
+  #682	spritzee	(Spritzee)  best@aromatisse: A6 D15 S14  [via reachable]
+  #683	aromatisse	(Aromatisse)  best@aromatisse: A6 D15 S14
+  #684	swirlix	(Swirlix)  best@slurpuff: A15 D15 S15  [via reachable]
+  #685	slurpuff	(Slurpuff)  best@slurpuff: A15 D15 S15
+  #704	goomy	(Goomy)  best@sliggoo: A15 D15 S15  [via reachable]
+  #705	sliggoo	(Sliggoo)  best@sliggoo: A15 D15 S15
+  #710	pumpkaboo_small	(Pumpkaboo (Small))  best@gourgeist_small: A11 D15 S15  [via reachable]
+  #711	gourgeist_small	(Gourgeist (Small))  best@gourgeist_small: A11 D15 S15
+  #734	yungoos	(Yungoos)  best@gumshoos: A15 D15 S15  [via reachable]
+  #735	gumshoos	(Gumshoos)  best@gumshoos: A15 D15 S15
+  #742	cutiefly	(Cutiefly)  best@ribombee: A15 D15 S15  [via reachable]
+  #743	ribombee	(Ribombee)  best@ribombee: A15 D15 S15
+  #764	comfey	(Comfey)  best@comfey: A15 D15 S15
+  #776	turtonator	(Turtonator)  best@turtonator: A15 D14 S14
+  #777	togedemaru	(Togedemaru)  best@togedemaru: A15 D15 S15
+  #778	mimikyu	(Mimikyu)  best@mimikyu: A14 D14 S15
+  #787	tapu_bulu	(Tapu Bulu)  best@tapu_bulu: A0 D9 S15
+  #824	blipbug	(Blipbug)  best@orbeetle: A14 D15 S15  [via reachable]
+  #825	dottler	(Dottler)  best@orbeetle: A14 D15 S15  [via reachable]
+  #826	orbeetle	(Orbeetle)  best@orbeetle: A14 D15 S15
+  #827	nickit	(Nickit)  best@thievul: A15 D15 S15  [via reachable]
+  #828	thievul	(Thievul)  best@thievul: A15 D15 S15
+  #829	gossifleur	(Gossifleur)  best@eldegoss: A15 D15 S15  [via reachable]
+  #830	eldegoss	(Eldegoss)  best@eldegoss: A15 D15 S15
+  #831	wooloo	(Wooloo)  best@dubwool: A15 D15 S15  [via reachable]
+  #832	dubwool	(Dubwool)  best@dubwool: A15 D15 S15
+  #835	yamper	(Yamper)  best@boltund: A15 D15 S15  [via reachable]
+  #836	boltund	(Boltund)  best@boltund: A15 D15 S15
+  #837	rolycoly	(Rolycoly)  best@coalossal: A6 D14 S14  [via reachable]
+  #838	carkol	(Carkol)  best@coalossal: A6 D14 S14  [via reachable]
+  #839	coalossal	(Coalossal)  best@coalossal: A6 D14 S14
+  #845	cramorant	(Cramorant)  best@cramorant: A15 D15 S15
+  #867	runerigus	(Runerigus)  best@runerigus: A10 D15 S15
+  #888	zacian_hero	(Zacian (Hero))  best@zacian_hero: A0 D10 S14
+  #889	zamazenta_hero	(Zamazenta (Hero))  best@zamazenta_hero: A0 D10 S14
+  #926	fidough	(Fidough)  best@dachsbun: A15 D15 S15  [via reachable]
+  #927	dachsbun	(Dachsbun)  best@dachsbun: A15 D15 S15
+  #938	tadbulb	(Tadbulb)  best@bellibolt: A0 D15 S10  [via reachable]
+  #939	bellibolt	(Bellibolt)  best@bellibolt: A0 D15 S10
+  #944	shroodle	(Shroodle)  best@grafaiai: A10 D15 S15  [via reachable]
+  #945	grafaiai	(Grafaiai)  best@grafaiai: A10 D15 S15
+  #957	tinkatink	(Tinkatink)  best@tinkaton: A13 D15 S15  [via reachable]
+  #958	tinkatuff	(Tinkatuff)  best@tinkaton: A13 D15 S15  [via reachable]
+  #959	tinkaton	(Tinkaton)  best@tinkaton: A13 D15 S15
+  #968	orthworm	(Orthworm)  best@orthworm: A8 D15 S15
+  #983	kingambit	(Kingambit)  best@kingambit: A0 D15 S10
+  #996	frigibax	(Frigibax)  best@arctibax: A15 D15 S15  [via reachable]
+  #997	arctibax	(Arctibax)  best@arctibax: A15 D15 S15

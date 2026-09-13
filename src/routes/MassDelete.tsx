@@ -7,6 +7,15 @@ import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
+import {
+	buildUniqueTypes,
+	complementOfBucket,
+	generatePokemonId,
+	groupAttr,
+	ivBucket,
+	negateIdentity,
+	translatePtBrTypeNames,
+} from '../lib/search-string';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
@@ -14,6 +23,7 @@ import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from '../utils/pokemon-helper';
+import type { BadIvCarveOut } from '../workers/compute.worker';
 import { getComputeWorker } from '../workers/compute-client';
 
 const numCfg = (key: ConfigKeys, fallback: number): number => {
@@ -34,6 +44,18 @@ const HELP_TEXT =
 	"also target Pokémon that require low Attack IVs to be relevant, in case they don't have a low Attack IV – " +
 	'because trading couldn’t make them relevant either. Please double-check if your in-game language matches the ' +
 	'language selected in the website settings.';
+
+const BAD_IV_HELP_TEXT =
+	'This mode ignores the current PvP/raid meta entirely — it never looks at rankings, so it won’t change as the meta ' +
+	'does. Instead, for every species it works out its own best possible IV spread for Great League (1500 CP) and ' +
+	'Ultra League (2500 CP), independent of how that species stacks up against any other. The rule of thumb: a spread ' +
+	'with low Attack (0-5) and high Defense/HP (11-15) is normally the best a species can do under a CP cap — trading ' +
+	'Attack for a higher level buys more Defense and HP than the Attack was worth. Species whose real best spread ' +
+	'doesn’t fit that shape (because their own stats are too weak to spare the Attack, or the cap barely binds them at ' +
+	'all) get their own exact spread protected instead, individually. For Master League (no CP cap), more IVs are ' +
+	'always strictly better, so it’s just a flat “keep anything 11+ in every stat”. A perfect 15/15/15 is always kept, ' +
+	'in every league, no matter what. This never deletes any favorite, tagged, legendary, ultra beast, mythical, or ' +
+	'mega-evolvable Pokémon either.';
 
 interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
@@ -174,68 +196,6 @@ const computeTrashString = (a: ComputeArgs): string => {
 			}
 		});
 
-	type PokemonForm = { dexNumber: number; types: Array<string>; isShadow: boolean; p: IGamemasterPokemon };
-	type UniqueTypes = Record<number, Set<string>>;
-
-	const buildUniqueTypes = (pokemonForms: Array<PokemonForm>): UniqueTypes => {
-		const typeOccurrences: Record<number, Record<string, number>> = {};
-		pokemonForms.forEach(({ dexNumber, types }) => {
-			if (!typeOccurrences[dexNumber]) typeOccurrences[dexNumber] = {};
-			types.forEach((type) => {
-				typeOccurrences[dexNumber][type] = (typeOccurrences[dexNumber][type] || 0) + 1;
-			});
-		});
-		const uniqueTypes: UniqueTypes = {};
-		for (const dex in typeOccurrences) {
-			const dexNumber = parseInt(dex);
-			uniqueTypes[dexNumber] = new Set<string>();
-			for (const type in typeOccurrences[dexNumber]) {
-				if (typeOccurrences[dexNumber][type] === 1) {
-					uniqueTypes[dexNumber].add(type);
-				}
-			}
-		}
-		return uniqueTypes;
-	};
-
-	const generatePokemonId = (
-		dexNumber: number,
-		types: Array<string>,
-		uniqueTypes: UniqueTypes,
-		formSiblings: Array<PokemonForm>,
-		form: PokemonForm
-	) => {
-		if (formSiblings.length === 1) {
-			return `${dexNumber}`;
-		}
-		let identifier = `${dexNumber}`;
-		const uniqueTypesForDex = uniqueTypes[dexNumber] || new Set<string>();
-		const siblingTypesToNegate = new Set<string>();
-		const uniqueType = types.find((type) => uniqueTypesForDex.has(type));
-		if (uniqueType) {
-			identifier += `,${uniqueType}`;
-		} else {
-			types.forEach((type) => {
-				if (formSiblings.some((t) => !t.types.includes(type))) {
-					identifier += `,${type}`;
-				}
-			});
-			formSiblings.forEach((sibling) => {
-				if (sibling !== form) {
-					sibling.types.forEach((siblingType) => {
-						if (!types.includes(siblingType) && sibling.types.some((t) => types.includes(t))) {
-							siblingTypesToNegate.add(siblingType);
-						}
-					});
-				}
-			});
-			siblingTypesToNegate.forEach((type) => {
-				identifier += `,!${type}`;
-			});
-		}
-		return identifier;
-	};
-
 	const allPokemonForms = Object.values(gamemasterPokemon)
 		.filter((e) => !e.isMega && !e.aliasId)
 		.map((e) => ({
@@ -263,12 +223,7 @@ const computeTrashString = (a: ComputeArgs): string => {
 			alwaysGood[d].forEach((e) => {
 				let newStr = '';
 				const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-				newStr +=
-					'&' +
-					baseId
-						.split(',')
-						.map((f) => (f.startsWith('!') ? f.substring(1) : `!${f}`))
-						.join(',');
+				newStr += '&' + negateIdentity(baseId);
 				if (e.isShadow) {
 					newStr += `,!shadow`;
 				} else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
@@ -284,12 +239,7 @@ const computeTrashString = (a: ComputeArgs): string => {
 			alwaysBadIfHighAtk[d].forEach((e) => {
 				let newStr = '';
 				const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-				newStr +=
-					'&' +
-					baseId
-						.split(',')
-						.map((f) => (f.startsWith('!') ? f.substring(1) : `!${f}`))
-						.join(',');
+				newStr += '&' + negateIdentity(baseId);
 				if (e.isShadow) {
 					newStr += `,!shadow`;
 				} else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
@@ -349,25 +299,7 @@ const computeTrashString = (a: ComputeArgs): string => {
 	}
 
 	if (gl === GameLanguage.ptbr) {
-		newStr = newStr
-			.replaceAll('bug', 'inseto')
-			.replaceAll('dark', 'sombrio')
-			.replaceAll('dragon', 'dragão')
-			.replaceAll('electric', 'elétrico')
-			.replaceAll('fairy', 'fada')
-			.replaceAll('fighting', 'lutador')
-			.replaceAll('fire', 'fogo')
-			.replaceAll('flying', 'voador')
-			.replaceAll('ghost', 'fantasma')
-			.replaceAll('grass', 'planta')
-			.replaceAll('ground', 'terrestre')
-			.replaceAll('ice', 'gelo')
-			.replaceAll('poison', 'venenoso')
-			.replaceAll('psychic', 'psíquico')
-			.replaceAll('rock', 'pedra')
-			.replaceAll('steel', 'aço')
-			.replaceAll('water', 'água')
-			.replaceAll('shadow', 'sombroso');
+		newStr = translatePtBrTypeNames(newStr);
 	}
 
 	newStr += `&!4*&!#&!${gameTranslator(GameTranslatorKeys.CP, gl)}${cp}-&!${gameTranslator(
@@ -376,6 +308,85 @@ const computeTrashString = (a: ComputeArgs): string => {
 	)}&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
 
 	return newStr;
+};
+
+/**
+ * "Mass Delete only Bad IV Pokémon" — meta-agnostic: never looks at PvP/raid
+ * rankings at all, just each species' own intrinsic best-possible IV spread
+ * per CP cap (see `findBadIvCarveOuts` in the compute worker, which does the
+ * actual brute-force analysis this only turns into a string). Default keep
+ * rule is the classic low-Attack/max-bulk CP-cap spread (0-5 Attack, 11-15
+ * Defense, 11-15 HP); `carveOuts` are the species where that default doesn't
+ * match their own real optimum, each protected via its own exact bucket
+ * pattern instead. An exact hundo is always kept regardless (`!4*`), so
+ * nothing here ever needs to special-case one.
+ */
+const computeBadIvString = (
+	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	carveOuts: Array<BadIvCarveOut>,
+	gl: GameLanguage,
+	cp: number
+): string => {
+	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
+	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
+	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
+	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
+
+	// Shadow forms mirror their non-shadow counterpart's stats exactly — CP
+	// depends only on base stats, and shadow doesn't change those — so this
+	// whole mode never needs to distinguish shadow from non-shadow at all.
+	const allPokemonForms = Object.values(gamemasterPokemon)
+		.filter((e) => !e.isMega && !e.aliasId && !e.isShadow)
+		.map((e) => ({
+			dexNumber: e.dex,
+			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
+			isShadow: false,
+			p: e,
+		}));
+	const uniqueTypes = buildUniqueTypes(allPokemonForms);
+	const baseIds: Record<string, string> = {};
+	allPokemonForms.forEach((form) => {
+		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber);
+		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
+		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
+	});
+
+	// The shared Great/Ultra default clause is the primary selection criterion
+	// (no leading `&`, matching Tab 1's own convention of always starting with
+	// a bare positive term). Master's broader "11+ everywhere" rule is
+	// deliberately not included — only an exact hundo gets a free pass, and
+	// that's `!4*` at the tail, unconditionally.
+	let result = `2-4${A},0-2${D},0-2${S}`;
+
+	const seenClauses = new Set<string>();
+	carveOuts.forEach(({ speciesId, pattern }) => {
+		const p = gamemasterPokemon[speciesId];
+		if (!p) return;
+		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
+		if (!baseId) return;
+		const negA = groupAttr(complementOfBucket(ivBucket(pattern.A)), A);
+		const negD = groupAttr(complementOfBucket(ivBucket(pattern.D)), D);
+		const negS = groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
+		const clause = `&${negateIdentity(baseId)}${negA}${negD}${negS}`;
+		if (!seenClauses.has(clause)) {
+			result += clause;
+			seenClauses.add(clause);
+		}
+	});
+
+	if (gl === GameLanguage.ptbr) {
+		result = translatePtBrTypeNames(result);
+	}
+
+	result += `&!4*&!#&!${CP}${cp}-&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}&!${gameTranslator(
+		GameTranslatorKeys.MegaEvolve,
+		gl
+	)}&!${gameTranslator(GameTranslatorKeys.Legendary, gl)}&!${gameTranslator(
+		GameTranslatorKeys.Mythical,
+		gl
+	)}&!${gameTranslator(GameTranslatorKeys.UltraBeast, gl)}`;
+
+	return result;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -408,6 +419,11 @@ const MassDelete = () => {
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { raidMetric } = useRaidMetric();
 	const { currentGameLanguage: gl } = useLanguage();
+
+	const [mode, setMode] = useState<'meta' | 'badIv'>(() =>
+		readPersistentValue(ConfigKeys.MassDeleteMode) === 'badIv' ? 'badIv' : 'meta'
+	);
+	useEffect(() => void writePersistentValue(ConfigKeys.MassDeleteMode, mode), [mode]);
 
 	const [trashGreat, setTrashGreat] = useState(() => numCfg(ConfigKeys.TrashGreat, 50));
 	const [trashUltra, setTrashUltra] = useState(() => numCfg(ConfigKeys.TrashUltra, 50));
@@ -510,9 +526,44 @@ const MassDelete = () => {
 		keepForTrade,
 	]);
 
+	// ---- "Bad IV" mode ----
+	const [isCalculatingBadIv, setIsCalculatingBadIv] = useState(false);
+	const [badIvResult, setBadIvResult] = useState('');
+
+	// The heavy part — the brute-force sweep for every species' own best spread
+	// per cap — never depends on `cp`/`gl`, so it's cached indefinitely and only
+	// ever runs once per session; only the (cheap) string assembly below reacts
+	// to those.
+	const { data: badIvCarveOuts } = useQuery({
+		enabled: isCalculatingBadIv && fetchCompleted,
+		queryKey: ['bad-iv-carveouts'],
+		queryFn: () => getComputeWorker().findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] }),
+		staleTime: Infinity,
+		gcTime: 30 * 60 * 1000,
+	});
+
+	useEffect(() => {
+		if (!isCalculatingBadIv || !fetchCompleted || !badIvCarveOuts) return;
+		const id = window.setTimeout(() => {
+			setBadIvResult(computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp));
+			setIsCalculatingBadIv(false);
+		}, 60);
+		return () => window.clearTimeout(id);
+	}, [isCalculatingBadIv, fetchCompleted, badIvCarveOuts, gamemasterPokemon, gl, cp]);
+
+	// changing the CP floor or language invalidates a stale result (the
+	// carve-out sweep itself is unaffected, so no need to recompute that part)
+	useEffect(() => {
+		setBadIvResult('');
+	}, [cp, gl]);
+
+	const isBadIv = mode === 'badIv';
+	const activeResult = isBadIv ? badIvResult : result;
+	const activeCalculating = isBadIv ? isCalculatingBadIv : isCalculating;
+
 	const copy = () => {
-		if (!result) return;
-		void navigator.clipboard?.writeText(result);
+		if (!activeResult) return;
+		void navigator.clipboard?.writeText(activeResult);
 		outRef.current?.select();
 		setCopied(true);
 		window.setTimeout(() => setCopied(false), 1400);
@@ -522,10 +573,21 @@ const MassDelete = () => {
 
 	return (
 		<div className='r-shell'>
-			<h1 className='r-page-title'>Mass delete</h1>
+			<h1 className='r-page-title'>
+				{isBadIv ? 'Mass Delete only Bad IV Pokémon' : 'Mass Delete current non-meta relevant Pokémon'}
+			</h1>
+
+			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label='Mass delete mode'>
+				<button type='button' data-active={!isBadIv} onClick={() => setMode('meta')}>
+					Non-meta relevant
+				</button>
+				<button type='button' data-active={isBadIv} onClick={() => setMode('badIv')}>
+					Bad IV
+				</button>
+			</div>
 
 			<div className='r-card r-md-help'>
-				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{HELP_TEXT}</p>
+				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{isBadIv ? BAD_IV_HELP_TEXT : HELP_TEXT}</p>
 				<button type='button' className='r-md-more' onClick={() => setHelpOpen((v) => !v)}>
 					{helpOpen ? 'Read less' : 'Read more'}
 				</button>
@@ -548,69 +610,78 @@ const MassDelete = () => {
 						))}
 					</select>
 				</div>
-				<div className='r-md-row'>
-					<span className='r-md-k'>
-						<img src='/images/leagues/great.png' alt='' width={18} height={18} />
-						Keep top Great League
-					</span>
-					<NumSelect label='Keep top Great League' value={trashGreat} onChange={setTrashGreat} count={2000} />
-				</div>
-				<div className='r-md-row'>
-					<span className='r-md-k'>
-						<img src='/images/leagues/ultra.png' alt='' width={18} height={18} />
-						Keep top Ultra League
-					</span>
-					<NumSelect label='Keep top Ultra League' value={trashUltra} onChange={setTrashUltra} count={2000} />
-				</div>
-				<div className='r-md-row'>
-					<span className='r-md-k'>
-						<img src='/images/leagues/master.png' alt='' width={18} height={18} />
-						Keep top Master League
-					</span>
-					<NumSelect label='Keep top Master League' value={trashMaster} onChange={setTrashMaster} count={2000} />
-				</div>
-				<div className='r-md-row'>
-					<span className='r-md-k'>
-						<img src='/images/tx_raid_coin.png' alt='' width={18} height={18} />
-						Keep top raid attackers
-					</span>
-					<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
-				</div>
-				<div className='r-md-row'>
-					<button
-						type='button'
-						className='r-ss-toggle'
-						data-on={keepForTrade ? '' : undefined}
-						aria-pressed={keepForTrade}
-						onClick={() => setKeepForTrade((v) => !v)}
-					>
-						<span className='r-ss-box' aria-hidden='true' />
-						Keep pokémon relevant for trade
-					</button>
-				</div>
+				{!isBadIv && (
+					<>
+						<div className='r-md-row'>
+							<span className='r-md-k'>
+								<img src='/images/leagues/great.png' alt='' width={18} height={18} />
+								Keep top Great League
+							</span>
+							<NumSelect label='Keep top Great League' value={trashGreat} onChange={setTrashGreat} count={2000} />
+						</div>
+						<div className='r-md-row'>
+							<span className='r-md-k'>
+								<img src='/images/leagues/ultra.png' alt='' width={18} height={18} />
+								Keep top Ultra League
+							</span>
+							<NumSelect label='Keep top Ultra League' value={trashUltra} onChange={setTrashUltra} count={2000} />
+						</div>
+						<div className='r-md-row'>
+							<span className='r-md-k'>
+								<img src='/images/leagues/master.png' alt='' width={18} height={18} />
+								Keep top Master League
+							</span>
+							<NumSelect label='Keep top Master League' value={trashMaster} onChange={setTrashMaster} count={2000} />
+						</div>
+						<div className='r-md-row'>
+							<span className='r-md-k'>
+								<img src='/images/tx_raid_coin.png' alt='' width={18} height={18} />
+								Keep top raid attackers
+							</span>
+							<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+						</div>
+						<div className='r-md-row'>
+							<button
+								type='button'
+								className='r-ss-toggle'
+								data-on={keepForTrade ? '' : undefined}
+								aria-pressed={keepForTrade}
+								onClick={() => setKeepForTrade((v) => !v)}
+							>
+								<span className='r-ss-box' aria-hidden='true' />
+								Keep pokémon relevant for trade
+							</button>
+						</div>
+					</>
+				)}
 			</div>
 
 			<button
 				type='button'
 				className='r-md-compute'
-				disabled={!ready || isCalculating}
+				disabled={!ready || activeCalculating}
 				onClick={() => {
-					setResult('');
-					setIsCalculating(true);
+					if (isBadIv) {
+						setBadIvResult('');
+						setIsCalculatingBadIv(true);
+					} else {
+						setResult('');
+						setIsCalculating(true);
+					}
 				}}
 			>
-				{isCalculating ? 'Computing…' : ready ? 'Compute' : 'Loading data…'}
+				{activeCalculating ? 'Computing…' : ready ? 'Compute' : 'Loading data…'}
 			</button>
 
 			<textarea
 				ref={outRef}
 				className='r-md-out'
 				readOnly
-				value={isCalculating ? 'Computing… this sweeps every species, give it a moment.' : result}
+				value={activeCalculating ? 'Computing… this sweeps every species, give it a moment.' : activeResult}
 				placeholder='Your search string appears here. Paste it into the Pokémon GO search bar, review the matches, then delete.'
 				onClick={copy}
 			/>
-			{result && (
+			{activeResult && (
 				<button type='button' className='r-md-copy' onClick={copy}>
 					{copied ? 'Copied ✓' : 'Copy search string'}
 				</button>

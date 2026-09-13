@@ -1,0 +1,72 @@
+956 candidates (non-alias/mega/shadow/legendary/mythical/UB)
+889 already protected by a blanket rule (Master or shared Great/Ultra default) via some reachable stage — no carve-out needed
+67 genuinely need their own dedicated carve-out
+
+-- species needing a dedicated carve-out --
+  #26	raichu_alolan	(Raichu (Alolan))  via raichu_alolan: 1500=A1D15S15  2500=A8D15S14
+  #38	ninetales	(Ninetales)  via ninetales: 1500=A0D15S15  2500=A9D15S15
+  #38	ninetales_alolan	(Ninetales (Alolan))  via ninetales_alolan: 1500=A0D14S12  2500=A7D15S15
+  #55	golduck	(Golduck)  via golduck: 1500=A0D10S14  2500=A0D13S13
+  #59	arcanine_hisuian	(Arcanine (Hisuian))  via arcanine_hisuian: 1500=A0D14S10  2500=A0D10S15
+  #99	kingler	(Kingler)  via kingler: 1500=A0D9S15  2500=A0D15S15
+  #108	lickitung	(Lickitung)  via lickitung: 1500=A8D14S15  2500=n/a
+  #110	weezing	(Weezing)  via weezing: 1500=A0D14S14  2500=A8D15S15
+  #110	weezing_galarian	(Weezing (Galarian))  via weezing_galarian: 1500=A0D14S14  2500=A8D15S15
+  #131	lapras	(Lapras)  via lapras: 1500=A0D10S14  2500=A0D15S15
+  #139	omastar	(Omastar)  via omastar: 1500=A0D9S15  2500=A0D14S15
+  #140	kabuto	(Kabuto)  via kabuto: 1500=A10D15S15  2500=n/a
+  #141	kabutops	(Kabutops)  via kabutops: 1500=A0D14S10  2500=A0D14S15
+  #154	meganium	(Meganium)  via meganium: 1500=A0D10S15  2500=A0D14S15
+  #182	bellossom	(Bellossom)  via bellossom: 1500=A1D14S14  2500=A9D15S15
+  #205	forretress	(Forretress)  via forretress: 1500=A0D9S15  2500=A9D15S15
+  #221	piloswine	(Piloswine)  via piloswine: 1500=A0D15S10  2500=A5D15S12
+  #222	corsola	(Corsola)  via corsola: 1500=A10D15S15  2500=n/a
+  #232	donphan	(Donphan)  via donphan: 1500=A0D14S8  2500=A0D15S15
+  #242	blissey	(Blissey)  via blissey: 1500=A0D15S3  2500=A0D15S14
+  #272	ludicolo	(Ludicolo)  via ludicolo: 1500=A0D15S15  2500=A6D14S15
+  #284	masquerain	(Masquerain)  via masquerain: 1500=A0D15S14  2500=A9D15S15
+  #295	exploud	(Exploud)  via exploud: 1500=A0D15S10  2500=A4D15S14
+  #321	wailord	(Wailord)  via wailord: 1500=A0D15S15  2500=A9D15S15
+  #330	flygon	(Flygon)  via flygon: 1500=A0D15S9  2500=A0D13S15
+  #332	cacturne	(Cacturne)  via cacturne: 1500=A0D14S15  2500=A6D15S15
+  #335	zangoose	(Zangoose)  via zangoose: 1500=A0D15S10  2500=A0D15S15
+  #348	armaldo	(Armaldo)  via armaldo: 1500=A0D9S15  2500=A2D15S15
+  #354	banette	(Banette)  via banette: 1500=A0D14S15  2500=A6D15S15
+  #373	salamence	(Salamence)  via salamence: 1500=A0D10S14  2500=A1D15S15
+  #409	rampardos	(Rampardos)  via rampardos: 1500=A1D14S8  2500=A0D14S15
+  #423	gastrodon	(Gastrodon)  via gastrodon: 1500=A1D15S14  2500=A6D15S15
+  #450	hippowdon	(Hippowdon)  via hippowdon: 1500=A0D14S10  2500=A0D14S15
+  #463	lickilicky	(Lickilicky)  via lickilicky: 1500=A0D15S10  2500=A0D14S15
+  #467	magmortar	(Magmortar)  via magmortar: 1500=A0D10S15  2500=A1D15S15
+  #473	mamoswine	(Mamoswine)  via mamoswine: 1500=A0D15S7  2500=A0D15S13
+  #497	serperior	(Serperior)  via serperior: 1500=A0D10S15  2500=A10D14S15
+  #500	emboar	(Emboar)  via emboar: 1500=A0D14S9  2500=A0D15S14
+  #523	zebstrika	(Zebstrika)  via zebstrika: 1500=A0D15S9  2500=A0D13S15
+  #528	swoobat	(Swoobat)  via swoobat: 1500=A0D15S9  2500=n/a
+  #556	maractus	(Maractus)  via maractus: 1500=A0D13S14  2500=A9D15S15
+  #560	scrafty	(Scrafty)  via scrafty: 1500=A0D8S15  2500=A9D15S15
+  #563	cofagrigus	(Cofagrigus)  via cofagrigus: 1500=A0D11S14  2500=A10D15S15
+  #593	jellicent	(Jellicent)  via jellicent: 1500=A1D14S14  2500=A6D14S15
+  #598	ferrothorn	(Ferrothorn)  via ferrothorn: 1500=A0D13S13  2500=A7D14S15
+  #635	hydreigon	(Hydreigon)  via hydreigon: 1500=A0D15S10  2500=A0D15S15
+  #637	volcarona	(Volcarona)  via volcarona: 1500=A0D9S15  2500=A0D15S14
+  #668	pyroar	(Pyroar)  via pyroar: 1500=A0D15S10  2500=A0D15S12
+  #683	aromatisse	(Aromatisse)  via aromatisse: 1500=A0D13S15  2500=A6D15S14
+  #687	malamar	(Malamar)  via malamar: 1500=A0D15S9  2500=A3D15S15
+  #689	barbaracle	(Barbaracle)  via barbaracle: 1500=A0D10S13  2500=A0D15S15
+  #713	avalugg_hisuian	(Avalugg (Hisuian))  via avalugg_hisuian: 1500=A0D14S9  2500=A1D14S15
+  #727	incineroar	(Incineroar)  via incineroar: 1500=A0D15S9  2500=A0D15S15
+  #752	araquanid	(Araquanid)  via araquanid: 1500=A0D10S15  2500=n/a
+  #768	golisopod	(Golisopod)  via golisopod: 1500=A0D8S15  2500=A1D14S15
+  #839	coalossal	(Coalossal)  via coalossal: 1500=A1D15S14  2500=A6D14S14
+  #851	centiskorch	(Centiskorch)  via centiskorch: 1500=A0D15S9  2500=A0D15S15
+  #867	runerigus	(Runerigus)  via runerigus: 1500=A0D11S14  2500=A10D15S15
+  #900	kleavor	(Kleavor)  via kleavor: 1500=A0D15S8  2500=A1D15S13
+  #903	sneasler	(Sneasler)  via sneasler: 1500=A0D15S9  2500=A2D15S15
+  #939	bellibolt	(Bellibolt)  via bellibolt: 1500=A0D14S12  2500=A0D15S10
+  #945	grafaiai	(Grafaiai)  via grafaiai: 1500=A0D15S14  2500=A10D15S15
+  #968	orthworm	(Orthworm)  via orthworm: 1500=A0D15S14  2500=A8D15S15
+  #982	dudunsparce	(Dudunsparce)  via dudunsparce: 1500=A0D15S7  2500=A0D15S14
+  #983	kingambit	(Kingambit)  via kingambit: 1500=A0D15S13  2500=A0D15S10
+  #998	baxcalibur	(Baxcalibur)  via baxcalibur: 1500=A0D15S5  2500=A1D15S15
+  #1000	gholdengo	(Gholdengo)  via gholdengo: 1500=A0D15S10  2500=A0D15S12
