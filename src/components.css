@@ -3393,44 +3393,96 @@
 	text-decoration: underline;
 	cursor: pointer;
 }
-.rvmp .r-md-knobs {
-	display: grid;
-	gap: 4px;
-}
-.rvmp .r-md-row {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 12px;
-	padding: 8px 0;
-	border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
-}
-.rvmp .r-md-row:last-child {
-	border-bottom: 0;
-}
-.rvmp .r-md-k {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--text);
-}
-.rvmp .r-md-k img {
-	flex: none;
-	object-fit: contain;
-}
 .rvmp .r-md-select {
-	flex: none;
-	min-width: 74px;
-	padding: 7px 10px;
+	width: 100%;
+	max-width: 130px;
+	padding: 7px 24px 7px 10px;
 	border-radius: var(--r-sm);
-	background: var(--surface-2);
+	background-color: var(--surface-2);
 	border: 1px solid var(--border);
 	color: var(--text);
 	font: inherit;
 	font-weight: 700;
 	font-variant-numeric: tabular-nums;
+	/* a compact, theme-aware chevron close to the value — not the browser's own,
+	   which glues itself to the far right of the box no matter how narrow the
+	   box or short the value, reading as "too much empty space, arrow miles
+	   away" the wider this ever got. */
+	appearance: none;
+	-webkit-appearance: none;
+	background-image:
+		linear-gradient(45deg, transparent 50%, var(--text-dim) 50%),
+		linear-gradient(135deg, var(--text-dim) 50%, transparent 50%);
+	background-position:
+		calc(100% - 15px) center,
+		calc(100% - 11px) center;
+	background-size: 4px 4px;
+	background-repeat: no-repeat;
+}
+/* compact "knob" grid for the CP cap + per-league "keep top N" selects — as
+   many as comfortably fit per row (several, on a wide screen) instead of one
+   full-width row each; a select this narrow no longer strands its native
+   chevron arrow way out past the value it belongs to. */
+.rvmp .r-md-knobs-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 12px 14px;
+	padding-bottom: 12px;
+}
+/* the 4 "keep top" leagues/raid — always exactly 4 across, even on a narrow
+   phone, rather than reflowing to fewer per row: they read as one group of
+   four peers, and letting the row shrink them together (icon + a shorter
+   per-card label below) keeps that group visually intact. */
+.rvmp .r-md-knobs-grid--4up {
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+}
+.rvmp .r-md-knob {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+/* Fixed-height label slot, laid out the same way on every card regardless of
+   whether this particular one has an icon or wraps to two lines — so the
+   select below always starts at the same Y across the whole row instead of
+   drifting per-card with however long that card's own label happens to be. */
+.rvmp .r-md-knob > span:first-child {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 30px;
+	margin-bottom: 6px;
+	font-size: 10.5px;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .r-md-knob > span:first-child img {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	object-fit: contain;
+}
+.rvmp .r-md-knobs-subtitle {
+	margin: 0 0 8px;
+}
+/* "Great League" fits fine standalone, but crammed into 1 of 4 forced-equal
+   columns on a narrow phone it just wraps badly — swap to the short form
+   below that width instead of fighting the wrap. */
+.rvmp .r-md-knob-short {
+	display: inline;
+}
+.rvmp .r-md-knob-full {
+	display: none;
+}
+@media (min-width: 480px) {
+	.rvmp .r-md-knob-short {
+		display: none;
+	}
+	.rvmp .r-md-knob-full {
+		display: inline;
+	}
 }
 .rvmp .r-md-compute {
 	width: 100%;
@@ -3482,6 +3534,119 @@
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	cursor: pointer;
+}
+
+/* ---- mass delete: whitelist (never-delete individual Pokémon) ------------ */
+.rvmp .r-md-wl-search {
+	position: relative;
+	margin-bottom: var(--s3);
+}
+.rvmp .r-md-wl-chips {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	gap: 6px;
+	/* ~4 rows of chips plus the divider row between the manual/auto groups,
+	   then scrolls internally rather than pushing the rest of the page down
+	   as the list grows. Deliberately NOT `overscroll-behavior: contain` —
+	   once you scroll past this list's own top/bottom, the gesture should
+	   keep going and scroll the page, the same as every other scroll area on
+	   the site; `contain` would trap it here instead. */
+	max-height: 210px;
+	overflow-y: auto;
+	padding-right: 2px;
+}
+.rvmp .r-md-wl-chip {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px 4px 4px;
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text);
+	transition:
+		border-color 0.14s ease,
+		background 0.14s ease;
+}
+.rvmp .r-md-wl-chip:not(:disabled):hover {
+	border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+	background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+}
+.rvmp .r-md-wl-chip:not(:disabled) {
+	cursor: pointer;
+}
+/* locked = protected by a category toggle, not this list — reads identically
+   to a removable chip (same weight, same colors) except it has no × and
+   doesn't respond to a click; the point is that it's still kept, exactly
+   like the others, not that it's somehow lesser. */
+.rvmp .r-md-wl-chip[data-locked] {
+	cursor: default;
+}
+/* full-width break between the manually-added chips and the ones already
+   covered for free by a category toggle above — same weight/color as the
+   divider elsewhere on the site (the search dropdown's own group divider). */
+.rvmp .r-md-wl-divider {
+	flex-basis: 100%;
+	height: 1px;
+	margin: 2px 0;
+	background: var(--border-strong);
+}
+.rvmp .r-md-wl-sprite {
+	position: relative;
+	flex: none;
+	width: 24px;
+	height: 24px;
+	display: grid;
+	place-items: center;
+	border-radius: 50%;
+	background: var(--surface-3);
+}
+.rvmp .r-md-wl-sprite > img {
+	width: 20px;
+	height: 20px;
+	object-fit: contain;
+}
+.rvmp .r-md-wl-sprite > .r-shadow-mark {
+	position: absolute;
+	top: -3px;
+	left: -3px;
+	width: 12px;
+	height: 12px;
+}
+.rvmp .r-md-wl-name {
+	white-space: nowrap;
+}
+.rvmp .r-md-wl-x {
+	font-size: 13px;
+	color: var(--text-faint);
+}
+
+/* compact multi-per-row protection toggles — same pill as `.r-ctr-toggle`
+   elsewhere, laid out as a real grid (not a wrapping flex row) so each
+   column's checkboxes land at the same x on every row regardless of how
+   long that row's own labels happen to be; a flex row's wrap point shifts
+   per row with content width, which is what made them zig-zag before.
+   Each chip's `title` carries its (short) explanation instead of inline
+   text. */
+.rvmp .r-md-protect-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+	gap: 10px 8px;
+	padding: 10px 0 2px;
+}
+.rvmp .r-md-protect-chip {
+	width: 100%;
+	justify-content: flex-start;
+}
+@media (max-width: 480px) {
+	.rvmp .r-md-protect-grid {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 16px 10px;
+	}
 }
 
 /* ---- type chart (/types) --------------------------------------------- */
@@ -4243,6 +4408,15 @@
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 }
+/* mass delete's own summary line is long (every "keep top" cutoff plus every
+   protected category spelled out) — show the whole thing, however many lines
+   that takes, rather than the shared 2-line clamp cutting it short. */
+.rvmp .r-md-config .r-ctr-config-sum {
+	display: block;
+	-webkit-line-clamp: unset;
+	overflow: visible;
+	white-space: normal;
+}
 .rvmp .r-ctr-config-chev {
 	flex: none;
 	font-size: 11px;
@@ -4289,6 +4463,13 @@
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	color: var(--text-dim);
+}
+.rvmp .r-ctr-cond-l img {
+	width: 14px;
+	height: 14px;
+	object-fit: contain;
+	vertical-align: -3px;
+	margin-right: 2px;
 }
 .rvmp .r-ctr-cond-c {
 	display: flex;

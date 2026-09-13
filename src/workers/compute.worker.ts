@@ -289,21 +289,30 @@ const isProtectedByBlanket = (ivs: BadIvPattern) => matchesDefault(ivs) || isExa
 
 /**
  * Meta-agnostic "bad IV" carve-outs — see the "Mass Delete only Bad IV
- * Pokémon" tab. For every non-alias/mega/shadow/legendary/mythical/UB species
- * and every requested CP cap, walks that species' whole *forward*-reachable
- * family (raw IVs never change through evolution, so a wild catch's fate
- * depends on every stage it could become, not just itself) looking for
- * reachable stages that both (a) clear 90% of the cap at 15/15/15/L50 — below
- * that the cap doesn't meaningfully bind, so there's nothing to compromise —
- * and (b) have a genuinely optimal top-1 spread that `isProtectedByBlanket`
- * doesn't already cover. Collects every *distinct* such pattern (not just the
- * first one found) — an earlier stage being unprotected isn't excused by a
- * later one being fine, since bucket-matching is purely about a wild catch's
- * own fixed IVs, not which species it currently is.
+ * Pokémon" tab. For every non-alias/mega/shadow species and every requested
+ * CP cap, walks that species' whole *forward*-reachable family (raw IVs
+ * never change through evolution, so a wild catch's fate depends on every
+ * stage it could become, not just itself) looking for reachable stages that
+ * both (a) clear 90% of the cap at 15/15/15/L50 — below that the cap doesn't
+ * meaningfully bind, so there's nothing to compromise — and (b) have a
+ * genuinely optimal top-1 spread that `isProtectedByBlanket` doesn't already
+ * cover. Collects every *distinct* such pattern (not just the first one
+ * found) — an earlier stage being unprotected isn't excused by a later one
+ * being fine, since bucket-matching is purely about a wild catch's own fixed
+ * IVs, not which species it currently is.
+ *
+ * Deliberately does NOT exclude Legendary/Mythical/Ultra Beast species (only
+ * Mega/alias/Shadow, which are structural — never real standalone catches to
+ * protect): whether those categories are actually excluded from the
+ * generated string is the caller's call (each corresponds to a togglable,
+ * independently-added `!keyword` in `computeBadIvString`), and if a caller
+ * turns that toggle off, a Legendary genuinely re-enters the swept
+ * population and needs its own verified carve-out exactly like anything
+ * else — computing one unconditionally here, always, is what makes that
+ * later toggle safe to flip in either direction.
  */
 const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
-	const isExcludedCategory = (p: IGamemasterPokemon) =>
-		!!p.aliasId || !!p.isMega || !!p.isShadow || !!p.isLegendary || !!p.isMythical || !!p.isBeast;
+	const isExcludedCategory = (p: IGamemasterPokemon) => !!p.aliasId || !!p.isMega || !!p.isShadow;
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !isExcludedCategory(p));
 	const domainFilter = (r: IGamemasterPokemon) => !isExcludedCategory(r);
 

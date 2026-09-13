@@ -51,6 +51,16 @@ export enum ConfigKeys {
 	BestBuddy,
 	TrashKeepForTrade,
 	MassDeleteMode,
+	TrashKeepFavorite,
+	TrashKeepTagged,
+	TrashKeepLegendary,
+	TrashKeepMythical,
+	TrashKeepUltraBeast,
+	TrashKeepMegaEvolvable,
+	TrashKeepShadow,
+	TrashWhitelist,
+	MassDeleteControlsCollapsed,
+	MassDeleteWhitelistCollapsed,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with
