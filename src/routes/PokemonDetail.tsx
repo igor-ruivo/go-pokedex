@@ -251,12 +251,34 @@ const PokemonDetail = () => {
 	// of implying 13 is the one exact value required.
 	const purifiedIv = (v: number) => (v >= 15 ? 15 : Math.max(0, v - purifyOffset));
 
+	// Once the user has dragged the IV picker or the level stepper themselves,
+	// their spread wins from then on — switching league, cycling "best
+	// reachable", or hopping to another family member no longer overwrites it.
+	// Only landing here fresh from a genuinely different page (Rankings, the
+	// Pokédex, search, …) re-arms the auto-pick; family-line/shadow-toggle
+	// navigation suppresses that reset via `suppressIvResetRef`, set right
+	// before those specific `navigate()`/`Link` calls, the same way
+	// `suppressNextScrollReset` is.
+	const ivTouchedRef = useRef(false);
+	const suppressIvResetRef = useRef(false);
+	const prevSpeciesIdRef = useRef(speciesId);
+	useLayoutEffect(() => {
+		if (prevSpeciesIdRef.current === speciesId) return;
+		prevSpeciesIdRef.current = speciesId;
+		if (suppressIvResetRef.current) {
+			suppressIvResetRef.current = false;
+		} else {
+			ivTouchedRef.current = false;
+		}
+	}, [speciesId]);
+
 	// On load and whenever the league (or carouseled member) changes, snap the IV
 	// spread to that league's rank-1 spread AND the level that hits its CP cap with
-	// that spread (the "… CP at LX" from the readout). The user can still drag both.
+	// that spread (the "… CP at LX" from the readout) — unless the user's already
+	// picked their own spread (see `ivTouchedRef` above).
 	const perfectKey = slice ? `${slice.perfect.A}-${slice.perfect.D}-${slice.perfect.S}-${slice.perfectLvl}` : '';
 	useEffect(() => {
-		if (!slice?.perfect) return;
+		if (!slice?.perfect || ivTouchedRef.current) return;
 		setIv({
 			atk: purifiedIv(slice.perfect.A),
 			def: purifiedIv(slice.perfect.D),
@@ -265,6 +287,15 @@ const PokemonDetail = () => {
 		if (slice.perfectLvl) setLevel(slice.perfectLvl);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [league, pvpMember?.speciesId, perfectKey, purifyOffset]);
+
+	const onManualIvChange = (v: IVs) => {
+		ivTouchedRef.current = true;
+		setIv(v);
+	};
+	const onManualLevelChange = (v: number) => {
+		ivTouchedRef.current = true;
+		setLevel(v);
+	};
 
 	// Switching to a different league always lands on its rank-1 (best reachable)
 	// candidate — any carousel position cycled into on a *previous* visit to
@@ -481,6 +512,7 @@ const PokemonDetail = () => {
 	const goToNextFamilyMember = () => {
 		if (!nextFamilyMember) return;
 		suppressNextScrollReset();
+		suppressIvResetRef.current = true;
 		void navigate(`${R.pokemon(nextFamilyMember.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
 	};
 
@@ -640,7 +672,7 @@ const PokemonDetail = () => {
 						min={1}
 						max={maxLevel}
 						step={0.5}
-						onChange={setLevel}
+						onChange={onManualLevelChange}
 						// Best Buddy's level 51 is a flat +1 past 50, not another half-level —
 						// skip the nonexistent 50.5 rung right below it either direction.
 						nextValue={(cur, dir) => {
@@ -656,6 +688,7 @@ const PokemonDetail = () => {
 							data-on={isShadow}
 							onClick={() => {
 								suppressNextScrollReset();
+								suppressIvResetRef.current = true;
 								void navigate(
 									`${R.pokemon(isShadow ? baseId : `${baseId}_shadow`, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`
 								);
@@ -681,7 +714,10 @@ const PokemonDetail = () => {
 								className='r-reach-chip'
 								data-active={m.speciesId === self}
 								style={{ ['--tc' as string]: typeVar(m.types[0]) }}
-								onClick={suppressNextScrollReset}
+								onClick={() => {
+									suppressNextScrollReset();
+									suppressIvResetRef.current = true;
+								}}
 							>
 								{m.isShadow && <ShadowMark />}
 								<span className='r-reach-art'>
@@ -940,7 +976,7 @@ const PokemonDetail = () => {
 							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
 								<IvPicker
 									value={iv}
-									onChange={setIv}
+									onChange={onManualIvChange}
 									presets={[
 										['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
 										['Hundo', { atk: 15, def: 15, hp: 15 }],
