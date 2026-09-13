@@ -135,25 +135,26 @@ const PROTECTION_META: ReadonlyArray<{
 /* The English help text is ported verbatim from the legacy app — the wording
    spells out exactly what will and won't be deleted, so users know the stakes. */
 const HELP_TEXT =
-	"You can use this section to generate a search string that will find all Pokémon in your storage that aren't " +
-	"meta-relevant. You can define what's relevant or not based on the available filters below. Choose to discard all " +
-	'Pokémon that aren’t ranked above rank X in one league and rank Y in another league. If you set a CP cap of Z, ' +
-	'then Pokémon with a CP equal to or higher than that CP will never be deleted. This search string won’t ever ' +
-	'delete any Pokémon protected below, or any trade-to-evolve Pokémon. It will also target Pokémon that require ' +
-	"low Attack IVs to be relevant, in case they don't have a low Attack IV – because trading couldn’t make them " +
-	'relevant either. Please double-check if your in-game language matches the language selected in the website ' +
-	'settings.';
+	'Deletes any Pokémon that isn’t competitively relevant anywhere — not in Great, Ultra, or Master League, and not ' +
+	'in raids — based on the rank cutoffs and CP cap below. A species (or any of its later evolutions) only needs to ' +
+	'clear the cutoff in one of those to be spared. Anything at or above your CP cap is always kept, and so is ' +
+	'everything checked in the categories and whitelist below, regardless of rank.';
+
+const BAD_IV_WARNING =
+	'This mode is aggressive and perfectionist: the intent is to delete every catch that isn’t a perfect (100%) IV ' +
+	'Pokémon, with no regard for whether a species is currently good or bad in the meta — double-check the ' +
+	'categories and whitelist below before running it.';
 
 const BAD_IV_HELP_TEXT =
-	'This mode ignores the current PvP/raid meta entirely — it never looks at rankings, so it won’t change as the meta ' +
-	'does. Instead, for every species it works out its own best possible IV spread for Great League (1500 CP) and ' +
-	'Ultra League (2500 CP), independent of how that species stacks up against any other. The rule of thumb: a spread ' +
-	'with low Attack (0-5) and high Defense/HP (11-15) is normally the best a species can do under a CP cap — trading ' +
-	'Attack for a higher level buys more Defense and HP than the Attack was worth. Species whose real best spread ' +
-	'doesn’t fit that shape (because their own stats are too weak to spare the Attack, or the cap barely binds them at ' +
-	'all) get their own exact spread protected instead, individually. For Master League (no CP cap), more IVs are ' +
-	'always strictly better, so it’s just a flat “keep anything 11+ in every stat”. A perfect 15/15/15 is always kept, ' +
-	'in every league, no matter what. This never deletes any Pokémon protected below either.';
+	'Ignores the current meta entirely: the goal is to delete anything that isn’t a perfect 15/15/15, since anything ' +
+	'less is wasted IV potential. The game’s search only lets us match IV ranges, not exact values, so it can’t ' +
+	'always draw that line exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept ' +
+	'via a shared low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-' +
+	'verified range instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect ' +
+	'(but not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no ' +
+	'CP cap, so there the true best really is always a plain 15/15/15 with nothing else close — this mode’s Master ' +
+	'League handling is exact, not an approximation. A perfect 15/15/15 is always kept in every league, and so is ' +
+	'everything checked in the categories and whitelist below, regardless of IVs.';
 
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
@@ -462,8 +463,9 @@ export const computeTrashString = (a: ComputeArgs): string => {
 };
 
 /**
- * "Mass Delete only Bad IV Pokémon" — meta-agnostic: never looks at PvP/raid
- * rankings at all, just each species' own intrinsic best-possible IV spread
+ * "Mass Delete Pokémon With Wasted IV Potential" — meta-agnostic: never looks
+ * at PvP/raid rankings at all, just each species' own intrinsic best-possible
+ * IV spread
  * per CP cap (see `findBadIvCarveOuts` in the compute worker, which does the
  * actual brute-force analysis this only turns into a string). Default keep
  * rule is the classic low-Attack/max-bulk CP-cap spread (0-5 Attack, 11-15
@@ -1050,7 +1052,7 @@ const MassDelete = () => {
 	return (
 		<div className='r-shell'>
 			<h1 className='r-page-title'>
-				{isBadIv ? 'Mass Delete only Bad IV Pokémon' : 'Mass Delete current non-meta relevant Pokémon'}
+				{isBadIv ? 'Mass Delete Non-Perfect IV Pokémon' : 'Mass Delete current non-meta relevant Pokémon'}
 			</h1>
 
 			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label='Mass delete mode'>
@@ -1058,9 +1060,15 @@ const MassDelete = () => {
 					Non-meta relevant
 				</button>
 				<button type='button' data-active={isBadIv} onClick={() => setMode('badIv')}>
-					Bad IV
+					Non-Perfect IVs
 				</button>
 			</div>
+
+			{isBadIv && (
+				<div className='r-card r-md-warning'>
+					<p style={{ margin: 0 }}>⚠️ {BAD_IV_WARNING}</p>
+				</div>
+			)}
 
 			<div className='r-card r-md-help'>
 				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{isBadIv ? BAD_IV_HELP_TEXT : HELP_TEXT}</p>

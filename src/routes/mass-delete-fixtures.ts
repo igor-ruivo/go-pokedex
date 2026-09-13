@@ -184,8 +184,18 @@ export const buildBadIvFixture = () => {
 		isLegendary: true,
 	});
 	const tinymon = mockPokemon({ speciesId: 'tinymon', dex: 302, baseStats: { atk: 50, def: 60, hp: 60 } });
-	const gamemasterPokemon = buildGamemaster([deviantmon, deviantlegendary, tinymon]);
-	return { gamemasterPokemon, deviantmon, deviantlegendary, tinymon };
+	// `tiedmon` (100/132/180): reproduces, with synthetic stats, a real bug
+	// found in live data (Raichu, Doduo, Naclstack, and 20+ others) — at cap
+	// 1500 its top-1 stat product is a genuine TIE between the exact hundo
+	// (15/15/15) and a 15/15/14 spread. `computeBestIVs` always lists the
+	// hundo first (its own internal tie-break), so code that only looked at
+	// index 0 silently never generated a carve-out for the 15/15/14 tie —
+	// which isn't itself a hundo (no `!4*` safety net) and doesn't fit the
+	// default low-Attack shape either, so it would've been wrongly swept
+	// despite being tied for the best possible spread for this species.
+	const tiedmon = mockPokemon({ speciesId: 'tiedmon', dex: 303, baseStats: { atk: 100, def: 132, hp: 180 } });
+	const gamemasterPokemon = buildGamemaster([deviantmon, deviantlegendary, tinymon, tiedmon]);
+	return { gamemasterPokemon, deviantmon, deviantlegendary, tinymon, tiedmon };
 };
 
 /**

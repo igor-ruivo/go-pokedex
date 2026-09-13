@@ -178,7 +178,7 @@ export interface LowAttackViableInput {
 }
 
 /**
- * For each candidate and cap: do the top 5 best-IV spreads all get by with an
+ * For each candidate and cap: does the single best-IV spread get by with an
  * attack IV below 5? Powers the "trash" analyzer's high-attack check.
  * @returns speciesId -> cap -> boolean
  */
@@ -192,14 +192,7 @@ const lowAttackViable = ({
 		const perCap: Record<number, boolean> = {};
 		for (const cap of caps) {
 			const best = Object.values(computeBestIVs(c.atk, c.def, c.hp, cap, maxLevel)).flat();
-			let allLow = true;
-			for (let i = 0; i < 5; i++) {
-				if ((best[i]?.IVs.A ?? 0) >= 5) {
-					allLow = false;
-					break;
-				}
-			}
-			perCap[cap] = allLow;
+			perCap[cap] = (best[0]?.IVs.A ?? 0) < 5;
 		}
 		out[c.speciesId] = perCap;
 	}
@@ -316,20 +309,42 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !isExcludedCategory(p));
 	const domainFilter = (r: IGamemasterPokemon) => !isExcludedCategory(r);
 
-	const bestCache = new Map<string, BadIvPattern | null>();
-	const getBest = (r: IGamemasterPokemon, cap: number): BadIvPattern | null => {
+	// A "top-1" spread is only unique because `computeBestIVs` has to pick
+	// *some* order for its own internal tie-break — real, exact stat-product
+	// ties for the very top spot happen often enough to matter (confirmed
+	// against real data: dozens of species tie an exact hundo's stat product
+	// with a 15/15/14 spread at some cap). Taking only index 0 silently
+	// dropped every OTHER tied-for-best spread — e.g. the 15/15/14 tie, which
+	// isn't itself a hundo (no `!4*` safety net) and doesn't fit the default
+	// low-Attack shape either, so it would have been swept as "bad" despite
+	// being statistically as good as it gets for that species. This returns
+	// every spread tied for the top stat product, not just the first one
+	// `computeBestIVs` happens to list.
+	const bestCache = new Map<string, Array<BadIvPattern>>();
+	const getBestTied = (r: IGamemasterPokemon, cap: number): Array<BadIvPattern> => {
 		const key = `${r.speciesId}|${cap}`;
 		const cached = bestCache.get(key);
 		if (cached !== undefined) return cached;
 		const maxCP = calculateCP(r.baseStats.atk, 15, r.baseStats.def, 15, r.baseStats.hp, 15, LEVEL_50_INDEX);
 		if (maxCP < CP_THRESHOLD_RATIO * cap) {
-			bestCache.set(key, null);
-			return null;
+			bestCache.set(key, []);
+			return [];
 		}
-		const best = Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap)).flat()[0];
-		const pattern: BadIvPattern = { A: best.IVs.A, D: best.IVs.D, S: best.IVs.S };
-		bestCache.set(key, pattern);
-		return pattern;
+		const flat = Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap)).flat();
+		if (flat.length === 0) {
+			bestCache.set(key, []);
+			return [];
+		}
+		// `flat` is sorted descending by stat product (see computeBestIVs), so
+		// every tie for the top spot is contiguous starting at index 0.
+		const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
+		const patterns: Array<BadIvPattern> = [];
+		for (const entry of flat) {
+			if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
+			patterns.push({ A: entry.IVs.A, D: entry.IVs.D, S: entry.IVs.S });
+		}
+		bestCache.set(key, patterns);
+		return patterns;
 	};
 
 	const carveOuts: Array<BadIvCarveOut> = [];
@@ -338,10 +353,11 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 		for (const cap of caps) {
 			const distinctPatterns = new Map<string, BadIvPattern>();
 			for (const r of reachable) {
-				const best = getBest(r, cap);
-				if (!best || isProtectedByBlanket(best)) continue;
-				const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
-				if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+				for (const best of getBestTied(r, cap)) {
+					if (isProtectedByBlanket(best)) continue;
+					const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+					if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+				}
 			}
 			for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });
 		}

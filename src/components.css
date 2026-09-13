@@ -3381,6 +3381,17 @@
 .rvmp .r-md-mode-seg {
 	margin-bottom: var(--s4);
 }
+.rvmp .r-md-warning {
+	margin-bottom: var(--s3);
+	background: color-mix(in srgb, #f5a623 16%, var(--surface));
+	border: 1px solid color-mix(in srgb, #f5a623 48%, var(--border));
+}
+.rvmp .r-md-warning p {
+	font-size: 12.5px;
+	font-weight: 700;
+	line-height: 1.5;
+	color: var(--text);
+}
 .rvmp .r-md-help {
 	margin-bottom: var(--s4);
 }

@@ -34,6 +34,42 @@ describe('findBadIvCarveOuts — a species whose real optimum deviates from the 
 	});
 });
 
+describe('findBadIvCarveOuts — a tied-for-top-1 stat product spanning two different buckets (regression)', () => {
+	it('regression: when the exact hundo ties with a 15/15/14 spread, the 15/15/14 tie still gets its own carve-out', () => {
+		const { gamemasterPokemon, tiedmon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const own = carveOuts.filter((c) => c.speciesId === tiedmon.speciesId && c.cap === 1500);
+
+		// A buggy "only look at computeBestIVs's own index 0" implementation
+		// would find nothing here — `computeBestIVs` always lists the exact
+		// hundo first among stat-product ties, and the hundo itself needs no
+		// carve-out (it's already covered by the universal `!4*` keyword) — so
+		// the 15/15/14 tie, which is NOT a hundo and does NOT fit the default
+		// low-Attack shape, would silently get zero protection despite being
+		// tied for the best possible spread.
+		expect(own).toHaveLength(1);
+		expect(own[0].pattern).toEqual({ A: 15, D: 15, S: 14 });
+	});
+
+	it('computeBadIvString emits a protective clause for the tied 15/15/14 spread specifically', () => {
+		const { gamemasterPokemon, tiedmon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		// 15/15/14 -> buckets 4/4/3 -> complement of bucket 4 is {0,1,2,3} for
+		// both attack and defense; complement of bucket 3 (hp) is {0,1,2,4},
+		// which splits into two ranges ("0-2" and "4", not contiguous).
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+});
+
 describe('findBadIvCarveOuts — collects every distinct pattern across a reachable family, not just the first', () => {
 	it('regression: a 2-stage line with two different deviating patterns produces a carve-out for BOTH', () => {
 		const { gamemasterPokemon, stageA } = buildMultiStageBadIvFixture();
@@ -182,6 +218,30 @@ describe('computeBadIvString — manual whitelist, shared-dex edge case', () => 
 		// qualifiers at all — full protection regardless of IVs.
 		expect(result).toContain('&!555,!grass');
 		expect(result).not.toContain('!555,!fire');
+	});
+
+	it('whitelisting a species that ALREADY has a real computed carve-out discards that carve-out entirely, replacing it with the unconditional clause', () => {
+		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		// Sanity: deviantmon genuinely has a real carve-out at 2500 (see the
+		// earlier "deviating species" test) — this test only means something if
+		// that's true.
+		expect(carveOuts.some((c) => c.speciesId === deviantmon.speciesId && c.cap === 2500)).toBe(true);
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set([deviantmon.speciesId])
+		);
+
+		// The bucket-qualified carve-out clause (from the earlier test) must be
+		// GONE — replaced by the plain unconditional one instead, not added
+		// alongside it.
+		expect(result).not.toContain(`&!${deviantmon.dex},0-2attack,4attack,0-3defense,0-3hp`);
+		expect(result).toContain(`&!${deviantmon.dex}`);
 	});
 });
 

@@ -340,6 +340,32 @@ describe('computeTrashString — manual whitelist, shared-dex edge case', () => 
 		// — and gets — its own disambiguating exclusion.
 		expect(result).toContain('&!555,!grass');
 	});
+
+	it('whitelisting a species that was never going to be swept anyway adds nothing at all to the output', () => {
+		// Alone at its dex, no sibling — and already good on its own merit (a
+		// clean Great rank), so its dex was never entering the deletable set
+		// regardless of the whitelist. Whitelisting it should be a true no-op:
+		// zero characters added, not even its own dex mentioned anywhere.
+		const safemon = mockPokemon({ speciesId: 'safemon', dex: 900 });
+		const gamemasterPokemon = buildGamemaster([safemon]);
+		// `lowAttackMap` proves it doesn't need a low Attack IV either — without
+		// this, the default fail-safe (`needsLessThanFiveAttack` -> true when
+		// absent) would still land it in `alwaysBadIfHighAtk`, which is NOT the
+		// no-op scenario this test is trying to isolate.
+		const commonArgs = {
+			rankLists: [{ safemon: rank(1) }, {}, {}],
+			lowAttackMap: { safemon: { 1500: false } },
+			trashGreat: 10,
+		};
+
+		const withoutWhitelist = computeTrashString(buildArgs(gamemasterPokemon, commonArgs));
+		const withWhitelist = computeTrashString(
+			buildArgs(gamemasterPokemon, { ...commonArgs, whitelist: new Set(['safemon']) })
+		);
+
+		expect(withoutWhitelist).toBe(withWhitelist);
+		expect(withWhitelist).not.toContain('900');
+	});
 });
 
 describe('computeTrashString — CP threshold', () => {
