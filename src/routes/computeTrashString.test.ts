@@ -208,13 +208,19 @@ describe('computeTrashString — raid rescue via a later stage (isGoodForRaids, 
 });
 
 describe('computeTrashString — multiple good later stages, different leagues each', () => {
-	it("Bulbasaur is protected when Ivysaur AND Venusaur are each good in a DIFFERENT league (not just one good stage)", () => {
+	it('Bulbasaur is protected when Ivysaur AND Venusaur are each good in a DIFFERENT league (not just one good stage)', () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
 		// Ivysaur good in Great, Venusaur good in Ultra — neither alone would
 		// necessarily be the one a naive "check only the last stage" bug would
-		// find; both must be considered.
+		// find; both must be considered. `lowAttackMap` proves neither needs a
+		// low Attack IV to hold that rank — without it, `needsLessThanFiveAttack`
+		// fails safe to `true` and this rescue correctly does NOT fire (a real
+		// gap I found by first omitting this and watching the test correctly
+		// fail — good rank alone isn't enough; the catch's own Attack IV has to
+		// not matter either).
 		const args = buildArgs(gamemasterPokemon, {
 			rankLists: [{ ivysaur: rank(1) }, { venusaur: rank(1) }, {}],
+			lowAttackMap: { ivysaur: { 1500: false }, venusaur: { 2500: false } },
 			trashGreat: 10,
 			trashUltra: 10,
 			trashMaster: 10,
