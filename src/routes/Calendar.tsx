@@ -289,11 +289,23 @@ const EventsTab = () => {
 		// Getting this wrong is exactly what made events linger an hour past
 		// their real (local-time) end before disappearing.
 		const now = nowAsEventTime();
+		// Same-day starts (the common case — most events go live at the same
+		// local hour) tie-break by shorter overall duration first, then
+		// alphabetically — never by exact start instant, or two events
+		// announced the same day in a different order each import would keep
+		// reshuffling for no visible reason.
+		const dayOf = (t: number) => Math.floor(t / 86_400_000);
 		const events = (postsFetchCompleted ? posts : [])
 			.filter((p) => p && p.endDate >= now)
-			.sort((a, b) => a.startDate - b.startDate);
+			.sort((a, b) => {
+				const dayDiff = dayOf(a.startDate) - dayOf(b.startDate);
+				if (dayDiff !== 0) return dayDiff;
+				const durationDiff = a.endDate - a.startDate - (b.endDate - b.startDate);
+				if (durationDiff !== 0) return durationDiff;
+				return a.title[gl].localeCompare(b.title[gl]);
+			});
 		return seasonFetchCompleted && season ? [season, ...events] : events;
-	}, [posts, season, postsFetchCompleted, seasonFetchCompleted]);
+	}, [posts, season, postsFetchCompleted, seasonFetchCompleted, gl]);
 
 	const dupeTitles = useMemo(() => {
 		const seen = new Map<string, number>();
