@@ -166,7 +166,7 @@ const PokemonDetail = () => {
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
 	// member the league carousel is on (best reachable by default, not the URL mon).
-	const [ivPercents, ivLoading] = useComputeIVs({
+	const [ivPercents] = useComputeIVs({
 		pokemon: pokemon as never,
 		attackIV: iv.atk,
 		defenseIV: iv.def,
@@ -284,9 +284,13 @@ const PokemonDetail = () => {
 	// On load and whenever the league (or carouseled member) changes, snap the IV
 	// spread to that league's rank-1 spread AND the level that hits its CP cap with
 	// that spread (the "… CP at LX" from the readout) — unless the user's already
-	// picked their own spread (see `ivTouchedRef` above).
+	// picked their own spread (see `ivTouchedRef` above). A layout effect, not a
+	// plain one: `heroReady` below turns on the instant `slice.perfect` exists,
+	// and a plain effect only runs after that frame has already painted — so
+	// updating `iv`/`level` here has to happen before paint too, or "ready"
+	// would show one frame of the still-stale spread before this catches up.
 	const perfectKey = slice ? `${slice.perfect.A}-${slice.perfect.D}-${slice.perfect.S}-${slice.perfectLvl}` : '';
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!slice?.perfect || ivTouchedRef.current) return;
 		setIv({
 			atk: purifiedIv(slice.perfect.A),
@@ -552,6 +556,23 @@ const PokemonDetail = () => {
 		? ((heroSpriteIdx % heroSprites.length) + heroSprites.length) % heroSprites.length
 		: 0;
 
+	// `iv`/`level` (and so `heroCp`) start at their plain defaults and only snap
+	// to the real best-reachable spread once its data lands (see the auto-pick
+	// effect above) — showing them before then flashes a CP/level that's about
+	// to change right in front of you. Checked via `slice` itself, not
+	// `ivLoading`: `useComputeIVs` keeps showing the *previous* species' result
+	// while a new one computes (`placeholderData: keepPreviousData`, so sliders
+	// update in place instead of flashing a loader) — which also means
+	// `ivLoading` goes false again immediately on a brand-new species, well
+	// before `ivPercents` actually has an entry for it. `slice` doesn't have
+	// that problem: it's only ever non-empty once `ivPercents` genuinely
+	// contains this exact `pvpMember`. Raids don't use `slice` at all (IVs
+	// barely matter there — see the raid tab's own note), so they're always
+	// "ready". Once the user's picked their own spread, `iv`/`level` are theirs
+	// and done changing on their own — never hide them again just because
+	// something else reloads.
+	const heroReady = isRaid || ivTouchedRef.current || !!slice?.perfect;
+
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
 	const boardRows = LEAGUES.map((l) => {
 		const raidRow = l.id === 3;
@@ -567,24 +588,31 @@ const PokemonDetail = () => {
 		const total = raidRow ? boardData.raid.length : (boardData.pvp[l.id]?.length ?? 0);
 		const pIdx = total ? Math.min(p, total - 1) : 0;
 
-		if (raidRow) {
-			const cand = boardData.raid[pIdx];
-			member = cand?.p;
-			typeCount = cand?.types.length ?? 0;
-			typeIdx = typeCount ? Math.min(t, typeCount - 1) : 0;
-			const tr = cand?.types[typeIdx];
-			if (tr) {
-				rank = tr.rank;
-				metric = `${fmtRaidMetric(tr.entry[raidMetric], raidMetric)} ${RAID_METRIC_LABEL[raidMetric]}`;
-				bestType = tr.type;
-			}
-		} else {
-			member = boardData.pvp[l.id]?.[pIdx];
-			const e = member ? rankLists[l.id]?.[member.speciesId] : undefined;
-			if (e) {
-				rank = e.rank;
-				metric = `${e.score.toFixed(1)} pts`;
-				rankChange = e.rankChange ?? 0;
+		// Before its ranking data lands, `boardData` still only "knows" about
+		// this Pokémon itself (see `pvpList`/`raid` above) — showing that as the
+		// row's member would flash the wrong species/sprite for a moment before
+		// the real best-reachable stage swaps in. Leaving it unset renders the
+		// existing "Loading…" fallback instead until `ready`.
+		if (ready) {
+			if (raidRow) {
+				const cand = boardData.raid[pIdx];
+				member = cand?.p;
+				typeCount = cand?.types.length ?? 0;
+				typeIdx = typeCount ? Math.min(t, typeCount - 1) : 0;
+				const tr = cand?.types[typeIdx];
+				if (tr) {
+					rank = tr.rank;
+					metric = `${fmtRaidMetric(tr.entry[raidMetric], raidMetric)} ${RAID_METRIC_LABEL[raidMetric]}`;
+					bestType = tr.type;
+				}
+			} else {
+				member = boardData.pvp[l.id]?.[pIdx];
+				const e = member ? rankLists[l.id]?.[member.speciesId] : undefined;
+				if (e) {
+					rank = e.rank;
+					metric = `${e.score.toFixed(1)} pts`;
+					rankChange = e.rankChange ?? 0;
+				}
 			}
 		}
 		return { l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange };
@@ -647,7 +675,7 @@ const PokemonDetail = () => {
 						<div className='r-dexno'>{dexNo(pokemon.dex)}</div>
 						<h1 className='r-name'>{cleanName(pokemon.speciesName)}</h1>
 						<div className='r-cp'>
-							<b>{heroCp.toLocaleString()}</b>
+							<b>{heroReady ? heroCp.toLocaleString() : '…'}</b>
 							<span>CP</span>
 						</div>
 						<div className='r-types' style={{ justifyContent: 'flex-start', marginTop: 10 }}>
@@ -676,20 +704,26 @@ const PokemonDetail = () => {
 				</div>
 
 				<div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-					<Stepper
-						value={level}
-						min={1}
-						max={maxLevel}
-						step={0.5}
-						onChange={onManualLevelChange}
-						// Best Buddy's level 51 is a flat +1 past 50, not another half-level —
-						// skip the nonexistent 50.5 rung right below it either direction.
-						nextValue={(cur, dir) => {
-							if (dir > 0) return cur === MAX_LEVEL && maxLevel > MAX_LEVEL ? maxLevel : cur + 0.5;
-							return cur === maxLevel && maxLevel > MAX_LEVEL ? MAX_LEVEL : cur - 0.5;
-						}}
-						format={(v) => `Lvl ${Number.isInteger(v) ? v : v.toFixed(1)}`}
-					/>
+					{heroReady ? (
+						<Stepper
+							value={level}
+							min={1}
+							max={maxLevel}
+							step={0.5}
+							onChange={onManualLevelChange}
+							// Best Buddy's level 51 is a flat +1 past 50, not another half-level —
+							// skip the nonexistent 50.5 rung right below it either direction.
+							nextValue={(cur, dir) => {
+								if (dir > 0) return cur === MAX_LEVEL && maxLevel > MAX_LEVEL ? maxLevel : cur + 0.5;
+								return cur === maxLevel && maxLevel > MAX_LEVEL ? MAX_LEVEL : cur - 0.5;
+							}}
+							format={(v) => `Lvl ${Number.isInteger(v) ? v : v.toFixed(1)}`}
+						/>
+					) : (
+						<div className='r-toggle r-stepper' aria-hidden='true'>
+							<span>Lvl …</span>
+						</div>
+					)}
 					{hasShadow && (
 						<button
 							type='button'
@@ -982,64 +1016,78 @@ const PokemonDetail = () => {
 									? `Your IVs Percentile · as Purified ${cleanName((pvpMember ?? pokemon).speciesName)}`
 									: `Your IVs Percentile · ${(pvpMember ?? pokemon).speciesId === self ? '' : 'as '}${(pvpMember ?? pokemon).isShadow ? 'Shadow ' : ''}${cleanName((pvpMember ?? pokemon).speciesName)}`}
 							</div>
-							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
-								<IvPicker
-									value={iv}
-									onChange={onManualIvChange}
-									presets={[
-										['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
-										['Hundo', { atk: 15, def: 15, hp: 15 }],
-										...(league !== 2 && slice
-											? [
-													[
-														`Rank 1 ${LEAGUES[league].label}`,
-														{
-															atk: purifiedIv(slice.perfect.A),
-															def: purifiedIv(slice.perfect.D),
-															hp: purifiedIv(slice.perfect.S),
-														},
-													] as [string, { atk: number; def: number; hp: number }],
-												]
-											: []),
-									]}
-								/>
-								<div className='r-readout'>
-									<div>
-										<i>{LEAGUES[league].label} IV rank</i>
-										<b className='hi'>{ivLoading || !slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
+							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar, position: 'relative' }}>
+								{/* Real content always renders (never skips a beat between "loading" and
+								    "loaded" heights — nothing to reflow), just hidden — not merely
+								    covered — until `heroReady`. `visibility: hidden` (not a conditional
+								    skip, and not `opacity`) keeps its layout box reserving the exact
+								    final height while making it and its 15/15/15 default genuinely
+								    unseeable, not just obscured. The spinner overlay sits on top via
+								    `position: absolute` against the card's own `position: relative`. */}
+								<div style={{ visibility: heroReady ? 'visible' : 'hidden' }}>
+									<IvPicker
+										value={iv}
+										onChange={onManualIvChange}
+										presets={[
+											['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
+											['Hundo', { atk: 15, def: 15, hp: 15 }],
+											...(league !== 2 && slice
+												? [
+														[
+															`Rank 1 ${LEAGUES[league].label}`,
+															{
+																atk: purifiedIv(slice.perfect.A),
+																def: purifiedIv(slice.perfect.D),
+																hp: purifiedIv(slice.perfect.S),
+															},
+														] as [string, { atk: number; def: number; hp: number }],
+													]
+												: []),
+										]}
+									/>
+									<div className='r-readout'>
+										<div>
+											<i>{LEAGUES[league].label} IV rank</i>
+											<b className='hi'>{!slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
+										</div>
+										<div>
+											<i>Percentile</i>
+											<b>
+												{!slice
+													? '…'
+													: `${dec1(statProdRangePercentile(slice.battle, slice.worstBattle, slice.perfectBattle))}%`}
+											</b>
+										</div>
+										<div>
+											<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>
+											<b>{!slice ? '…' : slice.cp.toLocaleString()}</b>
+										</div>
 									</div>
-									<div>
-										<i>Percentile</i>
-										<b>
-											{ivLoading || !slice
-												? '…'
-												: `${dec1(statProdRangePercentile(slice.battle, slice.worstBattle, slice.perfectBattle))}%`}
-										</b>
-									</div>
-									<div>
-										<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>
-										<b>{ivLoading || !slice ? '…' : slice.cp.toLocaleString()}</b>
-									</div>
+									{slice && (
+										<p className='r-muted' style={{ marginTop: 12 }}>
+											Best spread for {LEAGUES[league].label}:{' '}
+											<b>
+												{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
+											</b>{' '}
+											→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
+										</p>
+									)}
+									{purifyOffset > 0 && (
+										<p className='r-muted' style={{ marginTop: 8 }}>
+											⚠️ Be aware that purifying gains you +2 IVs on each stat.
+										</p>
+									)}
+									{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
+										<p className='r-muted' style={{ marginTop: 8 }}>
+											⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat
+											to at least 2, so a Shadow can never land below that no matter its own IVs.
+										</p>
+									)}
 								</div>
-								{slice && (
-									<p className='r-muted' style={{ marginTop: 12 }}>
-										Best spread for {LEAGUES[league].label}:{' '}
-										<b>
-											{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
-										</b>{' '}
-										→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
-									</p>
-								)}
-								{purifyOffset > 0 && (
-									<p className='r-muted' style={{ marginTop: 8 }}>
-										⚠️ Be aware that purifying gains you +2 IVs on each stat.
-									</p>
-								)}
-								{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
-									<p className='r-muted' style={{ marginTop: 8 }}>
-										⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to
-										at least 2, so a Shadow can never land below that no matter its own IVs.
-									</p>
+								{!heroReady && (
+									<div className='r-loading' style={{ position: 'absolute', inset: 0, background: 'var(--surface)' }}>
+										<div className='r-spinner' />
+									</div>
 								)}
 							</div>
 						</>

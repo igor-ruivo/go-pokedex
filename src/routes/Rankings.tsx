@@ -37,7 +37,15 @@ const GRID_GAP = 8;
  * commit and warns when a route transition is still rendering.
  */
 const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
-	const [metrics, setMetrics] = useState({ cols: 4, rowHeight: 96 });
+	// `measured` stays false until the very first real ResizeObserver callback —
+	// `cols`/`rowHeight` before that are just a placeholder guess, not yet
+	// derived from the container's actual width. Rendering tiles against that
+	// guess (a fixed 96px row height, whatever real square-tile width the
+	// current screen works out to) is what caused the "huge, overlapping
+	// tiles for a split second" flash on first load: the observer's initial
+	// callback doesn't fire synchronously on mount, so there's a real gap
+	// where the grid would otherwise already be painting with wrong numbers.
+	const [metrics, setMetrics] = useState({ cols: 4, rowHeight: 96, measured: false });
 	useLayoutEffect(() => {
 		const el = ref.current;
 		if (!el) return;
@@ -54,7 +62,9 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 				// single fixed row height fall a pixel short of that, which is what
 				// let rows overlap or gap unevenly depending on the exact width.
 				const rowHeight = Math.max(1, Math.ceil(cardWidth));
-				return prev.cols === cols && prev.rowHeight === rowHeight ? prev : { cols, rowHeight };
+				return prev.cols === cols && prev.rowHeight === rowHeight && prev.measured
+					? prev
+					: { cols, rowHeight, measured: true };
 			});
 		});
 		ro.observe(el);
@@ -195,7 +205,7 @@ const Rankings = () => {
 	]);
 
 	const gridRef = useRef<HTMLDivElement>(null);
-	const { cols, rowHeight } = useGridMetrics(gridRef);
+	const { cols, rowHeight, measured } = useGridMetrics(gridRef);
 	const rowCount = Math.ceil(rows.length / cols);
 
 	const [scrollMargin, setScrollMargin] = useState(0);
@@ -257,6 +267,13 @@ const Rankings = () => {
 		!fetchCompleted ||
 		(mode === 'raid' && !raidDPSFetchCompleted) ||
 		(['great', 'ultra', 'master'].includes(mode) && !pvpFetchCompleted);
+	// Also wait on `measured` — the grid's column count/tile size default to a
+	// placeholder guess until the first real `ResizeObserver` callback fires
+	// (see `useGridMetrics`), and painting tiles against that guess is what
+	// caused the "huge overlapping tiles" flash on first load. A spinner
+	// instead of the grid until both are true means the grid only ever
+	// appears already laid out correctly.
+	const showGrid = !loading && measured;
 
 	return (
 		<div className='r-shell r-shell--wide'>
@@ -315,49 +332,57 @@ const Rankings = () => {
 					)}
 				</div>
 				<div className='r-section-h'>
-					{loading ? 'Loading…' : isRaid && !raidType ? 'Choose a type' : `${rows.length.toLocaleString()} Pokémon`}
+					{!showGrid ? 'Loading…' : isRaid && !raidType ? 'Choose a type' : `${rows.length.toLocaleString()} Pokémon`}
 					{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
 				</div>
 			</div>
 
 			<div ref={gridRef} className='r-grid-vp'>
-				{!loading && isRaid && !raidType && (
+				{!showGrid && (
+					<div className='r-loading'>
+						<div className='r-spinner' />
+						{mode === 'pokedex' ? 'Loading Pokédex…' : 'Loading Rankings…'}
+					</div>
+				)}
+				{showGrid && isRaid && !raidType && (
 					<p className='r-muted r-rank-empty'>Pick a type in the filter to see the best raid attackers of that type.</p>
 				)}
-				{!loading && rows.length === 0 && !(isRaid && !raidType) && (
+				{showGrid && rows.length === 0 && !(isRaid && !raidType) && (
 					<p className='r-muted' style={{ padding: 24 }}>
 						Nothing matches.
 					</p>
 				)}
-				<div style={{ height: virt.getTotalSize(), position: 'relative' }}>
-					{virt.getVirtualItems().map((vi) => {
-						const start = vi.index * cols;
-						const slice = rows.slice(start, start + cols);
-						return (
-							<div
-								key={vi.key}
-								style={{
-									position: 'absolute',
-									top: 0,
-									left: 0,
-									width: '100%',
-									transform: `translateY(${vi.start - virt.options.scrollMargin}px)`,
-								}}
-							>
-								<div className='r-grid-row' style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-									{slice.map((row) => (
-										<PokeCard
-											key={row.pokemon.speciesId}
-											pokemon={row.pokemon}
-											metric={row.metric}
-											league={mode === 'pokedex' ? undefined : mode}
-										/>
-									))}
+				{showGrid && (
+					<div style={{ height: virt.getTotalSize(), position: 'relative' }}>
+						{virt.getVirtualItems().map((vi) => {
+							const start = vi.index * cols;
+							const slice = rows.slice(start, start + cols);
+							return (
+								<div
+									key={vi.key}
+									style={{
+										position: 'absolute',
+										top: 0,
+										left: 0,
+										width: '100%',
+										transform: `translateY(${vi.start - virt.options.scrollMargin}px)`,
+									}}
+								>
+									<div className='r-grid-row' style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+										{slice.map((row) => (
+											<PokeCard
+												key={row.pokemon.speciesId}
+												pokemon={row.pokemon}
+												metric={row.metric}
+												league={mode === 'pokedex' ? undefined : mode}
+											/>
+										))}
+									</div>
 								</div>
-							</div>
-						);
-					})}
-				</div>
+							);
+						})}
+					</div>
+				)}
 			</div>
 		</div>
 	);
