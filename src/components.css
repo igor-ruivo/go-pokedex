@@ -3755,8 +3755,8 @@
 	background: color-mix(in srgb, var(--t-fire) 78%, var(--surface));
 }
 .rvmp .r-tc-cell[data-t='imm'] {
-	color: var(--text-faint);
-	background: var(--surface-3);
+	color: var(--text);
+	background: color-mix(in srgb, #8b93a0 58%, var(--surface));
 }
 .rvmp .r-tc-cell[data-axis] {
 	filter: brightness(1.16);
