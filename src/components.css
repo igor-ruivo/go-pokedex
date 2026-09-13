@@ -3381,6 +3381,14 @@
 .rvmp .r-md-mode-seg {
 	margin-bottom: var(--s4);
 }
+.rvmp .r-md-invert-toggle-row {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: var(--s4);
+}
+.rvmp .r-md-invert-toggle {
+	font-weight: 600;
+}
 .rvmp .r-md-warning {
 	margin-bottom: var(--s3);
 	background: color-mix(in srgb, #f5a623 16%, var(--surface));

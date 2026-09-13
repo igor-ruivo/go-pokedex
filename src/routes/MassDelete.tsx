@@ -1216,6 +1216,22 @@ const MassDelete = () => {
 				</button>
 			</div>
 
+			{isBadIv && (
+				<div className='r-md-invert-toggle-row'>
+					<button
+						type='button'
+						className='r-ctr-toggle r-md-invert-toggle'
+						data-on={findPerfect ? '' : undefined}
+						aria-pressed={findPerfect}
+						title='Flips this tab’s intent: instead of best-effort deleting non-perfect catches, best-effort finds the ones that already are perfect.'
+						onClick={() => setFindPerfect((v) => !v)}
+					>
+						<span className='r-ss-box' aria-hidden='true' />
+						Find perfect IVs instead
+					</button>
+				</div>
+			)}
+
 			{isBadIv && !findPerfect && (
 				<div className='r-card r-md-warning'>
 					<p style={{ margin: 0 }}>⚠️ {BAD_IV_WARNING}</p>
@@ -1318,22 +1334,6 @@ const MassDelete = () => {
 											</option>
 										))}
 									</select>
-								</div>
-							)}
-							{isBadIv && (
-								<div className='r-md-knob'>
-									<span>Find perfect IVs instead</span>
-									<button
-										type='button'
-										className='r-ctr-toggle'
-										data-on={findPerfect ? '' : undefined}
-										aria-pressed={findPerfect}
-										title='Flips this tab’s intent: instead of best-effort deleting non-perfect catches, best-effort finds the ones that already are perfect.'
-										onClick={() => setFindPerfect((v) => !v)}
-									>
-										<span className='r-ss-box' aria-hidden='true' />
-										{findPerfect ? 'On' : 'Off'}
-									</button>
 								</div>
 							)}
 							{!isBadIv && (
