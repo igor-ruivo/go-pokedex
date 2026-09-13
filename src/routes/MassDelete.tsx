@@ -15,6 +15,7 @@ import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
 import {
 	buildUniqueTypes,
 	complementOfBucket,
+	complementOfBuckets,
 	generatePokemonId,
 	groupAttr,
 	ivBucket,
@@ -155,6 +156,15 @@ const BAD_IV_HELP_TEXT =
 	'CP cap, so there the true best really is always a plain 15/15/15 with nothing else close — this mode’s Master ' +
 	'League handling is exact, not an approximation. A perfect 15/15/15 is always kept in every league, and so is ' +
 	'everything checked in the categories and whitelist below, regardless of IVs.';
+
+const PERFECT_HELP_TEXT =
+	'The inverse of the mode above: instead of best-effort deleting everything that isn’t perfect, this finds the ' +
+	'catches that already are. A plain 15/15/15 always counts, in every league. For Great League (1500 CP) and Ultra ' +
+	'League (2500 CP), it also finds catches in the shared low-Attack/high-bulk range that’s the true optimum for ' +
+	'most species — but the few hundred species with their own individually-verified optimum instead are ' +
+	'deliberately left out here, rather than risk calling a merely-decent spread “perfect” (their own hundo, if they ' +
+	'have one, still counts). The categories and whitelist below still apply, but here they mean the opposite of ' +
+	'“protect from deletion” — they’re excluded from these results entirely.';
 
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
@@ -572,6 +582,119 @@ export const computeBadIvString = (
 	return result;
 };
 
+// Buckets 0-1 (IV 0-10) for Attack, 3-4 (IV 11-15) for Defense/HP — the classic
+// low-Attack/max-bulk CP-cap shape `matchesDefault` (in the compute worker)
+// already treats as "this species' true optimum looks completely normal" for
+// ~80% of species. This is its POSITIVE, species-agnostic form (unlike the
+// hand-typed narrow literal `computeBadIvString` deletes by, which only
+// targets a deliberately tiny "definitely wasted" corner).
+const GOOD_ATTACK_BUCKETS = new Set([0, 1]);
+const GOOD_BULK_BUCKETS = new Set([3, 4]);
+
+/**
+ * "Find Your Perfect (100%) IV Pokémon" — the inverse intent of the Bad-IV
+ * mode above: instead of best-effort *deleting* everything that isn't a
+ * perfect catch, best-effort *finds* the ones that already are. Genuinely
+ * exact for Master League (`4*` — a hundo is unconditionally the true best
+ * there, no exceptions) and for the ~80% of species whose own true Great/
+ * Ultra League optimum matches the shared low-Attack/max-bulk shape (verified
+ * — see `matchesDefault`). Deliberately can't chase the individually-verified
+ * optimum of the remaining ~20% (`carveOuts`, the same data `computeBadIvString`
+ * uses): Niantic's search grammar has no parentheses, so there's no way to
+ * OR together many species' differently-shaped bucket requirements into one
+ * string the way a plain per-species *exclusion* can be chained — the same
+ * asymmetry that makes protecting an exception from a bad rule easy but
+ * including one into a good rule hard. Rather than risk a false "this is
+ * perfect" for those species, they're excluded from the shared-shape claim
+ * entirely (their own hundo, if they have one, still matches via `4*`) —
+ * safer to under-report than to mislead someone into treating a merely-decent
+ * IV spread as their species' actual ceiling.
+ *
+ * Unlike Bad-IV mode, the category toggles (Legendary/Mythical/Ultra Beast/
+ * Mega Evolvable/Shadow) don't apply here at all: they exist to protect a
+ * category from *deletion*, which has no meaning for a *find* operation — we
+ * want to go through every species when looking for perfect ones, not skip
+ * whole categories. Only Favorite/Tagged carry over (relabeled "ignore" in
+ * the UI), since excluding your already-reviewed catches from these results
+ * is still a meaningful thing to want.
+ */
+export const computePerfectIvString = (
+	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	carveOuts: Array<BadIvCarveOut>,
+	gl: GameLanguage,
+	protect: Pick<ProtectionFlags, 'favorite' | 'tagged'>,
+	whitelist: Set<string>
+): string => {
+	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
+	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
+	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
+
+	const allPokemonForms = Object.values(gamemasterPokemon)
+		.filter((e) => !e.isMega && !e.aliasId && !e.isShadow)
+		.map((e) => ({
+			dexNumber: e.dex,
+			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
+			isShadow: false,
+			p: e,
+		}));
+	const uniqueTypes = buildUniqueTypes(allPokemonForms);
+	const baseIds: Record<string, string> = {};
+	allPokemonForms.forEach((form) => {
+		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber);
+		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
+		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
+	});
+
+	// The shared good shape is the primary anchor, in the same bucket domain
+	// (0-4, not raw 0-15 IV) `matchesDefault` and every carve-out clause below
+	// use — Attack bucket 0-1, Defense/HP bucket 3-4. `,4*` folds hundo in as
+	// an alternative the same way the legacy per-Pokémon search-string
+	// generator does (see `SearchStringsTab`'s `computeSearchString`, its
+	// non-`trash` branch) — appending a bare positive keyword after an
+	// attribute-range list ORs it in rather than ANDing it against those
+	// ranges.
+	let result = `0-1${A},3-4${D},3-4${S},4*`;
+
+	const deviantSpecies = new Set(carveOuts.map((c) => c.speciesId));
+	const seenClauses = new Set<string>();
+	deviantSpecies.forEach((speciesId) => {
+		if (whitelist.has(speciesId)) return; // already tail-excluded outright below
+		const p = gamemasterPokemon[speciesId];
+		if (!p) return;
+		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
+		if (!baseId) return;
+		const negA = groupAttr(complementOfBuckets(GOOD_ATTACK_BUCKETS), A);
+		const negD = groupAttr(complementOfBuckets(GOOD_BULK_BUCKETS), D);
+		const negS = groupAttr(complementOfBuckets(GOOD_BULK_BUCKETS), S);
+		const clause = `&${negateIdentity(baseId)}${negA}${negD}${negS}`;
+		if (!seenClauses.has(clause)) {
+			result += clause;
+			seenClauses.add(clause);
+		}
+	});
+
+	whitelist.forEach((speciesId) => {
+		const p = gamemasterPokemon[speciesId];
+		if (!p || p.isMega || p.aliasId) return;
+		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
+		if (!baseId) return;
+		const clause = `&${negateIdentity(baseId)}`;
+		if (!seenClauses.has(clause)) {
+			result += clause;
+			seenClauses.add(clause);
+		}
+	});
+
+	if (gl === GameLanguage.ptbr) {
+		result = translatePtBrTypeNames(result);
+	}
+
+	if (protect.tagged) result += '&!#';
+	if (protect.favorite) result += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
+
+	return result;
+};
+
 /* -------------------------------------------------------------------------- */
 
 const NumSelect = ({
@@ -747,6 +870,11 @@ const MassDelete = () => {
 		readPersistentValue(ConfigKeys.MassDeleteMode) === 'badIv' ? 'badIv' : 'meta'
 	);
 	useEffect(() => void writePersistentValue(ConfigKeys.MassDeleteMode, mode), [mode]);
+
+	// Inverts the Bad-IV tab's intent: find catches that already are perfect,
+	// rather than best-effort deleting the ones that aren't.
+	const [findPerfect, setFindPerfect] = useState(() => readPersistentValue(ConfigKeys.BadIvFindPerfect) === 'true');
+	useEffect(() => void writePersistentValue(ConfigKeys.BadIvFindPerfect, String(findPerfect)), [findPerfect]);
 
 	const [trashGreat, setTrashGreat] = useState(() => numCfg(ConfigKeys.TrashGreat, 50));
 	const [trashUltra, setTrashUltra] = useState(() => numCfg(ConfigKeys.TrashUltra, 50));
@@ -980,18 +1108,22 @@ const MassDelete = () => {
 	useEffect(() => {
 		if (!isCalculatingBadIv || !fetchCompleted || !badIvCarveOuts) return;
 		const id = window.setTimeout(() => {
-			setBadIvResult(computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp, protect, whitelistSet));
+			setBadIvResult(
+				findPerfect
+					? computePerfectIvString(gamemasterPokemon, badIvCarveOuts, gl, protect, whitelistSet)
+					: computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp, protect, whitelistSet)
+			);
 			setIsCalculatingBadIv(false);
 		}, 60);
 		return () => window.clearTimeout(id);
-	}, [isCalculatingBadIv, fetchCompleted, badIvCarveOuts, gamemasterPokemon, gl, cp, protect, whitelistSet]);
+	}, [isCalculatingBadIv, fetchCompleted, badIvCarveOuts, gamemasterPokemon, gl, cp, protect, whitelistSet, findPerfect]);
 
-	// changing the CP floor, language, protections or whitelist invalidates a
-	// stale result (the carve-out sweep itself is unaffected, so no need to
-	// recompute that part)
+	// changing the CP floor, language, protections, whitelist or the invert
+	// toggle invalidates a stale result (the carve-out sweep itself is
+	// unaffected, so no need to recompute that part)
 	useEffect(() => {
 		setBadIvResult('');
-	}, [cp, gl, protect, whitelist]);
+	}, [cp, gl, protect, whitelist, findPerfect]);
 
 	const isBadIv = mode === 'badIv';
 	const activeResult = isBadIv ? badIvResult : result;
@@ -1007,7 +1139,21 @@ const MassDelete = () => {
 
 	const ready = fetchCompleted && pvpFetchCompleted;
 
-	const protectionSummary = PROTECTION_META.filter((m) => protect[m.key])
+	const isFindPerfect = isBadIv && findPerfect;
+	// The category toggles protect from *deletion* — meaningless while finding,
+	// where we want to go through every category, not skip whole ones. Only
+	// Favorite/Tagged still mean something ("don't show me ones I've already
+	// reviewed"), relabeled to match on the chips themselves; the summary
+	// sentence below already supplies its own "ignores" verb, so it uses the
+	// plain category names instead of the relabeled chip text.
+	const relevantProtectionMeta = isFindPerfect
+		? PROTECTION_META.filter((m) => m.key === 'favorite' || m.key === 'tagged')
+		: PROTECTION_META;
+	const visibleProtectionMeta = isFindPerfect
+		? relevantProtectionMeta.map((m) => ({ ...m, label: m.key === 'favorite' ? 'Ignore Favourites' : 'Ignore Tagged' }))
+		: PROTECTION_META;
+	const protectionSummary = relevantProtectionMeta
+		.filter((m) => protect[m.key])
 		.map((m) => m.label)
 		.join(', ');
 	const keepTopSummary = [
@@ -1016,9 +1162,11 @@ const MassDelete = () => {
 		`Top ${trashMaster} Master League`,
 		`Top ${trashRaid} Raid`,
 	].join(' · ');
-	const panelSummary = isBadIv
-		? `CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`
-		: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
+	const panelSummary = isFindPerfect
+		? `Ignores ${protectionSummary || 'nothing'}`
+		: isBadIv
+			? `CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`
+			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
 
 	const whitelistSummary =
 		whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
@@ -1049,29 +1197,35 @@ const MassDelete = () => {
 		}
 	};
 
+	const pageTitle = isFindPerfect
+		? 'Find Your Perfect (100%) IV Pokémon'
+		: isBadIv
+			? 'Mass Delete Non-Perfect IV Pokémon'
+			: 'Mass Delete current non-meta relevant Pokémon';
+
 	return (
 		<div className='r-shell'>
-			<h1 className='r-page-title'>
-				{isBadIv ? 'Mass Delete Non-Perfect IV Pokémon' : 'Mass Delete current non-meta relevant Pokémon'}
-			</h1>
+			<h1 className='r-page-title'>{pageTitle}</h1>
 
 			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label='Mass delete mode'>
 				<button type='button' data-active={!isBadIv} onClick={() => setMode('meta')}>
 					Non-meta relevant
 				</button>
 				<button type='button' data-active={isBadIv} onClick={() => setMode('badIv')}>
-					Non-Perfect IVs
+					{isFindPerfect ? 'Find Perfect IVs' : 'Non-Perfect IVs'}
 				</button>
 			</div>
 
-			{isBadIv && (
+			{isBadIv && !findPerfect && (
 				<div className='r-card r-md-warning'>
 					<p style={{ margin: 0 }}>⚠️ {BAD_IV_WARNING}</p>
 				</div>
 			)}
 
 			<div className='r-card r-md-help'>
-				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{isBadIv ? BAD_IV_HELP_TEXT : HELP_TEXT}</p>
+				<p className={helpOpen ? '' : 'r-md-help-clamp'}>
+					{isFindPerfect ? PERFECT_HELP_TEXT : isBadIv ? BAD_IV_HELP_TEXT : HELP_TEXT}
+				</p>
 				<button type='button' className='r-md-more' onClick={() => setHelpOpen((v) => !v)}>
 					{helpOpen ? 'Read less' : 'Read more'}
 				</button>
@@ -1149,21 +1303,39 @@ const MassDelete = () => {
 						)}
 
 						<div className='r-md-knobs-grid'>
-							<div className='r-md-knob'>
-								<span>Never delete at or above CP</span>
-								<select
-									className='r-md-select'
-									aria-label='Never delete at or above CP'
-									value={cp}
-									onChange={(e) => setCp(+e.target.value)}
-								>
-									{CP_OPTIONS.map((n) => (
-										<option key={n} value={n}>
-											{n}
-										</option>
-									))}
-								</select>
-							</div>
+							{!isFindPerfect && (
+								<div className='r-md-knob'>
+									<span>Never delete at or above CP</span>
+									<select
+										className='r-md-select'
+										aria-label='Never delete at or above CP'
+										value={cp}
+										onChange={(e) => setCp(+e.target.value)}
+									>
+										{CP_OPTIONS.map((n) => (
+											<option key={n} value={n}>
+												{n}
+											</option>
+										))}
+									</select>
+								</div>
+							)}
+							{isBadIv && (
+								<div className='r-md-knob'>
+									<span>Find perfect IVs instead</span>
+									<button
+										type='button'
+										className='r-ctr-toggle'
+										data-on={findPerfect ? '' : undefined}
+										aria-pressed={findPerfect}
+										title='Flips this tab’s intent: instead of best-effort deleting non-perfect catches, best-effort finds the ones that already are perfect.'
+										onClick={() => setFindPerfect((v) => !v)}
+									>
+										<span className='r-ss-box' aria-hidden='true' />
+										{findPerfect ? 'On' : 'Off'}
+									</button>
+								</div>
+							)}
 							{!isBadIv && (
 								<div className='r-md-knob'>
 									<span>Keep relevant for trade</span>
@@ -1183,10 +1355,10 @@ const MassDelete = () => {
 						</div>
 
 						<div className='r-section-h' style={{ marginTop: 4 }}>
-							Never delete this category
+							{isFindPerfect ? 'Ignore this category' : 'Never delete this category'}
 						</div>
 						<div className='r-md-protect-grid'>
-							{PROTECTION_META.map((m) => (
+							{visibleProtectionMeta.map((m) => (
 								<button
 									key={m.key}
 									type='button'
@@ -1205,7 +1377,7 @@ const MassDelete = () => {
 				)}
 			</div>
 
-			<div className='r-section-h'>Never delete these Pokémon</div>
+			<div className='r-section-h'>{isFindPerfect ? 'Exclude these Pokémon from results' : 'Never delete these Pokémon'}</div>
 			<div className='r-ctr-config' data-open={wlOpen}>
 				<div className='r-ctr-config-bar'>
 					<button
@@ -1292,7 +1464,11 @@ const MassDelete = () => {
 				className='r-md-out'
 				readOnly
 				value={activeCalculating ? 'Computing… this sweeps every species, give it a moment.' : activeResult}
-				placeholder='Your search string appears here. Paste it into the Pokémon GO search bar, review the matches, then delete.'
+				placeholder={
+					isFindPerfect
+						? 'Your search string appears here. Paste it into the Pokémon GO search bar to see your perfect catches.'
+						: 'Your search string appears here. Paste it into the Pokémon GO search bar, review the matches, then delete.'
+				}
 				onClick={copy}
 			/>
 			{activeResult && (
