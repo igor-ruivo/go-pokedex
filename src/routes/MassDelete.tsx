@@ -65,7 +65,7 @@ const CP_OPTIONS = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000];
  *  that the game itself evaluates against your live inventory; this app never
  *  needs to know which of your own catches are favorited or tagged; it just
  *  decides whether to emit the keyword at all. */
-interface ProtectionFlags {
+export interface ProtectionFlags {
 	favorite: boolean;
 	tagged: boolean;
 	legendary: boolean;
@@ -75,7 +75,7 @@ interface ProtectionFlags {
 	shadow: boolean;
 }
 
-const DEFAULT_PROTECTION: ProtectionFlags = {
+export const DEFAULT_PROTECTION: ProtectionFlags = {
 	favorite: true,
 	tagged: true,
 	legendary: true,
@@ -155,7 +155,7 @@ const BAD_IV_HELP_TEXT =
 	'always strictly better, so it’s just a flat “keep anything 11+ in every stat”. A perfect 15/15/15 is always kept, ' +
 	'in every league, no matter what. This never deletes any Pokémon protected below either.';
 
-interface ComputeArgs {
+export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	rankLists: Array<Record<string, { rank: number } | undefined>>;
 	raidDPS: Record<string, Record<string, DPSEntry>>;
@@ -176,7 +176,7 @@ interface ComputeArgs {
 
 /* ---- verbatim port of the legacy DeleteTrash `computeStr`, since extended
    with togglable category protection and a manual per-species whitelist ---- */
-const computeTrashString = (a: ComputeArgs): string => {
+export const computeTrashString = (a: ComputeArgs): string => {
 	const {
 		gamemasterPokemon,
 		rankLists,
@@ -474,7 +474,7 @@ const computeTrashString = (a: ComputeArgs): string => {
  * get an unconditional exclusion clause instead of (not in addition to) their
  * carve-out pattern — their own IV spread stops mattering entirely.
  */
-const computeBadIvString = (
+export const computeBadIvString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
 	carveOuts: Array<BadIvCarveOut>,
 	gl: GameLanguage,

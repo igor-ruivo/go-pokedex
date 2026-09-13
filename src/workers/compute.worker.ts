@@ -311,7 +311,7 @@ const isProtectedByBlanket = (ivs: BadIvPattern) => matchesDefault(ivs) || isExa
  * else — computing one unconditionally here, always, is what makes that
  * later toggle safe to flip in either direction.
  */
-const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
+export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
 	const isExcludedCategory = (p: IGamemasterPokemon) => !!p.aliasId || !!p.isMega || !!p.isShadow;
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !isExcludedCategory(p));
 	const domainFilter = (r: IGamemasterPokemon) => !isExcludedCategory(r);
@@ -352,4 +352,9 @@ const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsInput): A
 export const api = { familyIvPercents, bestIvs, lowAttackViable, raidComparisons, findBadIvCarveOuts };
 export type ComputeApi = typeof api;
 
-expose(api);
+// Guarded: this module is also imported directly (not through a real Worker)
+// by tests exercising the pure functions above — `self` doesn't exist there,
+// and Comlink's `expose` assumes a genuine worker global scope.
+if (typeof self !== 'undefined') {
+	expose(api);
+}

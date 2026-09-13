@@ -3592,7 +3592,7 @@
 .rvmp .r-md-wl-divider {
 	flex-basis: 100%;
 	height: 1px;
-	margin: 2px 0;
+	margin: 10px 0;
 	background: var(--border-strong);
 }
 .rvmp .r-md-wl-sprite {
