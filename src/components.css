@@ -2995,6 +2995,16 @@
 	color: var(--accent);
 	font-variant-numeric: tabular-nums;
 }
+/* A found spread that's a true stat-product tie for #1 — same gold hint as
+   the ranked rows below, so "this is genuinely as good as it gets" reads the
+   same whether you found it by search or by scrolling. */
+.rvmp .r-ivt-found[data-top] {
+	background: linear-gradient(180deg, color-mix(in srgb, #ffc94d 22%, var(--surface)), var(--surface));
+	border-color: color-mix(in srgb, #ffc94d 55%, var(--border));
+}
+.rvmp .r-ivt-found[data-top] .r-ivt-found-rank {
+	color: #d99a00;
+}
 .rvmp .r-ivt-found-iv {
 	font-family: Fredoka, sans-serif;
 	font-weight: 700;
@@ -3115,6 +3125,24 @@
 .rvmp .r-ivt-row[data-match] {
 	background: color-mix(in srgb, var(--accent) 18%, var(--surface));
 	box-shadow: inset 3px 0 0 var(--accent);
+}
+/* Rows that are a genuine stat-product tie for #1 — not just close, exactly
+   equal — get a gold hint so the true tops stand out while scrolling past
+   the merely-excellent ones. Composes with `data-match` (own box-shadow
+   edge, the row backgrounds blend) rather than fighting it. */
+.rvmp .r-ivt-row[data-top] {
+	background: color-mix(in srgb, #ffc94d 14%, var(--surface));
+	box-shadow: inset 3px 0 0 #ffc94d;
+}
+.rvmp .r-ivt-row[data-top][data-match] {
+	background: color-mix(in srgb, #ffc94d 12%, color-mix(in srgb, var(--accent) 18%, var(--surface)));
+	box-shadow:
+		inset 3px 0 0 var(--accent),
+		inset -3px 0 0 #ffc94d;
+}
+.rvmp .r-ivt-row[data-top] .r-ivt-rank {
+	color: #d99a00;
+	font-weight: 800;
 }
 /* hover: gently light up the row and the column, pop the exact cell */
 .rvmp .r-ivt-row[data-hot] {

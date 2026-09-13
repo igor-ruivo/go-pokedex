@@ -84,6 +84,61 @@ export const cleanName = (name: string): string => {
 
 export const dexNo = (dex: number): string => `#${String(dex).padStart(3, '0')}`;
 
+// Truncate to one decimal (no rounding — matches pvpivs.com), then drop a
+// trailing ".0" so a whole value like 178.0 reads "178" and 100.0% reads "100%".
+export const dec1 = (n: number): string => {
+	const t = Math.trunc(n * 10) / 10;
+	return Number.isInteger(t) ? String(t) : t.toFixed(1);
+};
+
+/**
+ * Stat-product percentile of one spread vs. the #1 (best) spread — the same
+ * definition pvpivs.com/PvPoke use, and the only correct one: a raw rank-
+ * position fraction (e.g. `(4095 - rank) / 4095`) is NOT a percentile, it's
+ * just where the spread sits in the sorted list, and gets further from the
+ * true figure the more ties/close spreads exist below it.
+ *
+ * Rounds each stat product to an integer (as the games' own PvP ranking
+ * conventionally does, and as this library's `computeBestIVs` already does
+ * internally) before dividing — comparing raw floating-point products
+ * (`A * D * S`) directly can land a spread's ratio against *itself* at
+ * something like 99.999999999999% instead of exactly 100 (IEEE754 rounding
+ * in the intermediate `* 100` multiply), which both misreports the #1 spread
+ * and can misreport a genuine tie for #1. Dividing two *equal* integers is
+ * always exactly 1 in IEEE754, so the rank-1 spread — and any other spread
+ * that's a true stat-product tie with it — reports exactly 100, never 99.9.
+ */
+export const statProdPercentile = (
+	candidate: { A: number; D: number; S: number },
+	best: { A: number; D: number; S: number }
+): number => {
+	const candidateProd = Math.round(candidate.A * candidate.D * candidate.S);
+	const bestProd = Math.round(best.A * best.D * best.S);
+	return bestProd > 0 ? (candidateProd * 100) / bestProd : 0;
+};
+
+/**
+ * The other, differently-useful percentile: where a spread sits across the
+ * *whole* 0–4095 population, 0% at the worst possible spread (#4096) and
+ * 100% at the best (#1, or any other spread that's a genuine stat-product
+ * tie with it) — linear in stat product between those two ends. This is
+ * what "Your IVs Percentile" on a Pokémon's own page means by percentile:
+ * how good is this catch compared to every spread it could have been, not
+ * (that's `statProdPercentile` above, used by the IV Table) how close it is
+ * to flawless.
+ */
+export const statProdRangePercentile = (
+	candidate: { A: number; D: number; S: number },
+	worst: { A: number; D: number; S: number },
+	best: { A: number; D: number; S: number }
+): number => {
+	const candidateProd = Math.round(candidate.A * candidate.D * candidate.S);
+	const worstProd = Math.round(worst.A * worst.D * worst.S);
+	const bestProd = Math.round(best.A * best.D * best.S);
+	const span = bestProd - worstProd;
+	return span > 0 ? ((candidateProd - worstProd) * 100) / span : 100;
+};
+
 export const ordinal = (n: number): string => {
 	const s = ['th', 'st', 'nd', 'rd'];
 	const v = n % 100;

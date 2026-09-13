@@ -53,6 +53,22 @@ export interface FamilyIvPercentsInput {
 	maxLevel?: number;
 }
 
+/**
+ * "Competition ranking" (1224, not 1234): walks backward from a matched
+ * index to the earliest entry sharing its exact (rounded) stat product —
+ * `flat` is always sorted descending, so ties are always contiguous — and
+ * returns that entry's 1-based position. Two spreads that are a genuine
+ * stat-product tie always report the same rank this way (e.g. #2 and #3
+ * both reporting "#2"), matching the IV Table's own ranking.
+ */
+const competitionRank = (flat: Array<RankEntry>, idx: number): number => {
+	const prodOf = (r: RankEntry) => Math.round(r.battle.A * r.battle.D * r.battle.S);
+	const prod = prodOf(flat[idx]);
+	let i = idx;
+	while (i > 0 && prodOf(flat[i - 1]) === prod) i--;
+	return i + 1;
+};
+
 const familyIvPercents = ({
 	reachable,
 	selfIsShadow,
@@ -89,7 +105,7 @@ const familyIvPercents = ({
 		const rankMLIndex = flatMLResult.findIndex(matches);
 
 		result[p.speciesId] = {
-			greatLeagueRank: rankGLIndex,
+			greatLeagueRank: competitionRank(flatGLResult, rankGLIndex),
 			greatLeagueLvl: flatGLResult[rankGLIndex].L,
 			greatLeagueCP: flatGLResult[rankGLIndex].CP,
 			greatLeagueAttack: flatGLResult[rankGLIndex].battle.A,
@@ -98,7 +114,9 @@ const familyIvPercents = ({
 			greatLeaguePerfect: flatGLResult[0].IVs,
 			greatLeaguePerfectLevel: flatGLResult[0].L,
 			greatLeaguePerfectCP: flatGLResult[0].CP,
-			ultraLeagueRank: rankULIndex,
+			greatLeaguePerfectBattle: flatGLResult[0].battle,
+			greatLeagueWorstBattle: flatGLResult[flatGLResult.length - 1].battle,
+			ultraLeagueRank: competitionRank(flatULResult, rankULIndex),
 			ultraLeagueLvl: flatULResult[rankULIndex].L,
 			ultraLeagueCP: flatULResult[rankULIndex].CP,
 			ultraLeagueAttack: flatULResult[rankULIndex].battle.A,
@@ -107,7 +125,9 @@ const familyIvPercents = ({
 			ultraLeaguePerfect: flatULResult[0].IVs,
 			ultraLeaguePerfectLevel: flatULResult[0].L,
 			ultraLeaguePerfectCP: flatULResult[0].CP,
-			masterLeagueRank: rankMLIndex,
+			ultraLeaguePerfectBattle: flatULResult[0].battle,
+			ultraLeagueWorstBattle: flatULResult[flatULResult.length - 1].battle,
+			masterLeagueRank: competitionRank(flatMLResult, rankMLIndex),
 			masterLeagueLvl: flatMLResult[rankMLIndex].L,
 			masterLeagueCP: flatMLResult[rankMLIndex].CP,
 			masterLeagueAttack: flatMLResult[rankMLIndex].battle.A,
@@ -116,7 +136,9 @@ const familyIvPercents = ({
 			masterLeaguePerfect: flatMLResult[0].IVs,
 			masterLeaguePerfectLevel: flatMLResult[0].L,
 			masterLeaguePerfectCP: flatMLResult[0].CP,
-			customLeagueRank: rankLIndex,
+			masterLeaguePerfectBattle: flatMLResult[0].battle,
+			masterLeagueWorstBattle: flatMLResult[flatMLResult.length - 1].battle,
+			customLeagueRank: competitionRank(flatLResult, rankLIndex),
 			customLeagueLvl: flatLResult[rankLIndex].L,
 			customLeagueCP: flatLResult[rankLIndex].CP,
 			customLeagueAttack: flatLResult[rankLIndex].battle.A,
@@ -125,6 +147,8 @@ const familyIvPercents = ({
 			customLeaguePerfect: flatLResult[0].IVs,
 			customLeaguePerfectLevel: flatLResult[0].L,
 			customLeaguePerfectCP: flatLResult[0].CP,
+			customLeaguePerfectBattle: flatLResult[0].battle,
+			customLeagueWorstBattle: flatLResult[flatLResult.length - 1].battle,
 		};
 	}
 

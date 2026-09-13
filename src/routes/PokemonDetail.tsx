@@ -15,7 +15,7 @@ import type { IIvPercents } from '../DTOs/ivs';
 import useComputeIVs from '../hooks/useComputeIVs';
 import { suppressNextScrollReset } from '../hooks/useScrollToTopOnNavigate';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
-import { cleanName, dexNo, ordinal } from '../lib/format';
+import { cleanName, dec1, dexNo, ordinal, statProdRangePercentile } from '../lib/format';
 import { R } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
 import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
@@ -74,27 +74,36 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 				rank: ivp.greatLeagueRank,
 				cp: ivp.greatLeagueCP,
 				lvl: ivp.greatLeagueLvl,
+				battle: { A: ivp.greatLeagueAttack, D: ivp.greatLeagueDefense, S: ivp.greatLeagueHP },
 				perfect: ivp.greatLeaguePerfect,
 				perfectCP: ivp.greatLeaguePerfectCP,
 				perfectLvl: ivp.greatLeaguePerfectLevel,
+				perfectBattle: ivp.greatLeaguePerfectBattle,
+				worstBattle: ivp.greatLeagueWorstBattle,
 			};
 		case 1:
 			return {
 				rank: ivp.ultraLeagueRank,
 				cp: ivp.ultraLeagueCP,
 				lvl: ivp.ultraLeagueLvl,
+				battle: { A: ivp.ultraLeagueAttack, D: ivp.ultraLeagueDefense, S: ivp.ultraLeagueHP },
 				perfect: ivp.ultraLeaguePerfect,
 				perfectCP: ivp.ultraLeaguePerfectCP,
 				perfectLvl: ivp.ultraLeaguePerfectLevel,
+				perfectBattle: ivp.ultraLeaguePerfectBattle,
+				worstBattle: ivp.ultraLeagueWorstBattle,
 			};
 		default:
 			return {
 				rank: ivp.masterLeagueRank,
 				cp: ivp.masterLeagueCP,
 				lvl: ivp.masterLeagueLvl,
+				battle: { A: ivp.masterLeagueAttack, D: ivp.masterLeagueDefense, S: ivp.masterLeagueHP },
 				perfect: ivp.masterLeaguePerfect,
 				perfectCP: ivp.masterLeaguePerfectCP,
 				perfectLvl: ivp.masterLeaguePerfectLevel,
+				perfectBattle: ivp.masterLeaguePerfectBattle,
+				worstBattle: ivp.masterLeagueWorstBattle,
 			};
 	}
 };
@@ -997,11 +1006,15 @@ const PokemonDetail = () => {
 								<div className='r-readout'>
 									<div>
 										<i>{LEAGUES[league].label} IV rank</i>
-										<b className='hi'>{ivLoading || !slice ? '…' : `#${(slice.rank + 1).toLocaleString()}`}</b>
+										<b className='hi'>{ivLoading || !slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
 									</div>
 									<div>
 										<i>Percentile</i>
-										<b>{ivLoading || !slice ? '…' : `${(((4095 - slice.rank) / 4095) * 100).toFixed(1)}%`}</b>
+										<b>
+											{ivLoading || !slice
+												? '…'
+												: `${dec1(statProdRangePercentile(slice.battle, slice.worstBattle, slice.perfectBattle))}%`}
+										</b>
 									</div>
 									<div>
 										<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>

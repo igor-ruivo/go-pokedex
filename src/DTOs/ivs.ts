@@ -14,6 +14,8 @@ export interface IIvPercents {
 	greatLeaguePerfect: ILeaguePerfectStats;
 	greatLeaguePerfectLevel: number;
 	greatLeaguePerfectCP: number;
+	greatLeaguePerfectBattle: ILeaguePerfectStats;
+	greatLeagueWorstBattle: ILeaguePerfectStats;
 	ultraLeagueRank: number;
 	ultraLeagueLvl: number;
 	ultraLeagueCP: number;
@@ -23,6 +25,8 @@ export interface IIvPercents {
 	ultraLeaguePerfect: ILeaguePerfectStats;
 	ultraLeaguePerfectLevel: number;
 	ultraLeaguePerfectCP: number;
+	ultraLeaguePerfectBattle: ILeaguePerfectStats;
+	ultraLeagueWorstBattle: ILeaguePerfectStats;
 	masterLeagueRank: number;
 	masterLeagueLvl: number;
 	masterLeagueCP: number;
@@ -32,6 +36,8 @@ export interface IIvPercents {
 	masterLeaguePerfect: ILeaguePerfectStats;
 	masterLeaguePerfectLevel: number;
 	masterLeaguePerfectCP: number;
+	masterLeaguePerfectBattle: ILeaguePerfectStats;
+	masterLeagueWorstBattle: ILeaguePerfectStats;
 	customLeagueRank: number;
 	customLeagueLvl: number;
 	customLeagueCP: number;
@@ -41,4 +47,6 @@ export interface IIvPercents {
 	customLeaguePerfect: ILeaguePerfectStats;
 	customLeaguePerfectLevel: number;
 	customLeaguePerfectCP: number;
+	customLeaguePerfectBattle: ILeaguePerfectStats;
+	customLeagueWorstBattle: ILeaguePerfectStats;
 }

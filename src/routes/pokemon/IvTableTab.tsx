@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs } from '../../hooks/useBestIvs';
-import { cleanName } from '../../lib/format';
+import { cleanName, dec1, statProdPercentile } from '../../lib/format';
 
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
 const LEAGUE_NAME = ['Great', 'Ultra', 'Master'] as const;
@@ -16,13 +16,6 @@ const FIELD_LABEL = ['ATK', 'DEF', 'HP'] as const;
 const clamp15 = (s: string) => {
 	const n = Number.parseInt(s, 10);
 	return Number.isNaN(n) ? '' : String(Math.max(0, Math.min(15, n)));
-};
-
-// Truncate to one decimal (no rounding — matches pvpivs.com), then drop a
-// trailing ".0" so a whole value like 178.0 reads "178" and 100.0% reads "100%".
-const dec1 = (n: number) => {
-	const t = Math.trunc(n * 10) / 10;
-	return Number.isInteger(t) ? String(t) : t.toFixed(1);
 };
 
 const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
@@ -64,7 +57,6 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 		if (!triplet) return -1;
 		return rows.findIndex((r) => r.IVs.A === triplet[0] && r.IVs.D === triplet[1] && r.IVs.S === triplet[2]);
 	}, [rows, triplet]);
-	const bestProd = rows[0] ? rows[0].battle.A * rows[0].battle.D * rows[0].battle.S : 1;
 	const match = matchIdx >= 0 ? rows[matchIdx] : undefined;
 
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -74,6 +66,20 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 		estimateSize: () => ROW_H,
 		overscan: 12,
 	});
+
+	// "Competition ranking" (1224, not 1234): a spread ties the rank of the one
+	// above it whenever they share the exact (rounded) stat product — `rows` is
+	// already sorted descending, so ties are always adjacent — otherwise it
+	// takes its own 1-based position, which already accounts for every tie
+	// before it (e.g. 1, 1, 3, 4, 5, 6, 7, 7, 7, 10, 11 — never 1, 1, 2, 3…).
+	const ranks = useMemo(() => {
+		const prodOf = (r: (typeof rows)[number]) => Math.round(r.battle.A * r.battle.D * r.battle.S);
+		const out = new Array<number>(rows.length);
+		for (let i = 0; i < rows.length; i++) {
+			out[i] = i > 0 && prodOf(rows[i]) === prodOf(rows[i - 1]) ? out[i - 1] : i + 1;
+		}
+		return out;
+	}, [rows]);
 
 	if (!isPvp) {
 		return (
@@ -94,7 +100,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 	}
 
 	// Stat-product percentile vs the #1 spread (formatted with `dec1`).
-	const pctOf = (r: (typeof rows)[number]) => (r.battle.A * r.battle.D * r.battle.S * 100) / bestProd;
+	const pctOf = (r: (typeof rows)[number]) => (rows[0] ? statProdPercentile(r.battle, rows[0].battle) : 0);
 	// The bar shows where a spread sits *within the possible range*: the #1 spread
 	// fills it, the #4096 (worst) spread empties it. The number still reports the
 	// true stat-product percentile (~89% for the worst).
@@ -140,8 +146,8 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 
 			{anyEntered &&
 				(match ? (
-					<div className='r-ivt-found'>
-						<span className='r-ivt-found-rank'>#{(matchIdx + 1).toLocaleString()}</span>
+					<div className='r-ivt-found' data-top={ranks[matchIdx] === 1 ? '' : undefined}>
+						<span className='r-ivt-found-rank'>#{ranks[matchIdx].toLocaleString()}</span>
 						<span className='r-ivt-found-iv'>
 							{match.IVs.A} / {match.IVs.D} / {match.IVs.S}
 						</span>
@@ -191,6 +197,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 									key={vi.index}
 									className='r-ivt-row'
 									data-match={vi.index === matchIdx ? '' : undefined}
+									data-top={ranks[vi.index] === 1 ? '' : undefined}
 									data-hot={hover?.r === vi.index ? '' : undefined}
 									style={{
 										position: 'absolute',
@@ -202,7 +209,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 									}}
 								>
 									<span className='r-ivt-rank' data-colhot={hot(0)} onMouseEnter={on(0)}>
-										{(vi.index + 1).toLocaleString()}
+										{ranks[vi.index].toLocaleString()}
 									</span>
 									<span className='r-ivt-iv' data-colhot={hot(1)} onMouseEnter={on(1)}>
 										<b>{r.IVs.A}</b>
