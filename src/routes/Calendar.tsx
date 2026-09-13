@@ -103,6 +103,17 @@ const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
 });
 
 /* ---------- shared bits ---------- */
+/** Small inline placeholder for a single grid still waiting on relevance
+ *  data — not the page-level `Spinner` (60dvh is far too tall for a single
+ *  section) and not just skipping straight to `sorted`'s fallback (family-
+ *  line) order, which is exactly what caused the chips to render once, then
+ *  visibly jump into their real (relevance) order a split second later. */
+const MiniGridLoading = () => (
+	<div className='r-minigrid-loading'>
+		<div className='r-spinner r-spinner--sm' />
+	</div>
+);
+
 const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<string, number> | undefined }) => {
 	// `endMap` values come from the same local-time-encoded event feed
 	// everything else on this page does — see nowAsEventTime()'s doc comment.
@@ -114,6 +125,12 @@ const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<st
 		() => sortByCalendarRelevance(entries, (e) => e.speciesId, gamemasterPokemon, sets),
 		[entries, gamemasterPokemon, sets]
 	);
+	// `sets.ready` lags behind this tab's own `xFetchCompleted` gate (it's a
+	// completely separate data source — PvP/raid rankings, not the Calendar
+	// feed) — without waiting on it too, this grid renders once in the
+	// meaningless fallback (family-line) order, then reorders into the real
+	// relevance order the instant that data lands.
+	if (!sets.ready) return <MiniGridLoading />;
 	return (
 		<div className='r-minigrid'>
 			{sorted.map((e, i) => {
@@ -548,8 +565,16 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 	const avatar = t ? `/images/types/${t}.png` : npcAvatar(g.trainerId);
 	// Most relevant first (most league/raid dots), family-line order as tiebreak —
 	// same rule the Calendar's other Pokémon chip grids use (see `MiniGrid`).
-	const sortIds = (ids: Array<string>) => sortByCalendarRelevance(ids, (id) => id, gamemasterPokemon, sets);
-	const tiers = [sortIds(g.tier1), sortIds(g.tier2), sortIds(g.tier3)];
+	// Memoized for the same reason `MiniGrid` memoizes its own sort: each call
+	// walks every listed species' whole evolution family (`leagueBadgesFor` →
+	// `fetchReachablePokemonIncludingSelf`) — unmemoized and called 3× per
+	// grunt, across the ten-plus grunts this tab typically renders, that's
+	// what made this page noticeably slower to load than every other Calendar
+	// tab, and re-ran on every grunt for every single open/close toggle.
+	const tiers = useMemo(() => {
+		const sortIds = (ids: Array<string>) => sortByCalendarRelevance(ids, (id) => id, gamemasterPokemon, sets);
+		return [sortIds(g.tier1), sortIds(g.tier2), sortIds(g.tier3)];
+	}, [g, gamemasterPokemon, sets]);
 	const firstCatch = [...g.catchableTiers].sort((a, b) => a - b)[0];
 	const reward = firstCatch != null ? (tiers[firstCatch] ?? []) : [];
 	const title = g.type ? `${cap(g.type)} Grunt` : isNamed ? prettyTrainer(g.trainerId) : 'Grunt';
@@ -588,30 +613,43 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 			{!open && firstCatch != null && reward.length > 0 && (
 				<div className='r-grunt-peek'>
 					<u>Slot {firstCatch + 1} reward</u>
-					<div className='r-minigrid'>
-						{reward.map((id, j) => (
-							<PokeMini key={`${id}-${j}`} speciesId={id} forceShadow />
-						))}
-					</div>
+					{sets.ready ? (
+						<div className='r-minigrid'>
+							{reward.map((id, j) => (
+								<PokeMini key={`${id}-${j}`} speciesId={id} forceShadow />
+							))}
+						</div>
+					) : (
+						<MiniGridLoading />
+					)}
 				</div>
 			)}
 
 			{open && (
 				<div className='r-event-body'>
-					{tiers.map((tier, i) =>
-						tier.length ? (
-							<div key={i} className='r-rocket-tier'>
-								<u>
-									Slot {i + 1}
-									{g.catchableTiers.includes(i) && <span className='r-catch-tag'>catchable</span>}
-								</u>
-								<div className='r-minigrid'>
-									{tier.map((id, j) => (
-										<PokeMini key={`${id}-${j}`} speciesId={id} forceShadow catchable={g.catchableTiers.includes(i)} />
-									))}
+					{sets.ready ? (
+						tiers.map((tier, i) =>
+							tier.length ? (
+								<div key={i} className='r-rocket-tier'>
+									<u>
+										Slot {i + 1}
+										{g.catchableTiers.includes(i) && <span className='r-catch-tag'>catchable</span>}
+									</u>
+									<div className='r-minigrid'>
+										{tier.map((id, j) => (
+											<PokeMini
+												key={`${id}-${j}`}
+												speciesId={id}
+												forceShadow
+												catchable={g.catchableTiers.includes(i)}
+											/>
+										))}
+									</div>
 								</div>
-							</div>
-						) : null
+							) : null
+						)
+					) : (
+						<MiniGridLoading />
 					)}
 				</div>
 			)}

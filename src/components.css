@@ -1392,6 +1392,21 @@
 	animation: r-spin 0.8s linear infinite;
 	margin-bottom: var(--s3);
 }
+/* smaller variant for an inline placeholder standing in for a single chip
+   grid (Calendar) — the full-size spinner's own margin-bottom assumes it's
+   the only thing on the page, which is far too much space for this. */
+.rvmp .r-spinner--sm {
+	width: 22px;
+	height: 22px;
+	border-width: 3px;
+	margin-bottom: 0;
+}
+.rvmp .r-minigrid-loading {
+	display: grid;
+	place-items: center;
+	min-height: 64px;
+	margin-bottom: var(--s3);
+}
 @keyframes r-spin {
 	to {
 		transform: rotate(360deg);

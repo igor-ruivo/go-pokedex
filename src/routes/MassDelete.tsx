@@ -1207,7 +1207,13 @@ const MassDelete = () => {
 						onClick={() => setWlOpen((o) => !o)}
 					>
 						<span className='r-ctr-config-ic' aria-hidden='true'>
-							🛡
+							<svg viewBox='0 0 24 24' width='15' height='15' fill='none' stroke='currentColor' strokeWidth='2'>
+								<path
+									strokeLinecap='round'
+									strokeLinejoin='round'
+									d='M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6l7-3z'
+								/>
+							</svg>
 						</span>
 						<span className='r-ctr-config-sum'>{whitelistSummary}</span>
 						<span className='r-ctr-config-chev' aria-hidden='true'>
