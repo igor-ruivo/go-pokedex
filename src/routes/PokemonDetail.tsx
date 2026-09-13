@@ -127,7 +127,11 @@ const PokemonDetail = () => {
 	const tab: TabLabel = SLUG_TO_TAB[tabParam ?? 'ranks'] ?? 'Ranks';
 
 	const lgParam = searchParams.get('lg') ?? '';
-	const [iv, setIv] = useState<IVs>({ atk: 15, def: 15, hp: 15 });
+	// Never actually shown — `heroReady` keeps the picker/CP/level hidden behind
+	// a spinner until the real best-reachable spread lands — but pick the least
+	// misleading placeholder anyway, for the instant between mount and the
+	// first render/layout-effect pass.
+	const [iv, setIv] = useState<IVs>({ atk: 0, def: 0, hp: 0 });
 	const [level, setLevel] = useState(maxLevel);
 	// Best Buddy toggled off mid-session with the picker above the old ceiling —
 	// clamp back down rather than leaving it at an unreachable level.
@@ -1016,78 +1020,87 @@ const PokemonDetail = () => {
 									? `Your IVs Percentile · as Purified ${cleanName((pvpMember ?? pokemon).speciesName)}`
 									: `Your IVs Percentile · ${(pvpMember ?? pokemon).speciesId === self ? '' : 'as '}${(pvpMember ?? pokemon).isShadow ? 'Shadow ' : ''}${cleanName((pvpMember ?? pokemon).speciesName)}`}
 							</div>
-							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar, position: 'relative' }}>
-								{/* Real content always renders (never skips a beat between "loading" and
-								    "loaded" heights — nothing to reflow), just hidden — not merely
-								    covered — until `heroReady`. `visibility: hidden` (not a conditional
-								    skip, and not `opacity`) keeps its layout box reserving the exact
-								    final height while making it and its 15/15/15 default genuinely
-								    unseeable, not just obscured. The spinner overlay sits on top via
-								    `position: absolute` against the card's own `position: relative`. */}
-								<div style={{ visibility: heroReady ? 'visible' : 'hidden' }}>
-									<IvPicker
-										value={iv}
-										onChange={onManualIvChange}
-										presets={[
-											['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
-											['Hundo', { atk: 15, def: 15, hp: 15 }],
-											...(league !== 2 && slice
-												? [
-														[
-															`Rank 1 ${LEAGUES[league].label}`,
-															{
-																atk: purifiedIv(slice.perfect.A),
-																def: purifiedIv(slice.perfect.D),
-																hp: purifiedIv(slice.perfect.S),
-															},
-														] as [string, { atk: number; def: number; hp: number }],
-													]
-												: []),
-										]}
-									/>
-									<div className='r-readout'>
-										<div>
-											<i>{LEAGUES[league].label} IV rank</i>
-											<b className='hi'>{!slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
-										</div>
-										<div>
-											<i>Percentile</i>
-											<b>
-												{!slice
-													? '…'
-													: `${dec1(statProdRangePercentile(slice.battle, slice.worstBattle, slice.perfectBattle))}%`}
-											</b>
-										</div>
-										<div>
-											<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>
-											<b>{!slice ? '…' : slice.cp.toLocaleString()}</b>
-										</div>
+							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
+								{/* Only the picker itself (the one thing that can show a literal IV
+								    number) waits on `heroReady` — the readout/paragraphs below it
+								    already fall back to "…" off `slice` alone, so gating the whole
+								    card on `heroReady` too was reserving space for text that was
+								    never actually the problem, on top of the picker's own space:
+								    that's the "way too big while loading" of it. The picker's real
+								    DOM still always renders — `visibility: hidden`, not a conditional
+								    skip — so this reserves exactly its own real height (bars + preset
+								    row only, nothing else) and never reflows once the spinner drops
+								    away; the overlay sits on it via this wrapper's own `position:
+								    relative`. */}
+								<div style={{ position: 'relative' }}>
+									<div style={{ visibility: heroReady ? 'visible' : 'hidden' }}>
+										<IvPicker
+											value={iv}
+											onChange={onManualIvChange}
+											presets={[
+												['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
+												['Hundo', { atk: 15, def: 15, hp: 15 }],
+												...(league !== 2 && slice
+													? [
+															[
+																`Rank 1 ${LEAGUES[league].label}`,
+																{
+																	atk: purifiedIv(slice.perfect.A),
+																	def: purifiedIv(slice.perfect.D),
+																	hp: purifiedIv(slice.perfect.S),
+																},
+															] as [string, { atk: number; def: number; hp: number }],
+														]
+													: []),
+											]}
+										/>
 									</div>
-									{slice && (
-										<p className='r-muted' style={{ marginTop: 12 }}>
-											Best spread for {LEAGUES[league].label}:{' '}
-											<b>
-												{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
-											</b>{' '}
-											→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
-										</p>
-									)}
-									{purifyOffset > 0 && (
-										<p className='r-muted' style={{ marginTop: 8 }}>
-											⚠️ Be aware that purifying gains you +2 IVs on each stat.
-										</p>
-									)}
-									{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
-										<p className='r-muted' style={{ marginTop: 8 }}>
-											⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat
-											to at least 2, so a Shadow can never land below that no matter its own IVs.
-										</p>
+									{!heroReady && (
+										<div
+											className='r-loading'
+											style={{ position: 'absolute', inset: 0, minHeight: 0, background: 'var(--surface)' }}
+										>
+											<div className='r-spinner' style={{ width: 28, height: 28 }} />
+										</div>
 									)}
 								</div>
-								{!heroReady && (
-									<div className='r-loading' style={{ position: 'absolute', inset: 0, background: 'var(--surface)' }}>
-										<div className='r-spinner' />
+								<div className='r-readout'>
+									<div>
+										<i>{LEAGUES[league].label} IV rank</i>
+										<b className='hi'>{!slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
 									</div>
+									<div>
+										<i>Percentile</i>
+										<b>
+											{!slice
+												? '…'
+												: `${dec1(statProdRangePercentile(slice.battle, slice.worstBattle, slice.perfectBattle))}%`}
+										</b>
+									</div>
+									<div>
+										<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>
+										<b>{!slice ? '…' : slice.cp.toLocaleString()}</b>
+									</div>
+								</div>
+								{slice && (
+									<p className='r-muted' style={{ marginTop: 12 }}>
+										Best spread for {LEAGUES[league].label}:{' '}
+										<b>
+											{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
+										</b>{' '}
+										→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
+									</p>
+								)}
+								{purifyOffset > 0 && (
+									<p className='r-muted' style={{ marginTop: 8 }}>
+										⚠️ Be aware that purifying gains you +2 IVs on each stat.
+									</p>
+								)}
+								{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
+									<p className='r-muted' style={{ marginTop: 8 }}>
+										⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to
+										at least 2, so a Shadow can never land below that no matter its own IVs.
+									</p>
 								)}
 							</div>
 						</>
