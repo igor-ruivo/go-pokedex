@@ -12,7 +12,9 @@
 	<url><loc>https://go-pokedex.com/calendar/spawns</loc></url>
 	<url><loc>https://go-pokedex.com/calendar/rockets</loc></url>
 	<url><loc>https://go-pokedex.com/calendar/eggs</loc></url>
-	<url><loc>https://go-pokedex.com/search-strings</loc></url>
+	<url><loc>https://go-pokedex.com/search-strings/non-meta-relevant</loc></url>
+	<url><loc>https://go-pokedex.com/search-strings/non-perfect-ivs</loc></url>
+	<url><loc>https://go-pokedex.com/search-strings/tradeable</loc></url>
 	<url><loc>https://go-pokedex.com/rankings/raid/bug</loc></url>
 	<url><loc>https://go-pokedex.com/rankings/raid/dark</loc></url>
 	<url><loc>https://go-pokedex.com/rankings/raid/dragon</loc></url>
