@@ -1,0 +1,17 @@
+!37,!fire,0-1attack,3-4attack,0-3defense,0-3hp
+!37,!ice,0-1attack,3-4attack,0-3defense,0-3hp
+!38,!fire,0-1attack,3-4attack,0-3defense,0-3hp
+!38,!ice,0-1attack,3-4attack,0-3defense,0-3hp
+!88,dark,0-1attack,3-4attack,0-3defense,0-2hp,4hp
+!88,!dark,0-1attack,3-4attack,0-3defense,0-2hp,4hp
+!100,grass,0-3attack,0-3defense,0-2hp,4hp
+!100,!grass,0-3attack,0-3defense,0-2hp,4hp
+!101,grass,0-3attack,0-3defense,0-2hp,4hp
+!101,!grass,0-3attack,0-3defense,0-2hp,4hp
+!110,fairy,0-1attack,3-4attack,0-3defense,0-3hp
+!110,!fairy,0-1attack,3-4attack,0-3defense,0-3hp
+!562,ground,0-1attack,3-4attack,0-3defense,0-3hp
+!562,!ground,0-1attack,3-4attack,0-3defense,0-3hp
+!304,!shadow,0-3attack,0-3defense,0-2hp,4hp
+!532,!shadow,0-3attack,0-3defense,0-2hp,4hp
+!610,!shadow,0-1attack,3-4attack,0-3defense,0-2hp,4hp

@@ -1573,7 +1573,7 @@ const MassDelete = () => {
 										</select>
 									</div>
 									<div className='r-md-knob'>
-										<span>Simplified mode</span>
+										<span>Simplified mode (Smaller string but less effective)</span>
 										<button
 											type='button'
 											className='r-ctr-toggle'

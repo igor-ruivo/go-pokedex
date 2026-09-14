@@ -269,6 +269,76 @@ describe('computeBadIvString — simplified mode', () => {
 		expect(result).not.toContain('!900,!ground');
 	});
 
+	it('COMPLETE mode, single-form dex (no cross-form merge involved): a bare clause absorbs a Shadow-only clause sharing the identical real bucket pattern', () => {
+		// Isolates Case A specifically, in Complete mode, with no Case B in
+		// play at all (a single-form dex — nothing to disambiguate) — this is
+		// the exact real-world shape found at dex 304/532/610 on live
+		// gamemaster data: a species' own non-Shadow carve-out and its
+		// Shadow-only purification carve-out happen to land on the identical
+		// bucket, making the Shadow-scoped one provably redundant. Built by
+		// hand (not `findBadIvCarveOuts`) so the two patterns are guaranteed
+		// identical rather than hoping real IV math coincides.
+		const deviantmon = mockPokemon({ speciesId: 'deviantmon7', dex: 907, baseStats: { atk: 300, def: 100, hp: 100 } });
+		const deviantmonShadow = mockPokemon({
+			speciesId: 'deviantmon7_shadow',
+			dex: 907,
+			isShadow: true,
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const gamemasterPokemon = buildGamemaster([deviantmon, deviantmonShadow]);
+
+		const pattern = { A: 11, D: 15, S: 15 };
+		const carveOuts: Array<BadIvCarveOut> = [
+			{ speciesId: deviantmon.speciesId, cap: 2500, pattern },
+			{ speciesId: deviantmonShadow.speciesId, cap: 2500, pattern },
+		];
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		expect(result).toContain('&!907,0-2attack,4attack,0-3defense,0-3hp');
+		expect(result).not.toContain('!907,!shadow');
+	});
+
+	it('COMPLETE mode, single-form dex: a Shadow-only clause is NOT absorbed when its bucket pattern differs from the bare one — both survive', () => {
+		// Same shape as above, but the two patterns genuinely differ (as they
+		// realistically almost always do — a Shadow's purification carve-out
+		// and its non-Shadow raw carve-out are computed from different
+		// criteria). Confirms the negative isn't accidentally swallowed by
+		// the positive test's setup.
+		const deviantmon = mockPokemon({ speciesId: 'deviantmon8', dex: 908, baseStats: { atk: 300, def: 100, hp: 100 } });
+		const deviantmonShadow = mockPokemon({
+			speciesId: 'deviantmon8_shadow',
+			dex: 908,
+			isShadow: true,
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const gamemasterPokemon = buildGamemaster([deviantmon, deviantmonShadow]);
+
+		const carveOuts: Array<BadIvCarveOut> = [
+			{ speciesId: deviantmon.speciesId, cap: 2500, pattern: { A: 11, D: 15, S: 15 } },
+			{ speciesId: deviantmonShadow.speciesId, cap: 2500, pattern: { A: 0, D: 10, S: 13 } },
+		];
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		expect(result).toContain('&!908,0-2attack,4attack,0-3defense,0-3hp');
+		expect(result).toContain('!908,!shadow,1-4attack,0-1defense,3-4defense,0-2hp,4hp');
+	});
+
 	it('COMPLETE mode: two sibling forms that independently deviate to the IDENTICAL bucket pattern collapse into one dex-only clause that keeps that pattern', () => {
 		// Same deviating stats as deviantmon (300/100/100 -> real top-1 at cap
 		// 2500 is 11/15/15, per `buildBadIvFixture`'s own fixture comment) on

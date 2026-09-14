@@ -1,0 +1,7 @@
+!37,0-1attack,3-4attack,0-3defense,0-3hp
+!38,0-1attack,3-4attack,0-3defense,0-3hp
+!88,0-1attack,3-4attack,0-3defense,0-2hp,4hp
+!100,0-3attack,0-3defense,0-2hp,4hp
+!101,0-3attack,0-3defense,0-2hp,4hp
+!110,0-1attack,3-4attack,0-3defense,0-3hp
+!562,0-1attack,3-4attack,0-3defense,0-3hp
