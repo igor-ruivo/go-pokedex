@@ -480,7 +480,18 @@ export const computeBadIvString = (
 		const negA = groupAttr(complementOfBucket(ivBucket(pattern.A)), A);
 		const negD = groupAttr(complementOfBucket(ivBucket(pattern.D)), D);
 		const negS = groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
-		const clause = `&${negateIdentity(baseId)}${negA}${negD}${negS}`;
+		// This exact pattern is either that species' own true optimum (shadow-
+		// agnostic — a non-Shadow catch's raw IVs are its real IVs, and a
+		// Shadow catch's own raw IVs mean the same thing before it's purified,
+		// so protecting this pattern is correct for both) — or, when `p` is
+		// itself a Shadow form, it's specifically the *pre*-purification raw
+		// spread that turns into that species' true optimum only once
+		// purified (`findBadIvCarveOuts`'s Shadow-only pass). That second kind
+		// only holds for an actually-Shadow catch — a non-Shadow catch with
+		// this same raw spread gets no future +2 boost, so it stays genuinely
+		// wasted — hence the extra `,!shadow` scoping it to Shadow catches only.
+		const shadowScope = p.isShadow ? `,!${gameTranslator(GameTranslatorKeys.ShadowSearch, gl)}` : '';
+		const clause = `&${negateIdentity(baseId)}${shadowScope}${negA}${negD}${negS}`;
 		if (!seenClauses.has(clause)) {
 			result += clause;
 			seenClauses.add(clause);

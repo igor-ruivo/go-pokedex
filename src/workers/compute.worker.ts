@@ -13,8 +13,10 @@ import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
 import {
 	calculateCP,
+	calculateHP,
 	computeBestIVs,
 	computeDPSEntry,
+	cpm,
 	fetchReachablePokemonIncludingSelf,
 	guessRaidTier,
 	levelToLevelIndex,
@@ -250,6 +252,16 @@ const matchesDefault = (ivs: BadIvPattern) => {
 const isExactHundo = (ivs: BadIvPattern) => ivBucket(ivs.A) === 4 && ivBucket(ivs.D) === 4 && ivBucket(ivs.S) === 4;
 const isProtectedByBlanket = (ivs: BadIvPattern) => matchesDefault(ivs) || isExactHundo(ivs);
 
+// A Best Friend-level purify adds +2 to every one of a Shadow's own raw IVs,
+// capped at 15 — a real, always-available, zero-cost transition, not a
+// hypothetical like a trade. A Shadow catch's raw IVs are what the search
+// string actually has to match (that's what the game shows before you
+// purify it), but its *true* ceiling — whether keeping it unpurified is
+// wasted potential — depends on what those raw IVs become *after* purifying,
+// not on the raw IVs' own (unpurified) stat product.
+const PURIFY_BONUS = 2;
+const purify = (iv: number) => Math.min(iv + PURIFY_BONUS, 15);
+
 /**
  * Meta-agnostic "bad IV" carve-outs — see the "Mass Delete only Bad IV
  * Pokémon" tab. For every non-alias/mega/shadow species and every requested
@@ -318,6 +330,11 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	};
 
 	const carveOuts: Array<BadIvCarveOut> = [];
+	// speciesId+cap -> set of "A-D-S" bucket keys already covered by the
+	// regular (non-Shadow) analysis above — read by the Shadow pass below to
+	// skip a purified-optimal raw pattern that a plain, shadow-agnostic
+	// clause already protects, so it isn't emitted twice.
+	const rawPatternKeys = new Map<string, Set<string>>();
 	for (const p of candidates) {
 		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, domainFilter));
 		for (const cap of caps) {
@@ -329,9 +346,89 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 					if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
 				}
 			}
+			rawPatternKeys.set(`${p.speciesId}|${cap}`, new Set(distinctPatterns.keys()));
 			for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });
 		}
 	}
+
+	// Every entry above was computed with Shadow forms entirely absent — both
+	// as candidates and as reachable family members (`isExcludedCategory`
+	// excludes `isShadow` on both sides) — because a Shadow's own raw IVs
+	// don't tell the whole story: purifying it is a real, free, always-
+	// available action that adds +2 to every stat, so its true ceiling is
+	// what its raw IVs *become* once purified, not their own unpurified stat
+	// product. Walked separately here, over each Shadow's own reachable
+	// Shadow-only family (evolutions preserve Shadow status, so this never
+	// overlaps with the non-Shadow walk above), ranking raw spreads by their
+	// *purified* outcome instead.
+	const purifiedBestCache = new Map<string, Array<BadIvPattern>>();
+	const getBestPurifiedTied = (r: IGamemasterPokemon, cap: number): Array<BadIvPattern> => {
+		const key = `${r.speciesId}|${cap}`;
+		const cached = purifiedBestCache.get(key);
+		if (cached !== undefined) return cached;
+		const { atk, def, hp } = r.baseStats;
+		// Purifying 15 stays 15 — the hundo-reachability pre-filter is
+		// identical whether or not purification is in play.
+		const maxCP = calculateCP(atk, 15, def, 15, hp, 15, LEVEL_50_INDEX);
+		if (maxCP < CP_THRESHOLD_RATIO * cap) {
+			purifiedBestCache.set(key, []);
+			return [];
+		}
+		let bestProd = -1;
+		let patterns: Array<BadIvPattern> = [];
+		for (let a = 0; a <= 15; a++) {
+			for (let d = 0; d <= 15; d++) {
+				for (let s = 0; s <= 15; s++) {
+					const pa = purify(a);
+					const pd = purify(d);
+					const ps = purify(s);
+					let level = LEVEL_50_INDEX;
+					while (level >= 0 && calculateCP(atk, pa, def, pd, hp, ps, level) > cap) level--;
+					if (level < 0) continue;
+					const aSt = (atk + pa) * cpm[level];
+					const dSt = (def + pd) * cpm[level];
+					const sSt = calculateHP(hp, ps, level);
+					const prod = Math.round(aSt * dSt * sSt);
+					if (prod > bestProd) {
+						bestProd = prod;
+						patterns = [{ A: a, D: d, S: s }];
+					} else if (prod === bestProd) {
+						patterns.push({ A: a, D: d, S: s });
+					}
+				}
+			}
+		}
+		purifiedBestCache.set(key, patterns);
+		return patterns;
+	};
+
+	const shadowCandidates = Object.values(gamemasterPokemon).filter(
+		(p) => p.isShadow && !p.aliasId && !p.isMega
+	);
+	const shadowDomainFilter = (r: IGamemasterPokemon) => r.isShadow && !r.aliasId && !r.isMega;
+	for (const p of shadowCandidates) {
+		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, shadowDomainFilter));
+		const nonShadowId = p.speciesId.replaceAll('_shadow', '');
+		for (const cap of caps) {
+			const alreadyCovered = rawPatternKeys.get(`${nonShadowId}|${cap}`);
+			const distinctPatterns = new Map<string, BadIvPattern>();
+			for (const r of reachable) {
+				for (const best of getBestPurifiedTied(r, cap)) {
+					// The raw spread the game will actually show for this
+					// catch — evaluated against the blanket rules exactly
+					// like the non-Shadow pass, since a raw hundo or a raw
+					// catch already in the default good shape needs no
+					// Shadow-specific help either.
+					if (isProtectedByBlanket(best)) continue;
+					const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+					if (alreadyCovered?.has(key)) continue;
+					if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+				}
+			}
+			for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });
+		}
+	}
+
 	return carveOuts;
 };
 

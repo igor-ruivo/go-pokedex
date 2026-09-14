@@ -171,9 +171,22 @@ export const buildSmallSpecialDexesFixture = () => {
  *   the default shape, so no carve-out is needed there.
  * - `deviantlegendary`: same deviating stats, but Legendary — for the
  *   toggle/carve-out-skip regression test.
+ * - `deviantmonShadow`: same base stats, `isShadow: true` — used for the
+ *   purification-aware carve-out tests (see `findBadIvCarveOuts`'s Shadow-
+ *   only pass). Empirically verified via the actual worker function: at cap
+ *   1500, purifying (raw +2 each stat, capped 15) makes raw `0/10/13` and
+ *   `0/10/15` tie for the best *purified* stat product — bucket `0-2-3` and
+ *   `0-2-4`, neither matching the default shape (Defense bucket 2 fails the
+ *   `>=3` requirement) — genuinely new carve-outs a purification-blind
+ *   analysis would never find, since deviantmon itself needs no cap-1500
+ *   carve-out at all (its own raw top-1 already fits the default shape).
  * - `tinymon` (50/60/60): its 15/15/15/L50 max CP is 344, well under 90% of
  *   either 1500 or 2500 — never even reaches the "does its top spread fit
  *   the default" question, at either cap.
+ * - `tinymonShadow`: same stats — purifying can't change whether the
+ *   90%-of-cap pre-filter is cleared (it's identical either way, since a raw
+ *   hundo purifies to itself), so this gets no carve-out either, at either
+ *   cap — a purification-aware analysis correctly still leaves it deletable.
  */
 export const buildBadIvFixture = () => {
 	const deviantmon = mockPokemon({ speciesId: 'deviantmon', dex: 300, baseStats: { atk: 300, def: 100, hp: 100 } });
@@ -183,7 +196,19 @@ export const buildBadIvFixture = () => {
 		baseStats: { atk: 300, def: 100, hp: 100 },
 		isLegendary: true,
 	});
+	const deviantmonShadow = mockPokemon({
+		speciesId: 'deviantmon_shadow',
+		dex: 300,
+		isShadow: true,
+		baseStats: { atk: 300, def: 100, hp: 100 },
+	});
 	const tinymon = mockPokemon({ speciesId: 'tinymon', dex: 302, baseStats: { atk: 50, def: 60, hp: 60 } });
+	const tinymonShadow = mockPokemon({
+		speciesId: 'tinymon_shadow',
+		dex: 302,
+		isShadow: true,
+		baseStats: { atk: 50, def: 60, hp: 60 },
+	});
 	// `tiedmon` (100/132/180): reproduces, with synthetic stats, a real bug
 	// found in live data (Raichu, Doduo, Naclstack, and 20+ others) — at cap
 	// 1500 its top-1 stat product is a genuine TIE between the exact hundo
@@ -194,8 +219,57 @@ export const buildBadIvFixture = () => {
 	// default low-Attack shape either, so it would've been wrongly swept
 	// despite being tied for the best possible spread for this species.
 	const tiedmon = mockPokemon({ speciesId: 'tiedmon', dex: 303, baseStats: { atk: 100, def: 132, hp: 180 } });
-	const gamemasterPokemon = buildGamemaster([deviantmon, deviantlegendary, tinymon, tiedmon]);
-	return { gamemasterPokemon, deviantmon, deviantlegendary, tinymon, tiedmon };
+	// `blendmon` (140/120/140): empirically verified — at cap 1500 its own raw
+	// top-1 deviates (bucket `2-4-4`, Attack too high for the default shape),
+	// but every one of a Shadow's *purified*-best raw ties (Attack bucket 1
+	// throughout) lands inside the default shape (Attack ≤ 1) — needs no
+	// Shadow-specific carve-out at all, purification alone is enough.
+	const blendmon = mockPokemon({ speciesId: 'blendmon', dex: 304, baseStats: { atk: 140, def: 120, hp: 140 } });
+	const blendmonShadow = mockPokemon({
+		speciesId: 'blendmon_shadow',
+		dex: 304,
+		isShadow: true,
+		baseStats: { atk: 140, def: 120, hp: 140 },
+	});
+	// `overlapmon` (80/200/230): empirically verified — at cap 1500 both its
+	// own raw top-1 AND a Shadow's purified-best top-1 land in the identical
+	// bucket (`3-3-3`, neither the default shape nor a hundo) — the
+	// dead-weight-avoidance case: the plain (shadow-agnostic) carve-out
+	// clause the non-Shadow analysis already emits also protects a Shadow
+	// catch matching that same raw bucket, so no separate `,!shadow`-scoped
+	// clause should be emitted for it.
+	const overlapmon = mockPokemon({ speciesId: 'overlapmon', dex: 305, baseStats: { atk: 80, def: 200, hp: 230 } });
+	const overlapmonShadow = mockPokemon({
+		speciesId: 'overlapmon_shadow',
+		dex: 305,
+		isShadow: true,
+		baseStats: { atk: 80, def: 200, hp: 230 },
+	});
+	const gamemasterPokemon = buildGamemaster([
+		deviantmon,
+		deviantlegendary,
+		deviantmonShadow,
+		tinymon,
+		tinymonShadow,
+		tiedmon,
+		blendmon,
+		blendmonShadow,
+		overlapmon,
+		overlapmonShadow,
+	]);
+	return {
+		gamemasterPokemon,
+		deviantmon,
+		deviantlegendary,
+		deviantmonShadow,
+		tinymon,
+		tinymonShadow,
+		tiedmon,
+		blendmon,
+		blendmonShadow,
+		overlapmon,
+		overlapmonShadow,
+	};
 };
 
 /**
@@ -229,6 +303,84 @@ export const buildMultiStageBadIvFixture = () => {
 	});
 	const gamemasterPokemon = buildGamemaster([stageA, stageB]);
 	return { gamemasterPokemon, stageA, stageB };
+};
+
+/**
+ * Real Machop/Machoke/Machamp base stats (137/82/172, 177/125/190,
+ * 234/159/207) plus their Shadow lines — a 3-stage family purpose-built to
+ * exercise the Shadow-purification tie-explosion at real-world scale,
+ * cross-verified against live dex-server data (see the session's own
+ * back-and-forth deriving these by hand and checking them against the actual
+ * algorithm). Every number below was independently re-derived via direct
+ * `computeBestIVs`/purified-brute-force calls, not guessed:
+ *
+ * Non-Shadow (raw-only analysis) — all three get ZERO carve-outs, every
+ * stage's own raw top-1 already fits the default shape or is an exact hundo:
+ * - machop: clean 15/15/15 at both caps (no tie) — `!4*` alone covers it.
+ * - machoke @1500: ties between 0/15/15 and 0/15/14, buckets 0-4-4/0-4-3 —
+ *   both satisfy the default shape (Attack ≤1, Defense/HP ≥3).
+ * - machamp @1500: 0/14/11, bucket 0-3-3 — also fits the default shape.
+ *
+ * Shadow (purification-aware analysis):
+ * - machop_shadow: 16 entries total.
+ *   - @1500 (9): the 7-way hundo-tie explosion {3,4}³ minus {4,4,4} (raw
+ *     13/14/15 all purify to 15, so 2 possible raw buckets per stat tie for
+ *     purified-hundo; {4,4,4} itself is skipped, already covered by `!4*`)
+ *     — from Machop's OWN stage — PLUS 2 more (0-3-2, 0-4-2) from Machoke's
+ *     own stage (its purified-best raw spread, ranked by PURIFIED outcome,
+ *     not the same as Machoke's own raw-ranked top-1 above).
+ *   - @2500 (7): the same 7-way hundo-tie explosion again — Machop's
+ *     purified ceiling is hundo at Ultra League too.
+ * - machoke_shadow: 9 entries total (a genuine SUBSET of machop_shadow's,
+ *   since Machop's reachable family strictly contains Machoke's):
+ *   - @1500 (2): 0-3-2 and 0-4-2 — its own stage's contribution.
+ *   - @2500 (7): its own 7-way hundo-tie explosion (Machoke's purified
+ *     ceiling is ALSO hundo-achievable at Ultra League).
+ * - machamp_shadow: 0 entries — its own purified-best (bucket 1-3-3/1-4-3 at
+ *   1500) already fits the default shape at every cap, no carve-out needed.
+ */
+export const buildShadowFamilyFixture = () => {
+	const machop = mockPokemon({
+		speciesId: 'machop',
+		dex: 900,
+		baseStats: { atk: 137, def: 82, hp: 172 },
+		family: { id: 'f-machop', evolutions: ['machoke'] },
+	});
+	const machoke = mockPokemon({
+		speciesId: 'machoke',
+		dex: 901,
+		baseStats: { atk: 177, def: 125, hp: 190 },
+		family: { id: 'f-machop', parent: 'machop', evolutions: ['machamp'] },
+	});
+	const machamp = mockPokemon({
+		speciesId: 'machamp',
+		dex: 902,
+		baseStats: { atk: 234, def: 159, hp: 207 },
+		family: { id: 'f-machop', parent: 'machoke' },
+	});
+	const machopShadow = mockPokemon({
+		speciesId: 'machop_shadow',
+		dex: 900,
+		isShadow: true,
+		baseStats: { atk: 137, def: 82, hp: 172 },
+		family: { id: 'f-machop-shadow', evolutions: ['machoke_shadow'] },
+	});
+	const machokeShadow = mockPokemon({
+		speciesId: 'machoke_shadow',
+		dex: 901,
+		isShadow: true,
+		baseStats: { atk: 177, def: 125, hp: 190 },
+		family: { id: 'f-machop-shadow', parent: 'machop_shadow', evolutions: ['machamp_shadow'] },
+	});
+	const machampShadow = mockPokemon({
+		speciesId: 'machamp_shadow',
+		dex: 902,
+		isShadow: true,
+		baseStats: { atk: 234, def: 159, hp: 207 },
+		family: { id: 'f-machop-shadow', parent: 'machoke_shadow' },
+	});
+	const gamemasterPokemon = buildGamemaster([machop, machoke, machamp, machopShadow, machokeShadow, machampShadow]);
+	return { gamemasterPokemon, machop, machoke, machamp, machopShadow, machokeShadow, machampShadow };
 };
 
 export const rank = (r: number): { rank: number } => ({ rank: r });

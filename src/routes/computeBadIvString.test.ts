@@ -7,6 +7,7 @@ import {
 	buildGamemaster,
 	buildMainFixture,
 	buildMultiStageBadIvFixture,
+	buildShadowFamilyFixture,
 	mockPokemon,
 } from './mass-delete-fixtures';
 import { computeBadIvString, DEFAULT_PROTECTION } from './MassDelete';
@@ -165,22 +166,25 @@ describe('computeBadIvString — Legendary/Mythical/Ultra Beast toggle vs. carve
 	});
 });
 
-describe('computeBadIvString — Shadow is structurally excluded, never independently evaluated', () => {
-	it('a Shadow form never appears in findBadIvCarveOuts output, regardless of its stats', () => {
-		const shadowbase = mockPokemon({ speciesId: 'shadowbadiv', dex: 304, baseStats: { atk: 300, def: 100, hp: 100 } });
+describe('computeBadIvString — Shadow forms: purification-aware carve-outs, plus the plain tail keyword', () => {
+	it('a Shadow form CAN appear in findBadIvCarveOuts output — purification (+2/+2/+2, capped) is evaluated, not skipped', () => {
+		const shadowbase = mockPokemon({ speciesId: 'shadowbadiv', dex: 306, baseStats: { atk: 300, def: 100, hp: 100 } });
 		const shadowform = mockPokemon({
 			speciesId: 'shadowbadiv_shadow',
-			dex: 304,
+			dex: 306,
 			isShadow: true,
 			baseStats: { atk: 300, def: 100, hp: 100 },
 		});
 		const gamemasterPokemon = buildGamemaster([shadowbase, shadowform]);
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
 
-		expect(carveOuts.some((c) => c.speciesId === 'shadowbadiv_shadow')).toBe(false);
+		// Same stats as `deviantmon`/`deviantmonShadow` — empirically verified
+		// (see that fixture's own comment) to need a genuine purification-only
+		// carve-out at cap 1500.
+		expect(carveOuts.some((c) => c.speciesId === 'shadowbadiv_shadow' && c.cap === 1500)).toBe(true);
 	});
 
-	it('the `!shadow` tail keyword is the only protection mechanism here, toggled on/off directly', () => {
+	it('the `!shadow` tail keyword still works as an independent, additional protection layer', () => {
 		const { gamemasterPokemon } = buildBadIvFixture();
 		// DEFAULT_PROTECTION.shadow is off by default (unlike every other
 		// flag) — see MassDelete.tsx's own comment on why. Explicitly turn it
@@ -277,5 +281,237 @@ describe('computeBadIvString — pt-BR translation', () => {
 		expect(result).toContain('&!sombroso');
 		// "grass" -> "planta" inside the whitelist's own disambiguation clause.
 		expect(result).toContain('&!555,!planta');
+	});
+});
+
+describe('findBadIvCarveOuts — Shadow purification awareness', () => {
+	it('a Shadow species gets its own carve-out for the pre-purification raw spread that turns into its true optimum once purified', () => {
+		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const ownAt1500 = carveOuts.filter((c) => c.speciesId === deviantmonShadow.speciesId && c.cap === 1500);
+
+		// Empirically verified: purifying (raw +2, capped 15) makes raw
+		// 0/10/13 and 0/10/15 tie for the best *purified* stat product —
+		// bucket 0-2-3 and 0-2-4, neither the default shape (Defense bucket 2
+		// fails the >=3 requirement). deviantmon itself needs NO cap-1500
+		// carve-out at all (its own raw top-1 already fits the default shape)
+		// — these are genuinely new, purification-only carve-outs.
+		expect(ownAt1500).toHaveLength(2);
+		expect(ownAt1500.map((c) => c.pattern)).toContainEqual({ A: 0, D: 10, S: 13 });
+		expect(ownAt1500.map((c) => c.pattern)).toContainEqual({ A: 0, D: 10, S: 15 });
+	});
+
+	it('a Shadow whose purified-best already fits the default shape needs no carve-out at all — purification alone is enough', () => {
+		const { gamemasterPokemon, blendmon, blendmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		// blendmon's own raw top-1 at 1500 deviates (bucket 2-4-4) — it DOES
+		// need its own (non-Shadow) carve-out.
+		expect(carveOuts.some((c) => c.speciesId === blendmon.speciesId && c.cap === 1500)).toBe(true);
+		// But every one of a Shadow's purified-best ties has Attack bucket 1
+		// (≤1), landing inside the default shape — no Shadow-specific entry
+		// needed at any cap.
+		expect(carveOuts.some((c) => c.speciesId === blendmonShadow.speciesId)).toBe(false);
+	});
+
+	it('dead-weight avoidance: a Shadow purified-best pattern identical to its non-Shadow sibling’s own raw pattern gets no redundant entry', () => {
+		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		// overlapmon's own raw top-1 at 1500 deviates (bucket 3-3-3) and gets
+		// its own carve-out — a Shadow's purified-best lands in that EXACT
+		// same bucket, already covered by the shadow-agnostic clause the
+		// non-Shadow analysis emits, so no separate entry should exist.
+		expect(carveOuts.some((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500)).toBe(true);
+		expect(carveOuts.some((c) => c.speciesId === overlapmonShadow.speciesId)).toBe(false);
+	});
+
+	it('a Shadow whose family never clears the 90%-of-cap pre-filter gets no carve-out either — purification cannot change that', () => {
+		const { gamemasterPokemon, tinymonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		expect(carveOuts.some((c) => c.speciesId === tinymonShadow.speciesId)).toBe(false);
+	});
+});
+
+describe('computeBadIvString — Shadow-scoped purification carve-out clauses', () => {
+	it('emits a `,!shadow`-scoped clause for a genuine purification-only carve-out, distinct from any non-Shadow clause', () => {
+		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+
+		// Bucket 0-2-3 -> complement per field: attack bucket0 -> "1-4attack";
+		// defense bucket2 -> "0-1defense,3-4defense"; hp bucket3 -> "0-2hp,4hp".
+		expect(result).toContain(
+			`&!${deviantmonShadow.dex},!shadow,1-4attack,0-1defense,3-4defense,0-2hp,4hp`
+		);
+	});
+
+	it('does NOT emit a redundant shadow-scoped clause when the non-Shadow analysis already covers the identical raw bucket', () => {
+		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+
+		expect(result).not.toContain(`!${overlapmonShadow.dex},!shadow`);
+		// The plain (shadow-agnostic) clause is still present, and — since
+		// identity there doesn't distinguish Shadow from non-Shadow — already
+		// protects a live Shadow catch of this species matching that bucket.
+		expect(result).toContain(`!${overlapmon.dex},`);
+	});
+
+	it('a Shadow-derived carve-out is skipped while its category toggle is still on, same dead-weight avoidance as the regular carve-outs', () => {
+		const legendaryShadow = mockPokemon({
+			speciesId: 'deviantlegendary_shadow',
+			dex: 301,
+			isShadow: true,
+			isLegendary: true,
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const nonShadow = mockPokemon({
+			speciesId: 'deviantlegendary',
+			dex: 301,
+			isLegendary: true,
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const gamemasterPokemon = buildGamemaster([nonShadow, legendaryShadow]);
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		expect(carveOuts.some((c) => c.speciesId === legendaryShadow.speciesId)).toBe(true);
+
+		const on = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+		expect(on).not.toContain(`!${legendaryShadow.dex},!shadow`);
+		expect(on).toContain('&!legendary');
+
+		const off = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			{ ...DEFAULT_PROTECTION, legendary: false },
+			new Set()
+		);
+		expect(off).toContain(`!${legendaryShadow.dex},!shadow`);
+	});
+
+	it('whitelisting the Shadow form specifically replaces its purification carve-out with a plain unconditional clause, leaving the non-Shadow sibling’s own clause untouched', () => {
+		const { gamemasterPokemon, deviantmon, deviantmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set([deviantmonShadow.speciesId])
+		);
+
+		expect(result).not.toContain(`!${deviantmonShadow.dex},!shadow,1-4attack`);
+		// deviantmon's own (non-Shadow, cap-2500) clause is untouched.
+		expect(result).toContain(`!${deviantmon.dex},0-2attack,4attack,0-3defense,0-3hp`);
+	});
+});
+
+describe('findBadIvCarveOuts — real-scale multi-stage Shadow tie explosion (Machop family)', () => {
+	it('the non-Shadow line gets zero carve-outs — every stage already fits the default shape or is a clean hundo', () => {
+		const { gamemasterPokemon, machop, machoke, machamp } = buildShadowFamilyFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		for (const id of [machop.speciesId, machoke.speciesId, machamp.speciesId]) {
+			expect(carveOuts.some((c) => c.speciesId === id)).toBe(false);
+		}
+	});
+
+	it('Machop-Shadow gets all 16 entries: the 7-way hundo-tie explosion at both caps, plus Machoke’s own 2-pattern contribution at cap 1500', () => {
+		const { gamemasterPokemon, machopShadow } = buildShadowFamilyFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const own = carveOuts.filter((c) => c.speciesId === machopShadow.speciesId);
+
+		expect(own).toHaveLength(16);
+		const at1500 = own.filter((c) => c.cap === 1500);
+		const at2500 = own.filter((c) => c.cap === 2500);
+		expect(at1500).toHaveLength(9);
+		expect(at2500).toHaveLength(7);
+
+		// The 7-way hundo-tie explosion: every {3,4}³ bucket combo except the
+		// hundo itself (4-4-4, already covered by `!4*`) — raw 13/14/15 all
+		// purify to 15, so any raw bucket 3-or-4 per stat ties for the best
+		// purified stat product.
+		const hundoTieBuckets = [
+			{ A: 13, D: 13, S: 13 },
+			{ A: 13, D: 13, S: 15 },
+			{ A: 13, D: 15, S: 13 },
+			{ A: 13, D: 15, S: 15 },
+			{ A: 15, D: 13, S: 13 },
+			{ A: 15, D: 13, S: 15 },
+			{ A: 15, D: 15, S: 13 },
+		];
+		for (const pattern of hundoTieBuckets) {
+			expect(at1500.map((c) => c.pattern)).toContainEqual(pattern);
+			expect(at2500.map((c) => c.pattern)).toContainEqual(pattern);
+		}
+		// Machoke's own purified-best contribution, only relevant at cap 1500
+		// (at cap 2500 Machoke's own ceiling is itself the hundo-tie, already
+		// counted above).
+		expect(at1500.map((c) => c.pattern)).toContainEqual({ A: 0, D: 13, S: 9 });
+		expect(at1500.map((c) => c.pattern)).toContainEqual({ A: 0, D: 15, S: 9 });
+	});
+
+	it('Machoke-Shadow gets exactly 9 entries, a genuine subset of Machop-Shadow’s — nothing it discovers is missing from Machop-Shadow’s own set', () => {
+		const { gamemasterPokemon, machopShadow, machokeShadow } = buildShadowFamilyFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const machopOwn = carveOuts.filter((c) => c.speciesId === machopShadow.speciesId);
+		const machokeOwn = carveOuts.filter((c) => c.speciesId === machokeShadow.speciesId);
+
+		expect(machokeOwn).toHaveLength(9);
+		const bucketKey = (c: { pattern: { A: number; D: number; S: number }; cap: number }) =>
+			`${c.pattern.A}-${c.pattern.D}-${c.pattern.S}|${c.cap}`;
+		const machopKeys = new Set(machopOwn.map(bucketKey));
+		for (const entry of machokeOwn) {
+			expect(machopKeys.has(bucketKey(entry))).toBe(true);
+		}
+	});
+
+	it('Machamp-Shadow gets zero entries — its own purified best already fits the default shape at every cap', () => {
+		const { gamemasterPokemon, machampShadow } = buildShadowFamilyFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		expect(carveOuts.some((c) => c.speciesId === machampShadow.speciesId)).toBe(false);
+	});
+});
+
+describe('computeBadIvString — Machop-family Shadow tie explosion produces a well-formed, correctly-scoped string', () => {
+	it('emits a `,!shadow`-scoped clause for every one of Machop-Shadow’s distinct patterns, none for the non-Shadow line, none for Machamp-Shadow', () => {
+		const { gamemasterPokemon, machop, machoke, machamp, machopShadow, machampShadow } = buildShadowFamilyFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+
+		// 16 raw carve-out entries, but the clause text doesn't encode which
+		// cap it's for — the same 7 hundo-tie patterns recur at both caps and
+		// correctly collapse via `seenClauses` to one clause each: 7 unique
+		// hundo-tie clauses + 2 unique Machoke-contributed clauses = 9.
+		const shadowClauseCount = (result.match(new RegExp(`!${machopShadow.dex},!shadow`, 'g')) ?? []).length;
+		expect(shadowClauseCount).toBe(9);
+		// The non-Shadow line has zero carve-outs of its own — dex 900/901
+		// only ever appear as part of a `,!shadow`-scoped clause (Machop-
+		// Shadow's own dex, reused since Shadow shares its non-Shadow
+		// sibling's dex), never as a plain, non-shadow-scoped clause.
+		for (const id of [machop, machoke, machamp]) {
+			expect(result).not.toMatch(new RegExp(`!${id.dex},(?!!shadow)`));
+		}
+		// Machamp-Shadow shares its dex with Machamp but has zero entries of
+		// its own — no shadow-scoped clause for dex 902 should exist either.
+		expect(result).not.toContain(`!${machampShadow.dex},!shadow`);
+	});
+
+	it('spot-checks one exact clause from the hundo-tie explosion and one from Machoke’s own contribution', () => {
+		const { gamemasterPokemon, machopShadow } = buildShadowFamilyFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+
+		// Bucket 3-3-3: complement per field is {0,1,2,4} -> "0-2,4".
+		expect(result).toContain(`&!${machopShadow.dex},!shadow,0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`);
+		// Machoke's own pattern {A:0,D:15,S:9}: bucket 0-4-2 -> complement
+		// attack{1,2,3,4}->"1-4", defense{0,1,2,3}->"0-3", hp{0,1,3,4}->"0-1,3-4".
+		expect(result).toContain(`&!${machopShadow.dex},!shadow,1-4attack,0-3defense,0-1hp,3-4hp`);
 	});
 });
