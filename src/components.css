@@ -1694,6 +1694,19 @@
 		box-shadow: var(--shadow-2);
 		padding: 6px;
 		gap: 4px;
+		/* Same technique as `.r-seg--league`: once the icon+label items no
+		   longer all fit, scroll the row instead of wrapping it onto a
+		   second line (which, for a `left:50%` fixed-width pill with no
+		   wrap-aware sizing, was clipping/overlapping the item below it —
+		   see the screenshot this was reported with) or letting it spill
+		   past the viewport edge. */
+		max-width: calc(100vw - 32px);
+		overflow-x: auto;
+		scrollbar-width: none;
+		overscroll-behavior-x: contain;
+	}
+	.rvmp .r-bottomnav::-webkit-scrollbar {
+		display: none;
 	}
 	.rvmp .r-bottomnav a {
 		flex: none;
@@ -3546,6 +3559,15 @@
 .rvmp .r-md-out::placeholder {
 	color: var(--text-faint);
 	font-family: inherit;
+}
+.rvmp .r-md-length-hint {
+	margin: 6px 2px 0;
+	font-size: 12px;
+	color: var(--text-dim);
+}
+.rvmp .r-md-length-hint--warn {
+	color: #f5a623;
+	font-weight: 700;
 }
 .rvmp .r-md-copy {
 	width: 100%;

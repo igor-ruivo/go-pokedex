@@ -60,9 +60,13 @@ const App = () => (
 											<Route path='moves' element={<Moves />} />
 											<Route path='move/:moveId' element={<MoveDetail />} />
 											<Route path='types' element={<Types />} />
-											<Route path='search-strings' element={<MassDelete />} />
-											{/* Old URL, kept working for anyone with a bookmark or shared link. */}
-											<Route path='trash' element={<Navigate to='/search-strings' replace />} />
+											<Route
+												path='search-strings'
+												element={<Navigate to='/search-strings/non-meta-relevant' replace />}
+											/>
+											<Route path='search-strings/:tab' element={<MassDelete />} />
+											{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
+											<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
 											<Route path='tools' element={<Placeholder title='Tools' />} />
 											<Route path='settings' element={<Settings />} />
 											<Route path='*' element={<Navigate to='/' replace />} />

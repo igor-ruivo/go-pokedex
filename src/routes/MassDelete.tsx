@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { ShadowMark } from '../components/ShadowMark';
 import { spriteUrl } from '../components/Sprite';
@@ -10,6 +11,7 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo } from '../lib/format';
+import { type MassDeleteTab, R } from '../lib/nav';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
 import {
 	buildUniqueTypes,
@@ -159,7 +161,7 @@ const BAD_IV_WARNING =
 
 const BAD_IV_HELP_TEXT =
 	'IVs only, never meta: ignores the current meta entirely — the goal is to delete anything that isn’t a perfect ' +
-	'15/15/15, since anything less is wasted IV potential, regardless of whether the species itself is good or bad ' +
+	'15/15/15, since anything less is wasted IV potential, regardless of whether the species itself is meta ' +
 	'right now. The game’s search only lets us match IV ranges, not exact values, so it can’t always draw that line ' +
 	'exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept via a shared ' +
 	'low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-verified range ' +
@@ -202,8 +204,20 @@ export interface ComputeArgs {
    anywhere, every catch of it is spared — no IV consideration enters into
    this tab at all, that's what the "Non-Perfect IVs" tab is for. */
 export const computeTrashString = (a: ComputeArgs): string => {
-	const { gamemasterPokemon, rankLists, raidDPS, raidMetric, gl, cp, trashGreat, trashUltra, trashMaster, trashRaid, protect, whitelist } =
-		a;
+	const {
+		gamemasterPokemon,
+		rankLists,
+		raidDPS,
+		raidMetric,
+		gl,
+		cp,
+		trashGreat,
+		trashUltra,
+		trashMaster,
+		trashRaid,
+		protect,
+		whitelist,
+	} = a;
 
 	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
 		.filter((key) => isNaN(Number(key)) && key !== 'Normal')
@@ -844,11 +858,20 @@ const MassDelete = () => {
 	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
 
-	const [mode, setMode] = useState<'meta' | 'badIv' | 'trade'>(() => {
-		const v = readPersistentValue(ConfigKeys.MassDeleteMode);
-		return v === 'badIv' || v === 'trade' ? v : 'meta';
-	});
-	useEffect(() => void writePersistentValue(ConfigKeys.MassDeleteMode, mode), [mode]);
+	// The mode lives in the URL, not local/persisted state — each mode is a
+	// real, distinct, shareable/crawlable page (`/search-strings/:tab`) rather
+	// than a client-only toggle, matching how Calendar's own tabs work.
+	// Anything not recognized quietly falls back to the default, same as
+	// Calendar does for its own `:tab` param — no separate redirect route for
+	// a typo'd slug.
+	const { tab } = useParams();
+	const navigate = useNavigate();
+	const mode: 'meta' | 'badIv' | 'trade' = tab === 'non-perfect-ivs' ? 'badIv' : tab === 'tradeable' ? 'trade' : 'meta';
+	const setMode = (next: 'meta' | 'badIv' | 'trade') => {
+		const slug: MassDeleteTab =
+			next === 'badIv' ? 'non-perfect-ivs' : next === 'trade' ? 'tradeable' : 'non-meta-relevant';
+		void navigate(R.searchStrings(slug));
+	};
 
 	const [trashGreat, setTrashGreat] = useState(() => numCfg(ConfigKeys.TrashGreat, 50));
 	const [trashUltra, setTrashUltra] = useState(() => numCfg(ConfigKeys.TrashUltra, 50));
@@ -1040,9 +1063,9 @@ const MassDelete = () => {
 	const [badIvResult, setBadIvResult] = useState('');
 
 	// The heavy part — the brute-force sweep for every species' own best spread
-	// per cap — never depends on `cp`/`gl`/the toggles/the whitelist, so it's
-	// cached indefinitely and only ever runs once per session; only the
-	// (cheap) string assembly below reacts to those.
+	// per cap — never depends on `cp`/`gl`/the category toggles/the whitelist,
+	// so it's cached indefinitely and only ever runs once per session; only the
+	// (cheap) string assembly below reacts to those other knobs.
 	const { data: badIvCarveOuts } = useQuery({
 		enabled: isCalculatingBadIv && fetchCompleted,
 		queryKey: ['bad-iv-carveouts'],
@@ -1062,7 +1085,7 @@ const MassDelete = () => {
 
 	// changing the CP floor, language, protections or whitelist invalidates a
 	// stale result (the carve-out sweep itself is unaffected, so no need to
-	// recompute that part)
+	// recompute that part).
 	useEffect(() => {
 		setBadIvResult('');
 	}, [cp, gl, protect, whitelist]);
@@ -1076,7 +1099,13 @@ const MassDelete = () => {
 	}, [trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, tradeCp]);
 
 	useEffect(() => {
-		if (!isCalculatingTrade || !fetchCompleted || !pvpFetchCompleted || !raidDPSFetchCompleted || !movesFetchCompleted) {
+		if (
+			!isCalculatingTrade ||
+			!fetchCompleted ||
+			!pvpFetchCompleted ||
+			!raidDPSFetchCompleted ||
+			!movesFetchCompleted
+		) {
 			return;
 		}
 		const id = window.setTimeout(() => {
@@ -1196,13 +1225,16 @@ const MassDelete = () => {
 
 			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label='Mass delete mode'>
 				<button type='button' data-active={mode === 'meta'} onClick={() => setMode('meta')}>
-					Non-meta relevant
+					<i className='r-md-knob-full'>Non-meta relevant</i>
+					<i className='r-md-knob-short'>Non-meta</i>
 				</button>
 				<button type='button' data-active={isBadIv} onClick={() => setMode('badIv')}>
-					Non-Perfect IVs
+					<i className='r-md-knob-full'>Non-Perfect IVs</i>
+					<i className='r-md-knob-short'>IVs</i>
 				</button>
 				<button type='button' data-active={isTrade} onClick={() => setMode('trade')}>
-					Find Tradeable
+					<i className='r-md-knob-full'>Find Tradeable</i>
+					<i className='r-md-knob-short'>Tradeable</i>
 				</button>
 			</div>
 
@@ -1497,6 +1529,13 @@ const MassDelete = () => {
 				}
 				onClick={copy}
 			/>
+			{activeResult && !activeCalculating && (
+				<p className={`r-md-length-hint${activeResult.length > 5000 ? ' r-md-length-hint--warn' : ''}`}>
+					{activeResult.length.toLocaleString()} character{activeResult.length === 1 ? '' : 's'}
+					{activeResult.length > 5000 &&
+						' — ⚠️ this may be too long for the search bar on some Android phones; consider narrowing the settings above.'}
+				</p>
+			)}
 			{activeResult && (
 				<button type='button' className='r-md-copy' onClick={copy}>
 					{copied ? 'Copied ✓' : 'Copy search string'}

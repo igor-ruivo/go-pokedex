@@ -361,6 +361,15 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	// Shadow-only family (evolutions preserve Shadow status, so this never
 	// overlaps with the non-Shadow walk above), ranking raw spreads by their
 	// *purified* outcome instead.
+	//
+	// Also, because purification collapses several raw buckets onto the same
+	// purified outcome, this is — by a wide margin — the single biggest source
+	// of carve-out entries, hence generated-string length (confirmed against
+	// real data: ~11k characters without this pass, ~64k with it). That's an
+	// accepted cost, not a bug: skipping it would mean some Shadow catches
+	// that *would* purify into their species' true optimum lose their
+	// protection and get swept up for deletion after all — worse than a long
+	// string.
 	const purifiedBestCache = new Map<string, Array<BadIvPattern>>();
 	const getBestPurifiedTied = (r: IGamemasterPokemon, cap: number): Array<BadIvPattern> => {
 		const key = `${r.speciesId}|${cap}`;
@@ -402,9 +411,7 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 		return patterns;
 	};
 
-	const shadowCandidates = Object.values(gamemasterPokemon).filter(
-		(p) => p.isShadow && !p.aliasId && !p.isMega
-	);
+	const shadowCandidates = Object.values(gamemasterPokemon).filter((p) => p.isShadow && !p.aliasId && !p.isMega);
 	const shadowDomainFilter = (r: IGamemasterPokemon) => r.isShadow && !r.aliasId && !r.isMega;
 	for (const p of shadowCandidates) {
 		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, shadowDomainFilter));

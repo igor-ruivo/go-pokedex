@@ -12,7 +12,7 @@ export const R = {
 	moves: '/moves',
 	move: (moveId: string): string => `/move/${encodeURIComponent(moveId)}`,
 	types: '/types',
-	searchStrings: '/search-strings',
+	searchStrings: (tab: MassDeleteTab = 'non-meta-relevant'): string => `/search-strings/${tab}`,
 	tools: '/tools',
 	settings: '/settings',
 };
@@ -39,3 +39,6 @@ export const MODE_COLOR: Record<RankingMode, string> = {
 
 export const CALENDAR_TABS = ['events', 'bosses', 'spawns', 'rockets', 'eggs'] as const;
 export type CalendarTab = (typeof CALENDAR_TABS)[number];
+
+export const MASS_DELETE_TABS = ['non-meta-relevant', 'non-perfect-ivs', 'tradeable'] as const;
+export type MassDeleteTab = (typeof MASS_DELETE_TABS)[number];

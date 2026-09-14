@@ -338,19 +338,31 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 	it('emits a `,!shadow`-scoped clause for a genuine purification-only carve-out, distinct from any non-Shadow clause', () => {
 		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
-		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		// Bucket 0-2-3 -> complement per field: attack bucket0 -> "1-4attack";
 		// defense bucket2 -> "0-1defense,3-4defense"; hp bucket3 -> "0-2hp,4hp".
-		expect(result).toContain(
-			`&!${deviantmonShadow.dex},!shadow,1-4attack,0-1defense,3-4defense,0-2hp,4hp`
-		);
+		expect(result).toContain(`&!${deviantmonShadow.dex},!shadow,1-4attack,0-1defense,3-4defense,0-2hp,4hp`);
 	});
 
 	it('does NOT emit a redundant shadow-scoped clause when the non-Shadow analysis already covers the identical raw bucket', () => {
 		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
-		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		expect(result).not.toContain(`!${overlapmonShadow.dex},!shadow`);
 		// The plain (shadow-agnostic) clause is still present, and — since
@@ -483,7 +495,14 @@ describe('computeBadIvString — Machop-family Shadow tie explosion produces a w
 	it('emits a `,!shadow`-scoped clause for every one of Machop-Shadow’s distinct patterns, none for the non-Shadow line, none for Machamp-Shadow', () => {
 		const { gamemasterPokemon, machop, machoke, machamp, machopShadow, machampShadow } = buildShadowFamilyFixture();
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
-		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		// 16 raw carve-out entries, but the clause text doesn't encode which
 		// cap it's for — the same 7 hundo-tie patterns recur at both caps and
@@ -506,7 +525,14 @@ describe('computeBadIvString — Machop-family Shadow tie explosion produces a w
 	it('spot-checks one exact clause from the hundo-tie explosion and one from Machoke’s own contribution', () => {
 		const { gamemasterPokemon, machopShadow } = buildShadowFamilyFixture();
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
-		const result = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		// Bucket 3-3-3: complement per field is {0,1,2,4} -> "0-2,4".
 		expect(result).toContain(`&!${machopShadow.dex},!shadow,0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`);

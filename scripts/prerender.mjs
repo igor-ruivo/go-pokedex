@@ -119,11 +119,27 @@ const STATIC_PAGES = [
 		image: `${SITE}/images/og/eggs/10km.png`,
 	},
 	{
-		path: '/search-strings',
-		title: 'Search Strings — GO Pokédex',
+		path: '/search-strings/non-meta-relevant',
+		title: 'Mass Delete Non-Meta Pokémon — GO Pokédex',
 		description:
-			'Generate Pokémon GO search-bar queries to relieve your storage whenever it needs it — trim by current meta ' +
-			'relevance, hunt down perfect IVs, or find catches worth trading.',
+			'Generate a Pokémon GO search-bar query that finds every catch that isn’t competitively relevant anywhere — ' +
+			'not in Great, Ultra, or Master League, and not in raids — so you can clear them out in one pass.',
+		image: `${SITE}/images/og/nav/search-strings.png`,
+	},
+	{
+		path: '/search-strings/non-perfect-ivs',
+		title: 'Mass Delete Non-Perfect IV Pokémon — GO Pokédex',
+		description:
+			'Generate a Pokémon GO search-bar query that finds every catch that isn’t a perfect (100%) IV Pokémon, ' +
+			'regardless of whether the species itself is currently good or bad in the meta.',
+		image: `${SITE}/images/og/nav/search-strings.png`,
+	},
+	{
+		path: '/search-strings/tradeable',
+		title: 'Find Pokémon Worth Trading — GO Pokédex',
+		description:
+			'Generate a Pokémon GO search-bar query for catches worth trading away — meta-relevant for Master League or ' +
+			'raids, with IVs that still have room to improve.',
 		image: `${SITE}/images/og/nav/search-strings.png`,
 	},
 ];
