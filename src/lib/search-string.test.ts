@@ -255,3 +255,41 @@ describe('canonicalizeDexExclusions — multiple dexes are handled independently
 		expect(canonicalizeDexExclusions([], {})).toEqual([]);
 	});
 });
+
+describe('canonicalizeDexExclusions — idempotency (a second pass never finds anything a first pass missed)', () => {
+	it('re-running the pass on its own already-canonical output is a strict no-op, across every case above', () => {
+		const formsPerDex = {
+			26: new Set(['psychic', '!psychic']),
+			27: new Set(['!ice', '!ground']),
+			37: new Set(['!fire', '!ice']),
+			300: new Set(['']),
+			950: new Set(['grass', 'fire']),
+		};
+		const messy: Array<DexExclusion> = [
+			// dex 26: fully mergeable (Case B, no bucket)
+			bare(26, 'psychic'),
+			bare(26, '!psychic'),
+			// dex 27: correctly stuck (Shadow-only only, two different forms)
+			shadowOnly(27, '!ice'),
+			shadowOnly(27, '!ground'),
+			// dex 37: Case A then Case B, sharing a real bucket
+			bare(37, '!fire', ',1-4attack'),
+			shadowOnly(37, '!fire', ',1-4attack'),
+			nonShadowOnly(37, '!ice', ',1-4attack'),
+			shadowOnly(37, '!ice', ',1-4attack'),
+			// dex 300: single-form Case A, bare absorbs a same-pattern Shadow-only
+			bare(300, '', ',0-3attack'),
+			shadowOnly(300, '', ',0-3attack'),
+			// dex 950: two independent, non-overlapping bucket patterns
+			bare(950, 'grass', ',1-4attack'),
+			bare(950, 'fire', ',1-4attack'),
+			bare(950, 'grass', ',0-3defense'),
+			bare(950, 'fire', ',0-3defense'),
+		];
+
+		const oncePass = canonicalizeDexExclusions(messy, formsPerDex);
+		const twicePass = canonicalizeDexExclusions(oncePass, formsPerDex);
+
+		expect(twicePass).toEqual(oncePass);
+	});
+});
