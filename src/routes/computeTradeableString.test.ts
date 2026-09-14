@@ -188,3 +188,36 @@ describe('computeTradeableString — CP cap (upper bound, not a floor)', () => {
 		expect(result).toContain('&0-2attack&0-2defense&0-2hp');
 	});
 });
+
+describe('computeTradeableString — final canonicalization pass (dead-weight exclusion clauses)', () => {
+	it('whitelisting both the Shadow and non-Shadow forms of the same species collapses their two clauses into one bare, Shadow-agnostic clause', () => {
+		// dex 800 has two sibling forms (water, grass) — water is Master-ranked
+		// (drives dex 800 into the tradeable set), grass is whitelisted in BOTH
+		// its Shadow and non-Shadow form. Both "water" and "grass" are unique
+		// types at this dex, so each gets its own type as its positive id —
+		// grass's own id is "800,grass", negated to "!800,!grass". Without the
+		// canonicalization pass this would emit two separate clauses —
+		// "!800,!grass,shadow" (protects only the non-Shadow catch) and
+		// "!800,!grass,!shadow" (protects only the Shadow catch) — together
+		// they protect exactly what one bare "!800,!grass" would, for fewer
+		// characters.
+		const water = mockPokemon({ speciesId: 'tradewater', dex: 800, types: [mockType('water')] });
+		const grass = mockPokemon({ speciesId: 'tradegrass', dex: 800, types: [mockType('grass')] });
+		const grassShadow = mockPokemon({
+			speciesId: 'tradegrass_shadow',
+			dex: 800,
+			isShadow: true,
+			types: [mockType('grass')],
+		});
+		const gamemasterPokemon = buildGamemaster([water, grass, grassShadow]);
+
+		const result = call(gamemasterPokemon, {
+			rankLists: [{}, {}, { [water.speciesId]: rank(1) }],
+			whitelist: new Set([grass.speciesId, grassShadow.speciesId]),
+		});
+
+		expect(result).toContain('&!800,!grass');
+		expect(result).not.toContain('!800,!grass,shadow');
+		expect(result).not.toContain('!800,!grass,!shadow');
+	});
+});

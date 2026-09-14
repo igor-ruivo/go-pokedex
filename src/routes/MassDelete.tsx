@@ -15,11 +15,14 @@ import { type MassDeleteTab, R } from '../lib/nav';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
 import {
 	buildUniqueTypes,
+	canonicalizeDexExclusions,
 	complementOfBucket,
+	type DexExclusion,
 	generatePokemonId,
 	groupAttr,
 	ivBucket,
 	negateIdentity,
+	renderDexExclusion,
 	translatePtBrTypeNames,
 } from '../lib/search-string';
 import { useMoves } from '../queries/moves';
@@ -367,44 +370,43 @@ export const computeTrashString = (a: ComputeArgs): string => {
 
 	const uniqueTypes = buildUniqueTypes(allPokemonForms.filter((c) => !c.isShadow));
 	const baseIds: Record<string, string> = {};
+	const formsPerDex: Record<number, Set<string>> = {};
 	allPokemonForms.forEach((form) => {
 		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber && !f.isShadow);
 		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
 		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
-	});
-
-	let str = '';
-	const potentiallyDeletablePokemonArray = Array.from(potentiallyDeletablePokemon);
-	str += potentiallyDeletablePokemonArray.join(',');
-	const terms = new Set<string>();
-
-	potentiallyDeletablePokemonArray.forEach((d) => {
-		if (alwaysGood[d]) {
-			alwaysGood[d].forEach((e) => {
-				let newStr = '';
-				const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-				newStr += '&' + negateIdentity(baseId);
-				if (e.isShadow) {
-					newStr += `,!shadow`;
-				} else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
-					newStr += `,shadow`;
-				}
-				if (!terms.has(newStr)) {
-					str += newStr;
-					terms.add(newStr);
-				}
-			});
+		if (!form.isShadow) {
+			const [, ...formTokens] = negateIdentity(id).split(',');
+			(formsPerDex[form.dexNumber] ??= new Set()).add(formTokens.join(','));
 		}
 	});
 
+	const potentiallyDeletablePokemonArray = Array.from(potentiallyDeletablePokemon);
+	const dexListStr = potentiallyDeletablePokemonArray.join(',');
+
+	const exclusions: Array<DexExclusion> = [];
+	potentiallyDeletablePokemonArray.forEach((d) => {
+		if (!alwaysGood[d]) return;
+		alwaysGood[d].forEach((e) => {
+			const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
+			if (!baseId) return;
+			const [, ...formTokens] = negateIdentity(baseId).split(',');
+			const shadowScope: DexExclusion['shadowScope'] = e.isShadow
+				? 'shadow-only'
+				: isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)
+					? 'non-shadow-only'
+					: '';
+			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
+		});
+	});
+
 	// keep the query short — Android's search box caps out around 5k characters
-	const parts = str.split('&');
 	const allDexes = new Set(
 		Object.values(gamemasterPokemon)
 			.filter((e) => !e.isMega && !e.aliasId)
 			.map((f) => f.dex)
 	);
-	const actualDexes = new Set(parts[0].split(',').map((f) => +f));
+	const actualDexes = new Set(potentiallyDeletablePokemonArray);
 	// Safety net for the shortened "blacklist" encoding below: these dexes never
 	// entered candidacy in the first place (see the `.filter` above), so they
 	// must never end up matched by it either — but only while their toggle is
@@ -428,29 +430,22 @@ export const computeTrashString = (a: ComputeArgs): string => {
 			.filter((j) => !actualDexes.has(j) || specialDexes.has(j))
 			.join('&!');
 
-	let newStr = parts[0].length <= oppositeDexes.length ? parts[0] : oppositeDexes;
+	let newStr = dexListStr.length <= oppositeDexes.length ? dexListStr : oppositeDexes;
 
-	let currentDex = '';
-	const buffer = new Map<string, string>();
-	for (let i = 1; i < parts.length; i++) {
-		const current = parts[i];
-		const readDex = current.substring(1, current.indexOf(','));
-		if (currentDex !== readDex) {
-			currentDex = readDex;
-			if (buffer.size > 0) {
-				newStr += (newStr ? '&' : '') + Array.from(buffer.values()).join('&');
-				buffer.clear();
-			}
-		}
-		const termWithoutShadowModifier = current.replaceAll(',!shadow', '').replaceAll(',shadow', '');
-		if (!buffer.has(termWithoutShadowModifier)) {
-			buffer.set(termWithoutShadowModifier, current);
-		} else {
-			buffer.set(termWithoutShadowModifier, termWithoutShadowModifier);
-		}
-	}
-	if (buffer.size > 0) {
-		newStr += (newStr ? '&' : '') + Array.from(buffer.values()).join('&');
+	// Final dead-weight pass — see `canonicalizeDexExclusions`'s own doc
+	// comment. Replaces this tab's own former same-dex buffer/dedup logic,
+	// which only ever collapsed a Shadow-scope pair for the *identical* form
+	// (Case A there). Its cross-form dex-only merge (Case B) never actually
+	// fires here, structurally: a dex only ever reaches this loop via a
+	// sibling that ISN'T protected (see `alwaysGood`/`potentiallyDeletable-
+	// Pokemon` above — whitelisted/Shadow-protected short-circuits BEFORE the
+	// deletable-or-not evaluation, so a form is always either "why this dex
+	// is even a candidate" or "one of its protected siblings", never both) —
+	// "every sibling protected" and "this dex is a candidate at all" can't
+	// hold simultaneously. Kept anyway for the same shared, tested logic
+	// across all three tabs, and in case that invariant ever changes.
+	for (const t of canonicalizeDexExclusions(exclusions, formsPerDex)) {
+		newStr += (newStr ? '&' : '') + renderDexExclusion(t);
 	}
 
 	if (gl === GameLanguage.ptbr) {
@@ -529,10 +524,18 @@ export const computeBadIvString = (
 		}));
 	const uniqueTypes = buildUniqueTypes(allPokemonForms);
 	const baseIds: Record<string, string> = {};
+	// Every candidate form this tab could ever need a clause for, grouped by
+	// dex — the completeness oracle `canonicalizeDexExclusions` needs to know
+	// it's safe to collapse a dex's per-form clauses into one bare `!<dex>`
+	// (every sibling form actually accounted for), never inferred from
+	// whatever clauses happen to get emitted below.
+	const formsPerDex: Record<number, Set<string>> = {};
 	allPokemonForms.forEach((form) => {
 		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber);
 		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
 		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
+		const [, ...formTokens] = negateIdentity(id).split(',');
+		(formsPerDex[form.dexNumber] ??= new Set()).add(formTokens.join(','));
 	});
 
 	// The shared Great/Ultra default clause is the primary selection criterion
@@ -542,7 +545,7 @@ export const computeBadIvString = (
 	// that's `!4*` at the tail, unconditionally.
 	let result = `2-4${A},0-2${D},0-2${S}`;
 
-	const seenClauses = new Set<string>();
+	const exclusions: Array<DexExclusion> = [];
 	carveOuts.forEach(({ speciesId, pattern }) => {
 		if (whitelist.has(speciesId)) return; // gets its own unconditional clause below instead
 		const p = gamemasterPokemon[speciesId];
@@ -561,6 +564,7 @@ export const computeBadIvString = (
 		}
 		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
 		if (!baseId) return;
+		const [, ...formTokens] = negateIdentity(baseId).split(',');
 		// This exact pattern is either that species' own true optimum (shadow-
 		// agnostic — a non-Shadow catch's raw IVs are its real IVs, and a
 		// Shadow catch's own raw IVs mean the same thing before it's purified,
@@ -570,21 +574,16 @@ export const computeBadIvString = (
 		// purified (`findBadIvCarveOuts`'s Shadow-only pass). That second kind
 		// only holds for an actually-Shadow catch — a non-Shadow catch with
 		// this same raw spread gets no future +2 boost, so it stays genuinely
-		// wasted — hence the extra `,!shadow` scoping it to Shadow catches only.
-		const shadowScope = p.isShadow ? `,!${gameTranslator(GameTranslatorKeys.ShadowSearch, gl)}` : '';
+		// wasted — hence the Shadow-only scoping.
 		// Simplified mode stops right here — see this function's own doc
 		// comment on the tradeoff. Complete mode goes on to narrow the
 		// exclusion down to just the deviating bucket pattern itself.
-		const ivScope = simplified
+		const extra = simplified
 			? ''
 			: groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
 				groupAttr(complementOfBucket(ivBucket(pattern.D)), D) +
 				groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
-		const clause = `&${negateIdentity(baseId)}${shadowScope}${ivScope}`;
-		if (!seenClauses.has(clause)) {
-			result += clause;
-			seenClauses.add(clause);
-		}
+		exclusions.push({ dex: p.dex, form: formTokens.join(','), shadowScope: p.isShadow ? 'shadow-only' : '', extra });
 	});
 
 	whitelist.forEach((speciesId) => {
@@ -592,12 +591,19 @@ export const computeBadIvString = (
 		if (!p || p.isMega || p.aliasId) return;
 		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
 		if (!baseId) return;
-		const clause = `&${negateIdentity(baseId)}`;
-		if (!seenClauses.has(clause)) {
-			result += clause;
-			seenClauses.add(clause);
-		}
+		const [, ...formTokens] = negateIdentity(baseId).split(',');
+		exclusions.push({ dex: p.dex, form: formTokens.join(','), shadowScope: '', extra: '' });
 	});
+
+	// Final dead-weight pass: drops a Shadow-scoped clause a same-pattern
+	// unscoped one already subsumes (or merges Shadow-only + non-Shadow-only
+	// halves back into one), and — when Simplified mode (or the whitelist)
+	// has left *every* sibling form at a dex unconditionally excluded — folds
+	// them all into one bare `!<dex>`. See `canonicalizeDexExclusions`'s own
+	// doc comment for the exact soundness conditions.
+	for (const t of canonicalizeDexExclusions(exclusions, formsPerDex)) {
+		result += `&${renderDexExclusion(t)}`;
+	}
 
 	if (gl === GameLanguage.ptbr) {
 		result = translatePtBrTypeNames(result);
@@ -725,30 +731,47 @@ export const computeTradeableString = (
 		}));
 	const uniqueTypes = buildUniqueTypes(allPokemonForms.filter((c) => !c.isShadow));
 	const baseIds: Record<string, string> = {};
+	const formsPerDex: Record<number, Set<string>> = {};
 	allPokemonForms.forEach((form) => {
 		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber && !f.isShadow);
 		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
 		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
+		if (!form.isShadow) {
+			const [, ...formTokens] = negateIdentity(id).split(',');
+			(formsPerDex[form.dexNumber] ??= new Set()).add(formTokens.join(','));
+		}
 	});
 
 	let result = Array.from(tradeableDexes).join(',');
-	const terms = new Set<string>();
+	const exclusions: Array<DexExclusion> = [];
 	tradeableDexes.forEach((d) => {
 		if (!excludedForms[d]) return;
 		excludedForms[d].forEach((e) => {
-			let newStr =
-				'&' + negateIdentity(baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`]);
-			if (e.isShadow) {
-				newStr += ',!shadow';
-			} else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
-				newStr += ',shadow';
-			}
-			if (!terms.has(newStr)) {
-				result += newStr;
-				terms.add(newStr);
-			}
+			const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
+			if (!baseId) return;
+			const [, ...formTokens] = negateIdentity(baseId).split(',');
+			const shadowScope: DexExclusion['shadowScope'] = e.isShadow
+				? 'shadow-only'
+				: isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)
+					? 'non-shadow-only'
+					: '';
+			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
 		});
 	});
+	// Same final dead-weight pass as the Non-Perfect IVs tab — see
+	// `canonicalizeDexExclusions`'s own doc comment. Only its Case A
+	// (Shadow-scope collapse) ever actually fires here: it matters when both
+	// the Shadow and non-Shadow forms of the same species end up
+	// independently excluded (e.g. both individually whitelisted), collapsing
+	// their two clauses into one bare, Shadow-status-agnostic exclusion. Its
+	// cross-form dex-only merge (Case B) never fires — same structural reason
+	// as `computeTrashString`'s own copy of this comment: `excludedForms`
+	// only gets entries for a dex that's also independently in
+	// `tradeableDexes` via some OTHER, non-excluded sibling, so "every
+	// sibling excluded" and "this dex is even in the loop" can't both hold.
+	for (const t of canonicalizeDexExclusions(exclusions, formsPerDex)) {
+		result += `&${renderDexExclusion(t)}`;
+	}
 
 	if (gl === GameLanguage.ptbr) {
 		result = translatePtBrTypeNames(result);

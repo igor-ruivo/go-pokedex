@@ -9,6 +9,7 @@ import {
 	buildSmallSpecialDexesFixture,
 	mockDPSEntry,
 	mockPokemon,
+	mockType,
 	rank,
 } from './mass-delete-fixtures';
 import { computeTrashString, DEFAULT_PROTECTION } from './MassDelete';
@@ -401,5 +402,35 @@ describe('computeTrashString — specialDexes/oppositeDexes toggle-gating regres
 		// toggle from having any effect.
 		expect(result.startsWith('!9&')).toBe(true);
 		expect(result.startsWith('!9&!10')).toBe(false);
+	});
+});
+
+describe('computeTrashString — final canonicalization pass (dead-weight exclusion clauses)', () => {
+	it('whitelisting both the Shadow and non-Shadow forms of the same species collapses their two clauses into one bare, Shadow-agnostic clause', () => {
+		// dex 700 has two sibling forms (fire, grass) — grass is left alone
+		// (bad-for-everything, drives dex 700 into the deletable set), fire is
+		// whitelisted in BOTH its Shadow and non-Shadow form. Without the
+		// canonicalization pass this would emit two separate clauses —
+		// "!700,!fire,shadow" (protects only the non-Shadow catch) and
+		// "!700,!fire,!shadow" (protects only the Shadow catch) — which
+		// together protect exactly what one bare "!700,!fire" would, for
+		// fewer characters.
+		const grass = mockPokemon({ speciesId: 'formmon_grass', dex: 700, types: [mockType('grass')] });
+		const fire = mockPokemon({ speciesId: 'formmon_fire', dex: 700, types: [mockType('fire')] });
+		const fireShadow = mockPokemon({
+			speciesId: 'formmon_fire_shadow',
+			dex: 700,
+			isShadow: true,
+			types: [mockType('fire')],
+		});
+		const gamemasterPokemon = buildGamemaster([grass, fire, fireShadow]);
+
+		const result = computeTrashString(
+			buildArgs(gamemasterPokemon, { whitelist: new Set([fire.speciesId, fireShadow.speciesId]) })
+		);
+
+		expect(result).toContain('&!700,!fire');
+		expect(result).not.toContain('!700,!fire,shadow');
+		expect(result).not.toContain('!700,!fire,!shadow');
 	});
 });

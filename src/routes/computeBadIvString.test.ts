@@ -9,6 +9,7 @@ import {
 	buildMultiStageBadIvFixture,
 	buildShadowFamilyFixture,
 	mockPokemon,
+	mockType,
 } from './mass-delete-fixtures';
 import { computeBadIvString, DEFAULT_PROTECTION } from './MassDelete';
 
@@ -175,9 +176,16 @@ describe('computeBadIvString — simplified mode', () => {
 		expect(result).not.toMatch(new RegExp(`!${deviantmon.dex},(?!!shadow)`));
 	});
 
-	it('on: a Shadow-only purification carve-out still gets its `,!shadow` disambiguator, just no bucket complement', () => {
-		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+	it('on: a Shadow-only purification carve-out still gets its `,!shadow` disambiguator when isolated from any non-Shadow carve-out', () => {
+		const { gamemasterPokemon, deviantmon, deviantmonShadow } = buildBadIvFixture();
+		const allCarveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		// `computeBadIvString` applies every cap's carve-outs unconditionally —
+		// the `cp` argument only feeds the tail keyword, it does not filter
+		// `carveOuts` by cap — so isolating "only deviantmonShadow's carve-out,
+		// no bare non-Shadow one for dex 300" means filtering the array down
+		// ourselves, not just picking a cap via the `cp` parameter.
+		const carveOuts = allCarveOuts.filter((c) => c.speciesId !== deviantmon.speciesId);
+		expect(carveOuts.some((c) => c.speciesId === deviantmonShadow.speciesId)).toBe(true);
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
@@ -191,6 +199,111 @@ describe('computeBadIvString — simplified mode', () => {
 
 		expect(result).toContain(`&!${deviantmonShadow.dex},!shadow`);
 		expect(result).not.toContain(`!${deviantmonShadow.dex},!shadow,1-4attack`);
+	});
+
+	it('on: once BOTH deviantmon and deviantmonShadow have their own carve-out for the same dex, canonicalization merges them into one bare dex-only clause', () => {
+		const { gamemasterPokemon, deviantmon, deviantmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		expect(carveOuts.some((c) => c.speciesId === deviantmon.speciesId)).toBe(true);
+		expect(carveOuts.some((c) => c.speciesId === deviantmonShadow.speciesId)).toBe(true);
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		// deviantmon is alone at its dex (no sibling form to disambiguate) and
+		// both it and its Shadow form end up unconditionally excluded here —
+		// the bare `!300` from deviantmon's own carve-out already covers every
+		// Shadow status, so deviantmonShadow's own `,!shadow`-scoped clause is
+		// provably redundant and must not appear at all.
+		expect(result).toContain(`&!${deviantmon.dex}&`);
+		expect(result).not.toContain(`!${deviantmonShadow.dex},!shadow`);
+	});
+
+	it('on: two sibling forms sharing a dex, BOTH unconditionally excluded, collapse into one bare "!<dex>" clause — dropping the type disambiguation entirely', () => {
+		// Two forms at dex 900 (ice, ground), same deviating stats as
+		// deviantmon (300/100/100 — real top-1 at cap 2500 is 11/15/15,
+		// verified in `buildBadIvFixture`'s own fixture comment) so BOTH
+		// independently need a carve-out, hence a bare exclusion clause each
+		// in Simplified mode. With every sibling form at dex 900 covered,
+		// canonicalization must fold them into a single "!900" — anything
+		// short of that is dead weight, since a bare "!900" alone already
+		// protects both forms regardless of type.
+		const formIce = mockPokemon({
+			speciesId: 'formice',
+			dex: 900,
+			types: [mockType('ice')],
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const formGround = mockPokemon({
+			speciesId: 'formground',
+			dex: 900,
+			types: [mockType('ground')],
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const gamemasterPokemon = buildGamemaster([formIce, formGround]);
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [2500] });
+		expect(carveOuts.some((c) => c.speciesId === formIce.speciesId)).toBe(true);
+		expect(carveOuts.some((c) => c.speciesId === formGround.speciesId)).toBe(true);
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		expect(result).toContain('&!900&');
+		expect(result).not.toContain('!900,ice');
+		expect(result).not.toContain('!900,!ice');
+		expect(result).not.toContain('!900,ground');
+		expect(result).not.toContain('!900,!ground');
+	});
+
+	it('on: a dex with a sibling form left OUT of the exclusion set is never collapsed — the untouched sibling would be wrongly swept into protection too', () => {
+		// Same two forms as above, but only formIce gets a real carve-out this
+		// time (a plain, unremarkable species at dex 901 stays perfectly
+		// default-shaped, needing none) — collapsing to a bare "!901" would
+		// wrongly ALSO protect formGround's every IV spread, when it should
+		// stay fully targetable.
+		const formIce = mockPokemon({
+			speciesId: 'formice2',
+			dex: 901,
+			types: [mockType('ice')],
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const formGround = mockPokemon({
+			speciesId: 'formground2',
+			dex: 901,
+			types: [mockType('ground')],
+			baseStats: { atk: 120, def: 120, hp: 120 },
+		});
+		const gamemasterPokemon = buildGamemaster([formIce, formGround]);
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [2500] });
+		expect(carveOuts.some((c) => c.speciesId === formIce.speciesId)).toBe(true);
+		expect(carveOuts.some((c) => c.speciesId === formGround.speciesId)).toBe(false);
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		expect(result).not.toContain('&!901&');
+		expect(result).not.toMatch(/!901(&|$)/);
 	});
 
 	it('on: produces a strictly shorter string than Complete mode for the same inputs', () => {

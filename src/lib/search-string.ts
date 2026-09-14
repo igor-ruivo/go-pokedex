@@ -130,6 +130,124 @@ export const negateIdentity = (id: string): string =>
 		.join(',');
 
 /**
+ * One dex-scoped exclusion clause, already broken into its parts, as every
+ * one of the three Mass Delete generators independently builds today: a
+ * `negateIdentity`d per-form disambiguator (empty when the dex needed none),
+ * an optional Shadow-status restriction, and any further qualifier text
+ * (IV-bucket ranges on the Non-Perfect IVs tab; empty on the other two).
+ */
+export interface DexExclusion {
+	dex: number;
+	/** The disambiguating fragment after the dex token, already negated,
+	 *  WITHOUT a leading comma — e.g. `"psychic"` or `"!fire,ice"` — `""` when
+	 *  this dex has only one candidate form (a bare `!<dex>`). */
+	form: string;
+	/** `""` protects a matching catch regardless of Shadow status (no
+	 *  `,shadow`/`,!shadow` suffix at all); `"shadow-only"` is the `,!shadow`
+	 *  suffix (protects only Shadow catches); `"non-shadow-only"` is the
+	 *  `,shadow` suffix (protects only non-Shadow catches — used when a
+	 *  Shadow sibling independently needs a *different* verdict). */
+	shadowScope: '' | 'shadow-only' | 'non-shadow-only';
+	/** Every further qualifier, already comma-prefixed (e.g.
+	 *  `,0-2attack,4attack,...`) — `""` when this term protects its
+	 *  form+shadowScope combination unconditionally. */
+	extra: string;
+}
+
+/** Renders one `DexExclusion` back to the literal fragment it stands for
+ *  (everything after the leading `&`). */
+export const renderDexExclusion = (t: DexExclusion): string => {
+	const formPart = t.form ? `,${t.form}` : '';
+	const shadowPart =
+		t.shadowScope === 'shadow-only' ? ',!shadow' : t.shadowScope === 'non-shadow-only' ? ',shadow' : '';
+	return `!${t.dex}${formPart}${shadowPart}${t.extra}`;
+};
+
+/**
+ * Final dead-weight-elimination pass over a generator's own list of
+ * per-form exclusion clauses, exploiting two structural facts about how
+ * they combine (each is its own `&`-joined AND-clause; within one clause,
+ * `negateIdentity`/bucket terms are OR'd, so — De Morgan — the clause
+ * protects exactly the *intersection* of the positive form of every term
+ * in it):
+ *
+ * 1. **Shadow-scope collapse.** A `""`-scoped term for some (form, extra)
+ *    protects that population regardless of Shadow status — a
+ *    `"shadow-only"` or `"non-shadow-only"` term for the *identical*
+ *    (form, extra) is then a strict subset of it, hence pure dead weight.
+ *    Symmetrically, `"shadow-only"` and `"non-shadow-only"` terms for the
+ *    same (form, extra) are complementary halves of exactly the same
+ *    population a `""`-scoped term would cover — so the pair merges into
+ *    one. Two terms only ever merge here when `extra` matches *exactly* —
+ *    a different bucket pattern protects a generally non-overlapping
+ *    population, so nothing is ever assumed comparable beyond equality.
+ * 2. **Cross-form merge.** If, after (1), *every* candidate form at a dex
+ *    (per `formsPerDex`) has its own unconditional (`extra === ''`,
+ *    `shadowScope === ''`) term, those per-form terms collectively protect
+ *    the entire dex regardless of form or Shadow status — exactly what one
+ *    bare `!<dex>` term (no disambiguator at all) would protect, for far
+ *    fewer characters. This only fires when EVERY known form is covered
+ *    unconditionally; a single form left out, or only partially protected
+ *    (real `extra`, or only one Shadow-scope half), blocks it — collapsing
+ *    early would over-protect that form's remaining catches.
+ *
+ * `formsPerDex` must come from the same candidate universe the caller
+ * itself iterated to build `terms` (its own `allPokemonForms`/`baseIds`
+ * construction) — never inferred from `terms` alone, since an empty dex
+ * group there is indistinguishable from "every form already handled".
+ */
+export const canonicalizeDexExclusions = (
+	terms: Array<DexExclusion>,
+	formsPerDex: Record<number, Set<string>>
+): Array<DexExclusion> => {
+	const byDex = new Map<number, Array<DexExclusion>>();
+	for (const t of terms) {
+		if (!byDex.has(t.dex)) byDex.set(t.dex, []);
+		byDex.get(t.dex)?.push(t);
+	}
+
+	const result: Array<DexExclusion> = [];
+	for (const [dex, dexTerms] of byDex) {
+		const byFormExtra = new Map<string, Array<DexExclusion>>();
+		for (const t of dexTerms) {
+			const key = `${t.form} ${t.extra}`;
+			if (!byFormExtra.has(key)) byFormExtra.set(key, []);
+			byFormExtra.get(key)?.push(t);
+		}
+
+		const afterShadowCollapse: Array<DexExclusion> = [];
+		for (const group of byFormExtra.values()) {
+			const scopes = new Set(group.map((t) => t.shadowScope));
+			if (scopes.has('')) {
+				const bare = group.find((t) => t.shadowScope === '');
+				if (bare) afterShadowCollapse.push(bare);
+			} else if (scopes.has('shadow-only') && scopes.has('non-shadow-only')) {
+				afterShadowCollapse.push({ ...group[0], shadowScope: '' });
+			} else {
+				for (const scope of scopes) {
+					const rep = group.find((t) => t.shadowScope === scope);
+					if (rep) afterShadowCollapse.push(rep);
+				}
+			}
+		}
+
+		const allForms = formsPerDex[dex] ?? new Set<string>();
+		const unconditional = afterShadowCollapse.filter((t) => t.shadowScope === '' && t.extra === '');
+		const unconditionalForms = new Set(unconditional.map((t) => t.form));
+		const everyFormCoveredUnconditionally =
+			allForms.size > 0 && Array.from(allForms).every((f) => unconditionalForms.has(f));
+		const noPartialLeftovers = afterShadowCollapse.length === unconditional.length;
+
+		if (everyFormCoveredUnconditionally && noPartialLeftovers) {
+			result.push({ dex, form: '', shadowScope: '', extra: '' });
+		} else {
+			result.push(...afterShadowCollapse);
+		}
+	}
+	return result;
+};
+
+/**
  * Replaces every English type-name token a generated string can contain with
  * its pt-BR equivalent — the CP/Attack/Defense/HP/Favorite/etc. keywords
  * elsewhere in these strings are already localized individually via
