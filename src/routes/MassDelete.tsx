@@ -74,6 +74,12 @@ export interface ProtectionFlags {
 	ultraBeast: boolean;
 	megaEvolvable: boolean;
 	shadow: boolean;
+	dynamax: boolean;
+	fusion: boolean;
+	gigantamax: boolean;
+	background: boolean;
+	shiny: boolean;
+	costume: boolean;
 }
 
 export const DEFAULT_PROTECTION: ProtectionFlags = {
@@ -89,6 +95,20 @@ export const DEFAULT_PROTECTION: ProtectionFlags = {
 	// all — turning this on is an explicit, blunt override of that, so it
 	// shouldn't silently change what the legacy-verified algorithm would do.
 	shadow: false,
+	// These six are pure cosmetic/rarity keywords the game tracks per catch —
+	// nothing in the gamemaster data says which of your own catches are
+	// Dynamax/Fusion/Gigantamax/backgrounded/Shiny/costumed, so unlike the
+	// categories above there's no way to reason about them at all; each is
+	// just a blind `!keyword` append, same as `favorite`/`tagged`. Off by
+	// default, unlike the rest: these are opt-in, not opt-out — same reasoning
+	// as `shadow` above, just for a different reason (there's no existing
+	// per-catch judgment to override here, it's a brand new exclusion).
+	dynamax: false,
+	fusion: false,
+	gigantamax: false,
+	background: false,
+	shiny: false,
+	costume: false,
 };
 
 const PROTECTION_META: ReadonlyArray<{
@@ -130,6 +150,36 @@ const PROTECTION_META: ReadonlyArray<{
 		key: 'shadow',
 		label: 'Shadow',
 		description: 'Every Shadow Pokémon, regardless of its own IVs or rank.',
+	},
+	{
+		key: 'dynamax',
+		label: 'Dynamax',
+		description: 'Pokémon able to Dynamax.',
+	},
+	{
+		key: 'fusion',
+		label: 'Fusion',
+		description: 'Pokémon able to be fused, or already fused.',
+	},
+	{
+		key: 'gigantamax',
+		label: 'Gigantamax',
+		description: 'Pokémon able to Gigantamax.',
+	},
+	{
+		key: 'background',
+		label: 'Background',
+		description: 'Pokémon with a rare or location background in its profile.',
+	},
+	{
+		key: 'shiny',
+		label: 'Shiny',
+		description: 'Every Shiny Pokémon.',
+	},
+	{
+		key: 'costume',
+		label: 'Costume',
+		description: 'Pokémon wearing a Special Event costume.',
 	},
 ];
 
@@ -411,6 +461,12 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	if (protect.tagged) newStr += '&!#';
 	if (protect.favorite) newStr += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
 	if (protect.megaEvolvable) newStr += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
+	if (protect.dynamax) newStr += `&!${gameTranslator(GameTranslatorKeys.DynamaxSearch, gl)}`;
+	if (protect.fusion) newStr += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
+	if (protect.gigantamax) newStr += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;
+	if (protect.background) newStr += `&!${gameTranslator(GameTranslatorKeys.BackgroundSearch, gl)}`;
+	if (protect.shiny) newStr += `&!${gameTranslator(GameTranslatorKeys.ShinySearch, gl)}`;
+	if (protect.costume) newStr += `&!${gameTranslator(GameTranslatorKeys.CostumeSearch, gl)}`;
 	// No `&!shadow` here, unlike Bad-IV mode below: every Shadow form already got
 	// its own disambiguating exclusion clause above when `protect.shadow` is on
 	// (see the loop's short-circuit) — this mode independently evaluates Shadow
@@ -537,6 +593,12 @@ export const computeBadIvString = (
 	if (protect.mythical) result += `&!${gameTranslator(GameTranslatorKeys.Mythical, gl)}`;
 	if (protect.ultraBeast) result += `&!${gameTranslator(GameTranslatorKeys.UltraBeast, gl)}`;
 	if (protect.shadow) result += `&!${gameTranslator(GameTranslatorKeys.ShadowSearch, gl)}`;
+	if (protect.dynamax) result += `&!${gameTranslator(GameTranslatorKeys.DynamaxSearch, gl)}`;
+	if (protect.fusion) result += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
+	if (protect.gigantamax) result += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;
+	if (protect.background) result += `&!${gameTranslator(GameTranslatorKeys.BackgroundSearch, gl)}`;
+	if (protect.shiny) result += `&!${gameTranslator(GameTranslatorKeys.ShinySearch, gl)}`;
+	if (protect.costume) result += `&!${gameTranslator(GameTranslatorKeys.CostumeSearch, gl)}`;
 
 	return result;
 };
@@ -682,6 +744,16 @@ export const computeTradeableString = (
 	if (protect.tagged) result += '&!#';
 	if (protect.favorite) result += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
 	if (protect.megaEvolvable) result += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
+	if (protect.dynamax) result += `&!${gameTranslator(GameTranslatorKeys.DynamaxSearch, gl)}`;
+	if (protect.fusion) result += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
+	if (protect.gigantamax) result += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;
+	if (protect.background) result += `&!${gameTranslator(GameTranslatorKeys.BackgroundSearch, gl)}`;
+	if (protect.shiny) result += `&!${gameTranslator(GameTranslatorKeys.ShinySearch, gl)}`;
+	if (protect.costume) result += `&!${gameTranslator(GameTranslatorKeys.CostumeSearch, gl)}`;
+	// Unconditional, not a togglable protection: an already-traded Pokémon
+	// can never be traded again, so suggesting one would just be wrong,
+	// regardless of any category setting above.
+	result += `&!${gameTranslator(GameTranslatorKeys.TradedSearch, gl)}`;
 
 	return result;
 };
@@ -896,6 +968,12 @@ const MassDelete = () => {
 		ultraBeast: boolCfg(ConfigKeys.TrashKeepUltraBeast, DEFAULT_PROTECTION.ultraBeast),
 		megaEvolvable: boolCfg(ConfigKeys.TrashKeepMegaEvolvable, DEFAULT_PROTECTION.megaEvolvable),
 		shadow: boolCfg(ConfigKeys.TrashKeepShadow, DEFAULT_PROTECTION.shadow),
+		dynamax: boolCfg(ConfigKeys.TrashKeepDynamax, DEFAULT_PROTECTION.dynamax),
+		fusion: boolCfg(ConfigKeys.TrashKeepFusion, DEFAULT_PROTECTION.fusion),
+		gigantamax: boolCfg(ConfigKeys.TrashKeepGigantamax, DEFAULT_PROTECTION.gigantamax),
+		background: boolCfg(ConfigKeys.TrashKeepBackground, DEFAULT_PROTECTION.background),
+		shiny: boolCfg(ConfigKeys.TrashKeepShiny, DEFAULT_PROTECTION.shiny),
+		costume: boolCfg(ConfigKeys.TrashKeepCostume, DEFAULT_PROTECTION.costume),
 	}));
 	const setProtectFlag = (key: keyof ProtectionFlags) => setProtect((p) => ({ ...p, [key]: !p[key] }));
 	useEffect(
@@ -920,6 +998,18 @@ const MassDelete = () => {
 		[protect.megaEvolvable]
 	);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepShadow, String(protect.shadow)), [protect.shadow]);
+	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepDynamax, String(protect.dynamax)), [protect.dynamax]);
+	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepFusion, String(protect.fusion)), [protect.fusion]);
+	useEffect(
+		() => void writePersistentValue(ConfigKeys.TrashKeepGigantamax, String(protect.gigantamax)),
+		[protect.gigantamax]
+	);
+	useEffect(
+		() => void writePersistentValue(ConfigKeys.TrashKeepBackground, String(protect.background)),
+		[protect.background]
+	);
+	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepShiny, String(protect.shiny)), [protect.shiny]);
+	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepCostume, String(protect.costume)), [protect.costume]);
 
 	// Manually-protected species, by speciesId — never evaluated by either
 	// mode's algorithm, always excluded outright from the generated string.
@@ -1280,6 +1370,13 @@ const MassDelete = () => {
 						{mode === 'meta' && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>Preserve top current meta Pokémon per league/raid</p>
+								{/* Great/Ultra/Master/Raid share one row of 4 whenever that
+								    comfortably fits; below that width it becomes a row of 3
+								    (Great/Ultra/Master) instead of squeezing straight down to 2 —
+								    Raid moves out to sit beside the CP dropdown below, rather than
+								    wrapping to its own row alone here. Both Raid controls below are
+								    the same state; CSS shows exactly one of the two per breakpoint
+								    (same dual-render technique as the full/short knob labels). */}
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
 										<span>
@@ -1310,7 +1407,7 @@ const MassDelete = () => {
 											count={2000}
 										/>
 									</div>
-									<div className='r-md-knob'>
+									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>Raid Attackers</i>
@@ -1327,7 +1424,7 @@ const MassDelete = () => {
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
 									A species only needs to clear ONE of these two cutoffs to be suggested
 								</p>
-								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
@@ -1353,8 +1450,41 @@ const MassDelete = () => {
 							</>
 						)}
 
+						{mode === 'meta' && (
+							// Its own dedicated 2-up grid, not the general auto-fill one below —
+							// the CP dropdown and Raid Attackers are always exactly this one pair
+							// here, so they stay side by side at any width instead of the
+							// auto-fill grid's 150px-per-column minimum wrapping Raid down below
+							// CP once the panel gets narrower than ~385px.
+							<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+								<div className='r-md-knob'>
+									<span>Never delete at or above CP</span>
+									<select
+										className='r-md-select'
+										aria-label='Never delete at or above CP'
+										value={cp}
+										onChange={(e) => setCp(+e.target.value)}
+									>
+										{CP_OPTIONS.map((n) => (
+											<option key={n} value={n}>
+												{n}
+											</option>
+										))}
+									</select>
+								</div>
+								<div className='r-md-knob r-md-raid-cp'>
+									<span>
+										<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+										<i className='r-md-knob-full'>Raid Attackers</i>
+										<i className='r-md-knob-short'>Raid</i>
+									</span>
+									<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+								</div>
+							</div>
+						)}
+
 						<div className='r-md-knobs-grid'>
-							{!isTrade && (
+							{mode === 'badIv' && (
 								<div className='r-md-knob'>
 									<span>Never delete at or above CP</span>
 									<select

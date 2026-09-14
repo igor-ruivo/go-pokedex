@@ -64,6 +64,12 @@ export enum ConfigKeys {
 	TradeOnlyLowIv,
 	TradeCP,
 	BadIvSkipShadowAnalysis,
+	TrashKeepDynamax,
+	TrashKeepFusion,
+	TrashKeepGigantamax,
+	TrashKeepBackground,
+	TrashKeepShiny,
+	TrashKeepCostume,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

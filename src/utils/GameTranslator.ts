@@ -36,6 +36,13 @@ export enum GameTranslatorKeys {
 	MegaRaid,
 	Favorite,
 	Raid,
+	DynamaxSearch,
+	FusionSearch,
+	GigantamaxSearch,
+	BackgroundSearch,
+	ShinySearch,
+	CostumeSearch,
+	TradedSearch,
 }
 
 const hp = new Map<GameLanguage, string>([
@@ -121,6 +128,44 @@ const shadow = new Map<GameLanguage, string>([
 const shadowSearch = new Map<GameLanguage, string>([
 	[GameLanguage.en, 'shadow'],
 	[GameLanguage.ptbr, 'sombroso'],
+]);
+
+// Search-string literals verified against Niantic's own help page
+// (niantic.helpshift.com, "Searching & filtering your Pokémon inventory"),
+// EN and pt-BR editions — not guessed/machine-translated.
+const dynamaxSearch = new Map<GameLanguage, string>([
+	[GameLanguage.en, 'dynamax'],
+	[GameLanguage.ptbr, 'dinamax'],
+]);
+
+const fusionSearch = new Map<GameLanguage, string>([
+	[GameLanguage.en, 'fusion'],
+	[GameLanguage.ptbr, 'fusão'],
+]);
+
+const gigantamaxSearch = new Map<GameLanguage, string>([
+	[GameLanguage.en, 'gigantamax'],
+	[GameLanguage.ptbr, 'gigamax'],
+]);
+
+const backgroundSearch = new Map<GameLanguage, string>([
+	[GameLanguage.en, 'background'],
+	[GameLanguage.ptbr, 'fundo'],
+]);
+
+const shinySearch = new Map<GameLanguage, string>([
+	[GameLanguage.en, 'shiny'],
+	[GameLanguage.ptbr, 'brilhante'],
+]);
+
+const costumeSearch = new Map<GameLanguage, string>([
+	[GameLanguage.en, 'costume'],
+	[GameLanguage.ptbr, 'traje'],
+]);
+
+const tradedSearch = new Map<GameLanguage, string>([
+	[GameLanguage.en, 'traded'],
+	[GameLanguage.ptbr, 'trocado'],
 ]);
 
 const raids = new Map<GameLanguage, string>([
@@ -255,6 +300,13 @@ const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
 	[GameTranslatorKeys.UltraBeast, ultraBeast],
 	[GameTranslatorKeys.Favorite, favorite],
 	[GameTranslatorKeys.NoWildsInSeason, noWildsInSeason],
+	[GameTranslatorKeys.DynamaxSearch, dynamaxSearch],
+	[GameTranslatorKeys.FusionSearch, fusionSearch],
+	[GameTranslatorKeys.GigantamaxSearch, gigantamaxSearch],
+	[GameTranslatorKeys.BackgroundSearch, backgroundSearch],
+	[GameTranslatorKeys.ShinySearch, shinySearch],
+	[GameTranslatorKeys.CostumeSearch, costumeSearch],
+	[GameTranslatorKeys.TradedSearch, tradedSearch],
 ]);
 
 const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) =>
