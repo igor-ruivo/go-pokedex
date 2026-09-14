@@ -24,6 +24,7 @@ const call = (
 		protect: typeof DEFAULT_PROTECTION;
 		whitelist: Set<string>;
 		onlyLowIv: boolean;
+		cp: number;
 	}> = {}
 ) =>
 	computeTradeableString(
@@ -36,7 +37,8 @@ const call = (
 		overrides.trashRaid ?? 10,
 		overrides.protect ?? DEFAULT_PROTECTION,
 		overrides.whitelist ?? new Set<string>(),
-		overrides.onlyLowIv ?? false
+		overrides.onlyLowIv ?? false,
+		overrides.cp ?? 2500
 	);
 
 describe('computeTradeableString — Master League relevance', () => {
@@ -168,5 +170,21 @@ describe('computeTradeableString — pt-BR translation', () => {
 
 		expect(result).toContain('&!favorito');
 		expect(result).toContain('&!megaevolui');
+	});
+});
+
+describe('computeTradeableString — CP cap (upper bound, not a floor)', () => {
+	it.each([2000, 3500])('emits the exact CP cutoff in the tail (cp=%i)', (cp) => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const result = call(gamemasterPokemon, { cp });
+		expect(result).toContain(`&!cp${cp}-`);
+	});
+
+	it('is independent of the onlyLowIv toggle and the hundo exclusion, both still present', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const result = call(gamemasterPokemon, { cp: 2000, onlyLowIv: true });
+
+		expect(result).toContain('&!4*&!cp2000-');
+		expect(result).toContain('&0-2attack&0-2defense&0-2hp');
 	});
 });

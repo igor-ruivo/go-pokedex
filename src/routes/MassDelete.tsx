@@ -138,8 +138,9 @@ const PROTECTION_META: ReadonlyArray<{
        Never looks at IVs, not even once.
      - Non-Perfect IVs: is this exact catch's IV spread the true best possible
        for its species? Never looks at meta relevance, not even once.
-     - Tradeable: is this species relevant somewhere IVs don't matter (Master
-       League, raids) while this catch's own IVs still have room to improve?
+     - Find Tradeable: is this species relevant somewhere IVs don't matter
+       (Master League, raids) while this catch's own IVs still have room to
+       improve?
    Mixing "meta" and "IV" judgments in one tab was the mistake this app used
    to make (a "keep relevant for trade" checkbox in this tab used to do a
    half-hearted version of what the second tab now does properly) — each tab
@@ -171,11 +172,11 @@ const BAD_IV_HELP_TEXT =
 const TRADE_HELP_TEXT =
 	'A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? ' +
 	'Master League has no CP cap, and raids don’t care about one either — so unlike Great/Ultra, a higher IV is ' +
-	'never a downside there, only ever neutral or better. A Best Friend trade floors every stat at 5, a pure upgrade ' +
-	'for exactly that population. So: any species relevant for Master League or raids (cutoffs below), whose current ' +
-	'IVs aren’t already great, is worth trading — the meta relevance won’t change, and the IVs can only improve. A ' +
-	'perfect 15/15/15 is always excluded (it has nothing to gain), and the categories and whitelist below narrow the ' +
-	'suggestions further, same as the other tabs.';
+	'never a downside there, only ever neutral or better. A Best Friend trade floors every stat at 5, and if you’re ' +
+	'lucky enough to land a Lucky Trade, both Pokémon involved get a floor of 12 in every stat instead — extremely ' +
+	'close to perfect. So: any species relevant for Master League or raids (cutoffs below), whose current IVs aren’t ' +
+	'already great, is worth trading — the IVs can improve. A perfect 15/15/15 is always excluded (it has nothing to ' +
+	'gain), and the categories, whitelist, and CP cap below narrow the suggestions further, same as the other tabs.';
 
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
@@ -533,13 +534,16 @@ export const computeBadIvString = (
  * have great IVs. Master League has no CP cap, and raids don't care about a
  * PVP cap either — so unlike Great/Ultra, a higher IV is never a liability
  * there, only ever neutral-to-better. A Best Friend trade floors every stat
- * at 5, a pure upgrade for exactly this population (never a downside, unlike
- * Great/Ultra where a low Attack IV can be load-bearing) — so a
- * Master/raid-relevant species with mediocre-or-worse current IVs is
- * precisely what's worth trading: the meta-relevance won't change, and the
- * IVs can only improve. A hundo is always excluded outright (`!4*`) — it has
- * nothing to gain from a trade. `onlyLowIv` optionally narrows further, to
- * only the clearly-low spreads (Attack/Defense/HP all bucket 0-2).
+ * at 5 (and, on a lucky trade, floors every stat at 12 for both Pokémon
+ * involved — extremely close to perfect), a pure upgrade for exactly this
+ * population (never a downside, unlike Great/Ultra where a low Attack IV can
+ * be load-bearing) — so a Master/raid-relevant species with mediocre-or-worse
+ * current IVs is precisely what's worth trading. A hundo is always excluded
+ * outright (`!4*`) — it has nothing to gain from a trade. `onlyLowIv`
+ * optionally narrows further, to only the clearly-low spreads (Attack/
+ * Defense/HP all bucket 0-2, i.e. raw IV 10 or less). `cp` is an upper
+ * bound, not a floor — some players don't want to give up a catch they've
+ * already invested CP into, so anything at or above it is never suggested.
  */
 export const computeTradeableString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
@@ -551,11 +555,13 @@ export const computeTradeableString = (
 	trashRaid: number,
 	protect: ProtectionFlags,
 	whitelist: Set<string>,
-	onlyLowIv: boolean
+	onlyLowIv: boolean,
+	cp: number
 ): string => {
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
+	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
 
 	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
 		.filter((key) => isNaN(Number(key)) && key !== 'Normal')
@@ -655,7 +661,7 @@ export const computeTradeableString = (
 	}
 
 	// A hundo needs no trade at all, regardless of the stricter toggle below.
-	result += '&!4*';
+	result += `&!4*&!${CP}${cp}-`;
 	if (onlyLowIv) {
 		result += `&0-2${A}&0-2${D}&0-2${S}`;
 	}
@@ -849,11 +855,15 @@ const MassDelete = () => {
 	const [trashMaster, setTrashMaster] = useState(() => numCfg(ConfigKeys.TrashMaster, 110));
 	const [trashRaid, setTrashRaid] = useState(() => numCfg(ConfigKeys.TrashRaid, 5));
 	const [cp, setCp] = useState(() => numCfg(ConfigKeys.TrashCP, 2500));
-	// Only meaningful for the Tradeable tab — narrows the result to catches
-	// whose Attack/Defense/HP are all clearly low (bucket 0-2), rather than
-	// just excluding the exact hundo.
+	// Only meaningful for the Find Tradeable tab — narrows the result to
+	// catches whose Attack/Defense/HP are all clearly low (raw IV 10 or
+	// less), rather than just excluding the exact hundo.
 	const [tradeOnlyLowIv, setTradeOnlyLowIv] = useState(() => readPersistentValue(ConfigKeys.TradeOnlyLowIv) === 'true');
 	useEffect(() => void writePersistentValue(ConfigKeys.TradeOnlyLowIv, String(tradeOnlyLowIv)), [tradeOnlyLowIv]);
+	// An upper bound, not a floor — never suggest trading away a catch
+	// already at or above this CP, in case it's something already invested in.
+	const [tradeCp, setTradeCp] = useState(() => numCfg(ConfigKeys.TradeCP, 2500));
+	useEffect(() => void writePersistentValue(ConfigKeys.TradeCP, String(tradeCp)), [tradeCp]);
 
 	const [protect, setProtect] = useState<ProtectionFlags>(() => ({
 		favorite: boolCfg(ConfigKeys.TrashKeepFavorite, DEFAULT_PROTECTION.favorite),
@@ -1057,13 +1067,13 @@ const MassDelete = () => {
 		setBadIvResult('');
 	}, [cp, gl, protect, whitelist]);
 
-	// ---- "Tradeable" mode ----
+	// ---- "Find Tradeable" mode ----
 	const [isCalculatingTrade, setIsCalculatingTrade] = useState(false);
 	const [tradeResult, setTradeResult] = useState('');
 
 	useEffect(() => {
 		setTradeResult('');
-	}, [trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv]);
+	}, [trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, tradeCp]);
 
 	useEffect(() => {
 		if (!isCalculatingTrade || !fetchCompleted || !pvpFetchCompleted || !raidDPSFetchCompleted || !movesFetchCompleted) {
@@ -1081,7 +1091,8 @@ const MassDelete = () => {
 					trashRaid,
 					protect,
 					whitelistSet,
-					tradeOnlyLowIv
+					tradeOnlyLowIv,
+					tradeCp
 				)
 			);
 			setIsCalculatingTrade(false);
@@ -1103,6 +1114,7 @@ const MassDelete = () => {
 		protect,
 		whitelistSet,
 		tradeOnlyLowIv,
+		tradeCp,
 	]);
 
 	const isBadIv = mode === 'badIv';
@@ -1133,7 +1145,7 @@ const MassDelete = () => {
 	const panelSummary = isBadIv
 		? `CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`
 		: isTrade
-			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · excludes ${protectionSummary || 'nothing extra'}`
+			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · CP < ${tradeCp.toLocaleString()} · excludes ${protectionSummary || 'nothing extra'}`
 			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
 
 	const whitelistSummary =
@@ -1152,12 +1164,14 @@ const MassDelete = () => {
 	const panelDirty =
 		!isDefaultProtection ||
 		(!isTrade && cp !== 2500) ||
+		(isTrade && tradeCp !== 2500) ||
 		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
 		(mode === 'meta' && (trashGreat !== 50 || trashUltra !== 50)) ||
 		(isTrade && tradeOnlyLowIv);
 	const resetPanel = () => {
 		setProtect(DEFAULT_PROTECTION);
 		if (!isTrade) setCp(2500);
+		if (isTrade) setTradeCp(2500);
 		if (mode !== 'badIv') {
 			setTrashMaster(110);
 			setTrashRaid(5);
@@ -1188,7 +1202,7 @@ const MassDelete = () => {
 					Non-Perfect IVs
 				</button>
 				<button type='button' data-active={isTrade} onClick={() => setMode('trade')}>
-					Tradeable
+					Find Tradeable
 				</button>
 			</div>
 
@@ -1327,7 +1341,24 @@ const MassDelete = () => {
 							)}
 							{isTrade && (
 								<div className='r-md-knob'>
-									<span>Only very low IVs (0-2 in every stat)</span>
+									<span>Never suggest at or above CP</span>
+									<select
+										className='r-md-select'
+										aria-label='Never suggest at or above CP'
+										value={tradeCp}
+										onChange={(e) => setTradeCp(+e.target.value)}
+									>
+										{CP_OPTIONS.map((n) => (
+											<option key={n} value={n}>
+												{n}
+											</option>
+										))}
+									</select>
+								</div>
+							)}
+							{isTrade && (
+								<div className='r-md-knob'>
+									<span>Only very low IVs (10 or less in every stat)</span>
 									<button
 										type='button'
 										className='r-ctr-toggle'
