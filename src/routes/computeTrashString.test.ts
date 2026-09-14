@@ -111,8 +111,8 @@ describe('computeTrashString — raid metric switching', () => {
 	});
 });
 
-describe('computeTrashString — Master League rescue branch (isBadForEverythingIfItHasHighAttack)', () => {
-	it("a later evolution stage's good Master rank rescues every earlier stage too, via forward reachability", () => {
+describe('computeTrashString — Master League rescue via forward reachability', () => {
+	it("a later evolution stage's good Master rank rescues every earlier stage too", () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
 		// Only Venusaur (the last stage) is Master-ranked; nothing is
 		// Great/Ultra-ranked anywhere in the family, and there's no raid data.
@@ -129,7 +129,6 @@ describe('computeTrashString — Master League rescue branch (isBadForEverything
 			trashUltra: 10,
 			trashMaster: 10,
 			trashRaid: 10,
-			keepForTrade: false, // deliberately off — this rescue must not depend on it
 		});
 
 		const result = computeTrashString(args);
@@ -138,51 +137,35 @@ describe('computeTrashString — Master League rescue branch (isBadForEverything
 	});
 });
 
-describe('computeTrashString — Great/Ultra rescue branches (isBadForEverythingIfItHasHighAttack, keepForTrade-gated)', () => {
-	it("a later stage's Great rank (without needing low Attack) rescues every earlier stage — only when keepForTrade is on", () => {
+describe('computeTrashString — Great/Ultra rescue via forward reachability (meta-only, no IV consideration)', () => {
+	it("a later stage's Great rank rescues every earlier stage too, unconditionally — no Attack IV check exists anymore", () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
-		const commonArgs = {
+		const args = buildArgs(gamemasterPokemon, {
 			rankLists: [{ venusaur: rank(1) }, {}, {}],
-			lowAttackMap: { venusaur: { 1500: false } },
 			trashGreat: 10,
 			trashUltra: 10,
 			trashMaster: 10,
 			trashRaid: 10,
-		};
+		});
 
-		const on = computeTrashString(buildArgs(gamemasterPokemon, { ...commonArgs, keepForTrade: true }));
-		const off = computeTrashString(buildArgs(gamemasterPokemon, { ...commonArgs, keepForTrade: false }));
+		const result = computeTrashString(args);
 
-		// On: fully rescued for all three — nothing deletable at all.
-		expect(on).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
-		// Off: this specific rescue is disabled, so all three (including
-		// Venusaur itself) fall into "deletable unless its own Attack IV is
-		// already low" — every dex gets its own `,2-attack`-qualified clause.
-		expect(off.startsWith('!&')).toBe(true);
-		expect(off).toContain('&!1,2-attack');
-		expect(off).toContain('&!2,2-attack');
-		expect(off).toContain('&!3,2-attack');
+		expect(result).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
 	});
 
-	it("a later stage's Ultra rank (without needing low Attack) rescues every earlier stage — only when keepForTrade is on", () => {
+	it("a later stage's Ultra rank rescues every earlier stage too, unconditionally", () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
-		const commonArgs = {
+		const args = buildArgs(gamemasterPokemon, {
 			rankLists: [{}, { venusaur: rank(1) }, {}],
-			lowAttackMap: { venusaur: { 2500: false } },
 			trashGreat: 10,
 			trashUltra: 10,
 			trashMaster: 10,
 			trashRaid: 10,
-		};
+		});
 
-		const on = computeTrashString(buildArgs(gamemasterPokemon, { ...commonArgs, keepForTrade: true }));
-		const off = computeTrashString(buildArgs(gamemasterPokemon, { ...commonArgs, keepForTrade: false }));
+		const result = computeTrashString(args);
 
-		expect(on).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
-		expect(off.startsWith('!&')).toBe(true);
-		expect(off).toContain('&!1,2-attack');
-		expect(off).toContain('&!2,2-attack');
-		expect(off).toContain('&!3,2-attack');
+		expect(result).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
 	});
 });
 
@@ -212,15 +195,9 @@ describe('computeTrashString — multiple good later stages, different leagues e
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
 		// Ivysaur good in Great, Venusaur good in Ultra — neither alone would
 		// necessarily be the one a naive "check only the last stage" bug would
-		// find; both must be considered. `lowAttackMap` proves neither needs a
-		// low Attack IV to hold that rank — without it, `needsLessThanFiveAttack`
-		// fails safe to `true` and this rescue correctly does NOT fire (a real
-		// gap I found by first omitting this and watching the test correctly
-		// fail — good rank alone isn't enough; the catch's own Attack IV has to
-		// not matter either).
+		// find; both must be considered.
 		const args = buildArgs(gamemasterPokemon, {
 			rankLists: [{ ivysaur: rank(1) }, { venusaur: rank(1) }, {}],
-			lowAttackMap: { ivysaur: { 1500: false }, venusaur: { 2500: false } },
 			trashGreat: 10,
 			trashUltra: 10,
 			trashMaster: 10,
@@ -237,27 +214,23 @@ describe('computeTrashString — multiple good later stages, different leagues e
 	});
 });
 
-describe('computeTrashString — keepForTrade', () => {
-	it("protects a Great-relevant species that doesn't need low Attack only when keepForTrade is on", () => {
+describe('computeTrashString — no IV consideration at all (meta-only domain)', () => {
+	it('a Great-relevant species is fully protected regardless of what its own IVs would need to be — there is no Attack IV check left', () => {
 		const trademon = mockPokemon({ speciesId: 'trademon', dex: 161 });
 		const gamemasterPokemon = buildGamemaster([trademon]);
-		const commonArgs = {
+		const args = buildArgs(gamemasterPokemon, {
 			rankLists: [{ trademon: rank(1) }, {}, {}],
-			lowAttackMap: { trademon: { 1500: false } },
 			trashGreat: 10,
 			trashUltra: 10,
 			trashMaster: 10,
-		};
+		});
 
-		const on = computeTrashString(buildArgs(gamemasterPokemon, { ...commonArgs, keepForTrade: true }));
-		const off = computeTrashString(buildArgs(gamemasterPokemon, { ...commonArgs, keepForTrade: false }));
+		const result = computeTrashString(args);
 
-		// On: fully protected (alwaysGood), dex never enters the deletable
-		// set at all, so no "161" appears anywhere in the output.
-		expect(on).not.toContain('161');
-		// Off: falls through to "deletable unless its own Attack IV is
-		// already low" — the exact per-species clause for that.
-		expect(off).toContain('&!161,2-attack');
+		// Fully protected (alwaysGood) — dex never enters the deletable set at
+		// all, so no "161" appears anywhere in the output. Clearing the rank
+		// cutoff is the only thing that matters here now.
+		expect(result).not.toContain('161');
 	});
 });
 

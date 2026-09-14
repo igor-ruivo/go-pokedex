@@ -61,6 +61,7 @@ export enum ConfigKeys {
 	TrashWhitelist,
 	MassDeleteControlsCollapsed,
 	MassDeleteWhitelistCollapsed,
+	TradeOnlyLowIv,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

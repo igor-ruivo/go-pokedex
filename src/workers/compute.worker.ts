@@ -169,36 +169,6 @@ export interface BestIvsInput {
 const bestIvs = ({ atk, def, hp, league, maxLevel = MAX_LEVEL }: BestIvsInput): Array<RankEntry> =>
 	Object.values(computeBestIVs(atk, def, hp, league, maxLevel)).flat();
 
-export interface LowAttackViableInput {
-	candidates: Array<{ speciesId: string; atk: number; def: number; hp: number }>;
-	/** CP caps to evaluate (e.g. 1500 for Great, 2500 for Ultra). */
-	caps: Array<number>;
-	/** Level ceiling to rank against — {@link MAX_LEVEL} unless Best Buddy (51) is on. */
-	maxLevel?: number;
-}
-
-/**
- * For each candidate and cap: does the single best-IV spread get by with an
- * attack IV below 5? Powers the "trash" analyzer's high-attack check.
- * @returns speciesId -> cap -> boolean
- */
-const lowAttackViable = ({
-	candidates,
-	caps,
-	maxLevel = MAX_LEVEL,
-}: LowAttackViableInput): Record<string, Record<number, boolean>> => {
-	const out: Record<string, Record<number, boolean>> = {};
-	for (const c of candidates) {
-		const perCap: Record<number, boolean> = {};
-		for (const cap of caps) {
-			const best = Object.values(computeBestIVs(c.atk, c.def, c.hp, cap, maxLevel)).flat();
-			perCap[cap] = (best[0]?.IVs.A ?? 0) < 5;
-		}
-		out[c.speciesId] = perCap;
-	}
-	return out;
-};
-
 export interface RaidComparisonsInput {
 	candidates: Array<IGamemasterPokemon>;
 	moves: Record<string, IGameMasterMove>;
@@ -365,7 +335,7 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	return carveOuts;
 };
 
-export const api = { familyIvPercents, bestIvs, lowAttackViable, raidComparisons, findBadIvCarveOuts };
+export const api = { familyIvPercents, bestIvs, raidComparisons, findBadIvCarveOuts };
 export type ComputeApi = typeof api;
 
 // Guarded: this module is also imported directly (not through a real Worker)

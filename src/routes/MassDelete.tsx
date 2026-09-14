@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { ShadowMark } from '../components/ShadowMark';
 import { spriteUrl } from '../components/Sprite';
-import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
@@ -132,13 +131,25 @@ const PROTECTION_META: ReadonlyArray<{
 	},
 ];
 
-/* The English help text is ported verbatim from the legacy app — the wording
-   spells out exactly what will and won't be deleted, so users know the stakes. */
+/* Three tabs, three deliberately separate domains — each one asks exactly one
+   question and ignores everything else, so their answers can be trusted and
+   combined freely (run one, two, or all three, in any order):
+     - Non-meta relevant: is this species competitively relevant ANYWHERE?
+       Never looks at IVs, not even once.
+     - Non-Perfect IVs: is this exact catch's IV spread the true best possible
+       for its species? Never looks at meta relevance, not even once.
+     - Tradeable: is this species relevant somewhere IVs don't matter (Master
+       League, raids) while this catch's own IVs still have room to improve?
+   Mixing "meta" and "IV" judgments in one tab was the mistake this app used
+   to make (a "keep relevant for trade" checkbox in this tab used to do a
+   half-hearted version of what the second tab now does properly) — each tab
+   staying in its own lane is what makes all three trustworthy. */
 const HELP_TEXT =
-	'Deletes any Pokémon that isn’t competitively relevant anywhere — not in Great, Ultra, or Master League, and not ' +
-	'in raids — based on the rank cutoffs and CP cap below. A species (or any of its later evolutions) only needs to ' +
-	'clear the cutoff in one of those to be spared. Anything at or above your CP cap is always kept, and so is ' +
-	'everything checked in the categories and whitelist below, regardless of rank.';
+	'Meta only, never IVs: deletes any Pokémon that isn’t competitively relevant anywhere — not in Great, Ultra, or ' +
+	'Master League, and not in raids — based on the rank cutoffs and CP cap below. A species (or any of its later ' +
+	'evolutions) only needs to clear the cutoff in one of those to be spared, and once it does, every catch of it is ' +
+	'spared too, regardless of that catch’s own IVs — this tab has no opinion on IVs at all. Anything at or above ' +
+	'your CP cap is always kept, and so is everything checked in the categories and whitelist below, regardless of rank.';
 
 const BAD_IV_WARNING =
 	'This mode is aggressive and perfectionist: the intent is to delete every catch that isn’t a perfect (100%) IV ' +
@@ -146,65 +157,58 @@ const BAD_IV_WARNING =
 	'categories and whitelist below before running it.';
 
 const BAD_IV_HELP_TEXT =
-	'Ignores the current meta entirely: the goal is to delete anything that isn’t a perfect 15/15/15, since anything ' +
-	'less is wasted IV potential. The game’s search only lets us match IV ranges, not exact values, so it can’t ' +
-	'always draw that line exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept ' +
-	'via a shared low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-' +
-	'verified range instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect ' +
-	'(but not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no ' +
-	'CP cap, so there the true best really is always a plain 15/15/15 with nothing else close — this mode’s Master ' +
+	'IVs only, never meta: ignores the current meta entirely — the goal is to delete anything that isn’t a perfect ' +
+	'15/15/15, since anything less is wasted IV potential, regardless of whether the species itself is good or bad ' +
+	'right now. The game’s search only lets us match IV ranges, not exact values, so it can’t always draw that line ' +
+	'exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept via a shared ' +
+	'low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-verified range ' +
+	'instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect (but ' +
+	'not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no CP ' +
+	'cap, so there the true best really is always a plain 15/15/15 with nothing else close — this mode’s Master ' +
 	'League handling is exact, not an approximation. A perfect 15/15/15 is always kept in every league, and so is ' +
 	'everything checked in the categories and whitelist below, regardless of IVs.';
+
+const TRADE_HELP_TEXT =
+	'A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? ' +
+	'Master League has no CP cap, and raids don’t care about one either — so unlike Great/Ultra, a higher IV is ' +
+	'never a downside there, only ever neutral or better. A Best Friend trade floors every stat at 5, a pure upgrade ' +
+	'for exactly that population. So: any species relevant for Master League or raids (cutoffs below), whose current ' +
+	'IVs aren’t already great, is worth trading — the meta relevance won’t change, and the IVs can only improve. A ' +
+	'perfect 15/15/15 is always excluded (it has nothing to gain), and the categories and whitelist below narrow the ' +
+	'suggestions further, same as the other tabs.';
 
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	rankLists: Array<Record<string, { rank: number } | undefined>>;
 	raidDPS: Record<string, Record<string, DPSEntry>>;
 	raidMetric: RaidMetric;
-	lowAttackMap: Record<string, Record<number, boolean>> | undefined;
 	gl: GameLanguage;
 	cp: number;
 	trashGreat: number;
 	trashUltra: number;
 	trashMaster: number;
 	trashRaid: number;
-	/** See `isBadForEverythingIfItHasHighAttack`'s doc comment. */
-	keepForTrade: boolean;
 	protect: ProtectionFlags;
 	/** Manually-protected species — never evaluated, always excluded outright. */
 	whitelist: Set<string>;
 }
 
 /* ---- verbatim port of the legacy DeleteTrash `computeStr`, since extended
-   with togglable category protection and a manual per-species whitelist ---- */
+   with togglable category protection and a manual per-species whitelist ----
+   Deliberately meta-only: whether a species (or any of its later evolutions)
+   clears a rank/raid cutoff is a species-level fact, entirely independent of
+   which IVs any particular catch of it has. Once it clears one cutoff
+   anywhere, every catch of it is spared — no IV consideration enters into
+   this tab at all, that's what the "Non-Perfect IVs" tab is for. */
 export const computeTrashString = (a: ComputeArgs): string => {
-	const {
-		gamemasterPokemon,
-		rankLists,
-		raidDPS,
-		raidMetric,
-		lowAttackMap,
-		gl,
-		cp,
-		trashGreat,
-		trashUltra,
-		trashMaster,
-		trashRaid,
-		keepForTrade,
-		protect,
-		whitelist,
-	} = a;
+	const { gamemasterPokemon, rankLists, raidDPS, raidMetric, gl, cp, trashGreat, trashUltra, trashMaster, trashRaid, protect, whitelist } =
+		a;
 
 	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
 		.filter((key) => isNaN(Number(key)) && key !== 'Normal')
 		.map((key) => key as unknown as PokemonTypes);
 
 	const isBadRank = (rank: number, rankLimit: number) => rank === Infinity || rank > rankLimit;
-
-	const needsLessThanFiveAttack = (p: IGamemasterPokemon, leagueIndex: number) => {
-		const cap = leagueIndex === 0 ? 1500 : 2500;
-		return lowAttackMap?.[p.speciesId]?.[cap] ?? true;
-	};
 
 	const isGoodForRaids = (p: IGamemasterPokemon) => {
 		let minRaidRank = Infinity;
@@ -220,43 +224,6 @@ export const computeTrashString = (a: ComputeArgs): string => {
 			});
 		});
 		return minRaidRank <= trashRaid;
-	};
-
-	// A Great/Ultra-relevant reachable stage that doesn't need a sub-5 Attack IV
-	// to earn that relevance can always be fixed later by a Best Friend trade
-	// (which floors every stat at 5) — so with `keepForTrade` on (the default,
-	// matching the pre-revamp behavior), a currently-bad-IV catch of it is kept
-	// unconditionally rather than trashed, on the assumption it'll get traded up
-	// eventually. With it off, that assumption is disregarded entirely: those
-	// two checks are skipped, so such a species falls through to the same
-	// "only the naturally low-Attack catches survive" bucket as a species that
-	// actually needs low Attack — for someone who knows they won't trade it,
-	// not `alwaysGood`.
-	const isBadForEverythingIfItHasHighAttack = (p: IGamemasterPokemon) => {
-		if (isGoodForRaids(p)) {
-			return false;
-		}
-		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
-		if (reachablePokemon.some((k) => !isBadRank(rankLists[2][k.speciesId]?.rank ?? Infinity, trashMaster))) {
-			return false;
-		}
-		if (
-			keepForTrade &&
-			reachablePokemon.some(
-				(k) => !isBadRank(rankLists[0][k.speciesId]?.rank ?? Infinity, trashGreat) && !needsLessThanFiveAttack(k, 0)
-			)
-		) {
-			return false;
-		}
-		if (
-			keepForTrade &&
-			reachablePokemon.some(
-				(k) => !isBadRank(rankLists[1][k.speciesId]?.rank ?? Infinity, trashUltra) && !needsLessThanFiveAttack(k, 1)
-			)
-		) {
-			return false;
-		}
-		return true;
 	};
 
 	const isBadForEverything = (p: IGamemasterPokemon) => {
@@ -279,7 +246,6 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	};
 
 	const potentiallyDeletablePokemon = new Set<number>();
-	const alwaysBadIfHighAtk: Record<string, Set<IGamemasterPokemon>> = {};
 	const alwaysGood: Record<string, Set<IGamemasterPokemon>> = {};
 
 	Object.values(gamemasterPokemon)
@@ -317,12 +283,6 @@ export const computeTrashString = (a: ComputeArgs): string => {
 			}
 			if (isBadForEverything(p)) {
 				potentiallyDeletablePokemon.add(p.dex);
-			} else if (isBadForEverythingIfItHasHighAttack(p)) {
-				potentiallyDeletablePokemon.add(p.dex);
-				if (!alwaysBadIfHighAtk[p.dex]) {
-					alwaysBadIfHighAtk[p.dex] = new Set<IGamemasterPokemon>();
-				}
-				alwaysBadIfHighAtk[p.dex].add(p);
 			} else {
 				if (!alwaysGood[p.dex]) {
 					alwaysGood[p.dex] = new Set<IGamemasterPokemon>();
@@ -364,23 +324,6 @@ export const computeTrashString = (a: ComputeArgs): string => {
 				} else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
 					newStr += `,shadow`;
 				}
-				if (!terms.has(newStr)) {
-					str += newStr;
-					terms.add(newStr);
-				}
-			});
-		}
-		if (alwaysBadIfHighAtk[d]) {
-			alwaysBadIfHighAtk[d].forEach((e) => {
-				let newStr = '';
-				const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-				newStr += '&' + negateIdentity(baseId);
-				if (e.isShadow) {
-					newStr += `,!shadow`;
-				} else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
-					newStr += `,shadow`;
-				}
-				newStr += `,2-${gameTranslator(GameTranslatorKeys.AttackSearch, gl)}`;
 				if (!terms.has(newStr)) {
 					str += newStr;
 					terms.add(newStr);
@@ -572,6 +515,146 @@ export const computeBadIvString = (
 	return result;
 };
 
+/**
+ * "Find Pokémon Worth Trading" — a third, independent domain, deliberately
+ * disjoint from the two above: species that are meta-relevant for Master
+ * League or raids *specifically*, combined with catches that don't already
+ * have great IVs. Master League has no CP cap, and raids don't care about a
+ * PVP cap either — so unlike Great/Ultra, a higher IV is never a liability
+ * there, only ever neutral-to-better. A Best Friend trade floors every stat
+ * at 5, a pure upgrade for exactly this population (never a downside, unlike
+ * Great/Ultra where a low Attack IV can be load-bearing) — so a
+ * Master/raid-relevant species with mediocre-or-worse current IVs is
+ * precisely what's worth trading: the meta-relevance won't change, and the
+ * IVs can only improve. A hundo is always excluded outright (`!4*`) — it has
+ * nothing to gain from a trade. `onlyLowIv` optionally narrows further, to
+ * only the clearly-low spreads (Attack/Defense/HP all bucket 0-2).
+ */
+export const computeTradeableString = (
+	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	rankLists: Array<Record<string, { rank: number } | undefined>>,
+	raidDPS: Record<string, Record<string, DPSEntry>>,
+	raidMetric: RaidMetric,
+	gl: GameLanguage,
+	trashMaster: number,
+	trashRaid: number,
+	protect: ProtectionFlags,
+	whitelist: Set<string>,
+	onlyLowIv: boolean
+): string => {
+	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
+	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
+	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
+
+	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
+		.filter((key) => isNaN(Number(key)) && key !== 'Normal')
+		.map((key) => key as unknown as PokemonTypes);
+
+	const isBadRank = (rank: number, rankLimit: number) => rank === Infinity || rank > rankLimit;
+
+	const isGoodForRaids = (p: IGamemasterPokemon) => {
+		let minRaidRank = Infinity;
+		const finalCollection = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, undefined, true));
+		enumValues.forEach((t) => {
+			const list = raidDPS[t.toString().toLocaleLowerCase()];
+			finalCollection.forEach((pk) => {
+				const entry = list?.[pk.speciesId];
+				const rank = entry && raidRankOf(entry, raidMetric);
+				if (rank != null) {
+					minRaidRank = Math.min(minRaidRank, rank);
+				}
+			});
+		});
+		return minRaidRank <= trashRaid;
+	};
+
+	const isGoodForMaster = (p: IGamemasterPokemon) => {
+		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
+		const mlLowestRank = Math.min(
+			...reachablePokemon.map((r) => rankLists[2][r.speciesId]?.rank).filter((r): r is number => !!r)
+		);
+		return !isBadRank(mlLowestRank, trashMaster);
+	};
+
+	const tradeableDexes = new Set<number>();
+	const excludedForms: Record<string, Set<IGamemasterPokemon>> = {};
+
+	Object.values(gamemasterPokemon)
+		.filter(
+			(p) =>
+				!p.aliasId &&
+				!p.isMega &&
+				(protect.legendary ? !p.isLegendary : true) &&
+				(protect.mythical ? !p.isMythical : true) &&
+				(protect.ultraBeast ? !p.isBeast : true)
+		)
+		.forEach((p) => {
+			// Manually excluded from suggestion, or Shadow-excluded — same
+			// shared-dex nuance as the other two tabs: a whitelisted or
+			// Shadow-protected form must not be suggested even when a
+			// non-excluded sibling at the same dex otherwise qualifies, so it
+			// still needs its own disambiguating exclusion clause below.
+			if (whitelist.has(p.speciesId) || (protect.shadow && p.isShadow)) {
+				if (!excludedForms[p.dex]) excludedForms[p.dex] = new Set<IGamemasterPokemon>();
+				excludedForms[p.dex].add(p);
+				return;
+			}
+			if (isGoodForRaids(p) || isGoodForMaster(p)) {
+				tradeableDexes.add(p.dex);
+			}
+		});
+
+	const allPokemonForms = Object.values(gamemasterPokemon)
+		.filter((e) => !e.isMega && !e.aliasId)
+		.map((e) => ({
+			dexNumber: e.dex,
+			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
+			isShadow: e.isShadow,
+			p: e,
+		}));
+	const uniqueTypes = buildUniqueTypes(allPokemonForms.filter((c) => !c.isShadow));
+	const baseIds: Record<string, string> = {};
+	allPokemonForms.forEach((form) => {
+		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber && !f.isShadow);
+		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
+		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
+	});
+
+	let result = Array.from(tradeableDexes).join(',');
+	const terms = new Set<string>();
+	tradeableDexes.forEach((d) => {
+		if (!excludedForms[d]) return;
+		excludedForms[d].forEach((e) => {
+			let newStr =
+				'&' + negateIdentity(baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`]);
+			if (e.isShadow) {
+				newStr += ',!shadow';
+			} else if (isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)) {
+				newStr += ',shadow';
+			}
+			if (!terms.has(newStr)) {
+				result += newStr;
+				terms.add(newStr);
+			}
+		});
+	});
+
+	if (gl === GameLanguage.ptbr) {
+		result = translatePtBrTypeNames(result);
+	}
+
+	// A hundo needs no trade at all, regardless of the stricter toggle below.
+	result += '&!4*';
+	if (onlyLowIv) {
+		result += `&0-2${A}&0-2${D}&0-2${S}`;
+	}
+	if (protect.tagged) result += '&!#';
+	if (protect.favorite) result += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
+	if (protect.megaEvolvable) result += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
+
+	return result;
+};
+
 /* -------------------------------------------------------------------------- */
 
 const NumSelect = ({
@@ -600,10 +683,12 @@ const WhitelistSearch = ({
 	gamemasterPokemon,
 	exclude,
 	onPick,
+	placeholder,
 }: {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	exclude: Set<string>;
 	onPick: (speciesId: string) => void;
+	placeholder: string;
 }) => {
 	const { imageSource } = useImageSource();
 	const [q, setQ] = useState('');
@@ -649,8 +734,8 @@ const WhitelistSearch = ({
 					setOpen(true);
 				}}
 				onFocus={() => setOpen(true)}
-				placeholder='Add a Pokémon to never delete…'
-				aria-label='Add a Pokémon to the never-delete whitelist'
+				placeholder={placeholder}
+				aria-label={placeholder}
 				autoComplete='off'
 			/>
 			{q && (
@@ -736,16 +821,16 @@ const byDexFormShadow = (a: { p: IGamemasterPokemon }, b: { p: IGamemasterPokemo
 const MassDelete = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { movesFetchCompleted } = useMoves();
-	const { maxLevel } = useBestBuddy();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { raidMetric } = useRaidMetric();
 	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
 
-	const [mode, setMode] = useState<'meta' | 'badIv'>(() =>
-		readPersistentValue(ConfigKeys.MassDeleteMode) === 'badIv' ? 'badIv' : 'meta'
-	);
+	const [mode, setMode] = useState<'meta' | 'badIv' | 'trade'>(() => {
+		const v = readPersistentValue(ConfigKeys.MassDeleteMode);
+		return v === 'badIv' || v === 'trade' ? v : 'meta';
+	});
 	useEffect(() => void writePersistentValue(ConfigKeys.MassDeleteMode, mode), [mode]);
 
 	const [trashGreat, setTrashGreat] = useState(() => numCfg(ConfigKeys.TrashGreat, 50));
@@ -753,10 +838,11 @@ const MassDelete = () => {
 	const [trashMaster, setTrashMaster] = useState(() => numCfg(ConfigKeys.TrashMaster, 110));
 	const [trashRaid, setTrashRaid] = useState(() => numCfg(ConfigKeys.TrashRaid, 5));
 	const [cp, setCp] = useState(() => numCfg(ConfigKeys.TrashCP, 2500));
-	// Default true: a wild catch that only needs a future Best Friend trade
-	// (floors every stat at 5) to become meta-relevant is kept, not trashed —
-	// see `isBadForEverythingIfItHasHighAttack`'s doc comment.
-	const [keepForTrade, setKeepForTrade] = useState(() => readPersistentValue(ConfigKeys.TrashKeepForTrade) !== 'false');
+	// Only meaningful for the Tradeable tab — narrows the result to catches
+	// whose Attack/Defense/HP are all clearly low (bucket 0-2), rather than
+	// just excluding the exact hundo.
+	const [tradeOnlyLowIv, setTradeOnlyLowIv] = useState(() => readPersistentValue(ConfigKeys.TradeOnlyLowIv) === 'true');
+	useEffect(() => void writePersistentValue(ConfigKeys.TradeOnlyLowIv, String(tradeOnlyLowIv)), [tradeOnlyLowIv]);
 
 	const [protect, setProtect] = useState<ProtectionFlags>(() => ({
 		favorite: boolCfg(ConfigKeys.TrashKeepFavorite, DEFAULT_PROTECTION.favorite),
@@ -878,43 +964,14 @@ const MassDelete = () => {
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashMaster, String(trashMaster)), [trashMaster]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashRaid, String(trashRaid)), [trashRaid]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashCP, String(cp)), [cp]);
-	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepForTrade, String(keepForTrade)), [keepForTrade]);
 
 	// changing any knob invalidates a stale result
 	useEffect(() => {
 		setResult('');
-	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric, keepForTrade, protect, whitelist]);
-
-	const candidates = useMemo(
-		() =>
-			Object.values(gamemasterPokemon)
-				.filter((p) => !p.aliasId)
-				.map((p) => ({
-					speciesId: p.speciesId,
-					atk: p.baseStats.atk,
-					def: p.baseStats.def,
-					hp: p.baseStats.hp,
-				})),
-		[gamemasterPokemon]
-	);
-
-	const { data: lowAttackMap } = useQuery({
-		enabled: isCalculating && fetchCompleted,
-		queryKey: ['trash-low-attack', maxLevel],
-		queryFn: () => getComputeWorker().lowAttackViable({ candidates, caps: [1500, 2500], maxLevel }),
-		staleTime: Infinity,
-		gcTime: 30 * 60 * 1000,
-	});
+	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric, protect, whitelist]);
 
 	useEffect(() => {
-		if (
-			!isCalculating ||
-			!fetchCompleted ||
-			!pvpFetchCompleted ||
-			!raidDPSFetchCompleted ||
-			!movesFetchCompleted ||
-			!lowAttackMap
-		) {
+		if (!isCalculating || !fetchCompleted || !pvpFetchCompleted || !raidDPSFetchCompleted || !movesFetchCompleted) {
 			return;
 		}
 		const id = window.setTimeout(() => {
@@ -924,14 +981,12 @@ const MassDelete = () => {
 					rankLists: rankLists as unknown as ComputeArgs['rankLists'],
 					raidDPS,
 					raidMetric,
-					lowAttackMap,
 					gl,
 					cp,
 					trashGreat,
 					trashUltra,
 					trashMaster,
 					trashRaid,
-					keepForTrade,
 					protect,
 					whitelist: whitelistSet,
 				})
@@ -945,7 +1000,6 @@ const MassDelete = () => {
 		pvpFetchCompleted,
 		raidDPSFetchCompleted,
 		movesFetchCompleted,
-		lowAttackMap,
 		gamemasterPokemon,
 		rankLists,
 		raidDPS,
@@ -956,7 +1010,6 @@ const MassDelete = () => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
-		keepForTrade,
 		protect,
 		whitelistSet,
 	]);
@@ -993,9 +1046,58 @@ const MassDelete = () => {
 		setBadIvResult('');
 	}, [cp, gl, protect, whitelist]);
 
+	// ---- "Tradeable" mode ----
+	const [isCalculatingTrade, setIsCalculatingTrade] = useState(false);
+	const [tradeResult, setTradeResult] = useState('');
+
+	useEffect(() => {
+		setTradeResult('');
+	}, [trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv]);
+
+	useEffect(() => {
+		if (!isCalculatingTrade || !fetchCompleted || !pvpFetchCompleted || !raidDPSFetchCompleted || !movesFetchCompleted) {
+			return;
+		}
+		const id = window.setTimeout(() => {
+			setTradeResult(
+				computeTradeableString(
+					gamemasterPokemon,
+					rankLists as unknown as ComputeArgs['rankLists'],
+					raidDPS,
+					raidMetric,
+					gl,
+					trashMaster,
+					trashRaid,
+					protect,
+					whitelistSet,
+					tradeOnlyLowIv
+				)
+			);
+			setIsCalculatingTrade(false);
+		}, 60);
+		return () => window.clearTimeout(id);
+	}, [
+		isCalculatingTrade,
+		fetchCompleted,
+		pvpFetchCompleted,
+		raidDPSFetchCompleted,
+		movesFetchCompleted,
+		gamemasterPokemon,
+		rankLists,
+		raidDPS,
+		raidMetric,
+		gl,
+		trashMaster,
+		trashRaid,
+		protect,
+		whitelistSet,
+		tradeOnlyLowIv,
+	]);
+
 	const isBadIv = mode === 'badIv';
-	const activeResult = isBadIv ? badIvResult : result;
-	const activeCalculating = isBadIv ? isCalculatingBadIv : isCalculating;
+	const isTrade = mode === 'trade';
+	const activeResult = isBadIv ? badIvResult : isTrade ? tradeResult : result;
+	const activeCalculating = isBadIv ? isCalculatingBadIv : isTrade ? isCalculatingTrade : isCalculating;
 
 	const copy = () => {
 		if (!activeResult) return;
@@ -1016,9 +1118,12 @@ const MassDelete = () => {
 		`Top ${trashMaster} Master League`,
 		`Top ${trashRaid} Raid`,
 	].join(' · ');
+	const tradeTopSummary = [`Top ${trashMaster} Master League`, `Top ${trashRaid} Raid`].join(' · ');
 	const panelSummary = isBadIv
 		? `CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`
-		: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
+		: isTrade
+			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · excludes ${protectionSummary || 'nothing extra'}`
+			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
 
 	const whitelistSummary =
 		whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
@@ -1035,32 +1140,44 @@ const MassDelete = () => {
 	);
 	const panelDirty =
 		!isDefaultProtection ||
-		cp !== 2500 ||
-		(!isBadIv && (trashGreat !== 50 || trashUltra !== 50 || trashMaster !== 110 || trashRaid !== 5 || !keepForTrade));
+		(!isTrade && cp !== 2500) ||
+		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
+		(mode === 'meta' && (trashGreat !== 50 || trashUltra !== 50)) ||
+		(isTrade && tradeOnlyLowIv);
 	const resetPanel = () => {
-		setCp(2500);
 		setProtect(DEFAULT_PROTECTION);
-		if (!isBadIv) {
-			setTrashGreat(50);
-			setTrashUltra(50);
+		if (!isTrade) setCp(2500);
+		if (mode !== 'badIv') {
 			setTrashMaster(110);
 			setTrashRaid(5);
-			setKeepForTrade(true);
 		}
+		if (mode === 'meta') {
+			setTrashGreat(50);
+			setTrashUltra(50);
+		}
+		if (isTrade) setTradeOnlyLowIv(false);
 	};
+
+	const pageTitle = isBadIv
+		? 'Mass Delete Non-Perfect IV Pokémon'
+		: isTrade
+			? 'Find Pokémon Worth Trading'
+			: 'Mass Delete current non-meta relevant Pokémon';
+	const activeHelpText = isBadIv ? BAD_IV_HELP_TEXT : isTrade ? TRADE_HELP_TEXT : HELP_TEXT;
 
 	return (
 		<div className='r-shell'>
-			<h1 className='r-page-title'>
-				{isBadIv ? 'Mass Delete Non-Perfect IV Pokémon' : 'Mass Delete current non-meta relevant Pokémon'}
-			</h1>
+			<h1 className='r-page-title'>{pageTitle}</h1>
 
 			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label='Mass delete mode'>
-				<button type='button' data-active={!isBadIv} onClick={() => setMode('meta')}>
+				<button type='button' data-active={mode === 'meta'} onClick={() => setMode('meta')}>
 					Non-meta relevant
 				</button>
 				<button type='button' data-active={isBadIv} onClick={() => setMode('badIv')}>
 					Non-Perfect IVs
+				</button>
+				<button type='button' data-active={isTrade} onClick={() => setMode('trade')}>
+					Tradeable
 				</button>
 			</div>
 
@@ -1071,7 +1188,7 @@ const MassDelete = () => {
 			)}
 
 			<div className='r-card r-md-help'>
-				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{isBadIv ? BAD_IV_HELP_TEXT : HELP_TEXT}</p>
+				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{activeHelpText}</p>
 				<button type='button' className='r-md-more' onClick={() => setHelpOpen((v) => !v)}>
 					{helpOpen ? 'Read less' : 'Read more'}
 				</button>
@@ -1103,7 +1220,7 @@ const MassDelete = () => {
 
 				{panelOpen && (
 					<div className='r-ctr-panel'>
-						{!isBadIv && (
+						{mode === 'meta' && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>Preserve top current meta Pokémon per league/raid</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
@@ -1148,42 +1265,75 @@ const MassDelete = () => {
 							</>
 						)}
 
+						{isTrade && (
+							<>
+								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
+									A species only needs to clear ONE of these two cutoffs to be suggested
+								</p>
+								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+									<div className='r-md-knob'>
+										<span>
+											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
+											<i className='r-md-knob-full'>Master League</i>
+											<i className='r-md-knob-short'>Master</i>
+										</span>
+										<NumSelect
+											label='Keep top Master League'
+											value={trashMaster}
+											onChange={setTrashMaster}
+											count={2000}
+										/>
+									</div>
+									<div className='r-md-knob'>
+										<span>
+											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+											<i className='r-md-knob-full'>Raid Attackers</i>
+											<i className='r-md-knob-short'>Raid</i>
+										</span>
+										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+									</div>
+								</div>
+							</>
+						)}
+
 						<div className='r-md-knobs-grid'>
-							<div className='r-md-knob'>
-								<span>Never delete at or above CP</span>
-								<select
-									className='r-md-select'
-									aria-label='Never delete at or above CP'
-									value={cp}
-									onChange={(e) => setCp(+e.target.value)}
-								>
-									{CP_OPTIONS.map((n) => (
-										<option key={n} value={n}>
-											{n}
-										</option>
-									))}
-								</select>
-							</div>
-							{!isBadIv && (
+							{!isTrade && (
 								<div className='r-md-knob'>
-									<span>Keep relevant for trade</span>
+									<span>Never delete at or above CP</span>
+									<select
+										className='r-md-select'
+										aria-label='Never delete at or above CP'
+										value={cp}
+										onChange={(e) => setCp(+e.target.value)}
+									>
+										{CP_OPTIONS.map((n) => (
+											<option key={n} value={n}>
+												{n}
+											</option>
+										))}
+									</select>
+								</div>
+							)}
+							{isTrade && (
+								<div className='r-md-knob'>
+									<span>Only very low IVs (0-2 in every stat)</span>
 									<button
 										type='button'
 										className='r-ctr-toggle'
-										data-on={keepForTrade ? '' : undefined}
-										aria-pressed={keepForTrade}
-										title='Protects species that don’t need a low Attack IV to be relevant, on the assumption a future Best Friend trade would fix them anyway.'
-										onClick={() => setKeepForTrade((v) => !v)}
+										data-on={tradeOnlyLowIv ? '' : undefined}
+										aria-pressed={tradeOnlyLowIv}
+										title='Narrows suggestions to catches whose Attack, Defense, and HP are all clearly low — otherwise, anything short of a hundo is suggested.'
+										onClick={() => setTradeOnlyLowIv((v) => !v)}
 									>
 										<span className='r-ss-box' aria-hidden='true' />
-										{keepForTrade ? 'On' : 'Off'}
+										{tradeOnlyLowIv ? 'On' : 'Off'}
 									</button>
 								</div>
 							)}
 						</div>
 
 						<div className='r-section-h' style={{ marginTop: 4 }}>
-							Never delete this category
+							{isTrade ? 'Never suggest this category' : 'Never delete this category'}
 						</div>
 						<div className='r-md-protect-grid'>
 							{PROTECTION_META.map((m) => (
@@ -1205,7 +1355,7 @@ const MassDelete = () => {
 				)}
 			</div>
 
-			<div className='r-section-h'>Never delete these Pokémon</div>
+			<div className='r-section-h'>{isTrade ? 'Never suggest these Pokémon' : 'Never delete these Pokémon'}</div>
 			<div className='r-ctr-config' data-open={wlOpen}>
 				<div className='r-ctr-config-bar'>
 					<button
@@ -1235,11 +1385,14 @@ const MassDelete = () => {
 							gamemasterPokemon={gamemasterPokemon}
 							exclude={whitelistSearchExclude}
 							onPick={addToWhitelist}
+							placeholder={isTrade ? 'Add a Pokémon to never suggest…' : 'Add a Pokémon to never delete…'}
 						/>
 						<div className='r-md-wl-chips'>
 							{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
 								<p className='r-muted' style={{ margin: 0 }}>
-									Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.
+									{isTrade
+										? 'Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.'
+										: 'Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.'}
 								</p>
 							)}
 							{whitelistChipsManual.map(({ p, locked, reason }) => (
@@ -1278,6 +1431,9 @@ const MassDelete = () => {
 					if (isBadIv) {
 						setBadIvResult('');
 						setIsCalculatingBadIv(true);
+					} else if (isTrade) {
+						setTradeResult('');
+						setIsCalculatingTrade(true);
 					} else {
 						setResult('');
 						setIsCalculating(true);
@@ -1292,7 +1448,11 @@ const MassDelete = () => {
 				className='r-md-out'
 				readOnly
 				value={activeCalculating ? 'Computing… this sweeps every species, give it a moment.' : activeResult}
-				placeholder='Your search string appears here. Paste it into the Pokémon GO search bar, review the matches, then delete.'
+				placeholder={
+					isTrade
+						? 'Your search string appears here. Paste it into the Pokémon GO search bar to review your trade candidates.'
+						: 'Your search string appears here. Paste it into the Pokémon GO search bar, review the matches, then delete.'
+				}
 				onClick={copy}
 			/>
 			{activeResult && (
