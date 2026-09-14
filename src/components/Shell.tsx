@@ -50,7 +50,7 @@ const NAV: Array<{ to: string; label: string; icon: string; hint: string; match:
 	},
 	{
 		to: R.searchStrings,
-		label: 'Search Strings',
+		label: 'Searches',
 		icon: '/images/nav/search-strings.svg',
 		hint: 'Generate in-game search strings — cleanup, perfect IVs, or trade candidates',
 		match: (p) => p.startsWith('/search-strings') || p.startsWith('/trash'),
