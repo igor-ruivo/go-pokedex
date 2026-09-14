@@ -1070,6 +1070,13 @@
 	border-color: var(--border-strong);
 	color: var(--text);
 }
+/* "Currently in effect", not just clicked once (e.g. the "Rank 1" IV preset
+   while auto-tracking is still armed) — its own border and text repainted in
+   the league color, no second border. */
+.rvmp .r-chip[data-active='true'] {
+	border-color: var(--accent);
+	color: var(--accent);
+}
 
 /* readout under the picker */
 .rvmp .r-readout {

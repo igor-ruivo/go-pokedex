@@ -1066,7 +1066,11 @@ const PokemonDetail = () => {
 																	});
 																	if (slice.perfectLvl) setLevel(slice.perfectLvl);
 																},
-															] as [string, IVs, () => void],
+																// Toggled-looking second border while still actively
+																// tracking rank 1 - gone the moment the user drags a
+																// bar or the level stepper themselves.
+																!ivTouchedRef.current,
+															] as [string, IVs, () => void, boolean],
 														]
 													: []),
 											]}

@@ -119,8 +119,11 @@ export const IvPicker = ({
 	// The optional 3rd element lets a preset run its own handler instead of
 	// the plain `onChange(iv)` every other preset uses — e.g. a "Rank 1"
 	// preset that also needs to re-arm auto-tracking, not just jump to a
-	// fixed value once (see PokemonDetail's own use of this).
-	presets?: Array<[string, IVs, (() => void)?]>;
+	// fixed value once (see PokemonDetail's own use of this). The optional
+	// 4th marks the preset as currently "in effect" — not just clicked once,
+	// but actively being kept up to date (e.g. "Rank 1" while auto-tracking
+	// is still armed) — rendered as a toggled-looking second border.
+	presets?: Array<[string, IVs, (() => void)?, boolean?]>;
 }) => {
 	return (
 		<div className='r-iv'>
@@ -128,8 +131,14 @@ export const IvPicker = ({
 			<Bar label='DEFENSE' value={value.def} onChange={(def) => onChange({ ...value, def })} />
 			<Bar label='HP' value={value.hp} onChange={(hp) => onChange({ ...value, hp })} />
 			<div className='r-iv-presets'>
-				{presets.map(([label, iv, onPick]) => (
-					<button key={label} type='button' className='r-chip' onClick={() => (onPick ? onPick() : onChange(iv))}>
+				{presets.map(([label, iv, onPick, isActive]) => (
+					<button
+						key={label}
+						type='button'
+						className='r-chip'
+						data-active={isActive}
+						onClick={() => (onPick ? onPick() : onChange(iv))}
+					>
 						{label}
 					</button>
 				))}
