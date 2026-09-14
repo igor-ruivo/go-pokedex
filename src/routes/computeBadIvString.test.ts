@@ -125,6 +125,120 @@ describe('computeBadIvString — carve-out clause for a deviating species', () =
 	});
 });
 
+describe('computeBadIvString — simplified mode', () => {
+	it('off (default): behaves exactly like calling without the parameter at all — bucket-specific clause', () => {
+		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		const implicit = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+		const explicitOff = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			false
+		);
+
+		expect(explicitOff).toBe(implicit);
+		expect(explicitOff).toContain(`&!${deviantmon.dex},0-2attack,4attack,0-3defense,0-3hp`);
+	});
+
+	it('on: a deviating species gets a bare, unconditional dex exclusion — no bucket complement at all', () => {
+		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		// Immediately followed by `&` (the next clause) or end of string — never
+		// a comma, which would mean a bucket (or `!shadow`) qualifier tagged
+		// along. (Dex 300 is shared with its Shadow form's own, separately
+		// `,!shadow`-scoped clause elsewhere in the string — that legitimate
+		// `!300,!shadow` is not what this is checking.)
+		expect(result).toMatch(new RegExp(`!${deviantmon.dex}(&|$)`));
+		expect(result).not.toMatch(new RegExp(`!${deviantmon.dex},(?!!shadow)`));
+	});
+
+	it('on: a Shadow-only purification carve-out still gets its `,!shadow` disambiguator, just no bucket complement', () => {
+		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		expect(result).toContain(`&!${deviantmonShadow.dex},!shadow`);
+		expect(result).not.toContain(`!${deviantmonShadow.dex},!shadow,1-4attack`);
+	});
+
+	it('on: produces a strictly shorter string than Complete mode for the same inputs', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		const complete = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+		const simplified = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		expect(simplified.length).toBeLessThan(complete.length);
+	});
+
+	it('on: multiple carve-outs for the same species (different caps/patterns) collapse into one deduplicated bare clause', () => {
+		const { gamemasterPokemon, stageA } = buildMultiStageBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		// Two distinct patterns exist for stageA at cap 1500 (see the regression
+		// test above) — simplified mode must still emit its bare exclusion only
+		// once, not once per pattern.
+		const occurrences = result.split(`!${stageA.dex}`).length - 1;
+		expect(occurrences).toBe(1);
+	});
+});
+
 describe('computeBadIvString — Legendary/Mythical/Ultra Beast toggle vs. carve-outs (regression)', () => {
 	it('with the toggle on, the tail keyword covers it and its own carve-out clause is dead weight — skipped', () => {
 		const { gamemasterPokemon, deviantlegendary } = buildBadIvFixture();

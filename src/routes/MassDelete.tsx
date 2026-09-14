@@ -489,6 +489,18 @@ export const computeTrashString = (a: ComputeArgs): string => {
  * nothing here ever needs to special-case one. Manually-whitelisted species
  * get an unconditional exclusion clause instead of (not in addition to) their
  * carve-out pattern — their own IV spread stops mattering entirely.
+ *
+ * `simplified` (the "Simplified mode" toggle next to the CP dropdown) trades
+ * accuracy for string length: instead of a per-carve-out clause that protects
+ * only the exact deviating bucket pattern (`&!<dex>,<pattern-complement>`),
+ * it emits the same bare, unconditional exclusion whitelisted species get
+ * (`&!<dex>`, or `&!<dex>,!shadow` when the carve-out is Shadow-specific) —
+ * i.e. any species that needs even one bucket-level carve-out is skipped
+ * entirely rather than only protecting its own real optimum. Strictly more
+ * false negatives than Complete mode (some catches Complete would still
+ * correctly target stay un-targeted here too), never fewer — it only ever
+ * widens what gets excluded, exactly like the whitelist clause it borrows its
+ * shape from.
  */
 export const computeBadIvString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
@@ -496,7 +508,8 @@ export const computeBadIvString = (
 	gl: GameLanguage,
 	cp: number,
 	protect: ProtectionFlags,
-	whitelist: Set<string>
+	whitelist: Set<string>,
+	simplified = false
 ): string => {
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
@@ -548,9 +561,6 @@ export const computeBadIvString = (
 		}
 		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
 		if (!baseId) return;
-		const negA = groupAttr(complementOfBucket(ivBucket(pattern.A)), A);
-		const negD = groupAttr(complementOfBucket(ivBucket(pattern.D)), D);
-		const negS = groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
 		// This exact pattern is either that species' own true optimum (shadow-
 		// agnostic — a non-Shadow catch's raw IVs are its real IVs, and a
 		// Shadow catch's own raw IVs mean the same thing before it's purified,
@@ -562,7 +572,15 @@ export const computeBadIvString = (
 		// this same raw spread gets no future +2 boost, so it stays genuinely
 		// wasted — hence the extra `,!shadow` scoping it to Shadow catches only.
 		const shadowScope = p.isShadow ? `,!${gameTranslator(GameTranslatorKeys.ShadowSearch, gl)}` : '';
-		const clause = `&${negateIdentity(baseId)}${shadowScope}${negA}${negD}${negS}`;
+		// Simplified mode stops right here — see this function's own doc
+		// comment on the tradeoff. Complete mode goes on to narrow the
+		// exclusion down to just the deviating bucket pattern itself.
+		const ivScope = simplified
+			? ''
+			: groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
+				groupAttr(complementOfBucket(ivBucket(pattern.D)), D) +
+				groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
+		const clause = `&${negateIdentity(baseId)}${shadowScope}${ivScope}`;
 		if (!seenClauses.has(clause)) {
 			result += clause;
 			seenClauses.add(clause);
@@ -959,6 +977,15 @@ const MassDelete = () => {
 	// already at or above this CP, in case it's something already invested in.
 	const [tradeCp, setTradeCp] = useState(() => numCfg(ConfigKeys.TradeCP, 2500));
 	useEffect(() => void writePersistentValue(ConfigKeys.TradeCP, String(tradeCp)), [tradeCp]);
+	// Only meaningful for the Non-Perfect IVs tab — see `computeBadIvString`'s
+	// own doc comment on the `simplified` parameter this feeds.
+	const [simplifiedBadIv, setSimplifiedBadIv] = useState(
+		() => readPersistentValue(ConfigKeys.BadIvSimplifiedMode) === 'true'
+	);
+	useEffect(
+		() => void writePersistentValue(ConfigKeys.BadIvSimplifiedMode, String(simplifiedBadIv)),
+		[simplifiedBadIv]
+	);
 
 	const [protect, setProtect] = useState<ProtectionFlags>(() => ({
 		favorite: boolCfg(ConfigKeys.TrashKeepFavorite, DEFAULT_PROTECTION.favorite),
@@ -1167,18 +1194,30 @@ const MassDelete = () => {
 	useEffect(() => {
 		if (!isCalculatingBadIv || !fetchCompleted || !badIvCarveOuts) return;
 		const id = window.setTimeout(() => {
-			setBadIvResult(computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp, protect, whitelistSet));
+			setBadIvResult(
+				computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp, protect, whitelistSet, simplifiedBadIv)
+			);
 			setIsCalculatingBadIv(false);
 		}, 60);
 		return () => window.clearTimeout(id);
-	}, [isCalculatingBadIv, fetchCompleted, badIvCarveOuts, gamemasterPokemon, gl, cp, protect, whitelistSet]);
+	}, [
+		isCalculatingBadIv,
+		fetchCompleted,
+		badIvCarveOuts,
+		gamemasterPokemon,
+		gl,
+		cp,
+		protect,
+		whitelistSet,
+		simplifiedBadIv,
+	]);
 
-	// changing the CP floor, language, protections or whitelist invalidates a
-	// stale result (the carve-out sweep itself is unaffected, so no need to
-	// recompute that part).
+	// changing the CP floor, language, protections, whitelist, or simplified
+	// mode invalidates a stale result (the carve-out sweep itself is
+	// unaffected either way, so no need to recompute that part).
 	useEffect(() => {
 		setBadIvResult('');
-	}, [cp, gl, protect, whitelist]);
+	}, [cp, gl, protect, whitelist, simplifiedBadIv]);
 
 	// ---- "Find Tradeable" mode ----
 	const [isCalculatingTrade, setIsCalculatingTrade] = useState(false);
@@ -1262,7 +1301,7 @@ const MassDelete = () => {
 	].join(' · ');
 	const tradeTopSummary = [`Top ${trashMaster} Master League`, `Top ${trashRaid} Raid`].join(' · ');
 	const panelSummary = isBadIv
-		? `CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`
+		? `CP ≥ ${cp.toLocaleString()} kept${simplifiedBadIv ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`
 		: isTrade
 			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · CP < ${tradeCp.toLocaleString()} · excludes ${protectionSummary || 'nothing extra'}`
 			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
@@ -1286,7 +1325,8 @@ const MassDelete = () => {
 		(isTrade && tradeCp !== 2500) ||
 		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
 		(mode === 'meta' && (trashGreat !== 50 || trashUltra !== 50)) ||
-		(isTrade && tradeOnlyLowIv);
+		(isTrade && tradeOnlyLowIv) ||
+		(isBadIv && simplifiedBadIv);
 	const resetPanel = () => {
 		setProtect(DEFAULT_PROTECTION);
 		if (!isTrade) setCp(2500);
@@ -1300,6 +1340,7 @@ const MassDelete = () => {
 			setTrashUltra(50);
 		}
 		if (isTrade) setTradeOnlyLowIv(false);
+		if (isBadIv) setSimplifiedBadIv(false);
 	};
 
 	const pageTitle = isBadIv
@@ -1483,24 +1524,50 @@ const MassDelete = () => {
 							</div>
 						)}
 
-						<div className='r-md-knobs-grid'>
-							{mode === 'badIv' && (
-								<div className='r-md-knob'>
-									<span>Never delete at or above CP</span>
-									<select
-										className='r-md-select'
-										aria-label='Never delete at or above CP'
-										value={cp}
-										onChange={(e) => setCp(+e.target.value)}
-									>
-										{CP_OPTIONS.map((n) => (
-											<option key={n} value={n}>
-												{n}
-											</option>
-										))}
-									</select>
+						{mode === 'badIv' && (
+							<>
+								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
+									Simplified trades some accuracy for a shorter string — see the tooltip on the toggle
+								</p>
+								{/* Same dedicated 2-up grid technique as meta mode's CP+Raid pair
+								    above — CP and Simplified mode always stay side by side, at
+								    any width, rather than the auto-fill grid below wrapping the
+								    second one down once the panel gets too narrow. */}
+								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+									<div className='r-md-knob'>
+										<span>Never delete at or above CP</span>
+										<select
+											className='r-md-select'
+											aria-label='Never delete at or above CP'
+											value={cp}
+											onChange={(e) => setCp(+e.target.value)}
+										>
+											{CP_OPTIONS.map((n) => (
+												<option key={n} value={n}>
+													{n}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className='r-md-knob'>
+										<span>Simplified mode</span>
+										<button
+											type='button'
+											className='r-ctr-toggle'
+											data-on={simplifiedBadIv ? '' : undefined}
+											aria-pressed={simplifiedBadIv}
+											title='Trades accuracy for a shorter string: instead of protecting just a species’ exact best IV spread, any species that would need one of these per-spread carve-outs is skipped entirely — a bit like a bonus whitelist entry. Shorter and simpler, but more false negatives: some catches Complete mode would correctly target stay un-targeted here.'
+											onClick={() => setSimplifiedBadIv((v) => !v)}
+										>
+											<span className='r-ss-box' aria-hidden='true' />
+											{simplifiedBadIv ? 'On' : 'Off'}
+										</button>
+									</div>
 								</div>
-							)}
+							</>
+						)}
+
+						<div className='r-md-knobs-grid'>
 							{isTrade && (
 								<div className='r-md-knob'>
 									<span>Never suggest at or above CP</span>
@@ -1663,7 +1730,7 @@ const MassDelete = () => {
 				<p className={`r-md-length-hint${activeResult.length > 5000 ? ' r-md-length-hint--warn' : ''}`}>
 					{activeResult.length.toLocaleString()} character{activeResult.length === 1 ? '' : 's'}
 					{activeResult.length > 5000 &&
-						' — ⚠️ this may be too long for the search bar on some Android phones; consider narrowing the settings above.'}
+						" — ⚠️ this may be too long for the search bar on some Android phones; consider using the simplified deletion mode toggle above if you notice the string gets cut-off after pasting it in Pokémon Go's search bar."}
 				</p>
 			)}
 			{activeResult && (
