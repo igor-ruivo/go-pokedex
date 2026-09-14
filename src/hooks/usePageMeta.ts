@@ -70,10 +70,12 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 		description: 'The current Pokémon GO egg-hatch chart, by distance.',
 		image: '/images/og/eggs/10km.png',
 	},
-	'/trash': {
-		title: 'Mass Delete Pokémon',
-		description: 'Mass-appraise your Pokémon GO collection and find the best candidates to trade or transfer.',
-		// No image of its own — falls back to the logo (see resolvedImage below).
+	'/search-strings': {
+		title: 'Search Strings — GO Pokédex',
+		description:
+			'Generate Pokémon GO search-bar queries to relieve your storage whenever it needs it — trim by current meta ' +
+			'relevance, hunt down perfect IVs, or find catches worth trading.',
+		image: '/images/og/nav/search-strings.png',
 	},
 };
 

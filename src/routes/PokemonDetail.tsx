@@ -1049,7 +1049,24 @@ const PokemonDetail = () => {
 																	def: purifiedIv(slice.perfect.D),
 																	hp: purifiedIv(slice.perfect.S),
 																},
-															] as [string, { atk: number; def: number; hp: number }],
+																// Unlike every other preset, this one isn't "jump to
+																// this fixed value and stay there" — it's "go back to
+																// following rank 1, whatever that is right now and
+																// from now on." Re-arming `ivTouchedRef` (rather than
+																// setting it, like `onManualIvChange` does) means the
+																// next league switch, carousel move, or family-member
+																// hop resumes auto-tracking instead of staying pinned
+																// to today's league's rank-1 spread.
+																() => {
+																	ivTouchedRef.current = false;
+																	setIv({
+																		atk: purifiedIv(slice.perfect.A),
+																		def: purifiedIv(slice.perfect.D),
+																		hp: purifiedIv(slice.perfect.S),
+																	});
+																	if (slice.perfectLvl) setLevel(slice.perfectLvl);
+																},
+															] as [string, IVs, () => void],
 														]
 													: []),
 											]}

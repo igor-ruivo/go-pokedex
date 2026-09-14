@@ -12,7 +12,7 @@ export const R = {
 	moves: '/moves',
 	move: (moveId: string): string => `/move/${encodeURIComponent(moveId)}`,
 	types: '/types',
-	trash: '/trash',
+	searchStrings: '/search-strings',
 	tools: '/tools',
 	settings: '/settings',
 };

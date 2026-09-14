@@ -46,6 +46,7 @@ const SOURCES = [
 	'images/raids/tier-5.png',
 	'images/raids/mega.png',
 	'images/nav/calendar.png',
+	'images/nav/search-strings.svg',
 	{ rel: 'images/nav/spawns.png', recolor: { from: { r: 18, g: 23, b: 34 } } }, // navy -> transparent
 	'images/NPC/giovanni.webp',
 	'images/eggs/10km.png',

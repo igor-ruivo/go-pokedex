@@ -119,10 +119,12 @@ const STATIC_PAGES = [
 		image: `${SITE}/images/og/eggs/10km.png`,
 	},
 	{
-		path: '/trash',
-		title: 'Mass Delete Pokémon',
-		description: 'Mass-appraise your Pokémon GO collection and find the best candidates to trade or transfer.',
-		// No image of its own — falls back to LOGO_IMAGE in applyMeta().
+		path: '/search-strings',
+		title: 'Search Strings — GO Pokédex',
+		description:
+			'Generate Pokémon GO search-bar queries to relieve your storage whenever it needs it — trim by current meta ' +
+			'relevance, hunt down perfect IVs, or find catches worth trading.',
+		image: `${SITE}/images/og/nav/search-strings.png`,
 	},
 ];
 

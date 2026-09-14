@@ -49,11 +49,11 @@ const NAV: Array<{ to: string; label: string; icon: string; hint: string; match:
 		match: (p) => p.startsWith('/types'),
 	},
 	{
-		to: R.trash,
-		label: 'Delete',
-		icon: '/images/nav/trash.png',
-		hint: 'Mass-appraise trash candidates',
-		match: (p) => p.startsWith('/trash'),
+		to: R.searchStrings,
+		label: 'Search Strings',
+		icon: '/images/nav/search-strings.svg',
+		hint: 'Generate in-game search strings — cleanup, perfect IVs, or trade candidates',
+		match: (p) => p.startsWith('/search-strings') || p.startsWith('/trash'),
 	},
 ];
 
