@@ -85,6 +85,24 @@ describe('canonicalizeDexExclusions — Case A: shadow-scope collapse (single fo
 		expect(result).toContainEqual(bareWithExtra);
 		expect(result).toContainEqual(shadowWithDifferentExtra);
 	});
+
+	it('a bare term DOES absorb a shadow-only term sharing the identical NON-EMPTY `extra` — and the merged result keeps that bucket pattern', () => {
+		const sharedExtra = ',0-3attack,0-3defense,0-2hp,4hp';
+		const result = canonicalizeDexExclusions([bare(300, '', sharedExtra), shadowOnly(300, '', sharedExtra)], {
+			300: new Set(['']),
+		});
+		// Not stripped to "" — the bucket pattern both sides agreed on
+		// survives the merge intact.
+		expect(result).toEqual([bare(300, '', sharedExtra)]);
+	});
+
+	it('shadow-only + non-shadow-only sharing the identical NON-EMPTY `extra` union into one bare term, bucket pattern preserved', () => {
+		const sharedExtra = ',1-4attack';
+		const result = canonicalizeDexExclusions([shadowOnly(300, '', sharedExtra), nonShadowOnly(300, '', sharedExtra)], {
+			300: new Set(['']),
+		});
+		expect(result).toEqual([bare(300, '', sharedExtra)]);
+	});
 });
 
 describe('canonicalizeDexExclusions — Case B: cross-form merge into one bare dex-only term', () => {
@@ -144,6 +162,80 @@ describe('canonicalizeDexExclusions — Case B: cross-form merge into one bare d
 	it('a single-form dex (form "") with only itself in `formsPerDex` is already maximally simplified — no-op', () => {
 		const result = canonicalizeDexExclusions([bare(300)], { 300: new Set(['']) });
 		expect(result).toEqual([bare(300)]);
+	});
+});
+
+describe('canonicalizeDexExclusions — Case B generalized: cross-form merge keeps a shared NON-EMPTY bucket pattern', () => {
+	it('every sibling form needs protection at the IDENTICAL bucket pattern -> collapses to one dex-only term that keeps it', () => {
+		const sharedExtra = ',0-2attack,4attack,0-3defense,0-3hp';
+		const result = canonicalizeDexExclusions([bare(26, 'psychic', sharedExtra), bare(26, '!psychic', sharedExtra)], {
+			26: new Set(['psychic', '!psychic']),
+		});
+		expect(result).toEqual([bare(26, '', sharedExtra)]);
+	});
+
+	it('the same 2-form dex, but the two forms need DIFFERENT bucket patterns -> no merge, both kept exactly as given', () => {
+		const patternA = bare(26, 'psychic', ',0-2attack,4attack,0-3defense,0-3hp');
+		const patternB = bare(26, '!psychic', ',1-4attack,0-3defense,0-3hp');
+		const result = canonicalizeDexExclusions([patternA, patternB], { 26: new Set(['psychic', '!psychic']) });
+		// Neither group alone covers both forms, so nothing collapses —
+		// forcing this into one dex-only clause (with either pattern, or none)
+		// would silently change which catches get protected.
+		expect(result).toHaveLength(2);
+		expect(result).toContainEqual(patternA);
+		expect(result).toContainEqual(patternB);
+	});
+
+	it('one of two forms is missing at the shared pattern entirely -> blocks the merge, even though the OTHER form is fully covered', () => {
+		const sharedExtra = ',0-2attack,4attack,0-3defense,0-3hp';
+		// Only "psychic" has a clause at all; "!psychic" is completely absent.
+		const result = canonicalizeDexExclusions([bare(26, 'psychic', sharedExtra)], {
+			26: new Set(['psychic', '!psychic']),
+		});
+		expect(result).toEqual([bare(26, 'psychic', sharedExtra)]);
+	});
+
+	it('full two-dimension collapse: Shadow-scope collapses per form first (Case A), THEN the cross-form merge folds every form together, keeping the shared bucket', () => {
+		// dex 900 has two forms, "fire" and "ice". EVERY combination in the
+		// Shadow x form cartesian product needs protection at the identical
+		// bucket pattern: fire (bare), fire-Shadow-only, ice (bare),
+		// ice-non-Shadow-only + ice-Shadow-only (so both Shadow statuses are
+		// separately covered for ice too). This should collapse all the way
+		// down to one single "!900<pattern>" clause.
+		const pattern = ',1-4attack';
+		const result = canonicalizeDexExclusions(
+			[
+				bare(900, 'fire', pattern),
+				shadowOnly(900, 'fire', pattern),
+				nonShadowOnly(900, 'ice', pattern),
+				shadowOnly(900, 'ice', pattern),
+			],
+			{ 900: new Set(['fire', 'ice']) }
+		);
+		expect(result).toEqual([bare(900, '', pattern)]);
+	});
+
+	it('two DIFFERENT extras can each independently qualify for their own dex-only merge at the same dex', () => {
+		// Contrived but valid: dex 950 has two forms, both fully covered at
+		// pattern X AND, separately, both ALSO fully covered at pattern Y
+		// (e.g. two different CP caps producing two different deviating
+		// patterns for both forms). Each pattern's group independently
+		// satisfies "every form covered", so each collapses on its own —
+		// the result is two dex-only clauses, one per pattern, not one.
+		const patternX = ',1-4attack';
+		const patternY = ',0-3defense';
+		const result = canonicalizeDexExclusions(
+			[
+				bare(950, 'grass', patternX),
+				bare(950, 'fire', patternX),
+				bare(950, 'grass', patternY),
+				bare(950, 'fire', patternY),
+			],
+			{ 950: new Set(['grass', 'fire']) }
+		);
+		expect(result).toHaveLength(2);
+		expect(result).toContainEqual(bare(950, '', patternX));
+		expect(result).toContainEqual(bare(950, '', patternY));
 	});
 });
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
-import { findBadIvCarveOuts } from '../workers/compute.worker';
+import { type BadIvCarveOut, findBadIvCarveOuts } from '../workers/compute.worker';
 import {
 	buildBadIvFixture,
 	buildGamemaster,
@@ -267,6 +267,218 @@ describe('computeBadIvString — simplified mode', () => {
 		expect(result).not.toContain('!900,!ice');
 		expect(result).not.toContain('!900,ground');
 		expect(result).not.toContain('!900,!ground');
+	});
+
+	it('COMPLETE mode: two sibling forms that independently deviate to the IDENTICAL bucket pattern collapse into one dex-only clause that keeps that pattern', () => {
+		// Same deviating stats as deviantmon (300/100/100 -> real top-1 at cap
+		// 2500 is 11/15/15, per `buildBadIvFixture`'s own fixture comment) on
+		// BOTH sibling forms at dex 903 — so both independently need a
+		// carve-out at the exact same bucket pattern. This is Complete mode
+		// (`simplified` omitted/false) — the bucket restriction is real and
+		// non-empty, and the merge must keep it, not silently drop it.
+		const formIce = mockPokemon({
+			speciesId: 'formice3',
+			dex: 903,
+			types: [mockType('ice')],
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const formGround = mockPokemon({
+			speciesId: 'formground3',
+			dex: 903,
+			types: [mockType('ground')],
+			baseStats: { atk: 300, def: 100, hp: 100 },
+		});
+		const gamemasterPokemon = buildGamemaster([formIce, formGround]);
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [2500] });
+		expect(carveOuts.filter((c) => c.speciesId === formIce.speciesId)).toEqual([
+			expect.objectContaining({ pattern: { A: 11, D: 15, S: 15 } }),
+		]);
+		expect(carveOuts.filter((c) => c.speciesId === formGround.speciesId)).toEqual([
+			expect.objectContaining({ pattern: { A: 11, D: 15, S: 15 } }),
+		]);
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		// One combined clause, bucket pattern intact — not two separate
+		// per-form clauses, and not a bucket-less blanket exclusion either.
+		expect(result).toContain('&!903,0-2attack,4attack,0-3defense,0-3hp');
+		expect(result).not.toContain('!903,ice');
+		expect(result).not.toContain('!903,!ice');
+		expect(result).not.toContain('!903,ground');
+		expect(result).not.toContain('!903,!ground');
+	});
+
+	it('COMPLETE mode: the full Shadow x form cartesian product, ALL needing protection at the IDENTICAL bucket, collapses into ONE clause — both dimensions at once', () => {
+		// dex 904 has two sibling forms (fire, ice), each with its own Shadow
+		// counterpart — 4 gamemaster entries total. Every one of the 4
+		// (fire, fire-Shadow, ice, ice-Shadow) needs protection at the exact
+		// same bucket pattern. `carveOuts` is built by hand here rather than
+		// via `findBadIvCarveOuts` — coaxing the REAL purification math into
+		// coincidentally producing an identical pattern across two sibling
+		// forms AND their Shadow purification passes isn't practical to set
+		// up via base stats alone, and isn't the point of this test: this is
+		// specifically about `computeBadIvString`'s own clause construction +
+		// canonicalization pipeline, given that input, not about
+		// `findBadIvCarveOuts` itself (that's covered elsewhere).
+		const formFire = mockPokemon({ speciesId: 'formfire4', dex: 904, types: [mockType('fire')] });
+		const formIce = mockPokemon({ speciesId: 'formice4', dex: 904, types: [mockType('ice')] });
+		const formFireShadow = mockPokemon({
+			speciesId: 'formfire4_shadow',
+			dex: 904,
+			isShadow: true,
+			types: [mockType('fire')],
+		});
+		const formIceShadow = mockPokemon({
+			speciesId: 'formice4_shadow',
+			dex: 904,
+			isShadow: true,
+			types: [mockType('ice')],
+		});
+		const gamemasterPokemon = buildGamemaster([formFire, formIce, formFireShadow, formIceShadow]);
+
+		const pattern = { A: 11, D: 15, S: 15 }; // bucket 3-4-4, same shape used throughout this file
+		const carveOuts: Array<BadIvCarveOut> = [
+			{ speciesId: formFire.speciesId, cap: 2500, pattern },
+			{ speciesId: formIce.speciesId, cap: 2500, pattern },
+			{ speciesId: formFireShadow.speciesId, cap: 2500, pattern },
+			{ speciesId: formIceShadow.speciesId, cap: 2500, pattern },
+		];
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		// One single clause: no form disambiguator, no Shadow scope, bucket
+		// pattern intact — Case A collapses each form's Shadow-only clause
+		// into its own bare-per-form one first, THEN Case B folds both
+		// now-bare forms together, since they share the identical bucket.
+		expect(result).toContain('&!904,0-2attack,4attack,0-3defense,0-3hp');
+		expect(result).not.toContain('!904,fire');
+		expect(result).not.toContain('!904,!fire');
+		expect(result).not.toContain('!904,ice');
+		expect(result).not.toContain('!904,!ice');
+		expect(result).not.toContain('!904,!shadow');
+		expect(result).not.toContain('!904,shadow');
+	});
+
+	it('SIMPLIFIED mode: the same full Shadow x form cartesian product collapses into ONE bare clause (bucket-less, since Simplified never carries one)', () => {
+		// Same 4-entry universe as above, but through Simplified mode — every
+		// combination ends up unconditional (`extra === ''`) rather than
+		// sharing a real bucket, so this exercises the SAME two-dimension
+		// collapse machinery at the other end of the `extra` spectrum: the
+		// original, always-supported "no bucket at all" case.
+		const formFire = mockPokemon({ speciesId: 'formfire5', dex: 905, types: [mockType('fire')] });
+		const formIce = mockPokemon({ speciesId: 'formice5', dex: 905, types: [mockType('ice')] });
+		const formFireShadow = mockPokemon({
+			speciesId: 'formfire5_shadow',
+			dex: 905,
+			isShadow: true,
+			types: [mockType('fire')],
+		});
+		const formIceShadow = mockPokemon({
+			speciesId: 'formice5_shadow',
+			dex: 905,
+			isShadow: true,
+			types: [mockType('ice')],
+		});
+		const gamemasterPokemon = buildGamemaster([formFire, formIce, formFireShadow, formIceShadow]);
+
+		const pattern = { A: 11, D: 15, S: 15 };
+		const carveOuts: Array<BadIvCarveOut> = [
+			{ speciesId: formFire.speciesId, cap: 2500, pattern },
+			{ speciesId: formIce.speciesId, cap: 2500, pattern },
+			{ speciesId: formFireShadow.speciesId, cap: 2500, pattern },
+			{ speciesId: formIceShadow.speciesId, cap: 2500, pattern },
+		];
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		expect(result).toMatch(/!905(&|$)/);
+		expect(result).not.toContain('!905,fire');
+		expect(result).not.toContain('!905,!fire');
+		expect(result).not.toContain('!905,ice');
+		expect(result).not.toContain('!905,!ice');
+		expect(result).not.toContain('!905,!shadow');
+		expect(result).not.toContain('!905,shadow');
+	});
+
+	it('the cross-form merge is blocked when one form is covered ONLY for Shadow — its non-Shadow catches are never protected by anything', () => {
+		// A bare (shadow-agnostic) clause for a form already covers BOTH
+		// Shadow and non-Shadow catches of it — identity matching alone
+		// doesn't distinguish Shadow status unless a term explicitly scopes
+		// it. So the only way a form's non-Shadow side stays genuinely
+		// uncovered is if it has NO bare entry at all, only a Shadow-scoped
+		// one — exactly ice's situation here: its own raw (unpurified) top-1
+		// already fits the default shape (no carve-out needed for it), but
+		// its purified best does not, so ONLY its Shadow-only clause exists.
+		// fire's own Shadow+non-Shadow pair still legitimately collapses
+		// (Case A, same form, same bucket) — but that alone can't extend to
+		// a dex-wide merge, since ice never has a bare entry at any `extra`.
+		const formFire = mockPokemon({ speciesId: 'formfire6', dex: 906, types: [mockType('fire')] });
+		const formIce = mockPokemon({ speciesId: 'formice6', dex: 906, types: [mockType('ice')] });
+		const formFireShadow = mockPokemon({
+			speciesId: 'formfire6_shadow',
+			dex: 906,
+			isShadow: true,
+			types: [mockType('fire')],
+		});
+		const formIceShadow = mockPokemon({
+			speciesId: 'formice6_shadow',
+			dex: 906,
+			isShadow: true,
+			types: [mockType('ice')],
+		});
+		const gamemasterPokemon = buildGamemaster([formFire, formIce, formFireShadow, formIceShadow]);
+
+		const pattern = { A: 11, D: 15, S: 15 };
+		const carveOuts: Array<BadIvCarveOut> = [
+			{ speciesId: formFire.speciesId, cap: 2500, pattern },
+			{ speciesId: formFireShadow.speciesId, cap: 2500, pattern },
+			// formIce (non-Shadow): deliberately no entry — its own raw top-1
+			// already fits the default shape.
+			{ speciesId: formIceShadow.speciesId, cap: 2500, pattern },
+		];
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		// fire's own pair still legitimately collapses to one bare-per-form
+		// clause...
+		expect(result).toContain('&!906,!fire,0-2attack,4attack,0-3defense,0-3hp');
+		// ...but the dex-wide merge across BOTH forms must NOT happen: ice
+		// never has a bare entry at all, so its own non-Shadow catches are
+		// never protected by anything — dropping form disambiguation here
+		// would wrongly ALSO protect fire's non-Shadow catches merged with
+		// nothing, or worse, silently imply ice's non-Shadow side is covered
+		// when it isn't.
+		expect(result).not.toMatch(/!906,0-2attack/); // no bare-dex(no form)+bucket clause
+		expect(result).toContain('!906,!ice,!shadow,0-2attack,4attack,0-3defense,0-3hp');
 	});
 
 	it('on: a dex with a sibling form left OUT of the exclusion set is never collapsed — the untouched sibling would be wrongly swept into protection too', () => {

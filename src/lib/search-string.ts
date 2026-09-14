@@ -182,14 +182,25 @@ export const renderDexExclusion = (t: DexExclusion): string => {
  *    a different bucket pattern protects a generally non-overlapping
  *    population, so nothing is ever assumed comparable beyond equality.
  * 2. **Cross-form merge.** If, after (1), *every* candidate form at a dex
- *    (per `formsPerDex`) has its own unconditional (`extra === ''`,
- *    `shadowScope === ''`) term, those per-form terms collectively protect
- *    the entire dex regardless of form or Shadow status — exactly what one
- *    bare `!<dex>` term (no disambiguator at all) would protect, for far
- *    fewer characters. This only fires when EVERY known form is covered
- *    unconditionally; a single form left out, or only partially protected
- *    (real `extra`, or only one Shadow-scope half), blocks it — collapsing
- *    early would over-protect that form's remaining catches.
+ *    (per `formsPerDex`) has its own Shadow-agnostic (`shadowScope === ''`)
+ *    term, AND every one of those terms shares the exact same `extra` —
+ *    empty (fully unconditional) or a real, byte-identical bucket pattern —
+ *    those per-form terms collectively protect the entire dex regardless of
+ *    form or Shadow status, at that one shared `extra`: exactly what one
+ *    `!<dex><extra>` term (no form disambiguator at all) would protect, for
+ *    far fewer characters. `extra` is never assumed comparable beyond exact
+ *    equality here either — two forms independently needing protection at
+ *    *different* bucket patterns are NOT the same population, so they never
+ *    merge across forms; only within a form (case 1), or when literally
+ *    every form shares one identical pattern. A single form left out
+ *    entirely, or only partially protected (still Shadow-scoped after (1),
+ *    or covered at a *different* `extra` than its siblings), blocks the
+ *    merge for that `extra` — collapsing early would over-protect that
+ *    form's remaining catches. (Two independent `extra` groups can each
+ *    separately qualify for their own dex-only merge — rare, since it needs
+ *    every form to independently need protection at each of two distinct
+ *    shared patterns — but it's handled the same way, one `extra` at a
+ *    time.)
  *
  * `formsPerDex` must come from the same candidate universe the caller
  * itself iterated to build `terms` (its own `allPokemonForms`/`baseIds`
@@ -231,18 +242,36 @@ export const canonicalizeDexExclusions = (
 			}
 		}
 
+		// Cross-form merge: only terms that are already fully Shadow-agnostic
+		// post-collapse can ever qualify (a form left with only a Shadow-only
+		// term is never `bare`, so it can never appear in any group below —
+		// alone enough to block every `extra` that would need it). Grouped by
+		// `extra` so two forms only ever merge when their bucket pattern is
+		// byte-identical; a form covered at a *different* pattern than its
+		// siblings simply never satisfies that group's completeness check.
 		const allForms = formsPerDex[dex] ?? new Set<string>();
-		const unconditional = afterShadowCollapse.filter((t) => t.shadowScope === '' && t.extra === '');
-		const unconditionalForms = new Set(unconditional.map((t) => t.form));
-		const everyFormCoveredUnconditionally =
-			allForms.size > 0 && Array.from(allForms).every((f) => unconditionalForms.has(f));
-		const noPartialLeftovers = afterShadowCollapse.length === unconditional.length;
-
-		if (everyFormCoveredUnconditionally && noPartialLeftovers) {
-			result.push({ dex, form: '', shadowScope: '', extra: '' });
-		} else {
-			result.push(...afterShadowCollapse);
+		const bareByExtra = new Map<string, Array<DexExclusion>>();
+		const shadowScopedLeftovers: Array<DexExclusion> = [];
+		for (const t of afterShadowCollapse) {
+			if (t.shadowScope !== '') {
+				shadowScopedLeftovers.push(t);
+				continue;
+			}
+			if (!bareByExtra.has(t.extra)) bareByExtra.set(t.extra, []);
+			bareByExtra.get(t.extra)?.push(t);
 		}
+
+		const finalForDex: Array<DexExclusion> = [...shadowScopedLeftovers];
+		for (const [extra, group] of bareByExtra) {
+			const coveredForms = new Set(group.map((t) => t.form));
+			const everyFormCoveredAtThisExtra = allForms.size > 0 && Array.from(allForms).every((f) => coveredForms.has(f));
+			if (everyFormCoveredAtThisExtra) {
+				finalForDex.push({ dex, form: '', shadowScope: '', extra });
+			} else {
+				finalForDex.push(...group);
+			}
+		}
+		result.push(...finalForDex);
 	}
 	return result;
 };
