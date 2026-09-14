@@ -170,7 +170,7 @@ const PokemonDetail = () => {
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
 	// member the league carousel is on (best reachable by default, not the URL mon).
-	const [ivPercents] = useComputeIVs({
+	const [ivPercents, , ivStale] = useComputeIVs({
 		pokemon: pokemon as never,
 		attackIV: iv.atk,
 		defenseIV: iv.def,
@@ -576,6 +576,23 @@ const PokemonDetail = () => {
 	// and done changing on their own — never hide them again just because
 	// something else reloads.
 	const heroReady = isRaid || ivTouchedRef.current || !!slice?.perfect;
+
+	// `heroReady` alone isn't quite enough for the numeric readout below
+	// (rank/percentile/CP): `slice` being non-empty only means `ivPercents`
+	// has *some* entry for this species — not that it's the entry for the
+	// `iv` currently on screen. Right when `slice.perfect` first appears
+	// (still for the transient `iv: 0/0/0` default, before the auto-pick
+	// layout effect snaps `iv` to the real rank-1 spread), `heroReady` flips
+	// true and briefly shows that spread's own — wrong — rank/percentile.
+	// `ivStale` (react-query's `isPlaceholderData`) catches exactly that: true
+	// whenever the shown data was computed for a previous `iv` and
+	// `keepPreviousData` is filling in while the real result for the current
+	// one is still computing. Only gated during auto-tracking, not after the
+	// user's touched the picker themselves — once they have, showing the
+	// previous spread's numbers while a drag's new value recomputes is the
+	// deliberate, smoother UX `keepPreviousData` exists for in the first
+	// place; only the initial snap-to-rank-1 settling should ever show "…".
+	const readoutReady = isRaid || (ivTouchedRef.current ? !!slice : !!slice?.perfect && !ivStale);
 
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
 	const boardRows = LEAGUES.map((l) => {
@@ -1085,25 +1102,28 @@ const PokemonDetail = () => {
 										</div>
 									)}
 								</div>
+								{/* Gated on `readoutReady`, not just `!slice` — see its own doc
+								    comment above for exactly why `slice` alone isn't enough to
+								    guarantee these numbers match the `iv` actually on screen. */}
 								<div className='r-readout'>
 									<div>
 										<i>{LEAGUES[league].label} IV rank</i>
-										<b className='hi'>{!slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
+										<b className='hi'>{!readoutReady || !slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
 									</div>
 									<div>
 										<i>Percentile</i>
 										<b>
-											{!slice
+											{!readoutReady || !slice
 												? '…'
 												: `${dec1(statProdRangePercentile(slice.battle, slice.worstBattle, slice.perfectBattle))}%`}
 										</b>
 									</div>
 									<div>
-										<i>CP{slice ? ` @ L${slice.lvl}` : ''}</i>
-										<b>{!slice ? '…' : slice.cp.toLocaleString()}</b>
+										<i>CP{readoutReady && slice ? ` @ L${slice.lvl}` : ''}</i>
+										<b>{!readoutReady || !slice ? '…' : slice.cp.toLocaleString()}</b>
 									</div>
 								</div>
-								{slice && (
+								{readoutReady && slice && (
 									<p className='r-muted' style={{ marginTop: 12 }}>
 										Best spread for {LEAGUES[league].label}:{' '}
 										<b>
