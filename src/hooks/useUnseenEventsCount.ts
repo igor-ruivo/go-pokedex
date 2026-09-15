@@ -15,14 +15,8 @@ import { useCalendar } from '../queries/calendar';
  * opened it.
  */
 export const useUnseenEventsCount = (): number => {
-	const {
-		posts,
-		season,
-		spotlightHours,
-		postsFetchCompleted,
-		seasonFetchCompleted,
-		spotlightHoursFetchCompleted,
-	} = useCalendar();
+	const { posts, season, spotlightHours, postsFetchCompleted, seasonFetchCompleted, spotlightHoursFetchCompleted } =
+		useCalendar();
 	const { seenIds } = useSeenEvents();
 
 	return useMemo(() => {

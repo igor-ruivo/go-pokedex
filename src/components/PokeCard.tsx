@@ -53,12 +53,12 @@ export const PokeCard = ({
 			</span>
 			<span className='r-pc-art'>
 				<img
-				src={spriteUrl(pokemon, imageSource)}
-				alt=''
-				loading='lazy'
-				decoding='async'
-				onError={handleSpriteError(pokemon)}
-			/>
+					src={spriteUrl(pokemon, imageSource)}
+					alt=''
+					loading='lazy'
+					decoding='async'
+					onError={handleSpriteError(pokemon)}
+				/>
 			</span>
 			<b className='r-pc-name'>{cleanName(pokemon.speciesName)}</b>
 			{metric?.cp != null && (

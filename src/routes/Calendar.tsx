@@ -278,8 +278,7 @@ const EventCard = ({
 								// Only the 3-in-a-row layout overlaps (see the `data-count='3'`
 								// CSS) — first mon stacked on top, each one after sinking
 								// behind the last.
-								const style =
-									spotlightMons.length === 3 ? { zIndex: spotlightMons.length - i } : undefined;
+								const style = spotlightMons.length === 3 ? { zIndex: spotlightMons.length - i } : undefined;
 								return (
 									<img
 										key={e.speciesId}

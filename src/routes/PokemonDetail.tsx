@@ -876,14 +876,14 @@ const PokemonDetail = () => {
 										>
 											{member?.isShadow && <ShadowMark />}
 											{member && (
-										<img
-											src={spriteUrl(member, imageSource)}
-											alt=''
-											loading='lazy'
-											decoding='async'
-											onError={handleSpriteError(member)}
-										/>
-									)}
+												<img
+													src={spriteUrl(member, imageSource)}
+													alt=''
+													loading='lazy'
+													decoding='async'
+													onError={handleSpriteError(member)}
+												/>
+											)}
 											{bestType && (
 												<span
 													className='r-board-type'

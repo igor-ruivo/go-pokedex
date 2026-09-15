@@ -34,13 +34,12 @@ export const spriteUrl = (pokemon: IGamemasterPokemon, source: ImageSource): str
  * the official artwork once; if that 404s too there's nothing left to fall
  * back to, so it's left alone rather than looping.
  */
-export const handleSpriteError =
-	(pokemon: IGamemasterPokemon) => (e: React.SyntheticEvent<HTMLImageElement>) => {
-		const img = e.currentTarget;
-		if (pokemon.imageUrl && img.src !== pokemon.imageUrl) {
-			img.src = pokemon.imageUrl;
-		}
-	};
+export const handleSpriteError = (pokemon: IGamemasterPokemon) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+	const img = e.currentTarget;
+	if (pokemon.imageUrl && img.src !== pokemon.imageUrl) {
+		img.src = pokemon.imageUrl;
+	}
+};
 
 export const Sprite = ({
 	pokemon,
