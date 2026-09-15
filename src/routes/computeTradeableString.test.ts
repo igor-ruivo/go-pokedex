@@ -102,9 +102,11 @@ describe('computeTradeableString — onlyLowIv toggle', () => {
 });
 
 describe('computeTradeableString — category pre-filter (Legendary/Mythical/Ultra Beast)', () => {
+	// Mythical isn't included here — it's unconditional (see the dedicated
+	// describe block below), unlike Legendary and Ultra Beast which are still
+	// real, togglable toggles (both are actually tradeable in-game).
 	it.each([
 		['legendary', 'legendarymon'] as const,
-		['mythical', 'mythicalmon'] as const,
 		['ultraBeast', 'beastmon'] as const,
 	])('%s on: never a candidate even when Master-relevant; off: evaluated normally', (flagKey, speciesId) => {
 		const { gamemasterPokemon } = buildMainFixture();
@@ -119,7 +121,7 @@ describe('computeTradeableString — category pre-filter (Legendary/Mythical/Ult
 	});
 });
 
-describe('computeTradeableString — Shadow handling (unconditional, not togglable)', () => {
+describe('computeTradeableString — Shadow/Mythical handling (unconditional, not togglable)', () => {
 	it('a Shadow form is never itself a qualifying candidate — the dex is still suggested via its Master-good non-Shadow sibling, with no per-form clause needed (the flat &!shadow tail already excludes it)', () => {
 		const { gamemasterPokemon, shadowmon, shadowmonShadow } = buildMainFixture();
 		const rankLists = [{}, {}, { shadowmon: rank(1) }];
@@ -135,6 +137,19 @@ describe('computeTradeableString — Shadow handling (unconditional, not togglab
 		expect(on).toContain(String(shadowmon.dex));
 		expect(on).not.toContain('&!100,!shadow');
 		expect(on).toContain('&!shadow');
+	});
+
+	it('a Mythical is never a candidate regardless of the toggle — Mythicals can never be traded in-game, same treatment as Shadow', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const rankLists = [{}, {}, { mythicalmon: rank(1) }];
+
+		const on = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, mythical: true } });
+		const off = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, mythical: false } });
+
+		const dex = String(gamemasterPokemon.mythicalmon.dex);
+		expect(on).toBe(off);
+		expect(on).not.toContain(dex);
+		expect(on).toContain('&!mythical');
 	});
 });
 
@@ -178,23 +193,23 @@ describe('computeTradeableString — pt-BR translation', () => {
 	});
 });
 
-describe('computeTradeableString — flat Shadow exclusion (unconditional, always on)', () => {
-	it('a plain, unconditional &!shadow clause is present regardless of any toggle — same treatment as !4*', () => {
+describe('computeTradeableString — flat Shadow/Mythical exclusion (unconditional, always on)', () => {
+	it('plain, unconditional &!shadow and &!mythical clauses are present regardless of any toggle — same treatment as !4*', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon);
 
 		// No purify-to-hundo bucket carve-out needed here the way the other two
-		// tabs need it — Shadows can never be traded at all, in-game, purified
-		// or not, so a flat exclusion suffices. Right next to the exact-hundo
-		// guard, same as before.
-		expect(result).toContain('&!4*&!shadow');
+		// tabs need it — Shadows and Mythicals can never be traded at all,
+		// in-game, purified or not, so a flat exclusion suffices for both.
+		// Right next to the exact-hundo guard, same as before.
+		expect(result).toContain('&!4*&!shadow&!mythical');
 	});
 
 	it('localizes to pt-BR alongside the rest of the tail', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon, { gl: GameLanguage.ptbr });
 
-		expect(result).toContain('&!4*&!sombroso');
+		expect(result).toContain('&!4*&!sombroso&!mítico');
 	});
 });
 
@@ -209,7 +224,7 @@ describe('computeTradeableString — CP cap (upper bound, not a floor)', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon, { cp: 2000, onlyLowIv: true });
 
-		expect(result).toContain('&!4*&!shadow&!cp2000-');
+		expect(result).toContain('&!4*&!shadow&!mythical&!cp2000-');
 		expect(result).toContain('&0-2attack&0-2defense&0-2hp');
 	});
 });

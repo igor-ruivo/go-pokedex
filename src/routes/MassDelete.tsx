@@ -685,6 +685,7 @@ export const computeTradeableString = (
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
 	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
 	const shadow = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
+	const mythical = gameTranslator(GameTranslatorKeys.Mythical, gl);
 
 	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
 		.filter((key) => isNaN(Number(key)) && key !== 'Normal')
@@ -725,7 +726,10 @@ export const computeTradeableString = (
 				!p.aliasId &&
 				!p.isMega &&
 				(protect.legendary ? !p.isLegendary : true) &&
-				(protect.mythical ? !p.isMythical : true) &&
+				// Mythicals can never be traded, full stop, exactly like Shadows
+				// (see the flat `&!mythic` appended below) — unconditional, not
+				// tied to the toggle.
+				!p.isMythical &&
 				(protect.ultraBeast ? !p.isBeast : true)
 		)
 		.forEach((p) => {
@@ -809,18 +813,23 @@ export const computeTradeableString = (
 	}
 
 	// A hundo needs no trade at all, regardless of the stricter toggle below.
-	// Shadows can never be traded — no purify-to-hundo carve-out needed here
-	// the way the other two tabs need it (a Shadow catch can't be deleted or
-	// found-not-worth-keeping away right before it'd purify into one — but it
-	// was never tradeable in the first place, purified or not), just a flat,
-	// unconditional exclusion.
-	result += `&!4*&!${shadow}&!${CP}${cp}-`;
+	// Shadows and Mythicals can never be traded — no purify-to-hundo carve-out
+	// needed here the way the other two tabs need it (a Shadow catch can't be
+	// deleted or found-not-worth-keeping away right before it'd purify into
+	// one — but it was never tradeable in the first place, purified or not),
+	// just a flat, unconditional exclusion for both.
+	result += `&!4*&!${shadow}&!${mythical}&!${CP}${cp}-`;
 	if (onlyLowIv) {
 		result += `&0-2${A}&0-2${D}&0-2${S}`;
 	}
 	if (protect.tagged) result += '&!#';
 	if (protect.favorite) result += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
 	if (protect.megaEvolvable) result += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
+	// Precautionary duplicate of the candidate-level filter above (same as the
+	// other two tabs already do for these three) — belt-and-suspenders in
+	// case a reachable-family edge case ever let one slip past that filter.
+	if (protect.legendary) result += `&!${gameTranslator(GameTranslatorKeys.Legendary, gl)}`;
+	if (protect.ultraBeast) result += `&!${gameTranslator(GameTranslatorKeys.UltraBeast, gl)}`;
 	if (protect.dynamax) result += `&!${gameTranslator(GameTranslatorKeys.DynamaxSearch, gl)}`;
 	if (protect.fusion) result += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
 	if (protect.gigantamax) result += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;
@@ -1122,17 +1131,19 @@ const MassDelete = () => {
 	// keyword with no corresponding species list here.
 	const autoProtected = useMemo(() => {
 		const map = new Map<string, string>();
-		// On the Trade tab, Shadow is protected unconditionally (see the
-		// locked-on chip and computeTradeableString's flat `&!shadow`) — not
-		// tied to the `protect.shadow` flag there, so this has to check `isTrade`
-		// too, or every Shadow Pokémon would be silently missing from this list
-		// despite the chip showing "on".
+		// On the Trade tab, Shadow and Mythical are protected unconditionally
+		// (see the locked-on chips and computeTradeableString's flat
+		// `&!shadow&!mythic`) — not tied to the `protect.shadow`/
+		// `protect.mythical` flags there, so this has to check `isTrade` too,
+		// or every Shadow/Mythical Pokémon would be silently missing from this
+		// list despite the chips showing "on".
 		const shadowProtected = isTrade || protect.shadow;
+		const mythicalProtected = isTrade || protect.mythical;
 		Object.values(gamemasterPokemon)
 			.filter((p) => !p.aliasId && !p.isMega)
 			.forEach((p) => {
 				if (protect.legendary && p.isLegendary) map.set(p.speciesId, 'Legendary');
-				else if (protect.mythical && p.isMythical) map.set(p.speciesId, 'Mythical');
+				else if (mythicalProtected && p.isMythical) map.set(p.speciesId, 'Mythical');
 				else if (protect.ultraBeast && p.isBeast) map.set(p.speciesId, 'Ultra Beast');
 				else if (shadowProtected && p.isShadow) map.set(p.speciesId, 'Shadow');
 			});
@@ -1360,11 +1371,14 @@ const MassDelete = () => {
 
 	const ready = fetchCompleted && pvpFetchCompleted;
 
-	// On the Trade tab, "Shadow" is always effectively protected (see the
-	// locked-on chip below) regardless of the stored `protect.shadow` flag —
-	// the summary has to agree with what the chip itself shows, or it'd read
-	// as if Shadow weren't being protected at all.
-	const protectionSummary = PROTECTION_META.filter((m) => (isTrade && m.key === 'shadow') || protect[m.key])
+	// On the Trade tab, "Shadow" and "Mythical" are always effectively
+	// protected (see the locked-on chips below) regardless of the stored
+	// `protect.shadow`/`protect.mythical` flags — the summary has to agree
+	// with what the chips themselves show, or it'd read as if they weren't
+	// being protected at all.
+	const protectionSummary = PROTECTION_META.filter(
+		(m) => (isTrade && (m.key === 'shadow' || m.key === 'mythical')) || protect[m.key]
+	)
 		.map((m) => m.label)
 		.join(', ');
 	const keepTopSummary = [
@@ -1680,12 +1694,13 @@ const MassDelete = () => {
 						</div>
 						<div className='r-md-protect-grid'>
 							{PROTECTION_META.map((m) => {
-								// Trading a Shadow Pokémon isn't something the game allows
-								// at all, regardless of its IVs — computeTradeableString
-								// excludes every Shadow catch unconditionally, so this
-								// toggle has nothing left to control there and is locked
-								// on to reflect that, rather than implying it's optional.
-								const lockedOn = isTrade && m.key === 'shadow';
+								// Trading a Shadow or Mythical Pokémon isn't something the
+								// game allows at all, regardless of its IVs —
+								// computeTradeableString excludes every Shadow and Mythical
+								// catch unconditionally, so these two toggles have nothing
+								// left to control there and are locked on to reflect that,
+								// rather than implying they're optional.
+								const lockedOn = isTrade && (m.key === 'shadow' || m.key === 'mythical');
 								return (
 									<button
 										key={m.key}
@@ -1694,7 +1709,11 @@ const MassDelete = () => {
 										data-on={lockedOn || protect[m.key] ? '' : undefined}
 										aria-pressed={lockedOn || protect[m.key]}
 										disabled={lockedOn}
-										title={lockedOn ? 'Shadow Pokémon can never be traded, so this is always on.' : m.description}
+										title={
+											lockedOn
+												? `${m.label} Pokémon can never be traded, so this is always on.`
+												: m.description
+										}
 										onClick={lockedOn ? undefined : () => setProtectFlag(m.key)}
 									>
 										<span className='r-ss-box' aria-hidden='true' />
