@@ -1709,11 +1709,7 @@ const MassDelete = () => {
 										data-on={lockedOn || protect[m.key] ? '' : undefined}
 										aria-pressed={lockedOn || protect[m.key]}
 										disabled={lockedOn}
-										title={
-											lockedOn
-												? `${m.label} Pokémon can never be traded, so this is always on.`
-												: m.description
-										}
+										title={lockedOn ? `${m.label} Pokémon can never be traded, so this is always on.` : m.description}
 										onClick={lockedOn ? undefined : () => setProtectFlag(m.key)}
 									>
 										<span className='r-ss-box' aria-hidden='true' />

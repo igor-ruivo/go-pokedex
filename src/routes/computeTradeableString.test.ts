@@ -105,20 +105,20 @@ describe('computeTradeableString — category pre-filter (Legendary/Mythical/Ult
 	// Mythical isn't included here — it's unconditional (see the dedicated
 	// describe block below), unlike Legendary and Ultra Beast which are still
 	// real, togglable toggles (both are actually tradeable in-game).
-	it.each([
-		['legendary', 'legendarymon'] as const,
-		['ultraBeast', 'beastmon'] as const,
-	])('%s on: never a candidate even when Master-relevant; off: evaluated normally', (flagKey, speciesId) => {
-		const { gamemasterPokemon } = buildMainFixture();
-		const rankLists = [{}, {}, { [speciesId]: rank(1) }];
+	it.each([['legendary', 'legendarymon'] as const, ['ultraBeast', 'beastmon'] as const])(
+		'%s on: never a candidate even when Master-relevant; off: evaluated normally',
+		(flagKey, speciesId) => {
+			const { gamemasterPokemon } = buildMainFixture();
+			const rankLists = [{}, {}, { [speciesId]: rank(1) }];
 
-		const on = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, [flagKey]: true } });
-		const off = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, [flagKey]: false } });
+			const on = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, [flagKey]: true } });
+			const off = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, [flagKey]: false } });
 
-		const dex = String(gamemasterPokemon[speciesId].dex);
-		expect(on).not.toContain(dex);
-		expect(off).toContain(dex);
-	});
+			const dex = String(gamemasterPokemon[speciesId].dex);
+			expect(on).not.toContain(dex);
+			expect(off).toContain(dex);
+		}
+	);
 });
 
 describe('computeTradeableString — Shadow/Mythical handling (unconditional, not togglable)', () => {
