@@ -6,6 +6,7 @@ import { PokeMini } from '../components/PokeMini';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
+import { useLiveNow } from '../hooks/useLiveNow';
 import { dateRange, dayRange, eventPhase, eventStartEnd, nowAsEventTime, relativeDays } from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
@@ -72,9 +73,12 @@ const timeLeft = (end: number, now: number): string => {
 	const ms = end - now;
 	if (ms <= 0) return '';
 	const h = Math.floor(ms / 3_600_000);
-	if (h < 1) return '<1h';
-	if (h < 48) return `${h}h left`;
-	return `${Math.round(h / 24)}d left`;
+	if (h >= 48) return `${Math.round(h / 24)}d left`;
+	if (h >= 1) return `${h}h left`;
+	const m = Math.floor(ms / 60_000);
+	if (m >= 1) return `${m}m left`;
+	const s = Math.floor(ms / 1000);
+	return `${s}s left`;
 };
 
 /** Leekduck special-boss windows behave like tiny raid-only events. */
@@ -117,7 +121,10 @@ const MiniGridLoading = () => (
 const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<string, number> | undefined }) => {
 	// `endMap` values come from the same local-time-encoded event feed
 	// everything else on this page does — see nowAsEventTime()'s doc comment.
-	const now = nowAsEventTime();
+	// Ticking (not a one-off `nowAsEventTime()` read) so the "Xh/Xm/Xs left"
+	// note keeps counting down live while the tab stays open, all the way
+	// down through minutes and seconds as the deadline approaches.
+	const now = useLiveNow();
 	const { gamemasterPokemon } = usePokemon();
 	const sets = useRelevanceSets();
 	// Most relevant first (most league/raid dots), family-line order as tiebreak.
