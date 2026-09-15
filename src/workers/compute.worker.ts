@@ -12,6 +12,8 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
 import {
+	BEST_BUDDY_LEVEL,
+	BEST_BUDDY_LEVEL_INDEX,
 	calculateCP,
 	calculateHP,
 	computeBestIVs,
@@ -232,10 +234,22 @@ export interface BadIvCarveOutsInput {
 	caps: Array<number>;
 }
 
-// Always level 50 (`MAX_LEVEL`), deliberately never the Best Buddy toggle —
-// this whole mode is meta-agnostic and CP-cap-driven, not a ranking, and its
-// "reaches 90% of the cap at 15/15/15" pre-filter is defined against 50.
+// Deliberately never reads the Best Buddy toggle — this whole mode is
+// meta-agnostic and CP-cap-driven, not a ranking. But it can't just pick one
+// of level 50 / level 51 either: which raw spread is the true top-1 for a
+// given cap sometimes differs between the two (the extra half-level can push
+// a different spread's CP just over, or just under, the cap first), so a
+// carve-out computed at only one level can miss a pattern that's genuinely
+// optimal at the other. Both are always evaluated, unconditionally, and their
+// tied-top-1 patterns unioned — regardless of which level the player actually
+// has toggled, a wild catch that's the true best at EITHER level keeps its
+// protection.
 const LEVEL_50_INDEX = MAX_LEVEL_INDEX;
+const LEVEL_51_INDEX = BEST_BUDDY_LEVEL_INDEX;
+const PROTECTION_LEVELS: ReadonlyArray<{ levelIndex: number; level: number }> = [
+	{ levelIndex: LEVEL_50_INDEX, level: MAX_LEVEL },
+	{ levelIndex: LEVEL_51_INDEX, level: BEST_BUDDY_LEVEL },
+];
 const CP_THRESHOLD_RATIO = 0.9;
 
 const ivBucket = (iv: number) => (iv === 15 ? 4 : Math.ceil(iv / 5));
@@ -303,16 +317,16 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	// every spread tied for the top stat product, not just the first one
 	// `computeBestIVs` happens to list.
 	const bestCache = new Map<string, Array<BadIvPattern>>();
-	const getBestTied = (r: IGamemasterPokemon, cap: number): Array<BadIvPattern> => {
-		const key = `${r.speciesId}|${cap}`;
+	const getBestTied = (r: IGamemasterPokemon, cap: number, levelIndex: number, level: number): Array<BadIvPattern> => {
+		const key = `${r.speciesId}|${cap}|${levelIndex}`;
 		const cached = bestCache.get(key);
 		if (cached !== undefined) return cached;
-		const maxCP = calculateCP(r.baseStats.atk, 15, r.baseStats.def, 15, r.baseStats.hp, 15, LEVEL_50_INDEX);
+		const maxCP = calculateCP(r.baseStats.atk, 15, r.baseStats.def, 15, r.baseStats.hp, 15, levelIndex);
 		if (maxCP < CP_THRESHOLD_RATIO * cap) {
 			bestCache.set(key, []);
 			return [];
 		}
-		const flat = Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap)).flat();
+		const flat = Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap, level)).flat();
 		if (flat.length === 0) {
 			bestCache.set(key, []);
 			return [];
@@ -340,10 +354,12 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 		for (const cap of caps) {
 			const distinctPatterns = new Map<string, BadIvPattern>();
 			for (const r of reachable) {
-				for (const best of getBestTied(r, cap)) {
-					if (isProtectedByBlanket(best)) continue;
-					const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
-					if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+				for (const { levelIndex, level } of PROTECTION_LEVELS) {
+					for (const best of getBestTied(r, cap, levelIndex, level)) {
+						if (isProtectedByBlanket(best)) continue;
+						const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+						if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+					}
 				}
 			}
 			rawPatternKeys.set(`${p.speciesId}|${cap}`, new Set(distinctPatterns.keys()));
@@ -371,14 +387,14 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	// protection and get swept up for deletion after all — worse than a long
 	// string.
 	const purifiedBestCache = new Map<string, Array<BadIvPattern>>();
-	const getBestPurifiedTied = (r: IGamemasterPokemon, cap: number): Array<BadIvPattern> => {
-		const key = `${r.speciesId}|${cap}`;
+	const getBestPurifiedTied = (r: IGamemasterPokemon, cap: number, levelIndex: number): Array<BadIvPattern> => {
+		const key = `${r.speciesId}|${cap}|${levelIndex}`;
 		const cached = purifiedBestCache.get(key);
 		if (cached !== undefined) return cached;
 		const { atk, def, hp } = r.baseStats;
 		// Purifying 15 stays 15 — the hundo-reachability pre-filter is
 		// identical whether or not purification is in play.
-		const maxCP = calculateCP(atk, 15, def, 15, hp, 15, LEVEL_50_INDEX);
+		const maxCP = calculateCP(atk, 15, def, 15, hp, 15, levelIndex);
 		if (maxCP < CP_THRESHOLD_RATIO * cap) {
 			purifiedBestCache.set(key, []);
 			return [];
@@ -391,7 +407,7 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 					const pa = purify(a);
 					const pd = purify(d);
 					const ps = purify(s);
-					let level = LEVEL_50_INDEX;
+					let level = levelIndex;
 					while (level >= 0 && calculateCP(atk, pa, def, pd, hp, ps, level) > cap) level--;
 					if (level < 0) continue;
 					const aSt = (atk + pa) * cpm[level];
@@ -420,16 +436,18 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 			const alreadyCovered = rawPatternKeys.get(`${nonShadowId}|${cap}`);
 			const distinctPatterns = new Map<string, BadIvPattern>();
 			for (const r of reachable) {
-				for (const best of getBestPurifiedTied(r, cap)) {
-					// The raw spread the game will actually show for this
-					// catch — evaluated against the blanket rules exactly
-					// like the non-Shadow pass, since a raw hundo or a raw
-					// catch already in the default good shape needs no
-					// Shadow-specific help either.
-					if (isProtectedByBlanket(best)) continue;
-					const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
-					if (alreadyCovered?.has(key)) continue;
-					if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+				for (const { levelIndex } of PROTECTION_LEVELS) {
+					for (const best of getBestPurifiedTied(r, cap, levelIndex)) {
+						// The raw spread the game will actually show for this
+						// catch — evaluated against the blanket rules exactly
+						// like the non-Shadow pass, since a raw hundo or a raw
+						// catch already in the default good shape needs no
+						// Shadow-specific help either.
+						if (isProtectedByBlanket(best)) continue;
+						const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+						if (alreadyCovered?.has(key)) continue;
+						if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+					}
 				}
 			}
 			for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });

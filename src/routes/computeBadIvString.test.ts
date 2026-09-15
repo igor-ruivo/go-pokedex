@@ -72,6 +72,41 @@ describe('findBadIvCarveOuts — a tied-for-top-1 stat product spanning two diff
 	});
 });
 
+describe('findBadIvCarveOuts — level 50 / level 51 (Best Buddy) union, regardless of the player’s toggle', () => {
+	it('when a species’ top-1 pattern lands in a DIFFERENT bucket at level 50 vs. level 51, both buckets get their own carve-out', () => {
+		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const ownAt1500 = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
+
+		// Empirically verified (see fixture comment): overlapmon's own top-1
+		// at cap 1500 is 13/14/14 (bucket 3-3-3) at level 50, but 12/15/15
+		// (bucket 3-4-4) at level 51 — neither a hundo nor the default shape.
+		// A hypothetical implementation that only ever evaluated one of the
+		// two levels would silently drop protection for whichever bucket that
+		// level doesn't produce — a real wild catch matching the OTHER
+		// bucket would then have no carve-out at all on whichever setting the
+		// player hasn't toggled.
+		expect(ownAt1500).toHaveLength(2);
+		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 13, D: 14, S: 14 } }));
+		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } }));
+	});
+
+	it('never reads the Best Buddy setting at all — the input has no such parameter, so both levels are always evaluated unconditionally', () => {
+		// `findBadIvCarveOuts` takes only `gamemasterPokemon` and `caps` (see
+		// `BadIvCarveOutsInput`) — there is no `maxLevel`/`bestBuddy` knob to
+		// thread through, structurally guaranteeing every caller gets the
+		// same level-50 ∪ level-51 union regardless of what the player (or a
+		// test) has the Best Buddy context set to.
+		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
+		const first = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const second = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const ownFirst = first.filter((c) => c.speciesId === overlapmon.speciesId);
+		const ownSecond = second.filter((c) => c.speciesId === overlapmon.speciesId);
+		expect(ownSecond).toEqual(ownFirst);
+		expect(ownFirst).toHaveLength(2); // both the level-50-only and level-51-only bucket, every time
+	});
+});
+
 describe('findBadIvCarveOuts — collects every distinct pattern across a reachable family, not just the first', () => {
 	it('regression: a 2-stage line with two different deviating patterns produces a carve-out for BOTH', () => {
 		const { gamemasterPokemon, stageA } = buildMultiStageBadIvFixture();
@@ -82,12 +117,19 @@ describe('findBadIvCarveOuts — collects every distinct pattern across a reacha
 		// only find one of these two distinct patterns — this is exactly the
 		// Lickitung/Kabuto-shaped bug found and fixed manually earlier this
 		// session, now locked in as an automated regression.
+		//
+		// The second pattern's bucket (`2-4-4`) is empirically shared by BOTH
+		// stageA's own level-51 top-1 (`10/15/15`) and stageB's level-50 top-1
+		// (`8/15/15`) — since stageA is walked first, its level-51 tie wins the
+		// bucket-key dedup and supplies the representative raw IVs here. Either
+		// raw spread protects the identical bucket, so this is not a behavior
+		// change, just a different (level-51-sourced) witness for it.
 		expect(ownAt1500).toHaveLength(2);
 		expect(ownAt1500).toContainEqual(
-			expect.objectContaining({ pattern: { A: 12, D: 15, S: 13 } }) // stageA's own optimum
+			expect.objectContaining({ pattern: { A: 12, D: 15, S: 13 } }) // stageA's own level-50 optimum
 		);
 		expect(ownAt1500).toContainEqual(
-			expect.objectContaining({ pattern: { A: 8, D: 15, S: 15 } }) // stageB's optimum, discovered while walking forward from stageA
+			expect.objectContaining({ pattern: { A: 10, D: 15, S: 15 } }) // stageA's own level-51 optimum (bucket 2-4-4, same bucket stageB's level-50 optimum would also supply)
 		);
 	});
 });
@@ -862,16 +904,39 @@ describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 		expect(carveOuts.some((c) => c.speciesId === blendmonShadow.speciesId)).toBe(false);
 	});
 
-	it('dead-weight avoidance: a Shadow purified-best pattern identical to its non-Shadow sibling’s own raw pattern gets no redundant entry', () => {
+	it('dead-weight avoidance: a Shadow purified-best pattern identical to its non-Shadow sibling’s own raw pattern gets no redundant entry — but a level-51-only purified pattern still gets its own genuine carve-out', () => {
 		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
 
-		// overlapmon's own raw top-1 at 1500 deviates (bucket 3-3-3) and gets
-		// its own carve-out — a Shadow's purified-best lands in that EXACT
-		// same bucket, already covered by the shadow-agnostic clause the
-		// non-Shadow analysis emits, so no separate entry should exist.
-		expect(carveOuts.some((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500)).toBe(true);
-		expect(carveOuts.some((c) => c.speciesId === overlapmonShadow.speciesId)).toBe(false);
+		// overlapmon's own raw top-1 at 1500 deviates at BOTH evaluated
+		// levels, to two different buckets: 3-3-3 (level 50, 13/14/14) and
+		// 3-4-4 (level 51, 12/15/15) — both are genuinely needed, regardless
+		// of which level the player has toggled.
+		const ownAt1500 = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
+		expect(ownAt1500).toHaveLength(2);
+		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 13, D: 14, S: 14 } }));
+		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } }));
+
+		// overlapmon never clears the 90%-of-2500 pre-filter at either level
+		// (its 15/15/15 max CP is well under 2250), so cap 2500 gets nothing.
+		expect(carveOuts.some((c) => c.speciesId === overlapmon.speciesId && c.cap === 2500)).toBe(false);
+
+		// A Shadow's purified-best at level 50 lands in the EXACT same bucket
+		// as overlapmon's own level-50 raw top-1 (3-3-3, i.e. raw 11/12/12
+		// purified) — already covered by the shadow-agnostic clause the
+		// non-Shadow analysis emits, so that specific bucket must NOT get its
+		// own redundant Shadow-scoped entry.
+		const shadowAt1500 = carveOuts.filter((c) => c.speciesId === overlapmonShadow.speciesId && c.cap === 1500);
+		expect(shadowAt1500.some((c) => c.pattern.A === 11 && c.pattern.D === 12 && c.pattern.S === 12)).toBe(false);
+
+		// But a Shadow's purified-best at level 51 lands in FOUR different,
+		// genuinely uncovered buckets — real level-51-only protection a
+		// level-50-only analysis would have missed entirely.
+		expect(shadowAt1500).toHaveLength(4);
+		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 13, S: 13 } })); // 2-3-3
+		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 13, S: 15 } })); // 2-3-4
+		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 15, S: 13 } })); // 2-4-3
+		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 15, S: 15 } })); // 2-4-4
 	});
 
 	it('a Shadow whose family never clears the 90%-of-cap pre-filter gets no carve-out either — purification cannot change that', () => {
@@ -900,7 +965,7 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 		expect(result).toContain(`&!${deviantmonShadow.dex},!shadow,1-4attack,0-1defense,3-4defense,0-2hp,4hp`);
 	});
 
-	it('does NOT emit a redundant shadow-scoped clause when the non-Shadow analysis already covers the identical raw bucket', () => {
+	it('does NOT emit a redundant shadow-scoped clause for the bucket the non-Shadow analysis already covers, but DOES emit one for level-51-only purified buckets it doesn’t', () => {
 		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
 		const result = computeBadIvString(
@@ -912,11 +977,30 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 			new Set()
 		);
 
-		expect(result).not.toContain(`!${overlapmonShadow.dex},!shadow`);
-		// The plain (shadow-agnostic) clause is still present, and — since
-		// identity there doesn't distinguish Shadow from non-Shadow — already
-		// protects a live Shadow catch of this species matching that bucket.
-		expect(result).toContain(`!${overlapmon.dex},`);
+		// Bucket 3-3-3 (level 50, raw 11/12/12 purified) is the one genuinely
+		// shared between overlapmon's own top-1 and its Shadow's purified-best
+		// — its complement (`0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`)
+		// must appear only on the plain (shadow-agnostic) clause, never on a
+		// `,!shadow`-scoped one.
+		expect(result).toContain(`!${overlapmon.dex},0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`);
+		// Bucket 3-3-3's own shadow-scoped clause specifically (as opposed to
+		// any of the four genuinely-distinct level-51 buckets below, one of
+		// which happens to share this bucket's Attack/Defense complement) must
+		// never appear.
+		expect(result).not.toContain(`!${overlapmonShadow.dex},!shadow,0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`);
+
+		// overlapmon's own level-51-only bucket (3-4-4) also gets its plain
+		// clause, same treatment.
+		expect(result).toContain(`!${overlapmon.dex},0-2attack,4attack,0-3defense,0-3hp`);
+
+		// But the four buckets a Shadow's purified-best reaches ONLY at level
+		// 51 (2-3-3, 2-3-4, 2-4-3, 2-4-4) are genuinely uncovered by the
+		// non-Shadow analysis, so each DOES get its own `,!shadow`-scoped
+		// clause.
+		expect(result).toContain(`!${overlapmonShadow.dex},!shadow,0-1attack,3-4attack,0-2defense,4defense,0-2hp,4hp`);
+		expect(result).toContain(`!${overlapmonShadow.dex},!shadow,0-1attack,3-4attack,0-2defense,4defense,0-3hp`);
+		expect(result).toContain(`!${overlapmonShadow.dex},!shadow,0-1attack,3-4attack,0-3defense,0-2hp,4hp`);
+		expect(result).toContain(`!${overlapmonShadow.dex},!shadow,0-1attack,3-4attack,0-3defense,0-3hp`);
 	});
 
 	it('a Shadow-derived carve-out is skipped while its category toggle is still on, same dead-weight avoidance as the regular carve-outs', () => {

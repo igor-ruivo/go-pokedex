@@ -231,13 +231,25 @@ export const buildBadIvFixture = () => {
 		isShadow: true,
 		baseStats: { atk: 140, def: 120, hp: 140 },
 	});
-	// `overlapmon` (80/200/230): empirically verified — at cap 1500 both its
-	// own raw top-1 AND a Shadow's purified-best top-1 land in the identical
-	// bucket (`3-3-3`, neither the default shape nor a hundo) — the
-	// dead-weight-avoidance case: the plain (shadow-agnostic) carve-out
-	// clause the non-Shadow analysis already emits also protects a Shadow
-	// catch matching that same raw bucket, so no separate `,!shadow`-scoped
-	// clause should be emitted for it.
+	// `overlapmon` (80/200/230): empirically verified, at cap 1500 (its
+	// 15/15/15 max CP never clears the 90%-of-2500 pre-filter at either
+	// level, so cap 2500 produces nothing at all for this species):
+	// - Own raw top-1 deviates at BOTH evaluated levels, to two DIFFERENT
+	//   buckets — `3-3-3` (level 50, `13/14/14`) and `3-4-4` (level 51,
+	//   `12/15/15`) — the level-50/level-51-union case: neither bucket is a
+	//   hundo or the default shape, so both need their own carve-out
+	//   regardless of which level the player has toggled.
+	// - A Shadow's purified-best top-1 at level 50 lands in that exact same
+	//   `3-3-3` bucket — the dead-weight-avoidance case: the plain
+	//   (shadow-agnostic) carve-out clause the non-Shadow analysis already
+	//   emits also protects a Shadow catch matching that raw bucket, so no
+	//   separate `,!shadow`-scoped clause should be emitted for it.
+	// - But at level 51, a Shadow's purified-best top-1 lands in FOUR
+	//   different, genuinely uncovered buckets (`2-3-3`, `2-3-4`, `2-4-3`,
+	//   `2-4-4`) — none matching either of the non-Shadow union's two
+	//   buckets above — so those DO need their own new `,!shadow`-scoped
+	//   carve-outs: real, level-51-only protection the old level-50-only
+	//   analysis would have missed entirely.
 	const overlapmon = mockPokemon({ speciesId: 'overlapmon', dex: 305, baseStats: { atk: 80, def: 200, hp: 230 } });
 	const overlapmonShadow = mockPokemon({
 		speciesId: 'overlapmon_shadow',
@@ -279,7 +291,7 @@ export const buildBadIvFixture = () => {
  * pattern found while walking a reachable family, instead of every distinct
  * one. Both stages' own top-1 spreads at cap 1500 were empirically verified
  * (via `computeBestIVs`) to deviate from the default shape, and to deviate
- * from EACH OTHER (different bucket signatures):
+ * from EACH OTHER (different bucket signatures), at level 50 (`MAX_LEVEL`):
  * - `stageA` (100/100/300): top-1 is 12/15/13 → buckets 3/4/3.
  * - `stageB` (140/60/260), forward-reachable from stageA: top-1 is 8/15/15
  *   → buckets 2/4/4 — a different pattern, not a hundo (so not blanket-
@@ -287,6 +299,14 @@ export const buildBadIvFixture = () => {
  * Evaluating `stageA` as the origin must produce carve-outs for BOTH
  * patterns at cap 1500 — a buggy "stop at the first unprotected stage"
  * implementation would only find one of them.
+ *
+ * `findBadIvCarveOuts` also always unions in level 51 (Best Buddy) — stageA's
+ * OWN level-51 top-1 happens to be 10/15/15, which is bucket 2/4/4 too, the
+ * same bucket as stageB's level-50 optimum above. Since stageA is walked
+ * before stageB, its level-51 tie wins the bucket-key dedup, so the actual
+ * carve-out witnessing bucket 2/4/4 is `{A:10,D:15,S:15}`, not stageB's
+ * `{A:8,D:15,S:15}` — both raw spreads protect the identical bucket, so this
+ * is not a gap, just a different (level-51-sourced) witness for it.
  */
 export const buildMultiStageBadIvFixture = () => {
 	const stageA = mockPokemon({
