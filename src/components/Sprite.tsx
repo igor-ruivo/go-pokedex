@@ -25,6 +25,23 @@ export const spriteUrl = (pokemon: IGamemasterPokemon, source: ImageSource): str
 	return pokemon.imageUrl || goSpriteUrl(pokemon.goImageUrl);
 };
 
+/**
+ * Shared `<img onError>` handler for every sprite `<img>` in the app, not
+ * just the hero `<Sprite>` below — GO/shiny assets 404 for plenty of species
+ * (not every one has a PokeMiners icon), and every mini-chip, family-line
+ * chip, calendar chip and ranking card renders its own plain `<img
+ * src={spriteUrl(...)}>` rather than going through `<Sprite>`. Falls back to
+ * the official artwork once; if that 404s too there's nothing left to fall
+ * back to, so it's left alone rather than looping.
+ */
+export const handleSpriteError =
+	(pokemon: IGamemasterPokemon) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+		const img = e.currentTarget;
+		if (pokemon.imageUrl && img.src !== pokemon.imageUrl) {
+			img.src = pokemon.imageUrl;
+		}
+	};
+
 export const Sprite = ({
 	pokemon,
 	alt,
@@ -106,18 +123,7 @@ export const Sprite = ({
 				: {})}
 		>
 			{pokemon.isShadow && <ShadowMark className='r-shadow-mark r-sprite-shadow' />}
-			<img
-				src={resolved}
-				alt={alt ?? pokemon.speciesName}
-				decoding='async'
-				onError={(e) => {
-					// a missing GO / shiny asset falls back to the official artwork
-					const img = e.currentTarget;
-					if (pokemon.imageUrl && img.src !== pokemon.imageUrl) {
-						img.src = pokemon.imageUrl;
-					}
-				}}
-			/>
+			<img src={resolved} alt={alt ?? pokemon.speciesName} decoding='async' onError={handleSpriteError(pokemon)} />
 			{hint && hint.count > 1 && (
 				<span className='r-sprite-dots' aria-hidden='true'>
 					{Array.from({ length: hint.count }, (_, i) => (

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { spriteUrl } from '../../components/Sprite';
+import { handleSpriteError, spriteUrl } from '../../components/Sprite';
 import { Stepper } from '../../components/Stepper';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../../contexts/language-context';
@@ -723,7 +723,13 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 					<div key={key} className='r-ss-block'>
 						<div className='r-ss-head'>
 							<span className='r-ss-sprite'>
-								<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
+								<img
+									src={spriteUrl(p, imageSource)}
+									alt=''
+									loading='lazy'
+									decoding='async'
+									onError={handleSpriteError(p)}
+								/>
 							</span>
 							<p className='r-ss-sentence'>{sentence(entry, pokemon, top, trash, leagueName)}</p>
 						</div>

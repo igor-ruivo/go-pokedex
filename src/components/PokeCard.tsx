@@ -6,7 +6,7 @@ import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
 import { typeKey, typeVar } from '../lib/types';
 import { ShadowMark } from './ShadowMark';
-import { spriteUrl } from './Sprite';
+import { handleSpriteError, spriteUrl } from './Sprite';
 
 export interface CardMetric {
 	rank?: number;
@@ -52,7 +52,13 @@ export const PokeCard = ({
 				))}
 			</span>
 			<span className='r-pc-art'>
-				<img src={spriteUrl(pokemon, imageSource)} alt='' loading='lazy' decoding='async' />
+				<img
+				src={spriteUrl(pokemon, imageSource)}
+				alt=''
+				loading='lazy'
+				decoding='async'
+				onError={handleSpriteError(pokemon)}
+			/>
 			</span>
 			<b className='r-pc-name'>{cleanName(pokemon.speciesName)}</b>
 			{metric?.cp != null && (

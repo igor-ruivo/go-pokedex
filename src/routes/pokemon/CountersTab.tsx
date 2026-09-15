@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir } from '../../components/SortBar';
-import { spriteUrl } from '../../components/Sprite';
+import { handleSpriteError, spriteUrl } from '../../components/Sprite';
 import { useBestBuddy } from '../../contexts/best-buddy-context';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
@@ -205,7 +205,13 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								<span className='r-ctr-rank'>{i + 1}</span>
 								<span className='r-ctr-art'>
 									{p.isShadow && <ShadowMark />}
-									<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
+									<img
+										src={spriteUrl(p, imageSource)}
+										alt=''
+										loading='lazy'
+										decoding='async'
+										onError={handleSpriteError(p)}
+									/>
 								</span>
 								<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>
 								<span className='r-ctr-score' data-tone={m.rating >= 500 ? 'win' : 'lose'}>
@@ -475,7 +481,13 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								<span className='r-ctr-rank'>{i + 1}</span>
 								<span className='r-ctr-art'>
 									{p.isShadow && <ShadowMark />}
-									<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
+									<img
+										src={spriteUrl(p, imageSource)}
+										alt=''
+										loading='lazy'
+										decoding='async'
+										onError={handleSpriteError(p)}
+									/>
 								</span>
 								<div className='r-ctr-mid'>
 									<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ShadowMark } from '../components/ShadowMark';
-import { spriteUrl } from '../components/Sprite';
+import { handleSpriteError, spriteUrl } from '../components/Sprite';
 import { useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
@@ -924,7 +924,13 @@ const WhitelistSearch = ({
 							<button type='button' role='option' aria-selected={false} onClick={() => pick(p)}>
 								<span className='r-search-sprite'>
 									{p.isShadow && <ShadowMark />}
-									<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
+									<img
+										src={spriteUrl(p, imageSource)}
+										alt=''
+										loading='lazy'
+										decoding='async'
+										onError={handleSpriteError(p)}
+									/>
 								</span>
 								<span className='r-search-name'>
 									{cleanName(p.speciesName)}
@@ -963,7 +969,7 @@ const WhitelistChip = ({
 	>
 		<span className='r-md-wl-sprite'>
 			{p.isShadow && <ShadowMark />}
-			<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
+			<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' onError={handleSpriteError(p)} />
 		</span>
 		<span className='r-md-wl-name'>{cleanName(p.speciesName)}</span>
 		{!locked && (

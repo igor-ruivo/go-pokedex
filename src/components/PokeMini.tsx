@@ -7,7 +7,7 @@ import { LEAGUE_KEYS, useLeagueBadges } from '../lib/relevance';
 import { typeVar } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { ShadowMark } from './ShadowMark';
-import { spriteUrl } from './Sprite';
+import { handleSpriteError, spriteUrl } from './Sprite';
 
 /** Small sprite tile used across the calendar (spawns, raids, eggs, rockets…). */
 export const PokeMini = ({
@@ -49,7 +49,7 @@ export const PokeMini = ({
 					))}
 				</span>
 			)}
-			<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
+			<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' onError={handleSpriteError(p)} />
 			<span>{cleanName(p.speciesName)}</span>
 			{note && <em>{note}</em>}
 		</Link>

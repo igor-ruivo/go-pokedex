@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { IvPicker, type IVs } from '../components/IvPicker';
 import { ShadowMark } from '../components/ShadowMark';
-import { goSpriteUrl, Sprite, spriteUrl } from '../components/Sprite';
+import { goSpriteUrl, handleSpriteError, Sprite, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
@@ -662,7 +662,12 @@ const PokemonDetail = () => {
 				>
 					<span className='r-hero-mini-sprite'>
 						{isShadow && <ShadowMark className='r-shadow-mark' />}
-						<img src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)} alt='' aria-hidden='true' />
+						<img
+							src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)}
+							alt=''
+							aria-hidden='true'
+							onError={handleSpriteError(pokemon)}
+						/>
 					</span>
 					<span className='r-hero-mini-name'>{cleanName(pokemon.speciesName)}</span>
 				</button>
@@ -781,7 +786,13 @@ const PokemonDetail = () => {
 							>
 								{m.isShadow && <ShadowMark />}
 								<span className='r-reach-art'>
-									<img src={spriteUrl(m, imageSource)} alt='' loading='lazy' decoding='async' />
+									<img
+										src={spriteUrl(m, imageSource)}
+										alt=''
+										loading='lazy'
+										decoding='async'
+										onError={handleSpriteError(m)}
+									/>
 								</span>
 								<span>{cleanName(m.speciesName)}</span>
 							</Link>
@@ -864,7 +875,15 @@ const PokemonDetail = () => {
 											onClick={bestType ? (e) => spriteClick(e, l.id as LeagueId) : undefined}
 										>
 											{member?.isShadow && <ShadowMark />}
-											{member && <img src={spriteUrl(member, imageSource)} alt='' loading='lazy' decoding='async' />}
+											{member && (
+										<img
+											src={spriteUrl(member, imageSource)}
+											alt=''
+											loading='lazy'
+											decoding='async'
+											onError={handleSpriteError(member)}
+										/>
+									)}
 											{bestType && (
 												<span
 													className='r-board-type'

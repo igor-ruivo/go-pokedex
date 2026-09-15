@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
-import { spriteUrl } from '../components/Sprite';
+import { handleSpriteError, spriteUrl } from '../components/Sprite';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
@@ -280,7 +280,16 @@ const EventCard = ({
 								// behind the last.
 								const style =
 									spotlightMons.length === 3 ? { zIndex: spotlightMons.length - i } : undefined;
-								return <img key={e.speciesId} src={spriteUrl(p, imageSource)} alt='' loading='lazy' style={style} />;
+								return (
+									<img
+										key={e.speciesId}
+										src={spriteUrl(p, imageSource)}
+										alt=''
+										loading='lazy'
+										style={style}
+										onError={handleSpriteError(p)}
+									/>
+								);
 							})}
 						</span>
 					</span>

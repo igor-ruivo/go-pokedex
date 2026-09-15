@@ -11,7 +11,7 @@ import { R } from '../lib/nav';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { ShadowMark } from './ShadowMark';
-import { spriteUrl } from './Sprite';
+import { handleSpriteError, spriteUrl } from './Sprite';
 
 const MAX_PER_GROUP = 16;
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -195,7 +195,13 @@ export const SearchBox = () => {
 										<>
 											<span className='r-search-sprite'>
 												{hit.p.isShadow && <ShadowMark />}
-												<img src={spriteUrl(hit.p, imageSource)} alt='' loading='lazy' decoding='async' />
+												<img
+													src={spriteUrl(hit.p, imageSource)}
+													alt=''
+													loading='lazy'
+													decoding='async'
+													onError={handleSpriteError(hit.p)}
+												/>
 											</span>
 											<span className='r-search-name'>
 												{cleanName(hit.p.speciesName)}
