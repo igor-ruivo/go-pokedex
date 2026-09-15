@@ -4,32 +4,23 @@ import { useLocation, useNavigationType } from 'react-router-dom';
 /**
  * The "page family" a pathname belongs to, for scroll-reset purposes. Tabs
  * and filters that live in the URL but stay conceptually on the *same* page
- * don't count as a new page — a Pokémon's tabs (/pokemon/pikachu/moves),
- * Rankings' league/type (/rankings/raid/fire), and Calendar's tab
- * (/calendar/bosses) are all real path segments, but switching between them
- * shouldn't reset your scroll any more than switching a query param would.
- * A different Pokémon/move, or an entirely different section of the site,
- * genuinely is a new page and should start at the top.
+ * don't count as a new page — a Pokémon's tabs *and* its species itself
+ * (/pokemon/pikachu/moves → /pokemon/raichu/moves, however that switch was
+ * triggered: the searchbar, the family-line strip, the shadow toggle, a
+ * "used by"/counters list link, …), Rankings' league/type
+ * (/rankings/raid/fire), and Calendar's tab (/calendar/bosses) are all real
+ * path segments, but switching between them shouldn't reset your scroll any
+ * more than switching a query param would. An entirely different section of
+ * the site genuinely is a new page and should start at the top — landing on
+ * a Pokémon page fresh from Rankings/search/a move's owner list still starts
+ * there scrolled to top, same as always; it's only *staying inside* the
+ * Pokémon page family that no longer resets it.
  */
 const pageFamily = (pathname: string): string => {
-	if (pathname.startsWith('/pokemon/')) return pathname.split('/').slice(0, 3).join('/'); // /pokemon/:speciesId
+	if (pathname.startsWith('/pokemon/')) return '/pokemon'; // species *and* tab are both tab-like here
 	if (pathname.startsWith('/rankings')) return '/rankings'; // league/type are tab-like here
 	if (pathname.startsWith('/calendar')) return '/calendar'; // ditto for the calendar's tab
 	return pathname; // /moves, /move/:id, /types, /trash, /settings, … — each is its own page
-};
-
-/**
- * Set by a navigation trigger that changes the URL's `pageFamily` (e.g.
- * switching to a different species via a Pokémon's family-line strip or its
- * shadow toggle) but that the caller considers conceptually the *same* page
- * for scroll purposes — call this right before triggering that navigation to
- * suppress the next scroll-to-top. Consumed (and cleared) by the first
- * navigation effect that runs afterwards, whether or not it would have
- * scrolled.
- */
-let suppressNext = false;
-export const suppressNextScrollReset = () => {
-	suppressNext = true;
 };
 
 /**
@@ -56,9 +47,7 @@ export const useScrollToTopOnNavigate = () => {
 		const family = pageFamily(pathname);
 		const changed = lastFamily.current !== null && lastFamily.current !== family;
 		lastFamily.current = family;
-		const suppressed = suppressNext;
-		suppressNext = false;
-		if (changed && !suppressed && String(navigationType) !== 'POP') {
+		if (changed && String(navigationType) !== 'POP') {
 			window.scrollTo(0, 0);
 		}
 	}, [pathname, navigationType]);

@@ -83,6 +83,18 @@ const Rankings = () => {
 	const [hintOpen, setHintOpen] = useState(false);
 	const q = (params.get('q') ?? '').toLowerCase().trim();
 	const isRaid = mode === 'raid';
+	// Switching the league/mode tab is a deliberate "start over" action here —
+	// unlike a Pokémon page's tabs (see useScrollToTopOnNavigate's `pageFamily`,
+	// which treats all of /rankings as one page precisely so this component
+	// doesn't remount on every tab/type/sort change), scrolling back to the top
+	// of the *new* tab's list is what you'd actually want after picking it.
+	const lastMode = useRef(mode);
+	useLayoutEffect(() => {
+		if (lastMode.current !== mode) {
+			lastMode.current = mode;
+			window.scrollTo(0, 0);
+		}
+	}, [mode]);
 	// `/rankings/raid/:type` (a real, crawlable URL per type — see R.rankings)
 	// only ever *seeds* the type when `?type=` isn't already set; from then on
 	// the query param — what the FilterBar actually writes to — is the single

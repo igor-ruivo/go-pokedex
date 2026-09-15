@@ -13,7 +13,6 @@ import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import useComputeIVs from '../hooks/useComputeIVs';
-import { suppressNextScrollReset } from '../hooks/useScrollToTopOnNavigate';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dec1, dexNo, ordinal, rankPerfection } from '../lib/format';
 import { R } from '../lib/nav';
@@ -271,8 +270,7 @@ const PokemonDetail = () => {
 	// Only landing here fresh from a genuinely different page (Rankings, the
 	// Pokédex, search, …) re-arms the auto-pick; family-line/shadow-toggle
 	// navigation suppresses that reset via `suppressIvResetRef`, set right
-	// before those specific `navigate()`/`Link` calls, the same way
-	// `suppressNextScrollReset` is.
+	// before those specific `navigate()`/`Link` calls.
 	const ivTouchedRef = useRef(false);
 	const suppressIvResetRef = useRef(false);
 	const prevSpeciesIdRef = useRef(speciesId);
@@ -529,7 +527,6 @@ const PokemonDetail = () => {
 	const nextFamilyMember = family.length > 1 ? family[(familyIdx + 1) % family.length] : undefined;
 	const goToNextFamilyMember = () => {
 		if (!nextFamilyMember) return;
-		suppressNextScrollReset();
 		suppressIvResetRef.current = true;
 		void navigate(`${R.pokemon(nextFamilyMember.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
 	};
@@ -752,7 +749,6 @@ const PokemonDetail = () => {
 							className='r-toggle r-toggle--shadow'
 							data-on={isShadow}
 							onClick={() => {
-								suppressNextScrollReset();
 								suppressIvResetRef.current = true;
 								void navigate(
 									`${R.pokemon(isShadow ? baseId : `${baseId}_shadow`, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`
@@ -780,7 +776,6 @@ const PokemonDetail = () => {
 								data-active={m.speciesId === self}
 								style={{ ['--tc' as string]: typeVar(m.types[0]) }}
 								onClick={() => {
-									suppressNextScrollReset();
 									suppressIvResetRef.current = true;
 								}}
 							>
