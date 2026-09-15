@@ -134,7 +134,7 @@ describe('computeTrashString — Master League rescue via forward reachability',
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
 	});
 });
 
@@ -151,7 +151,7 @@ describe('computeTrashString — Great/Ultra rescue via forward reachability (me
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
 	});
 
 	it("a later stage's Ultra rank rescues every earlier stage too, unconditionally", () => {
@@ -166,7 +166,7 @@ describe('computeTrashString — Great/Ultra rescue via forward reachability (me
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
 	});
 });
 
@@ -187,7 +187,7 @@ describe('computeTrashString — raid rescue via a later stage (isGoodForRaids, 
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
 	});
 });
 
@@ -211,7 +211,7 @@ describe('computeTrashString — multiple good later stages, different leagues e
 		// best is Ivysaur's (good), Ultra's best is Venusaur's (good) — so
 		// Master is the only bad league, and "all three bad" is false for
 		// every reachable candidate in this family. Nothing is deletable.
-		expect(result).toBe('&!4*&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
 	});
 });
 
@@ -365,6 +365,28 @@ describe('computeTrashString — pt-BR translation', () => {
 		// clause — proves `translatePtBrTypeNames` runs over per-species
 		// identity clauses too, not just the tail.
 		expect(result).toContain('&!555,!planta');
+	});
+});
+
+describe('computeTrashString — Shadow-purify hundo guard (unconditional, always on)', () => {
+	it('the guard clause is present regardless of any protect/whitelist setting — same treatment as !4*', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const result = computeTrashString(buildArgs(gamemasterPokemon));
+
+		// A Shadow catch with Attack/Defense/HP all already bucket 3-4 (raw
+		// 11-15) might purify (+2/stat, capped 15) into an exact 15/15/15 —
+		// raw 13 or 14 reaches 15 once purified, raw 15 already is one. This
+		// clause (De Morgan of "isShadow AND attack>=3 AND defense>=3 AND
+		// hp>=3") protects that whole population unconditionally, right next
+		// to the exact-hundo guard.
+		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow');
+	});
+
+	it('localizes to pt-BR alongside the rest of the tail', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const result = computeTrashString(buildArgs(gamemasterPokemon, { gl: GameLanguage.ptbr }));
+
+		expect(result).toContain('&!4*&0-2ataque,0-2defesa,0-2ps,!sombroso');
 	});
 });
 

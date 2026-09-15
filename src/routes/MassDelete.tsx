@@ -249,6 +249,28 @@ export interface ComputeArgs {
 	whitelist: Set<string>;
 }
 
+/**
+ * Unconditional, not togglable by anything — same treatment as `!4*` itself,
+ * and appended alongside it in all three tabs. A Shadow catch with Attack,
+ * Defense, AND HP each already in bucket 3-4 (raw IV 11-15) might purify
+ * (+2 per stat, capped at 15) into an exact 15/15/15: raw 13 or 14 in a stat
+ * reaches 15 once purified, and raw 15 already is one. Judging a Shadow
+ * catch as "not a hundo" purely on its own raw IVs, the way every other
+ * check here does, would risk deleting or trading away what amounts to a
+ * hundo the moment it's purified — a free, always-available action, not a
+ * hypothetical. The game's search can't filter tighter than bucket
+ * granularity, so the whole bucket 3-4 range is protected, not just the raw
+ * values that provably reach exactly 15 — the same approximation every
+ * other bucket-based carve-out in this file already makes.
+ */
+const shadowPurifyHundoGuard = (gl: GameLanguage): string => {
+	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
+	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
+	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
+	const shadow = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
+	return `&0-2${A},0-2${D},0-2${S},!${shadow}`;
+};
+
 /* ---- verbatim port of the legacy DeleteTrash `computeStr`, since extended
    with togglable category protection and a manual per-species whitelist ----
    Deliberately meta-only: whether a species (or any of its later evolutions)
@@ -452,7 +474,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 		newStr = translatePtBrTypeNames(newStr);
 	}
 
-	newStr += `&!4*&!${gameTranslator(GameTranslatorKeys.CP, gl)}${cp}-`;
+	newStr += `&!4*${shadowPurifyHundoGuard(gl)}&!${gameTranslator(GameTranslatorKeys.CP, gl)}${cp}-`;
 	if (protect.tagged) newStr += '&!#';
 	if (protect.favorite) newStr += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
 	if (protect.megaEvolvable) newStr += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
@@ -609,7 +631,7 @@ export const computeBadIvString = (
 		result = translatePtBrTypeNames(result);
 	}
 
-	result += `&!4*&!${CP}${cp}-`;
+	result += `&!4*${shadowPurifyHundoGuard(gl)}&!${CP}${cp}-`;
 	if (protect.tagged) result += '&!#';
 	if (protect.favorite) result += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
 	if (protect.megaEvolvable) result += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
@@ -778,7 +800,7 @@ export const computeTradeableString = (
 	}
 
 	// A hundo needs no trade at all, regardless of the stricter toggle below.
-	result += `&!4*&!${CP}${cp}-`;
+	result += `&!4*${shadowPurifyHundoGuard(gl)}&!${CP}${cp}-`;
 	if (onlyLowIv) {
 		result += `&0-2${A}&0-2${D}&0-2${S}`;
 	}

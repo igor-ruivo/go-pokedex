@@ -84,10 +84,15 @@ describe('computeTradeableString — hundo always excluded', () => {
 });
 
 describe('computeTradeableString — onlyLowIv toggle', () => {
-	it('off: no bucket restriction beyond hundo exclusion', () => {
+	it('off: no bucket restriction beyond hundo exclusion and the unconditional Shadow-purify guard', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon, { onlyLowIv: false });
-		expect(result).not.toContain('0-2attack');
+		// The `onlyLowIv` toggle's own restriction is 3 separate `&`-joined
+		// positive terms (an AND, one per stat) — distinct in shape from the
+		// unconditional Shadow-purify guard's single comma-joined OR term
+		// (`&0-2attack,0-2defense,0-2hp,!shadow`), which is always present
+		// regardless of this toggle and isn't what this test is checking.
+		expect(result).not.toContain('&0-2attack&0-2defense&0-2hp');
 	});
 
 	it('on: adds the AND-joined low-IV restriction across all three stats', () => {
@@ -173,6 +178,26 @@ describe('computeTradeableString — pt-BR translation', () => {
 	});
 });
 
+describe('computeTradeableString — Shadow-purify hundo guard (unconditional, always on)', () => {
+	it('the guard clause is present regardless of any toggle — same treatment as !4*', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const result = call(gamemasterPokemon);
+
+		// A Shadow catch with Attack/Defense/HP all already bucket 3-4 (raw
+		// 11-15) might purify (+2/stat, capped 15) into an exact 15/15/15 —
+		// suggesting it for trade would throw away that possibility for good.
+		// Protected unconditionally, right next to the exact-hundo guard.
+		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow');
+	});
+
+	it('localizes to pt-BR alongside the rest of the tail', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const result = call(gamemasterPokemon, { gl: GameLanguage.ptbr });
+
+		expect(result).toContain('&!4*&0-2ataque,0-2defesa,0-2ps,!sombroso');
+	});
+});
+
 describe('computeTradeableString — CP cap (upper bound, not a floor)', () => {
 	it.each([2000, 3500])('emits the exact CP cutoff in the tail (cp=%i)', (cp) => {
 		const { gamemasterPokemon } = buildMainFixture();
@@ -184,7 +209,7 @@ describe('computeTradeableString — CP cap (upper bound, not a floor)', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon, { cp: 2000, onlyLowIv: true });
 
-		expect(result).toContain('&!4*&!cp2000-');
+		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp2000-');
 		expect(result).toContain('&0-2attack&0-2defense&0-2hp');
 	});
 });

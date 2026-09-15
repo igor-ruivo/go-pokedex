@@ -793,6 +793,45 @@ describe('computeBadIvString — pt-BR translation', () => {
 	});
 });
 
+describe('computeBadIvString — Shadow-purify hundo guard (unconditional, always on)', () => {
+	it('the guard clause is present regardless of mode, protect flags, or whitelist — same treatment as !4*', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const result = computeBadIvString(gamemasterPokemon, [], GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set());
+
+		// This tab's own base literal already targets any raw Attack bucket
+		// >= 2 (`2-4attack,...`) — meaning a Shadow catch with Attack bucket 3
+		// (raw 11-14, not yet an exact hundo) would otherwise be swept as
+		// "bad", even though purifying it (+2/stat, capped 15) might make it
+		// an exact 15/15/15. This unconditional clause protects the whole
+		// "Shadow AND Attack/Defense/HP all bucket 3-4" population, in both
+		// Complete and Simplified mode alike (it doesn't depend on `carveOuts`
+		// at all).
+		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow');
+	});
+
+	it('present identically in Simplified mode too — this guard is independent of the `simplified` parameter', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true
+		);
+
+		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow');
+	});
+
+	it('localizes to pt-BR alongside the rest of the tail', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const result = computeBadIvString(gamemasterPokemon, [], GameLanguage.ptbr, 1500, DEFAULT_PROTECTION, new Set());
+
+		expect(result).toContain('&!4*&0-2ataque,0-2defesa,0-2ps,!sombroso');
+	});
+});
+
 describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 	it('a Shadow species gets its own carve-out for the pre-purification raw spread that turns into its true optimum once purified', () => {
 		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();

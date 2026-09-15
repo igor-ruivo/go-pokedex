@@ -84,7 +84,7 @@ const trashFlip = (cps: Set<number>, maxCP: number, attr: boolean): Set<number> 
 	return cps;
 };
 
-const computeSearchString = (
+export const computeSearchString = (
 	predecessor: IGamemasterPokemon,
 	opts: { top: number; trash: boolean; topIVCombinations: ReadonlyArray<RankEntry>; gl: GameLanguage }
 ): string => {
@@ -174,8 +174,17 @@ const computeSearchString = (
 	}
 
 	result += emptyBuf;
-	if (trash) result += '&!4*';
-	else if (cps[4].size > 0) result += ',4*';
+	if (trash) {
+		result += '&!4*';
+		// Unconditional, right alongside the exact-hundo guard above — same
+		// treatment as Mass Delete's own copy of this rule (see
+		// `shadowPurifyHundoGuard` in MassDelete.tsx for the full reasoning).
+		// A Shadow catch with Attack, Defense, AND HP already bucket 3-4 (raw
+		// 11-15) might purify (+2/stat, capped 15) into an exact 15/15/15 —
+		// raw 13 or 14 reaches 15 once purified, raw 15 already is one —
+		// so it's never safe to match it here on its raw IVs alone.
+		result += `&0-2${A},0-2${D},0-2${S},!${gameTranslator(GameTranslatorKeys.ShadowSearch, gl)}`;
+	} else if (cps[4].size > 0) result += ',4*';
 
 	return result;
 };
