@@ -271,47 +271,194 @@ export const shadowSuffixFor = (
    (purifying it also reaches the same, non-Shadow, target) -------------------- */
 
 export interface SearchChainEntry {
-	species: IGamemasterPokemon;
-	/** True for a Shadow species included only because purifying it reaches
-	 *  the (non-Shadow) target — its raw IVs need `rawShadowSourcesFor`
-	 *  before matching the target's own top combos. Always false when the
-	 *  target itself is Shadow (a Shadow chain needs no purification math at
-	 *  all — Shadow evolves into Shadow, raw IVs unchanged, same as any
-	 *  other evolution). */
-	viaPurify: boolean;
+	/** The non-Shadow species at this evolutionary stage — present unless
+	 *  `target` itself is Shadow, in which case the whole chain is
+	 *  Shadow-only and this is undefined on every entry. */
+	nonShadow?: IGamemasterPokemon;
+	/** The Shadow species at this stage: either the purify-reachable Shadow
+	 *  counterpart of `nonShadow` (when one exists in the gamemaster and
+	 *  `target` is non-Shadow — the case `computeMergedSearchString` merges
+	 *  with `nonShadow`), or, when `target` itself is Shadow, this stage's
+	 *  own (only) species, with `nonShadow` left undefined — nothing to
+	 *  merge with in that case, since a Shadow chain never involves
+	 *  purification math at all (Shadow evolves into Shadow, raw IVs
+	 *  unchanged, same as any other evolution). */
+	shadow?: IGamemasterPokemon;
 }
 
 /**
  * The inverse of `fetchReachablePokemonIncludingSelf`: every earlier
  * evolutionary stage that can still become `target`, starting from `target`
- * and expanding backward. On top of the plain (Shadow-status-matching)
- * predecessor walk, when `target` itself is non-Shadow this also adds the
- * Shadow counterpart of every one of those predecessors (target included)
- * that actually exists in the gamemaster — a wild-caught Shadow of an
- * earlier stage purifies into the ordinary (non-Shadow) stage, which then
- * evolves normally, same as any other non-Shadow catch of that stage.
+ * and expanding backward — one entry per STAGE (not per Shadow status), each
+ * carrying its non-Shadow species and, when one exists, its Shadow
+ * counterpart too, ready for `computeMergedSearchString` to combine into a
+ * single string. A wild-caught Shadow of an earlier stage purifies into the
+ * ordinary (non-Shadow) stage, which then evolves normally, same as any
+ * other non-Shadow catch of that stage — that's what makes it a legitimate
+ * additional predecessor at all, not just a stray inclusion.
  */
 export const buildSearchChain = (
 	target: IGamemasterPokemon,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>
 ): Array<SearchChainEntry> => {
 	const direct = Array.from(fetchPredecessorPokemonIncludingSelf(target, gamemasterPokemon));
-	const entries: Array<SearchChainEntry> = direct.map((species) => ({ species, viaPurify: false }));
 
-	if (!target.isShadow) {
-		const shadowByBase = new Map<string, IGamemasterPokemon>();
-		Object.values(gamemasterPokemon).forEach((p) => {
-			if (p.isShadow && !p.aliasId) shadowByBase.set(p.speciesId.replaceAll('_shadow', ''), p);
-		});
-		for (const species of direct) {
-			const shadow = shadowByBase.get(species.speciesId);
-			if (shadow) entries.push({ species: shadow, viaPurify: true });
-		}
+	if (target.isShadow) {
+		return direct
+			.map((species) => ({ shadow: species }))
+			.sort((a, b) => sortPokemonByBattlePowerAsc(a.shadow, b.shadow));
 	}
 
-	return entries.sort(
-		(a, b) => sortPokemonByBattlePowerAsc(a.species, b.species) || Number(a.species.isShadow) - Number(b.species.isShadow)
-	);
+	const shadowByBase = new Map<string, IGamemasterPokemon>();
+	Object.values(gamemasterPokemon).forEach((p) => {
+		if (p.isShadow && !p.aliasId) shadowByBase.set(p.speciesId.replaceAll('_shadow', ''), p);
+	});
+
+	return direct
+		.map((species) => {
+			const shadow = shadowByBase.get(species.speciesId);
+			return shadow ? { nonShadow: species, shadow } : { nonShadow: species };
+		})
+		.sort((a, b) => sortPokemonByBattlePowerAsc(a.nonShadow, b.nonShadow));
+};
+
+/* ---- per-star-tier bucket/CP/HP bookkeeping — shared by the solo and -------
+   merged string builders below ------------------------------------------- */
+
+interface TierBucket {
+	cps: Set<number>;
+	hps: Set<number>;
+	atkivs: Set<number>;
+	defivs: Set<number>;
+	hpivs: Set<number>;
+	maxCP: number;
+	maxHP: number;
+}
+
+const emptyTierBucket = (): TierBucket => ({
+	cps: new Set(),
+	hps: new Set(),
+	atkivs: new Set(),
+	defivs: new Set(),
+	hpivs: new Set(),
+	maxCP: 0,
+	maxHP: 0,
+});
+
+/** Buckets every combo (optionally purify-expanded first) into its own star
+ *  tier's CP/HP/IV-bucket sets, for `species`'s own base stats. */
+const computeTierBuckets = (
+	species: IGamemasterPokemon,
+	topIVCombinations: ReadonlyArray<RankEntry>,
+	viaPurify: boolean
+): Array<TierBucket> => {
+	const combos = viaPurify ? topIVCombinations.flatMap(rawShadowSourcesFor) : topIVCombinations;
+	const tiers: Array<TierBucket> = Array.from({ length: 5 }, emptyTierBucket);
+	const baseatk = species.baseStats.atk;
+	const basedef = species.baseStats.def;
+	const basesta = species.baseStats.hp;
+
+	for (const c of combos) {
+		// `c.L` is the level at which THIS combo's CP, on the TARGET species'
+		// own base stats, reaches the league cap — not this species' own CP.
+		// That's deliberate, not an oversight: a wild catch's level can only
+		// ever go up (never down), so what actually determines whether a
+		// catch is still relevant to this league is whether evolving it (at
+		// its own, as-caught level, no higher) would already push the FINAL
+		// species over the cap — this species' own CP along the way is
+		// irrelevant to that question, it's just what the search bar can
+		// actually match on for the still-unevolved catch.
+		const maxLevel = c.L;
+		const atkBucket = c.IVs.A === 15 ? 4 : Math.ceil(c.IVs.A / 5);
+		const defBucket = c.IVs.D === 15 ? 4 : Math.ceil(c.IVs.D / 5);
+		const hpBucket = c.IVs.S === 15 ? 4 : Math.ceil(c.IVs.S / 5);
+		const tier = tiers[c.IVs.star];
+
+		for (let j = 0; j <= (Math.min(35, maxLevel) - 1) * 2; j += 2) {
+			const cp = calculateCP(baseatk, c.IVs.A, basedef, c.IVs.D, basesta, c.IVs.S, j);
+			const hp = calculateHP(basesta, c.IVs.S, j);
+			tier.cps.add(cp);
+			tier.hps.add(hp);
+			tier.atkivs.add(atkBucket);
+			tier.defivs.add(defBucket);
+			tier.hpivs.add(hpBucket);
+			if (tier.maxCP < cp) tier.maxCP = cp;
+			if (tier.maxHP < hp) tier.maxHP = hp;
+		}
+	}
+	return tiers;
+};
+
+/** "Except" mode's bucket/CP/HP complement — mutates every tier in place,
+ *  same as the solo builder always did. */
+const applyTrashFlipToTiers = (tiers: ReadonlyArray<TierBucket>): void => {
+	for (const tier of tiers) {
+		tier.atkivs = trashFlip(tier.atkivs, 4, true);
+		tier.defivs = trashFlip(tier.defivs, 4, true);
+		tier.hpivs = trashFlip(tier.hpivs, 4, true);
+		if (tier.cps.size > 0) {
+			tier.cps = trashFlip(tier.cps, tier.maxCP, false);
+			if (tier.hps.size > 0) tier.hps = trashFlip(tier.hps, tier.maxHP, false);
+		}
+	}
+};
+
+const setsEqual = (a: ReadonlySet<number>, b: ReadonlySet<number>): boolean => {
+	if (a.size !== b.size) return false;
+	for (const v of a) if (!b.has(v)) return false;
+	return true;
+};
+
+/** Whether two tiers need IDENTICAL criteria — `maxCP`/`maxHP` are derived
+ *  from `cps`/`hps` so comparing those two is redundant once the sets match. */
+const tierBucketsEqual = (a: TierBucket, b: TierBucket): boolean =>
+	setsEqual(a.cps, b.cps) &&
+	setsEqual(a.hps, b.hps) &&
+	setsEqual(a.atkivs, b.atkivs) &&
+	setsEqual(a.defivs, b.defivs) &&
+	setsEqual(a.hpivs, b.hpivs);
+
+/** Renders one star tier's contribution to the string. `scope` is `''` for a
+ *  solo (non-merged) string or a tier both sides agree on (Case A); it's
+ *  `,shadow` or `,!shadow` — folded into every clause this tier emits, right
+ *  alongside the tier's own `!i*` escape — when the two sides differ (Case
+ *  B) and this is one side's own half of the pair. Empty in "except" mode
+ *  means literally nothing to emit (an empty tier already needs no
+ *  protection, scoped or not); empty in "find" mode still needs the bare
+ *  `!i*[,scope]` exclusion so that shadow status alone doesn't accidentally
+ *  make this tier match everything. */
+const renderTier = (
+	i: number,
+	tier: TierBucket,
+	trash: boolean,
+	A: string,
+	D: string,
+	S: string,
+	CP: string,
+	scope: string
+): string => {
+	if (tier.cps.size === 0) return trash ? '' : `&!${i}*${scope}`;
+
+	const sortedCps = Array.from(tier.cps).sort((a, b) => a - b);
+	if (trash) {
+		let s = `&!${i}*${scope}${groupAttr(tier.atkivs, A)}${groupAttr(tier.defivs, D)}${groupAttr(tier.hpivs, S)}`;
+		s += `,${getMatchingString(sortedCps, CP)},${CP}${tier.maxCP + 1}-`;
+		if (tier.hps.size > 0) {
+			const sortedHps = Array.from(tier.hps).sort((a, b) => a - b);
+			s += `,${getMatchingString(sortedHps, S)},${S}${tier.maxHP + 1}-`;
+		}
+		return s;
+	}
+
+	let s = `&!${i}*${scope}${groupAttr(tier.atkivs, A)}`;
+	s += `&!${i}*${scope}${groupAttr(tier.defivs, D)}`;
+	s += `&!${i}*${scope}${groupAttr(tier.hpivs, S)}`;
+	s += `&!${i}*${scope},${getMatchingString(sortedCps, CP)}`;
+	if (tier.hps.size > 0) {
+		const sortedHps = Array.from(tier.hps).sort((a, b) => a - b);
+		s += `&!${i}*${scope},${getMatchingString(sortedHps, S)}`;
+	}
+	return s;
 };
 
 export const computeSearchString = (
@@ -326,103 +473,28 @@ export const computeSearchString = (
 	}
 ): string => {
 	const { trash, gl, formId, shadowSuffix = '', viaPurify = false } = opts;
-	const topIVCombinations = viaPurify ? opts.topIVCombinations.flatMap(rawShadowSourcesFor) : opts.topIVCombinations;
-
-	const cps: Array<Set<number>> = [];
-	const hps: Array<Set<number>> = [];
-	const atkivs: Array<Set<number>> = [];
-	const defivs: Array<Set<number>> = [];
-	const hpivs: Array<Set<number>> = [];
-	for (let i = 0; i <= 4; i++) {
-		cps[i] = new Set<number>();
-		hps[i] = new Set<number>();
-		atkivs[i] = new Set<number>();
-		defivs[i] = new Set<number>();
-		hpivs[i] = new Set<number>();
-	}
-
-	const maxCP: Array<number> = Array.from({ length: 5 }, () => 0);
-	const maxHP: Array<number> = Array.from({ length: 5 }, () => 0);
-
-	for (const c of topIVCombinations) {
-		// `c.L` is the level at which THIS combo's CP, on the TARGET species'
-		// own base stats, reaches the league cap — not the predecessor's own
-		// CP. That's deliberate, not an oversight: a wild catch's level can
-		// only ever go up (never down), so what actually determines whether a
-		// catch is still relevant to this league is whether evolving it (at
-		// its own, as-caught level, no higher) would already push the FINAL
-		// species over the cap — the predecessor's own CP along the way is
-		// irrelevant to that question, it's just what the search bar can
-		// actually match on for the still-unevolved catch. A weaker
-		// predecessor's own CP staying well under the cap doesn't change
-		// this: if the target's CP at level 30 already exceeds the cap,
-		// a catch encountered at level 30 is permanently unusable for this
-		// league regardless of how low the predecessor's own CP looks.
-		const maxLevel = c.L;
-		const atkBucket = c.IVs.A === 15 ? 4 : Math.ceil(c.IVs.A / 5);
-		const defBucket = c.IVs.D === 15 ? 4 : Math.ceil(c.IVs.D / 5);
-		const hpBucket = c.IVs.S === 15 ? 4 : Math.ceil(c.IVs.S / 5);
-		const star = c.IVs.star;
-		const baseatk = predecessor.baseStats.atk;
-		const basedef = predecessor.baseStats.def;
-		const basesta = predecessor.baseStats.hp;
-
-		for (let j = 0; j <= (Math.min(35, maxLevel) - 1) * 2; j += 2) {
-			const cp = calculateCP(baseatk, c.IVs.A, basedef, c.IVs.D, basesta, c.IVs.S, j);
-			const hp = calculateHP(basesta, c.IVs.S, j);
-			cps[star].add(cp);
-			hps[star].add(hp);
-			atkivs[star].add(atkBucket);
-			defivs[star].add(defBucket);
-			hpivs[star].add(hpBucket);
-			if (maxCP[star] < cp) maxCP[star] = cp;
-			if (maxHP[star] < hp) maxHP[star] = hp;
-		}
-	}
-
-	let result = formId + shadowSuffix;
-
-	if (trash) {
-		for (let i = 0; i < atkivs.length; i++) {
-			atkivs[i] = trashFlip(atkivs[i], 4, true);
-			defivs[i] = trashFlip(defivs[i], 4, true);
-			hpivs[i] = trashFlip(hpivs[i], 4, true);
-		}
-	}
+	const tiers = computeTierBuckets(predecessor, opts.topIVCombinations, viaPurify);
+	if (trash) applyTrashFlipToTiers(tiers);
 
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
 	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
 
+	let result = formId + shadowSuffix;
+	// Populated tiers render in order as encountered; empty ("find" mode
+	// only) tiers are collected and appended after every populated one —
+	// matches this function's original, already-tested ordering exactly.
 	let emptyBuf = '';
 	for (let i = 0; i < 4; i++) {
-		if (cps[i].size > 0) {
-			if (trash) {
-				cps[i] = trashFlip(cps[i], maxCP[i], false);
-				if (hps[i].size > 0) hps[i] = trashFlip(hps[i], maxHP[i], false);
-			}
-			const sortedCps = Array.from(cps[i]).sort((a, b) => a - b);
-			result += '&!' + i + '*' + groupAttr(atkivs[i], A);
-			if (!trash) result += '&!' + i + '*';
-			result += groupAttr(defivs[i], D);
-			if (!trash) result += '&!' + i + '*';
-			result += groupAttr(hpivs[i], S);
-			if (!trash) result += '&!' + i + '*';
-			result += ',' + getMatchingString(sortedCps, CP);
-			if (!trash) result += '&!' + i + '*';
-			else result += ',' + CP + String(maxCP[i] + 1) + '-';
-			if (hps[i].size > 0) {
-				const sortedHps = Array.from(hps[i]).sort((a, b) => a - b);
-				result += ',' + getMatchingString(sortedHps, S);
-				if (trash) result += ',' + S + String(maxHP[i] + 1) + '-';
-			}
+		if (tiers[i].cps.size > 0) {
+			result += renderTier(i, tiers[i], trash, A, D, S, CP, '');
 		} else if (!trash) {
-			emptyBuf += '&!' + i + '*';
+			emptyBuf += `&!${i}*`;
 		}
 	}
-
 	result += emptyBuf;
+
 	if (trash) {
 		result += '&!4*';
 		// Unconditional, right alongside the exact-hundo guard above — same
@@ -433,7 +505,64 @@ export const computeSearchString = (
 		// raw 13 or 14 reaches 15 once purified, raw 15 already is one —
 		// so it's never safe to match it here on its raw IVs alone.
 		result += `&0-2${A},0-2${D},0-2${S},!${gameTranslator(GameTranslatorKeys.ShadowSearch, gl)}`;
-	} else if (cps[4].size > 0) result += ',4*';
+	} else if (tiers[4].cps.size > 0) result += ',4*';
+
+	return result;
+};
+
+/**
+ * Combines a species' non-Shadow and Shadow-purify blocks into ONE string
+ * instead of two — with EXACTLY the same matched/protected population as
+ * running them separately, never a looser approximation of it. Per star
+ * tier: when both sides need IDENTICAL criteria, one shared clause is
+ * emitted (Case A — purification didn't actually change anything for this
+ * tier, so the Shadow distinction was never doing any work here). When they
+ * differ (Case B — the common case, since purification usually shifts which
+ * raw buckets are optimal), each of that tier's clauses is emitted twice,
+ * once per side, with a `shadow`/`!shadow` term folded into its own OR-list
+ * rather than as a separate leading AND'd clause. That's the standard
+ * two-clause CNF encoding of "if shadow then (this side's criteria) else
+ * (the other side's)" — provably a strict rewrite of the same boolean
+ * condition the two separate strings already computed, not a shortcut:
+ * for a mon that's genuinely tier `i`, its own OWN shadow status makes the
+ * OTHER side's clause trivially pass (via the escape term) while its own
+ * side's clause still gates it exactly as the un-merged string would have.
+ */
+export const computeMergedSearchString = (
+	nonShadow: IGamemasterPokemon,
+	shadow: IGamemasterPokemon,
+	opts: { trash: boolean; topIVCombinations: ReadonlyArray<RankEntry>; gl: GameLanguage; formId: string }
+): string => {
+	const { trash, gl, formId } = opts;
+	const tiersA = computeTierBuckets(nonShadow, opts.topIVCombinations, false);
+	const tiersB = computeTierBuckets(shadow, opts.topIVCombinations, true);
+	if (trash) {
+		applyTrashFlipToTiers(tiersA);
+		applyTrashFlipToTiers(tiersB);
+	}
+
+	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
+	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
+	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
+	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
+	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
+
+	let result = formId;
+	for (let i = 0; i < 4; i++) {
+		if (tierBucketsEqual(tiersA[i], tiersB[i])) {
+			result += renderTier(i, tiersA[i], trash, A, D, S, CP, '');
+		} else {
+			result += renderTier(i, tiersA[i], trash, A, D, S, CP, `,${shadowKw}`);
+			result += renderTier(i, tiersB[i], trash, A, D, S, CP, `,!${shadowKw}`);
+		}
+	}
+
+	if (trash) {
+		result += '&!4*';
+		result += `&0-2${A},0-2${D},0-2${S},!${shadowKw}`;
+	} else if (tiersA[4].cps.size > 0 || tiersB[4].cps.size > 0) {
+		result += ',4*';
+	}
 
 	return result;
 };
@@ -449,27 +578,32 @@ const ClipIcon = () => (
 
 /** Legacy sentence construction — the wording matters, it tells the user what they're matching. */
 const sentence = (
-	p: IGamemasterPokemon,
+	entry: SearchChainEntry,
 	target: IGamemasterPokemon,
 	top: number,
 	trash: boolean,
-	leagueName: string,
-	viaPurify: boolean
+	leagueName: string
 ): string => {
 	const nm = (x: IGamemasterPokemon) => (x.isShadow ? 'Shadow ' : '') + cleanName(x.speciesName);
 	const except = trash ? 'all except the ' : '';
-	const caught = viaPurify ? '(wild caught, still unpurified and unpowered)' : '(wild caught and still unpowered)';
-	const isTargetItself = p.speciesId.replaceAll('_shadow', '') === target.speciesId;
-	if (isTargetItself && !viaPurify) {
+	const caught = '(wild caught and still unpowered)';
+
+	if (entry.nonShadow && entry.shadow) {
+		const p = entry.nonShadow;
+		const who = `${cleanName(p.speciesName)} — Shadow or not, purifying a Shadow catch first if needed —`;
+		const isTargetItself = p.speciesId === target.speciesId;
+		if (isTargetItself) {
+			return `Find ${except}top ${top} ${who} ${caught} for ${leagueName} League:`;
+		}
+		return `Find ${who} ${caught} that evolve to the ${except}top ${top} ${nm(target)} for ${leagueName} League:`;
+	}
+
+	const p = (entry.nonShadow ?? entry.shadow)!;
+	const isTargetItself = p.speciesId === target.speciesId;
+	if (isTargetItself) {
 		return `Find ${except}top ${top} ${nm(p)} ${caught} for ${leagueName} League:`;
 	}
-	if (isTargetItself) {
-		return `Find ${nm(p)} ${caught} that, once purified, become the ${except}top ${top} ${nm(
-			target
-		)} for ${leagueName} League:`;
-	}
-	const evolveClause = viaPurify ? 'that, once purified, evolve to the' : 'that evolve to the';
-	return `Find ${nm(p)} ${caught} ${evolveClause} ${except}top ${top} ${nm(target)} for ${leagueName} League:`;
+	return `Find ${nm(p)} ${caught} that evolve to the ${except}top ${top} ${nm(target)} for ${leagueName} League:`;
 };
 
 const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
@@ -567,25 +701,35 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 				GO search bar.
 			</p>
 
-			{chain.map(({ species: p, viaPurify }) => {
+			{chain.map((entry) => {
+				const p = (entry.nonShadow ?? entry.shadow)!;
 				const formId = formIdentifierFor(p, formIds);
-				const shadowSuffix = shadowSuffixFor(p, gamemasterPokemon, gl);
-				const str = computeSearchString(p, { trash, topIVCombinations, gl, formId, shadowSuffix, viaPurify });
-				const isOpen = open === p.speciesId;
+				const str =
+					entry.nonShadow && entry.shadow
+						? computeMergedSearchString(entry.nonShadow, entry.shadow, { trash, topIVCombinations, gl, formId })
+						: computeSearchString(p, {
+								trash,
+								topIVCombinations,
+								gl,
+								formId,
+								shadowSuffix: shadowSuffixFor(p, gamemasterPokemon, gl),
+							});
+				const key = p.speciesId;
+				const isOpen = open === key;
 				return (
-					<div key={p.speciesId} className='r-ss-block'>
-						<p className='r-ss-sentence'>{sentence(p, pokemon, top, trash, leagueName, viaPurify)}</p>
+					<div key={key} className='r-ss-block'>
+						<p className='r-ss-sentence'>{sentence(entry, pokemon, top, trash, leagueName)}</p>
 						<div className='r-ss-actions'>
-							<button type='button' className='r-ss-copybtn' onClick={() => copy(p.speciesId, str)}>
+							<button type='button' className='r-ss-copybtn' onClick={() => copy(key, str)}>
 								<ClipIcon />
-								{copied === p.speciesId ? 'Copied ✓' : 'Copy string'}
+								{copied === key ? 'Copied ✓' : 'Copy string'}
 							</button>
 							<button
 								type='button'
 								className='r-ss-reveal'
 								data-on={isOpen ? '' : undefined}
 								aria-expanded={isOpen}
-								onClick={() => setOpen((c) => (c === p.speciesId ? '' : p.speciesId))}
+								onClick={() => setOpen((c) => (c === key ? '' : key))}
 							>
 								<span className='r-ss-preview'>{str}</span>
 								<span className='r-ss-chev' aria-hidden='true'>
@@ -594,7 +738,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 							</button>
 						</div>
 						{isOpen && (
-							<button type='button' className='r-ss-raw' onClick={() => copy(p.speciesId, str)} title='Click to copy'>
+							<button type='button' className='r-ss-raw' onClick={() => copy(key, str)} title='Click to copy'>
 								{str}
 							</button>
 						)}

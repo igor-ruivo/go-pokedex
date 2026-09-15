@@ -6,6 +6,7 @@ import { buildGamemaster, mockPokemon, mockType } from '../mass-delete-fixtures'
 import {
 	buildFormIds,
 	buildSearchChain,
+	computeMergedSearchString,
 	computeSearchString,
 	formIdentifierFor,
 	selectTopIVCombinations,
@@ -307,29 +308,23 @@ describe('buildSearchChain — backward walk, plus each predecessor’s Shadow c
 		ninetalesAlolanShadow,
 	]);
 
-	it('a non-Shadow target pulls in both the plain predecessor chain AND each predecessor’s Shadow counterpart', () => {
+	it('a non-Shadow target pulls in one entry per stage, each PAIRED with its Shadow counterpart (not four separate flat entries)', () => {
 		const chain = buildSearchChain(ninetalesAlolan, gamemasterPokemon);
-		const ids = chain.map((c) => `${c.species.speciesId}:${c.viaPurify}`).sort();
-		expect(ids).toEqual(
-			[
-				'vulpix_alolan:false',
-				'ninetales_alolan:false',
-				'vulpix_alolan_shadow:true',
-				'ninetales_alolan_shadow:true',
-			].sort()
-		);
+		const ids = chain.map((c) => `${c.nonShadow?.speciesId}+${c.shadow?.speciesId}`).sort();
+		expect(ids).toEqual(['vulpix_alolan+vulpix_alolan_shadow', 'ninetales_alolan+ninetales_alolan_shadow'].sort());
 	});
 
-	it('a Shadow target stays a pure Shadow chain — no purification widening applied to an already-Shadow lineage', () => {
+	it('a Shadow target stays a pure Shadow chain — no purification widening, no pairing, `nonShadow` undefined throughout', () => {
 		const chain = buildSearchChain(ninetalesAlolanShadow, gamemasterPokemon);
-		const ids = chain.map((c) => `${c.species.speciesId}:${c.viaPurify}`).sort();
-		expect(ids).toEqual(['vulpix_alolan_shadow:false', 'ninetales_alolan_shadow:false'].sort());
+		expect(chain.every((c) => c.nonShadow === undefined)).toBe(true);
+		const ids = chain.map((c) => c.shadow?.speciesId).sort();
+		expect(ids).toEqual(['vulpix_alolan_shadow', 'ninetales_alolan_shadow'].sort());
 	});
 
-	it('a species with no Shadow-catchable form anywhere in its line gets no extra entries', () => {
+	it('a species with no Shadow-catchable form anywhere in its line gets a solo entry (no `shadow` at all)', () => {
 		const solo = mockPokemon({ speciesId: 'solomon', dex: 999, types: [mockType('normal')] });
 		const chain = buildSearchChain(solo, buildGamemaster([solo]));
-		expect(chain).toEqual([{ species: solo, viaPurify: false }]);
+		expect(chain).toEqual([{ nonShadow: solo }]);
 	});
 });
 
@@ -457,5 +452,109 @@ describe('computeSearchString — form/Shadow identity prefix (regression: Ninet
 		// at all, which would also match the Kantonian (Fire) line and any
 		// Shadow catch of either form.
 		expect(result.startsWith('37&!')).toBe(false);
+	});
+});
+
+describe('computeMergedSearchString — combining the non-Shadow and Shadow-purify blocks into one string', () => {
+	// A single target combo (5/15/15, star 2) deliberately engineered to
+	// exercise all three cases at once:
+	// - tier 0: empty on BOTH sides (Case A — shared bare clause).
+	// - tier 1: EMPTY on the non-Shadow side, but populated on the Shadow side
+	//   (one of the purify pre-images, raw 3/13/13, sums to 29 — star 1, not
+	//   star 2) — the asymmetric-empty case.
+	// - tier 2: populated on BOTH sides, with DIFFERENT criteria (Case B) —
+	//   non-Shadow's own single combo (bucket 1-4-4) vs the Shadow side's
+	//   other 8 purify pre-images (bucket 1-3–4-3–4).
+	// - tier 3: empty on BOTH sides (Case A again).
+	const nonShadow = mockPokemon({ speciesId: 'mergemon', dex: 900, baseStats: { atk: 200, def: 150, hp: 150 } });
+	const shadow = mockPokemon({
+		speciesId: 'mergemon_shadow',
+		dex: 900,
+		isShadow: true,
+		baseStats: { atk: 200, def: 150, hp: 150 },
+	});
+	const combos: Array<RankEntry> = [
+		{ IVs: { A: 5, D: 15, S: 15, star: 2 }, battle: { A: 1, D: 1, S: 1 }, L: 50, CP: 1500 },
+	];
+
+	it('FIND mode: Case A tiers share one bare clause; the asymmetric tier keeps only the populated side (still scoped); Case B tier emits both sides, each with its own real criteria', () => {
+		const result = computeMergedSearchString(nonShadow, shadow, {
+			trash: false,
+			topIVCombinations: combos,
+			gl: GameLanguage.en,
+			formId: '900',
+		});
+
+		// No leading &shadow/&!shadow at all — the whole point of merging.
+		expect(result.startsWith('900&!0*')).toBe(true);
+		// Tier 0, Case A: shared, unscoped bare exclusion.
+		expect(result).toContain('&!0*&!1*');
+		// Tier 1: non-Shadow side is empty — bare fallback, scoped to `shadow`
+		// (so it only ever auto-passes for Shadow mons, never silently matches
+		// a non-Shadow one). Shadow side has real criteria, scoped `!shadow`.
+		expect(result).toContain('&!1*,shadow&!1*,!shadow,1attack&!1*,!shadow,3defense&!1*,!shadow,3hp');
+		// Tier 2, Case B: non-Shadow's own criteria under the `shadow` escape...
+		expect(result).toContain('&!2*,shadow,1attack&!2*,shadow,4defense&!2*,shadow,4hp');
+		// ...and the Shadow side's own (genuinely different) criteria under `!shadow`.
+		expect(result).toContain('&!2*,!shadow,1attack&!2*,!shadow,3-4defense&!2*,!shadow,3-4hp');
+		// Tier 3, Case A: empty on both sides, shared bare clause, nothing after it.
+		expect(result.endsWith('&!3*')).toBe(true);
+	});
+
+	it('EXCEPT mode: the empty non-Shadow side of the asymmetric tier emits NOTHING (unlike find mode’s bare fallback) — only the populated, scoped side appears', () => {
+		const result = computeMergedSearchString(nonShadow, shadow, {
+			trash: true,
+			topIVCombinations: combos,
+			gl: GameLanguage.en,
+			formId: '900',
+		});
+
+		// Tier 1: only the Shadow side's protect clause exists — the
+		// non-Shadow side needed no clause at all (nothing to protect there).
+		expect(result).not.toContain('!1*,shadow,');
+		expect(result).toContain('&!1*,!shadow,');
+		// Tier 2, Case B: BOTH sides get their own protect clause.
+		expect(result).toContain('&!2*,shadow,');
+		expect(result).toContain('&!2*,!shadow,');
+		// Tiers 0 and 3 (empty on both sides) need no clause at all in "except"
+		// mode — there's nothing to protect there either way.
+		expect(result).not.toContain('!0*');
+		expect(result).not.toContain('!3*');
+		// The unconditional tail is still present, shared, exactly once.
+		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow');
+	});
+
+	it('regression: every scoped clause the merge emits is byte-identical (content-wise) to what the equivalent solo call already produces — the merge only ever adds the scope term, never changes the criteria', () => {
+		const soloNonShadow = computeSearchString(nonShadow, {
+			trash: false,
+			topIVCombinations: combos,
+			gl: GameLanguage.en,
+			formId: '900',
+		});
+		const soloShadow = computeSearchString(shadow, {
+			trash: false,
+			topIVCombinations: combos,
+			gl: GameLanguage.en,
+			formId: '900',
+			viaPurify: true,
+		});
+		const merged = computeMergedSearchString(nonShadow, shadow, {
+			trash: false,
+			topIVCombinations: combos,
+			gl: GameLanguage.en,
+			formId: '900',
+		});
+
+		// Solo non-Shadow's own tier-2 criteria, with the `shadow` escape
+		// spliced in right after each `!2*` — must appear verbatim in the
+		// merged string.
+		const nonShadowTier2 = '&!2*,1attack&!2*,4defense&!2*,4hp';
+		expect(soloNonShadow).toContain(nonShadowTier2);
+		expect(merged).toContain(nonShadowTier2.replaceAll('&!2*,', '&!2*,shadow,'));
+
+		// Solo Shadow's own tier-2 criteria, same transform with `!shadow`.
+		const shadowTier2 = '&!2*,1attack&!2*,3-4defense&!2*,3-4hp';
+		expect(soloShadow).toContain(shadowTier2);
+		expect(merged).toContain(shadowTier2.replaceAll('&!2*,', '&!2*,!shadow,'));
 	});
 });
