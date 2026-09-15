@@ -501,6 +501,28 @@ describe('computeMergedSearchString — combining the non-Shadow and Shadow-puri
 		expect(result.endsWith('&!3*')).toBe(true);
 	});
 
+	it('documents the known granularity tradeoff: a sub-clause identical on both sides (tier 2’s Attack bucket, "1attack" here) still gets duplicated once per scope, because the merge compares whole tiers (all ~5 of a tier’s clauses together), not each clause independently', () => {
+		const result = computeMergedSearchString(nonShadow, shadow, {
+			trash: false,
+			topIVCombinations: combos,
+			gl: GameLanguage.en,
+			formId: '900',
+		});
+
+		// Isolate tier 2's own region — "1attack" also shows up once, quite
+		// incidentally, in tier 1 (its lone Shadow-side clause happens to
+		// share the same Attack bucket) — that's not part of what this test
+		// is pinning down, so scope the count to avoid a false signal from it.
+		const tier2Region = result.slice(result.indexOf('&!2*'), result.indexOf('&!3*'));
+		// Not a correctness bug — De Morgan on either scoped copy still
+		// resolves to the same population — just the acknowledged byte-length
+		// cost of tier-level (not clause-level) comparison. If this ever
+		// becomes clause-level, this count drops to 1 and this test should be
+		// updated deliberately, not silently left passing on the wrong reason.
+		const occurrences = tier2Region.split('1attack').length - 1;
+		expect(occurrences).toBe(2);
+	});
+
 	it('EXCEPT mode: the empty non-Shadow side of the asymmetric tier emits NOTHING (unlike find mode’s bare fallback) — only the populated, scoped side appears', () => {
 		const result = computeMergedSearchString(nonShadow, shadow, {
 			trash: true,
