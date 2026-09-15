@@ -15,7 +15,7 @@ import type { IIvPercents } from '../DTOs/ivs';
 import useComputeIVs from '../hooks/useComputeIVs';
 import { suppressNextScrollReset } from '../hooks/useScrollToTopOnNavigate';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
-import { cleanName, dec1, dexNo, ordinal, statProdRangePercentile } from '../lib/format';
+import { cleanName, dec1, dexNo, ordinal, rankPerfection } from '../lib/format';
 import { R } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
 import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
@@ -79,7 +79,6 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 				perfectCP: ivp.greatLeaguePerfectCP,
 				perfectLvl: ivp.greatLeaguePerfectLevel,
 				perfectBattle: ivp.greatLeaguePerfectBattle,
-				worstBattle: ivp.greatLeagueWorstBattle,
 			};
 		case 1:
 			return {
@@ -91,7 +90,6 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 				perfectCP: ivp.ultraLeaguePerfectCP,
 				perfectLvl: ivp.ultraLeaguePerfectLevel,
 				perfectBattle: ivp.ultraLeaguePerfectBattle,
-				worstBattle: ivp.ultraLeagueWorstBattle,
 			};
 		default:
 			return {
@@ -103,7 +101,6 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 				perfectCP: ivp.masterLeaguePerfectCP,
 				perfectLvl: ivp.masterLeaguePerfectLevel,
 				perfectBattle: ivp.masterLeaguePerfectBattle,
-				worstBattle: ivp.masterLeagueWorstBattle,
 			};
 	}
 };
@@ -1111,12 +1108,8 @@ const PokemonDetail = () => {
 										<b className='hi'>{!readoutReady || !slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
 									</div>
 									<div>
-										<i>Percentile</i>
-										<b>
-											{!readoutReady || !slice
-												? '…'
-												: `${dec1(statProdRangePercentile(slice.battle, slice.worstBattle, slice.perfectBattle))}%`}
-										</b>
+										<i>Perfection</i>
+										<b>{!readoutReady || !slice ? '…' : `${dec1(rankPerfection(slice.rank))}%`}</b>
 									</div>
 									<div>
 										<i>CP{readoutReady && slice ? ` @ L${slice.lvl}` : ''}</i>

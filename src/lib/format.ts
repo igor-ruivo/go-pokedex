@@ -118,26 +118,12 @@ export const statProdPercentile = (
 };
 
 /**
- * The other, differently-useful percentile: where a spread sits across the
- * *whole* 0–4095 population, 0% at the worst possible spread (#4096) and
- * 100% at the best (#1, or any other spread that's a genuine stat-product
- * tie with it) — linear in stat product between those two ends. This is
- * what "Your IVs Percentile" on a Pokémon's own page means by percentile:
- * how good is this catch compared to every spread it could have been, not
- * (that's `statProdPercentile` above, used by the IV Table) how close it is
- * to flawless.
+ * "Perfection" shown on a Pokémon's own Ranks tab: where this spread's
+ * competition rank sits among all 4096 possible raw IV combos, #1 → 100%
+ * and #4096 → 0%, evenly spaced by rank position (not by stat product like
+ * `statProdPercentile` above, which is what the IV Table shows instead).
  */
-export const statProdRangePercentile = (
-	candidate: { A: number; D: number; S: number },
-	worst: { A: number; D: number; S: number },
-	best: { A: number; D: number; S: number }
-): number => {
-	const candidateProd = Math.round(candidate.A * candidate.D * candidate.S);
-	const worstProd = Math.round(worst.A * worst.D * worst.S);
-	const bestProd = Math.round(best.A * best.D * best.S);
-	const span = bestProd - worstProd;
-	return span > 0 ? ((candidateProd - worstProd) * 100) / span : 100;
-};
+export const rankPerfection = (rank: number): number => ((4096 - rank) / 4095) * 100;
 
 export const ordinal = (n: number): string => {
 	const s = ['th', 'st', 'nd', 'rd'];
