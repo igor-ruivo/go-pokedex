@@ -684,6 +684,7 @@ export const computeTradeableString = (
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
 	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
+	const shadow = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 
 	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
 		.filter((key) => isNaN(Number(key)) && key !== 'Normal')
@@ -728,12 +729,18 @@ export const computeTradeableString = (
 				(protect.ultraBeast ? !p.isBeast : true)
 		)
 		.forEach((p) => {
-			// Manually excluded from suggestion, or Shadow-excluded — same
-			// shared-dex nuance as the other two tabs: a whitelisted or
-			// Shadow-protected form must not be suggested even when a
-			// non-excluded sibling at the same dex otherwise qualifies, so it
-			// still needs its own disambiguating exclusion clause below.
-			if (whitelist.has(p.speciesId) || (protect.shadow && p.isShadow)) {
+			// Shadows can never be traded, full stop — the game doesn't allow
+			// it, regardless of IVs — so a Shadow form never gets to be the one
+			// that qualifies a dex here (unconditionally, not tied to any
+			// toggle), and needs no scoped exclusion clause of its own either:
+			// the flat `&!shadow` appended below already excludes every Shadow
+			// catch outright.
+			if (p.isShadow) return;
+			// Manually excluded from suggestion — a whitelisted form must not be
+			// suggested even when a non-excluded sibling at the same dex
+			// otherwise qualifies, so it still needs its own disambiguating
+			// exclusion clause below.
+			if (whitelist.has(p.speciesId)) {
 				if (!excludedForms[p.dex]) excludedForms[p.dex] = new Set<IGamemasterPokemon>();
 				excludedForms[p.dex].add(p);
 				return;
@@ -772,11 +779,13 @@ export const computeTradeableString = (
 			const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
 			if (!baseId) return;
 			const [, ...formTokens] = negateIdentity(baseId).split(',');
-			const shadowScope: DexExclusion['shadowScope'] = e.isShadow
-				? 'shadow-only'
-				: isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)
-					? 'non-shadow-only'
-					: '';
+			// `e` is never a Shadow form here (those are skipped entirely
+			// above), but it can still share a dex with one — 'non-shadow-only'
+			// keeps this whitelist exclusion from also swallowing that Shadow
+			// sibling's own (already unconditionally excluded) catches.
+			const shadowScope: DexExclusion['shadowScope'] = isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)
+				? 'non-shadow-only'
+				: '';
 			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
 		});
 	});
@@ -800,7 +809,12 @@ export const computeTradeableString = (
 	}
 
 	// A hundo needs no trade at all, regardless of the stricter toggle below.
-	result += `&!4*${shadowPurifyHundoGuard(gl)}&!${CP}${cp}-`;
+	// Shadows can never be traded — no purify-to-hundo carve-out needed here
+	// the way the other two tabs need it (a Shadow catch can't be deleted or
+	// found-not-worth-keeping away right before it'd purify into one — but it
+	// was never tradeable in the first place, purified or not), just a flat,
+	// unconditional exclusion.
+	result += `&!4*&!${shadow}&!${CP}${cp}-`;
 	if (onlyLowIv) {
 		result += `&0-2${A}&0-2${D}&0-2${S}`;
 	}
@@ -1013,21 +1027,21 @@ const MassDelete = () => {
 			next === 'badIv' ? 'non-perfect-ivs' : next === 'trade' ? 'tradeable' : 'non-meta-relevant';
 		void navigate(R.searchStrings(slug));
 	};
+	const isTrade = mode === 'trade';
 
 	const [trashGreat, setTrashGreat] = useState(() => numCfg(ConfigKeys.TrashGreat, 50));
 	const [trashUltra, setTrashUltra] = useState(() => numCfg(ConfigKeys.TrashUltra, 50));
 	const [trashMaster, setTrashMaster] = useState(() => numCfg(ConfigKeys.TrashMaster, 110));
 	const [trashRaid, setTrashRaid] = useState(() => numCfg(ConfigKeys.TrashRaid, 5));
+	// Shared across all three tabs — "never delete/suggest at or above this
+	// CP" is the exact same guard everywhere, just applied to a different
+	// action (delete vs. trade-suggest); one CP dropdown, one setting.
 	const [cp, setCp] = useState(() => numCfg(ConfigKeys.TrashCP, 2500));
 	// Only meaningful for the Find Tradeable tab — narrows the result to
 	// catches whose Attack/Defense/HP are all clearly low (raw IV 10 or
 	// less), rather than just excluding the exact hundo.
 	const [tradeOnlyLowIv, setTradeOnlyLowIv] = useState(() => readPersistentValue(ConfigKeys.TradeOnlyLowIv) === 'true');
 	useEffect(() => void writePersistentValue(ConfigKeys.TradeOnlyLowIv, String(tradeOnlyLowIv)), [tradeOnlyLowIv]);
-	// An upper bound, not a floor — never suggest trading away a catch
-	// already at or above this CP, in case it's something already invested in.
-	const [tradeCp, setTradeCp] = useState(() => numCfg(ConfigKeys.TradeCP, 2500));
-	useEffect(() => void writePersistentValue(ConfigKeys.TradeCP, String(tradeCp)), [tradeCp]);
 	// Only meaningful for the Non-Perfect IVs tab — see `computeBadIvString`'s
 	// own doc comment on the `simplified` parameter this feeds.
 	const [simplifiedBadIv, setSimplifiedBadIv] = useState(
@@ -1108,16 +1122,22 @@ const MassDelete = () => {
 	// keyword with no corresponding species list here.
 	const autoProtected = useMemo(() => {
 		const map = new Map<string, string>();
+		// On the Trade tab, Shadow is protected unconditionally (see the
+		// locked-on chip and computeTradeableString's flat `&!shadow`) — not
+		// tied to the `protect.shadow` flag there, so this has to check `isTrade`
+		// too, or every Shadow Pokémon would be silently missing from this list
+		// despite the chip showing "on".
+		const shadowProtected = isTrade || protect.shadow;
 		Object.values(gamemasterPokemon)
 			.filter((p) => !p.aliasId && !p.isMega)
 			.forEach((p) => {
 				if (protect.legendary && p.isLegendary) map.set(p.speciesId, 'Legendary');
 				else if (protect.mythical && p.isMythical) map.set(p.speciesId, 'Mythical');
 				else if (protect.ultraBeast && p.isBeast) map.set(p.speciesId, 'Ultra Beast');
-				else if (protect.shadow && p.isShadow) map.set(p.speciesId, 'Shadow');
+				else if (shadowProtected && p.isShadow) map.set(p.speciesId, 'Shadow');
 			});
 		return map;
-	}, [gamemasterPokemon, protect.legendary, protect.mythical, protect.ultraBeast, protect.shadow]);
+	}, [gamemasterPokemon, protect.legendary, protect.mythical, protect.ultraBeast, protect.shadow, isTrade]);
 
 	// Two separate, separately-sorted groups (see `byDexFormShadow`) rather than
 	// one merged list —
@@ -1276,7 +1296,7 @@ const MassDelete = () => {
 
 	useEffect(() => {
 		setTradeResult('');
-	}, [trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, tradeCp]);
+	}, [trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, cp]);
 
 	useEffect(() => {
 		if (
@@ -1301,7 +1321,7 @@ const MassDelete = () => {
 					protect,
 					whitelistSet,
 					tradeOnlyLowIv,
-					tradeCp
+					cp
 				)
 			);
 			setIsCalculatingTrade(false);
@@ -1323,11 +1343,10 @@ const MassDelete = () => {
 		protect,
 		whitelistSet,
 		tradeOnlyLowIv,
-		tradeCp,
+		cp,
 	]);
 
 	const isBadIv = mode === 'badIv';
-	const isTrade = mode === 'trade';
 	const activeResult = isBadIv ? badIvResult : isTrade ? tradeResult : result;
 	const activeCalculating = isBadIv ? isCalculatingBadIv : isTrade ? isCalculatingTrade : isCalculating;
 
@@ -1341,7 +1360,11 @@ const MassDelete = () => {
 
 	const ready = fetchCompleted && pvpFetchCompleted;
 
-	const protectionSummary = PROTECTION_META.filter((m) => protect[m.key])
+	// On the Trade tab, "Shadow" is always effectively protected (see the
+	// locked-on chip below) regardless of the stored `protect.shadow` flag —
+	// the summary has to agree with what the chip itself shows, or it'd read
+	// as if Shadow weren't being protected at all.
+	const protectionSummary = PROTECTION_META.filter((m) => (isTrade && m.key === 'shadow') || protect[m.key])
 		.map((m) => m.label)
 		.join(', ');
 	const keepTopSummary = [
@@ -1354,7 +1377,7 @@ const MassDelete = () => {
 	const panelSummary = isBadIv
 		? `CP ≥ ${cp.toLocaleString()} kept${simplifiedBadIv ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`
 		: isTrade
-			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · CP < ${tradeCp.toLocaleString()} · excludes ${protectionSummary || 'nothing extra'}`
+			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · CP < ${cp.toLocaleString()} · excludes ${protectionSummary || 'nothing extra'}`
 			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
 
 	const whitelistSummary =
@@ -1372,16 +1395,14 @@ const MassDelete = () => {
 	);
 	const panelDirty =
 		!isDefaultProtection ||
-		(!isTrade && cp !== 2500) ||
-		(isTrade && tradeCp !== 2500) ||
+		cp !== 2500 ||
 		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
 		(mode === 'meta' && (trashGreat !== 50 || trashUltra !== 50)) ||
 		(isTrade && tradeOnlyLowIv) ||
 		(isBadIv && simplifiedBadIv);
 	const resetPanel = () => {
 		setProtect(DEFAULT_PROTECTION);
-		if (!isTrade) setCp(2500);
-		if (isTrade) setTradeCp(2500);
+		setCp(2500);
 		if (mode !== 'badIv') {
 			setTrashMaster(110);
 			setTrashRaid(5);
@@ -1625,8 +1646,8 @@ const MassDelete = () => {
 									<select
 										className='r-md-select'
 										aria-label='Never suggest at or above CP'
-										value={tradeCp}
-										onChange={(e) => setTradeCp(+e.target.value)}
+										value={cp}
+										onChange={(e) => setCp(+e.target.value)}
 									>
 										{CP_OPTIONS.map((n) => (
 											<option key={n} value={n}>
@@ -1658,20 +1679,29 @@ const MassDelete = () => {
 							{isTrade ? 'Never suggest this category' : 'Never delete this category'}
 						</div>
 						<div className='r-md-protect-grid'>
-							{PROTECTION_META.map((m) => (
-								<button
-									key={m.key}
-									type='button'
-									className='r-ctr-toggle r-md-protect-chip'
-									data-on={protect[m.key] ? '' : undefined}
-									aria-pressed={protect[m.key]}
-									title={m.description}
-									onClick={() => setProtectFlag(m.key)}
-								>
-									<span className='r-ss-box' aria-hidden='true' />
-									{m.label}
-								</button>
-							))}
+							{PROTECTION_META.map((m) => {
+								// Trading a Shadow Pokémon isn't something the game allows
+								// at all, regardless of its IVs — computeTradeableString
+								// excludes every Shadow catch unconditionally, so this
+								// toggle has nothing left to control there and is locked
+								// on to reflect that, rather than implying it's optional.
+								const lockedOn = isTrade && m.key === 'shadow';
+								return (
+									<button
+										key={m.key}
+										type='button'
+										className='r-ctr-toggle r-md-protect-chip'
+										data-on={lockedOn || protect[m.key] ? '' : undefined}
+										aria-pressed={lockedOn || protect[m.key]}
+										disabled={lockedOn}
+										title={lockedOn ? 'Shadow Pokémon can never be traded, so this is always on.' : m.description}
+										onClick={lockedOn ? undefined : () => setProtectFlag(m.key)}
+									>
+										<span className='r-ss-box' aria-hidden='true' />
+										{m.label}
+									</button>
+								);
+							})}
 						</div>
 					</div>
 				)}

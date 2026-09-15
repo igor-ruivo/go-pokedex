@@ -62,6 +62,11 @@ export enum ConfigKeys {
 	MassDeleteControlsCollapsed,
 	MassDeleteWhitelistCollapsed,
 	TradeOnlyLowIv,
+	/** No longer written/read — the Trade tab's CP cap merged into TrashCP
+	 *  (one shared "never delete/suggest at or above this CP" setting across
+	 *  all three tabs). Left in place, not deleted, so every later member
+	 *  here keeps its existing numeric value — removing an entry would shift
+	 *  every persisted key after it. */
 	TradeCP,
 	BadIvSkipShadowAnalysis,
 	TrashKeepDynamax,

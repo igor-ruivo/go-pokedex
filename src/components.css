@@ -4883,6 +4883,18 @@
 	border: 0;
 	cursor: pointer;
 }
+/* Locked-on toggle (e.g. "Shadow" on the Trade tab) — visually "on" but in
+   grey rather than the accent colour, so it still reads as a forced,
+   non-interactive state rather than a normal user choice. */
+.rvmp .r-ctr-toggle:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+.rvmp .r-ctr-toggle:disabled[data-on] .r-ss-box {
+	background: var(--text-faint);
+	border-color: var(--text-faint);
+	box-shadow: inset 0 0 0 3px var(--surface);
+}
 .rvmp .r-ctr-toggle[data-on] .r-ss-box {
 	background: var(--accent);
 	border-color: var(--accent);

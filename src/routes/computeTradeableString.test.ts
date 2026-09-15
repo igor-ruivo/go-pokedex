@@ -84,14 +84,13 @@ describe('computeTradeableString — hundo always excluded', () => {
 });
 
 describe('computeTradeableString — onlyLowIv toggle', () => {
-	it('off: no bucket restriction beyond hundo exclusion and the unconditional Shadow-purify guard', () => {
+	it('off: no bucket restriction beyond hundo exclusion and the unconditional flat Shadow exclusion', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon, { onlyLowIv: false });
 		// The `onlyLowIv` toggle's own restriction is 3 separate `&`-joined
 		// positive terms (an AND, one per stat) — distinct in shape from the
-		// unconditional Shadow-purify guard's single comma-joined OR term
-		// (`&0-2attack,0-2defense,0-2hp,!shadow`), which is always present
-		// regardless of this toggle and isn't what this test is checking.
+		// unconditional flat Shadow exclusion (`&!shadow`), which is always
+		// present regardless of this toggle and isn't what this test checks.
 		expect(result).not.toContain('&0-2attack&0-2defense&0-2hp');
 	});
 
@@ -120,21 +119,22 @@ describe('computeTradeableString — category pre-filter (Legendary/Mythical/Ult
 	});
 });
 
-describe('computeTradeableString — Shadow handling (in-loop exclusion, not a candidate-filter)', () => {
-	it('a Shadow form sharing a dex with its Master-good non-Shadow sibling still gets its own disambiguating exclusion', () => {
+describe('computeTradeableString — Shadow handling (unconditional, not togglable)', () => {
+	it('a Shadow form is never itself a qualifying candidate — the dex is still suggested via its Master-good non-Shadow sibling, with no per-form clause needed (the flat &!shadow tail already excludes it)', () => {
 		const { gamemasterPokemon, shadowmon, shadowmonShadow } = buildMainFixture();
 		const rankLists = [{}, {}, { shadowmon: rank(1) }];
 
+		// The `protect.shadow` toggle no longer has any effect here — Shadow
+		// trading is impossible in-game, so this is unconditional, exactly
+		// like `!4*` — both settings must produce identical output.
 		const on = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, shadow: true } });
 		const off = call(gamemasterPokemon, { rankLists, protect: { ...DEFAULT_PROTECTION, shadow: false } });
 
 		expect(shadowmonShadow.dex).toBe(shadowmon.dex);
-		// On: the dex is still suggested (via the non-Shadow form), but the
-		// Shadow form itself gets a disambiguating exclusion clause.
+		expect(on).toBe(off);
 		expect(on).toContain(String(shadowmon.dex));
-		expect(on).toContain('&!100,!shadow');
-		// Off: no special clause needed, Shadow evaluated like anything else.
-		expect(off).not.toContain('&!100,!shadow');
+		expect(on).not.toContain('&!100,!shadow');
+		expect(on).toContain('&!shadow');
 	});
 });
 
@@ -178,23 +178,23 @@ describe('computeTradeableString — pt-BR translation', () => {
 	});
 });
 
-describe('computeTradeableString — Shadow-purify hundo guard (unconditional, always on)', () => {
-	it('the guard clause is present regardless of any toggle — same treatment as !4*', () => {
+describe('computeTradeableString — flat Shadow exclusion (unconditional, always on)', () => {
+	it('a plain, unconditional &!shadow clause is present regardless of any toggle — same treatment as !4*', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon);
 
-		// A Shadow catch with Attack/Defense/HP all already bucket 3-4 (raw
-		// 11-15) might purify (+2/stat, capped 15) into an exact 15/15/15 —
-		// suggesting it for trade would throw away that possibility for good.
-		// Protected unconditionally, right next to the exact-hundo guard.
-		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow');
+		// No purify-to-hundo bucket carve-out needed here the way the other two
+		// tabs need it — Shadows can never be traded at all, in-game, purified
+		// or not, so a flat exclusion suffices. Right next to the exact-hundo
+		// guard, same as before.
+		expect(result).toContain('&!4*&!shadow');
 	});
 
 	it('localizes to pt-BR alongside the rest of the tail', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon, { gl: GameLanguage.ptbr });
 
-		expect(result).toContain('&!4*&0-2ataque,0-2defesa,0-2ps,!sombroso');
+		expect(result).toContain('&!4*&!sombroso');
 	});
 });
 
@@ -209,23 +209,20 @@ describe('computeTradeableString — CP cap (upper bound, not a floor)', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const result = call(gamemasterPokemon, { cp: 2000, onlyLowIv: true });
 
-		expect(result).toContain('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp2000-');
+		expect(result).toContain('&!4*&!shadow&!cp2000-');
 		expect(result).toContain('&0-2attack&0-2defense&0-2hp');
 	});
 });
 
-describe('computeTradeableString — final canonicalization pass (dead-weight exclusion clauses)', () => {
-	it('whitelisting both the Shadow and non-Shadow forms of the same species collapses their two clauses into one bare, Shadow-agnostic clause', () => {
+describe('computeTradeableString — whitelisting a Shadow form is a no-op', () => {
+	it('whitelisting the Shadow form of a species changes nothing — it was already unconditionally excluded, so only the non-Shadow whitelisted sibling produces a clause', () => {
 		// dex 800 has two sibling forms (water, grass) — water is Master-ranked
-		// (drives dex 800 into the tradeable set), grass is whitelisted in BOTH
-		// its Shadow and non-Shadow form. Both "water" and "grass" are unique
-		// types at this dex, so each gets its own type as its positive id —
-		// grass's own id is "800,grass", negated to "!800,!grass". Without the
-		// canonicalization pass this would emit two separate clauses —
-		// "!800,!grass,shadow" (protects only the non-Shadow catch) and
-		// "!800,!grass,!shadow" (protects only the Shadow catch) — together
-		// they protect exactly what one bare "!800,!grass" would, for fewer
-		// characters.
+		// (drives dex 800 into the tradeable set), grass is whitelisted in its
+		// non-Shadow form (which still needs its own scoped exclusion, since
+		// dex 800 otherwise qualifies via water). Its Shadow sibling is *also*
+		// whitelisted here, but that's redundant: Shadow forms are skipped
+		// before the whitelist is even consulted (see the flat &!shadow tail),
+		// so whitelisting it changes the output not at all.
 		const water = mockPokemon({ speciesId: 'tradewater', dex: 800, types: [mockType('water')] });
 		const grass = mockPokemon({ speciesId: 'tradegrass', dex: 800, types: [mockType('grass')] });
 		const grassShadow = mockPokemon({
@@ -236,13 +233,16 @@ describe('computeTradeableString — final canonicalization pass (dead-weight ex
 		});
 		const gamemasterPokemon = buildGamemaster([water, grass, grassShadow]);
 
-		const result = call(gamemasterPokemon, {
+		const withoutShadowWhitelisted = call(gamemasterPokemon, {
+			rankLists: [{}, {}, { [water.speciesId]: rank(1) }],
+			whitelist: new Set([grass.speciesId]),
+		});
+		const withShadowWhitelisted = call(gamemasterPokemon, {
 			rankLists: [{}, {}, { [water.speciesId]: rank(1) }],
 			whitelist: new Set([grass.speciesId, grassShadow.speciesId]),
 		});
 
-		expect(result).toContain('&!800,!grass');
-		expect(result).not.toContain('!800,!grass,shadow');
-		expect(result).not.toContain('!800,!grass,!shadow');
+		expect(withoutShadowWhitelisted).toContain('&!800,!grass');
+		expect(withShadowWhitelisted).toBe(withoutShadowWhitelisted);
 	});
 });
