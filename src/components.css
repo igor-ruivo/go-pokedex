@@ -2393,7 +2393,7 @@
 	top: 5%;
 	right: 6%;
 	z-index: 3;
-	font-size: clamp(8px, 11cqi, 11px);
+	font-size: clamp(13px, 18cqi, 18px);
 	color: var(--iv-fill);
 }
 /* league / raid relevance — vertical dots on the left, same treatment as the

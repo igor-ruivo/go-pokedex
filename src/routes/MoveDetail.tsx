@@ -5,6 +5,7 @@ import { PokeMini } from '../components/PokeMini';
 import { useLanguage } from '../contexts/language-context';
 import { cleanName } from '../lib/format';
 import { type Arena, buffText, fastMoveTurns, moveDPE, moveDPS, moveEPS, moveOwners } from '../lib/moves';
+import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { TYPE_LABEL } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
@@ -18,15 +19,18 @@ const MoveDetail = () => {
 	const { rankLists } = usePvp();
 	const { raidDPS } = useRaidRanker();
 	const { currentGameLanguage: gl } = useLanguage();
+	const relevanceSets = useRelevanceSets();
 
 	// Shadow forms share their base's movepool, so they'd just be duplicates —
-	// hide them, except for Frustration, which only shadows can have.
+	// hide them, except for Frustration, which only shadows can have. Ordered
+	// the same way Calendar's own subtabs order their chips: most PvP/raid
+	// relevant first, then — on a tie — each evolution family's own line
+	// order (base stage first), falling back to dex/name from there.
 	const owners = useMemo(() => {
 		const keepShadows = moveId === 'FRUSTRATION';
-		return moveOwners(moveId, gamemasterPokemon)
-			.filter((p) => keepShadows || !p.isShadow)
-			.sort((a, b) => a.dex - b.dex || a.speciesId.localeCompare(b.speciesId));
-	}, [moveId, gamemasterPokemon]);
+		const filtered = moveOwners(moveId, gamemasterPokemon).filter((p) => keepShadows || !p.isShadow);
+		return sortByCalendarRelevance(filtered, (p) => p.speciesId, gamemasterPokemon, relevanceSets);
+	}, [moveId, gamemasterPokemon, relevanceSets]);
 
 	// "Recommended" = the move is part of a Pokémon's best moveset for some PvP
 	// league OR the fast/charged of its best combo for any raid attacking type.
