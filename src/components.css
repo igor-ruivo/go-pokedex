@@ -2495,12 +2495,13 @@
 }
 /* Spotlight Hour's synthetic card: the same static promo background the
    legacy (pre-revamp) site used, with the spotlighted species' own sprite(s)
-   layered on top — side by side when a Spotlight Hour features more than one
-   (some do, up to 4). */
+   layered on top — up to 4, arranged per count below. A little taller than
+   the plain event thumbnail (96×60) to give a multi-sprite arrangement room
+   to breathe. */
 .rvmp .r-event-head .r-event-spotlight {
 	position: relative;
 	width: 96px;
-	height: 60px;
+	height: 72px;
 	border-radius: var(--r-xs);
 	overflow: hidden;
 	flex: none;
@@ -2522,33 +2523,54 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 1px;
-	padding: 0 4px;
 	max-width: 100%;
+	max-height: 100%;
 }
 .rvmp .r-event-head .r-event-spotlight-sprites img {
-	width: 44px;
-	height: 44px;
 	object-fit: contain;
 	border-radius: 0;
 	flex: none;
 	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.75)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.65));
 }
-/* Only shrink as more sprites need to share the same fixed-width thumbnail
-   (a Spotlight Hour can feature up to 4 species) — each breakpoint below
-   wins over the last by source order (same specificity, since a 4-sprite
-   card still matches the :has(nth-child(2)) and (3) rules too). */
-.rvmp .r-event-head .r-event-spotlight-sprites:has(img:nth-child(2)) img {
+/* 1 — solo, biggest. */
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='1'] img {
+	width: 54px;
+	height: 54px;
+}
+/* 2 — plain side by side, no overlap. */
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='2'] {
+	gap: 6px;
+}
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='2'] img {
+	width: 40px;
+	height: 40px;
+}
+/* 3 — one row, deliberately overlapping (z-index set inline, highest first). */
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='3'] img {
 	width: 38px;
 	height: 38px;
+	margin-left: -13px;
 }
-.rvmp .r-event-head .r-event-spotlight-sprites:has(img:nth-child(3)) img {
-	width: 28px;
-	height: 28px;
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='3'] img:first-child {
+	margin-left: 0;
 }
-.rvmp .r-event-head .r-event-spotlight-sprites:has(img:nth-child(4)) img {
-	width: 20px;
-	height: 20px;
+/* 4 — a proper 2×2 grid, not a cramped row. */
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 2px;
+}
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] img {
+	width: 30px;
+	height: 30px;
+}
+/* GO/shiny sprite assets carry a lot of built-in transparent padding versus
+   the official artwork, so they render visibly smaller at the same box size
+   — scaled up in place to compensate. The layout box itself doesn't grow, so
+   this is allowed to spill over its neighbours slightly rather than stay
+   starved (see EventCard's own note). */
+.rvmp .r-event-head .r-event-spotlight-sprites[data-go] img {
+	transform: scale(1.35);
 }
 .rvmp .r-event-head > div {
 	flex: 1;

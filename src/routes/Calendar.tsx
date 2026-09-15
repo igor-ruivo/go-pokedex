@@ -4,7 +4,7 @@ import { NavLink, useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
 import { spriteUrl } from '../components/Sprite';
-import { useImageSource } from '../contexts/imageSource-context';
+import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
@@ -254,18 +254,33 @@ const EventCard = ({
 	const phase = eventPhase(post.startDate, post.endDate);
 	const title = (preferSubtitle ? post.subtitle[gl] || post.title[gl] : post.title[gl] || post.subtitle[gl]) || 'Event';
 	const bonuses = post.bonuses[gl] ?? [];
+	const spotlightMons = post.wild;
+	// The GO/shiny sprite assets carry a lot of built-in transparent padding
+	// (unlike the official artwork), so they render visibly smaller than the
+	// official ones at the same box size — scaled up to compensate (see the
+	// `[data-go]` rule; the layout box itself is untouched, so this is
+	// allowed to overlap neighbours slightly rather than staying starved).
+	const isGoLike = imageSource !== ImageSource.Official;
 	return (
 		<div className='r-event' data-open={open}>
 			<button type='button' className='r-event-head' onClick={onToggle}>
 				{post.isSpotlight ? (
 					<span className='r-event-spotlight'>
 						{post.imageUrl && <img className='r-event-spotlight-bg' src={post.imageUrl} alt='' loading='lazy' />}
-						<span className='r-event-spotlight-sprites'>
-							{post.wild.map((e) => {
+						<span
+							className='r-event-spotlight-sprites'
+							data-count={Math.min(spotlightMons.length, 4)}
+							data-go={isGoLike || undefined}
+						>
+							{spotlightMons.map((e, i) => {
 								const p = gamemasterPokemon[e.speciesId];
-								return p ? (
-									<img key={e.speciesId} src={spriteUrl(p, imageSource)} alt='' loading='lazy' />
-								) : null;
+								if (!p) return null;
+								// Only the 3-in-a-row layout overlaps (see the `data-count='3'`
+								// CSS) — first mon stacked on top, each one after sinking
+								// behind the last.
+								const style =
+									spotlightMons.length === 3 ? { zIndex: spotlightMons.length - i } : undefined;
+								return <img key={e.speciesId} src={spriteUrl(p, imageSource)} alt='' loading='lazy' style={style} />;
 							})}
 						</span>
 					</span>
