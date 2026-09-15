@@ -379,6 +379,66 @@ describe('computeSearchString — Shadow purification math (backward direction)'
 		// unconditional trailing `,4*` addendum, same as any other block.
 		expect(result.endsWith(',4*')).toBe(true);
 	});
+
+	it('regression: a mid-range, non-15 target combo (3/6/11) purifies from a raw combo (1/4/9) landing in GENUINELY DIFFERENT buckets on two of three stats — not just the 15-ceiling fan-out case', () => {
+		// Attack: target bucket 1 (3) -> raw bucket 1 (1) — same, no ceiling
+		// involved either way. Defense: target bucket 2 (6) -> raw bucket 1
+		// (4) — genuinely different. HP: target bucket 3 (11) -> raw bucket 2
+		// (9) — also genuinely different. None of these three stats are
+		// anywhere near 15, so this is a distinct code path from the hundo
+		// fan-out test above (which only exercises purifiedSources' [13,14,15]
+		// branch) — this one exercises the plain `iv - 2` branch on all three
+		// stats simultaneously, each shifting bucket independently.
+		const pokemon = mockPokemon({ speciesId: 'midmon_shadow', dex: 802, isShadow: true });
+		const midCombo: Array<RankEntry> = [
+			{ IVs: { A: 3, D: 6, S: 11, star: 1 }, battle: { A: 1, D: 1, S: 1 }, L: 30, CP: 1500 },
+		];
+		const result = computeSearchString(pokemon, {
+			trash: false,
+			topIVCombinations: midCombo,
+			gl: GameLanguage.en,
+			formId: '802',
+			shadowSuffix: '&shadow',
+			viaPurify: true,
+		});
+
+		// Raw sum 1+4+9=14 -> star 0, NOT the target's own star 1 — the tier
+		// gating must follow the raw catch's own IV-sum rating.
+		expect(result).toContain('&!0*,1attack&!0*,1defense&!0*,2hp');
+		// Never the target's own (purified-space) buckets.
+		expect(result).not.toContain('2defense');
+		expect(result).not.toContain('3hp');
+	});
+
+	it('regression: a rank-1 safety-floor combo also gets purify-expanded when it lands in a viaPurify block, exactly like a core combo', () => {
+		// Simulates the component wiring: the safety floor (withBestBuddySafetyFloor)
+		// operates purely in target space, unaware of Shadow/purification at
+		// all — it's computeSearchString's own viaPurify flag that must expand
+		// EVERY combo it receives, core selection or safety floor alike.
+		const pokemon = mockPokemon({ speciesId: 'floormon_shadow', dex: 803, isShadow: true });
+		const core: Array<RankEntry> = [];
+		const level50: Array<RankEntry> = [
+			{ IVs: { A: 15, D: 15, S: 15, star: 4 }, battle: { A: 1, D: 1, S: 1 }, L: 50, CP: 1500 },
+		];
+		const level51: Array<RankEntry> = [];
+		const withFloor = withBestBuddySafetyFloor(core, level50, level51);
+
+		const result = computeSearchString(pokemon, {
+			trash: false,
+			topIVCombinations: withFloor,
+			gl: GameLanguage.en,
+			formId: '803',
+			shadowSuffix: '&shadow',
+			viaPurify: true,
+		});
+
+		// Same signature as the plain hundo-fan-out test above — proves the
+		// safety-floor-sourced combo went through the identical purify
+		// expansion, not some bucket-only shortcut.
+		expect(result).toContain('&!3*,3-4attack');
+		expect(result).toContain('3-4defense');
+		expect(result).toContain('3-4hp');
+	});
 });
 
 describe('computeSearchString — form/Shadow identity prefix (regression: Ninetales-Alolan bug)', () => {
