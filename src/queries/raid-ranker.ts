@@ -45,9 +45,11 @@ const TYPE_KEYS = Object.values(PokemonTypes)
 	.map((t) => t.toLocaleLowerCase());
 
 // One list per attacking type. The old generic "" list was dropped — a raid
-// ranking only means something once you pick a type.
-const RAID_DPS_KEYS = TYPE_KEYS;
-const RAID_DPS_URLS = TYPE_KEYS.map((t) => dpsUrl(t));
+// ranking only means something once you pick a type. Normal is excluded too:
+// it's the only type with zero super-effective matchups against anything, so
+// dex-server no longer generates a normal-raid-dps-rank.json to fetch.
+const RAID_DPS_KEYS = TYPE_KEYS.filter((t) => t !== 'normal');
+const RAID_DPS_URLS = RAID_DPS_KEYS.map((t) => dpsUrl(t));
 
 const combine = (results: Array<UseQueryResult<DPSRank, Error>>): RaidRankerData => {
 	const raidDPS: Record<string, DPSRank> = {};

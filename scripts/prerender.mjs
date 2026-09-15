@@ -144,9 +144,13 @@ const STATIC_PAGES = [
 	},
 ];
 
-// Must match src/lib/types.ts's TYPE_KEYS — duplicated for the same reason as
-// GAMEMASTER_URL above (this script can't import a .ts file directly).
-const TYPE_KEYS = [
+// Must match src/lib/types.ts's RAID_TYPE_KEYS — duplicated for the same
+// reason as GAMEMASTER_URL above (this script can't import a .ts file
+// directly). Normal is excluded: it's the only type with zero
+// super-effective matchups against anything, so there's no
+// /rankings/raid/normal page, and dex-server doesn't generate a
+// normal-raid-dps-rank.json to prerender structured data from.
+const RAID_TYPE_KEYS = [
 	'bug',
 	'dark',
 	'dragon',
@@ -159,7 +163,6 @@ const TYPE_KEYS = [
 	'grass',
 	'ground',
 	'ice',
-	'normal',
 	'poison',
 	'psychic',
 	'rock',
@@ -175,7 +178,7 @@ const TYPE_KEYS = [
 // and silently overwrite each other. See Rankings.tsx for how the path
 // segment and the `?type=` query param coexist without fighting.
 const capitalize = (s) => s[0].toUpperCase() + s.slice(1);
-for (const t of TYPE_KEYS) {
+for (const t of RAID_TYPE_KEYS) {
 	STATIC_PAGES.push({
 		path: `/rankings/raid/${t}`,
 		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,
@@ -355,11 +358,11 @@ const main = async () => {
 	console.log('Fetching ranking data for structured data…');
 	const [greatPvp, ultraPvp, masterPvp, ...raidDpsByType] = await Promise.all([
 		...PVP_URLS.map((u) => fetch(u).then((r) => r.json())),
-		...TYPE_KEYS.map((t) => fetch(dpsUrl(t)).then((r) => r.json())),
+		...RAID_TYPE_KEYS.map((t) => fetch(dpsUrl(t)).then((r) => r.json())),
 	]);
 	const pvpTop10 = [greatPvp, ultraPvp, masterPvp].map((list) => Object.values(list).sort((a, b) => a.rank - b.rank));
 	const raidTop10ByType = Object.fromEntries(
-		TYPE_KEYS.map((t, i) => [t, Object.values(raidDpsByType[i]).sort((a, b) => a.rank - b.rank)])
+		RAID_TYPE_KEYS.map((t, i) => [t, Object.values(raidDpsByType[i]).sort((a, b) => a.rank - b.rank)])
 	);
 
 	// For a quick local smoke test without paying the full ~1,900-page cost:

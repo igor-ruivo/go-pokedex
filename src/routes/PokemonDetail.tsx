@@ -213,16 +213,20 @@ const PokemonDetail = () => {
 		// under whichever figure (DPS/TDO/eDPS) is currently chosen — dex-server
 		// bakes in all three per entry precisely so this doesn't have to re-rank
 		// the list itself just to switch metrics (see `raidRankOf`).
-		const rankedTypes = (sid: string) =>
+		// `raidDPS` never has a 'normal' entry at all any more (see useRaidRanker:
+		// Normal is the only type with zero super-effective matchups against
+		// anything, so dex-server doesn't generate that ranking), so no explicit
+		// filtering for it is needed here.
+		const rankedTypes = (p: IGamemasterPokemon) =>
 			Object.entries(raidDPS)
 				.filter(([t]) => t !== '')
-				.map(([type, list]) => ({ type, entry: list[sid] as DPSEntry | undefined }))
+				.map(([type, list]) => ({ type, entry: list[p.speciesId] as DPSEntry | undefined }))
 				.filter((x): x is { type: string; entry: DPSEntry } => !!x.entry)
 				.map((x) => ({ ...x, rank: raidRankOf(x.entry, raidMetric) ?? Number.POSITIVE_INFINITY }))
 				.sort((a, b) => a.rank - b.rank);
 
 		const raid = [...reachableRaid]
-			.map((p) => ({ p, types: rankedTypes(p.speciesId) }))
+			.map((p) => ({ p, types: rankedTypes(p) }))
 			.sort((a, b) => {
 				const ra = a.types[0]?.rank ?? Number.POSITIVE_INFINITY;
 				const rb = b.types[0]?.rank ?? Number.POSITIVE_INFINITY;
@@ -1021,9 +1025,11 @@ const PokemonDetail = () => {
 									</>
 								)}
 
-								<p className='r-muted' style={{ marginTop: 14 }}>
-									IVs barely matter in raids — chase the highest <b>Attack</b>.
-								</p>
+								{raidSelRow && (
+									<p className='r-muted' style={{ marginTop: 14 }}>
+										IVs barely matter in raids — chase the highest <b>Attack</b>.
+									</p>
+								)}
 							</div>
 						</>
 					) : (

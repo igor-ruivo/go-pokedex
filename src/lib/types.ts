@@ -39,6 +39,16 @@ export const TYPE_KEYS: ReadonlyArray<string> = [
 	'water',
 ];
 
+/** Raid attacking-type filter list — `TYPE_KEYS` minus Normal.
+ *  Normal is the only type with zero super-effective matchups against
+ *  anything, so it was never a meaningful raid attacking type: there's no
+ *  `/rankings/raid/normal` page, no `normal-raid-dps-rank.json` from
+ *  dex-server, and no Normal chip in the raid rankings' type picker. Every
+ *  *other* type picker (Moves, the type chart, Pokédex/PvP type filters)
+ *  keeps Normal — Normal-type Pokémon and moves are still real and still
+ *  filterable there. */
+export const RAID_TYPE_KEYS: ReadonlyArray<string> = TYPE_KEYS.filter((t) => t !== 'normal');
+
 export const TYPE_LABEL: Record<string, string> = {
 	normal: 'Normal',
 	fire: 'Fire',

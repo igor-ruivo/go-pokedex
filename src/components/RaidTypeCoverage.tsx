@@ -53,6 +53,10 @@ export const RaidTypeCoverage = ({
 
 	// every attacking-type list this species is ranked in, best rank first
 	// (under whichever figure — DPS/TDO/eDPS — the app is currently ranking by)
+	// — `raidDPS` never has a 'normal' entry at all any more (see useRaidRanker:
+	// Normal is the only type with zero super-effective matchups against
+	// anything, so dex-server doesn't generate that ranking), so no explicit
+	// filtering for it is needed here.
 	const types = useMemo(
 		() =>
 			Object.entries(raidDPS)

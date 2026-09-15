@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 
-import { TYPE_KEYS } from '../lib/types';
+import { RAID_TYPE_KEYS } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 
@@ -103,7 +103,7 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
  *  pointing at whatever type the page happened to load with. */
 const raidTypePage = (typeParam: string | undefined, queryType: string | null) => {
 	const t = (queryType ?? typeParam ?? '').toLowerCase();
-	if (!TYPE_KEYS.includes(t)) return { path: '/rankings/raid', ...STATIC_PAGES['/rankings/raid'] };
+	if (!RAID_TYPE_KEYS.includes(t)) return { path: '/rankings/raid', ...STATIC_PAGES['/rankings/raid'] };
 	return {
 		path: `/rankings/raid/${t}`,
 		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,

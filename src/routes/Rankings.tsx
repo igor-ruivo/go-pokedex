@@ -10,7 +10,7 @@ import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { MODE_COLOR, MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
 import { RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
-import { TYPE_KEYS, TYPE_LABEL, typeKey } from '../lib/types';
+import { RAID_TYPE_KEYS, TYPE_KEYS, TYPE_LABEL, typeKey } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
@@ -80,18 +80,19 @@ const Rankings = () => {
 		: 'pokedex';
 	const navigate = useNavigate();
 	const [params, setParams] = useSearchParams();
+	const [hintOpen, setHintOpen] = useState(false);
 	const q = (params.get('q') ?? '').toLowerCase().trim();
 	const isRaid = mode === 'raid';
 	// `/rankings/raid/:type` (a real, crawlable URL per type — see R.rankings)
 	// only ever *seeds* the type when `?type=` isn't already set; from then on
 	// the query param — what the FilterBar actually writes to — is the single
 	// source of truth, so the two never end up fighting each other.
-	const typeSeed = isRaid && typeParam && TYPE_KEYS.includes(typeParam) ? typeParam : '';
+	const typeSeed = isRaid && typeParam && RAID_TYPE_KEYS.includes(typeParam) ? typeParam : '';
 	const selectedTypes = (params.get('type') ?? typeSeed)
 		.split(',')
 		.map((t) => t.trim())
 		.filter(Boolean)
-		.filter((t) => TYPE_KEYS.includes(t))
+		.filter((t) => (isRaid ? RAID_TYPE_KEYS : TYPE_KEYS).includes(t))
 		.slice(0, isRaid ? 1 : 2);
 	const raidType = isRaid ? (selectedTypes[0] ?? '') : '';
 
@@ -310,7 +311,7 @@ const Rankings = () => {
 				</div>
 				<div className='r-controls'>
 					<FilterBar
-						types={TYPE_KEYS}
+						types={isRaid ? RAID_TYPE_KEYS : TYPE_KEYS}
 						selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes}
 						onChange={setTypes}
 						single={isRaid}
@@ -332,9 +333,30 @@ const Rankings = () => {
 					)}
 				</div>
 				<div className='r-section-h'>
-					{!showGrid ? 'Loading…' : isRaid && !raidType ? 'Choose a type' : `${rows.length.toLocaleString()} Pokémon`}
-					{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
+					<span>
+						{!showGrid ? 'Loading…' : isRaid && !raidType ? 'Choose a type' : `${rows.length.toLocaleString()} Pokémon`}
+						{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
+					</span>
+					{showGrid && isRaid && raidType && (
+						<button
+							type='button'
+							className='r-rank-hint-toggle'
+							aria-expanded={hintOpen}
+							aria-label={hintOpen ? 'Hide ranking assumptions' : 'Show ranking assumptions'}
+							title={hintOpen ? 'Hide ranking assumptions' : 'Show ranking assumptions'}
+							onClick={() => setHintOpen((o) => !o)}
+						>
+							?
+						</button>
+					)}
 				</div>
+				{showGrid && isRaid && raidType && hintOpen && (
+					<p className='r-muted r-rank-hint'>
+						Raid ranks assume each Pokémon&rsquo;s best fast + charged move combo dealing Effective{' '}
+						{TYPE_LABEL[raidType] ?? raidType}-type damage (×1.6) against a Tier 5 non-shadow boss (200 Defense,
+						level 40), with a level 50 attacker (15 Attack IV) and no weather, friendship or Mega bonuses.
+					</p>
+				)}
 			</div>
 
 			<div ref={gridRef} className='r-grid-vp'>

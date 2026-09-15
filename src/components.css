@@ -1956,6 +1956,38 @@
 	font-size: 13.5px;
 	line-height: 1.5;
 }
+.rvmp .r-rank-hint {
+	margin-top: 2px;
+	font-size: 12px;
+	line-height: 1.4;
+}
+.rvmp .r-rank-hint-toggle {
+	flex: none;
+	display: grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	border: 1px solid var(--border-strong);
+	background: var(--surface-3);
+	color: var(--text-dim);
+	font-family: Fredoka, sans-serif;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: normal;
+	text-transform: none;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		color 0.15s,
+		border-color 0.15s,
+		background 0.15s;
+}
+.rvmp .r-rank-hint-toggle:hover,
+.rvmp .r-rank-hint-toggle[aria-expanded='true'] {
+	color: var(--accent);
+	border-color: var(--accent);
+}
 
 .rvmp .r-grid-row {
 	display: grid;
