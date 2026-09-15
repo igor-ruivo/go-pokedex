@@ -2472,6 +2472,11 @@
 	border: 1px solid var(--border);
 	border-radius: var(--r-md);
 	overflow: clip;
+	/* `.r-eventlist` is a grid — grid items default to `min-width: auto`, so
+	   without this, a long nowrap title's intrinsic width blows out the grid
+	   track (and the page along with it, causing horizontal scroll) instead
+	   of ever actually triggering the ellipsis further down. */
+	min-width: 0;
 	transition: border-color 0.14s ease;
 }
 .rvmp .r-event[data-open='true'],
@@ -2581,6 +2586,15 @@
 	font-size: 14.5px;
 	font-weight: 800;
 	line-height: 1.2;
+}
+/* Collapsed rows stay a single line regardless of title length — a long
+   title wrapping to 2 lines made that one row taller than its neighbours in
+   the list. Expanding (data-open) removes the clamp so the full title shows
+   (the full row already exists then; nothing is lost, just no longer cut off). */
+.rvmp .r-event:not([data-open='true']) .r-event-head b {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 /* never-opened-yet dot — same colour as the Calendar nav badge (.r-bn-badge),
    just a plain dot per-row instead of a count */
@@ -4535,12 +4549,10 @@
 	letter-spacing: 0.05em;
 	color: var(--text-faint);
 }
-/* win/lose colour only paints in on hover — the row itself carries no colour
-   language at rest, so a whole list doesn't read as a wall of green/red. */
-.rvmp .r-ctr-row:hover .r-ctr-score[data-tone='win'] {
+.rvmp .r-ctr-score[data-tone='win'] {
 	color: var(--t-grass);
 }
-.rvmp .r-ctr-row:hover .r-ctr-score[data-tone='lose'] {
+.rvmp .r-ctr-score[data-tone='lose'] {
 	color: color-mix(in srgb, var(--t-fire) 82%, var(--text));
 }
 .rvmp .r-ctr-toggles {

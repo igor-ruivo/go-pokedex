@@ -54,13 +54,19 @@ const groupByRange = (
 	posts: Array<IPostEntry>,
 	pick: (p: IPostEntry) => Array<IEntry>
 ): Array<{ label: string; entries: Array<IEntry> }> => {
-	const map = new Map<string, { label: string; entries: Array<IEntry>; seen: Set<string> }>();
+	const map = new Map<
+		string,
+		{ entries: Array<IEntry>; seen: Set<string>; minStart: number; maxEnd: number }
+	>();
 	for (const p of posts) {
 		const label = dayRange(p.startDate, p.endDate);
 		let g = map.get(label);
 		if (!g) {
-			g = { label, entries: [], seen: new Set() };
+			g = { entries: [], seen: new Set(), minStart: p.startDate, maxEnd: p.endDate };
 			map.set(label, g);
+		} else {
+			g.minStart = Math.min(g.minStart, p.startDate);
+			g.maxEnd = Math.max(g.maxEnd, p.endDate);
 		}
 		for (const e of pick(p)) {
 			const k = `${e.speciesId}-${e.kind ?? ''}`;
@@ -69,7 +75,16 @@ const groupByRange = (
 			g.entries.push(e);
 		}
 	}
-	return [...map.values()].map(({ label, entries }) => ({ label, entries }));
+	// A bucket's own grouping key only ever collapses posts that land on the
+	// exact same single calendar day (dayRange falls back to a "day1 – day2"
+	// string otherwise, which never merges with anything) — safe then to
+	// upgrade the displayed label to a full start/end time range, same as
+	// Events already show (`dateRange` itself still falls back to day-only
+	// for anything spanning more than one day).
+	return [...map.values()].map(({ entries, minStart, maxEnd }) => ({
+		label: dayRange(minStart, maxEnd).includes('–') ? dayRange(minStart, maxEnd) : dateRange(minStart, maxEnd),
+		entries,
+	}));
 };
 
 const timeLeft = (end: number, now: number): string => {

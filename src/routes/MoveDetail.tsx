@@ -162,11 +162,11 @@ const MoveDetail = () => {
 						</div>
 						<div className='r-usage-tile'>
 							<b>{eliteCount}</b>
-							<i>Elite move</i>
+							<i>Elite</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{legacyCount}</b>
-							<i>Legacy move</i>
+							<i>Legacy</i>
 						</div>
 					</div>
 				</div>
