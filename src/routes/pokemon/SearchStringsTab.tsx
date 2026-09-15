@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { spriteUrl } from '../../components/Sprite';
 import { Stepper } from '../../components/Stepper';
+import { useImageSource } from '../../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs, useBestIvsAtLevel } from '../../hooks/useBestIvs';
@@ -609,6 +611,7 @@ const sentence = (
 const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const { gamemasterPokemon } = usePokemon();
 	const { currentGameLanguage: gl } = useLanguage();
+	const { imageSource } = useImageSource();
 
 	const [top, setTop] = useState(() => {
 		const v = readPersistentValue(ConfigKeys.TopPokemonInSearchString);
@@ -718,7 +721,12 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 				const isOpen = open === key;
 				return (
 					<div key={key} className='r-ss-block'>
-						<p className='r-ss-sentence'>{sentence(entry, pokemon, top, trash, leagueName)}</p>
+						<div className='r-ss-head'>
+							<span className='r-ss-sprite'>
+								<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' />
+							</span>
+							<p className='r-ss-sentence'>{sentence(entry, pokemon, top, trash, leagueName)}</p>
+						</div>
 						<div className='r-ss-actions'>
 							<button type='button' className='r-ss-copybtn' onClick={() => copy(key, str)}>
 								<ClipIcon />
