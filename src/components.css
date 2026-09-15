@@ -2494,6 +2494,7 @@
 .rvmp .r-event-head img {
 	width: 96px;
 	height: 60px;
+	align-self: flex-start;
 	object-fit: cover;
 	border-radius: var(--r-xs);
 	flex: none;
