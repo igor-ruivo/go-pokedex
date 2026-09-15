@@ -2500,18 +2500,16 @@
 }
 /* Spotlight Hour's synthetic card: the same static promo background the
    legacy (pre-revamp) site used, with the spotlighted species' own sprite(s)
-   layered on top — up to 4, arranged per count below. A little taller than
-   the plain event thumbnail (96×60) to give a multi-sprite arrangement room
-   to breathe. */
+   layered on top — up to 4, arranged per count below. Exact same 96×60 box
+   as the plain event thumbnail (cropped to fit, like it), so every row in
+   the list lines up at the same size. */
 .rvmp .r-event-head .r-event-spotlight {
 	position: relative;
 	width: 96px;
-	height: 72px;
+	height: 60px;
 	border-radius: var(--r-xs);
 	overflow: hidden;
 	flex: none;
-	display: grid;
-	place-items: center;
 	background: var(--surface-3);
 }
 .rvmp .r-event-head .r-event-spotlight-bg {
@@ -2523,7 +2521,8 @@
 	border-radius: 0;
 }
 .rvmp .r-event-head .r-event-spotlight-sprites {
-	position: relative;
+	position: absolute;
+	inset: 0;
 	z-index: 1;
 	display: flex;
 	align-items: center;
@@ -2566,8 +2565,8 @@
 	gap: 2px;
 }
 .rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] img {
-	width: 30px;
-	height: 30px;
+	width: 28px;
+	height: 28px;
 }
 /* GO/shiny sprite assets carry a lot of built-in transparent padding versus
    the official artwork, so they render visibly smaller at the same box size
@@ -2587,14 +2586,16 @@
 	font-weight: 800;
 	line-height: 1.2;
 }
-/* Collapsed rows stay a single line regardless of title length — a long
-   title wrapping to 2 lines made that one row taller than its neighbours in
-   the list. Expanding (data-open) removes the clamp so the full title shows
-   (the full row already exists then; nothing is lost, just no longer cut off). */
+/* Collapsed rows clamp to 2 lines regardless of title length — an
+   uncapped title made that one row taller than its neighbours in the list
+   (or, past 2 lines, taller still). Expanding (data-open) removes the clamp
+   so the full title shows (the full row already exists then; nothing is
+   lost, just no longer cut off). */
 .rvmp .r-event:not([data-open='true']) .r-event-head b {
+	display: -webkit-box;
 	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
 }
 /* never-opened-yet dot — same colour as the Calendar nav badge (.r-bn-badge),
    just a plain dot per-row instead of a count */
