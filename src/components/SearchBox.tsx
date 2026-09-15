@@ -112,7 +112,17 @@ export const SearchBox = () => {
 	const pick = (hit: Hit) => {
 		setOpen(false);
 		setQ('');
-		void navigate(hit.kind === 'pokemon' ? R.pokemon(hit.p.speciesId, detailTab) : R.move(hit.m.moveId));
+		if (hit.kind === 'pokemon') {
+			// `?lg=` (which league/raids tab the detail page's picker/readout was
+			// showing) lives in the URL, same as `detailTab` above — carried over
+			// the same way, so searching for a different Pokémon while already
+			// looking at, say, Ultra League doesn't silently drop you back to
+			// Great on the page you land on.
+			const lg = pathname.startsWith('/pokemon/') ? params.get('lg') : null;
+			void navigate({ pathname: R.pokemon(hit.p.speciesId, detailTab), search: lg ? `?lg=${lg}` : '' });
+		} else {
+			void navigate(R.move(hit.m.moveId));
+		}
 	};
 
 	const showMenu = open && q.trim().length > 0 && results.length > 0;
