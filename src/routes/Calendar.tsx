@@ -54,10 +54,7 @@ const groupByRange = (
 	posts: Array<IPostEntry>,
 	pick: (p: IPostEntry) => Array<IEntry>
 ): Array<{ label: string; entries: Array<IEntry> }> => {
-	const map = new Map<
-		string,
-		{ entries: Array<IEntry>; seen: Set<string>; minStart: number; maxEnd: number }
-	>();
+	const map = new Map<string, { entries: Array<IEntry>; seen: Set<string>; minStart: number; maxEnd: number }>();
 	for (const p of posts) {
 		const label = dayRange(p.startDate, p.endDate);
 		let g = map.get(label);
