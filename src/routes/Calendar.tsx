@@ -3,10 +3,13 @@ import { useMemo, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
+import { spriteUrl } from '../components/Sprite';
+import { useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
+import { spotlightToPost } from '../lib/calendar-events';
 import { dateRange, dayRange, eventPhase, eventStartEnd, nowAsEventTime, relativeDays } from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
@@ -97,9 +100,14 @@ const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
 	researches: [],
 	incenses: [],
 	lures: [],
-	bonuses: Object.keys(GameLanguage).reduce(
-		(acc, k) => {
-			acc[k as keyof typeof GameLanguage] = [];
+	// `Object.values`, not `Object.keys` — GameLanguage's member *names*
+	// don't all match their runtime string *values* (see spotlightToPost's
+	// own note); harmless here since every value is just `[]` regardless of
+	// which key name it lands on, but keyed consistently with the real
+	// `GameLanguage` values all the same.
+	bonuses: Object.values(GameLanguage).reduce(
+		(acc, key) => {
+			acc[key] = [];
 			return acc;
 		},
 		{} as Record<GameLanguage, Array<string>>
@@ -241,13 +249,29 @@ const EventCard = ({
 	unseen: boolean;
 }) => {
 	const { currentGameLanguage: gl } = useLanguage();
+	const { gamemasterPokemon } = usePokemon();
+	const { imageSource } = useImageSource();
 	const phase = eventPhase(post.startDate, post.endDate);
 	const title = (preferSubtitle ? post.subtitle[gl] || post.title[gl] : post.title[gl] || post.subtitle[gl]) || 'Event';
 	const bonuses = post.bonuses[gl] ?? [];
 	return (
 		<div className='r-event' data-open={open}>
 			<button type='button' className='r-event-head' onClick={onToggle}>
-				{post.imageUrl && !post.isSpotlight && <img src={post.imageUrl} alt='' loading='lazy' />}
+				{post.isSpotlight ? (
+					<span className='r-event-spotlight'>
+						{post.imageUrl && <img className='r-event-spotlight-bg' src={post.imageUrl} alt='' loading='lazy' />}
+						<span className='r-event-spotlight-sprites'>
+							{post.wild.map((e) => {
+								const p = gamemasterPokemon[e.speciesId];
+								return p ? (
+									<img key={e.speciesId} src={spriteUrl(p, imageSource)} alt='' loading='lazy' />
+								) : null;
+							})}
+						</span>
+					</span>
+				) : (
+					post.imageUrl && <img src={post.imageUrl} alt='' loading='lazy' />
+				)}
 				<div>
 					<b>
 						{unseen && <i className='r-event-new' aria-label='Not yet opened' />}
@@ -303,23 +327,30 @@ const EventCard = ({
 };
 
 const EventsTab = () => {
-	const { posts, season, postsFetchCompleted, seasonFetchCompleted } = useCalendar();
+	const { posts, season, spotlightHours, postsFetchCompleted, seasonFetchCompleted, spotlightHoursFetchCompleted } =
+		useCalendar();
 	const [openId, setOpenId] = useState<string | null>(null);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { seenIds, markSeen } = useSeenEvents();
+
+	const ready = postsFetchCompleted && spotlightHoursFetchCompleted;
 
 	const list = useMemo(() => {
 		// Not a raw `Date.now()` — see nowAsEventTime()'s own doc comment.
 		// Getting this wrong is exactly what made events linger an hour past
 		// their real (local-time) end before disappearing.
 		const now = nowAsEventTime();
+		// Spotlight Hours fold straight into the same Events feed — the
+		// pre-revamp site did the same (a Spotlight Hour is just a very short
+		// event), rather than giving them their own section.
+		const allPosts = ready ? [...posts, ...spotlightHours.map(spotlightToPost)] : [];
 		// Same-day starts (the common case — most events go live at the same
 		// local hour) tie-break by shorter overall duration first, then
 		// alphabetically — never by exact start instant, or two events
 		// announced the same day in a different order each import would keep
 		// reshuffling for no visible reason.
 		const dayOf = (t: number) => Math.floor(t / 86_400_000);
-		const events = (postsFetchCompleted ? posts : [])
+		const events = allPosts
 			.filter((p) => p && p.endDate >= now)
 			.sort((a, b) => {
 				const dayDiff = dayOf(a.startDate) - dayOf(b.startDate);
@@ -329,7 +360,7 @@ const EventsTab = () => {
 				return a.title[gl].localeCompare(b.title[gl]);
 			});
 		return seasonFetchCompleted && season ? [season, ...events] : events;
-	}, [posts, season, postsFetchCompleted, seasonFetchCompleted, gl]);
+	}, [posts, spotlightHours, ready, season, seasonFetchCompleted, gl]);
 
 	const dupeTitles = useMemo(() => {
 		const seen = new Map<string, number>();
@@ -337,7 +368,7 @@ const EventsTab = () => {
 		return new Set([...seen].filter(([, n]) => n > 1).map(([t]) => t));
 	}, [list, gl]);
 
-	if (!postsFetchCompleted) return <Spinner />;
+	if (!ready) return <Spinner />;
 	if (list.length === 0) return <p className='r-muted'>No events right now.</p>;
 
 	const seasonId = seasonFetchCompleted && season ? season.id : null;
@@ -474,15 +505,22 @@ const RaidsTab = () => {
 
 /* ---------- Spawns ---------- */
 const SpawnsTab = () => {
-	const { season, posts, seasonFetchCompleted, postsFetchCompleted } = useCalendar();
+	const { season, posts, spotlightHours, seasonFetchCompleted, postsFetchCompleted, spotlightHoursFetchCompleted } =
+		useCalendar();
 	const { fetchCompleted } = usePokemon();
 	const [sel, setSel] = useState('');
 
-	if (!seasonFetchCompleted || !postsFetchCompleted || !fetchCompleted) return <Spinner />;
+	if (!seasonFetchCompleted || !postsFetchCompleted || !spotlightHoursFetchCompleted || !fetchCompleted) {
+		return <Spinner />;
+	}
 
 	// Same local-time-encoded event feed as the Events tab — see nowAsEventTime().
 	const now = nowAsEventTime();
-	const withWild = (posts ?? [])
+	// A Spotlight Hour's featured Pokémon are a "current spawn" too, for the
+	// same duration — same synthetic post as the Events tab (see
+	// spotlightToPost), so it costs nothing beyond scanning it alongside
+	// everything else here that already carries a `wild` list.
+	const withWild = [...posts, ...spotlightHours.map(spotlightToPost)]
 		.filter((p) => p && (p.wild?.length ?? 0) > 0 && p.endDate >= now)
 		.sort((a, b) => a.startDate - b.startDate);
 
