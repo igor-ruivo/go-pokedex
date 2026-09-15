@@ -12,6 +12,17 @@ import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
 
+/** Small inline placeholder for the Recommended/Also-learned-by grids while
+ *  they're still waiting on relevance data — same treatment as Calendar's
+ *  own copy of this (not the page-level spinner, which is far too tall for
+ *  a single section, and not just skipping straight to the family-line
+ *  fallback order, which would render once then visibly jump). */
+const MiniGridLoading = () => (
+	<div className='r-minigrid-loading'>
+		<div className='r-spinner r-spinner--sm' />
+	</div>
+);
+
 const MoveDetail = () => {
 	const { moveId = '' } = useParams();
 	const { moves, movesFetchCompleted } = useMoves();
@@ -67,8 +78,12 @@ const MoveDetail = () => {
 
 	const kind: 'fast' | 'charged' = m.isFast ? 'fast' : 'charged';
 	const type = m.type.toLowerCase();
-	const eliteCount = owners.filter((p) => p.eliteMoves.includes(moveId)).length;
-	const legacyCount = owners.filter((p) => p.legacyMoves.includes(moveId)).length;
+	// `owners` is already in relevance order (see its own useMemo above) —
+	// filtering it preserves that order, no separate sort needed here.
+	const eliteOwners = owners.filter((p) => p.eliteMoves.includes(moveId));
+	const legacyOwners = owners.filter((p) => p.legacyMoves.includes(moveId));
+	const eliteCount = eliteOwners.length;
+	const legacyCount = legacyOwners.length;
 	const megaCount = owners.filter((p) => p.isMega).length;
 
 	const recommended = owners.filter((p) => recommendedFor.has(p.speciesId));
@@ -138,7 +153,7 @@ const MoveDetail = () => {
 					</div>
 					<div className='r-usage-tiles'>
 						<div className='r-usage-tile' data-hi=''>
-							<b>{recommended.length.toLocaleString()}</b>
+							<b>{relevanceSets.ready ? recommended.length.toLocaleString() : '…'}</b>
 							<i>Recommended</i>
 						</div>
 						<div className='r-usage-tile'>
@@ -157,23 +172,60 @@ const MoveDetail = () => {
 				</div>
 			</div>
 
-			{recommended.length > 0 && (
+			{!relevanceSets.ready ? (
 				<>
 					<div className='r-section-h'>Recommended</div>
+					<MiniGridLoading />
+					<div className='r-section-h'>Also learned by</div>
+					<MiniGridLoading />
+					<div className='r-section-h'>Is an elite move for</div>
+					<MiniGridLoading />
+					<div className='r-section-h'>Is a legacy move for</div>
+					<MiniGridLoading />
+				</>
+			) : (
+				<>
+					{recommended.length > 0 && (
+						<>
+							<div className='r-section-h'>Recommended</div>
+							<div className='r-minigrid r-minigrid--fill'>
+								{recommended.map((p) => (
+									<PokeMini key={p.speciesId} speciesId={p.speciesId} />
+								))}
+							</div>
+						</>
+					)}
+
+					<div className='r-section-h'>{recommended.length > 0 ? 'Also learned by' : 'Learned by'}</div>
 					<div className='r-minigrid r-minigrid--fill'>
-						{recommended.map((p) => (
+						{others.map((p) => (
 							<PokeMini key={p.speciesId} speciesId={p.speciesId} />
 						))}
 					</div>
+
+					{eliteOwners.length > 0 && (
+						<>
+							<div className='r-section-h'>Is an elite move for</div>
+							<div className='r-minigrid r-minigrid--fill'>
+								{eliteOwners.map((p) => (
+									<PokeMini key={p.speciesId} speciesId={p.speciesId} />
+								))}
+							</div>
+						</>
+					)}
+
+					{legacyOwners.length > 0 && (
+						<>
+							<div className='r-section-h'>Is a legacy move for</div>
+							<div className='r-minigrid r-minigrid--fill'>
+								{legacyOwners.map((p) => (
+									<PokeMini key={p.speciesId} speciesId={p.speciesId} />
+								))}
+							</div>
+						</>
+					)}
 				</>
 			)}
-
-			<div className='r-section-h'>{recommended.length > 0 ? 'Also learned by' : 'Learned by'}</div>
-			<div className='r-minigrid r-minigrid--fill'>
-				{others.map((p) => (
-					<PokeMini key={p.speciesId} speciesId={p.speciesId} />
-				))}
-			</div>
 			{owners.length === 0 && <p className='r-muted'>No Pokémon learns this move.</p>}
 		</div>
 	);

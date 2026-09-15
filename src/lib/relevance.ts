@@ -27,6 +27,14 @@ export interface RelevanceSets {
 	ultra: Set<string>;
 	master: Set<string>;
 	raid: Set<string>;
+	/** Each species' own best (lowest) rank in that category — `undefined`
+	 *  when it doesn't appear there at all. Membership in the `Set`s above is
+	 *  just "rank <= the /trash-page cutoff"; these carry the actual number,
+	 *  for ranking WITHIN a tied badge count (see `sortByCalendarRelevance`). */
+	greatRank: Map<string, number>;
+	ultraRank: Map<string, number>;
+	masterRank: Map<string, number>;
+	raidRank: Map<string, number>;
 	ready: boolean;
 }
 
@@ -35,6 +43,10 @@ const EMPTY: RelevanceSets = {
 	ultra: new Set(),
 	master: new Set(),
 	raid: new Set(),
+	greatRank: new Map(),
+	ultraRank: new Map(),
+	masterRank: new Map(),
+	raidRank: new Map(),
 	ready: false,
 };
 
@@ -60,17 +72,35 @@ export const useRelevanceSets = (): RelevanceSets => {
 			for (const r of Object.values(list ?? {})) if (r.rank <= cutoff) s.add(r.speciesId);
 			return s;
 		};
+		const pvpRankMap = (list: Record<string, { speciesId: string; rank: number }> | undefined) => {
+			const m = new Map<string, number>();
+			for (const r of Object.values(list ?? {})) m.set(r.speciesId, r.rank);
+			return m;
+		};
 		const raid = new Set<string>();
+		// A species can appear in several type-specific attacker lists with a
+		// different rank in each — keep its BEST (lowest) one, same "relevant
+		// for raids at all" spirit the membership set already has.
+		const raidRank = new Map<string, number>();
 		for (const [key, list] of Object.entries(raidDPS)) {
 			if (key === '') continue; // the '' key is the type-agnostic overall list; we want "top N of any type"
-			for (const e of Object.values(list))
-				if ((raidRankOf(e, raidMetric) ?? Infinity) <= raidCut) raid.add(e.speciesId);
+			for (const e of Object.values(list)) {
+				const rank = raidRankOf(e, raidMetric);
+				if (rank == null) continue;
+				if (rank <= raidCut) raid.add(e.speciesId);
+				const existing = raidRank.get(e.speciesId);
+				if (existing == null || rank < existing) raidRank.set(e.speciesId, rank);
+			}
 		}
 		return {
 			great: pvpSet(rankLists[0], greatCut),
 			ultra: pvpSet(rankLists[1], ultraCut),
 			master: pvpSet(rankLists[2], masterCut),
 			raid,
+			greatRank: pvpRankMap(rankLists[0]),
+			ultraRank: pvpRankMap(rankLists[1]),
+			masterRank: pvpRankMap(rankLists[2]),
+			raidRank,
 			ready: true,
 		};
 	}, [
@@ -119,11 +149,52 @@ export const useLeagueBadges = (
 	return useMemo(() => leagueBadgesFor(pokemon, gamemasterPokemon, sets), [pokemon, gamemasterPokemon, sets]);
 };
 
+interface BestRanks {
+	raid: number;
+	master: number;
+	ultra: number;
+	great: number;
+}
+
+/** Each category's best (lowest) rank across the whole reachable family —
+ *  `Infinity` where the family never shows up in that category at all.
+ *  Same family-reachability sweep `leagueBadgesFor` already does, just
+ *  keeping the actual number instead of collapsing it to "relevant or not". */
+const bestRanksFor = (
+	pokemon: IGamemasterPokemon,
+	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	sets: RelevanceSets
+): BestRanks => {
+	if (!sets.ready) return { raid: Infinity, master: Infinity, ultra: Infinity, great: Infinity };
+	const family = Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map(
+		(m) => m.speciesId
+	);
+	const bestOf = (map: Map<string, number>) => {
+		let best = Infinity;
+		for (const id of family) {
+			const rank = map.get(id);
+			if (rank != null && rank < best) best = rank;
+		}
+		return best;
+	};
+	return {
+		raid: bestOf(sets.raidRank),
+		master: bestOf(sets.masterRank),
+		ultra: bestOf(sets.ultraRank),
+		great: bestOf(sets.greatRank),
+	};
+};
+
 /**
- * Calendar chip ordering: most relevant first (however many league/raid dots
- * a Pokémon earns — see `leagueBadgesFor`), then — on a tie — the exact same
- * ordering a Pokémon's own family-line strip uses (`sortByFamilyLine`), reused
- * as-is rather than re-implemented; unrelated species just fall back to its
+ * Calendar chip ordering (also used by Move Detail's Recommended/Also-learned
+ * -by/Elite/Legacy lists): most relevant first (however many league/raid dots
+ * a Pokémon earns — see `leagueBadgesFor`); on a tie, whichever has the
+ * better (lower) raid rank wins, using the player's own preferred raid metric
+ * (`useRaidMetric` — DPS/TDO/eDPS, baked into `sets.raidRank` already); still
+ * tied, Master, then Ultra, then Great League rank, same "better rank wins"
+ * comparison each time; still tied after all four, the exact same ordering a
+ * Pokémon's own family-line strip uses (`sortByFamilyLine`), reused as-is
+ * rather than re-implemented — unrelated species just fall back to its
  * dex/name tiebreak, which reads fine for a mixed bag of Pokémon too.
  */
 export const sortByCalendarRelevance = <T>(
@@ -141,10 +212,22 @@ export const sortByCalendarRelevance = <T>(
 	const badgeCount = new Map(
 		uniquePokemon.map((p) => [p.speciesId, leagueBadgesFor(p, gamemasterPokemon, sets).length])
 	);
+	const bestRanks = new Map(uniquePokemon.map((p) => [p.speciesId, bestRanksFor(p, gamemasterPokemon, sets)]));
+	const ranksOf = (id: string): BestRanks =>
+		bestRanks.get(id) ?? { raid: Infinity, master: Infinity, ultra: Infinity, great: Infinity };
 
-	return [...items].sort(
-		(a, b) =>
-			(badgeCount.get(speciesIdOf(b)) ?? 0) - (badgeCount.get(speciesIdOf(a)) ?? 0) ||
-			(familyRank.get(speciesIdOf(a)) ?? 0) - (familyRank.get(speciesIdOf(b)) ?? 0)
-	);
+	return [...items].sort((a, b) => {
+		const idA = speciesIdOf(a);
+		const idB = speciesIdOf(b);
+		const ranksA = ranksOf(idA);
+		const ranksB = ranksOf(idB);
+		return (
+			(badgeCount.get(idB) ?? 0) - (badgeCount.get(idA) ?? 0) ||
+			ranksA.raid - ranksB.raid ||
+			ranksA.master - ranksB.master ||
+			ranksA.ultra - ranksB.ultra ||
+			ranksA.great - ranksB.great ||
+			(familyRank.get(idA) ?? 0) - (familyRank.get(idB) ?? 0)
+		);
+	});
 };

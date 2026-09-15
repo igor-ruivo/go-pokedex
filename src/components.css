@@ -2393,7 +2393,12 @@
 	top: 5%;
 	right: 6%;
 	z-index: 3;
-	font-size: clamp(13px, 18cqi, 18px);
+	/* Chip width swings a lot between contexts — narrow on mobile grids,
+	   often stretched well past 100px on a wide desktop grid with few items
+	   — so the old wide clamp range (13-18px) hit its floor on mobile and
+	   its ceiling on desktop, i.e. both ends of the complaint at once. A
+	   tight range converges on roughly the same size everywhere instead. */
+	font-size: clamp(14px, 14cqi, 16px);
 	color: var(--iv-fill);
 }
 /* league / raid relevance — vertical dots on the left, same treatment as the
