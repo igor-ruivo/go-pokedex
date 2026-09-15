@@ -301,12 +301,7 @@ describe('buildSearchChain — backward walk, plus each predecessor’s Shadow c
 		isShadow: true,
 		family: { id: 'f-vulpix-alolan-shadow', parent: 'vulpix_alolan_shadow' },
 	});
-	const gamemasterPokemon = buildGamemaster([
-		vulpixAlolan,
-		vulpixAlolanShadow,
-		ninetalesAlolan,
-		ninetalesAlolanShadow,
-	]);
+	const gamemasterPokemon = buildGamemaster([vulpixAlolan, vulpixAlolanShadow, ninetalesAlolan, ninetalesAlolanShadow]);
 
 	it('a non-Shadow target pulls in one entry per stage, each PAIRED with its Shadow counterpart (not four separate flat entries)', () => {
 		const chain = buildSearchChain(ninetalesAlolan, gamemasterPokemon);
