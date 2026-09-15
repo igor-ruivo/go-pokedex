@@ -478,6 +478,14 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	if (protect.tagged) newStr += '&!#';
 	if (protect.favorite) newStr += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
 	if (protect.megaEvolvable) newStr += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
+	// Precautionary duplicate of the candidate-level filter above (same as
+	// the Non-Perfect IVs tab already does for these four) — belt-and-
+	// suspenders in case a reachable-family edge case ever let one slip past
+	// that filter.
+	if (protect.legendary) newStr += `&!${gameTranslator(GameTranslatorKeys.Legendary, gl)}`;
+	if (protect.mythical) newStr += `&!${gameTranslator(GameTranslatorKeys.Mythical, gl)}`;
+	if (protect.ultraBeast) newStr += `&!${gameTranslator(GameTranslatorKeys.UltraBeast, gl)}`;
+	if (protect.shadow) newStr += `&!${gameTranslator(GameTranslatorKeys.ShadowSearch, gl)}`;
 	if (protect.dynamax) newStr += `&!${gameTranslator(GameTranslatorKeys.DynamaxSearch, gl)}`;
 	if (protect.fusion) newStr += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
 	if (protect.gigantamax) newStr += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;

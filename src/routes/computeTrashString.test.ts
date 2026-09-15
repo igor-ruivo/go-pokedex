@@ -134,7 +134,9 @@ describe('computeTrashString — Master League rescue via forward reachability',
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe(
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+		);
 	});
 });
 
@@ -151,7 +153,9 @@ describe('computeTrashString — Great/Ultra rescue via forward reachability (me
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe(
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+		);
 	});
 
 	it("a later stage's Ultra rank rescues every earlier stage too, unconditionally", () => {
@@ -166,7 +170,9 @@ describe('computeTrashString — Great/Ultra rescue via forward reachability (me
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe(
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+		);
 	});
 });
 
@@ -187,7 +193,9 @@ describe('computeTrashString — raid rescue via a later stage (isGoodForRaids, 
 
 		const result = computeTrashString(args);
 
-		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe(
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+		);
 	});
 });
 
@@ -211,7 +219,9 @@ describe('computeTrashString — multiple good later stages, different leagues e
 		// best is Ivysaur's (good), Ultra's best is Venusaur's (good) — so
 		// Master is the only bad league, and "all three bad" is false for
 		// every reachable candidate in this family. Nothing is deletable.
-		expect(result).toBe('&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve');
+		expect(result).toBe(
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+		);
 	});
 });
 
@@ -295,10 +305,12 @@ describe('computeTrashString — protection toggles', () => {
 		expect(on).toContain('&!100,!shadow');
 		// Off: evaluated like anything else — no special clause for it.
 		expect(off).not.toContain('&!100,!shadow');
-		// Meta mode never needs a blanket `&!shadow` tail keyword either way
-		// — every Shadow form's protection (when on) is already the specific
-		// clause above, making a blanket keyword redundant dead weight.
-		expect(on).not.toContain('&!shadow');
+		// A blanket `&!shadow` tail keyword is technically redundant on top of
+		// that precise clause (nothing it protects isn't already covered),
+		// but it's appended anyway when the toggle is on — deliberate
+		// belt-and-suspenders precaution, same as the other two tabs already
+		// do for this and the other category toggles.
+		expect(on).toContain('&!shadow');
 		expect(off).not.toContain('&!shadow');
 	});
 });
