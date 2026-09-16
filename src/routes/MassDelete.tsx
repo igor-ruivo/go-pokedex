@@ -226,16 +226,14 @@ const BAD_IV_HELP_TEXT =
 
 const TRADE_HELP_TEXT =
 	'A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? ' +
-	'A Best Friend trade floors every stat at 5, and a Lucky Trade floors every stat at 12 for both Pokémon ' +
-	'involved — a trade is only ever a neutral-or-better move, never a downside, which is the whole premise this ' +
-	'tab rests on. Master League has no CP cap, so any species relevant there (cutoff below) qualifies on rank ' +
-	'alone — same for raids. Great and Ultra are pickier: their CP caps often make the single best (top stat ' +
-	'product) spread the classic low-Attack shape, which a trade’s guaranteed floor of 5 can never actually reach — ' +
-	'so a Great/Ultra-relevant species only counts when its own best spread needs 5 or more in every stat at ' +
-	'level 50 or level 51. A hundo is always excluded (`4*`, nothing to gain), but a hundo isn’t the only spread ' +
-	'with nothing to gain — a genuine tie with it (most often HP-related, e.g. 15/15/14) is just as much a ' +
-	'ceiling. So for every species suggested here, its own tied-for-best spread(s) — for whichever league(s) ' +
-	'actually qualified it, at both level 50 and 51 — are individually excluded too, on top of the hundo. The ' +
+	'A Best Friend trade always floors every stat at 5, and a Lucky Trade floors it at 12 for both Pokémon — ' +
+	'trading is never a downside, only neutral or better, so a species just needs to clear ONE of the four ' +
+	'cutoffs below (Great, Ultra, Master, or Raid) to be suggested. Master League and raids have no CP cap, so ' +
+	'any relevant species qualifies on rank alone. Great and Ultra are pickier: their CP caps often mean the ' +
+	'best possible spread for a species needs very low Attack, which a trade’s floor of 5 can never produce — so ' +
+	'those two leagues only count a species when its own best spread is actually something a trade could reach. ' +
+	'Either way, a catch that’s already perfect — or already tied for the best possible spread in whichever ' +
+	'league qualified it — is never suggested, since trading it could only lose it, never improve it. The ' +
 	'categories, whitelist, and CP cap below narrow the suggestions further, same as the other tabs.';
 
 export interface ComputeArgs {
@@ -1687,9 +1685,8 @@ const MassDelete = () => {
 						{isTrade && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									A species only needs to clear ONE of these four cutoffs to be suggested — Great/Ultra also need
-									their own tied-for-best spread to need 5+ in every stat at level 50 or 51 (see the help text above).
-									Any tied-for-best spread, for any league that qualified it, is individually excluded too.
+									A species only needs to clear ONE of these four cutoffs to be suggested — Great and Ultra also
+									require a trade to actually be able to reach their best possible spread (see the help text above)
 								</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
