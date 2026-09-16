@@ -564,9 +564,21 @@ export const computeTrashString = (a: ComputeArgs): string => {
  * Defense, 11-15 HP); `carveOuts` are the species where that default doesn't
  * match their own real optimum, each protected via its own exact bucket
  * pattern instead. An exact hundo is always kept regardless (`!4*`), so
- * nothing here ever needs to special-case one. Manually-whitelisted species
- * get an unconditional exclusion clause instead of (not in addition to) their
- * carve-out pattern — their own IV spread stops mattering entirely.
+ * nothing here ever needs to special-case one — but a hundo isn't the only
+ * spread with nothing left to gain: `masterCarveOuts` (computed separately,
+ * uncapped, `includeShadowPurify: false`) covers the one other case `!4*`
+ * can't — a genuine stat-product TIE with it in Master League, always bucket
+ * 4/4/3 (only HP floors; Attack/Defense can never tie below 15). Applied
+ * unconditionally to every species this whole tab evaluates, not just a
+ * filtered candidate subset — this tab never has one, unlike the other two.
+ * Shadow catches need no entry here at all: they're already completely
+ * covered by the always-on `shadowPurifyHundoGuard` below (every raw IV that
+ * could ever purify into a Master tie is already inside the bucket 3-4 range
+ * it protects), so `masterCarveOuts` is computed without the expensive
+ * Shadow-purify pass — pure waste to redo protection that already exists.
+ * Manually-whitelisted species get an unconditional exclusion clause instead
+ * of (not in addition to) any carve-out pattern — their own IV spread stops
+ * mattering entirely.
  *
  * `simplified` (the "Simplified mode" toggle next to the CP dropdown) trades
  * accuracy for string length: instead of a per-carve-out clause that protects
@@ -578,7 +590,8 @@ export const computeTrashString = (a: ComputeArgs): string => {
  * false negatives than Complete mode (some catches Complete would still
  * correctly target stay un-targeted here too), never fewer — it only ever
  * widens what gets excluded, exactly like the whitelist clause it borrows its
- * shape from.
+ * shape from. Applies identically to `masterCarveOuts` entries, same as any
+ * other carve-out.
  */
 export const computeBadIvString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
@@ -587,7 +600,8 @@ export const computeBadIvString = (
 	cp: number,
 	protect: ProtectionFlags,
 	whitelist: Set<string>,
-	simplified = false
+	simplified = false,
+	masterCarveOuts: Array<BadIvCarveOut> = []
 ): string => {
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
@@ -629,7 +643,12 @@ export const computeBadIvString = (
 	let result = `2-4${A},0-2${D},0-2${S}`;
 
 	const exclusions: Array<DexExclusion> = [];
-	carveOuts.forEach(({ speciesId, pattern }) => {
+	// `masterCarveOuts` entries are consumed by the exact same logic below as
+	// `carveOuts` — the loop body never actually branches on `cap`, and every
+	// `masterCarveOuts` entry is guaranteed non-Shadow (computed with
+	// `includeShadowPurify: false`), so `p.isShadow` below is always `false`
+	// for them, same as any other non-Shadow carve-out.
+	[...carveOuts, ...masterCarveOuts].forEach(({ speciesId, pattern }) => {
 		if (whitelist.has(speciesId)) return; // gets its own unconditional clause below instead
 		const p = gamemasterPokemon[speciesId];
 		if (!p) return;
@@ -1366,17 +1385,25 @@ const MassDelete = () => {
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashRaid, String(trashRaid)), [trashRaid]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashCP, String(cp)), [cp]);
 
+	// Hoisted up from "Bad IV" mode's own section below (it's still declared
+	// there in spirit — this is just so the shared `masterCarveOuts` query
+	// right after can gate on it too, alongside the Non-meta tab's own
+	// `isCalculating`, without a hook-ordering issue).
+	const [isCalculatingBadIv, setIsCalculatingBadIv] = useState(false);
+	const [badIvResult, setBadIvResult] = useState('');
+
 	// Every non-Shadow species' own tied-for-rank-1 raw-IV bucket pattern(s)
 	// for the uncapped Master cap only — see `ComputeArgs.masterCarveOuts`'s
-	// own doc comment. Deliberately its own separate query from `badIvCarve-
-	// Outs` below (not folded into its `caps` array): that one needs the
-	// expensive Shadow-purify pass for Great/Ultra anyway, but this one
-	// explicitly skips it (`includeShadowPurify: false`) since Shadow catches
-	// already have their own, cheaper, always-on protection here
-	// (`shadowPurifyHundoGuard`) — sharing one query would force this sweep to
-	// wait on work it structurally never needs.
+	// own doc comment. Shared by the Non-meta AND Non-Perfect IVs tabs (both
+	// need the exact same non-Shadow Master sweep). Deliberately its own
+	// separate query from `badIvCarveOuts` below (not folded into its `caps`
+	// array): that one needs the expensive Shadow-purify pass for Great/Ultra
+	// anyway, but this one explicitly skips it (`includeShadowPurify: false`)
+	// since Shadow catches already have their own, cheaper, always-on
+	// protection here (`shadowPurifyHundoGuard`) — sharing one query would
+	// force this sweep to wait on work it structurally never needs.
 	const { data: masterCarveOuts } = useQuery({
-		enabled: isCalculating && fetchCompleted,
+		enabled: (isCalculating || isCalculatingBadIv) && fetchCompleted,
 		queryKey: ['master-carveouts-no-shadow'],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({
@@ -1447,8 +1474,8 @@ const MassDelete = () => {
 	]);
 
 	// ---- "Bad IV" mode ----
-	const [isCalculatingBadIv, setIsCalculatingBadIv] = useState(false);
-	const [badIvResult, setBadIvResult] = useState('');
+	// (`isCalculatingBadIv`/`badIvResult` declared earlier — see the comment
+	// on `masterCarveOuts` above for why.)
 
 	// The heavy part — the brute-force sweep for every species' own best spread
 	// per cap — never depends on `cp`/`gl`/the category toggles/the whitelist,
@@ -1463,10 +1490,10 @@ const MassDelete = () => {
 	});
 
 	useEffect(() => {
-		if (!isCalculatingBadIv || !fetchCompleted || !badIvCarveOuts) return;
+		if (!isCalculatingBadIv || !fetchCompleted || !badIvCarveOuts || !masterCarveOuts) return;
 		const id = window.setTimeout(() => {
 			setBadIvResult(
-				computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp, protect, whitelistSet, simplifiedBadIv)
+				computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp, protect, whitelistSet, simplifiedBadIv, masterCarveOuts)
 			);
 			setIsCalculatingBadIv(false);
 		}, 60);
@@ -1475,6 +1502,7 @@ const MassDelete = () => {
 		isCalculatingBadIv,
 		fetchCompleted,
 		badIvCarveOuts,
+		masterCarveOuts,
 		gamemasterPokemon,
 		gl,
 		cp,

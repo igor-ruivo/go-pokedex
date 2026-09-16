@@ -1173,3 +1173,151 @@ describe('computeBadIvString — Machop-family Shadow tie explosion produces a w
 		expect(result).toContain(`&!${machopShadow.dex},!shadow,1-4attack,0-3defense,0-1hp,3-4hp`);
 	});
 });
+
+describe('computeBadIvString — masterCarveOuts (Master League stat-product tie protection, non-Shadow only)', () => {
+	// Same `tiedmon` (100/132/180) fixture used throughout this session —
+	// empirically confirmed to floor-tie 15/15/14 with the hundo at level 50
+	// specifically, for the uncapped Master cap.
+	const buildFixture = () => {
+		const tiedmon = mockPokemon({ speciesId: 'badivtiedmon', dex: 950, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([tiedmon]);
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+		return { gamemasterPokemon, tiedmon, masterCarveOuts };
+	};
+
+	it('emits the same protective clause shape for a masterCarveOuts entry as it does for a Great/Ultra carveOuts one', () => {
+		const { gamemasterPokemon, tiedmon, masterCarveOuts } = buildFixture();
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			false,
+			masterCarveOuts
+		);
+
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('applies unconditionally, with no candidate-set filtering — this tab has no "already good, skip it" concept, unlike the other two', () => {
+		// No whitelist, no protection toggle, nothing else marking this
+		// species as special — it still gets the clause purely because its
+		// own raw IVs tie the Master hundo.
+		const { gamemasterPokemon, tiedmon, masterCarveOuts } = buildFixture();
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			[],
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+			// simplified and masterCarveOuts both omitted — defaults `false`/`[]`
+		);
+		expect(result).not.toContain(String(tiedmon.dex));
+
+		const resultWithMasterData = computeBadIvString(
+			gamemasterPokemon,
+			[],
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			false,
+			masterCarveOuts
+		);
+		expect(resultWithMasterData).toContain(`&!${tiedmon.dex}`);
+	});
+
+	it('Simplified mode collapses a masterCarveOuts entry into the same bare, unconditional exclusion as any other carve-out', () => {
+		const { gamemasterPokemon, tiedmon, masterCarveOuts } = buildFixture();
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			true,
+			masterCarveOuts
+		);
+
+		expect(result).toContain(`&!${tiedmon.dex}`);
+		expect(result).not.toContain('0-3attack');
+	});
+
+	it('a tie that exists ONLY at level 51 (not level 50) is still caught — the level-50/51 union applies here exactly as everywhere else', () => {
+		// Base HP 5 — empirically verified (see the Tab 1 regression test of
+		// the same shape) to floor-tie raw IV 14 and 15 at level 51
+		// specifically, with no tie at all at level 50.
+		const level51tied = mockPokemon({
+			speciesId: 'badivlevel51tied',
+			dex: 951,
+			baseStats: { atk: 100, def: 132, hp: 5 },
+		});
+		const gamemasterPokemon = buildGamemaster([level51tied]);
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			false,
+			masterCarveOuts
+		);
+
+		expect(result).toContain(`&!${level51tied.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('a Shadow form never needs its own masterCarveOuts entry — `includeShadowPurify: false` means the sweep never even considers it', () => {
+		const monShadow = mockPokemon({
+			speciesId: 'badivshadowtied_shadow',
+			dex: 952,
+			isShadow: true,
+			baseStats: { atk: 100, def: 132, hp: 180 },
+		});
+		const gamemasterPokemon = buildGamemaster([monShadow]);
+
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+
+		expect(masterCarveOuts).toHaveLength(0);
+	});
+
+	it('backward compatible: omitting masterCarveOuts entirely (existing call sites, pre-this-change) behaves exactly as before', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+
+		const withExplicitEmpty = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			false,
+			[]
+		);
+		const withOmitted = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set());
+
+		expect(withOmitted).toBe(withExplicitEmpty);
+	});
+});
