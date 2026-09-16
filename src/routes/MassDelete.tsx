@@ -206,7 +206,8 @@ const HELP_TEXT =
 	'Master League, and not in raids — based on the rank cutoffs and CP cap below. A species (or any of its later ' +
 	'evolutions) only needs to clear the cutoff in one of those to be spared, and once it does, every catch of it is ' +
 	'spared too, regardless of that catch’s own IVs — this tab has no opinion on IVs at all. Anything at or above ' +
-	'your CP cap is always kept, and so is everything checked in the categories and whitelist below, regardless of rank.';
+	'your CP cap is always kept, and so is everything checked in the categories and whitelist below, regardless of rank.' +
+	'A perfect stat product for Master League is always kept.';
 
 const BAD_IV_WARNING =
 	'This mode is aggressive and perfectionist: the intent is to delete every catch that isn’t a perfect (100%) IV ' +
@@ -215,20 +216,19 @@ const BAD_IV_WARNING =
 
 const BAD_IV_HELP_TEXT =
 	'IVs only, never meta: ignores the current meta entirely — the goal is to delete anything that isn’t a perfect ' +
-	'15/15/15, since anything less is wasted IV potential, regardless of whether the species itself is meta ' +
+	'15/15/15 regardless of whether the species itself is meta ' +
 	'right now. The game’s search only lets us match IV ranges, not exact values, so it can’t always draw that line ' +
 	'exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept via a shared ' +
 	'low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-verified range ' +
 	'instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect (but ' +
 	'not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no CP ' +
-	'cap, so there the true best really is always a plain 15/15/15 with nothing else close — this mode’s Master ' +
-	'League handling is exact, not an approximation. A perfect 15/15/15 is always kept in every league, and so is ' +
+	'cap, so there the true best really is always higher IVs — this mode’s Master ' +
+	'League handling is exact, not an approximation. A perfect stat product is always kept in every league, and so is ' +
 	'everything checked in the categories and whitelist below, regardless of IVs.';
 
 const TRADE_HELP_TEXT =
 	'A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? ' +
-	'A Best Friend trade always floors every stat at 5, and a Lucky Trade floors it at 12 for both Pokémon — ' +
-	'trading is never a downside, only neutral or better, so a species just needs to clear ONE of the four ' +
+	'A Best Friend trade always floors every stat at 5. In this mode, a species just needs to clear ONE of the four ' +
 	'cutoffs below (Great, Ultra, Master, or Raid) to be suggested. Master League and raids have no CP cap, so ' +
 	'any relevant species qualifies on rank alone. Great and Ultra are pickier: their CP caps often mean the ' +
 	'best possible spread for a species needs very low Attack, which a trade’s floor of 5 can never produce — so ' +
