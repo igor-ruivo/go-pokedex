@@ -207,6 +207,12 @@ describe('buildFormIds / formIdentifierFor — form disambiguation (regression: 
 		});
 		expect(formIdentifierFor(vulpixAlolanShadow, formIds)).toBe('37&ice');
 	});
+
+	it('prefers a precomputed searchFormId over the live formIds lookup entirely', () => {
+		const withPrecomputed = mockPokemon({ ...vulpix, searchFormId: 'precomputed-value' });
+		// A deliberately empty/mismatched map — proves the map is never consulted.
+		expect(formIdentifierFor(withPrecomputed, {})).toBe('precomputed-value');
+	});
 });
 
 describe('shadowSuffixFor', () => {
@@ -229,6 +235,13 @@ describe('shadowSuffixFor', () => {
 
 	it('localizes the keyword to pt-BR', () => {
 		expect(shadowSuffixFor(shadow, gamemasterPokemon, GameLanguage.ptbr)).toBe('&sombroso');
+	});
+
+	it('prefers a precomputed hasShadowCounterpart over the live gamemaster scan entirely', () => {
+		// noShadowVariant genuinely has no Shadow counterpart in this gamemaster —
+		// a precomputed `true` proves the live scan is never consulted.
+		const withPrecomputed = mockPokemon({ ...noShadowVariant, hasShadowCounterpart: true });
+		expect(shadowSuffixFor(withPrecomputed, gamemasterPokemon, GameLanguage.en)).toBe('&!shadow');
 	});
 });
 

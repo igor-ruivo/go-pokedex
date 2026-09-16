@@ -24,6 +24,7 @@ import {
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
 const LEAGUE_NAME = ['Great', 'Ultra', 'Master'] as const;
 const LEAGUE_COLOR_VAR = ['--lg-great', '--lg-ultra', '--lg-master'] as const;
+const EMPTY_FORM_IDS: Record<string, string> = {};
 
 /* ---- verbatim from the legacy search-string generator ---------------------- */
 
@@ -205,7 +206,13 @@ export const buildFormIds = (gamemasterPokemon: Record<string, IGamemasterPokemo
 	return formIds;
 };
 
+/** Prefers dex-server's own precomputed `searchFormId` — the exact same
+ *  value `buildFormIds`/this lookup would otherwise produce (see
+ *  `form-identifier-calculator.ts` in dex-server) — and only falls back to
+ *  computing it here when a species predates that field (a stale cache, or
+ *  a synthetic test fixture). */
 export const formIdentifierFor = (species: IGamemasterPokemon, formIds: Record<string, string>): string => {
+	if (species.searchFormId !== undefined) return species.searchFormId;
 	const key = `${species.dex},${species.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`;
 	return formIds[key] ?? String(species.dex);
 };
@@ -224,7 +231,10 @@ export const shadowSuffixFor = (
 ): string => {
 	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 	if (species.isShadow) return `&${shadowKw}`;
-	return isNormalPokemonAndHasShadowVersion(species, gamemasterPokemon) ? `&!${shadowKw}` : '';
+	// Prefers dex-server's own precomputed flag; falls back to the live
+	// gamemaster scan only when a species predates that field.
+	const hasShadowCounterpart = species.hasShadowCounterpart ?? isNormalPokemonAndHasShadowVersion(species, gamemasterPokemon);
+	return hasShadowCounterpart ? `&!${shadowKw}` : '';
 };
 
 /* ---- backward chain: predecessors, PLUS each one's Shadow counterpart ------
@@ -638,7 +648,15 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 	const topIVCombinations = useMemo(() => selectTopIVCombinations(topIVs, top), [topIVs, top]);
 
 	const chain = useMemo(() => buildSearchChain(pokemon, gamemasterPokemon), [pokemon, gamemasterPokemon]);
-	const formIds = useMemo(() => buildFormIds(gamemasterPokemon), [gamemasterPokemon]);
+	// Skips the whole-gamemaster scan entirely once dex-server's own
+	// `searchFormId` is present on every species (checking the tab's own
+	// target is a valid proxy — the field comes from one shared JSON payload,
+	// so it's never present for some species and absent for others).
+	// `formIdentifierFor` still falls back to `formIds` for stale data.
+	const formIds = useMemo(
+		() => (pokemon.searchFormId !== undefined ? EMPTY_FORM_IDS : buildFormIds(gamemasterPokemon)),
+		[gamemasterPokemon, pokemon.searchFormId]
+	);
 
 	const copy = (id: string, str: string) => {
 		void navigator.clipboard?.writeText(str);

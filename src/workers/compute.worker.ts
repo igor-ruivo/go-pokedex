@@ -260,6 +260,30 @@ export interface BadIvCarveOutsInput {
 // extra-level accuracy for a shorter string instead.
 const CP_THRESHOLD_RATIO = 0.9;
 
+/** dex-server precomputes `bestIvSpreads`/`bestIvSpreadsPurified` keyed this
+ *  way — every caller here only ever passes one of these three caps (see
+ *  `BadIvCarveOutsInput.caps`'s own callers in MassDelete.tsx). */
+const leagueKeyFor = (cap: number): 'great' | 'ultra' | 'master' =>
+	cap === 1500 ? 'great' : cap === 2500 ? 'ultra' : 'master';
+/** Same idea for the level axis — every caller passes {@link MAX_LEVEL} (50)
+ *  or {@link BEST_BUDDY_LEVEL} (51), never anything else. */
+const levelKeyFor = (level: number): 'level50' | 'level51' => (level === 51 ? 'level51' : 'level50');
+
+/** The tied-for-#1 (rounded) stat-product extraction `computeBestIVs`'s own
+ *  output needs before it's usable as a `BadIvPattern` list — shared by every
+ *  fallback path below (dex-server's own precomputed data skips this
+ *  entirely; see each call site's own comment on when it applies). */
+const extractTiedTop1 = (flat: ReadonlyArray<RankEntry>): Array<BadIvPattern> => {
+	if (flat.length === 0) return [];
+	const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
+	const patterns: Array<BadIvPattern> = [];
+	for (const entry of flat) {
+		if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
+		patterns.push({ A: entry.IVs.A, D: entry.IVs.D, S: entry.IVs.S });
+	}
+	return patterns;
+};
+
 const ivBucket = (iv: number) => (iv === 15 ? 4 : Math.ceil(iv / 5));
 // Keep the top spread only if Attack is bucket 0-1 (IV 0-5) AND Defense/HP are
 // bucket 3-4 (IV 11-15) — the classic low-Attack/max-bulk CP-cap spread.
@@ -346,19 +370,11 @@ export const findBadIvCarveOuts = ({
 			bestCache.set(key, []);
 			return [];
 		}
-		const flat = Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap, level)).flat();
-		if (flat.length === 0) {
-			bestCache.set(key, []);
-			return [];
-		}
-		// `flat` is sorted descending by stat product (see computeBestIVs), so
-		// every tie for the top spot is contiguous starting at index 0.
-		const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
-		const patterns: Array<BadIvPattern> = [];
-		for (const entry of flat) {
-			if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
-			patterns.push({ A: entry.IVs.A, D: entry.IVs.D, S: entry.IVs.S });
-		}
+		// dex-server precomputes exactly this reduction per species — skip the
+		// brute force entirely when it's there; fall back for anything that
+		// predates it (a stale cache, or a synthetic test fixture).
+		const precomputed = r.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(level)];
+		const patterns = precomputed ?? extractTiedTop1(Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap, level)).flat());
 		bestCache.set(key, patterns);
 		return patterns;
 	};
@@ -417,6 +433,14 @@ export const findBadIvCarveOuts = ({
 		if (cap !== Number.MAX_VALUE && maxCP < CP_THRESHOLD_RATIO * cap) {
 			purifiedBestCache.set(key, []);
 			return [];
+		}
+		// dex-server precomputes exactly this pass per Shadow species (`r` here
+		// is always a Shadow form — see `shadowDomainFilter` below) — skip the
+		// from-scratch 16x16x16 loop entirely when it's there.
+		const precomputed = r.bestIvSpreadsPurified?.[leagueKeyFor(cap)]?.[levelKeyFor(levelIndex / 2 + 1)];
+		if (precomputed) {
+			purifiedBestCache.set(key, precomputed);
+			return precomputed;
 		}
 		let bestProd = -1;
 		let patterns: Array<BadIvPattern> = [];
@@ -536,30 +560,33 @@ export const findTradeableSpeciesData = ({
 }: TradeableSpeciesDataInput): Record<string, TradeableSpeciesData> => {
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !p.isShadow);
 
-	const analyze = (atk: number, def: number, hp: number, cap: number): TradeableLeagueData => {
+	const toLeagueData = (patterns: ReadonlyArray<BadIvPattern>): TradeableLeagueData => {
 		const patternMap = new Map<string, BadIvPattern>();
 		let floorOk = false;
-		const flat = Object.values(computeBestIVs(atk, def, hp, cap, maxLevel)).flat();
-		if (flat.length > 0) {
-			const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
-			for (const entry of flat) {
-				if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
-				const pattern: BadIvPattern = { A: entry.IVs.A, D: entry.IVs.D, S: entry.IVs.S };
-				const key = `${pattern.A}-${pattern.D}-${pattern.S}`;
-				if (!patternMap.has(key)) patternMap.set(key, pattern);
-				if (pattern.A >= 5 && pattern.D >= 5 && pattern.S >= 5) floorOk = true;
-			}
+		for (const pattern of patterns) {
+			const key = `${pattern.A}-${pattern.D}-${pattern.S}`;
+			if (!patternMap.has(key)) patternMap.set(key, pattern);
+			if (pattern.A >= 5 && pattern.D >= 5 && pattern.S >= 5) floorOk = true;
 		}
 		return { patterns: Array.from(patternMap.values()).filter((p) => !isExactHundo(p)), floorOk };
 	};
 
+	// dex-server precomputes exactly this per non-Shadow species — skip the
+	// brute force entirely when it's there; fall back for anything that
+	// predates it (a stale cache, or a synthetic test fixture).
+	const analyze = (p: IGamemasterPokemon, cap: number): TradeableLeagueData => {
+		const precomputed = p.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(maxLevel)];
+		if (precomputed) return toLeagueData(precomputed);
+		const { atk, def, hp } = p.baseStats;
+		return toLeagueData(extractTiedTop1(Object.values(computeBestIVs(atk, def, hp, cap, maxLevel)).flat()));
+	};
+
 	const result: Record<string, TradeableSpeciesData> = {};
 	for (const p of candidates) {
-		const { atk, def, hp } = p.baseStats;
 		result[p.speciesId] = {
-			great: analyze(atk, def, hp, 1500),
-			ultra: analyze(atk, def, hp, 2500),
-			master: analyze(atk, def, hp, Number.MAX_VALUE),
+			great: analyze(p, 1500),
+			ultra: analyze(p, 2500),
+			master: analyze(p, Number.MAX_VALUE),
 		};
 	}
 	return result;
