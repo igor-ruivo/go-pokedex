@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { findBadIvCarveOuts } from '../workers/compute.worker';
 import {
 	buildArgs,
 	buildEvolutionLineFixture,
@@ -466,5 +467,133 @@ describe('computeTrashString — final canonicalization pass (dead-weight exclus
 		expect(result).toContain('&!700,!fire');
 		expect(result).not.toContain('!700,!fire,shadow');
 		expect(result).not.toContain('!700,!fire,!shadow');
+	});
+});
+
+describe('computeTrashString — Master League stat-product tie protection (non-Shadow only)', () => {
+	// `tiedmon` (100/132/180) — same base stats used throughout this session
+	// to reproduce a genuine, empirically-confirmed HP-floor tie: at level 50,
+	// 15/15/14 ties an exact hundo's Master stat product exactly.
+	// `controlmon` is Master-ranked purely to keep the dex-list encoding from
+	// degenerating to the trivial single-species "!" case (see the encoding
+	// note on `computeTrashString`'s own `oppositeDexes`).
+	const buildFixture = () => {
+		const tiedmon = mockPokemon({ speciesId: 'trashtiedmon', dex: 900, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const controlmon = mockPokemon({ speciesId: 'trashcontrolmon', dex: 901 });
+		const gamemasterPokemon = buildGamemaster([tiedmon, controlmon]);
+		return { gamemasterPokemon, tiedmon, controlmon };
+	};
+
+	it('catches a tie that exists ONLY at level 51 (Best Buddy), not level 50 — regression for "only checked whichever level a species happens to hit first"', () => {
+		// Base HP 5 empirically verified (via `calculateHP` directly) to floor-
+		// tie raw IV 14 and 15 at level 51 specifically, while NOT tying at
+		// level 50 — the exact opposite level from `tiedmon` above, so this
+		// isolates that the level-50/51 union genuinely covers both directions,
+		// not just whichever one this session's other fixtures happen to hit.
+		const level51tied = mockPokemon({
+			speciesId: 'trashlevel51tied',
+			dex: 902,
+			baseStats: { atk: 100, def: 132, hp: 5 },
+		});
+		const controlmon = mockPokemon({ speciesId: 'trashlevel51control', dex: 903 });
+		const gamemasterPokemon = buildGamemaster([level51tied, controlmon]);
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+		const rankLists = [{}, {}, { [controlmon.speciesId]: rank(1) }];
+
+		expect(masterCarveOuts).toContainEqual(
+			expect.objectContaining({ speciesId: level51tied.speciesId, pattern: { A: 15, D: 15, S: 14 } })
+		);
+
+		const result = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts }));
+
+		expect(result).toContain(`&!${level51tied.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('a species that is bad everywhere still gets a protective clause for its own tied-for-rank-1 Master spread — !4* alone is not enough', () => {
+		const { gamemasterPokemon, tiedmon, controlmon } = buildFixture();
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+		const rankLists = [{}, {}, { [controlmon.speciesId]: rank(1) }];
+
+		const result = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts }));
+
+		expect(result).toContain(String(tiedmon.dex));
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('without the carve-out data (e.g. still loading), no such clause is emitted — the protection is additive, not pre-existing behavior', () => {
+		const { gamemasterPokemon, controlmon } = buildFixture();
+		const rankLists = [{}, {}, { [controlmon.speciesId]: rank(1) }];
+
+		const result = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts: [] }));
+
+		expect(result).not.toContain('0-3attack');
+	});
+
+	it('a species that is NOT deletable (already meta-relevant) gets no carve-out clause either — it would be pure dead weight, the whole dex is already unconditionally protected', () => {
+		const { gamemasterPokemon, tiedmon } = buildFixture();
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+		// Now tiedmon itself is the Master-ranked (protected) one.
+		const rankLists = [{}, {}, { [tiedmon.speciesId]: rank(1) }];
+
+		const result = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts }));
+
+		expect(result).not.toContain('0-3attack');
+	});
+
+	it('a species whose max CP never gets remotely close to Great/Ultra is still protected for its own Master tie — the 90%-of-cap pre-filter never applies to the uncapped Master cap', () => {
+		const tiny = mockPokemon({ speciesId: 'trashtinytied', dex: 920, baseStats: { atk: 10, def: 10, hp: 180 } });
+		const controlmon = mockPokemon({ speciesId: 'trashtinycontrolmon', dex: 921 });
+		const gamemasterPokemon = buildGamemaster([tiny, controlmon]);
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+		const rankLists = [{}, {}, { [controlmon.speciesId]: rank(1) }];
+
+		const result = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts }));
+
+		expect(result).toContain(`&!${tiny.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('`includeShadowPurify: false` genuinely skips the expensive Shadow-purify pass — a Shadow-only tie never shows up, even though it would with the default', () => {
+		// `blendmon` (140/120/140) is the exact fixture already established
+		// (via `buildBadIvFixture` in computeBadIvString.test.ts) as needing NO
+		// Shadow-specific carve-out at Great/Ultra — for Master specifically,
+		// what matters here is simpler: does the Shadow pass run at all.
+		const mon = mockPokemon({ speciesId: 'shadowpassmon', dex: 930, baseStats: { atk: 140, def: 120, hp: 140 } });
+		const monShadow = mockPokemon({
+			speciesId: 'shadowpassmon_shadow',
+			dex: 930,
+			isShadow: true,
+			baseStats: { atk: 140, def: 120, hp: 140 },
+		});
+		const gamemasterPokemon = buildGamemaster([mon, monShadow]);
+
+		const withShadowPass = findBadIvCarveOuts({ gamemasterPokemon, caps: [Number.MAX_VALUE] });
+		const withoutShadowPass = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+
+		expect(withShadowPass.some((c) => c.speciesId === monShadow.speciesId)).toBe(true);
+		expect(withoutShadowPass.some((c) => c.speciesId === monShadow.speciesId)).toBe(false);
+		// The non-Shadow pass is completely unaffected either way.
+		expect(withoutShadowPass.filter((c) => c.speciesId === mon.speciesId)).toEqual(
+			withShadowPass.filter((c) => c.speciesId === mon.speciesId)
+		);
 	});
 });

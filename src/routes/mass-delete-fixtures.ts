@@ -434,6 +434,7 @@ export const buildArgs = (
 	trashUltra: 10,
 	trashMaster: 10,
 	trashRaid: 10,
+	masterCarveOuts: [],
 	protect: DEFAULT_PROTECTION,
 	whitelist: new Set<string>(),
 	...overrides,

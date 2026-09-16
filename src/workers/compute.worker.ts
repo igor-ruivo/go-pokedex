@@ -230,8 +230,20 @@ export interface BadIvCarveOut {
 
 export interface BadIvCarveOutsInput {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
-	/** CP caps to evaluate (e.g. [1500, 2500]). */
+	/** CP caps to evaluate (e.g. [1500, 2500]) — `Number.MAX_VALUE` is a valid
+	 *  entry too, for the uncapped Master cap. Master isn't tie-free the way a
+	 *  quick glance suggests: Attack/Defense are never floored so they can't
+	 *  tie below 15, but HP IS floored (`calculateHP`), so a 15/15/14 spread
+	 *  regularly ties an exact hundo's Master stat product too — same
+	 *  phenomenon as the well-documented Great/Ultra ties below, just via a
+	 *  different mechanism (HP-floor coincidence instead of a CP-cap trade-off). */
 	caps: Array<number>;
+	/** Default `true`. Set `false` to skip the Shadow-purify pass entirely —
+	 *  for a caller whose own candidates can never include a Shadow catch in
+	 *  the first place (nothing to protect), computing it would be pure
+	 *  wasted work: confirmed against real data, that pass alone is ~87% of
+	 *  an equivalent Master sweep's total cost. */
+	includeShadowPurify?: boolean;
 }
 
 // Deliberately never reads the Best Buddy toggle — this whole mode is
@@ -300,7 +312,11 @@ const purify = (iv: number) => Math.min(iv + PURIFY_BONUS, 15);
  * else — computing one unconditionally here, always, is what makes that
  * later toggle safe to flip in either direction.
  */
-export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
+export const findBadIvCarveOuts = ({
+	gamemasterPokemon,
+	caps,
+	includeShadowPurify = true,
+}: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
 	const isExcludedCategory = (p: IGamemasterPokemon) => !!p.aliasId || !!p.isMega || !!p.isShadow;
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !isExcludedCategory(p));
 	const domainFilter = (r: IGamemasterPokemon) => !isExcludedCategory(r);
@@ -321,8 +337,14 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 		const key = `${r.speciesId}|${cap}|${levelIndex}`;
 		const cached = bestCache.get(key);
 		if (cached !== undefined) return cached;
+		// The 90%-of-cap pre-filter only means something for a real CP ceiling —
+		// for the uncapped Master cap (`Number.MAX_VALUE`) every species is
+		// always "relevant" (there's no cap to fall short of), and the naive
+		// `0.9 * Number.MAX_VALUE` comparison below would otherwise overflow to
+		// `Infinity` and skip EVERY species unconditionally, silently producing
+		// zero Master carve-outs no matter what.
 		const maxCP = calculateCP(r.baseStats.atk, 15, r.baseStats.def, 15, r.baseStats.hp, 15, levelIndex);
-		if (maxCP < CP_THRESHOLD_RATIO * cap) {
+		if (cap !== Number.MAX_VALUE && maxCP < CP_THRESHOLD_RATIO * cap) {
 			bestCache.set(key, []);
 			return [];
 		}
@@ -393,9 +415,10 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 		if (cached !== undefined) return cached;
 		const { atk, def, hp } = r.baseStats;
 		// Purifying 15 stays 15 — the hundo-reachability pre-filter is
-		// identical whether or not purification is in play.
+		// identical whether or not purification is in play. Same uncapped
+		// (Master) special-case as `getBestTied` above.
 		const maxCP = calculateCP(atk, 15, def, 15, hp, 15, levelIndex);
-		if (maxCP < CP_THRESHOLD_RATIO * cap) {
+		if (cap !== Number.MAX_VALUE && maxCP < CP_THRESHOLD_RATIO * cap) {
 			purifiedBestCache.set(key, []);
 			return [];
 		}
@@ -427,30 +450,36 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 		return patterns;
 	};
 
-	const shadowCandidates = Object.values(gamemasterPokemon).filter((p) => p.isShadow && !p.aliasId && !p.isMega);
-	const shadowDomainFilter = (r: IGamemasterPokemon) => r.isShadow && !r.aliasId && !r.isMega;
-	for (const p of shadowCandidates) {
-		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, shadowDomainFilter));
-		const nonShadowId = p.speciesId.replaceAll('_shadow', '');
-		for (const cap of caps) {
-			const alreadyCovered = rawPatternKeys.get(`${nonShadowId}|${cap}`);
-			const distinctPatterns = new Map<string, BadIvPattern>();
-			for (const r of reachable) {
-				for (const { levelIndex } of PROTECTION_LEVELS) {
-					for (const best of getBestPurifiedTied(r, cap, levelIndex)) {
-						// The raw spread the game will actually show for this
-						// catch — evaluated against the blanket rules exactly
-						// like the non-Shadow pass, since a raw hundo or a raw
-						// catch already in the default good shape needs no
-						// Shadow-specific help either.
-						if (isProtectedByBlanket(best)) continue;
-						const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
-						if (alreadyCovered?.has(key)) continue;
-						if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+	// Skippable entirely by a caller whose own candidates structurally can
+	// never include a Shadow catch (e.g. a trade-suggestion sweep — Shadows
+	// can't be traded at all) — see `includeShadowPurify`'s own doc comment
+	// on `BadIvCarveOutsInput` for why that's worth doing, not just legal.
+	if (includeShadowPurify) {
+		const shadowCandidates = Object.values(gamemasterPokemon).filter((p) => p.isShadow && !p.aliasId && !p.isMega);
+		const shadowDomainFilter = (r: IGamemasterPokemon) => r.isShadow && !r.aliasId && !r.isMega;
+		for (const p of shadowCandidates) {
+			const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, shadowDomainFilter));
+			const nonShadowId = p.speciesId.replaceAll('_shadow', '');
+			for (const cap of caps) {
+				const alreadyCovered = rawPatternKeys.get(`${nonShadowId}|${cap}`);
+				const distinctPatterns = new Map<string, BadIvPattern>();
+				for (const r of reachable) {
+					for (const { levelIndex } of PROTECTION_LEVELS) {
+						for (const best of getBestPurifiedTied(r, cap, levelIndex)) {
+							// The raw spread the game will actually show for this
+							// catch — evaluated against the blanket rules exactly
+							// like the non-Shadow pass, since a raw hundo or a raw
+							// catch already in the default good shape needs no
+							// Shadow-specific help either.
+							if (isProtectedByBlanket(best)) continue;
+							const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+							if (alreadyCovered?.has(key)) continue;
+							if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
+						}
 					}
 				}
+				for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });
 			}
-			for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });
 		}
 	}
 

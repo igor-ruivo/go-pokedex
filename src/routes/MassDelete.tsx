@@ -247,6 +247,19 @@ export interface ComputeArgs {
 	trashUltra: number;
 	trashMaster: number;
 	trashRaid: number;
+	/** Every non-Shadow species' own tied-for-rank-1 (best stat product) raw
+	 *  IV bucket pattern(s) for the uncapped Master cap only — see
+	 *  `findBadIvCarveOuts` in the compute worker (called here with
+	 *  `caps: [Number.MAX_VALUE], includeShadowPurify: false`). `!4*` alone
+	 *  only protects the exact 15/15/15; a stat-product TIE with it (most
+	 *  often an HP-floor coincidence like 15/15/14 — a real, confirmed thing,
+	 *  not an approximation) is otherwise indistinguishable from genuine
+	 *  wasted IV potential. Shadow catches don't need this: they already have
+	 *  their own, cheaper, always-on protection (`shadowPurifyHundoGuard`
+	 *  below), so the expensive Shadow-purify pass is deliberately skipped for
+	 *  this sweep — confirmed against real data to be ~87% of the cost of
+	 *  computing this otherwise. */
+	masterCarveOuts: Array<BadIvCarveOut>;
 	protect: ProtectionFlags;
 	/** Manually-protected species — never evaluated, always excluded outright. */
 	whitelist: Set<string>;
@@ -293,9 +306,14 @@ export const computeTrashString = (a: ComputeArgs): string => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		masterCarveOuts,
 		protect,
 		whitelist,
 	} = a;
+
+	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
+	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
+	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
 
 	const enumValues: Array<PokemonTypes> = Object.keys(PokemonTypes)
 		.filter((key) => isNaN(Number(key)) && key !== 'Normal')
@@ -340,6 +358,12 @@ export const computeTrashString = (a: ComputeArgs): string => {
 
 	const potentiallyDeletablePokemon = new Set<number>();
 	const alwaysGood: Record<string, Set<IGamemasterPokemon>> = {};
+	// Every species that ends up deletable on its own account (not merely
+	// sharing a dex with one) — read below to scope the Master carve-out
+	// consumption to exactly these; a species that never entered candidacy at
+	// all is already unconditionally protected regardless of IVs, so a
+	// carve-out clause for it would be pure dead weight.
+	const deletableSpeciesIds = new Set<string>();
 
 	Object.values(gamemasterPokemon)
 		.filter(
@@ -376,6 +400,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 			}
 			if (isBadForEverything(p)) {
 				potentiallyDeletablePokemon.add(p.dex);
+				deletableSpeciesIds.add(p.speciesId);
 			} else {
 				if (!alwaysGood[p.dex]) {
 					alwaysGood[p.dex] = new Set<IGamemasterPokemon>();
@@ -423,6 +448,31 @@ export const computeTrashString = (a: ComputeArgs): string => {
 					: '';
 			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
 		});
+	});
+
+	// Stat-product-tie protection (Master League only — see `masterCarveOuts`'s
+	// own doc comment on `ComputeArgs`): a species that's genuinely deletable
+	// (bad everywhere) can still have individual catches whose raw IVs are its
+	// own tied-for-rank-1 Master spread — just as "nothing left to gain" as an
+	// exact hundo, even though they aren't one. `!4*` alone only ever catches
+	// the literal hundo, so every carve-out belonging to an actually-deletable,
+	// non-Shadow species gets its own protective clause here too. Never
+	// Shadow-scoped — `masterCarveOuts` is computed with `includeShadowPurify:
+	// false`, so it never contains a Shadow-suffixed speciesId in the first
+	// place; Shadow catches already have their own, separate, always-on
+	// protection (`shadowPurifyHundoGuard` below).
+	masterCarveOuts.forEach(({ speciesId, pattern }) => {
+		if (!deletableSpeciesIds.has(speciesId)) return;
+		const p = gamemasterPokemon[speciesId];
+		if (!p) return;
+		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
+		if (!baseId) return;
+		const [, ...formTokens] = negateIdentity(baseId).split(',');
+		const extra =
+			groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
+			groupAttr(complementOfBucket(ivBucket(pattern.D)), D) +
+			groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
+		exclusions.push({ dex: p.dex, form: formTokens.join(','), shadowScope: '', extra });
 	});
 
 	// keep the query short — Android's search box caps out around 5k characters
@@ -1316,13 +1366,42 @@ const MassDelete = () => {
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashRaid, String(trashRaid)), [trashRaid]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashCP, String(cp)), [cp]);
 
+	// Every non-Shadow species' own tied-for-rank-1 raw-IV bucket pattern(s)
+	// for the uncapped Master cap only — see `ComputeArgs.masterCarveOuts`'s
+	// own doc comment. Deliberately its own separate query from `badIvCarve-
+	// Outs` below (not folded into its `caps` array): that one needs the
+	// expensive Shadow-purify pass for Great/Ultra anyway, but this one
+	// explicitly skips it (`includeShadowPurify: false`) since Shadow catches
+	// already have their own, cheaper, always-on protection here
+	// (`shadowPurifyHundoGuard`) — sharing one query would force this sweep to
+	// wait on work it structurally never needs.
+	const { data: masterCarveOuts } = useQuery({
+		enabled: isCalculating && fetchCompleted,
+		queryKey: ['master-carveouts-no-shadow'],
+		queryFn: () =>
+			getComputeWorker().findBadIvCarveOuts({
+				gamemasterPokemon,
+				caps: [Number.MAX_VALUE],
+				includeShadowPurify: false,
+			}),
+		staleTime: Infinity,
+		gcTime: 30 * 60 * 1000,
+	});
+
 	// changing any knob invalidates a stale result
 	useEffect(() => {
 		setResult('');
 	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric, protect, whitelist]);
 
 	useEffect(() => {
-		if (!isCalculating || !fetchCompleted || !pvpFetchCompleted || !raidDPSFetchCompleted || !movesFetchCompleted) {
+		if (
+			!isCalculating ||
+			!fetchCompleted ||
+			!pvpFetchCompleted ||
+			!raidDPSFetchCompleted ||
+			!movesFetchCompleted ||
+			!masterCarveOuts
+		) {
 			return;
 		}
 		const id = window.setTimeout(() => {
@@ -1338,6 +1417,7 @@ const MassDelete = () => {
 					trashUltra,
 					trashMaster,
 					trashRaid,
+					masterCarveOuts,
 					protect,
 					whitelist: whitelistSet,
 				})
@@ -1351,6 +1431,7 @@ const MassDelete = () => {
 		pvpFetchCompleted,
 		raidDPSFetchCompleted,
 		movesFetchCompleted,
+		masterCarveOuts,
 		gamemasterPokemon,
 		rankLists,
 		raidDPS,
