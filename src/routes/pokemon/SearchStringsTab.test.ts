@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../../contexts/language-context';
+import type { IBestIvSpreads, ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
 import { calculateCP, type RankEntry } from '../../utils/pokemon-helper';
 import { buildGamemaster, mockPokemon, mockType } from '../mass-delete-fixtures';
 import {
@@ -12,6 +13,18 @@ import {
 	selectTopIVCombinations,
 	shadowSuffixFor,
 } from './SearchStringsTab';
+
+const EMPTY_BEST_IV_SPREADS: IBestIvSpreads = {
+	great: { level50: [], level51: [] },
+	ultra: { level50: [], level51: [] },
+	master: { level50: [], level51: [] },
+};
+
+/** Builds a one-species metadata map, filling in whichever fields a given
+ *  test doesn't care about with harmless defaults. */
+const metadataFor = (speciesId: string, overrides: Partial<ISpeciesSearchMetadata>): Record<string, ISpeciesSearchMetadata> => ({
+	[speciesId]: { searchFormId: '', hasShadowCounterpart: false, bestIvSpreads: EMPTY_BEST_IV_SPREADS, ...overrides },
+});
 
 // One minimal top-1 combination is enough — this file's own bucket/CP/level
 // bookkeeping isn't what's under test here, only whether the unconditional
@@ -209,9 +222,9 @@ describe('buildFormIds / formIdentifierFor — form disambiguation (regression: 
 	});
 
 	it('prefers a precomputed searchFormId over the live formIds lookup entirely', () => {
-		const withPrecomputed = mockPokemon({ ...vulpix, searchFormId: 'precomputed-value' });
-		// A deliberately empty/mismatched map — proves the map is never consulted.
-		expect(formIdentifierFor(withPrecomputed, {})).toBe('precomputed-value');
+		// A deliberately empty/mismatched formIds map — proves it's never consulted.
+		const metadata = metadataFor(vulpix.speciesId, { searchFormId: 'precomputed-value' });
+		expect(formIdentifierFor(vulpix, {}, metadata)).toBe('precomputed-value');
 	});
 });
 
@@ -240,8 +253,8 @@ describe('shadowSuffixFor', () => {
 	it('prefers a precomputed hasShadowCounterpart over the live gamemaster scan entirely', () => {
 		// noShadowVariant genuinely has no Shadow counterpart in this gamemaster —
 		// a precomputed `true` proves the live scan is never consulted.
-		const withPrecomputed = mockPokemon({ ...noShadowVariant, hasShadowCounterpart: true });
-		expect(shadowSuffixFor(withPrecomputed, gamemasterPokemon, GameLanguage.en)).toBe('&!shadow');
+		const metadata = metadataFor(noShadowVariant.speciesId, { hasShadowCounterpart: true });
+		expect(shadowSuffixFor(noShadowVariant, gamemasterPokemon, GameLanguage.en, metadata)).toBe('&!shadow');
 	});
 });
 

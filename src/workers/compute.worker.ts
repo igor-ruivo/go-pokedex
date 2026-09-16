@@ -9,6 +9,7 @@ import { expose } from 'comlink';
 
 import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
 import {
@@ -228,6 +229,13 @@ export interface BadIvCarveOut {
 
 export interface BadIvCarveOutsInput {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+	/** dex-server's precomputed per-species `bestIvSpreads`/
+	 *  `bestIvSpreadsPurified` — read instead of brute-forcing a species'
+	 *  own tied-top-1 spread whenever it's present for that speciesId (see
+	 *  `useSpeciesSearchMetadata`'s own doc comment). Missing/empty is a
+	 *  fully supported fallback state, not an error — default `{}` for a
+	 *  caller (e.g. a test) that doesn't care to exercise the fast path. */
+	speciesSearchMetadata?: Record<string, ISpeciesSearchMetadata>;
 	/** CP caps to evaluate (e.g. [1500, 2500]) — `Number.MAX_VALUE` is a valid
 	 *  entry too, for the uncapped Master cap. Master isn't tie-free the way a
 	 *  quick glance suggests: Attack/Defense are never floored so they can't
@@ -334,6 +342,7 @@ const purify = (iv: number) => Math.min(iv + PURIFY_BONUS, 15);
  */
 export const findBadIvCarveOuts = ({
 	gamemasterPokemon,
+	speciesSearchMetadata = {},
 	caps,
 	includeShadowPurify = true,
 	maxLevel = MAX_LEVEL,
@@ -372,8 +381,8 @@ export const findBadIvCarveOuts = ({
 		}
 		// dex-server precomputes exactly this reduction per species — skip the
 		// brute force entirely when it's there; fall back for anything that
-		// predates it (a stale cache, or a synthetic test fixture).
-		const precomputed = r.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(level)];
+		// predates it (still loading, a fetch error, or a synthetic test fixture).
+		const precomputed = speciesSearchMetadata[r.speciesId]?.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(level)];
 		const patterns = precomputed ?? extractTiedTop1(Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap, level)).flat());
 		bestCache.set(key, patterns);
 		return patterns;
@@ -437,7 +446,9 @@ export const findBadIvCarveOuts = ({
 		// dex-server precomputes exactly this pass per Shadow species (`r` here
 		// is always a Shadow form — see `shadowDomainFilter` below) — skip the
 		// from-scratch 16x16x16 loop entirely when it's there.
-		const precomputed = r.bestIvSpreadsPurified?.[leagueKeyFor(cap)]?.[levelKeyFor(levelIndex / 2 + 1)];
+		const precomputed = speciesSearchMetadata[r.speciesId]?.bestIvSpreadsPurified?.[leagueKeyFor(cap)]?.[
+			levelKeyFor(levelIndex / 2 + 1)
+		];
 		if (precomputed) {
 			purifiedBestCache.set(key, precomputed);
 			return precomputed;
@@ -530,6 +541,8 @@ export interface TradeableSpeciesData {
 
 export interface TradeableSpeciesDataInput {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+	/** See `BadIvCarveOutsInput.speciesSearchMetadata`'s own doc comment. */
+	speciesSearchMetadata?: Record<string, ISpeciesSearchMetadata>;
 	/** {@link MAX_LEVEL} (50) or 51 (Best Buddy) — see
 	 *  `BadIvCarveOutsInput.maxLevel`'s own doc comment; same "never both"
 	 *  rule applies here. Default {@link MAX_LEVEL}. */
@@ -556,6 +569,7 @@ export interface TradeableSpeciesDataInput {
  */
 export const findTradeableSpeciesData = ({
 	gamemasterPokemon,
+	speciesSearchMetadata = {},
 	maxLevel = MAX_LEVEL,
 }: TradeableSpeciesDataInput): Record<string, TradeableSpeciesData> => {
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !p.isShadow);
@@ -575,7 +589,7 @@ export const findTradeableSpeciesData = ({
 	// brute force entirely when it's there; fall back for anything that
 	// predates it (a stale cache, or a synthetic test fixture).
 	const analyze = (p: IGamemasterPokemon, cap: number): TradeableLeagueData => {
-		const precomputed = p.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(maxLevel)];
+		const precomputed = speciesSearchMetadata[p.speciesId]?.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(maxLevel)];
 		if (precomputed) return toLeagueData(precomputed);
 		const { atk, def, hp } = p.baseStats;
 		return toLeagueData(extractTiedTop1(Object.values(computeBestIVs(atk, def, hp, cap, maxLevel)).flat()));

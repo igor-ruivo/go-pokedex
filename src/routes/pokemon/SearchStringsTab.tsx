@@ -5,11 +5,13 @@ import { Stepper } from '../../components/Stepper';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
+import type { ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName } from '../../lib/format';
 import { buildUniqueTypes, generatePokemonId } from '../../lib/search-string';
 import { typeVar } from '../../lib/types';
 import { usePokemon } from '../../queries/pokemon';
+import { useSpeciesSearchMetadata } from '../../queries/species-search-metadata';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../../utils/persistent-configs-handler';
 import {
@@ -209,10 +211,15 @@ export const buildFormIds = (gamemasterPokemon: Record<string, IGamemasterPokemo
 /** Prefers dex-server's own precomputed `searchFormId` — the exact same
  *  value `buildFormIds`/this lookup would otherwise produce (see
  *  `form-identifier-calculator.ts` in dex-server) — and only falls back to
- *  computing it here when a species predates that field (a stale cache, or
- *  a synthetic test fixture). */
-export const formIdentifierFor = (species: IGamemasterPokemon, formIds: Record<string, string>): string => {
-	if (species.searchFormId !== undefined) return species.searchFormId;
+ *  computing it here when `metadata` doesn't have this species yet (still
+ *  loading, a fetch error, or a synthetic test fixture). */
+export const formIdentifierFor = (
+	species: IGamemasterPokemon,
+	formIds: Record<string, string>,
+	metadata: Record<string, ISpeciesSearchMetadata> = {}
+): string => {
+	const precomputed = metadata[species.speciesId]?.searchFormId;
+	if (precomputed !== undefined) return precomputed;
 	const key = `${species.dex},${species.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`;
 	return formIds[key] ?? String(species.dex);
 };
@@ -227,13 +234,15 @@ export const formIdentifierFor = (species: IGamemasterPokemon, formIds: Record<s
 export const shadowSuffixFor = (
 	species: IGamemasterPokemon,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
-	gl: GameLanguage
+	gl: GameLanguage,
+	metadata: Record<string, ISpeciesSearchMetadata> = {}
 ): string => {
 	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 	if (species.isShadow) return `&${shadowKw}`;
 	// Prefers dex-server's own precomputed flag; falls back to the live
-	// gamemaster scan only when a species predates that field.
-	const hasShadowCounterpart = species.hasShadowCounterpart ?? isNormalPokemonAndHasShadowVersion(species, gamemasterPokemon);
+	// gamemaster scan only when `metadata` doesn't have this species yet.
+	const hasShadowCounterpart =
+		metadata[species.speciesId]?.hasShadowCounterpart ?? isNormalPokemonAndHasShadowVersion(species, gamemasterPokemon);
 	return hasShadowCounterpart ? `&!${shadowKw}` : '';
 };
 
@@ -619,6 +628,7 @@ const sentence = (
 
 const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const { gamemasterPokemon } = usePokemon();
+	const speciesSearchMetadata = useSpeciesSearchMetadata();
 	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
 
@@ -648,14 +658,14 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 	const topIVCombinations = useMemo(() => selectTopIVCombinations(topIVs, top), [topIVs, top]);
 
 	const chain = useMemo(() => buildSearchChain(pokemon, gamemasterPokemon), [pokemon, gamemasterPokemon]);
-	// Skips the whole-gamemaster scan entirely once dex-server's own
-	// `searchFormId` is present on every species (checking the tab's own
-	// target is a valid proxy — the field comes from one shared JSON payload,
-	// so it's never present for some species and absent for others).
-	// `formIdentifierFor` still falls back to `formIds` for stale data.
+	// Skips the whole-gamemaster scan entirely once dex-server's own metadata
+	// is loaded (checking the tab's own target is a valid proxy — it's one
+	// shared JSON payload, so it's never loaded for some species and not
+	// others). `formIdentifierFor` still falls back to `formIds` when it isn't.
+	const hasPrecomputedMetadata = speciesSearchMetadata[pokemon.speciesId] !== undefined;
 	const formIds = useMemo(
-		() => (pokemon.searchFormId !== undefined ? EMPTY_FORM_IDS : buildFormIds(gamemasterPokemon)),
-		[gamemasterPokemon, pokemon.searchFormId]
+		() => (hasPrecomputedMetadata ? EMPTY_FORM_IDS : buildFormIds(gamemasterPokemon)),
+		[gamemasterPokemon, hasPrecomputedMetadata]
 	);
 
 	const copy = (id: string, str: string) => {
@@ -718,7 +728,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 
 			{chain.map((entry) => {
 				const p = (entry.nonShadow ?? entry.shadow)!;
-				const formId = formIdentifierFor(p, formIds);
+				const formId = formIdentifierFor(p, formIds, speciesSearchMetadata);
 				const str =
 					entry.nonShadow && entry.shadow
 						? computeMergedSearchString(entry.nonShadow, entry.shadow, { trash, topIVCombinations, gl, formId })
@@ -727,7 +737,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 								topIVCombinations,
 								gl,
 								formId,
-								shadowSuffix: shadowSuffixFor(p, gamemasterPokemon, gl),
+								shadowSuffix: shadowSuffixFor(p, gamemasterPokemon, gl, speciesSearchMetadata),
 							});
 				const key = p.speciesId;
 				const isOpen = open === key;

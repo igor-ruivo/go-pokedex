@@ -30,6 +30,7 @@ import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
+import { useSpeciesSearchMetadata } from '../queries/species-search-metadata';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import {
 	ConfigKeys,
@@ -1193,6 +1194,7 @@ const byDexFormShadow = (a: { p: IGamemasterPokemon }, b: { p: IGamemasterPokemo
 
 const MassDelete = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
+	const speciesSearchMetadata = useSpeciesSearchMetadata();
 	const { movesFetchCompleted } = useMoves();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
@@ -1408,12 +1410,19 @@ const MassDelete = () => {
 	// since Shadow catches already have their own, cheaper, always-on
 	// protection here (`shadowPurifyHundoGuard`) — sharing one query would
 	// force this sweep to wait on work it structurally never needs.
+	// `speciesSearchMetadata`'s own key count is folded into every query key
+	// below (not just passed as an argument): react-query's `staleTime:
+	// Infinity` would otherwise cache a slow, brute-forced result computed
+	// before that fetch resolved, and never automatically upgrade to the fast
+	// precomputed path once it lands.
+	const speciesSearchMetadataCount = Object.keys(speciesSearchMetadata).length;
 	const { data: masterCarveOuts } = useQuery({
 		enabled: (isCalculating || isCalculatingBadIv) && fetchCompleted,
-		queryKey: ['master-carveouts-no-shadow', maxLevel],
+		queryKey: ['master-carveouts-no-shadow', maxLevel, speciesSearchMetadataCount],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({
 				gamemasterPokemon,
+				speciesSearchMetadata,
 				caps: [Number.MAX_VALUE],
 				includeShadowPurify: false,
 				maxLevel,
@@ -1491,8 +1500,9 @@ const MassDelete = () => {
 	// the other knobs.
 	const { data: badIvCarveOuts } = useQuery({
 		enabled: isCalculatingBadIv && fetchCompleted,
-		queryKey: ['bad-iv-carveouts', maxLevel],
-		queryFn: () => getComputeWorker().findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500], maxLevel }),
+		queryKey: ['bad-iv-carveouts', maxLevel, speciesSearchMetadataCount],
+		queryFn: () =>
+			getComputeWorker().findBadIvCarveOuts({ gamemasterPokemon, speciesSearchMetadata, caps: [1500, 2500], maxLevel }),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});
@@ -1540,8 +1550,8 @@ const MassDelete = () => {
 	// for work it structurally never needs.
 	const { data: tradeableSpeciesData } = useQuery({
 		enabled: isCalculatingTrade && fetchCompleted,
-		queryKey: ['tradeable-species-data', maxLevel],
-		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon, maxLevel }),
+		queryKey: ['tradeable-species-data', maxLevel, speciesSearchMetadataCount],
+		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon, speciesSearchMetadata, maxLevel }),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});

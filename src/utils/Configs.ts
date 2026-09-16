@@ -4,6 +4,8 @@ export const buildPokemonImageUrl = (dex: string, type: string, form?: string) =
 	`https://assets.pokemon.com/assets/cms2/img/pokedex/${type}/${dex}${form ? '_f' + form : ''}.png`;
 export const gamemasterPokemonUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/game-master.json';
+export const speciesSearchMetadataUrl =
+	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/species-search-metadata.json';
 export const pvpokeRankings1500Url =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/great-league-pvp.json';
 export const pvpokeRankings2500Url =
