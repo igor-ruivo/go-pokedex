@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
 import { type BadIvCarveOut, findBadIvCarveOuts } from '../workers/compute.worker';
 import {
 	buildBadIvFixture,
@@ -72,38 +73,36 @@ describe('findBadIvCarveOuts — a tied-for-top-1 stat product spanning two diff
 	});
 });
 
-describe('findBadIvCarveOuts — level 50 / level 51 (Best Buddy) union, regardless of the player’s toggle', () => {
-	it('when a species’ top-1 pattern lands in a DIFFERENT bucket at level 50 vs. level 51, both buckets get their own carve-out', () => {
+describe('findBadIvCarveOuts — single level only, never both (this session’s deliberate reversal)', () => {
+	it('defaults to level 50 (MAX_LEVEL) when maxLevel is omitted — only that level’s own bucket is protected', () => {
 		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
-		const ownAt1500 = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const own = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
 
 		// Empirically verified (see fixture comment): overlapmon's own top-1
-		// at cap 1500 is 13/14/14 (bucket 3-3-3) at level 50, but 12/15/15
-		// (bucket 3-4-4) at level 51 — neither a hundo nor the default shape.
-		// A hypothetical implementation that only ever evaluated one of the
-		// two levels would silently drop protection for whichever bucket that
-		// level doesn't produce — a real wild catch matching the OTHER
-		// bucket would then have no carve-out at all on whichever setting the
-		// player hasn't toggled.
-		expect(ownAt1500).toHaveLength(2);
-		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 13, D: 14, S: 14 } }));
-		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } }));
+		// at cap 1500 is 13/14/14 (bucket 3-3-3) at level 50, but a DIFFERENT
+		// bucket (12/15/15, bucket 3-4-4) at level 51. With no `maxLevel`
+		// passed, only the level-50 bucket is protected — the level-51-only
+		// one is deliberately NOT included anymore.
+		expect(own).toEqual([expect.objectContaining({ pattern: { A: 13, D: 14, S: 14 } })]);
 	});
 
-	it('never reads the Best Buddy setting at all — the input has no such parameter, so both levels are always evaluated unconditionally', () => {
-		// `findBadIvCarveOuts` takes only `gamemasterPokemon` and `caps` (see
-		// `BadIvCarveOutsInput`) — there is no `maxLevel`/`bestBuddy` knob to
-		// thread through, structurally guaranteeing every caller gets the
-		// same level-50 ∪ level-51 union regardless of what the player (or a
-		// test) has the Best Buddy context set to.
+	it('passing maxLevel: BEST_BUDDY_LEVEL switches to level 51’s own bucket instead — never both at once', () => {
+		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500], maxLevel: BEST_BUDDY_LEVEL });
+		const own = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
+
+		expect(own).toEqual([expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } })]);
+	});
+
+	it('is deterministic and stable across repeated calls at the same maxLevel', () => {
 		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
 		const first = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
 		const second = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
 		const ownFirst = first.filter((c) => c.speciesId === overlapmon.speciesId);
 		const ownSecond = second.filter((c) => c.speciesId === overlapmon.speciesId);
 		expect(ownSecond).toEqual(ownFirst);
-		expect(ownFirst).toHaveLength(2); // both the level-50-only and level-51-only bucket, every time
+		expect(ownFirst).toHaveLength(1);
 	});
 });
 
@@ -116,20 +115,17 @@ describe('findBadIvCarveOuts — collects every distinct pattern across a reacha
 		// A buggy "stop at the first unprotected stage" implementation would
 		// only find one of these two distinct patterns — this is exactly the
 		// Lickitung/Kabuto-shaped bug found and fixed manually earlier this
-		// session, now locked in as an automated regression.
-		//
-		// The second pattern's bucket (`2-4-4`) is empirically shared by BOTH
-		// stageA's own level-51 top-1 (`10/15/15`) and stageB's level-50 top-1
-		// (`8/15/15`) — since stageA is walked first, its level-51 tie wins the
-		// bucket-key dedup and supplies the representative raw IVs here. Either
-		// raw spread protects the identical bucket, so this is not a behavior
-		// change, just a different (level-51-sourced) witness for it.
+		// session, now locked in as an automated regression. This is about the
+		// REACHABLE-FAMILY walk specifically (stageA and stageB each
+		// contribute their own pattern), independent of the single-vs-both-
+		// levels question — still holds even though this session made every
+		// level-related computation single-level-only (default level 50 here).
 		expect(ownAt1500).toHaveLength(2);
 		expect(ownAt1500).toContainEqual(
 			expect.objectContaining({ pattern: { A: 12, D: 15, S: 13 } }) // stageA's own level-50 optimum
 		);
 		expect(ownAt1500).toContainEqual(
-			expect.objectContaining({ pattern: { A: 10, D: 15, S: 15 } }) // stageA's own level-51 optimum (bucket 2-4-4, same bucket stageB's level-50 optimum would also supply)
+			expect.objectContaining({ pattern: { A: 8, D: 15, S: 15 } }) // stageB's own level-50 optimum
 		);
 	});
 });
@@ -904,39 +900,35 @@ describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 		expect(carveOuts.some((c) => c.speciesId === blendmonShadow.speciesId)).toBe(false);
 	});
 
-	it('dead-weight avoidance: a Shadow purified-best pattern identical to its non-Shadow sibling’s own raw pattern gets no redundant entry — but a level-51-only purified pattern still gets its own genuine carve-out', () => {
+	it('dead-weight avoidance: a Shadow purified-best pattern identical to its non-Shadow sibling’s own raw pattern gets no redundant entry, at whichever single level is requested', () => {
 		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
 
-		// overlapmon's own raw top-1 at 1500 deviates at BOTH evaluated
-		// levels, to two different buckets: 3-3-3 (level 50, 13/14/14) and
-		// 3-4-4 (level 51, 12/15/15) — both are genuinely needed, regardless
-		// of which level the player has toggled.
-		const ownAt1500 = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
-		expect(ownAt1500).toHaveLength(2);
-		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 13, D: 14, S: 14 } }));
-		expect(ownAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } }));
+		// Default level (50): overlapmon's own raw top-1 at 1500 is bucket
+		// 3-3-3 (13/14/14) — a Shadow's purified-best at level 50 lands in
+		// that EXACT same bucket (raw 11/12/12 purified), already covered by
+		// the shadow-agnostic clause the non-Shadow analysis emits, so no
+		// redundant Shadow-scoped entry should exist at level 50 at all.
+		const atLevel50 = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const ownAt1500 = atLevel50.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
+		expect(ownAt1500).toEqual([expect.objectContaining({ pattern: { A: 13, D: 14, S: 14 } })]);
+		const shadowAtLevel50 = atLevel50.filter((c) => c.speciesId === overlapmonShadow.speciesId && c.cap === 1500);
+		expect(shadowAtLevel50).toHaveLength(0);
 
-		// overlapmon never clears the 90%-of-2500 pre-filter at either level
-		// (its 15/15/15 max CP is well under 2250), so cap 2500 gets nothing.
-		expect(carveOuts.some((c) => c.speciesId === overlapmon.speciesId && c.cap === 2500)).toBe(false);
-
-		// A Shadow's purified-best at level 50 lands in the EXACT same bucket
-		// as overlapmon's own level-50 raw top-1 (3-3-3, i.e. raw 11/12/12
-		// purified) — already covered by the shadow-agnostic clause the
-		// non-Shadow analysis emits, so that specific bucket must NOT get its
-		// own redundant Shadow-scoped entry.
-		const shadowAt1500 = carveOuts.filter((c) => c.speciesId === overlapmonShadow.speciesId && c.cap === 1500);
-		expect(shadowAt1500.some((c) => c.pattern.A === 11 && c.pattern.D === 12 && c.pattern.S === 12)).toBe(false);
-
-		// But a Shadow's purified-best at level 51 lands in FOUR different,
-		// genuinely uncovered buckets — real level-51-only protection a
-		// level-50-only analysis would have missed entirely.
-		expect(shadowAt1500).toHaveLength(4);
-		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 13, S: 13 } })); // 2-3-3
-		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 13, S: 15 } })); // 2-3-4
-		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 15, S: 13 } })); // 2-4-3
-		expect(shadowAt1500).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 15, S: 15 } })); // 2-4-4
+		// Explicitly requesting level 51 instead: overlapmon's own raw top-1
+		// there is a DIFFERENT bucket (3-4-4, 12/15/15) — and a Shadow's
+		// purified-best at level 51 lands in FOUR different, genuinely
+		// uncovered buckets relative to THAT level's own non-Shadow pattern.
+		// Never both at once — this is the level-51 story on its own, not
+		// unioned with level 50's.
+		const atLevel51 = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500], maxLevel: BEST_BUDDY_LEVEL });
+		const ownAt1500Level51 = atLevel51.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
+		expect(ownAt1500Level51).toEqual([expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } })]);
+		const shadowAtLevel51 = atLevel51.filter((c) => c.speciesId === overlapmonShadow.speciesId && c.cap === 1500);
+		expect(shadowAtLevel51).toHaveLength(4);
+		expect(shadowAtLevel51).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 13, S: 13 } })); // 2-3-3
+		expect(shadowAtLevel51).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 13, S: 15 } })); // 2-3-4
+		expect(shadowAtLevel51).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 15, S: 13 } })); // 2-4-3
+		expect(shadowAtLevel51).toContainEqual(expect.objectContaining({ pattern: { A: 10, D: 15, S: 15 } })); // 2-4-4
 	});
 
 	it('a Shadow whose family never clears the 90%-of-cap pre-filter gets no carve-out either — purification cannot change that', () => {
@@ -965,7 +957,7 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 		expect(result).toContain(`&!${deviantmonShadow.dex},!shadow,1-4attack,0-1defense,3-4defense,0-2hp,4hp`);
 	});
 
-	it('does NOT emit a redundant shadow-scoped clause for the bucket the non-Shadow analysis already covers, but DOES emit one for level-51-only purified buckets it doesn’t', () => {
+	it('does NOT emit a redundant shadow-scoped clause for the bucket the non-Shadow analysis already covers, at the default level (50)', () => {
 		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
 		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
 		const result = computeBadIvString(
@@ -977,26 +969,38 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 			new Set()
 		);
 
-		// Bucket 3-3-3 (level 50, raw 11/12/12 purified) is the one genuinely
-		// shared between overlapmon's own top-1 and its Shadow's purified-best
-		// — its complement (`0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`)
-		// must appear only on the plain (shadow-agnostic) clause, never on a
-		// `,!shadow`-scoped one.
+		// overlapmonShadow shares overlapmon's own dex (Shadow forms always
+		// do), so this bucket-3-3-3 clause is the ONE, bare, shadow-agnostic
+		// clause covering both the non-Shadow catch and the Shadow's
+		// purified-best (they're identical at level 50, so nothing to
+		// disambiguate) — never a `,!shadow`-scoped clause on top of it. The
+		// level-51-only buckets this used to also pick up are no longer
+		// computed unless level 51 is explicitly requested (see the dedicated
+		// `findBadIvCarveOuts` test for that).
+		expect(overlapmonShadow.dex).toBe(overlapmon.dex);
 		expect(result).toContain(`!${overlapmon.dex},0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`);
-		// Bucket 3-3-3's own shadow-scoped clause specifically (as opposed to
-		// any of the four genuinely-distinct level-51 buckets below, one of
-		// which happens to share this bucket's Attack/Defense complement) must
-		// never appear.
-		expect(result).not.toContain(`!${overlapmonShadow.dex},!shadow,0-2attack,4attack,0-2defense,4defense,0-2hp,4hp`);
+		expect(result).not.toContain(`!${overlapmon.dex},!shadow,`);
+	});
 
-		// overlapmon's own level-51-only bucket (3-4-4) also gets its plain
-		// clause, same treatment.
+	it('DOES emit its own shadow-scoped clauses for level-51-only purified buckets when level 51 is explicitly requested', () => {
+		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500], maxLevel: BEST_BUDDY_LEVEL });
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		// At level 51, overlapmon's own top-1 is bucket 3-4-4 instead.
 		expect(result).toContain(`!${overlapmon.dex},0-2attack,4attack,0-3defense,0-3hp`);
 
-		// But the four buckets a Shadow's purified-best reaches ONLY at level
-		// 51 (2-3-3, 2-3-4, 2-4-3, 2-4-4) are genuinely uncovered by the
-		// non-Shadow analysis, so each DOES get its own `,!shadow`-scoped
-		// clause.
+		// The four buckets a Shadow's purified-best reaches ONLY at level 51
+		// (2-3-3, 2-3-4, 2-4-3, 2-4-4) are genuinely uncovered by the
+		// non-Shadow analysis at this same level, so each DOES get its own
+		// `,!shadow`-scoped clause.
 		expect(result).toContain(`!${overlapmonShadow.dex},!shadow,0-1attack,3-4attack,0-2defense,4defense,0-2hp,4hp`);
 		expect(result).toContain(`!${overlapmonShadow.dex},!shadow,0-1attack,3-4attack,0-2defense,4defense,0-3hp`);
 		expect(result).toContain(`!${overlapmonShadow.dex},!shadow,0-1attack,3-4attack,0-3defense,0-2hp,4hp`);
@@ -1254,7 +1258,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		expect(result).not.toContain('0-3attack');
 	});
 
-	it('a tie that exists ONLY at level 51 (not level 50) is still caught — the level-50/51 union applies here exactly as everywhere else', () => {
+	it('a tie that exists ONLY at level 51 (not level 50) is invisible at the default level, but caught when maxLevel: BEST_BUDDY_LEVEL is explicitly requested — never both at once', () => {
 		// Base HP 5 — empirically verified (see the Tab 1 regression test of
 		// the same shape) to floor-tie raw IV 14 and 15 at level 51
 		// specifically, with no tie at all at level 50.
@@ -1264,13 +1268,13 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 			baseStats: { atk: 100, def: 132, hp: 5 },
 		});
 		const gamemasterPokemon = buildGamemaster([level51tied]);
-		const masterCarveOuts = findBadIvCarveOuts({
+
+		const atLevel50 = findBadIvCarveOuts({
 			gamemasterPokemon,
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
-
-		const result = computeBadIvString(
+		const resultAtLevel50 = computeBadIvString(
 			gamemasterPokemon,
 			[],
 			GameLanguage.en,
@@ -1278,10 +1282,27 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 			DEFAULT_PROTECTION,
 			new Set(),
 			false,
-			masterCarveOuts
+			atLevel50
 		);
+		expect(resultAtLevel50).not.toContain(String(level51tied.dex));
 
-		expect(result).toContain(`&!${level51tied.dex},0-3attack,0-3defense,0-2hp,4hp`);
+		const atLevel51 = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
+		const resultAtLevel51 = computeBadIvString(
+			gamemasterPokemon,
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			false,
+			atLevel51
+		);
+		expect(resultAtLevel51).toContain(`&!${level51tied.dex},0-3attack,0-3defense,0-2hp,4hp`);
 	});
 
 	it('a Shadow form never needs its own masterCarveOuts entry — `includeShadowPurify: false` means the sweep never even considers it', () => {

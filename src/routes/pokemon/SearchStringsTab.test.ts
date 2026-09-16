@@ -11,7 +11,6 @@ import {
 	formIdentifierFor,
 	selectTopIVCombinations,
 	shadowSuffixFor,
-	withBestBuddySafetyFloor,
 } from './SearchStringsTab';
 
 // One minimal top-1 combination is enough — this file's own bucket/CP/level
@@ -154,47 +153,6 @@ describe('selectTopIVCombinations — single-level only (regression: never hedge
 	});
 });
 
-describe('withBestBuddySafetyFloor — rank-1 safety net, both levels, regardless of the core cutoff', () => {
-	it('adds the rank-1 spreads from BOTH levels on top of a core selection that already excludes them', () => {
-		// `core` here stands in for a toggle-respecting selection that, for
-		// whatever cutoff the player chose, happens not to include either
-		// level's own #1 — the exact scenario the floor exists to cover.
-		const core = [combo(9, 1)];
-		const level50 = [combo(1, 100), combo(9, 1)];
-		const level51 = [combo(2, 90), combo(9, 1)];
-
-		const result = withBestBuddySafetyFloor(core, level50, level51);
-		const keys = result.map((c) => c.IVs.A).sort();
-		expect(keys).toEqual([1, 2, 9]);
-	});
-
-	it('a rank-1 tie at one level contributes every tied spread, not just one', () => {
-		const level50 = [combo(1, 100), combo(2, 100), combo(3, 50)];
-		const level51 = [combo(4, 40)];
-
-		const result = withBestBuddySafetyFloor([], level50, level51);
-		const keys = result.map((c) => c.IVs.A).sort();
-		expect(keys).toEqual([1, 2, 4]);
-	});
-
-	it('when the core selection already includes both levels’ rank-1, nothing new is added (deduped)', () => {
-		const level50 = [combo(1, 100)];
-		const level51 = [combo(2, 90)];
-		const core = [combo(1, 100), combo(2, 90), combo(3, 50)];
-
-		const result = withBestBuddySafetyFloor(core, level50, level51);
-		expect(result).toHaveLength(3);
-	});
-
-	it('the same rank-1 spread at both levels merges into one entry', () => {
-		const level50 = [combo(1, 100, 50)];
-		const level51 = [combo(1, 95, 51)];
-
-		const result = withBestBuddySafetyFloor([], level50, level51);
-		expect(result).toHaveLength(1);
-		expect(result[0].L).toBe(51);
-	});
-});
 
 describe('buildFormIds / formIdentifierFor — form disambiguation (regression: Ninetales-Alolan bug)', () => {
 	const vulpix = mockPokemon({
@@ -400,31 +358,22 @@ describe('computeSearchString — Shadow purification math (backward direction)'
 		expect(result).not.toContain('3hp');
 	});
 
-	it('regression: a rank-1 safety-floor combo also gets purify-expanded when it lands in a viaPurify block, exactly like a core combo', () => {
-		// Simulates the component wiring: the safety floor (withBestBuddySafetyFloor)
-		// operates purely in target space, unaware of Shadow/purification at
-		// all — it's computeSearchString's own viaPurify flag that must expand
-		// EVERY combo it receives, core selection or safety floor alike.
+	it('regression: a combo straight from `selectTopIVCombinations` also gets purify-expanded when it lands in a viaPurify block', () => {
 		const pokemon = mockPokemon({ speciesId: 'floormon_shadow', dex: 803, isShadow: true });
-		const core: Array<RankEntry> = [];
-		const level50: Array<RankEntry> = [
+		const level: Array<RankEntry> = [
 			{ IVs: { A: 15, D: 15, S: 15, star: 4 }, battle: { A: 1, D: 1, S: 1 }, L: 50, CP: 1500 },
 		];
-		const level51: Array<RankEntry> = [];
-		const withFloor = withBestBuddySafetyFloor(core, level50, level51);
+		const topIVCombinations = selectTopIVCombinations(level, 1);
 
 		const result = computeSearchString(pokemon, {
 			trash: false,
-			topIVCombinations: withFloor,
+			topIVCombinations,
 			gl: GameLanguage.en,
 			formId: '803',
 			shadowSuffix: '&shadow',
 			viaPurify: true,
 		});
 
-		// Same signature as the plain hundo-fan-out test above — proves the
-		// safety-floor-sourced combo went through the identical purify
-		// expansion, not some bucket-only shortcut.
 		expect(result).toContain('&!3*,3-4attack');
 		expect(result).toContain('3-4defense');
 		expect(result).toContain('3-4hp');

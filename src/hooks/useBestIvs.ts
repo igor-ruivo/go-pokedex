@@ -10,13 +10,9 @@ const EMPTY: ReadonlyArray<RankEntry> = [];
 /**
  * Every IV spread for `pokemon`, ranked for the given CP cap at an explicit
  * level ceiling — unlike {@link useBestIvs}, never reads the Best Buddy
- * toggle. Meant for a caller that needs one SPECIFIC level regardless of what
- * the player currently has set (e.g. the search-string generator's rank-1
- * safety floor, which must check both 50 and 51 no matter which one is
- * toggled — see `SearchStringsTab.tsx`'s own notes on why that floor is kept
- * separate from the toggle-respecting core selection). Shares its cache with
- * {@link useBestIvs}: the query key is identical to what that hook produces
- * for the same `maxLevel`.
+ * toggle. Meant for a caller that needs one specific level regardless of what
+ * the player currently has set. Shares its cache with {@link useBestIvs}: the
+ * query key is identical to what that hook produces for the same `maxLevel`.
  */
 export const useBestIvsAtLevel = (
 	pokemon: IGamemasterPokemon | undefined,

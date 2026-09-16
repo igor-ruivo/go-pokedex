@@ -5,19 +5,17 @@ import { Stepper } from '../../components/Stepper';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
-import { useBestIvs, useBestIvsAtLevel } from '../../hooks/useBestIvs';
+import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName } from '../../lib/format';
 import { buildUniqueTypes, generatePokemonId } from '../../lib/search-string';
 import { usePokemon } from '../../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../../utils/persistent-configs-handler';
 import {
-	BEST_BUDDY_LEVEL,
 	calculateCP,
 	calculateHP,
 	fetchPredecessorPokemonIncludingSelf,
 	isNormalPokemonAndHasShadowVersion,
-	MAX_LEVEL,
 	type RankEntry,
 	sortPokemonByBattlePowerAsc,
 } from '../../utils/pokemon-helper';
@@ -121,48 +119,6 @@ export const selectTopIVCombinations = (
 	let count = top;
 	while (count < sortedDesc.length && statProdOf(sortedDesc[count]) === boundaryProd) count++;
 	return sortedDesc.slice(0, count);
-};
-
-const dedupeCombosByIVs = (lists: ReadonlyArray<ReadonlyArray<RankEntry>>): ReadonlyArray<RankEntry> => {
-	const merged = new Map<string, RankEntry>();
-	for (const list of lists) {
-		for (const combo of list) {
-			const key = `${combo.IVs.A}-${combo.IVs.D}-${combo.IVs.S}`;
-			const existing = merged.get(key);
-			if (!existing || existing.L < combo.L) merged.set(key, combo);
-		}
-	}
-	return Array.from(merged.values());
-};
-
-/**
- * The rank-1 (tie-inclusive) safety floor: no matter what cutoff the player
- * chose, and no matter which single level `core` was computed at (whichever
- * the Best Buddy toggle currently says), the species' own literal #1 stat
- * product — at BOTH level 50 AND level 51 — always rides along on top of it.
- * A spread that's rank-1 only at the OTHER level (not the one the toggle
- * currently has selected) would otherwise never appear in `core` at all and
- * could get swept up in "except" mode, or never surface in plain "find" mode,
- * purely because of which level happens to be toggled right now.
- *
- * This can't be bolted on as a literal trailing clause the way `!4*` is —
- * Pokémon GO's search grammar has no parentheses/OR-of-whole-clauses (see
- * `lib/search-string.ts`'s own top-of-file note), so a genuine "also match
- * this, as an alternative to everything else" can only be expressed by
- * feeding it into the SAME per-star-tier bucket/CP/HP bookkeeping
- * `computeSearchString` already builds from `core` — a plain unconditional
- * `&`-appended clause would instead AND onto (over-restrict) every other
- * match in "find" mode. Functionally, that's exactly the "final suffix" this
- * is meant to be: an unconditional floor added ON TOP of the core, toggle-
- * respecting selection, never a replacement for it.
- */
-export const withBestBuddySafetyFloor = (
-	core: ReadonlyArray<RankEntry>,
-	level50: ReadonlyArray<RankEntry>,
-	level51: ReadonlyArray<RankEntry>
-): ReadonlyArray<RankEntry> => {
-	const floor = dedupeCombosByIVs([selectTopIVCombinations(level50, 1), selectTopIVCombinations(level51, 1)]);
-	return dedupeCombosByIVs([core, floor]);
 };
 
 /* ---- Shadow purification (backward direction): a raw Shadow IV that, once --
@@ -630,18 +586,13 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 
 	const isPvp = league === 0 || league === 1 || league === 2;
 	const cpCap = isPvp ? CAP[league] : 1500;
-	// The core "top N" selection respects whichever level ceiling (50, or 51
-	// with Best Buddy) the player currently has toggled — see the note above
-	// `selectTopIVCombinations`. `safety50`/`safety51` are ONLY used to build
-	// the rank-1 safety floor below (`withBestBuddySafetyFloor`) — they never
-	// change which level the core "top N" itself is computed at.
+	// Always honors whichever single level ceiling (50, or 51 with Best Buddy)
+	// the player currently has toggled — see the note above
+	// `selectTopIVCombinations`. No cross-level floor: the other level's own
+	// rank-1 spread is deliberately never pulled in, matching every other
+	// tab's own single-level-only rule now.
 	const topIVs = useBestIvs(pokemon, cpCap, isPvp);
-	const safety50 = useBestIvsAtLevel(pokemon, cpCap, MAX_LEVEL, isPvp);
-	const safety51 = useBestIvsAtLevel(pokemon, cpCap, BEST_BUDDY_LEVEL, isPvp);
-	const topIVCombinations = useMemo(
-		() => withBestBuddySafetyFloor(selectTopIVCombinations(topIVs, top), safety50, safety51),
-		[topIVs, safety50, safety51, top]
-	);
+	const topIVCombinations = useMemo(() => selectTopIVCombinations(topIVs, top), [topIVs, top]);
 
 	const chain = useMemo(() => buildSearchChain(pokemon, gamemasterPokemon), [pokemon, gamemasterPokemon]);
 	const formIds = useMemo(() => buildFormIds(gamemasterPokemon), [gamemasterPokemon]);
@@ -661,7 +612,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 			</div>
 		);
 	}
-	if (topIVs.length === 0 || safety50.length === 0 || safety51.length === 0) {
+	if (topIVs.length === 0) {
 		return (
 			<div className='r-loading' style={{ minHeight: '30dvh' }}>
 				<div className='r-spinner' />

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
 import { findBadIvCarveOuts } from '../workers/compute.worker';
 import {
 	buildArgs,
@@ -484,12 +485,10 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		return { gamemasterPokemon, tiedmon, controlmon };
 	};
 
-	it('catches a tie that exists ONLY at level 51 (Best Buddy), not level 50 — regression for "only checked whichever level a species happens to hit first"', () => {
+	it('a tie that exists ONLY at level 51 (Best Buddy), not level 50, is invisible at the default level but caught when maxLevel: BEST_BUDDY_LEVEL is explicitly requested — never both at once', () => {
 		// Base HP 5 empirically verified (via `calculateHP` directly) to floor-
 		// tie raw IV 14 and 15 at level 51 specifically, while NOT tying at
-		// level 50 — the exact opposite level from `tiedmon` above, so this
-		// isolates that the level-50/51 union genuinely covers both directions,
-		// not just whichever one this session's other fixtures happen to hit.
+		// level 50 — the exact opposite level from `tiedmon` above.
 		const level51tied = mockPokemon({
 			speciesId: 'trashlevel51tied',
 			dex: 902,
@@ -497,20 +496,32 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		});
 		const controlmon = mockPokemon({ speciesId: 'trashlevel51control', dex: 903 });
 		const gamemasterPokemon = buildGamemaster([level51tied, controlmon]);
-		const masterCarveOuts = findBadIvCarveOuts({
+		const rankLists = [{}, {}, { [controlmon.speciesId]: rank(1) }];
+
+		const atLevel50 = findBadIvCarveOuts({
 			gamemasterPokemon,
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
-		const rankLists = [{}, {}, { [controlmon.speciesId]: rank(1) }];
+		expect(atLevel50.some((c) => c.speciesId === level51tied.speciesId)).toBe(false);
+		const resultAtLevel50 = computeTrashString(
+			buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts: atLevel50 })
+		);
+		expect(resultAtLevel50).not.toContain('0-3attack');
 
-		expect(masterCarveOuts).toContainEqual(
+		const atLevel51 = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
+		expect(atLevel51).toContainEqual(
 			expect.objectContaining({ speciesId: level51tied.speciesId, pattern: { A: 15, D: 15, S: 14 } })
 		);
-
-		const result = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts }));
-
-		expect(result).toContain(`&!${level51tied.dex},0-3attack,0-3defense,0-2hp,4hp`);
+		const resultAtLevel51 = computeTrashString(
+			buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts: atLevel51 })
+		);
+		expect(resultAtLevel51).toContain(`&!${level51tied.dex},0-3attack,0-3defense,0-2hp,4hp`);
 	});
 
 	it('a species that is bad everywhere still gets a protective clause for its own tied-for-rank-1 Master spread — !4* alone is not enough', () => {

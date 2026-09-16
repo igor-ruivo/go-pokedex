@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { ShadowMark } from '../components/ShadowMark';
 import { handleSpriteError, spriteUrl } from '../components/Sprite';
+import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
@@ -743,12 +744,12 @@ export const computeBadIvString = (
  * comment) has just as little to gain from a trade as an exact hundo does,
  * but `!4*` doesn't match it. So for every reachable stage that actually
  * qualifies a candidate (clears its league's rank cutoff), this also carves
- * out that stage's own tied-for-rank-1 raw IV pattern(s) — at BOTH level 50
- * and level 51, unconditionally, regardless of the player's Best Buddy
- * toggle — from the CANDIDATE's own dex. Raw IVs never change through
- * evolution, so a pattern computed from a later stage's own base stats still
- * correctly protects an earlier, not-yet-evolved catch that already happens
- * to have those exact raw IVs.
+ * out that stage's own tied-for-rank-1 raw IV pattern(s) — at whichever
+ * single level ceiling the player currently has toggled (never both, see
+ * `findBadIvCarveOuts`'s own `maxLevel` doc comment) — from the CANDIDATE's
+ * own dex. Raw IVs never change through evolution, so a pattern computed
+ * from a later stage's own base stats still correctly protects an earlier,
+ * not-yet-evolved catch that already happens to have those exact raw IVs.
  *
  * This is deliberately cheap despite doing real per-catch protection, for a
  * reason unique to this tab: a Shadow can NEVER be a trade candidate at all
@@ -765,8 +766,8 @@ export const computeBadIvString = (
  * product) spread for a species is the classic low-Attack shape, which a
  * trade's guaranteed floor of 5 can never actually reach (a trade never
  * produces below 5 in a stat) — so a reachable stage there only counts as a
- * qualifying reason when its own tied-best spread has every stat at 5 or
- * higher, at level 50 OR level 51 (skipped only when BOTH levels fail).
+ * qualifying reason when its own tied-best spread, at the single level
+ * ceiling currently toggled, has every stat at 5 or higher.
  *
  * A hundo is always excluded outright (`!4*`) regardless of any of the
  * above — the carve-outs above never need to (and don't) duplicate that.
@@ -1198,6 +1199,11 @@ const MassDelete = () => {
 	const { raidMetric } = useRaidMetric();
 	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
+	// Every carve-out/tie-eligibility sweep across all three tabs now honors
+	// this single toggle exclusively — never both 50 and 51 at once — trading
+	// the extra-level accuracy that used to cost real search-string length for
+	// a shorter, single-level-correct string instead.
+	const { maxLevel } = useBestBuddy();
 
 	// The mode lives in the URL, not local/persisted state — each mode is a
 	// real, distinct, shareable/crawlable page (`/search-strings/:tab`) rather
@@ -1404,12 +1410,13 @@ const MassDelete = () => {
 	// force this sweep to wait on work it structurally never needs.
 	const { data: masterCarveOuts } = useQuery({
 		enabled: (isCalculating || isCalculatingBadIv) && fetchCompleted,
-		queryKey: ['master-carveouts-no-shadow'],
+		queryKey: ['master-carveouts-no-shadow', maxLevel],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({
 				gamemasterPokemon,
 				caps: [Number.MAX_VALUE],
 				includeShadowPurify: false,
+				maxLevel,
 			}),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
@@ -1479,12 +1486,13 @@ const MassDelete = () => {
 
 	// The heavy part — the brute-force sweep for every species' own best spread
 	// per cap — never depends on `cp`/`gl`/the category toggles/the whitelist,
-	// so it's cached indefinitely and only ever runs once per session; only the
-	// (cheap) string assembly below reacts to those other knobs.
+	// so it's cached indefinitely and only ever recomputed when the Best Buddy
+	// toggle itself changes; only the (cheap) string assembly below reacts to
+	// the other knobs.
 	const { data: badIvCarveOuts } = useQuery({
 		enabled: isCalculatingBadIv && fetchCompleted,
-		queryKey: ['bad-iv-carveouts'],
-		queryFn: () => getComputeWorker().findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] }),
+		queryKey: ['bad-iv-carveouts', maxLevel],
+		queryFn: () => getComputeWorker().findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500], maxLevel }),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});
@@ -1524,16 +1532,16 @@ const MassDelete = () => {
 
 	// Same shape as `badIvCarveOuts` above: purely species-stat-driven (never
 	// depends on `gl`/`cp`/the category toggles/the whitelist/the rank
-	// cutoffs), so it's cached indefinitely and only ever computed once per
-	// session. Deliberately its own separate query from `badIvCarveOuts`
-	// (not folded into `IV_CARVEOUT_CAPS`'s sweep) — this one skips the
-	// expensive Shadow-purify pass entirely, which `findBadIvCarveOuts` can't
-	// do (the other two tabs genuinely need it), so sharing one query would
-	// force this tab to pay for work it structurally never needs.
+	// cutoffs), so it's cached indefinitely and only ever recomputed when the
+	// Best Buddy toggle changes. Deliberately its own separate query from
+	// `badIvCarveOuts` — this one skips the expensive Shadow-purify pass
+	// entirely, which `findBadIvCarveOuts` can't do (the other two tabs
+	// genuinely need it), so sharing one query would force this tab to pay
+	// for work it structurally never needs.
 	const { data: tradeableSpeciesData } = useQuery({
 		enabled: isCalculatingTrade && fetchCompleted,
-		queryKey: ['tradeable-species-data'],
-		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon }),
+		queryKey: ['tradeable-species-data', maxLevel],
+		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon, maxLevel }),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});

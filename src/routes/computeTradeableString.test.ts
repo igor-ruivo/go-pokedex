@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
 import { findTradeableSpeciesData, type TradeableLeagueData, type TradeableSpeciesData } from '../workers/compute.worker';
 import {
 	buildEvolutionLineFixture,
@@ -108,7 +109,7 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		expect(data[mon.speciesId].ultra.floorOk).toBe(true);
 	});
 
-	it('a species whose tied-top-1 spread is the classic low-Attack shape at both levels is floor-ineligible', () => {
+	it('a species whose tied-top-1 spread is the classic low-Attack shape at the current level is floor-ineligible', () => {
 		const mon = mockPokemon({ speciesId: 'lowattackmon', dex: 2, baseStats: { atk: 250, def: 100, hp: 100 } });
 		const gamemasterPokemon = buildGamemaster([mon]);
 
@@ -146,6 +147,24 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		const data = findTradeableSpeciesData({ gamemasterPokemon });
 
 		expect(data[tiedmon.speciesId].master.patterns).toContainEqual({ A: 15, D: 15, S: 14 });
+	});
+
+	it('honors a single explicit maxLevel only — never both at once, same rule as findBadIvCarveOuts', () => {
+		// Base HP 5 — the same fixture used across this session's other tests,
+		// empirically confirmed to floor-tie raw IV 14 and 15 at level 51
+		// specifically, with no tie at all at level 50.
+		const level51tied = mockPokemon({
+			speciesId: 'tradelevel51tied',
+			dex: 7,
+			baseStats: { atk: 100, def: 132, hp: 5 },
+		});
+		const gamemasterPokemon = buildGamemaster([level51tied]);
+
+		const atLevel50 = findTradeableSpeciesData({ gamemasterPokemon });
+		expect(atLevel50[level51tied.speciesId].master.patterns).toEqual([]);
+
+		const atLevel51 = findTradeableSpeciesData({ gamemasterPokemon, maxLevel: BEST_BUDDY_LEVEL });
+		expect(atLevel51[level51tied.speciesId].master.patterns).toContainEqual({ A: 15, D: 15, S: 14 });
 	});
 });
 
@@ -381,7 +400,7 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 		expect(result).not.toContain('900');
 	});
 
-	it('Example 2 — good Master rank, uniquely the hundo at BOTH level 50 and 51: suggested, with no carve-out beyond the global !4*', () => {
+	it('Example 2 — good Master rank, uniquely the hundo at the current level: suggested, with no carve-out beyond the global !4*', () => {
 		const golemtron = mockPokemon({ speciesId: 'golemtron', dex: 901 });
 		const gamemasterPokemon = buildGamemaster([golemtron]);
 		const rankLists = [{}, {}, { golemtron: rank(12) }];
@@ -389,8 +408,8 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 		const result = call(gamemasterPokemon, {
 			rankLists,
 			trashMaster: 12,
-			// Empty `patterns` = no tie at either level — nothing beyond the
-			// hundo is ever tied for rank-1, at level 50 or level 51.
+			// Empty `patterns` = no tie at the level being checked — nothing
+			// beyond the hundo is ever tied for rank-1 there.
 			tradeableSpeciesData: { golemtron: { great: leagueData(), ultra: leagueData(), master: leagueData() } },
 		});
 
@@ -398,28 +417,32 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 		expect(result).not.toContain('attack');
 	});
 
-	it('Example 3 — good Master rank, tied ONLY at level 50 (not level 51): the tie still gets carved out, since the carve-out is a union across both levels, not "whichever level currently applies"', () => {
+	it('Example 3 — good Master rank, tied at the default level (50): gets carved out because that IS the level being checked, not because of any cross-level union (there is none anymore)', () => {
 		const tiedmon = mockPokemon({ speciesId: 'tiedmon900', dex: 902, baseStats: { atk: 100, def: 132, hp: 180 } });
 		const gamemasterPokemon = buildGamemaster([tiedmon]);
 		const rankLists = [{}, {}, { tiedmon900: rank(3) }];
 
 		// This is exactly the real, empirically-confirmed shape for these base
 		// stats: a genuine level-50-only HP-floor tie (15/15/14), nothing at
-		// level 51 — `findTradeableSpeciesData` unions both levels regardless.
-		const data = findTradeableSpeciesData({ gamemasterPokemon });
-		expect(data[tiedmon.speciesId].master.patterns).toEqual([{ A: 15, D: 15, S: 14 }]);
+		// level 51. `findTradeableSpeciesData` defaults to level 50, so it
+		// picks this up — calling it with `maxLevel: BEST_BUDDY_LEVEL` instead
+		// would find nothing at all for this species (proven separately below).
+		const dataAtLevel50 = findTradeableSpeciesData({ gamemasterPokemon });
+		expect(dataAtLevel50[tiedmon.speciesId].master.patterns).toEqual([{ A: 15, D: 15, S: 14 }]);
+		const dataAtLevel51 = findTradeableSpeciesData({ gamemasterPokemon, maxLevel: BEST_BUDDY_LEVEL });
+		expect(dataAtLevel51[tiedmon.speciesId].master.patterns).toEqual([]);
 
 		const result = call(gamemasterPokemon, {
 			rankLists,
 			trashMaster: 3,
-			tradeableSpeciesData: data,
+			tradeableSpeciesData: dataAtLevel50,
 		});
 
 		expect(result).toContain(String(tiedmon.dex));
 		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
 	});
 
-	it('Example 4 — good Great League rank, but the ideal needs an Attack IV of 0 at BOTH levels: never admitted via Great at all (floor-5 can never reach it)', () => {
+	it('Example 4 — good Great League rank, but the ideal needs an Attack IV of 0 at the current level: never admitted via Great at all (floor-5 can never reach it)', () => {
 		const bulkshell = mockPokemon({ speciesId: 'bulkshell', dex: 903 });
 		const gamemasterPokemon = buildGamemaster([bulkshell]);
 		const rankLists = [{ bulkshell: rank(4) }, {}, {}];
@@ -484,7 +507,7 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 		}
 	});
 
-	it('Great League: rank and floor-5 are checked on the SAME reachable, both of its tied spreads (one level-50-only, one level-51-only) are unioned into the carve-out, and the result propagates to the whole family', () => {
+	it('Great League: rank and floor-5 are checked on the SAME reachable, and computeTradeableString carves out EVERY pattern that reachable has (however many `findTradeableSpeciesData` found), propagating the result to the whole family', () => {
 		const { gamemasterPokemon, bulbasaur, ivysaur, venusaur } = buildEvolutionLineFixture();
 		const rankLists = [{ venusaur: rank(1) }, {}, {}];
 
@@ -494,11 +517,16 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 				bulbasaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
 				ivysaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
 				venusaur: {
+					// Two distinct hand-picked patterns here purely to prove
+					// `computeTradeableString` carves out ALL of a reachable's
+					// patterns, not just the first — it doesn't know or care
+					// that `findTradeableSpeciesData` only ever returns
+					// patterns from a single requested level these days.
 					great: leagueData({
 						floorOk: true,
 						patterns: [
-							{ A: 15, D: 15, S: 14 }, // hypothetically, the level-50-only tie
-							{ A: 13, D: 15, S: 15 }, // hypothetically, the level-51-only tie
+							{ A: 15, D: 15, S: 14 },
+							{ A: 13, D: 15, S: 15 },
 						],
 					}),
 					ultra: leagueData(),
@@ -513,7 +541,7 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 		}
 	});
 
-	it('Great League: a reachable that clears the rank cutoff but fails floor-5 at BOTH levels never admits the species at all — no dex, no carve-out, nothing', () => {
+	it('Great League: a reachable that clears the rank cutoff but fails floor-5 at the level being checked never admits the species at all — no dex, no carve-out, nothing', () => {
 		const { gamemasterPokemon, venusaur } = buildEvolutionLineFixture();
 		const rankLists = [{ venusaur: rank(1) }, {}, {}];
 

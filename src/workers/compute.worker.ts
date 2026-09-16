@@ -12,8 +12,6 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
 import {
-	BEST_BUDDY_LEVEL,
-	BEST_BUDDY_LEVEL_INDEX,
 	calculateCP,
 	calculateHP,
 	computeBestIVs,
@@ -244,24 +242,22 @@ export interface BadIvCarveOutsInput {
 	 *  wasted work: confirmed against real data, that pass alone is ~87% of
 	 *  an equivalent Master sweep's total cost. */
 	includeShadowPurify?: boolean;
+	/** {@link MAX_LEVEL} (50) or 51 (Best Buddy) — the single
+	 *  level ceiling to evaluate every tied-top-1 spread at. Never both: the
+	 *  caller must pass whichever one the player currently has toggled (see
+	 *  `useBestBuddy`). Default {@link MAX_LEVEL} only for callers that don't
+	 *  care (e.g. a test not exercising this specifically). */
+	maxLevel?: number;
 }
 
-// Deliberately never reads the Best Buddy toggle — this whole mode is
-// meta-agnostic and CP-cap-driven, not a ranking. But it can't just pick one
-// of level 50 / level 51 either: which raw spread is the true top-1 for a
-// given cap sometimes differs between the two (the extra half-level can push
-// a different spread's CP just over, or just under, the cap first), so a
-// carve-out computed at only one level can miss a pattern that's genuinely
-// optimal at the other. Both are always evaluated, unconditionally, and their
-// tied-top-1 patterns unioned — regardless of which level the player actually
-// has toggled, a wild catch that's the true best at EITHER level keeps its
-// protection.
-const LEVEL_50_INDEX = MAX_LEVEL_INDEX;
-const LEVEL_51_INDEX = BEST_BUDDY_LEVEL_INDEX;
-const PROTECTION_LEVELS: ReadonlyArray<{ levelIndex: number; level: number }> = [
-	{ levelIndex: LEVEL_50_INDEX, level: MAX_LEVEL },
-	{ levelIndex: LEVEL_51_INDEX, level: BEST_BUDDY_LEVEL },
-];
+// Always honors whichever single level ceiling (50, or 51 with Best Buddy)
+// the player currently has toggled — every caller passes its own `maxLevel`
+// explicitly, never both at once. This used to unconditionally evaluate BOTH
+// levels and union their tied-top-1 patterns, on the reasoning that the true
+// top-1 spread for a cap can differ between the two; that produced strictly
+// more accurate, but also strictly longer, search strings than a single-level
+// player actually needs — every consumer of this data now trades that
+// extra-level accuracy for a shorter string instead.
 const CP_THRESHOLD_RATIO = 0.9;
 
 const ivBucket = (iv: number) => (iv === 15 ? 4 : Math.ceil(iv / 5));
@@ -316,7 +312,9 @@ export const findBadIvCarveOuts = ({
 	gamemasterPokemon,
 	caps,
 	includeShadowPurify = true,
+	maxLevel = MAX_LEVEL,
 }: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
+	const levelIndex = levelToLevelIndex(maxLevel);
 	const isExcludedCategory = (p: IGamemasterPokemon) => !!p.aliasId || !!p.isMega || !!p.isShadow;
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !isExcludedCategory(p));
 	const domainFilter = (r: IGamemasterPokemon) => !isExcludedCategory(r);
@@ -376,12 +374,10 @@ export const findBadIvCarveOuts = ({
 		for (const cap of caps) {
 			const distinctPatterns = new Map<string, BadIvPattern>();
 			for (const r of reachable) {
-				for (const { levelIndex, level } of PROTECTION_LEVELS) {
-					for (const best of getBestTied(r, cap, levelIndex, level)) {
-						if (isProtectedByBlanket(best)) continue;
-						const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
-						if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
-					}
+				for (const best of getBestTied(r, cap, levelIndex, maxLevel)) {
+					if (isProtectedByBlanket(best)) continue;
+					const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+					if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
 				}
 			}
 			rawPatternKeys.set(`${p.speciesId}|${cap}`, new Set(distinctPatterns.keys()));
@@ -464,18 +460,16 @@ export const findBadIvCarveOuts = ({
 				const alreadyCovered = rawPatternKeys.get(`${nonShadowId}|${cap}`);
 				const distinctPatterns = new Map<string, BadIvPattern>();
 				for (const r of reachable) {
-					for (const { levelIndex } of PROTECTION_LEVELS) {
-						for (const best of getBestPurifiedTied(r, cap, levelIndex)) {
-							// The raw spread the game will actually show for this
-							// catch — evaluated against the blanket rules exactly
-							// like the non-Shadow pass, since a raw hundo or a raw
-							// catch already in the default good shape needs no
-							// Shadow-specific help either.
-							if (isProtectedByBlanket(best)) continue;
-							const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
-							if (alreadyCovered?.has(key)) continue;
-							if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
-						}
+					for (const best of getBestPurifiedTied(r, cap, levelIndex)) {
+						// The raw spread the game will actually show for this
+						// catch — evaluated against the blanket rules exactly
+						// like the non-Shadow pass, since a raw hundo or a raw
+						// catch already in the default good shape needs no
+						// Shadow-specific help either.
+						if (isProtectedByBlanket(best)) continue;
+						const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
+						if (alreadyCovered?.has(key)) continue;
+						if (!distinctPatterns.has(key)) distinctPatterns.set(key, best);
 					}
 				}
 				for (const pattern of distinctPatterns.values()) carveOuts.push({ speciesId: p.speciesId, cap, pattern });
@@ -487,10 +481,10 @@ export const findBadIvCarveOuts = ({
 };
 
 export interface TradeableLeagueData {
-	/** Every tied-for-rank-1 (best stat product) raw IV pattern at this cap —
-	 *  the union across level 50 and level 51, deduped — EXCLUDING the exact
-	 *  hundo (15/15/15). The hundo is always in this tied set (Attack/Defense
-	 *  are never floored so nothing can beat it, only tie it; the universal
+	/** Every tied-for-rank-1 (best stat product) raw IV pattern at this cap,
+	 *  for whichever single level was requested — EXCLUDING the exact hundo
+	 *  (15/15/15). The hundo is always in this tied set (Attack/Defense are
+	 *  never floored so nothing can beat it, only tie it); the universal
 	 *  `!4*` keyword already protects it unconditionally everywhere this data
 	 *  is used, so carving it out again would be pure dead weight. */
 	patterns: Array<BadIvPattern>;
@@ -499,8 +493,8 @@ export interface TradeableLeagueData {
 	 *  a trade never produces below 5, so no trade could ever actually reach
 	 *  that spread). Master has no cap to force that trade-off, so this is
 	 *  always `true` there and callers should simply ignore it for Master.
-	 *  `true` when AT LEAST ONE of level 50 / level 51's tied-rank-1 spread
-	 *  has every stat at 5 or higher. */
+	 *  `true` when the requested level's tied-rank-1 spread has every stat at
+	 *  5 or higher. */
 	floorOk: boolean;
 }
 
@@ -512,14 +506,19 @@ export interface TradeableSpeciesData {
 
 export interface TradeableSpeciesDataInput {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+	/** {@link MAX_LEVEL} (50) or 51 (Best Buddy) — see
+	 *  `BadIvCarveOutsInput.maxLevel`'s own doc comment; same "never both"
+	 *  rule applies here. Default {@link MAX_LEVEL}. */
+	maxLevel?: number;
 }
 
 /**
  * Per non-alias/Mega/Shadow species, everything the "Find Tradeable" tab
  * needs to know about its own tied-for-rank-1 (best stat product) spreads,
- * for Great (1500), Ultra (2500), and the uncapped Master cap — always both
- * level 50 and level 51, regardless of the player's Best Buddy toggle, same
- * as `findBadIvCarveOuts`'s own `PROTECTION_LEVELS` sweep.
+ * for Great (1500), Ultra (2500), and the uncapped Master cap — always at
+ * whichever single level the player currently has toggled, never both (see
+ * `maxLevel`'s own doc comment on why this used to check both and no longer
+ * does).
  *
  * Deliberately NOT a whole-reachable-family walk the way `findBadIvCarveOuts`
  * is — `computeTradeableString` itself does that walk, once per candidate,
@@ -533,15 +532,15 @@ export interface TradeableSpeciesDataInput {
  */
 export const findTradeableSpeciesData = ({
 	gamemasterPokemon,
+	maxLevel = MAX_LEVEL,
 }: TradeableSpeciesDataInput): Record<string, TradeableSpeciesData> => {
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !p.isShadow);
 
 	const analyze = (atk: number, def: number, hp: number, cap: number): TradeableLeagueData => {
 		const patternMap = new Map<string, BadIvPattern>();
 		let floorOk = false;
-		for (const { level } of PROTECTION_LEVELS) {
-			const flat = Object.values(computeBestIVs(atk, def, hp, cap, level)).flat();
-			if (flat.length === 0) continue;
+		const flat = Object.values(computeBestIVs(atk, def, hp, cap, maxLevel)).flat();
+		if (flat.length > 0) {
 			const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
 			for (const entry of flat) {
 				if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
