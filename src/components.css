@@ -3666,9 +3666,9 @@
 		display: flex;
 	}
 }
-/* Find Tradeable's own pair (Master League / Raid Attackers) — always
-   exactly 2 across, on any screen width; there's never a 3rd or 4th peer
-   here to make room for. */
+/* Every CP + Raid (or CP + Simplified mode) pair below a mode's own 4-up row
+   — always exactly 2 across, on any screen width; there's never a 3rd or 4th
+   peer here to make room for. */
 .rvmp .r-md-knobs-grid--2up {
 	grid-template-columns: repeat(2, 1fr);
 	gap: 8px;

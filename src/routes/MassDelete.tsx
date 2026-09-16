@@ -38,7 +38,7 @@ import {
 	writeSessionValue,
 } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from '../utils/pokemon-helper';
-import type { BadIvCarveOut } from '../workers/compute.worker';
+import type { BadIvCarveOut, TradeFloors } from '../workers/compute.worker';
 import { getComputeWorker } from '../workers/compute-client';
 
 const numCfg = (key: ConfigKeys, fallback: number): number => {
@@ -226,12 +226,16 @@ const BAD_IV_HELP_TEXT =
 
 const TRADE_HELP_TEXT =
 	'A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? ' +
-	'Master League has no CP cap, and raids don’t care about one either — so unlike Great/Ultra, a higher IV is ' +
-	'never a downside there, only ever neutral or better. A Best Friend trade floors every stat at 5, and if you’re ' +
-	'lucky enough to land a Lucky Trade, both Pokémon involved get a floor of 12 in every stat instead — extremely ' +
-	'close to perfect. So: any species relevant for Master League or raids (cutoffs below), whose current IVs aren’t ' +
-	'already great, is worth trading — the IVs can improve. A perfect 15/15/15 is always excluded (it has nothing to ' +
-	'gain), and the categories, whitelist, and CP cap below narrow the suggestions further, same as the other tabs.';
+	'A Best Friend trade floors every stat at 5, and if you’re lucky enough to land a Lucky Trade, both Pokémon ' +
+	'involved get a floor of 12 in every stat instead — extremely close to perfect. Master League has no CP cap, ' +
+	'and raids don’t care about one either, so unlike Great/Ultra a higher IV is never a downside there, only ever ' +
+	'neutral or better — any species relevant for Master League or raids (cutoffs below) is worth trading. Great ' +
+	'and Ultra are pickier, since their CP caps mean the single best (top stat product) spread for a species often ' +
+	'needs an Attack IV below 5 — a trade can never land below floor 5, so no trade could ever reach that spread, ' +
+	'making one pointless there. A Great/Ultra-relevant species only makes the list when at least one of its own ' +
+	'tied-for-best spreads needs 5 or more in every stat — only then can a trade actually land on it. A perfect ' +
+	'15/15/15 is always excluded (it has nothing to gain), and the categories, whitelist, and CP cap below narrow ' +
+	'the suggestions further, same as the other tabs.';
 
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
@@ -681,8 +685,11 @@ export const computeTradeableString = (
 	raidDPS: Record<string, Record<string, DPSEntry>>,
 	raidMetric: RaidMetric,
 	gl: GameLanguage,
+	trashGreat: number,
+	trashUltra: number,
 	trashMaster: number,
 	trashRaid: number,
+	tradeFloors: Record<string, TradeFloors>,
 	protect: ProtectionFlags,
 	whitelist: Set<string>,
 	onlyLowIv: boolean,
@@ -725,6 +732,25 @@ export const computeTradeableString = (
 		return !isBadRank(mlLowestRank, trashMaster);
 	};
 
+	// Great/Ultra, unlike Master/raids: clearing the rank cutoff alone isn't
+	// enough, since a trade's guaranteed floor of 5 per stat can only ever
+	// land on that reachable form's own best (rank-1, tie-inclusive) spread
+	// when that spread itself needs 5 or more in every stat — see
+	// `findTradeableFloors` in the compute worker, and this function's own
+	// doc comment above. A reachable form that clears the cutoff but whose
+	// only tied-for-best spreads dip below floor 5 somewhere can never
+	// actually be reached by a trade, so it doesn't qualify `p` on its own.
+	const isGoodForLeague = (p: IGamemasterPokemon, leagueIndex: 0 | 1, trashLimit: number, key: keyof TradeFloors) => {
+		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
+		return reachablePokemon.some((r) => {
+			const rank = rankLists[leagueIndex][r.speciesId]?.rank;
+			if (rank == null || isBadRank(rank, trashLimit)) return false;
+			return !!tradeFloors[r.speciesId]?.[key];
+		});
+	};
+	const isGoodForGreat = (p: IGamemasterPokemon) => isGoodForLeague(p, 0, trashGreat, 'great');
+	const isGoodForUltra = (p: IGamemasterPokemon) => isGoodForLeague(p, 1, trashUltra, 'ultra');
+
 	const tradeableDexes = new Set<number>();
 	const excludedForms: Record<string, Set<IGamemasterPokemon>> = {};
 
@@ -757,7 +783,7 @@ export const computeTradeableString = (
 				excludedForms[p.dex].add(p);
 				return;
 			}
-			if (isGoodForRaids(p) || isGoodForMaster(p)) {
+			if (isGoodForRaids(p) || isGoodForMaster(p) || isGoodForGreat(p) || isGoodForUltra(p)) {
 				tradeableDexes.add(p.dex);
 			}
 		});
@@ -1313,9 +1339,21 @@ const MassDelete = () => {
 	const [isCalculatingTrade, setIsCalculatingTrade] = useState(false);
 	const [tradeResult, setTradeResult] = useState('');
 
+	// Same shape as `badIvCarveOuts` above: purely species-stat-driven (never
+	// depends on `gl`/`cp`/the category toggles/the whitelist/the rank
+	// cutoffs), so it's cached indefinitely and only ever computed once per
+	// session.
+	const { data: tradeFloors } = useQuery({
+		enabled: isCalculatingTrade && fetchCompleted,
+		queryKey: ['trade-gu-floors'],
+		queryFn: () => getComputeWorker().findTradeableFloors({ gamemasterPokemon }),
+		staleTime: Infinity,
+		gcTime: 30 * 60 * 1000,
+	});
+
 	useEffect(() => {
 		setTradeResult('');
-	}, [trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, cp]);
+	}, [trashGreat, trashUltra, trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, cp]);
 
 	useEffect(() => {
 		if (
@@ -1323,7 +1361,8 @@ const MassDelete = () => {
 			!fetchCompleted ||
 			!pvpFetchCompleted ||
 			!raidDPSFetchCompleted ||
-			!movesFetchCompleted
+			!movesFetchCompleted ||
+			!tradeFloors
 		) {
 			return;
 		}
@@ -1335,8 +1374,11 @@ const MassDelete = () => {
 					raidDPS,
 					raidMetric,
 					gl,
+					trashGreat,
+					trashUltra,
 					trashMaster,
 					trashRaid,
+					tradeFloors,
 					protect,
 					whitelistSet,
 					tradeOnlyLowIv,
@@ -1352,11 +1394,14 @@ const MassDelete = () => {
 		pvpFetchCompleted,
 		raidDPSFetchCompleted,
 		movesFetchCompleted,
+		tradeFloors,
 		gamemasterPokemon,
 		rankLists,
 		raidDPS,
 		raidMetric,
 		gl,
+		trashGreat,
+		trashUltra,
 		trashMaster,
 		trashRaid,
 		protect,
@@ -1395,7 +1440,12 @@ const MassDelete = () => {
 		`Top ${trashMaster} Master League`,
 		`Top ${trashRaid} Raid`,
 	].join(' · ');
-	const tradeTopSummary = [`Top ${trashMaster} Master League`, `Top ${trashRaid} Raid`].join(' · ');
+	const tradeTopSummary = [
+		`Top ${trashGreat} Great League`,
+		`Top ${trashUltra} Ultra League`,
+		`Top ${trashMaster} Master League`,
+		`Top ${trashRaid} Raid`,
+	].join(' · ');
 	const panelSummary = isBadIv
 		? `CP ≥ ${cp.toLocaleString()} kept${simplifiedBadIv ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`
 		: isTrade
@@ -1419,7 +1469,7 @@ const MassDelete = () => {
 		!isDefaultProtection ||
 		cp !== 2500 ||
 		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
-		(mode === 'meta' && (trashGreat !== 50 || trashUltra !== 50)) ||
+		((mode === 'meta' || isTrade) && (trashGreat !== 50 || trashUltra !== 50)) ||
 		(isTrade && tradeOnlyLowIv) ||
 		(isBadIv && simplifiedBadIv);
 	const resetPanel = () => {
@@ -1429,7 +1479,7 @@ const MassDelete = () => {
 			setTrashMaster(110);
 			setTrashRaid(5);
 		}
-		if (mode === 'meta') {
+		if (mode === 'meta' || isTrade) {
 			setTrashGreat(50);
 			setTrashUltra(50);
 		}
@@ -1557,9 +1607,26 @@ const MassDelete = () => {
 						{isTrade && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									A species only needs to clear ONE of these two cutoffs to be suggested
+									A species only needs to clear ONE of these four cutoffs to be suggested — Great/Ultra also need one
+									of their own tied-for-best spreads to need 5+ in every stat (see the help text above)
 								</p>
-								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+									<div className='r-md-knob'>
+										<span>
+											<img src='/images/leagues/great.png' alt='' width={20} height={20} />
+											<i className='r-md-knob-full'>Great League</i>
+											<i className='r-md-knob-short'>Great</i>
+										</span>
+										<NumSelect label='Keep top Great League' value={trashGreat} onChange={setTrashGreat} count={2000} />
+									</div>
+									<div className='r-md-knob'>
+										<span>
+											<img src='/images/leagues/ultra.png' alt='' width={20} height={20} />
+											<i className='r-md-knob-full'>Ultra League</i>
+											<i className='r-md-knob-short'>Ultra</i>
+										</span>
+										<NumSelect label='Keep top Ultra League' value={trashUltra} onChange={setTrashUltra} count={2000} />
+									</div>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
@@ -1573,7 +1640,7 @@ const MassDelete = () => {
 											count={2000}
 										/>
 									</div>
-									<div className='r-md-knob'>
+									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>Raid Attackers</i>
@@ -1661,8 +1728,12 @@ const MassDelete = () => {
 							</>
 						)}
 
-						<div className='r-md-knobs-grid'>
-							{isTrade && (
+						{isTrade && (
+							// Same dedicated 2-up grid + `.r-md-raid-cp` twin technique as the
+							// 4-up Great/Ultra/Master/Raid row above — see that row's own
+							// comment. Below 600px, `.r-md-raid-inline` up there hides and this
+							// Raid control (next to CP) takes its place instead.
+							<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
 								<div className='r-md-knob'>
 									<span>Never suggest at or above CP</span>
 									<select
@@ -1678,7 +1749,18 @@ const MassDelete = () => {
 										))}
 									</select>
 								</div>
-							)}
+								<div className='r-md-knob r-md-raid-cp'>
+									<span>
+										<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+										<i className='r-md-knob-full'>Raid Attackers</i>
+										<i className='r-md-knob-short'>Raid</i>
+									</span>
+									<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+								</div>
+							</div>
+						)}
+
+						<div className='r-md-knobs-grid'>
 							{isTrade && (
 								<div className='r-md-knob'>
 									<span>Only very low IVs (10 or less in every stat)</span>

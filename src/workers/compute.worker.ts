@@ -457,7 +457,57 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	return carveOuts;
 };
 
-export const api = { familyIvPercents, bestIvs, raidComparisons, findBadIvCarveOuts };
+export interface TradeFloors {
+	great: boolean;
+	ultra: boolean;
+}
+
+export interface TradeFloorsInput {
+	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+}
+
+/**
+ * Per non-alias/Mega/Shadow species: whether AT LEAST ONE of its tied rank-1
+ * (best stat product) IV spreads for Great (1500) / Ultra (2500) has every
+ * stat at IV 5 or higher — the floor a Best Friend trade always guarantees
+ * (12, on a Lucky Trade). Checked at both level 50 and 51 (Best Buddy), same
+ * as `findBadIvCarveOuts`'s own `PROTECTION_LEVELS` sweep, and unioned: a
+ * species only needs to clear this bar at EITHER level to count, since a
+ * trade's outcome isn't tied to whichever level ceiling the player currently
+ * has toggled. When true, a trade *could* in principle land exactly on that
+ * species' own best possible spread for the league; when false, no trade
+ * ever can (a trade never produces below floor 5 in a stat, but every tied
+ * top spread needs less there), so suggesting one for that league would be
+ * pointless regardless of its current PvP rank — see `computeTradeableString`
+ * in MassDelete.tsx, the sole consumer.
+ */
+export const findTradeableFloors = ({ gamemasterPokemon }: TradeFloorsInput): Record<string, TradeFloors> => {
+	const candidates = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !p.isShadow);
+
+	const meetsFloor = (atk: number, def: number, hp: number, cap: number): boolean =>
+		PROTECTION_LEVELS.some(({ level }) => {
+			const flat = Object.values(computeBestIVs(atk, def, hp, cap, level)).flat();
+			if (flat.length === 0) return false;
+			const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
+			for (const entry of flat) {
+				if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
+				if (entry.IVs.A >= 5 && entry.IVs.D >= 5 && entry.IVs.S >= 5) return true;
+			}
+			return false;
+		});
+
+	const result: Record<string, TradeFloors> = {};
+	for (const p of candidates) {
+		const { atk, def, hp } = p.baseStats;
+		result[p.speciesId] = {
+			great: meetsFloor(atk, def, hp, 1500),
+			ultra: meetsFloor(atk, def, hp, 2500),
+		};
+	}
+	return result;
+};
+
+export const api = { familyIvPercents, bestIvs, raidComparisons, findBadIvCarveOuts, findTradeableFloors };
 export type ComputeApi = typeof api;
 
 // Guarded: this module is also imported directly (not through a real Worker)

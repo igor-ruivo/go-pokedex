@@ -19,8 +19,11 @@ const call = (
 		raidDPS: Record<string, Record<string, ReturnType<typeof mockDPSEntry>>>;
 		raidMetric: 'dps' | 'tdo' | 'edps';
 		gl: GameLanguage;
+		trashGreat: number;
+		trashUltra: number;
 		trashMaster: number;
 		trashRaid: number;
+		tradeFloors: Parameters<typeof computeTradeableString>[9];
 		protect: typeof DEFAULT_PROTECTION;
 		whitelist: Set<string>;
 		onlyLowIv: boolean;
@@ -33,8 +36,11 @@ const call = (
 		overrides.raidDPS ?? {},
 		overrides.raidMetric ?? 'dps',
 		overrides.gl ?? GameLanguage.en,
+		overrides.trashGreat ?? 10,
+		overrides.trashUltra ?? 10,
 		overrides.trashMaster ?? 10,
 		overrides.trashRaid ?? 10,
+		overrides.tradeFloors ?? {},
 		overrides.protect ?? DEFAULT_PROTECTION,
 		overrides.whitelist ?? new Set<string>(),
 		overrides.onlyLowIv ?? false,
@@ -60,6 +66,82 @@ describe('computeTradeableString — Master League relevance', () => {
 		expect(result).toContain('1');
 		expect(result).toContain('2');
 		expect(result).toContain('3');
+	});
+});
+
+describe('computeTradeableString — Great/Ultra League relevance (floor-gated)', () => {
+	it('a Great-ranked species is only included when its own tied-for-best spread needs floor 5+ in every stat', () => {
+		const floormon = mockPokemon({ speciesId: 'floormon', dex: 604 });
+		const nofloormon = mockPokemon({ speciesId: 'nofloormon', dex: 605 });
+		const gamemasterPokemon = buildGamemaster([floormon, nofloormon]);
+		const rankLists = [{ floormon: rank(1), nofloormon: rank(1) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeFloors: { floormon: { great: true, ultra: false }, nofloormon: { great: false, ultra: false } },
+		});
+
+		expect(result).toContain('604');
+		expect(result).not.toContain('605');
+	});
+
+	it('an Ultra-ranked species is only included when its own tied-for-best spread needs floor 5+ in every stat', () => {
+		const floormon = mockPokemon({ speciesId: 'ufloormon', dex: 606 });
+		const nofloormon = mockPokemon({ speciesId: 'unofloormon', dex: 607 });
+		const gamemasterPokemon = buildGamemaster([floormon, nofloormon]);
+		const rankLists = [{}, { ufloormon: rank(1), unofloormon: rank(1) }, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeFloors: { ufloormon: { great: false, ultra: true }, unofloormon: { great: false, ultra: false } },
+		});
+
+		expect(result).toContain('606');
+		expect(result).not.toContain('607');
+	});
+
+	it("a later evolution stage's good rank+floor rescues every earlier stage too (forward reachability)", () => {
+		const { gamemasterPokemon } = buildEvolutionLineFixture();
+		const rankLists = [{ venusaur: rank(1) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeFloors: { venusaur: { great: true, ultra: false } },
+		});
+
+		expect(result).toContain('1');
+		expect(result).toContain('2');
+		expect(result).toContain('3');
+	});
+
+	it("an earlier stage that's independently ranked and floor-eligible on ITS OWN spread is kept even when the later, better-ranked stage's own spread fails the floor", () => {
+		const { gamemasterPokemon } = buildEvolutionLineFixture();
+		// bulbasaur clears the cutoff on its own (rank 8), just not as well as
+		// venusaur (rank 1) — but it's bulbasaur's OWN tied-top spread that needs
+		// floor 5+, not venusaur's, and venusaur's own spread here does NOT.
+		const rankLists = [{ bulbasaur: rank(8), venusaur: rank(1) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			trashGreat: 10,
+			tradeFloors: { bulbasaur: { great: true, ultra: false }, venusaur: { great: false, ultra: false } },
+		});
+
+		expect(result).toContain('1');
+	});
+
+	it('a floor-eligible species outside the rank cutoff is still excluded — the floor alone never qualifies it', () => {
+		const outsidemon = mockPokemon({ speciesId: 'outsidemon', dex: 608 });
+		const gamemasterPokemon = buildGamemaster([outsidemon]);
+		const rankLists = [{ outsidemon: rank(50) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			trashGreat: 10,
+			tradeFloors: { outsidemon: { great: true, ultra: false } },
+		});
+
+		expect(result).not.toContain('608');
 	});
 });
 
