@@ -1210,6 +1210,51 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
 	});
 
+	it('combines with regular Great/Ultra carveOuts correctly when both sources have entries for DIFFERENT species — no cross-contamination', () => {
+		// `deviantmon` (300/100/100, from `buildBadIvFixture`) has a real,
+		// already-verified Ultra (2500) deviation: 11/15/15 — and, being a
+		// high-Attack species, never ties for Master (no HP-floor coincidence
+		// at these particular stats). `tinytied` (10/10/180) is the mirror
+		// image: its Attack/Defense are so low it can never clear the
+		// 90%-of-cap pre-filter for Great or Ultra (confirmed empty below),
+		// but Master has no such pre-filter, so its HP-floor Master tie still
+		// gets found.
+		const { gamemasterPokemon: baseGamemaster, deviantmon } = buildBadIvFixture();
+		const tinytied = mockPokemon({ speciesId: 'combinedtinytied', dex: 960, baseStats: { atk: 10, def: 10, hp: 180 } });
+		const gamemasterPokemon = { ...baseGamemaster, [tinytied.speciesId]: tinytied };
+
+		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+		// Sanity: confirms each source independently found exactly what this
+		// test relies on, before checking how they combine.
+		expect(carveOuts.some((c) => c.speciesId === deviantmon.speciesId && c.cap === 2500)).toBe(true);
+		expect(masterCarveOuts.some((c) => c.speciesId === tinytied.speciesId)).toBe(true);
+		expect(carveOuts.some((c) => c.speciesId === tinytied.speciesId)).toBe(false);
+		expect(masterCarveOuts.some((c) => c.speciesId === deviantmon.speciesId)).toBe(false);
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set(),
+			false,
+			masterCarveOuts
+		);
+
+		// deviantmon's Ultra-only deviation clause (from `carveOuts`) and
+		// tinytied's Master tie clause (from `masterCarveOuts`) both appear,
+		// each on its own dex, with neither source's data leaking onto the
+		// other's species.
+		expect(result).toContain(`!${deviantmon.dex},0-2attack,4attack,0-3defense,0-3hp`);
+		expect(result).toContain(`!${tinytied.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
 	it('applies unconditionally, with no candidate-set filtering — this tab has no "already good, skip it" concept, unlike the other two', () => {
 		// No whitelist, no protection toggle, nothing else marking this
 		// species as special — it still gets the clause purely because its
