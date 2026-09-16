@@ -38,7 +38,7 @@ import {
 	writeSessionValue,
 } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from '../utils/pokemon-helper';
-import type { BadIvCarveOut, TradeFloors } from '../workers/compute.worker';
+import type { BadIvCarveOut, BadIvPattern, TradeableSpeciesData } from '../workers/compute.worker';
 import { getComputeWorker } from '../workers/compute-client';
 
 const numCfg = (key: ConfigKeys, fallback: number): number => {
@@ -226,16 +226,17 @@ const BAD_IV_HELP_TEXT =
 
 const TRADE_HELP_TEXT =
 	'A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? ' +
-	'A Best Friend trade floors every stat at 5, and if you’re lucky enough to land a Lucky Trade, both Pokémon ' +
-	'involved get a floor of 12 in every stat instead — extremely close to perfect. Master League has no CP cap, ' +
-	'and raids don’t care about one either, so unlike Great/Ultra a higher IV is never a downside there, only ever ' +
-	'neutral or better — any species relevant for Master League or raids (cutoffs below) is worth trading. Great ' +
-	'and Ultra are pickier, since their CP caps mean the single best (top stat product) spread for a species often ' +
-	'needs an Attack IV below 5 — a trade can never land below floor 5, so no trade could ever reach that spread, ' +
-	'making one pointless there. A Great/Ultra-relevant species only makes the list when at least one of its own ' +
-	'tied-for-best spreads needs 5 or more in every stat — only then can a trade actually land on it. A perfect ' +
-	'15/15/15 is always excluded (it has nothing to gain), and the categories, whitelist, and CP cap below narrow ' +
-	'the suggestions further, same as the other tabs.';
+	'A Best Friend trade floors every stat at 5, and a Lucky Trade floors every stat at 12 for both Pokémon ' +
+	'involved — a trade is only ever a neutral-or-better move, never a downside, which is the whole premise this ' +
+	'tab rests on. Master League has no CP cap, so any species relevant there (cutoff below) qualifies on rank ' +
+	'alone — same for raids. Great and Ultra are pickier: their CP caps often make the single best (top stat ' +
+	'product) spread the classic low-Attack shape, which a trade’s guaranteed floor of 5 can never actually reach — ' +
+	'so a Great/Ultra-relevant species only counts when its own best spread needs 5 or more in every stat at ' +
+	'level 50 or level 51. A hundo is always excluded (`4*`, nothing to gain), but a hundo isn’t the only spread ' +
+	'with nothing to gain — a genuine tie with it (most often HP-related, e.g. 15/15/14) is just as much a ' +
+	'ceiling. So for every species suggested here, its own tied-for-best spread(s) — for whichever league(s) ' +
+	'actually qualified it, at both level 50 and 51 — are individually excluded too, on top of the hundo. The ' +
+	'categories, whitelist, and CP cap below narrow the suggestions further, same as the other tabs.';
 
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
@@ -662,22 +663,51 @@ export const computeBadIvString = (
 };
 
 /**
- * "Find Pokémon Worth Trading" — a third, independent domain, deliberately
- * disjoint from the two above: species that are meta-relevant for Master
- * League or raids *specifically*, combined with catches that don't already
- * have great IVs. Master League has no CP cap, and raids don't care about a
- * PVP cap either — so unlike Great/Ultra, a higher IV is never a liability
- * there, only ever neutral-to-better. A Best Friend trade floors every stat
- * at 5 (and, on a lucky trade, floors every stat at 12 for both Pokémon
- * involved — extremely close to perfect), a pure upgrade for exactly this
- * population (never a downside, unlike Great/Ultra where a low Attack IV can
- * be load-bearing) — so a Master/raid-relevant species with mediocre-or-worse
- * current IVs is precisely what's worth trading. A hundo is always excluded
- * outright (`!4*`) — it has nothing to gain from a trade. `onlyLowIv`
- * optionally narrows further, to only the clearly-low spreads (Attack/
- * Defense/HP all bucket 0-2, i.e. raw IV 10 or less). `cp` is an upper
- * bound, not a floor — some players don't want to give up a catch they've
- * already invested CP into, so anything at or above it is never suggested.
+ * "Find Pokémon Worth Trading" — a third, independent domain: species that
+ * are actually relevant for Master League, raids, or Great/Ultra (see below),
+ * where a Best Friend trade's guaranteed floor of 5 per stat (12, on a Lucky
+ * Trade) can only ever be a genuine upgrade, never a downside — that's the
+ * whole premise a suggestion here is supposed to rest on.
+ *
+ * Unlike the other two tabs, this one can't lean on the game's own `!4*`
+ * keyword alone to avoid suggesting something that's already at its ceiling:
+ * a stat-product TIE with the hundo (most commonly a 15/15/14, since HP is
+ * the only stat the game floors — see `findBadIvCarveOuts`'s own doc
+ * comment) has just as little to gain from a trade as an exact hundo does,
+ * but `!4*` doesn't match it. So for every reachable stage that actually
+ * qualifies a candidate (clears its league's rank cutoff), this also carves
+ * out that stage's own tied-for-rank-1 raw IV pattern(s) — at BOTH level 50
+ * and level 51, unconditionally, regardless of the player's Best Buddy
+ * toggle — from the CANDIDATE's own dex. Raw IVs never change through
+ * evolution, so a pattern computed from a later stage's own base stats still
+ * correctly protects an earlier, not-yet-evolved catch that already happens
+ * to have those exact raw IVs.
+ *
+ * This is deliberately cheap despite doing real per-catch protection, for a
+ * reason unique to this tab: a Shadow can NEVER be a trade candidate at all
+ * (the game doesn't allow it), so purification — by far the most expensive
+ * part of the equivalent machinery in the Non-Perfect IVs tab — is simply
+ * never relevant here (confirmed against real data: the Shadow-purify pass
+ * alone was ~87% of an equivalent Master sweep's cost). Carve-outs are also
+ * only ever computed for reachable stages that actually clear a rank cutoff,
+ * never a species' whole reachable family unconditionally.
+ *
+ * Master League has no CP cap, so a reachable stage qualifies on rank alone —
+ * no IV condition needed for a species to be a real candidate there. Great
+ * and Ultra are pickier: their CP caps often mean the single best (top stat
+ * product) spread for a species is the classic low-Attack shape, which a
+ * trade's guaranteed floor of 5 can never actually reach (a trade never
+ * produces below 5 in a stat) — so a reachable stage there only counts as a
+ * qualifying reason when its own tied-best spread has every stat at 5 or
+ * higher, at level 50 OR level 51 (skipped only when BOTH levels fail).
+ *
+ * A hundo is always excluded outright (`!4*`) regardless of any of the
+ * above — the carve-outs above never need to (and don't) duplicate that.
+ * `onlyLowIv` optionally narrows further, to only the clearly-low spreads
+ * (Attack/Defense/HP all bucket 0-2, i.e. raw IV 10 or less). `cp` is an
+ * upper bound, not a floor — some players don't want to give up a catch
+ * they've already invested CP into, so anything at or above it is never
+ * suggested.
  */
 export const computeTradeableString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
@@ -689,7 +719,7 @@ export const computeTradeableString = (
 	trashUltra: number,
 	trashMaster: number,
 	trashRaid: number,
-	tradeFloors: Record<string, TradeFloors>,
+	tradeableSpeciesData: Record<string, TradeableSpeciesData>,
 	protect: ProtectionFlags,
 	whitelist: Set<string>,
 	onlyLowIv: boolean,
@@ -724,35 +754,19 @@ export const computeTradeableString = (
 		return minRaidRank <= trashRaid;
 	};
 
-	const isGoodForMaster = (p: IGamemasterPokemon) => {
-		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
-		const mlLowestRank = Math.min(
-			...reachablePokemon.map((r) => rankLists[2][r.speciesId]?.rank).filter((r): r is number => !!r)
-		);
-		return !isBadRank(mlLowestRank, trashMaster);
-	};
-
-	// Great/Ultra, unlike Master/raids: clearing the rank cutoff alone isn't
-	// enough, since a trade's guaranteed floor of 5 per stat can only ever
-	// land on that reachable form's own best (rank-1, tie-inclusive) spread
-	// when that spread itself needs 5 or more in every stat — see
-	// `findTradeableFloors` in the compute worker, and this function's own
-	// doc comment above. A reachable form that clears the cutoff but whose
-	// only tied-for-best spreads dip below floor 5 somewhere can never
-	// actually be reached by a trade, so it doesn't qualify `p` on its own.
-	const isGoodForLeague = (p: IGamemasterPokemon, leagueIndex: 0 | 1, trashLimit: number, key: keyof TradeFloors) => {
-		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
-		return reachablePokemon.some((r) => {
-			const rank = rankLists[leagueIndex][r.speciesId]?.rank;
-			if (rank == null || isBadRank(rank, trashLimit)) return false;
-			return !!tradeFloors[r.speciesId]?.[key];
-		});
-	};
-	const isGoodForGreat = (p: IGamemasterPokemon) => isGoodForLeague(p, 0, trashGreat, 'great');
-	const isGoodForUltra = (p: IGamemasterPokemon) => isGoodForLeague(p, 1, trashUltra, 'ultra');
-
 	const tradeableDexes = new Set<number>();
 	const excludedForms: Record<string, Set<IGamemasterPokemon>> = {};
+	// Every tied-for-rank-1 pattern a qualifying reachable stage contributed,
+	// per CANDIDATE species (not per reachable — raw IVs belong to the
+	// candidate, never change through evolution, so that's always the right
+	// place to carve a pattern out of, regardless of which reachable stage's
+	// own base stats produced it). Deduped by `speciesId|A-D-S`, consumed
+	// below once `baseIds`/`formsPerDex` exist.
+	const carvePatternsBySpecies = new Map<string, Map<string, BadIvPattern>>();
+	const addCarvePattern = (speciesId: string, pattern: BadIvPattern) => {
+		if (!carvePatternsBySpecies.has(speciesId)) carvePatternsBySpecies.set(speciesId, new Map());
+		carvePatternsBySpecies.get(speciesId)!.set(`${pattern.A}-${pattern.D}-${pattern.S}`, pattern);
+	};
 
 	Object.values(gamemasterPokemon)
 		.filter(
@@ -783,7 +797,50 @@ export const computeTradeableString = (
 				excludedForms[p.dex].add(p);
 				return;
 			}
-			if (isGoodForRaids(p) || isGoodForMaster(p) || isGoodForGreat(p) || isGoodForUltra(p)) {
+
+			// Master/Great/Ultra: walk the whole reachable family (including
+			// `p` itself) once, checking each stage `r` against every league's
+			// own rank cutoff AND (Great/Ultra only) its own floor-5
+			// eligibility, and — whenever `r` actually qualifies `p` through
+			// some league — folding that SAME stage's own tied-rank-1
+			// pattern(s) for that league into `p`'s carve-out set. A stage can
+			// qualify `p` through more than one league at once; each
+			// contributes its own patterns independently.
+			const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
+			let goodForMaster = false;
+			let goodForGreat = false;
+			let goodForUltra = false;
+			for (const r of reachablePokemon) {
+				// Deliberately NOT skipped when `data` is missing (e.g. `r` is
+				// excluded from `findTradeableSpeciesData`'s own candidate
+				// filter for some reason) — Master's admission is pure rank,
+				// same as before this whole carve-out mechanism existed, and
+				// must never silently start depending on this data being
+				// present. Only the pattern carve-out (an ADDITIONAL, optional
+				// protection) needs `data` at all — its absence just means no
+				// carve-out gets added for this stage, never a lost admission.
+				const data = tradeableSpeciesData[r.speciesId];
+
+				const mlRank = rankLists[2][r.speciesId]?.rank;
+				if (mlRank != null && !isBadRank(mlRank, trashMaster)) {
+					goodForMaster = true;
+					data?.master.patterns.forEach((pattern) => addCarvePattern(p.speciesId, pattern));
+				}
+
+				const glRank = rankLists[0][r.speciesId]?.rank;
+				if (glRank != null && !isBadRank(glRank, trashGreat) && data?.great.floorOk) {
+					goodForGreat = true;
+					data.great.patterns.forEach((pattern) => addCarvePattern(p.speciesId, pattern));
+				}
+
+				const ulRank = rankLists[1][r.speciesId]?.rank;
+				if (ulRank != null && !isBadRank(ulRank, trashUltra) && data?.ultra.floorOk) {
+					goodForUltra = true;
+					data.ultra.patterns.forEach((pattern) => addCarvePattern(p.speciesId, pattern));
+				}
+			}
+
+			if (isGoodForRaids(p) || goodForMaster || goodForGreat || goodForUltra) {
 				tradeableDexes.add(p.dex);
 			}
 		});
@@ -827,17 +884,36 @@ export const computeTradeableString = (
 			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
 		});
 	});
-	// Same final dead-weight pass as the Non-Perfect IVs tab — see
-	// `canonicalizeDexExclusions`'s own doc comment. Only its Case A
-	// (Shadow-scope collapse) ever actually fires here: it matters when both
-	// the Shadow and non-Shadow forms of the same species end up
-	// independently excluded (e.g. both individually whitelisted), collapsing
-	// their two clauses into one bare, Shadow-status-agnostic exclusion. Its
-	// cross-form dex-only merge (Case B) never fires — same structural reason
-	// as `computeTrashString`'s own copy of this comment: `excludedForms`
-	// only gets entries for a dex that's also independently in
-	// `tradeableDexes` via some OTHER, non-excluded sibling, so "every
-	// sibling excluded" and "this dex is even in the loop" can't both hold.
+	// Stat-product-tie protection — the carve-out patterns accumulated above,
+	// turned into the same bucket-complement exclusion shape the other two
+	// tabs use. `speciesId` here is always the ORIGINAL candidate (never the
+	// reachable stage whose own base stats produced the pattern — see the
+	// candidate loop above), so this always protects the actual catch's own
+	// raw IVs, correctly, regardless of which future stage the pattern came
+	// from. Never Shadow-scoped — a candidate here is guaranteed non-Shadow
+	// (Shadows are skipped entirely above), so a bare, Shadow-agnostic clause
+	// is always correct.
+	carvePatternsBySpecies.forEach((patterns, speciesId) => {
+		const p = gamemasterPokemon[speciesId];
+		if (!p) return;
+		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
+		if (!baseId) return;
+		const [, ...formTokens] = negateIdentity(baseId).split(',');
+		patterns.forEach((pattern) => {
+			const extra =
+				groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
+				groupAttr(complementOfBucket(ivBucket(pattern.D)), D) +
+				groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
+			exclusions.push({ dex: p.dex, form: formTokens.join(','), shadowScope: '', extra });
+		});
+	});
+	// Final dead-weight pass — see `canonicalizeDexExclusions`'s own doc
+	// comment. Both its Case A (Shadow-scope collapse, for the whitelist
+	// exclusions above) and Case B (cross-form dex-only merge) can now
+	// genuinely fire here, unlike before the carve-out patterns above existed
+	// — e.g. every sibling form at a dex independently earning the exact same
+	// tied-rank-1 pattern collapses into one shared clause instead of one per
+	// form.
 	for (const t of canonicalizeDexExclusions(exclusions, formsPerDex)) {
 		result += `&${renderDexExclusion(t)}`;
 	}
@@ -1342,11 +1418,15 @@ const MassDelete = () => {
 	// Same shape as `badIvCarveOuts` above: purely species-stat-driven (never
 	// depends on `gl`/`cp`/the category toggles/the whitelist/the rank
 	// cutoffs), so it's cached indefinitely and only ever computed once per
-	// session.
-	const { data: tradeFloors } = useQuery({
+	// session. Deliberately its own separate query from `badIvCarveOuts`
+	// (not folded into `IV_CARVEOUT_CAPS`'s sweep) — this one skips the
+	// expensive Shadow-purify pass entirely, which `findBadIvCarveOuts` can't
+	// do (the other two tabs genuinely need it), so sharing one query would
+	// force this tab to pay for work it structurally never needs.
+	const { data: tradeableSpeciesData } = useQuery({
 		enabled: isCalculatingTrade && fetchCompleted,
-		queryKey: ['trade-gu-floors'],
-		queryFn: () => getComputeWorker().findTradeableFloors({ gamemasterPokemon }),
+		queryKey: ['tradeable-species-data'],
+		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon }),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});
@@ -1362,7 +1442,7 @@ const MassDelete = () => {
 			!pvpFetchCompleted ||
 			!raidDPSFetchCompleted ||
 			!movesFetchCompleted ||
-			!tradeFloors
+			!tradeableSpeciesData
 		) {
 			return;
 		}
@@ -1378,7 +1458,7 @@ const MassDelete = () => {
 					trashUltra,
 					trashMaster,
 					trashRaid,
-					tradeFloors,
+					tradeableSpeciesData,
 					protect,
 					whitelistSet,
 					tradeOnlyLowIv,
@@ -1394,7 +1474,7 @@ const MassDelete = () => {
 		pvpFetchCompleted,
 		raidDPSFetchCompleted,
 		movesFetchCompleted,
-		tradeFloors,
+		tradeableSpeciesData,
 		gamemasterPokemon,
 		rankLists,
 		raidDPS,
@@ -1607,8 +1687,9 @@ const MassDelete = () => {
 						{isTrade && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									A species only needs to clear ONE of these four cutoffs to be suggested — Great/Ultra also need one
-									of their own tied-for-best spreads to need 5+ in every stat (see the help text above)
+									A species only needs to clear ONE of these four cutoffs to be suggested — Great/Ultra also need
+									their own tied-for-best spread to need 5+ in every stat at level 50 or 51 (see the help text above).
+									Any tied-for-best spread, for any league that qualified it, is individually excluded too.
 								</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>

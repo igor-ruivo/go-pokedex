@@ -457,57 +457,87 @@ export const findBadIvCarveOuts = ({ gamemasterPokemon, caps }: BadIvCarveOutsIn
 	return carveOuts;
 };
 
-export interface TradeFloors {
-	great: boolean;
-	ultra: boolean;
+export interface TradeableLeagueData {
+	/** Every tied-for-rank-1 (best stat product) raw IV pattern at this cap —
+	 *  the union across level 50 and level 51, deduped — EXCLUDING the exact
+	 *  hundo (15/15/15). The hundo is always in this tied set (Attack/Defense
+	 *  are never floored so nothing can beat it, only tie it; the universal
+	 *  `!4*` keyword already protects it unconditionally everywhere this data
+	 *  is used, so carving it out again would be pure dead weight. */
+	patterns: Array<BadIvPattern>;
+	/** Only meaningful for Great/Ultra, where a real CP cap can force the true
+	 *  best spread below floor 5 in some stat (the classic low-Attack shape —
+	 *  a trade never produces below 5, so no trade could ever actually reach
+	 *  that spread). Master has no cap to force that trade-off, so this is
+	 *  always `true` there and callers should simply ignore it for Master.
+	 *  `true` when AT LEAST ONE of level 50 / level 51's tied-rank-1 spread
+	 *  has every stat at 5 or higher. */
+	floorOk: boolean;
 }
 
-export interface TradeFloorsInput {
+export interface TradeableSpeciesData {
+	great: TradeableLeagueData;
+	ultra: TradeableLeagueData;
+	master: TradeableLeagueData;
+}
+
+export interface TradeableSpeciesDataInput {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 }
 
 /**
- * Per non-alias/Mega/Shadow species: whether AT LEAST ONE of its tied rank-1
- * (best stat product) IV spreads for Great (1500) / Ultra (2500) has every
- * stat at IV 5 or higher — the floor a Best Friend trade always guarantees
- * (12, on a Lucky Trade). Checked at both level 50 and 51 (Best Buddy), same
- * as `findBadIvCarveOuts`'s own `PROTECTION_LEVELS` sweep, and unioned: a
- * species only needs to clear this bar at EITHER level to count, since a
- * trade's outcome isn't tied to whichever level ceiling the player currently
- * has toggled. When true, a trade *could* in principle land exactly on that
- * species' own best possible spread for the league; when false, no trade
- * ever can (a trade never produces below floor 5 in a stat, but every tied
- * top spread needs less there), so suggesting one for that league would be
- * pointless regardless of its current PvP rank — see `computeTradeableString`
- * in MassDelete.tsx, the sole consumer.
+ * Per non-alias/Mega/Shadow species, everything the "Find Tradeable" tab
+ * needs to know about its own tied-for-rank-1 (best stat product) spreads,
+ * for Great (1500), Ultra (2500), and the uncapped Master cap — always both
+ * level 50 and level 51, regardless of the player's Best Buddy toggle, same
+ * as `findBadIvCarveOuts`'s own `PROTECTION_LEVELS` sweep.
+ *
+ * Deliberately NOT a whole-reachable-family walk the way `findBadIvCarveOuts`
+ * is — `computeTradeableString` itself does that walk, once per candidate,
+ * pulling this per-species data for each reachable stage it visits; walking
+ * the family here too would just duplicate that work. Also deliberately
+ * skips the Shadow-purify pass `findBadIvCarveOuts` needs — a Shadow can
+ * never be a trade candidate at all (the game doesn't allow it), so
+ * purification is simply never relevant here, which is most of why this
+ * stays cheap despite covering all three PvP leagues (see
+ * `computeTradeableString`'s own doc comment for the measured comparison).
  */
-export const findTradeableFloors = ({ gamemasterPokemon }: TradeFloorsInput): Record<string, TradeFloors> => {
+export const findTradeableSpeciesData = ({
+	gamemasterPokemon,
+}: TradeableSpeciesDataInput): Record<string, TradeableSpeciesData> => {
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !p.isShadow);
 
-	const meetsFloor = (atk: number, def: number, hp: number, cap: number): boolean =>
-		PROTECTION_LEVELS.some(({ level }) => {
+	const analyze = (atk: number, def: number, hp: number, cap: number): TradeableLeagueData => {
+		const patternMap = new Map<string, BadIvPattern>();
+		let floorOk = false;
+		for (const { level } of PROTECTION_LEVELS) {
 			const flat = Object.values(computeBestIVs(atk, def, hp, cap, level)).flat();
-			if (flat.length === 0) return false;
+			if (flat.length === 0) continue;
 			const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
 			for (const entry of flat) {
 				if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
-				if (entry.IVs.A >= 5 && entry.IVs.D >= 5 && entry.IVs.S >= 5) return true;
+				const pattern: BadIvPattern = { A: entry.IVs.A, D: entry.IVs.D, S: entry.IVs.S };
+				const key = `${pattern.A}-${pattern.D}-${pattern.S}`;
+				if (!patternMap.has(key)) patternMap.set(key, pattern);
+				if (pattern.A >= 5 && pattern.D >= 5 && pattern.S >= 5) floorOk = true;
 			}
-			return false;
-		});
+		}
+		return { patterns: Array.from(patternMap.values()).filter((p) => !isExactHundo(p)), floorOk };
+	};
 
-	const result: Record<string, TradeFloors> = {};
+	const result: Record<string, TradeableSpeciesData> = {};
 	for (const p of candidates) {
 		const { atk, def, hp } = p.baseStats;
 		result[p.speciesId] = {
-			great: meetsFloor(atk, def, hp, 1500),
-			ultra: meetsFloor(atk, def, hp, 2500),
+			great: analyze(atk, def, hp, 1500),
+			ultra: analyze(atk, def, hp, 2500),
+			master: analyze(atk, def, hp, Number.MAX_VALUE),
 		};
 	}
 	return result;
 };
 
-export const api = { familyIvPercents, bestIvs, raidComparisons, findBadIvCarveOuts, findTradeableFloors };
+export const api = { familyIvPercents, bestIvs, raidComparisons, findBadIvCarveOuts, findTradeableSpeciesData };
 export type ComputeApi = typeof api;
 
 // Guarded: this module is also imported directly (not through a real Worker)

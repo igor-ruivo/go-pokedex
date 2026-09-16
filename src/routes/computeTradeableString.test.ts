@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { findTradeableSpeciesData, type TradeableLeagueData, type TradeableSpeciesData } from '../workers/compute.worker';
 import {
 	buildEvolutionLineFixture,
 	buildGamemaster,
@@ -11,6 +12,22 @@ import {
 	rank,
 } from './mass-delete-fixtures';
 import { computeTradeableString, DEFAULT_PROTECTION } from './MassDelete';
+
+const leagueData = (overrides: Partial<TradeableLeagueData> = {}): TradeableLeagueData => ({
+	patterns: [],
+	floorOk: false,
+	...overrides,
+});
+
+/** A species that's floor-eligible for Great/Ultra but has no tied patterns
+ *  to carve out — the common shape for tests that only care about admission,
+ *  not the carve-out mechanism itself. */
+const floorEligible = (overrides: Partial<TradeableSpeciesData> = {}): TradeableSpeciesData => ({
+	great: leagueData({ floorOk: true }),
+	ultra: leagueData({ floorOk: true }),
+	master: leagueData(),
+	...overrides,
+});
 
 const call = (
 	gamemasterPokemon: Parameters<typeof computeTradeableString>[0],
@@ -23,7 +40,7 @@ const call = (
 		trashUltra: number;
 		trashMaster: number;
 		trashRaid: number;
-		tradeFloors: Parameters<typeof computeTradeableString>[9];
+		tradeableSpeciesData: Parameters<typeof computeTradeableString>[9];
 		protect: typeof DEFAULT_PROTECTION;
 		whitelist: Set<string>;
 		onlyLowIv: boolean;
@@ -40,14 +57,14 @@ const call = (
 		overrides.trashUltra ?? 10,
 		overrides.trashMaster ?? 10,
 		overrides.trashRaid ?? 10,
-		overrides.tradeFloors ?? {},
+		overrides.tradeableSpeciesData ?? {},
 		overrides.protect ?? DEFAULT_PROTECTION,
 		overrides.whitelist ?? new Set<string>(),
 		overrides.onlyLowIv ?? false,
 		overrides.cp ?? 2500
 	);
 
-describe('computeTradeableString — Master League relevance', () => {
+describe('computeTradeableString — Master League relevance (pure rank, no IV condition on admission)', () => {
 	it('a Master-ranked species is included, an unranked one is not', () => {
 		const goodmon = mockPokemon({ speciesId: 'goodmon', dex: 601 });
 		const badmon = mockPokemon({ speciesId: 'badmon', dex: 602 });
@@ -67,9 +84,72 @@ describe('computeTradeableString — Master League relevance', () => {
 		expect(result).toContain('2');
 		expect(result).toContain('3');
 	});
+
+	it('admission never depends on `tradeableSpeciesData` having an entry for the ranked species — pure rank, always', () => {
+		const goodmon = mockPokemon({ speciesId: 'nodata', dex: 609 });
+		const gamemasterPokemon = buildGamemaster([goodmon]);
+
+		// Deliberately empty — simulates the data still loading, or the
+		// species missing from it for any reason.
+		const result = call(gamemasterPokemon, { rankLists: [{}, {}, { nodata: rank(1) }], tradeableSpeciesData: {} });
+
+		expect(result).toContain('609');
+	});
 });
 
-describe('computeTradeableString — Great/Ultra League relevance (floor-gated)', () => {
+describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis', () => {
+	it('a species whose tied-top-1 spread needs 5+ everywhere at some level is floor-eligible for that league', () => {
+		const mon = mockPokemon({ speciesId: 'highbucketmon', dex: 1, baseStats: { atk: 120, def: 120, hp: 120 } });
+		const gamemasterPokemon = buildGamemaster([mon]);
+
+		const data = findTradeableSpeciesData({ gamemasterPokemon });
+
+		expect(data[mon.speciesId].great.floorOk).toBe(true);
+		expect(data[mon.speciesId].ultra.floorOk).toBe(true);
+	});
+
+	it('a species whose tied-top-1 spread is the classic low-Attack shape at both levels is floor-ineligible', () => {
+		const mon = mockPokemon({ speciesId: 'lowattackmon', dex: 2, baseStats: { atk: 250, def: 100, hp: 100 } });
+		const gamemasterPokemon = buildGamemaster([mon]);
+
+		const data = findTradeableSpeciesData({ gamemasterPokemon });
+
+		expect(data[mon.speciesId].great.floorOk).toBe(false);
+	});
+
+	it('a Shadow form is never in the result at all — never a trade candidate to begin with', () => {
+		const shadow = mockPokemon({ speciesId: 'shadowfloor_shadow', dex: 4, isShadow: true });
+		const gamemasterPokemon = buildGamemaster([shadow]);
+
+		const data = findTradeableSpeciesData({ gamemasterPokemon });
+
+		expect(data[shadow.speciesId]).toBeUndefined();
+	});
+
+	it('the exact hundo is never included in `patterns` for any league — `!4*` already covers it unconditionally', () => {
+		const mon = mockPokemon({ speciesId: 'anymon', dex: 5, baseStats: { atk: 150, def: 150, hp: 150 } });
+		const gamemasterPokemon = buildGamemaster([mon]);
+
+		const data = findTradeableSpeciesData({ gamemasterPokemon });
+
+		for (const league of ['great', 'ultra', 'master'] as const) {
+			expect(data[mon.speciesId][league].patterns.some((p) => p.A === 15 && p.D === 15 && p.S === 15)).toBe(false);
+		}
+	});
+
+	it('a genuine stat-product tie (15/15/14, from HP flooring) shows up as a Master pattern to carve out', () => {
+		// Same base-stat fixture used elsewhere this session to reproduce a
+		// real, confirmed HP-floor tie at level 50 for the uncapped cap.
+		const tiedmon = mockPokemon({ speciesId: 'tiedmon', dex: 6, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([tiedmon]);
+
+		const data = findTradeableSpeciesData({ gamemasterPokemon });
+
+		expect(data[tiedmon.speciesId].master.patterns).toContainEqual({ A: 15, D: 15, S: 14 });
+	});
+});
+
+describe('computeTradeableString — Great/Ultra League relevance (rank + floor-5 admission)', () => {
 	it('a Great-ranked species is only included when its own tied-for-best spread needs floor 5+ in every stat', () => {
 		const floormon = mockPokemon({ speciesId: 'floormon', dex: 604 });
 		const nofloormon = mockPokemon({ speciesId: 'nofloormon', dex: 605 });
@@ -78,7 +158,10 @@ describe('computeTradeableString — Great/Ultra League relevance (floor-gated)'
 
 		const result = call(gamemasterPokemon, {
 			rankLists,
-			tradeFloors: { floormon: { great: true, ultra: false }, nofloormon: { great: false, ultra: false } },
+			tradeableSpeciesData: {
+				floormon: floorEligible({ great: leagueData({ floorOk: true }) }),
+				nofloormon: floorEligible({ great: leagueData({ floorOk: false }), ultra: leagueData({ floorOk: false }) }),
+			},
 		});
 
 		expect(result).toContain('604');
@@ -93,7 +176,10 @@ describe('computeTradeableString — Great/Ultra League relevance (floor-gated)'
 
 		const result = call(gamemasterPokemon, {
 			rankLists,
-			tradeFloors: { ufloormon: { great: false, ultra: true }, unofloormon: { great: false, ultra: false } },
+			tradeableSpeciesData: {
+				ufloormon: floorEligible({ great: leagueData({ floorOk: false }), ultra: leagueData({ floorOk: true }) }),
+				unofloormon: floorEligible({ great: leagueData({ floorOk: false }), ultra: leagueData({ floorOk: false }) }),
+			},
 		});
 
 		expect(result).toContain('606');
@@ -106,7 +192,7 @@ describe('computeTradeableString — Great/Ultra League relevance (floor-gated)'
 
 		const result = call(gamemasterPokemon, {
 			rankLists,
-			tradeFloors: { venusaur: { great: true, ultra: false } },
+			tradeableSpeciesData: { venusaur: floorEligible() },
 		});
 
 		expect(result).toContain('1');
@@ -117,14 +203,17 @@ describe('computeTradeableString — Great/Ultra League relevance (floor-gated)'
 	it("an earlier stage that's independently ranked and floor-eligible on ITS OWN spread is kept even when the later, better-ranked stage's own spread fails the floor", () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
 		// bulbasaur clears the cutoff on its own (rank 8), just not as well as
-		// venusaur (rank 1) — but it's bulbasaur's OWN tied-top spread that needs
-		// floor 5+, not venusaur's, and venusaur's own spread here does NOT.
+		// venusaur (rank 1) — but it's bulbasaur's OWN spread that's floor-
+		// eligible, not venusaur's, and venusaur's own spread here is not.
 		const rankLists = [{ bulbasaur: rank(8), venusaur: rank(1) }, {}, {}];
 
 		const result = call(gamemasterPokemon, {
 			rankLists,
 			trashGreat: 10,
-			tradeFloors: { bulbasaur: { great: true, ultra: false }, venusaur: { great: false, ultra: false } },
+			tradeableSpeciesData: {
+				bulbasaur: floorEligible(),
+				venusaur: floorEligible({ great: leagueData({ floorOk: false }), ultra: leagueData({ floorOk: false }) }),
+			},
 		});
 
 		expect(result).toContain('1');
@@ -138,10 +227,304 @@ describe('computeTradeableString — Great/Ultra League relevance (floor-gated)'
 		const result = call(gamemasterPokemon, {
 			rankLists,
 			trashGreat: 10,
-			tradeFloors: { outsidemon: { great: true, ultra: false } },
+			tradeableSpeciesData: { outsidemon: floorEligible() },
 		});
 
 		expect(result).not.toContain('608');
+	});
+
+	it('a ranked species with no `tradeableSpeciesData` entry at all is never admitted via Great/Ultra — floor eligibility can never be assumed', () => {
+		const nodata = mockPokemon({ speciesId: 'greatnodata', dex: 610 });
+		const gamemasterPokemon = buildGamemaster([nodata]);
+		const rankLists = [{ greatnodata: rank(1) }, {}, {}];
+
+		const result = call(gamemasterPokemon, { rankLists, tradeableSpeciesData: {} });
+
+		expect(result).not.toContain('610');
+	});
+});
+
+describe('computeTradeableString — stat-product tie carve-outs (Great/Ultra/Master)', () => {
+	it('a Master-qualified species gets a protective clause for its own tied-rank-1 Master pattern — !4* alone is not enough', () => {
+		const tiedmon = mockPokemon({ speciesId: 'mastertied', dex: 700, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([tiedmon]);
+		const rankLists = [{}, {}, { mastertied: rank(1) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				mastertied: {
+					great: leagueData(),
+					ultra: leagueData(),
+					master: leagueData({ patterns: [{ A: 15, D: 15, S: 14 }] }),
+				},
+			},
+		});
+
+		expect(result).toContain(String(tiedmon.dex));
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('a Great-qualified species gets a protective clause for its own tied-rank-1 Great pattern', () => {
+		const tiedmon = mockPokemon({ speciesId: 'greattied', dex: 701, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([tiedmon]);
+		const rankLists = [{ greattied: rank(1) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				greattied: {
+					great: leagueData({ floorOk: true, patterns: [{ A: 15, D: 15, S: 14 }] }),
+					ultra: leagueData(),
+					master: leagueData(),
+				},
+			},
+		});
+
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('a reachable that qualifies via BOTH Master and Great contributes BOTH leagues’ own patterns, independently', () => {
+		const tiedmon = mockPokemon({ speciesId: 'bothtied', dex: 702, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([tiedmon]);
+		const rankLists = [{ bothtied: rank(1) }, {}, { bothtied: rank(1) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				bothtied: {
+					great: leagueData({ floorOk: true, patterns: [{ A: 13, D: 15, S: 15 }] }),
+					ultra: leagueData(),
+					master: leagueData({ patterns: [{ A: 15, D: 15, S: 14 }] }),
+				},
+			},
+		});
+
+		expect(result).toContain(`&!${tiedmon.dex},0-2attack,4attack,0-3defense,0-3hp`);
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('a pattern is scoped to the league that actually admitted that reachable — a species admitted PURELY via Master does NOT carve out a Great pattern it has, since Great never independently cleared its own cutoff for that reachable', () => {
+		const tiedmon = mockPokemon({ speciesId: 'masteronlytied', dex: 705, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([tiedmon]);
+		// Only Master is ranked — Great has no rank entry at all here, so this
+		// reachable never independently qualifies via Great, even though its
+		// own Great pattern is populated in the data below.
+		const rankLists = [{}, {}, { masteronlytied: rank(1) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				masteronlytied: {
+					great: leagueData({ floorOk: true, patterns: [{ A: 13, D: 15, S: 15 }] }),
+					ultra: leagueData(),
+					master: leagueData({ patterns: [{ A: 15, D: 15, S: 14 }] }),
+				},
+			},
+		});
+
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+		expect(result).not.toContain('0-2attack,4attack');
+	});
+
+	it('a species with no tied patterns at all (the common case) gets no carve-out clause — just the plain dex, same as before this mechanism existed', () => {
+		const plainmon = mockPokemon({ speciesId: 'plainmon', dex: 703 });
+		const gamemasterPokemon = buildGamemaster([plainmon]);
+		const rankLists = [{}, {}, { plainmon: rank(1) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: { plainmon: floorEligible() },
+		});
+
+		expect(result).toContain('703');
+		expect(result).not.toContain('attack');
+		expect(result).not.toContain('defense');
+	});
+
+	it('a reachable stage that never actually qualified the species contributes no carve-out pattern, even if it has one available', () => {
+		const { gamemasterPokemon, bulbasaur, ivysaur } = buildEvolutionLineFixture();
+		// Only bulbasaur is ranked; ivysaur is not ranked anywhere, so it never
+		// qualifies bulbasaur through any league — its own tied pattern (even
+		// though populated in the data below) must never leak into the output.
+		const rankLists = [{}, {}, { bulbasaur: rank(1) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				bulbasaur: floorEligible(),
+				ivysaur: {
+					great: leagueData(),
+					ultra: leagueData(),
+					master: leagueData({ patterns: [{ A: 2, D: 2, S: 2 }] }),
+				},
+			},
+		});
+
+		expect(bulbasaur.dex).toBe(1);
+		expect(ivysaur.dex).toBe(2);
+		expect(result).not.toContain('0-1attack');
+	});
+});
+
+// The worked examples from conversation, pinned down permanently. Each name
+// below cross-references the plain-English example it formalizes, so a
+// future change that breaks one of these breaks the exact scenario that was
+// reasoned through, not just an abstract property.
+describe('computeTradeableString — worked examples (simple to specific)', () => {
+	it('Example 1 — clearly irrelevant everywhere: unranked in every league, no raid relevance, never suggested at all', () => {
+		const ratbat = mockPokemon({ speciesId: 'ratbat', dex: 900 });
+		const gamemasterPokemon = buildGamemaster([ratbat]);
+
+		const result = call(gamemasterPokemon, { rankLists: [{}, {}, {}] });
+
+		expect(result).not.toContain('900');
+	});
+
+	it('Example 2 — good Master rank, uniquely the hundo at BOTH level 50 and 51: suggested, with no carve-out beyond the global !4*', () => {
+		const golemtron = mockPokemon({ speciesId: 'golemtron', dex: 901 });
+		const gamemasterPokemon = buildGamemaster([golemtron]);
+		const rankLists = [{}, {}, { golemtron: rank(12) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			trashMaster: 12,
+			// Empty `patterns` = no tie at either level — nothing beyond the
+			// hundo is ever tied for rank-1, at level 50 or level 51.
+			tradeableSpeciesData: { golemtron: { great: leagueData(), ultra: leagueData(), master: leagueData() } },
+		});
+
+		expect(result).toContain('901');
+		expect(result).not.toContain('attack');
+	});
+
+	it('Example 3 — good Master rank, tied ONLY at level 50 (not level 51): the tie still gets carved out, since the carve-out is a union across both levels, not "whichever level currently applies"', () => {
+		const tiedmon = mockPokemon({ speciesId: 'tiedmon900', dex: 902, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([tiedmon]);
+		const rankLists = [{}, {}, { tiedmon900: rank(3) }];
+
+		// This is exactly the real, empirically-confirmed shape for these base
+		// stats: a genuine level-50-only HP-floor tie (15/15/14), nothing at
+		// level 51 — `findTradeableSpeciesData` unions both levels regardless.
+		const data = findTradeableSpeciesData({ gamemasterPokemon });
+		expect(data[tiedmon.speciesId].master.patterns).toEqual([{ A: 15, D: 15, S: 14 }]);
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			trashMaster: 3,
+			tradeableSpeciesData: data,
+		});
+
+		expect(result).toContain(String(tiedmon.dex));
+		expect(result).toContain(`&!${tiedmon.dex},0-3attack,0-3defense,0-2hp,4hp`);
+	});
+
+	it('Example 4 — good Great League rank, but the ideal needs an Attack IV of 0 at BOTH levels: never admitted via Great at all (floor-5 can never reach it)', () => {
+		const bulkshell = mockPokemon({ speciesId: 'bulkshell', dex: 903 });
+		const gamemasterPokemon = buildGamemaster([bulkshell]);
+		const rankLists = [{ bulkshell: rank(4) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			trashGreat: 4,
+			tradeableSpeciesData: {
+				bulkshell: { great: leagueData({ floorOk: false }), ultra: leagueData(), master: leagueData() },
+			},
+		});
+
+		expect(result).not.toContain('903');
+	});
+
+	it('Example 5 — cross-league scoping: Master-ranked (and Master-tied) but completely unranked in Great, despite ALSO having a Great tie: the species is suggested, its Master tie is protected, but its Great tie is NOT (Great never independently admitted it)', () => {
+		const duotype = mockPokemon({ speciesId: 'duotype', dex: 904, baseStats: { atk: 100, def: 132, hp: 180 } });
+		const gamemasterPokemon = buildGamemaster([duotype]);
+		// No Great rank entry at all — Great plays no role in admission.
+		const rankLists = [{}, {}, { duotype: rank(1) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				duotype: {
+					// Populated purely as a mathematical property of its base
+					// stats — Great never gets a chance to consult this, since
+					// duotype never clears Great's own rank cutoff.
+					great: leagueData({ floorOk: true, patterns: [{ A: 13, D: 15, S: 15 }] }),
+					ultra: leagueData(),
+					master: leagueData({ patterns: [{ A: 15, D: 15, S: 14 }] }),
+				},
+			},
+		});
+
+		expect(result).toContain(String(duotype.dex));
+		expect(result).toContain(`&!${duotype.dex},0-3attack,0-3defense,0-2hp,4hp`); // Master tie: protected
+		expect(result).not.toContain('0-2attack,4attack'); // Great tie: NOT protected
+	});
+
+	it('Master carve-out propagates to every earlier stage of the family, not just the reachable that actually qualified — verified end to end, not just by rank', () => {
+		const { gamemasterPokemon, bulbasaur, ivysaur, venusaur } = buildEvolutionLineFixture();
+		// Only venusaur is Master-ranked, and only venusaur's own base stats
+		// produce the tied pattern — bulbasaur/ivysaur contribute nothing of
+		// their own.
+		const rankLists = [{}, {}, { venusaur: rank(1) }];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				bulbasaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
+				ivysaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
+				venusaur: { great: leagueData(), ultra: leagueData(), master: leagueData({ patterns: [{ A: 10, D: 15, S: 15 }] }) },
+			},
+		});
+
+		// Every one of the three dexes independently carries its own copy of
+		// venusaur's own bucket pattern (bucket of A=10 is 2, complement
+		// {0,1,3,4}; D/S=15 is bucket 4, complement {0,1,2,3}).
+		for (const dex of [bulbasaur.dex, ivysaur.dex, venusaur.dex]) {
+			expect(result).toContain(`&!${dex},0-1attack,3-4attack,0-3defense,0-3hp`);
+		}
+	});
+
+	it('Great League: rank and floor-5 are checked on the SAME reachable, both of its tied spreads (one level-50-only, one level-51-only) are unioned into the carve-out, and the result propagates to the whole family', () => {
+		const { gamemasterPokemon, bulbasaur, ivysaur, venusaur } = buildEvolutionLineFixture();
+		const rankLists = [{ venusaur: rank(1) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				bulbasaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
+				ivysaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
+				venusaur: {
+					great: leagueData({
+						floorOk: true,
+						patterns: [
+							{ A: 15, D: 15, S: 14 }, // hypothetically, the level-50-only tie
+							{ A: 13, D: 15, S: 15 }, // hypothetically, the level-51-only tie
+						],
+					}),
+					ultra: leagueData(),
+					master: leagueData(),
+				},
+			},
+		});
+
+		for (const dex of [bulbasaur.dex, ivysaur.dex, venusaur.dex]) {
+			expect(result).toContain(`&!${dex},0-3attack,0-3defense,0-2hp,4hp`);
+			expect(result).toContain(`&!${dex},0-2attack,4attack,0-3defense,0-3hp`);
+		}
+	});
+
+	it('Great League: a reachable that clears the rank cutoff but fails floor-5 at BOTH levels never admits the species at all — no dex, no carve-out, nothing', () => {
+		const { gamemasterPokemon, venusaur } = buildEvolutionLineFixture();
+		const rankLists = [{ venusaur: rank(1) }, {}, {}];
+
+		const result = call(gamemasterPokemon, {
+			rankLists,
+			tradeableSpeciesData: {
+				venusaur: { great: leagueData({ floorOk: false, patterns: [{ A: 0, D: 15, S: 15 }] }), ultra: leagueData(), master: leagueData() },
+			},
+		});
+
+		expect(result).not.toContain(String(venusaur.dex));
 	});
 });
 
@@ -154,6 +537,26 @@ describe('computeTradeableString — raid relevance', () => {
 		const result = call(gamemasterPokemon, { raidDPS, raidMetric: 'dps', trashRaid: 5 });
 
 		expect(result).toContain('603');
+	});
+
+	it('raid admission never carves out any pattern — raid ranking is not stat-product-sensitive', () => {
+		const raidmon = mockPokemon({ speciesId: 'raidtied', dex: 704, types: [mockType('fire')] });
+		const gamemasterPokemon = buildGamemaster([raidmon]);
+		const raidDPS = { fire: { raidtied: mockDPSEntry({ speciesId: 'raidtied', dpsRank: 1, tdoRank: 1, edpsRank: 1 }) } };
+
+		// Populated Master pattern, but no Master rank at all — raid alone
+		// admits it, so no carve-out should appear.
+		const result = call(gamemasterPokemon, {
+			raidDPS,
+			raidMetric: 'dps',
+			trashRaid: 5,
+			tradeableSpeciesData: {
+				raidtied: { great: leagueData(), ultra: leagueData(), master: leagueData({ patterns: [{ A: 1, D: 1, S: 1 }] }) },
+			},
+		});
+
+		expect(result).toContain('704');
+		expect(result).not.toContain('attack');
 	});
 });
 
