@@ -3666,6 +3666,24 @@
 		display: flex;
 	}
 }
+/* Non-meta's own Raid Attackers narrow-screen duplicate now lives in its own
+   row (CP is paired with Simplified mode instead — see that row's own JSX
+   comment) — hidden whenever `.r-md-raid-inline` above is visible (>=600px),
+   shown as its own compact row only below that, same breakpoint as
+   `.r-md-raid-cp` itself. Not `.r-md-knobs-grid` (that class's own
+   `padding-bottom` would otherwise leave a stray empty gap here whenever this
+   row's only child is hidden). */
+.rvmp .r-md-raid-cp-row {
+	display: none;
+}
+@media (max-width: 600px) {
+	.rvmp .r-md-raid-cp-row {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 12px 14px;
+		padding-bottom: 12px;
+	}
+}
 /* Every CP + Raid (or CP + Simplified mode) pair below a mode's own 4-up row
    — always exactly 2 across, on any screen width; there's never a 3rd or 4th
    peer here to make room for. */

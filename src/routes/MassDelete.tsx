@@ -315,6 +315,12 @@ export interface ComputeArgs {
 	protect: ProtectionFlags;
 	/** Manually-protected species — never evaluated, always excluded outright. */
 	whitelist: Set<string>;
+	/** Default `false`. Set `true` to skip `masterCarveOuts` entirely — a
+	 *  genuinely deletable species then relies solely on the unconditional,
+	 *  global `!4*` exclusion for Master League (the exact hundo only), same
+	 *  as `computeBadIvString`'s own "Simplified mode" trades some accuracy
+	 *  for a shorter string. */
+	simplified?: boolean;
 }
 
 /**
@@ -362,6 +368,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 		masterCarveOuts,
 		protect,
 		whitelist,
+		simplified = false,
 	} = a;
 
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
@@ -492,17 +499,24 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	// false`, so it never contains a Shadow-suffixed speciesId in the first
 	// place; Shadow catches already have their own, separate, always-on
 	// protection (`shadowPurifyHundoGuard` below).
-	masterCarveOuts.forEach(({ speciesId, pattern }) => {
-		if (!deletableSpeciesIds.has(speciesId)) return;
-		const p = gamemasterPokemon[speciesId];
-		if (!p) return;
-		const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, p.speciesId)).split(',');
-		const extra =
-			groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
-			groupAttr(complementOfBucket(ivBucket(pattern.D)), D) +
-			groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
-		exclusions.push({ dex: p.dex, form: formTokens.join(','), shadowScope: '', extra });
-	});
+	//
+	// Simplified mode skips this loop entirely: a genuinely deletable species
+	// then relies solely on the unconditional, global `!4*` exclusion below
+	// (the exact hundo only) for Master League protection — shorter string,
+	// but a non-hundo Master-tied spread (e.g. a 15/15/14 HP-floor tie) is no
+	// longer individually carved out.
+	if (!simplified)
+		masterCarveOuts.forEach(({ speciesId, pattern }) => {
+			if (!deletableSpeciesIds.has(speciesId)) return;
+			const p = gamemasterPokemon[speciesId];
+			if (!p) return;
+			const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, p.speciesId)).split(',');
+			const extra =
+				groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
+				groupAttr(complementOfBucket(ivBucket(pattern.D)), D) +
+				groupAttr(complementOfBucket(ivBucket(pattern.S)), S);
+			exclusions.push({ dex: p.dex, form: formTokens.join(','), shadowScope: '', extra });
+		});
 
 	// keep the query short — Android's search box caps out around 5k characters
 	const allDexes = new Set(
@@ -1227,6 +1241,15 @@ const MassDelete = () => {
 		() => void writePersistentValue(ConfigKeys.BadIvSimplifiedMode, String(simplifiedBadIv)),
 		[simplifiedBadIv]
 	);
+	// Only meaningful for the Non-meta-relevant tab — see `computeTrashString`'s
+	// own doc comment on the `simplified` parameter this feeds.
+	const [simplifiedTrash, setSimplifiedTrash] = useState(
+		() => readPersistentValue(ConfigKeys.TrashSimplifiedMode) === 'true'
+	);
+	useEffect(
+		() => void writePersistentValue(ConfigKeys.TrashSimplifiedMode, String(simplifiedTrash)),
+		[simplifiedTrash]
+	);
 
 	const [protect, setProtect] = useState<ProtectionFlags>(() => ({
 		favorite: boolCfg(ConfigKeys.TrashKeepFavorite, DEFAULT_PROTECTION.favorite),
@@ -1418,7 +1441,19 @@ const MassDelete = () => {
 	// swaps out from under an already-displayed string otherwise.
 	useEffect(() => {
 		setResult('');
-	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric, protect, whitelist, maxLevel]);
+	}, [
+		trashGreat,
+		trashUltra,
+		trashMaster,
+		trashRaid,
+		cp,
+		gl,
+		raidMetric,
+		protect,
+		whitelist,
+		maxLevel,
+		simplifiedTrash,
+	]);
 
 	useEffect(() => {
 		if (
@@ -1448,6 +1483,7 @@ const MassDelete = () => {
 					masterCarveOuts,
 					protect,
 					whitelist: whitelistSet,
+					simplified: simplifiedTrash,
 				})
 			);
 			setIsCalculating(false);
@@ -1473,6 +1509,7 @@ const MassDelete = () => {
 		trashRaid,
 		protect,
 		whitelistSet,
+		simplifiedTrash,
 	]);
 
 	// ---- "Bad IV" mode ----
@@ -1560,7 +1597,19 @@ const MassDelete = () => {
 	// this result too.
 	useEffect(() => {
 		setTradeResult('');
-	}, [trashGreat, trashUltra, trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, cp, maxLevel]);
+	}, [
+		trashGreat,
+		trashUltra,
+		trashMaster,
+		trashRaid,
+		gl,
+		raidMetric,
+		protect,
+		whitelist,
+		tradeOnlyLowIv,
+		cp,
+		maxLevel,
+	]);
 
 	useEffect(() => {
 		if (
@@ -1659,10 +1708,11 @@ const MassDelete = () => {
 		? `CP ≥ ${cp.toLocaleString()} kept${simplifiedBadIv ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`
 		: isTrade
 			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · CP < ${cp.toLocaleString()} · excludes ${protectionSummary || 'nothing extra'}`
-			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept · protects ${protectionSummary || 'nothing extra'}`;
+			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept${simplifiedTrash ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`;
 
-	const whitelistSummary =
-		whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
+	const whitelistSummary = !fetchCompleted
+		? 'Loading…'
+		: whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
 			? 'No individually-protected Pokémon yet'
 			: [
 					whitelistChipsManual.length > 0 && `${whitelistChipsManual.length} kept individually`,
@@ -1680,7 +1730,8 @@ const MassDelete = () => {
 		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
 		((mode === 'meta' || isTrade) && (trashGreat !== 50 || trashUltra !== 50)) ||
 		(isTrade && tradeOnlyLowIv) ||
-		(isBadIv && simplifiedBadIv);
+		(isBadIv && simplifiedBadIv) ||
+		(mode === 'meta' && simplifiedTrash);
 	const resetPanel = () => {
 		setProtect(DEFAULT_PROTECTION);
 		setCp(2500);
@@ -1694,6 +1745,7 @@ const MassDelete = () => {
 		}
 		if (isTrade) setTradeOnlyLowIv(false);
 		if (isBadIv) setSimplifiedBadIv(false);
+		if (mode === 'meta') setSimplifiedTrash(false);
 	};
 
 	const pageTitle = isBadIv
@@ -1862,36 +1914,55 @@ const MassDelete = () => {
 						)}
 
 						{mode === 'meta' && (
-							// Its own dedicated 2-up grid, not the general auto-fill one below —
-							// the CP dropdown and Raid Attackers are always exactly this one pair
-							// here, so they stay side by side at any width instead of the
-							// auto-fill grid's 150px-per-column minimum wrapping Raid down below
-							// CP once the panel gets narrower than ~385px.
-							<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
-								<div className='r-md-knob'>
-									<span>Never delete at or above CP</span>
-									<select
-										className='r-md-select'
-										aria-label='Never delete at or above CP'
-										value={cp}
-										onChange={(e) => setCp(+e.target.value)}
-									>
-										{CP_OPTIONS.map((n) => (
-											<option key={n} value={n}>
-												{n}
-											</option>
-										))}
-									</select>
+							<>
+								{/* Its own dedicated 2-up grid, not the general auto-fill one below —
+								    CP and Simplified mode always stay side by side, at any width,
+								    same technique (and same pairing) as the Non-Perfect IVs tab's own
+								    CP+Simplified row below. Raid Attackers' narrow-screen duplicate
+								    moves to its own row right after instead of sharing this one — see
+								    `.r-md-raid-cp-row`'s own doc comment in components.css. */}
+								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+									<div className='r-md-knob'>
+										<span>Never delete at or above CP</span>
+										<select
+											className='r-md-select'
+											aria-label='Never delete at or above CP'
+											value={cp}
+											onChange={(e) => setCp(+e.target.value)}
+										>
+											{CP_OPTIONS.map((n) => (
+												<option key={n} value={n}>
+													{n}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className='r-md-knob'>
+										<span>Simplified mode (Smaller string but less effective)</span>
+										<button
+											type='button'
+											className='r-ctr-toggle'
+											data-on={simplifiedTrash ? '' : undefined}
+											aria-pressed={simplifiedTrash}
+											title='Trades accuracy for a shorter string: skips looking for Master League (uncapped) stat-product ties — only the exact hundo (protected everywhere, unconditionally, via the global !4* exclusion) stays protected there. Great/Ultra/raid protection is unaffected.'
+											onClick={() => setSimplifiedTrash((v) => !v)}
+										>
+											<span className='r-ss-box' aria-hidden='true' />
+											{simplifiedTrash ? 'On' : 'Off'}
+										</button>
+									</div>
 								</div>
-								<div className='r-md-knob r-md-raid-cp'>
-									<span>
-										<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-										<i className='r-md-knob-full'>Raid Attackers</i>
-										<i className='r-md-knob-short'>Raid</i>
-									</span>
-									<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+								<div className='r-md-raid-cp-row'>
+									<div className='r-md-knob r-md-raid-cp'>
+										<span>
+											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+											<i className='r-md-knob-full'>Raid Attackers</i>
+											<i className='r-md-knob-short'>Raid</i>
+										</span>
+										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+									</div>
 								</div>
-							</div>
+							</>
 						)}
 
 						{mode === 'badIv' && (
@@ -1899,8 +1970,8 @@ const MassDelete = () => {
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
 									Simplified trades some accuracy for a shorter string — see the tooltip on the toggle
 								</p>
-								{/* Same dedicated 2-up grid technique as meta mode's CP+Raid pair
-								    above — CP and Simplified mode always stay side by side, at
+								{/* Same dedicated 2-up grid technique as meta mode's own CP+Simplified
+								    pair above — CP and Simplified mode always stay side by side, at
 								    any width, rather than the auto-fill grid below wrapping the
 								    second one down once the panel gets too narrow. */}
 								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
@@ -1938,55 +2009,55 @@ const MassDelete = () => {
 						)}
 
 						{isTrade && (
-							// Same dedicated 2-up grid + `.r-md-raid-cp` twin technique as the
-							// 4-up Great/Ultra/Master/Raid row above — see that row's own
-							// comment. Below 600px, `.r-md-raid-inline` up there hides and this
-							// Raid control (next to CP) takes its place instead.
-							<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
-								<div className='r-md-knob'>
-									<span>Never suggest at or above CP</span>
-									<select
-										className='r-md-select'
-										aria-label='Never suggest at or above CP'
-										value={cp}
-										onChange={(e) => setCp(+e.target.value)}
-									>
-										{CP_OPTIONS.map((n) => (
-											<option key={n} value={n}>
-												{n}
-											</option>
-										))}
-									</select>
+							<>
+								{/* Same dedicated 2-up grid technique as the other two tabs' own
+								    CP-paired row — CP and "Only very low IVs" always stay side by
+								    side, at any width. Raid Attackers' narrow-screen duplicate gets
+								    its own row right after instead of sharing this one — see
+								    `.r-md-raid-cp-row`'s own doc comment in components.css. */}
+								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+									<div className='r-md-knob'>
+										<span>Never suggest at or above CP</span>
+										<select
+											className='r-md-select'
+											aria-label='Never suggest at or above CP'
+											value={cp}
+											onChange={(e) => setCp(+e.target.value)}
+										>
+											{CP_OPTIONS.map((n) => (
+												<option key={n} value={n}>
+													{n}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className='r-md-knob'>
+										<span>Only very low IVs (10 or less in every stat)</span>
+										<button
+											type='button'
+											className='r-ctr-toggle'
+											data-on={tradeOnlyLowIv ? '' : undefined}
+											aria-pressed={tradeOnlyLowIv}
+											title='Narrows suggestions to catches whose Attack, Defense, and HP are all clearly low — otherwise, anything short of a hundo is suggested.'
+											onClick={() => setTradeOnlyLowIv((v) => !v)}
+										>
+											<span className='r-ss-box' aria-hidden='true' />
+											{tradeOnlyLowIv ? 'On' : 'Off'}
+										</button>
+									</div>
 								</div>
-								<div className='r-md-knob r-md-raid-cp'>
-									<span>
-										<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-										<i className='r-md-knob-full'>Raid Attackers</i>
-										<i className='r-md-knob-short'>Raid</i>
-									</span>
-									<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+								<div className='r-md-raid-cp-row'>
+									<div className='r-md-knob r-md-raid-cp'>
+										<span>
+											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+											<i className='r-md-knob-full'>Raid Attackers</i>
+											<i className='r-md-knob-short'>Raid</i>
+										</span>
+										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+									</div>
 								</div>
-							</div>
+							</>
 						)}
-
-						<div className='r-md-knobs-grid'>
-							{isTrade && (
-								<div className='r-md-knob'>
-									<span>Only very low IVs (10 or less in every stat)</span>
-									<button
-										type='button'
-										className='r-ctr-toggle'
-										data-on={tradeOnlyLowIv ? '' : undefined}
-										aria-pressed={tradeOnlyLowIv}
-										title='Narrows suggestions to catches whose Attack, Defense, and HP are all clearly low — otherwise, anything short of a hundo is suggested.'
-										onClick={() => setTradeOnlyLowIv((v) => !v)}
-									>
-										<span className='r-ss-box' aria-hidden='true' />
-										{tradeOnlyLowIv ? 'On' : 'Off'}
-									</button>
-								</div>
-							)}
-						</div>
 
 						<div className='r-section-h' style={{ marginTop: 4 }}>
 							{isTrade ? 'Never suggest this category' : 'Never delete this category'}
@@ -2054,36 +2125,53 @@ const MassDelete = () => {
 							placeholder={isTrade ? 'Add a Pokémon to never suggest…' : 'Add a Pokémon to never delete…'}
 						/>
 						<div className='r-md-wl-chips'>
-							{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
-								<p className='r-muted' style={{ margin: 0 }}>
-									{isTrade
-										? 'Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.'
-										: 'Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.'}
-								</p>
+							{!fetchCompleted ? (
+								// `whitelist` itself is available immediately (persisted config),
+								// but every chip needs the real `IGamemasterPokemon` object to
+								// render — without this guard, a whitelist with entries in it
+								// would flash the "Nothing here yet" empty state for a split
+								// second before the real chips suddenly appear once the
+								// gamemaster fetch resolves.
+								// `.r-md-wl-chips` is a flex row, so this needs an explicit full
+								// width — otherwise, as a flex item, it only shrinks to fit its
+								// own content and sits flush left instead of centered.
+								<div className='r-loading' style={{ minHeight: 80, width: '100%' }}>
+									<div className='r-spinner' />
+								</div>
+							) : (
+								<>
+									{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
+										<p className='r-muted' style={{ margin: 0 }}>
+											{isTrade
+												? 'Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.'
+												: 'Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.'}
+										</p>
+									)}
+									{whitelistChipsManual.map(({ p, locked, reason }) => (
+										<WhitelistChip
+											key={p.speciesId}
+											p={p}
+											locked={locked}
+											reason={reason}
+											imageSource={imageSource}
+											onRemove={removeFromWhitelist}
+										/>
+									))}
+									{whitelistChipsManual.length > 0 && whitelistChipsAuto.length > 0 && (
+										<div className='r-md-wl-divider' aria-hidden='true' />
+									)}
+									{whitelistChipsAuto.map(({ p, locked, reason }) => (
+										<WhitelistChip
+											key={p.speciesId}
+											p={p}
+											locked={locked}
+											reason={reason}
+											imageSource={imageSource}
+											onRemove={removeFromWhitelist}
+										/>
+									))}
+								</>
 							)}
-							{whitelistChipsManual.map(({ p, locked, reason }) => (
-								<WhitelistChip
-									key={p.speciesId}
-									p={p}
-									locked={locked}
-									reason={reason}
-									imageSource={imageSource}
-									onRemove={removeFromWhitelist}
-								/>
-							))}
-							{whitelistChipsManual.length > 0 && whitelistChipsAuto.length > 0 && (
-								<div className='r-md-wl-divider' aria-hidden='true' />
-							)}
-							{whitelistChipsAuto.map(({ p, locked, reason }) => (
-								<WhitelistChip
-									key={p.speciesId}
-									p={p}
-									locked={locked}
-									reason={reason}
-									imageSource={imageSource}
-									onRemove={removeFromWhitelist}
-								/>
-							))}
 						</div>
 					</div>
 				)}
@@ -2125,7 +2213,9 @@ const MassDelete = () => {
 				<p className={`r-md-length-hint${activeResult.length > 5000 ? ' r-md-length-hint--warn' : ''}`}>
 					{activeResult.length.toLocaleString()} character{activeResult.length === 1 ? '' : 's'}
 					{activeResult.length > 5000 &&
-						" — ⚠️ this may be too long for the search bar on some Android phones; consider using the simplified deletion mode toggle above if you notice the string gets cut-off after pasting it in Pokémon Go's search bar."}
+						(isTrade
+							? " — ⚠️ this may be too long for the search bar on some Android phones; pasting it into Pokémon GO's search bar may cut off the end of the string."
+							: " — ⚠️ this may be too long for the search bar on some Android phones; consider using the simplified deletion mode toggle above if you notice the string gets cut-off after pasting it in Pokémon Go's search bar.")}
 				</p>
 			)}
 			{activeResult && (

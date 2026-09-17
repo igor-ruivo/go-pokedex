@@ -548,6 +548,23 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		expect(result).not.toContain('0-3attack');
 	});
 
+	it('Simplified mode skips this Master-tie clause entirely, even when real carve-out data is available — the exact hundo (!4*) is all that stays protected there', () => {
+		const { gamemasterPokemon, tiedmon, controlmon } = buildFixture();
+		const masterCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [Number.MAX_VALUE],
+			includeShadowPurify: false,
+		});
+		const rankLists = [{}, {}, { [controlmon.speciesId]: rank(1) }];
+
+		const result = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts, simplified: true }));
+
+		expect(result).toContain(String(tiedmon.dex));
+		expect(result).not.toContain('0-3attack');
+		expect(result).toContain('!4*');
+	});
+
 	it('a species that is NOT deletable (already meta-relevant) gets no carve-out clause either — it would be pure dead weight, the whole dex is already unconditionally protected', () => {
 		const { gamemasterPokemon, tiedmon } = buildFixture();
 		const masterCarveOuts = findBadIvCarveOuts({
