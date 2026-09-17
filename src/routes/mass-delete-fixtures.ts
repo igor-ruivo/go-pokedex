@@ -8,8 +8,13 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IBestIvSpreads, ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
 import type { RaidMetric } from '../lib/raid-metric';
+import { buildUniqueTypes, generatePokemonId } from '../lib/search-string';
 import type { DPSEntry } from '../queries/raid-ranker';
-import { computeTiedTop1Patterns, computeTiedTop1PurifiedPatterns } from '../utils/pokemon-helper';
+import {
+	computeTiedTop1Patterns,
+	computeTiedTop1PurifiedPatterns,
+	isNormalPokemonAndHasShadowVersion,
+} from '../utils/pokemon-helper';
 import { type ComputeArgs, DEFAULT_PROTECTION } from './MassDelete';
 
 // Despite `IGamemasterPokemon.types` being typed as `Array<PokemonTypes>`
@@ -51,22 +56,53 @@ export const buildGamemaster = (list: Array<IGamemasterPokemon>): Record<string,
 	Object.fromEntries(list.map((p) => [p.speciesId, p]));
 
 /**
+ * The `searchFormId` half of the fixture — a verbatim re-port of dex-server's
+ * own `buildFormIds`/`formIdentifierFor` (`form-identifier-calculator.ts`).
+ * Production code (`MassDelete.tsx`, `SearchStringsTab.tsx`) no longer
+ * computes this at all — it's kept here purely so a test fixture can produce
+ * a value that's actually right, not a placeholder, for whatever dex/type
+ * arrangement a given test sets up (e.g. two forms sharing a dex).
+ */
+const buildSearchFormIds = (gamemasterPokemon: Record<string, IGamemasterPokemon>): Record<string, string> => {
+	const allPokemonForms = Object.values(gamemasterPokemon)
+		.filter((e) => !e.isMega && !e.aliasId && !e.isShadow)
+		.map((e) => ({
+			dexNumber: e.dex,
+			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
+			isShadow: false,
+			p: e,
+		}));
+	const uniqueTypes = buildUniqueTypes(allPokemonForms);
+	const idsByKey: Record<string, string> = {};
+	allPokemonForms.forEach((form) => {
+		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber);
+		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
+		idsByKey[`${form.dexNumber},${form.types.join(',')}`] = id.replaceAll(',', '&');
+	});
+	const result: Record<string, string> = {};
+	for (const p of Object.values(gamemasterPokemon)) {
+		const key = `${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`;
+		result[p.speciesId] = idsByKey[key] ?? String(p.dex);
+	}
+	return result;
+};
+
+/**
  * A `speciesSearchMetadata` fixture, numerically correct for every species in
- * `gamemasterPokemon` — `findBadIvCarveOuts`/`findTradeableSpeciesData` no
- * longer have an on-the-fly fallback (dex-server is the single source of
- * truth for this data now), so any test exercising them for real needs a
- * fixture that's actually right, not a stub. Built from the same
- * `computeTiedTop1Patterns`/`computeTiedTop1PurifiedPatterns` dex-server
- * itself uses, so the result matches what dex-server would have precomputed
- * for these exact base stats.
- *
- * `searchFormId`/`hasShadowCounterpart` are filled with harmless placeholders
- * — neither function reads them at all, only `bestIvSpreads`/
- * `bestIvSpreadsPurified` (the two things this fixture actually verifies).
+ * `gamemasterPokemon` — none of `findBadIvCarveOuts`/`findTradeableSpeciesData`/
+ * `computeTrashString`/`computeBadIvString`/`computeTradeableString` have an
+ * on-the-fly fallback any more (dex-server is the single source of truth for
+ * this data now), so any test exercising them for real needs a fixture
+ * that's actually right, not a stub. `bestIvSpreads`/`bestIvSpreadsPurified`
+ * are built from the same `computeTiedTop1Patterns`/
+ * `computeTiedTop1PurifiedPatterns` dex-server itself uses; `searchFormId`/
+ * `hasShadowCounterpart` from the same algorithm dex-server's
+ * `form-identifier-calculator.ts` uses (see `buildSearchFormIds` above).
  */
 export const buildSpeciesSearchMetadata = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>
 ): Record<string, ISpeciesSearchMetadata> => {
+	const searchFormIds = buildSearchFormIds(gamemasterPokemon);
 	const result: Record<string, ISpeciesSearchMetadata> = {};
 	for (const p of Object.values(gamemasterPokemon)) {
 		const { atk, def, hp } = p.baseStats;
@@ -81,8 +117,8 @@ export const buildSpeciesSearchMetadata = (
 		};
 
 		const entry: ISpeciesSearchMetadata = {
-			searchFormId: String(p.dex),
-			hasShadowCounterpart: false,
+			searchFormId: searchFormIds[p.speciesId],
+			hasShadowCounterpart: isNormalPokemonAndHasShadowVersion(p, gamemasterPokemon),
 			bestIvSpreads,
 		};
 
@@ -477,6 +513,7 @@ export const buildArgs = (
 	overrides: Partial<ComputeArgs> = {}
 ): ComputeArgs => ({
 	gamemasterPokemon,
+	speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 	rankLists: [{}, {}, {}],
 	raidDPS: {},
 	raidMetric: 'dps' as RaidMetric,

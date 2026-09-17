@@ -76,6 +76,7 @@ describe('findBadIvCarveOuts — a tied-for-top-1 stat product spanning two diff
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -171,7 +172,15 @@ describe('findBadIvCarveOuts — collects every distinct pattern across a reacha
 describe('computeBadIvString — base clause literal', () => {
 	it('always starts with the exact hand-authored literal, not a groupAttr-generated bucket string', () => {
 		const { gamemasterPokemon } = buildBadIvFixture();
-		const result = computeBadIvString(gamemasterPokemon, [], GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		// Deliberately NOT derived via `groupAttr`/`ivBucket` here — this is a
 		// hand-written literal in a different textual convention from the
@@ -192,6 +201,7 @@ describe('computeBadIvString — carve-out clause for a deviating species', () =
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -217,6 +227,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const implicit = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -225,6 +236,7 @@ describe('computeBadIvString — simplified mode', () => {
 		);
 		const explicitOff = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -247,6 +259,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -281,6 +294,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -305,6 +319,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -354,6 +369,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -395,6 +411,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -428,6 +445,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -473,6 +491,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -527,6 +546,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -579,6 +599,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -635,6 +656,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -684,6 +706,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -706,6 +729,7 @@ describe('computeBadIvString — simplified mode', () => {
 
 		const complete = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -714,6 +738,7 @@ describe('computeBadIvString — simplified mode', () => {
 		);
 		const simplified = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -734,6 +759,7 @@ describe('computeBadIvString — simplified mode', () => {
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -764,6 +790,7 @@ describe('computeBadIvString — Legendary/Mythical/Ultra Beast toggle vs. carve
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -784,6 +811,7 @@ describe('computeBadIvString — Legendary/Mythical/Ultra Beast toggle vs. carve
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -828,13 +856,22 @@ describe('computeBadIvString — Shadow forms: purification-aware carve-outs, pl
 		// on for the "on" case rather than assuming the default.
 		const on = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			1500,
 			{ ...DEFAULT_PROTECTION, shadow: true },
 			new Set()
 		);
-		const off = computeBadIvString(gamemasterPokemon, [], GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set());
+		const off = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		expect(on).toContain('&!shadow');
 		expect(off).not.toContain('&!shadow');
@@ -848,6 +885,7 @@ describe('computeBadIvString — manual whitelist, shared-dex edge case', () => 
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			1500,
@@ -875,6 +913,7 @@ describe('computeBadIvString — manual whitelist, shared-dex edge case', () => 
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -893,7 +932,15 @@ describe('computeBadIvString — manual whitelist, shared-dex edge case', () => 
 describe('computeBadIvString — CP threshold', () => {
 	it.each([2000, 3500])('emits the exact CP cutoff in the tail (cp=%i)', (cp) => {
 		const { gamemasterPokemon } = buildBadIvFixture();
-		const result = computeBadIvString(gamemasterPokemon, [], GameLanguage.en, cp, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			[],
+			GameLanguage.en,
+			cp,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 		expect(result).toContain(`&!cp${cp}-`);
 	});
 });
@@ -903,6 +950,7 @@ describe('computeBadIvString — pt-BR translation', () => {
 		const { gamemasterPokemon, formGrass } = buildMainFixture();
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.ptbr,
 			1500,
@@ -928,7 +976,15 @@ describe('computeBadIvString — pt-BR translation', () => {
 describe('computeBadIvString — Shadow-purify hundo guard (unconditional, always on)', () => {
 	it('the guard clause is present regardless of mode, protect flags, or whitelist — same treatment as !4*', () => {
 		const { gamemasterPokemon } = buildBadIvFixture();
-		const result = computeBadIvString(gamemasterPokemon, [], GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			[],
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		// This tab's own base literal already targets any raw Attack bucket
 		// >= 2 (`2-4attack,...`) — meaning a Shadow catch with Attack bucket 3
@@ -945,6 +1001,7 @@ describe('computeBadIvString — Shadow-purify hundo guard (unconditional, alway
 		const { gamemasterPokemon } = buildBadIvFixture();
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			1500,
@@ -958,7 +1015,15 @@ describe('computeBadIvString — Shadow-purify hundo guard (unconditional, alway
 
 	it('localizes to pt-BR alongside the rest of the tail', () => {
 		const { gamemasterPokemon } = buildBadIvFixture();
-		const result = computeBadIvString(gamemasterPokemon, [], GameLanguage.ptbr, 1500, DEFAULT_PROTECTION, new Set());
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			[],
+			GameLanguage.ptbr,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		expect(result).toContain('&!4*&0-2ataque,0-2defesa,0-2ps,!sombroso');
 	});
@@ -1064,6 +1129,7 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1085,6 +1151,7 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1115,6 +1182,7 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1157,12 +1225,21 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 		});
 		expect(carveOuts.some((c) => c.speciesId === legendaryShadow.speciesId)).toBe(true);
 
-		const on = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
+		const on = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			carveOuts,
+			GameLanguage.en,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 		expect(on).not.toContain(`!${legendaryShadow.dex},!shadow`);
 		expect(on).toContain('&!legendary');
 
 		const off = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1182,6 +1259,7 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1289,6 +1367,7 @@ describe('computeBadIvString — Machop-family Shadow tie explosion produces a w
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1323,6 +1402,7 @@ describe('computeBadIvString — Machop-family Shadow tie explosion produces a w
 		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1359,6 +1439,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			1500,
@@ -1404,6 +1485,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			2500,
@@ -1429,6 +1511,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			2500,
@@ -1440,6 +1523,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const resultWithMasterData = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			2500,
@@ -1456,6 +1540,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			1500,
@@ -1488,6 +1573,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		});
 		const resultAtLevel50 = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			1500,
@@ -1507,6 +1593,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		});
 		const resultAtLevel51 = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			[],
 			GameLanguage.en,
 			1500,
@@ -1547,6 +1634,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const withExplicitEmpty = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,
@@ -1557,6 +1645,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		);
 		const withOmitted = computeBadIvString(
 			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
 			carveOuts,
 			GameLanguage.en,
 			1500,

@@ -9,17 +9,16 @@ import { useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo } from '../lib/format';
 import { type MassDeleteTab, R } from '../lib/nav';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
 import {
-	buildUniqueTypes,
 	canonicalizeDexExclusions,
 	complementOfBucket,
 	type DexExclusion,
-	generatePokemonId,
 	groupAttr,
 	ivBucket,
 	negateIdentity,
@@ -39,9 +38,59 @@ import {
 	writePersistentValue,
 	writeSessionValue,
 } from '../utils/persistent-configs-handler';
-import { fetchReachablePokemonIncludingSelf, isNormalPokemonAndHasShadowVersion } from '../utils/pokemon-helper';
+import { fetchReachablePokemonIncludingSelf } from '../utils/pokemon-helper';
 import type { BadIvCarveOut, BadIvPattern, TradeableSpeciesData } from '../workers/compute.worker';
 import { getComputeWorker } from '../workers/compute-client';
+
+/** dex-server's own `searchFormId`, converted back to the raw comma-joined
+ *  form these generators' `negateIdentity`-based clauses need — an exact,
+ *  lossless inverse of the `.replaceAll(',', '&')` dex-server applies when
+ *  publishing it (types and dex numbers never contain `&`). Throws if the
+ *  species is missing — there is no on-the-fly fallback; dex-server is the
+ *  single source of truth for this identifier. */
+const commaFormId = (speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>, speciesId: string): string => {
+	const metadata = speciesSearchMetadata[speciesId];
+	if (!metadata) {
+		throw new Error(`speciesSearchMetadata is missing an entry for "${speciesId}" — metadata isn't loaded yet.`);
+	}
+	return metadata.searchFormId.replaceAll('&', ',');
+};
+
+/** dex-server's own precomputed Shadow-counterpart flag — see
+ *  `commaFormId`'s own doc comment on why there's no fallback. */
+const hasShadowCounterpart = (
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>,
+	speciesId: string
+): boolean => {
+	const metadata = speciesSearchMetadata[speciesId];
+	if (!metadata) {
+		throw new Error(`speciesSearchMetadata is missing an entry for "${speciesId}" — metadata isn't loaded yet.`);
+	}
+	return metadata.hasShadowCounterpart;
+};
+
+/**
+ * Every non-Mega/non-alias/non-Shadow form's own comma-form id, grouped by
+ * dex — what `canonicalizeDexExclusions` needs to know it's safe to collapse
+ * a dex's per-form clauses into one bare `!<dex>` (every sibling form
+ * actually accounted for). Shadow forms never need their own entry here:
+ * they always resolve to the identical id as their non-Shadow counterpart
+ * (same dex, same types — dex-server's own `searchFormId` is keyed that
+ * way), so including them would only ever add a duplicate.
+ */
+const buildFormsPerDex = (
+	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>
+): Record<number, Set<string>> => {
+	const formsPerDex: Record<number, Set<string>> = {};
+	Object.values(gamemasterPokemon)
+		.filter((e) => !e.isMega && !e.aliasId && !e.isShadow)
+		.forEach((form) => {
+			const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, form.speciesId)).split(',');
+			(formsPerDex[form.dex] ??= new Set()).add(formTokens.join(','));
+		});
+	return formsPerDex;
+};
 
 const numCfg = (key: ConfigKeys, fallback: number): number => {
 	const v = readPersistentValue(key);
@@ -240,6 +289,7 @@ const TRADE_HELP_TEXT =
 
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>;
 	rankLists: Array<Record<string, { rank: number } | undefined>>;
 	raidDPS: Record<string, Record<string, DPSEntry>>;
 	raidMetric: RaidMetric;
@@ -299,6 +349,7 @@ const shadowPurifyHundoGuard = (gl: GameLanguage): string => {
 export const computeTrashString = (a: ComputeArgs): string => {
 	const {
 		gamemasterPokemon,
+		speciesSearchMetadata,
 		rankLists,
 		raidDPS,
 		raidMetric,
@@ -411,27 +462,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 			}
 		});
 
-	const allPokemonForms = Object.values(gamemasterPokemon)
-		.filter((e) => !e.isMega && !e.aliasId)
-		.map((e) => ({
-			dexNumber: e.dex,
-			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
-			isShadow: e.isShadow,
-			p: e,
-		}));
-
-	const uniqueTypes = buildUniqueTypes(allPokemonForms.filter((c) => !c.isShadow));
-	const baseIds: Record<string, string> = {};
-	const formsPerDex: Record<number, Set<string>> = {};
-	allPokemonForms.forEach((form) => {
-		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber && !f.isShadow);
-		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
-		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
-		if (!form.isShadow) {
-			const [, ...formTokens] = negateIdentity(id).split(',');
-			(formsPerDex[form.dexNumber] ??= new Set()).add(formTokens.join(','));
-		}
-	});
+	const formsPerDex = buildFormsPerDex(gamemasterPokemon, speciesSearchMetadata);
 
 	const potentiallyDeletablePokemonArray = Array.from(potentiallyDeletablePokemon);
 	const dexListStr = potentiallyDeletablePokemonArray.join(',');
@@ -440,12 +471,10 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	potentiallyDeletablePokemonArray.forEach((d) => {
 		if (!alwaysGood[d]) return;
 		alwaysGood[d].forEach((e) => {
-			const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-			if (!baseId) return;
-			const [, ...formTokens] = negateIdentity(baseId).split(',');
+			const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, e.speciesId)).split(',');
 			const shadowScope: DexExclusion['shadowScope'] = e.isShadow
 				? 'shadow-only'
-				: isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)
+				: hasShadowCounterpart(speciesSearchMetadata, e.speciesId)
 					? 'non-shadow-only'
 					: '';
 			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
@@ -467,9 +496,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 		if (!deletableSpeciesIds.has(speciesId)) return;
 		const p = gamemasterPokemon[speciesId];
 		if (!p) return;
-		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-		if (!baseId) return;
-		const [, ...formTokens] = negateIdentity(baseId).split(',');
+		const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, p.speciesId)).split(',');
 		const extra =
 			groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
 			groupAttr(complementOfBucket(ivBucket(pattern.D)), D) +
@@ -597,6 +624,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
  */
 export const computeBadIvString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>,
 	carveOuts: Array<BadIvCarveOut>,
 	gl: GameLanguage,
 	cp: number,
@@ -612,30 +640,10 @@ export const computeBadIvString = (
 
 	// Shadow forms mirror their non-shadow counterpart's stats exactly — CP
 	// depends only on base stats, and shadow doesn't change those — so this
-	// whole mode never needs to distinguish shadow from non-shadow at all.
-	const allPokemonForms = Object.values(gamemasterPokemon)
-		.filter((e) => !e.isMega && !e.aliasId && !e.isShadow)
-		.map((e) => ({
-			dexNumber: e.dex,
-			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
-			isShadow: false,
-			p: e,
-		}));
-	const uniqueTypes = buildUniqueTypes(allPokemonForms);
-	const baseIds: Record<string, string> = {};
-	// Every candidate form this tab could ever need a clause for, grouped by
-	// dex — the completeness oracle `canonicalizeDexExclusions` needs to know
-	// it's safe to collapse a dex's per-form clauses into one bare `!<dex>`
-	// (every sibling form actually accounted for), never inferred from
-	// whatever clauses happen to get emitted below.
-	const formsPerDex: Record<number, Set<string>> = {};
-	allPokemonForms.forEach((form) => {
-		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber);
-		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
-		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
-		const [, ...formTokens] = negateIdentity(id).split(',');
-		(formsPerDex[form.dexNumber] ??= new Set()).add(formTokens.join(','));
-	});
+	// whole mode never needs to distinguish shadow from non-shadow at all
+	// (`buildFormsPerDex` itself already excludes Shadow forms, for the same
+	// reason dex-server's own `searchFormId` does).
+	const formsPerDex = buildFormsPerDex(gamemasterPokemon, speciesSearchMetadata);
 
 	// The shared Great/Ultra default clause is the primary selection criterion
 	// (no leading `&`, matching Tab 1's own convention of always starting with
@@ -666,9 +674,7 @@ export const computeBadIvString = (
 		) {
 			return;
 		}
-		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-		if (!baseId) return;
-		const [, ...formTokens] = negateIdentity(baseId).split(',');
+		const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, p.speciesId)).split(',');
 		// This exact pattern is either that species' own true optimum (shadow-
 		// agnostic — a non-Shadow catch's raw IVs are its real IVs, and a
 		// Shadow catch's own raw IVs mean the same thing before it's purified,
@@ -693,9 +699,7 @@ export const computeBadIvString = (
 	whitelist.forEach((speciesId) => {
 		const p = gamemasterPokemon[speciesId];
 		if (!p || p.isMega || p.aliasId) return;
-		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-		if (!baseId) return;
-		const [, ...formTokens] = negateIdentity(baseId).split(',');
+		const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, p.speciesId)).split(',');
 		exclusions.push({ dex: p.dex, form: formTokens.join(','), shadowScope: '', extra: '' });
 	});
 
@@ -780,6 +784,7 @@ export const computeBadIvString = (
  */
 export const computeTradeableString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>,
 	rankLists: Array<Record<string, { rank: number } | undefined>>,
 	raidDPS: Record<string, Record<string, DPSEntry>>,
 	raidMetric: RaidMetric,
@@ -914,40 +919,19 @@ export const computeTradeableString = (
 			}
 		});
 
-	const allPokemonForms = Object.values(gamemasterPokemon)
-		.filter((e) => !e.isMega && !e.aliasId)
-		.map((e) => ({
-			dexNumber: e.dex,
-			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
-			isShadow: e.isShadow,
-			p: e,
-		}));
-	const uniqueTypes = buildUniqueTypes(allPokemonForms.filter((c) => !c.isShadow));
-	const baseIds: Record<string, string> = {};
-	const formsPerDex: Record<number, Set<string>> = {};
-	allPokemonForms.forEach((form) => {
-		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber && !f.isShadow);
-		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
-		baseIds[`${form.dexNumber},${form.types.join(',')}`] = id;
-		if (!form.isShadow) {
-			const [, ...formTokens] = negateIdentity(id).split(',');
-			(formsPerDex[form.dexNumber] ??= new Set()).add(formTokens.join(','));
-		}
-	});
+	const formsPerDex = buildFormsPerDex(gamemasterPokemon, speciesSearchMetadata);
 
 	let result = Array.from(tradeableDexes).join(',');
 	const exclusions: Array<DexExclusion> = [];
 	tradeableDexes.forEach((d) => {
 		if (!excludedForms[d]) return;
 		excludedForms[d].forEach((e) => {
-			const baseId = baseIds[`${e.dex},${e.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-			if (!baseId) return;
-			const [, ...formTokens] = negateIdentity(baseId).split(',');
+			const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, e.speciesId)).split(',');
 			// `e` is never a Shadow form here (those are skipped entirely
 			// above), but it can still share a dex with one — 'non-shadow-only'
 			// keeps this whitelist exclusion from also swallowing that Shadow
 			// sibling's own (already unconditionally excluded) catches.
-			const shadowScope: DexExclusion['shadowScope'] = isNormalPokemonAndHasShadowVersion(e, gamemasterPokemon)
+			const shadowScope: DexExclusion['shadowScope'] = hasShadowCounterpart(speciesSearchMetadata, e.speciesId)
 				? 'non-shadow-only'
 				: '';
 			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
@@ -965,9 +949,7 @@ export const computeTradeableString = (
 	carvePatternsBySpecies.forEach((patterns, speciesId) => {
 		const p = gamemasterPokemon[speciesId];
 		if (!p) return;
-		const baseId = baseIds[`${p.dex},${p.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`];
-		if (!baseId) return;
-		const [, ...formTokens] = negateIdentity(baseId).split(',');
+		const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, p.speciesId)).split(',');
 		patterns.forEach((pattern) => {
 			const extra =
 				groupAttr(complementOfBucket(ivBucket(pattern.A)), A) +
@@ -1451,6 +1433,7 @@ const MassDelete = () => {
 			setResult(
 				computeTrashString({
 					gamemasterPokemon,
+					speciesSearchMetadata,
 					rankLists: rankLists as unknown as ComputeArgs['rankLists'],
 					raidDPS,
 					raidMetric,
@@ -1476,6 +1459,7 @@ const MassDelete = () => {
 		movesFetchCompleted,
 		masterCarveOuts,
 		gamemasterPokemon,
+		speciesSearchMetadata,
 		rankLists,
 		raidDPS,
 		raidMetric,
@@ -1513,6 +1497,7 @@ const MassDelete = () => {
 			setBadIvResult(
 				computeBadIvString(
 					gamemasterPokemon,
+					speciesSearchMetadata,
 					badIvCarveOuts,
 					gl,
 					cp,
@@ -1531,6 +1516,7 @@ const MassDelete = () => {
 		badIvCarveOuts,
 		masterCarveOuts,
 		gamemasterPokemon,
+		speciesSearchMetadata,
 		gl,
 		cp,
 		protect,
@@ -1584,6 +1570,7 @@ const MassDelete = () => {
 			setTradeResult(
 				computeTradeableString(
 					gamemasterPokemon,
+					speciesSearchMetadata,
 					rankLists as unknown as ComputeArgs['rankLists'],
 					raidDPS,
 					raidMetric,
@@ -1610,6 +1597,7 @@ const MassDelete = () => {
 		movesFetchCompleted,
 		tradeableSpeciesData,
 		gamemasterPokemon,
+		speciesSearchMetadata,
 		rankLists,
 		raidDPS,
 		raidMetric,

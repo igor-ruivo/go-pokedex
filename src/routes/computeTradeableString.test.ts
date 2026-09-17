@@ -46,7 +46,7 @@ const call = (
 		trashUltra: number;
 		trashMaster: number;
 		trashRaid: number;
-		tradeableSpeciesData: Parameters<typeof computeTradeableString>[9];
+		tradeableSpeciesData: Parameters<typeof computeTradeableString>[10];
 		protect: typeof DEFAULT_PROTECTION;
 		whitelist: Set<string>;
 		onlyLowIv: boolean;
@@ -55,6 +55,7 @@ const call = (
 ) =>
 	computeTradeableString(
 		gamemasterPokemon,
+		buildSpeciesSearchMetadata(gamemasterPokemon),
 		overrides.rankLists ?? [{}, {}, {}],
 		overrides.raidDPS ?? {},
 		overrides.raidMetric ?? 'dps',
