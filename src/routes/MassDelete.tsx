@@ -1413,10 +1413,12 @@ const MassDelete = () => {
 		gcTime: 30 * 60 * 1000,
 	});
 
-	// changing any knob invalidates a stale result
+	// changing any knob invalidates a stale result — including the Best Buddy
+	// level toggle: `masterCarveOuts` is keyed on `maxLevel` and silently
+	// swaps out from under an already-displayed string otherwise.
 	useEffect(() => {
 		setResult('');
-	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric, protect, whitelist]);
+	}, [trashGreat, trashUltra, trashMaster, trashRaid, cp, gl, raidMetric, protect, whitelist, maxLevel]);
 
 	useEffect(() => {
 		if (
@@ -1525,11 +1527,13 @@ const MassDelete = () => {
 	]);
 
 	// changing the CP floor, language, protections, whitelist, or simplified
-	// mode invalidates a stale result (the carve-out sweep itself is
-	// unaffected either way, so no need to recompute that part).
+	// mode invalidates a stale result. The Best Buddy level toggle does too —
+	// unlike the other knobs here, it DOES change the carve-out sweep itself
+	// (`badIvCarveOuts`/`masterCarveOuts` are both keyed on `maxLevel`), so an
+	// already-displayed string would otherwise silently go stale under it.
 	useEffect(() => {
 		setBadIvResult('');
-	}, [cp, gl, protect, whitelist, simplifiedBadIv]);
+	}, [cp, gl, protect, whitelist, simplifiedBadIv, maxLevel]);
 
 	// ---- "Find Tradeable" mode ----
 	const [isCalculatingTrade, setIsCalculatingTrade] = useState(false);
@@ -1551,9 +1555,12 @@ const MassDelete = () => {
 		gcTime: 30 * 60 * 1000,
 	});
 
+	// See `setBadIvResult`'s own comment above — `tradeableSpeciesData` is
+	// likewise keyed on `maxLevel`, so the Best Buddy toggle must invalidate
+	// this result too.
 	useEffect(() => {
 		setTradeResult('');
-	}, [trashGreat, trashUltra, trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, cp]);
+	}, [trashGreat, trashUltra, trashMaster, trashRaid, gl, raidMetric, protect, whitelist, tradeOnlyLowIv, cp, maxLevel]);
 
 	useEffect(() => {
 		if (
