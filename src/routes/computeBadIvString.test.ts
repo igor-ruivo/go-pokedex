@@ -9,6 +9,7 @@ import {
 	buildMainFixture,
 	buildMultiStageBadIvFixture,
 	buildShadowFamilyFixture,
+	buildSpeciesSearchMetadata,
 	mockPokemon,
 	mockType,
 } from './mass-delete-fixtures';
@@ -17,7 +18,11 @@ import { computeBadIvString, DEFAULT_PROTECTION } from './MassDelete';
 describe('findBadIvCarveOuts — 90%-of-cap-at-15/15/15/L50 pre-filter', () => {
 	it('a species whose hundo max CP never reaches 90% of the cap gets no carve-out at all', () => {
 		const { gamemasterPokemon, tinymon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		expect(carveOuts.some((c) => c.speciesId === tinymon.speciesId)).toBe(false);
 	});
@@ -26,7 +31,11 @@ describe('findBadIvCarveOuts — 90%-of-cap-at-15/15/15/L50 pre-filter', () => {
 describe('findBadIvCarveOuts — a species whose real optimum deviates from the default shape', () => {
 	it('produces a carve-out only for the cap where its top-1 spread actually deviates', () => {
 		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const own = carveOuts.filter((c) => c.speciesId === deviantmon.speciesId);
 
 		// Empirically verified (see fixture comment): fits default at 1500,
@@ -40,7 +49,11 @@ describe('findBadIvCarveOuts — a species whose real optimum deviates from the 
 describe('findBadIvCarveOuts — a tied-for-top-1 stat product spanning two different buckets (regression)', () => {
 	it('regression: when the exact hundo ties with a 15/15/14 spread, the 15/15/14 tie still gets its own carve-out', () => {
 		const { gamemasterPokemon, tiedmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const own = carveOuts.filter((c) => c.speciesId === tiedmon.speciesId && c.cap === 1500);
 
 		// A buggy "only look at computeBestIVs's own index 0" implementation
@@ -56,7 +69,11 @@ describe('findBadIvCarveOuts — a tied-for-top-1 stat product spanning two diff
 
 	it('computeBadIvString emits a protective clause for the tied 15/15/14 spread specifically', () => {
 		const { gamemasterPokemon, tiedmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -76,7 +93,11 @@ describe('findBadIvCarveOuts — a tied-for-top-1 stat product spanning two diff
 describe('findBadIvCarveOuts — single level only, never both (this session’s deliberate reversal)', () => {
 	it('defaults to level 50 (MAX_LEVEL) when maxLevel is omitted — only that level’s own bucket is protected', () => {
 		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+		});
 		const own = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
 
 		// Empirically verified (see fixture comment): overlapmon's own top-1
@@ -89,7 +110,12 @@ describe('findBadIvCarveOuts — single level only, never both (this session’s
 
 	it('passing maxLevel: BEST_BUDDY_LEVEL switches to level 51’s own bucket instead — never both at once', () => {
 		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500], maxLevel: BEST_BUDDY_LEVEL });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
 		const own = carveOuts.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
 
 		expect(own).toEqual([expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } })]);
@@ -97,8 +123,16 @@ describe('findBadIvCarveOuts — single level only, never both (this session’s
 
 	it('is deterministic and stable across repeated calls at the same maxLevel', () => {
 		const { gamemasterPokemon, overlapmon } = buildBadIvFixture();
-		const first = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
-		const second = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const first = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+		});
+		const second = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+		});
 		const ownFirst = first.filter((c) => c.speciesId === overlapmon.speciesId);
 		const ownSecond = second.filter((c) => c.speciesId === overlapmon.speciesId);
 		expect(ownSecond).toEqual(ownFirst);
@@ -109,7 +143,11 @@ describe('findBadIvCarveOuts — single level only, never both (this session’s
 describe('findBadIvCarveOuts — collects every distinct pattern across a reachable family, not just the first', () => {
 	it('regression: a 2-stage line with two different deviating patterns produces a carve-out for BOTH', () => {
 		const { gamemasterPokemon, stageA } = buildMultiStageBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+		});
 		const ownAt1500 = carveOuts.filter((c) => c.speciesId === stageA.speciesId && c.cap === 1500);
 
 		// A buggy "stop at the first unprotected stage" implementation would
@@ -147,7 +185,11 @@ describe('computeBadIvString — base clause literal', () => {
 describe('computeBadIvString — carve-out clause for a deviating species', () => {
 	it('emits the negated-bucket clause matching the real top-1 spread, not the default shape', () => {
 		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -167,7 +209,11 @@ describe('computeBadIvString — carve-out clause for a deviating species', () =
 describe('computeBadIvString — simplified mode', () => {
 	it('off (default): behaves exactly like calling without the parameter at all — bucket-specific clause', () => {
 		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		const implicit = computeBadIvString(
 			gamemasterPokemon,
@@ -193,7 +239,11 @@ describe('computeBadIvString — simplified mode', () => {
 
 	it('on: a deviating species gets a bare, unconditional dex exclusion — no bucket complement at all', () => {
 		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
@@ -216,7 +266,11 @@ describe('computeBadIvString — simplified mode', () => {
 
 	it('on: a Shadow-only purification carve-out still gets its `,!shadow` disambiguator when isolated from any non-Shadow carve-out', () => {
 		const { gamemasterPokemon, deviantmon, deviantmonShadow } = buildBadIvFixture();
-		const allCarveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const allCarveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		// `computeBadIvString` applies every cap's carve-outs unconditionally —
 		// the `cp` argument only feeds the tail keyword, it does not filter
 		// `carveOuts` by cap — so isolating "only deviantmonShadow's carve-out,
@@ -241,7 +295,11 @@ describe('computeBadIvString — simplified mode', () => {
 
 	it('on: once BOTH deviantmon and deviantmonShadow have their own carve-out for the same dex, canonicalization merges them into one bare dex-only clause', () => {
 		const { gamemasterPokemon, deviantmon, deviantmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		expect(carveOuts.some((c) => c.speciesId === deviantmon.speciesId)).toBe(true);
 		expect(carveOuts.some((c) => c.speciesId === deviantmonShadow.speciesId)).toBe(true);
 
@@ -286,7 +344,11 @@ describe('computeBadIvString — simplified mode', () => {
 			baseStats: { atk: 300, def: 100, hp: 100 },
 		});
 		const gamemasterPokemon = buildGamemaster([formIce, formGround]);
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [2500],
+		});
 		expect(carveOuts.some((c) => c.speciesId === formIce.speciesId)).toBe(true);
 		expect(carveOuts.some((c) => c.speciesId === formGround.speciesId)).toBe(true);
 
@@ -397,7 +459,11 @@ describe('computeBadIvString — simplified mode', () => {
 			baseStats: { atk: 300, def: 100, hp: 100 },
 		});
 		const gamemasterPokemon = buildGamemaster([formIce, formGround]);
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [2500],
+		});
 		expect(carveOuts.filter((c) => c.speciesId === formIce.speciesId)).toEqual([
 			expect.objectContaining({ pattern: { A: 11, D: 15, S: 15 } }),
 		]);
@@ -608,7 +674,11 @@ describe('computeBadIvString — simplified mode', () => {
 			baseStats: { atk: 120, def: 120, hp: 120 },
 		});
 		const gamemasterPokemon = buildGamemaster([formIce, formGround]);
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [2500],
+		});
 		expect(carveOuts.some((c) => c.speciesId === formIce.speciesId)).toBe(true);
 		expect(carveOuts.some((c) => c.speciesId === formGround.speciesId)).toBe(false);
 
@@ -628,7 +698,11 @@ describe('computeBadIvString — simplified mode', () => {
 
 	it('on: produces a strictly shorter string than Complete mode for the same inputs', () => {
 		const { gamemasterPokemon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		const complete = computeBadIvString(
 			gamemasterPokemon,
@@ -653,7 +727,11 @@ describe('computeBadIvString — simplified mode', () => {
 
 	it('on: multiple carve-outs for the same species (different caps/patterns) collapse into one deduplicated bare clause', () => {
 		const { gamemasterPokemon, stageA } = buildMultiStageBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -675,7 +753,11 @@ describe('computeBadIvString — simplified mode', () => {
 describe('computeBadIvString — Legendary/Mythical/Ultra Beast toggle vs. carve-outs (regression)', () => {
 	it('with the toggle on, the tail keyword covers it and its own carve-out clause is dead weight — skipped', () => {
 		const { gamemasterPokemon, deviantlegendary } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		// The worker itself must still compute it — only the string-builder
 		// decides whether to use it.
 		expect(carveOuts.some((c) => c.speciesId === deviantlegendary.speciesId && c.cap === 2500)).toBe(true);
@@ -694,7 +776,11 @@ describe('computeBadIvString — Legendary/Mythical/Ultra Beast toggle vs. carve
 
 	it('regression: with the toggle off, the per-species carve-out clause must appear — this is the bug fixed this session', () => {
 		const { gamemasterPokemon, deviantlegendary } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
@@ -723,7 +809,11 @@ describe('computeBadIvString — Shadow forms: purification-aware carve-outs, pl
 			baseStats: { atk: 300, def: 100, hp: 100 },
 		});
 		const gamemasterPokemon = buildGamemaster([shadowbase, shadowform]);
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		// Same stats as `deviantmon`/`deviantmonShadow` — empirically verified
 		// (see that fixture's own comment) to need a genuine purification-only
@@ -773,7 +863,11 @@ describe('computeBadIvString — manual whitelist, shared-dex edge case', () => 
 
 	it('whitelisting a species that ALREADY has a real computed carve-out discards that carve-out entirely, replacing it with the unconditional clause', () => {
 		const { gamemasterPokemon, deviantmon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		// Sanity: deviantmon genuinely has a real carve-out at 2500 (see the
 		// earlier "deviating species" test) — this test only means something if
 		// that's true.
@@ -873,7 +967,11 @@ describe('computeBadIvString — Shadow-purify hundo guard (unconditional, alway
 describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 	it('a Shadow species gets its own carve-out for the pre-purification raw spread that turns into its true optimum once purified', () => {
 		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const ownAt1500 = carveOuts.filter((c) => c.speciesId === deviantmonShadow.speciesId && c.cap === 1500);
 
 		// Empirically verified: purifying (raw +2, capped 15) makes raw
@@ -889,7 +987,11 @@ describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 
 	it('a Shadow whose purified-best already fits the default shape needs no carve-out at all — purification alone is enough', () => {
 		const { gamemasterPokemon, blendmon, blendmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		// blendmon's own raw top-1 at 1500 deviates (bucket 2-4-4) — it DOES
 		// need its own (non-Shadow) carve-out.
@@ -908,7 +1010,11 @@ describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 		// that EXACT same bucket (raw 11/12/12 purified), already covered by
 		// the shadow-agnostic clause the non-Shadow analysis emits, so no
 		// redundant Shadow-scoped entry should exist at level 50 at all.
-		const atLevel50 = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500] });
+		const atLevel50 = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+		});
 		const ownAt1500 = atLevel50.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
 		expect(ownAt1500).toEqual([expect.objectContaining({ pattern: { A: 13, D: 14, S: 14 } })]);
 		const shadowAtLevel50 = atLevel50.filter((c) => c.speciesId === overlapmonShadow.speciesId && c.cap === 1500);
@@ -920,7 +1026,12 @@ describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 		// uncovered buckets relative to THAT level's own non-Shadow pattern.
 		// Never both at once — this is the level-51 story on its own, not
 		// unioned with level 50's.
-		const atLevel51 = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500], maxLevel: BEST_BUDDY_LEVEL });
+		const atLevel51 = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500],
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
 		const ownAt1500Level51 = atLevel51.filter((c) => c.speciesId === overlapmon.speciesId && c.cap === 1500);
 		expect(ownAt1500Level51).toEqual([expect.objectContaining({ pattern: { A: 12, D: 15, S: 15 } })]);
 		const shadowAtLevel51 = atLevel51.filter((c) => c.speciesId === overlapmonShadow.speciesId && c.cap === 1500);
@@ -933,7 +1044,11 @@ describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 
 	it('a Shadow whose family never clears the 90%-of-cap pre-filter gets no carve-out either — purification cannot change that', () => {
 		const { gamemasterPokemon, tinymonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		expect(carveOuts.some((c) => c.speciesId === tinymonShadow.speciesId)).toBe(false);
 	});
@@ -942,7 +1057,11 @@ describe('findBadIvCarveOuts — Shadow purification awareness', () => {
 describe('computeBadIvString — Shadow-scoped purification carve-out clauses', () => {
 	it('emits a `,!shadow`-scoped clause for a genuine purification-only carve-out, distinct from any non-Shadow clause', () => {
 		const { gamemasterPokemon, deviantmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -959,7 +1078,11 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 
 	it('does NOT emit a redundant shadow-scoped clause for the bucket the non-Shadow analysis already covers, at the default level (50)', () => {
 		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -984,7 +1107,12 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 
 	it('DOES emit its own shadow-scoped clauses for level-51-only purified buckets when level 51 is explicitly requested', () => {
 		const { gamemasterPokemon, overlapmon, overlapmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500], maxLevel: BEST_BUDDY_LEVEL });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -1022,7 +1150,11 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 			baseStats: { atk: 300, def: 100, hp: 100 },
 		});
 		const gamemasterPokemon = buildGamemaster([nonShadow, legendaryShadow]);
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		expect(carveOuts.some((c) => c.speciesId === legendaryShadow.speciesId)).toBe(true);
 
 		const on = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 2500, DEFAULT_PROTECTION, new Set());
@@ -1042,7 +1174,11 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 
 	it('whitelisting the Shadow form specifically replaces its purification carve-out with a plain unconditional clause, leaving the non-Shadow sibling’s own clause untouched', () => {
 		const { gamemasterPokemon, deviantmon, deviantmonShadow } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		const result = computeBadIvString(
 			gamemasterPokemon,
@@ -1062,7 +1198,11 @@ describe('computeBadIvString — Shadow-scoped purification carve-out clauses', 
 describe('findBadIvCarveOuts — real-scale multi-stage Shadow tie explosion (Machop family)', () => {
 	it('the non-Shadow line gets zero carve-outs — every stage already fits the default shape or is a clean hundo', () => {
 		const { gamemasterPokemon, machop, machoke, machamp } = buildShadowFamilyFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		for (const id of [machop.speciesId, machoke.speciesId, machamp.speciesId]) {
 			expect(carveOuts.some((c) => c.speciesId === id)).toBe(false);
@@ -1071,7 +1211,11 @@ describe('findBadIvCarveOuts — real-scale multi-stage Shadow tie explosion (Ma
 
 	it('Machop-Shadow gets all 16 entries: the 7-way hundo-tie explosion at both caps, plus Machoke’s own 2-pattern contribution at cap 1500', () => {
 		const { gamemasterPokemon, machopShadow } = buildShadowFamilyFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const own = carveOuts.filter((c) => c.speciesId === machopShadow.speciesId);
 
 		expect(own).toHaveLength(16);
@@ -1106,7 +1250,11 @@ describe('findBadIvCarveOuts — real-scale multi-stage Shadow tie explosion (Ma
 
 	it('Machoke-Shadow gets exactly 9 entries, a genuine subset of Machop-Shadow’s — nothing it discovers is missing from Machop-Shadow’s own set', () => {
 		const { gamemasterPokemon, machopShadow, machokeShadow } = buildShadowFamilyFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const machopOwn = carveOuts.filter((c) => c.speciesId === machopShadow.speciesId);
 		const machokeOwn = carveOuts.filter((c) => c.speciesId === machokeShadow.speciesId);
 
@@ -1121,7 +1269,11 @@ describe('findBadIvCarveOuts — real-scale multi-stage Shadow tie explosion (Ma
 
 	it('Machamp-Shadow gets zero entries — its own purified best already fits the default shape at every cap', () => {
 		const { gamemasterPokemon, machampShadow } = buildShadowFamilyFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		expect(carveOuts.some((c) => c.speciesId === machampShadow.speciesId)).toBe(false);
 	});
@@ -1130,7 +1282,11 @@ describe('findBadIvCarveOuts — real-scale multi-stage Shadow tie explosion (Ma
 describe('computeBadIvString — Machop-family Shadow tie explosion produces a well-formed, correctly-scoped string', () => {
 	it('emits a `,!shadow`-scoped clause for every one of Machop-Shadow’s distinct patterns, none for the non-Shadow line, none for Machamp-Shadow', () => {
 		const { gamemasterPokemon, machop, machoke, machamp, machopShadow, machampShadow } = buildShadowFamilyFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -1160,7 +1316,11 @@ describe('computeBadIvString — Machop-family Shadow tie explosion produces a w
 
 	it('spot-checks one exact clause from the hundo-tie explosion and one from Machoke’s own contribution', () => {
 		const { gamemasterPokemon, machopShadow } = buildShadowFamilyFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const result = computeBadIvString(
 			gamemasterPokemon,
 			carveOuts,
@@ -1187,6 +1347,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		const gamemasterPokemon = buildGamemaster([tiedmon]);
 		const masterCarveOuts = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
@@ -1223,9 +1384,14 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		const tinytied = mockPokemon({ speciesId: 'combinedtinytied', dex: 960, baseStats: { atk: 10, def: 10, hp: 180 } });
 		const gamemasterPokemon = { ...baseGamemaster, [tinytied.speciesId]: tinytied };
 
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 		const masterCarveOuts = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
@@ -1316,6 +1482,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const atLevel50 = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
@@ -1333,6 +1500,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const atLevel51 = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 			maxLevel: BEST_BUDDY_LEVEL,
@@ -1361,6 +1529,7 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 		const masterCarveOuts = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
@@ -1370,7 +1539,11 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 
 	it('backward compatible: omitting masterCarveOuts entirely (existing call sites, pre-this-change) behaves exactly as before', () => {
 		const { gamemasterPokemon } = buildBadIvFixture();
-		const carveOuts = findBadIvCarveOuts({ gamemasterPokemon, caps: [1500, 2500] });
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
 
 		const withExplicitEmpty = computeBadIvString(
 			gamemasterPokemon,
@@ -1382,7 +1555,14 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 			false,
 			[]
 		);
-		const withOmitted = computeBadIvString(gamemasterPokemon, carveOuts, GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set());
+		const withOmitted = computeBadIvString(
+			gamemasterPokemon,
+			carveOuts,
+			GameLanguage.en,
+			1500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
 
 		expect(withOmitted).toBe(withExplicitEmpty);
 	});

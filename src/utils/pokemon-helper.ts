@@ -1447,3 +1447,80 @@ export const computeBestIVs = (
 		});
 	return sorted;
 };
+
+export interface BadIvPattern {
+	A: number;
+	D: number;
+	S: number;
+}
+
+/**
+ * Every raw IV pattern tied for the single best (rounded) stat product —
+ * exactly what dex-server's own `bestIvSpreads` precomputes per species
+ * (`tiedTop1Patterns` in its `best-iv-spread-calculator.ts`), ported back
+ * here verbatim. Production code no longer calls this at all — Mass Delete's
+ * bulk sweeps trust dex-server's precomputed data unconditionally, with no
+ * on-the-fly fallback. This exists purely so tests can build a
+ * `speciesSearchMetadata` fixture for a synthetic gamemaster that's
+ * numerically correct (matching what dex-server would have precomputed for
+ * those exact base stats), instead of hand-guessing expected values.
+ */
+export const computeTiedTop1Patterns = (
+	baseAtk: number,
+	baseDef: number,
+	baseHp: number,
+	cap: number,
+	maxLevel: number
+): Array<BadIvPattern> => {
+	const flat = Object.values(computeBestIVs(baseAtk, baseDef, baseHp, cap, maxLevel)).flat();
+	if (flat.length === 0) return [];
+	const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
+	const patterns: Array<BadIvPattern> = [];
+	for (const entry of flat) {
+		if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
+		patterns.push({ A: entry.IVs.A, D: entry.IVs.D, S: entry.IVs.S });
+	}
+	return patterns;
+};
+
+const PURIFY_BONUS = 2;
+const purifyIv = (iv: number) => Math.min(iv + PURIFY_BONUS, 15);
+
+/**
+ * Test-fixture counterpart of {@link computeTiedTop1Patterns} for the
+ * Shadow-purify case — mirrors dex-server's `tiedTop1PurifiedPatterns`
+ * verbatim. `levelIndex` is the half-level CPM index, not a game level.
+ */
+export const computeTiedTop1PurifiedPatterns = (
+	baseAtk: number,
+	baseDef: number,
+	baseHp: number,
+	cap: number,
+	levelIndex: number
+): Array<BadIvPattern> => {
+	let bestProd = -1;
+	let patterns: Array<BadIvPattern> = [];
+	for (let a = 0; a <= 15; a++) {
+		for (let d = 0; d <= 15; d++) {
+			for (let s = 0; s <= 15; s++) {
+				const pa = purifyIv(a);
+				const pd = purifyIv(d);
+				const ps = purifyIv(s);
+				let level = levelIndex;
+				while (level >= 0 && calculateCP(baseAtk, pa, baseDef, pd, baseHp, ps, level) > cap) level--;
+				if (level < 0) continue;
+				const aSt = (baseAtk + pa) * cpm[level];
+				const dSt = (baseDef + pd) * cpm[level];
+				const sSt = calculateHP(baseHp, ps, level);
+				const prod = Math.round(aSt * dSt * sSt);
+				if (prod > bestProd) {
+					bestProd = prod;
+					patterns = [{ A: a, D: d, S: s }];
+				} else if (prod === bestProd) {
+					patterns.push({ A: a, D: d, S: s });
+				}
+			}
+		}
+	}
+	return patterns;
+};

@@ -8,7 +8,6 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName } from '../../lib/format';
-import { buildUniqueTypes, generatePokemonId } from '../../lib/search-string';
 import { typeVar } from '../../lib/types';
 import { usePokemon } from '../../queries/pokemon';
 import { useSpeciesSearchMetadata } from '../../queries/species-search-metadata';
@@ -18,7 +17,6 @@ import {
 	calculateCP,
 	calculateHP,
 	fetchPredecessorPokemonIncludingSelf,
-	isNormalPokemonAndHasShadowVersion,
 	type RankEntry,
 	sortPokemonByBattlePowerAsc,
 } from '../../utils/pokemon-helper';
@@ -26,7 +24,6 @@ import {
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
 const LEAGUE_NAME = ['Great', 'Ultra', 'Master'] as const;
 const LEAGUE_COLOR_VAR = ['--lg-great', '--lg-ultra', '--lg-master'] as const;
-const EMPTY_FORM_IDS: Record<string, string> = {};
 
 /* ---- verbatim from the legacy search-string generator ---------------------- */
 
@@ -175,54 +172,31 @@ const rawShadowSourcesFor = (combo: RankEntry): ReadonlyArray<RankEntry> => {
 
 /* ---- species identity: form + Shadow disambiguation ------------------------ */
 
-/**
- * The shortest `dex[&type[&!type]]` identifier that pins down one specific
- * form among every dex number shared by multiple species — built once from
- * the whole gamemaster (memoize per `gamemasterPokemon` reference), keyed by
- * `dex,types` so a Shadow reuses its non-Shadow counterpart's identical
- * entry (Shadow never changes a species' dex or types). Unlike Mass Delete's
- * own use of `generatePokemonId` (always embedded in a NEGATED exclusion
- * clause via `negateIdentity`), this is a standalone, unnegated, top-level
- * positive filter — Pokémon GO's search bar ORs comma-joined terms but ANDs
- * `&`-joined ones, so `generatePokemonId`'s comma-joined output (designed to
- * become an OR-of-negations that protects an AND via De Morgan) has to be
- * re-joined with `&` here instead, to positively AND "this dex" with "this
- * type" rather than OR them.
- */
-export const buildFormIds = (gamemasterPokemon: Record<string, IGamemasterPokemon>): Record<string, string> => {
-	const allPokemonForms = Object.values(gamemasterPokemon)
-		.filter((e) => !e.isMega && !e.aliasId && !e.isShadow)
-		.map((e) => ({
-			dexNumber: e.dex,
-			types: e.types.map((f) => f.toString().toLocaleLowerCase()),
-			isShadow: false,
-			p: e,
-		}));
-	const uniqueTypes = buildUniqueTypes(allPokemonForms);
-	const formIds: Record<string, string> = {};
-	allPokemonForms.forEach((form) => {
-		const formSiblings = allPokemonForms.filter((f) => f.dexNumber === form.dexNumber);
-		const id = generatePokemonId(form.dexNumber, form.types, uniqueTypes, formSiblings, form);
-		formIds[`${form.dexNumber},${form.types.join(',')}`] = id.replaceAll(',', '&');
-	});
-	return formIds;
+/** Looks up `species`'s metadata entry, throwing loudly if it's missing —
+ *  callers must gate on `useSpeciesSearchMetadata`'s own `fetchCompleted`
+ *  before ever rendering anything that reaches this. There is no on-the-fly
+ *  fallback computation; dex-server is the single source of truth. */
+const requireMetadata = (
+	species: IGamemasterPokemon,
+	metadata: Record<string, ISpeciesSearchMetadata>
+): ISpeciesSearchMetadata => {
+	const entry = metadata[species.speciesId];
+	if (!entry) {
+		throw new Error(
+			`speciesSearchMetadata is missing an entry for "${species.speciesId}" — metadata isn't loaded yet.`
+		);
+	}
+	return entry;
 };
 
-/** Prefers dex-server's own precomputed `searchFormId` — the exact same
- *  value `buildFormIds`/this lookup would otherwise produce (see
- *  `form-identifier-calculator.ts` in dex-server) — and only falls back to
- *  computing it here when `metadata` doesn't have this species yet (still
- *  loading, a fetch error, or a synthetic test fixture). */
+/** dex-server's precomputed `searchFormId` — the shortest `dex[&type[&!type]]`
+ *  identifier that pins down this species' own form among every dex number
+ *  shared by multiple species (see `form-identifier-calculator.ts` in
+ *  dex-server for how it's built). */
 export const formIdentifierFor = (
 	species: IGamemasterPokemon,
-	formIds: Record<string, string>,
-	metadata: Record<string, ISpeciesSearchMetadata> = {}
-): string => {
-	const precomputed = metadata[species.speciesId]?.searchFormId;
-	if (precomputed !== undefined) return precomputed;
-	const key = `${species.dex},${species.types.map((t) => t.toString().toLocaleLowerCase()).join(',')}`;
-	return formIds[key] ?? String(species.dex);
-};
+	metadata: Record<string, ISpeciesSearchMetadata>
+): string => requireMetadata(species, metadata).searchFormId;
 
 /** `&shadow`/`&!shadow`, ANDed onto the leading identity — needed whenever
  *  ambiguity is actually possible: always for a Shadow species block (its
@@ -233,17 +207,12 @@ export const formIdentifierFor = (
  *  appending it would be harmless but pointless extra bytes. */
 export const shadowSuffixFor = (
 	species: IGamemasterPokemon,
-	gamemasterPokemon: Record<string, IGamemasterPokemon>,
 	gl: GameLanguage,
-	metadata: Record<string, ISpeciesSearchMetadata> = {}
+	metadata: Record<string, ISpeciesSearchMetadata>
 ): string => {
 	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 	if (species.isShadow) return `&${shadowKw}`;
-	// Prefers dex-server's own precomputed flag; falls back to the live
-	// gamemaster scan only when `metadata` doesn't have this species yet.
-	const hasShadowCounterpart =
-		metadata[species.speciesId]?.hasShadowCounterpart ?? isNormalPokemonAndHasShadowVersion(species, gamemasterPokemon);
-	return hasShadowCounterpart ? `&!${shadowKw}` : '';
+	return requireMetadata(species, metadata).hasShadowCounterpart ? `&!${shadowKw}` : '';
 };
 
 /* ---- backward chain: predecessors, PLUS each one's Shadow counterpart ------
@@ -605,7 +574,8 @@ const sentence = (
 		}
 		return (
 			<>
-				Find {who} {caught} that evolve to {toThe}{except}top {top} <NameLabel p={target} /> for {league}:
+				Find {who} {caught} that evolve to {toThe}
+				{except}top {top} <NameLabel p={target} /> for {league}:
 			</>
 		);
 	}
@@ -621,14 +591,15 @@ const sentence = (
 	}
 	return (
 		<>
-			Find <NameLabel p={p} /> {caught} that evolve to {toThe}{except}top {top} <NameLabel p={target} /> for {league}:
+			Find <NameLabel p={p} /> {caught} that evolve to {toThe}
+			{except}top {top} <NameLabel p={target} /> for {league}:
 		</>
 	);
 };
 
 const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const { gamemasterPokemon } = usePokemon();
-	const speciesSearchMetadata = useSpeciesSearchMetadata();
+	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
 
@@ -658,15 +629,6 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 	const topIVCombinations = useMemo(() => selectTopIVCombinations(topIVs, top), [topIVs, top]);
 
 	const chain = useMemo(() => buildSearchChain(pokemon, gamemasterPokemon), [pokemon, gamemasterPokemon]);
-	// Skips the whole-gamemaster scan entirely once dex-server's own metadata
-	// is loaded (checking the tab's own target is a valid proxy — it's one
-	// shared JSON payload, so it's never loaded for some species and not
-	// others). `formIdentifierFor` still falls back to `formIds` when it isn't.
-	const hasPrecomputedMetadata = speciesSearchMetadata[pokemon.speciesId] !== undefined;
-	const formIds = useMemo(
-		() => (hasPrecomputedMetadata ? EMPTY_FORM_IDS : buildFormIds(gamemasterPokemon)),
-		[gamemasterPokemon, hasPrecomputedMetadata]
-	);
 
 	const copy = (id: string, str: string) => {
 		void navigator.clipboard?.writeText(str);
@@ -683,7 +645,10 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 			</div>
 		);
 	}
-	if (topIVs.length === 0) {
+	// `formIdentifierFor`/`shadowSuffixFor` below trust `speciesSearchMetadata`
+	// unconditionally (no on-the-fly fallback) — this tab simply can't render
+	// until dex-server's data has actually loaded.
+	if (topIVs.length === 0 || !speciesSearchMetadataFetchCompleted) {
 		return (
 			<div className='r-loading' style={{ minHeight: '30dvh' }}>
 				<div className='r-spinner' />
@@ -728,7 +693,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 
 			{chain.map((entry) => {
 				const p = (entry.nonShadow ?? entry.shadow)!;
-				const formId = formIdentifierFor(p, formIds, speciesSearchMetadata);
+				const formId = formIdentifierFor(p, speciesSearchMetadata);
 				const str =
 					entry.nonShadow && entry.shadow
 						? computeMergedSearchString(entry.nonShadow, entry.shadow, { trash, topIVCombinations, gl, formId })
@@ -737,7 +702,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 								topIVCombinations,
 								gl,
 								formId,
-								shadowSuffix: shadowSuffixFor(p, gamemasterPokemon, gl, speciesSearchMetadata),
+								shadowSuffix: shadowSuffixFor(p, gl, speciesSearchMetadata),
 							});
 				const key = p.speciesId;
 				const isOpen = open === key;

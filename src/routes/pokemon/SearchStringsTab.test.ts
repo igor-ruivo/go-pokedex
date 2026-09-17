@@ -5,7 +5,6 @@ import type { IBestIvSpreads, ISpeciesSearchMetadata } from '../../DTOs/ISpecies
 import { calculateCP, type RankEntry } from '../../utils/pokemon-helper';
 import { buildGamemaster, mockPokemon, mockType } from '../mass-delete-fixtures';
 import {
-	buildFormIds,
 	buildSearchChain,
 	computeMergedSearchString,
 	computeSearchString,
@@ -22,7 +21,10 @@ const EMPTY_BEST_IV_SPREADS: IBestIvSpreads = {
 
 /** Builds a one-species metadata map, filling in whichever fields a given
  *  test doesn't care about with harmless defaults. */
-const metadataFor = (speciesId: string, overrides: Partial<ISpeciesSearchMetadata>): Record<string, ISpeciesSearchMetadata> => ({
+const metadataFor = (
+	speciesId: string,
+	overrides: Partial<ISpeciesSearchMetadata>
+): Record<string, ISpeciesSearchMetadata> => ({
 	[speciesId]: { searchFormId: '', hasShadowCounterpart: false, bestIvSpreads: EMPTY_BEST_IV_SPREADS, ...overrides },
 });
 
@@ -166,95 +168,48 @@ describe('selectTopIVCombinations — single-level only (regression: never hedge
 	});
 });
 
+// The actual disambiguation ALGORITHM (Ninetales-Alolan-style regression
+// coverage) now lives entirely in dex-server (`form-identifier-calculator.ts`
+// and its own test suite) — this tab has no fallback computation left to
+// test, only that it reads dex-server's `searchFormId`/`hasShadowCounterpart`
+// verbatim and refuses to guess when they're missing.
+describe('formIdentifierFor', () => {
+	const vulpix = mockPokemon({ speciesId: 'vulpix', dex: 37, types: [mockType('fire')] });
 
-describe('buildFormIds / formIdentifierFor — form disambiguation (regression: Ninetales-Alolan bug)', () => {
-	const vulpix = mockPokemon({
-		speciesId: 'vulpix',
-		dex: 37,
-		types: [mockType('fire')],
-		family: { id: 'f-vulpix', evolutions: ['ninetales'] },
-	});
-	const vulpixAlolan = mockPokemon({
-		speciesId: 'vulpix_alolan',
-		dex: 37,
-		types: [mockType('ice')],
-		family: { id: 'f-vulpix-alolan', evolutions: ['ninetales_alolan'] },
-	});
-	const ninetales = mockPokemon({
-		speciesId: 'ninetales',
-		dex: 38,
-		types: [mockType('fire')],
-		family: { id: 'f-vulpix', parent: 'vulpix' },
-	});
-	const ninetalesAlolan = mockPokemon({
-		speciesId: 'ninetales_alolan',
-		dex: 38,
-		types: [mockType('ice')],
-		family: { id: 'f-vulpix-alolan', parent: 'vulpix_alolan' },
-	});
-	const gamemasterPokemon = buildGamemaster([vulpix, vulpixAlolan, ninetales, ninetalesAlolan]);
-	const formIds = buildFormIds(gamemasterPokemon);
-
-	it('the two dex-37 forms each get their own AND-joined (not comma/OR) type-scoped identifier', () => {
-		expect(formIdentifierFor(vulpix, formIds)).toBe('37&fire');
-		expect(formIdentifierFor(vulpixAlolan, formIds)).toBe('37&ice');
+	it('returns the precomputed searchFormId verbatim', () => {
+		const metadata = metadataFor(vulpix.speciesId, { searchFormId: '37&fire' });
+		expect(formIdentifierFor(vulpix, metadata)).toBe('37&fire');
 	});
 
-	it('the two dex-38 forms are likewise disambiguated from each other', () => {
-		expect(formIdentifierFor(ninetales, formIds)).toBe('38&fire');
-		expect(formIdentifierFor(ninetalesAlolan, formIds)).toBe('38&ice');
-	});
-
-	it('a dex with only one candidate form needs no disambiguation at all — bare dex number', () => {
-		const solomon = mockPokemon({ speciesId: 'solomon', dex: 999, types: [mockType('normal')] });
-		const ids = buildFormIds(buildGamemaster([solomon]));
-		expect(formIdentifierFor(solomon, ids)).toBe('999');
-	});
-
-	it('a Shadow reuses its non-Shadow counterpart’s identical identifier (same dex, same types)', () => {
-		const vulpixAlolanShadow = mockPokemon({
-			speciesId: 'vulpix_alolan_shadow',
-			dex: 37,
-			types: [mockType('ice')],
-			isShadow: true,
-		});
-		expect(formIdentifierFor(vulpixAlolanShadow, formIds)).toBe('37&ice');
-	});
-
-	it('prefers a precomputed searchFormId over the live formIds lookup entirely', () => {
-		// A deliberately empty/mismatched formIds map — proves it's never consulted.
-		const metadata = metadataFor(vulpix.speciesId, { searchFormId: 'precomputed-value' });
-		expect(formIdentifierFor(vulpix, {}, metadata)).toBe('precomputed-value');
+	it('throws when the species has no metadata entry at all — no silent fallback', () => {
+		expect(() => formIdentifierFor(vulpix, {})).toThrow();
 	});
 });
 
 describe('shadowSuffixFor', () => {
 	const nonShadow = mockPokemon({ speciesId: 'dualmon', dex: 700, types: [mockType('ice')] });
 	const shadow = mockPokemon({ speciesId: 'dualmon_shadow', dex: 700, types: [mockType('ice')], isShadow: true });
-	const noShadowVariant = mockPokemon({ speciesId: 'solomon', dex: 701, types: [mockType('normal')] });
-	const gamemasterPokemon = buildGamemaster([nonShadow, shadow, noShadowVariant]);
 
-	it('a Shadow species always gets the positive &shadow suffix', () => {
-		expect(shadowSuffixFor(shadow, gamemasterPokemon, GameLanguage.en)).toBe('&shadow');
+	it('a Shadow species always gets the positive &shadow suffix — never even looks at metadata', () => {
+		expect(shadowSuffixFor(shadow, GameLanguage.en, {})).toBe('&shadow');
 	});
 
-	it('a non-Shadow species WITH a Shadow counterpart gets the disambiguating &!shadow suffix', () => {
-		expect(shadowSuffixFor(nonShadow, gamemasterPokemon, GameLanguage.en)).toBe('&!shadow');
+	it('a non-Shadow species WITH a precomputed Shadow counterpart gets the disambiguating &!shadow suffix', () => {
+		const metadata = metadataFor(nonShadow.speciesId, { hasShadowCounterpart: true });
+		expect(shadowSuffixFor(nonShadow, GameLanguage.en, metadata)).toBe('&!shadow');
 	});
 
-	it('a non-Shadow species with no Shadow counterpart at all needs no suffix', () => {
-		expect(shadowSuffixFor(noShadowVariant, gamemasterPokemon, GameLanguage.en)).toBe('');
+	it('a non-Shadow species with no precomputed Shadow counterpart needs no suffix', () => {
+		const metadata = metadataFor(nonShadow.speciesId, { hasShadowCounterpart: false });
+		expect(shadowSuffixFor(nonShadow, GameLanguage.en, metadata)).toBe('');
 	});
 
 	it('localizes the keyword to pt-BR', () => {
-		expect(shadowSuffixFor(shadow, gamemasterPokemon, GameLanguage.ptbr)).toBe('&sombroso');
+		expect(shadowSuffixFor(shadow, GameLanguage.ptbr, {})).toBe('&sombroso');
 	});
 
-	it('prefers a precomputed hasShadowCounterpart over the live gamemaster scan entirely', () => {
-		// noShadowVariant genuinely has no Shadow counterpart in this gamemaster —
-		// a precomputed `true` proves the live scan is never consulted.
-		const metadata = metadataFor(noShadowVariant.speciesId, { hasShadowCounterpart: true });
-		expect(shadowSuffixFor(noShadowVariant, gamemasterPokemon, GameLanguage.en, metadata)).toBe('&!shadow');
+	it('throws for a non-Shadow species with no metadata entry at all — no silent fallback', () => {
+		expect(() => shadowSuffixFor(nonShadow, GameLanguage.en, {})).toThrow();
 	});
 });
 

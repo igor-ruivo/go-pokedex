@@ -9,6 +9,7 @@ import {
 	buildGamemaster,
 	buildMainFixture,
 	buildSmallSpecialDexesFixture,
+	buildSpeciesSearchMetadata,
 	mockDPSEntry,
 	mockPokemon,
 	mockType,
@@ -500,17 +501,17 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 
 		const atLevel50 = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
 		expect(atLevel50.some((c) => c.speciesId === level51tied.speciesId)).toBe(false);
-		const resultAtLevel50 = computeTrashString(
-			buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts: atLevel50 })
-		);
+		const resultAtLevel50 = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts: atLevel50 }));
 		expect(resultAtLevel50).not.toContain('0-3attack');
 
 		const atLevel51 = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 			maxLevel: BEST_BUDDY_LEVEL,
@@ -518,9 +519,7 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		expect(atLevel51).toContainEqual(
 			expect.objectContaining({ speciesId: level51tied.speciesId, pattern: { A: 15, D: 15, S: 14 } })
 		);
-		const resultAtLevel51 = computeTrashString(
-			buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts: atLevel51 })
-		);
+		const resultAtLevel51 = computeTrashString(buildArgs(gamemasterPokemon, { rankLists, masterCarveOuts: atLevel51 }));
 		expect(resultAtLevel51).toContain(`&!${level51tied.dex},0-3attack,0-3defense,0-2hp,4hp`);
 	});
 
@@ -528,6 +527,7 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		const { gamemasterPokemon, tiedmon, controlmon } = buildFixture();
 		const masterCarveOuts = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
@@ -552,6 +552,7 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		const { gamemasterPokemon, tiedmon } = buildFixture();
 		const masterCarveOuts = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
@@ -569,6 +570,7 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		const gamemasterPokemon = buildGamemaster([tiny, controlmon]);
 		const masterCarveOuts = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});
@@ -593,9 +595,14 @@ describe('computeTrashString — Master League stat-product tie protection (non-
 		});
 		const gamemasterPokemon = buildGamemaster([mon, monShadow]);
 
-		const withShadowPass = findBadIvCarveOuts({ gamemasterPokemon, caps: [Number.MAX_VALUE] });
+		const withShadowPass = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [Number.MAX_VALUE],
+		});
 		const withoutShadowPass = findBadIvCarveOuts({
 			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [Number.MAX_VALUE],
 			includeShadowPurify: false,
 		});

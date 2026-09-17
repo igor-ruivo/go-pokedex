@@ -14,10 +14,8 @@ import type { IIvPercents } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
 import {
 	calculateCP,
-	calculateHP,
 	computeBestIVs,
 	computeDPSEntry,
-	cpm,
 	fetchReachablePokemonIncludingSelf,
 	guessRaidTier,
 	levelToLevelIndex,
@@ -230,12 +228,11 @@ export interface BadIvCarveOut {
 export interface BadIvCarveOutsInput {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	/** dex-server's precomputed per-species `bestIvSpreads`/
-	 *  `bestIvSpreadsPurified` — read instead of brute-forcing a species'
-	 *  own tied-top-1 spread whenever it's present for that speciesId (see
-	 *  `useSpeciesSearchMetadata`'s own doc comment). Missing/empty is a
-	 *  fully supported fallback state, not an error — default `{}` for a
-	 *  caller (e.g. a test) that doesn't care to exercise the fast path. */
-	speciesSearchMetadata?: Record<string, ISpeciesSearchMetadata>;
+	 *  `bestIvSpreadsPurified` — the ONLY source of this data; there is no
+	 *  fallback computation. The caller must have this fully loaded (see
+	 *  `useSpeciesSearchMetadata`'s own doc comment) before calling this
+	 *  function at all — a missing speciesId throws. */
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>;
 	/** CP caps to evaluate (e.g. [1500, 2500]) — `Number.MAX_VALUE` is a valid
 	 *  entry too, for the uncapped Master cap. Master isn't tie-free the way a
 	 *  quick glance suggests: Attack/Defense are never floored so they can't
@@ -268,6 +265,25 @@ export interface BadIvCarveOutsInput {
 // extra-level accuracy for a shorter string instead.
 const CP_THRESHOLD_RATIO = 0.9;
 
+/** Every caller must gate on `speciesSearchMetadata` actually being loaded
+ *  (e.g. `usePokemon`-style `fetchCompleted`) before calling
+ *  `findBadIvCarveOuts`/`findTradeableSpeciesData` at all — there is no
+ *  on-the-fly fallback if a species is missing from it, by design (dex-server
+ *  is the single source of truth for this data). This throws loudly instead
+ *  of silently producing wrong/incomplete carve-outs. */
+const requireSpeciesMetadata = (
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>,
+	speciesId: string
+): ISpeciesSearchMetadata => {
+	const metadata = speciesSearchMetadata[speciesId];
+	if (!metadata) {
+		throw new Error(
+			`speciesSearchMetadata is missing an entry for "${speciesId}" — caller must wait for it to finish loading before calling this.`
+		);
+	}
+	return metadata;
+};
+
 /** dex-server precomputes `bestIvSpreads`/`bestIvSpreadsPurified` keyed this
  *  way — every caller here only ever passes one of these three caps (see
  *  `BadIvCarveOutsInput.caps`'s own callers in MassDelete.tsx). */
@@ -276,21 +292,6 @@ const leagueKeyFor = (cap: number): 'great' | 'ultra' | 'master' =>
 /** Same idea for the level axis — every caller passes {@link MAX_LEVEL} (50)
  *  or {@link BEST_BUDDY_LEVEL} (51), never anything else. */
 const levelKeyFor = (level: number): 'level50' | 'level51' => (level === 51 ? 'level51' : 'level50');
-
-/** The tied-for-#1 (rounded) stat-product extraction `computeBestIVs`'s own
- *  output needs before it's usable as a `BadIvPattern` list — shared by every
- *  fallback path below (dex-server's own precomputed data skips this
- *  entirely; see each call site's own comment on when it applies). */
-const extractTiedTop1 = (flat: ReadonlyArray<RankEntry>): Array<BadIvPattern> => {
-	if (flat.length === 0) return [];
-	const topProd = Math.round(flat[0].battle.A * flat[0].battle.D * flat[0].battle.S);
-	const patterns: Array<BadIvPattern> = [];
-	for (const entry of flat) {
-		if (Math.round(entry.battle.A * entry.battle.D * entry.battle.S) !== topProd) break;
-		patterns.push({ A: entry.IVs.A, D: entry.IVs.D, S: entry.IVs.S });
-	}
-	return patterns;
-};
 
 const ivBucket = (iv: number) => (iv === 15 ? 4 : Math.ceil(iv / 5));
 // Keep the top spread only if Attack is bucket 0-1 (IV 0-5) AND Defense/HP are
@@ -305,16 +306,6 @@ const matchesDefault = (ivs: BadIvPattern) => {
 // league — nothing short of it gets a free pass from this check.
 const isExactHundo = (ivs: BadIvPattern) => ivBucket(ivs.A) === 4 && ivBucket(ivs.D) === 4 && ivBucket(ivs.S) === 4;
 const isProtectedByBlanket = (ivs: BadIvPattern) => matchesDefault(ivs) || isExactHundo(ivs);
-
-// A Best Friend-level purify adds +2 to every one of a Shadow's own raw IVs,
-// capped at 15 — a real, always-available, zero-cost transition, not a
-// hypothetical like a trade. A Shadow catch's raw IVs are what the search
-// string actually has to match (that's what the game shows before you
-// purify it), but its *true* ceiling — whether keeping it unpurified is
-// wasted potential — depends on what those raw IVs become *after* purifying,
-// not on the raw IVs' own (unpurified) stat product.
-const PURIFY_BONUS = 2;
-const purify = (iv: number) => Math.min(iv + PURIFY_BONUS, 15);
 
 /**
  * Meta-agnostic "bad IV" carve-outs — see the "Mass Delete only Bad IV
@@ -342,7 +333,7 @@ const purify = (iv: number) => Math.min(iv + PURIFY_BONUS, 15);
  */
 export const findBadIvCarveOuts = ({
 	gamemasterPokemon,
-	speciesSearchMetadata = {},
+	speciesSearchMetadata,
 	caps,
 	includeShadowPurify = true,
 	maxLevel = MAX_LEVEL,
@@ -379,11 +370,11 @@ export const findBadIvCarveOuts = ({
 			bestCache.set(key, []);
 			return [];
 		}
-		// dex-server precomputes exactly this reduction per species — skip the
-		// brute force entirely when it's there; fall back for anything that
-		// predates it (still loading, a fetch error, or a synthetic test fixture).
-		const precomputed = speciesSearchMetadata[r.speciesId]?.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(level)];
-		const patterns = precomputed ?? extractTiedTop1(Object.values(computeBestIVs(r.baseStats.atk, r.baseStats.def, r.baseStats.hp, cap, level)).flat());
+		// dex-server precomputes exactly this reduction per species — the only
+		// source of it (no on-the-fly fallback).
+		const patterns = requireSpeciesMetadata(speciesSearchMetadata, r.speciesId).bestIvSpreads[leagueKeyFor(cap)][
+			levelKeyFor(level)
+		];
 		bestCache.set(key, patterns);
 		return patterns;
 	};
@@ -444,39 +435,13 @@ export const findBadIvCarveOuts = ({
 			return [];
 		}
 		// dex-server precomputes exactly this pass per Shadow species (`r` here
-		// is always a Shadow form — see `shadowDomainFilter` below) — skip the
-		// from-scratch 16x16x16 loop entirely when it's there.
-		const precomputed = speciesSearchMetadata[r.speciesId]?.bestIvSpreadsPurified?.[leagueKeyFor(cap)]?.[
-			levelKeyFor(levelIndex / 2 + 1)
-		];
-		if (precomputed) {
-			purifiedBestCache.set(key, precomputed);
-			return precomputed;
+		// is always a Shadow form — see `shadowDomainFilter` below) — the only
+		// source of it (no on-the-fly fallback).
+		const metadata = requireSpeciesMetadata(speciesSearchMetadata, r.speciesId);
+		if (!metadata.bestIvSpreadsPurified) {
+			throw new Error(`speciesSearchMetadata for Shadow species "${r.speciesId}" is missing bestIvSpreadsPurified.`);
 		}
-		let bestProd = -1;
-		let patterns: Array<BadIvPattern> = [];
-		for (let a = 0; a <= 15; a++) {
-			for (let d = 0; d <= 15; d++) {
-				for (let s = 0; s <= 15; s++) {
-					const pa = purify(a);
-					const pd = purify(d);
-					const ps = purify(s);
-					let level = levelIndex;
-					while (level >= 0 && calculateCP(atk, pa, def, pd, hp, ps, level) > cap) level--;
-					if (level < 0) continue;
-					const aSt = (atk + pa) * cpm[level];
-					const dSt = (def + pd) * cpm[level];
-					const sSt = calculateHP(hp, ps, level);
-					const prod = Math.round(aSt * dSt * sSt);
-					if (prod > bestProd) {
-						bestProd = prod;
-						patterns = [{ A: a, D: d, S: s }];
-					} else if (prod === bestProd) {
-						patterns.push({ A: a, D: d, S: s });
-					}
-				}
-			}
-		}
+		const patterns = metadata.bestIvSpreadsPurified[leagueKeyFor(cap)][levelKeyFor(levelIndex / 2 + 1)];
 		purifiedBestCache.set(key, patterns);
 		return patterns;
 	};
@@ -542,7 +507,7 @@ export interface TradeableSpeciesData {
 export interface TradeableSpeciesDataInput {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	/** See `BadIvCarveOutsInput.speciesSearchMetadata`'s own doc comment. */
-	speciesSearchMetadata?: Record<string, ISpeciesSearchMetadata>;
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>;
 	/** {@link MAX_LEVEL} (50) or 51 (Best Buddy) — see
 	 *  `BadIvCarveOutsInput.maxLevel`'s own doc comment; same "never both"
 	 *  rule applies here. Default {@link MAX_LEVEL}. */
@@ -569,7 +534,7 @@ export interface TradeableSpeciesDataInput {
  */
 export const findTradeableSpeciesData = ({
 	gamemasterPokemon,
-	speciesSearchMetadata = {},
+	speciesSearchMetadata,
 	maxLevel = MAX_LEVEL,
 }: TradeableSpeciesDataInput): Record<string, TradeableSpeciesData> => {
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !p.isShadow);
@@ -585,15 +550,12 @@ export const findTradeableSpeciesData = ({
 		return { patterns: Array.from(patternMap.values()).filter((p) => !isExactHundo(p)), floorOk };
 	};
 
-	// dex-server precomputes exactly this per non-Shadow species — skip the
-	// brute force entirely when it's there; fall back for anything that
-	// predates it (a stale cache, or a synthetic test fixture).
-	const analyze = (p: IGamemasterPokemon, cap: number): TradeableLeagueData => {
-		const precomputed = speciesSearchMetadata[p.speciesId]?.bestIvSpreads?.[leagueKeyFor(cap)]?.[levelKeyFor(maxLevel)];
-		if (precomputed) return toLeagueData(precomputed);
-		const { atk, def, hp } = p.baseStats;
-		return toLeagueData(extractTiedTop1(Object.values(computeBestIVs(atk, def, hp, cap, maxLevel)).flat()));
-	};
+	// dex-server precomputes exactly this per non-Shadow species — the only
+	// source of it (no on-the-fly fallback).
+	const analyze = (p: IGamemasterPokemon, cap: number): TradeableLeagueData =>
+		toLeagueData(
+			requireSpeciesMetadata(speciesSearchMetadata, p.speciesId).bestIvSpreads[leagueKeyFor(cap)][levelKeyFor(maxLevel)]
+		);
 
 	const result: Record<string, TradeableSpeciesData> = {};
 	for (const p of candidates) {

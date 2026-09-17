@@ -2,11 +2,16 @@ import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
 import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
-import { findTradeableSpeciesData, type TradeableLeagueData, type TradeableSpeciesData } from '../workers/compute.worker';
+import {
+	findTradeableSpeciesData,
+	type TradeableLeagueData,
+	type TradeableSpeciesData,
+} from '../workers/compute.worker';
 import {
 	buildEvolutionLineFixture,
 	buildGamemaster,
 	buildMainFixture,
+	buildSpeciesSearchMetadata,
 	mockDPSEntry,
 	mockPokemon,
 	mockType,
@@ -103,7 +108,10 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		const mon = mockPokemon({ speciesId: 'highbucketmon', dex: 1, baseStats: { atk: 120, def: 120, hp: 120 } });
 		const gamemasterPokemon = buildGamemaster([mon]);
 
-		const data = findTradeableSpeciesData({ gamemasterPokemon });
+		const data = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
 
 		expect(data[mon.speciesId].great.floorOk).toBe(true);
 		expect(data[mon.speciesId].ultra.floorOk).toBe(true);
@@ -113,7 +121,10 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		const mon = mockPokemon({ speciesId: 'lowattackmon', dex: 2, baseStats: { atk: 250, def: 100, hp: 100 } });
 		const gamemasterPokemon = buildGamemaster([mon]);
 
-		const data = findTradeableSpeciesData({ gamemasterPokemon });
+		const data = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
 
 		expect(data[mon.speciesId].great.floorOk).toBe(false);
 	});
@@ -122,7 +133,10 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		const shadow = mockPokemon({ speciesId: 'shadowfloor_shadow', dex: 4, isShadow: true });
 		const gamemasterPokemon = buildGamemaster([shadow]);
 
-		const data = findTradeableSpeciesData({ gamemasterPokemon });
+		const data = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
 
 		expect(data[shadow.speciesId]).toBeUndefined();
 	});
@@ -131,7 +145,10 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		const mon = mockPokemon({ speciesId: 'anymon', dex: 5, baseStats: { atk: 150, def: 150, hp: 150 } });
 		const gamemasterPokemon = buildGamemaster([mon]);
 
-		const data = findTradeableSpeciesData({ gamemasterPokemon });
+		const data = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
 
 		for (const league of ['great', 'ultra', 'master'] as const) {
 			expect(data[mon.speciesId][league].patterns.some((p) => p.A === 15 && p.D === 15 && p.S === 15)).toBe(false);
@@ -144,7 +161,10 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		const tiedmon = mockPokemon({ speciesId: 'tiedmon', dex: 6, baseStats: { atk: 100, def: 132, hp: 180 } });
 		const gamemasterPokemon = buildGamemaster([tiedmon]);
 
-		const data = findTradeableSpeciesData({ gamemasterPokemon });
+		const data = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
 
 		expect(data[tiedmon.speciesId].master.patterns).toContainEqual({ A: 15, D: 15, S: 14 });
 	});
@@ -160,10 +180,17 @@ describe('findTradeableSpeciesData — per-species Great/Ultra/Master analysis',
 		});
 		const gamemasterPokemon = buildGamemaster([level51tied]);
 
-		const atLevel50 = findTradeableSpeciesData({ gamemasterPokemon });
+		const atLevel50 = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
 		expect(atLevel50[level51tied.speciesId].master.patterns).toEqual([]);
 
-		const atLevel51 = findTradeableSpeciesData({ gamemasterPokemon, maxLevel: BEST_BUDDY_LEVEL });
+		const atLevel51 = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
 		expect(atLevel51[level51tied.speciesId].master.patterns).toContainEqual({ A: 15, D: 15, S: 14 });
 	});
 });
@@ -427,9 +454,16 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 		// level 51. `findTradeableSpeciesData` defaults to level 50, so it
 		// picks this up — calling it with `maxLevel: BEST_BUDDY_LEVEL` instead
 		// would find nothing at all for this species (proven separately below).
-		const dataAtLevel50 = findTradeableSpeciesData({ gamemasterPokemon });
+		const dataAtLevel50 = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
 		expect(dataAtLevel50[tiedmon.speciesId].master.patterns).toEqual([{ A: 15, D: 15, S: 14 }]);
-		const dataAtLevel51 = findTradeableSpeciesData({ gamemasterPokemon, maxLevel: BEST_BUDDY_LEVEL });
+		const dataAtLevel51 = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
 		expect(dataAtLevel51[tiedmon.speciesId].master.patterns).toEqual([]);
 
 		const result = call(gamemasterPokemon, {
@@ -495,7 +529,11 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 			tradeableSpeciesData: {
 				bulbasaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
 				ivysaur: { great: leagueData(), ultra: leagueData(), master: leagueData() },
-				venusaur: { great: leagueData(), ultra: leagueData(), master: leagueData({ patterns: [{ A: 10, D: 15, S: 15 }] }) },
+				venusaur: {
+					great: leagueData(),
+					ultra: leagueData(),
+					master: leagueData({ patterns: [{ A: 10, D: 15, S: 15 }] }),
+				},
 			},
 		});
 
@@ -548,7 +586,11 @@ describe('computeTradeableString — worked examples (simple to specific)', () =
 		const result = call(gamemasterPokemon, {
 			rankLists,
 			tradeableSpeciesData: {
-				venusaur: { great: leagueData({ floorOk: false, patterns: [{ A: 0, D: 15, S: 15 }] }), ultra: leagueData(), master: leagueData() },
+				venusaur: {
+					great: leagueData({ floorOk: false, patterns: [{ A: 0, D: 15, S: 15 }] }),
+					ultra: leagueData(),
+					master: leagueData(),
+				},
 			},
 		});
 
@@ -570,7 +612,9 @@ describe('computeTradeableString — raid relevance', () => {
 	it('raid admission never carves out any pattern — raid ranking is not stat-product-sensitive', () => {
 		const raidmon = mockPokemon({ speciesId: 'raidtied', dex: 704, types: [mockType('fire')] });
 		const gamemasterPokemon = buildGamemaster([raidmon]);
-		const raidDPS = { fire: { raidtied: mockDPSEntry({ speciesId: 'raidtied', dpsRank: 1, tdoRank: 1, edpsRank: 1 }) } };
+		const raidDPS = {
+			fire: { raidtied: mockDPSEntry({ speciesId: 'raidtied', dpsRank: 1, tdoRank: 1, edpsRank: 1 }) },
+		};
 
 		// Populated Master pattern, but no Master rank at all — raid alone
 		// admits it, so no carve-out should appear.
@@ -579,7 +623,11 @@ describe('computeTradeableString — raid relevance', () => {
 			raidMetric: 'dps',
 			trashRaid: 5,
 			tradeableSpeciesData: {
-				raidtied: { great: leagueData(), ultra: leagueData(), master: leagueData({ patterns: [{ A: 1, D: 1, S: 1 }] }) },
+				raidtied: {
+					great: leagueData(),
+					ultra: leagueData(),
+					master: leagueData({ patterns: [{ A: 1, D: 1, S: 1 }] }),
+				},
 			},
 		});
 

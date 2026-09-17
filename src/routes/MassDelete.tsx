@@ -1194,7 +1194,7 @@ const byDexFormShadow = (a: { p: IGamemasterPokemon }, b: { p: IGamemasterPokemo
 
 const MassDelete = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
-	const speciesSearchMetadata = useSpeciesSearchMetadata();
+	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { movesFetchCompleted } = useMoves();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
@@ -1417,7 +1417,7 @@ const MassDelete = () => {
 	// precomputed path once it lands.
 	const speciesSearchMetadataCount = Object.keys(speciesSearchMetadata).length;
 	const { data: masterCarveOuts } = useQuery({
-		enabled: (isCalculating || isCalculatingBadIv) && fetchCompleted,
+		enabled: (isCalculating || isCalculatingBadIv) && fetchCompleted && speciesSearchMetadataFetchCompleted,
 		queryKey: ['master-carveouts-no-shadow', maxLevel, speciesSearchMetadataCount],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({
@@ -1499,7 +1499,7 @@ const MassDelete = () => {
 	// toggle itself changes; only the (cheap) string assembly below reacts to
 	// the other knobs.
 	const { data: badIvCarveOuts } = useQuery({
-		enabled: isCalculatingBadIv && fetchCompleted,
+		enabled: isCalculatingBadIv && fetchCompleted && speciesSearchMetadataFetchCompleted,
 		queryKey: ['bad-iv-carveouts', maxLevel, speciesSearchMetadataCount],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({ gamemasterPokemon, speciesSearchMetadata, caps: [1500, 2500], maxLevel }),
@@ -1511,7 +1511,16 @@ const MassDelete = () => {
 		if (!isCalculatingBadIv || !fetchCompleted || !badIvCarveOuts || !masterCarveOuts) return;
 		const id = window.setTimeout(() => {
 			setBadIvResult(
-				computeBadIvString(gamemasterPokemon, badIvCarveOuts, gl, cp, protect, whitelistSet, simplifiedBadIv, masterCarveOuts)
+				computeBadIvString(
+					gamemasterPokemon,
+					badIvCarveOuts,
+					gl,
+					cp,
+					protect,
+					whitelistSet,
+					simplifiedBadIv,
+					masterCarveOuts
+				)
 			);
 			setIsCalculatingBadIv(false);
 		}, 60);
@@ -1549,7 +1558,7 @@ const MassDelete = () => {
 	// genuinely need it), so sharing one query would force this tab to pay
 	// for work it structurally never needs.
 	const { data: tradeableSpeciesData } = useQuery({
-		enabled: isCalculatingTrade && fetchCompleted,
+		enabled: isCalculatingTrade && fetchCompleted && speciesSearchMetadataFetchCompleted,
 		queryKey: ['tradeable-species-data', maxLevel, speciesSearchMetadataCount],
 		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon, speciesSearchMetadata, maxLevel }),
 		staleTime: Infinity,
@@ -1812,8 +1821,8 @@ const MassDelete = () => {
 						{isTrade && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									A species only needs to clear ONE of these four cutoffs to be suggested — Great and Ultra also
-									require a trade to actually be able to reach their best possible spread (see the help text above)
+									A species only needs to clear ONE of these four cutoffs to be suggested — Great and Ultra also require
+									a trade to actually be able to reach their best possible spread (see the help text above)
 								</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>

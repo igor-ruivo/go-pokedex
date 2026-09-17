@@ -5,9 +5,11 @@
  */
 import { GameLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import type { IBestIvSpreads, ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import type { PokemonTypes } from '../DTOs/PokemonTypes';
 import type { RaidMetric } from '../lib/raid-metric';
 import type { DPSEntry } from '../queries/raid-ranker';
+import { computeTiedTop1Patterns, computeTiedTop1PurifiedPatterns } from '../utils/pokemon-helper';
 import { type ComputeArgs, DEFAULT_PROTECTION } from './MassDelete';
 
 // Despite `IGamemasterPokemon.types` being typed as `Array<PokemonTypes>`
@@ -47,6 +49,59 @@ export const mockPokemon = (
 
 export const buildGamemaster = (list: Array<IGamemasterPokemon>): Record<string, IGamemasterPokemon> =>
 	Object.fromEntries(list.map((p) => [p.speciesId, p]));
+
+/**
+ * A `speciesSearchMetadata` fixture, numerically correct for every species in
+ * `gamemasterPokemon` — `findBadIvCarveOuts`/`findTradeableSpeciesData` no
+ * longer have an on-the-fly fallback (dex-server is the single source of
+ * truth for this data now), so any test exercising them for real needs a
+ * fixture that's actually right, not a stub. Built from the same
+ * `computeTiedTop1Patterns`/`computeTiedTop1PurifiedPatterns` dex-server
+ * itself uses, so the result matches what dex-server would have precomputed
+ * for these exact base stats.
+ *
+ * `searchFormId`/`hasShadowCounterpart` are filled with harmless placeholders
+ * — neither function reads them at all, only `bestIvSpreads`/
+ * `bestIvSpreadsPurified` (the two things this fixture actually verifies).
+ */
+export const buildSpeciesSearchMetadata = (
+	gamemasterPokemon: Record<string, IGamemasterPokemon>
+): Record<string, ISpeciesSearchMetadata> => {
+	const result: Record<string, ISpeciesSearchMetadata> = {};
+	for (const p of Object.values(gamemasterPokemon)) {
+		const { atk, def, hp } = p.baseStats;
+		const spreadsFor = (cap: number): IBestIvSpreads['great'] => ({
+			level50: computeTiedTop1Patterns(atk, def, hp, cap, 50),
+			level51: computeTiedTop1Patterns(atk, def, hp, cap, 51),
+		});
+		const bestIvSpreads: IBestIvSpreads = {
+			great: spreadsFor(1500),
+			ultra: spreadsFor(2500),
+			master: spreadsFor(Number.MAX_VALUE),
+		};
+
+		const entry: ISpeciesSearchMetadata = {
+			searchFormId: String(p.dex),
+			hasShadowCounterpart: false,
+			bestIvSpreads,
+		};
+
+		if (p.isShadow) {
+			const purifiedSpreadsFor = (cap: number): IBestIvSpreads['great'] => ({
+				level50: computeTiedTop1PurifiedPatterns(atk, def, hp, cap, (50 - 1) * 2),
+				level51: computeTiedTop1PurifiedPatterns(atk, def, hp, cap, (51 - 1) * 2),
+			});
+			entry.bestIvSpreadsPurified = {
+				great: purifiedSpreadsFor(1500),
+				ultra: purifiedSpreadsFor(2500),
+				master: purifiedSpreadsFor(Number.MAX_VALUE),
+			};
+		}
+
+		result[p.speciesId] = entry;
+	}
+	return result;
+};
 
 /** Just the 3-stage evolution line, nothing else — for the forward-only
  *  reachability tests, where a small/predictable dex universe matters (see
