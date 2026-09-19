@@ -1,5 +1,5 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
@@ -220,27 +220,36 @@ const DatePicker = ({
 	slots: Array<{ key: string; label: string }>;
 	active: string;
 	onPick: (k: string) => void;
-}) => (
-	<div className='r-datepick'>
-		<span className='r-datepick-ic' aria-hidden='true'>
-			📅
-		</span>
-		<div className='r-datepick-chips' role='tablist' aria-label='Timeframe'>
-			{slots.map((s) => (
-				<button
-					key={s.key}
-					type='button'
-					role='tab'
-					aria-selected={active === s.key}
-					data-active={active === s.key}
-					onClick={() => onPick(s.key)}
-				>
-					{s.label}
-				</button>
-			))}
+}) => {
+	const activeBtnRef = useRef<HTMLButtonElement | null>(null);
+
+	useEffect(() => {
+		activeBtnRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+	}, [active]);
+
+	return (
+		<div className='r-datepick'>
+			<span className='r-datepick-ic' aria-hidden='true'>
+				📅
+			</span>
+			<div className='r-datepick-chips' role='tablist' aria-label='Timeframe'>
+				{slots.map((s) => (
+					<button
+						key={s.key}
+						ref={active === s.key ? activeBtnRef : undefined}
+						type='button'
+						role='tab'
+						aria-selected={active === s.key}
+						data-active={active === s.key}
+						onClick={() => onPick(s.key)}
+					>
+						{s.label}
+					</button>
+				))}
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 /* ---------- Events ---------- */
 const EventCard = ({
@@ -562,9 +571,12 @@ const SpawnsTab = () => {
 	// spawns from events happening right this moment, merged & deduped
 	const nowSeen = new Set<string>();
 	const nowSpawns: Array<IEntry> = [];
+	const endMap = new Map<string, number>();
 	for (const p of withWild) {
 		if (!isActive(p, now)) continue;
 		for (const e of p.wild) {
+			const prev = endMap.get(e.speciesId);
+			if (prev === undefined || p.endDate < prev) endMap.set(e.speciesId, p.endDate);
 			const k = `${e.speciesId}-${e.kind ?? ''}`;
 			if (nowSeen.has(k)) continue;
 			nowSeen.add(k);
@@ -594,7 +606,7 @@ const SpawnsTab = () => {
 
 			{activeKey === 'now' ? (
 				<div style={{ marginTop: 'var(--s4)' }}>
-					<MiniGrid entries={nowSpawns} />
+					<MiniGrid entries={nowSpawns} endMap={endMap} />
 				</div>
 			) : activeKey === 'season' ? (
 				wild.length === 0 ? (

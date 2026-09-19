@@ -2771,13 +2771,14 @@
 /* ---- date picker (raids / spawns) ---- */
 .rvmp .r-datepick {
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	gap: var(--s2);
 	margin-top: var(--s3);
 	/* it's a picker/configurer — rule it off from the list it drives */
 	padding-bottom: var(--s4);
 	margin-bottom: var(--s4);
 	border-bottom: 1px solid var(--border);
+	min-width: 0;
 }
 .rvmp .r-datepick-ic {
 	flex: none;
@@ -2793,11 +2794,20 @@
 }
 .rvmp .r-datepick-chips {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
 	gap: 6px;
-	padding-top: 2px;
+	padding: 2px 0;
+	min-width: 0;
+	flex: 1;
+}
+.rvmp .r-datepick-chips::-webkit-scrollbar {
+	display: none;
 }
 .rvmp .r-datepick-chips button {
+	flex: none;
 	padding: 6px 12px;
 	border-radius: var(--r-pill);
 	font-weight: 700;
