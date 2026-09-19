@@ -47,6 +47,7 @@ export enum ConfigKeys {
 	RaidPartySize,
 	RaidFriendship,
 	RaidMegaBoostType,
+	RaidMegaLevel,
 	InstallPromptDismissed,
 	BestBuddy,
 	TrashKeepForTrade,

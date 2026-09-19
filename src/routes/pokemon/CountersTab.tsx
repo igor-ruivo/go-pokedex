@@ -18,7 +18,13 @@ import { useMoves } from '../../queries/moves';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../../utils/persistent-configs-handler';
-import { guessRaidTier, RAID_BOSS_STATS, type RaidTier } from '../../utils/pokemon-helper';
+import {
+	guessRaidTier,
+	MEGA_LEVEL_PLUS_MULTIPLIER,
+	type MegaLevel,
+	RAID_BOSS_STATS,
+	type RaidTier,
+} from '../../utils/pokemon-helper';
 import { getComputeWorker } from '../../workers/compute-client';
 
 const LEAGUE_NAME = ['Great', 'Ultra', 'Master', 'Raid'] as const;
@@ -29,22 +35,26 @@ const RAID_TOP = 10;
 const TIER_LABEL: Record<RaidTier, string> = {
 	T1: 'Tier 1',
 	T3: 'Tier 3',
-	T5: 'Tier 5',
 	MEGA: 'Mega',
-	T6: 'Tier 6',
-	PRIMAL: 'Primal',
+	T5: 'Tier 5',
 	ELITE: 'Elite',
+	LEGENDARY_MEGA: 'Legendary Mega',
+	PRIMAL: 'Primal',
+	SUPER_MEGA: 'Super Mega',
 };
-const TIER_ORDER: Array<RaidTier> = ['T1', 'T3', 'T5', 'MEGA', 'T6', 'PRIMAL', 'ELITE'];
-/** PokeMiners raid-egg icon per tier, in /public/images/raids. */
+const TIER_ORDER: Array<RaidTier> = ['T1', 'T3', 'MEGA', 'T5', 'ELITE', 'LEGENDARY_MEGA', 'PRIMAL', 'SUPER_MEGA'];
+/** PokeMiners raid-egg icon per tier (with its own extension), in
+ *  /public/images/raids. Legendary Mega Raid reuses Mega's own icon — there's
+ *  no distinct official art for it. */
 const TIER_ICON: Record<RaidTier, string> = {
-	T1: 'tier-1',
-	T3: 'tier-3',
-	T5: 'tier-5',
-	MEGA: 'mega',
-	T6: 'tier-6',
-	PRIMAL: 'primal',
-	ELITE: 'elite',
+	T1: 'tier-1.png',
+	T3: 'tier-3.png',
+	MEGA: 'mega.png',
+	T5: 'tier-5.png',
+	ELITE: 'elite.png',
+	LEGENDARY_MEGA: 'mega.png',
+	PRIMAL: 'primal.png',
+	SUPER_MEGA: 'super-mega.webp',
 };
 
 /** Weather → the attacker move types it boosts ×1.2, and its official icon file. */
@@ -59,16 +69,32 @@ const WEATHER: Array<{ key: string; label: string; icon: string; types: Array<st
 	{ key: 'fog', label: 'Fog', icon: 'fog', types: ['dark', 'ghost'] },
 ];
 
-/** Raid damage bonus by friendship level. */
+/** Raid damage bonus by friendship level — Best Friend was previously coded
+ *  as ×1.11; corrected to the real ×1.10 (10%) while adding Forever Friend
+ *  here, per Bulbapedia/community sources (Niantic's own help center
+ *  confirms Forever Friend gives an additional boost beyond Best Friend,
+ *  without publishing the exact figure itself). */
 const FRIENDSHIP: Array<{ label: string; mult: number }> = [
 	{ label: '—', mult: 1 },
 	{ label: 'Good', mult: 1.03 },
 	{ label: 'Great', mult: 1.05 },
 	{ label: 'Ultra', mult: 1.07 },
-	{ label: 'Best', mult: 1.11 },
+	{ label: 'Best', mult: 1.1 },
+	{ label: 'Forever', mult: 1.12 },
 ];
 
 const PARTY_SIZES = [1, 2, 3, 4];
+
+/** Base/High/Max/Super Max — see `MEGA_LEVEL_PLUS_MULTIPLIER`'s own doc
+ *  comment for the sourcing. Defaults to Max (3), matching dex-server's own
+ *  precomputed rankings, so this tab agrees with the pre-computed type lists
+ *  unless the player explicitly changes it here. */
+const MEGA_LEVELS: Array<{ level: MegaLevel; label: string }> = [
+	{ level: 1, label: 'Base' },
+	{ level: 2, label: 'High' },
+	{ level: 3, label: 'Max' },
+	{ level: 4, label: 'Super Max' },
+];
 
 const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
@@ -97,10 +123,15 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 	const [partySize, setPartySize] = useState(() => Number(readPersistentValue(ConfigKeys.RaidPartySize)) || 1);
 	const [friendship, setFriendship] = useState(() => Number(readPersistentValue(ConfigKeys.RaidFriendship)) || 1);
 	const [megaBoostType, setMegaBoostType] = useState(() => readPersistentValue(ConfigKeys.RaidMegaBoostType) ?? '');
+	const [megaLevel, setMegaLevel] = useState<MegaLevel>(() => {
+		const raw = Number(readPersistentValue(ConfigKeys.RaidMegaLevel));
+		return raw === 1 || raw === 2 || raw === 3 || raw === 4 ? raw : 3;
+	});
 	useEffect(() => void writePersistentValue(ConfigKeys.RaidWeather, weatherKey), [weatherKey]);
 	useEffect(() => void writePersistentValue(ConfigKeys.RaidPartySize, String(partySize)), [partySize]);
 	useEffect(() => void writePersistentValue(ConfigKeys.RaidFriendship, String(friendship)), [friendship]);
 	useEffect(() => void writePersistentValue(ConfigKeys.RaidMegaBoostType, megaBoostType), [megaBoostType]);
+	useEffect(() => void writePersistentValue(ConfigKeys.RaidMegaLevel, String(megaLevel)), [megaLevel]);
 	// Starts on the inferred tier for this boss; re-syncs when you open another one.
 	// (not persisted — the boss tier is a property of the raid you're looking at)
 	const [tier, setTier] = useState<RaidTier>(() => guessRaidTier(pokemon));
@@ -111,13 +142,19 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 	const inferredTier = guessRaidTier(pokemon);
 
 	const cfgDirty =
-		weatherKey !== '' || partySize !== 1 || friendship !== 1 || megaBoostType !== '' || tier !== inferredTier;
+		weatherKey !== '' ||
+		partySize !== 1 ||
+		friendship !== 1 ||
+		megaBoostType !== '' ||
+		megaLevel !== 3 ||
+		tier !== inferredTier;
 
 	const clearConfig = () => {
 		setWeatherKey('');
 		setPartySize(1);
 		setFriendship(1);
 		setMegaBoostType('');
+		setMegaLevel(3);
 		setTier(inferredTier);
 	};
 
@@ -127,6 +164,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		partySize > 1 && `Party of ${partySize}`,
 		friendship > 1 && `${FRIENDSHIP.find((f) => f.mult === friendship)?.label} Friend`,
 		megaBoostType && `Mega ${TYPE_LABEL[megaBoostType] ?? megaBoostType} aura`,
+		megaLevel !== 3 && `Mega Level: ${MEGA_LEVELS.find((m) => m.level === megaLevel)?.label}`,
 	]
 		.filter(Boolean)
 		.join('  ·  ');
@@ -141,7 +179,17 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 
 	const { data: raidCounters = [], isFetching: raidLoading } = useQuery({
 		enabled: isRaid && ready,
-		queryKey: ['raid-counters', pokemon.speciesId, weatherKey, partySize, friendship, megaBoostType, tier, maxLevel],
+		queryKey: [
+			'raid-counters',
+			pokemon.speciesId,
+			weatherKey,
+			partySize,
+			friendship,
+			megaBoostType,
+			megaLevel,
+			tier,
+			maxLevel,
+		],
 		queryFn: () =>
 			getComputeWorker().raidComparisons({
 				candidates: Object.values(gamemasterPokemon).filter((p) => !p.aliasId),
@@ -152,6 +200,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 					partySize: partySize > 1 ? partySize : undefined,
 					friendship: friendship > 1 ? friendship : undefined,
 					megaBoostType: megaBoostType || undefined,
+					megaLevel,
 					tier,
 				},
 				maxLevel,
@@ -298,7 +347,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 											data-active={tier === t}
 											onClick={() => setTier(t)}
 										>
-											<img src={`/images/raids/${TIER_ICON[t]}.png`} alt='' loading='lazy' />
+											<img src={`/images/raids/${TIER_ICON[t]}`} alt='' loading='lazy' />
 										</button>
 									))}
 								</div>
@@ -375,6 +424,28 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 						</div>
 
 						<div className='r-ctr-cond'>
+							<span className='r-ctr-cond-l'>Mega Level</span>
+							<div className='r-ctr-cond-c'>
+								<div className='r-ctr-seg'>
+									{MEGA_LEVELS.map((m) => (
+										<button
+											key={m.level}
+											type='button'
+											data-active={megaLevel === m.level}
+											onClick={() => setMegaLevel(m.level)}
+										>
+											{m.label}
+										</button>
+									))}
+								</div>
+								<span className='r-ctr-cond-hint'>
+									×{MEGA_LEVEL_PLUS_MULTIPLIER[megaLevel].toFixed(1)} on a Mega/Primal’s own Plus move
+									{megaLevel === 4 && ' · +2 attacker levels'}
+								</span>
+							</div>
+						</div>
+
+						<div className='r-ctr-cond'>
 							<span className='r-ctr-cond-l'>Party Power</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-seg'>
@@ -419,6 +490,12 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								<dd>
 									Damage multipliers on your attackers. Incoming damage always uses one fixed constant, so the boss’s
 									own moves never change these numbers.
+								</dd>
+								<dt>Mega Level</dt>
+								<dd>
+									A Mega or Primal’s own Mega Level (raised with Mega Energy after evolving) boosts its bonus “Plus”
+									charged attack only — every other move on its kit is unaffected. Super Max Level also gives the
+									attacker +2 effective Pokémon levels, whether or not it even has a Plus move.
 								</dd>
 								<dt>Boss tier</dt>
 								<dd>

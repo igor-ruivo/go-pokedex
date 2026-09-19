@@ -27,6 +27,7 @@ import {
 	levelToLevelIndex,
 	MAX_LEVEL,
 	MAX_LEVEL_INDEX,
+	type MegaLevel,
 	type RaidOpts,
 	type RaidTier,
 	type RankEntry,
@@ -188,6 +189,8 @@ export interface RaidComparisonsInput {
 		megaBoostType?: string | undefined;
 		/** Explicit tier override; falls back to `guessRaidTier(target)`. */
 		tier?: RaidTier | undefined;
+		/** Base/High/Max/Super Max — defaults to Max (3) inside `computeDPSEntry`. */
+		megaLevel?: MegaLevel | undefined;
 	};
 	/** Level ceiling to evaluate attackers at — {@link MAX_LEVEL} unless Best Buddy (51) is on. */
 	maxLevel?: number;
@@ -210,6 +213,7 @@ const raidComparisons = ({
 		friendship: opts?.friendship,
 		partySize: opts?.partySize,
 		megaBoostType: opts?.megaBoostType,
+		megaLevel: opts?.megaLevel,
 		weatherBoostedTypes: opts?.weatherBoostedTypes ? new Set(opts.weatherBoostedTypes) : undefined,
 	};
 	const levelIndex = maxLevel === MAX_LEVEL ? MAX_LEVEL_INDEX : levelToLevelIndex(maxLevel);
