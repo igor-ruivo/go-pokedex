@@ -291,7 +291,7 @@ const Rankings = () => {
 	return (
 		<div className='r-shell r-shell--wide'>
 			<div className='r-rank-head'>
-				<div className='r-seg r-seg--wrap r-seg--league'>
+				<div className='r-seg r-seg--wrap r-seg--league' style={{ ['--seg-count' as string]: RANKING_MODES.length }}>
 					{RANKING_MODES.map((m) => (
 						<button
 							key={m}
@@ -317,7 +317,18 @@ const Rankings = () => {
 								void navigate({ pathname, search: search.toString() ? `?${search.toString()}` : '' });
 							}}
 						>
-							{MODE_LABEL[m]}
+							{m === 'pokedex' ? (
+								<>
+									{/* "Pokédex" is the odd one out, length-wise, next to Great/Ultra/
+									    Master/Raid — shortened on phones (see .r-seg-short) so all 5
+									    tabs fit in one row without needing the horizontal scroll the
+									    other four already used to require. */}
+									<span className='r-seg-full'>Pokédex</span>
+									<span className='r-seg-short'>Dex</span>
+								</>
+							) : (
+								MODE_LABEL[m]
+							)}
 						</button>
 					))}
 				</div>

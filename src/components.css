@@ -474,12 +474,30 @@
 	background: var(--seg-c);
 	opacity: 0.5;
 }
-/* mobile: a single swipeable row, same "always exactly 4 across, integer
-   snap" mechanism `.r-reach` (the family line) uses — never wraps a league
-   onto its own second line, and stays exactly this way how ever many leagues
-   get added later, since it's sized off a constant (4 visible), not the
-   actual count. Desktop keeps wrapping — seg's own note above still applies
-   there (scrolling would hijack the mouse wheel). */
+/* Full label on desktop, where there's room to spare; "Pokédex" shortens to
+   "Dex" below so all 5 tabs (see the mobile rule right after this) actually
+   fit at that width instead of needing the shorter label AND still scrolling. */
+.rvmp .r-seg-short {
+	display: none;
+}
+@media (max-width: 520px) {
+	.rvmp .r-seg-full {
+		display: none;
+	}
+	.rvmp .r-seg-short {
+		display: inline;
+	}
+}
+/* mobile: a single non-wrapping row, never scrollable — every consumer of
+   `.r-seg--league` always fits its own full set of buttons in one row, sized
+   off however many it actually has (`--seg-count`), not a shared constant:
+   the per-Pokémon page's picker (Great/Ultra/Master/Raid, 4) and Rankings'
+   own (+ Pokédex/Dex, 5 — see `.r-seg-short` above) are NOT the same count,
+   and forcing one shared divisor onto both either starves 4 buttons with
+   dead space sized for a 5th that isn't there, or crams 5 into a 4-wide
+   layout — hence each caller sets its own `--seg-count` via inline style.
+   `overflow-x`/scroll-snap stay only as a safety net for a future extra mode
+   or an unusually narrow phone, never this row's expected, normal case. */
 @media (max-width: 520px) {
 	.rvmp .r-seg--league {
 		flex-wrap: nowrap;
@@ -492,7 +510,9 @@
 		display: none;
 	}
 	.rvmp .r-seg--league button {
-		flex: 0 0 calc((100% - 3 * 4px) / 4);
+		flex: 0 0 calc((100% - (var(--seg-count, 4) - 1) * 4px) / var(--seg-count, 4));
+		padding-left: 4px;
+		padding-right: 4px;
 		scroll-snap-align: start;
 	}
 }

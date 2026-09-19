@@ -805,7 +805,12 @@ const PokemonDetail = () => {
 			)}
 
 			{/* ---- LEAGUE + TABS ---- */}
-			<div className='r-seg r-seg--league' role='tablist' aria-label='League / mode'>
+			<div
+				className='r-seg r-seg--league'
+				role='tablist'
+				aria-label='League / mode'
+				style={{ ['--seg-count' as string]: LEAGUES.length }}
+			>
 				{LEAGUES.map((l) => (
 					<button
 						key={l.id}
