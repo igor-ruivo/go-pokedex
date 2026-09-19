@@ -152,6 +152,31 @@ const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<st
 		() => sortByCalendarRelevance(entries, (e) => e.speciesId, gamemasterPokemon, sets),
 		[entries, gamemasterPokemon, sets]
 	);
+
+	// Only "current" raid/spawn grids pass an `endMap` at all (see RaidsTab/
+	// SpawnsTab) — once any of THIS grid's own countdowns hits zero, the
+	// underlying "current" bucket it came from is stale (computed from a
+	// single non-live `nowAsEventTime()` snapshot, unlike this chip's own
+	// live `now`), and surgically dropping just this one chip risks a subtler
+	// bug than the one it fixes: the tab's own bucketing/date-tab boundaries,
+	// "nothing scheduled" empty state, and any entry that should have just
+	// rotated in from "upcoming" would all need to be recomputed in lockstep.
+	// A full reload re-derives everything from fresh data instead — simple,
+	// and guaranteed consistent. Guarded so a render tick that still sees the
+	// same expiry (before navigation actually happens) can't call it twice.
+	const reloadTriggeredRef = useRef(false);
+	useEffect(() => {
+		if (reloadTriggeredRef.current || !endMap) return;
+		const expired = sorted.some((e) => {
+			const end = endMap.get(e.speciesId);
+			return end !== undefined && end - now <= 0;
+		});
+		if (expired) {
+			reloadTriggeredRef.current = true;
+			window.location.reload();
+		}
+	}, [now, sorted, endMap]);
+
 	// `sets.ready` lags behind this tab's own `xFetchCompleted` gate (it's a
 	// completely separate data source — PvP/raid rankings, not the Calendar
 	// feed) — without waiting on it too, this grid renders once in the
@@ -272,7 +297,11 @@ const EventCard = ({
 	const { currentGameLanguage: gl } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const { imageSource } = useImageSource();
-	const phase = eventPhase(post.startDate, post.endDate);
+	// Ticking so a same-day "in Xh/Xm/Xs" countdown (see `relativeDays`) counts
+	// down live and flips this card straight to "Live" the instant it starts,
+	// instead of sitting on a static "today" until some unrelated re-render.
+	const now = useLiveNow();
+	const phase = eventPhase(post.startDate, post.endDate, now);
 	const title = (preferSubtitle ? post.subtitle[gl] || post.title[gl] : post.title[gl] || post.subtitle[gl]) || 'Event';
 	const bonuses = post.bonuses[gl] ?? [];
 	const spotlightMons = post.wild;
@@ -329,7 +358,7 @@ const EventCard = ({
 					</i>
 				) : (
 					<i className='r-phase' data-phase={phase}>
-						{phase === 'live' ? 'Live' : phase === 'soon' ? relativeDays(post.startDate) : 'Ended'}
+						{phase === 'live' ? 'Live' : phase === 'soon' ? relativeDays(post.startDate, now) : 'Ended'}
 					</i>
 				)}
 			</button>

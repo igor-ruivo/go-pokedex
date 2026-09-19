@@ -217,9 +217,22 @@ export type EventPhase = 'live' | 'soon' | 'ended';
 export const eventPhase = (start: number, end: number, now = nowAsEventTime()): EventPhase =>
 	now < start ? 'soon' : now > end ? 'ended' : 'live';
 
+/**
+ * `now` is expected to come from `useLiveNow()` (ticking every second) for
+ * anything rendering this live — for same-day events (`d <= 0`) this counts
+ * down to the minute/second instead of sitting on a static "today" all day,
+ * flipping to `eventPhase`'s own 'live' the moment it reaches zero.
+ */
 export const relativeDays = (ts: number, now = nowAsEventTime()): string => {
-	const d = Math.round((ts - now) / 86_400_000);
-	if (d <= 0) return 'today';
+	const ms = ts - now;
+	const d = Math.round(ms / 86_400_000);
+	if (d >= 2) return `in ${d}d`;
 	if (d === 1) return 'tomorrow';
-	return `in ${d}d`;
+	if (ms <= 0) return 'today';
+	const h = Math.floor(ms / 3_600_000);
+	if (h >= 1) return `in ${h}h`;
+	const m = Math.floor(ms / 60_000);
+	if (m >= 1) return `in ${m}m`;
+	const s = Math.floor(ms / 1000);
+	return `in ${s}s`;
 };
