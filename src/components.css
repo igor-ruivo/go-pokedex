@@ -1692,7 +1692,16 @@
 	height: 1.15em;
 	object-fit: contain;
 }
-@media (min-width: 900px) {
+/* This must stay comfortably ABOVE the real width all 6 side-by-side pills
+   need (icon + gap + label × 6, plus the outer pill's own gaps/padding/
+   border) — an earlier, too-low 900px guess here meant the pill's own
+   scrollbar-hidden `overflow-x: auto` (below) silently ate the 6th item
+   (Searches) anywhere from ~900px up to ~1342px: invisible or half-clipped
+   depending on the exact width, with no way to reach it (no touch, no wheel
+   affordance) since this is primary navigation. Below this breakpoint, nav
+   stays in the stacked icon-on-top layout instead, which is always safe: its
+   items are `flex: 1` and just shrink together, so it can never overflow. */
+@media (min-width: 1360px) {
 	.rvmp .r-bottomnav {
 		left: 50%;
 		right: auto;
