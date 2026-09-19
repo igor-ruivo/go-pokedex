@@ -977,12 +977,12 @@
    treatment as `.r-board-lg` right above, purely via colour: no visibility/
    animation logic, nothing to mount or unmount. */
 .rvmp .r-board-ivrank {
-	font-family: Fredoka, sans-serif;
+	font-size: 10.5px;
 	font-weight: 700;
-	font-size: 12px;
-	letter-spacing: 0.01em;
+	letter-spacing: 0.02em;
 	color: var(--text-faint);
 	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
 	transition: color 0.14s ease;
 }
 .rvmp .r-board-row:hover .r-board-ivrank,
