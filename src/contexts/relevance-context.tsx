@@ -18,10 +18,6 @@ const EMPTY: RelevanceSets = {
 	ultra: new Set(),
 	master: new Set(),
 	raid: new Set(),
-	greatRank: new Map(),
-	ultraRank: new Map(),
-	masterRank: new Map(),
-	raidRank: new Map(),
 	ready: false,
 };
 
@@ -61,24 +57,12 @@ export const RelevanceSetsProvider = (props: React.PropsWithChildren<object>) =>
 			for (const r of Object.values(list ?? {})) if (r.rank <= cutoff) s.add(r.speciesId);
 			return s;
 		};
-		const pvpRankMap = (list: Record<string, { speciesId: string; rank: number }> | undefined) => {
-			const m = new Map<string, number>();
-			for (const r of Object.values(list ?? {})) m.set(r.speciesId, r.rank);
-			return m;
-		};
 		const raid = new Set<string>();
-		// A species can appear in several type-specific attacker lists with a
-		// different rank in each — keep its BEST (lowest) one, same "relevant
-		// for raids at all" spirit the membership set already has.
-		const raidRank = new Map<string, number>();
 		for (const [key, list] of Object.entries(raidDPS)) {
 			if (key === '') continue; // the '' key is the type-agnostic overall list; we want "top N of any type"
 			for (const e of Object.values(list)) {
 				const rank = raidRankOf(e, raidMetric);
-				if (rank == null) continue;
-				if (rank <= raidCut) raid.add(e.speciesId);
-				const existing = raidRank.get(e.speciesId);
-				if (existing == null || rank < existing) raidRank.set(e.speciesId, rank);
+				if (rank != null && rank <= raidCut) raid.add(e.speciesId);
 			}
 		}
 		return {
@@ -86,10 +70,6 @@ export const RelevanceSetsProvider = (props: React.PropsWithChildren<object>) =>
 			ultra: pvpSet(rankLists[1], ultraCut),
 			master: pvpSet(rankLists[2], masterCut),
 			raid,
-			greatRank: pvpRankMap(rankLists[0]),
-			ultraRank: pvpRankMap(rankLists[1]),
-			masterRank: pvpRankMap(rankLists[2]),
-			raidRank,
 			ready: true,
 		};
 	}, [

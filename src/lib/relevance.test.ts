@@ -8,12 +8,37 @@ const relevanceSets = (overrides: Partial<RelevanceSets> = {}): RelevanceSets =>
 	ultra: new Set(),
 	master: new Set(),
 	raid: new Set(),
-	greatRank: new Map(),
-	ultraRank: new Map(),
-	masterRank: new Map(),
-	raidRank: new Map(),
 	ready: true,
 	...overrides,
+});
+
+describe('sortByCalendarRelevance — live countdown outranks everything else', () => {
+	it('a species with a countdown always wins, even against more/higher-priority badges', () => {
+		const counting = mockPokemon({ speciesId: 'counting', dex: 1 });
+		const badged = mockPokemon({ speciesId: 'badged', dex: 900 });
+		const gm = buildGamemaster([counting, badged]);
+		const sets = relevanceSets({ raid: new Set(['badged']), master: new Set(['badged']) });
+
+		const result = sortByCalendarRelevance(
+			[badged, counting],
+			(p) => p.speciesId,
+			gm,
+			sets,
+			(p) => (p.speciesId === 'counting' ? 60_000 : undefined)
+		);
+		expect(result.map((p) => p.speciesId)).toEqual(['counting', 'badged']);
+	});
+
+	it('both counting down: the one ending SOONER comes first', () => {
+		const soon = mockPokemon({ speciesId: 'soon', dex: 900 });
+		const later = mockPokemon({ speciesId: 'later', dex: 1 });
+		const gm = buildGamemaster([soon, later]);
+		const sets = relevanceSets();
+		const timeLeftOf = (p: ReturnType<typeof mockPokemon>) => (p.speciesId === 'soon' ? 5_000 : 500_000);
+
+		const result = sortByCalendarRelevance([later, soon], (p) => p.speciesId, gm, sets, timeLeftOf);
+		expect(result.map((p) => p.speciesId)).toEqual(['soon', 'later']);
+	});
 });
 
 describe('sortByCalendarRelevance — badge count first', () => {
@@ -23,11 +48,8 @@ describe('sortByCalendarRelevance — badge count first', () => {
 		const gm = buildGamemaster([oneBadge, twoBadges]);
 		const sets = relevanceSets({
 			raid: new Set(['onebadge']),
-			raidRank: new Map([['onebadge', 1]]), // best possible raid rank
 			great: new Set(['twobadges']),
 			master: new Set(['twobadges']),
-			greatRank: new Map([['twobadges', 50]]),
-			masterRank: new Map([['twobadges', 50]]),
 		});
 
 		const result = sortByCalendarRelevance([oneBadge, twoBadges], (p) => p.speciesId, gm, sets);
@@ -35,88 +57,40 @@ describe('sortByCalendarRelevance — badge count first', () => {
 	});
 });
 
-describe('sortByCalendarRelevance — tiebreak priority: raid > master > ultra > great > family line', () => {
-	it('same badge count (1 each), both raid-relevant: the better raid rank wins', () => {
-		const better = mockPokemon({ speciesId: 'better', dex: 900 });
-		const worse = mockPokemon({ speciesId: 'worse', dex: 1 });
-		const gm = buildGamemaster([better, worse]);
-		const sets = relevanceSets({
-			raid: new Set(['better', 'worse']),
-			raidRank: new Map([
-				['better', 3],
-				['worse', 40],
-			]),
-		});
-
-		const result = sortByCalendarRelevance([worse, better], (p) => p.speciesId, gm, sets);
-		expect(result.map((p) => p.speciesId)).toEqual(['better', 'worse']);
-	});
-
-	it('same badge count (1 each), one raid-relevant vs one only great-relevant: the raid one wins — raid is checked before great in the priority chain', () => {
+describe('sortByCalendarRelevance — tied badge COUNT: importance of which badge, not any rank number', () => {
+	it('same badge count (1 each), one raid-relevant vs one only great-relevant: raid wins — importance is checked by presence, never by rank', () => {
 		const raidMon = mockPokemon({ speciesId: 'raidmon', dex: 900 });
 		const greatMon = mockPokemon({ speciesId: 'greatmon', dex: 1 });
 		const gm = buildGamemaster([raidMon, greatMon]);
-		const sets = relevanceSets({
-			raid: new Set(['raidmon']),
-			raidRank: new Map([['raidmon', 5]]),
-			great: new Set(['greatmon']),
-			greatRank: new Map([['greatmon', 1]]), // even the very best Great League rank...
-		});
+		// greatMon's rank would be the best possible in the old rank-based
+		// scheme — irrelevant now, since only badge PRESENCE is compared.
+		const sets = relevanceSets({ raid: new Set(['raidmon']), great: new Set(['greatmon']) });
 
 		const result = sortByCalendarRelevance([greatMon, raidMon], (p) => p.speciesId, gm, sets);
-		// ...still loses to any raid-relevant mon, because raid is compared first.
 		expect(result.map((p) => p.speciesId)).toEqual(['raidmon', 'greatmon']);
 	});
 
-	it('tied on raid (neither is raid-relevant): falls through to Master rank', () => {
-		const better = mockPokemon({ speciesId: 'better', dex: 900 });
-		const worse = mockPokemon({ speciesId: 'worse', dex: 1 });
-		const gm = buildGamemaster([better, worse]);
-		const sets = relevanceSets({
-			master: new Set(['better', 'worse']),
-			masterRank: new Map([
-				['better', 10],
-				['worse', 90],
-			]),
-		});
+	it('tied on Raid presence (neither has one): Master presence decides next', () => {
+		const masterMon = mockPokemon({ speciesId: 'mastermon', dex: 900 });
+		const ultraMon = mockPokemon({ speciesId: 'ultramon', dex: 1 });
+		const gm = buildGamemaster([masterMon, ultraMon]);
+		const sets = relevanceSets({ master: new Set(['mastermon']), ultra: new Set(['ultramon']) });
 
-		const result = sortByCalendarRelevance([worse, better], (p) => p.speciesId, gm, sets);
-		expect(result.map((p) => p.speciesId)).toEqual(['better', 'worse']);
+		const result = sortByCalendarRelevance([ultraMon, masterMon], (p) => p.speciesId, gm, sets);
+		expect(result.map((p) => p.speciesId)).toEqual(['mastermon', 'ultramon']);
 	});
 
-	it('tied on raid and Master: falls through to Ultra rank', () => {
-		const better = mockPokemon({ speciesId: 'better', dex: 900 });
-		const worse = mockPokemon({ speciesId: 'worse', dex: 1 });
-		const gm = buildGamemaster([better, worse]);
-		const sets = relevanceSets({
-			ultra: new Set(['better', 'worse']),
-			ultraRank: new Map([
-				['better', 4],
-				['worse', 45],
-			]),
-		});
+	it('tied on Raid, Master, and Ultra presence: Great presence decides last', () => {
+		const greatMon = mockPokemon({ speciesId: 'greatmon', dex: 900 });
+		const noneMon = mockPokemon({ speciesId: 'nonemon', dex: 1 });
+		const gm = buildGamemaster([greatMon, noneMon]);
+		const sets = relevanceSets({ great: new Set(['greatmon']) });
 
-		const result = sortByCalendarRelevance([worse, better], (p) => p.speciesId, gm, sets);
-		expect(result.map((p) => p.speciesId)).toEqual(['better', 'worse']);
+		const result = sortByCalendarRelevance([noneMon, greatMon], (p) => p.speciesId, gm, sets);
+		expect(result.map((p) => p.speciesId)).toEqual(['greatmon', 'nonemon']);
 	});
 
-	it('tied on raid, Master, and Ultra: falls through to Great rank', () => {
-		const better = mockPokemon({ speciesId: 'better', dex: 900 });
-		const worse = mockPokemon({ speciesId: 'worse', dex: 1 });
-		const gm = buildGamemaster([better, worse]);
-		const sets = relevanceSets({
-			great: new Set(['better', 'worse']),
-			greatRank: new Map([
-				['better', 2],
-				['worse', 48],
-			]),
-		});
-
-		const result = sortByCalendarRelevance([worse, better], (p) => p.speciesId, gm, sets);
-		expect(result.map((p) => p.speciesId)).toEqual(['better', 'worse']);
-	});
-
-	it('tied on all four ranks (both zero-badge, unrelated species): falls back to sortByFamilyLine (dex order)', () => {
+	it('exact same badges on both sides: falls straight to sortByFamilyLine (dex order) — rank plays no part at all', () => {
 		const lowDex = mockPokemon({ speciesId: 'lowdex', dex: 1 });
 		const highDex = mockPokemon({ speciesId: 'highdex', dex: 900 });
 		const gm = buildGamemaster([lowDex, highDex]);
@@ -127,8 +101,8 @@ describe('sortByCalendarRelevance — tiebreak priority: raid > master > ultra >
 	});
 });
 
-describe('sortByCalendarRelevance — rank tiebreak respects family reachability', () => {
-	it('a base-stage mon inherits its EVOLVED form’s better raid rank for the tiebreak, same reachability sweep as the badge count itself', () => {
+describe('sortByCalendarRelevance — badge presence respects family reachability', () => {
+	it('a base-stage mon inherits its EVOLVED form’s badge for the tiebreak, same reachability sweep the badge count itself uses', () => {
 		// Base stage, badge-count-wise relevant only because its evolution is —
 		// mirrors `leagueBadgesFor`'s own family-reachable design.
 		const base = mockPokemon({
@@ -141,20 +115,14 @@ describe('sortByCalendarRelevance — rank tiebreak respects family reachability
 			dex: 901,
 			family: { id: 'f-base', parent: 'base' },
 		});
-		const unrelatedButBetterRaid = mockPokemon({ speciesId: 'unrelated', dex: 1 });
-		const gm = buildGamemaster([base, evolved, unrelatedButBetterRaid]);
-		const sets = relevanceSets({
-			raid: new Set(['evolved', 'unrelated']),
-			raidRank: new Map([
-				['evolved', 5], // base's own reachable family includes this
-				['unrelated', 6],
-			]),
-		});
+		const unrelated = mockPokemon({ speciesId: 'unrelated', dex: 1 });
+		const gm = buildGamemaster([base, evolved, unrelated]);
+		const sets = relevanceSets({ raid: new Set(['evolved']) });
 
-		const result = sortByCalendarRelevance([unrelatedButBetterRaid, base], (p) => p.speciesId, gm, sets);
-		// `base` picks up rank 5 (via `evolved`, reachable from it), beating
-		// `unrelated`'s own direct rank 6, even though `base` itself never
-		// appears in the raid set/rank map at all.
+		const result = sortByCalendarRelevance([unrelated, base], (p) => p.speciesId, gm, sets);
+		// `base` picks up the Raid badge via `evolved` (reachable from it),
+		// beating `unrelated`'s zero badges, even though `base` itself never
+		// appears in the raid set directly.
 		expect(result.map((p) => p.speciesId)).toEqual(['base', 'unrelated']);
 	});
 });

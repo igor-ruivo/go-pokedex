@@ -147,10 +147,26 @@ const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<st
 	const now = useLiveNow();
 	const { gamemasterPokemon } = usePokemon();
 	const sets = useRelevanceSets();
-	// Most relevant first (most league/raid dots), family-line order as tiebreak.
+	// Ending soonest first (when `endMap` gives it a countdown at all), then
+	// most relevant (most league/raid dots), family-line order as the final
+	// tiebreak — see `sortByCalendarRelevance`'s own doc comment for the exact
+	// priority chain. Re-sorts every tick so a chip about to expire visibly
+	// climbs to the front as its own countdown counts down.
 	const sorted = useMemo(
-		() => sortByCalendarRelevance(entries, (e) => e.speciesId, gamemasterPokemon, sets),
-		[entries, gamemasterPokemon, sets]
+		() =>
+			sortByCalendarRelevance(
+				entries,
+				(e) => e.speciesId,
+				gamemasterPokemon,
+				sets,
+				endMap
+					? (e) => {
+							const end = endMap.get(e.speciesId);
+							return end !== undefined ? end - now : undefined;
+						}
+					: undefined
+			),
+		[entries, gamemasterPokemon, sets, endMap, now]
 	);
 
 	// Only "current" raid/spawn grids pass an `endMap` at all (see RaidsTab/

@@ -6,20 +6,16 @@ import { fetchReachablePokemonIncludingSelf, sortByFamilyLine } from '../utils/p
 
 export type LeagueKey = 'great' | 'ultra' | 'master' | 'raid';
 export const LEAGUE_KEYS: ReadonlyArray<LeagueKey> = ['great', 'ultra', 'master', 'raid'];
+/** Badge importance, most to least — used to break a tied badge COUNT by
+ *  which specific badges each side has, not by any underlying rank number
+ *  (see `sortByCalendarRelevance`). */
+const BADGE_IMPORTANCE: ReadonlyArray<LeagueKey> = ['raid', 'master', 'ultra', 'great'];
 
 export interface RelevanceSets {
 	great: Set<string>;
 	ultra: Set<string>;
 	master: Set<string>;
 	raid: Set<string>;
-	/** Each species' own best (lowest) rank in that category — `undefined`
-	 *  when it doesn't appear there at all. Membership in the `Set`s above is
-	 *  just "rank <= the /trash-page cutoff"; these carry the actual number,
-	 *  for ranking WITHIN a tied badge count (see `sortByCalendarRelevance`). */
-	greatRank: Map<string, number>;
-	ultraRank: Map<string, number>;
-	masterRank: Map<string, number>;
-	raidRank: Map<string, number>;
 	ready: boolean;
 }
 
@@ -30,10 +26,9 @@ export interface RelevanceSets {
 // plain per-component `useMemo`.
 export { useRelevanceSets };
 
-/** The one family-reachability sweep both `leagueBadgesFor` and `bestRanksFor`
- *  need — computed once per Pokémon and shared between them by
- *  `sortByCalendarRelevance` (via the optional `family` param on each),
- *  instead of each doing its own separate walk over the same family. */
+/** The family-reachability sweep `leagueBadgesFor` needs — a plain helper so
+ *  `sortByCalendarRelevance` can pass in an already-computed family instead
+ *  of making it walk the same reachable set itself. */
 const familyIdsFor = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) =>
 	Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map((m) => m.speciesId);
 
@@ -69,58 +64,31 @@ export const useLeagueBadges = (
 	return useMemo(() => leagueBadgesFor(pokemon, gamemasterPokemon, sets), [pokemon, gamemasterPokemon, sets]);
 };
 
-interface BestRanks {
-	raid: number;
-	master: number;
-	ultra: number;
-	great: number;
-}
-
-/** Each category's best (lowest) rank across the whole reachable family —
- *  `Infinity` where the family never shows up in that category at all.
- *  Same family-reachability sweep `leagueBadgesFor` already does, just
- *  keeping the actual number instead of collapsing it to "relevant or not". */
-const bestRanksFor = (
-	pokemon: IGamemasterPokemon,
-	gamemasterPokemon: Record<string, IGamemasterPokemon>,
-	sets: RelevanceSets,
-	family?: Array<string>
-): BestRanks => {
-	if (!sets.ready) return { raid: Infinity, master: Infinity, ultra: Infinity, great: Infinity };
-	const familyIds = family ?? familyIdsFor(pokemon, gamemasterPokemon);
-	const bestOf = (map: Map<string, number>) => {
-		let best = Infinity;
-		for (const id of familyIds) {
-			const rank = map.get(id);
-			if (rank != null && rank < best) best = rank;
-		}
-		return best;
-	};
-	return {
-		raid: bestOf(sets.raidRank),
-		master: bestOf(sets.masterRank),
-		ultra: bestOf(sets.ultraRank),
-		great: bestOf(sets.greatRank),
-	};
-};
-
 /**
  * Calendar chip ordering (also used by Move Detail's Recommended/Also-learned
- * -by/Elite/Legacy lists): most relevant first (however many league/raid dots
- * a Pokémon earns — see `leagueBadgesFor`); on a tie, whichever has the
- * better (lower) raid rank wins, using the player's own preferred raid metric
- * (`useRaidMetric` — DPS/TDO/eDPS, baked into `sets.raidRank` already); still
- * tied, Master, then Ultra, then Great League rank, same "better rank wins"
- * comparison each time; still tied after all four, the exact same ordering a
- * Pokémon's own family-line strip uses (`sortByFamilyLine`), reused as-is
- * rather than re-implemented — unrelated species just fall back to its
- * dex/name tiebreak, which reads fine for a mixed bag of Pokémon too.
+ * -by/Elite/Legacy lists), in this exact priority order:
+ *
+ *  1. A live countdown (`timeLeftOf`, e.g. a "current" raid/spawn's own
+ *     "Xh/Xm/Xs left" adorner) always outranks having none at all.
+ *  2. Between two both counting down, the one ending SOONER comes first.
+ *  3. However many league/raid badges a Pokémon earns (see `leagueBadgesFor`)
+ *     — more badges wins, full stop.
+ *  4. Tied on badge COUNT: which specific badges, by importance (Raid, then
+ *     Master, then Ultra, then Great — see `BADGE_IMPORTANCE`) — presence of
+ *     the higher-priority badge wins; the underlying PvP/raid rank NUMBER
+ *     plays no part at all here, only whether each badge is present.
+ *  5. Exactly the same badges on both sides: rank stops mattering entirely —
+ *     falls straight to `sortByFamilyLine`'s own dex/family-branch order,
+ *     which also covers a pair of otherwise-unrelated, badge-less species.
  */
 export const sortByCalendarRelevance = <T>(
 	items: ReadonlyArray<T>,
 	speciesIdOf: (item: T) => string,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
-	sets: RelevanceSets
+	sets: RelevanceSets,
+	/** Remaining ms for a live countdown this item is showing (e.g. Calendar's
+	 *  "current" raid/spawn chips) — `undefined` when it has none at all. */
+	timeLeftOf?: (item: T) => number | undefined
 ): Array<T> => {
 	const known = items.filter((item) => gamemasterPokemon[speciesIdOf(item)]);
 	const uniquePokemon = [
@@ -128,33 +96,29 @@ export const sortByCalendarRelevance = <T>(
 	];
 	const familyOrder = sortByFamilyLine(uniquePokemon, gamemasterPokemon);
 	const familyRank = new Map(familyOrder.map((p, i) => [p.speciesId, i]));
-	// One reachability sweep per unique Pokémon, shared by both the badge
-	// count and the best-rank lookup below, instead of each doing its own.
-	const reachableIds = new Map(uniquePokemon.map((p) => [p.speciesId, familyIdsFor(p, gamemasterPokemon)]));
-	const badgeCount = new Map(
-		uniquePokemon.map((p) => [
-			p.speciesId,
-			leagueBadgesFor(p, gamemasterPokemon, sets, reachableIds.get(p.speciesId)).length,
-		])
+	const badgesOf = new Map(
+		uniquePokemon.map((p) => [p.speciesId, new Set(leagueBadgesFor(p, gamemasterPokemon, sets))])
 	);
-	const bestRanks = new Map(
-		uniquePokemon.map((p) => [p.speciesId, bestRanksFor(p, gamemasterPokemon, sets, reachableIds.get(p.speciesId))])
-	);
-	const ranksOf = (id: string): BestRanks =>
-		bestRanks.get(id) ?? { raid: Infinity, master: Infinity, ultra: Infinity, great: Infinity };
 
 	return [...items].sort((a, b) => {
 		const idA = speciesIdOf(a);
 		const idB = speciesIdOf(b);
-		const ranksA = ranksOf(idA);
-		const ranksB = ranksOf(idB);
-		return (
-			(badgeCount.get(idB) ?? 0) - (badgeCount.get(idA) ?? 0) ||
-			ranksA.raid - ranksB.raid ||
-			ranksA.master - ranksB.master ||
-			ranksA.ultra - ranksB.ultra ||
-			ranksA.great - ranksB.great ||
-			(familyRank.get(idA) ?? 0) - (familyRank.get(idB) ?? 0)
-		);
+
+		const timeA = timeLeftOf?.(a);
+		const timeB = timeLeftOf?.(b);
+		if ((timeA !== undefined) !== (timeB !== undefined)) return timeA !== undefined ? -1 : 1;
+		if (timeA !== undefined && timeB !== undefined && timeA !== timeB) return timeA - timeB;
+
+		const badgesA = badgesOf.get(idA) ?? new Set<LeagueKey>();
+		const badgesB = badgesOf.get(idB) ?? new Set<LeagueKey>();
+		if (badgesA.size !== badgesB.size) return badgesB.size - badgesA.size;
+
+		for (const key of BADGE_IMPORTANCE) {
+			const hasA = badgesA.has(key);
+			const hasB = badgesB.has(key);
+			if (hasA !== hasB) return hasA ? -1 : 1;
+		}
+
+		return (familyRank.get(idA) ?? 0) - (familyRank.get(idB) ?? 0);
 	});
 };
