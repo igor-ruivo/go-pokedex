@@ -2508,6 +2508,7 @@
 	position: relative;
 	width: 96px;
 	height: 60px;
+	align-self: flex-start;
 	border-radius: var(--r-xs);
 	overflow: hidden;
 	flex: none;
