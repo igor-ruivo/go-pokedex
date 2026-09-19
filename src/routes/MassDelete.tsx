@@ -1816,13 +1816,6 @@ const MassDelete = () => {
 						{mode === 'meta' && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>Preserve top current meta Pokémon per league/raid</p>
-								{/* Great/Ultra/Master/Raid share one row of 4 whenever that
-								    comfortably fits; below that width it becomes a row of 3
-								    (Great/Ultra/Master) instead of squeezing straight down to 2 —
-								    Raid moves out to sit beside the CP dropdown below, rather than
-								    wrapping to its own row alone here. Both Raid controls below are
-								    the same state; CSS shows exactly one of the two per breakpoint
-								    (same dual-render technique as the full/short knob labels). */}
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
 										<span>
@@ -1860,6 +1853,85 @@ const MassDelete = () => {
 											<i className='r-md-knob-short'>Raid</i>
 										</span>
 										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+									</div>
+								</div>
+								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
+								<div className='r-md-row-2'>
+									<div className='r-md-knob'>
+										<span>Save CP</span>
+										<select
+											className='r-md-select'
+											aria-label='Save CP'
+											value={cp}
+											onChange={(e) => setCp(+e.target.value)}
+										>
+											{CP_OPTIONS.map((n) => (
+												<option key={n} value={n}>
+													{n}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className='r-md-knob r-md-raid-cp'>
+										<span>
+											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+											<i className='r-md-knob-full'>Raid Attackers</i>
+											<i className='r-md-knob-short'>Raid</i>
+										</span>
+										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+									</div>
+									<div className='r-md-knob'>
+										<span>Simplified mode</span>
+										<button
+											type='button'
+											className='r-ctr-toggle'
+											data-on={simplifiedTrash ? '' : undefined}
+											aria-pressed={simplifiedTrash}
+											title='Trades accuracy for a shorter string: skips looking for Master League (uncapped) stat-product ties — only the exact hundo (protected everywhere, unconditionally, via the global !4* exclusion) stays protected there. Great/Ultra/raid protection is unaffected.'
+											onClick={() => setSimplifiedTrash((v) => !v)}
+										>
+											<span className='r-ss-box' aria-hidden='true' />
+											{simplifiedTrash ? 'On' : 'Off'}
+										</button>
+									</div>
+								</div>
+							</>
+						)}
+
+						{mode === 'badIv' && (
+							<>
+								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
+									Simplified trades some accuracy for a shorter string — see the tooltip on the toggle
+								</p>
+								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+									<div className='r-md-knob'>
+										<span>Save CP</span>
+										<select
+											className='r-md-select'
+											aria-label='Save CP'
+											value={cp}
+											onChange={(e) => setCp(+e.target.value)}
+										>
+											{CP_OPTIONS.map((n) => (
+												<option key={n} value={n}>
+													{n}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className='r-md-knob'>
+										<span>Simplified mode</span>
+										<button
+											type='button'
+											className='r-ctr-toggle'
+											data-on={simplifiedBadIv ? '' : undefined}
+											aria-pressed={simplifiedBadIv}
+											title='Trades accuracy for a shorter string: instead of protecting just a species’ exact best IV spread, any species that would need one of these per-spread carve-outs is skipped entirely — a bit like a bonus whitelist entry. Shorter and simpler, but more false negatives: some catches Complete mode would correctly target stay un-targeted here.'
+											onClick={() => setSimplifiedBadIv((v) => !v)}
+										>
+											<span className='r-ss-box' aria-hidden='true' />
+											{simplifiedBadIv ? 'On' : 'Off'}
+										</button>
 									</div>
 								</div>
 							</>
@@ -1910,23 +1982,13 @@ const MassDelete = () => {
 										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
 									</div>
 								</div>
-							</>
-						)}
-
-						{mode === 'meta' && (
-							<>
-								{/* Its own dedicated 2-up grid, not the general auto-fill one below —
-								    CP and Simplified mode always stay side by side, at any width,
-								    same technique (and same pairing) as the Non-Perfect IVs tab's own
-								    CP+Simplified row below. Raid Attackers' narrow-screen duplicate
-								    moves to its own row right after instead of sharing this one — see
-								    `.r-md-raid-cp-row`'s own doc comment in components.css. */}
-								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
+								<div className='r-md-row-2'>
 									<div className='r-md-knob'>
-										<span>Never delete at or above CP</span>
+										<span>Save CP</span>
 										<select
 											className='r-md-select'
-											aria-label='Never delete at or above CP'
+											aria-label='Save CP'
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -1937,22 +1999,6 @@ const MassDelete = () => {
 											))}
 										</select>
 									</div>
-									<div className='r-md-knob'>
-										<span>Simplified mode (Smaller string but less effective)</span>
-										<button
-											type='button'
-											className='r-ctr-toggle'
-											data-on={simplifiedTrash ? '' : undefined}
-											aria-pressed={simplifiedTrash}
-											title='Trades accuracy for a shorter string: skips looking for Master League (uncapped) stat-product ties — only the exact hundo (protected everywhere, unconditionally, via the global !4* exclusion) stays protected there. Great/Ultra/raid protection is unaffected.'
-											onClick={() => setSimplifiedTrash((v) => !v)}
-										>
-											<span className='r-ss-box' aria-hidden='true' />
-											{simplifiedTrash ? 'On' : 'Off'}
-										</button>
-									</div>
-								</div>
-								<div className='r-md-raid-cp-row'>
 									<div className='r-md-knob r-md-raid-cp'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
@@ -1961,78 +2007,8 @@ const MassDelete = () => {
 										</span>
 										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
 									</div>
-								</div>
-							</>
-						)}
-
-						{mode === 'badIv' && (
-							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									Simplified trades some accuracy for a shorter string — see the tooltip on the toggle
-								</p>
-								{/* Same dedicated 2-up grid technique as meta mode's own CP+Simplified
-								    pair above — CP and Simplified mode always stay side by side, at
-								    any width, rather than the auto-fill grid below wrapping the
-								    second one down once the panel gets too narrow. */}
-								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
 									<div className='r-md-knob'>
-										<span>Never delete at or above CP</span>
-										<select
-											className='r-md-select'
-											aria-label='Never delete at or above CP'
-											value={cp}
-											onChange={(e) => setCp(+e.target.value)}
-										>
-											{CP_OPTIONS.map((n) => (
-												<option key={n} value={n}>
-													{n}
-												</option>
-											))}
-										</select>
-									</div>
-									<div className='r-md-knob'>
-										<span>Simplified mode (Smaller string but less effective)</span>
-										<button
-											type='button'
-											className='r-ctr-toggle'
-											data-on={simplifiedBadIv ? '' : undefined}
-											aria-pressed={simplifiedBadIv}
-											title='Trades accuracy for a shorter string: instead of protecting just a species’ exact best IV spread, any species that would need one of these per-spread carve-outs is skipped entirely — a bit like a bonus whitelist entry. Shorter and simpler, but more false negatives: some catches Complete mode would correctly target stay un-targeted here.'
-											onClick={() => setSimplifiedBadIv((v) => !v)}
-										>
-											<span className='r-ss-box' aria-hidden='true' />
-											{simplifiedBadIv ? 'On' : 'Off'}
-										</button>
-									</div>
-								</div>
-							</>
-						)}
-
-						{isTrade && (
-							<>
-								{/* Same dedicated 2-up grid technique as the other two tabs' own
-								    CP-paired row — CP and "Only very low IVs" always stay side by
-								    side, at any width. Raid Attackers' narrow-screen duplicate gets
-								    its own row right after instead of sharing this one — see
-								    `.r-md-raid-cp-row`'s own doc comment in components.css. */}
-								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
-									<div className='r-md-knob'>
-										<span>Never suggest at or above CP</span>
-										<select
-											className='r-md-select'
-											aria-label='Never suggest at or above CP'
-											value={cp}
-											onChange={(e) => setCp(+e.target.value)}
-										>
-											{CP_OPTIONS.map((n) => (
-												<option key={n} value={n}>
-													{n}
-												</option>
-											))}
-										</select>
-									</div>
-									<div className='r-md-knob'>
-										<span>Only very low IVs (10 or less in every stat)</span>
+										<span>Keep 3* Pokémon</span>
 										<button
 											type='button'
 											className='r-ctr-toggle'
@@ -2044,16 +2020,6 @@ const MassDelete = () => {
 											<span className='r-ss-box' aria-hidden='true' />
 											{tradeOnlyLowIv ? 'On' : 'Off'}
 										</button>
-									</div>
-								</div>
-								<div className='r-md-raid-cp-row'>
-									<div className='r-md-knob r-md-raid-cp'>
-										<span>
-											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Raid Attackers</i>
-											<i className='r-md-knob-short'>Raid</i>
-										</span>
-										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
 									</div>
 								</div>
 							</>

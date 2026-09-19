@@ -3647,25 +3647,24 @@
 	gap: 12px 14px;
 	padding-bottom: 12px;
 }
-/* Great/Ultra/Master/Raid — 4 equal columns whenever they comfortably fit.
-   Below 600px, that's a row of 3 (Great/Ultra/Master) instead of squeezing
-   straight down to 2 — Raid moves out to sit beside the CP dropdown in the
-   grid below instead of wrapping to its own row alone here. The `.r-md-
-   raid-inline` knob above is this row's own Raid control, shown only at
-   >=600px; `.r-md-raid-cp` below is its twin next to CP, shown only below
-   that — exactly one of the two is ever visible, same dual-render technique
-   as `.r-md-knob-short`/`.r-md-knob-full`. */
+/* Great/Ultra/Master/Raid — 4 equal columns when wide; 3 columns on narrower screens */
 .rvmp .r-md-knobs-grid--4up {
 	grid-template-columns: repeat(4, 1fr);
 	gap: 8px;
 }
-/* Compound selectors (`.r-md-knob.r-md-raid-*`), not bare `.r-md-raid-*` —
-   `.r-md-knob` itself sets `display: flex` further below, at equal
-   specificity to a single-class selector, so whichever rule is declared
-   later in the file would otherwise win regardless of media query. */
 .rvmp .r-md-knob.r-md-raid-cp {
 	display: none;
 }
+/* Wide screens (> 600px): Row 2 has 2 items: CP + Toggle button */
+.rvmp .r-md-row-2 {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 8px;
+	padding-bottom: 12px;
+}
+/* Narrow screens (<= 600px): 
+   Row 1 becomes 3 items (Great/Ultra/Master)
+   Row 2 becomes 3 items (CP, Raid, and Toggle button) */
 @media (max-width: 600px) {
 	.rvmp .r-md-knobs-grid--4up {
 		grid-template-columns: repeat(3, 1fr);
@@ -3676,28 +3675,10 @@
 	.rvmp .r-md-knob.r-md-raid-cp {
 		display: flex;
 	}
-}
-/* Non-meta's own Raid Attackers narrow-screen duplicate now lives in its own
-   row (CP is paired with Simplified mode instead — see that row's own JSX
-   comment) — hidden whenever `.r-md-raid-inline` above is visible (>=600px),
-   shown as its own compact row only below that, same breakpoint as
-   `.r-md-raid-cp` itself. Not `.r-md-knobs-grid` (that class's own
-   `padding-bottom` would otherwise leave a stray empty gap here whenever this
-   row's only child is hidden). */
-.rvmp .r-md-raid-cp-row {
-	display: none;
-}
-@media (max-width: 600px) {
-	.rvmp .r-md-raid-cp-row {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-		gap: 12px 14px;
-		padding-bottom: 12px;
+	.rvmp .r-md-row-2 {
+		grid-template-columns: repeat(3, 1fr);
 	}
 }
-/* Every CP + Raid (or CP + Simplified mode) pair below a mode's own 4-up row
-   — always exactly 2 across, on any screen width; there's never a 3rd or 4th
-   peer here to make room for. */
 .rvmp .r-md-knobs-grid--2up {
 	grid-template-columns: repeat(2, 1fr);
 	gap: 8px;
