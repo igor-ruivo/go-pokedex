@@ -1680,7 +1680,12 @@ const MassDelete = () => {
 		window.setTimeout(() => setCopied(false), 1400);
 	};
 
-	const ready = fetchCompleted && pvpFetchCompleted;
+	const ready =
+		fetchCompleted &&
+		speciesSearchMetadataFetchCompleted &&
+		movesFetchCompleted &&
+		pvpFetchCompleted &&
+		raidDPSFetchCompleted;
 
 	// On the Trade tab, "Shadow" and "Mythical" are always effectively
 	// protected (see the locked-on chips below) regardless of the stored
@@ -1710,9 +1715,8 @@ const MassDelete = () => {
 			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · CP < ${cp.toLocaleString()} · excludes ${protectionSummary || 'nothing extra'}`
 			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept${simplifiedTrash ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`;
 
-	const whitelistSummary = !fetchCompleted
-		? 'Loading…'
-		: whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
+	const whitelistSummary =
+		whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
 			? 'No individually-protected Pokémon yet'
 			: [
 					whitelistChipsManual.length > 0 && `${whitelistChipsManual.length} kept individually`,
@@ -1754,6 +1758,21 @@ const MassDelete = () => {
 			? 'Find Pokémon Worth Trading'
 			: 'Mass Delete current non-meta relevant Pokémon';
 	const activeHelpText = isBadIv ? BAD_IV_HELP_TEXT : isTrade ? TRADE_HELP_TEXT : HELP_TEXT;
+
+	// This page depends on five separate dex-server feeds (gamemaster, moves,
+	// PvP rankings, raid DPS, species-search-metadata) — three of them
+	// multi-MB and none persisted to disk (see `PERSISTED_QUERY_KEY_PREFIXES`
+	// in query-client.ts), so without this gate the page used to render its
+	// full UI immediately with empty data and then silently jump to the real
+	// thing once all five landed, with nothing on screen to explain the wait.
+	if (!ready) {
+		return (
+			<div className='r-loading'>
+				<div className='r-spinner' />
+				Loading…
+			</div>
+		);
+	}
 
 	return (
 		<div className='r-shell'>
@@ -2091,53 +2110,36 @@ const MassDelete = () => {
 							placeholder={isTrade ? 'Add a Pokémon to never suggest…' : 'Add a Pokémon to never delete…'}
 						/>
 						<div className='r-md-wl-chips'>
-							{!fetchCompleted ? (
-								// `whitelist` itself is available immediately (persisted config),
-								// but every chip needs the real `IGamemasterPokemon` object to
-								// render — without this guard, a whitelist with entries in it
-								// would flash the "Nothing here yet" empty state for a split
-								// second before the real chips suddenly appear once the
-								// gamemaster fetch resolves.
-								// `.r-md-wl-chips` is a flex row, so this needs an explicit full
-								// width — otherwise, as a flex item, it only shrinks to fit its
-								// own content and sits flush left instead of centered.
-								<div className='r-loading' style={{ minHeight: 80, width: '100%' }}>
-									<div className='r-spinner' />
-								</div>
-							) : (
-								<>
-									{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
-										<p className='r-muted' style={{ margin: 0 }}>
-											{isTrade
-												? 'Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.'
-												: 'Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.'}
-										</p>
-									)}
-									{whitelistChipsManual.map(({ p, locked, reason }) => (
-										<WhitelistChip
-											key={p.speciesId}
-											p={p}
-											locked={locked}
-											reason={reason}
-											imageSource={imageSource}
-											onRemove={removeFromWhitelist}
-										/>
-									))}
-									{whitelistChipsManual.length > 0 && whitelistChipsAuto.length > 0 && (
-										<div className='r-md-wl-divider' aria-hidden='true' />
-									)}
-									{whitelistChipsAuto.map(({ p, locked, reason }) => (
-										<WhitelistChip
-											key={p.speciesId}
-											p={p}
-											locked={locked}
-											reason={reason}
-											imageSource={imageSource}
-											onRemove={removeFromWhitelist}
-										/>
-									))}
-								</>
+							{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
+								<p className='r-muted' style={{ margin: 0 }}>
+									{isTrade
+										? 'Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.'
+										: 'Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.'}
+								</p>
 							)}
+							{whitelistChipsManual.map(({ p, locked, reason }) => (
+								<WhitelistChip
+									key={p.speciesId}
+									p={p}
+									locked={locked}
+									reason={reason}
+									imageSource={imageSource}
+									onRemove={removeFromWhitelist}
+								/>
+							))}
+							{whitelistChipsManual.length > 0 && whitelistChipsAuto.length > 0 && (
+								<div className='r-md-wl-divider' aria-hidden='true' />
+							)}
+							{whitelistChipsAuto.map(({ p, locked, reason }) => (
+								<WhitelistChip
+									key={p.speciesId}
+									p={p}
+									locked={locked}
+									reason={reason}
+									imageSource={imageSource}
+									onRemove={removeFromWhitelist}
+								/>
+							))}
 						</div>
 					</div>
 				)}
@@ -2146,7 +2148,7 @@ const MassDelete = () => {
 			<button
 				type='button'
 				className='r-md-compute'
-				disabled={!ready || activeCalculating}
+				disabled={activeCalculating}
 				onClick={() => {
 					if (isBadIv) {
 						setBadIvResult('');
@@ -2160,7 +2162,7 @@ const MassDelete = () => {
 					}
 				}}
 			>
-				{activeCalculating ? 'Computing…' : ready ? 'Compute' : 'Loading data…'}
+				{activeCalculating ? 'Computing…' : 'Compute'}
 			</button>
 
 			<textarea

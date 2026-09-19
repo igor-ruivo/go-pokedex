@@ -1,6 +1,12 @@
 /**
- * Off-main-thread home for the expensive, synchronous number crunching:
- * the per-family IV brute force and the whole-dex raid DPS comparison.
+ * Off-main-thread home for the expensive, synchronous number crunching (the
+ * per-family IV brute force, the whole-dex raid DPS comparison) — and, via
+ * `fetchJson` below, for fetching + JSON-parsing the largest dex-server
+ * payloads (PvP rankings, raid DPS ranks, species-search-metadata). `fetch`
+ * and `Response.json()` are Web Platform APIs available in a worker's global
+ * scope too, not DOM — the actual parse of a multi-MB response is a genuine
+ * synchronous main-thread task otherwise, and this is the one place in the
+ * app already set up to run work off it.
  *
  * Everything imported here must be pure (no React, no DOM, no TanStack Query).
  * `pokemon-helper` qualifies — its only runtime import is a plain enum.
@@ -568,7 +574,36 @@ export const findTradeableSpeciesData = ({
 	return result;
 };
 
-export const api = { familyIvPercents, bestIvs, raidComparisons, findBadIvCarveOuts, findTradeableSpeciesData };
+/**
+ * Fetches `url` and parses it as JSON entirely off the main thread — the
+ * network transfer was already async either way, but `Response.json()`'s own
+ * parse of a multi-MB payload is a genuine synchronous task, and running it
+ * here means the main thread never blocks on it at all. The caller gets back
+ * an already-parsed plain object via Comlink's structured-clone transfer
+ * (cheaper than re-parsing raw text, though not literally free) rather than
+ * the raw response.
+ *
+ * Untyped (`unknown`) rather than generic — Comlink's `Remote<ComputeApi>`
+ * doesn't preserve a per-call type argument through the proxy, so every
+ * caller casts the result itself, the same way `utils/fetch-json.ts`'s
+ * main-thread `fetchJson<T>` is used at each of its own call sites.
+ */
+const fetchJson = async (url: string): Promise<unknown> => {
+	const response = await fetch(url);
+	if (!response.ok) {
+		throw new Error(`Network response was not ok for ${url} (HTTP ${response.status})`);
+	}
+	return await response.json();
+};
+
+export const api = {
+	familyIvPercents,
+	bestIvs,
+	raidComparisons,
+	findBadIvCarveOuts,
+	findTradeableSpeciesData,
+	fetchJson,
+};
 export type ComputeApi = typeof api;
 
 // Guarded: this module is also imported directly (not through a real Worker)

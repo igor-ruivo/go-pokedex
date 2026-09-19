@@ -3,7 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 
 import type { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Configs';
-import { fetchJson } from '../utils/fetch-json';
+import { fetchJsonInWorker } from '../utils/fetch-json';
 
 export const customCupCPLimit = 1500;
 
@@ -32,7 +32,7 @@ export const usePvp = (): PvpData =>
 	useQueries({
 		queries: PVP_RANKING_URLS.map((url) => ({
 			queryKey: ['pvp-ranking', url] as const,
-			queryFn: ({ signal }: { signal: AbortSignal }) => fetchJson<RankList>(url, signal),
+			queryFn: () => fetchJsonInWorker<RankList>(url),
 		})),
 		combine,
 	});

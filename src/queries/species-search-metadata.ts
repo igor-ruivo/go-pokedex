@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import { speciesSearchMetadataUrl } from '../utils/Configs';
-import { fetchJson } from '../utils/fetch-json';
+import { fetchJsonInWorker } from '../utils/fetch-json';
 
 interface SpeciesSearchMetadataData {
 	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>;
@@ -42,7 +42,7 @@ export const speciesSearchMetadataQueryKey = ['species-search-metadata'] as cons
 export const useSpeciesSearchMetadata = (): SpeciesSearchMetadataData => {
 	const { data, isSuccess, isError, error } = useQuery({
 		queryKey: speciesSearchMetadataQueryKey,
-		queryFn: ({ signal }) => fetchJson<Record<string, ISpeciesSearchMetadata>>(speciesSearchMetadataUrl, signal),
+		queryFn: () => fetchJsonInWorker<Record<string, ISpeciesSearchMetadata>>(speciesSearchMetadataUrl),
 	});
 
 	return {

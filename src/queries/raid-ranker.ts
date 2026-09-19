@@ -3,7 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { dpsUrl } from '../utils/Configs';
-import { fetchJson } from '../utils/fetch-json';
+import { fetchJsonInWorker } from '../utils/fetch-json';
 
 export type DPSEntry = {
 	/** Weave DPS with the comprehensive / energy-from-damage corrections. */
@@ -68,7 +68,7 @@ export const useRaidRanker = (): RaidRankerData =>
 	useQueries({
 		queries: RAID_DPS_URLS.map((url) => ({
 			queryKey: ['raid-dps', url] as const,
-			queryFn: ({ signal }: { signal: AbortSignal }) => fetchJson<DPSRank>(url, signal),
+			queryFn: () => fetchJsonInWorker<DPSRank>(url),
 		})),
 		combine,
 	});
