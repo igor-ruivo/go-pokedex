@@ -2794,6 +2794,11 @@
 	font-size: 16px;
 	line-height: 1;
 }
+.rvmp .r-datepick-scroller {
+	position: relative;
+	min-width: 0;
+	flex: 1;
+}
 .rvmp .r-datepick-chips {
 	display: flex;
 	flex-wrap: nowrap;
@@ -2803,10 +2808,66 @@
 	gap: 6px;
 	padding: 2px 0;
 	min-width: 0;
-	flex: 1;
 }
 .rvmp .r-datepick-chips::-webkit-scrollbar {
 	display: none;
+}
+/* Scroll-shadow affordance: a soft fade at whichever edge still has more
+   chips past the fold, so it reads as scrollable at a glance instead of
+   looking like a hard-clipped list — same idea a horizontally-scrolling tab
+   strip on any polished site uses. */
+.rvmp .r-datepick-scroller[data-fade-left]::before,
+.rvmp .r-datepick-scroller[data-fade-right]::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 20px;
+	pointer-events: none;
+	z-index: 1;
+}
+.rvmp .r-datepick-scroller[data-fade-left]::before {
+	left: 0;
+	background: linear-gradient(to right, var(--bg), transparent);
+}
+.rvmp .r-datepick-scroller[data-fade-right]::after {
+	right: 0;
+	background: linear-gradient(to left, var(--bg), transparent);
+}
+/* Click-to-scroll chevrons — only where a mouse (not touch) actually needs
+   them: touch already scrolls this row fine via swipe. */
+.rvmp .r-datepick-arrow {
+	display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-datepick-arrow {
+		display: grid;
+		place-items: center;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 2;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background: var(--surface-2);
+		border: 1px solid var(--border-strong);
+		color: var(--text);
+		font-size: 15px;
+		line-height: 1;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+	}
+	.rvmp .r-datepick-arrow:hover {
+		background: var(--accent);
+		color: #0c1017;
+		border-color: transparent;
+	}
+	.rvmp .r-datepick-arrow--left {
+		left: -4px;
+	}
+	.rvmp .r-datepick-arrow--right {
+		right: -4px;
+	}
 }
 .rvmp .r-datepick-chips button {
 	flex: none;

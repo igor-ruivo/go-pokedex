@@ -1,5 +1,9 @@
-import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import type {
+	KeyboardEvent as ReactKeyboardEvent,
+	MouseEvent as ReactMouseEvent,
+	WheelEvent as ReactWheelEvent,
+} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
@@ -252,7 +256,18 @@ const Spinner = () => (
 	</div>
 );
 
-/** Timeframe switcher for the raid / spawn tabs. */
+/**
+ * Timeframe switcher for the raid / spawn tabs — with 10-15+ dated slots
+ * (each showing its own start/end time, so genuinely wide), the row scrolls
+ * horizontally rather than wrapping onto multiple lines and eating vertical
+ * space. Touch already scrolls it fine via swipe; a mouse-only desktop
+ * visitor has no such gesture (and the scrollbar itself is deliberately
+ * hidden — see `.r-datepick-chips`), so this adds the two things a
+ * professional site would for that case: a plain vertical wheel scrolls the
+ * row horizontally while hovering it, and a pair of chevron buttons (shown
+ * only on a fine, hover-capable pointer, and only on the side that actually
+ * has more to reveal) do the same a click at a time.
+ */
 const DatePicker = ({
 	slots,
 	active,
@@ -263,30 +278,92 @@ const DatePicker = ({
 	onPick: (k: string) => void;
 }) => {
 	const activeBtnRef = useRef<HTMLButtonElement | null>(null);
+	const chipsRef = useRef<HTMLDivElement | null>(null);
+	const [canScrollLeft, setCanScrollLeft] = useState(false);
+	const [canScrollRight, setCanScrollRight] = useState(false);
+
+	const updateScrollState = useCallback(() => {
+		const el = chipsRef.current;
+		if (!el) return;
+		setCanScrollLeft(el.scrollLeft > 1);
+		setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+	}, []);
 
 	useEffect(() => {
 		activeBtnRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
 	}, [active]);
+
+	useEffect(() => {
+		const el = chipsRef.current;
+		if (!el) return;
+		updateScrollState();
+		el.addEventListener('scroll', updateScrollState, { passive: true });
+		const ro = new ResizeObserver(updateScrollState);
+		ro.observe(el);
+		return () => {
+			el.removeEventListener('scroll', updateScrollState);
+			ro.disconnect();
+		};
+	}, [slots, updateScrollState]);
+
+	const onWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
+		const el = chipsRef.current;
+		if (!el || el.scrollWidth <= el.clientWidth) return; // nothing to scroll — let the page scroll normally
+		if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // already a horizontal gesture (trackpad) — don't fight it
+		e.preventDefault();
+		el.scrollBy({ left: e.deltaY });
+	};
+
+	const scrollByPage = (dir: 1 | -1) => {
+		const el = chipsRef.current;
+		el?.scrollBy({ left: dir * (el.clientWidth * 0.8), behavior: 'smooth' });
+	};
 
 	return (
 		<div className='r-datepick'>
 			<span className='r-datepick-ic' aria-hidden='true'>
 				📅
 			</span>
-			<div className='r-datepick-chips' role='tablist' aria-label='Timeframe'>
-				{slots.map((s) => (
+			<div
+				className='r-datepick-scroller'
+				data-fade-left={canScrollLeft || undefined}
+				data-fade-right={canScrollRight || undefined}
+			>
+				{canScrollLeft && (
 					<button
-						key={s.key}
-						ref={active === s.key ? activeBtnRef : undefined}
 						type='button'
-						role='tab'
-						aria-selected={active === s.key}
-						data-active={active === s.key}
-						onClick={() => onPick(s.key)}
+						className='r-datepick-arrow r-datepick-arrow--left'
+						aria-label='Scroll to earlier dates'
+						onClick={() => scrollByPage(-1)}
 					>
-						{s.label}
+						‹
 					</button>
-				))}
+				)}
+				<div className='r-datepick-chips' role='tablist' aria-label='Timeframe' ref={chipsRef} onWheel={onWheel}>
+					{slots.map((s) => (
+						<button
+							key={s.key}
+							ref={active === s.key ? activeBtnRef : undefined}
+							type='button'
+							role='tab'
+							aria-selected={active === s.key}
+							data-active={active === s.key}
+							onClick={() => onPick(s.key)}
+						>
+							{s.label}
+						</button>
+					))}
+				</div>
+				{canScrollRight && (
+					<button
+						type='button'
+						className='r-datepick-arrow r-datepick-arrow--right'
+						aria-label='Scroll to later dates'
+						onClick={() => scrollByPage(1)}
+					>
+						›
+					</button>
+				)}
 			</div>
 		</div>
 	);
