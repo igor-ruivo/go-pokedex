@@ -204,15 +204,15 @@ export const formIdentifierFor = (
  *  non-Shadow catch of the same form), and for a non-Shadow species block
  *  only when a Shadow form of it actually exists in the gamemaster (nothing
  *  to disambiguate against otherwise). `''` otherwise — unconditionally
- *  appending it would be harmless but pointless extra bytes. */
-export const shadowSuffixFor = (
-	species: IGamemasterPokemon,
-	gl: GameLanguage,
-	metadata: Record<string, ISpeciesSearchMetadata>
-): string => {
+ *  appending it would be harmless but pointless extra bytes.
+ *
+ *  Reads `species.shadowSpecies` directly (precomputed by dex-server's
+ *  `family-relations-calculator.ts`) — no `speciesSearchMetadata` needed at
+ *  all here any more, and no gamemaster scan. */
+export const shadowSuffixFor = (species: IGamemasterPokemon, gl: GameLanguage): string => {
 	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 	if (species.isShadow) return `&${shadowKw}`;
-	return requireMetadata(species, metadata).hasShadowCounterpart ? `&!${shadowKw}` : '';
+	return species.shadowSpecies !== undefined ? `&!${shadowKw}` : '';
 };
 
 /* ---- backward chain: predecessors, PLUS each one's Shadow counterpart ------
@@ -257,14 +257,12 @@ export const buildSearchChain = (
 			.sort((a, b) => sortPokemonByBattlePowerAsc(a.shadow, b.shadow));
 	}
 
-	const shadowByBase = new Map<string, IGamemasterPokemon>();
-	Object.values(gamemasterPokemon).forEach((p) => {
-		if (p.isShadow && !p.aliasId) shadowByBase.set(p.speciesId.replaceAll('_shadow', ''), p);
-	});
-
+	// Direct field read (precomputed by dex-server's own
+	// `family-relations-calculator.ts`) — no whole-gamemaster scan, no
+	// speciesId string surgery.
 	return direct
 		.map((species) => {
-			const shadow = shadowByBase.get(species.speciesId);
+			const shadow = species.shadowSpecies ? gamemasterPokemon[species.shadowSpecies] : undefined;
 			return shadow ? { nonShadow: species, shadow } : { nonShadow: species };
 		})
 		.sort((a, b) => sortPokemonByBattlePowerAsc(a.nonShadow, b.nonShadow));
@@ -702,7 +700,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 								topIVCombinations,
 								gl,
 								formId,
-								shadowSuffix: shadowSuffixFor(p, gl, speciesSearchMetadata),
+								shadowSuffix: shadowSuffixFor(p, gl),
 							});
 				const key = p.speciesId;
 				const isOpen = open === key;

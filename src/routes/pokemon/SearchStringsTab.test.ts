@@ -25,7 +25,7 @@ const metadataFor = (
 	speciesId: string,
 	overrides: Partial<ISpeciesSearchMetadata>
 ): Record<string, ISpeciesSearchMetadata> => ({
-	[speciesId]: { searchFormId: '', hasShadowCounterpart: false, bestIvSpreads: EMPTY_BEST_IV_SPREADS, ...overrides },
+	[speciesId]: { searchFormId: '', bestIvSpreads: EMPTY_BEST_IV_SPREADS, ...overrides },
 });
 
 // One minimal top-1 combination is enough — this file's own bucket/CP/level
@@ -171,8 +171,8 @@ describe('selectTopIVCombinations — single-level only (regression: never hedge
 // The actual disambiguation ALGORITHM (Ninetales-Alolan-style regression
 // coverage) now lives entirely in dex-server (`form-identifier-calculator.ts`
 // and its own test suite) — this tab has no fallback computation left to
-// test, only that it reads dex-server's `searchFormId`/`hasShadowCounterpart`
-// verbatim and refuses to guess when they're missing.
+// test, only that it reads dex-server's `searchFormId` verbatim and refuses
+// to guess when it's missing.
 describe('formIdentifierFor', () => {
 	const vulpix = mockPokemon({ speciesId: 'vulpix', dex: 37, types: [mockType('fire')] });
 
@@ -187,29 +187,29 @@ describe('formIdentifierFor', () => {
 });
 
 describe('shadowSuffixFor', () => {
-	const nonShadow = mockPokemon({ speciesId: 'dualmon', dex: 700, types: [mockType('ice')] });
+	const nonShadowWithCounterpart = mockPokemon({
+		speciesId: 'dualmon',
+		dex: 700,
+		types: [mockType('ice')],
+		shadowSpecies: 'dualmon_shadow',
+	});
+	const nonShadowNoCounterpart = mockPokemon({ speciesId: 'lonemon', dex: 701, types: [mockType('ice')] });
 	const shadow = mockPokemon({ speciesId: 'dualmon_shadow', dex: 700, types: [mockType('ice')], isShadow: true });
 
-	it('a Shadow species always gets the positive &shadow suffix — never even looks at metadata', () => {
-		expect(shadowSuffixFor(shadow, GameLanguage.en, {})).toBe('&shadow');
+	it('a Shadow species always gets the positive &shadow suffix', () => {
+		expect(shadowSuffixFor(shadow, GameLanguage.en)).toBe('&shadow');
 	});
 
-	it('a non-Shadow species WITH a precomputed Shadow counterpart gets the disambiguating &!shadow suffix', () => {
-		const metadata = metadataFor(nonShadow.speciesId, { hasShadowCounterpart: true });
-		expect(shadowSuffixFor(nonShadow, GameLanguage.en, metadata)).toBe('&!shadow');
+	it('a non-Shadow species WITH a precomputed Shadow counterpart (shadowSpecies field) gets the disambiguating &!shadow suffix', () => {
+		expect(shadowSuffixFor(nonShadowWithCounterpart, GameLanguage.en)).toBe('&!shadow');
 	});
 
-	it('a non-Shadow species with no precomputed Shadow counterpart needs no suffix', () => {
-		const metadata = metadataFor(nonShadow.speciesId, { hasShadowCounterpart: false });
-		expect(shadowSuffixFor(nonShadow, GameLanguage.en, metadata)).toBe('');
+	it('a non-Shadow species with no shadowSpecies field needs no suffix', () => {
+		expect(shadowSuffixFor(nonShadowNoCounterpart, GameLanguage.en)).toBe('');
 	});
 
 	it('localizes the keyword to pt-BR', () => {
-		expect(shadowSuffixFor(shadow, GameLanguage.ptbr, {})).toBe('&sombroso');
-	});
-
-	it('throws for a non-Shadow species with no metadata entry at all — no silent fallback', () => {
-		expect(() => shadowSuffixFor(nonShadow, GameLanguage.en, {})).toThrow();
+		expect(shadowSuffixFor(shadow, GameLanguage.ptbr)).toBe('&sombroso');
 	});
 });
 

@@ -56,18 +56,10 @@ const commaFormId = (speciesSearchMetadata: Record<string, ISpeciesSearchMetadat
 	return metadata.searchFormId.replaceAll('&', ',');
 };
 
-/** dex-server's own precomputed Shadow-counterpart flag — see
- *  `commaFormId`'s own doc comment on why there's no fallback. */
-const hasShadowCounterpart = (
-	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>,
-	speciesId: string
-): boolean => {
-	const metadata = speciesSearchMetadata[speciesId];
-	if (!metadata) {
-		throw new Error(`speciesSearchMetadata is missing an entry for "${speciesId}" — metadata isn't loaded yet.`);
-	}
-	return metadata.hasShadowCounterpart;
-};
+/** dex-server's own precomputed Shadow-counterpart pointer, straight off the
+ *  gamemaster entry itself (`family-relations-calculator.ts`) — no
+ *  `speciesSearchMetadata` involved at all, no gamemaster scan. */
+const hasShadowCounterpart = (species: IGamemasterPokemon): boolean => species.shadowSpecies !== undefined;
 
 /**
  * Every non-Mega/non-alias/non-Shadow form's own comma-form id, grouped by
@@ -481,7 +473,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 			const [, ...formTokens] = negateIdentity(commaFormId(speciesSearchMetadata, e.speciesId)).split(',');
 			const shadowScope: DexExclusion['shadowScope'] = e.isShadow
 				? 'shadow-only'
-				: hasShadowCounterpart(speciesSearchMetadata, e.speciesId)
+				: hasShadowCounterpart(e)
 					? 'non-shadow-only'
 					: '';
 			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
@@ -945,9 +937,7 @@ export const computeTradeableString = (
 			// above), but it can still share a dex with one — 'non-shadow-only'
 			// keeps this whitelist exclusion from also swallowing that Shadow
 			// sibling's own (already unconditionally excluded) catches.
-			const shadowScope: DexExclusion['shadowScope'] = hasShadowCounterpart(speciesSearchMetadata, e.speciesId)
-				? 'non-shadow-only'
-				: '';
+			const shadowScope: DexExclusion['shadowScope'] = hasShadowCounterpart(e) ? 'non-shadow-only' : '';
 			exclusions.push({ dex: e.dex, form: formTokens.join(','), shadowScope, extra: '' });
 		});
 	});
@@ -1178,15 +1168,13 @@ const WhitelistChip = ({
 	</button>
 );
 
-// dex, then form (a shadow's speciesId is its base form's plus `_shadow`, so
-// stripping that groups a form with its own shadow right after it), then
-// non-shadow before shadow — e.g. pikachu, raichu, raichu (shadow), raichu
-// (alolan), raichu (alolan, shadow).
-const formKeyOf = (speciesId: string) => speciesId.replace(/_shadow$/, '');
+// dex, then form (grouping each Shadow right after its precomputed
+// non-Shadow counterpart, via dex-server's own `nonShadowSpecies` field),
+// then non-shadow before shadow — e.g. pikachu, raichu, raichu (shadow),
+// raichu (alolan), raichu (alolan, shadow).
+const formKeyOf = (p: IGamemasterPokemon) => (p.isShadow ? (p.nonShadowSpecies ?? p.speciesId) : p.speciesId);
 const byDexFormShadow = (a: { p: IGamemasterPokemon }, b: { p: IGamemasterPokemon }) =>
-	a.p.dex - b.p.dex ||
-	formKeyOf(a.p.speciesId).localeCompare(formKeyOf(b.p.speciesId)) ||
-	Number(a.p.isShadow) - Number(b.p.isShadow);
+	a.p.dex - b.p.dex || formKeyOf(a.p).localeCompare(formKeyOf(b.p)) || Number(a.p.isShadow) - Number(b.p.isShadow);
 
 const MassDelete = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();

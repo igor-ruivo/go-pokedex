@@ -123,16 +123,22 @@ export const useRelevanceSets = (): RelevanceSets => {
  * `sortByCalendarRelevance` below; `useLeagueBadges` is the memoized,
  * per-component-render wrapper for everywhere else (the dot badges themselves).
  */
+/** The one family-reachability sweep both `leagueBadgesFor` and `bestRanksFor`
+ *  need — computed once per Pokémon and shared between them by
+ *  `sortByCalendarRelevance` (via the optional `family` param on each),
+ *  instead of each doing its own separate walk over the same family. */
+const familyIdsFor = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) =>
+	Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map((m) => m.speciesId);
+
 export const leagueBadgesFor = (
 	pokemon: IGamemasterPokemon | undefined,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
-	sets: RelevanceSets
+	sets: RelevanceSets,
+	family?: Array<string>
 ): Array<LeagueKey> => {
 	if (!pokemon || !sets.ready) return [];
-	const family = Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map(
-		(m) => m.speciesId
-	);
-	const hits = (set: Set<string>) => family.some((id) => set.has(id));
+	const familyIds = family ?? familyIdsFor(pokemon, gamemasterPokemon);
+	const hits = (set: Set<string>) => familyIds.some((id) => set.has(id));
 	const out: Array<LeagueKey> = [];
 	if (hits(sets.great)) out.push('great');
 	if (hits(sets.ultra)) out.push('ultra');
@@ -163,15 +169,14 @@ interface BestRanks {
 const bestRanksFor = (
 	pokemon: IGamemasterPokemon,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
-	sets: RelevanceSets
+	sets: RelevanceSets,
+	family?: Array<string>
 ): BestRanks => {
 	if (!sets.ready) return { raid: Infinity, master: Infinity, ultra: Infinity, great: Infinity };
-	const family = Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map(
-		(m) => m.speciesId
-	);
+	const familyIds = family ?? familyIdsFor(pokemon, gamemasterPokemon);
 	const bestOf = (map: Map<string, number>) => {
 		let best = Infinity;
-		for (const id of family) {
+		for (const id of familyIds) {
 			const rank = map.get(id);
 			if (rank != null && rank < best) best = rank;
 		}
@@ -209,10 +214,18 @@ export const sortByCalendarRelevance = <T>(
 	];
 	const familyOrder = sortByFamilyLine(uniquePokemon, gamemasterPokemon);
 	const familyRank = new Map(familyOrder.map((p, i) => [p.speciesId, i]));
+	// One reachability sweep per unique Pokémon, shared by both the badge
+	// count and the best-rank lookup below, instead of each doing its own.
+	const reachableIds = new Map(uniquePokemon.map((p) => [p.speciesId, familyIdsFor(p, gamemasterPokemon)]));
 	const badgeCount = new Map(
-		uniquePokemon.map((p) => [p.speciesId, leagueBadgesFor(p, gamemasterPokemon, sets).length])
+		uniquePokemon.map((p) => [
+			p.speciesId,
+			leagueBadgesFor(p, gamemasterPokemon, sets, reachableIds.get(p.speciesId)).length,
+		])
 	);
-	const bestRanks = new Map(uniquePokemon.map((p) => [p.speciesId, bestRanksFor(p, gamemasterPokemon, sets)]));
+	const bestRanks = new Map(
+		uniquePokemon.map((p) => [p.speciesId, bestRanksFor(p, gamemasterPokemon, sets, reachableIds.get(p.speciesId))])
+	);
 	const ranksOf = (id: string): BestRanks =>
 		bestRanks.get(id) ?? { raid: Infinity, master: Infinity, ultra: Infinity, great: Infinity };
 

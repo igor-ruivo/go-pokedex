@@ -21,25 +21,6 @@ export enum Effectiveness {
 	DoubleEffective = 2.56,
 }
 
-export const isNormalPokemonAndHasShadowVersion = (
-	pokemon: IGamemasterPokemon,
-	gamemasterPokemon: Record<string, IGamemasterPokemon>
-) => {
-	if (pokemon.isShadow) {
-		return false;
-	}
-
-	return Object.values(gamemasterPokemon).some(
-		(p) =>
-			p.speciesId !== pokemon.speciesId &&
-			!p.aliasId &&
-			p.dex === pokemon.dex &&
-			p.isShadow &&
-			p.types.length === pokemon.types.length &&
-			p.types.every((t) => pokemon.types.includes(t))
-	);
-};
-
 const normalizedMoveName = (moveName: string) =>
 	moveName
 		.split('_')
@@ -925,13 +906,13 @@ export const pveDPS = (
 	return Math.max(chargedMoveUsageDPS, fastMoveDPS);
 };
 
-const megaFetcherExceptions = ['slowbro_galarian', 'slowpoke_galarian', 'mewtwo_armored'];
-
-const getMegaPokemonFromBase = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
-	return Object.values(gamemasterPokemon).filter(
-		(p) => !p.aliasId && p.isMega && p.dex === pokemon.dex && !megaFetcherExceptions.includes(pokemon.speciesId)
-	);
-};
+/** Every Mega/Primal form of `pokemon`, read straight off its own precomputed
+ *  `megaFormsIds` (see `family-relations-calculator.ts` in dex-server) —
+ *  never a dex-number scan. Deliberately does NOT apply `domainFilter` here,
+ *  matching this function's own long-standing behavior (only the initial
+ *  Shadow-replica/Mega-base seeding below applies it). */
+const getMegaPokemonFromBase = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) =>
+	(pokemon.megaFormsIds ?? []).map((id) => gamemasterPokemon[id]).filter((p): p is IGamemasterPokemon => !!p);
 
 export const fetchReachablePokemonIncludingSelf = (
 	pokemon: IGamemasterPokemon,
@@ -941,27 +922,20 @@ export const fetchReachablePokemonIncludingSelf = (
 ) => {
 	const reachablePokemons = new Set<IGamemasterPokemon>();
 
-	const nonShadowReplica =
-		!pokemon.isShadow || pokemon.isMega
-			? []
-			: Object.values(gamemasterPokemon).filter(
-					(r) =>
-						!r.aliasId &&
-						r.speciesId === pokemon.speciesId.replaceAll('_shadow', '') &&
-						(!domainFilter || domainFilter(r))
-				);
+	// Direct field reads (both precomputed by dex-server's own
+	// `family-relations-calculator.ts`) — no gamemaster scan, no speciesId
+	// string surgery.
+	const nonShadowReplica = ((): Array<IGamemasterPokemon> => {
+		if (!pokemon.isShadow || pokemon.isMega || !pokemon.nonShadowSpecies) return [];
+		const r = gamemasterPokemon[pokemon.nonShadowSpecies];
+		return r && (!domainFilter || domainFilter(r)) ? [r] : [];
+	})();
 
-	const baseVersionOfMegaPkm = !pokemon.isMega
-		? []
-		: Object.values(gamemasterPokemon).filter(
-				(r) =>
-					!r.aliasId &&
-					(!domainFilter || domainFilter(r)) &&
-					r.dex === pokemon.dex &&
-					!r.isMega &&
-					!r.isShadow &&
-					!megaFetcherExceptions.includes(r.speciesId)
-			);
+	const baseVersionOfMegaPkm = ((): Array<IGamemasterPokemon> => {
+		if (!pokemon.isMega || !pokemon.baseSpecies) return [];
+		const r = gamemasterPokemon[pokemon.baseSpecies];
+		return r && (!domainFilter || domainFilter(r)) ? [r] : [];
+	})();
 
 	const queue = [pokemon, ...nonShadowReplica, ...baseVersionOfMegaPkm];
 

@@ -1384,8 +1384,10 @@
 	font-size: 13.5px;
 }
 .rvmp .r-loading {
-	display: grid;
-	place-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 	min-height: 60dvh;
 	color: var(--text-dim);
 	font-family: Fredoka, sans-serif;

@@ -461,7 +461,7 @@ export const findBadIvCarveOuts = ({
 		const shadowDomainFilter = (r: IGamemasterPokemon) => r.isShadow && !r.aliasId && !r.isMega;
 		for (const p of shadowCandidates) {
 			const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, shadowDomainFilter));
-			const nonShadowId = p.speciesId.replaceAll('_shadow', '');
+			const nonShadowId = p.nonShadowSpecies;
 			for (const cap of caps) {
 				const alreadyCovered = rawPatternKeys.get(`${nonShadowId}|${cap}`);
 				const distinctPatterns = new Map<string, BadIvPattern>();

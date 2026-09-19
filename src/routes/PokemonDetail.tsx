@@ -518,9 +518,13 @@ const PokemonDetail = () => {
 
 	const self = pokemon.speciesId;
 	const primary = pokemon.types[0];
-	const baseId = self.replace('_shadow', '');
-	const hasShadow = !!gamemasterPokemon[`${baseId}_shadow`];
-	const isShadow = self.endsWith('_shadow');
+	const isShadow = pokemon.isShadow;
+	// Direct field read either way (precomputed by dex-server's own
+	// `family-relations-calculator.ts`) — no speciesId string surgery. A
+	// Shadow's own toggle target is always its non-Shadow base; a non-Shadow's
+	// is its own Shadow form when one exists, absent otherwise.
+	const shadowToggleTarget = isShadow ? pokemon.nonShadowSpecies : pokemon.shadowSpecies;
+	const hasShadow = shadowToggleTarget !== undefined;
 	// the topbar sprite/name double as "next in the family line" — same cyclic
 	// order the family-line strip itself is rendered in
 	const familyIdx = family.findIndex((m) => m.speciesId === self);
@@ -754,10 +758,9 @@ const PokemonDetail = () => {
 							className='r-toggle r-toggle--shadow'
 							data-on={isShadow}
 							onClick={() => {
+								if (!shadowToggleTarget) return;
 								suppressIvResetRef.current = true;
-								void navigate(
-									`${R.pokemon(isShadow ? baseId : `${baseId}_shadow`, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`
-								);
+								void navigate(`${R.pokemon(shadowToggleTarget, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
 							}}
 						>
 							<ShadowMark className='r-toggle-flame' />

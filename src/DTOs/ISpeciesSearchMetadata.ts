@@ -25,10 +25,6 @@ export interface ISpeciesSearchMetadata {
 	 *  down this species' own form — see `formIdentifierFor`'s own doc
 	 *  comment on what it replaces. */
 	searchFormId: string;
-	/** Whether a Shadow counterpart of this (non-Shadow) species exists in
-	 *  the gamemaster — replaces `isNormalPokemonAndHasShadowVersion`'s own
-	 *  gamemaster scan. */
-	hasShadowCounterpart: boolean;
 	bestIvSpreads: IBestIvSpreads;
 	/** Only ever populated for a Shadow species. */
 	bestIvSpreadsPurified?: IBestIvSpreads;

@@ -10,12 +10,47 @@ import type { PokemonTypes } from '../DTOs/PokemonTypes';
 import type { RaidMetric } from '../lib/raid-metric';
 import { buildUniqueTypes, generatePokemonId } from '../lib/search-string';
 import type { DPSEntry } from '../queries/raid-ranker';
-import {
-	computeTiedTop1Patterns,
-	computeTiedTop1PurifiedPatterns,
-	isNormalPokemonAndHasShadowVersion,
-} from '../utils/pokemon-helper';
+import { computeTiedTop1Patterns, computeTiedTop1PurifiedPatterns } from '../utils/pokemon-helper';
 import { type ComputeArgs, DEFAULT_PROTECTION } from './MassDelete';
+
+const MEGA_TERM = '_mega';
+const PRIMAL_TERM = '_primal';
+
+/**
+ * Mirrors dex-server's own `family-relations-calculator.ts` exactly (same
+ * id-splitting rule for Mega/Primal, same dex+types+form matching for
+ * Shadow) — production code now reads `shadowSpecies`/`nonShadowSpecies`/
+ * `megaFormsIds`/`baseSpecies` directly instead of deriving them, so a test
+ * fixture that only sets `isShadow`/`isMega`/`dex`/`types`/`form` (the same
+ * way real pre-transform data does) needs this run over it once to populate
+ * what production code now expects to already be there.
+ */
+const deriveFamilyRelations = (dict: Record<string, IGamemasterPokemon>): void => {
+	for (const p of Object.values(dict)) {
+		if (!p.isMega || p.aliasId) continue;
+		const baseId = p.speciesId.split(MEGA_TERM)[0].split(PRIMAL_TERM)[0];
+		const base = dict[baseId];
+		if (!base) continue;
+		p.baseSpecies = baseId;
+		(base.megaFormsIds ??= []).push(p.speciesId);
+	}
+	for (const p of Object.values(dict)) {
+		if (p.isShadow || p.isMega || p.aliasId) continue;
+		const shadow = Object.values(dict).find(
+			(s) =>
+				s.speciesId !== p.speciesId &&
+				!s.aliasId &&
+				s.dex === p.dex &&
+				s.isShadow &&
+				s.form === p.form &&
+				s.types.length === p.types.length &&
+				s.types.every((t) => p.types.includes(t))
+		);
+		if (!shadow) continue;
+		p.shadowSpecies = shadow.speciesId;
+		shadow.nonShadowSpecies = p.speciesId;
+	}
+};
 
 // Despite `IGamemasterPokemon.types` being typed as `Array<PokemonTypes>`
 // (a numeric TS enum), the real data dex-server serves is plain lowercase
@@ -52,8 +87,11 @@ export const mockPokemon = (
 	...overrides,
 });
 
-export const buildGamemaster = (list: Array<IGamemasterPokemon>): Record<string, IGamemasterPokemon> =>
-	Object.fromEntries(list.map((p) => [p.speciesId, p]));
+export const buildGamemaster = (list: Array<IGamemasterPokemon>): Record<string, IGamemasterPokemon> => {
+	const dict = Object.fromEntries(list.map((p) => [p.speciesId, p]));
+	deriveFamilyRelations(dict);
+	return dict;
+};
 
 /**
  * The `searchFormId` half of the fixture — a verbatim re-port of dex-server's
@@ -95,9 +133,9 @@ const buildSearchFormIds = (gamemasterPokemon: Record<string, IGamemasterPokemon
  * this data now), so any test exercising them for real needs a fixture
  * that's actually right, not a stub. `bestIvSpreads`/`bestIvSpreadsPurified`
  * are built from the same `computeTiedTop1Patterns`/
- * `computeTiedTop1PurifiedPatterns` dex-server itself uses; `searchFormId`/
- * `hasShadowCounterpart` from the same algorithm dex-server's
- * `form-identifier-calculator.ts` uses (see `buildSearchFormIds` above).
+ * `computeTiedTop1PurifiedPatterns` dex-server itself uses; `searchFormId`
+ * from the same algorithm dex-server's `form-identifier-calculator.ts` uses
+ * (see `buildSearchFormIds` above).
  */
 export const buildSpeciesSearchMetadata = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>
@@ -118,7 +156,6 @@ export const buildSpeciesSearchMetadata = (
 
 		const entry: ISpeciesSearchMetadata = {
 			searchFormId: searchFormIds[p.speciesId],
-			hasShadowCounterpart: isNormalPokemonAndHasShadowVersion(p, gamemasterPokemon),
 			bestIvSpreads,
 		};
 
