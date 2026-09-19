@@ -638,7 +638,14 @@ const PokemonDetail = () => {
 				}
 			}
 		}
-		return { l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange };
+		// This row's own IV rank/percentage — always computed (not just for
+		// whichever league happens to be selected), same "always there, only
+		// painted when active" treatment `.r-board-lg` already gets. Raid has
+		// no IV-rank concept at all (its `rank` above is already the species'
+		// raid-attacker rank); `leagueSlice` only ever handles 0/1/2, so it's
+		// never called for it.
+		const ivSlice = !raidRow ? leagueSlice(ivPercents[member?.speciesId ?? ''], l.id as PvpLeague) : undefined;
+		return { l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice };
 	});
 
 	return (
@@ -855,7 +862,7 @@ const PokemonDetail = () => {
 					<div className='r-section-h'>best reachable stage per league</div>
 					<div className='r-board'>
 						{boardRows.map(
-							({ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange }) => {
+							({ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice }) => {
 								const active = league === l.id;
 								return (
 									<div
@@ -924,6 +931,18 @@ const PokemonDetail = () => {
 											)}
 											<span className='r-board-name'>
 												{member ? cleanName(member.speciesName) : ready ? 'Not ranked' : 'Loading…'}
+											</span>
+											{/* This exact catch's own IV rank/perfection, for whichever
+											    species is THIS row's own best reachable — always rendered
+											    (same "always there, only painted when active" treatment
+											    `.r-board-lg` gets, purely via CSS colour, see
+											    `.r-board-ivrank`'s own rule) rather than conditionally
+											    mounted, so `.r-board-id` never needs any special-cased
+											    centring logic: it's always exactly 3 real lines. Raid has no
+											    IV-rank concept at all (its `rank` above is already the raid-
+											    attacker rank), so it always shows a plain dash instead. */}
+											<span className='r-board-ivrank'>
+												{ivSlice ? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%` : '—'}
 											</span>
 										</span>
 										<span className='r-board-fig'>

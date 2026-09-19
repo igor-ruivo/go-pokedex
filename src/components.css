@@ -939,6 +939,9 @@
 	background: var(--lg);
 	box-shadow: 0 0 5px var(--lg);
 }
+/* Always exactly 3 real lines (league, name, IV-rank — see `.r-board-ivrank`
+   below) on every row, so the row's own `align-items: center` just centres
+   this whole, always-the-same-shape block with no special-casing needed. */
 .rvmp .r-board-id {
 	display: flex;
 	flex-direction: column;
@@ -968,6 +971,23 @@
 	   scroll container and can swallow touch/wheel scrolling started over it */
 	overflow: clip;
 	text-overflow: ellipsis;
+}
+/* This catch's own IV rank/perfection — always rendered on every row (real
+   text or a plain dash for Raid), same "neutral until hovered/selected"
+   treatment as `.r-board-lg` right above, purely via colour: no visibility/
+   animation logic, nothing to mount or unmount. */
+.rvmp .r-board-ivrank {
+	font-family: Fredoka, sans-serif;
+	font-weight: 700;
+	font-size: 12px;
+	letter-spacing: 0.01em;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+	transition: color 0.14s ease;
+}
+.rvmp .r-board-row:hover .r-board-ivrank,
+.rvmp .r-board-row[data-active='true'] .r-board-ivrank {
+	color: var(--lg);
 }
 .rvmp .r-board-fig {
 	display: flex;
