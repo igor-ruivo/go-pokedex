@@ -1,26 +1,11 @@
 import { useMemo } from 'react';
 
-import { useRaidMetric } from '../contexts/raid-metric-context';
+import { useRelevanceSets } from '../contexts/relevance-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { usePvp } from '../queries/pvp';
-import { useRaidRanker } from '../queries/raid-ranker';
-import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-handler';
 import { fetchReachablePokemonIncludingSelf, sortByFamilyLine } from '../utils/pokemon-helper';
-import { raidRankOf } from './raid-metric';
 
 export type LeagueKey = 'great' | 'ultra' | 'master' | 'raid';
 export const LEAGUE_KEYS: ReadonlyArray<LeagueKey> = ['great', 'ultra', 'master', 'raid'];
-
-/**
- * Relevance cut-offs are whatever the user set on the Mass-delete (/trash) page —
- * "keep top N …" — so a mon is relevant exactly when it wouldn't be trashed.
- * Defaults match that page's defaults.
- */
-const cfgNum = (key: ConfigKeys, fallback: number): number => {
-	const raw = readPersistentValue(key);
-	const n = raw == null ? NaN : Number(raw);
-	return Number.isFinite(n) && n > 0 ? n : fallback;
-};
 
 export interface RelevanceSets {
 	great: Set<string>;
@@ -38,83 +23,19 @@ export interface RelevanceSets {
 	ready: boolean;
 }
 
-const EMPTY: RelevanceSets = {
-	great: new Set(),
-	ultra: new Set(),
-	master: new Set(),
-	raid: new Set(),
-	greatRank: new Map(),
-	ultraRank: new Map(),
-	masterRank: new Map(),
-	raidRank: new Map(),
-	ready: false,
-};
+// The actual computation (and its site-wide sharing via context) now lives in
+// `RelevanceSetsProvider`/`useRelevanceSets` in `contexts/relevance-context.tsx`
+// — re-exported here so every existing call site (`'../lib/relevance'`) keeps
+// working unchanged. See that file's doc comment for why this moved out of a
+// plain per-component `useMemo`.
+export { useRelevanceSets };
 
-/** Species ids that are directly relevant for each league / raids. Computed once. */
-export const useRelevanceSets = (): RelevanceSets => {
-	const { rankLists, pvpFetchCompleted } = usePvp();
-	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
-	// Which figure (DPS/TDO/eDPS) counts as "top N" for raids — the same
-	// device-wide setting Rankings' raid tab ranks by, not the feed's own
-	// baked-in `rank` field (always DPS-ordered regardless of this choice).
-	const { raidMetric } = useRaidMetric();
-
-	// Read fresh every render so edits on /trash take effect on the next navigation.
-	const greatCut = cfgNum(ConfigKeys.TrashGreat, 50);
-	const ultraCut = cfgNum(ConfigKeys.TrashUltra, 50);
-	const masterCut = cfgNum(ConfigKeys.TrashMaster, 110);
-	const raidCut = cfgNum(ConfigKeys.TrashRaid, 5);
-
-	return useMemo(() => {
-		if (!pvpFetchCompleted || !raidDPSFetchCompleted) return EMPTY;
-		const pvpSet = (list: Record<string, { speciesId: string; rank: number }> | undefined, cutoff: number) => {
-			const s = new Set<string>();
-			for (const r of Object.values(list ?? {})) if (r.rank <= cutoff) s.add(r.speciesId);
-			return s;
-		};
-		const pvpRankMap = (list: Record<string, { speciesId: string; rank: number }> | undefined) => {
-			const m = new Map<string, number>();
-			for (const r of Object.values(list ?? {})) m.set(r.speciesId, r.rank);
-			return m;
-		};
-		const raid = new Set<string>();
-		// A species can appear in several type-specific attacker lists with a
-		// different rank in each — keep its BEST (lowest) one, same "relevant
-		// for raids at all" spirit the membership set already has.
-		const raidRank = new Map<string, number>();
-		for (const [key, list] of Object.entries(raidDPS)) {
-			if (key === '') continue; // the '' key is the type-agnostic overall list; we want "top N of any type"
-			for (const e of Object.values(list)) {
-				const rank = raidRankOf(e, raidMetric);
-				if (rank == null) continue;
-				if (rank <= raidCut) raid.add(e.speciesId);
-				const existing = raidRank.get(e.speciesId);
-				if (existing == null || rank < existing) raidRank.set(e.speciesId, rank);
-			}
-		}
-		return {
-			great: pvpSet(rankLists[0], greatCut),
-			ultra: pvpSet(rankLists[1], ultraCut),
-			master: pvpSet(rankLists[2], masterCut),
-			raid,
-			greatRank: pvpRankMap(rankLists[0]),
-			ultraRank: pvpRankMap(rankLists[1]),
-			masterRank: pvpRankMap(rankLists[2]),
-			raidRank,
-			ready: true,
-		};
-	}, [
-		rankLists,
-		raidDPS,
-		raidMetric,
-		pvpFetchCompleted,
-		raidDPSFetchCompleted,
-		greatCut,
-		ultraCut,
-		masterCut,
-		raidCut,
-	]);
-};
+/** The one family-reachability sweep both `leagueBadgesFor` and `bestRanksFor`
+ *  need — computed once per Pokémon and shared between them by
+ *  `sortByCalendarRelevance` (via the optional `family` param on each),
+ *  instead of each doing its own separate walk over the same family. */
+const familyIdsFor = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) =>
+	Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map((m) => m.speciesId);
 
 /**
  * Which leagues a Pokémon is relevant for — directly, or through any member of
@@ -123,13 +44,6 @@ export const useRelevanceSets = (): RelevanceSets => {
  * `sortByCalendarRelevance` below; `useLeagueBadges` is the memoized,
  * per-component-render wrapper for everywhere else (the dot badges themselves).
  */
-/** The one family-reachability sweep both `leagueBadgesFor` and `bestRanksFor`
- *  need — computed once per Pokémon and shared between them by
- *  `sortByCalendarRelevance` (via the optional `family` param on each),
- *  instead of each doing its own separate walk over the same family. */
-const familyIdsFor = (pokemon: IGamemasterPokemon, gamemasterPokemon: Record<string, IGamemasterPokemon>) =>
-	Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)).map((m) => m.speciesId);
-
 export const leagueBadgesFor = (
 	pokemon: IGamemasterPokemon | undefined,
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,

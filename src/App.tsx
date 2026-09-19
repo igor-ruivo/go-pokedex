@@ -9,6 +9,7 @@ import { BestBuddyProvider } from './contexts/best-buddy-context';
 import { ImageSourceProvider } from './contexts/imageSource-context';
 import { LanguageProvider } from './contexts/language-context';
 import { RaidMetricProvider } from './contexts/raid-metric-context';
+import { RelevanceSetsProvider } from './contexts/relevance-context';
 import { SeenEventsProvider } from './contexts/seen-events-context';
 import { ThemeProvider } from './contexts/theme-context';
 import Calendar from './routes/Calendar';
@@ -44,38 +45,40 @@ const App = () => (
 		<ThemeProvider>
 			<ImageSourceProvider>
 				<RaidMetricProvider>
-					<BestBuddyProvider>
-						<LanguageProvider>
-							<SeenEventsProvider>
-								<BrowserRouter>
-									<Routes>
-										<Route element={<Shell />}>
-											<Route index element={<Rankings />} />
-											<Route path='rankings/:league' element={<Rankings />} />
-											<Route path='rankings/:league/:type' element={<Rankings />} />
-											<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
-											<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
-											<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
-											<Route path='calendar/:tab' element={<Calendar />} />
-											<Route path='moves' element={<Moves />} />
-											<Route path='move/:moveId' element={<MoveDetail />} />
-											<Route path='types' element={<Types />} />
-											<Route
-												path='search-strings'
-												element={<Navigate to='/search-strings/non-meta-relevant' replace />}
-											/>
-											<Route path='search-strings/:tab' element={<MassDelete />} />
-											{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
-											<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
-											<Route path='tools' element={<Placeholder title='Tools' />} />
-											<Route path='settings' element={<Settings />} />
-											<Route path='*' element={<Navigate to='/' replace />} />
-										</Route>
-									</Routes>
-								</BrowserRouter>
-							</SeenEventsProvider>
-						</LanguageProvider>
-					</BestBuddyProvider>
+					<RelevanceSetsProvider>
+						<BestBuddyProvider>
+							<LanguageProvider>
+								<SeenEventsProvider>
+									<BrowserRouter>
+										<Routes>
+											<Route element={<Shell />}>
+												<Route index element={<Rankings />} />
+												<Route path='rankings/:league' element={<Rankings />} />
+												<Route path='rankings/:league/:type' element={<Rankings />} />
+												<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
+												<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
+												<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
+												<Route path='calendar/:tab' element={<Calendar />} />
+												<Route path='moves' element={<Moves />} />
+												<Route path='move/:moveId' element={<MoveDetail />} />
+												<Route path='types' element={<Types />} />
+												<Route
+													path='search-strings'
+													element={<Navigate to='/search-strings/non-meta-relevant' replace />}
+												/>
+												<Route path='search-strings/:tab' element={<MassDelete />} />
+												{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
+												<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
+												<Route path='tools' element={<Placeholder title='Tools' />} />
+												<Route path='settings' element={<Settings />} />
+												<Route path='*' element={<Navigate to='/' replace />} />
+											</Route>
+										</Routes>
+									</BrowserRouter>
+								</SeenEventsProvider>
+							</LanguageProvider>
+						</BestBuddyProvider>
+					</RelevanceSetsProvider>
 				</RaidMetricProvider>
 			</ImageSourceProvider>
 		</ThemeProvider>
