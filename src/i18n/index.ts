@@ -19,6 +19,20 @@ import { ConfigKeys, readPersistentValue } from '../utils/persistent-configs-han
 // endonym (the name for the language *in* that language — "Español", not
 // "Spanish") for the picker in SettingsMenu.tsx/Settings.tsx, same
 // convention Niantic's own picker uses. None of these are RTL scripts.
+// Polish is deliberately absent: Niantic's own Pokémon GO help site has no
+// Polish edition (it falls straight back to plain English), unlike every
+// other locale here — meaning the game itself isn't actually localized into
+// Polish, so it doesn't belong on a list meant to mirror what Pokémon GO
+// supports. Removed after that was confirmed directly against the source,
+// not assumed from the original list this was seeded from.
+//
+// `pt-PT`, not `pt-BR`: deliberately European Portuguese, not the Brazilian
+// Portuguese Niantic's own site uses — the website-UI copy and the in-game
+// search terms (`GameLanguage.ptbr`, contexts/language-context.tsx) are on
+// two separate axes for exactly this reason. GameLanguage stays Brazilian
+// (that's what Pokémon GO's own Brazilian client actually ships); this
+// locale is European Portuguese by explicit choice, not by mirroring
+// Niantic.
 export const SUPPORTED_LOCALES = [
 	'en',
 	'de',
@@ -28,8 +42,7 @@ export const SUPPORTED_LOCALES = [
 	'hi',
 	'id',
 	'it',
-	'pl',
-	'pt-BR',
+	'pt-PT',
 	'ja',
 	'ko',
 	'ru',
@@ -49,8 +62,7 @@ export const SUPPORTED_LOCALE_NAMES: Record<Locale, string> = {
 	'hi': 'हिन्दी',
 	'id': 'Bahasa Indonesia',
 	'it': 'Italiano',
-	'pl': 'Polski',
-	'pt-BR': 'Português',
+	'pt-PT': 'Português',
 	'ja': '日本語',
 	'ko': '한국어',
 	'ru': 'Русский',
@@ -101,9 +113,12 @@ const detectDefaultLocale = (): Locale => {
 	// Spanish copy, every other es-* gets European Spanish; zh-* of any kind
 	// maps to zh-Hant, since that's the only Chinese variant Pokémon GO's own
 	// site (and this app) offers — better a Traditional-script page than none.
+	// pt-* of any kind (pt-BR included) maps to pt-PT: this app only offers
+	// European Portuguese for the website UI (see SUPPORTED_LOCALES's own
+	// comment for why) — better European Portuguese than no Portuguese.
 	if (browserLang.startsWith('es')) return browserLang === 'es-mx' || browserLang.startsWith('es-419') ? 'es-MX' : 'es';
 	if (browserLang.startsWith('zh')) return 'zh-Hant';
-	if (browserLang.startsWith('pt')) return 'pt-BR';
+	if (browserLang.startsWith('pt')) return 'pt-PT';
 
 	const directMatch = (SUPPORTED_LOCALES as ReadonlyArray<string>).find(
 		(l) => l.toLowerCase() === browserLang || browserLang.startsWith(`${l.toLowerCase()}-`)

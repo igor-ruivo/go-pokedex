@@ -1,0 +1,31 @@
+{
+	"sorts": {
+		"dex": "Número da Dex",
+		"name": "Nome",
+		"cp": "CP máximo",
+		"type": "Tipo"
+	},
+	"tabs": {
+		"pokedexFull": "Pokédex",
+		"pokedexShort": "Dex"
+	},
+	"status": {
+		"loading": "A carregar…",
+		"chooseType": "Escolha um tipo",
+		"count": "{{count}} Pokémon",
+		"bestAttackersSuffix": " · melhores atacantes de {{type}}"
+	},
+	"hint": {
+		"show": "Mostrar premissas da classificação",
+		"hide": "Ocultar premissas da classificação",
+		"text": "As classificações de reide assumem a melhor combinação de golpe rápido + carregado de cada Pokémon a causar dano Efetivo do tipo {{type}} (×1,6) contra um chefe não Sombroso de Nível 5 (200 de Defesa, nível 40), com um atacante de nível 50 (15 de IV de Ataque) e sem bónus de clima, amizade ou aura Mega de companheiro. Os Pokémon Super Mega são classificados no Nível Mega máximo."
+	},
+	"empty": {
+		"pickType": "Escolha um tipo no filtro para ver os melhores atacantes de reide desse tipo.",
+		"nothingMatches": "Sem resultados."
+	},
+	"loadingLabel": {
+		"pokedex": "A carregar a Pokédex…",
+		"rankings": "A carregar a classificação…"
+	}
+}

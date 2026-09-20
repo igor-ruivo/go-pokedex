@@ -8,7 +8,8 @@ import { ShadowMark } from '../components/ShadowMark';
 import { handleSpriteError, spriteUrl } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
-import { GameLanguage, useLanguage } from '../contexts/language-context';
+import type { GameLanguage } from '../contexts/language-context';
+import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
@@ -25,7 +26,7 @@ import {
 	ivBucket,
 	negateIdentity,
 	renderDexExclusion,
-	translatePtBrTypeNames,
+	translateTypeNames,
 } from '../lib/search-string';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
@@ -126,6 +127,7 @@ export interface ProtectionFlags {
 	fusion: boolean;
 	gigantamax: boolean;
 	background: boolean;
+	specialBackground: boolean;
 	shiny: boolean;
 	costume: boolean;
 }
@@ -155,6 +157,7 @@ export const DEFAULT_PROTECTION: ProtectionFlags = {
 	fusion: false,
 	gigantamax: false,
 	background: false,
+	specialBackground: false,
 	shiny: false,
 	costume: false,
 };
@@ -243,6 +246,13 @@ const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 		translate: (t) => ({
 			label: t('massDelete:protectionMeta.background.label'),
 			description: t('massDelete:protectionMeta.background.description'),
+		}),
+	},
+	{
+		key: 'specialBackground',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.specialBackground.label'),
+			description: t('massDelete:protectionMeta.specialBackground.description'),
 		}),
 	},
 	{
@@ -554,9 +564,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 		newStr += (newStr ? '&' : '') + renderDexExclusion(t);
 	}
 
-	if (gl === GameLanguage.ptbr) {
-		newStr = translatePtBrTypeNames(newStr);
-	}
+	newStr = translateTypeNames(newStr, gl);
 
 	newStr += `&!4*${shadowPurifyHundoGuard(gl)}&!${gameTranslator(GameTranslatorKeys.CP, gl)}${cp}-`;
 	if (protect.tagged) newStr += '&!#';
@@ -574,6 +582,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	if (protect.fusion) newStr += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
 	if (protect.gigantamax) newStr += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;
 	if (protect.background) newStr += `&!${gameTranslator(GameTranslatorKeys.BackgroundSearch, gl)}`;
+	if (protect.specialBackground) newStr += `&!${gameTranslator(GameTranslatorKeys.SpecialBackgroundSearch, gl)}`;
 	if (protect.shiny) newStr += `&!${gameTranslator(GameTranslatorKeys.ShinySearch, gl)}`;
 	if (protect.costume) newStr += `&!${gameTranslator(GameTranslatorKeys.CostumeSearch, gl)}`;
 	// No `&!shadow` here, unlike Bad-IV mode below: every Shadow form already got
@@ -715,9 +724,7 @@ export const computeBadIvString = (
 		result += `&${renderDexExclusion(t)}`;
 	}
 
-	if (gl === GameLanguage.ptbr) {
-		result = translatePtBrTypeNames(result);
-	}
+	result = translateTypeNames(result, gl);
 
 	result += `&!4*${shadowPurifyHundoGuard(gl)}&!${CP}${cp}-`;
 	if (protect.tagged) result += '&!#';
@@ -731,6 +738,7 @@ export const computeBadIvString = (
 	if (protect.fusion) result += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
 	if (protect.gigantamax) result += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;
 	if (protect.background) result += `&!${gameTranslator(GameTranslatorKeys.BackgroundSearch, gl)}`;
+	if (protect.specialBackground) result += `&!${gameTranslator(GameTranslatorKeys.SpecialBackgroundSearch, gl)}`;
 	if (protect.shiny) result += `&!${gameTranslator(GameTranslatorKeys.ShinySearch, gl)}`;
 	if (protect.costume) result += `&!${gameTranslator(GameTranslatorKeys.CostumeSearch, gl)}`;
 
@@ -969,9 +977,7 @@ export const computeTradeableString = (
 		result += `&${renderDexExclusion(t)}`;
 	}
 
-	if (gl === GameLanguage.ptbr) {
-		result = translatePtBrTypeNames(result);
-	}
+	result = translateTypeNames(result, gl);
 
 	// A hundo needs no trade at all, regardless of the stricter toggle below.
 	// Shadows and Mythicals can never be traded — no purify-to-hundo carve-out
@@ -995,6 +1001,7 @@ export const computeTradeableString = (
 	if (protect.fusion) result += `&!${gameTranslator(GameTranslatorKeys.FusionSearch, gl)}`;
 	if (protect.gigantamax) result += `&!${gameTranslator(GameTranslatorKeys.GigantamaxSearch, gl)}`;
 	if (protect.background) result += `&!${gameTranslator(GameTranslatorKeys.BackgroundSearch, gl)}`;
+	if (protect.specialBackground) result += `&!${gameTranslator(GameTranslatorKeys.SpecialBackgroundSearch, gl)}`;
 	if (protect.shiny) result += `&!${gameTranslator(GameTranslatorKeys.ShinySearch, gl)}`;
 	if (protect.costume) result += `&!${gameTranslator(GameTranslatorKeys.CostumeSearch, gl)}`;
 	// Unconditional, not a togglable protection: an already-traded Pokémon
@@ -1252,6 +1259,7 @@ const MassDelete = () => {
 		fusion: boolCfg(ConfigKeys.TrashKeepFusion, DEFAULT_PROTECTION.fusion),
 		gigantamax: boolCfg(ConfigKeys.TrashKeepGigantamax, DEFAULT_PROTECTION.gigantamax),
 		background: boolCfg(ConfigKeys.TrashKeepBackground, DEFAULT_PROTECTION.background),
+		specialBackground: boolCfg(ConfigKeys.TrashKeepSpecialBackground, DEFAULT_PROTECTION.specialBackground),
 		shiny: boolCfg(ConfigKeys.TrashKeepShiny, DEFAULT_PROTECTION.shiny),
 		costume: boolCfg(ConfigKeys.TrashKeepCostume, DEFAULT_PROTECTION.costume),
 	}));
@@ -1287,6 +1295,10 @@ const MassDelete = () => {
 	useEffect(
 		() => void writePersistentValue(ConfigKeys.TrashKeepBackground, String(protect.background)),
 		[protect.background]
+	);
+	useEffect(
+		() => void writePersistentValue(ConfigKeys.TrashKeepSpecialBackground, String(protect.specialBackground)),
+		[protect.specialBackground]
 	);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepShiny, String(protect.shiny)), [protect.shiny]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashKeepCostume, String(protect.costume)), [protect.costume]);

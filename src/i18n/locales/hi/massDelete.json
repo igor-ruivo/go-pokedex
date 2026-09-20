@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "मास डिलीट मोड",
 	"modeTabs": {
-		"meta": { "full": "नॉन-मेटा रिलेवेंट", "short": "नॉन-मेटा" },
-		"badIv": { "full": "अपरफेक्ट IV", "short": "IVs" },
-		"trade": { "full": "ट्रेड के लायक ढूंढें", "short": "ट्रेड योग्य" }
+		"meta": {
+			"full": "नॉन-मेटा रिलेवेंट",
+			"short": "नॉन-मेटा"
+		},
+		"badIv": {
+			"full": "अपरफेक्ट IV",
+			"short": "IVs"
+		},
+		"trade": {
+			"full": "ट्रेड के लायक ढूंढें",
+			"short": "ट्रेड योग्य"
+		}
 	},
 	"badIvWarning": "यह मोड आक्रामक और परफेक्शनिस्ट है: इसका मकसद हर उस कैच को डिलीट करना है जो परफेक्ट (100%) IV वाला Pokémon नहीं है, चाहे वह स्पीशीज़ अभी मेटा में अच्छी हो या बुरी — इसे चलाने से पहले नीचे दी गई कैटेगरी और व्हाइटलिस्ट जरूर दोबारा जांच लें।",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "इन Pokémon को कभी डिलीट न करें",
 	"neverSuggestPokemon": "इन Pokémon को कभी सुझाएं नहीं",
 	"knobs": {
-		"greatLeague": { "full": "ग्रेट लीग", "short": "ग्रेट" },
-		"ultraLeague": { "full": "अल्ट्रा लीग", "short": "अल्ट्रा" },
-		"masterLeague": { "full": "मास्टर लीग", "short": "मास्टर" },
-		"raidAttackers": { "full": "रेड अटैकर", "short": "रेड" },
+		"greatLeague": {
+			"full": "ग्रेट लीग",
+			"short": "ग्रेट"
+		},
+		"ultraLeague": {
+			"full": "अल्ट्रा लीग",
+			"short": "अल्ट्रा"
+		},
+		"masterLeague": {
+			"full": "मास्टर लीग",
+			"short": "मास्टर"
+		},
+		"raidAttackers": {
+			"full": "रेड अटैकर",
+			"short": "रेड"
+		},
 		"saveCp": "CP सेव करें",
 		"simplifiedMode": "सिंपलिफ़ाइड मोड",
 		"keep3StarPokemon": "3* Pokémon रखें",
@@ -49,25 +70,62 @@
 	"toggleOn": "चालू",
 	"toggleOff": "बंद",
 	"protectionMeta": {
-		"favorite": { "label": "पसंदीदा", "description": "गेम में फ़ेवरिट मार्क किए गए Pokémon।" },
-		"tagged": { "label": "टैग किए गए", "description": "निकनेम या कस्टम टैग वाले Pokémon।" },
-		"legendary": { "label": "लेजेंडरी", "description": "बॉक्स लेजेंडरी (Mewtwo, Lugia, …)।" },
-		"mythical": { "label": "मिथिकल", "description": "मिथिकल (Mew, Celebi, …)।" },
-		"ultraBeast": { "label": "अल्ट्रा बीस्ट", "description": "अल्ट्रा बीस्ट (Nihilego, Buzzwole, …)।" },
+		"favorite": {
+			"label": "पसंदीदा",
+			"description": "गेम में फ़ेवरिट मार्क किए गए Pokémon।"
+		},
+		"tagged": {
+			"label": "टैग किए गए",
+			"description": "निकनेम या कस्टम टैग वाले Pokémon।"
+		},
+		"legendary": {
+			"label": "लेजेंडरी",
+			"description": "बॉक्स लेजेंडरी (Mewtwo, Lugia, …)।"
+		},
+		"mythical": {
+			"label": "मिथिकल",
+			"description": "मिथिकल (Mew, Celebi, …)।"
+		},
+		"ultraBeast": {
+			"label": "अल्ट्रा बीस्ट",
+			"description": "अल्ट्रा बीस्ट (Nihilego, Buzzwole, …)।"
+		},
 		"megaEvolvable": {
 			"label": "मेगा एवॉल्वेबल",
 			"description": "सिर्फ़ गेम को यह पता है — उस स्पीशीज़ के लिए अभी पर्याप्त मेगा एनर्जी जमा होनी चाहिए।"
 		},
-		"shadow": { "label": "शैडो", "description": "हर शैडो Pokémon, उसके अपने IV या रैंक चाहे जो हों।" },
-		"dynamax": { "label": "डायनामैक्स", "description": "डायनामैक्स कर सकने वाले Pokémon।" },
-		"fusion": { "label": "फ़्यूज़न", "description": "फ़्यूज़ किए जा सकने वाले, या पहले से फ़्यूज़्ड Pokémon।" },
-		"gigantamax": { "label": "गिगानतामैक्स", "description": "गिगानतामैक्स कर सकने वाले Pokémon।" },
+		"shadow": {
+			"label": "शैडो",
+			"description": "हर शैडो Pokémon, उसके अपने IV या रैंक चाहे जो हों।"
+		},
+		"dynamax": {
+			"label": "डायनामैक्स",
+			"description": "डायनामैक्स कर सकने वाले Pokémon।"
+		},
+		"fusion": {
+			"label": "फ़्यूज़न",
+			"description": "फ़्यूज़ किए जा सकने वाले, या पहले से फ़्यूज़्ड Pokémon।"
+		},
+		"gigantamax": {
+			"label": "गिगानतामैक्स",
+			"description": "गिगानतामैक्स कर सकने वाले Pokémon।"
+		},
 		"background": {
 			"label": "बैकग्राउंड",
 			"description": "जिन Pokémon के प्रोफ़ाइल में दुर्लभ या लोकेशन बैकग्राउंड हो।"
 		},
-		"shiny": { "label": "शाइनी", "description": "हर शाइनी Pokémon।" },
-		"costume": { "label": "कॉस्ट्यूम", "description": "स्पेशल इवेंट कॉस्ट्यूम पहने Pokémon।" }
+		"specialBackground": {
+			"label": "स्पेशल बैकग्राउंड",
+			"description": "जिन Pokémon के प्रोफ़ाइल में खास इवेंट बैकग्राउंड हो।"
+		},
+		"shiny": {
+			"label": "शाइनी",
+			"description": "हर शाइनी Pokémon।"
+		},
+		"costume": {
+			"label": "कॉस्ट्यूम",
+			"description": "स्पेशल इवेंट कॉस्ट्यूम पहने Pokémon।"
+		}
 	},
 	"lockedOnTitle": "{{label}} Pokémon कभी ट्रेड नहीं किए जा सकते, इसलिए यह हमेशा चालू रहता है।",
 	"whitelist": {

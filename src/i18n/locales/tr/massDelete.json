@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "Toplu silme modu",
 	"modeTabs": {
-		"meta": { "full": "Meta dışı", "short": "Meta dışı" },
-		"badIv": { "full": "Mükemmel Olmayan IV'ler", "short": "IV'ler" },
-		"trade": { "full": "Takas Edilebilir", "short": "Takas Edilebilir" }
+		"meta": {
+			"full": "Meta dışı",
+			"short": "Meta dışı"
+		},
+		"badIv": {
+			"full": "Mükemmel Olmayan IV'ler",
+			"short": "IV'ler"
+		},
+		"trade": {
+			"full": "Takas Edilebilir",
+			"short": "Takas Edilebilir"
+		}
 	},
 	"badIvWarning": "Bu mod agresif ve mükemmeliyetçidir: amaç, türün meta'da şu anda iyi ya da kötü olmasına bakılmaksızın mükemmel (%100) IV'li olmayan her yakalamayı silmektir — çalıştırmadan önce aşağıdaki kategorileri ve beyaz listeyi kontrol edin.",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "Bu Pokémon'ları asla silme",
 	"neverSuggestPokemon": "Bu Pokémon'ları asla önerme",
 	"knobs": {
-		"greatLeague": { "full": "Great Ligi", "short": "Great" },
-		"ultraLeague": { "full": "Ultra Ligi", "short": "Ultra" },
-		"masterLeague": { "full": "Master Ligi", "short": "Master" },
-		"raidAttackers": { "full": "Baskın Saldırganları", "short": "Baskın" },
+		"greatLeague": {
+			"full": "Great Ligi",
+			"short": "Great"
+		},
+		"ultraLeague": {
+			"full": "Ultra Ligi",
+			"short": "Ultra"
+		},
+		"masterLeague": {
+			"full": "Master Ligi",
+			"short": "Master"
+		},
+		"raidAttackers": {
+			"full": "Baskın Saldırganları",
+			"short": "Baskın"
+		},
 		"saveCp": "CP'yi Kaydet",
 		"simplifiedMode": "Basitleştirilmiş mod",
 		"keep3StarPokemon": "3* Pokémon'ları tut",
@@ -49,25 +70,62 @@
 	"toggleOn": "Açık",
 	"toggleOff": "Kapalı",
 	"protectionMeta": {
-		"favorite": { "label": "Favori", "description": "Oyun içinde Favori olarak işaretlenmiş Pokémon." },
-		"tagged": { "label": "Etiketli", "description": "Takma adı veya özel etiketi olan Pokémon." },
-		"legendary": { "label": "Efsanevi", "description": "Kutu efsanevileri (Mewtwo, Lugia, …)." },
-		"mythical": { "label": "Söylencesel", "description": "Söylenceseller (Mew, Celebi, …)." },
-		"ultraBeast": { "label": "Ultra Canavar", "description": "Ultra Canavarlar (Nihilego, Buzzwole, …)." },
+		"favorite": {
+			"label": "Favori",
+			"description": "Oyun içinde Favori olarak işaretlenmiş Pokémon."
+		},
+		"tagged": {
+			"label": "Etiketli",
+			"description": "Takma adı veya özel etiketi olan Pokémon."
+		},
+		"legendary": {
+			"label": "Efsanevi",
+			"description": "Kutu efsanevileri (Mewtwo, Lugia, …)."
+		},
+		"mythical": {
+			"label": "Söylencesel",
+			"description": "Söylenceseller (Mew, Celebi, …)."
+		},
+		"ultraBeast": {
+			"label": "Ultra Canavar",
+			"description": "Ultra Canavarlar (Nihilego, Buzzwole, …)."
+		},
 		"megaEvolvable": {
 			"label": "Mega Evrimleşebilir",
 			"description": "Bunu sadece oyun bilir — o tür için şu anda yeterli Mega Enerjisi birikmiş olması gerekir."
 		},
-		"shadow": { "label": "Gölge", "description": "Kendi IV'lerine veya sıralamasına bakılmaksızın her Gölge Pokémon." },
-		"dynamax": { "label": "Dynamax", "description": "Dynamax yapabilen Pokémon." },
-		"fusion": { "label": "Füzyon", "description": "Füzyon yapabilen veya zaten füzyonlanmış Pokémon." },
-		"gigantamax": { "label": "Gigantamax", "description": "Gigantamax yapabilen Pokémon." },
+		"shadow": {
+			"label": "Gölge",
+			"description": "Kendi IV'lerine veya sıralamasına bakılmaksızın her Gölge Pokémon."
+		},
+		"dynamax": {
+			"label": "Dynamax",
+			"description": "Dynamax yapabilen Pokémon."
+		},
+		"fusion": {
+			"label": "Füzyon",
+			"description": "Füzyon yapabilen veya zaten füzyonlanmış Pokémon."
+		},
+		"gigantamax": {
+			"label": "Gigantamax",
+			"description": "Gigantamax yapabilen Pokémon."
+		},
 		"background": {
 			"label": "Arka Plan",
 			"description": "Profilinde nadir veya konuma özel bir arka planı olan Pokémon."
 		},
-		"shiny": { "label": "Işıltılı", "description": "Her Işıltılı Pokémon." },
-		"costume": { "label": "Kostüm", "description": "Özel Etkinlik kostümü giyen Pokémon." }
+		"specialBackground": {
+			"label": "Özel Arka Plan",
+			"description": "Profilinde özel etkinlik arka planı olan Pokémon."
+		},
+		"shiny": {
+			"label": "Işıltılı",
+			"description": "Her Işıltılı Pokémon."
+		},
+		"costume": {
+			"label": "Kostüm",
+			"description": "Özel Etkinlik kostümü giyen Pokémon."
+		}
 	},
 	"lockedOnTitle": "{{label}} Pokémon asla takas edilemez, bu yüzden bu her zaman açıktır.",
 	"whitelist": {

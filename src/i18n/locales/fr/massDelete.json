@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "Mode de suppression en masse",
 	"modeTabs": {
-		"meta": { "full": "Hors meta", "short": "Hors meta" },
-		"badIv": { "full": "IV imparfaits", "short": "IV" },
-		"trade": { "full": "Trouver échangeables", "short": "Échangeables" }
+		"meta": {
+			"full": "Hors meta",
+			"short": "Hors meta"
+		},
+		"badIv": {
+			"full": "IV imparfaits",
+			"short": "IV"
+		},
+		"trade": {
+			"full": "Trouver échangeables",
+			"short": "Échangeables"
+		}
 	},
 	"badIvWarning": "Ce mode est agressif et perfectionniste : l'objectif est de supprimer toute capture qui n'est pas un Pokémon aux IV parfaits (100 %), sans se soucier de savoir si l'espèce est actuellement bonne ou mauvaise dans le meta — vérifiez bien les catégories et la liste blanche ci-dessous avant de l'exécuter.",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "Ne jamais supprimer ces Pokémon",
 	"neverSuggestPokemon": "Ne jamais suggérer ces Pokémon",
 	"knobs": {
-		"greatLeague": { "full": "Ligue Superbe", "short": "Superbe" },
-		"ultraLeague": { "full": "Ligue Ultra", "short": "Ultra" },
-		"masterLeague": { "full": "Ligue Maître", "short": "Maître" },
-		"raidAttackers": { "full": "Attaquants de raid", "short": "Raid" },
+		"greatLeague": {
+			"full": "Ligue Superbe",
+			"short": "Superbe"
+		},
+		"ultraLeague": {
+			"full": "Ligue Ultra",
+			"short": "Ultra"
+		},
+		"masterLeague": {
+			"full": "Ligue Maître",
+			"short": "Maître"
+		},
+		"raidAttackers": {
+			"full": "Attaquants de raid",
+			"short": "Raid"
+		},
 		"saveCp": "Conserver les PC",
 		"simplifiedMode": "Mode simplifié",
 		"keep3StarPokemon": "Garder les Pokémon 3*",
@@ -49,25 +70,62 @@
 	"toggleOn": "Activé",
 	"toggleOff": "Désactivé",
 	"protectionMeta": {
-		"favorite": { "label": "Favori", "description": "Pokémon marqués comme favoris en jeu." },
-		"tagged": { "label": "Étiqueté", "description": "Pokémon avec un surnom ou une étiquette personnalisée." },
-		"legendary": { "label": "Légendaire", "description": "Légendaires de boîte (Mewtwo, Lugia, …)." },
-		"mythical": { "label": "Mythique", "description": "Mythiques (Mew, Celebi, …)." },
-		"ultraBeast": { "label": "Ultra-Chimère", "description": "Ultra-Chimères (Vorasterie, Lucanon, …)." },
+		"favorite": {
+			"label": "Favori",
+			"description": "Pokémon marqués comme favoris en jeu."
+		},
+		"tagged": {
+			"label": "Étiqueté",
+			"description": "Pokémon avec un surnom ou une étiquette personnalisée."
+		},
+		"legendary": {
+			"label": "Légendaire",
+			"description": "Légendaires de boîte (Mewtwo, Lugia, …)."
+		},
+		"mythical": {
+			"label": "Mythique",
+			"description": "Mythiques (Mew, Celebi, …)."
+		},
+		"ultraBeast": {
+			"label": "Ultra-Chimère",
+			"description": "Ultra-Chimères (Vorasterie, Lucanon, …)."
+		},
 		"megaEvolvable": {
 			"label": "Méga-évoluable",
 			"description": "Seul le jeu le sait — nécessite assez d'Méga-Énergie accumulée pour cette espèce en ce moment."
 		},
-		"shadow": { "label": "Ombre", "description": "Tous les Pokémon Ombre, quels que soient leurs IV ou leur rang." },
-		"dynamax": { "label": "Dynamax", "description": "Pokémon capables de Dynamax." },
-		"fusion": { "label": "Fusion", "description": "Pokémon pouvant être fusionnés, ou déjà fusionnés." },
-		"gigantamax": { "label": "Gigamax", "description": "Pokémon capables de Gigamax." },
+		"shadow": {
+			"label": "Ombre",
+			"description": "Tous les Pokémon Ombre, quels que soient leurs IV ou leur rang."
+		},
+		"dynamax": {
+			"label": "Dynamax",
+			"description": "Pokémon capables de Dynamax."
+		},
+		"fusion": {
+			"label": "Fusion",
+			"description": "Pokémon pouvant être fusionnés, ou déjà fusionnés."
+		},
+		"gigantamax": {
+			"label": "Gigamax",
+			"description": "Pokémon capables de Gigamax."
+		},
 		"background": {
 			"label": "Arrière-plan",
 			"description": "Pokémon avec un arrière-plan rare ou géolocalisé dans son profil."
 		},
-		"shiny": { "label": "Chromatique", "description": "Tous les Pokémon chromatiques." },
-		"costume": { "label": "Costume", "description": "Pokémon portant un costume d'événement spécial." }
+		"specialBackground": {
+			"label": "Arrière-plan spécial",
+			"description": "Pokémon avec un arrière-plan spécial d'événement dans son profil."
+		},
+		"shiny": {
+			"label": "Chromatique",
+			"description": "Tous les Pokémon chromatiques."
+		},
+		"costume": {
+			"label": "Costume",
+			"description": "Pokémon portant un costume d'événement spécial."
+		}
 	},
 	"lockedOnTitle": "Les Pokémon {{label}} ne peuvent jamais être échangés, donc c'est toujours activé.",
 	"whitelist": {

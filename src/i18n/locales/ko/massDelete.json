@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "일괄 삭제 모드",
 	"modeTabs": {
-		"meta": { "full": "메타와 무관", "short": "메타 외" },
-		"badIv": { "full": "개체값 불완전", "short": "개체값" },
-		"trade": { "full": "교환 후보 찾기", "short": "교환 후보" }
+		"meta": {
+			"full": "메타와 무관",
+			"short": "메타 외"
+		},
+		"badIv": {
+			"full": "개체값 불완전",
+			"short": "개체값"
+		},
+		"trade": {
+			"full": "교환 후보 찾기",
+			"short": "교환 후보"
+		}
 	},
 	"badIvWarning": "이 모드는 매우 엄격하고 완벽주의적입니다 — 해당 종이 현재 메타에서 강한지 약한지와 무관하게, 완벽한(100%) 개체값이 아닌 모든 포획 개체를 삭제 대상으로 합니다. 실행하기 전에 아래 카테고리와 화이트리스트를 반드시 확인하세요.",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "이 포켓몬은 삭제하지 않음",
 	"neverSuggestPokemon": "이 포켓몬은 제안하지 않음",
 	"knobs": {
-		"greatLeague": { "full": "그레이트 리그", "short": "그레이트" },
-		"ultraLeague": { "full": "울트라 리그", "short": "울트라" },
-		"masterLeague": { "full": "마스터 리그", "short": "마스터" },
-		"raidAttackers": { "full": "레이드 어태커", "short": "레이드" },
+		"greatLeague": {
+			"full": "그레이트 리그",
+			"short": "그레이트"
+		},
+		"ultraLeague": {
+			"full": "울트라 리그",
+			"short": "울트라"
+		},
+		"masterLeague": {
+			"full": "마스터 리그",
+			"short": "마스터"
+		},
+		"raidAttackers": {
+			"full": "레이드 어태커",
+			"short": "레이드"
+		},
 		"saveCp": "CP 저장",
 		"simplifiedMode": "간소화 모드",
 		"keep3StarPokemon": "★3 포켓몬 보호",
@@ -49,25 +70,62 @@
 	"toggleOn": "켜짐",
 	"toggleOff": "꺼짐",
 	"protectionMeta": {
-		"favorite": { "label": "즐겨찾기", "description": "게임 내에서 즐겨찾기로 설정된 포켓몬." },
-		"tagged": { "label": "태그 지정됨", "description": "닉네임이나 커스텀 태그가 있는 포켓몬." },
-		"legendary": { "label": "전설", "description": "전설의 포켓몬(뮤츠, 루기아 등)." },
-		"mythical": { "label": "환상", "description": "환상의 포켓몬(뮤, 세레비 등)." },
-		"ultraBeast": { "label": "울트라비스트", "description": "울트라비스트(네크로즈마 등)." },
+		"favorite": {
+			"label": "즐겨찾기",
+			"description": "게임 내에서 즐겨찾기로 설정된 포켓몬."
+		},
+		"tagged": {
+			"label": "태그 지정됨",
+			"description": "닉네임이나 커스텀 태그가 있는 포켓몬."
+		},
+		"legendary": {
+			"label": "전설",
+			"description": "전설의 포켓몬(뮤츠, 루기아 등)."
+		},
+		"mythical": {
+			"label": "환상",
+			"description": "환상의 포켓몬(뮤, 세레비 등)."
+		},
+		"ultraBeast": {
+			"label": "울트라비스트",
+			"description": "울트라비스트(네크로즈마 등)."
+		},
 		"megaEvolvable": {
 			"label": "메가진화 가능",
 			"description": "게임 정보로만 판단 가능 — 현재 해당 종의 메가에너지가 충분히 모여 있는 경우."
 		},
-		"shadow": { "label": "섀도", "description": "개체값이나 랭크와 무관하게 모든 섀도 포켓몬." },
-		"dynamax": { "label": "다이맥스", "description": "다이맥스 가능한 포켓몬." },
-		"fusion": { "label": "합체", "description": "합체 가능하거나 이미 합체된 포켓몬." },
-		"gigantamax": { "label": "거다이맥스", "description": "거다이맥스 가능한 포켓몬." },
+		"shadow": {
+			"label": "섀도",
+			"description": "개체값이나 랭크와 무관하게 모든 섀도 포켓몬."
+		},
+		"dynamax": {
+			"label": "다이맥스",
+			"description": "다이맥스 가능한 포켓몬."
+		},
+		"fusion": {
+			"label": "합체",
+			"description": "합체 가능하거나 이미 합체된 포켓몬."
+		},
+		"gigantamax": {
+			"label": "거다이맥스",
+			"description": "거다이맥스 가능한 포켓몬."
+		},
 		"background": {
 			"label": "배경",
 			"description": "프로필에 희귀하거나 특별한 지역 배경이 있는 포켓몬."
 		},
-		"shiny": { "label": "색이 다른", "description": "모든 색이 다른 포켓몬." },
-		"costume": { "label": "코스튬", "description": "특별 이벤트 코스튬을 착용한 포켓몬." }
+		"specialBackground": {
+			"label": "스페셜 배경",
+			"description": "프로필에 특별한 이벤트 배경이 있는 포켓몬."
+		},
+		"shiny": {
+			"label": "색이 다른",
+			"description": "모든 색이 다른 포켓몬."
+		},
+		"costume": {
+			"label": "코스튬",
+			"description": "특별 이벤트 코스튬을 착용한 포켓몬."
+		}
 	},
 	"lockedOnTitle": "{{label}} 포켓몬은 교환할 수 없어 항상 켜져 있습니다.",
 	"whitelist": {

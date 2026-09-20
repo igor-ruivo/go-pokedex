@@ -11,9 +11,29 @@ export type { Locale };
 // for why: they have different lifecycles and, for now, different supported
 // sets — a website-UI locale doesn't imply Pokémon GO itself ships that
 // language's in-game strings, and vice versa.
+// Values match the website-UI `Locale` codes where both exist, for the same
+// reason `pt_br` (not `pt-BR`) below is left alone rather than "fixed" to
+// match: `ptbr`'s value is already what's persisted in real users'
+// localStorage today, and changing it would silently reset their saved game
+// language back to the default — not worth it just for cosmetic consistency.
+// New members added here don't have that problem yet, so they use the
+// website's exact codes.
 export enum GameLanguage {
 	en = 'en',
 	ptbr = 'pt_br',
+	de = 'de',
+	es = 'es',
+	esMx = 'es-MX',
+	fr = 'fr',
+	hi = 'hi',
+	id = 'id',
+	it = 'it',
+	ja = 'ja',
+	ko = 'ko',
+	ru = 'ru',
+	th = 'th',
+	tr = 'tr',
+	zhHant = 'zh-Hant',
 }
 
 interface LanguageContextType {

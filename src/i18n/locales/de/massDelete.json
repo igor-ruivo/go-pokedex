@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "Massenlöschmodus",
 	"modeTabs": {
-		"meta": { "full": "Nicht meta-relevant", "short": "Nicht-Meta" },
-		"badIv": { "full": "Nicht perfekte IWs", "short": "IWs" },
-		"trade": { "full": "Tauschbar finden", "short": "Tauschbar" }
+		"meta": {
+			"full": "Nicht meta-relevant",
+			"short": "Nicht-Meta"
+		},
+		"badIv": {
+			"full": "Nicht perfekte IWs",
+			"short": "IWs"
+		},
+		"trade": {
+			"full": "Tauschbar finden",
+			"short": "Tauschbar"
+		}
 	},
 	"badIvWarning": "Dieser Modus ist aggressiv und perfektionistisch: Ziel ist es, jeden Fang zu löschen, der kein perfektes (100 %) IW-Pokémon ist — unabhängig davon, ob eine Spezies aktuell im Meta gut oder schlecht ist. Prüfe die Kategorien und die Whitelist unten, bevor du ihn ausführst.",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "Diese Pokémon nie löschen",
 	"neverSuggestPokemon": "Diese Pokémon nie vorschlagen",
 	"knobs": {
-		"greatLeague": { "full": "Superliga", "short": "Super" },
-		"ultraLeague": { "full": "Ultraliga", "short": "Ultra" },
-		"masterLeague": { "full": "Meisterliga", "short": "Meister" },
-		"raidAttackers": { "full": "Arena-Kampf-Angreifer", "short": "Kampf" },
+		"greatLeague": {
+			"full": "Superliga",
+			"short": "Super"
+		},
+		"ultraLeague": {
+			"full": "Ultraliga",
+			"short": "Ultra"
+		},
+		"masterLeague": {
+			"full": "Meisterliga",
+			"short": "Meister"
+		},
+		"raidAttackers": {
+			"full": "Arena-Kampf-Angreifer",
+			"short": "Kampf"
+		},
 		"saveCp": "WP speichern",
 		"simplifiedMode": "Vereinfachter Modus",
 		"keep3StarPokemon": "3*-Pokémon behalten",
@@ -49,25 +70,62 @@
 	"toggleOn": "An",
 	"toggleOff": "Aus",
 	"protectionMeta": {
-		"favorite": { "label": "Favorit", "description": "Im Spiel als Favorit markierte Pokémon." },
-		"tagged": { "label": "Markiert", "description": "Pokémon mit einem Spitznamen oder einer eigenen Markierung." },
-		"legendary": { "label": "Legendär", "description": "Box-Legendäre (Mewtu, Lugia, …)." },
-		"mythical": { "label": "Mystisch", "description": "Mysteriöse Pokémon (Mew, Celebi, …)." },
-		"ultraBeast": { "label": "Ultrabestie", "description": "Ultrabestien (Bluzuken, Zaubeel, …)." },
+		"favorite": {
+			"label": "Favorit",
+			"description": "Im Spiel als Favorit markierte Pokémon."
+		},
+		"tagged": {
+			"label": "Markiert",
+			"description": "Pokémon mit einem Spitznamen oder einer eigenen Markierung."
+		},
+		"legendary": {
+			"label": "Legendär",
+			"description": "Box-Legendäre (Mewtu, Lugia, …)."
+		},
+		"mythical": {
+			"label": "Mystisch",
+			"description": "Mysteriöse Pokémon (Mew, Celebi, …)."
+		},
+		"ultraBeast": {
+			"label": "Ultrabestie",
+			"description": "Ultrabestien (Bluzuken, Zaubeel, …)."
+		},
 		"megaEvolvable": {
 			"label": "Mega-fähig",
 			"description": "Das weiß nur das Spiel — erfordert gerade genug gespeicherte Mega-Energie für diese Spezies."
 		},
-		"shadow": { "label": "Schatten", "description": "Jedes Schatten-Pokémon, unabhängig von eigenen IWs oder Rang." },
-		"dynamax": { "label": "Dynamax", "description": "Pokémon, die dynamaximieren können." },
-		"fusion": { "label": "Fusion", "description": "Pokémon, die fusioniert werden können oder es bereits sind." },
-		"gigantamax": { "label": "Gigadynamax", "description": "Pokémon, die gigadynamaximieren können." },
+		"shadow": {
+			"label": "Schatten",
+			"description": "Jedes Schatten-Pokémon, unabhängig von eigenen IWs oder Rang."
+		},
+		"dynamax": {
+			"label": "Dynamax",
+			"description": "Pokémon, die dynamaximieren können."
+		},
+		"fusion": {
+			"label": "Fusion",
+			"description": "Pokémon, die fusioniert werden können oder es bereits sind."
+		},
+		"gigantamax": {
+			"label": "Gigadynamax",
+			"description": "Pokémon, die gigadynamaximieren können."
+		},
 		"background": {
 			"label": "Hintergrund",
 			"description": "Pokémon mit einem seltenen oder ortsbezogenen Hintergrund im Profil."
 		},
-		"shiny": { "label": "Schillernd", "description": "Jedes schillernde Pokémon." },
-		"costume": { "label": "Kostüm", "description": "Pokémon mit einem Sonderevent-Kostüm." }
+		"specialBackground": {
+			"label": "Spezialhintergrund",
+			"description": "Pokémon mit einem besonderen Event-Hintergrund im Profil."
+		},
+		"shiny": {
+			"label": "Schillernd",
+			"description": "Jedes schillernde Pokémon."
+		},
+		"costume": {
+			"label": "Kostüm",
+			"description": "Pokémon mit einem Sonderevent-Kostüm."
+		}
 	},
 	"lockedOnTitle": "{{label}}-Pokémon können nie getauscht werden, daher ist dies immer aktiv.",
 	"whitelist": {

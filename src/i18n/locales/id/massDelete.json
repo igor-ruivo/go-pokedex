@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "Mode hapus massal",
 	"modeTabs": {
-		"meta": { "full": "Non-meta relevan", "short": "Non-meta" },
-		"badIv": { "full": "IV Tidak Sempurna", "short": "IV" },
-		"trade": { "full": "Cari yang Bisa Ditukar", "short": "Bisa Ditukar" }
+		"meta": {
+			"full": "Non-meta relevan",
+			"short": "Non-meta"
+		},
+		"badIv": {
+			"full": "IV Tidak Sempurna",
+			"short": "IV"
+		},
+		"trade": {
+			"full": "Cari yang Bisa Ditukar",
+			"short": "Bisa Ditukar"
+		}
 	},
 	"badIvWarning": "Mode ini agresif dan perfeksionis: tujuannya adalah menghapus setiap tangkapan yang bukan Pokémon IV sempurna (100%), tanpa mempertimbangkan apakah spesiesnya sedang bagus atau buruk di meta — periksa kembali kategori dan whitelist di bawah sebelum menjalankannya.",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "Jangan pernah hapus Pokémon ini",
 	"neverSuggestPokemon": "Jangan pernah sarankan Pokémon ini",
 	"knobs": {
-		"greatLeague": { "full": "Liga Hebat", "short": "Hebat" },
-		"ultraLeague": { "full": "Liga Ultra", "short": "Ultra" },
-		"masterLeague": { "full": "Liga Master", "short": "Master" },
-		"raidAttackers": { "full": "Attacker Raid", "short": "Raid" },
+		"greatLeague": {
+			"full": "Liga Hebat",
+			"short": "Hebat"
+		},
+		"ultraLeague": {
+			"full": "Liga Ultra",
+			"short": "Ultra"
+		},
+		"masterLeague": {
+			"full": "Liga Master",
+			"short": "Master"
+		},
+		"raidAttackers": {
+			"full": "Attacker Raid",
+			"short": "Raid"
+		},
 		"saveCp": "Simpan CP",
 		"simplifiedMode": "Mode sederhana",
 		"keep3StarPokemon": "Pertahankan Pokémon 3*",
@@ -49,11 +70,26 @@
 	"toggleOn": "Aktif",
 	"toggleOff": "Mati",
 	"protectionMeta": {
-		"favorite": { "label": "Favorit", "description": "Pokémon yang ditandai Favorit di dalam game." },
-		"tagged": { "label": "Diberi Tag", "description": "Pokémon dengan nama panggilan atau tag kustom." },
-		"legendary": { "label": "Legendaris", "description": "Legendaris box (Mewtwo, Lugia, …)." },
-		"mythical": { "label": "Mitos", "description": "Pokémon mitos (Mew, Celebi, …)." },
-		"ultraBeast": { "label": "Ultra Beast", "description": "Ultra Beast (Nihilego, Buzzwole, …)." },
+		"favorite": {
+			"label": "Favorit",
+			"description": "Pokémon yang ditandai Favorit di dalam game."
+		},
+		"tagged": {
+			"label": "Diberi Tag",
+			"description": "Pokémon dengan nama panggilan atau tag kustom."
+		},
+		"legendary": {
+			"label": "Legendaris",
+			"description": "Legendaris box (Mewtwo, Lugia, …)."
+		},
+		"mythical": {
+			"label": "Mitos",
+			"description": "Pokémon mitos (Mew, Celebi, …)."
+		},
+		"ultraBeast": {
+			"label": "Ultra Beast",
+			"description": "Ultra Beast (Nihilego, Buzzwole, …)."
+		},
 		"megaEvolvable": {
 			"label": "Bisa Mega Evolve",
 			"description": "Hanya game yang tahu ini — butuh cukup Energi Mega yang tersimpan untuk spesies itu saat ini."
@@ -62,15 +98,34 @@
 			"label": "Shadow",
 			"description": "Setiap Pokémon Shadow, terlepas dari IV atau peringkatnya sendiri."
 		},
-		"dynamax": { "label": "Dynamax", "description": "Pokémon yang bisa Dynamax." },
-		"fusion": { "label": "Fusion", "description": "Pokémon yang bisa difusi, atau sudah difusi." },
-		"gigantamax": { "label": "Gigantamax", "description": "Pokémon yang bisa Gigantamax." },
+		"dynamax": {
+			"label": "Dynamax",
+			"description": "Pokémon yang bisa Dynamax."
+		},
+		"fusion": {
+			"label": "Fusion",
+			"description": "Pokémon yang bisa difusi, atau sudah difusi."
+		},
+		"gigantamax": {
+			"label": "Gigantamax",
+			"description": "Pokémon yang bisa Gigantamax."
+		},
 		"background": {
 			"label": "Latar Belakang",
 			"description": "Pokémon dengan latar belakang langka atau lokasi khusus di profilnya."
 		},
-		"shiny": { "label": "Shiny", "description": "Setiap Pokémon Shiny." },
-		"costume": { "label": "Kostum", "description": "Pokémon yang mengenakan kostum Event Spesial." }
+		"specialBackground": {
+			"label": "Latar Belakang Spesial",
+			"description": "Pokémon dengan latar belakang acara khusus di profilnya."
+		},
+		"shiny": {
+			"label": "Shiny",
+			"description": "Setiap Pokémon Shiny."
+		},
+		"costume": {
+			"label": "Kostum",
+			"description": "Pokémon yang mengenakan kostum Event Spesial."
+		}
 	},
 	"lockedOnTitle": "Pokémon {{label}} tidak pernah bisa ditukar, jadi ini selalu aktif.",
 	"whitelist": {

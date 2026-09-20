@@ -4,8 +4,8 @@
 		"clear": "Limpar",
 		"dialogAriaLabel": "Filtros",
 		"typeSectionLabel": "Tipo",
-		"pickOneHint": "escolha um",
-		"pickUpToHint": "escolha até {{max}} · precisa combinar com ambos"
+		"pickOneHint": "escolher um",
+		"pickUpToHint": "escolher até {{max}} · corresponde a ambos"
 	},
 	"sortBar": {
 		"dialogAriaLabel": "Ordenar por",
@@ -28,21 +28,21 @@
 		"alt": "Sombrio"
 	},
 	"searchBox": {
-		"placeholder": "Buscar Pokémon ou golpes…",
-		"ariaLabel": "Buscar Pokémon ou golpes",
-		"clearAriaLabel": "Limpar busca",
+		"placeholder": "Pesquisar Pokémon ou golpes…",
+		"ariaLabel": "Pesquisar Pokémon ou golpes",
+		"clearAriaLabel": "Limpar pesquisa",
 		"shadowSuffix": "Sombrio",
 		"fast": "Rápido",
 		"charged": "Carregado"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "Não classificado como atacante de raide.",
+		"notRanked": "Não classificado como atacante de reide.",
 		"bestMovesetByType": "Melhor conjunto de golpes por tipo",
-		"tapNextMoveset": "Toque para o próximo conjunto de golpes",
-		"tapSelectType": "Toque para selecionar este tipo",
+		"tapNextMoveset": "Tocar para o próximo conjunto de golpes",
+		"tapSelectType": "Tocar para selecionar este tipo",
 		"legacy": "Legado",
 		"elite": "Elite",
-		"baseAtk": "ATK Base",
-		"typeRank": "Rank de {{type}}"
+		"baseAtk": "ATK base",
+		"typeRank": "Classificação de {{type}}"
 	}
 }

@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "โหมดลบเป็นชุด",
 	"modeTabs": {
-		"meta": { "full": "ไม่เกี่ยวกับเมต้า", "short": "นอกเมต้า" },
-		"badIv": { "full": "IV ไม่สมบูรณ์แบบ", "short": "IV" },
-		"trade": { "full": "ค้นหาที่แลกเปลี่ยนได้", "short": "แลกเปลี่ยนได้" }
+		"meta": {
+			"full": "ไม่เกี่ยวกับเมต้า",
+			"short": "นอกเมต้า"
+		},
+		"badIv": {
+			"full": "IV ไม่สมบูรณ์แบบ",
+			"short": "IV"
+		},
+		"trade": {
+			"full": "ค้นหาที่แลกเปลี่ยนได้",
+			"short": "แลกเปลี่ยนได้"
+		}
 	},
 	"badIvWarning": "โหมดนี้ดุดันและเน้นความสมบูรณ์แบบ: มีเป้าหมายลบทุกตัวที่ไม่ใช่โปเกมอน IV สมบูรณ์แบบ (100%) โดยไม่สนใจว่าสปีชีส์นั้นจะดีหรือแย่ในเมต้าปัจจุบัน — ตรวจสอบหมวดหมู่และรายการที่ยกเว้นด้านล่างให้ดีก่อนใช้งาน",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "ไม่ต้องลบโปเกมอนเหล่านี้เลย",
 	"neverSuggestPokemon": "ไม่ต้องแนะนำโปเกมอนเหล่านี้เลย",
 	"knobs": {
-		"greatLeague": { "full": "ลีกเกรท", "short": "เกรท" },
-		"ultraLeague": { "full": "ลีกอัลตร้า", "short": "อัลตร้า" },
-		"masterLeague": { "full": "ลีกมาสเตอร์", "short": "มาสเตอร์" },
-		"raidAttackers": { "full": "ตัวโจมตีเรด", "short": "เรด" },
+		"greatLeague": {
+			"full": "ลีกเกรท",
+			"short": "เกรท"
+		},
+		"ultraLeague": {
+			"full": "ลีกอัลตร้า",
+			"short": "อัลตร้า"
+		},
+		"masterLeague": {
+			"full": "ลีกมาสเตอร์",
+			"short": "มาสเตอร์"
+		},
+		"raidAttackers": {
+			"full": "ตัวโจมตีเรด",
+			"short": "เรด"
+		},
 		"saveCp": "บันทึก CP",
 		"simplifiedMode": "โหมดย่อ",
 		"keep3StarPokemon": "เก็บโปเกมอน 3 ดาว",
@@ -49,25 +70,62 @@
 	"toggleOn": "เปิด",
 	"toggleOff": "ปิด",
 	"protectionMeta": {
-		"favorite": { "label": "รายการโปรด", "description": "โปเกมอนที่ทำเครื่องหมายเป็นรายการโปรดในเกม" },
-		"tagged": { "label": "ติดแท็ก", "description": "โปเกมอนที่มีชื่อเล่นหรือแท็กที่กำหนดเอง" },
-		"legendary": { "label": "เลเจนดารี", "description": "เลเจนดารีกล่อง (Mewtwo, Lugia, …)" },
-		"mythical": { "label": "มายธิคัล", "description": "มายธิคัล (Mew, Celebi, …)" },
-		"ultraBeast": { "label": "อัลตร้าบีสต์", "description": "อัลตร้าบีสต์ (Nihilego, Buzzwole, …)" },
+		"favorite": {
+			"label": "รายการโปรด",
+			"description": "โปเกมอนที่ทำเครื่องหมายเป็นรายการโปรดในเกม"
+		},
+		"tagged": {
+			"label": "ติดแท็ก",
+			"description": "โปเกมอนที่มีชื่อเล่นหรือแท็กที่กำหนดเอง"
+		},
+		"legendary": {
+			"label": "เลเจนดารี",
+			"description": "เลเจนดารีกล่อง (Mewtwo, Lugia, …)"
+		},
+		"mythical": {
+			"label": "มายธิคัล",
+			"description": "มายธิคัล (Mew, Celebi, …)"
+		},
+		"ultraBeast": {
+			"label": "อัลตร้าบีสต์",
+			"description": "อัลตร้าบีสต์ (Nihilego, Buzzwole, …)"
+		},
 		"megaEvolvable": {
 			"label": "เมก้าอีโวลูชันได้",
 			"description": "มีแค่เกมที่รู้เรื่องนี้ — ต้องมีเมก้าเอนเนอร์จีสะสมพอสำหรับสปีชีส์นั้นตอนนี้"
 		},
-		"shadow": { "label": "เชโดว์", "description": "โปเกมอนเชโดว์ทุกตัว ไม่ว่า IV หรืออันดับของมันจะเป็นอย่างไร" },
-		"dynamax": { "label": "ไดนาแม็กซ์", "description": "โปเกมอนที่ไดนาแม็กซ์ได้" },
-		"fusion": { "label": "ฟิวชัน", "description": "โปเกมอนที่ฟิวชันได้ หรือฟิวชันอยู่แล้ว" },
-		"gigantamax": { "label": "ไกกันตาแม็กซ์", "description": "โปเกมอนที่ไกกันตาแม็กซ์ได้" },
+		"shadow": {
+			"label": "เชโดว์",
+			"description": "โปเกมอนเชโดว์ทุกตัว ไม่ว่า IV หรืออันดับของมันจะเป็นอย่างไร"
+		},
+		"dynamax": {
+			"label": "ไดนาแม็กซ์",
+			"description": "โปเกมอนที่ไดนาแม็กซ์ได้"
+		},
+		"fusion": {
+			"label": "ฟิวชัน",
+			"description": "โปเกมอนที่ฟิวชันได้ หรือฟิวชันอยู่แล้ว"
+		},
+		"gigantamax": {
+			"label": "ไกกันตาแม็กซ์",
+			"description": "โปเกมอนที่ไกกันตาแม็กซ์ได้"
+		},
 		"background": {
 			"label": "พื้นหลัง",
 			"description": "โปเกมอนที่มีพื้นหลังหายากหรือพื้นหลังสถานที่ในโปรไฟล์"
 		},
-		"shiny": { "label": "เงางาม", "description": "โปเกมอนเงางามทุกตัว" },
-		"costume": { "label": "ชุดพิเศษ", "description": "โปเกมอนที่สวมชุดอีเวนต์พิเศษ" }
+		"specialBackground": {
+			"label": "พื้นหลังพิเศษ",
+			"description": "โปเกมอนที่มีพื้นหลังกิจกรรมพิเศษในโปรไฟล์"
+		},
+		"shiny": {
+			"label": "เงางาม",
+			"description": "โปเกมอนเงางามทุกตัว"
+		},
+		"costume": {
+			"label": "ชุดพิเศษ",
+			"description": "โปเกมอนที่สวมชุดอีเวนต์พิเศษ"
+		}
 	},
 	"lockedOnTitle": "โปเกมอน{{label}}ไม่สามารถแลกเปลี่ยนได้เลย จึงเปิดไว้เสมอ",
 	"whitelist": {

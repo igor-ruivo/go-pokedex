@@ -1,4 +1,6 @@
+import { GameLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { gameTypeTranslator } from '../utils/GameTranslator';
 
 /**
  * Shared low-level building blocks for the in-game search-string generators
@@ -276,30 +278,12 @@ export const canonicalizeDexExclusions = (
 	return result;
 };
 
-/**
- * Replaces every English type-name token a generated string can contain with
- * its pt-BR equivalent — the CP/Attack/Defense/HP/Favorite/etc. keywords
- * elsewhere in these strings are already localized individually via
- * `gameTranslator`; this only covers the type names that show up as
- * dex-disambiguation tokens (e.g. `!23,!dark,dragon`).
- */
-export const translatePtBrTypeNames = (str: string): string =>
-	str
-		.replaceAll('bug', 'inseto')
-		.replaceAll('dark', 'sombrio')
-		.replaceAll('dragon', 'dragão')
-		.replaceAll('electric', 'elétrico')
-		.replaceAll('fairy', 'fada')
-		.replaceAll('fighting', 'lutador')
-		.replaceAll('fire', 'fogo')
-		.replaceAll('flying', 'voador')
-		.replaceAll('ghost', 'fantasma')
-		.replaceAll('grass', 'planta')
-		.replaceAll('ground', 'terrestre')
-		.replaceAll('ice', 'gelo')
-		.replaceAll('poison', 'venenoso')
-		.replaceAll('psychic', 'psíquico')
-		.replaceAll('rock', 'pedra')
-		.replaceAll('steel', 'aço')
-		.replaceAll('water', 'água')
-		.replaceAll('shadow', 'sombroso');
+const TYPE_TOKEN_PATTERN =
+	/\b(bug|dark|dragon|electric|fairy|fighting|fire|flying|ghost|grass|ground|ice|normal|poison|psychic|rock|steel|water)\b/g;
+
+/** Localizes the type-name tokens in a dex-server `searchFormId` disambiguator
+ *  (e.g. `!23,!dark,dragon`) for `gl` — a single regex pass over the original
+ *  string, not sequential per-type `.replaceAll` calls, so a translated word
+ *  can never get re-matched by a later type's own replacement. */
+export const translateTypeNames = (str: string, gl: GameLanguage): string =>
+	gl === GameLanguage.en ? str : str.replace(TYPE_TOKEN_PATTERN, (match) => gameTypeTranslator(match, gl));

@@ -9,16 +9,36 @@ import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useDismiss } from '../hooks/useDismiss';
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
+import { type LanguageOption, LanguagePicker } from './LanguagePicker';
 
-const GAME_LANGS: Array<[GameLanguage, string, string]> = [
-	[GameLanguage.en, 'EN', 'English'],
-	[GameLanguage.ptbr, 'BR', 'Português (BR)'],
+// Endonyms, not translated — see LanguagePicker's doc for why. All 15
+// GameLanguage members are listed here even though GameTranslator.ts search
+// keywords are the only thing actually localized per language today —
+// dex-server hasn't shipped per-locale Pokémon/move names yet, so picking,
+// say, Japanese here only changes search-string keywords for now, not
+// species/move names on the rest of the site. That's expected, not a bug —
+// see the dex-server work this is waiting on.
+const GAME_LANGS: Array<LanguageOption<GameLanguage>> = [
+	{ value: GameLanguage.en, label: SUPPORTED_LOCALE_NAMES.en },
+	{ value: GameLanguage.de, label: SUPPORTED_LOCALE_NAMES.de },
+	{ value: GameLanguage.es, label: SUPPORTED_LOCALE_NAMES.es },
+	{ value: GameLanguage.esMx, label: SUPPORTED_LOCALE_NAMES['es-MX'] },
+	{ value: GameLanguage.fr, label: SUPPORTED_LOCALE_NAMES.fr },
+	{ value: GameLanguage.hi, label: SUPPORTED_LOCALE_NAMES.hi },
+	{ value: GameLanguage.id, label: SUPPORTED_LOCALE_NAMES.id },
+	{ value: GameLanguage.it, label: SUPPORTED_LOCALE_NAMES.it },
+	{ value: GameLanguage.ptbr, label: 'Português (BR)' },
+	{ value: GameLanguage.ja, label: SUPPORTED_LOCALE_NAMES.ja },
+	{ value: GameLanguage.ko, label: SUPPORTED_LOCALE_NAMES.ko },
+	{ value: GameLanguage.ru, label: SUPPORTED_LOCALE_NAMES.ru },
+	{ value: GameLanguage.th, label: SUPPORTED_LOCALE_NAMES.th },
+	{ value: GameLanguage.tr, label: SUPPORTED_LOCALE_NAMES.tr },
+	{ value: GameLanguage.zhHant, label: SUPPORTED_LOCALE_NAMES['zh-Hant'] },
 ];
 
 /**
  * App-bar language / settings menu. Opens a popover in place instead of routing
- * away, so the page you were reading stays put. The trigger shows the current
- * app-language flag.
+ * away, so the page you were reading stays put.
  */
 export const SettingsMenu = () => {
 	const { t } = useTranslation(['settings']);
@@ -27,7 +47,6 @@ export const SettingsMenu = () => {
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
 	const { bestBuddy, updateBestBuddy } = useBestBuddy();
 	const [open, setOpen] = useState(false);
-	const [moreOpen, setMoreOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	const SPRITES: Array<[ImageSource, string]> = [
@@ -54,108 +73,67 @@ export const SettingsMenu = () => {
 				<div className='r-setmenu-pop' role='dialog' aria-label={t('settings:menu.dialogAriaLabel')}>
 					<div className='r-setmenu-grp'>
 						<span className='r-setmenu-h'>{t('settings:menu.appLanguage')}</span>
-						{/* A button grid tops out well before 16 options — a native
-						    select is the same pattern Pokémon GO's own site uses for
-						    this exact list of languages. Endonyms (each language's
-						    own name for itself, e.g. "Español" not "Spanish") aren't
-						    run through t() — the standard convention for a language
-						    picker, so a reader can always find their language
-						    regardless of what locale the UI is currently in. */}
-						<select
-							className='r-lang-select'
-							aria-label={t('settings:menu.appLanguage')}
+						<LanguagePicker
 							value={currentLanguage}
-							onChange={(e) => updateCurrentLanguage(e.target.value as (typeof SUPPORTED_LOCALES)[number])}
-						>
-							{SUPPORTED_LOCALES.map((locale) => (
-								<option key={locale} value={locale}>
-									{SUPPORTED_LOCALE_NAMES[locale]}
-								</option>
-							))}
-						</select>
+							options={SUPPORTED_LOCALES.map((locale) => ({ value: locale, label: SUPPORTED_LOCALE_NAMES[locale] }))}
+							onChange={updateCurrentLanguage}
+							ariaLabel={t('settings:menu.appLanguage')}
+						/>
 					</div>
 
 					<div className='r-setmenu-grp'>
 						<span className='r-setmenu-h'>{t('settings:menu.gameLanguage')}</span>
+						<LanguagePicker
+							value={currentGameLanguage}
+							options={GAME_LANGS}
+							onChange={updateCurrentGameLanguage}
+							ariaLabel={t('settings:menu.gameLanguage')}
+						/>
+					</div>
+
+					<div className='r-setmenu-grp'>
+						<span className='r-setmenu-h'>{t('settings:menu.sprites')}</span>
 						<div className='r-set-opts'>
-							{GAME_LANGS.map(([v, flag, label]) => (
+							{SPRITES.map(([v, label]) => (
 								<button
 									key={String(v)}
 									type='button'
-									data-active={v === currentGameLanguage ? '' : undefined}
-									onClick={() => updateCurrentGameLanguage(v)}
+									data-active={v === imageSource ? '' : undefined}
+									onClick={() => updateImageSource(v)}
 								>
-									<span className='r-setmenu-fl'>{flag}</span>
 									{label}
 								</button>
 							))}
 						</div>
 					</div>
 
-					<button
-						type='button'
-						className='r-setmenu-more'
-						data-on={moreOpen ? '' : undefined}
-						aria-expanded={moreOpen}
-						onClick={() => setMoreOpen((v) => !v)}
-					>
-						{t('settings:menu.moreSettings')}
-						<span className='r-setmenu-chev' aria-hidden='true'>
-							⌄
-						</span>
-					</button>
+					<div className='r-setmenu-grp'>
+						<span className='r-setmenu-h'>{t('settings:menu.raidRanking')}</span>
+						<div className='r-set-opts'>
+							{RAID_METRICS.map((m) => (
+								<button
+									key={m}
+									type='button'
+									data-active={m === raidMetric ? '' : undefined}
+									onClick={() => updateRaidMetric(m)}
+								>
+									{RAID_METRIC_LABEL[m]}
+								</button>
+							))}
+						</div>
+					</div>
 
-					{moreOpen && (
-						<>
-							<div className='r-setmenu-grp'>
-								<span className='r-setmenu-h'>{t('settings:menu.sprites')}</span>
-								<div className='r-set-opts'>
-									{SPRITES.map(([v, label]) => (
-										<button
-											key={String(v)}
-											type='button'
-											data-active={v === imageSource ? '' : undefined}
-											onClick={() => updateImageSource(v)}
-										>
-											{label}
-										</button>
-									))}
-								</div>
-							</div>
-
-							<div className='r-setmenu-grp'>
-								<span className='r-setmenu-h'>{t('settings:menu.raidRanking')}</span>
-								<div className='r-set-opts'>
-									{RAID_METRICS.map((m) => (
-										<button
-											key={m}
-											type='button'
-											data-active={m === raidMetric ? '' : undefined}
-											onClick={() => updateRaidMetric(m)}
-										>
-											{RAID_METRIC_LABEL[m]}
-										</button>
-									))}
-								</div>
-							</div>
-
-							<div className='r-setmenu-grp'>
-								<span className='r-setmenu-h'>{t('settings:menu.bestBuddy')}</span>
-								<div className='r-set-opts'>
-									<button
-										type='button'
-										data-active={!bestBuddy ? '' : undefined}
-										onClick={() => updateBestBuddy(false)}
-									>
-										{t('settings:menu.off')}
-									</button>
-									<button type='button' data-active={bestBuddy ? '' : undefined} onClick={() => updateBestBuddy(true)}>
-										{t('settings:menu.on')}
-									</button>
-								</div>
-							</div>
-						</>
-					)}
+					<div className='r-setmenu-grp'>
+						<span className='r-setmenu-h'>{t('settings:menu.bestBuddy')}</span>
+						<div className='r-set-opts'>
+							<button type='button' data-active={!bestBuddy ? '' : undefined} onClick={() => updateBestBuddy(false)}>
+								{t('settings:menu.off')}
+							</button>
+							<button type='button' data-active={bestBuddy ? '' : undefined} onClick={() => updateBestBuddy(true)}>
+								{t('settings:menu.on')}
+							</button>
+						</div>
+					</div>
 
 					<p className='r-setmenu-foot'>{t('settings:menu.footer')}</p>
 				</div>

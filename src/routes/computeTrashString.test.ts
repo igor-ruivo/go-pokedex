@@ -138,7 +138,7 @@ describe('computeTrashString — Master League rescue via forward reachability',
 		const result = computeTrashString(args);
 
 		expect(result).toBe(
-			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultrabeast'
 		);
 	});
 });
@@ -157,7 +157,7 @@ describe('computeTrashString — Great/Ultra rescue via forward reachability (me
 		const result = computeTrashString(args);
 
 		expect(result).toBe(
-			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultrabeast'
 		);
 	});
 
@@ -174,7 +174,7 @@ describe('computeTrashString — Great/Ultra rescue via forward reachability (me
 		const result = computeTrashString(args);
 
 		expect(result).toBe(
-			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultrabeast'
 		);
 	});
 });
@@ -197,7 +197,7 @@ describe('computeTrashString — raid rescue via a later stage (isGoodForRaids, 
 		const result = computeTrashString(args);
 
 		expect(result).toBe(
-			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultrabeast'
 		);
 	});
 });
@@ -223,7 +223,7 @@ describe('computeTrashString — multiple good later stages, different leagues e
 		// Master is the only bad league, and "all three bad" is false for
 		// every reachable candidate in this family. Nothing is deletable.
 		expect(result).toBe(
-			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultra beasts'
+			'&!4*&0-2attack,0-2defense,0-2hp,!shadow&!cp1500-&!#&!favorite&!megaevolve&!legendary&!mythical&!ultrabeast'
 		);
 	});
 });

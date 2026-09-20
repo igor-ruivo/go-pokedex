@@ -4,7 +4,7 @@
 	},
 	"tabs": {
 		"events": "Eventos",
-		"bosses": "Raides",
+		"bosses": "Reides",
 		"spawns": "Spawns",
 		"rockets": "Rockets",
 		"eggs": "Ovos"
@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Raides de Tier Superior", "short": "Tier Superior" },
-			"tier3": { "full": "Raides de Tier 3", "short": "Tier 3" },
-			"tier1": { "full": "Raides de Tier 1", "short": "Tier 1" }
+			"higher": { "full": "Reides de Tier Superior", "short": "Tier Superior" },
+			"tier3": { "full": "Reides de Tier 3", "short": "Tier 3" },
+			"tier1": { "full": "Reides de Tier 1", "short": "Tier 1" }
 		},
 		"shadowPrefix": "Sombra · {{tier}}",
-		"otherRaids": "Outros raides",
+		"otherRaids": "Outros reides",
 		"nothingScheduled": "Nada agendado.",
 		"nowSlot": "Agora"
 	},
@@ -40,8 +40,8 @@
 		"scrollLater": "Rolar para datas posteriores"
 	},
 	"events": {
-		"noEvents": "Nenhum evento no momento.",
-		"scheduledCount": "{{count}} Eventos agendados",
+		"noEvents": "Nenhum evento de momento.",
+		"scheduledCount": "{{count}} eventos agendados",
 		"fallbackTitle": "Evento",
 		"unseenAriaLabel": "Ainda não aberto",
 		"phase": {
@@ -49,19 +49,19 @@
 			"live": "Ao vivo",
 			"ended": "Encerrado"
 		},
-		"bonuses": "Bônus",
+		"bonuses": "Bónus",
 		"groups": {
 			"featuredSpawns": "Spawns em destaque",
-			"featuredRaids": "Raides em destaque",
-			"researchEncounters": "Encontros de pesquisa",
+			"featuredRaids": "Reides em destaque",
+			"researchEncounters": "Encontros de investigação",
 			"eggs": "Ovos",
 			"incense": "Incenso",
-			"lures": "Módulos"
+			"lures": "Módulos-Isco"
 		},
-		"readAnnouncement": "Leia o anúncio completo"
+		"readAnnouncement": "Ler o anúncio completo"
 	},
 	"rockets": {
-		"noLineups": "Nenhuma escalação do Rocket.",
+		"noLineups": "Sem alinhamentos da Rocket.",
 		"typeGrunt": "Recruta de {{type}}",
 		"genericGrunt": "Recruta",
 		"slotReward": "Recompensa do slot {{slot}}",
@@ -69,12 +69,12 @@
 		"catchableTag": "capturável"
 	},
 	"eggs": {
-		"noPoolData": "Sem dados do conjunto de ovos."
+		"noPoolData": "Sem dados sobre os ovos."
 	},
 	"timeLeft": {
-		"days": "{{count}}d restantes",
-		"hours": "{{count}}h restantes",
-		"minutes": "{{count}}m restantes",
-		"seconds": "{{count}}s restantes"
+		"days": "faltam {{count}}d",
+		"hours": "faltam {{count}}h",
+		"minutes": "faltam {{count}}m",
+		"seconds": "faltam {{count}}s"
 	}
 }

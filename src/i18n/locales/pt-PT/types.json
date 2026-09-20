@@ -1,12 +1,12 @@
 {
 	"page": {
 		"title": "Tabela de tipos",
-		"description": "Leia uma <b>linha</b> para ver como um tipo atacante se sai contra cada defensor · leia uma <b>coluna</b> para ver do que um tipo defensor resiste."
+		"description": "Leia uma <b>linha</b> para ver como um tipo atacante se sai contra cada defensor · leia uma <b>coluna</b> para ver a que um tipo defensor resiste."
 	},
 	"legend": {
-		"superEffective": "Super efetivo",
+		"superEffective": "Super eficaz",
 		"resisted": "Resistido",
-		"immune": "Imune / duplo-resistido"
+		"immune": "Imune / dupla resistência"
 	},
 	"calculator": {
 		"title": "Calculadora de fraquezas",

@@ -4315,50 +4315,103 @@
 .rvmp .r-setmenu-trigger:hover .r-setmenu-gear {
 	color: var(--text);
 }
-.rvmp .r-setmenu-fl {
-	display: inline-grid;
-	place-items: center;
-	min-width: 22px;
-	height: 16px;
-	margin-right: 8px;
-	padding: 0 4px;
-	border-radius: 4px;
-	font-size: 9.5px;
-	font-weight: 800;
-	letter-spacing: 0.04em;
-	color: var(--text-dim);
-	background: var(--surface-3);
-	border: 1px solid var(--border);
+/* Custom language combobox (LanguagePicker.tsx) — deliberately not a native
+   <select>: with 16 options, a native select hands off to the OS's own
+   full-screen picker (an iOS wheel, an Android bottom sheet), which looks and
+   behaves nothing like the rest of this app's custom popovers. This renders
+   its own compact trigger + scrollable listbox instead, so it stays visually
+   consistent everywhere it's used (the app-bar menu and the Settings page)
+   and never grows past what fits a phone screen. */
+.rvmp .r-lang-picker {
+	position: relative;
+	display: inline-block;
+	max-width: 100%;
+	/* Settings.tsx's `.r-set-row` is a flex column, which stretches a plain
+	   block-level child to the row's full width by default — that would win
+	   over `.r-lang-pop`'s own `max-width` below (a wider `min-width: 100%`
+	   beats a smaller `max-width` per the CSS sizing spec), producing a
+	   dropdown far wider than intended. Shrink-wrapping here keeps this
+	   picker sized to its trigger everywhere it's used, popover or page row. */
+	align-self: flex-start;
 }
-.rvmp .r-set-opts button[data-active] .r-setmenu-fl {
-	color: #0c1017;
-	background: rgb(255 255 255 / 0.6);
-	border-color: transparent;
-}
-/* Same visual language as .r-md-select (see its own comment for the custom-
-   chevron rationale), just wide enough for the longest entry in a 16-language
-   list ("Bahasa Indonesia", "Español (México)") without truncating. */
-.rvmp .r-lang-select {
+.rvmp .r-lang-trigger {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
 	width: 100%;
-	max-width: 220px;
-	min-width: 0;
-	padding: 7px 24px 7px 10px;
+	min-width: 160px;
+	max-width: 240px;
+	padding: 7px 10px;
 	border-radius: var(--r-sm);
 	background-color: var(--surface-2);
 	border: 1px solid var(--border);
 	color: var(--text);
-	font: inherit;
+	/* `font: inherit` alone pulls the browser's own default button font-size
+	   (16px), not this popover's 13px — matching `.r-set-opts button` (the
+	   sibling controls right next to this one) explicitly, same reason the
+	   size mismatch was visible in the first place. */
+	font-family: inherit;
+	font-size: 13px;
 	font-weight: 700;
-	appearance: none;
-	-webkit-appearance: none;
-	background-image:
-		linear-gradient(45deg, transparent 50%, var(--text-dim) 50%),
-		linear-gradient(135deg, var(--text-dim) 50%, transparent 50%);
-	background-position:
-		calc(100% - 15px) center,
-		calc(100% - 11px) center;
-	background-size: 4px 4px;
-	background-repeat: no-repeat;
+	text-align: left;
+	cursor: pointer;
+}
+.rvmp .r-lang-trigger-value {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rvmp .r-lang-chev {
+	flex: none;
+	color: var(--text-dim);
+	transition: transform 0.14s ease;
+}
+.rvmp .r-lang-trigger[aria-expanded='true'] .r-lang-chev {
+	transform: rotate(180deg);
+}
+.rvmp .r-lang-pop {
+	position: absolute;
+	z-index: 60;
+	top: calc(100% + 6px);
+	left: 0;
+	width: max-content;
+	min-width: 100%;
+	max-width: min(240px, calc(100vw - 48px));
+	max-height: 264px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	/* This can sit inside a parent popover that's itself `touch-action: none`
+	   (it has no scrollable content of its own, so a swipe over it would
+	   otherwise fall through to the page behind) — this listbox does have
+	   scrollable content, so it opts back into vertical touch scrolling. */
+	touch-action: pan-y;
+	padding: 6px;
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+	display: grid;
+	gap: 2px;
+}
+.rvmp .r-lang-pop button {
+	display: block;
+	width: 100%;
+	padding: 8px 10px;
+	border-radius: var(--r-xs);
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	text-align: left;
+	color: var(--text);
+}
+.rvmp .r-lang-pop button:hover {
+	background: var(--surface-2);
+}
+.rvmp .r-lang-pop button[data-active] {
+	color: var(--accent-ink);
+	background: var(--accent);
+	font-weight: 800;
 }
 .rvmp .r-setmenu-pop {
 	position: absolute;
@@ -4388,27 +4441,6 @@
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 	color: var(--text-dim);
-}
-.rvmp .r-setmenu-more {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-	padding: 9px 12px;
-	border-radius: var(--r-sm);
-	font-size: 12.5px;
-	font-weight: 800;
-	color: var(--text);
-	background: var(--surface-2);
-	border: 1px solid var(--border);
-	cursor: pointer;
-}
-.rvmp .r-setmenu-chev {
-	transition: transform 0.16s ease;
-	color: var(--text-faint);
-}
-.rvmp .r-setmenu-more[data-on] .r-setmenu-chev {
-	transform: rotate(180deg);
 }
 .rvmp .r-setmenu-foot {
 	margin: 2px 0 0;

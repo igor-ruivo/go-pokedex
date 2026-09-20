@@ -9,6 +9,7 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName } from '../../lib/format';
+import { translateTypeNames } from '../../lib/search-string';
 import { typeVar } from '../../lib/types';
 import { usePokemon } from '../../queries/pokemon';
 import { useSpeciesSearchMetadata } from '../../queries/species-search-metadata';
@@ -427,7 +428,7 @@ export const computeSearchString = (
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
 	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
 
-	let result = formId + shadowSuffix;
+	let result = translateTypeNames(formId, gl) + shadowSuffix;
 	// Populated tiers render in order as encountered; empty ("find" mode
 	// only) tiers are collected and appended after every populated one —
 	// matches this function's original, already-tested ordering exactly.
@@ -493,7 +494,7 @@ export const computeMergedSearchString = (
 	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
 	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 
-	let result = formId;
+	let result = translateTypeNames(formId, gl);
 	for (let i = 0; i < 4; i++) {
 		if (tierBucketsEqual(tiersA[i], tiersB[i])) {
 			result += renderTier(i, tiersA[i], trash, A, D, S, CP, '');

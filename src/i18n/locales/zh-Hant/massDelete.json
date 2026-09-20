@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "批次刪除模式",
 	"modeTabs": {
-		"meta": { "full": "非主流強力", "short": "非主流" },
-		"badIv": { "full": "非完美個體值", "short": "個體值" },
-		"trade": { "full": "尋找可交換", "short": "可交換" }
+		"meta": {
+			"full": "非主流強力",
+			"short": "非主流"
+		},
+		"badIv": {
+			"full": "非完美個體值",
+			"short": "個體值"
+		},
+		"trade": {
+			"full": "尋找可交換",
+			"short": "可交換"
+		}
 	},
 	"badIvWarning": "此模式非常激進且要求完美：目的是刪除所有非完美（100%）個體值的捕獲紀錄，完全不考慮該物種目前在主流環境中是強是弱 — 執行前請務必再次確認下方的分類與白名單設定。",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "永不刪除這些寶可夢",
 	"neverSuggestPokemon": "永不建議這些寶可夢",
 	"knobs": {
-		"greatLeague": { "full": "超級聯盟", "short": "超級" },
-		"ultraLeague": { "full": "高級聯盟", "short": "高級" },
-		"masterLeague": { "full": "大師聯盟", "short": "大師" },
-		"raidAttackers": { "full": "團體戰攻擊手", "short": "團體戰" },
+		"greatLeague": {
+			"full": "超級聯盟",
+			"short": "超級"
+		},
+		"ultraLeague": {
+			"full": "高級聯盟",
+			"short": "高級"
+		},
+		"masterLeague": {
+			"full": "大師聯盟",
+			"short": "大師"
+		},
+		"raidAttackers": {
+			"full": "團體戰攻擊手",
+			"short": "團體戰"
+		},
 		"saveCp": "保留 CP",
 		"simplifiedMode": "簡化模式",
 		"keep3StarPokemon": "保留 3 星寶可夢",
@@ -49,25 +70,62 @@
 	"toggleOn": "開啟",
 	"toggleOff": "關閉",
 	"protectionMeta": {
-		"favorite": { "label": "已收藏", "description": "在遊戲內標記為最愛的寶可夢。" },
-		"tagged": { "label": "已標記", "description": "有暱稱或自訂標籤的寶可夢。" },
-		"legendary": { "label": "傳說", "description": "箱型傳說（超夢、洛奇亞……）。" },
-		"mythical": { "label": "幻之", "description": "幻之寶可夢（夢幻、時拉比……）。" },
-		"ultraBeast": { "label": "究極異獸", "description": "究極異獸（虛吾伊德、爆肌蟲……）。" },
+		"favorite": {
+			"label": "已收藏",
+			"description": "在遊戲內標記為最愛的寶可夢。"
+		},
+		"tagged": {
+			"label": "已標記",
+			"description": "有暱稱或自訂標籤的寶可夢。"
+		},
+		"legendary": {
+			"label": "傳說",
+			"description": "箱型傳說（超夢、洛奇亞……）。"
+		},
+		"mythical": {
+			"label": "幻之",
+			"description": "幻之寶可夢（夢幻、時拉比……）。"
+		},
+		"ultraBeast": {
+			"label": "究極異獸",
+			"description": "究極異獸（虛吾伊德、爆肌蟲……）。"
+		},
 		"megaEvolvable": {
 			"label": "可 Mega 進化",
 			"description": "僅遊戲本身知道 — 需要該物種目前累積足夠的 Mega 進化能量。"
 		},
-		"shadow": { "label": "暗影", "description": "所有暗影寶可夢，無論個體值或排名如何。" },
-		"dynamax": { "label": "極巨化", "description": "可極巨化的寶可夢。" },
-		"fusion": { "label": "融合", "description": "可融合、或已融合的寶可夢。" },
-		"gigantamax": { "label": "超極巨化", "description": "可超極巨化的寶可夢。" },
+		"shadow": {
+			"label": "暗影",
+			"description": "所有暗影寶可夢，無論個體值或排名如何。"
+		},
+		"dynamax": {
+			"label": "極巨化",
+			"description": "可極巨化的寶可夢。"
+		},
+		"fusion": {
+			"label": "融合",
+			"description": "可融合、或已融合的寶可夢。"
+		},
+		"gigantamax": {
+			"label": "超極巨化",
+			"description": "可超極巨化的寶可夢。"
+		},
 		"background": {
 			"label": "背景",
 			"description": "個人檔案中擁有稀有或特殊地點背景的寶可夢。"
 		},
-		"shiny": { "label": "閃光", "description": "所有閃光寶可夢。" },
-		"costume": { "label": "服裝", "description": "穿著特殊活動服裝的寶可夢。" }
+		"specialBackground": {
+			"label": "特殊背景",
+			"description": "個人檔案中擁有特殊活動背景的寶可夢。"
+		},
+		"shiny": {
+			"label": "閃光",
+			"description": "所有閃光寶可夢。"
+		},
+		"costume": {
+			"label": "服裝",
+			"description": "穿著特殊活動服裝的寶可夢。"
+		}
 	},
 	"lockedOnTitle": "{{label}} 的寶可夢永遠無法交換，因此此項一律開啟。",
 	"whitelist": {

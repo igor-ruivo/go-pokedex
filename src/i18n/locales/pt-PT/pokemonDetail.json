@@ -1,9 +1,9 @@
 {
 	"leagues": {
 		"great": "Grande",
-		"greatFull": "Grande Liga",
+		"greatFull": "Liga Grande",
 		"ultra": "Ultra",
-		"ultraFull": "Ultra-liga",
+		"ultraFull": "Liga Ultra",
 		"master": "Mestra",
 		"masterFull": "Liga Mestra",
 		"raid": "Reide",
@@ -19,7 +19,7 @@
 		"comingSoon": "“{{tab}}” é o próximo na reformulação."
 	},
 	"loading": {
-		"pokedex": "Carregando Pokédex…",
+		"pokedex": "A carregar Pokédex…",
 		"notFound": "Nenhum Pokémon “{{speciesId}}”."
 	},
 	"hero": {
@@ -27,7 +27,7 @@
 		"stats": { "atk": "ATQ", "def": "DEF", "hp": "PS" },
 		"level": { "prefix": "Nv.", "loading": "Nv. …" },
 		"shadowToggle": "Sombroso",
-		"switchLeagueAriaLabel": "Mostrando {{league}}. Toque para trocar de liga.",
+		"switchLeagueAriaLabel": "A mostrar {{league}}. Toque para mudar de liga.",
 		"nextFamilyMemberAriaLabel": "{{current}} — próximo: {{next}}"
 	},
 	"familyLine": {
@@ -39,9 +39,9 @@
 	"board": {
 		"sectionHeading": "melhor estágio alcançável por liga",
 		"notRanked": "Não classificado",
-		"loading": "Carregando…",
+		"loading": "A carregar…",
 		"attackersSuffix": "atacantes de {{type}}",
-		"nextTypeTitle": "{{type}} — toque para o próximo tipo"
+		"nextTypeTitle": "{{type}} — toque para o tipo seguinte"
 	},
 	"raid": {
 		"performanceHeading": {
@@ -54,9 +54,9 @@
 		"baseAtk": "ATQ base",
 		"notRankedAttacker": "Não classificado como atacante de reide.",
 		"bestMovesetByType": "Melhor combinação de golpes por tipo",
-		"nextMovesetTitle": "Toque para a próxima combinação",
+		"nextMovesetTitle": "Toque para a combinação seguinte",
 		"selectTypeTitle": "Toque para selecionar este tipo",
-		"ivsBarelyMatterPrefix": "IVs quase não importam em reides — busque o maior",
+		"ivsBarelyMatterPrefix": "Os IVs quase não importam em reides — procure o mais alto",
 		"attackWord": "Ataque"
 	},
 	"pvp": {
@@ -72,9 +72,9 @@
 		"cp": "PC",
 		"cpAtLevel": "PC @ Nv{{level}}",
 		"bestSpreadFor": "Melhor combinação para {{league}}:",
-		"bestSpreadResult": "→ {{cp}} PC no Nv{{level}}.",
-		"purifyWarning": "⚠️ Lembre-se de que purificar concede +2 IVs em cada atributo.",
-		"purifyUnreachableWarning": "⚠️ Essa combinação de rank 1 é inalcançável ao purificar — a purificação sempre eleva cada atributo a pelo menos 2, então um Sombroso nunca pode ficar abaixo disso, independentemente dos seus próprios IVs.",
+		"bestSpreadResult": "→ {{cp}} PC ao Nv{{level}}.",
+		"purifyWarning": "⚠️ Tenha em atenção que purificar concede +2 IVs em cada atributo.",
+		"purifyUnreachableWarning": "⚠️ Essa combinação de rank 1 é inalcançável através da purificação — a purificação eleva sempre cada atributo a pelo menos 2, pelo que um Sombroso nunca poderá ficar abaixo desse valor, independentemente dos seus próprios IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "Hundo",
@@ -100,11 +100,11 @@
 		},
 		"weather": {
 			"none": "Sem clima",
-			"sunny": "Ensolarado/Claro",
+			"sunny": "Ensolarado / Limpo",
 			"rainy": "Chuvoso",
 			"partlyCloudy": "Parcialmente nublado",
 			"cloudy": "Nublado",
-			"windy": "Ventania",
+			"windy": "Ventoso",
 			"snow": "Neve",
 			"fog": "Nevoeiro"
 		},
@@ -142,33 +142,33 @@
 		"weather_field": "Clima",
 		"weatherHint": "×1,2 · {{types}}",
 		"megaAura": "Aura Mega",
-		"noMegaOnTeam": "Sem Mega na equipe",
+		"noMegaOnTeam": "Sem Mega na equipa",
 		"megaOfType": "Mega {{type}}",
 		"megaAuraHint": "×1,3 {{type}} · ×1,1 outros",
 		"megaLevelField": "Nível Mega",
-		"megaLevelHint": "×{{mult}} no golpe carregado “Plus” do Mega/Primígeno",
+		"megaLevelHint": "×{{mult}} no golpe carregado “Plus” próprio do Mega/Primígeno",
 		"megaLevelHintExtra": " · +2 níveis de atacante",
 		"partyPower": "Poder de Grupo",
 		"solo": "Solo",
 		"friendshipField": "Amizade",
 		"friendshipHint": "×{{mult}} de dano",
-		"helpSummary": "O que isso significa?",
+		"helpSummary": "O que significa isto?",
 		"help": {
 			"weatherFriendshipMegaAura": "Clima · Amizade · Aura Mega",
-			"weatherFriendshipMegaAuraDesc": "Multiplicadores de dano nos seus atacantes. O dano recebido sempre usa uma constante fixa, então os próprios golpes do chefe nunca alteram esses números.",
-			"megaLevelDesc": "O próprio Nível Mega de um Mega ou Primígeno (aumentado com Energia Mega após evoluir) potencializa apenas seu golpe carregado bônus “Plus” — nenhum outro golpe do seu kit é afetado. O Nível Super Máximo também dá ao atacante +2 níveis efetivos, tenha ou não um golpe Plus.",
-			"bossTierDesc": "Define o PS do chefe (usado pelo eDPS) e o CPM aplicado à sua defesa. Inferido a partir do chefe — altere para Reides de Elite."
+			"weatherFriendshipMegaAuraDesc": "Multiplicadores de dano nos seus atacantes. O dano recebido usa sempre uma constante fixa, pelo que os próprios golpes do chefe nunca alteram estes números.",
+			"megaLevelDesc": "O Nível Mega próprio de um Mega ou Primígeno (aumentado com Energia Mega depois de evoluir) potencia apenas o seu golpe carregado bónus “Plus” — nenhum outro golpe do seu kit é afetado. O Nível Super Máximo também dá ao atacante +2 níveis efetivos, tenha ou não um golpe Plus.",
+			"bossTierDesc": "Define os PS do chefe (usado pelo eDPS) e o CPM aplicado à sua defesa. Inferido a partir do chefe — altere para Reides de Elite."
 		},
 		"includeMegas": "Incluir Megas",
 		"includeShadows": "Incluir Sombrosos",
-		"noCountersMatch": "Nenhum counter corresponde a esses filtros."
+		"noCountersMatch": "Nenhum counter corresponde a estes filtros."
 	},
 	"ivTable": {
-		"notForRaids": "Rankings de IV não se aplicam a reides — escolha Grande, Ultra ou Mestra acima.",
+		"notForRaids": "As classificações de IV não se aplicam a reides — escolha Grande, Ultra ou Mestra acima.",
 		"heading": "{{league}} · todas as 4.096 combinações de IV de {{shadow}}{{name}}",
 		"fieldAriaLabel": "IV de {{label}}, de 0 a 15",
 		"clearAriaLabel": "Limpar",
-		"notInRanking": "Essa combinação não está no ranking.",
+		"notInRanking": "Essa combinação não está na classificação.",
 		"fillAllThree": "Preencha os três (0–15).",
 		"columns": {
 			"rank": "#",
@@ -189,28 +189,28 @@
 		"chargedMoves": "Golpes carregados",
 		"recommended": "Recomendado",
 		"elite": "Elite",
-		"legacy": "Exclusivo",
+		"legacy": "Legado",
 		"pve": "PvE",
 		"pvp": "PvP"
 	},
 	"searchStrings": {
-		"pvpOnly": "Strings de busca são coisa de PvP — escolha Grande, Ultra ou Mestra acima.",
+		"pvpOnly": "As strings de busca são uma funcionalidade de PvP — escolha Grande, Ultra ou Mestra acima.",
 		"heading": "{{league}} · strings de busca do jogo",
 		"rankCutoff": "Corte de rank",
 		"topN": "Top {{n}}",
 		"matchExceptTop": "Corresponder a tudo <em>exceto</em> o top {{n}}",
-		"helperText": "Cada linha corresponde a capturas selvagens e ainda não fortalecidas cuja família alcança o corte. Copie e cole na barra de busca do Pokémon GO.",
+		"helperText": "Cada linha corresponde a capturas selvagens e ainda não reforçadas cuja família atinge o corte. Copie-a e cole-a na barra de pesquisa do Pokémon GO.",
 		"copyString": "Copiar string",
 		"copied": "Copiado ✓",
 		"clickToCopy": "Clique para copiar",
 		"sentence": {
-			"caught": "(capturado selvagem e ainda não fortalecido)",
+			"caught": "(capturado selvagem e ainda não reforçado)",
 			"findTopSelf": "Encontre {{except}}o top {{top}} de <name></name> {{caught}} para <league></league>:",
 			"findTopEvolvesTo": "Encontre <name></name> {{caught}} que evolui para {{toThe}}{{except}}o top {{top}} de <target></target> para <league></league>:",
 			"findTopSelfShadowEither": "Encontre {{except}}o top {{top}} de <name></name> — Sombroso ou não — {{caught}} para <league></league>:",
 			"findTopEvolvesToShadowEither": "Encontre <name></name> — Sombroso ou não — {{caught}} que evolui para {{toThe}}{{except}}o top {{top}} de <target></target> para <league></league>:",
 			"exceptPrefix": "todos exceto ",
-			"toThePrefix": "o "
+			"toThePrefix": ""
 		}
 	}
 }

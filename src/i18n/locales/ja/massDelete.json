@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "一括削除モード",
 	"modeTabs": {
-		"meta": { "full": "環境で無関係", "short": "環境外" },
-		"badIv": { "full": "個体値が不完全", "short": "個体値" },
-		"trade": { "full": "交換候補を探す", "short": "交換候補" }
+		"meta": {
+			"full": "環境で無関係",
+			"short": "環境外"
+		},
+		"badIv": {
+			"full": "個体値が不完全",
+			"short": "個体値"
+		},
+		"trade": {
+			"full": "交換候補を探す",
+			"short": "交換候補"
+		}
 	},
 	"badIvWarning": "このモードは非常に厳格です。種族が現在の環境で強いか弱いかに関係なく、完全個体値(100%)でないすべての捕獲ポケモンを削除対象にします — 実行前に下記のカテゴリーとホワイトリストを必ず確認してください。",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "これらのポケモンは削除しない",
 	"neverSuggestPokemon": "これらのポケモンは提案しない",
 	"knobs": {
-		"greatLeague": { "full": "グレートリーグ", "short": "グレート" },
-		"ultraLeague": { "full": "ハイパーリーグ", "short": "ハイパー" },
-		"masterLeague": { "full": "マスターリーグ", "short": "マスター" },
-		"raidAttackers": { "full": "レイドアタッカー", "short": "レイド" },
+		"greatLeague": {
+			"full": "グレートリーグ",
+			"short": "グレート"
+		},
+		"ultraLeague": {
+			"full": "ハイパーリーグ",
+			"short": "ハイパー"
+		},
+		"masterLeague": {
+			"full": "マスターリーグ",
+			"short": "マスター"
+		},
+		"raidAttackers": {
+			"full": "レイドアタッカー",
+			"short": "レイド"
+		},
 		"saveCp": "CPを保存",
 		"simplifiedMode": "簡易モード",
 		"keep3StarPokemon": "★3ポケモンを保護",
@@ -49,28 +70,62 @@
 	"toggleOn": "オン",
 	"toggleOff": "オフ",
 	"protectionMeta": {
-		"favorite": { "label": "お気に入り", "description": "ゲーム内でお気に入りに設定されたポケモン。" },
-		"tagged": { "label": "タグ付き", "description": "ニックネームまたはカスタムタグが付いたポケモン。" },
-		"legendary": { "label": "伝説", "description": "伝説のポケモン(ミュウツー、ルギアなど)。" },
-		"mythical": { "label": "幻", "description": "幻のポケモン(ミュウ、セレビィなど)。" },
-		"ultraBeast": { "label": "ウルトラビースト", "description": "ウルトラビースト(ネクロズマなど)。" },
+		"favorite": {
+			"label": "お気に入り",
+			"description": "ゲーム内でお気に入りに設定されたポケモン。"
+		},
+		"tagged": {
+			"label": "タグ付き",
+			"description": "ニックネームまたはカスタムタグが付いたポケモン。"
+		},
+		"legendary": {
+			"label": "伝説",
+			"description": "伝説のポケモン(ミュウツー、ルギアなど)。"
+		},
+		"mythical": {
+			"label": "幻",
+			"description": "幻のポケモン(ミュウ、セレビィなど)。"
+		},
+		"ultraBeast": {
+			"label": "ウルトラビースト",
+			"description": "ウルトラビースト(ネクロズマなど)。"
+		},
 		"megaEvolvable": {
 			"label": "メガシンカ可能",
 			"description": "ゲーム側の情報のみで判定 — 現在その種族のメガエナジーが必要数蓄積されている場合。"
 		},
-		"shadow": { "label": "シャドウ", "description": "個体値やランクに関係なく、すべてのシャドウポケモン。" },
-		"dynamax": { "label": "ダイマックス", "description": "ダイマックスできるポケモン。" },
+		"shadow": {
+			"label": "シャドウ",
+			"description": "個体値やランクに関係なく、すべてのシャドウポケモン。"
+		},
+		"dynamax": {
+			"label": "ダイマックス",
+			"description": "ダイマックスできるポケモン。"
+		},
 		"fusion": {
 			"label": "フュージョン",
 			"description": "フュージョンできる、またはすでにフュージョン済みのポケモン。"
 		},
-		"gigantamax": { "label": "キョダイマックス", "description": "キョダイマックスできるポケモン。" },
+		"gigantamax": {
+			"label": "キョダイマックス",
+			"description": "キョダイマックスできるポケモン。"
+		},
 		"background": {
 			"label": "背景",
 			"description": "プロフィールにレアまたは特別なロケーション背景を持つポケモン。"
 		},
-		"shiny": { "label": "色違い", "description": "すべての色違いポケモン。" },
-		"costume": { "label": "コスチューム", "description": "特別なイベントコスチュームを着たポケモン。" }
+		"specialBackground": {
+			"label": "スペシャル背景",
+			"description": "プロフィールに特別なイベント背景を持つポケモン。"
+		},
+		"shiny": {
+			"label": "色違い",
+			"description": "すべての色違いポケモン。"
+		},
+		"costume": {
+			"label": "コスチューム",
+			"description": "特別なイベントコスチュームを着たポケモン。"
+		}
 	},
 	"lockedOnTitle": "{{label}}ポケモンは交換できないため、常にオンです。",
 	"whitelist": {

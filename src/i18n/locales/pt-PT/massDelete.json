@@ -1,0 +1,170 @@
+{
+	"loading": "A carregar…",
+	"pageTitle": {
+		"meta": "Eliminar em massa Pokémon fora do meta atual",
+		"badIv": "Eliminar em massa Pokémon com IVs imperfeitos",
+		"trade": "Encontrar Pokémon que vale a pena trocar"
+	},
+	"modeTablist": "Modo de eliminação em massa",
+	"modeTabs": {
+		"meta": {
+			"full": "Fora do meta",
+			"short": "Fora do meta"
+		},
+		"badIv": {
+			"full": "IVs imperfeitos",
+			"short": "IVs"
+		},
+		"trade": {
+			"full": "Encontrar trocáveis",
+			"short": "Trocáveis"
+		}
+	},
+	"badIvWarning": "Este modo é agressivo e extremamente rigoroso: a intenção é eliminar todas as capturas que não sejam um Pokémon de IV perfeito (100%), sem considerar se a espécie está atualmente boa ou má no meta — confirme as categorias e a lista de proteção abaixo antes de o executar.",
+	"helpText": {
+		"meta": "Apenas meta, nunca IVs: elimina qualquer Pokémon que não seja competitivamente relevante em lado nenhum — nem na Liga Grande, Ultra ou Mestra, nem em reides — com base nos limites de rank e no limite de CP abaixo. Uma espécie (ou qualquer uma das suas evoluções posteriores) só precisa de superar o limite numa dessas categorias para ser poupada, e assim que o consegue, todas as capturas dela são poupadas também, independentemente dos IVs dessa captura — esta aba não tem qualquer opinião sobre IVs. Qualquer captura igual ou acima do seu limite de CP é sempre mantida, tal como tudo o que estiver marcado nas categorias e na lista de proteção abaixo, independentemente do rank. Um stat product perfeito para a Liga Mestra é sempre mantido.",
+		"badIv": "Apenas IVs, nunca meta: ignora por completo o meta atual — o objetivo é eliminar tudo o que não seja um 15/15/15 perfeito, independentemente de a espécie estar ou não no meta atual. A pesquisa do jogo só permite corresponder a intervalos de IV, não a valores exatos, pelo que nem sempre consegue traçar essa linha com precisão — para a Liga Grande (1500 CP) e a Liga Ultra (2500 CP), a maioria das espécies é abrangida por um intervalo partilhado de Ataque baixo/resistência alta que aproxima esse resultado, e algumas centenas têm o seu próprio intervalo verificado individualmente, já que o intervalo partilhado não se ajusta às suas estatísticas; de qualquer forma, algumas capturas quase perfeitas (mas não exatamente hundo) mesmo no limite podem passar despercebidas como falsos negativos. A Liga Mestra não tem limite de CP, pelo que aí o melhor resultado é sempre IVs mais altos — o tratamento da Liga Mestra neste modo é exato, não uma aproximação. Um stat product perfeito é sempre mantido em todas as ligas, tal como tudo o que estiver marcado nas categorias e na lista de proteção abaixo, independentemente dos IVs.",
+		"trade": "Uma terceira questão, distinta das duas abas acima: quais das suas capturas valem a pena trocar? Uma troca de Melhor Amigo eleva sempre cada estatística para um mínimo de 5. Neste modo, uma espécie só precisa de superar UM dos quatro limites abaixo (Grande, Ultra, Mestra ou Reide) para ser sugerida. A Liga Mestra e as reides não têm limite de CP, pelo que qualquer espécie relevante se qualifica apenas pelo rank. A Grande e a Ultra são mais exigentes: os seus limites de CP costumam significar que a melhor combinação possível para uma espécie precisa de um Ataque muito baixo, algo que o mínimo de 5 de uma troca nunca consegue produzir — por isso, estas duas ligas só contam uma espécie quando a sua própria melhor combinação é, de facto, algo que uma troca conseguiria alcançar. De qualquer forma, uma captura que já é perfeita — ou que já está empatada com a melhor combinação possível na liga que a qualificou — nunca é sugerida, já que trocá-la só a poderia piorar, nunca melhorar. As categorias, a lista de proteção e o limite de CP abaixo restringem ainda mais as sugestões, tal como nas outras abas."
+	},
+	"readMore": "Ler mais",
+	"readLess": "Ler menos",
+	"configuration": "Configuração",
+	"edit": "Editar",
+	"hide": "Ocultar",
+	"reset": "Repor",
+	"neverDeleteCategory": "Nunca eliminar esta categoria",
+	"neverSuggestCategory": "Nunca sugerir esta categoria",
+	"neverDeletePokemon": "Nunca eliminar estes Pokémon",
+	"neverSuggestPokemon": "Nunca sugerir estes Pokémon",
+	"knobs": {
+		"greatLeague": {
+			"full": "Liga Grande",
+			"short": "Grande"
+		},
+		"ultraLeague": {
+			"full": "Liga Ultra",
+			"short": "Ultra"
+		},
+		"masterLeague": {
+			"full": "Liga Mestra",
+			"short": "Mestra"
+		},
+		"raidAttackers": {
+			"full": "Atacantes de Reide",
+			"short": "Reide"
+		},
+		"saveCp": "Manter CP",
+		"simplifiedMode": "Modo simplificado",
+		"keep3StarPokemon": "Manter Pokémon 3*",
+		"ariaKeepTopGreat": "Manter os melhores da Liga Grande",
+		"ariaKeepTopUltra": "Manter os melhores da Liga Ultra",
+		"ariaKeepTopMaster": "Manter os melhores da Liga Mestra",
+		"ariaKeepTopRaid": "Manter os melhores atacantes de reide"
+	},
+	"metaKnobsSubtitle": "Preservar os melhores Pokémon do meta atual por liga/reide",
+	"badIvKnobsSubtitle": "O modo simplificado troca alguma precisão por uma string mais curta — veja a dica no interruptor",
+	"tradeKnobsSubtitle": "Uma espécie só precisa de superar UM destes quatro limites para ser sugerida — a Grande e a Ultra também exigem que uma troca consiga, de facto, alcançar a sua melhor combinação possível (veja o texto de ajuda acima)",
+	"simplifiedTrashTooltip": "Troca precisão por uma string mais curta: deixa de procurar empates de stat product na Liga Mestra (sem limite) — só o hundo exato (protegido em toda a parte, incondicionalmente, pela exclusão global !4*) continua protegido aí. A proteção da Grande/Ultra/reide não é afetada.",
+	"simplifiedBadIvTooltip": "Troca precisão por uma string mais curta: em vez de proteger apenas a combinação de IV exata e ideal de uma espécie, qualquer espécie que precisasse de uma destas exceções específicas é simplesmente ignorada por completo — um pouco como uma entrada extra na lista de proteção. Mais curto e simples, mas com mais falsos negativos: algumas capturas que o modo Completo visaria corretamente ficam de fora aqui.",
+	"tradeOnlyLowIvTooltip": "Restringe as sugestões a capturas cujo Ataque, Defesa e HP sejam todos claramente baixos — caso contrário, é sugerido tudo o que não seja um hundo.",
+	"toggleOn": "Ligado",
+	"toggleOff": "Desligado",
+	"protectionMeta": {
+		"favorite": {
+			"label": "Favorito",
+			"description": "Pokémon marcados como favoritos no jogo."
+		},
+		"tagged": {
+			"label": "Etiquetado",
+			"description": "Pokémon com alcunha ou etiqueta personalizada."
+		},
+		"legendary": {
+			"label": "Lendário",
+			"description": "Lendários de capa (Mewtwo, Lugia, …)."
+		},
+		"mythical": {
+			"label": "Mítico",
+			"description": "Míticos (Mew, Celebi, …)."
+		},
+		"ultraBeast": {
+			"label": "Ultra Besta",
+			"description": "Ultra Bestas (Nihilego, Buzzwole, …)."
+		},
+		"megaEvolvable": {
+			"label": "Mega-evoluível",
+			"description": "Só o jogo sabe isto — é necessário ter Mega Energia suficiente acumulada para essa espécie neste momento."
+		},
+		"shadow": {
+			"label": "Sombra",
+			"description": "Todos os Pokémon Sombra, independentemente dos seus IVs ou rank."
+		},
+		"dynamax": {
+			"label": "Dynamax",
+			"description": "Pokémon capazes de Dynamax."
+		},
+		"fusion": {
+			"label": "Fusão",
+			"description": "Pokémon capazes de fusão, ou já fundidos."
+		},
+		"gigantamax": {
+			"label": "Gigantamax",
+			"description": "Pokémon capazes de Gigantamax."
+		},
+		"background": {
+			"label": "Fundo",
+			"description": "Pokémon com um fundo raro ou de localização no seu perfil."
+		},
+		"specialBackground": {
+			"label": "Fundo especial",
+			"description": "Pokémon com um fundo especial de evento no seu perfil."
+		},
+		"shiny": {
+			"label": "Brilhante",
+			"description": "Todos os Pokémon Brilhantes."
+		},
+		"costume": {
+			"label": "Fantasia",
+			"description": "Pokémon com uma fantasia de evento especial."
+		}
+	},
+	"lockedOnTitle": "Os Pokémon {{label}} nunca podem ser trocados, por isso isto está sempre ligado.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Adicionar um Pokémon para nunca eliminar…",
+		"searchPlaceholderTrade": "Adicionar um Pokémon para nunca sugerir…",
+		"clear": "Limpar",
+		"remove": "Remover",
+		"removeLockedTitle": "Protegido porque é {{reason}} — desative essa opção acima para o remover",
+		"shadowSuffix": "Sombra",
+		"emptyMeta": "Ainda nada aqui — pesquise acima para proteger um Pokémon específico, independentemente das categorias acima.",
+		"emptyTrade": "Ainda nada aqui — pesquise acima para manter um Pokémon específico fora das sugestões de troca, independentemente das categorias acima.",
+		"summaryEmpty": "Ainda nenhum Pokémon protegido individualmente",
+		"summaryManual_one": "{{count}} mantido individualmente",
+		"summaryManual_other": "{{count}} mantidos individualmente",
+		"summaryAuto_one": "{{count}} protegido por categoria",
+		"summaryAuto_other": "{{count}} protegidos por categoria"
+	},
+	"compute": "Calcular",
+	"computing": "A calcular…",
+	"computingMessage": "A calcular… isto percorre todas as espécies, aguarde um momento.",
+	"outputPlaceholderMeta": "A sua string de pesquisa aparece aqui. Cole-a na barra de pesquisa do Pokémon GO, reveja os resultados e depois elimine.",
+	"outputPlaceholderTrade": "A sua string de pesquisa aparece aqui. Cole-a na barra de pesquisa do Pokémon GO para rever os seus candidatos a troca.",
+	"characterCount_one": "{{formatted}} carácter",
+	"characterCount_other": "{{formatted}} caracteres",
+	"lengthWarningMeta": " — ⚠️ isto pode ser demasiado longo para a pesquisa em alguns telemóveis Android; considere usar o interruptor de modo de eliminação simplificado acima se reparar que a string é cortada ao colá-la na barra de pesquisa do Pokémon Go.",
+	"lengthWarningTrade": " — ⚠️ isto pode ser demasiado longo para a pesquisa em alguns telemóveis Android; colar na barra de pesquisa do Pokémon GO pode cortar o final da string.",
+	"copySearchString": "Copiar string de pesquisa",
+	"copied": "Copiado ✓",
+	"panelSummary": {
+		"topGreat": "Top {{n}} da Liga Grande",
+		"topUltra": "Top {{n}} da Liga Ultra",
+		"topMaster": "Top {{n}} da Liga Mestra",
+		"topRaid": "Top {{n}} de Reide",
+		"cpKept": "CP ≥ {{cp}} mantido",
+		"cpUnder": "CP < {{cp}}",
+		"simplifiedModeSuffix": "Modo simplificado",
+		"protectsList": "protege {{list}}",
+		"excludesList": "exclui {{list}}",
+		"nothingExtra": "nada extra",
+		"onlyClearlyLowIvs": "apenas IVs claramente baixos"
+	}
+}

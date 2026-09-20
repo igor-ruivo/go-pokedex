@@ -78,6 +78,7 @@ export enum ConfigKeys {
 	TrashKeepCostume,
 	BadIvSimplifiedMode,
 	TrashSimplifiedMode,
+	TrashKeepSpecialBackground,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

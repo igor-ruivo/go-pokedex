@@ -7,9 +7,18 @@
 	},
 	"modeTablist": "Mass delete mode",
 	"modeTabs": {
-		"meta": { "full": "Non-meta relevant", "short": "Non-meta" },
-		"badIv": { "full": "Non-Perfect IVs", "short": "IVs" },
-		"trade": { "full": "Find Tradeable", "short": "Tradeable" }
+		"meta": {
+			"full": "Non-meta relevant",
+			"short": "Non-meta"
+		},
+		"badIv": {
+			"full": "Non-Perfect IVs",
+			"short": "IVs"
+		},
+		"trade": {
+			"full": "Find Tradeable",
+			"short": "Tradeable"
+		}
 	},
 	"badIvWarning": "This mode is aggressive and perfectionist: the intent is to delete every catch that isn’t a perfect (100%) IV Pokémon, with no regard for whether a species is currently good or bad in the meta — double-check the categories and whitelist below before running it.",
 	"helpText": {
@@ -28,10 +37,22 @@
 	"neverDeletePokemon": "Never delete these Pokémon",
 	"neverSuggestPokemon": "Never suggest these Pokémon",
 	"knobs": {
-		"greatLeague": { "full": "Great League", "short": "Great" },
-		"ultraLeague": { "full": "Ultra League", "short": "Ultra" },
-		"masterLeague": { "full": "Master League", "short": "Master" },
-		"raidAttackers": { "full": "Raid Attackers", "short": "Raid" },
+		"greatLeague": {
+			"full": "Great League",
+			"short": "Great"
+		},
+		"ultraLeague": {
+			"full": "Ultra League",
+			"short": "Ultra"
+		},
+		"masterLeague": {
+			"full": "Master League",
+			"short": "Master"
+		},
+		"raidAttackers": {
+			"full": "Raid Attackers",
+			"short": "Raid"
+		},
 		"saveCp": "Save CP",
 		"simplifiedMode": "Simplified mode",
 		"keep3StarPokemon": "Keep 3* Pokémon",
@@ -49,25 +70,62 @@
 	"toggleOn": "On",
 	"toggleOff": "Off",
 	"protectionMeta": {
-		"favorite": { "label": "Favorited", "description": "Pokémon marked as a Favorite in-game." },
-		"tagged": { "label": "Tagged", "description": "Pokémon with a nickname or custom tag." },
-		"legendary": { "label": "Legendary", "description": "Box legendaries (Mewtwo, Lugia, …)." },
-		"mythical": { "label": "Mythical", "description": "Mythicals (Mew, Celebi, …)." },
-		"ultraBeast": { "label": "Ultra Beast", "description": "Ultra Beasts (Nihilego, Buzzwole, …)." },
+		"favorite": {
+			"label": "Favorited",
+			"description": "Pokémon marked as a Favorite in-game."
+		},
+		"tagged": {
+			"label": "Tagged",
+			"description": "Pokémon with a nickname or custom tag."
+		},
+		"legendary": {
+			"label": "Legendary",
+			"description": "Box legendaries (Mewtwo, Lugia, …)."
+		},
+		"mythical": {
+			"label": "Mythical",
+			"description": "Mythicals (Mew, Celebi, …)."
+		},
+		"ultraBeast": {
+			"label": "Ultra Beast",
+			"description": "Ultra Beasts (Nihilego, Buzzwole, …)."
+		},
 		"megaEvolvable": {
 			"label": "Mega Evolvable",
 			"description": "Only the game knows this — needs enough Mega Energy banked for that species right now."
 		},
-		"shadow": { "label": "Shadow", "description": "Every Shadow Pokémon, regardless of its own IVs or rank." },
-		"dynamax": { "label": "Dynamax", "description": "Pokémon able to Dynamax." },
-		"fusion": { "label": "Fusion", "description": "Pokémon able to be fused, or already fused." },
-		"gigantamax": { "label": "Gigantamax", "description": "Pokémon able to Gigantamax." },
+		"shadow": {
+			"label": "Shadow",
+			"description": "Every Shadow Pokémon, regardless of its own IVs or rank."
+		},
+		"dynamax": {
+			"label": "Dynamax",
+			"description": "Pokémon able to Dynamax."
+		},
+		"fusion": {
+			"label": "Fusion",
+			"description": "Pokémon able to be fused, or already fused."
+		},
+		"gigantamax": {
+			"label": "Gigantamax",
+			"description": "Pokémon able to Gigantamax."
+		},
 		"background": {
 			"label": "Background",
 			"description": "Pokémon with a rare or location background in its profile."
 		},
-		"shiny": { "label": "Shiny", "description": "Every Shiny Pokémon." },
-		"costume": { "label": "Costume", "description": "Pokémon wearing a Special Event costume." }
+		"specialBackground": {
+			"label": "Special Background",
+			"description": "Pokémon with a special event background in its profile."
+		},
+		"shiny": {
+			"label": "Shiny",
+			"description": "Every Shiny Pokémon."
+		},
+		"costume": {
+			"label": "Costume",
+			"description": "Pokémon wearing a Special Event costume."
+		}
 	},
 	"lockedOnTitle": "{{label}} Pokémon can never be traded, so this is always on.",
 	"whitelist": {
