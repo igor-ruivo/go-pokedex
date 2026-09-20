@@ -922,28 +922,26 @@ const PokemonDetail = () => {
 												{l.full}
 												{bestType && ` · ${TYPE_LABEL[bestType] ?? bestType} attackers`}
 											</span>
-											{l.id === 3 && typeCount > 1 && (
-												<span className='r-board-typepips' aria-hidden='true'>
-													{Array.from({ length: typeCount }, (_, i) => (
-														<i key={i} data-on={i === typeIdx} />
-													))}
-												</span>
-											)}
 											<span className='r-board-name'>
 												{member ? cleanName(member.speciesName) : ready ? 'Not ranked' : 'Loading…'}
 											</span>
-											{/* This exact catch's own IV rank/perfection, for whichever
-											    species is THIS row's own best reachable — always rendered
-											    (same "always there, only painted when active" treatment
-											    `.r-board-lg` gets, purely via CSS colour, see
-											    `.r-board-ivrank`'s own rule) rather than conditionally
-											    mounted, so `.r-board-id` never needs any special-cased
-											    centring logic: it's always exactly 3 real lines. Raid has no
-											    IV-rank concept at all (its `rank` above is already the raid-
-											    attacker rank), so it always shows a plain dash instead. */}
-											<span className='r-board-ivrank'>
-												{ivSlice ? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%` : '—'}
-											</span>
+											{/* Raid has no IV-rank concept at all (its `rank` above is
+											    already the raid-attacker rank, not an IV percentile), so it
+											    never generates one here — the type-carousel pips (which
+											    league rows have no equivalent of) take this slot instead. */}
+											{l.id === 3 ? (
+												typeCount > 1 && (
+													<span className='r-board-typepips' aria-hidden='true'>
+														{Array.from({ length: typeCount }, (_, i) => (
+															<i key={i} data-on={i === typeIdx} />
+														))}
+													</span>
+												)
+											) : (
+												<span className='r-board-ivrank'>
+													{ivSlice ? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%` : '—'}
+												</span>
+											)}
 										</span>
 										<span className='r-board-fig'>
 											<span className='r-board-rank'>

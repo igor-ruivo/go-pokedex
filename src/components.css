@@ -768,7 +768,7 @@
 	   stay vertically centred and every row is the same size; the pokémon-carousel
 	   pips are absolutely positioned in the bottom gap */
 	padding: 12px 16px 12px 20px;
-	min-height: 78px;
+	min-height: 78.57px;
 	cursor: pointer;
 	border-radius: var(--r-md);
 	/* de-emphasis is done with the border / accent bar / glow — NOT opacity, which
@@ -921,13 +921,19 @@
 	background: var(--lg);
 	box-shadow: 0 0 6px var(--lg);
 }
-/* type-carousel pips — in-flow between the "RAIDS · <type>" label and the name,
-   left-aligned with that label text */
+/* type-carousel pips — Raid's own third line, in the same slot the PvP
+   leagues use for `.r-board-ivrank` (raids have no IV-rank equivalent).
+   `min-height` matches `.r-board-ivrank`'s own natural (font-size × the
+   inherited body line-height) line box — the 4px dots alone are shorter
+   than a text line, which was making a Raid row's `.r-board-id` a hair
+   shorter than a league row's and shifting `.r-board-fig`'s vertical
+   centring by a sub-pixel amount. `margin-top` adds a bit more room below
+   the name than the shared 2px `.r-board-id` gap alone gives. */
 .rvmp .r-board-typepips {
 	display: flex;
 	align-items: center;
 	gap: 4px;
-	margin: 2px 0 3px;
+	margin-top: 3px;
 }
 .rvmp .r-board-typepips i {
 	width: 4px;
@@ -939,9 +945,11 @@
 	background: var(--lg);
 	box-shadow: 0 0 5px var(--lg);
 }
-/* Always exactly 3 real lines (league, name, IV-rank — see `.r-board-ivrank`
-   below) on every row, so the row's own `align-items: center` just centres
-   this whole, always-the-same-shape block with no special-casing needed. */
+/* League + name, plus a third line for whichever this row's own tier can
+   show — IV-rank for the PvP leagues (see `.r-board-ivrank`, always
+   present), type-carousel pips for Raid (`.r-board-typepips`, only when
+   there's more than one type to page through). Either way, the row's own
+   `align-items: center` just centres this block with no special-casing. */
 .rvmp .r-board-id {
 	display: flex;
 	flex-direction: column;

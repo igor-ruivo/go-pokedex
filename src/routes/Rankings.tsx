@@ -377,7 +377,8 @@ const Rankings = () => {
 					<p className='r-muted r-rank-hint'>
 						Raid ranks assume each Pokémon&rsquo;s best fast + charged move combo dealing Effective{' '}
 						{TYPE_LABEL[raidType] ?? raidType}-type damage (×1.6) against a Tier 5 non-shadow boss (200 Defense, level
-						40), with a level 50 attacker (15 Attack IV) and no weather, friendship or Mega bonuses.
+						40), with a level 50 attacker (15 Attack IV) and no weather, friendship or teammate Mega-aura bonuses. Super
+						Mega Pokémon are ranked as Max Mega Level.
 					</p>
 				)}
 			</div>
