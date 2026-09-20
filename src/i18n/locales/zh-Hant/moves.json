@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "名稱",
+		"dmgPve": "傷害 · PvE",
+		"dmgPvp": "傷害 · PvP",
+		"nrgPve": "能量 · PvE",
+		"nrgPvp": "能量 · PvP",
+		"durPve": "耗時 · PvE",
+		"turnsPvp": "回合 · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "招式",
+		"kindAriaLabel": "招式種類",
+		"kind": { "all": "全部", "fast": "快速招式", "charged": "特殊招式" },
+		"count_one": "{{count}} 個招式",
+		"count_other": "{{count}} 個招式"
+	}
+}

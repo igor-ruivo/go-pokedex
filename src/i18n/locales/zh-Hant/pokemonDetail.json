@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "超級",
+		"greatFull": "超級聯盟",
+		"ultra": "高級",
+		"ultraFull": "高級聯盟",
+		"master": "大師",
+		"masterFull": "大師聯盟",
+		"raid": "團體戰",
+		"raids": "團體戰",
+		"raidsFull": "團體戰"
+	},
+	"tabs": {
+		"ranks": "排名",
+		"moves": "招式",
+		"counters": "對戰技巧",
+		"ivTable": "個體值表",
+		"strings": "搜尋字串",
+		"comingSoon": "「{{tab}}」改版即將推出。"
+	},
+	"loading": {
+		"pokedex": "載入圖鑑中…",
+		"notFound": "找不到寶可夢「{{speciesId}}」。"
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "攻擊", "def": "防禦", "hp": "體力" },
+		"level": { "prefix": "等級", "loading": "等級 …" },
+		"shadowToggle": "暗影",
+		"switchLeagueAriaLabel": "目前顯示 {{league}}。點選以切換聯盟。",
+		"nextFamilyMemberAriaLabel": "{{current}} — 下一個：{{next}}"
+	},
+	"familyLine": {
+		"heading": "{{name}} 的進化家族"
+	},
+	"tablist": {
+		"ariaLabel": "聯盟／模式"
+	},
+	"board": {
+		"sectionHeading": "各聯盟最佳可達階段",
+		"notRanked": "未列入排名",
+		"loading": "載入中…",
+		"attackersSuffix": "{{type}} 屬性攻擊手",
+		"nextTypeTitle": "{{type}} — 點選查看下一個屬性"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "團體戰表現 · {{name}}",
+			"selfShadow": "團體戰表現 · 暗影{{name}}",
+			"as": "團體戰表現 · 作為 {{name}}",
+			"asShadow": "團體戰表現 · 作為暗影{{name}}"
+		},
+		"rank": "{{type}} 排名",
+		"baseAtk": "基礎攻擊",
+		"notRankedAttacker": "未列入團體戰攻擊手排名。",
+		"bestMovesetByType": "各屬性最佳招式組合",
+		"nextMovesetTitle": "點選查看下一組招式",
+		"selectTypeTitle": "點選選擇此屬性",
+		"ivsBarelyMatterPrefix": "個體值在團體戰中影響甚微 — 追求最高的",
+		"attackWord": "攻擊力"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "你的個體值百分位 · {{name}}",
+			"selfShadow": "你的個體值百分位 · 暗影{{name}}",
+			"as": "你的個體值百分位 · 作為 {{name}}",
+			"asShadow": "你的個體值百分位 · 作為暗影{{name}}",
+			"purified": "你的個體值百分位 · 作為淨化{{name}}"
+		},
+		"ivRank": "{{league}} 個體值排名",
+		"perfection": "完美度",
+		"cp": "CP",
+		"cpAtLevel": "L{{level}} 時的 CP",
+		"bestSpreadFor": "{{league}} 最佳數值組合：",
+		"bestSpreadResult": "→ L{{level}} 時 {{cp}} CP。",
+		"purifyWarning": "⚠️ 請注意，淨化會使每項數值的個體值提升 +2。",
+		"purifyUnreachableWarning": "⚠️ 這個排名第 1 的數值組合本身無法透過淨化達成 — 淨化一律會將每項數值提升至至少 2，因此暗影寶可夢無論個體值如何，都不可能低於此組合。",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "滿值",
+			"rank1": "{{league}} 排名第 1"
+		}
+	},
+	"effectiveness": {
+		"heading": "屬性相剋 · {{name}}",
+		"weakTo": "弱點屬性",
+		"resists": "抵抗屬性",
+		"nothing": "無"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "一星級",
+			"t3": "三星級",
+			"mega": "Mega",
+			"t5": "五星級",
+			"elite": "菁英",
+			"legendaryMega": "傳說 Mega",
+			"primal": "原始",
+			"superMega": "究極 Mega"
+		},
+		"weather": {
+			"none": "無天氣加成",
+			"sunny": "晴朗／萬里無雲",
+			"rainy": "下雨",
+			"partlyCloudy": "多雲時晴",
+			"cloudy": "陰天",
+			"windy": "強風",
+			"snow": "下雪",
+			"fog": "起霧"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "好朋友",
+			"great": "超要好的朋友",
+			"ultra": "非常要好的朋友",
+			"best": "摯友",
+			"forever": "永遠的摯友"
+		},
+		"megaLevel": {
+			"base": "基礎",
+			"high": "高級",
+			"max": "極限",
+			"superMax": "究極極限"
+		},
+		"notRankedInLeague": "{{name}} 未列入 {{league}} 排名 — 沒有預先計算的對戰資料。",
+		"noData": "沒有資料。",
+		"strongAgainst": "{{name}} 在 {{league}} 中的優勢對手",
+		"weakAgainst": "{{name}} 在 {{league}} 中的劣勢對手",
+		"bestRaidCounters": "最佳團體戰對戰技巧 · {{name}}",
+		"summaryRaidHp": "{{tier}} 團體戰 · {{hp}} 體力",
+		"partyOf": "{{size}} 人小隊",
+		"friendLabel": "{{label}}",
+		"megaAuraSummary": "Mega {{type}} 光環",
+		"megaLevelSummary": "Mega 等級：{{label}}",
+		"configHide": "隱藏",
+		"configEdit": "編輯",
+		"clear": "清除",
+		"bossTier": "首領星級",
+		"bossTierTitle": "{{tier}} — {{hp}} 體力",
+		"bossTierAriaLabel": "{{tier}} 團體戰",
+		"bossTierHint": "{{tier}} 團體戰 · {{hp}} 體力",
+		"weather_field": "天氣",
+		"weatherHint": "×1.2 · {{types}}",
+		"megaAura": "Mega 光環",
+		"noMegaOnTeam": "隊伍中沒有 Mega 寶可夢",
+		"megaOfType": "Mega {{type}}",
+		"megaAuraHint": "×1.3 {{type}} · ×1.1 其他屬性",
+		"megaLevelField": "Mega 等級",
+		"megaLevelHint": "×{{mult}} 用於 Mega／原始寶可夢自身的額外招式",
+		"megaLevelHintExtra": " · 攻擊方等級 +2",
+		"partyPower": "團隊戰力",
+		"solo": "單人",
+		"friendshipField": "友誼程度",
+		"friendshipHint": "×{{mult}} 傷害",
+		"helpSummary": "這些代表什麼意思？",
+		"help": {
+			"weatherFriendshipMegaAura": "天氣 · 友誼 · Mega 光環",
+			"weatherFriendshipMegaAuraDesc": "作用於你攻擊方的傷害加成。首領造成的傷害一律使用固定數值，因此首領本身的招式不會影響這些數字。",
+			"megaLevelDesc": "Mega 或原始寶可夢自身的 Mega 等級（進化後透過 Mega 進化能量提升）只會強化其專屬額外特殊招式，套路中其他招式不受影響。究極極限等級還會讓攻擊方獲得 +2 有效等級，無論是否擁有額外招式。",
+			"bossTierDesc": "設定首領體力（供 eDPS 使用）以及套用於其防禦力的 CPM。系統會依首領自動判斷，菁英團體戰需手動變更。"
+		},
+		"includeMegas": "包含 Mega",
+		"includeShadows": "包含暗影",
+		"noCountersMatch": "沒有符合篩選條件的對戰技巧。"
+	},
+	"ivTable": {
+		"notForRaids": "個體值排名不適用於團體戰 — 請於上方選擇超級、高級或大師聯盟。",
+		"heading": "{{league}} · {{shadow}}{{name}} 的全部 4,096 種個體值組合",
+		"fieldAriaLabel": "{{label}} 個體值，0 至 15",
+		"clearAriaLabel": "清除",
+		"notInRanking": "該數值組合不在排名內。",
+		"fillAllThree": "請填入全部三項數值（0–15）。",
+		"columns": {
+			"rank": "#",
+			"ivs": "個體值",
+			"stats": "攻擊 · 防禦 · 體力",
+			"percent": "%",
+			"cp": "CP",
+			"level": "等級"
+		}
+	},
+	"moves": {
+		"bestMoveset": "{{league}} 最佳招式組合",
+		"unrankedForLeague": "{{name}} 未列入 {{league}} 排名 — 沒有推薦招式組合。下方列出牠能學會的所有招式。",
+		"defaultLeague": "聯盟",
+		"defaultLeagueSelected": "所選聯盟",
+		"allMovesCanLearn": "{{name}} 能學會的所有招式",
+		"fastMoves": "快速招式",
+		"chargedMoves": "特殊招式",
+		"recommended": "推薦",
+		"elite": "高級",
+		"legacy": "傳承",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "搜尋字串僅適用於 PvP — 請於上方選擇超級、高級或大師聯盟。",
+		"heading": "{{league}} · 遊戲內搜尋字串",
+		"rankCutoff": "排名門檻",
+		"topN": "前 {{n}} 名",
+		"matchExceptTop": "比對<em>除了</em>前 {{n}} 名以外的所有項目",
+		"helperText": "每一行會比對達到門檻的野生、未強化捕獲紀錄的該進化家族。複製後貼到 Pokémon GO 的搜尋欄。",
+		"copyString": "複製字串",
+		"copied": "已複製 ✓",
+		"clickToCopy": "點選以複製",
+		"sentence": {
+			"caught": "（野生捕獲且尚未強化）",
+			"findTopSelf": "尋找{{except}}前 {{top}} 名的 <name></name>，{{caught}}，適用於 <league></league>：",
+			"findTopEvolvesTo": "尋找 <name></name>，{{caught}}，會進化為{{toThe}}{{except}}前 {{top}} 名的 <target></target>，適用於 <league></league>：",
+			"findTopSelfShadowEither": "尋找{{except}}前 {{top}} 名的 <name></name> — 無論是否為暗影 — {{caught}}，適用於 <league></league>：",
+			"findTopEvolvesToShadowEither": "尋找 <name></name> — 無論是否為暗影 — {{caught}}，會進化為{{toThe}}{{except}}前 {{top}} 名的 <target></target>，適用於 <league></league>：",
+			"exceptPrefix": "非",
+			"toThePrefix": ""
+		}
+	}
+}

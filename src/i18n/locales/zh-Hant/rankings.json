@@ -1,0 +1,31 @@
+{
+	"sorts": {
+		"dex": "圖鑑編號",
+		"name": "名稱",
+		"cp": "最高 CP",
+		"type": "屬性"
+	},
+	"tabs": {
+		"pokedexFull": "圖鑑",
+		"pokedexShort": "圖鑑"
+	},
+	"status": {
+		"loading": "載入中…",
+		"chooseType": "選擇一個屬性",
+		"count": "{{count}} 隻寶可夢",
+		"bestAttackersSuffix": " · 最佳 {{type}} 屬性攻擊手"
+	},
+	"hint": {
+		"show": "顯示排名假設條件",
+		"hide": "隱藏排名假設條件",
+		"text": "團體戰排名假設每隻寶可夢使用最佳快速＋特殊招式組合，對五星非暗影首領（防禦 200、40 級）造成有效 {{type}} 屬性傷害（×1.6），攻擊方為 50 級（攻擊個體值 15），且無天氣、友誼或隊友 Mega 光環加成。究極 Mega 寶可夢以最高 Mega 等級計算排名。"
+	},
+	"empty": {
+		"pickType": "在篩選中選擇一個屬性，即可查看該屬性最佳的團體戰攻擊手。",
+		"nothingMatches": "沒有符合的項目。"
+	},
+	"loadingLabel": {
+		"pokedex": "載入圖鑑中…",
+		"rankings": "載入排行榜中…"
+	}
+}

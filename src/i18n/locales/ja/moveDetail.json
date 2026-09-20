@@ -1,0 +1,38 @@
+{
+	"notFound": "わざ「{{moveId}}」は見つかりません。",
+	"sections": {
+		"stats": "ステータス",
+		"usage": "使用状況",
+		"recommended": "おすすめ",
+		"alsoLearnedBy": "他に覚えるポケモン",
+		"learnedBy": "覚えるポケモン",
+		"eliteFor": "エリートわざとして使用可能",
+		"legacyFor": "過去限定わざとして使用可能"
+	},
+	"arena": {
+		"pve": "PvE · レイド&ジム",
+		"pvp": "PvP · リーグ"
+	},
+	"kind": {
+		"fastChip": "はやわざ",
+		"chargedChip": "ゲージわざ"
+	},
+	"superMega": "スーパーメガ",
+	"statLabels": {
+		"dmg": "威力",
+		"nrg": "エネルギー",
+		"dur": "発生時間",
+		"turns": "ターン",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "{{name}}を覚えられるポケモン",
+	"tiles": {
+		"recommended": "おすすめ",
+		"mega": "メガ",
+		"elite": "エリート",
+		"legacy": "過去限定"
+	},
+	"noneLearn": "このわざを覚えるポケモンはいません。"
+}

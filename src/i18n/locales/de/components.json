@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filter",
+		"clear": "Zurücksetzen",
+		"dialogAriaLabel": "Filter",
+		"typeSectionLabel": "Typ",
+		"pickOneHint": "eine wählen",
+		"pickUpToHint": "bis zu {{max}} wählen · beide treffen zu"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Sortieren nach",
+		"sectionLabel": "Sortieren nach",
+		"asc": "Aufst.",
+		"desc": "Abst."
+	},
+	"ivPicker": {
+		"attack": "ANGRIFF",
+		"defense": "VERTEIDIGUNG",
+		"hp": "KP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Verringern",
+		"increaseAriaLabel": "Erhöhen"
+	},
+	"shadowMark": {
+		"alt": "Schatten"
+	},
+	"searchBox": {
+		"placeholder": "Pokémon oder Attacken suchen…",
+		"ariaLabel": "Pokémon oder Attacken suchen",
+		"clearAriaLabel": "Suche löschen",
+		"shadowSuffix": "Schatten",
+		"fast": "Schnell",
+		"charged": "Lade"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Nicht als Arena-Kampf-Angreifer eingestuft.",
+		"bestMovesetByType": "Beste Attackenkombo nach Typ",
+		"tapNextMoveset": "Tippen für die nächste Attackenkombo",
+		"tapSelectType": "Tippen, um diesen Typ auszuwählen",
+		"legacy": "Alt",
+		"elite": "Elite",
+		"baseAtk": "Basis-ANG",
+		"typeRank": "{{type}}-Rang"
+	}
+}

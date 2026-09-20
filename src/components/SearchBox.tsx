@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useImageSource } from '../contexts/imageSource-context';
@@ -25,6 +26,7 @@ type Hit = { kind: 'pokemon'; p: IGamemasterPokemon } | { kind: 'move'; m: IGame
  * the grid views the query also drives the `?q=` Pokémon filter in place.
  */
 export const SearchBox = () => {
+	const { t } = useTranslation(['components']);
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
 	const [params, setParams] = useSearchParams();
@@ -156,8 +158,8 @@ export const SearchBox = () => {
 						setOpen(false);
 					}
 				}}
-				placeholder='Search Pokémon or moves…'
-				aria-label='Search Pokémon or moves'
+				placeholder={t('components:searchBox.placeholder')}
+				aria-label={t('components:searchBox.ariaLabel')}
 				enterKeyHint='search'
 				role='combobox'
 				aria-expanded={showMenu}
@@ -168,7 +170,7 @@ export const SearchBox = () => {
 				<button
 					type='button'
 					className='r-search-clear'
-					aria-label='Clear search'
+					aria-label={t('components:searchBox.clearAriaLabel')}
 					onClick={() => {
 						setQ('');
 						setOpen(false);
@@ -205,7 +207,9 @@ export const SearchBox = () => {
 											</span>
 											<span className='r-search-name'>
 												{cleanName(hit.p.speciesName)}
-												{hit.p.isShadow && <em className='r-search-shadow'> · Shadow</em>}
+												{hit.p.isShadow && (
+													<em className='r-search-shadow'> · {t('components:searchBox.shadowSuffix')}</em>
+												)}
 											</span>
 											<span className='r-search-dex'>{dexNo(hit.p.dex)}</span>
 										</>
@@ -220,7 +224,9 @@ export const SearchBox = () => {
 												/>
 											</span>
 											<span className='r-search-name'>{hit.m.moveName[gl] ?? hit.m.moveId}</span>
-											<span className='r-search-dex'>{hit.m.isFast ? 'Fast' : 'Charged'}</span>
+											<span className='r-search-dex'>
+												{hit.m.isFast ? t('components:searchBox.fast') : t('components:searchBox.charged')}
+											</span>
 										</>
 									)}
 								</button>

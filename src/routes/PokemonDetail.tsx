@@ -1,5 +1,6 @@
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { IvPicker, type IVs } from '../components/IvPicker';
@@ -36,11 +37,13 @@ import IvTableTab from './pokemon/IvTableTab';
 import MovesTab from './pokemon/MovesTab';
 import SearchStringsTab from './pokemon/SearchStringsTab';
 
-const LEAGUES = [
-	{ id: 0, label: 'Great', full: 'Great League', cssVar: 'var(--lg-great)' },
-	{ id: 1, label: 'Ultra', full: 'Ultra League', cssVar: 'var(--lg-ultra)' },
-	{ id: 2, label: 'Master', full: 'Master League', cssVar: 'var(--lg-master)' },
-	{ id: 3, label: 'Raids', full: 'Raids', cssVar: 'var(--lg-raid)' },
+/** Just the layout facts (id/colour) — display text is translated inside the
+ *  component (see LEAGUES there) since it needs the t() hook. */
+const LEAGUE_META = [
+	{ id: 0, cssVar: 'var(--lg-great)' },
+	{ id: 1, cssVar: 'var(--lg-ultra)' },
+	{ id: 2, cssVar: 'var(--lg-master)' },
+	{ id: 3, cssVar: 'var(--lg-raid)' },
 ] as const;
 type LeagueId = 0 | 1 | 2 | 3;
 type PvpLeague = 0 | 1 | 2;
@@ -105,6 +108,7 @@ const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 };
 
 const PokemonDetail = () => {
+	const { t } = useTranslation(['pokemonDetail']);
 	const { speciesId = '', tab: tabParam } = useParams();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
@@ -118,6 +122,27 @@ const PokemonDetail = () => {
 	// setting Rankings' raid tab and the Counters tab use.
 	const { raidMetric } = useRaidMetric();
 	const { maxLevel, maxLevelIndex } = useBestBuddy();
+
+	// Display text for the four league/mode segments — LEAGUE_META (module
+	// scope) carries the stable id/colour, translated here since t() only
+	// exists inside the component.
+	const LEAGUES = [
+		{ ...LEAGUE_META[0], label: t('pokemonDetail:leagues.great'), full: t('pokemonDetail:leagues.greatFull') },
+		{ ...LEAGUE_META[1], label: t('pokemonDetail:leagues.ultra'), full: t('pokemonDetail:leagues.ultraFull') },
+		{ ...LEAGUE_META[2], label: t('pokemonDetail:leagues.master'), full: t('pokemonDetail:leagues.masterFull') },
+		{ ...LEAGUE_META[3], label: t('pokemonDetail:leagues.raids'), full: t('pokemonDetail:leagues.raidsFull') },
+	];
+	// Visible tab text, keyed by the (stable, English, comparison-only) slug —
+	// TABS/SLUG_TO_TAB/TabLabel above stay untouched since `tab === 'Moves'`
+	// etc. is used as an internal state key throughout this component, not
+	// display text.
+	const TAB_LABEL: Record<string, string> = {
+		'ranks': t('pokemonDetail:tabs.ranks'),
+		'moves': t('pokemonDetail:tabs.moves'),
+		'counters': t('pokemonDetail:tabs.counters'),
+		'iv-table': t('pokemonDetail:tabs.ivTable'),
+		'strings': t('pokemonDetail:tabs.strings'),
+	};
 
 	const pokemon = fetchCompleted ? gamemasterPokemon[speciesId] : undefined;
 	const tab: TabLabel = SLUG_TO_TAB[tabParam ?? 'ranks'] ?? 'Ranks';
@@ -504,14 +529,14 @@ const PokemonDetail = () => {
 		return (
 			<div className='r-loading'>
 				<div className='r-spinner' />
-				Loading Pokédex…
+				{t('pokemonDetail:loading.pokedex')}
 			</div>
 		);
 	}
 	if (!pokemon) {
 		return (
 			<div className='r-loading'>
-				<p>No Pokémon “{speciesId}”.</p>
+				<p>{t('pokemonDetail:loading.notFound', { speciesId })}</p>
 			</div>
 		);
 	}
@@ -542,7 +567,8 @@ const PokemonDetail = () => {
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
 	const raidElite = new Set(raidMember.eliteMoves);
 	const raidLegacy = new Set(raidMember.legacyMoves);
-	const raidMoveTag = (id: string) => (raidLegacy.has(id) ? 'Legacy' : raidElite.has(id) ? 'Elite' : null);
+	const raidMoveTag = (id: string) =>
+		raidLegacy.has(id) ? t('pokemonDetail:moves.legacy') : raidElite.has(id) ? t('pokemonDetail:moves.elite') : null;
 	const raidRows = (raidSel?.types ?? []).map(({ type, entry, rank }, i) => {
 		const combos = comboLists[type] ?? [];
 		const mIdx = Math.min(cpos(3).m[type] ?? 0, Math.max(0, combos.length - 1));
@@ -667,7 +693,10 @@ const PokemonDetail = () => {
 					disabled={!nextFamilyMember}
 					aria-label={
 						nextFamilyMember
-							? `${cleanName(pokemon.speciesName)} — next: ${cleanName(nextFamilyMember.speciesName)}`
+							? t('pokemonDetail:hero.nextFamilyMemberAriaLabel', {
+									current: cleanName(pokemon.speciesName),
+									next: cleanName(nextFamilyMember.speciesName),
+								})
 							: undefined
 					}
 				>
@@ -687,11 +716,10 @@ const PokemonDetail = () => {
 					className='r-hero-mini-lg'
 					style={{ ['--seg-c' as string]: LEAGUES[league].cssVar }}
 					onClick={cycleLeague}
-					aria-label={`Currently showing ${LEAGUES[league].full}. Tap to switch league.`}
+					aria-label={t('pokemonDetail:hero.switchLeagueAriaLabel', { league: LEAGUES[league].full })}
 				>
 					<img src={LG_ICON[league]} alt='' aria-hidden='true' />
-					{LEAGUES[league].label}
-					{league !== 3 && ' League'}
+					{league !== 3 ? LEAGUES[league].full : LEAGUES[league].label}
 				</button>
 			</div>
 
@@ -711,7 +739,7 @@ const PokemonDetail = () => {
 						<h1 className='r-name'>{cleanName(pokemon.speciesName)}</h1>
 						<div className='r-cp'>
 							<b>{heroReady ? heroCp.toLocaleString() : '…'}</b>
-							<span>CP</span>
+							<span>{t('pokemonDetail:hero.cp')}</span>
 						</div>
 						<div className='r-types' style={{ justifyContent: 'flex-start', marginTop: 10 }}>
 							{pokemon.types.map((t) => (
@@ -725,15 +753,15 @@ const PokemonDetail = () => {
 
 				<div className='r-stats'>
 					<div className='r-stat'>
-						<i>ATK</i>
+						<i>{t('pokemonDetail:hero.stats.atk')}</i>
 						<b>{pokemon.baseStats.atk}</b>
 					</div>
 					<div className='r-stat'>
-						<i>DEF</i>
+						<i>{t('pokemonDetail:hero.stats.def')}</i>
 						<b>{pokemon.baseStats.def}</b>
 					</div>
 					<div className='r-stat'>
-						<i>HP</i>
+						<i>{t('pokemonDetail:hero.stats.hp')}</i>
 						<b>{pokemon.baseStats.hp}</b>
 					</div>
 				</div>
@@ -752,11 +780,11 @@ const PokemonDetail = () => {
 								if (dir > 0) return cur === MAX_LEVEL && maxLevel > MAX_LEVEL ? maxLevel : cur + 0.5;
 								return cur === maxLevel && maxLevel > MAX_LEVEL ? MAX_LEVEL : cur - 0.5;
 							}}
-							format={(v) => `Lvl ${Number.isInteger(v) ? v : v.toFixed(1)}`}
+							format={(v) => `${t('pokemonDetail:hero.level.prefix')} ${Number.isInteger(v) ? v : v.toFixed(1)}`}
 						/>
 					) : (
 						<div className='r-toggle r-stepper' aria-hidden='true'>
-							<span>Lvl …</span>
+							<span>{t('pokemonDetail:hero.level.loading')}</span>
 						</div>
 					)}
 					{hasShadow && (
@@ -771,7 +799,7 @@ const PokemonDetail = () => {
 							}}
 						>
 							<ShadowMark className='r-toggle-flame' />
-							Shadow
+							{t('pokemonDetail:hero.shadowToggle')}
 						</button>
 					)}
 				</div>
@@ -781,7 +809,9 @@ const PokemonDetail = () => {
 			    skipped entirely when it's just this one mon on its own — nothing to switch to */}
 			{family.length > 1 && (
 				<>
-					<div className='r-section-h'>{cleanName(pokemon.speciesName)}’s family line</div>
+					<div className='r-section-h'>
+						{t('pokemonDetail:familyLine.heading', { name: cleanName(pokemon.speciesName) })}
+					</div>
 					<div className='r-reach'>
 						{family.map((m) => (
 							<Link
@@ -815,7 +845,7 @@ const PokemonDetail = () => {
 			<div
 				className='r-seg r-seg--league'
 				role='tablist'
-				aria-label='League / mode'
+				aria-label={t('pokemonDetail:tablist.ariaLabel')}
 				style={{ ['--seg-count' as string]: LEAGUES.length }}
 			>
 				{LEAGUES.map((l) => (
@@ -839,7 +869,7 @@ const PokemonDetail = () => {
 						aria-current={tab === label ? 'page' : undefined}
 						onClick={() => void navigate(`${R.pokemon(speciesId, slug)}${lgParam ? `?lg=${lgParam}` : ''}`)}
 					>
-						{label}
+						{TAB_LABEL[slug]}
 					</button>
 				))}
 			</nav>
@@ -854,12 +884,12 @@ const PokemonDetail = () => {
 				<CountersTab pokemon={pokemon} league={league} />
 			) : tab !== 'Ranks' ? (
 				<div className='r-card' style={{ marginTop: 24, textAlign: 'center' }}>
-					<p className='r-muted'>“{tab}” is next in the revamp.</p>
+					<p className='r-muted'>{t('pokemonDetail:tabs.comingSoon', { tab })}</p>
 				</div>
 			) : (
 				<>
 					{/* ---- LEADERBOARD — best reachable per league; click active row to cycle ---- */}
-					<div className='r-section-h'>best reachable stage per league</div>
+					<div className='r-section-h'>{t('pokemonDetail:board.sectionHeading')}</div>
 					<div className='r-board'>
 						{boardRows.map(
 							({ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice }) => {
@@ -904,7 +934,7 @@ const PokemonDetail = () => {
 													className='r-board-type'
 													role='button'
 													tabIndex={0}
-													title={`${TYPE_LABEL[bestType] ?? bestType} — tap for next type`}
+													title={t('pokemonDetail:board.nextTypeTitle', { type: TYPE_LABEL[bestType] ?? bestType })}
 													onClick={(e) => cycleType(e, l.id as LeagueId)}
 													onKeyDown={(e) => {
 														if (e.key === 'Enter' || e.key === ' ') {
@@ -920,10 +950,15 @@ const PokemonDetail = () => {
 										<span className='r-board-id'>
 											<span className='r-board-lg'>
 												{l.full}
-												{bestType && ` · ${TYPE_LABEL[bestType] ?? bestType} attackers`}
+												{bestType &&
+													` · ${t('pokemonDetail:board.attackersSuffix', { type: TYPE_LABEL[bestType] ?? bestType })}`}
 											</span>
 											<span className='r-board-name'>
-												{member ? cleanName(member.speciesName) : ready ? 'Not ranked' : 'Loading…'}
+												{member
+													? cleanName(member.speciesName)
+													: ready
+														? t('pokemonDetail:board.notRanked')
+														: t('pokemonDetail:board.loading')}
 											</span>
 											{/* Raid has no IV-rank concept at all (its `rank` above is
 											    already the raid-attacker rank, not an IV percentile), so it
@@ -972,13 +1007,19 @@ const PokemonDetail = () => {
 						/* ---- RAID PERFORMANCE ---- */
 						<>
 							<div className='r-section-h'>
-								{`Raid performance · ${raidMember.speciesId === self ? '' : 'as '}${raidMember.isShadow ? 'Shadow ' : ''}${cleanName(raidMember.speciesName)}`}
+								{raidMember.speciesId === self
+									? raidMember.isShadow
+										? t('pokemonDetail:raid.performanceHeading.selfShadow', { name: cleanName(raidMember.speciesName) })
+										: t('pokemonDetail:raid.performanceHeading.self', { name: cleanName(raidMember.speciesName) })
+									: raidMember.isShadow
+										? t('pokemonDetail:raid.performanceHeading.asShadow', { name: cleanName(raidMember.speciesName) })
+										: t('pokemonDetail:raid.performanceHeading.as', { name: cleanName(raidMember.speciesName) })}
 							</div>
 							<div className='r-card' style={{ ['--accent' as string]: 'var(--lg-raid)' }}>
 								{raidSelRow ? (
 									<div className='r-readout'>
 										<div>
-											<i>{TYPE_LABEL[raidSelRow.t] ?? raidSelRow.t} rank</i>
+											<i>{t('pokemonDetail:raid.rank', { type: TYPE_LABEL[raidSelRow.t] ?? raidSelRow.t })}</i>
 											<b className='hi' style={{ ['--tc' as string]: typeVar(raidSelRow.t) }}>
 												{ordinal(raidSelRow.rank)}
 											</b>
@@ -988,32 +1029,34 @@ const PokemonDetail = () => {
 											<b>{fmtRaidMetric(raidSelRow.combo?.[raidMetric] ?? raidSelRow.e[raidMetric], raidMetric)}</b>
 										</div>
 										<div>
-											<i>Base ATK</i>
+											<i>{t('pokemonDetail:raid.baseAtk')}</i>
 											<b>{raidMember.baseStats.atk}</b>
 										</div>
 									</div>
 								) : (
-									<p className='r-muted'>Not ranked as a raid attacker.</p>
+									<p className='r-muted'>{t('pokemonDetail:raid.notRankedAttacker')}</p>
 								)}
 
 								{raidRows.length > 0 && (
 									<>
 										<div className='r-section-h' style={{ marginTop: 16 }}>
-											Best moveset by type
+											{t('pokemonDetail:raid.bestMovesetByType')}
 										</div>
 										<div className='r-raidtypes'>
-											{raidRows.map(({ t, e, rank, on, combos, mIdx, combo }, i) => {
-												const activate = () => (on ? cycleMove(t, combos.length) : selectType(i));
+											{raidRows.map(({ t: rt, e, rank, on, combos, mIdx, combo }, i) => {
+												const activate = () => (on ? cycleMove(rt, combos.length) : selectType(i));
 												return (
 													<div
-														key={t}
+														key={rt}
 														className='r-raidtype'
 														role='button'
 														tabIndex={0}
 														data-active={on ? '' : undefined}
 														aria-pressed={on}
-														title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
-														style={{ ['--tc' as string]: `var(--t-${t})` }}
+														title={
+															on ? t('pokemonDetail:raid.nextMovesetTitle') : t('pokemonDetail:raid.selectTypeTitle')
+														}
+														style={{ ['--tc' as string]: `var(--t-${rt})` }}
 														onClick={activate}
 														onKeyDown={(ev) => {
 															if (ev.key === 'Enter' || ev.key === ' ') {
@@ -1023,7 +1066,7 @@ const PokemonDetail = () => {
 														}}
 													>
 														<span className='r-raidtype-head'>
-															<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
+															<span className='r-move-type'>{TYPE_LABEL[rt] ?? rt}</span>
 															<b>{ordinal(rank)}</b>
 															<em>
 																{fmtRaidMetric(combo?.[raidMetric] ?? e[raidMetric], raidMetric)}{' '}
@@ -1066,7 +1109,7 @@ const PokemonDetail = () => {
 
 								{raidSelRow && (
 									<p className='r-muted' style={{ marginTop: 14 }}>
-										IVs barely matter in raids — chase the highest <b>Attack</b>.
+										{t('pokemonDetail:raid.ivsBarelyMatterPrefix')} <b>{t('pokemonDetail:raid.attackWord')}</b>.
 									</p>
 								)}
 							</div>
@@ -1075,9 +1118,20 @@ const PokemonDetail = () => {
 						<>
 							{/* ---- IV PICKER ---- */}
 							<div className='r-section-h'>
-								{purifyOffset > 0
-									? `Your IVs Percentile · as Purified ${cleanName((pvpMember ?? pokemon).speciesName)}`
-									: `Your IVs Percentile · ${(pvpMember ?? pokemon).speciesId === self ? '' : 'as '}${(pvpMember ?? pokemon).isShadow ? 'Shadow ' : ''}${cleanName((pvpMember ?? pokemon).speciesName)}`}
+								{(() => {
+									const m = pvpMember ?? pokemon;
+									const name = cleanName(m.speciesName);
+									if (purifyOffset > 0) return t('pokemonDetail:pvp.percentileHeading.purified', { name });
+									const isSelf = m.speciesId === self;
+									if (isSelf) {
+										return m.isShadow
+											? t('pokemonDetail:pvp.percentileHeading.selfShadow', { name })
+											: t('pokemonDetail:pvp.percentileHeading.self', { name });
+									}
+									return m.isShadow
+										? t('pokemonDetail:pvp.percentileHeading.asShadow', { name })
+										: t('pokemonDetail:pvp.percentileHeading.as', { name });
+								})()}
 							</div>
 							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
 								{/* Only the picker itself (the one thing that can show a literal IV
@@ -1097,12 +1151,12 @@ const PokemonDetail = () => {
 											value={iv}
 											onChange={onManualIvChange}
 											presets={[
-												['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
-												['Hundo', { atk: 15, def: 15, hp: 15 }],
+												[t('pokemonDetail:pvp.presets.zero'), { atk: 0, def: 0, hp: 0 }],
+												[t('pokemonDetail:pvp.presets.hundo'), { atk: 15, def: 15, hp: 15 }],
 												...(league !== 2 && slice
 													? [
 															[
-																`Rank 1 ${LEAGUES[league].label}`,
+																t('pokemonDetail:pvp.presets.rank1', { league: LEAGUES[league].label }),
 																{
 																	atk: purifiedIv(slice.perfect.A),
 																	def: purifiedIv(slice.perfect.D),
@@ -1149,36 +1203,42 @@ const PokemonDetail = () => {
 								    guarantee these numbers match the `iv` actually on screen. */}
 								<div className='r-readout'>
 									<div>
-										<i>{LEAGUES[league].label} IV rank</i>
+										<i>{t('pokemonDetail:pvp.ivRank', { league: LEAGUES[league].label })}</i>
 										<b className='hi'>{!readoutReady || !slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
 									</div>
 									<div>
-										<i>Perfection</i>
+										<i>{t('pokemonDetail:pvp.perfection')}</i>
 										<b>{!readoutReady || !slice ? '…' : `${dec1(rankPerfection(slice.rank))}%`}</b>
 									</div>
 									<div>
-										<i>CP{readoutReady && slice ? ` @ L${slice.lvl}` : ''}</i>
+										<i>
+											{readoutReady && slice
+												? t('pokemonDetail:pvp.cpAtLevel', { level: slice.lvl })
+												: t('pokemonDetail:pvp.cp')}
+										</i>
 										<b>{!readoutReady || !slice ? '…' : slice.cp.toLocaleString()}</b>
 									</div>
 								</div>
 								{readoutReady && slice && (
 									<p className='r-muted' style={{ marginTop: 12 }}>
-										Best spread for {LEAGUES[league].label}:{' '}
+										{t('pokemonDetail:pvp.bestSpreadFor', { league: LEAGUES[league].label })}{' '}
 										<b>
 											{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
 										</b>{' '}
-										→ {slice.perfectCP.toLocaleString()} CP at L{slice.perfectLvl}.
+										{t('pokemonDetail:pvp.bestSpreadResult', {
+											cp: slice.perfectCP.toLocaleString(),
+											level: slice.perfectLvl,
+										})}
 									</p>
 								)}
 								{purifyOffset > 0 && (
 									<p className='r-muted' style={{ marginTop: 8 }}>
-										⚠️ Be aware that purifying gains you +2 IVs on each stat.
+										{t('pokemonDetail:pvp.purifyWarning')}
 									</p>
 								)}
 								{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
 									<p className='r-muted' style={{ marginTop: 8 }}>
-										⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to
-										at least 2, so a Shadow can never land below that no matter its own IVs.
+										{t('pokemonDetail:pvp.purifyUnreachableWarning')}
 									</p>
 								)}
 							</div>
@@ -1186,11 +1246,13 @@ const PokemonDetail = () => {
 					)}
 
 					{/* ---- EFFECTIVENESS ---- */}
-					<div className='r-section-h'>Type effectiveness · {cleanName(pokemon.speciesName)}</div>
+					<div className='r-section-h'>
+						{t('pokemonDetail:effectiveness.heading', { name: cleanName(pokemon.speciesName) })}
+					</div>
 					<div className='r-card'>
 						<div className='r-eff'>
 							<div className='r-eff-col'>
-								<b>Weak to</b>
+								<b>{t('pokemonDetail:effectiveness.weakTo')}</b>
 								<div className='r-eff-list'>
 									{matchups.weak.map(({ type, mult }) => (
 										<span
@@ -1203,11 +1265,13 @@ const PokemonDetail = () => {
 											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))}
-									{matchups.weak.length === 0 && <span className='r-muted'>Nothing</span>}
+									{matchups.weak.length === 0 && (
+										<span className='r-muted'>{t('pokemonDetail:effectiveness.nothing')}</span>
+									)}
 								</div>
 							</div>
 							<div className='r-eff-col'>
-								<b>Resists</b>
+								<b>{t('pokemonDetail:effectiveness.resists')}</b>
 								<div className='r-eff-list'>
 									{matchups.resist.map(({ type, mult }) => (
 										<span
@@ -1220,7 +1284,9 @@ const PokemonDetail = () => {
 											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))}
-									{matchups.resist.length === 0 && <span className='r-muted'>Nothing</span>}
+									{matchups.resist.length === 0 && (
+										<span className='r-muted'>{t('pokemonDetail:effectiveness.nothing')}</span>
+									)}
 								</div>
 							</div>
 						</div>

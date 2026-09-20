@@ -1,0 +1,112 @@
+{
+	"loading": "Chargement…",
+	"pageTitle": {
+		"meta": "Suppression en masse des Pokémon actuellement hors meta",
+		"badIv": "Suppression en masse des Pokémon aux IV imparfaits",
+		"trade": "Trouver des Pokémon à échanger"
+	},
+	"modeTablist": "Mode de suppression en masse",
+	"modeTabs": {
+		"meta": { "full": "Hors meta", "short": "Hors meta" },
+		"badIv": { "full": "IV imparfaits", "short": "IV" },
+		"trade": { "full": "Trouver échangeables", "short": "Échangeables" }
+	},
+	"badIvWarning": "Ce mode est agressif et perfectionniste : l'objectif est de supprimer toute capture qui n'est pas un Pokémon aux IV parfaits (100 %), sans se soucier de savoir si l'espèce est actuellement bonne ou mauvaise dans le meta — vérifiez bien les catégories et la liste blanche ci-dessous avant de l'exécuter.",
+	"helpText": {
+		"meta": "Uniquement le meta, jamais les IV : supprime tout Pokémon qui n'est compétitivement pertinent nulle part — ni en Ligue Superbe, Ultra ou Maître, ni en raid — selon les seuils de rang et le plafond de PC ci-dessous. Une espèce (ou l'une de ses évolutions suivantes) doit seulement franchir le seuil dans l'une de ces catégories pour être épargnée, et une fois que c'est le cas, chaque capture de cette espèce est épargnée aussi, quels que soient ses propres IV — cet onglet n'a aucun avis sur les IV. Tout ce qui atteint ou dépasse votre plafond de PC est toujours conservé, tout comme tout ce qui est coché dans les catégories et la liste blanche ci-dessous, quel que soit le rang. Un produit de statistiques parfait pour la Ligue Maître est toujours conservé.",
+		"badIv": "Uniquement les IV, jamais le meta : ignore totalement le meta actuel — l'objectif est de supprimer tout ce qui n'est pas parfaitement 15/15/15, que l'espèce soit ou non pertinente dans le meta actuel. La recherche du jeu ne peut faire correspondre que des plages d'IV, pas des valeurs exactes, donc cette limite ne peut pas toujours être tracée exactement — pour la Ligue Superbe (1500 PC) et la Ligue Ultra (2500 PC), la plupart des espèces sont couvertes via une plage partagée à faible Attaque/forte endurance qui l'approxime, et quelques centaines reçoivent à la place une plage vérifiée individuellement, car la plage partagée ne correspond pas à leurs statistiques ; dans tous les cas, quelques captures presque parfaites (mais pas tout à fait Hundo) tout près de la limite peuvent passer entre les mailles du filet en faux négatifs. La Ligue Maître n'a pas de plafond de PC, donc là, le meilleur reste vraiment toujours celui avec les IV les plus élevés — le traitement de la Ligue Maître dans ce mode est exact, pas une approximation. Un produit de statistiques parfait est toujours conservé dans chaque ligue, tout comme tout ce qui est coché dans les catégories et la liste blanche ci-dessous, quels que soient les IV.",
+		"trade": "Une troisième question, distincte des deux onglets ci-dessus : lesquelles de vos captures valent la peine d'être échangées ? Un échange Meilleur Ami plafonne toujours chaque statistique à un minimum de 5. Dans ce mode, une espèce n'a besoin de franchir qu'UN SEUL des quatre seuils ci-dessous (Superbe, Ultra, Maître ou Raid) pour être suggérée. La Ligue Maître et les raids n'ont pas de plafond de PC, donc toute espèce pertinente se qualifie sur le seul rang. Superbe et Ultra sont plus exigeantes : leurs plafonds de PC nécessitent souvent une répartition optimale avec une Attaque très faible, qu'un plancher d'échange de 5 ne peut jamais produire — ces deux ligues ne comptent donc une espèce que lorsque sa meilleure répartition possible est réellement quelque chose qu'un échange peut atteindre. Dans tous les cas, une capture déjà parfaite — ou déjà à égalité avec la meilleure répartition possible dans la ligue qui l'a qualifiée — n'est jamais suggérée, puisque l'échanger ne pourrait que la dégrader, jamais l'améliorer. Les catégories, la liste blanche et le plafond de PC ci-dessous affinent encore les suggestions, comme pour les autres onglets."
+	},
+	"readMore": "Lire plus",
+	"readLess": "Lire moins",
+	"configuration": "Configuration",
+	"edit": "Modifier",
+	"hide": "Masquer",
+	"reset": "Réinitialiser",
+	"neverDeleteCategory": "Ne jamais supprimer cette catégorie",
+	"neverSuggestCategory": "Ne jamais suggérer cette catégorie",
+	"neverDeletePokemon": "Ne jamais supprimer ces Pokémon",
+	"neverSuggestPokemon": "Ne jamais suggérer ces Pokémon",
+	"knobs": {
+		"greatLeague": { "full": "Ligue Superbe", "short": "Superbe" },
+		"ultraLeague": { "full": "Ligue Ultra", "short": "Ultra" },
+		"masterLeague": { "full": "Ligue Maître", "short": "Maître" },
+		"raidAttackers": { "full": "Attaquants de raid", "short": "Raid" },
+		"saveCp": "Conserver les PC",
+		"simplifiedMode": "Mode simplifié",
+		"keep3StarPokemon": "Garder les Pokémon 3*",
+		"ariaKeepTopGreat": "Garder le top Ligue Superbe",
+		"ariaKeepTopUltra": "Garder le top Ligue Ultra",
+		"ariaKeepTopMaster": "Garder le top Ligue Maître",
+		"ariaKeepTopRaid": "Garder le top des attaquants de raid"
+	},
+	"metaKnobsSubtitle": "Préserver les meilleurs Pokémon du meta actuel par ligue/raid",
+	"badIvKnobsSubtitle": "Le mode simplifié échange un peu de précision contre une chaîne plus courte — voir l'infobulle sur le bouton",
+	"tradeKnobsSubtitle": "Une espèce n'a besoin de franchir qu'UN SEUL de ces quatre seuils pour être suggérée — Superbe et Ultra exigent aussi qu'un échange puisse réellement atteindre leur meilleure répartition possible (voir le texte d'aide ci-dessus)",
+	"simplifiedTrashTooltip": "Échange de la précision contre une chaîne plus courte : évite de chercher les égalités de produit de statistiques pour la Ligue Maître (sans plafond) — seul le Hundo exact (protégé partout, inconditionnellement, via l'exclusion globale !4*) y reste protégé. La protection Superbe/Ultra/raid n'est pas affectée.",
+	"simplifiedBadIvTooltip": "Échange de la précision contre une chaîne plus courte : au lieu de protéger uniquement la répartition d'IV exacte optimale d'une espèce, toute espèce qui nécessiterait l'une de ces exceptions individuelles est entièrement ignorée — un peu comme une entrée bonus de liste blanche. Plus court et plus simple, mais avec plus de faux négatifs : certaines captures que le mode complet ciblerait correctement restent ici non ciblées.",
+	"tradeOnlyLowIvTooltip": "Limite les suggestions aux captures dont l'Attaque, la Défense et les PV sont tous clairement bas — sinon, tout ce qui n'est pas un Hundo est suggéré.",
+	"toggleOn": "Activé",
+	"toggleOff": "Désactivé",
+	"protectionMeta": {
+		"favorite": { "label": "Favori", "description": "Pokémon marqués comme favoris en jeu." },
+		"tagged": { "label": "Étiqueté", "description": "Pokémon avec un surnom ou une étiquette personnalisée." },
+		"legendary": { "label": "Légendaire", "description": "Légendaires de boîte (Mewtwo, Lugia, …)." },
+		"mythical": { "label": "Mythique", "description": "Mythiques (Mew, Celebi, …)." },
+		"ultraBeast": { "label": "Ultra-Chimère", "description": "Ultra-Chimères (Vorasterie, Lucanon, …)." },
+		"megaEvolvable": {
+			"label": "Méga-évoluable",
+			"description": "Seul le jeu le sait — nécessite assez d'Méga-Énergie accumulée pour cette espèce en ce moment."
+		},
+		"shadow": { "label": "Ombre", "description": "Tous les Pokémon Ombre, quels que soient leurs IV ou leur rang." },
+		"dynamax": { "label": "Dynamax", "description": "Pokémon capables de Dynamax." },
+		"fusion": { "label": "Fusion", "description": "Pokémon pouvant être fusionnés, ou déjà fusionnés." },
+		"gigantamax": { "label": "Gigamax", "description": "Pokémon capables de Gigamax." },
+		"background": {
+			"label": "Arrière-plan",
+			"description": "Pokémon avec un arrière-plan rare ou géolocalisé dans son profil."
+		},
+		"shiny": { "label": "Chromatique", "description": "Tous les Pokémon chromatiques." },
+		"costume": { "label": "Costume", "description": "Pokémon portant un costume d'événement spécial." }
+	},
+	"lockedOnTitle": "Les Pokémon {{label}} ne peuvent jamais être échangés, donc c'est toujours activé.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Ajouter un Pokémon à ne jamais supprimer…",
+		"searchPlaceholderTrade": "Ajouter un Pokémon à ne jamais suggérer…",
+		"clear": "Effacer",
+		"remove": "Retirer",
+		"removeLockedTitle": "Protégé car {{reason}} — désactivez cette option ci-dessus pour le retirer",
+		"shadowSuffix": "Ombre",
+		"emptyMeta": "Rien ici pour l'instant — recherchez ci-dessus pour protéger un Pokémon spécifique indépendamment des catégories ci-dessus.",
+		"emptyTrade": "Rien ici pour l'instant — recherchez ci-dessus pour exclure un Pokémon spécifique des suggestions d'échange indépendamment des catégories ci-dessus.",
+		"summaryEmpty": "Aucun Pokémon protégé individuellement pour l'instant",
+		"summaryManual_one": "{{count}} conservé individuellement",
+		"summaryManual_other": "{{count}} conservés individuellement",
+		"summaryAuto_one": "{{count}} protégé par catégorie",
+		"summaryAuto_other": "{{count}} protégés par catégorie"
+	},
+	"compute": "Calculer",
+	"computing": "Calcul en cours…",
+	"computingMessage": "Calcul en cours… cela parcourt toutes les espèces, laissez-lui un instant.",
+	"outputPlaceholderMeta": "Votre chaîne de recherche apparaît ici. Collez-la dans la barre de recherche de Pokémon GO, vérifiez les résultats, puis supprimez.",
+	"outputPlaceholderTrade": "Votre chaîne de recherche apparaît ici. Collez-la dans la barre de recherche de Pokémon GO pour examiner vos candidats à l'échange.",
+	"characterCount_one": "{{formatted}} caractère",
+	"characterCount_other": "{{formatted}} caractères",
+	"lengthWarningMeta": " — ⚠️ cela peut être trop long pour la barre de recherche sur certains téléphones Android ; envisagez d'utiliser le mode de suppression simplifié ci-dessus si vous remarquez que la chaîne est tronquée après l'avoir collée dans la barre de recherche de Pokémon GO.",
+	"lengthWarningTrade": " — ⚠️ cela peut être trop long pour la barre de recherche sur certains téléphones Android ; le collage dans la barre de recherche de Pokémon GO peut tronquer la fin de la chaîne.",
+	"copySearchString": "Copier la chaîne de recherche",
+	"copied": "Copié ✓",
+	"panelSummary": {
+		"topGreat": "Top {{n}} Ligue Superbe",
+		"topUltra": "Top {{n}} Ligue Ultra",
+		"topMaster": "Top {{n}} Ligue Maître",
+		"topRaid": "Top {{n}} Raid",
+		"cpKept": "PC ≥ {{cp}} conservés",
+		"cpUnder": "PC < {{cp}}",
+		"simplifiedModeSuffix": "Mode simplifié",
+		"protectsList": "protège {{list}}",
+		"excludesList": "exclut {{list}}",
+		"nothingExtra": "rien de plus",
+		"onlyClearlyLowIvs": "uniquement les IV clairement bas"
+	}
+}

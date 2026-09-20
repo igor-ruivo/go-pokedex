@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "Великая",
+		"greatFull": "Великая лига",
+		"ultra": "Продвинутая",
+		"ultraFull": "Продвинутая лига",
+		"master": "Мастер",
+		"masterFull": "Мастер-лига",
+		"raid": "Рейд",
+		"raids": "Рейды",
+		"raidsFull": "Рейды"
+	},
+	"tabs": {
+		"ranks": "Рейтинги",
+		"moves": "Атаки",
+		"counters": "Контрпики",
+		"ivTable": "Таблица IV",
+		"strings": "Строки",
+		"comingSoon": "«{{tab}}» появится в следующем обновлении."
+	},
+	"loading": {
+		"pokedex": "Загрузка Покедекса…",
+		"notFound": "Покемон «{{speciesId}}» не найден."
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "АТК", "def": "ЗАЩ", "hp": "HP" },
+		"level": { "prefix": "Ур.", "loading": "Ур. …" },
+		"shadowToggle": "Теневой",
+		"switchLeagueAriaLabel": "Сейчас показана {{league}}. Нажмите, чтобы сменить лигу.",
+		"nextFamilyMemberAriaLabel": "{{current}} — далее: {{next}}"
+	},
+	"familyLine": {
+		"heading": "Эволюционная линия {{name}}"
+	},
+	"tablist": {
+		"ariaLabel": "Лига / режим"
+	},
+	"board": {
+		"sectionHeading": "лучшая достижимая стадия по лиге",
+		"notRanked": "Не в рейтинге",
+		"loading": "Загрузка…",
+		"attackersSuffix": "атакующие типа {{type}}",
+		"nextTypeTitle": "{{type}} — нажмите для следующего типа"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "Эффективность в рейдах · {{name}}",
+			"selfShadow": "Эффективность в рейдах · Теневой {{name}}",
+			"as": "Эффективность в рейдах · как {{name}}",
+			"asShadow": "Эффективность в рейдах · как Теневой {{name}}"
+		},
+		"rank": "Рейтинг по типу {{type}}",
+		"baseAtk": "Базовая АТК",
+		"notRankedAttacker": "Не входит в рейтинг атакующих для рейдов.",
+		"bestMovesetByType": "Лучший набор атак по типу",
+		"nextMovesetTitle": "Нажмите для следующего набора атак",
+		"selectTypeTitle": "Нажмите, чтобы выбрать этот тип",
+		"ivsBarelyMatterPrefix": "В рейдах IV почти не важны — стремитесь к максимальной",
+		"attackWord": "Атака"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "Процентиль ваших IV · {{name}}",
+			"selfShadow": "Процентиль ваших IV · Теневой {{name}}",
+			"as": "Процентиль ваших IV · как {{name}}",
+			"asShadow": "Процентиль ваших IV · как Теневой {{name}}",
+			"purified": "Процентиль ваших IV · как Очищенный {{name}}"
+		},
+		"ivRank": "Рейтинг IV в {{league}}",
+		"perfection": "Совершенство",
+		"cp": "CP",
+		"cpAtLevel": "CP на ур. {{level}}",
+		"bestSpreadFor": "Лучший набор IV для {{league}}:",
+		"bestSpreadResult": "→ {{cp}} CP на ур. {{level}}.",
+		"purifyWarning": "⚠️ Учтите, что очищение даёт +2 к каждой характеристике IV.",
+		"purifyUnreachableWarning": "⚠️ Этот набор IV 1-го места сам по себе недостижим через очищение — очищение всегда поднимает каждую характеристику минимум до 2, поэтому теневой покемон никогда не может опуститься ниже этого значения, какими бы ни были его собственные IV.",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "Хандо",
+			"rank1": "1-е место в {{league}}"
+		}
+	},
+	"effectiveness": {
+		"heading": "Эффективность типов · {{name}}",
+		"weakTo": "Уязвим к",
+		"resists": "Сопротивляется",
+		"nothing": "Ничего"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "1 уровень",
+			"t3": "3 уровень",
+			"mega": "Мега",
+			"t5": "5 уровень",
+			"elite": "Элитный",
+			"legendaryMega": "Легендарная Мега",
+			"primal": "Начальная форма",
+			"superMega": "Супер Мега"
+		},
+		"weather": {
+			"none": "Без погоды",
+			"sunny": "Солнечно / Ясно",
+			"rainy": "Дождь",
+			"partlyCloudy": "Переменная облачность",
+			"cloudy": "Облачно",
+			"windy": "Ветрено",
+			"snow": "Снег",
+			"fog": "Туман"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "Хороший",
+			"great": "Отличный",
+			"ultra": "Замечательный",
+			"best": "Лучший",
+			"forever": "Навеки"
+		},
+		"megaLevel": {
+			"base": "База",
+			"high": "Высокий",
+			"max": "Макс.",
+			"superMax": "Супер Макс."
+		},
+		"notRankedInLeague": "{{name}} не входит в рейтинг {{league}} — нет предрасчитанных матчапов.",
+		"noData": "Нет данных.",
+		"strongAgainst": "{{name}} силён против · {{league}}",
+		"weakAgainst": "{{name}} слаб против · {{league}}",
+		"bestRaidCounters": "Лучшие контрпики для рейда · {{name}}",
+		"summaryRaidHp": "{{tier}} рейд · {{hp}} HP",
+		"partyOf": "Команда из {{size}}",
+		"friendLabel": "{{label}} друг",
+		"megaAuraSummary": "Аура Мега-{{type}}",
+		"megaLevelSummary": "Мега уровень: {{label}}",
+		"configHide": "Скрыть",
+		"configEdit": "Изменить",
+		"clear": "Очистить",
+		"bossTier": "Уровень босса",
+		"bossTierTitle": "{{tier}} — {{hp}} HP",
+		"bossTierAriaLabel": "рейд {{tier}}",
+		"bossTierHint": "{{tier}} рейд · {{hp}} HP",
+		"weather_field": "Погода",
+		"weatherHint": "×1.2 · {{types}}",
+		"megaAura": "Мега-аура",
+		"noMegaOnTeam": "В команде нет Мега-покемона",
+		"megaOfType": "Мега-{{type}}",
+		"megaAuraHint": "×1.3 {{type}} · ×1.1 остальные",
+		"megaLevelField": "Мега уровень",
+		"megaLevelHint": "×{{mult}} на собственной дополнительной атаке Мега/Начальной формы",
+		"megaLevelHintExtra": " · +2 уровня атакующего",
+		"partyPower": "Сила команды",
+		"solo": "Соло",
+		"friendshipField": "Дружба",
+		"friendshipHint": "×{{mult}} урона",
+		"helpSummary": "Что это значит?",
+		"help": {
+			"weatherFriendshipMegaAura": "Погода · Дружба · Мега-аура",
+			"weatherFriendshipMegaAuraDesc": "Множители урона для ваших атакующих. Входящий урон всегда использует одну фиксированную константу, поэтому атаки босса никогда не меняют эти числа.",
+			"megaLevelDesc": "Собственный Мега уровень Мега- или Начальной формы (повышается Мега-энергией после мегаэволюции) усиливает только его бонусную «Дополнительную» заряженную атаку — все остальные атаки в его наборе не затрагиваются. Супер Макс уровень также даёт атакующему +2 эффективных уровня, независимо от наличия Дополнительной атаки.",
+			"bossTierDesc": "Задаёт HP босса (используется в eDPS) и CPM, применяемый к его защите. Определяется по боссу — измените для Элитных рейдов."
+		},
+		"includeMegas": "Включить Мега-покемонов",
+		"includeShadows": "Включить теневых покемонов",
+		"noCountersMatch": "Нет контрпиков под эти фильтры."
+	},
+	"ivTable": {
+		"notForRaids": "Рейтинг IV не применяется к рейдам — выберите Великую, Продвинутую или Мастер-лигу выше.",
+		"heading": "{{league}} · все 4096 наборов IV для {{shadow}}{{name}}",
+		"fieldAriaLabel": "IV {{label}}, от 0 до 15",
+		"clearAriaLabel": "Очистить",
+		"notInRanking": "Этого набора IV нет в рейтинге.",
+		"fillAllThree": "Заполните все три значения (0–15).",
+		"columns": {
+			"rank": "#",
+			"ivs": "IV",
+			"stats": "Атк · Защ · HP",
+			"percent": "%",
+			"cp": "CP",
+			"level": "Ур."
+		}
+	},
+	"moves": {
+		"bestMoveset": "Лучший набор атак для {{league}}",
+		"unrankedForLeague": "{{name}} не входит в рейтинг для {{league}} — нет рекомендуемого набора атак. Все доступные ему атаки перечислены ниже.",
+		"defaultLeague": "лиги",
+		"defaultLeagueSelected": "выбранной лиги",
+		"allMovesCanLearn": "Все атаки, доступные {{name}}",
+		"fastMoves": "Быстрые атаки",
+		"chargedMoves": "Заряженные атаки",
+		"recommended": "Рекомендуемая",
+		"elite": "Элитная",
+		"legacy": "Устаревшая",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "Поисковые строки актуальны только для PvP — выберите Великую, Продвинутую или Мастер-лигу выше.",
+		"heading": "{{league}} · игровые поисковые строки",
+		"rankCutoff": "Порог рейтинга",
+		"topN": "Топ {{n}}",
+		"matchExceptTop": "Совпадает со всеми, <em>кроме</em> топ {{n}}",
+		"helperText": "Каждая строка находит диких, ещё не прокачанных особей, чья эволюционная линия достигает порога. Скопируйте и вставьте в поиск Pokémon GO.",
+		"copyString": "Скопировать строку",
+		"copied": "Скопировано ✓",
+		"clickToCopy": "Нажмите, чтобы скопировать",
+		"sentence": {
+			"caught": "(пойман диким и ещё не прокачан)",
+			"findTopSelf": "Найти {{except}}топ {{top}} <name></name> {{caught}} для <league></league>:",
+			"findTopEvolvesTo": "Найти <name></name> {{caught}}, эволюционирующего в {{toThe}}{{except}}топ {{top}} <target></target> для <league></league>:",
+			"findTopSelfShadowEither": "Найти {{except}}топ {{top}} <name></name> — теневой или нет — {{caught}} для <league></league>:",
+			"findTopEvolvesToShadowEither": "Найти <name></name> — теневой или нет — {{caught}}, эволюционирующего в {{toThe}}{{except}}топ {{top}} <target></target> для <league></league>:",
+			"exceptPrefix": "всех, кроме ",
+			"toThePrefix": "то "
+		}
+	}
+}

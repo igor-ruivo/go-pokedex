@@ -1,5 +1,6 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { FilterBar } from '../components/FilterBar';
@@ -13,20 +14,20 @@ import { TYPE_KEYS, TYPE_LABEL } from '../lib/types';
 import { useMoves } from '../queries/moves';
 
 // PvE / PvP are split out so it's unambiguous which stat a sort acts on.
-const MOVE_SORTS: ReadonlyArray<SortOption> = [
-	{ key: 'name', label: 'Name', defaultDir: 'asc' },
-	{ key: 'dmg_pve', label: 'DMG · PvE', defaultDir: 'desc' },
-	{ key: 'dmg_pvp', label: 'DMG · PvP', defaultDir: 'desc' },
-	{ key: 'nrg_pve', label: 'NRG · PvE', defaultDir: 'desc' },
-	{ key: 'nrg_pvp', label: 'NRG · PvP', defaultDir: 'desc' },
-	{ key: 'cd_pve', label: 'DUR · PvE', defaultDir: 'asc' },
-	{ key: 'cd_pvp', label: 'TURNS · PvP', defaultDir: 'asc' },
-	{ key: 'dps_pve', label: 'DPS · PvE', defaultDir: 'desc' },
-	{ key: 'dps_pvp', label: 'DPS · PvP', defaultDir: 'desc' },
-	{ key: 'eps_pve', label: 'EPS · PvE', defaultDir: 'desc' },
-	{ key: 'eps_pvp', label: 'EPS · PvP', defaultDir: 'desc' },
-	{ key: 'dpe_pve', label: 'DPE · PvE', defaultDir: 'desc' },
-	{ key: 'dpe_pvp', label: 'DPE · PvP', defaultDir: 'desc' },
+const useMoveSorts = (t: (key: string) => string): ReadonlyArray<SortOption> => [
+	{ key: 'name', label: t('moves:sorts.name'), defaultDir: 'asc' },
+	{ key: 'dmg_pve', label: t('moves:sorts.dmgPve'), defaultDir: 'desc' },
+	{ key: 'dmg_pvp', label: t('moves:sorts.dmgPvp'), defaultDir: 'desc' },
+	{ key: 'nrg_pve', label: t('moves:sorts.nrgPve'), defaultDir: 'desc' },
+	{ key: 'nrg_pvp', label: t('moves:sorts.nrgPvp'), defaultDir: 'desc' },
+	{ key: 'cd_pve', label: t('moves:sorts.durPve'), defaultDir: 'asc' },
+	{ key: 'cd_pvp', label: t('moves:sorts.turnsPvp'), defaultDir: 'asc' },
+	{ key: 'dps_pve', label: t('moves:sorts.dpsPve'), defaultDir: 'desc' },
+	{ key: 'dps_pvp', label: t('moves:sorts.dpsPvp'), defaultDir: 'desc' },
+	{ key: 'eps_pve', label: t('moves:sorts.epsPve'), defaultDir: 'desc' },
+	{ key: 'eps_pvp', label: t('moves:sorts.epsPvp'), defaultDir: 'desc' },
+	{ key: 'dpe_pve', label: t('moves:sorts.dpePve'), defaultDir: 'desc' },
+	{ key: 'dpe_pvp', label: t('moves:sorts.dpePvp'), defaultDir: 'desc' },
 ];
 
 // Fixed row heights (the list buff line is clamped to 1 line) so the virtualizer
@@ -37,6 +38,8 @@ const ROW_BUFF = 124; // + the one-line buff row
 type Kind = 'all' | 'fast' | 'charged';
 
 const Moves = () => {
+	const { t } = useTranslation(['moves']);
+	const MOVE_SORTS = useMoveSorts(t);
 	const { moves, movesFetchCompleted } = useMoves();
 	const { currentGameLanguage: gl } = useLanguage();
 	// kind/type/sort/dir live in the URL (same as Rankings) — reloading,
@@ -164,13 +167,19 @@ const Moves = () => {
 
 	return (
 		<div className='r-shell'>
-			<h1 className='r-page-title'>Moves</h1>
+			<h1 className='r-page-title'>{t('moves:page.title')}</h1>
 
 			<div className='r-rank-head'>
-				<div className='r-seg' role='tablist' aria-label='Move kind'>
-					{(['all', 'fast', 'charged'] as const).map((k) => (
+				<div className='r-seg' role='tablist' aria-label={t('moves:page.kindAriaLabel')}>
+					{(
+						[
+							['all', t('moves:page.kind.all')],
+							['fast', t('moves:page.kind.fast')],
+							['charged', t('moves:page.kind.charged')],
+						] as const
+					).map(([k, label]) => (
 						<button key={k} type='button' data-active={kind === k} onClick={() => setKind(k)}>
-							{k === 'all' ? 'All' : k === 'fast' ? 'Fast' : 'Charged'}
+							{label}
 						</button>
 					))}
 				</div>
@@ -180,7 +189,7 @@ const Moves = () => {
 					<SortBar options={MOVE_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />
 				</div>
 
-				<div className='r-section-h'>{list.length.toLocaleString()} Moves</div>
+				<div className='r-section-h'>{t('moves:page.count', { count: list.length })}</div>
 			</div>
 
 			<div ref={listRef}>
@@ -188,7 +197,7 @@ const Moves = () => {
 					{virt.getVirtualItems().map((vi) => {
 						const m = list[vi.index];
 						if (!m) return null;
-						const t = m.type.toLowerCase();
+						const typeKey = m.type.toLowerCase();
 						return (
 							<div
 								key={m.moveId}
@@ -205,12 +214,12 @@ const Moves = () => {
 								<Link
 									to={R.move(m.moveId)}
 									className='r-move r-move--link'
-									style={{ ['--tc' as string]: `var(--t-${t})` }}
+									style={{ ['--tc' as string]: `var(--t-${typeKey})` }}
 								>
 									<div className='r-move-head'>
-										<span className='r-move-type'>{TYPE_LABEL[t] ?? m.type}</span>
+										<span className='r-move-type'>{TYPE_LABEL[typeKey] ?? m.type}</span>
 										<b>{m.moveName[gl] ?? cleanName(m.moveId)}</b>
-										<i className='r-move-tag'>{m.isFast ? 'Fast' : 'Charged'}</i>
+										<i className='r-move-tag'>{t(m.isFast ? 'moves:page.kind.fast' : 'moves:page.kind.charged')}</i>
 									</div>
 									<MoveStatRows m={m} />
 								</Link>

@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "Idioma y configuración",
+		"dialogAriaLabel": "Configuración",
+		"appLanguage": "Idioma de la app",
+		"gameLanguage": "Idioma del juego",
+		"moreSettings": "Más ajustes",
+		"sprites": "Sprites",
+		"raidRanking": "Clasificación de incursión",
+		"bestBuddy": "Considerar Mejor Amigo",
+		"off": "Desactivado",
+		"on": "Activado",
+		"footer": "Guardado en este dispositivo."
+	},
+	"page": {
+		"title": "Configuración",
+		"appLanguage": {
+			"title": "Idioma de la app",
+			"desc": "Texto de la interfaz. El inglés es el idioma predeterminado."
+		},
+		"gameLanguage": {
+			"title": "Idioma del juego",
+			"desc": "Nombres de Pokémon y movimientos, tal como aparecen en Pokémon GO."
+		},
+		"sprites": {
+			"title": "Sprites",
+			"desc": "Qué ilustración mostrar para cada Pokémon."
+		},
+		"bestBuddy": {
+			"title": "Considerar Mejor Amigo",
+			"desc": "Trata el nivel 51 como alcanzable — la tabla de IVs, las cadenas de basura/búsqueda, el PC máximo, el selector de nivel, los mejores IVs/percentil, los contadores de incursión y el DPS/TDO/eDPS pasan a evaluarse hasta el nivel 51 en lugar del 50."
+		},
+		"footer": "Las preferencias se guardan en este dispositivo."
+	},
+	"spriteOptions": {
+		"official": "Oficial",
+		"go": "Pokémon GO",
+		"shiny": "Shiny de GO"
+	},
+	"toggle": {
+		"off": "Desactivado",
+		"on": "Activado"
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "Nom",
+		"dmgPve": "DGT · PvE",
+		"dmgPvp": "DGT · PvP",
+		"nrgPve": "ÉNG · PvE",
+		"nrgPvp": "ÉNG · PvP",
+		"durPve": "DUR · PvE",
+		"turnsPvp": "TOURS · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "Capacités",
+		"kindAriaLabel": "Type de capacité",
+		"kind": { "all": "Toutes", "fast": "Rapide", "charged": "Chargée" },
+		"count_one": "{{count}} capacité",
+		"count_other": "{{count}} capacités"
+	}
+}

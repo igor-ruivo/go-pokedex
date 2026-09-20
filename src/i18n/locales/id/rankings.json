@@ -1,0 +1,31 @@
+{
+	"sorts": {
+		"dex": "Nomor Dex",
+		"name": "Nama",
+		"cp": "CP Maks",
+		"type": "Tipe"
+	},
+	"tabs": {
+		"pokedexFull": "Pokédex",
+		"pokedexShort": "Dex"
+	},
+	"status": {
+		"loading": "Memuat…",
+		"chooseType": "Pilih sebuah tipe",
+		"count": "{{count}} Pokémon",
+		"bestAttackersSuffix": " · attacker {{type}} terbaik"
+	},
+	"hint": {
+		"show": "Tampilkan asumsi peringkat",
+		"hide": "Sembunyikan asumsi peringkat",
+		"text": "Peringkat raid mengasumsikan kombinasi jurus cepat + utama terbaik tiap Pokémon yang memberikan kerusakan tipe {{type}} Efektif (×1.6) terhadap boss Tingkat 5 non-shadow (200 Pertahanan, level 40), dengan attacker level 50 (IV Serangan 15) dan tanpa bonus cuaca, persahabatan, atau aura Mega rekan satu tim. Pokémon Super Mega diperingkat sebagai Mega Level Maks."
+	},
+	"empty": {
+		"pickType": "Pilih sebuah tipe di filter untuk melihat attacker raid terbaik dari tipe tersebut.",
+		"nothingMatches": "Tidak ada yang cocok."
+	},
+	"loadingLabel": {
+		"pokedex": "Memuat Pokédex…",
+		"rankings": "Memuat Peringkat…"
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"notFound": "Keine Attacke „{{moveId}}“.",
+	"sections": {
+		"stats": "Werte",
+		"usage": "Verwendung",
+		"recommended": "Empfohlen",
+		"alsoLearnedBy": "Auch erlernbar von",
+		"learnedBy": "Erlernbar von",
+		"eliteFor": "Ist eine Erbattacke für",
+		"legacyFor": "Ist eine Alt-Attacke für"
+	},
+	"arena": {
+		"pve": "PvE · Arena-Kämpfe & Arenen",
+		"pvp": "PvP · Ligen"
+	},
+	"kind": {
+		"fastChip": "Schnellattacke",
+		"chargedChip": "Ladeattacke"
+	},
+	"superMega": "Super-Mega",
+	"statLabels": {
+		"dmg": "SCH",
+		"nrg": "ENG",
+		"dur": "DAU",
+		"turns": "Züge",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Pokémon, die {{name}} erlernen können",
+	"tiles": {
+		"recommended": "Empfohlen",
+		"mega": "Mega",
+		"elite": "Elite",
+		"legacy": "Alt"
+	},
+	"noneLearn": "Kein Pokémon kann diese Attacke erlernen."
+}

@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "Superbe",
+		"greatFull": "Ligue Superbe",
+		"ultra": "Ultra",
+		"ultraFull": "Ligue Ultra",
+		"master": "Maître",
+		"masterFull": "Ligue Maître",
+		"raid": "Raid",
+		"raids": "Raids",
+		"raidsFull": "Raids"
+	},
+	"tabs": {
+		"ranks": "Rangs",
+		"moves": "Capacités",
+		"counters": "Contres",
+		"ivTable": "Tableau des IV",
+		"strings": "Chaînes",
+		"comingSoon": "« {{tab}} » arrive prochainement dans la refonte."
+	},
+	"loading": {
+		"pokedex": "Chargement du Pokédex…",
+		"notFound": "Aucun Pokémon « {{speciesId}} »."
+	},
+	"hero": {
+		"cp": "PC",
+		"stats": { "atk": "ATT", "def": "DÉF", "hp": "PV" },
+		"level": { "prefix": "Niv.", "loading": "Niv. …" },
+		"shadowToggle": "Ombre",
+		"switchLeagueAriaLabel": "Affiche actuellement {{league}}. Touchez pour changer de ligue.",
+		"nextFamilyMemberAriaLabel": "{{current}} — suivant : {{next}}"
+	},
+	"familyLine": {
+		"heading": "Lignée évolutive de {{name}}"
+	},
+	"tablist": {
+		"ariaLabel": "Ligue / mode"
+	},
+	"board": {
+		"sectionHeading": "meilleur stade atteignable par ligue",
+		"notRanked": "Non classé",
+		"loading": "Chargement…",
+		"attackersSuffix": "attaquants {{type}}",
+		"nextTypeTitle": "{{type}} — touchez pour le type suivant"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "Performance en raid · {{name}}",
+			"selfShadow": "Performance en raid · {{name}} Ombre",
+			"as": "Performance en raid · en tant que {{name}}",
+			"asShadow": "Performance en raid · en tant que {{name}} Ombre"
+		},
+		"rank": "Rang {{type}}",
+		"baseAtk": "ATT de base",
+		"notRankedAttacker": "Non classé comme attaquant de raid.",
+		"bestMovesetByType": "Meilleures capacités par type",
+		"nextMovesetTitle": "Touchez pour les capacités suivantes",
+		"selectTypeTitle": "Touchez pour sélectionner ce type",
+		"ivsBarelyMatterPrefix": "Les IV comptent à peine en raid — visez le plus haut",
+		"attackWord": "IV d'Attaque possible"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "Votre percentile d'IV · {{name}}",
+			"selfShadow": "Votre percentile d'IV · {{name}} Ombre",
+			"as": "Votre percentile d'IV · en tant que {{name}}",
+			"asShadow": "Votre percentile d'IV · en tant que {{name}} Ombre",
+			"purified": "Votre percentile d'IV · en tant que {{name}} Purifié"
+		},
+		"ivRank": "Rang IV {{league}}",
+		"perfection": "Perfection",
+		"cp": "PC",
+		"cpAtLevel": "PC au Niv. {{level}}",
+		"bestSpreadFor": "Meilleure répartition pour {{league}} :",
+		"bestSpreadResult": "→ {{cp}} PC au Niv. {{level}}.",
+		"purifyWarning": "⚠️ Notez que la purification confère +2 IV sur chaque statistique.",
+		"purifyUnreachableWarning": "⚠️ Cette répartition de rang 1 est elle-même inatteignable par purification — la purification remonte toujours chaque statistique à au moins 2, donc un Pokémon Ombre ne peut jamais descendre en dessous, quels que soient ses propres IV.",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "Hundo",
+			"rank1": "Rang 1 {{league}}"
+		}
+	},
+	"effectiveness": {
+		"heading": "Efficacité des types · {{name}}",
+		"weakTo": "Faible contre",
+		"resists": "Résiste à",
+		"nothing": "Rien"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "Niveau 1",
+			"t3": "Niveau 3",
+			"mega": "Méga",
+			"t5": "Niveau 5",
+			"elite": "Élite",
+			"legendaryMega": "Méga légendaire",
+			"primal": "Primal",
+			"superMega": "Super Méga"
+		},
+		"weather": {
+			"none": "Aucune météo",
+			"sunny": "Ensoleillé / Dégagé",
+			"rainy": "Pluvieux",
+			"partlyCloudy": "Partiellement nuageux",
+			"cloudy": "Nuageux",
+			"windy": "Venteux",
+			"snow": "Neige",
+			"fog": "Brouillard"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "Bon",
+			"great": "Super",
+			"ultra": "Ultra",
+			"best": "Meilleur",
+			"forever": "Pour toujours"
+		},
+		"megaLevel": {
+			"base": "Base",
+			"high": "Élevé",
+			"max": "Max",
+			"superMax": "Super Max"
+		},
+		"notRankedInLeague": "{{name}} n'est pas classé en {{league}} — pas de matchups précalculés.",
+		"noData": "Aucune donnée.",
+		"strongAgainst": "{{name}} est fort contre · {{league}}",
+		"weakAgainst": "{{name}} est faible contre · {{league}}",
+		"bestRaidCounters": "Meilleurs contres de raid · {{name}}",
+		"summaryRaidHp": "Raid {{tier}} · {{hp}} PV",
+		"partyOf": "Équipe de {{size}}",
+		"friendLabel": "Ami {{label}}",
+		"megaAuraSummary": "Aura Méga {{type}}",
+		"megaLevelSummary": "Niveau Méga : {{label}}",
+		"configHide": "Masquer",
+		"configEdit": "Modifier",
+		"clear": "Réinitialiser",
+		"bossTier": "Niveau du boss",
+		"bossTierTitle": "{{tier}} — {{hp}} PV",
+		"bossTierAriaLabel": "Raid {{tier}}",
+		"bossTierHint": "Raid {{tier}} · {{hp}} PV",
+		"weather_field": "Météo",
+		"weatherHint": "×1,2 · {{types}}",
+		"megaAura": "Aura Méga",
+		"noMegaOnTeam": "Aucun Méga dans l'équipe",
+		"megaOfType": "Méga {{type}}",
+		"megaAuraHint": "×1,3 {{type}} · ×1,1 autres",
+		"megaLevelField": "Niveau Méga",
+		"megaLevelHint": "×{{mult}} sur la capacité chargée Plus propre à un Méga/Primal",
+		"megaLevelHintExtra": " · +2 niveaux d'attaquant",
+		"partyPower": "Puissance d'équipe",
+		"solo": "Solo",
+		"friendshipField": "Amitié",
+		"friendshipHint": "×{{mult}} de dégâts",
+		"helpSummary": "Que signifient ces éléments ?",
+		"help": {
+			"weatherFriendshipMegaAura": "Météo · Amitié · Aura Méga",
+			"weatherFriendshipMegaAuraDesc": "Multiplicateurs de dégâts pour vos attaquants. Les dégâts reçus utilisent toujours une constante fixe, donc les capacités du boss ne changent jamais ces chiffres.",
+			"megaLevelDesc": "Le niveau Méga propre à un Méga ou Primal (augmenté avec de l'Énergie Méga après l'évolution) ne renforce que sa capacité chargée bonus « Plus » — aucune autre capacité de son kit n'est affectée. Le niveau Super Max confère aussi +2 niveaux effectifs à l'attaquant, qu'il ait ou non une capacité Plus.",
+			"bossTierDesc": "Définit les PV du boss (utilisés pour l'eDPS) et le CPM appliqué à sa défense. Déduit du boss — à modifier pour les Raids Élite."
+		},
+		"includeMegas": "Inclure les Méga",
+		"includeShadows": "Inclure les Ombre",
+		"noCountersMatch": "Aucun contre ne correspond à ces filtres."
+	},
+	"ivTable": {
+		"notForRaids": "Les classements d'IV ne s'appliquent pas aux raids — choisissez Superbe, Ultra ou Maître ci-dessus.",
+		"heading": "{{league}} · les 4 096 répartitions d'IV pour {{shadow}}{{name}}",
+		"fieldAriaLabel": "IV {{label}}, de 0 à 15",
+		"clearAriaLabel": "Réinitialiser",
+		"notInRanking": "Cette répartition n'est pas dans le classement.",
+		"fillAllThree": "Remplissez les trois (0–15).",
+		"columns": {
+			"rank": "#",
+			"ivs": "IV",
+			"stats": "Att · Déf · PV",
+			"percent": "%",
+			"cp": "PC",
+			"level": "Niv."
+		}
+	},
+	"moves": {
+		"bestMoveset": "Meilleures capacités {{league}}",
+		"unrankedForLeague": "{{name}} n'est pas classé pour la {{league}} — pas de capacités recommandées. Toutes les capacités qu'il peut apprendre sont listées ci-dessous.",
+		"defaultLeague": "ligue",
+		"defaultLeagueSelected": "ligue sélectionnée",
+		"allMovesCanLearn": "Toutes les capacités que {{name}} peut apprendre",
+		"fastMoves": "Capacités rapides",
+		"chargedMoves": "Capacités chargées",
+		"recommended": "Recommandée",
+		"elite": "Élite",
+		"legacy": "Passée",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "Les chaînes de recherche sont une affaire de PvP — choisissez Superbe, Ultra ou Maître ci-dessus.",
+		"heading": "{{league}} · chaînes de recherche en jeu",
+		"rankCutoff": "Seuil de rang",
+		"topN": "Top {{n}}",
+		"matchExceptTop": "Trouver tout <em>sauf</em> le top {{n}}",
+		"helperText": "Chaque ligne cible les captures sauvages et non renforcées dont la famille atteint le seuil. Copiez-la, puis collez-la dans la barre de recherche de Pokémon GO.",
+		"copyString": "Copier la chaîne",
+		"copied": "Copié ✓",
+		"clickToCopy": "Cliquer pour copier",
+		"sentence": {
+			"caught": "(capturé à l'état sauvage et encore non renforcé)",
+			"findTopSelf": "Trouver {{except}}le top {{top}} <name></name> {{caught}} pour <league></league> :",
+			"findTopEvolvesTo": "Trouver <name></name> {{caught}} évoluant vers {{toThe}}{{except}}top {{top}} <target></target> pour <league></league> :",
+			"findTopSelfShadowEither": "Trouver {{except}}le top {{top}} <name></name> — Ombre ou non — {{caught}} pour <league></league> :",
+			"findTopEvolvesToShadowEither": "Trouver <name></name> — Ombre ou non — {{caught}} évoluant vers {{toThe}}{{except}}top {{top}} <target></target> pour <league></league> :",
+			"exceptPrefix": "tous sauf le ",
+			"toThePrefix": "le "
+		}
+	}
+}

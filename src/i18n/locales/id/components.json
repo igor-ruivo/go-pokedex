@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filter",
+		"clear": "Hapus",
+		"dialogAriaLabel": "Filter",
+		"typeSectionLabel": "Tipe",
+		"pickOneHint": "pilih satu",
+		"pickUpToHint": "pilih hingga {{max}} · cocok keduanya"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Urutkan berdasarkan",
+		"sectionLabel": "Urutkan berdasarkan",
+		"asc": "Naik",
+		"desc": "Turun"
+	},
+	"ivPicker": {
+		"attack": "SERANGAN",
+		"defense": "PERTAHANAN",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Kurangi",
+		"increaseAriaLabel": "Tambah"
+	},
+	"shadowMark": {
+		"alt": "Shadow"
+	},
+	"searchBox": {
+		"placeholder": "Cari Pokémon atau jurus…",
+		"ariaLabel": "Cari Pokémon atau jurus",
+		"clearAriaLabel": "Hapus pencarian",
+		"shadowSuffix": "Shadow",
+		"fast": "Cepat",
+		"charged": "Utama"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Belum diperingkat sebagai attacker raid.",
+		"bestMovesetByType": "Moveset terbaik per tipe",
+		"tapNextMoveset": "Ketuk untuk moveset berikutnya",
+		"tapSelectType": "Ketuk untuk memilih tipe ini",
+		"legacy": "Legacy",
+		"elite": "Elite",
+		"baseAtk": "ATK Dasar",
+		"typeRank": "Peringkat {{type}}"
+	}
+}

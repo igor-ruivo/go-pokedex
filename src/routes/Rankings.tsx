@@ -1,5 +1,6 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { FilterBar } from '../components/FilterBar';
@@ -16,11 +17,11 @@ import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
 import { calculateCP } from '../utils/pokemon-helper';
 
-const POKEDEX_SORTS: ReadonlyArray<SortOption> = [
-	{ key: 'dex', label: 'Dex number', defaultDir: 'asc' },
-	{ key: 'name', label: 'Name', defaultDir: 'asc' },
-	{ key: 'cp', label: 'Max CP', defaultDir: 'desc' },
-	{ key: 'type', label: 'Type', defaultDir: 'asc' },
+const usePokedexSorts = (t: (key: string) => string): ReadonlyArray<SortOption> => [
+	{ key: 'dex', label: t('rankings:sorts.dex'), defaultDir: 'asc' },
+	{ key: 'name', label: t('rankings:sorts.name'), defaultDir: 'asc' },
+	{ key: 'cp', label: t('rankings:sorts.cp'), defaultDir: 'desc' },
+	{ key: 'type', label: t('rankings:sorts.type'), defaultDir: 'asc' },
 ];
 
 interface Row {
@@ -74,6 +75,8 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 };
 
 const Rankings = () => {
+	const { t } = useTranslation(['rankings']);
+	const POKEDEX_SORTS = usePokedexSorts(t);
 	const { league, type: typeParam } = useParams();
 	const mode: RankingMode = (RANKING_MODES as ReadonlyArray<string>).includes(league ?? 'pokedex')
 		? ((league ?? 'pokedex') as RankingMode)
@@ -323,8 +326,8 @@ const Rankings = () => {
 									    Master/Raid — shortened on phones (see .r-seg-short) so all 5
 									    tabs fit in one row without needing the horizontal scroll the
 									    other four already used to require. */}
-									<span className='r-seg-full'>Pokédex</span>
-									<span className='r-seg-short'>Dex</span>
+									<span className='r-seg-full'>{t('rankings:tabs.pokedexFull')}</span>
+									<span className='r-seg-short'>{t('rankings:tabs.pokedexShort')}</span>
 								</>
 							) : (
 								MODE_LABEL[m]
@@ -357,16 +360,20 @@ const Rankings = () => {
 				</div>
 				<div className='r-section-h'>
 					<span>
-						{!showGrid ? 'Loading…' : isRaid && !raidType ? 'Choose a type' : `${rows.length.toLocaleString()} Pokémon`}
-						{isRaid && raidType && ` · best ${TYPE_LABEL[raidType]} attackers`}
+						{!showGrid
+							? t('rankings:status.loading')
+							: isRaid && !raidType
+								? t('rankings:status.chooseType')
+								: t('rankings:status.count', { count: rows.length })}
+						{isRaid && raidType && t('rankings:status.bestAttackersSuffix', { type: TYPE_LABEL[raidType] })}
 					</span>
 					{showGrid && isRaid && raidType && (
 						<button
 							type='button'
 							className='r-rank-hint-toggle'
 							aria-expanded={hintOpen}
-							aria-label={hintOpen ? 'Hide ranking assumptions' : 'Show ranking assumptions'}
-							title={hintOpen ? 'Hide ranking assumptions' : 'Show ranking assumptions'}
+							aria-label={t(hintOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
+							title={t(hintOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
 							onClick={() => setHintOpen((o) => !o)}
 						>
 							?
@@ -374,12 +381,7 @@ const Rankings = () => {
 					)}
 				</div>
 				{showGrid && isRaid && raidType && hintOpen && (
-					<p className='r-muted r-rank-hint'>
-						Raid ranks assume each Pokémon&rsquo;s best fast + charged move combo dealing Effective{' '}
-						{TYPE_LABEL[raidType] ?? raidType}-type damage (×1.6) against a Tier 5 non-shadow boss (200 Defense, level
-						40), with a level 50 attacker (15 Attack IV) and no weather, friendship or teammate Mega-aura bonuses. Super
-						Mega Pokémon are ranked as Max Mega Level.
-					</p>
+					<p className='r-muted r-rank-hint'>{t('rankings:hint.text', { type: TYPE_LABEL[raidType] ?? raidType })}</p>
 				)}
 			</div>
 
@@ -387,15 +389,13 @@ const Rankings = () => {
 				{!showGrid && (
 					<div className='r-loading'>
 						<div className='r-spinner' />
-						{mode === 'pokedex' ? 'Loading Pokédex…' : 'Loading Rankings…'}
+						{t(mode === 'pokedex' ? 'rankings:loadingLabel.pokedex' : 'rankings:loadingLabel.rankings')}
 					</div>
 				)}
-				{showGrid && isRaid && !raidType && (
-					<p className='r-muted r-rank-empty'>Pick a type in the filter to see the best raid attackers of that type.</p>
-				)}
+				{showGrid && isRaid && !raidType && <p className='r-muted r-rank-empty'>{t('rankings:empty.pickType')}</p>}
 				{showGrid && rows.length === 0 && !(isRaid && !raidType) && (
 					<p className='r-muted' style={{ padding: 24 }}>
-						Nothing matches.
+						{t('rankings:empty.nothingMatches')}
 					</p>
 				)}
 				{showGrid && (

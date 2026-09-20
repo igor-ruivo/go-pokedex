@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "홈"
+	},
+	"nav": {
+		"pokedex": { "label": "포켓몬 도감", "hint": "모든 포켓몬 살펴보기" },
+		"rankings": { "label": "랭킹", "hint": "리그·레이드 타입별 최강 어태커" },
+		"calendar": { "label": "캘린더", "hint": "이벤트·레이드·출현·알" },
+		"moves": { "label": "기술", "hint": "모든 일반 기술과 스페셜 기술" },
+		"types": { "label": "타입", "hint": "타입 상성표" },
+		"searches": {
+			"label": "검색",
+			"hint": "게임 내 검색 문자열 생성 — 정리, 완벽 개체값, 교환 후보"
+		},
+		"calendarBadge_one": "{{label}} — 새 이벤트 {{count}}개",
+		"calendarBadge_other": "{{label}} — 새 이벤트 {{count}}개"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "GO Pokédex 설치",
+		"title": "GO Pokédex 설치",
+		"iosHint": "공유 버튼을 누른 뒤 “홈 화면에 추가”를 선택하세요 — 브라우저 창 없이 전체 화면으로 사용할 수 있습니다.",
+		"androidHint": "홈 화면에 추가하면 앱처럼 전체 화면으로 사용할 수 있습니다.",
+		"installButton": "설치",
+		"dismissAriaLabel": "닫기"
+	},
+	"placeholder": {
+		"toolsTitle": "도구",
+		"comingSoon": "리뉴얼과 함께 곧 추가될 예정입니다."
+	}
+}

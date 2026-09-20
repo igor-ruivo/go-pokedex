@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filtrer",
+		"clear": "Effacer",
+		"dialogAriaLabel": "Filtres",
+		"typeSectionLabel": "Type",
+		"pickOneHint": "en choisir un",
+		"pickUpToHint": "jusqu'à {{max}} · les deux comptent"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Trier par",
+		"sectionLabel": "Trier par",
+		"asc": "Croiss.",
+		"desc": "Décroiss."
+	},
+	"ivPicker": {
+		"attack": "ATTAQUE",
+		"defense": "DÉFENSE",
+		"hp": "PV",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Diminuer",
+		"increaseAriaLabel": "Augmenter"
+	},
+	"shadowMark": {
+		"alt": "Ombre"
+	},
+	"searchBox": {
+		"placeholder": "Rechercher un Pokémon ou une capacité…",
+		"ariaLabel": "Rechercher un Pokémon ou une capacité",
+		"clearAriaLabel": "Effacer la recherche",
+		"shadowSuffix": "Ombre",
+		"fast": "Rapide",
+		"charged": "Chargée"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Non classé comme attaquant de raid.",
+		"bestMovesetByType": "Meilleures capacités par type",
+		"tapNextMoveset": "Touchez pour les capacités suivantes",
+		"tapSelectType": "Touchez pour sélectionner ce type",
+		"legacy": "Ancienne",
+		"elite": "Élite",
+		"baseAtk": "ATT de base",
+		"typeRank": "Rang {{type}}"
+	}
+}

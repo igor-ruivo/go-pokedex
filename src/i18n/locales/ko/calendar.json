@@ -1,0 +1,78 @@
+{
+	"shell": { "title": "캘린더" },
+	"tabs": {
+		"events": "이벤트",
+		"bosses": "레이드",
+		"spawns": "출현",
+		"rockets": "로켓단",
+		"eggs": "알"
+	},
+	"biomes": {
+		"cities": "도시",
+		"forests": "숲",
+		"mountains": "산",
+		"beaches": "해변 및 물가",
+		"northernHemisphere": "북반구",
+		"southernHemisphere": "남반구",
+		"allAreas": "모든 지역"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "상위 티어 레이드", "short": "상위 티어" },
+			"tier3": { "full": "티어 3 레이드", "short": "티어 3" },
+			"tier1": { "full": "티어 1 레이드", "short": "티어 1" }
+		},
+		"shadowPrefix": "섀도 · {{tier}}",
+		"otherRaids": "다른 레이드",
+		"nothingScheduled": "예정된 일정이 없습니다.",
+		"nowSlot": "지금"
+	},
+	"spawns": {
+		"noSeasonalData": "시즌 출현 데이터가 없습니다.",
+		"nowSlot": "지금",
+		"seasonSlot": "시즌"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "기간",
+		"scrollEarlier": "이전 날짜로 스크롤",
+		"scrollLater": "이후 날짜로 스크롤"
+	},
+	"events": {
+		"noEvents": "현재 진행 중인 이벤트가 없습니다.",
+		"scheduledCount": "예정된 이벤트 {{count}}개",
+		"fallbackTitle": "이벤트",
+		"unseenAriaLabel": "아직 확인하지 않음",
+		"phase": {
+			"season": "시즌",
+			"live": "진행 중",
+			"ended": "종료됨"
+		},
+		"bonuses": "보너스",
+		"groups": {
+			"featuredSpawns": "특별 출현",
+			"featuredRaids": "특별 레이드",
+			"researchEncounters": "리서치 조우",
+			"eggs": "알",
+			"incense": "향",
+			"lures": "루어 모듈"
+		},
+		"readAnnouncement": "공지 전문 읽기"
+	},
+	"rockets": {
+		"noLineups": "로켓단 라인업 정보가 없습니다.",
+		"typeGrunt": "{{type}} 타입 로켓단 조무래기",
+		"genericGrunt": "조무래기",
+		"slotReward": "{{slot}}번 슬롯 보상",
+		"slotHeader": "{{slot}}번 슬롯",
+		"catchableTag": "포획 가능"
+	},
+	"eggs": {
+		"noPoolData": "부화 데이터가 없습니다."
+	},
+	"timeLeft": {
+		"days": "{{count}}일 남음",
+		"hours": "{{count}}시간 남음",
+		"minutes": "{{count}}분 남음",
+		"seconds": "{{count}}초 남음"
+	}
+}

@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "Kalender"
+	},
+	"tabs": {
+		"events": "Event",
+		"bosses": "Raid",
+		"spawns": "Spawn",
+		"rockets": "Rocket",
+		"eggs": "Telur"
+	},
+	"biomes": {
+		"cities": "Perkotaan",
+		"forests": "Hutan",
+		"mountains": "Pegunungan",
+		"beaches": "Pantai & Perairan",
+		"northernHemisphere": "Belahan Bumi Utara",
+		"southernHemisphere": "Belahan Bumi Selatan",
+		"allAreas": "Semua area"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Raid Tingkat Tinggi", "short": "Tingkat Tinggi" },
+			"tier3": { "full": "Raid Tingkat 3", "short": "Tingkat 3" },
+			"tier1": { "full": "Raid Tingkat 1", "short": "Tingkat 1" }
+		},
+		"shadowPrefix": "Shadow · {{tier}}",
+		"otherRaids": "Raid lainnya",
+		"nothingScheduled": "Belum ada jadwal.",
+		"nowSlot": "Sekarang"
+	},
+	"spawns": {
+		"noSeasonalData": "Tidak ada data spawn musiman.",
+		"nowSlot": "Sekarang",
+		"seasonSlot": "Musim"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Rentang waktu",
+		"scrollEarlier": "Gulir ke tanggal sebelumnya",
+		"scrollLater": "Gulir ke tanggal berikutnya"
+	},
+	"events": {
+		"noEvents": "Belum ada event saat ini.",
+		"scheduledCount": "{{count}} Event terjadwal",
+		"fallbackTitle": "Event",
+		"unseenAriaLabel": "Belum dibuka",
+		"phase": {
+			"season": "Musim",
+			"live": "Berlangsung",
+			"ended": "Berakhir"
+		},
+		"bonuses": "Bonus",
+		"groups": {
+			"featuredSpawns": "Spawn unggulan",
+			"featuredRaids": "Raid unggulan",
+			"researchEncounters": "Encounter riset",
+			"eggs": "Telur",
+			"incense": "Incense",
+			"lures": "Lure"
+		},
+		"readAnnouncement": "Baca pengumuman lengkap"
+	},
+	"rockets": {
+		"noLineups": "Belum ada line-up Rocket.",
+		"typeGrunt": "Grunt {{type}}",
+		"genericGrunt": "Grunt",
+		"slotReward": "Hadiah slot {{slot}}",
+		"slotHeader": "Slot {{slot}}",
+		"catchableTag": "bisa ditangkap"
+	},
+	"eggs": {
+		"noPoolData": "Belum ada data pool telur."
+	},
+	"timeLeft": {
+		"days": "{{count}}h lagi",
+		"hours": "{{count}}j lagi",
+		"minutes": "{{count}}m lagi",
+		"seconds": "{{count}}d lagi"
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "Nama",
+		"dmgPve": "DMG · PvE",
+		"dmgPvp": "DMG · PvP",
+		"nrgPve": "NRG · PvE",
+		"nrgPvp": "NRG · PvP",
+		"durPve": "DUR · PvE",
+		"turnsPvp": "GILIRAN · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "Jurus",
+		"kindAriaLabel": "Jenis jurus",
+		"kind": { "all": "Semua", "fast": "Cepat", "charged": "Utama" },
+		"count_one": "{{count}} Jurus",
+		"count_other": "{{count}} Jurus"
+	}
+}

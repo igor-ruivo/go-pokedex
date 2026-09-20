@@ -1,0 +1,112 @@
+{
+	"loading": "Yükleniyor…",
+	"pageTitle": {
+		"meta": "Mevcut meta-dışı Pokémon'ları toplu sil",
+		"badIv": "Mükemmel Olmayan IV'lü Pokémon'ları Toplu Sil",
+		"trade": "Takasa Değer Pokémon'ları Bul"
+	},
+	"modeTablist": "Toplu silme modu",
+	"modeTabs": {
+		"meta": { "full": "Meta dışı", "short": "Meta dışı" },
+		"badIv": { "full": "Mükemmel Olmayan IV'ler", "short": "IV'ler" },
+		"trade": { "full": "Takas Edilebilir", "short": "Takas Edilebilir" }
+	},
+	"badIvWarning": "Bu mod agresif ve mükemmeliyetçidir: amaç, türün meta'da şu anda iyi ya da kötü olmasına bakılmaksızın mükemmel (%100) IV'li olmayan her yakalamayı silmektir — çalıştırmadan önce aşağıdaki kategorileri ve beyaz listeyi kontrol edin.",
+	"helpText": {
+		"meta": "Sadece meta, asla IV'ler değil: aşağıdaki sıralama eşikleri ve CP sınırına göre, hiçbir yerde rekabetçi açıdan önemli olmayan Pokémon'ları siler — Great, Ultra veya Master Ligi'nde ya da baskınlarda değil. Bir tür (veya sonraki evrimlerinden herhangi biri) bunlardan sadece birinde eşiği geçmesi yeterlidir ve geçtiğinde, o yakalamanın kendi IV'lerine bakılmaksızın her yakalaması korunur — bu sekme IV'ler konusunda hiçbir fikir yürütmez. CP sınırınıza eşit veya üzerindeki her şey her zaman tutulur, aşağıdaki kategorilerde ve beyaz listede işaretli her şey de sıralamaya bakılmaksızın öyledir. Master Ligi için mükemmel bir istatistik çarpımı her zaman tutulur.",
+		"badIv": "Sadece IV'ler, asla meta değil: mevcut meta'yı tamamen yok sayar — amaç, türün kendisinin şu anda meta olup olmadığına bakılmaksızın mükemmel 15/15/15 olmayan her şeyi silmektir. Oyunun aramasi sadece IV aralıklarını eşleştirmemize izin verir, tam değerleri değil, bu yüzden bu çizgiyi her zaman tam olarak çizemez — Great Ligi (1500 CP) ve Ultra Ligi (2500 CP) için çoğu tür, buna yaklaşan paylaşılan düşük Saldırı/yüksek dayanıklılık aralığıyla taranır, ve birkaç yüzü, paylaşılan aralık istatistiklerine gerçekten uymadığı için kendi ayrı ayrı doğrulanmış aralığını alır; her iki durumda da, sınırdaki neredeyse mükemmel (ama tam hundo olmayan) birkaç yakalama yanlış negatif olarak sızabilir. Master Ligi'nin CP sınırı yoktur, bu yüzden orada gerçek en iyi her zaman daha yüksek IV'lerdir — bu modun Master Ligi işleyişi tam, yaklaşık değil. Mükemmel bir istatistik çarpımı her ligde her zaman tutulur, aşağıdaki kategorilerde ve beyaz listede işaretli her şey de IV'lere bakılmaksızın öyledir.",
+		"trade": "Yukarıdaki iki sekmeden farklı, üçüncü ve ayrı bir soru: yakalamalarınızdan hangileri bir takasta elden çıkarmaya değer? Bir En İyi Arkadaş takası her istatistiği her zaman 5'e sabitler. Bu modda, bir türün önerilmesi için aşağıdaki dört eşikten (Great, Ultra, Master veya Baskın) SADECE BİRİNİ geçmesi yeterlidir. Master Ligi ve baskınların CP sınırı yoktur, bu yüzden ilgili herhangi bir tür sadece sıralamayla hak kazanır. Great ve Ultra daha seçicidir: CP sınırları genellikle bir tür için en iyi olası dağılımın çok düşük Saldırı gerektirmesi anlamına gelir, ki bir takasın 5 tabanı bunu asla üretemez — bu yüzden bu iki lig, bir türü sadece kendi en iyi dağılımının bir takasla gerçekten ulaşılabilir olduğu durumda sayar. Her iki durumda da, zaten mükemmel olan — veya hak kazandığı ligde zaten en iyi olası dağılıma eşit olan — bir yakalama asla önerilmez, çünkü onu takas etmek sadece kaybettirebilir, asla iyileştiremez. Aşağıdaki kategoriler, beyaz liste ve CP sınırı önerileri diğer sekmelerle aynı şekilde daraltır."
+	},
+	"readMore": "Devamını oku",
+	"readLess": "Daha az göster",
+	"configuration": "Yapılandırma",
+	"edit": "Düzenle",
+	"hide": "Gizle",
+	"reset": "Sıfırla",
+	"neverDeleteCategory": "Bu kategoriyi asla silme",
+	"neverSuggestCategory": "Bu kategoriyi asla önerme",
+	"neverDeletePokemon": "Bu Pokémon'ları asla silme",
+	"neverSuggestPokemon": "Bu Pokémon'ları asla önerme",
+	"knobs": {
+		"greatLeague": { "full": "Great Ligi", "short": "Great" },
+		"ultraLeague": { "full": "Ultra Ligi", "short": "Ultra" },
+		"masterLeague": { "full": "Master Ligi", "short": "Master" },
+		"raidAttackers": { "full": "Baskın Saldırganları", "short": "Baskın" },
+		"saveCp": "CP'yi Kaydet",
+		"simplifiedMode": "Basitleştirilmiş mod",
+		"keep3StarPokemon": "3* Pokémon'ları tut",
+		"ariaKeepTopGreat": "Great Ligi'nde en üsttekileri tut",
+		"ariaKeepTopUltra": "Ultra Ligi'nde en üsttekileri tut",
+		"ariaKeepTopMaster": "Master Ligi'nde en üsttekileri tut",
+		"ariaKeepTopRaid": "En iyi baskın saldırganlarını tut"
+	},
+	"metaKnobsSubtitle": "Lig/baskın başına mevcut en iyi meta Pokémon'ları koru",
+	"badIvKnobsSubtitle": "Basitleştirilmiş mod, daha kısa bir dize için doğruluktan ödün verir — düğmedeki ipucuna bakın",
+	"tradeKnobsSubtitle": "Önerilmek için bir türün bu dört eşikten sadece BİRİNİ geçmesi yeterlidir — Great ve Ultra ayrıca bir takasın en iyi olası dağılıma gerçekten ulaşabilmesini de gerektirir (yukarıdaki yardım metnine bakın)",
+	"simplifiedTrashTooltip": "Doğruluktan ödün vererek daha kısa bir dize üretir: Master Ligi'nde (sınırsız) istatistik çarpımı eşitliklerini aramayı atlar — sadece tam hundo (genel !4* hariç tutmasıyla her yerde koşulsuz korunan) orada korunmaya devam eder. Great/Ultra/baskın koruması etkilenmez.",
+	"simplifiedBadIvTooltip": "Doğruluktan ödün vererek daha kısa bir dize üretir: bir türün tam olarak en iyi IV dağılımını korumak yerine, bu tür kişiye özel ayrıcalıklardan birine ihtiyaç duyacak herhangi bir tür tamamen atlanır — bir tür bonus beyaz liste girişi gibi. Daha kısa ve basit, ama daha fazla yanlış negatif üretir: Tam mod'un doğru şekilde hedefleyeceği bazı yakalamalar burada hedeflenmeden kalır.",
+	"tradeOnlyLowIvTooltip": "Önerileri Saldırı, Savunma ve HP'sinin tümü açıkça düşük olan yakalamalarla sınırlar — aksi takdirde, hundo olmayan her şey önerilir.",
+	"toggleOn": "Açık",
+	"toggleOff": "Kapalı",
+	"protectionMeta": {
+		"favorite": { "label": "Favori", "description": "Oyun içinde Favori olarak işaretlenmiş Pokémon." },
+		"tagged": { "label": "Etiketli", "description": "Takma adı veya özel etiketi olan Pokémon." },
+		"legendary": { "label": "Efsanevi", "description": "Kutu efsanevileri (Mewtwo, Lugia, …)." },
+		"mythical": { "label": "Söylencesel", "description": "Söylenceseller (Mew, Celebi, …)." },
+		"ultraBeast": { "label": "Ultra Canavar", "description": "Ultra Canavarlar (Nihilego, Buzzwole, …)." },
+		"megaEvolvable": {
+			"label": "Mega Evrimleşebilir",
+			"description": "Bunu sadece oyun bilir — o tür için şu anda yeterli Mega Enerjisi birikmiş olması gerekir."
+		},
+		"shadow": { "label": "Gölge", "description": "Kendi IV'lerine veya sıralamasına bakılmaksızın her Gölge Pokémon." },
+		"dynamax": { "label": "Dynamax", "description": "Dynamax yapabilen Pokémon." },
+		"fusion": { "label": "Füzyon", "description": "Füzyon yapabilen veya zaten füzyonlanmış Pokémon." },
+		"gigantamax": { "label": "Gigantamax", "description": "Gigantamax yapabilen Pokémon." },
+		"background": {
+			"label": "Arka Plan",
+			"description": "Profilinde nadir veya konuma özel bir arka planı olan Pokémon."
+		},
+		"shiny": { "label": "Işıltılı", "description": "Her Işıltılı Pokémon." },
+		"costume": { "label": "Kostüm", "description": "Özel Etkinlik kostümü giyen Pokémon." }
+	},
+	"lockedOnTitle": "{{label}} Pokémon asla takas edilemez, bu yüzden bu her zaman açıktır.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Asla silinmeyecek bir Pokémon ekle…",
+		"searchPlaceholderTrade": "Asla önerilmeyecek bir Pokémon ekle…",
+		"clear": "Temizle",
+		"remove": "Kaldır",
+		"removeLockedTitle": "{{reason}} olduğu için korunuyor — kaldırmak için yukarıdaki ilgili ayarı kapatın",
+		"shadowSuffix": "Gölge",
+		"emptyMeta": "Henüz burada bir şey yok — yukarıdaki kategorilere bakılmaksızın belirli bir Pokémon'u korumak için yukarıda arama yapın.",
+		"emptyTrade": "Henüz burada bir şey yok — yukarıdaki kategorilere bakılmaksızın belirli bir Pokémon'u takas önerilerinden hariç tutmak için yukarıda arama yapın.",
+		"summaryEmpty": "Henüz ayrı ayrı korunan Pokémon yok",
+		"summaryManual_one": "{{count}} tanesi ayrı ayrı tutuldu",
+		"summaryManual_other": "{{count}} tanesi ayrı ayrı tutuldu",
+		"summaryAuto_one": "{{count}} tanesi kategoriyle korundu",
+		"summaryAuto_other": "{{count}} tanesi kategoriyle korundu"
+	},
+	"compute": "Hesapla",
+	"computing": "Hesaplanıyor…",
+	"computingMessage": "Hesaplanıyor… bu tüm türleri tarar, biraz zaman tanıyın.",
+	"outputPlaceholderMeta": "Arama dizeniz burada görünür. Pokémon GO arama çubuğuna yapıştırın, eşleşmeleri gözden geçirin, ardından silin.",
+	"outputPlaceholderTrade": "Arama dizeniz burada görünür. Takas adaylarınızı gözden geçirmek için Pokémon GO arama çubuğuna yapıştırın.",
+	"characterCount_one": "{{formatted}} karakter",
+	"characterCount_other": "{{formatted}} karakter",
+	"lengthWarningMeta": " — ⚠️ bu bazı Android telefonlarda arama çubuğu için çok uzun olabilir; Pokémon GO'nun arama çubuğuna yapıştırdıktan sonra dizenin kesildiğini fark ederseniz yukarıdaki basitleştirilmiş silme modu düğmesini kullanmayı düşünün.",
+	"lengthWarningTrade": " — ⚠️ bu bazı Android telefonlarda arama çubuğu için çok uzun olabilir; Pokémon GO'nun arama çubuğuna yapıştırmak dizenin sonunu kesebilir.",
+	"copySearchString": "Arama dizesini kopyala",
+	"copied": "Kopyalandı ✓",
+	"panelSummary": {
+		"topGreat": "İlk {{n}} Great Ligi",
+		"topUltra": "İlk {{n}} Ultra Ligi",
+		"topMaster": "İlk {{n}} Master Ligi",
+		"topRaid": "İlk {{n}} Baskın",
+		"cpKept": "CP ≥ {{cp}} tutuldu",
+		"cpUnder": "CP < {{cp}}",
+		"simplifiedModeSuffix": "Basitleştirilmiş mod",
+		"protectsList": "{{list}} korur",
+		"excludesList": "{{list}} hariç tutar",
+		"nothingExtra": "ekstra bir şey yok",
+		"onlyClearlyLowIvs": "sadece açıkça düşük IV'ler"
+	}
+}

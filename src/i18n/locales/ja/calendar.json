@@ -1,0 +1,78 @@
+{
+	"shell": { "title": "カレンダー" },
+	"tabs": {
+		"events": "イベント",
+		"bosses": "レイド",
+		"spawns": "出現",
+		"rockets": "ロケット団",
+		"eggs": "タマゴ"
+	},
+	"biomes": {
+		"cities": "都市",
+		"forests": "森林",
+		"mountains": "山地",
+		"beaches": "海岸・水辺",
+		"northernHemisphere": "北半球",
+		"southernHemisphere": "南半球",
+		"allAreas": "全エリア"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "上位ティアレイド", "short": "上位ティア" },
+			"tier3": { "full": "ティア3レイド", "short": "ティア3" },
+			"tier1": { "full": "ティア1レイド", "short": "ティア1" }
+		},
+		"shadowPrefix": "シャドウ · {{tier}}",
+		"otherRaids": "その他のレイド",
+		"nothingScheduled": "予定はありません。",
+		"nowSlot": "現在"
+	},
+	"spawns": {
+		"noSeasonalData": "シーズン出現データはありません。",
+		"nowSlot": "現在",
+		"seasonSlot": "シーズン"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "期間",
+		"scrollEarlier": "過去の日付にスクロール",
+		"scrollLater": "未来の日付にスクロール"
+	},
+	"events": {
+		"noEvents": "現在イベントはありません。",
+		"scheduledCount": "予定イベント{{count}}件",
+		"fallbackTitle": "イベント",
+		"unseenAriaLabel": "未確認",
+		"phase": {
+			"season": "シーズン",
+			"live": "開催中",
+			"ended": "終了"
+		},
+		"bonuses": "ボーナス",
+		"groups": {
+			"featuredSpawns": "注目の出現",
+			"featuredRaids": "注目のレイド",
+			"researchEncounters": "リサーチで出会える",
+			"eggs": "タマゴ",
+			"incense": "お香",
+			"lures": "ルアーモジュール"
+		},
+		"readAnnouncement": "お知らせ全文を読む"
+	},
+	"rockets": {
+		"noLineups": "ロケット団の編成情報はありません。",
+		"typeGrunt": "{{type}}タイプのしたっぱ",
+		"genericGrunt": "したっぱ",
+		"slotReward": "枠{{slot}}の報酬",
+		"slotHeader": "枠{{slot}}",
+		"catchableTag": "捕獲可能"
+	},
+	"eggs": {
+		"noPoolData": "タマゴの排出データはありません。"
+	},
+	"timeLeft": {
+		"days": "残り{{count}}日",
+		"hours": "残り{{count}}時間",
+		"minutes": "残り{{count}}分",
+		"seconds": "残り{{count}}秒"
+	}
+}

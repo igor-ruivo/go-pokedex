@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "ग्रेट",
+		"greatFull": "ग्रेट लीग",
+		"ultra": "अल्ट्रा",
+		"ultraFull": "अल्ट्रा लीग",
+		"master": "मास्टर",
+		"masterFull": "मास्टर लीग",
+		"raid": "रेड",
+		"raids": "रेड",
+		"raidsFull": "रेड"
+	},
+	"tabs": {
+		"ranks": "रैंक",
+		"moves": "मूव्स",
+		"counters": "काउंटर",
+		"ivTable": "IV टेबल",
+		"strings": "स्ट्रिंग्स",
+		"comingSoon": "रीवैंप में अगला “{{tab}}” आएगा।"
+	},
+	"loading": {
+		"pokedex": "Pokédex लोड हो रहा है…",
+		"notFound": "“{{speciesId}}” नाम का कोई Pokémon नहीं मिला।"
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "ATK", "def": "DEF", "hp": "HP" },
+		"level": { "prefix": "लेवल", "loading": "लेवल …" },
+		"shadowToggle": "शैडो",
+		"switchLeagueAriaLabel": "अभी {{league}} दिख रही है। लीग बदलने के लिए टैप करें।",
+		"nextFamilyMemberAriaLabel": "{{current}} — अगला: {{next}}"
+	},
+	"familyLine": {
+		"heading": "{{name}} की फ़ैमिली लाइन"
+	},
+	"tablist": {
+		"ariaLabel": "लीग / मोड"
+	},
+	"board": {
+		"sectionHeading": "हर लीग में सबसे बेहतरीन पहुंच योग्य स्टेज",
+		"notRanked": "रैंक नहीं",
+		"loading": "लोड हो रहा है…",
+		"attackersSuffix": "{{type}} अटैकर",
+		"nextTypeTitle": "{{type}} — अगले टाइप के लिए टैप करें"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "रेड परफॉर्मेंस · {{name}}",
+			"selfShadow": "रेड परफॉर्मेंस · शैडो {{name}}",
+			"as": "रेड परफॉर्मेंस · {{name}} के रूप में",
+			"asShadow": "रेड परफॉर्मेंस · शैडो {{name}} के रूप में"
+		},
+		"rank": "{{type}} रैंक",
+		"baseAtk": "बेस ATK",
+		"notRankedAttacker": "रेड अटैकर के रूप में रैंक नहीं किया गया।",
+		"bestMovesetByType": "टाइप के अनुसार बेस्ट मूवसेट",
+		"nextMovesetTitle": "अगले मूवसेट के लिए टैप करें",
+		"selectTypeTitle": "यह टाइप चुनने के लिए टैप करें",
+		"ivsBarelyMatterPrefix": "रेड में IV का ज़्यादा फ़र्क़ नहीं पड़ता — सबसे ऊंचा पाने की कोशिश करें",
+		"attackWord": "अटैक"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "आपका IV पर्सेंटाइल · {{name}}",
+			"selfShadow": "आपका IV पर्सेंटाइल · शैडो {{name}}",
+			"as": "आपका IV पर्सेंटाइल · {{name}} के रूप में",
+			"asShadow": "आपका IV पर्सेंटाइल · शैडो {{name}} के रूप में",
+			"purified": "आपका IV पर्सेंटाइल · प्यूरिफाइड {{name}} के रूप में"
+		},
+		"ivRank": "{{league}} IV रैंक",
+		"perfection": "परफेक्शन",
+		"cp": "CP",
+		"cpAtLevel": "CP @ L{{level}}",
+		"bestSpreadFor": "{{league}} के लिए बेस्ट स्प्रेड:",
+		"bestSpreadResult": "→ L{{level}} पर {{cp}} CP।",
+		"purifyWarning": "⚠️ ध्यान दें, प्यूरिफाई करने से हर स्टैट पर +2 IV मिलते हैं।",
+		"purifyUnreachableWarning": "⚠️ वह रैंक-1 स्प्रेड प्यूरिफाई करके भी नहीं पाया जा सकता — प्यूरिफिकेशन हमेशा हर स्टैट को कम से कम 2 तक बढ़ाता है, इसलिए शैडो कभी उससे नीचे नहीं जा सकता, चाहे उसके अपने IV कुछ भी हों।",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "हंडो",
+			"rank1": "रैंक 1 {{league}}"
+		}
+	},
+	"effectiveness": {
+		"heading": "टाइप इफेक्टिवनेस · {{name}}",
+		"weakTo": "इनसे कमज़ोर",
+		"resists": "इन्हें रेज़िस्ट करता है",
+		"nothing": "कुछ नहीं"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "टियर 1",
+			"t3": "टियर 3",
+			"mega": "मेगा",
+			"t5": "टियर 5",
+			"elite": "एलीट",
+			"legendaryMega": "लेजेंडरी मेगा",
+			"primal": "प्राइमल",
+			"superMega": "सुपर मेगा"
+		},
+		"weather": {
+			"none": "कोई मौसम नहीं",
+			"sunny": "धूप / साफ़",
+			"rainy": "बारिश",
+			"partlyCloudy": "आंशिक बादल",
+			"cloudy": "बादल",
+			"windy": "हवा वाला",
+			"snow": "बर्फ़",
+			"fog": "कोहरा"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "अच्छा",
+			"great": "ग्रेट",
+			"ultra": "अल्ट्रा",
+			"best": "बेस्ट",
+			"forever": "फ़ॉरएवर"
+		},
+		"megaLevel": {
+			"base": "बेस",
+			"high": "हाई",
+			"max": "मैक्स",
+			"superMax": "सुपर मैक्स"
+		},
+		"notRankedInLeague": "{{name}} {{league}} में रैंक नहीं है — कोई पहले से कंप्यूटेड मैचअप नहीं।",
+		"noData": "कोई डेटा नहीं।",
+		"strongAgainst": "{{name}} इनके खिलाफ़ मज़बूत है · {{league}}",
+		"weakAgainst": "{{name}} इनके खिलाफ़ कमज़ोर है · {{league}}",
+		"bestRaidCounters": "बेस्ट रेड काउंटर · {{name}}",
+		"summaryRaidHp": "{{tier}} रेड · {{hp}} HP",
+		"partyOf": "{{size}} की पार्टी",
+		"friendLabel": "{{label}} फ़्रेंड",
+		"megaAuraSummary": "मेगा {{type}} आभा",
+		"megaLevelSummary": "मेगा लेवल: {{label}}",
+		"configHide": "छुपाएं",
+		"configEdit": "एडिट करें",
+		"clear": "साफ़ करें",
+		"bossTier": "बॉस टियर",
+		"bossTierTitle": "{{tier}} — {{hp}} HP",
+		"bossTierAriaLabel": "{{tier}} रेड",
+		"bossTierHint": "{{tier}} रेड · {{hp}} HP",
+		"weather_field": "मौसम",
+		"weatherHint": "×1.2 · {{types}}",
+		"megaAura": "मेगा आभा",
+		"noMegaOnTeam": "टीम में कोई मेगा नहीं",
+		"megaOfType": "मेगा {{type}}",
+		"megaAuraHint": "×1.3 {{type}} · ×1.1 अन्य",
+		"megaLevelField": "मेगा लेवल",
+		"megaLevelHint": "मेगा/प्राइमल के अपने प्लस मूव पर ×{{mult}}",
+		"megaLevelHintExtra": " · +2 अटैकर लेवल",
+		"partyPower": "पार्टी पावर",
+		"solo": "सोलो",
+		"friendshipField": "फ़्रेंडशिप",
+		"friendshipHint": "×{{mult}} डैमेज",
+		"helpSummary": "इनका मतलब क्या है?",
+		"help": {
+			"weatherFriendshipMegaAura": "मौसम · फ़्रेंडशिप · मेगा आभा",
+			"weatherFriendshipMegaAuraDesc": "आपके अटैकर पर डैमेज मल्टीप्लायर। आने वाला डैमेज हमेशा एक तय कॉन्स्टेंट इस्तेमाल करता है, इसलिए बॉस के अपने मूव इन नंबरों को कभी नहीं बदलते।",
+			"megaLevelDesc": "किसी मेगा या प्राइमल का अपना मेगा लेवल (इवॉल्व होने के बाद मेगा एनर्जी से बढ़ाया गया) सिर्फ़ उसके बोनस “प्लस” चार्ज्ड अटैक को बूस्ट करता है — उसकी किट के बाक़ी हर मूव पर असर नहीं पड़ता। सुपर मैक्स लेवल अटैकर को +2 इफेक्टिव Pokémon लेवल भी देता है, चाहे उसके पास प्लस मूव हो या न हो।",
+			"bossTierDesc": "बॉस का HP (eDPS में इस्तेमाल) और उसकी डिफेंस पर लगने वाला CPM सेट करता है। बॉस से अनुमानित — एलीट रेड के लिए इसे बदलें।"
+		},
+		"includeMegas": "मेगा शामिल करें",
+		"includeShadows": "शैडो शामिल करें",
+		"noCountersMatch": "इन फ़िल्टर से कोई काउंटर मैच नहीं हुआ।"
+	},
+	"ivTable": {
+		"notForRaids": "रेड पर IV रैंकिंग लागू नहीं होती — ऊपर ग्रेट, अल्ट्रा या मास्टर चुनें।",
+		"heading": "{{league}} · {{shadow}}{{name}} के सभी 4,096 IV स्प्रेड",
+		"fieldAriaLabel": "{{label}} IV, 0 से 15",
+		"clearAriaLabel": "साफ़ करें",
+		"notInRanking": "वह स्प्रेड रैंकिंग में नहीं है।",
+		"fillAllThree": "तीनों भरें (0–15)।",
+		"columns": {
+			"rank": "#",
+			"ivs": "IVs",
+			"stats": "ATK · DEF · HP",
+			"percent": "%",
+			"cp": "CP",
+			"level": "लेवल"
+		}
+	},
+	"moves": {
+		"bestMoveset": "बेस्ट {{league}} मूवसेट",
+		"unrankedForLeague": "{{name}} {{league}} के लिए रैंक नहीं है — कोई सुझाया मूवसेट नहीं। इसके सीखने लायक हर मूव नीचे लिस्ट है।",
+		"defaultLeague": "लीग",
+		"defaultLeagueSelected": "चुनी गई लीग",
+		"allMovesCanLearn": "{{name}} जो सारे मूव सीख सकता है",
+		"fastMoves": "फ़ास्ट मूव्स",
+		"chargedMoves": "चार्ज्ड मूव्स",
+		"recommended": "सुझाया गया",
+		"elite": "एलीट",
+		"legacy": "लेगसी",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "सर्च स्ट्रिंग सिर्फ़ PvP के लिए हैं — ऊपर ग्रेट, अल्ट्रा या मास्टर चुनें।",
+		"heading": "{{league}} · इन-गेम सर्च स्ट्रिंग्स",
+		"rankCutoff": "रैंक कटऑफ़",
+		"topN": "टॉप {{n}}",
+		"matchExceptTop": "टॉप {{n}} को <em>छोड़कर</em> बाक़ी सब मैच करें",
+		"helperText": "हर लाइन वाइल्ड, अनपावर्ड कैच से मैच करती है जिनकी फ़ैमिली कटऑफ़ तक पहुंचती है। इसे कॉपी करें, फिर Pokémon GO सर्च बार में पेस्ट करें।",
+		"copyString": "स्ट्रिंग कॉपी करें",
+		"copied": "कॉपी हो गई ✓",
+		"clickToCopy": "कॉपी करने के लिए क्लिक करें",
+		"sentence": {
+			"caught": "(वाइल्ड कैच और अभी भी अनपावर्ड)",
+			"findTopSelf": "{{except}}टॉप {{top}} <name></name> {{caught}} ढूंढें, <league></league> के लिए:",
+			"findTopEvolvesTo": "<name></name> {{caught}} ढूंढें जो {{toThe}}{{except}}टॉप {{top}} <target></target> में इवॉल्व होते हैं, <league></league> के लिए:",
+			"findTopSelfShadowEither": "{{except}}टॉप {{top}} <name></name> — शैडो हो या न हो — {{caught}} ढूंढें, <league></league> के लिए:",
+			"findTopEvolvesToShadowEither": "<name></name> — शैडो हो या न हो — {{caught}} ढूंढें जो {{toThe}}{{except}}टॉप {{top}} <target></target> में इवॉल्व होते हैं, <league></league> के लिए:",
+			"exceptPrefix": "टॉप को छोड़कर बाक़ी सब ",
+			"toThePrefix": ""
+		}
+	}
+}

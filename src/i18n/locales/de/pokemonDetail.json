@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "Super",
+		"greatFull": "Superliga",
+		"ultra": "Ultra",
+		"ultraFull": "Ultraliga",
+		"master": "Meister",
+		"masterFull": "Meisterliga",
+		"raid": "Arena-Kampf",
+		"raids": "Arena-Kämpfe",
+		"raidsFull": "Arena-Kämpfe"
+	},
+	"tabs": {
+		"ranks": "Ränge",
+		"moves": "Attacken",
+		"counters": "Konter",
+		"ivTable": "IW-Tabelle",
+		"strings": "Strings",
+		"comingSoon": "„{{tab}}“ kommt als Nächstes im Redesign."
+	},
+	"loading": {
+		"pokedex": "Pokédex wird geladen…",
+		"notFound": "Kein Pokémon „{{speciesId}}“."
+	},
+	"hero": {
+		"cp": "WP",
+		"stats": { "atk": "ANG", "def": "VER", "hp": "KP" },
+		"level": { "prefix": "Stufe", "loading": "Stufe …" },
+		"shadowToggle": "Schatten",
+		"switchLeagueAriaLabel": "Zeigt gerade {{league}}. Tippen, um die Liga zu wechseln.",
+		"nextFamilyMemberAriaLabel": "{{current}} — nächste: {{next}}"
+	},
+	"familyLine": {
+		"heading": "Entwicklungsreihe von {{name}}"
+	},
+	"tablist": {
+		"ariaLabel": "Liga / Modus"
+	},
+	"board": {
+		"sectionHeading": "beste erreichbare Stufe je Liga",
+		"notRanked": "Nicht eingestuft",
+		"loading": "Lädt…",
+		"attackersSuffix": "{{type}}-Angreifer",
+		"nextTypeTitle": "{{type}} — tippen für nächsten Typ"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "Arena-Kampf-Leistung · {{name}}",
+			"selfShadow": "Arena-Kampf-Leistung · Schatten-{{name}}",
+			"as": "Arena-Kampf-Leistung · als {{name}}",
+			"asShadow": "Arena-Kampf-Leistung · als Schatten-{{name}}"
+		},
+		"rank": "{{type}}-Rang",
+		"baseAtk": "Basis-ANG",
+		"notRankedAttacker": "Nicht als Arena-Kampf-Angreifer eingestuft.",
+		"bestMovesetByType": "Beste Attackenkombo nach Typ",
+		"nextMovesetTitle": "Tippen für die nächste Attackenkombo",
+		"selectTypeTitle": "Tippen, um diesen Typ auszuwählen",
+		"ivsBarelyMatterPrefix": "IWs spielen bei Arena-Kämpfen kaum eine Rolle — strebe die höchste",
+		"attackWord": "Angriffs-IW an"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "Dein IW-Perzentil · {{name}}",
+			"selfShadow": "Dein IW-Perzentil · Schatten-{{name}}",
+			"as": "Dein IW-Perzentil · als {{name}}",
+			"asShadow": "Dein IW-Perzentil · als Schatten-{{name}}",
+			"purified": "Dein IW-Perzentil · als geläuterte(s) {{name}}"
+		},
+		"ivRank": "{{league}} IW-Rang",
+		"perfection": "Perfektion",
+		"cp": "WP",
+		"cpAtLevel": "WP @ Stufe {{level}}",
+		"bestSpreadFor": "Beste Verteilung für {{league}}:",
+		"bestSpreadResult": "→ {{cp}} WP auf Stufe {{level}}.",
+		"purifyWarning": "⚠️ Beachte, dass Läutern +2 IWs auf jeden Wert gibt.",
+		"purifyUnreachableWarning": "⚠️ Diese Rang-1-Verteilung selbst ist durch Läutern nicht erreichbar — Läutern hebt jeden Wert immer auf mindestens 2 an, sodass ein Schatten-Pokémon unabhängig von seinen eigenen IWs nie darunter landen kann.",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "Hundo",
+			"rank1": "Rang 1 {{league}}"
+		}
+	},
+	"effectiveness": {
+		"heading": "Typ-Effektivität · {{name}}",
+		"weakTo": "Schwach gegen",
+		"resists": "Resistent gegen",
+		"nothing": "Nichts"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "Stufe 1",
+			"t3": "Stufe 3",
+			"mega": "Mega",
+			"t5": "Stufe 5",
+			"elite": "Elite",
+			"legendaryMega": "Legendäres Mega",
+			"primal": "Ur",
+			"superMega": "Super-Mega"
+		},
+		"weather": {
+			"none": "Kein Wetter",
+			"sunny": "Sonnig / Klar",
+			"rainy": "Regnerisch",
+			"partlyCloudy": "Leicht bewölkt",
+			"cloudy": "Bewölkt",
+			"windy": "Windig",
+			"snow": "Schnee",
+			"fog": "Nebel"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "Gut",
+			"great": "Super",
+			"ultra": "Ultra",
+			"best": "Beste",
+			"forever": "Für immer"
+		},
+		"megaLevel": {
+			"base": "Basis",
+			"high": "Hoch",
+			"max": "Max",
+			"superMax": "Super-Max"
+		},
+		"notRankedInLeague": "{{name}} ist in {{league}} nicht eingestuft — keine vorberechneten Matchups.",
+		"noData": "Keine Daten.",
+		"strongAgainst": "{{name}} ist stark gegen · {{league}}",
+		"weakAgainst": "{{name}} ist schwach gegen · {{league}}",
+		"bestRaidCounters": "Beste Arena-Kampf-Konter · {{name}}",
+		"summaryRaidHp": "{{tier}} Arena-Kampf · {{hp}} KP",
+		"partyOf": "Team aus {{size}}",
+		"friendLabel": "{{label}}-Freund",
+		"megaAuraSummary": "Mega-{{type}}-Aura",
+		"megaLevelSummary": "Mega-Stufe: {{label}}",
+		"configHide": "Ausblenden",
+		"configEdit": "Bearbeiten",
+		"clear": "Zurücksetzen",
+		"bossTier": "Boss-Stufe",
+		"bossTierTitle": "{{tier}} — {{hp}} KP",
+		"bossTierAriaLabel": "{{tier}}-Arena-Kampf",
+		"bossTierHint": "{{tier}} Arena-Kampf · {{hp}} KP",
+		"weather_field": "Wetter",
+		"weatherHint": "×1,2 · {{types}}",
+		"megaAura": "Mega-Aura",
+		"noMegaOnTeam": "Kein Mega im Team",
+		"megaOfType": "Mega-{{type}}",
+		"megaAuraHint": "×1,3 {{type}} · ×1,1 andere",
+		"megaLevelField": "Mega-Stufe",
+		"megaLevelHint": "×{{mult}} auf die eigene Plus-Ladeattacke eines Mega-/Ur-Pokémon",
+		"megaLevelHintExtra": " · +2 Angreiferstufen",
+		"partyPower": "Team-Power",
+		"solo": "Solo",
+		"friendshipField": "Freundschaft",
+		"friendshipHint": "×{{mult}} Schaden",
+		"helpSummary": "Was bedeutet das?",
+		"help": {
+			"weatherFriendshipMegaAura": "Wetter · Freundschaft · Mega-Aura",
+			"weatherFriendshipMegaAuraDesc": "Schadensmultiplikatoren für deine Angreifer. Eingehender Schaden nutzt immer eine feste Konstante, die Angriffe des Bosses ändern diese Zahlen also nie.",
+			"megaLevelDesc": "Die Mega-Stufe eines Mega- oder Ur-Pokémon (durch Mega-Energie nach der Mega-Entwicklung erhöht) verstärkt nur seine Plus-Ladeattacke — jede andere Attacke im Set bleibt unverändert. Super-Max-Stufe gibt dem Angreifer außerdem +2 effektive Pokémon-Stufen, unabhängig davon, ob es überhaupt eine Plus-Attacke hat.",
+			"bossTierDesc": "Legt die Boss-KP (für eDPS genutzt) und den auf seine Verteidigung angewendeten KPM fest. Wird vom Boss abgeleitet — bei Elite-Arena-Kämpfen ändern."
+		},
+		"includeMegas": "Mega-Pokémon einschließen",
+		"includeShadows": "Schatten-Pokémon einschließen",
+		"noCountersMatch": "Keine Konter entsprechen diesen Filtern."
+	},
+	"ivTable": {
+		"notForRaids": "IW-Ranglisten gelten nicht für Arena-Kämpfe — wähle oben Great, Ultra oder Master.",
+		"heading": "{{league}} · alle 4.096 IW-Verteilungen für {{shadow}}{{name}}",
+		"fieldAriaLabel": "{{label}}-IW, 0 bis 15",
+		"clearAriaLabel": "Zurücksetzen",
+		"notInRanking": "Diese Verteilung ist nicht in der Rangliste.",
+		"fillAllThree": "Fülle alle drei aus (0–15).",
+		"columns": {
+			"rank": "#",
+			"ivs": "IWs",
+			"stats": "Ang · Ver · KP",
+			"percent": "%",
+			"cp": "WP",
+			"level": "Stufe"
+		}
+	},
+	"moves": {
+		"bestMoveset": "Beste {{league}}-Attackenkombo",
+		"unrankedForLeague": "{{name}} ist für {{league}} nicht eingestuft — keine empfohlene Attackenkombo. Alle erlernbaren Attacken sind unten aufgelistet.",
+		"defaultLeague": "Liga",
+		"defaultLeagueSelected": "ausgewählte Liga",
+		"allMovesCanLearn": "Alle Attacken, die {{name}} erlernen kann",
+		"fastMoves": "Schnellattacken",
+		"chargedMoves": "Ladeattacken",
+		"recommended": "Empfohlen",
+		"elite": "Elite",
+		"legacy": "Alt",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "Suchstrings sind eine PvP-Sache — wähle oben Great, Ultra oder Master.",
+		"heading": "{{league}} · Suchstrings fürs Spiel",
+		"rankCutoff": "Rang-Grenzwert",
+		"topN": "Top {{n}}",
+		"matchExceptTop": "Alles <em>außer</em> den Top {{n}} finden",
+		"helperText": "Jede Zeile trifft auf wilde, ungestärkte Fänge zu, deren Familie den Grenzwert erreicht. Kopiere sie und füge sie in die Pokémon-GO-Suchleiste ein.",
+		"copyString": "String kopieren",
+		"copied": "Kopiert ✓",
+		"clickToCopy": "Zum Kopieren klicken",
+		"sentence": {
+			"caught": "(wild gefangen und noch ungestärkt)",
+			"findTopSelf": "Finde {{except}}Top {{top}} <name></name> {{caught}} für <league></league>:",
+			"findTopEvolvesTo": "Finde <name></name> {{caught}}, das sich zu {{toThe}}{{except}}Top {{top}} <target></target> für <league></league> entwickelt:",
+			"findTopSelfShadowEither": "Finde {{except}}Top {{top}} <name></name> — Schatten oder nicht — {{caught}} für <league></league>:",
+			"findTopEvolvesToShadowEither": "Finde <name></name> — Schatten oder nicht — {{caught}}, das sich zu {{toThe}}{{except}}Top {{top}} <target></target> für <league></league> entwickelt:",
+			"exceptPrefix": "alle außer den ",
+			"toThePrefix": "den "
+		}
+	}
+}

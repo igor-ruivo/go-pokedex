@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "필터",
+		"clear": "초기화",
+		"dialogAriaLabel": "필터",
+		"typeSectionLabel": "타입",
+		"pickOneHint": "1개 선택",
+		"pickUpToHint": "최대 {{max}}개 선택 · 둘 중 하나만 맞아도 표시"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "정렬 기준",
+		"sectionLabel": "정렬 기준",
+		"asc": "오름차순",
+		"desc": "내림차순"
+	},
+	"ivPicker": {
+		"attack": "공격",
+		"defense": "방어",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "완벽 개체"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "감소",
+		"increaseAriaLabel": "증가"
+	},
+	"shadowMark": {
+		"alt": "섀도"
+	},
+	"searchBox": {
+		"placeholder": "포켓몬 또는 기술 검색…",
+		"ariaLabel": "포켓몬 또는 기술 검색",
+		"clearAriaLabel": "검색 지우기",
+		"shadowSuffix": "섀도",
+		"fast": "일반 기술",
+		"charged": "스페셜 기술"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "레이드 어태커로 랭크되지 않았습니다.",
+		"bestMovesetByType": "타입별 최고의 기술 조합",
+		"tapNextMoveset": "탭하면 다음 기술 조합",
+		"tapSelectType": "탭하여 이 타입 선택",
+		"legacy": "기간 한정",
+		"elite": "엘리트",
+		"baseAtk": "공격 실수치",
+		"typeRank": "{{type}} 랭크"
+	}
+}

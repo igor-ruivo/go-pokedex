@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filtra",
+		"clear": "Cancella",
+		"dialogAriaLabel": "Filtri",
+		"typeSectionLabel": "Tipo",
+		"pickOneHint": "scegline uno",
+		"pickUpToHint": "scegline fino a {{max}} · entrambi validi"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Ordina per",
+		"sectionLabel": "Ordina per",
+		"asc": "Cresc.",
+		"desc": "Decresc."
+	},
+	"ivPicker": {
+		"attack": "ATTACCO",
+		"defense": "DIFESA",
+		"hp": "PS",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Diminuisci",
+		"increaseAriaLabel": "Aumenta"
+	},
+	"shadowMark": {
+		"alt": "Ombra"
+	},
+	"searchBox": {
+		"placeholder": "Cerca Pokémon o mosse…",
+		"ariaLabel": "Cerca Pokémon o mosse",
+		"clearAriaLabel": "Cancella ricerca",
+		"shadowSuffix": "Ombra",
+		"fast": "Veloce",
+		"charged": "Caricata"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Non classificato come attaccante da raid.",
+		"bestMovesetByType": "Miglior set di mosse per tipo",
+		"tapNextMoveset": "Tocca per il set di mosse successivo",
+		"tapSelectType": "Tocca per selezionare questo tipo",
+		"legacy": "Storica",
+		"elite": "Elite",
+		"baseAtk": "ATT base",
+		"typeRank": "Rango {{type}}"
+	}
+}

@@ -1,0 +1,112 @@
+{
+	"loading": "載入中…",
+	"pageTitle": {
+		"meta": "批次刪除目前非主流強力寶可夢",
+		"badIv": "批次刪除非完美個體值寶可夢",
+		"trade": "尋找值得交換的寶可夢"
+	},
+	"modeTablist": "批次刪除模式",
+	"modeTabs": {
+		"meta": { "full": "非主流強力", "short": "非主流" },
+		"badIv": { "full": "非完美個體值", "short": "個體值" },
+		"trade": { "full": "尋找可交換", "short": "可交換" }
+	},
+	"badIvWarning": "此模式非常激進且要求完美：目的是刪除所有非完美（100%）個體值的捕獲紀錄，完全不考慮該物種目前在主流環境中是強是弱 — 執行前請務必再次確認下方的分類與白名單設定。",
+	"helpText": {
+		"meta": "只看主流環境，不看個體值：刪除在任何地方都沒有競爭力的寶可夢 — 不在超級、高級或大師聯盟，也不在團體戰中，判斷依據為下方的排名門檻與 CP 上限。只要該物種（或其後續進化）在其中任一項達到門檻，就會被保留，一旦達標，該物種的所有捕獲紀錄都會被保留，無論該捕獲紀錄本身的個體值如何 — 此分頁完全不考慮個體值。CP 達到或超過上限的一律保留，下方分類與白名單中勾選的項目也一律保留，無論排名如何。大師聯盟的完美數值乘積一律保留。",
+		"badIv": "只看個體值，不看主流環境：完全忽略目前的主流環境 — 目標是刪除所有非完美 15/15/15 的寶可夢，無論該物種目前是否強力。遊戲搜尋功能只能比對個體值範圍，無法比對確切數值，因此無法每次都精確劃分 — 對於超級聯盟（1500 CP）與高級聯盟（2500 CP），大多數物種是以共用的低攻擊／高血量範圍概略涵蓋，另有數百種物種因不符合此共用範圍而各自使用獨立驗證過的範圍；無論哪一種方式，邊界附近仍可能有少數接近完美（但非滿值）的捕獲紀錄被漏掉。大師聯盟沒有 CP 上限，因此個體值愈高愈好 — 這個模式在大師聯盟的判斷是精確的，並非概略估算。每個聯盟中完美數值乘積一律保留，下方分類與白名單中勾選的項目也一律保留，無論個體值如何。",
+		"trade": "這是與上面兩個分頁不同的第三個問題：哪些捕獲紀錄值得拿去交換？摯友交換一律將每項數值提升至最低 5。此模式下，只要該物種在下方四個門檻（超級、高級、大師或團體戰）中符合任一項，就會被建議交換。大師聯盟與團體戰沒有 CP 上限，因此只要物種本身具競爭力就符合資格。超級與高級聯盟較嚴格：CP 上限通常代表該物種的最佳數值組合需要很低的攻擊力，而交換的最低 5 永遠無法產生這種組合 — 因此這兩個聯盟只有在該物種本身的最佳組合確實是交換可達成的範圍內時才會列入。無論哪種情況，已經是完美數值，或已經並列符合資格聯盟中最佳組合的捕獲紀錄，都不會被建議交換，因為交換出去只會變差，不會變好。下方的分類、白名單與 CP 上限會進一步縮小建議範圍，與其他分頁相同。"
+	},
+	"readMore": "顯示更多",
+	"readLess": "顯示較少",
+	"configuration": "設定",
+	"edit": "編輯",
+	"hide": "隱藏",
+	"reset": "重設",
+	"neverDeleteCategory": "永不刪除此分類",
+	"neverSuggestCategory": "永不建議此分類",
+	"neverDeletePokemon": "永不刪除這些寶可夢",
+	"neverSuggestPokemon": "永不建議這些寶可夢",
+	"knobs": {
+		"greatLeague": { "full": "超級聯盟", "short": "超級" },
+		"ultraLeague": { "full": "高級聯盟", "short": "高級" },
+		"masterLeague": { "full": "大師聯盟", "short": "大師" },
+		"raidAttackers": { "full": "團體戰攻擊手", "short": "團體戰" },
+		"saveCp": "保留 CP",
+		"simplifiedMode": "簡化模式",
+		"keep3StarPokemon": "保留 3 星寶可夢",
+		"ariaKeepTopGreat": "保留超級聯盟前段排名",
+		"ariaKeepTopUltra": "保留高級聯盟前段排名",
+		"ariaKeepTopMaster": "保留大師聯盟前段排名",
+		"ariaKeepTopRaid": "保留團體戰攻擊手前段排名"
+	},
+	"metaKnobsSubtitle": "保留各聯盟／團體戰目前主流環境中的頂尖寶可夢",
+	"badIvKnobsSubtitle": "簡化模式以些許準確度換取較短的字串 — 詳見切換開關上的提示",
+	"tradeKnobsSubtitle": "物種只需符合下列四項門檻中的任一項即可被建議 — 超級與高級聯盟另需交換能達成其最佳組合（詳見上方說明文字）",
+	"simplifiedTrashTooltip": "以準確度換取較短字串：略過尋找大師聯盟（無 CP 上限）數值乘積並列的情況 — 只有精確滿值（透過全域「非 3 星」排除，一律無條件受保護）會在此受到保護。超級／高級／團體戰的保護不受影響。",
+	"simplifiedBadIvTooltip": "以準確度換取較短字串：不再只保護物種的精確最佳個體值組合，而是直接略過任何需要這類個別組合例外的物種 — 類似額外的白名單項目。字串較短、較簡單，但漏判會增加：部分完整模式原本會正確鎖定的捕獲紀錄，在此模式下不會被鎖定。",
+	"tradeOnlyLowIvTooltip": "將建議範圍縮小至攻擊、防禦、體力皆明顯偏低的捕獲紀錄 — 否則只要不是滿值就會被建議。",
+	"toggleOn": "開啟",
+	"toggleOff": "關閉",
+	"protectionMeta": {
+		"favorite": { "label": "已收藏", "description": "在遊戲內標記為最愛的寶可夢。" },
+		"tagged": { "label": "已標記", "description": "有暱稱或自訂標籤的寶可夢。" },
+		"legendary": { "label": "傳說", "description": "箱型傳說（超夢、洛奇亞……）。" },
+		"mythical": { "label": "幻之", "description": "幻之寶可夢（夢幻、時拉比……）。" },
+		"ultraBeast": { "label": "究極異獸", "description": "究極異獸（虛吾伊德、爆肌蟲……）。" },
+		"megaEvolvable": {
+			"label": "可 Mega 進化",
+			"description": "僅遊戲本身知道 — 需要該物種目前累積足夠的 Mega 進化能量。"
+		},
+		"shadow": { "label": "暗影", "description": "所有暗影寶可夢，無論個體值或排名如何。" },
+		"dynamax": { "label": "極巨化", "description": "可極巨化的寶可夢。" },
+		"fusion": { "label": "融合", "description": "可融合、或已融合的寶可夢。" },
+		"gigantamax": { "label": "超極巨化", "description": "可超極巨化的寶可夢。" },
+		"background": {
+			"label": "背景",
+			"description": "個人檔案中擁有稀有或特殊地點背景的寶可夢。"
+		},
+		"shiny": { "label": "閃光", "description": "所有閃光寶可夢。" },
+		"costume": { "label": "服裝", "description": "穿著特殊活動服裝的寶可夢。" }
+	},
+	"lockedOnTitle": "{{label}} 的寶可夢永遠無法交換，因此此項一律開啟。",
+	"whitelist": {
+		"searchPlaceholderMeta": "新增一隻永不刪除的寶可夢…",
+		"searchPlaceholderTrade": "新增一隻永不建議的寶可夢…",
+		"clear": "清除",
+		"remove": "移除",
+		"removeLockedTitle": "因為「{{reason}}」而受保護 — 請先關閉上方對應選項才能移除",
+		"shadowSuffix": "暗影",
+		"emptyMeta": "目前尚無項目 — 在上方搜尋以保護特定寶可夢，不受上方分類影響。",
+		"emptyTrade": "目前尚無項目 — 在上方搜尋以讓特定寶可夢不列入交換建議，不受上方分類影響。",
+		"summaryEmpty": "目前沒有個別保護的寶可夢",
+		"summaryManual_one": "個別保留 {{count}} 隻",
+		"summaryManual_other": "個別保留 {{count}} 隻",
+		"summaryAuto_one": "依分類保護 {{count}} 隻",
+		"summaryAuto_other": "依分類保護 {{count}} 隻"
+	},
+	"compute": "產生",
+	"computing": "產生中…",
+	"computingMessage": "產生中… 正在掃描所有物種，請稍候。",
+	"outputPlaceholderMeta": "搜尋字串將顯示於此。貼到 Pokémon GO 的搜尋欄，確認符合的項目後再刪除。",
+	"outputPlaceholderTrade": "搜尋字串將顯示於此。貼到 Pokémon GO 的搜尋欄以檢視交換候選名單。",
+	"characterCount_one": "{{formatted}} 個字元",
+	"characterCount_other": "{{formatted}} 個字元",
+	"lengthWarningMeta": " — ⚠️ 部分 Android 手機的搜尋欄可能過長；若貼上後字串被截斷，可考慮使用上方的簡化刪除模式。",
+	"lengthWarningTrade": " — ⚠️ 部分 Android 手機的搜尋欄可能過長；貼到 Pokémon GO 搜尋欄後，字串結尾可能會被截斷。",
+	"copySearchString": "複製搜尋字串",
+	"copied": "已複製 ✓",
+	"panelSummary": {
+		"topGreat": "超級聯盟前 {{n}} 名",
+		"topUltra": "高級聯盟前 {{n}} 名",
+		"topMaster": "大師聯盟前 {{n}} 名",
+		"topRaid": "團體戰前 {{n}} 名",
+		"cpKept": "CP ≥ {{cp}} 保留",
+		"cpUnder": "CP < {{cp}}",
+		"simplifiedModeSuffix": "簡化模式",
+		"protectsList": "保護 {{list}}",
+		"excludesList": "排除 {{list}}",
+		"nothingExtra": "無其他項目",
+		"onlyClearlyLowIvs": "僅明顯偏低的個體值"
+	}
+}

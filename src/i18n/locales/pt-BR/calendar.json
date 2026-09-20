@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "Calendário"
+	},
+	"tabs": {
+		"events": "Eventos",
+		"bosses": "Raides",
+		"spawns": "Spawns",
+		"rockets": "Rockets",
+		"eggs": "Ovos"
+	},
+	"biomes": {
+		"cities": "Cidades",
+		"forests": "Florestas",
+		"mountains": "Montanhas",
+		"beaches": "Praias e Água",
+		"northernHemisphere": "Hemisfério Norte",
+		"southernHemisphere": "Hemisfério Sul",
+		"allAreas": "Todas as áreas"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Raides de Tier Superior", "short": "Tier Superior" },
+			"tier3": { "full": "Raides de Tier 3", "short": "Tier 3" },
+			"tier1": { "full": "Raides de Tier 1", "short": "Tier 1" }
+		},
+		"shadowPrefix": "Sombra · {{tier}}",
+		"otherRaids": "Outros raides",
+		"nothingScheduled": "Nada agendado.",
+		"nowSlot": "Agora"
+	},
+	"spawns": {
+		"noSeasonalData": "Sem dados de spawn sazonal.",
+		"nowSlot": "Agora",
+		"seasonSlot": "Temporada"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Período",
+		"scrollEarlier": "Rolar para datas anteriores",
+		"scrollLater": "Rolar para datas posteriores"
+	},
+	"events": {
+		"noEvents": "Nenhum evento no momento.",
+		"scheduledCount": "{{count}} Eventos agendados",
+		"fallbackTitle": "Evento",
+		"unseenAriaLabel": "Ainda não aberto",
+		"phase": {
+			"season": "Temporada",
+			"live": "Ao vivo",
+			"ended": "Encerrado"
+		},
+		"bonuses": "Bônus",
+		"groups": {
+			"featuredSpawns": "Spawns em destaque",
+			"featuredRaids": "Raides em destaque",
+			"researchEncounters": "Encontros de pesquisa",
+			"eggs": "Ovos",
+			"incense": "Incenso",
+			"lures": "Módulos"
+		},
+		"readAnnouncement": "Leia o anúncio completo"
+	},
+	"rockets": {
+		"noLineups": "Nenhuma escalação do Rocket.",
+		"typeGrunt": "Recruta de {{type}}",
+		"genericGrunt": "Recruta",
+		"slotReward": "Recompensa do slot {{slot}}",
+		"slotHeader": "Slot {{slot}}",
+		"catchableTag": "capturável"
+	},
+	"eggs": {
+		"noPoolData": "Sem dados do conjunto de ovos."
+	},
+	"timeLeft": {
+		"days": "{{count}}d restantes",
+		"hours": "{{count}}h restantes",
+		"minutes": "{{count}}m restantes",
+		"seconds": "{{count}}s restantes"
+	}
+}

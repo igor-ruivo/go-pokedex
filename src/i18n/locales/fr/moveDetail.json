@@ -1,0 +1,38 @@
+{
+	"notFound": "Aucune capacité « {{moveId}} ».",
+	"sections": {
+		"stats": "Statistiques",
+		"usage": "Utilisation",
+		"recommended": "Recommandée",
+		"alsoLearnedBy": "Également apprise par",
+		"learnedBy": "Apprise par",
+		"eliteFor": "Est une capacité Élite pour",
+		"legacyFor": "Est une capacité passée pour"
+	},
+	"arena": {
+		"pve": "PvE · Raids et Arènes",
+		"pvp": "PvP · Ligues"
+	},
+	"kind": {
+		"fastChip": "Capacité rapide",
+		"chargedChip": "Capacité chargée"
+	},
+	"superMega": "Super Méga",
+	"statLabels": {
+		"dmg": "DGT",
+		"nrg": "ÉNG",
+		"dur": "DUR",
+		"turns": "Tours",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Pokémon pouvant apprendre {{name}}",
+	"tiles": {
+		"recommended": "Recommandée",
+		"mega": "Méga",
+		"elite": "Élite",
+		"legacy": "Passée"
+	},
+	"noneLearn": "Aucun Pokémon n'apprend cette capacité."
+}

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface StepperProps {
 	value: number;
@@ -22,6 +23,7 @@ interface StepperProps {
  * like a native numeric stepper. Supports fractional steps.
  */
 export const Stepper = ({ value, min, max, step, onChange, format = String, nextValue }: StepperProps) => {
+	const { t } = useTranslation(['components']);
 	const vRef = useRef(value);
 	vRef.current = value;
 	const timers = useRef<Array<number>>([]);
@@ -65,11 +67,21 @@ export const Stepper = ({ value, min, max, step, onChange, format = String, next
 
 	return (
 		<div className='r-toggle r-stepper'>
-			<button type='button' aria-label='Decrease' disabled={value <= min} {...holdProps(-1)}>
+			<button
+				type='button'
+				aria-label={t('components:stepper.decreaseAriaLabel')}
+				disabled={value <= min}
+				{...holdProps(-1)}
+			>
 				−
 			</button>
 			<span>{format(value)}</span>
-			<button type='button' aria-label='Increase' disabled={value >= max} {...holdProps(1)}>
+			<button
+				type='button'
+				aria-label={t('components:stepper.increaseAriaLabel')}
+				disabled={value >= max}
+				{...holdProps(1)}
+			>
 				+
 			</button>
 		</div>

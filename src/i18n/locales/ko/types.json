@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "타입 상성표",
+		"description": "<b>행</b>으로 공격 타입이 각 방어 타입에 어떻게 작용하는지, <b>열</b>로 방어 타입이 무엇에 내성이 있는지 확인하세요."
+	},
+	"legend": {
+		"superEffective": "효과는 굉장했다",
+		"resisted": "효과가 별로인 듯하다",
+		"immune": "효과가 없다/이중 내성"
+	},
+	"calculator": {
+		"title": "약점 계산기",
+		"defendingTypesLabel": "방어 타입(최대 2개)",
+		"takesExtraFrom": "추가 피해를 받는 타입",
+		"takesLessFrom": "피해를 덜 받는 타입",
+		"nothing": "없음"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "Tabla de tipos",
+		"description": "Lee una <b>fila</b> para ver cómo le va a un tipo atacante contra cada defensor · lee una <b>columna</b> para ver a qué resiste un tipo defensor."
+	},
+	"legend": {
+		"superEffective": "Superefectivo",
+		"resisted": "Resistido",
+		"immune": "Inmune / doble resistencia"
+	},
+	"calculator": {
+		"title": "Calculadora de debilidades",
+		"defendingTypesLabel": "Tipo(s) defensor(es) · hasta 2",
+		"takesExtraFrom": "Recibe daño extra de",
+		"takesLessFrom": "Recibe menos daño de",
+		"nothing": "Nada"
+	}
+}

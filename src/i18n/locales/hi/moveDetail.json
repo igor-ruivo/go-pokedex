@@ -1,0 +1,38 @@
+{
+	"notFound": "“{{moveId}}” नाम का कोई मूव नहीं मिला।",
+	"sections": {
+		"stats": "स्टैट्स",
+		"usage": "उपयोग",
+		"recommended": "सुझाया गया",
+		"alsoLearnedBy": "ये भी सीख सकते हैं",
+		"learnedBy": "ये सीख सकते हैं",
+		"eliteFor": "इनके लिए एलीट मूव है",
+		"legacyFor": "इनके लिए लेगसी मूव है"
+	},
+	"arena": {
+		"pve": "PvE · रेड और जिम",
+		"pvp": "PvP · लीग"
+	},
+	"kind": {
+		"fastChip": "फ़ास्ट मूव",
+		"chargedChip": "चार्ज्ड मूव"
+	},
+	"superMega": "सुपर मेगा",
+	"statLabels": {
+		"dmg": "DMG",
+		"nrg": "NRG",
+		"dur": "DUR",
+		"turns": "टर्न्स",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "{{name}} सीख सकने वाले Pokémon",
+	"tiles": {
+		"recommended": "सुझाया गया",
+		"mega": "मेगा",
+		"elite": "एलीट",
+		"legacy": "लेगसी"
+	},
+	"noneLearn": "कोई भी Pokémon यह मूव नहीं सीखता।"
+}

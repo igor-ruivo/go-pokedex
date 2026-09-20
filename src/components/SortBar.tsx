@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDismiss } from '../hooks/useDismiss';
 
@@ -23,6 +24,7 @@ interface SortBarProps {
  * ascending / descending toggle. Sits next to <FilterBar />.
  */
 export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
+	const { t } = useTranslation(['components']);
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
@@ -52,23 +54,23 @@ export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
 			</button>
 
 			{open && (
-				<div className='r-filter-panel r-sort-panel' role='dialog' aria-label='Order by'>
+				<div className='r-filter-panel r-sort-panel' role='dialog' aria-label={t('components:sortBar.dialogAriaLabel')}>
 					<div className='r-filter-sec-h'>
-						<span>Order by</span>
+						<span>{t('components:sortBar.sectionLabel')}</span>
 						<div className='r-sort-dirseg'>
 							<button
 								type='button'
 								data-active={dir === 'asc' ? '' : undefined}
 								onClick={() => onChange(sortKey, 'asc')}
 							>
-								↑ Asc
+								↑ {t('components:sortBar.asc')}
 							</button>
 							<button
 								type='button'
 								data-active={dir === 'desc' ? '' : undefined}
 								onClick={() => onChange(sortKey, 'desc')}
 							>
-								↓ Desc
+								↓ {t('components:sortBar.desc')}
 							</button>
 						</div>
 					</div>

@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "フィルター",
+		"clear": "クリア",
+		"dialogAriaLabel": "フィルター",
+		"typeSectionLabel": "タイプ",
+		"pickOneHint": "1つ選択",
+		"pickUpToHint": "最大{{max}}件まで選択 · いずれかに一致"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "並び替え",
+		"sectionLabel": "並び替え",
+		"asc": "昇順",
+		"desc": "降順"
+	},
+	"ivPicker": {
+		"attack": "こうげき",
+		"defense": "ぼうぎょ",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "完全個体"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "減らす",
+		"increaseAriaLabel": "増やす"
+	},
+	"shadowMark": {
+		"alt": "シャドウ"
+	},
+	"searchBox": {
+		"placeholder": "ポケモンまたはわざを検索…",
+		"ariaLabel": "ポケモンまたはわざを検索",
+		"clearAriaLabel": "検索をクリア",
+		"shadowSuffix": "シャドウ",
+		"fast": "はやわざ",
+		"charged": "ゲージわざ"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "レイドアタッカーとしてランク外です。",
+		"bestMovesetByType": "タイプ別ベストわざ構成",
+		"tapNextMoveset": "タップで次のわざ構成へ",
+		"tapSelectType": "タップしてこのタイプを選択",
+		"legacy": "過去限定",
+		"elite": "エリート",
+		"baseAtk": "こうげき実数値",
+		"typeRank": "{{type}}ランク"
+	}
+}

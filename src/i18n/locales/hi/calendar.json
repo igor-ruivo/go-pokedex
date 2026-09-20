@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "कैलेंडर"
+	},
+	"tabs": {
+		"events": "इवेंट",
+		"bosses": "रेड",
+		"spawns": "स्पॉन",
+		"rockets": "रॉकेट",
+		"eggs": "अंडे"
+	},
+	"biomes": {
+		"cities": "शहर",
+		"forests": "जंगल",
+		"mountains": "पहाड़",
+		"beaches": "बीच और पानी",
+		"northernHemisphere": "उत्तरी गोलार्ध",
+		"southernHemisphere": "दक्षिणी गोलार्ध",
+		"allAreas": "सभी क्षेत्र"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "हायर टियर रेड", "short": "हायर टियर" },
+			"tier3": { "full": "टियर 3 रेड", "short": "टियर 3" },
+			"tier1": { "full": "टियर 1 रेड", "short": "टियर 1" }
+		},
+		"shadowPrefix": "शैडो · {{tier}}",
+		"otherRaids": "अन्य रेड",
+		"nothingScheduled": "कुछ भी शेड्यूल नहीं है।",
+		"nowSlot": "अभी"
+	},
+	"spawns": {
+		"noSeasonalData": "कोई सीज़नल स्पॉन डेटा नहीं।",
+		"nowSlot": "अभी",
+		"seasonSlot": "सीज़न"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "समयसीमा",
+		"scrollEarlier": "पहले की तारीखों पर जाएं",
+		"scrollLater": "बाद की तारीखों पर जाएं"
+	},
+	"events": {
+		"noEvents": "अभी कोई इवेंट नहीं है।",
+		"scheduledCount": "{{count}} शेड्यूल किए गए इवेंट",
+		"fallbackTitle": "इवेंट",
+		"unseenAriaLabel": "अभी नहीं देखा गया",
+		"phase": {
+			"season": "सीज़न",
+			"live": "लाइव",
+			"ended": "समाप्त"
+		},
+		"bonuses": "बोनस",
+		"groups": {
+			"featuredSpawns": "फ़ीचर्ड स्पॉन",
+			"featuredRaids": "फ़ीचर्ड रेड",
+			"researchEncounters": "रिसर्च एनकाउंटर",
+			"eggs": "अंडे",
+			"incense": "इन्सेंस",
+			"lures": "ल्यूर"
+		},
+		"readAnnouncement": "पूरी घोषणा पढ़ें"
+	},
+	"rockets": {
+		"noLineups": "कोई रॉकेट लाइनअप नहीं।",
+		"typeGrunt": "{{type}} ग्रंट",
+		"genericGrunt": "ग्रंट",
+		"slotReward": "स्लॉट {{slot}} इनाम",
+		"slotHeader": "स्लॉट {{slot}}",
+		"catchableTag": "पकड़ने योग्य"
+	},
+	"eggs": {
+		"noPoolData": "कोई एग पूल डेटा नहीं।"
+	},
+	"timeLeft": {
+		"days": "{{count}} दिन बचे",
+		"hours": "{{count}} घंटे बचे",
+		"minutes": "{{count}} मिनट बचे",
+		"seconds": "{{count}} सेकंड बचे"
+	}
+}

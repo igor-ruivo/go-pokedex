@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "언어 및 설정",
+		"dialogAriaLabel": "설정",
+		"appLanguage": "앱 언어",
+		"gameLanguage": "게임 언어",
+		"moreSettings": "추가 설정",
+		"sprites": "스프라이트",
+		"raidRanking": "레이드 랭킹",
+		"bestBuddy": "베스트프렌드 기준 적용",
+		"off": "끄기",
+		"on": "켜기",
+		"footer": "이 기기에 저장됩니다."
+	},
+	"page": {
+		"title": "설정",
+		"appLanguage": {
+			"title": "앱 언어",
+			"desc": "화면에 표시되는 텍스트입니다. 기본값은 영어입니다."
+		},
+		"gameLanguage": {
+			"title": "게임 언어",
+			"desc": "Pokémon GO에 표시되는 포켓몬 및 기술 이름의 언어입니다."
+		},
+		"sprites": {
+			"title": "스프라이트",
+			"desc": "각 포켓몬에 표시할 아트워크입니다."
+		},
+		"bestBuddy": {
+			"title": "베스트프렌드 기준 적용",
+			"desc": "레벨 51까지 도달 가능한 것으로 간주합니다 — 개체값 표, 삭제/검색 문자열, 최대 CP, 레벨 선택기, 베스트 개체값/백분위, 레이드 카운터, DPS/TDO/eDPS가 모두 레벨 50이 아닌 51까지 계산됩니다."
+		},
+		"footer": "설정은 이 기기에 저장됩니다."
+	},
+	"spriteOptions": {
+		"official": "공식",
+		"go": "Pokémon GO",
+		"shiny": "GO 색이 다른"
+	},
+	"toggle": {
+		"off": "끄기",
+		"on": "켜기"
+	}
+}

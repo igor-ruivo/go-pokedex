@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "Hebat",
+		"greatFull": "Liga Hebat",
+		"ultra": "Ultra",
+		"ultraFull": "Liga Ultra",
+		"master": "Master",
+		"masterFull": "Liga Master",
+		"raid": "Raid",
+		"raids": "Raid",
+		"raidsFull": "Raid"
+	},
+	"tabs": {
+		"ranks": "Peringkat",
+		"moves": "Jurus",
+		"counters": "Counter",
+		"ivTable": "Tabel IV",
+		"strings": "String",
+		"comingSoon": "“{{tab}}” segera hadir di pembaruan berikutnya."
+	},
+	"loading": {
+		"pokedex": "Memuat Pokédex…",
+		"notFound": "Tidak ada Pokémon “{{speciesId}}”."
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "ATK", "def": "DEF", "hp": "HP" },
+		"level": { "prefix": "Lvl", "loading": "Lvl …" },
+		"shadowToggle": "Shadow",
+		"switchLeagueAriaLabel": "Sedang menampilkan {{league}}. Ketuk untuk ganti liga.",
+		"nextFamilyMemberAriaLabel": "{{current}} — berikutnya: {{next}}"
+	},
+	"familyLine": {
+		"heading": "Garis keluarga {{name}}"
+	},
+	"tablist": {
+		"ariaLabel": "Liga / mode"
+	},
+	"board": {
+		"sectionHeading": "tahap terbaik yang bisa dicapai per liga",
+		"notRanked": "Belum diperingkat",
+		"loading": "Memuat…",
+		"attackersSuffix": "attacker {{type}}",
+		"nextTypeTitle": "{{type}} — ketuk untuk tipe berikutnya"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "Performa raid · {{name}}",
+			"selfShadow": "Performa raid · Shadow {{name}}",
+			"as": "Performa raid · sebagai {{name}}",
+			"asShadow": "Performa raid · sebagai Shadow {{name}}"
+		},
+		"rank": "Peringkat {{type}}",
+		"baseAtk": "ATK Dasar",
+		"notRankedAttacker": "Belum diperingkat sebagai attacker raid.",
+		"bestMovesetByType": "Moveset terbaik per tipe",
+		"nextMovesetTitle": "Ketuk untuk moveset berikutnya",
+		"selectTypeTitle": "Ketuk untuk memilih tipe ini",
+		"ivsBarelyMatterPrefix": "IV nyaris tidak berpengaruh di raid — kejar yang tertinggi",
+		"attackWord": "Attack"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "Persentil IV Anda · {{name}}",
+			"selfShadow": "Persentil IV Anda · Shadow {{name}}",
+			"as": "Persentil IV Anda · sebagai {{name}}",
+			"asShadow": "Persentil IV Anda · sebagai Shadow {{name}}",
+			"purified": "Persentil IV Anda · sebagai Purified {{name}}"
+		},
+		"ivRank": "Peringkat IV {{league}}",
+		"perfection": "Kesempurnaan",
+		"cp": "CP",
+		"cpAtLevel": "CP @ L{{level}}",
+		"bestSpreadFor": "Spread terbaik untuk {{league}}:",
+		"bestSpreadResult": "→ {{cp}} CP di L{{level}}.",
+		"purifyWarning": "⚠️ Perlu diketahui bahwa memurnikan memberi +2 IV pada setiap stat.",
+		"purifyUnreachableWarning": "⚠️ Spread peringkat 1 itu sendiri tidak bisa dicapai lewat pemurnian — pemurnian selalu menaikkan setiap stat minimal ke 2, jadi Pokémon Shadow tidak akan pernah berada di bawah itu berapa pun IV aslinya.",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "Hundo",
+			"rank1": "Peringkat 1 {{league}}"
+		}
+	},
+	"effectiveness": {
+		"heading": "Efektivitas tipe · {{name}}",
+		"weakTo": "Lemah terhadap",
+		"resists": "Menahan",
+		"nothing": "Tidak ada"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "Tingkat 1",
+			"t3": "Tingkat 3",
+			"mega": "Mega",
+			"t5": "Tingkat 5",
+			"elite": "Elite",
+			"legendaryMega": "Mega Legendaris",
+			"primal": "Primal",
+			"superMega": "Super Mega"
+		},
+		"weather": {
+			"none": "Tanpa cuaca",
+			"sunny": "Cerah / Terang",
+			"rainy": "Hujan",
+			"partlyCloudy": "Berawan Sebagian",
+			"cloudy": "Berawan",
+			"windy": "Berangin",
+			"snow": "Salju",
+			"fog": "Berkabut"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "Baik",
+			"great": "Hebat",
+			"ultra": "Ultra",
+			"best": "Terbaik",
+			"forever": "Selamanya"
+		},
+		"megaLevel": {
+			"base": "Dasar",
+			"high": "Tinggi",
+			"max": "Maks",
+			"superMax": "Super Maks"
+		},
+		"notRankedInLeague": "{{name}} tidak diperingkat di {{league}} — tidak ada matchup yang sudah dihitung sebelumnya.",
+		"noData": "Tidak ada data.",
+		"strongAgainst": "{{name}} kuat melawan · {{league}}",
+		"weakAgainst": "{{name}} lemah melawan · {{league}}",
+		"bestRaidCounters": "Counter raid terbaik · {{name}}",
+		"summaryRaidHp": "Raid {{tier}} · {{hp}} HP",
+		"partyOf": "Party berisi {{size}}",
+		"friendLabel": "Teman {{label}}",
+		"megaAuraSummary": "Aura Mega {{type}}",
+		"megaLevelSummary": "Mega Level: {{label}}",
+		"configHide": "Sembunyikan",
+		"configEdit": "Edit",
+		"clear": "Hapus",
+		"bossTier": "Tingkat boss",
+		"bossTierTitle": "{{tier}} — {{hp}} HP",
+		"bossTierAriaLabel": "Raid {{tier}}",
+		"bossTierHint": "{{tier}} Raid · {{hp}} HP",
+		"weather_field": "Cuaca",
+		"weatherHint": "×1.2 · {{types}}",
+		"megaAura": "Aura Mega",
+		"noMegaOnTeam": "Tidak ada Mega di tim",
+		"megaOfType": "Mega {{type}}",
+		"megaAuraHint": "×1.3 {{type}} · ×1.1 lainnya",
+		"megaLevelField": "Mega Level",
+		"megaLevelHint": "×{{mult}} pada jurus Plus milik Mega/Primal itu sendiri",
+		"megaLevelHintExtra": " · +2 level attacker",
+		"partyPower": "Party Power",
+		"solo": "Solo",
+		"friendshipField": "Persahabatan",
+		"friendshipHint": "×{{mult}} kerusakan",
+		"helpSummary": "Apa arti semua ini?",
+		"help": {
+			"weatherFriendshipMegaAura": "Cuaca · Persahabatan · Aura Mega",
+			"weatherFriendshipMegaAuraDesc": "Pengali kerusakan pada attacker Anda. Kerusakan yang diterima selalu memakai satu konstanta tetap, jadi jurus boss sendiri tidak pernah mengubah angka-angka ini.",
+			"megaLevelDesc": "Mega Level suatu Mega atau Primal (dinaikkan dengan Energi Mega setelah evolusi) hanya meningkatkan jurus utama “Plus” bonusnya — semua jurus lain di kitnya tidak terpengaruh. Super Maks Level juga memberi attacker +2 level Pokémon efektif, terlepas dari apakah dia punya jurus Plus atau tidak.",
+			"bossTierDesc": "Menentukan HP boss (dipakai oleh eDPS) dan CPM yang diterapkan pada pertahanannya. Ditentukan dari bossnya — ubah untuk Raid Elite."
+		},
+		"includeMegas": "Sertakan Mega",
+		"includeShadows": "Sertakan Shadow",
+		"noCountersMatch": "Tidak ada counter yang cocok dengan filter itu."
+	},
+	"ivTable": {
+		"notForRaids": "Peringkat IV tidak berlaku untuk raid — pilih Hebat, Ultra, atau Master di atas.",
+		"heading": "{{league}} · semua 4.096 spread IV untuk {{shadow}}{{name}}",
+		"fieldAriaLabel": "IV {{label}}, 0 hingga 15",
+		"clearAriaLabel": "Hapus",
+		"notInRanking": "Spread itu tidak ada di peringkat.",
+		"fillAllThree": "Isi ketiganya (0–15).",
+		"columns": {
+			"rank": "#",
+			"ivs": "IV",
+			"stats": "Atk · Def · HP",
+			"percent": "%",
+			"cp": "CP",
+			"level": "Lvl"
+		}
+	},
+	"moves": {
+		"bestMoveset": "Moveset {{league}} terbaik",
+		"unrankedForLeague": "{{name}} tidak diperingkat untuk {{league}} — tidak ada moveset yang direkomendasikan. Semua jurus yang bisa dipelajarinya tercantum di bawah.",
+		"defaultLeague": "liga",
+		"defaultLeagueSelected": "liga terpilih",
+		"allMovesCanLearn": "Semua jurus yang bisa dipelajari {{name}}",
+		"fastMoves": "Jurus cepat",
+		"chargedMoves": "Jurus utama",
+		"recommended": "Direkomendasikan",
+		"elite": "Elite",
+		"legacy": "Legacy",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "String pencarian adalah hal PvP — pilih Hebat, Ultra, atau Master di atas.",
+		"heading": "{{league}} · string pencarian dalam game",
+		"rankCutoff": "Batas peringkat",
+		"topN": "Top {{n}}",
+		"matchExceptTop": "Cocokkan semua <em>kecuali</em> top {{n}}",
+		"helperText": "Setiap baris mencocokkan tangkapan liar yang belum ditingkatkan dari keluarga yang mencapai batas. Salin, lalu tempel ke bilah pencarian Pokémon GO.",
+		"copyString": "Salin string",
+		"copied": "Tersalin ✓",
+		"clickToCopy": "Klik untuk menyalin",
+		"sentence": {
+			"caught": "(tangkapan liar dan belum ditingkatkan)",
+			"findTopSelf": "Temukan {{except}}top {{top}} <name></name> {{caught}} untuk <league></league>:",
+			"findTopEvolvesTo": "Temukan <name></name> {{caught}} yang berevolusi menjadi {{toThe}}{{except}}top {{top}} <target></target> untuk <league></league>:",
+			"findTopSelfShadowEither": "Temukan {{except}}top {{top}} <name></name> — Shadow atau bukan — {{caught}} untuk <league></league>:",
+			"findTopEvolvesToShadowEither": "Temukan <name></name> — Shadow atau bukan — {{caught}} yang berevolusi menjadi {{toThe}}{{except}}top {{top}} <target></target> untuk <league></league>:",
+			"exceptPrefix": "semua kecuali ",
+			"toThePrefix": "yang "
+		}
+	}
+}

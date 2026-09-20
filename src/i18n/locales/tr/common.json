@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "Ana sayfa"
+	},
+	"nav": {
+		"pokedex": { "label": "Pokédex", "hint": "Tüm Pokémon'lara göz atın" },
+		"rankings": { "label": "Sıralamalar", "hint": "Lig ve baskın türüne göre en iyi saldırganlar" },
+		"calendar": { "label": "Takvim", "hint": "Etkinlikler, baskınlar, ortaya çıkışlar ve yumurtalar" },
+		"moves": { "label": "Hareketler", "hint": "Tüm hızlı ve şarjlı hareketler" },
+		"types": { "label": "Türler", "hint": "Tür etkileşim tablosu" },
+		"searches": {
+			"label": "Aramalar",
+			"hint": "Oyun içi arama dizeleri oluşturun — temizlik, mükemmel IV'ler veya takas adayları"
+		},
+		"calendarBadge_one": "{{label}} — {{count}} yeni etkinlik",
+		"calendarBadge_other": "{{label}} — {{count}} yeni etkinlik"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "GO Pokédex'i yükle",
+		"title": "GO Pokédex'i yükle",
+		"iosHint": "Paylaş'a, ardından “Ana Ekrana Ekle”ye dokunun — tam ekran, tarayıcı çubuğu olmadan.",
+		"androidHint": "Tam ekran, uygulama benzeri bir deneyim için ana ekranınıza ekleyin.",
+		"installButton": "Yükle",
+		"dismissAriaLabel": "Kapat"
+	},
+	"placeholder": {
+		"toolsTitle": "Araçlar",
+		"comingSoon": "Yenileme kapsamında sırada."
+	}
+}

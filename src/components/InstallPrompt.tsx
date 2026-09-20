@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ConfigKeys, readSessionValue, writeSessionValue } from '../utils/persistent-configs-handler';
 
@@ -30,6 +31,7 @@ const isMobile = () => /android|iphone|ipad|ipod/i.test(window.navigator.userAge
  *     offered it again): nothing renders, full stop.
  */
 export const InstallPrompt = () => {
+	const { t } = useTranslation(['common']);
 	const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
 	const [showIosHint, setShowIosHint] = useState(false);
 	// Session-only: dismissing it shouldn't mean never again — a new tab/visit
@@ -72,22 +74,23 @@ export const InstallPrompt = () => {
 	if (dismissed || (!deferred && !showIosHint)) return null;
 
 	return (
-		<div className='r-install' role='dialog' aria-label='Install GO Pokédex'>
+		<div className='r-install' role='dialog' aria-label={t('common:installPrompt.dialogAriaLabel')}>
 			<img className='r-install-ic' src='/logo192.png' alt='' aria-hidden='true' />
 			<div className='r-install-copy'>
-				<b>Install GO Pokédex</b>
-				<span>
-					{showIosHint
-						? 'Tap Share, then “Add to Home Screen” — full screen, no browser bar.'
-						: 'Add it to your home screen for a full-screen, app-like experience.'}
-				</span>
+				<b>{t('common:installPrompt.title')}</b>
+				<span>{showIosHint ? t('common:installPrompt.iosHint') : t('common:installPrompt.androidHint')}</span>
 			</div>
 			{deferred && (
 				<button type='button' className='r-install-btn' onClick={() => void install()}>
-					Install
+					{t('common:installPrompt.installButton')}
 				</button>
 			)}
-			<button type='button' className='r-install-close' aria-label='Dismiss' onClick={dismiss}>
+			<button
+				type='button'
+				className='r-install-close'
+				aria-label={t('common:installPrompt.dismissAriaLabel')}
+				onClick={dismiss}
+			>
 				×
 			</button>
 		</div>

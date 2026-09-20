@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filtrar",
+		"clear": "Limpar",
+		"dialogAriaLabel": "Filtros",
+		"typeSectionLabel": "Tipo",
+		"pickOneHint": "escolha um",
+		"pickUpToHint": "escolha até {{max}} · precisa combinar com ambos"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Ordenar por",
+		"sectionLabel": "Ordenar por",
+		"asc": "Cresc.",
+		"desc": "Decr."
+	},
+	"ivPicker": {
+		"attack": "ATAQUE",
+		"defense": "DEFESA",
+		"hp": "PS",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Diminuir",
+		"increaseAriaLabel": "Aumentar"
+	},
+	"shadowMark": {
+		"alt": "Sombrio"
+	},
+	"searchBox": {
+		"placeholder": "Buscar Pokémon ou golpes…",
+		"ariaLabel": "Buscar Pokémon ou golpes",
+		"clearAriaLabel": "Limpar busca",
+		"shadowSuffix": "Sombrio",
+		"fast": "Rápido",
+		"charged": "Carregado"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Não classificado como atacante de raide.",
+		"bestMovesetByType": "Melhor conjunto de golpes por tipo",
+		"tapNextMoveset": "Toque para o próximo conjunto de golpes",
+		"tapSelectType": "Toque para selecionar este tipo",
+		"legacy": "Legado",
+		"elite": "Elite",
+		"baseAtk": "ATK Base",
+		"typeRank": "Rank de {{type}}"
+	}
+}

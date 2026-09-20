@@ -1,0 +1,31 @@
+{
+	"sorts": {
+		"dex": "Numero Dex",
+		"name": "Nome",
+		"cp": "PL max",
+		"type": "Tipo"
+	},
+	"tabs": {
+		"pokedexFull": "Pokédex",
+		"pokedexShort": "Dex"
+	},
+	"status": {
+		"loading": "Caricamento…",
+		"chooseType": "Scegli un tipo",
+		"count": "{{count}} Pokémon",
+		"bestAttackersSuffix": " · migliori attaccanti {{type}}"
+	},
+	"hint": {
+		"show": "Mostra le ipotesi di classifica",
+		"hide": "Nascondi le ipotesi di classifica",
+		"text": "Le classifiche raid presuppongono la miglior combinazione di mossa veloce + caricata di ogni Pokémon, che infligge danno {{type}} Efficace (×1,6) a un boss non Ombra di livello 5 (200 Difesa, livello 40), con un attaccante di livello 50 (15 IV Attacco) e nessun bonus di meteo, amicizia o aura Mega di compagni. I Pokémon Super Mega sono classificati al livello Mega massimo."
+	},
+	"empty": {
+		"pickType": "Scegli un tipo nel filtro per vedere i migliori attaccanti da raid di quel tipo.",
+		"nothingMatches": "Nessun risultato."
+	},
+	"loadingLabel": {
+		"pokedex": "Caricamento Pokédex…",
+		"rankings": "Caricamento classifiche…"
+	}
+}

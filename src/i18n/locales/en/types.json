@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "Type chart",
+		"description": "Read a <b>row</b> for how an attacking type fares against every defender · read a <b>column</b> for what a defending type resists."
+	},
+	"legend": {
+		"superEffective": "Super effective",
+		"resisted": "Resisted",
+		"immune": "Immune / double-resist"
+	},
+	"calculator": {
+		"title": "Weakness calculator",
+		"defendingTypesLabel": "Defending type(s) · up to 2",
+		"takesExtraFrom": "Takes extra damage from",
+		"takesLessFrom": "Takes less damage from",
+		"nothing": "Nothing"
+	}
+}

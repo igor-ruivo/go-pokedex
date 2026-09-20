@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "Startseite"
+	},
+	"nav": {
+		"pokedex": { "label": "Pokédex", "hint": "Alle Pokémon durchsuchen" },
+		"rankings": { "label": "Ranglisten", "hint": "Beste Angreifer je Liga und Arena-Kampf-Typ" },
+		"calendar": { "label": "Kalender", "hint": "Events, Arena-Kämpfe, Fundorte und Eier" },
+		"moves": { "label": "Attacken", "hint": "Alle Schnell- und Ladeattacken" },
+		"types": { "label": "Typen", "hint": "Typ-Effektivitätstabelle" },
+		"searches": {
+			"label": "Suchen",
+			"hint": "Suchstrings fürs Spiel erstellen — Aufräumen, perfekte IWs oder Tauschkandidaten"
+		},
+		"calendarBadge_one": "{{label}} — {{count}} neues Event",
+		"calendarBadge_other": "{{label}} — {{count}} neue Events"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "GO Pokédex installieren",
+		"title": "GO Pokédex installieren",
+		"iosHint": "Tippe auf Teilen und dann auf „Zum Home-Bildschirm“ — Vollbild, ohne Browserleiste.",
+		"androidHint": "Füge sie deinem Home-Bildschirm hinzu für eine App-ähnliche Vollbildansicht.",
+		"installButton": "Installieren",
+		"dismissAriaLabel": "Schließen"
+	},
+	"placeholder": {
+		"toolsTitle": "Werkzeuge",
+		"comingSoon": "Kommt als Nächstes im Redesign."
+	}
+}

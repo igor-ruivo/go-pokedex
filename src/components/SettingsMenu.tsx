@@ -1,30 +1,18 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
-import { GameLanguage, Language, useLanguage } from '../contexts/language-context';
+import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 // Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
 import { useDismiss } from '../hooks/useDismiss';
+import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
-
-// Regional-indicator flag emoji don't render on Windows, so a crisp 2-letter
-// ISO badge is the reliable cross-platform "flag".
-const APP_LANGS: Array<[Language, string, string]> = [
-	[Language.English, 'EN', 'English'],
-	[Language.Portuguese, 'PT', 'Português'],
-	[Language.Bosnian, 'BS', 'Bosanski'],
-];
 
 const GAME_LANGS: Array<[GameLanguage, string, string]> = [
 	[GameLanguage.en, 'EN', 'English'],
 	[GameLanguage.ptbr, 'BR', 'Português (BR)'],
-];
-
-const SPRITES: Array<[ImageSource, string]> = [
-	[ImageSource.Official, 'Official'],
-	[ImageSource.GO, 'Pokémon GO'],
-	[ImageSource.Shiny, 'GO shiny'],
 ];
 
 /**
@@ -33,6 +21,7 @@ const SPRITES: Array<[ImageSource, string]> = [
  * app-language flag.
  */
 export const SettingsMenu = () => {
+	const { t } = useTranslation(['settings']);
 	const { currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
@@ -41,12 +30,18 @@ export const SettingsMenu = () => {
 	const [moreOpen, setMoreOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
+	const SPRITES: Array<[ImageSource, string]> = [
+		[ImageSource.Official, t('settings:spriteOptions.official')],
+		[ImageSource.GO, t('settings:spriteOptions.go')],
+		[ImageSource.Shiny, t('settings:spriteOptions.shiny')],
+	];
+
 	return (
 		<div className='r-setmenu' ref={rootRef}>
 			<button
 				type='button'
 				className='r-icon-btn r-setmenu-trigger'
-				aria-label='Language & settings'
+				aria-label={t('settings:menu.triggerAriaLabel')}
 				aria-expanded={open}
 				onClick={() => setOpen((o) => !o)}
 			>
@@ -56,26 +51,32 @@ export const SettingsMenu = () => {
 			</button>
 
 			{open && (
-				<div className='r-setmenu-pop' role='dialog' aria-label='Settings'>
+				<div className='r-setmenu-pop' role='dialog' aria-label={t('settings:menu.dialogAriaLabel')}>
 					<div className='r-setmenu-grp'>
-						<span className='r-setmenu-h'>App language</span>
-						<div className='r-set-opts'>
-							{APP_LANGS.map(([v, flag, label]) => (
-								<button
-									key={String(v)}
-									type='button'
-									data-active={v === currentLanguage ? '' : undefined}
-									onClick={() => updateCurrentLanguage(v)}
-								>
-									<span className='r-setmenu-fl'>{flag}</span>
-									{label}
-								</button>
+						<span className='r-setmenu-h'>{t('settings:menu.appLanguage')}</span>
+						{/* A button grid tops out well before 16 options — a native
+						    select is the same pattern Pokémon GO's own site uses for
+						    this exact list of languages. Endonyms (each language's
+						    own name for itself, e.g. "Español" not "Spanish") aren't
+						    run through t() — the standard convention for a language
+						    picker, so a reader can always find their language
+						    regardless of what locale the UI is currently in. */}
+						<select
+							className='r-lang-select'
+							aria-label={t('settings:menu.appLanguage')}
+							value={currentLanguage}
+							onChange={(e) => updateCurrentLanguage(e.target.value as (typeof SUPPORTED_LOCALES)[number])}
+						>
+							{SUPPORTED_LOCALES.map((locale) => (
+								<option key={locale} value={locale}>
+									{SUPPORTED_LOCALE_NAMES[locale]}
+								</option>
 							))}
-						</div>
+						</select>
 					</div>
 
 					<div className='r-setmenu-grp'>
-						<span className='r-setmenu-h'>Game language</span>
+						<span className='r-setmenu-h'>{t('settings:menu.gameLanguage')}</span>
 						<div className='r-set-opts'>
 							{GAME_LANGS.map(([v, flag, label]) => (
 								<button
@@ -98,7 +99,7 @@ export const SettingsMenu = () => {
 						aria-expanded={moreOpen}
 						onClick={() => setMoreOpen((v) => !v)}
 					>
-						More settings
+						{t('settings:menu.moreSettings')}
 						<span className='r-setmenu-chev' aria-hidden='true'>
 							⌄
 						</span>
@@ -107,7 +108,7 @@ export const SettingsMenu = () => {
 					{moreOpen && (
 						<>
 							<div className='r-setmenu-grp'>
-								<span className='r-setmenu-h'>Sprites</span>
+								<span className='r-setmenu-h'>{t('settings:menu.sprites')}</span>
 								<div className='r-set-opts'>
 									{SPRITES.map(([v, label]) => (
 										<button
@@ -123,7 +124,7 @@ export const SettingsMenu = () => {
 							</div>
 
 							<div className='r-setmenu-grp'>
-								<span className='r-setmenu-h'>Raid ranking</span>
+								<span className='r-setmenu-h'>{t('settings:menu.raidRanking')}</span>
 								<div className='r-set-opts'>
 									{RAID_METRICS.map((m) => (
 										<button
@@ -139,24 +140,24 @@ export const SettingsMenu = () => {
 							</div>
 
 							<div className='r-setmenu-grp'>
-								<span className='r-setmenu-h'>Account for Best Buddy</span>
+								<span className='r-setmenu-h'>{t('settings:menu.bestBuddy')}</span>
 								<div className='r-set-opts'>
 									<button
 										type='button'
 										data-active={!bestBuddy ? '' : undefined}
 										onClick={() => updateBestBuddy(false)}
 									>
-										Off
+										{t('settings:menu.off')}
 									</button>
 									<button type='button' data-active={bestBuddy ? '' : undefined} onClick={() => updateBestBuddy(true)}>
-										On
+										{t('settings:menu.on')}
 									</button>
 								</div>
 							</div>
 						</>
 					)}
 
-					<p className='r-setmenu-foot'>Saved on this device.</p>
+					<p className='r-setmenu-foot'>{t('settings:menu.footer')}</p>
 				</div>
 			)}
 		</div>

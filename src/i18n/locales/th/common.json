@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "หน้าแรก"
+	},
+	"nav": {
+		"pokedex": { "label": "Pokédex", "hint": "ดูโปเกมอนทั้งหมด" },
+		"rankings": { "label": "อันดับ", "hint": "ตัวโจมตีที่ดีที่สุดในแต่ละลีกและประเภทเรด" },
+		"calendar": { "label": "ปฏิทิน", "hint": "อีเวนต์ เรด สปอว์น และไข่" },
+		"moves": { "label": "ท่าโจมตี", "hint": "ท่าเร็วและท่าชาร์จทั้งหมด" },
+		"types": { "label": "ธาตุ", "hint": "ตารางประสิทธิภาพธาตุ" },
+		"searches": {
+			"label": "ค้นหา",
+			"hint": "สร้างข้อความค้นหาในเกม — จัดการ, IV สมบูรณ์แบบ หรือตัวเลือกแลกเปลี่ยน"
+		},
+		"calendarBadge_one": "{{label}} — อีเวนต์ใหม่ {{count}} รายการ",
+		"calendarBadge_other": "{{label}} — อีเวนต์ใหม่ {{count}} รายการ"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "ติดตั้ง GO Pokédex",
+		"title": "ติดตั้ง GO Pokédex",
+		"iosHint": "แตะแชร์ แล้วเลือก “เพิ่มไปยังหน้าจอโฮม” — เต็มจอ ไม่มีแถบเบราว์เซอร์",
+		"androidHint": "เพิ่มลงในหน้าจอโฮมเพื่อประสบการณ์แบบแอปเต็มจอ",
+		"installButton": "ติดตั้ง",
+		"dismissAriaLabel": "ปิด"
+	},
+	"placeholder": {
+		"toolsTitle": "เครื่องมือ",
+		"comingSoon": "กำลังจะมาในการปรับปรุงครั้งต่อไป"
+	}
+}

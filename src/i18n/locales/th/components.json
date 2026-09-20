@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "ตัวกรอง",
+		"clear": "ล้าง",
+		"dialogAriaLabel": "ตัวกรอง",
+		"typeSectionLabel": "ธาตุ",
+		"pickOneHint": "เลือกหนึ่งอย่าง",
+		"pickUpToHint": "เลือกได้สูงสุด {{max}} · ตรงกันทั้งคู่"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "เรียงตาม",
+		"sectionLabel": "เรียงตาม",
+		"asc": "น้อยไปมาก",
+		"desc": "มากไปน้อย"
+	},
+	"ivPicker": {
+		"attack": "โจมตี",
+		"defense": "ป้องกัน",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "ฮันโด"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "ลด",
+		"increaseAriaLabel": "เพิ่ม"
+	},
+	"shadowMark": {
+		"alt": "เชโดว์"
+	},
+	"searchBox": {
+		"placeholder": "ค้นหาโปเกมอนหรือท่าโจมตี…",
+		"ariaLabel": "ค้นหาโปเกมอนหรือท่าโจมตี",
+		"clearAriaLabel": "ล้างการค้นหา",
+		"shadowSuffix": "เชโดว์",
+		"fast": "เร็ว",
+		"charged": "ชาร์จ"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "ไม่ได้รับการจัดอันดับเป็นตัวโจมตีเรด",
+		"bestMovesetByType": "ท่าที่ดีที่สุดตามธาตุ",
+		"tapNextMoveset": "แตะเพื่อดูชุดท่าถัดไป",
+		"tapSelectType": "แตะเพื่อเลือกธาตุนี้",
+		"legacy": "เลกาซี",
+		"elite": "อีลีท",
+		"baseAtk": "ค่าโจมตีพื้นฐาน",
+		"typeRank": "อันดับธาตุ{{type}}"
+	}
+}

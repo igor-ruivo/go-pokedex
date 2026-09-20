@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "Dil ve ayarlar",
+		"dialogAriaLabel": "Ayarlar",
+		"appLanguage": "Uygulama dili",
+		"gameLanguage": "Oyun dili",
+		"moreSettings": "Diğer ayarlar",
+		"sprites": "Görseller",
+		"raidRanking": "Baskın sıralaması",
+		"bestBuddy": "En İyi Dost'u hesaba kat",
+		"off": "Kapalı",
+		"on": "Açık",
+		"footer": "Bu cihazda kaydedildi."
+	},
+	"page": {
+		"title": "Ayarlar",
+		"appLanguage": {
+			"title": "Uygulama dili",
+			"desc": "Arayüz metni. Varsayılan dil İngilizce'dir."
+		},
+		"gameLanguage": {
+			"title": "Oyun dili",
+			"desc": "Pokémon ve hareket adları, Pokémon GO'da göründükleri şekilde."
+		},
+		"sprites": {
+			"title": "Görseller",
+			"desc": "Her Pokémon için hangi görselin gösterileceği."
+		},
+		"bestBuddy": {
+			"title": "En İyi Dost'u hesaba kat",
+			"desc": "Seviye 51'i ulaşılabilir kabul et — IV tablosu, çöp/arama dizeleri, maksimum CP, seviye seçici, en iyi IV'ler/yüzdelik dilim, baskın sayaçları ve DPS/TDO/eDPS hesaplamalarının tümü seviye 50 yerine 51'e kadar değerlendirilir."
+		},
+		"footer": "Tercihler bu cihazda saklanır."
+	},
+	"spriteOptions": {
+		"official": "Resmi",
+		"go": "Pokémon GO",
+		"shiny": "GO Işıltılı"
+	},
+	"toggle": {
+		"off": "Kapalı",
+		"on": "Açık"
+	}
+}

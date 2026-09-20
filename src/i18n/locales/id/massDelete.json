@@ -1,0 +1,115 @@
+{
+	"loading": "Memuat…",
+	"pageTitle": {
+		"meta": "Hapus Massal Pokémon Non-Meta Saat Ini",
+		"badIv": "Hapus Massal Pokémon dengan IV Tidak Sempurna",
+		"trade": "Temukan Pokémon yang Layak Ditukar"
+	},
+	"modeTablist": "Mode hapus massal",
+	"modeTabs": {
+		"meta": { "full": "Non-meta relevan", "short": "Non-meta" },
+		"badIv": { "full": "IV Tidak Sempurna", "short": "IV" },
+		"trade": { "full": "Cari yang Bisa Ditukar", "short": "Bisa Ditukar" }
+	},
+	"badIvWarning": "Mode ini agresif dan perfeksionis: tujuannya adalah menghapus setiap tangkapan yang bukan Pokémon IV sempurna (100%), tanpa mempertimbangkan apakah spesiesnya sedang bagus atau buruk di meta — periksa kembali kategori dan whitelist di bawah sebelum menjalankannya.",
+	"helpText": {
+		"meta": "Hanya meta, tidak pernah IV: menghapus Pokémon apa pun yang tidak relevan secara kompetitif di mana pun — tidak di Liga Hebat, Ultra, atau Master, dan tidak di raid — berdasarkan batas peringkat dan batas CP di bawah. Sebuah spesies (atau evolusi lanjutannya) hanya perlu melewati batas di salah satu dari itu untuk diselamatkan, dan begitu terpenuhi, setiap tangkapan spesies itu juga diselamatkan, terlepas dari IV tangkapan itu sendiri — tab ini sama sekali tidak mempedulikan IV. Apa pun yang mencapai atau melebihi batas CP Anda selalu dipertahankan, begitu juga semua yang dicentang di kategori dan whitelist di bawah, terlepas dari peringkat. Stat product sempurna untuk Liga Master selalu dipertahankan.",
+		"badIv": "Hanya IV, tidak pernah meta: sepenuhnya mengabaikan meta saat ini — tujuannya adalah menghapus apa pun yang bukan 15/15/15 sempurna, terlepas dari apakah spesiesnya sendiri sedang meta atau tidak. Pencarian dalam game hanya bisa mencocokkan rentang IV, bukan nilai pastinya, jadi batasnya tidak selalu bisa digambar dengan tepat — untuk Liga Hebat (1500 CP) dan Liga Ultra (2500 CP), sebagian besar spesies tersapu lewat rentang Attack-rendah/bulk-tinggi bersama yang mendekatinya, dan beberapa ratus mendapat rentang terverifikasi masing-masing karena rentang bersama itu tidak cocok dengan statnya; bagaimanapun, beberapa tangkapan hampir sempurna (tapi bukan hundo) tepat di batas bisa lolos sebagai false negative. Liga Master tidak punya batas CP, jadi di sana yang terbaik memang selalu IV lebih tinggi — penanganan Liga Master mode ini presisi, bukan perkiraan. Stat product sempurna selalu dipertahankan di setiap liga, begitu juga semua yang dicentang di kategori dan whitelist di bawah, terlepas dari IV.",
+		"trade": "Pertanyaan ketiga, terpisah dari dua tab di atas: tangkapan mana yang layak diserahkan dalam pertukaran? Pertukaran Sahabat Karib selalu menaikkan tiap stat minimal ke 5. Dalam mode ini, sebuah spesies hanya perlu melewati SATU dari empat batas di bawah (Hebat, Ultra, Master, atau Raid) untuk disarankan. Liga Master dan raid tidak punya batas CP, jadi spesies relevan apa pun memenuhi syarat hanya lewat peringkat. Liga Hebat dan Ultra lebih pemilih: batas CP mereka sering berarti spread terbaik untuk suatu spesies butuh Attack sangat rendah, yang tidak bisa dihasilkan oleh batas minimal pertukaran sebesar 5 — jadi kedua liga itu hanya menghitung spesies saat spread terbaiknya sendiri memang bisa dicapai lewat pertukaran. Bagaimanapun, tangkapan yang sudah sempurna — atau sudah setara dengan spread terbaik yang mungkin di liga yang memenuhi syaratkannya — tidak pernah disarankan, karena menukarnya hanya bisa merugikan, tidak pernah meningkatkan. Kategori, whitelist, dan batas CP di bawah mempersempit saran lebih jauh, sama seperti tab lainnya."
+	},
+	"readMore": "Baca selengkapnya",
+	"readLess": "Tampilkan lebih sedikit",
+	"configuration": "Konfigurasi",
+	"edit": "Edit",
+	"hide": "Sembunyikan",
+	"reset": "Reset",
+	"neverDeleteCategory": "Jangan pernah hapus kategori ini",
+	"neverSuggestCategory": "Jangan pernah sarankan kategori ini",
+	"neverDeletePokemon": "Jangan pernah hapus Pokémon ini",
+	"neverSuggestPokemon": "Jangan pernah sarankan Pokémon ini",
+	"knobs": {
+		"greatLeague": { "full": "Liga Hebat", "short": "Hebat" },
+		"ultraLeague": { "full": "Liga Ultra", "short": "Ultra" },
+		"masterLeague": { "full": "Liga Master", "short": "Master" },
+		"raidAttackers": { "full": "Attacker Raid", "short": "Raid" },
+		"saveCp": "Simpan CP",
+		"simplifiedMode": "Mode sederhana",
+		"keep3StarPokemon": "Pertahankan Pokémon 3*",
+		"ariaKeepTopGreat": "Pertahankan Liga Hebat teratas",
+		"ariaKeepTopUltra": "Pertahankan Liga Ultra teratas",
+		"ariaKeepTopMaster": "Pertahankan Liga Master teratas",
+		"ariaKeepTopRaid": "Pertahankan attacker raid teratas"
+	},
+	"metaKnobsSubtitle": "Pertahankan Pokémon meta teratas saat ini per liga/raid",
+	"badIvKnobsSubtitle": "Mode sederhana menukar sedikit akurasi demi string yang lebih pendek — lihat tooltip pada toggle",
+	"tradeKnobsSubtitle": "Sebuah spesies hanya perlu melewati SATU dari empat batas ini untuk disarankan — Hebat dan Ultra juga mensyaratkan pertukaran benar-benar bisa mencapai spread terbaiknya (lihat teks bantuan di atas)",
+	"simplifiedTrashTooltip": "Menukar akurasi demi string yang lebih pendek: melewatkan pencarian kesetaraan stat product Liga Master (tanpa batas) — hanya hundo persis (dilindungi di mana pun, tanpa syarat, lewat pengecualian global !4*) yang tetap dilindungi di sana. Perlindungan Hebat/Ultra/raid tidak terpengaruh.",
+	"simplifiedBadIvTooltip": "Menukar akurasi demi string yang lebih pendek: alih-alih melindungi hanya spread IV terbaik persis suatu spesies, spesies mana pun yang butuh salah satu pengecualian per-spread ini dilewati sepenuhnya — sedikit seperti entri whitelist bonus. Lebih pendek dan sederhana, tapi lebih banyak false negative: beberapa tangkapan yang benar disasar oleh mode Lengkap tidak disasar di sini.",
+	"tradeOnlyLowIvTooltip": "Mempersempit saran ke tangkapan yang Attack, Defense, dan HP-nya jelas rendah semua — selain itu, apa pun yang kurang dari hundo akan disarankan.",
+	"toggleOn": "Aktif",
+	"toggleOff": "Mati",
+	"protectionMeta": {
+		"favorite": { "label": "Favorit", "description": "Pokémon yang ditandai Favorit di dalam game." },
+		"tagged": { "label": "Diberi Tag", "description": "Pokémon dengan nama panggilan atau tag kustom." },
+		"legendary": { "label": "Legendaris", "description": "Legendaris box (Mewtwo, Lugia, …)." },
+		"mythical": { "label": "Mitos", "description": "Pokémon mitos (Mew, Celebi, …)." },
+		"ultraBeast": { "label": "Ultra Beast", "description": "Ultra Beast (Nihilego, Buzzwole, …)." },
+		"megaEvolvable": {
+			"label": "Bisa Mega Evolve",
+			"description": "Hanya game yang tahu ini — butuh cukup Energi Mega yang tersimpan untuk spesies itu saat ini."
+		},
+		"shadow": {
+			"label": "Shadow",
+			"description": "Setiap Pokémon Shadow, terlepas dari IV atau peringkatnya sendiri."
+		},
+		"dynamax": { "label": "Dynamax", "description": "Pokémon yang bisa Dynamax." },
+		"fusion": { "label": "Fusion", "description": "Pokémon yang bisa difusi, atau sudah difusi." },
+		"gigantamax": { "label": "Gigantamax", "description": "Pokémon yang bisa Gigantamax." },
+		"background": {
+			"label": "Latar Belakang",
+			"description": "Pokémon dengan latar belakang langka atau lokasi khusus di profilnya."
+		},
+		"shiny": { "label": "Shiny", "description": "Setiap Pokémon Shiny." },
+		"costume": { "label": "Kostum", "description": "Pokémon yang mengenakan kostum Event Spesial." }
+	},
+	"lockedOnTitle": "Pokémon {{label}} tidak pernah bisa ditukar, jadi ini selalu aktif.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Tambahkan Pokémon untuk tidak pernah dihapus…",
+		"searchPlaceholderTrade": "Tambahkan Pokémon untuk tidak pernah disarankan…",
+		"clear": "Hapus",
+		"remove": "Hapus",
+		"removeLockedTitle": "Dilindungi karena {{reason}} — matikan itu di atas untuk menghapusnya",
+		"shadowSuffix": "Shadow",
+		"emptyMeta": "Belum ada apa pun di sini — cari di atas untuk melindungi Pokémon tertentu terlepas dari kategori di atas.",
+		"emptyTrade": "Belum ada apa pun di sini — cari di atas untuk menjaga Pokémon tertentu tetap di luar saran pertukaran terlepas dari kategori di atas.",
+		"summaryEmpty": "Belum ada Pokémon yang dilindungi secara individual",
+		"summaryManual_one": "{{count}} dipertahankan secara individual",
+		"summaryManual_other": "{{count}} dipertahankan secara individual",
+		"summaryAuto_one": "{{count}} dilindungi lewat kategori",
+		"summaryAuto_other": "{{count}} dilindungi lewat kategori"
+	},
+	"compute": "Hitung",
+	"computing": "Menghitung…",
+	"computingMessage": "Menghitung… ini menyapu setiap spesies, tunggu sebentar.",
+	"outputPlaceholderMeta": "String pencarian Anda akan muncul di sini. Tempel ke bilah pencarian Pokémon GO, tinjau hasilnya, lalu hapus.",
+	"outputPlaceholderTrade": "String pencarian Anda akan muncul di sini. Tempel ke bilah pencarian Pokémon GO untuk meninjau kandidat pertukaran Anda.",
+	"characterCount_one": "{{formatted}} karakter",
+	"characterCount_other": "{{formatted}} karakter",
+	"lengthWarningMeta": " — ⚠️ ini mungkin terlalu panjang untuk bilah pencarian di beberapa ponsel Android; pertimbangkan menggunakan toggle mode hapus sederhana di atas jika string terpotong setelah ditempel di bilah pencarian Pokémon GO.",
+	"lengthWarningTrade": " — ⚠️ ini mungkin terlalu panjang untuk bilah pencarian di beberapa ponsel Android; menempelnya ke bilah pencarian Pokémon GO bisa memotong bagian akhir string.",
+	"copySearchString": "Salin string pencarian",
+	"copied": "Tersalin ✓",
+	"panelSummary": {
+		"topGreat": "Top {{n}} Liga Hebat",
+		"topUltra": "Top {{n}} Liga Ultra",
+		"topMaster": "Top {{n}} Liga Master",
+		"topRaid": "Top {{n}} Raid",
+		"cpKept": "CP ≥ {{cp}} dipertahankan",
+		"cpUnder": "CP < {{cp}}",
+		"simplifiedModeSuffix": "Mode sederhana",
+		"protectsList": "melindungi {{list}}",
+		"excludesList": "mengecualikan {{list}}",
+		"nothingExtra": "tidak ada tambahan",
+		"onlyClearlyLowIvs": "hanya IV yang jelas rendah"
+	}
+}

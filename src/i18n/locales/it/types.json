@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "Tabella dei tipi",
+		"description": "Leggi una <b>riga</b> per vedere come un tipo attaccante se la cava contro ogni difensore · leggi una <b>colonna</b> per vedere a cosa resiste un tipo difensore."
+	},
+	"legend": {
+		"superEffective": "Super efficace",
+		"resisted": "Resistito",
+		"immune": "Immune / doppia resistenza"
+	},
+	"calculator": {
+		"title": "Calcolatore debolezze",
+		"defendingTypesLabel": "Tipo/i difensore/i · fino a 2",
+		"takesExtraFrom": "Subisce più danni da",
+		"takesLessFrom": "Subisce meno danni da",
+		"nothing": "Niente"
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"notFound": "找不到招式「{{moveId}}」。",
+	"sections": {
+		"stats": "數值",
+		"usage": "使用情況",
+		"recommended": "推薦",
+		"alsoLearnedBy": "其他能學會的寶可夢",
+		"learnedBy": "能學會的寶可夢",
+		"eliteFor": "是以下寶可夢的高級招式",
+		"legacyFor": "是以下寶可夢的傳承招式"
+	},
+	"arena": {
+		"pve": "PvE · 團體戰與道館戰",
+		"pvp": "PvP · 對戰聯盟"
+	},
+	"kind": {
+		"fastChip": "快速招式",
+		"chargedChip": "特殊招式"
+	},
+	"superMega": "究極 Mega",
+	"statLabels": {
+		"dmg": "傷害",
+		"nrg": "能量",
+		"dur": "耗時",
+		"turns": "回合",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "能學會 {{name}} 的寶可夢",
+	"tiles": {
+		"recommended": "推薦",
+		"mega": "Mega",
+		"elite": "高級",
+		"legacy": "傳承"
+	},
+	"noneLearn": "沒有寶可夢能學會這個招式。"
+}

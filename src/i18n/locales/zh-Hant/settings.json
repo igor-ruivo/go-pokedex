@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "語言與設定",
+		"dialogAriaLabel": "設定",
+		"appLanguage": "應用程式語言",
+		"gameLanguage": "遊戲語言",
+		"moreSettings": "更多設定",
+		"sprites": "圖鑑圖片",
+		"raidRanking": "團體戰排名依據",
+		"bestBuddy": "以最佳夥伴計算",
+		"off": "關閉",
+		"on": "開啟",
+		"footer": "設定已儲存在此裝置。"
+	},
+	"page": {
+		"title": "設定",
+		"appLanguage": {
+			"title": "應用程式語言",
+			"desc": "介面文字。預設為英文。"
+		},
+		"gameLanguage": {
+			"title": "遊戲語言",
+			"desc": "寶可夢與招式名稱，依 Pokémon GO 遊戲內顯示為準。"
+		},
+		"sprites": {
+			"title": "圖鑑圖片",
+			"desc": "每隻寶可夢要顯示哪種圖片。"
+		},
+		"bestBuddy": {
+			"title": "以最佳夥伴計算",
+			"desc": "將 51 級視為可達成 — 個體值表、垃圾/搜尋字串、最高 CP、等級選擇器、最佳個體值/百分位、團體戰計算與 DPS/TDO/eDPS，全部以 51 級（而非 50 級）計算。"
+		},
+		"footer": "偏好設定會儲存在此裝置。"
+	},
+	"spriteOptions": {
+		"official": "官方圖片",
+		"go": "Pokémon GO",
+		"shiny": "GO 閃光"
+	},
+	"toggle": {
+		"off": "關閉",
+		"on": "開啟"
+	}
+}

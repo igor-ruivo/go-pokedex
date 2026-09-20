@@ -1,0 +1,38 @@
+{
+	"notFound": "Jurus “{{moveId}}” tidak ditemukan.",
+	"sections": {
+		"stats": "Statistik",
+		"usage": "Penggunaan",
+		"recommended": "Direkomendasikan",
+		"alsoLearnedBy": "Juga dipelajari oleh",
+		"learnedBy": "Dipelajari oleh",
+		"eliteFor": "Merupakan jurus elite untuk",
+		"legacyFor": "Merupakan jurus legacy untuk"
+	},
+	"arena": {
+		"pve": "PvE · Raid & Gym",
+		"pvp": "PvP · Liga"
+	},
+	"kind": {
+		"fastChip": "Jurus cepat",
+		"chargedChip": "Jurus utama"
+	},
+	"superMega": "Super Mega",
+	"statLabels": {
+		"dmg": "DMG",
+		"nrg": "NRG",
+		"dur": "DUR",
+		"turns": "Giliran",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Pokémon yang bisa mempelajari {{name}}",
+	"tiles": {
+		"recommended": "Direkomendasikan",
+		"mega": "Mega",
+		"elite": "Elite",
+		"legacy": "Legacy"
+	},
+	"noneLearn": "Tidak ada Pokémon yang mempelajari jurus ini."
+}

@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "首頁"
+	},
+	"nav": {
+		"pokedex": { "label": "圖鑑", "hint": "瀏覽所有寶可夢" },
+		"rankings": { "label": "排行榜", "hint": "各聯盟與團體戰屬性的最強攻擊手" },
+		"calendar": { "label": "行事曆", "hint": "活動、團體戰、野生出沒與蛋" },
+		"moves": { "label": "招式", "hint": "所有快速招式與特殊招式" },
+		"types": { "label": "屬性", "hint": "屬性相剋表" },
+		"searches": {
+			"label": "搜尋字串",
+			"hint": "產生遊戲內搜尋字串 — 清理、完美個體值，或交換候選"
+		},
+		"calendarBadge_one": "{{label}} — {{count}} 個新活動",
+		"calendarBadge_other": "{{label}} — {{count}} 個新活動"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "安裝 GO Pokédex",
+		"title": "安裝 GO Pokédex",
+		"iosHint": "點選「分享」，再點選「加入主畫面」— 全螢幕，無瀏覽器列。",
+		"androidHint": "加入主畫面即可獲得全螢幕的應用程式體驗。",
+		"installButton": "安裝",
+		"dismissAriaLabel": "關閉"
+	},
+	"placeholder": {
+		"toolsTitle": "工具",
+		"comingSoon": "改版即將推出此功能。"
+	}
+}

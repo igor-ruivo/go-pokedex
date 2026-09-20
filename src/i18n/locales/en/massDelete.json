@@ -1,0 +1,112 @@
+{
+	"loading": "Loading…",
+	"pageTitle": {
+		"meta": "Mass Delete current non-meta relevant Pokémon",
+		"badIv": "Mass Delete Non-Perfect IV Pokémon",
+		"trade": "Find Pokémon Worth Trading"
+	},
+	"modeTablist": "Mass delete mode",
+	"modeTabs": {
+		"meta": { "full": "Non-meta relevant", "short": "Non-meta" },
+		"badIv": { "full": "Non-Perfect IVs", "short": "IVs" },
+		"trade": { "full": "Find Tradeable", "short": "Tradeable" }
+	},
+	"badIvWarning": "This mode is aggressive and perfectionist: the intent is to delete every catch that isn’t a perfect (100%) IV Pokémon, with no regard for whether a species is currently good or bad in the meta — double-check the categories and whitelist below before running it.",
+	"helpText": {
+		"meta": "Meta only, never IVs: deletes any Pokémon that isn’t competitively relevant anywhere — not in Great, Ultra, or Master League, and not in raids — based on the rank cutoffs and CP cap below. A species (or any of its later evolutions) only needs to clear the cutoff in one of those to be spared, and once it does, every catch of it is spared too, regardless of that catch’s own IVs — this tab has no opinion on IVs at all. Anything at or above your CP cap is always kept, and so is everything checked in the categories and whitelist below, regardless of rank.A perfect stat product for Master League is always kept.",
+		"badIv": "IVs only, never meta: ignores the current meta entirely — the goal is to delete anything that isn’t a perfect 15/15/15 regardless of whether the species itself is meta right now. The game’s search only lets us match IV ranges, not exact values, so it can’t always draw that line exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept via a shared low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-verified range instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect (but not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no CP cap, so there the true best really is always higher IVs — this mode’s Master League handling is exact, not an approximation. A perfect stat product is always kept in every league, and so is everything checked in the categories and whitelist below, regardless of IVs.",
+		"trade": "A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? A Best Friend trade always floors every stat at 5. In this mode, a species just needs to clear ONE of the four cutoffs below (Great, Ultra, Master, or Raid) to be suggested. Master League and raids have no CP cap, so any relevant species qualifies on rank alone. Great and Ultra are pickier: their CP caps often mean the best possible spread for a species needs very low Attack, which a trade’s floor of 5 can never produce — so those two leagues only count a species when its own best spread is actually something a trade could reach. Either way, a catch that’s already perfect — or already tied for the best possible spread in whichever league qualified it — is never suggested, since trading it could only lose it, never improve it. The categories, whitelist, and CP cap below narrow the suggestions further, same as the other tabs."
+	},
+	"readMore": "Read more",
+	"readLess": "Read less",
+	"configuration": "Configuration",
+	"edit": "Edit",
+	"hide": "Hide",
+	"reset": "Reset",
+	"neverDeleteCategory": "Never delete this category",
+	"neverSuggestCategory": "Never suggest this category",
+	"neverDeletePokemon": "Never delete these Pokémon",
+	"neverSuggestPokemon": "Never suggest these Pokémon",
+	"knobs": {
+		"greatLeague": { "full": "Great League", "short": "Great" },
+		"ultraLeague": { "full": "Ultra League", "short": "Ultra" },
+		"masterLeague": { "full": "Master League", "short": "Master" },
+		"raidAttackers": { "full": "Raid Attackers", "short": "Raid" },
+		"saveCp": "Save CP",
+		"simplifiedMode": "Simplified mode",
+		"keep3StarPokemon": "Keep 3* Pokémon",
+		"ariaKeepTopGreat": "Keep top Great League",
+		"ariaKeepTopUltra": "Keep top Ultra League",
+		"ariaKeepTopMaster": "Keep top Master League",
+		"ariaKeepTopRaid": "Keep top raid attackers"
+	},
+	"metaKnobsSubtitle": "Preserve top current meta Pokémon per league/raid",
+	"badIvKnobsSubtitle": "Simplified trades some accuracy for a shorter string — see the tooltip on the toggle",
+	"tradeKnobsSubtitle": "A species only needs to clear ONE of these four cutoffs to be suggested — Great and Ultra also require a trade to actually be able to reach their best possible spread (see the help text above)",
+	"simplifiedTrashTooltip": "Trades accuracy for a shorter string: skips looking for Master League (uncapped) stat-product ties — only the exact hundo (protected everywhere, unconditionally, via the global !4* exclusion) stays protected there. Great/Ultra/raid protection is unaffected.",
+	"simplifiedBadIvTooltip": "Trades accuracy for a shorter string: instead of protecting just a species’ exact best IV spread, any species that would need one of these per-spread carve-outs is skipped entirely — a bit like a bonus whitelist entry. Shorter and simpler, but more false negatives: some catches Complete mode would correctly target stay un-targeted here.",
+	"tradeOnlyLowIvTooltip": "Narrows suggestions to catches whose Attack, Defense, and HP are all clearly low — otherwise, anything short of a hundo is suggested.",
+	"toggleOn": "On",
+	"toggleOff": "Off",
+	"protectionMeta": {
+		"favorite": { "label": "Favorited", "description": "Pokémon marked as a Favorite in-game." },
+		"tagged": { "label": "Tagged", "description": "Pokémon with a nickname or custom tag." },
+		"legendary": { "label": "Legendary", "description": "Box legendaries (Mewtwo, Lugia, …)." },
+		"mythical": { "label": "Mythical", "description": "Mythicals (Mew, Celebi, …)." },
+		"ultraBeast": { "label": "Ultra Beast", "description": "Ultra Beasts (Nihilego, Buzzwole, …)." },
+		"megaEvolvable": {
+			"label": "Mega Evolvable",
+			"description": "Only the game knows this — needs enough Mega Energy banked for that species right now."
+		},
+		"shadow": { "label": "Shadow", "description": "Every Shadow Pokémon, regardless of its own IVs or rank." },
+		"dynamax": { "label": "Dynamax", "description": "Pokémon able to Dynamax." },
+		"fusion": { "label": "Fusion", "description": "Pokémon able to be fused, or already fused." },
+		"gigantamax": { "label": "Gigantamax", "description": "Pokémon able to Gigantamax." },
+		"background": {
+			"label": "Background",
+			"description": "Pokémon with a rare or location background in its profile."
+		},
+		"shiny": { "label": "Shiny", "description": "Every Shiny Pokémon." },
+		"costume": { "label": "Costume", "description": "Pokémon wearing a Special Event costume." }
+	},
+	"lockedOnTitle": "{{label}} Pokémon can never be traded, so this is always on.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Add a Pokémon to never delete…",
+		"searchPlaceholderTrade": "Add a Pokémon to never suggest…",
+		"clear": "Clear",
+		"remove": "Remove",
+		"removeLockedTitle": "Protected because it’s {{reason}} — toggle that off above to remove it",
+		"shadowSuffix": "Shadow",
+		"emptyMeta": "Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.",
+		"emptyTrade": "Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.",
+		"summaryEmpty": "No individually-protected Pokémon yet",
+		"summaryManual_one": "{{count}} kept individually",
+		"summaryManual_other": "{{count}} kept individually",
+		"summaryAuto_one": "{{count}} protected by category",
+		"summaryAuto_other": "{{count}} protected by category"
+	},
+	"compute": "Compute",
+	"computing": "Computing…",
+	"computingMessage": "Computing… this sweeps every species, give it a moment.",
+	"outputPlaceholderMeta": "Your search string appears here. Paste it into the Pokémon GO search bar, review the matches, then delete.",
+	"outputPlaceholderTrade": "Your search string appears here. Paste it into the Pokémon GO search bar to review your trade candidates.",
+	"characterCount_one": "{{formatted}} character",
+	"characterCount_other": "{{formatted}} characters",
+	"lengthWarningMeta": " — ⚠️ this may be too long for the search bar on some Android phones; consider using the simplified deletion mode toggle above if you notice the string gets cut-off after pasting it in Pokémon Go's search bar.",
+	"lengthWarningTrade": " — ⚠️ this may be too long for the search bar on some Android phones; pasting it into Pokémon GO's search bar may cut off the end of the string.",
+	"copySearchString": "Copy search string",
+	"copied": "Copied ✓",
+	"panelSummary": {
+		"topGreat": "Top {{n}} Great League",
+		"topUltra": "Top {{n}} Ultra League",
+		"topMaster": "Top {{n}} Master League",
+		"topRaid": "Top {{n}} Raid",
+		"cpKept": "CP ≥ {{cp}} kept",
+		"cpUnder": "CP < {{cp}}",
+		"simplifiedModeSuffix": "Simplified mode",
+		"protectsList": "protects {{list}}",
+		"excludesList": "excludes {{list}}",
+		"nothingExtra": "nothing extra",
+		"onlyClearlyLowIvs": "only clearly-low IVs"
+	}
+}

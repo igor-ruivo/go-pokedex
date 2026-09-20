@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "이름",
+		"dmgPve": "데미지 · PvE",
+		"dmgPvp": "데미지 · PvP",
+		"nrgPve": "에너지 · PvE",
+		"nrgPvp": "에너지 · PvP",
+		"durPve": "지속시간 · PvE",
+		"turnsPvp": "턴 · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "기술",
+		"kindAriaLabel": "기술 종류",
+		"kind": { "all": "전체", "fast": "일반 기술", "charged": "스페셜 기술" },
+		"count_one": "기술 {{count}}개",
+		"count_other": "기술 {{count}}개"
+	}
+}

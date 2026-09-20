@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { type RaidRecommendation, RaidTypeCoverage } from '../../components/RaidTypeCoverage';
@@ -11,7 +12,6 @@ import { TYPE_LABEL } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { usePvp } from '../../queries/pvp';
 
-const LEAGUE_LABEL = ['Great League', 'Ultra League', 'Master League', 'Raids'] as const;
 const EPS = 1e-9;
 
 const MoveRow = ({
@@ -32,6 +32,7 @@ const MoveRow = ({
 	best?: boolean;
 	recommended?: boolean;
 }) => {
+	const { t } = useTranslation(['pokemonDetail']);
 	const { currentGameLanguage } = useLanguage();
 	const { moves } = useMoves();
 	const m = moves[moveId];
@@ -71,7 +72,7 @@ const MoveRow = ({
 			<div className='r-move-head'>
 				<span className='r-move-type'>{TYPE_LABEL[type] ?? m.type}</span>
 				<b>{m.moveName[currentGameLanguage] ?? cleanName(moveId)}</b>
-				{recommended && <i className='r-move-tag r-move-tag--rec'>Recommended</i>}
+				{recommended && <i className='r-move-tag r-move-tag--rec'>{t('pokemonDetail:moves.recommended')}</i>}
 				{tags.map((t) => (
 					<i key={t} className='r-move-tag'>
 						{t}
@@ -80,7 +81,7 @@ const MoveRow = ({
 			</div>
 			<div className='r-move-stats'>
 				<div>
-					<u>{arena === 'pve' ? 'PvE' : 'PvP'}</u>
+					<u>{arena === 'pve' ? t('pokemonDetail:moves.pve') : t('pokemonDetail:moves.pvp')}</u>
 					{base.map(([k, v]) => (
 						<span key={k}>
 							{k} <b>{v}</b>
@@ -100,9 +101,17 @@ const MoveRow = ({
 };
 
 const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+	const { t } = useTranslation(['pokemonDetail']);
 	const { moves, movesFetchCompleted } = useMoves();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { currentGameLanguage } = useLanguage();
+
+	const LEAGUE_LABEL = [
+		t('pokemonDetail:leagues.greatFull'),
+		t('pokemonDetail:leagues.ultraFull'),
+		t('pokemonDetail:leagues.masterFull'),
+		t('pokemonDetail:leagues.raidsFull'),
+	];
 
 	const isRaid = league === 3;
 	const arena: Arena = isRaid ? 'pve' : 'pvp';
@@ -118,7 +127,10 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 
 	const elite = new Set(pokemon.eliteMoves);
 	const legacy = new Set(pokemon.legacyMoves);
-	const tagsFor = (id: string) => [elite.has(id) ? 'Elite' : '', legacy.has(id) ? 'Legacy' : ''].filter(Boolean);
+	const tagsFor = (id: string) =>
+		[elite.has(id) ? t('pokemonDetail:moves.elite') : '', legacy.has(id) ? t('pokemonDetail:moves.legacy') : ''].filter(
+			Boolean
+		);
 	const charged = Array.from(new Set([...pokemon.chargedMoves, ...pokemon.extraChargedMoves]));
 
 	// Moveset recommended for the league the user is looking at.
@@ -173,7 +185,11 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 				<RaidTypeCoverage pokemon={pokemon} showReadout={false} onRecommend={setRaidRec} />
 			) : (
 				<>
-					<div className='r-section-h'>Best {LEAGUE_LABEL[league] ?? 'league'} moveset</div>
+					<div className='r-section-h'>
+						{t('pokemonDetail:moves.bestMoveset', {
+							league: LEAGUE_LABEL[league] ?? t('pokemonDetail:moves.defaultLeague'),
+						})}
+					</div>
 					{hasBest ? (
 						<div className='r-movelist'>
 							<MoveRow pokemon={pokemon} moveId={recFast} kind='fast' arena={arena} tags={tagsFor(recFast)} best />
@@ -183,15 +199,19 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 						</div>
 					) : (
 						<p className='r-moves-unranked'>
-							{cleanName(pokemon.speciesName)} isn’t ranked for the {LEAGUE_LABEL[league] ?? 'selected league'} — no
-							recommended moveset. Every move it can learn is listed below.
+							{t('pokemonDetail:moves.unrankedForLeague', {
+								name: cleanName(pokemon.speciesName),
+								league: LEAGUE_LABEL[league] ?? t('pokemonDetail:moves.defaultLeagueSelected'),
+							})}
 						</p>
 					)}
 				</>
 			)}
 
-			<div className='r-section-h r-section-h--big'>All moves {cleanName(pokemon.speciesName)} can learn</div>
-			<div className='r-section-h'>Fast moves</div>
+			<div className='r-section-h r-section-h--big'>
+				{t('pokemonDetail:moves.allMovesCanLearn', { name: cleanName(pokemon.speciesName) })}
+			</div>
+			<div className='r-section-h'>{t('pokemonDetail:moves.fastMoves')}</div>
 			<div className='r-movelist r-movelist--scroll'>
 				{fastSorted.map((id) => (
 					<MoveRow
@@ -206,7 +226,7 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 				))}
 			</div>
 
-			<div className='r-section-h'>Charged moves</div>
+			<div className='r-section-h'>{t('pokemonDetail:moves.chargedMoves')}</div>
 			<div className='r-movelist r-movelist--scroll'>
 				{chargedSorted.map((id) => (
 					<MoveRow

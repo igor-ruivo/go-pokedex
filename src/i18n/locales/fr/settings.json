@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "Langue et paramètres",
+		"dialogAriaLabel": "Paramètres",
+		"appLanguage": "Langue de l'appli",
+		"gameLanguage": "Langue du jeu",
+		"moreSettings": "Plus de paramètres",
+		"sprites": "Sprites",
+		"raidRanking": "Classement des raids",
+		"bestBuddy": "Prendre en compte le Meilleur Ami",
+		"off": "Désactivé",
+		"on": "Activé",
+		"footer": "Enregistré sur cet appareil."
+	},
+	"page": {
+		"title": "Paramètres",
+		"appLanguage": {
+			"title": "Langue de l'appli",
+			"desc": "Texte de l'interface. L'anglais est la langue par défaut."
+		},
+		"gameLanguage": {
+			"title": "Langue du jeu",
+			"desc": "Noms des Pokémon et des capacités, tels qu'ils apparaissent dans Pokémon GO."
+		},
+		"sprites": {
+			"title": "Sprites",
+			"desc": "Quel artwork afficher pour chaque Pokémon."
+		},
+		"bestBuddy": {
+			"title": "Prendre en compte le Meilleur Ami",
+			"desc": "Considérer le niveau 51 comme atteignable — le tableau des IV, les chaînes de suppression/recherche, les PC max, le sélecteur de niveau, les meilleurs IV/percentile, les calculs de raid et les DPS/TDO/eDPS évaluent alors jusqu'au niveau 51 au lieu de 50."
+		},
+		"footer": "Les préférences sont enregistrées sur cet appareil."
+	},
+	"spriteOptions": {
+		"official": "Officiel",
+		"go": "Pokémon GO",
+		"shiny": "GO chromatique"
+	},
+	"toggle": {
+		"off": "Désactivé",
+		"on": "Activé"
+	}
+}

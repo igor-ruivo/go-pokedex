@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface IVs {
 	atk: number;
@@ -104,15 +105,10 @@ const Bar = ({ label, value, onChange }: { label: string; value: number; onChang
 	);
 };
 
-const DEFAULT_PRESETS: Array<[string, IVs]> = [
-	['0 / 0 / 0', { atk: 0, def: 0, hp: 0 }],
-	['Hundo', { atk: 15, def: 15, hp: 15 }],
-];
-
 export const IvPicker = ({
 	value,
 	onChange,
-	presets = DEFAULT_PRESETS,
+	presets,
 }: {
 	value: IVs;
 	onChange: (next: IVs) => void;
@@ -125,13 +121,18 @@ export const IvPicker = ({
 	// is still armed) — rendered as a toggled-looking second border.
 	presets?: Array<[string, IVs, (() => void)?, boolean?]>;
 }) => {
+	const { t } = useTranslation(['components']);
+	const resolvedPresets: Array<[string, IVs, (() => void)?, boolean?]> = presets ?? [
+		[t('components:ivPicker.presetZero'), { atk: 0, def: 0, hp: 0 }],
+		[t('components:ivPicker.presetHundo'), { atk: 15, def: 15, hp: 15 }],
+	];
 	return (
 		<div className='r-iv'>
-			<Bar label='ATTACK' value={value.atk} onChange={(atk) => onChange({ ...value, atk })} />
-			<Bar label='DEFENSE' value={value.def} onChange={(def) => onChange({ ...value, def })} />
-			<Bar label='HP' value={value.hp} onChange={(hp) => onChange({ ...value, hp })} />
+			<Bar label={t('components:ivPicker.attack')} value={value.atk} onChange={(atk) => onChange({ ...value, atk })} />
+			<Bar label={t('components:ivPicker.defense')} value={value.def} onChange={(def) => onChange({ ...value, def })} />
+			<Bar label={t('components:ivPicker.hp')} value={value.hp} onChange={(hp) => onChange({ ...value, hp })} />
 			<div className='r-iv-presets'>
-				{presets.map(([label, iv, onPick, isActive]) => (
+				{resolvedPresets.map(([label, iv, onPick, isActive]) => (
 					<button
 						key={label}
 						type='button'

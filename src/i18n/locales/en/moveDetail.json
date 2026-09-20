@@ -1,0 +1,38 @@
+{
+	"notFound": "No move “{{moveId}}”.",
+	"sections": {
+		"stats": "Stats",
+		"usage": "Usage",
+		"recommended": "Recommended",
+		"alsoLearnedBy": "Also learned by",
+		"learnedBy": "Learned by",
+		"eliteFor": "Is an elite move for",
+		"legacyFor": "Is a legacy move for"
+	},
+	"arena": {
+		"pve": "PvE · Raids & Gyms",
+		"pvp": "PvP · Leagues"
+	},
+	"kind": {
+		"fastChip": "Fast move",
+		"chargedChip": "Charged move"
+	},
+	"superMega": "Super Mega",
+	"statLabels": {
+		"dmg": "DMG",
+		"nrg": "NRG",
+		"dur": "DUR",
+		"turns": "Turns",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Pokémon can learn {{name}}",
+	"tiles": {
+		"recommended": "Recommended",
+		"mega": "Mega",
+		"elite": "Elite",
+		"legacy": "Legacy"
+	},
+	"noneLearn": "No Pokémon learns this move."
+}

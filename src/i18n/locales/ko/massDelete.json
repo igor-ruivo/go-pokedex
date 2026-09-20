@@ -1,0 +1,112 @@
+{
+	"loading": "불러오는 중…",
+	"pageTitle": {
+		"meta": "현재 메타와 무관한 포켓몬 일괄 삭제",
+		"badIv": "개체값이 완벽하지 않은 포켓몬 일괄 삭제",
+		"trade": "교환할 만한 포켓몬 찾기"
+	},
+	"modeTablist": "일괄 삭제 모드",
+	"modeTabs": {
+		"meta": { "full": "메타와 무관", "short": "메타 외" },
+		"badIv": { "full": "개체값 불완전", "short": "개체값" },
+		"trade": { "full": "교환 후보 찾기", "short": "교환 후보" }
+	},
+	"badIvWarning": "이 모드는 매우 엄격하고 완벽주의적입니다 — 해당 종이 현재 메타에서 강한지 약한지와 무관하게, 완벽한(100%) 개체값이 아닌 모든 포획 개체를 삭제 대상으로 합니다. 실행하기 전에 아래 카테고리와 화이트리스트를 반드시 확인하세요.",
+	"helpText": {
+		"meta": "메타만 판단하고 개체값은 보지 않습니다 — 그레이트·울트라·마스터 리그 어디에도, 레이드에도 경쟁력이 없는 포켓몬을 아래 랭크 기준과 CP 상한을 근거로 삭제합니다. 해당 종(또는 이후 진화형)이 이 중 하나라도 기준을 통과하면 그 종의 모든 포획 개체가 개체값과 무관하게 보호됩니다 — 이 탭은 개체값을 전혀 고려하지 않습니다. CP 상한 이상인 개체는 항상 보호되며, 아래 카테고리와 화이트리스트에서 선택한 항목도 랭크와 무관하게 항상 보호됩니다. 마스터 리그 기준 완벽한 스탯곱을 가진 개체는 항상 보호됩니다.",
+		"badIv": "개체값만 판단하고 메타는 보지 않습니다 — 해당 종이 현재 메타에서 좋은지와 무관하게 완벽한 15/15/15가 아닌 개체를 삭제하는 것이 목적입니다. 게임 검색 기능은 정확한 값이 아닌 개체값 범위만 지원하므로 항상 정확히 일치시킬 수는 없습니다 — 그레이트 리그(CP 1500)와 울트라 리그(CP 2500)에서는 대부분의 종을 공통된 '낮은 공격/높은 내구' 범위로 근사하며, 이 공통 범위가 맞지 않는 수백 종은 개별적으로 검증된 범위를 사용합니다. 두 경우 모두 경계에 가까운, 완벽에 근접했지만 완벽하지는 않은 개체가 누락될 수 있습니다. 마스터 리그는 CP 상한이 없으므로 여기서는 '개체값이 높을수록 좋다'가 그대로 정확히 적용됩니다 — 이 모드의 마스터 리그 처리는 근사치가 아닌 정확한 계산입니다. 모든 리그에서 완벽한 스탯곱을 가진 개체는 항상 보호되며, 아래 카테고리와 화이트리스트에서 선택한 항목도 개체값과 무관하게 항상 보호됩니다.",
+		"trade": "위 두 탭과는 별개인 세 번째 질문입니다 — 어떤 포획 개체가 교환할 가치가 있을까요? 베스트프렌드 교환은 모든 스탯을 최소 5까지 올려줍니다. 이 모드에서는 아래 네 가지 기준(그레이트·울트라·마스터·레이드) 중 하나만 충족해도 교환 후보로 제안됩니다. 마스터 리그와 레이드는 CP 상한이 없으므로 랭크만으로 해당되는 모든 종이 대상이 됩니다. 그레이트와 울트라는 더 까다롭습니다 — CP 상한 때문에 최적의 스탯 배분에 매우 낮은 공격력이 필요한 경우가 많은데, 교환의 최소 5 보정으로는 이를 만들 수 없습니다. 따라서 이 두 리그에서는 교환으로 실제 도달 가능한 배분을 가진 종만 대상으로 삼습니다. 어느 경우든, 이미 완벽하거나 이미 해당 리그에서 도달 가능한 최고의 배분과 동률인 개체는 교환으로 개선될 수 없으므로 제안되지 않습니다. 아래 카테고리, 화이트리스트, CP 상한이 다른 탭과 마찬가지로 제안을 더 좁혀줍니다."
+	},
+	"readMore": "더 보기",
+	"readLess": "접기",
+	"configuration": "설정",
+	"edit": "편집",
+	"hide": "숨기기",
+	"reset": "초기화",
+	"neverDeleteCategory": "이 카테고리는 삭제하지 않음",
+	"neverSuggestCategory": "이 카테고리는 제안하지 않음",
+	"neverDeletePokemon": "이 포켓몬은 삭제하지 않음",
+	"neverSuggestPokemon": "이 포켓몬은 제안하지 않음",
+	"knobs": {
+		"greatLeague": { "full": "그레이트 리그", "short": "그레이트" },
+		"ultraLeague": { "full": "울트라 리그", "short": "울트라" },
+		"masterLeague": { "full": "마스터 리그", "short": "마스터" },
+		"raidAttackers": { "full": "레이드 어태커", "short": "레이드" },
+		"saveCp": "CP 저장",
+		"simplifiedMode": "간소화 모드",
+		"keep3StarPokemon": "★3 포켓몬 보호",
+		"ariaKeepTopGreat": "그레이트 리그 상위 보호",
+		"ariaKeepTopUltra": "울트라 리그 상위 보호",
+		"ariaKeepTopMaster": "마스터 리그 상위 보호",
+		"ariaKeepTopRaid": "레이드 상위 어태커 보호"
+	},
+	"metaKnobsSubtitle": "리그/레이드별 현재 메타 상위 포켓몬 보호",
+	"badIvKnobsSubtitle": "간소화는 정확도 대신 더 짧은 문자열을 만듭니다 — 토글의 툴팁 참고",
+	"tradeKnobsSubtitle": "이 네 가지 기준 중 하나만 충족하면 제안됩니다 — 그레이트와 울트라는 교환으로 실제 최고 배분에 도달할 수 있어야 합니다(위 설명 참고)",
+	"simplifiedTrashTooltip": "정확도 대신 더 짧은 문자열을 만듭니다 — 마스터 리그(상한 없음)의 스탯곱 동률 개체 탐색을 생략하고, 완벽한 개체(모든 모드에서 !4* 예외로 항상 보호됨)만 그곳에서 보호합니다. 그레이트/울트라/레이드 보호에는 영향이 없습니다.",
+	"simplifiedBadIvTooltip": "정확도 대신 더 짧은 문자열을 만듭니다 — 종별로 정확한 최고 개체값 배분만 보호하는 대신, 그런 개별 예외가 필요한 종 전체를 제외합니다 — 보너스 화이트리스트 항목과 비슷합니다. 더 짧고 간단하지만 누락이 늘어납니다 — 완전 모드라면 올바르게 대상이 되었을 일부 포획 개체가 여기서는 대상에서 빠질 수 있습니다.",
+	"tradeOnlyLowIvTooltip": "공격, 방어, HP가 모두 명확히 낮은 포획 개체로만 제안을 좁힙니다 — 그 외에는 완벽 개체가 아닌 이상 모두 제안됩니다.",
+	"toggleOn": "켜짐",
+	"toggleOff": "꺼짐",
+	"protectionMeta": {
+		"favorite": { "label": "즐겨찾기", "description": "게임 내에서 즐겨찾기로 설정된 포켓몬." },
+		"tagged": { "label": "태그 지정됨", "description": "닉네임이나 커스텀 태그가 있는 포켓몬." },
+		"legendary": { "label": "전설", "description": "전설의 포켓몬(뮤츠, 루기아 등)." },
+		"mythical": { "label": "환상", "description": "환상의 포켓몬(뮤, 세레비 등)." },
+		"ultraBeast": { "label": "울트라비스트", "description": "울트라비스트(네크로즈마 등)." },
+		"megaEvolvable": {
+			"label": "메가진화 가능",
+			"description": "게임 정보로만 판단 가능 — 현재 해당 종의 메가에너지가 충분히 모여 있는 경우."
+		},
+		"shadow": { "label": "섀도", "description": "개체값이나 랭크와 무관하게 모든 섀도 포켓몬." },
+		"dynamax": { "label": "다이맥스", "description": "다이맥스 가능한 포켓몬." },
+		"fusion": { "label": "합체", "description": "합체 가능하거나 이미 합체된 포켓몬." },
+		"gigantamax": { "label": "거다이맥스", "description": "거다이맥스 가능한 포켓몬." },
+		"background": {
+			"label": "배경",
+			"description": "프로필에 희귀하거나 특별한 지역 배경이 있는 포켓몬."
+		},
+		"shiny": { "label": "색이 다른", "description": "모든 색이 다른 포켓몬." },
+		"costume": { "label": "코스튬", "description": "특별 이벤트 코스튬을 착용한 포켓몬." }
+	},
+	"lockedOnTitle": "{{label}} 포켓몬은 교환할 수 없어 항상 켜져 있습니다.",
+	"whitelist": {
+		"searchPlaceholderMeta": "삭제하지 않을 포켓몬 추가…",
+		"searchPlaceholderTrade": "제안하지 않을 포켓몬 추가…",
+		"clear": "초기화",
+		"remove": "제거",
+		"removeLockedTitle": "{{reason}}(으)로 보호 중입니다 — 제거하려면 위의 해당 토글을 끄세요",
+		"shadowSuffix": "섀도",
+		"emptyMeta": "아직 없습니다 — 위에서 검색해 위 카테고리와 무관하게 특정 포켓몬을 보호하세요.",
+		"emptyTrade": "아직 없습니다 — 위에서 검색해 위 카테고리와 무관하게 특정 포켓몬을 교환 제안에서 제외하세요.",
+		"summaryEmpty": "개별 보호된 포켓몬이 아직 없습니다",
+		"summaryManual_one": "{{count}}마리 개별 보호",
+		"summaryManual_other": "{{count}}마리 개별 보호",
+		"summaryAuto_one": "카테고리로 {{count}}마리 보호",
+		"summaryAuto_other": "카테고리로 {{count}}마리 보호"
+	},
+	"compute": "생성",
+	"computing": "생성 중…",
+	"computingMessage": "생성 중… 모든 종을 검사하고 있으니 잠시만 기다려 주세요.",
+	"outputPlaceholderMeta": "검색 문자열이 여기에 표시됩니다. Pokémon GO 검색창에 붙여넣고 결과를 확인한 뒤 삭제하세요.",
+	"outputPlaceholderTrade": "검색 문자열이 여기에 표시됩니다. Pokémon GO 검색창에 붙여넣어 교환 후보를 확인하세요.",
+	"characterCount_one": "{{formatted}}자",
+	"characterCount_other": "{{formatted}}자",
+	"lengthWarningMeta": " — ⚠️ 일부 안드로이드 기기에서는 검색창 입력 길이를 초과할 수 있습니다. 붙여넣은 문자열이 잘리면 위의 간소화 삭제 모드를 사용해 보세요.",
+	"lengthWarningTrade": " — ⚠️ 일부 안드로이드 기기에서는 검색창 입력 길이를 초과할 수 있습니다. Pokémon GO 검색창에 붙여넣을 때 끝부분이 잘릴 수 있습니다.",
+	"copySearchString": "검색 문자열 복사",
+	"copied": "복사됨 ✓",
+	"panelSummary": {
+		"topGreat": "그레이트 리그 상위 {{n}}",
+		"topUltra": "울트라 리그 상위 {{n}}",
+		"topMaster": "마스터 리그 상위 {{n}}",
+		"topRaid": "레이드 상위 {{n}}",
+		"cpKept": "CP {{cp}} 이상 보호",
+		"cpUnder": "CP {{cp}} 미만",
+		"simplifiedModeSuffix": "간소화 모드",
+		"protectsList": "{{list}} 보호",
+		"excludesList": "{{list}} 제외",
+		"nothingExtra": "추가 없음",
+		"onlyClearlyLowIvs": "명확히 낮은 개체값만"
+	}
+}

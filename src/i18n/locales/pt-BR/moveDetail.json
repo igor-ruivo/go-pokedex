@@ -1,0 +1,38 @@
+{
+	"notFound": "Nenhum golpe “{{moveId}}”.",
+	"sections": {
+		"stats": "Estatísticas",
+		"usage": "Uso",
+		"recommended": "Recomendado",
+		"alsoLearnedBy": "Também aprendido por",
+		"learnedBy": "Aprendido por",
+		"eliteFor": "É um golpe elite para",
+		"legacyFor": "É um golpe legado para"
+	},
+	"arena": {
+		"pve": "PvE · Raides e Ginásios",
+		"pvp": "PvP · Ligas"
+	},
+	"kind": {
+		"fastChip": "Golpe rápido",
+		"chargedChip": "Golpe carregado"
+	},
+	"superMega": "Super Mega",
+	"statLabels": {
+		"dmg": "DANO",
+		"nrg": "ENG",
+		"dur": "DUR",
+		"turns": "Turnos",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Pokémon podem aprender {{name}}",
+	"tiles": {
+		"recommended": "Recomendado",
+		"mega": "Mega",
+		"elite": "Elite",
+		"legacy": "Legado"
+	},
+	"noneLearn": "Nenhum Pokémon aprende este golpe."
+}

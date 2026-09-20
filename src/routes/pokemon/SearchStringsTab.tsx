@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { handleSpriteError, spriteUrl } from '../../components/Sprite';
 import { Stepper } from '../../components/Stepper';
@@ -22,7 +23,6 @@ import {
 } from '../../utils/pokemon-helper';
 
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
-const LEAGUE_NAME = ['Great', 'Ultra', 'Master'] as const;
 const LEAGUE_COLOR_VAR = ['--lg-great', '--lg-ultra', '--lg-master'] as const;
 
 /* ---- verbatim from the legacy search-string generator ---------------------- */
@@ -525,56 +525,71 @@ const ClipIcon = () => (
 /** A species name painted with its own primary type's colour — the same
  *  `--t-*` vars the rest of the app already tints itself from (see
  *  `typeVar`/`accentStyle` in lib/types.ts). */
-const NameLabel = ({ p }: { p: IGamemasterPokemon }) => (
-	<span style={{ color: typeVar(p.types[0]), fontWeight: 600 }}>
-		{(p.isShadow ? 'Shadow ' : '') + cleanName(p.speciesName)}
-	</span>
-);
+const NameLabel = ({ p }: { p: IGamemasterPokemon }) => {
+	const { t } = useTranslation(['pokemonDetail']);
+	return (
+		<span style={{ color: typeVar(p.types[0]), fontWeight: 600 }}>
+			{(p.isShadow ? `${t('pokemonDetail:hero.shadowToggle')} ` : '') + cleanName(p.speciesName)}
+		</span>
+	);
+};
 
 /** A league name painted with that league's own identity colour — the same
  *  `--lg-*` vars used elsewhere (e.g. the league dots on the ranking cards),
- *  not a page-specific colour, so it stays consistent across the app. */
+ *  not a page-specific colour, so it stays consistent across the app.
+ *  `leagueName` is already the full, translated league name (e.g. "Great
+ *  League" / "Grande Liga") — see LEAGUE_FULL in SearchStringsTab below. */
 const LeagueLabel = ({ leagueName, colorVar }: { leagueName: string; colorVar: string }) => (
-	<span style={{ color: `var(${colorVar})`, fontWeight: 600 }}>{leagueName} League</span>
+	<span style={{ color: `var(${colorVar})`, fontWeight: 600 }}>{leagueName}</span>
 );
 
-/** Legacy sentence construction — the wording matters, it tells the user what they're matching. */
-const sentence = (
-	entry: SearchChainEntry,
-	target: IGamemasterPokemon,
-	top: number,
-	trash: boolean,
-	leagueName: string,
-	leagueColorVar: string
-) => {
-	const except = trash ? 'all except the ' : '';
-	// "the" belongs right before "top" only in the default phrasing ("to the
-	// top 10") — the "except" phrasing already supplies its own "the" further
-	// in ("to all except the top 10"), so a second one would double up.
-	const toThe = trash ? '' : 'the ';
-	const caught = '(wild caught and still unpowered)';
+/** Legacy sentence construction — the wording matters, it tells the user what they're matching.
+ *  Uses <Trans> (not a plain t() interpolation) so the coloured NameLabel/LeagueLabel
+ *  elements land inside the translated sentence at the right spot in every
+ *  language, including languages that reorder the clauses relative to English. */
+const Sentence = ({
+	entry,
+	target,
+	top,
+	trash,
+	leagueName,
+	leagueColorVar,
+}: {
+	entry: SearchChainEntry;
+	target: IGamemasterPokemon;
+	top: number;
+	trash: boolean;
+	leagueName: string;
+	leagueColorVar: string;
+}) => {
+	const { t } = useTranslation(['pokemonDetail']);
+	const except = trash ? t('pokemonDetail:searchStrings.sentence.exceptPrefix') : '';
+	// The translated "the"-equivalent belongs right before "top" only in the
+	// default phrasing — the "except" phrasing already supplies its own
+	// leading article, so a second one would double up (see the JSON keys'
+	// own wording for how each locale handles this).
+	const toThe = trash ? '' : t('pokemonDetail:searchStrings.sentence.toThePrefix');
+	const caught = t('pokemonDetail:searchStrings.sentence.caught');
 	const league = <LeagueLabel leagueName={leagueName} colorVar={leagueColorVar} />;
 
 	if (entry.nonShadow && entry.shadow) {
 		const p = entry.nonShadow;
-		const who = (
-			<>
-				<NameLabel p={p} /> — Shadow or not —
-			</>
-		);
 		const isTargetItself = p.speciesId === target.speciesId;
 		if (isTargetItself) {
 			return (
-				<>
-					Find {except}top {top} {who} {caught} for {league}:
-				</>
+				<Trans
+					i18nKey='pokemonDetail:searchStrings.sentence.findTopSelfShadowEither'
+					values={{ except, top, caught }}
+					components={{ name: <NameLabel p={p} />, league }}
+				/>
 			);
 		}
 		return (
-			<>
-				Find {who} {caught} that evolve to {toThe}
-				{except}top {top} <NameLabel p={target} /> for {league}:
-			</>
+			<Trans
+				i18nKey='pokemonDetail:searchStrings.sentence.findTopEvolvesToShadowEither'
+				values={{ except, top, caught, toThe }}
+				components={{ name: <NameLabel p={p} />, target: <NameLabel p={target} />, league }}
+			/>
 		);
 	}
 
@@ -582,20 +597,29 @@ const sentence = (
 	const isTargetItself = p.speciesId === target.speciesId;
 	if (isTargetItself) {
 		return (
-			<>
-				Find {except}top {top} <NameLabel p={p} /> {caught} for {league}:
-			</>
+			<Trans
+				i18nKey='pokemonDetail:searchStrings.sentence.findTopSelf'
+				values={{ except, top, caught }}
+				components={{ name: <NameLabel p={p} />, league }}
+			/>
 		);
 	}
 	return (
-		<>
-			Find <NameLabel p={p} /> {caught} that evolve to {toThe}
-			{except}top {top} <NameLabel p={target} /> for {league}:
-		</>
+		<Trans
+			i18nKey='pokemonDetail:searchStrings.sentence.findTopEvolvesTo'
+			values={{ except, top, caught, toThe }}
+			components={{ name: <NameLabel p={p} />, target: <NameLabel p={target} />, league }}
+		/>
 	);
 };
 
 const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+	const { t } = useTranslation(['pokemonDetail']);
+	const LEAGUE_FULL = [
+		t('pokemonDetail:leagues.greatFull'),
+		t('pokemonDetail:leagues.ultraFull'),
+		t('pokemonDetail:leagues.masterFull'),
+	];
 	const { gamemasterPokemon } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { currentGameLanguage: gl } = useLanguage();
@@ -638,7 +662,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 		return (
 			<div className='r-movecontent'>
 				<div className='r-card' style={{ textAlign: 'center' }}>
-					<p className='r-muted'>Search strings are a PvP thing — pick Great, Ultra or Master above.</p>
+					<p className='r-muted'>{t('pokemonDetail:searchStrings.pvpOnly')}</p>
 				</div>
 			</div>
 		);
@@ -654,22 +678,22 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 		);
 	}
 
-	const leagueName = LEAGUE_NAME[league];
+	const leagueName = LEAGUE_FULL[league];
 
 	return (
 		<div className='r-movecontent'>
-			<div className='r-section-h'>{leagueName} League · in-game search strings</div>
+			<div className='r-section-h'>{t('pokemonDetail:searchStrings.heading', { league: leagueName })}</div>
 
 			<div className='r-card r-ss-controls'>
 				<div className='r-ss-cut'>
-					<span>Rank cutoff</span>
+					<span>{t('pokemonDetail:searchStrings.rankCutoff')}</span>
 					<Stepper
 						value={top}
 						min={1}
 						max={4096}
 						step={1}
 						onChange={(v) => setTop(Math.round(v))}
-						format={(v) => `Top ${v}`}
+						format={(v) => t('pokemonDetail:searchStrings.topN', { n: v })}
 					/>
 				</div>
 				<button
@@ -680,13 +704,12 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 					onClick={() => setTrash((v) => !v)}
 				>
 					<span className='r-ss-box' aria-hidden='true' />
-					Match everything <em>except</em> the top {top}
+					<Trans i18nKey='pokemonDetail:searchStrings.matchExceptTop' values={{ n: top }} components={{ em: <em /> }} />
 				</button>
 			</div>
 
 			<p className='r-muted' style={{ margin: '0 2px 12px', fontSize: 12 }}>
-				Each line matches wild, unpowered catches whose family reaches the cutoff. Copy it, then paste into the Pokémon
-				GO search bar.
+				{t('pokemonDetail:searchStrings.helperText')}
 			</p>
 
 			{chain.map((entry) => {
@@ -717,13 +740,20 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 								/>
 							</span>
 							<p className='r-ss-sentence'>
-								{sentence(entry, pokemon, top, trash, leagueName, LEAGUE_COLOR_VAR[league])}
+								<Sentence
+									entry={entry}
+									target={pokemon}
+									top={top}
+									trash={trash}
+									leagueName={leagueName}
+									leagueColorVar={LEAGUE_COLOR_VAR[league]}
+								/>
 							</p>
 						</div>
 						<div className='r-ss-actions'>
 							<button type='button' className='r-ss-copybtn' onClick={() => copy(key, str)}>
 								<ClipIcon />
-								{copied === key ? 'Copied ✓' : 'Copy string'}
+								{copied === key ? t('pokemonDetail:searchStrings.copied') : t('pokemonDetail:searchStrings.copyString')}
 							</button>
 							<button
 								type='button'
@@ -739,7 +769,12 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 							</button>
 						</div>
 						{isOpen && (
-							<button type='button' className='r-ss-raw' onClick={() => copy(key, str)} title='Click to copy'>
+							<button
+								type='button'
+								className='r-ss-raw'
+								onClick={() => copy(key, str)}
+								title={t('pokemonDetail:searchStrings.clickToCopy')}
+							>
 								{str}
 							</button>
 						)}

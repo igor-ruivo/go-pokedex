@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "Sprache & Einstellungen",
+		"dialogAriaLabel": "Einstellungen",
+		"appLanguage": "App-Sprache",
+		"gameLanguage": "Spielsprache",
+		"moreSettings": "Weitere Einstellungen",
+		"sprites": "Sprites",
+		"raidRanking": "Arena-Kampf-Rangliste",
+		"bestBuddy": "Besten Freund berücksichtigen",
+		"off": "Aus",
+		"on": "An",
+		"footer": "Auf diesem Gerät gespeichert."
+	},
+	"page": {
+		"title": "Einstellungen",
+		"appLanguage": {
+			"title": "App-Sprache",
+			"desc": "Text der Oberfläche. Englisch ist die Standardsprache."
+		},
+		"gameLanguage": {
+			"title": "Spielsprache",
+			"desc": "Pokémon- und Attackennamen, wie sie in Pokémon GO erscheinen."
+		},
+		"sprites": {
+			"title": "Sprites",
+			"desc": "Welche Grafik für jedes Pokémon angezeigt wird."
+		},
+		"bestBuddy": {
+			"title": "Besten Freund berücksichtigen",
+			"desc": "Stufe 51 als erreichbar behandeln — die IW-Tabelle, Lösch-/Suchstrings, maximale WP, Stufenwähler, beste IWs/Perzentil, Arena-Kampf-Rechner und DPS/TDO/eDPS berücksichtigen dann alle Stufe 51 statt 50."
+		},
+		"footer": "Einstellungen werden auf diesem Gerät gespeichert."
+	},
+	"spriteOptions": {
+		"official": "Offiziell",
+		"go": "Pokémon GO",
+		"shiny": "GO Shiny"
+	},
+	"toggle": {
+		"off": "Aus",
+		"on": "An"
+	}
+}

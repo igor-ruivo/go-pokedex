@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "行事曆"
+	},
+	"tabs": {
+		"events": "活動",
+		"bosses": "團體戰",
+		"spawns": "野生出沒",
+		"rockets": "火箭隊",
+		"eggs": "蛋"
+	},
+	"biomes": {
+		"cities": "城市",
+		"forests": "森林",
+		"mountains": "山區",
+		"beaches": "海灘與水域",
+		"northernHemisphere": "北半球",
+		"southernHemisphere": "南半球",
+		"allAreas": "所有地區"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "高星級團體戰", "short": "高星級" },
+			"tier3": { "full": "三星級團體戰", "short": "三星級" },
+			"tier1": { "full": "一星級團體戰", "short": "一星級" }
+		},
+		"shadowPrefix": "暗影 · {{tier}}",
+		"otherRaids": "其他團體戰",
+		"nothingScheduled": "目前沒有排定的項目。",
+		"nowSlot": "現在"
+	},
+	"spawns": {
+		"noSeasonalData": "沒有季節性出沒資料。",
+		"nowSlot": "現在",
+		"seasonSlot": "季節"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "時間範圍",
+		"scrollEarlier": "捲動至較早的日期",
+		"scrollLater": "捲動至較晚的日期"
+	},
+	"events": {
+		"noEvents": "目前沒有活動。",
+		"scheduledCount": "{{count}} 個已排定活動",
+		"fallbackTitle": "活動",
+		"unseenAriaLabel": "尚未開啟",
+		"phase": {
+			"season": "季節",
+			"live": "進行中",
+			"ended": "已結束"
+		},
+		"bonuses": "加成",
+		"groups": {
+			"featuredSpawns": "特色出沒",
+			"featuredRaids": "特色團體戰",
+			"researchEncounters": "研究遭遇",
+			"eggs": "蛋",
+			"incense": "薰香",
+			"lures": "誘餌"
+		},
+		"readAnnouncement": "閱讀完整公告"
+	},
+	"rockets": {
+		"noLineups": "沒有火箭隊陣容資料。",
+		"typeGrunt": "{{type}} 系小嘍囉",
+		"genericGrunt": "小嘍囉",
+		"slotReward": "第 {{slot}} 格獎勵",
+		"slotHeader": "第 {{slot}} 格",
+		"catchableTag": "可捕捉"
+	},
+	"eggs": {
+		"noPoolData": "沒有蛋池資料。"
+	},
+	"timeLeft": {
+		"days": "剩 {{count}} 天",
+		"hours": "剩 {{count}} 小時",
+		"minutes": "剩 {{count}} 分鐘",
+		"seconds": "剩 {{count}} 秒"
+	}
+}

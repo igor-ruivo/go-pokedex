@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "Tabel tipe",
+		"description": "Baca <b>baris</b> untuk melihat bagaimana tipe penyerang tampil melawan setiap petahan · baca <b>kolom</b> untuk melihat apa yang ditahan oleh tipe petahan."
+	},
+	"legend": {
+		"superEffective": "Sangat efektif",
+		"resisted": "Ditahan",
+		"immune": "Kebal / tahan ganda"
+	},
+	"calculator": {
+		"title": "Kalkulator kelemahan",
+		"defendingTypesLabel": "Tipe bertahan · hingga 2",
+		"takesExtraFrom": "Menerima kerusakan ekstra dari",
+		"takesLessFrom": "Menerima kerusakan lebih kecil dari",
+		"nothing": "Tidak ada"
+	}
+}

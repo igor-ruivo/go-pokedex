@@ -1,0 +1,38 @@
+{
+	"notFound": "No existe el movimiento “{{moveId}}”.",
+	"sections": {
+		"stats": "Estadísticas",
+		"usage": "Uso",
+		"recommended": "Recomendado",
+		"alsoLearnedBy": "También lo aprenden",
+		"learnedBy": "Lo aprenden",
+		"eliteFor": "Es un movimiento elite para",
+		"legacyFor": "Es un movimiento legado para"
+	},
+	"arena": {
+		"pve": "JcE · Incursiones y gimnasios",
+		"pvp": "JcJ · Ligas"
+	},
+	"kind": {
+		"fastChip": "Movimiento rápido",
+		"chargedChip": "Movimiento cargado"
+	},
+	"superMega": "Super Mega",
+	"statLabels": {
+		"dmg": "DAÑO",
+		"nrg": "ENERGÍA",
+		"dur": "DUR",
+		"turns": "Turnos",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Pokémon que pueden aprender {{name}}",
+	"tiles": {
+		"recommended": "Recomendado",
+		"mega": "Mega",
+		"elite": "Elite",
+		"legacy": "Legado"
+	},
+	"noneLearn": "Ningún Pokémon aprende este movimiento."
+}

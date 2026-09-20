@@ -1,0 +1,31 @@
+{
+	"sorts": {
+		"dex": "Número da Dex",
+		"name": "Nome",
+		"cp": "CP máximo",
+		"type": "Tipo"
+	},
+	"tabs": {
+		"pokedexFull": "Pokédex",
+		"pokedexShort": "Dex"
+	},
+	"status": {
+		"loading": "Carregando…",
+		"chooseType": "Escolha um tipo",
+		"count": "{{count}} Pokémon",
+		"bestAttackersSuffix": " · melhores atacantes de {{type}}"
+	},
+	"hint": {
+		"show": "Mostrar premissas do ranking",
+		"hide": "Ocultar premissas do ranking",
+		"text": "Os ranks de raide assumem a melhor combinação de golpe rápido + carregado de cada Pokémon causando dano Efetivo do tipo {{type}} (×1,6) contra um chefe não-sombra de Nível 5 (200 de Defesa, nível 40), com um atacante de nível 50 (15 de IV de Ataque) e sem bônus de clima, amizade ou aura Mega de companheiro. Pokémon Super Mega são classificados no Nível Mega máximo."
+	},
+	"empty": {
+		"pickType": "Escolha um tipo no filtro para ver os melhores atacantes de raide desse tipo.",
+		"nothingMatches": "Nada encontrado."
+	},
+	"loadingLabel": {
+		"pokedex": "Carregando Pokédex…",
+		"rankings": "Carregando Rankings…"
+	}
+}

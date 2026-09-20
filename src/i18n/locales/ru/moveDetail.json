@@ -1,0 +1,38 @@
+{
+	"notFound": "Атака «{{moveId}}» не найдена.",
+	"sections": {
+		"stats": "Характеристики",
+		"usage": "Использование",
+		"recommended": "Рекомендуемая",
+		"alsoLearnedBy": "Также изучают",
+		"learnedBy": "Изучают",
+		"eliteFor": "Элитная атака для",
+		"legacyFor": "Устаревшая атака для"
+	},
+	"arena": {
+		"pve": "PvE · Рейды и Залы",
+		"pvp": "PvP · Лиги"
+	},
+	"kind": {
+		"fastChip": "Быстрая атака",
+		"chargedChip": "Заряженная атака"
+	},
+	"superMega": "Супер Мега",
+	"statLabels": {
+		"dmg": "DMG",
+		"nrg": "NRG",
+		"dur": "DUR",
+		"turns": "Ходы",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Покемоны, способные изучить {{name}}",
+	"tiles": {
+		"recommended": "Рекомендуемая",
+		"mega": "Мега",
+		"elite": "Элитная",
+		"legacy": "Устаревшая"
+	},
+	"noneLearn": "Ни один покемон не изучает эту атаку."
+}

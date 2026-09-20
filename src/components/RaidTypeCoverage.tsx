@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { useBestBuddy } from '../contexts/best-buddy-context';
@@ -37,6 +38,7 @@ export const RaidTypeCoverage = ({
 	/** Reports the currently-selected type's active fast+charged combo. */
 	onRecommend?: (rec: RaidRecommendation | null) => void;
 }) => {
+	const { t } = useTranslation(['components']);
 	const { gamemasterPokemon } = usePokemon();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
@@ -116,13 +118,18 @@ export const RaidTypeCoverage = ({
 		);
 	}
 	if (types.length === 0) {
-		return <p className='r-muted'>Not ranked as a raid attacker.</p>;
+		return <p className='r-muted'>{t('components:raidTypeCoverage.notRanked')}</p>;
 	}
 
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
 	const elite = new Set(pokemon.eliteMoves);
 	const legacy = new Set(pokemon.legacyMoves);
-	const moveTag = (id: string) => (legacy.has(id) ? 'Legacy' : elite.has(id) ? 'Elite' : null);
+	const moveTag = (id: string) =>
+		legacy.has(id)
+			? t('components:raidTypeCoverage.legacy')
+			: elite.has(id)
+				? t('components:raidTypeCoverage.elite')
+				: null;
 	const cycleCombo = (type: string, len: number) =>
 		setComboIdx((c) => ({ ...c, [type]: len ? ((c[type] ?? 0) + 1) % len : 0 }));
 	const selectType = (i: number) => {
@@ -138,7 +145,7 @@ export const RaidTypeCoverage = ({
 			{showReadout && selRow && (
 				<div className='r-readout'>
 					<div>
-						<i>{TYPE_LABEL[selRow.t] ?? selRow.t} rank</i>
+						<i>{t('components:raidTypeCoverage.typeRank', { type: TYPE_LABEL[selRow.t] ?? selRow.t })}</i>
 						<b className='hi'>{ordinal(raidRankOf(selRow.e, raidMetric) ?? 0)}</b>
 					</div>
 					<div>
@@ -146,28 +153,30 @@ export const RaidTypeCoverage = ({
 						<b>{(selRow.combo?.dps ?? selRow.e.dps).toFixed(1)}</b>
 					</div>
 					<div>
-						<i>Base ATK</i>
+						<i>{t('components:raidTypeCoverage.baseAtk')}</i>
 						<b>{pokemon.baseStats.atk}</b>
 					</div>
 				</div>
 			)}
 
 			<div className='r-section-h' style={showReadout ? { marginTop: 16 } : undefined}>
-				Best moveset by type
+				{t('components:raidTypeCoverage.bestMovesetByType')}
 			</div>
 			<div className='r-raidtypes'>
-				{rows.map(({ t, e, on, combos, mIdx, combo }, i) => {
-					const activate = () => (on ? cycleCombo(t, combos.length) : selectType(i));
+				{rows.map(({ t: typeKey, e, on, combos, mIdx, combo }, i) => {
+					const activate = () => (on ? cycleCombo(typeKey, combos.length) : selectType(i));
 					return (
 						<div
-							key={t}
+							key={typeKey}
 							className='r-raidtype'
 							role='button'
 							tabIndex={0}
 							data-active={on ? '' : undefined}
 							aria-pressed={on}
-							title={on ? 'Tap for the next moveset' : 'Tap to select this type'}
-							style={{ ['--tc' as string]: `var(--t-${t})` }}
+							title={
+								on ? t('components:raidTypeCoverage.tapNextMoveset') : t('components:raidTypeCoverage.tapSelectType')
+							}
+							style={{ ['--tc' as string]: `var(--t-${typeKey})` }}
 							onClick={activate}
 							onKeyDown={(ev) => {
 								if (ev.key === 'Enter' || ev.key === ' ') {
@@ -177,7 +186,7 @@ export const RaidTypeCoverage = ({
 							}}
 						>
 							<span className='r-raidtype-head'>
-								<span className='r-move-type'>{TYPE_LABEL[t] ?? t}</span>
+								<span className='r-move-type'>{TYPE_LABEL[typeKey] ?? typeKey}</span>
 								<b>{ordinal(raidRankOf(e, raidMetric) ?? 0)}</b>
 								<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
 							</span>

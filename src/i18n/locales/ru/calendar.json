@@ -1,0 +1,78 @@
+{
+	"shell": { "title": "Календарь" },
+	"tabs": {
+		"events": "События",
+		"bosses": "Рейды",
+		"spawns": "Спавны",
+		"rockets": "Ракеты",
+		"eggs": "Яйца"
+	},
+	"biomes": {
+		"cities": "Города",
+		"forests": "Леса",
+		"mountains": "Горы",
+		"beaches": "Пляжи и вода",
+		"northernHemisphere": "Северное полушарие",
+		"southernHemisphere": "Южное полушарие",
+		"allAreas": "Все зоны"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Рейды высокого уровня", "short": "Высокий уровень" },
+			"tier3": { "full": "Рейды 3 уровня", "short": "3 уровень" },
+			"tier1": { "full": "Рейды 1 уровня", "short": "1 уровень" }
+		},
+		"shadowPrefix": "Теневой · {{tier}}",
+		"otherRaids": "Другие рейды",
+		"nothingScheduled": "Ничего не запланировано.",
+		"nowSlot": "Сейчас"
+	},
+	"spawns": {
+		"noSeasonalData": "Нет данных о сезонных спавнах.",
+		"nowSlot": "Сейчас",
+		"seasonSlot": "Сезон"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Период",
+		"scrollEarlier": "Прокрутить к более ранним датам",
+		"scrollLater": "Прокрутить к более поздним датам"
+	},
+	"events": {
+		"noEvents": "Сейчас нет событий.",
+		"scheduledCount": "{{count}} запланированных событий",
+		"fallbackTitle": "Событие",
+		"unseenAriaLabel": "Ещё не открыто",
+		"phase": {
+			"season": "Сезон",
+			"live": "Идёт",
+			"ended": "Завершено"
+		},
+		"bonuses": "Бонусы",
+		"groups": {
+			"featuredSpawns": "Особые спавны",
+			"featuredRaids": "Особые рейды",
+			"researchEncounters": "Встречи по исследованиям",
+			"eggs": "Яйца",
+			"incense": "Ладан",
+			"lures": "Приманки"
+		},
+		"readAnnouncement": "Читать полное объявление"
+	},
+	"rockets": {
+		"noLineups": "Нет составов Team GO Rocket.",
+		"typeGrunt": "Рядовой ({{type}})",
+		"genericGrunt": "Рядовой",
+		"slotReward": "Награда за слот {{slot}}",
+		"slotHeader": "Слот {{slot}}",
+		"catchableTag": "можно поймать"
+	},
+	"eggs": {
+		"noPoolData": "Нет данных о пуле яиц."
+	},
+	"timeLeft": {
+		"days": "осталось {{count}} дн.",
+		"hours": "осталось {{count}} ч.",
+		"minutes": "осталось {{count}} мин.",
+		"seconds": "осталось {{count}} сек."
+	}
+}

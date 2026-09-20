@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "屬性相剋表",
+		"description": "看<b>橫列</b>了解攻擊屬性對每個防禦方的效果 · 看<b>直欄</b>了解防禦屬性能抵抗什麼。"
+	},
+	"legend": {
+		"superEffective": "效果絕佳",
+		"resisted": "效果不佳",
+		"immune": "無效／雙重抵抗"
+	},
+	"calculator": {
+		"title": "弱點計算器",
+		"defendingTypesLabel": "防禦屬性（最多 2 個）",
+		"takesExtraFrom": "會受到額外傷害的屬性",
+		"takesLessFrom": "會受到較少傷害的屬性",
+		"nothing": "無"
+	}
+}

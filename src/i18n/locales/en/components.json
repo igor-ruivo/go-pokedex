@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filter",
+		"clear": "Clear",
+		"dialogAriaLabel": "Filters",
+		"typeSectionLabel": "Type",
+		"pickOneHint": "pick one",
+		"pickUpToHint": "pick up to {{max}} · matches both"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Order by",
+		"sectionLabel": "Order by",
+		"asc": "Asc",
+		"desc": "Desc"
+	},
+	"ivPicker": {
+		"attack": "ATTACK",
+		"defense": "DEFENSE",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Decrease",
+		"increaseAriaLabel": "Increase"
+	},
+	"shadowMark": {
+		"alt": "Shadow"
+	},
+	"searchBox": {
+		"placeholder": "Search Pokémon or moves…",
+		"ariaLabel": "Search Pokémon or moves",
+		"clearAriaLabel": "Clear search",
+		"shadowSuffix": "Shadow",
+		"fast": "Fast",
+		"charged": "Charged"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Not ranked as a raid attacker.",
+		"bestMovesetByType": "Best moveset by type",
+		"tapNextMoveset": "Tap for the next moveset",
+		"tapSelectType": "Tap to select this type",
+		"legacy": "Legacy",
+		"elite": "Elite",
+		"baseAtk": "Base ATK",
+		"typeRank": "{{type}} rank"
+	}
+}

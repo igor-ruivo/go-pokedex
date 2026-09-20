@@ -1,0 +1,112 @@
+{
+	"loading": "Lädt…",
+	"pageTitle": {
+		"meta": "Aktuell nicht meta-relevante Pokémon massenhaft löschen",
+		"badIv": "Pokémon mit nicht perfekten IWs massenhaft löschen",
+		"trade": "Tauschwürdige Pokémon finden"
+	},
+	"modeTablist": "Massenlöschmodus",
+	"modeTabs": {
+		"meta": { "full": "Nicht meta-relevant", "short": "Nicht-Meta" },
+		"badIv": { "full": "Nicht perfekte IWs", "short": "IWs" },
+		"trade": { "full": "Tauschbar finden", "short": "Tauschbar" }
+	},
+	"badIvWarning": "Dieser Modus ist aggressiv und perfektionistisch: Ziel ist es, jeden Fang zu löschen, der kein perfektes (100 %) IW-Pokémon ist — unabhängig davon, ob eine Spezies aktuell im Meta gut oder schlecht ist. Prüfe die Kategorien und die Whitelist unten, bevor du ihn ausführst.",
+	"helpText": {
+		"meta": "Nur Meta, nie IWs: löscht jedes Pokémon, das nirgends wettkampfrelevant ist — weder in Great, Ultra oder Master League noch in Arena-Kämpfen — basierend auf den Rang-Grenzwerten und der WP-Obergrenze unten. Eine Spezies (oder eine ihrer späteren Entwicklungen) muss den Grenzwert nur in einer dieser Kategorien unterschreiten, um verschont zu bleiben, und sobald das der Fall ist, ist jeder Fang davon ebenfalls verschont — unabhängig von dessen eigenen IWs. Dieser Tab hat keine Meinung zu IWs. Alles auf oder über deiner WP-Obergrenze wird immer behalten, ebenso alles, was in den Kategorien und der Whitelist unten aktiviert ist, unabhängig vom Rang. Ein perfektes Statuswert-Produkt für die Meisterliga wird immer behalten.",
+		"badIv": "Nur IWs, nie Meta: ignoriert das aktuelle Meta vollständig — das Ziel ist, alles zu löschen, was nicht perfekt 15/15/15 ist, unabhängig davon, ob die Spezies gerade meta-relevant ist. Die Spielsuche kann nur IW-Bereiche abgleichen, keine exakten Werte, daher kann diese Grenze nicht immer exakt gezogen werden — für die Great League (1500 WP) und Ultra League (2500 WP) werden die meisten Spezies über einen gemeinsamen Bereich mit niedrigem Angriff/hoher Ausdauer erfasst, der das annähert, und ein paar Hundert erhalten stattdessen einen individuell geprüften Bereich, da der gemeinsame nicht zu ihren Werten passt; so oder so können ein paar fast perfekte (aber nicht ganz Hundo-) Fänge genau an der Grenze als falsch-negativ durchrutschen. Die Meisterliga hat keine WP-Obergrenze, daher gilt dort wirklich: höhere IWs sind immer besser — die Behandlung der Meisterliga in diesem Modus ist exakt, keine Annäherung. Ein perfektes Statuswert-Produkt wird in jeder Liga immer behalten, ebenso alles, was in den Kategorien und der Whitelist unten aktiviert ist, unabhängig von den IWs.",
+		"trade": "Eine dritte, von den beiden obigen Tabs unabhängige Frage: Welche deiner Fänge sind einen Tausch wert? Ein Tausch mit dem besten Freund hebt jeden Wert immer auf mindestens 5 an. In diesem Modus muss eine Spezies nur EINEN der vier Grenzwerte unten (Great, Ultra, Master oder Arena-Kampf) unterschreiten, um vorgeschlagen zu werden. Meisterliga und Arena-Kämpfe haben keine WP-Obergrenze, daher qualifiziert sich jede relevante Spezies allein über den Rang. Great und Ultra sind wählerischer: ihre WP-Obergrenzen erfordern oft eine bestmögliche Verteilung mit sehr niedrigem Angriff, was ein Tausch-Minimum von 5 nie erreichen kann — daher zählen diese beiden Ligen eine Spezies nur, wenn ihre beste eigene Verteilung tatsächlich etwas ist, das ein Tausch erreichen könnte. So oder so wird ein Fang, der bereits perfekt ist — oder bereits die bestmögliche Verteilung in der qualifizierenden Liga erreicht hat — nie vorgeschlagen, da ein Tausch ihn nur verschlechtern, nie verbessern könnte. Die Kategorien, die Whitelist und die WP-Obergrenze unten grenzen die Vorschläge weiter ein, genau wie bei den anderen Tabs."
+	},
+	"readMore": "Mehr lesen",
+	"readLess": "Weniger lesen",
+	"configuration": "Konfiguration",
+	"edit": "Bearbeiten",
+	"hide": "Ausblenden",
+	"reset": "Zurücksetzen",
+	"neverDeleteCategory": "Diese Kategorie nie löschen",
+	"neverSuggestCategory": "Diese Kategorie nie vorschlagen",
+	"neverDeletePokemon": "Diese Pokémon nie löschen",
+	"neverSuggestPokemon": "Diese Pokémon nie vorschlagen",
+	"knobs": {
+		"greatLeague": { "full": "Superliga", "short": "Super" },
+		"ultraLeague": { "full": "Ultraliga", "short": "Ultra" },
+		"masterLeague": { "full": "Meisterliga", "short": "Meister" },
+		"raidAttackers": { "full": "Arena-Kampf-Angreifer", "short": "Kampf" },
+		"saveCp": "WP speichern",
+		"simplifiedMode": "Vereinfachter Modus",
+		"keep3StarPokemon": "3*-Pokémon behalten",
+		"ariaKeepTopGreat": "Top der Superliga behalten",
+		"ariaKeepTopUltra": "Top der Ultraliga behalten",
+		"ariaKeepTopMaster": "Top der Meisterliga behalten",
+		"ariaKeepTopRaid": "Top-Arena-Kampf-Angreifer behalten"
+	},
+	"metaKnobsSubtitle": "Aktuelle Top-Meta-Pokémon je Liga/Arena-Kampf behalten",
+	"badIvKnobsSubtitle": "Vereinfacht tauscht etwas Genauigkeit gegen einen kürzeren String — siehe den Tooltip am Schalter",
+	"tradeKnobsSubtitle": "Eine Spezies muss nur EINEN dieser vier Grenzwerte unterschreiten, um vorgeschlagen zu werden — Great und Ultra erfordern zudem, dass ein Tausch die bestmögliche Verteilung tatsächlich erreichen kann (siehe Hilfetext oben)",
+	"simplifiedTrashTooltip": "Tauscht Genauigkeit gegen einen kürzeren String: verzichtet darauf, nach Statuswert-Produkt-Gleichständen für die Meisterliga (ohne Obergrenze) zu suchen — nur der exakte Hundo bleibt dort geschützt (überall, bedingungslos, durch den globalen !4*-Ausschluss). Der Schutz für Great/Ultra/Arena-Kampf ist davon nicht betroffen.",
+	"simplifiedBadIvTooltip": "Tauscht Genauigkeit gegen einen kürzeren String: statt nur die exakte beste IW-Verteilung einer Spezies zu schützen, wird jede Spezies, die eine solche Einzelfall-Ausnahme bräuchte, komplett übersprungen — ähnlich einem Bonus-Whitelist-Eintrag. Kürzer und einfacher, aber mit mehr falsch-negativen Fällen: manche Fänge, die der vollständige Modus korrekt erfassen würde, bleiben hier unberührt.",
+	"tradeOnlyLowIvTooltip": "Grenzt die Vorschläge auf Fänge ein, deren Angriff, Verteidigung und KP alle eindeutig niedrig sind — andernfalls wird alles unterhalb eines Hundo vorgeschlagen.",
+	"toggleOn": "An",
+	"toggleOff": "Aus",
+	"protectionMeta": {
+		"favorite": { "label": "Favorit", "description": "Im Spiel als Favorit markierte Pokémon." },
+		"tagged": { "label": "Markiert", "description": "Pokémon mit einem Spitznamen oder einer eigenen Markierung." },
+		"legendary": { "label": "Legendär", "description": "Box-Legendäre (Mewtu, Lugia, …)." },
+		"mythical": { "label": "Mystisch", "description": "Mysteriöse Pokémon (Mew, Celebi, …)." },
+		"ultraBeast": { "label": "Ultrabestie", "description": "Ultrabestien (Bluzuken, Zaubeel, …)." },
+		"megaEvolvable": {
+			"label": "Mega-fähig",
+			"description": "Das weiß nur das Spiel — erfordert gerade genug gespeicherte Mega-Energie für diese Spezies."
+		},
+		"shadow": { "label": "Schatten", "description": "Jedes Schatten-Pokémon, unabhängig von eigenen IWs oder Rang." },
+		"dynamax": { "label": "Dynamax", "description": "Pokémon, die dynamaximieren können." },
+		"fusion": { "label": "Fusion", "description": "Pokémon, die fusioniert werden können oder es bereits sind." },
+		"gigantamax": { "label": "Gigadynamax", "description": "Pokémon, die gigadynamaximieren können." },
+		"background": {
+			"label": "Hintergrund",
+			"description": "Pokémon mit einem seltenen oder ortsbezogenen Hintergrund im Profil."
+		},
+		"shiny": { "label": "Schillernd", "description": "Jedes schillernde Pokémon." },
+		"costume": { "label": "Kostüm", "description": "Pokémon mit einem Sonderevent-Kostüm." }
+	},
+	"lockedOnTitle": "{{label}}-Pokémon können nie getauscht werden, daher ist dies immer aktiv.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Ein Pokémon hinzufügen, das nie gelöscht wird…",
+		"searchPlaceholderTrade": "Ein Pokémon hinzufügen, das nie vorgeschlagen wird…",
+		"clear": "Zurücksetzen",
+		"remove": "Entfernen",
+		"removeLockedTitle": "Geschützt, weil es {{reason}} ist — schalte das oben aus, um es zu entfernen",
+		"shadowSuffix": "Schatten",
+		"emptyMeta": "Hier ist noch nichts — suche oben, um ein bestimmtes Pokémon unabhängig von den Kategorien oben zu schützen.",
+		"emptyTrade": "Hier ist noch nichts — suche oben, um ein bestimmtes Pokémon unabhängig von den Kategorien oben von Tauschvorschlägen auszuschließen.",
+		"summaryEmpty": "Noch keine einzeln geschützten Pokémon",
+		"summaryManual_one": "{{count}} einzeln behalten",
+		"summaryManual_other": "{{count}} einzeln behalten",
+		"summaryAuto_one": "{{count}} durch Kategorie geschützt",
+		"summaryAuto_other": "{{count}} durch Kategorie geschützt"
+	},
+	"compute": "Berechnen",
+	"computing": "Berechnet…",
+	"computingMessage": "Berechnet… das durchsucht jede Spezies, gib ihm einen Moment.",
+	"outputPlaceholderMeta": "Dein Suchstring erscheint hier. Füge ihn in die Pokémon-GO-Suchleiste ein, prüfe die Treffer und lösche dann.",
+	"outputPlaceholderTrade": "Dein Suchstring erscheint hier. Füge ihn in die Pokémon-GO-Suchleiste ein, um deine Tauschkandidaten zu prüfen.",
+	"characterCount_one": "{{formatted}} Zeichen",
+	"characterCount_other": "{{formatted}} Zeichen",
+	"lengthWarningMeta": " — ⚠️ das könnte auf manchen Android-Handys zu lang für die Suchleiste sein; nutze ggf. den Schalter für den vereinfachten Löschmodus oben, falls der String nach dem Einfügen in die Pokémon-GO-Suchleiste abgeschnitten wird.",
+	"lengthWarningTrade": " — ⚠️ das könnte auf manchen Android-Handys zu lang für die Suchleiste sein; beim Einfügen in die Pokémon-GO-Suchleiste könnte das Ende des Strings abgeschnitten werden.",
+	"copySearchString": "Suchstring kopieren",
+	"copied": "Kopiert ✓",
+	"panelSummary": {
+		"topGreat": "Top {{n}} Superliga",
+		"topUltra": "Top {{n}} Ultraliga",
+		"topMaster": "Top {{n}} Meisterliga",
+		"topRaid": "Top {{n}} Arena-Kampf",
+		"cpKept": "WP ≥ {{cp}} behalten",
+		"cpUnder": "WP < {{cp}}",
+		"simplifiedModeSuffix": "Vereinfachter Modus",
+		"protectsList": "schützt {{list}}",
+		"excludesList": "schließt aus {{list}}",
+		"nothingExtra": "nichts Zusätzliches",
+		"onlyClearlyLowIvs": "nur eindeutig niedrige IWs"
+	}
+}

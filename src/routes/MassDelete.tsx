@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import type { TFunction } from 'i18next';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ShadowMark } from '../components/ShadowMark';
@@ -157,75 +159,105 @@ export const DEFAULT_PROTECTION: ProtectionFlags = {
 	costume: false,
 };
 
-const PROTECTION_META: ReadonlyArray<{
+/** Order and keys are fixed; label/description are translated at render
+ *  time via literal per-entry `t()` calls (see `protectionMeta` inside
+ *  MassDelete) — a `t(\`massDelete:protectionMeta.${key}.label\`)` template
+ *  would silently escape scripts/check-i18n-parity.mjs's static scan, same
+ *  reasoning as Shell.tsx's NAV array. */
+const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 	key: keyof ProtectionFlags;
-	label: string;
-	description: string;
+	translate: (t: TFunction) => { label: string; description: string };
 }> = [
 	{
 		key: 'favorite',
-		label: 'Favorited',
-		description: 'Pokémon marked as a Favorite in-game.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.favorite.label'),
+			description: t('massDelete:protectionMeta.favorite.description'),
+		}),
 	},
 	{
 		key: 'tagged',
-		label: 'Tagged',
-		description: 'Pokémon with a nickname or custom tag.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.tagged.label'),
+			description: t('massDelete:protectionMeta.tagged.description'),
+		}),
 	},
 	{
 		key: 'legendary',
-		label: 'Legendary',
-		description: 'Box legendaries (Mewtwo, Lugia, …).',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.legendary.label'),
+			description: t('massDelete:protectionMeta.legendary.description'),
+		}),
 	},
 	{
 		key: 'mythical',
-		label: 'Mythical',
-		description: 'Mythicals (Mew, Celebi, …).',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.mythical.label'),
+			description: t('massDelete:protectionMeta.mythical.description'),
+		}),
 	},
 	{
 		key: 'ultraBeast',
-		label: 'Ultra Beast',
-		description: 'Ultra Beasts (Nihilego, Buzzwole, …).',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.ultraBeast.label'),
+			description: t('massDelete:protectionMeta.ultraBeast.description'),
+		}),
 	},
 	{
 		key: 'megaEvolvable',
-		label: 'Mega Evolvable',
-		description: 'Only the game knows this — needs enough Mega Energy banked for that species right now.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.megaEvolvable.label'),
+			description: t('massDelete:protectionMeta.megaEvolvable.description'),
+		}),
 	},
 	{
 		key: 'shadow',
-		label: 'Shadow',
-		description: 'Every Shadow Pokémon, regardless of its own IVs or rank.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.shadow.label'),
+			description: t('massDelete:protectionMeta.shadow.description'),
+		}),
 	},
 	{
 		key: 'dynamax',
-		label: 'Dynamax',
-		description: 'Pokémon able to Dynamax.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.dynamax.label'),
+			description: t('massDelete:protectionMeta.dynamax.description'),
+		}),
 	},
 	{
 		key: 'fusion',
-		label: 'Fusion',
-		description: 'Pokémon able to be fused, or already fused.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.fusion.label'),
+			description: t('massDelete:protectionMeta.fusion.description'),
+		}),
 	},
 	{
 		key: 'gigantamax',
-		label: 'Gigantamax',
-		description: 'Pokémon able to Gigantamax.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.gigantamax.label'),
+			description: t('massDelete:protectionMeta.gigantamax.description'),
+		}),
 	},
 	{
 		key: 'background',
-		label: 'Background',
-		description: 'Pokémon with a rare or location background in its profile.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.background.label'),
+			description: t('massDelete:protectionMeta.background.description'),
+		}),
 	},
 	{
 		key: 'shiny',
-		label: 'Shiny',
-		description: 'Every Shiny Pokémon.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.shiny.label'),
+			description: t('massDelete:protectionMeta.shiny.description'),
+		}),
 	},
 	{
 		key: 'costume',
-		label: 'Costume',
-		description: 'Pokémon wearing a Special Event costume.',
+		translate: (t) => ({
+			label: t('massDelete:protectionMeta.costume.label'),
+			description: t('massDelete:protectionMeta.costume.description'),
+		}),
 	},
 ];
 
@@ -243,42 +275,6 @@ const PROTECTION_META: ReadonlyArray<{
    to make (a "keep relevant for trade" checkbox in this tab used to do a
    half-hearted version of what the second tab now does properly) — each tab
    staying in its own lane is what makes all three trustworthy. */
-const HELP_TEXT =
-	'Meta only, never IVs: deletes any Pokémon that isn’t competitively relevant anywhere — not in Great, Ultra, or ' +
-	'Master League, and not in raids — based on the rank cutoffs and CP cap below. A species (or any of its later ' +
-	'evolutions) only needs to clear the cutoff in one of those to be spared, and once it does, every catch of it is ' +
-	'spared too, regardless of that catch’s own IVs — this tab has no opinion on IVs at all. Anything at or above ' +
-	'your CP cap is always kept, and so is everything checked in the categories and whitelist below, regardless of rank.' +
-	'A perfect stat product for Master League is always kept.';
-
-const BAD_IV_WARNING =
-	'This mode is aggressive and perfectionist: the intent is to delete every catch that isn’t a perfect (100%) IV ' +
-	'Pokémon, with no regard for whether a species is currently good or bad in the meta — double-check the ' +
-	'categories and whitelist below before running it.';
-
-const BAD_IV_HELP_TEXT =
-	'IVs only, never meta: ignores the current meta entirely — the goal is to delete anything that isn’t a perfect ' +
-	'15/15/15 regardless of whether the species itself is meta ' +
-	'right now. The game’s search only lets us match IV ranges, not exact values, so it can’t always draw that line ' +
-	'exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept via a shared ' +
-	'low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-verified range ' +
-	'instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect (but ' +
-	'not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no CP ' +
-	'cap, so there the true best really is always higher IVs — this mode’s Master ' +
-	'League handling is exact, not an approximation. A perfect stat product is always kept in every league, and so is ' +
-	'everything checked in the categories and whitelist below, regardless of IVs.';
-
-const TRADE_HELP_TEXT =
-	'A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? ' +
-	'A Best Friend trade always floors every stat at 5. In this mode, a species just needs to clear ONE of the four ' +
-	'cutoffs below (Great, Ultra, Master, or Raid) to be suggested. Master League and raids have no CP cap, so ' +
-	'any relevant species qualifies on rank alone. Great and Ultra are pickier: their CP caps often mean the ' +
-	'best possible spread for a species needs very low Attack, which a trade’s floor of 5 can never produce — so ' +
-	'those two leagues only count a species when its own best spread is actually something a trade could reach. ' +
-	'Either way, a catch that’s already perfect — or already tied for the best possible spread in whichever ' +
-	'league qualified it — is never suggested, since trading it could only lose it, never improve it. The ' +
-	'categories, whitelist, and CP cap below narrow the suggestions further, same as the other tabs.';
-
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>;
@@ -1044,6 +1040,7 @@ const WhitelistSearch = ({
 	onPick: (speciesId: string) => void;
 	placeholder: string;
 }) => {
+	const { t } = useTranslation(['massDelete']);
 	const { imageSource } = useImageSource();
 	const [q, setQ] = useState('');
 	const [open, setOpen] = useState(false);
@@ -1096,7 +1093,7 @@ const WhitelistSearch = ({
 				<button
 					type='button'
 					className='r-search-clear'
-					aria-label='Clear'
+					aria-label={t('massDelete:whitelist.clear')}
 					onClick={() => {
 						setQ('');
 						setOpen(false);
@@ -1122,7 +1119,7 @@ const WhitelistSearch = ({
 								</span>
 								<span className='r-search-name'>
 									{cleanName(p.speciesName)}
-									{p.isShadow && <em className='r-search-shadow'> · Shadow</em>}
+									{p.isShadow && <em className='r-search-shadow'> · {t('massDelete:whitelist.shadowSuffix')}</em>}
 								</span>
 								<span className='r-search-dex'>{dexNo(p.dex)}</span>
 							</button>
@@ -1146,27 +1143,30 @@ const WhitelistChip = ({
 	reason: string;
 	imageSource: ReturnType<typeof useImageSource>['imageSource'];
 	onRemove: (speciesId: string) => void;
-}) => (
-	<button
-		type='button'
-		className='r-md-wl-chip'
-		data-locked={locked ? '' : undefined}
-		disabled={locked}
-		title={locked ? `Protected because it’s ${reason} — toggle that off above to remove it` : 'Remove'}
-		onClick={() => onRemove(p.speciesId)}
-	>
-		<span className='r-md-wl-sprite'>
-			{p.isShadow && <ShadowMark />}
-			<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' onError={handleSpriteError(p)} />
-		</span>
-		<span className='r-md-wl-name'>{cleanName(p.speciesName)}</span>
-		{!locked && (
-			<span className='r-md-wl-x' aria-hidden='true'>
-				×
+}) => {
+	const { t } = useTranslation(['massDelete']);
+	return (
+		<button
+			type='button'
+			className='r-md-wl-chip'
+			data-locked={locked ? '' : undefined}
+			disabled={locked}
+			title={locked ? t('massDelete:whitelist.removeLockedTitle', { reason }) : t('massDelete:whitelist.remove')}
+			onClick={() => onRemove(p.speciesId)}
+		>
+			<span className='r-md-wl-sprite'>
+				{p.isShadow && <ShadowMark />}
+				<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' onError={handleSpriteError(p)} />
 			</span>
-		)}
-	</button>
-);
+			<span className='r-md-wl-name'>{cleanName(p.speciesName)}</span>
+			{!locked && (
+				<span className='r-md-wl-x' aria-hidden='true'>
+					×
+				</span>
+			)}
+		</button>
+	);
+};
 
 // dex, then form (grouping each Shadow right after its precomputed
 // non-Shadow counterpart, via dex-server's own `nonShadowSpecies` field),
@@ -1177,6 +1177,7 @@ const byDexFormShadow = (a: { p: IGamemasterPokemon }, b: { p: IGamemasterPokemo
 	a.p.dex - b.p.dex || formKeyOf(a.p).localeCompare(formKeyOf(b.p)) || Number(a.p.isShadow) - Number(b.p.isShadow);
 
 const MassDelete = () => {
+	const { t } = useTranslation(['massDelete']);
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { movesFetchCompleted } = useMoves();
@@ -1320,13 +1321,13 @@ const MassDelete = () => {
 		Object.values(gamemasterPokemon)
 			.filter((p) => !p.aliasId && !p.isMega)
 			.forEach((p) => {
-				if (protect.legendary && p.isLegendary) map.set(p.speciesId, 'Legendary');
-				else if (mythicalProtected && p.isMythical) map.set(p.speciesId, 'Mythical');
-				else if (protect.ultraBeast && p.isBeast) map.set(p.speciesId, 'Ultra Beast');
-				else if (shadowProtected && p.isShadow) map.set(p.speciesId, 'Shadow');
+				if (protect.legendary && p.isLegendary) map.set(p.speciesId, t('massDelete:protectionMeta.legendary.label'));
+				else if (mythicalProtected && p.isMythical) map.set(p.speciesId, t('massDelete:protectionMeta.mythical.label'));
+				else if (protect.ultraBeast && p.isBeast) map.set(p.speciesId, t('massDelete:protectionMeta.ultraBeast.label'));
+				else if (shadowProtected && p.isShadow) map.set(p.speciesId, t('massDelete:protectionMeta.shadow.label'));
 			});
 		return map;
-	}, [gamemasterPokemon, protect.legendary, protect.mythical, protect.ultraBeast, protect.shadow, isTrade]);
+	}, [gamemasterPokemon, protect.legendary, protect.mythical, protect.ultraBeast, protect.shadow, isTrade, t]);
 
 	// Two separate, separately-sorted groups (see `byDexFormShadow`) rather than
 	// one merged list —
@@ -1680,35 +1681,41 @@ const MassDelete = () => {
 	// `protect.shadow`/`protect.mythical` flags — the summary has to agree
 	// with what the chips themselves show, or it'd read as if they weren't
 	// being protected at all.
-	const protectionSummary = PROTECTION_META.filter(
-		(m) => (isTrade && (m.key === 'shadow' || m.key === 'mythical')) || protect[m.key]
-	)
+	const protectionMeta = useMemo(
+		() => PROTECTION_META_TRANSLATORS.map(({ key, translate }) => ({ key, ...translate(t) })),
+		[t]
+	);
+
+	const protectionSummary = protectionMeta
+		.filter((m) => (isTrade && (m.key === 'shadow' || m.key === 'mythical')) || protect[m.key])
 		.map((m) => m.label)
 		.join(', ');
+	const nothingExtra = t('massDelete:panelSummary.nothingExtra');
 	const keepTopSummary = [
-		`Top ${trashGreat} Great League`,
-		`Top ${trashUltra} Ultra League`,
-		`Top ${trashMaster} Master League`,
-		`Top ${trashRaid} Raid`,
+		t('massDelete:panelSummary.topGreat', { n: trashGreat }),
+		t('massDelete:panelSummary.topUltra', { n: trashUltra }),
+		t('massDelete:panelSummary.topMaster', { n: trashMaster }),
+		t('massDelete:panelSummary.topRaid', { n: trashRaid }),
 	].join(' · ');
 	const tradeTopSummary = [
-		`Top ${trashGreat} Great League`,
-		`Top ${trashUltra} Ultra League`,
-		`Top ${trashMaster} Master League`,
-		`Top ${trashRaid} Raid`,
+		t('massDelete:panelSummary.topGreat', { n: trashGreat }),
+		t('massDelete:panelSummary.topUltra', { n: trashUltra }),
+		t('massDelete:panelSummary.topMaster', { n: trashMaster }),
+		t('massDelete:panelSummary.topRaid', { n: trashRaid }),
 	].join(' · ');
 	const panelSummary = isBadIv
-		? `CP ≥ ${cp.toLocaleString()} kept${simplifiedBadIv ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`
+		? `${t('massDelete:panelSummary.cpKept', { cp: cp.toLocaleString() })}${simplifiedBadIv ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`
 		: isTrade
-			? `${tradeTopSummary}${tradeOnlyLowIv ? ' · only clearly-low IVs' : ''} · CP < ${cp.toLocaleString()} · excludes ${protectionSummary || 'nothing extra'}`
-			: `${keepTopSummary} · CP ≥ ${cp.toLocaleString()} kept${simplifiedTrash ? ' · Simplified mode' : ''} · protects ${protectionSummary || 'nothing extra'}`;
+			? `${tradeTopSummary}${tradeOnlyLowIv ? ` · ${t('massDelete:panelSummary.onlyClearlyLowIvs')}` : ''} · ${t('massDelete:panelSummary.cpUnder', { cp: cp.toLocaleString() })} · ${t('massDelete:panelSummary.excludesList', { list: protectionSummary || nothingExtra })}`
+			: `${keepTopSummary} · ${t('massDelete:panelSummary.cpKept', { cp: cp.toLocaleString() })}${simplifiedTrash ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`;
 
 	const whitelistSummary =
 		whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
-			? 'No individually-protected Pokémon yet'
+			? t('massDelete:whitelist.summaryEmpty')
 			: [
-					whitelistChipsManual.length > 0 && `${whitelistChipsManual.length} kept individually`,
-					whitelistChipsAuto.length > 0 && `${whitelistChipsAuto.length} protected by category`,
+					whitelistChipsManual.length > 0 &&
+						t('massDelete:whitelist.summaryManual', { count: whitelistChipsManual.length }),
+					whitelistChipsAuto.length > 0 && t('massDelete:whitelist.summaryAuto', { count: whitelistChipsAuto.length }),
 				]
 					.filter(Boolean)
 					.join(' · ');
@@ -1741,11 +1748,15 @@ const MassDelete = () => {
 	};
 
 	const pageTitle = isBadIv
-		? 'Mass Delete Non-Perfect IV Pokémon'
+		? t('massDelete:pageTitle.badIv')
 		: isTrade
-			? 'Find Pokémon Worth Trading'
-			: 'Mass Delete current non-meta relevant Pokémon';
-	const activeHelpText = isBadIv ? BAD_IV_HELP_TEXT : isTrade ? TRADE_HELP_TEXT : HELP_TEXT;
+			? t('massDelete:pageTitle.trade')
+			: t('massDelete:pageTitle.meta');
+	const activeHelpText = isBadIv
+		? t('massDelete:helpText.badIv')
+		: isTrade
+			? t('massDelete:helpText.trade')
+			: t('massDelete:helpText.meta');
 
 	// This page depends on five separate dex-server feeds (gamemaster, moves,
 	// PvP rankings, raid DPS, species-search-metadata) — three of them
@@ -1757,7 +1768,7 @@ const MassDelete = () => {
 		return (
 			<div className='r-loading'>
 				<div className='r-spinner' />
-				Loading…
+				{t('massDelete:loading')}
 			</div>
 		);
 	}
@@ -1766,35 +1777,35 @@ const MassDelete = () => {
 		<div className='r-shell'>
 			<h1 className='r-page-title'>{pageTitle}</h1>
 
-			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label='Mass delete mode'>
+			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label={t('massDelete:modeTablist')}>
 				<button type='button' data-active={mode === 'meta'} onClick={() => setMode('meta')}>
-					<i className='r-md-knob-full'>Non-meta relevant</i>
-					<i className='r-md-knob-short'>Non-meta</i>
+					<i className='r-md-knob-full'>{t('massDelete:modeTabs.meta.full')}</i>
+					<i className='r-md-knob-short'>{t('massDelete:modeTabs.meta.short')}</i>
 				</button>
 				<button type='button' data-active={isBadIv} onClick={() => setMode('badIv')}>
-					<i className='r-md-knob-full'>Non-Perfect IVs</i>
-					<i className='r-md-knob-short'>IVs</i>
+					<i className='r-md-knob-full'>{t('massDelete:modeTabs.badIv.full')}</i>
+					<i className='r-md-knob-short'>{t('massDelete:modeTabs.badIv.short')}</i>
 				</button>
 				<button type='button' data-active={isTrade} onClick={() => setMode('trade')}>
-					<i className='r-md-knob-full'>Find Tradeable</i>
-					<i className='r-md-knob-short'>Tradeable</i>
+					<i className='r-md-knob-full'>{t('massDelete:modeTabs.trade.full')}</i>
+					<i className='r-md-knob-short'>{t('massDelete:modeTabs.trade.short')}</i>
 				</button>
 			</div>
 
 			{isBadIv && (
 				<div className='r-card r-md-warning'>
-					<p style={{ margin: 0 }}>⚠️ {BAD_IV_WARNING}</p>
+					<p style={{ margin: 0 }}>⚠️ {t('massDelete:badIvWarning')}</p>
 				</div>
 			)}
 
 			<div className='r-card r-md-help'>
 				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{activeHelpText}</p>
 				<button type='button' className='r-md-more' onClick={() => setHelpOpen((v) => !v)}>
-					{helpOpen ? 'Read less' : 'Read more'}
+					{helpOpen ? t('massDelete:readLess') : t('massDelete:readMore')}
 				</button>
 			</div>
 
-			<div className='r-section-h'>Configuration</div>
+			<div className='r-section-h'>{t('massDelete:configuration')}</div>
 			<div className='r-ctr-config r-md-config' data-open={panelOpen}>
 				<div className='r-ctr-config-bar'>
 					<button
@@ -1808,12 +1819,12 @@ const MassDelete = () => {
 						</span>
 						<span className='r-ctr-config-sum'>{panelSummary}</span>
 						<span className='r-ctr-config-chev' aria-hidden='true'>
-							{panelOpen ? 'Hide' : 'Edit'}
+							{panelOpen ? t('massDelete:hide') : t('massDelete:edit')}
 						</span>
 					</button>
 					{panelDirty && (
 						<button type='button' className='r-ctr-config-clear' onClick={resetPanel}>
-							Reset
+							{t('massDelete:reset')}
 						</button>
 					)}
 				</div>
@@ -1822,32 +1833,42 @@ const MassDelete = () => {
 					<div className='r-ctr-panel'>
 						{mode === 'meta' && (
 							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>Preserve top current meta Pokémon per league/raid</p>
+								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:metaKnobsSubtitle')}</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/great.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Great League</i>
-											<i className='r-md-knob-short'>Great</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.greatLeague.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.greatLeague.short')}</i>
 										</span>
-										<NumSelect label='Keep top Great League' value={trashGreat} onChange={setTrashGreat} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopGreat')}
+											value={trashGreat}
+											onChange={setTrashGreat}
+											count={2000}
+										/>
 									</div>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/ultra.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Ultra League</i>
-											<i className='r-md-knob-short'>Ultra</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.ultraLeague.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.ultraLeague.short')}</i>
 										</span>
-										<NumSelect label='Keep top Ultra League' value={trashUltra} onChange={setTrashUltra} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopUltra')}
+											value={trashUltra}
+											onChange={setTrashUltra}
+											count={2000}
+										/>
 									</div>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Master League</i>
-											<i className='r-md-knob-short'>Master</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.masterLeague.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.masterLeague.short')}</i>
 										</span>
 										<NumSelect
-											label='Keep top Master League'
+											label={t('massDelete:knobs.ariaKeepTopMaster')}
 											value={trashMaster}
 											onChange={setTrashMaster}
 											count={2000}
@@ -1856,19 +1877,24 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Raid Attackers</i>
-											<i className='r-md-knob-short'>Raid</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
 										</span>
-										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											value={trashRaid}
+											onChange={setTrashRaid}
+											count={2000}
+										/>
 									</div>
 								</div>
 								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
 								<div className='r-md-row-2'>
 									<div className='r-md-knob'>
-										<span>Save CP</span>
+										<span>{t('massDelete:knobs.saveCp')}</span>
 										<select
 											className='r-md-select'
-											aria-label='Save CP'
+											aria-label={t('massDelete:knobs.saveCp')}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -1882,23 +1908,28 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-cp'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Raid Attackers</i>
-											<i className='r-md-knob-short'>Raid</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
 										</span>
-										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											value={trashRaid}
+											onChange={setTrashRaid}
+											count={2000}
+										/>
 									</div>
 									<div className='r-md-knob'>
-										<span>Simplified mode</span>
+										<span>{t('massDelete:knobs.simplifiedMode')}</span>
 										<button
 											type='button'
 											className='r-ctr-toggle'
 											data-on={simplifiedTrash ? '' : undefined}
 											aria-pressed={simplifiedTrash}
-											title='Trades accuracy for a shorter string: skips looking for Master League (uncapped) stat-product ties — only the exact hundo (protected everywhere, unconditionally, via the global !4* exclusion) stays protected there. Great/Ultra/raid protection is unaffected.'
+											title={t('massDelete:simplifiedTrashTooltip')}
 											onClick={() => setSimplifiedTrash((v) => !v)}
 										>
 											<span className='r-ss-box' aria-hidden='true' />
-											{simplifiedTrash ? 'On' : 'Off'}
+											{simplifiedTrash ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
 										</button>
 									</div>
 								</div>
@@ -1907,15 +1938,13 @@ const MassDelete = () => {
 
 						{mode === 'badIv' && (
 							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									Simplified trades some accuracy for a shorter string — see the tooltip on the toggle
-								</p>
+								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:badIvKnobsSubtitle')}</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
 									<div className='r-md-knob'>
-										<span>Save CP</span>
+										<span>{t('massDelete:knobs.saveCp')}</span>
 										<select
 											className='r-md-select'
-											aria-label='Save CP'
+											aria-label={t('massDelete:knobs.saveCp')}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -1927,17 +1956,17 @@ const MassDelete = () => {
 										</select>
 									</div>
 									<div className='r-md-knob'>
-										<span>Simplified mode</span>
+										<span>{t('massDelete:knobs.simplifiedMode')}</span>
 										<button
 											type='button'
 											className='r-ctr-toggle'
 											data-on={simplifiedBadIv ? '' : undefined}
 											aria-pressed={simplifiedBadIv}
-											title='Trades accuracy for a shorter string: instead of protecting just a species’ exact best IV spread, any species that would need one of these per-spread carve-outs is skipped entirely — a bit like a bonus whitelist entry. Shorter and simpler, but more false negatives: some catches Complete mode would correctly target stay un-targeted here.'
+											title={t('massDelete:simplifiedBadIvTooltip')}
 											onClick={() => setSimplifiedBadIv((v) => !v)}
 										>
 											<span className='r-ss-box' aria-hidden='true' />
-											{simplifiedBadIv ? 'On' : 'Off'}
+											{simplifiedBadIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
 										</button>
 									</div>
 								</div>
@@ -1946,35 +1975,42 @@ const MassDelete = () => {
 
 						{isTrade && (
 							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									A species only needs to clear ONE of these four cutoffs to be suggested — Great and Ultra also require
-									a trade to actually be able to reach their best possible spread (see the help text above)
-								</p>
+								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:tradeKnobsSubtitle')}</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/great.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Great League</i>
-											<i className='r-md-knob-short'>Great</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.greatLeague.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.greatLeague.short')}</i>
 										</span>
-										<NumSelect label='Keep top Great League' value={trashGreat} onChange={setTrashGreat} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopGreat')}
+											value={trashGreat}
+											onChange={setTrashGreat}
+											count={2000}
+										/>
 									</div>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/ultra.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Ultra League</i>
-											<i className='r-md-knob-short'>Ultra</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.ultraLeague.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.ultraLeague.short')}</i>
 										</span>
-										<NumSelect label='Keep top Ultra League' value={trashUltra} onChange={setTrashUltra} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopUltra')}
+											value={trashUltra}
+											onChange={setTrashUltra}
+											count={2000}
+										/>
 									</div>
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Master League</i>
-											<i className='r-md-knob-short'>Master</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.masterLeague.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.masterLeague.short')}</i>
 										</span>
 										<NumSelect
-											label='Keep top Master League'
+											label={t('massDelete:knobs.ariaKeepTopMaster')}
 											value={trashMaster}
 											onChange={setTrashMaster}
 											count={2000}
@@ -1983,19 +2019,24 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Raid Attackers</i>
-											<i className='r-md-knob-short'>Raid</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
 										</span>
-										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											value={trashRaid}
+											onChange={setTrashRaid}
+											count={2000}
+										/>
 									</div>
 								</div>
 								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
 								<div className='r-md-row-2'>
 									<div className='r-md-knob'>
-										<span>Save CP</span>
+										<span>{t('massDelete:knobs.saveCp')}</span>
 										<select
 											className='r-md-select'
-											aria-label='Save CP'
+											aria-label={t('massDelete:knobs.saveCp')}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -2009,23 +2050,28 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-cp'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>Raid Attackers</i>
-											<i className='r-md-knob-short'>Raid</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
 										</span>
-										<NumSelect label='Keep top raid attackers' value={trashRaid} onChange={setTrashRaid} count={2000} />
+										<NumSelect
+											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											value={trashRaid}
+											onChange={setTrashRaid}
+											count={2000}
+										/>
 									</div>
 									<div className='r-md-knob'>
-										<span>Keep 3* Pokémon</span>
+										<span>{t('massDelete:knobs.keep3StarPokemon')}</span>
 										<button
 											type='button'
 											className='r-ctr-toggle'
 											data-on={tradeOnlyLowIv ? '' : undefined}
 											aria-pressed={tradeOnlyLowIv}
-											title='Narrows suggestions to catches whose Attack, Defense, and HP are all clearly low — otherwise, anything short of a hundo is suggested.'
+											title={t('massDelete:tradeOnlyLowIvTooltip')}
 											onClick={() => setTradeOnlyLowIv((v) => !v)}
 										>
 											<span className='r-ss-box' aria-hidden='true' />
-											{tradeOnlyLowIv ? 'On' : 'Off'}
+											{tradeOnlyLowIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
 										</button>
 									</div>
 								</div>
@@ -2033,10 +2079,10 @@ const MassDelete = () => {
 						)}
 
 						<div className='r-section-h' style={{ marginTop: 4 }}>
-							{isTrade ? 'Never suggest this category' : 'Never delete this category'}
+							{isTrade ? t('massDelete:neverSuggestCategory') : t('massDelete:neverDeleteCategory')}
 						</div>
 						<div className='r-md-protect-grid'>
-							{PROTECTION_META.map((m) => {
+							{protectionMeta.map((m) => {
 								// Trading a Shadow or Mythical Pokémon isn't something the
 								// game allows at all, regardless of its IVs —
 								// computeTradeableString excludes every Shadow and Mythical
@@ -2052,7 +2098,7 @@ const MassDelete = () => {
 										data-on={lockedOn || protect[m.key] ? '' : undefined}
 										aria-pressed={lockedOn || protect[m.key]}
 										disabled={lockedOn}
-										title={lockedOn ? `${m.label} Pokémon can never be traded, so this is always on.` : m.description}
+										title={lockedOn ? t('massDelete:lockedOnTitle', { label: m.label }) : m.description}
 										onClick={lockedOn ? undefined : () => setProtectFlag(m.key)}
 									>
 										<span className='r-ss-box' aria-hidden='true' />
@@ -2065,7 +2111,9 @@ const MassDelete = () => {
 				)}
 			</div>
 
-			<div className='r-section-h'>{isTrade ? 'Never suggest these Pokémon' : 'Never delete these Pokémon'}</div>
+			<div className='r-section-h'>
+				{isTrade ? t('massDelete:neverSuggestPokemon') : t('massDelete:neverDeletePokemon')}
+			</div>
 			<div className='r-ctr-config' data-open={wlOpen}>
 				<div className='r-ctr-config-bar'>
 					<button
@@ -2085,7 +2133,7 @@ const MassDelete = () => {
 						</span>
 						<span className='r-ctr-config-sum'>{whitelistSummary}</span>
 						<span className='r-ctr-config-chev' aria-hidden='true'>
-							{wlOpen ? 'Hide' : 'Edit'}
+							{wlOpen ? t('massDelete:hide') : t('massDelete:edit')}
 						</span>
 					</button>
 				</div>
@@ -2095,14 +2143,16 @@ const MassDelete = () => {
 							gamemasterPokemon={gamemasterPokemon}
 							exclude={whitelistSearchExclude}
 							onPick={addToWhitelist}
-							placeholder={isTrade ? 'Add a Pokémon to never suggest…' : 'Add a Pokémon to never delete…'}
+							placeholder={
+								isTrade
+									? t('massDelete:whitelist.searchPlaceholderTrade')
+									: t('massDelete:whitelist.searchPlaceholderMeta')
+							}
 						/>
 						<div className='r-md-wl-chips'>
 							{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
 								<p className='r-muted' style={{ margin: 0 }}>
-									{isTrade
-										? 'Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.'
-										: 'Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.'}
+									{isTrade ? t('massDelete:whitelist.emptyTrade') : t('massDelete:whitelist.emptyMeta')}
 								</p>
 							)}
 							{whitelistChipsManual.map(({ p, locked, reason }) => (
@@ -2150,33 +2200,30 @@ const MassDelete = () => {
 					}
 				}}
 			>
-				{activeCalculating ? 'Computing…' : 'Compute'}
+				{activeCalculating ? t('massDelete:computing') : t('massDelete:compute')}
 			</button>
 
 			<textarea
 				ref={outRef}
 				className='r-md-out'
 				readOnly
-				value={activeCalculating ? 'Computing… this sweeps every species, give it a moment.' : activeResult}
-				placeholder={
-					isTrade
-						? 'Your search string appears here. Paste it into the Pokémon GO search bar to review your trade candidates.'
-						: 'Your search string appears here. Paste it into the Pokémon GO search bar, review the matches, then delete.'
-				}
+				value={activeCalculating ? t('massDelete:computingMessage') : activeResult}
+				placeholder={isTrade ? t('massDelete:outputPlaceholderTrade') : t('massDelete:outputPlaceholderMeta')}
 				onClick={copy}
 			/>
 			{activeResult && !activeCalculating && (
 				<p className={`r-md-length-hint${activeResult.length > 5000 ? ' r-md-length-hint--warn' : ''}`}>
-					{activeResult.length.toLocaleString()} character{activeResult.length === 1 ? '' : 's'}
+					{t('massDelete:characterCount', {
+						count: activeResult.length,
+						formatted: activeResult.length.toLocaleString(),
+					})}
 					{activeResult.length > 5000 &&
-						(isTrade
-							? " — ⚠️ this may be too long for the search bar on some Android phones; pasting it into Pokémon GO's search bar may cut off the end of the string."
-							: " — ⚠️ this may be too long for the search bar on some Android phones; consider using the simplified deletion mode toggle above if you notice the string gets cut-off after pasting it in Pokémon Go's search bar.")}
+						(isTrade ? t('massDelete:lengthWarningTrade') : t('massDelete:lengthWarningMeta'))}
 				</p>
 			)}
 			{activeResult && (
 				<button type='button' className='r-md-copy' onClick={copy}>
-					{copied ? 'Copied ✓' : 'Copy search string'}
+					{copied ? t('massDelete:copied') : t('massDelete:copySearchString')}
 				</button>
 			)}
 		</div>

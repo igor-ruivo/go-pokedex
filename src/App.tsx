@@ -2,6 +2,7 @@ import './rvmp.css';
 import './components.css';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { useTranslation } from 'react-i18next';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Shell from './components/Shell';
@@ -32,57 +33,60 @@ import {
 // Server state (the dex-server JSON feeds) lives in TanStack Query — see src/queries/.
 // Only genuine client state keeps a Context provider here. Everything is scoped
 // under the `.rvmp` root class (see Shell) — one self-contained stylesheet.
-const App = () => (
-	<PersistQueryClientProvider
-		client={queryClient}
-		persistOptions={{
-			persister: queryPersister,
-			maxAge: DAY_IN_MS,
-			buster: QUERY_CACHE_BUSTER,
-			dehydrateOptions: queryDehydrateOptions,
-		}}
-	>
-		<ThemeProvider>
-			<ImageSourceProvider>
-				<RaidMetricProvider>
-					<RelevanceSetsProvider>
-						<BestBuddyProvider>
-							<LanguageProvider>
-								<SeenEventsProvider>
-									<BrowserRouter>
-										<Routes>
-											<Route element={<Shell />}>
-												<Route index element={<Rankings />} />
-												<Route path='rankings/:league' element={<Rankings />} />
-												<Route path='rankings/:league/:type' element={<Rankings />} />
-												<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
-												<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
-												<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
-												<Route path='calendar/:tab' element={<Calendar />} />
-												<Route path='moves' element={<Moves />} />
-												<Route path='move/:moveId' element={<MoveDetail />} />
-												<Route path='types' element={<Types />} />
-												<Route
-													path='search-strings'
-													element={<Navigate to='/search-strings/non-meta-relevant' replace />}
-												/>
-												<Route path='search-strings/:tab' element={<MassDelete />} />
-												{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
-												<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
-												<Route path='tools' element={<Placeholder title='Tools' />} />
-												<Route path='settings' element={<Settings />} />
-												<Route path='*' element={<Navigate to='/' replace />} />
-											</Route>
-										</Routes>
-									</BrowserRouter>
-								</SeenEventsProvider>
-							</LanguageProvider>
-						</BestBuddyProvider>
-					</RelevanceSetsProvider>
-				</RaidMetricProvider>
-			</ImageSourceProvider>
-		</ThemeProvider>
-	</PersistQueryClientProvider>
-);
+const App = () => {
+	const { t } = useTranslation(['common']);
+	return (
+		<PersistQueryClientProvider
+			client={queryClient}
+			persistOptions={{
+				persister: queryPersister,
+				maxAge: DAY_IN_MS,
+				buster: QUERY_CACHE_BUSTER,
+				dehydrateOptions: queryDehydrateOptions,
+			}}
+		>
+			<ThemeProvider>
+				<ImageSourceProvider>
+					<RaidMetricProvider>
+						<RelevanceSetsProvider>
+							<BestBuddyProvider>
+								<LanguageProvider>
+									<SeenEventsProvider>
+										<BrowserRouter>
+											<Routes>
+												<Route element={<Shell />}>
+													<Route index element={<Rankings />} />
+													<Route path='rankings/:league' element={<Rankings />} />
+													<Route path='rankings/:league/:type' element={<Rankings />} />
+													<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
+													<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
+													<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
+													<Route path='calendar/:tab' element={<Calendar />} />
+													<Route path='moves' element={<Moves />} />
+													<Route path='move/:moveId' element={<MoveDetail />} />
+													<Route path='types' element={<Types />} />
+													<Route
+														path='search-strings'
+														element={<Navigate to='/search-strings/non-meta-relevant' replace />}
+													/>
+													<Route path='search-strings/:tab' element={<MassDelete />} />
+													{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
+													<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
+													<Route path='tools' element={<Placeholder title={t('common:placeholder.toolsTitle')} />} />
+													<Route path='settings' element={<Settings />} />
+													<Route path='*' element={<Navigate to='/' replace />} />
+												</Route>
+											</Routes>
+										</BrowserRouter>
+									</SeenEventsProvider>
+								</LanguageProvider>
+							</BestBuddyProvider>
+						</RelevanceSetsProvider>
+					</RaidMetricProvider>
+				</ImageSourceProvider>
+			</ThemeProvider>
+		</PersistQueryClientProvider>
+	);
+};
 
 export default App;

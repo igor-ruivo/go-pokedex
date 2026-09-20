@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "Tür tablosu",
+		"description": "Bir saldırı türünün her savunmacıya karşı nasıl performans gösterdiğini görmek için bir <b>satırı</b> okuyun · bir savunma türünün nelere karşı dirençli olduğunu görmek için bir <b>sütunu</b> okuyun."
+	},
+	"legend": {
+		"superEffective": "Çok etkili",
+		"resisted": "Dirençli",
+		"immune": "Bağışık / çift dirençli"
+	},
+	"calculator": {
+		"title": "Zayıflık hesaplayıcı",
+		"defendingTypesLabel": "Savunma türü/türleri · en fazla 2",
+		"takesExtraFrom": "Şunlardan ekstra hasar alır",
+		"takesLessFrom": "Şunlardan daha az hasar alır",
+		"nothing": "Hiçbiri"
+	}
+}

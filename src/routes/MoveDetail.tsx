@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
@@ -24,6 +25,7 @@ const MiniGridLoading = () => (
 );
 
 const MoveDetail = () => {
+	const { t } = useTranslation(['moveDetail']);
 	const { moveId = '' } = useParams();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
@@ -71,7 +73,7 @@ const MoveDetail = () => {
 	if (!m) {
 		return (
 			<div className='r-loading'>
-				<p>No move “{moveId}”.</p>
+				<p>{t('moveDetail:notFound', { moveId })}</p>
 			</div>
 		);
 	}
@@ -97,15 +99,18 @@ const MoveDetail = () => {
 		const nrg = a === 'pve' ? m.pveEnergy : m.pvpEnergy;
 		const cd = a === 'pve' ? m.pveCooldown : m.pvpCooldown;
 		const out: Array<[string, string]> = [
-			['DMG', String(pow)],
-			['NRG', kind === 'fast' ? `+${nrg}` : String(nrg)],
+			[t('moveDetail:statLabels.dmg'), String(pow)],
+			[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : String(nrg)],
 		];
-		if (a === 'pve') out.push(['DUR', `${cd}s`]);
-		else if (kind === 'fast') out.push(['Turns', String(fastMoveTurns(m))]);
+		if (a === 'pve') out.push([t('moveDetail:statLabels.dur'), `${cd}s`]);
+		else if (kind === 'fast') out.push([t('moveDetail:statLabels.turns'), String(fastMoveTurns(m))]);
 		if (kind === 'fast') {
-			out.push(['DPS', moveDPS(m, a).toFixed(1)], ['EPS', moveEPS(m, a).toFixed(1)]);
+			out.push(
+				[t('moveDetail:statLabels.dps'), moveDPS(m, a).toFixed(1)],
+				[t('moveDetail:statLabels.eps'), moveEPS(m, a).toFixed(1)]
+			);
 		} else {
-			out.push(['DPE', moveDPE(m, a).toFixed(2)]);
+			out.push([t('moveDetail:statLabels.dpe'), moveDPE(m, a).toFixed(2)]);
 		}
 		return out;
 	};
@@ -118,18 +123,20 @@ const MoveDetail = () => {
 			>
 				<div className='r-move-hero-badges'>
 					<span className='r-move-type'>{TYPE_LABEL[type] ?? m.type}</span>
-					<span className='r-chip'>{kind === 'fast' ? 'Fast move' : 'Charged move'}</span>
-					{m.isSuperMega && <span className='r-chip'>Super Mega</span>}
+					<span className='r-chip'>
+						{t(kind === 'fast' ? 'moveDetail:kind.fastChip' : 'moveDetail:kind.chargedChip')}
+					</span>
+					{m.isSuperMega && <span className='r-chip'>{t('moveDetail:superMega')}</span>}
 				</div>
 				<h1 className='r-name'>{m.moveName[gl] ?? cleanName(moveId)}</h1>
 			</header>
 
-			<div className='r-section-h'>Stats</div>
+			<div className='r-section-h'>{t('moveDetail:sections.stats')}</div>
 			<div className='r-card' style={{ ['--tc' as string]: `var(--t-${type})` }}>
 				<div className='r-mstat'>
 					{(['pve', 'pvp'] as const).map((a) => (
 						<div className='r-mstat-col' key={a}>
-							<span className='r-mstat-arena'>{a === 'pve' ? 'PvE · Raids & Gyms' : 'PvP · Leagues'}</span>
+							<span className='r-mstat-arena'>{t(a === 'pve' ? 'moveDetail:arena.pve' : 'moveDetail:arena.pvp')}</span>
 							<div className='r-mstat-tiles'>
 								{statsFor(a).map(([label, value]) => (
 									<div className='r-mstat-tile' key={label}>
@@ -144,29 +151,29 @@ const MoveDetail = () => {
 				{fx && <p className='r-mstat-buff'>{fx}</p>}
 			</div>
 
-			<div className='r-section-h'>Usage</div>
+			<div className='r-section-h'>{t('moveDetail:sections.usage')}</div>
 			<div className='r-card'>
 				<div className='r-usage'>
 					<div className='r-usage-lead'>
 						<b>{owners.length.toLocaleString()}</b>
-						<i>Pokémon can learn {name}</i>
+						<i>{t('moveDetail:usageLead', { name })}</i>
 					</div>
 					<div className='r-usage-tiles'>
 						<div className='r-usage-tile' data-hi=''>
 							<b>{relevanceSets.ready ? recommended.length.toLocaleString() : '…'}</b>
-							<i>Recommended</i>
+							<i>{t('moveDetail:tiles.recommended')}</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{megaCount}</b>
-							<i>Mega</i>
+							<i>{t('moveDetail:tiles.mega')}</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{eliteCount}</b>
-							<i>Elite</i>
+							<i>{t('moveDetail:tiles.elite')}</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{legacyCount}</b>
-							<i>Legacy</i>
+							<i>{t('moveDetail:tiles.legacy')}</i>
 						</div>
 					</div>
 				</div>
@@ -174,20 +181,20 @@ const MoveDetail = () => {
 
 			{!relevanceSets.ready ? (
 				<>
-					<div className='r-section-h'>Recommended</div>
+					<div className='r-section-h'>{t('moveDetail:sections.recommended')}</div>
 					<MiniGridLoading />
-					<div className='r-section-h'>Also learned by</div>
+					<div className='r-section-h'>{t('moveDetail:sections.alsoLearnedBy')}</div>
 					<MiniGridLoading />
-					<div className='r-section-h'>Is an elite move for</div>
+					<div className='r-section-h'>{t('moveDetail:sections.eliteFor')}</div>
 					<MiniGridLoading />
-					<div className='r-section-h'>Is a legacy move for</div>
+					<div className='r-section-h'>{t('moveDetail:sections.legacyFor')}</div>
 					<MiniGridLoading />
 				</>
 			) : (
 				<>
 					{recommended.length > 0 && (
 						<>
-							<div className='r-section-h'>Recommended</div>
+							<div className='r-section-h'>{t('moveDetail:sections.recommended')}</div>
 							<div className='r-minigrid r-minigrid--fill'>
 								{recommended.map((p) => (
 									<PokeMini key={p.speciesId} speciesId={p.speciesId} />
@@ -196,7 +203,9 @@ const MoveDetail = () => {
 						</>
 					)}
 
-					<div className='r-section-h'>{recommended.length > 0 ? 'Also learned by' : 'Learned by'}</div>
+					<div className='r-section-h'>
+						{t(recommended.length > 0 ? 'moveDetail:sections.alsoLearnedBy' : 'moveDetail:sections.learnedBy')}
+					</div>
 					<div className='r-minigrid r-minigrid--fill'>
 						{others.map((p) => (
 							<PokeMini key={p.speciesId} speciesId={p.speciesId} />
@@ -205,7 +214,7 @@ const MoveDetail = () => {
 
 					{eliteOwners.length > 0 && (
 						<>
-							<div className='r-section-h'>Is an elite move for</div>
+							<div className='r-section-h'>{t('moveDetail:sections.eliteFor')}</div>
 							<div className='r-minigrid r-minigrid--fill'>
 								{eliteOwners.map((p) => (
 									<PokeMini key={p.speciesId} speciesId={p.speciesId} />
@@ -216,7 +225,7 @@ const MoveDetail = () => {
 
 					{legacyOwners.length > 0 && (
 						<>
-							<div className='r-section-h'>Is a legacy move for</div>
+							<div className='r-section-h'>{t('moveDetail:sections.legacyFor')}</div>
 							<div className='r-minigrid r-minigrid--fill'>
 								{legacyOwners.map((p) => (
 									<PokeMini key={p.speciesId} speciesId={p.speciesId} />
@@ -226,7 +235,7 @@ const MoveDetail = () => {
 					)}
 				</>
 			)}
-			{owners.length === 0 && <p className='r-muted'>No Pokémon learns this move.</p>}
+			{owners.length === 0 && <p className='r-muted'>{t('moveDetail:noneLearn')}</p>}
 		</div>
 	);
 };

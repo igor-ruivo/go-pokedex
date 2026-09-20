@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "名前",
+		"dmgPve": "威力 · PvE",
+		"dmgPvp": "威力 · PvP",
+		"nrgPve": "エネルギー · PvE",
+		"nrgPvp": "エネルギー · PvP",
+		"durPve": "発生時間 · PvE",
+		"turnsPvp": "ターン · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "わざ",
+		"kindAriaLabel": "わざの種類",
+		"kind": { "all": "すべて", "fast": "はやわざ", "charged": "ゲージわざ" },
+		"count_one": "わざ{{count}}件",
+		"count_other": "わざ{{count}}件"
+	}
+}

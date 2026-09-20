@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "グレート",
+		"greatFull": "グレートリーグ",
+		"ultra": "ハイパー",
+		"ultraFull": "ハイパーリーグ",
+		"master": "マスター",
+		"masterFull": "マスターリーグ",
+		"raid": "レイド",
+		"raids": "レイド",
+		"raidsFull": "レイド"
+	},
+	"tabs": {
+		"ranks": "ランク",
+		"moves": "わざ",
+		"counters": "対策",
+		"ivTable": "個体値表",
+		"strings": "検索文字列",
+		"comingSoon": "「{{tab}}」はリニューアルで近日公開予定。"
+	},
+	"loading": {
+		"pokedex": "図鑑を読み込み中…",
+		"notFound": "ポケモン「{{speciesId}}」は見つかりません。"
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "こう", "def": "ぼう", "hp": "HP" },
+		"level": { "prefix": "Lv", "loading": "Lv …" },
+		"shadowToggle": "シャドウ",
+		"switchLeagueAriaLabel": "現在{{league}}を表示中。タップでリーグ切替。",
+		"nextFamilyMemberAriaLabel": "{{current}} — 次: {{next}}"
+	},
+	"familyLine": {
+		"heading": "{{name}}の進化系統"
+	},
+	"tablist": {
+		"ariaLabel": "リーグ / モード"
+	},
+	"board": {
+		"sectionHeading": "リーグ別 到達可能な最良進化形",
+		"notRanked": "ランク外",
+		"loading": "読み込み中…",
+		"attackersSuffix": "{{type}}タイプアタッカー",
+		"nextTypeTitle": "{{type}} — タップで次のタイプへ"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "レイド性能 · {{name}}",
+			"selfShadow": "レイド性能 · シャドウ{{name}}",
+			"as": "レイド性能 · {{name}}として",
+			"asShadow": "レイド性能 · シャドウ{{name}}として"
+		},
+		"rank": "{{type}}ランク",
+		"baseAtk": "こうげき実数値",
+		"notRankedAttacker": "レイドアタッカーとしてランク外です。",
+		"bestMovesetByType": "タイプ別ベストわざ構成",
+		"nextMovesetTitle": "タップで次のわざ構成へ",
+		"selectTypeTitle": "タップしてこのタイプを選択",
+		"ivsBarelyMatterPrefix": "レイドでは個体値はほぼ影響しません — 最も高いものを選びましょう",
+		"attackWord": "こうげき"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "個体値パーセンタイル · {{name}}",
+			"selfShadow": "個体値パーセンタイル · シャドウ{{name}}",
+			"as": "個体値パーセンタイル · {{name}}として",
+			"asShadow": "個体値パーセンタイル · シャドウ{{name}}として",
+			"purified": "個体値パーセンタイル · きぜつ回復{{name}}として"
+		},
+		"ivRank": "{{league}}個体値ランク",
+		"perfection": "完成度",
+		"cp": "CP",
+		"cpAtLevel": "Lv{{level}}時のCP",
+		"bestSpreadFor": "{{league}}の最良配分:",
+		"bestSpreadResult": "→ Lv{{level}}でCP{{cp}}。",
+		"purifyWarning": "⚠️ きぜつ回復すると各ステータスに+2個体値が付与される点にご注意ください。",
+		"purifyUnreachableWarning": "⚠️ このランク1配分自体は、きぜつ回復では到達できません — きぜつ回復は各ステータスを必ず2以上に引き上げるため、シャドウポケモンは個体値に関係なくそれを下回ることができません。",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "完全個体",
+			"rank1": "{{league}}ランク1"
+		}
+	},
+	"effectiveness": {
+		"heading": "タイプ相性 · {{name}}",
+		"weakTo": "弱点",
+		"resists": "耐性",
+		"nothing": "なし"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "ティア1",
+			"t3": "ティア3",
+			"mega": "メガ",
+			"t5": "ティア5",
+			"elite": "エリート",
+			"legendaryMega": "伝説メガ",
+			"primal": "ゲンシ",
+			"superMega": "スーパーメガ"
+		},
+		"weather": {
+			"none": "天候なし",
+			"sunny": "晴れ/快晴",
+			"rainy": "雨",
+			"partlyCloudy": "薄曇り",
+			"cloudy": "曇り",
+			"windy": "強風",
+			"snow": "雪",
+			"fog": "霧"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "なかよし",
+			"great": "大なかよし",
+			"ultra": "とてもなかよし",
+			"best": "ベストフレンド",
+			"forever": "永遠の友"
+		},
+		"megaLevel": {
+			"base": "基本",
+			"high": "高",
+			"max": "最大",
+			"superMax": "超最大"
+		},
+		"notRankedInLeague": "{{name}}は{{league}}でランク外です — 事前計算された対戦データはありません。",
+		"noData": "データなし。",
+		"strongAgainst": "{{name}}が得意な相手 · {{league}}",
+		"weakAgainst": "{{name}}が苦手な相手 · {{league}}",
+		"bestRaidCounters": "レイド最強対策 · {{name}}",
+		"summaryRaidHp": "{{tier}}レイド · HP{{hp}}",
+		"partyOf": "パーティ{{size}}体",
+		"friendLabel": "{{label}}フレンド",
+		"megaAuraSummary": "メガ{{type}}オーラ",
+		"megaLevelSummary": "メガレベル: {{label}}",
+		"configHide": "隠す",
+		"configEdit": "編集",
+		"clear": "クリア",
+		"bossTier": "ボスティア",
+		"bossTierTitle": "{{tier}} — HP{{hp}}",
+		"bossTierAriaLabel": "{{tier}}レイド",
+		"bossTierHint": "{{tier}}レイド · HP{{hp}}",
+		"weather_field": "天候",
+		"weatherHint": "×1.2 · {{types}}",
+		"megaAura": "メガオーラ",
+		"noMegaOnTeam": "パーティにメガなし",
+		"megaOfType": "メガ{{type}}",
+		"megaAuraHint": "×1.3 {{type}} · ×1.1 その他",
+		"megaLevelField": "メガレベル",
+		"megaLevelHint": "メガ/ゲンシのブラスわざに×{{mult}}",
+		"megaLevelHintExtra": " · アタッカーレベル+2",
+		"partyPower": "パーティパワー",
+		"solo": "ソロ",
+		"friendshipField": "なかよし度",
+		"friendshipHint": "ダメージ×{{mult}}",
+		"helpSummary": "これは何ですか?",
+		"help": {
+			"weatherFriendshipMegaAura": "天候 · なかよし度 · メガオーラ",
+			"weatherFriendshipMegaAuraDesc": "アタッカーへのダメージ倍率です。被ダメージは常に固定値を使用するため、ボス側のわざによってこれらの数値が変わることはありません。",
+			"megaLevelDesc": "メガまたはゲンシ(進化後にメガエナジーで上昇)独自のメガレベルは、専用のブラスわざのみを強化します — その他のわざには影響しません。超最大レベルはブラスわざの有無に関わらず、アタッカーに実質+2レベルを与えます。",
+			"bossTierDesc": "ボスのHP(eDPSに使用)と、その防御に適用されるCPMを設定します。ボスから自動推測されます — エリートレイドの場合は変更してください。"
+		},
+		"includeMegas": "メガを含める",
+		"includeShadows": "シャドウを含める",
+		"noCountersMatch": "そのフィルターに一致する対策はありません。"
+	},
+	"ivTable": {
+		"notForRaids": "個体値ランキングはレイドには適用されません — 上でグレート・ハイパー・マスターのいずれかを選択してください。",
+		"heading": "{{league}} · {{shadow}}{{name}}の全4,096個体値配分",
+		"fieldAriaLabel": "{{label}}個体値、0から15",
+		"clearAriaLabel": "クリア",
+		"notInRanking": "その配分はランキングにありません。",
+		"fillAllThree": "3つすべて入力してください(0〜15)。",
+		"columns": {
+			"rank": "#",
+			"ivs": "個体値",
+			"stats": "攻 · 防 · HP",
+			"percent": "%",
+			"cp": "CP",
+			"level": "Lv"
+		}
+	},
+	"moves": {
+		"bestMoveset": "{{league}}ベストわざ構成",
+		"unrankedForLeague": "{{name}}は{{league}}でランク外です — おすすめのわざ構成はありません。覚えられるわざはすべて下に表示されています。",
+		"defaultLeague": "リーグ",
+		"defaultLeagueSelected": "選択中のリーグ",
+		"allMovesCanLearn": "{{name}}が覚えられるすべてのわざ",
+		"fastMoves": "はやわざ",
+		"chargedMoves": "ゲージわざ",
+		"recommended": "おすすめ",
+		"elite": "エリート",
+		"legacy": "過去限定",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "検索文字列はPvP向けの機能です — 上でグレート・ハイパー・マスターのいずれかを選択してください。",
+		"heading": "{{league}} · ゲーム内検索文字列",
+		"rankCutoff": "ランクカットオフ",
+		"topN": "上位{{n}}",
+		"matchExceptTop": "上位{{n}}を<em>除く</em>すべてに一致",
+		"helperText": "各行は、その系統がカットオフに達する未強化の野生捕獲個体に一致します。コピーしてPokémon GOの検索バーに貼り付けてください。",
+		"copyString": "文字列をコピー",
+		"copied": "コピーしました ✓",
+		"clickToCopy": "クリックでコピー",
+		"sentence": {
+			"caught": "(野生捕獲・未強化)",
+			"findTopSelf": "{{league}}向けに、{{except}}上位{{top}}の<name></name>{{caught}}を検索:",
+			"findTopEvolvesTo": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name>{{caught}}を{{league}}向けに検索:",
+			"findTopSelfShadowEither": "{{league}}向けに、{{except}}上位{{top}}の<name></name> — シャドウ問わず —{{caught}}を検索:",
+			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name> — シャドウ問わず —{{caught}}を{{league}}向けに検索:",
+			"exceptPrefix": "以下を除くすべて: ",
+			"toThePrefix": ""
+		}
+	}
+}

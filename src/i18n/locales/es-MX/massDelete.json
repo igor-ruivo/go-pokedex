@@ -1,0 +1,112 @@
+{
+	"loading": "Cargando…",
+	"pageTitle": {
+		"meta": "Eliminación masiva de Pokémon no relevantes en el meta actual",
+		"badIv": "Eliminación masiva de Pokémon con IVs no perfectos",
+		"trade": "Encontrar Pokémon que valga la pena intercambiar"
+	},
+	"modeTablist": "Modo de eliminación masiva",
+	"modeTabs": {
+		"meta": { "full": "No relevante en el meta", "short": "No meta" },
+		"badIv": { "full": "IVs no perfectos", "short": "IVs" },
+		"trade": { "full": "Buscar intercambiables", "short": "Intercambiables" }
+	},
+	"badIvWarning": "Este modo es agresivo y perfeccionista: la intención es eliminar toda captura que no sea un Pokémon con IVs perfectos (100 %), sin importar si la especie es buena o mala en el meta actual — revisa bien las categorías y la lista blanca de abajo antes de ejecutarlo.",
+	"helpText": {
+		"meta": "Solo meta, nunca IVs: elimina cualquier Pokémon que no sea competitivamente relevante en ningún lado — ni en la Liga Súper, Ultra o Máster, ni en incursiones — según los límites de clasificación y el tope de PC de abajo. Basta con que una especie (o cualquiera de sus evoluciones posteriores) supere el límite en una de ellas para librarse, y una vez lo hace, se libra también cualquier captura de esa especie, sin importar sus propios IVs — esta pestaña no toma en cuenta los IVs en absoluto. Todo lo que esté en el tope de PC o por encima siempre se conserva, igual que todo lo marcado en las categorías y la lista blanca de abajo, sin importar la clasificación. Un producto de estadísticas perfecto para la Liga Máster siempre se conserva.",
+		"badIv": "Solo IVs, nunca meta: ignora por completo el meta actual — el objetivo es eliminar todo lo que no sea un 15/15/15 perfecto, sin importar si la especie es meta ahora mismo. La búsqueda del juego solo permite igualar rangos de IVs, no valores exactos, así que no siempre puede trazar esa línea con precisión — para la Liga Súper (1500 PC) y la Liga Ultra (2500 PC), la mayoría de especies se cubren con un rango compartido de Ataque bajo/resistencia alta que lo aproxima, y unos cientos tienen su propio rango verificado individualmente porque el rango compartido no encaja con sus estadísticas; de cualquier forma, alguna captura casi perfecta (pero no del todo hundo) justo en el límite puede colarse como falso negativo. La Liga Máster no tiene tope de PC, así que ahí lo mejor realmente son siempre los IVs más altos — el manejo de la Liga Máster en este modo es exacto, no una aproximación. Un producto de estadísticas perfecto siempre se conserva en todas las ligas, igual que todo lo marcado en las categorías y la lista blanca de abajo, sin importar los IVs.",
+		"trade": "Una tercera pregunta, aparte de las dos pestañas anteriores: ¿cuáles de tus capturas vale la pena entregar en un intercambio? Un intercambio de Mejor Amigo siempre fija cada estadística en un mínimo de 5. En este modo, basta con que una especie supere UNO de los cuatro límites de abajo (Súper, Ultra, Máster o Incursión) para que se sugiera. La Liga Máster y las incursiones no tienen tope de PC, así que cualquier especie relevante califica solo por clasificación. La Súper y la Ultra son más exigentes: sus topes de PC a menudo implican que el mejor reparto posible para una especie necesita un Ataque muy bajo, algo que el mínimo de 5 de un intercambio nunca puede producir — así que esas dos ligas solo cuentan una especie cuando su mejor reparto propio es algo que un intercambio realmente podría alcanzar. De cualquier forma, una captura que ya es perfecta — o que ya empata con el mejor reparto posible en la liga que la calificó — nunca se sugiere, ya que intercambiarla solo podría empeorarla, nunca mejorarla. Las categorías, la lista blanca y el tope de PC de abajo acotan aún más las sugerencias, igual que en las otras pestañas."
+	},
+	"readMore": "Leer más",
+	"readLess": "Leer menos",
+	"configuration": "Configuración",
+	"edit": "Editar",
+	"hide": "Ocultar",
+	"reset": "Restablecer",
+	"neverDeleteCategory": "Nunca eliminar esta categoría",
+	"neverSuggestCategory": "Nunca sugerir esta categoría",
+	"neverDeletePokemon": "Nunca eliminar estos Pokémon",
+	"neverSuggestPokemon": "Nunca sugerir estos Pokémon",
+	"knobs": {
+		"greatLeague": { "full": "Liga Súper", "short": "Súper" },
+		"ultraLeague": { "full": "Liga Ultra", "short": "Ultra" },
+		"masterLeague": { "full": "Liga Máster", "short": "Máster" },
+		"raidAttackers": { "full": "Atacantes de incursión", "short": "Incursión" },
+		"saveCp": "Guardar PC",
+		"simplifiedMode": "Modo simplificado",
+		"keep3StarPokemon": "Conservar Pokémon 3*",
+		"ariaKeepTopGreat": "Conservar el top de la Liga Súper",
+		"ariaKeepTopUltra": "Conservar el top de la Liga Ultra",
+		"ariaKeepTopMaster": "Conservar el top de la Liga Máster",
+		"ariaKeepTopRaid": "Conservar el top de atacantes de incursión"
+	},
+	"metaKnobsSubtitle": "Conserva a los mejores Pokémon del meta actual por liga/incursión",
+	"badIvKnobsSubtitle": "Lo simplificado cambia algo de precisión por una cadena más corta — mira el tooltip del interruptor",
+	"tradeKnobsSubtitle": "Una especie solo necesita superar UNO de estos cuatro límites para sugerirse — Súper y Ultra también requieren que un intercambio pueda realmente alcanzar su mejor reparto posible (ver el texto de ayuda arriba)",
+	"simplifiedTrashTooltip": "Cambia precisión por una cadena más corta: deja de buscar empates de producto de estadísticas en la Liga Máster (sin tope) — solo el hundo exacto (protegido en todas partes, incondicionalmente, por la exclusión global !4*) queda protegido ahí. La protección de Súper/Ultra/incursión no se ve afectada.",
+	"simplifiedBadIvTooltip": "Cambia precisión por una cadena más corta: en vez de proteger solo el reparto de IVs exacto de una especie, cualquier especie que necesitara una de estas excepciones por reparto se omite por completo — algo así como una entrada extra de lista blanca. Más corto y simple, pero con más falsos negativos: algunas capturas que el modo Completo detectaría correctamente aquí quedan sin marcar.",
+	"tradeOnlyLowIvTooltip": "Reduce las sugerencias a capturas cuyo Ataque, Defensa y PS sean claramente bajos — de lo contrario, se sugiere cualquier cosa que no sea un hundo.",
+	"toggleOn": "Activado",
+	"toggleOff": "Desactivado",
+	"protectionMeta": {
+		"favorite": { "label": "Favorito", "description": "Pokémon marcados como Favorito en el juego." },
+		"tagged": { "label": "Etiquetado", "description": "Pokémon con apodo o etiqueta personalizada." },
+		"legendary": { "label": "Legendario", "description": "Legendarios de caja (Mewtwo, Lugia, …)." },
+		"mythical": { "label": "Singular", "description": "Pokémon singulares (Mew, Celebi, …)." },
+		"ultraBeast": { "label": "Ultraente", "description": "Ultraentes (Nihilego, Buzzwole, …)." },
+		"megaEvolvable": {
+			"label": "Megaevolucionable",
+			"description": "Solo el juego lo sabe — necesita suficiente Megaenergía acumulada para esa especie ahora mismo."
+		},
+		"shadow": { "label": "Sombra", "description": "Todo Pokémon Sombra, sin importar sus IVs o clasificación." },
+		"dynamax": { "label": "Dynamax", "description": "Pokémon capaces de usar Dynamax." },
+		"fusion": { "label": "Fusión", "description": "Pokémon que pueden fusionarse, o ya fusionados." },
+		"gigantamax": { "label": "Gigamax", "description": "Pokémon capaces de usar Gigamax." },
+		"background": {
+			"label": "Fondo",
+			"description": "Pokémon con un fondo raro o de ubicación en su perfil."
+		},
+		"shiny": { "label": "Shiny", "description": "Todo Pokémon Shiny." },
+		"costume": { "label": "Disfraz", "description": "Pokémon con disfraz de evento especial." }
+	},
+	"lockedOnTitle": "Los Pokémon {{label}} nunca se pueden intercambiar, así que esto siempre está activado.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Agrega un Pokémon para nunca eliminar…",
+		"searchPlaceholderTrade": "Agrega un Pokémon para nunca sugerir…",
+		"clear": "Borrar",
+		"remove": "Quitar",
+		"removeLockedTitle": "Protegido porque es {{reason}} — desactiva eso arriba para quitarlo",
+		"shadowSuffix": "Sombra",
+		"emptyMeta": "Nada por aquí todavía — busca arriba para proteger un Pokémon en específico, sin importar las categorías de arriba.",
+		"emptyTrade": "Nada por aquí todavía — busca arriba para mantener a un Pokémon en específico fuera de las sugerencias de intercambio, sin importar las categorías de arriba.",
+		"summaryEmpty": "Aún no hay Pokémon protegidos individualmente",
+		"summaryManual_one": "{{count}} conservado individualmente",
+		"summaryManual_other": "{{count}} conservados individualmente",
+		"summaryAuto_one": "{{count}} protegido por categoría",
+		"summaryAuto_other": "{{count}} protegidos por categoría"
+	},
+	"compute": "Calcular",
+	"computing": "Calculando…",
+	"computingMessage": "Calculando… esto recorre todas las especies, dale un momento.",
+	"outputPlaceholderMeta": "Tu cadena de búsqueda aparece aquí. Pégala en la barra de búsqueda de Pokémon GO, revisa las coincidencias y luego elimina.",
+	"outputPlaceholderTrade": "Tu cadena de búsqueda aparece aquí. Pégala en la barra de búsqueda de Pokémon GO para revisar tus candidatos de intercambio.",
+	"characterCount_one": "{{formatted}} carácter",
+	"characterCount_other": "{{formatted}} caracteres",
+	"lengthWarningMeta": " — ⚠️ esto puede ser demasiado largo para la barra de búsqueda en algunos celulares Android; prueba a activar el modo de eliminación simplificado de arriba si notas que la cadena se corta al pegarla en la barra de búsqueda de Pokémon GO.",
+	"lengthWarningTrade": " — ⚠️ esto puede ser demasiado largo para la barra de búsqueda en algunos celulares Android; al pegarlo en la barra de búsqueda de Pokémon GO puede cortarse el final de la cadena.",
+	"copySearchString": "Copiar cadena de búsqueda",
+	"copied": "Copiado ✓",
+	"panelSummary": {
+		"topGreat": "Top {{n}} Liga Súper",
+		"topUltra": "Top {{n}} Liga Ultra",
+		"topMaster": "Top {{n}} Liga Máster",
+		"topRaid": "Top {{n}} Incursión",
+		"cpKept": "PC ≥ {{cp}} conservado",
+		"cpUnder": "PC < {{cp}}",
+		"simplifiedModeSuffix": "Modo simplificado",
+		"protectsList": "protege {{list}}",
+		"excludesList": "excluye {{list}}",
+		"nothingExtra": "nada extra",
+		"onlyClearlyLowIvs": "solo IVs claramente bajos"
+	}
+}

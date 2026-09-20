@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "Calendrier"
+	},
+	"tabs": {
+		"events": "Événements",
+		"bosses": "Raids",
+		"spawns": "Apparitions",
+		"rockets": "Rocket",
+		"eggs": "Œufs"
+	},
+	"biomes": {
+		"cities": "Villes",
+		"forests": "Forêts",
+		"mountains": "Montagnes",
+		"beaches": "Plages & eau",
+		"northernHemisphere": "Hémisphère nord",
+		"southernHemisphere": "Hémisphère sud",
+		"allAreas": "Toutes les zones"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Raids de haut niveau", "short": "Haut niveau" },
+			"tier3": { "full": "Raids niveau 3", "short": "Niveau 3" },
+			"tier1": { "full": "Raids niveau 1", "short": "Niveau 1" }
+		},
+		"shadowPrefix": "Ombre · {{tier}}",
+		"otherRaids": "Autres raids",
+		"nothingScheduled": "Rien de prévu.",
+		"nowSlot": "Maintenant"
+	},
+	"spawns": {
+		"noSeasonalData": "Aucune donnée d'apparition saisonnière.",
+		"nowSlot": "Maintenant",
+		"seasonSlot": "Saison"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Période",
+		"scrollEarlier": "Défiler vers des dates antérieures",
+		"scrollLater": "Défiler vers des dates ultérieures"
+	},
+	"events": {
+		"noEvents": "Aucun événement pour le moment.",
+		"scheduledCount": "{{count}} événements prévus",
+		"fallbackTitle": "Événement",
+		"unseenAriaLabel": "Pas encore ouvert",
+		"phase": {
+			"season": "Saison",
+			"live": "En cours",
+			"ended": "Terminé"
+		},
+		"bonuses": "Bonus",
+		"groups": {
+			"featuredSpawns": "Apparitions vedettes",
+			"featuredRaids": "Raids vedettes",
+			"researchEncounters": "Rencontres de recherche",
+			"eggs": "Œufs",
+			"incense": "Encens",
+			"lures": "Modules Leurre"
+		},
+		"readAnnouncement": "Lire l'annonce complète"
+	},
+	"rockets": {
+		"noLineups": "Aucune composition de la Team GO Rocket.",
+		"typeGrunt": "Sbire {{type}}",
+		"genericGrunt": "Sbire",
+		"slotReward": "Récompense emplacement {{slot}}",
+		"slotHeader": "Emplacement {{slot}}",
+		"catchableTag": "capturable"
+	},
+	"eggs": {
+		"noPoolData": "Aucune donnée sur les œufs."
+	},
+	"timeLeft": {
+		"days": "encore {{count}} j",
+		"hours": "encore {{count}} h",
+		"minutes": "encore {{count}} min",
+		"seconds": "encore {{count}} s"
+	}
+}

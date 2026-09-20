@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "ホーム"
+	},
+	"nav": {
+		"pokedex": { "label": "ポケモン図鑑", "hint": "すべてのポケモンを見る" },
+		"rankings": { "label": "ランキング", "hint": "リーグ・レイドタイプ別の最強アタッカー" },
+		"calendar": { "label": "カレンダー", "hint": "イベント・レイド・出現・タマゴ" },
+		"moves": { "label": "わざ", "hint": "すべてのはやわざ・ゲージわざ" },
+		"types": { "label": "タイプ", "hint": "タイプ相性表" },
+		"searches": {
+			"label": "検索",
+			"hint": "ゲーム内の検索文字列を生成 — 整理・完全個体値・交換候補"
+		},
+		"calendarBadge_one": "{{label}} — 新着イベント{{count}}件",
+		"calendarBadge_other": "{{label}} — 新着イベント{{count}}件"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "GO Pokédexをインストール",
+		"title": "GO Pokédexをインストール",
+		"iosHint": "共有ボタンをタップし、「ホーム画面に追加」を選択 — ブラウザバーなしの全画面表示になります。",
+		"androidHint": "ホーム画面に追加すると、アプリのような全画面表示で使えます。",
+		"installButton": "インストール",
+		"dismissAriaLabel": "閉じる"
+	},
+	"placeholder": {
+		"toolsTitle": "ツール",
+		"comingSoon": "リニューアルで近日公開予定。"
+	}
+}

@@ -1,0 +1,38 @@
+{
+	"notFound": "Nessuna mossa “{{moveId}}”.",
+	"sections": {
+		"stats": "Statistiche",
+		"usage": "Utilizzo",
+		"recommended": "Consigliata",
+		"alsoLearnedBy": "Appresa anche da",
+		"learnedBy": "Appresa da",
+		"eliteFor": "È una mossa Elite per",
+		"legacyFor": "È una mossa storica per"
+	},
+	"arena": {
+		"pve": "PvE · Raid e Palestre",
+		"pvp": "PvP · Leghe"
+	},
+	"kind": {
+		"fastChip": "Mossa veloce",
+		"chargedChip": "Mossa caricata"
+	},
+	"superMega": "Super Mega",
+	"statLabels": {
+		"dmg": "DAN",
+		"nrg": "ENG",
+		"dur": "DUR",
+		"turns": "Turni",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "Pokémon che possono apprendere {{name}}",
+	"tiles": {
+		"recommended": "Consigliata",
+		"mega": "Mega",
+		"elite": "Elite",
+		"legacy": "Storica"
+	},
+	"noneLearn": "Nessun Pokémon apprende questa mossa."
+}

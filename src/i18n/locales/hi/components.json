@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "फ़िल्टर",
+		"clear": "साफ़ करें",
+		"dialogAriaLabel": "फ़िल्टर",
+		"typeSectionLabel": "टाइप",
+		"pickOneHint": "एक चुनें",
+		"pickUpToHint": "{{max}} तक चुनें · दोनों मैच करें"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "क्रम से लगाएं",
+		"sectionLabel": "क्रम से लगाएं",
+		"asc": "आरोही",
+		"desc": "अवरोही"
+	},
+	"ivPicker": {
+		"attack": "अटैक",
+		"defense": "डिफेंस",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "हंडो"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "घटाएं",
+		"increaseAriaLabel": "बढ़ाएं"
+	},
+	"shadowMark": {
+		"alt": "शैडो"
+	},
+	"searchBox": {
+		"placeholder": "Pokémon या मूव्स सर्च करें…",
+		"ariaLabel": "Pokémon या मूव्स सर्च करें",
+		"clearAriaLabel": "सर्च साफ़ करें",
+		"shadowSuffix": "शैडो",
+		"fast": "फ़ास्ट",
+		"charged": "चार्ज्ड"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "रेड अटैकर के रूप में रैंक नहीं किया गया।",
+		"bestMovesetByType": "टाइप के अनुसार बेस्ट मूवसेट",
+		"tapNextMoveset": "अगले मूवसेट के लिए टैप करें",
+		"tapSelectType": "यह टाइप चुनने के लिए टैप करें",
+		"legacy": "लेगसी",
+		"elite": "एलीट",
+		"baseAtk": "बेस अटैक",
+		"typeRank": "{{type}} रैंक"
+	}
+}

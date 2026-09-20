@@ -1,0 +1,72 @@
+{
+	"shell": { "title": "Kalendarz" },
+	"tabs": {
+		"events": "Wydarzenia",
+		"bosses": "Rajdy",
+		"spawns": "Pojawienia",
+		"rockets": "Rocket",
+		"eggs": "Jaja"
+	},
+	"biomes": {
+		"cities": "Miasta",
+		"forests": "Lasy",
+		"mountains": "Góry",
+		"beaches": "Plaże i woda",
+		"northernHemisphere": "Półkula północna",
+		"southernHemisphere": "Półkula południowa",
+		"allAreas": "Wszystkie obszary"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Rajdy wyższego poziomu", "short": "Wyższy poziom" },
+			"tier3": { "full": "Rajdy poziomu 3", "short": "Poziom 3" },
+			"tier1": { "full": "Rajdy poziomu 1", "short": "Poziom 1" }
+		},
+		"shadowPrefix": "Cień · {{tier}}",
+		"otherRaids": "Inne rajdy",
+		"nothingScheduled": "Nic nie zaplanowano.",
+		"nowSlot": "Teraz"
+	},
+	"spawns": {
+		"noSeasonalData": "Brak sezonowych danych o pojawieniach.",
+		"nowSlot": "Teraz",
+		"seasonSlot": "Sezon"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Zakres czasu",
+		"scrollEarlier": "Przewiń do wcześniejszych dat",
+		"scrollLater": "Przewiń do późniejszych dat"
+	},
+	"events": {
+		"noEvents": "Obecnie brak wydarzeń.",
+		"scheduledCount": "{{count}} zaplanowanych wydarzeń",
+		"fallbackTitle": "Wydarzenie",
+		"unseenAriaLabel": "Jeszcze nie otwarte",
+		"phase": { "season": "Sezon", "live": "Trwa", "ended": "Zakończone" },
+		"bonuses": "Bonusy",
+		"groups": {
+			"featuredSpawns": "Wyróżnione pojawienia",
+			"featuredRaids": "Wyróżnione rajdy",
+			"researchEncounters": "Spotkania z badań",
+			"eggs": "Jaja",
+			"incense": "Kadzidło",
+			"lures": "Wabiki"
+		},
+		"readAnnouncement": "Przeczytaj pełne ogłoszenie"
+	},
+	"rockets": {
+		"noLineups": "Brak składów Rocket.",
+		"typeGrunt": "Członek Rocket typu {{type}}",
+		"genericGrunt": "Członek Rocket",
+		"slotReward": "Nagroda za miejsce {{slot}}",
+		"slotHeader": "Miejsce {{slot}}",
+		"catchableTag": "możliwy do złapania"
+	},
+	"eggs": { "noPoolData": "Brak danych o puli jaj." },
+	"timeLeft": {
+		"days": "pozostało {{count}}d",
+		"hours": "pozostało {{count}}h",
+		"minutes": "pozostało {{count}}min",
+		"seconds": "pozostało {{count}}s"
+	}
+}

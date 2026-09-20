@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "Kalender"
+	},
+	"tabs": {
+		"events": "Events",
+		"bosses": "Arena-Kämpfe",
+		"spawns": "Fundorte",
+		"rockets": "Rocket",
+		"eggs": "Eier"
+	},
+	"biomes": {
+		"cities": "Städte",
+		"forests": "Wälder",
+		"mountains": "Berge",
+		"beaches": "Strände & Wasser",
+		"northernHemisphere": "Nordhalbkugel",
+		"southernHemisphere": "Südhalbkugel",
+		"allAreas": "Alle Gebiete"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Arena-Kämpfe höherer Stufe", "short": "Höhere Stufe" },
+			"tier3": { "full": "Arena-Kämpfe Stufe 3", "short": "Stufe 3" },
+			"tier1": { "full": "Arena-Kämpfe Stufe 1", "short": "Stufe 1" }
+		},
+		"shadowPrefix": "Schatten · {{tier}}",
+		"otherRaids": "Weitere Arena-Kämpfe",
+		"nothingScheduled": "Nichts geplant.",
+		"nowSlot": "Jetzt"
+	},
+	"spawns": {
+		"noSeasonalData": "Keine Daten zu saisonalen Fundorten.",
+		"nowSlot": "Jetzt",
+		"seasonSlot": "Saison"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Zeitraum",
+		"scrollEarlier": "Zu früheren Terminen scrollen",
+		"scrollLater": "Zu späteren Terminen scrollen"
+	},
+	"events": {
+		"noEvents": "Momentan keine Events.",
+		"scheduledCount": "{{count}} geplante Events",
+		"fallbackTitle": "Event",
+		"unseenAriaLabel": "Noch nicht geöffnet",
+		"phase": {
+			"season": "Saison",
+			"live": "Live",
+			"ended": "Beendet"
+		},
+		"bonuses": "Boni",
+		"groups": {
+			"featuredSpawns": "Vorgestellte Fundorte",
+			"featuredRaids": "Vorgestellte Arena-Kämpfe",
+			"researchEncounters": "Forschungsbegegnungen",
+			"eggs": "Eier",
+			"incense": "Rauch",
+			"lures": "Lockmodule"
+		},
+		"readAnnouncement": "Ganze Ankündigung lesen"
+	},
+	"rockets": {
+		"noLineups": "Keine Rocket-Aufstellungen.",
+		"typeGrunt": "{{type}}-Rüpel",
+		"genericGrunt": "Rüpel",
+		"slotReward": "Belohnung Platz {{slot}}",
+		"slotHeader": "Platz {{slot}}",
+		"catchableTag": "fangbar"
+	},
+	"eggs": {
+		"noPoolData": "Keine Daten zum Ei-Pool."
+	},
+	"timeLeft": {
+		"days": "noch {{count}} T",
+		"hours": "noch {{count}} Std.",
+		"minutes": "noch {{count}} Min.",
+		"seconds": "noch {{count}} Sek."
+	}
+}

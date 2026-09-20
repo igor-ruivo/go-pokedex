@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "Takvim"
+	},
+	"tabs": {
+		"events": "Etkinlikler",
+		"bosses": "Baskınlar",
+		"spawns": "Ortaya Çıkışlar",
+		"rockets": "Rocket'lar",
+		"eggs": "Yumurtalar"
+	},
+	"biomes": {
+		"cities": "Şehirler",
+		"forests": "Ormanlar",
+		"mountains": "Dağlar",
+		"beaches": "Plajlar ve Su",
+		"northernHemisphere": "Kuzey Yarımküre",
+		"southernHemisphere": "Güney Yarımküre",
+		"allAreas": "Tüm bölgeler"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Üst Seviye Baskınlar", "short": "Üst Seviye" },
+			"tier3": { "full": "3. Seviye Baskınlar", "short": "3. Seviye" },
+			"tier1": { "full": "1. Seviye Baskınlar", "short": "1. Seviye" }
+		},
+		"shadowPrefix": "Gölge · {{tier}}",
+		"otherRaids": "Diğer baskınlar",
+		"nothingScheduled": "Planlanmış bir şey yok.",
+		"nowSlot": "Şimdi"
+	},
+	"spawns": {
+		"noSeasonalData": "Mevsimsel ortaya çıkış verisi yok.",
+		"nowSlot": "Şimdi",
+		"seasonSlot": "Sezon"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Zaman aralığı",
+		"scrollEarlier": "Daha önceki tarihlere kaydır",
+		"scrollLater": "Daha sonraki tarihlere kaydır"
+	},
+	"events": {
+		"noEvents": "Şu anda etkinlik yok.",
+		"scheduledCount": "{{count}} Planlanmış etkinlik",
+		"fallbackTitle": "Etkinlik",
+		"unseenAriaLabel": "Henüz açılmadı",
+		"phase": {
+			"season": "Sezon",
+			"live": "Canlı",
+			"ended": "Sona Erdi"
+		},
+		"bonuses": "Bonuslar",
+		"groups": {
+			"featuredSpawns": "Öne çıkan ortaya çıkışlar",
+			"featuredRaids": "Öne çıkan baskınlar",
+			"researchEncounters": "Araştırma karşılaşmaları",
+			"eggs": "Yumurtalar",
+			"incense": "Tütsü",
+			"lures": "Çekici Modül"
+		},
+		"readAnnouncement": "Tüm duyuruyu oku"
+	},
+	"rockets": {
+		"noLineups": "Rocket kadrosu yok.",
+		"typeGrunt": "{{type}} Çaylağı",
+		"genericGrunt": "Çaylak",
+		"slotReward": "{{slot}}. slot ödülü",
+		"slotHeader": "{{slot}}. slot",
+		"catchableTag": "yakalanabilir"
+	},
+	"eggs": {
+		"noPoolData": "Yumurta havuzu verisi yok."
+	},
+	"timeLeft": {
+		"days": "{{count}}g kaldı",
+		"hours": "{{count}}s kaldı",
+		"minutes": "{{count}}dk kaldı",
+		"seconds": "{{count}}sn kaldı"
+	}
+}

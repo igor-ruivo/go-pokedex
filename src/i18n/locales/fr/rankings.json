@@ -1,0 +1,31 @@
+{
+	"sorts": {
+		"dex": "Numéro du Pokédex",
+		"name": "Nom",
+		"cp": "PC max",
+		"type": "Type"
+	},
+	"tabs": {
+		"pokedexFull": "Pokédex",
+		"pokedexShort": "Dex"
+	},
+	"status": {
+		"loading": "Chargement…",
+		"chooseType": "Choisissez un type",
+		"count": "{{count}} Pokémon",
+		"bestAttackersSuffix": " · meilleurs attaquants {{type}}"
+	},
+	"hint": {
+		"show": "Afficher les hypothèses de classement",
+		"hide": "Masquer les hypothèses de classement",
+		"text": "Les classements de raid supposent la meilleure combinaison de capacité rapide + chargée de chaque Pokémon, infligeant des dégâts de type {{type}} Efficaces (×1,6) à un boss non-Ombre de niveau 5 (200 en Défense, niveau 40), avec un attaquant de niveau 50 (15 IV d'Attaque) et sans bonus de météo, d'amitié ou d'aura Méga d'un coéquipier. Les Pokémon Super Méga sont classés au niveau Méga maximal."
+	},
+	"empty": {
+		"pickType": "Choisissez un type dans le filtre pour voir les meilleurs attaquants de raid de ce type.",
+		"nothingMatches": "Rien ne correspond."
+	},
+	"loadingLabel": {
+		"pokedex": "Chargement du Pokédex…",
+		"rankings": "Chargement des classements…"
+	}
+}

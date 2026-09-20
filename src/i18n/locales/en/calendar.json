@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "Calendar"
+	},
+	"tabs": {
+		"events": "Events",
+		"bosses": "Raids",
+		"spawns": "Spawns",
+		"rockets": "Rockets",
+		"eggs": "Eggs"
+	},
+	"biomes": {
+		"cities": "Cities",
+		"forests": "Forests",
+		"mountains": "Mountains",
+		"beaches": "Beaches & Water",
+		"northernHemisphere": "Northern Hemisphere",
+		"southernHemisphere": "Southern Hemisphere",
+		"allAreas": "All areas"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Higher Tier Raids", "short": "Higher Tier" },
+			"tier3": { "full": "Tier 3 Raids", "short": "Tier 3" },
+			"tier1": { "full": "Tier 1 Raids", "short": "Tier 1" }
+		},
+		"shadowPrefix": "Shadow · {{tier}}",
+		"otherRaids": "Other raids",
+		"nothingScheduled": "Nothing scheduled.",
+		"nowSlot": "Now"
+	},
+	"spawns": {
+		"noSeasonalData": "No seasonal spawn data.",
+		"nowSlot": "Now",
+		"seasonSlot": "Season"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Timeframe",
+		"scrollEarlier": "Scroll to earlier dates",
+		"scrollLater": "Scroll to later dates"
+	},
+	"events": {
+		"noEvents": "No events right now.",
+		"scheduledCount": "{{count}} Scheduled events",
+		"fallbackTitle": "Event",
+		"unseenAriaLabel": "Not yet opened",
+		"phase": {
+			"season": "Season",
+			"live": "Live",
+			"ended": "Ended"
+		},
+		"bonuses": "Bonuses",
+		"groups": {
+			"featuredSpawns": "Featured spawns",
+			"featuredRaids": "Featured raids",
+			"researchEncounters": "Research encounters",
+			"eggs": "Eggs",
+			"incense": "Incense",
+			"lures": "Lures"
+		},
+		"readAnnouncement": "Read the full announcement"
+	},
+	"rockets": {
+		"noLineups": "No Rocket line-ups.",
+		"typeGrunt": "{{type}} Grunt",
+		"genericGrunt": "Grunt",
+		"slotReward": "Slot {{slot}} reward",
+		"slotHeader": "Slot {{slot}}",
+		"catchableTag": "catchable"
+	},
+	"eggs": {
+		"noPoolData": "No egg pool data."
+	},
+	"timeLeft": {
+		"days": "{{count}}d left",
+		"hours": "{{count}}h left",
+		"minutes": "{{count}}m left",
+		"seconds": "{{count}}s left"
+	}
+}

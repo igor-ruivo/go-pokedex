@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Фильтр",
+		"clear": "Очистить",
+		"dialogAriaLabel": "Фильтры",
+		"typeSectionLabel": "Тип",
+		"pickOneHint": "выберите один",
+		"pickUpToHint": "выберите до {{max}} · совпадение по любому"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Сортировка",
+		"sectionLabel": "Сортировать по",
+		"asc": "По возр.",
+		"desc": "По убыв."
+	},
+	"ivPicker": {
+		"attack": "АТАКА",
+		"defense": "ЗАЩИТА",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Хандо"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Уменьшить",
+		"increaseAriaLabel": "Увеличить"
+	},
+	"shadowMark": {
+		"alt": "Теневой"
+	},
+	"searchBox": {
+		"placeholder": "Поиск покемона или атаки…",
+		"ariaLabel": "Поиск покемона или атаки",
+		"clearAriaLabel": "Очистить поиск",
+		"shadowSuffix": "Теневой",
+		"fast": "Быстрая",
+		"charged": "Заряженная"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Не входит в рейтинг атакующих для рейдов.",
+		"bestMovesetByType": "Лучший набор атак по типу",
+		"tapNextMoveset": "Нажмите для следующего набора атак",
+		"tapSelectType": "Нажмите, чтобы выбрать этот тип",
+		"legacy": "Устаревшая",
+		"elite": "Элитная",
+		"baseAtk": "Базовая АТК",
+		"typeRank": "Рейтинг по типу {{type}}"
+	}
+}

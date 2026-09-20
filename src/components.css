@@ -4335,6 +4335,31 @@
 	background: rgb(255 255 255 / 0.6);
 	border-color: transparent;
 }
+/* Same visual language as .r-md-select (see its own comment for the custom-
+   chevron rationale), just wide enough for the longest entry in a 16-language
+   list ("Bahasa Indonesia", "Español (México)") without truncating. */
+.rvmp .r-lang-select {
+	width: 100%;
+	max-width: 220px;
+	min-width: 0;
+	padding: 7px 24px 7px 10px;
+	border-radius: var(--r-sm);
+	background-color: var(--surface-2);
+	border: 1px solid var(--border);
+	color: var(--text);
+	font: inherit;
+	font-weight: 700;
+	appearance: none;
+	-webkit-appearance: none;
+	background-image:
+		linear-gradient(45deg, transparent 50%, var(--text-dim) 50%),
+		linear-gradient(135deg, var(--text-dim) 50%, transparent 50%);
+	background-position:
+		calc(100% - 15px) center,
+		calc(100% - 11px) center;
+	background-size: 4px 4px;
+	background-repeat: no-repeat;
+}
 .rvmp .r-setmenu-pop {
 	position: absolute;
 	z-index: 50;

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { ShadowMark } from '../../components/ShadowMark';
@@ -27,21 +28,10 @@ import {
 } from '../../utils/pokemon-helper';
 import { getComputeWorker } from '../../workers/compute-client';
 
-const LEAGUE_NAME = ['Great', 'Ultra', 'Master', 'Raid'] as const;
 const LG_SLUG = ['great', 'ultra', 'master', 'raid'] as const;
 const PVP_TOP = 5;
 const RAID_TOP = 10;
 
-const TIER_LABEL: Record<RaidTier, string> = {
-	T1: 'Tier 1',
-	T3: 'Tier 3',
-	MEGA: 'Mega',
-	T5: 'Tier 5',
-	ELITE: 'Elite',
-	LEGENDARY_MEGA: 'Legendary Mega',
-	PRIMAL: 'Primal',
-	SUPER_MEGA: 'Super Mega',
-};
 const TIER_ORDER: Array<RaidTier> = ['T1', 'T3', 'MEGA', 'T5', 'ELITE', 'LEGENDARY_MEGA', 'PRIMAL', 'SUPER_MEGA'];
 /** PokeMiners raid-egg icon per tier (with its own extension), in
  *  /public/images/raids. Legendary Mega Raid reuses Mega's own icon — there's
@@ -57,16 +47,19 @@ const TIER_ICON: Record<RaidTier, string> = {
 	SUPER_MEGA: 'super-mega.webp',
 };
 
-/** Weather → the attacker move types it boosts ×1.2, and its official icon file. */
-const WEATHER: Array<{ key: string; label: string; icon: string; types: Array<string> }> = [
-	{ key: '', label: 'No weather', icon: '', types: [] },
-	{ key: 'sunny', label: 'Sunny / Clear', icon: 'sunny', types: ['grass', 'ground', 'fire'] },
-	{ key: 'rain', label: 'Rainy', icon: 'rainy', types: ['water', 'electric', 'bug'] },
-	{ key: 'partlycloudy', label: 'Partly Cloudy', icon: 'partly-cloudy', types: ['normal', 'rock'] },
-	{ key: 'cloudy', label: 'Cloudy', icon: 'cloudy', types: ['fairy', 'fighting', 'poison'] },
-	{ key: 'windy', label: 'Windy', icon: 'windy', types: ['dragon', 'flying', 'psychic'] },
-	{ key: 'snow', label: 'Snow', icon: 'snow', types: ['ice', 'steel'] },
-	{ key: 'fog', label: 'Fog', icon: 'fog', types: ['dark', 'ghost'] },
+/** Weather → the attacker move types it boosts ×1.2, and its official icon
+ *  file. `key`/`icon`/`types` are stable identifiers (matched against saved
+ *  settings, filenames) — only `label` is display text, translated inside
+ *  the component below. */
+const WEATHER_META: Array<{ key: string; icon: string; types: Array<string> }> = [
+	{ key: '', icon: '', types: [] },
+	{ key: 'sunny', icon: 'sunny', types: ['grass', 'ground', 'fire'] },
+	{ key: 'rain', icon: 'rainy', types: ['water', 'electric', 'bug'] },
+	{ key: 'partlycloudy', icon: 'partly-cloudy', types: ['normal', 'rock'] },
+	{ key: 'cloudy', icon: 'cloudy', types: ['fairy', 'fighting', 'poison'] },
+	{ key: 'windy', icon: 'windy', types: ['dragon', 'flying', 'psychic'] },
+	{ key: 'snow', icon: 'snow', types: ['ice', 'steel'] },
+	{ key: 'fog', icon: 'fog', types: ['dark', 'ghost'] },
 ];
 
 /** Raid damage bonus by friendship level — Best Friend was previously coded
@@ -74,14 +67,7 @@ const WEATHER: Array<{ key: string; label: string; icon: string; types: Array<st
  *  here, per Bulbapedia/community sources (Niantic's own help center
  *  confirms Forever Friend gives an additional boost beyond Best Friend,
  *  without publishing the exact figure itself). */
-const FRIENDSHIP: Array<{ label: string; mult: number }> = [
-	{ label: '—', mult: 1 },
-	{ label: 'Good', mult: 1.03 },
-	{ label: 'Great', mult: 1.05 },
-	{ label: 'Ultra', mult: 1.07 },
-	{ label: 'Best', mult: 1.1 },
-	{ label: 'Forever', mult: 1.12 },
-];
+const FRIENDSHIP_MULT = [1, 1.03, 1.05, 1.07, 1.1, 1.12] as const;
 
 const PARTY_SIZES = [1, 2, 3, 4];
 
@@ -89,14 +75,50 @@ const PARTY_SIZES = [1, 2, 3, 4];
  *  comment for the sourcing. Defaults to Max (3), matching dex-server's own
  *  precomputed rankings, so this tab agrees with the pre-computed type lists
  *  unless the player explicitly changes it here. */
-const MEGA_LEVELS: Array<{ level: MegaLevel; label: string }> = [
-	{ level: 1, label: 'Base' },
-	{ level: 2, label: 'High' },
-	{ level: 3, label: 'Max' },
-	{ level: 4, label: 'Super Max' },
-];
+const MEGA_LEVEL_ORDER: ReadonlyArray<MegaLevel> = [1, 2, 3, 4];
 
 const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+	const { t } = useTranslation(['pokemonDetail']);
+	const LEAGUE_FULL = [
+		t('pokemonDetail:leagues.greatFull'),
+		t('pokemonDetail:leagues.ultraFull'),
+		t('pokemonDetail:leagues.masterFull'),
+		t('pokemonDetail:leagues.raidsFull'),
+	];
+	const TIER_LABEL: Record<RaidTier, string> = {
+		T1: t('pokemonDetail:counters.tierLabel.t1'),
+		T3: t('pokemonDetail:counters.tierLabel.t3'),
+		MEGA: t('pokemonDetail:counters.tierLabel.mega'),
+		T5: t('pokemonDetail:counters.tierLabel.t5'),
+		ELITE: t('pokemonDetail:counters.tierLabel.elite'),
+		LEGENDARY_MEGA: t('pokemonDetail:counters.tierLabel.legendaryMega'),
+		PRIMAL: t('pokemonDetail:counters.tierLabel.primal'),
+		SUPER_MEGA: t('pokemonDetail:counters.tierLabel.superMega'),
+	};
+	const WEATHER = [
+		{ ...WEATHER_META[0], label: t('pokemonDetail:counters.weather.none') },
+		{ ...WEATHER_META[1], label: t('pokemonDetail:counters.weather.sunny') },
+		{ ...WEATHER_META[2], label: t('pokemonDetail:counters.weather.rainy') },
+		{ ...WEATHER_META[3], label: t('pokemonDetail:counters.weather.partlyCloudy') },
+		{ ...WEATHER_META[4], label: t('pokemonDetail:counters.weather.cloudy') },
+		{ ...WEATHER_META[5], label: t('pokemonDetail:counters.weather.windy') },
+		{ ...WEATHER_META[6], label: t('pokemonDetail:counters.weather.snow') },
+		{ ...WEATHER_META[7], label: t('pokemonDetail:counters.weather.fog') },
+	];
+	const FRIENDSHIP: Array<{ label: string; mult: number }> = [
+		{ label: t('pokemonDetail:counters.friendship.none'), mult: FRIENDSHIP_MULT[0] },
+		{ label: t('pokemonDetail:counters.friendship.good'), mult: FRIENDSHIP_MULT[1] },
+		{ label: t('pokemonDetail:counters.friendship.great'), mult: FRIENDSHIP_MULT[2] },
+		{ label: t('pokemonDetail:counters.friendship.ultra'), mult: FRIENDSHIP_MULT[3] },
+		{ label: t('pokemonDetail:counters.friendship.best'), mult: FRIENDSHIP_MULT[4] },
+		{ label: t('pokemonDetail:counters.friendship.forever'), mult: FRIENDSHIP_MULT[5] },
+	];
+	const MEGA_LEVELS: Array<{ level: MegaLevel; label: string }> = [
+		{ level: MEGA_LEVEL_ORDER[0], label: t('pokemonDetail:counters.megaLevel.base') },
+		{ level: MEGA_LEVEL_ORDER[1], label: t('pokemonDetail:counters.megaLevel.high') },
+		{ level: MEGA_LEVEL_ORDER[2], label: t('pokemonDetail:counters.megaLevel.max') },
+		{ level: MEGA_LEVEL_ORDER[3], label: t('pokemonDetail:counters.megaLevel.superMax') },
+	];
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { moves, movesFetchCompleted } = useMoves();
@@ -159,12 +181,17 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 	};
 
 	const activeSummary = [
-		`${TIER_LABEL[tier]} Raid · ${RAID_BOSS_STATS[tier].hp.toLocaleString()} HP`,
+		t('pokemonDetail:counters.summaryRaidHp', {
+			tier: TIER_LABEL[tier],
+			hp: RAID_BOSS_STATS[tier].hp.toLocaleString(),
+		}),
 		weatherKey && WEATHER.find((w) => w.key === weatherKey)?.label,
-		partySize > 1 && `Party of ${partySize}`,
-		friendship > 1 && `${FRIENDSHIP.find((f) => f.mult === friendship)?.label} Friend`,
-		megaBoostType && `Mega ${TYPE_LABEL[megaBoostType] ?? megaBoostType} aura`,
-		megaLevel !== 3 && `Mega Level: ${MEGA_LEVELS.find((m) => m.level === megaLevel)?.label}`,
+		partySize > 1 && t('pokemonDetail:counters.partyOf', { size: partySize }),
+		friendship > 1 &&
+			t('pokemonDetail:counters.friendLabel', { label: FRIENDSHIP.find((f) => f.mult === friendship)?.label }),
+		megaBoostType && t('pokemonDetail:counters.megaAuraSummary', { type: TYPE_LABEL[megaBoostType] ?? megaBoostType }),
+		megaLevel !== 3 &&
+			t('pokemonDetail:counters.megaLevelSummary', { label: MEGA_LEVELS.find((m) => m.level === megaLevel)?.label }),
 	]
 		.filter(Boolean)
 		.join('  ·  ');
@@ -228,7 +255,10 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 				<div className='r-movecontent'>
 					<div className='r-card' style={{ textAlign: 'center' }}>
 						<p className='r-muted'>
-							{cleanName(pokemon.speciesName)} isn’t ranked in {LEAGUE_NAME[league]} League — no pre-computed match-ups.
+							{t('pokemonDetail:counters.notRankedInLeague', {
+								name: cleanName(pokemon.speciesName),
+								league: LEAGUE_FULL[league],
+							})}
 						</p>
 					</div>
 				</div>
@@ -240,7 +270,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 			<>
 				<div className='r-section-h'>{title}</div>
 				<div className='r-ctr-list'>
-					{list.length === 0 && <p className='r-muted'>No data.</p>}
+					{list.length === 0 && <p className='r-muted'>{t('pokemonDetail:counters.noData')}</p>}
 					{list.map((m, i) => {
 						const p = gamemasterPokemon[m.opponent];
 						if (!p) return null;
@@ -275,8 +305,14 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 
 		return (
 			<div className='r-movecontent'>
-				{section(`${name} is strong against · ${LEAGUE_NAME[league]} League`, ranked.matchups.slice(0, PVP_TOP))}
-				{section(`${name} is weak against · ${LEAGUE_NAME[league]} League`, ranked.counters.slice(0, PVP_TOP))}
+				{section(
+					t('pokemonDetail:counters.strongAgainst', { name, league: LEAGUE_FULL[league] }),
+					ranked.matchups.slice(0, PVP_TOP)
+				)}
+				{section(
+					t('pokemonDetail:counters.weakAgainst', { name, league: LEAGUE_FULL[league] }),
+					ranked.counters.slice(0, PVP_TOP)
+				)}
 			</div>
 		);
 	}
@@ -293,7 +329,9 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 
 	return (
 		<div className='r-movecontent'>
-			<div className='r-section-h'>Best raid counters · {cleanName(pokemon.speciesName)}</div>
+			<div className='r-section-h'>
+				{t('pokemonDetail:counters.bestRaidCounters', { name: cleanName(pokemon.speciesName) })}
+			</div>
 
 			<div className='r-ctr-metricbar'>
 				<SortBar
@@ -321,12 +359,12 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 						</span>
 						<span className='r-ctr-config-sum'>{activeSummary}</span>
 						<span className='r-ctr-config-chev' aria-hidden='true'>
-							{cfgOpen ? 'Hide' : 'Edit'}
+							{cfgOpen ? t('pokemonDetail:counters.configHide') : t('pokemonDetail:counters.configEdit')}
 						</span>
 					</button>
 					{cfgDirty && (
 						<button type='button' className='r-ctr-config-clear' onClick={clearConfig}>
-							Clear
+							{t('pokemonDetail:counters.clear')}
 						</button>
 					)}
 				</div>
@@ -334,31 +372,37 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 				{cfgOpen && (
 					<div className='r-ctr-panel'>
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>Boss tier</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.bossTier')}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-iconrow'>
-									{TIER_ORDER.map((t) => (
+									{TIER_ORDER.map((tierKey) => (
 										<button
-											key={t}
+											key={tierKey}
 											type='button'
 											className='r-ctr-iconbtn'
-											title={`${TIER_LABEL[t]} — ${RAID_BOSS_STATS[t].hp.toLocaleString()} HP`}
-											aria-label={`${TIER_LABEL[t]} raid`}
-											data-active={tier === t}
-											onClick={() => setTier(t)}
+											title={t('pokemonDetail:counters.bossTierTitle', {
+												tier: TIER_LABEL[tierKey],
+												hp: RAID_BOSS_STATS[tierKey].hp.toLocaleString(),
+											})}
+											aria-label={t('pokemonDetail:counters.bossTierAriaLabel', { tier: TIER_LABEL[tierKey] })}
+											data-active={tier === tierKey}
+											onClick={() => setTier(tierKey)}
 										>
-											<img src={`/images/raids/${TIER_ICON[t]}`} alt='' loading='lazy' />
+											<img src={`/images/raids/${TIER_ICON[tierKey]}`} alt='' loading='lazy' />
 										</button>
 									))}
 								</div>
 								<span className='r-ctr-cond-hint'>
-									{TIER_LABEL[tier]} Raid · {RAID_BOSS_STATS[tier].hp.toLocaleString()} HP
+									{t('pokemonDetail:counters.bossTierHint', {
+										tier: TIER_LABEL[tier],
+										hp: RAID_BOSS_STATS[tier].hp.toLocaleString(),
+									})}
 								</span>
 							</div>
 						</div>
 
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>Weather</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.weather_field')}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-iconrow'>
 									{WEATHER.map((w) => (
@@ -381,50 +425,52 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								</div>
 								{weatherTypes.length > 0 && (
 									<span className='r-ctr-cond-hint'>
-										×1.2 · {weatherTypes.map((t) => TYPE_LABEL[t] ?? t).join(', ')}
+										{t('pokemonDetail:counters.weatherHint', {
+											types: weatherTypes.map((tk) => TYPE_LABEL[tk] ?? tk).join(', '),
+										})}
 									</span>
 								)}
 							</div>
 						</div>
 
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>Mega aura</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.megaAura')}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-iconrow'>
 									<button
 										type='button'
 										className='r-ctr-iconbtn'
-										title='No Mega on team'
-										aria-label='No Mega on team'
+										title={t('pokemonDetail:counters.noMegaOnTeam')}
+										aria-label={t('pokemonDetail:counters.noMegaOnTeam')}
 										data-active={!megaBoostType}
 										onClick={() => setMegaBoostType('')}
 									>
 										<span className='r-ctr-none'>—</span>
 									</button>
-									{TYPE_KEYS.map((t) => (
+									{TYPE_KEYS.map((tk) => (
 										<button
-											key={t}
+											key={tk}
 											type='button'
 											className='r-ctr-iconbtn'
-											title={`Mega ${TYPE_LABEL[t] ?? t}`}
-											aria-label={`Mega ${TYPE_LABEL[t] ?? t}`}
-											data-active={megaBoostType === t}
-											onClick={() => setMegaBoostType(megaBoostType === t ? '' : t)}
+											title={t('pokemonDetail:counters.megaOfType', { type: TYPE_LABEL[tk] ?? tk })}
+											aria-label={t('pokemonDetail:counters.megaOfType', { type: TYPE_LABEL[tk] ?? tk })}
+											data-active={megaBoostType === tk}
+											onClick={() => setMegaBoostType(megaBoostType === tk ? '' : tk)}
 										>
-											<img src={`/images/types/${t}.png`} alt='' loading='lazy' />
+											<img src={`/images/types/${tk}.png`} alt='' loading='lazy' />
 										</button>
 									))}
 								</div>
 								{megaBoostType && (
 									<span className='r-ctr-cond-hint'>
-										×1.3 {TYPE_LABEL[megaBoostType] ?? megaBoostType} · ×1.1 others
+										{t('pokemonDetail:counters.megaAuraHint', { type: TYPE_LABEL[megaBoostType] ?? megaBoostType })}
 									</span>
 								)}
 							</div>
 						</div>
 
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>Mega Level</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.megaLevelField')}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-seg'>
 									{MEGA_LEVELS.map((m) => (
@@ -439,19 +485,21 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 									))}
 								</div>
 								<span className='r-ctr-cond-hint'>
-									×{MEGA_LEVEL_PLUS_MULTIPLIER[megaLevel].toFixed(1)} on a Mega/Primal’s own Plus move
-									{megaLevel === 4 && ' · +2 attacker levels'}
+									{t('pokemonDetail:counters.megaLevelHint', {
+										mult: MEGA_LEVEL_PLUS_MULTIPLIER[megaLevel].toFixed(1),
+									})}
+									{megaLevel === 4 && t('pokemonDetail:counters.megaLevelHintExtra')}
 								</span>
 							</div>
 						</div>
 
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>Party Power</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.partyPower')}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-seg'>
 									{PARTY_SIZES.map((n) => (
 										<button key={n} type='button' data-active={partySize === n} onClick={() => setPartySize(n)}>
-											{n === 1 ? 'Solo' : n}
+											{n === 1 ? t('pokemonDetail:counters.solo') : n}
 										</button>
 									))}
 								</div>
@@ -459,7 +507,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 						</div>
 
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>Friendship</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.friendshipField')}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-seg'>
 									{FRIENDSHIP.map((f) => (
@@ -473,12 +521,16 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 										</button>
 									))}
 								</div>
-								{friendship > 1 && <span className='r-ctr-cond-hint'>×{friendship.toFixed(2)} damage</span>}
+								{friendship > 1 && (
+									<span className='r-ctr-cond-hint'>
+										{t('pokemonDetail:counters.friendshipHint', { mult: friendship.toFixed(2) })}
+									</span>
+								)}
 							</div>
 						</div>
 
 						<details className='r-ctr-help'>
-							<summary>What do these mean?</summary>
+							<summary>{t('pokemonDetail:counters.helpSummary')}</summary>
 							<dl>
 								<dt>DPS</dt>
 								<dd>{RAID_METRIC_BLURB.dps}</dd>
@@ -486,22 +538,12 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								<dd>{RAID_METRIC_BLURB.tdo}</dd>
 								<dt>eDPS</dt>
 								<dd>{RAID_METRIC_BLURB.edps}</dd>
-								<dt>Weather · Friendship · Mega aura</dt>
-								<dd>
-									Damage multipliers on your attackers. Incoming damage always uses one fixed constant, so the boss’s
-									own moves never change these numbers.
-								</dd>
-								<dt>Mega Level</dt>
-								<dd>
-									A Mega or Primal’s own Mega Level (raised with Mega Energy after evolving) boosts its bonus “Plus”
-									charged attack only — every other move on its kit is unaffected. Super Max Level also gives the
-									attacker +2 effective Pokémon levels, whether or not it even has a Plus move.
-								</dd>
-								<dt>Boss tier</dt>
-								<dd>
-									Sets the boss HP (used by eDPS) and the CPM applied to its defence. Inferred from the boss — change it
-									for Elite Raids.
-								</dd>
+								<dt>{t('pokemonDetail:counters.help.weatherFriendshipMegaAura')}</dt>
+								<dd>{t('pokemonDetail:counters.help.weatherFriendshipMegaAuraDesc')}</dd>
+								<dt>{t('pokemonDetail:counters.megaLevelField')}</dt>
+								<dd>{t('pokemonDetail:counters.help.megaLevelDesc')}</dd>
+								<dt>{t('pokemonDetail:counters.bossTier')}</dt>
+								<dd>{t('pokemonDetail:counters.help.bossTierDesc')}</dd>
 							</dl>
 						</details>
 					</div>
@@ -516,7 +558,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 					onClick={() => setMega((v) => !v)}
 				>
 					<span className='r-ss-box' aria-hidden='true' />
-					Include Megas
+					{t('pokemonDetail:counters.includeMegas')}
 				</button>
 				<button
 					type='button'
@@ -525,7 +567,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 					onClick={() => setShadow((v) => !v)}
 				>
 					<span className='r-ss-box' aria-hidden='true' />
-					Include Shadows
+					{t('pokemonDetail:counters.includeShadows')}
 				</button>
 			</div>
 
@@ -535,7 +577,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 				</div>
 			) : (
 				<div className='r-ctr-list'>
-					{list.length === 0 && <p className='r-muted'>No counters match those filters.</p>}
+					{list.length === 0 && <p className='r-muted'>{t('pokemonDetail:counters.noCountersMatch')}</p>}
 					{list.map((e, i) => {
 						const p = gamemasterPokemon[e.speciesId];
 						if (!p) return null;

@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "タイプ相性表",
+		"description": "<b>行</b>で攻撃側タイプが各防御側にどう有利/不利かを、<b>列</b>で防御側タイプが何に耐性を持つかを確認できます。"
+	},
+	"legend": {
+		"superEffective": "効果ばつぐん",
+		"resisted": "耐性あり",
+		"immune": "無効/二重耐性"
+	},
+	"calculator": {
+		"title": "弱点計算機",
+		"defendingTypesLabel": "防御側タイプ(最大2つ)",
+		"takesExtraFrom": "効果ばつぐんを受けるタイプ",
+		"takesLessFrom": "耐性を持つタイプ",
+		"nothing": "なし"
+	}
+}

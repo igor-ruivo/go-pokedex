@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "Nome",
+		"dmgPve": "DANO · PvE",
+		"dmgPvp": "DANO · PvP",
+		"nrgPve": "ENG · PvE",
+		"nrgPvp": "ENG · PvP",
+		"durPve": "DUR · PvE",
+		"turnsPvp": "TURNOS · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "Golpes",
+		"kindAriaLabel": "Tipo de golpe",
+		"kind": { "all": "Todos", "fast": "Rápidos", "charged": "Carregados" },
+		"count_one": "{{count}} golpe",
+		"count_other": "{{count}} golpes"
+	}
+}

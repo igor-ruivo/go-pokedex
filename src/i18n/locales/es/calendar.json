@@ -1,0 +1,72 @@
+{
+	"shell": { "title": "Calendario" },
+	"tabs": {
+		"events": "Eventos",
+		"bosses": "Incursiones",
+		"spawns": "Apariciones",
+		"rockets": "Rockets",
+		"eggs": "Huevos"
+	},
+	"biomes": {
+		"cities": "Ciudades",
+		"forests": "Bosques",
+		"mountains": "Montañas",
+		"beaches": "Playas y agua",
+		"northernHemisphere": "Hemisferio norte",
+		"southernHemisphere": "Hemisferio sur",
+		"allAreas": "Todas las áreas"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Incursiones de nivel superior", "short": "Nivel superior" },
+			"tier3": { "full": "Incursiones de nivel 3", "short": "Nivel 3" },
+			"tier1": { "full": "Incursiones de nivel 1", "short": "Nivel 1" }
+		},
+		"shadowPrefix": "Sombra · {{tier}}",
+		"otherRaids": "Otras incursiones",
+		"nothingScheduled": "Nada programado.",
+		"nowSlot": "Ahora"
+	},
+	"spawns": {
+		"noSeasonalData": "Sin datos de aparición estacional.",
+		"nowSlot": "Ahora",
+		"seasonSlot": "Temporada"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Periodo",
+		"scrollEarlier": "Desplazar a fechas anteriores",
+		"scrollLater": "Desplazar a fechas posteriores"
+	},
+	"events": {
+		"noEvents": "No hay eventos por ahora.",
+		"scheduledCount": "{{count}} eventos programados",
+		"fallbackTitle": "Evento",
+		"unseenAriaLabel": "Aún no abierto",
+		"phase": { "season": "Temporada", "live": "En curso", "ended": "Finalizado" },
+		"bonuses": "Bonificaciones",
+		"groups": {
+			"featuredSpawns": "Apariciones destacadas",
+			"featuredRaids": "Incursiones destacadas",
+			"researchEncounters": "Encuentros de investigación",
+			"eggs": "Huevos",
+			"incense": "Incienso",
+			"lures": "Módulos señuelo"
+		},
+		"readAnnouncement": "Leer el anuncio completo"
+	},
+	"rockets": {
+		"noLineups": "Sin alineaciones de Rocket.",
+		"typeGrunt": "Recluta de tipo {{type}}",
+		"genericGrunt": "Recluta",
+		"slotReward": "Recompensa del puesto {{slot}}",
+		"slotHeader": "Puesto {{slot}}",
+		"catchableTag": "capturable"
+	},
+	"eggs": { "noPoolData": "Sin datos del grupo de huevos." },
+	"timeLeft": {
+		"days": "quedan {{count}}d",
+		"hours": "quedan {{count}}h",
+		"minutes": "quedan {{count}}m",
+		"seconds": "quedan {{count}}s"
+	}
+}

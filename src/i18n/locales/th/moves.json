@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "ชื่อ",
+		"dmgPve": "DMG · PvE",
+		"dmgPvp": "DMG · PvP",
+		"nrgPve": "NRG · PvE",
+		"nrgPvp": "NRG · PvP",
+		"durPve": "DUR · PvE",
+		"turnsPvp": "TURNS · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "ท่าโจมตี",
+		"kindAriaLabel": "ประเภทท่าโจมตี",
+		"kind": { "all": "ทั้งหมด", "fast": "เร็ว", "charged": "ชาร์จ" },
+		"count_one": "{{count}} ท่า",
+		"count_other": "{{count}} ท่า"
+	}
+}

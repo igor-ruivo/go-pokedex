@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "Typentabelle",
+		"description": "Lies eine <b>Zeile</b>, um zu sehen, wie ein angreifender Typ gegen jeden Verteidiger abschneidet · lies eine <b>Spalte</b>, um zu sehen, wogegen ein verteidigender Typ resistent ist."
+	},
+	"legend": {
+		"superEffective": "Sehr effektiv",
+		"resisted": "Widerstanden",
+		"immune": "Immun / doppelt resistent"
+	},
+	"calculator": {
+		"title": "Schwächen-Rechner",
+		"defendingTypesLabel": "Verteidigende(r) Typ(en) · bis zu 2",
+		"takesExtraFrom": "Erleidet mehr Schaden durch",
+		"takesLessFrom": "Erleidet weniger Schaden durch",
+		"nothing": "Nichts"
+	}
+}

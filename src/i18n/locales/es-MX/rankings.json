@@ -1,0 +1,31 @@
+{
+	"sorts": {
+		"dex": "Número de Pokédex",
+		"name": "Nombre",
+		"cp": "PC máximo",
+		"type": "Tipo"
+	},
+	"tabs": {
+		"pokedexFull": "Pokédex",
+		"pokedexShort": "Dex"
+	},
+	"status": {
+		"loading": "Cargando…",
+		"chooseType": "Elige un tipo",
+		"count": "{{count}} Pokémon",
+		"bestAttackersSuffix": " · mejores atacantes de {{type}}"
+	},
+	"hint": {
+		"show": "Mostrar supuestos de clasificación",
+		"hide": "Ocultar supuestos de clasificación",
+		"text": "Las clasificaciones de incursión asumen el mejor combo de movimiento rápido + cargado de cada Pokémon infligiendo daño Efectivo de tipo {{type}} (×1,6) contra un jefe de Nivel 5 no Sombra (200 de Defensa, nivel 40), con un atacante de nivel 50 (15 de IV de Ataque) y sin bonificaciones de clima, amistad o aura Mega de compañero. Los Pokémon Super Mega se clasifican como Nivel Mega Máximo."
+	},
+	"empty": {
+		"pickType": "Elige un tipo en el filtro para ver los mejores atacantes de incursión de ese tipo.",
+		"nothingMatches": "Nada coincide."
+	},
+	"loadingLabel": {
+		"pokedex": "Cargando Pokédex…",
+		"rankings": "Cargando clasificación…"
+	}
+}

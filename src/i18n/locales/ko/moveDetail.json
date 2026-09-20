@@ -1,0 +1,38 @@
+{
+	"notFound": "기술 “{{moveId}}”를 찾을 수 없습니다.",
+	"sections": {
+		"stats": "스탯",
+		"usage": "사용 현황",
+		"recommended": "추천",
+		"alsoLearnedBy": "이 기술을 배우는 다른 포켓몬",
+		"learnedBy": "이 기술을 배우는 포켓몬",
+		"eliteFor": "엘리트 기술로 사용 가능",
+		"legacyFor": "기간 한정 기술로 사용 가능"
+	},
+	"arena": {
+		"pve": "PvE · 레이드 & 체육관",
+		"pvp": "PvP · 리그"
+	},
+	"kind": {
+		"fastChip": "일반 기술",
+		"chargedChip": "스페셜 기술"
+	},
+	"superMega": "슈퍼 메가",
+	"statLabels": {
+		"dmg": "데미지",
+		"nrg": "에너지",
+		"dur": "지속시간",
+		"turns": "턴",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "{{name}}을(를) 배울 수 있는 포켓몬",
+	"tiles": {
+		"recommended": "추천",
+		"mega": "메가",
+		"elite": "엘리트",
+		"legacy": "기간 한정"
+	},
+	"noneLearn": "이 기술을 배우는 포켓몬이 없습니다."
+}

@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "Название",
+		"dmgPve": "DMG · PvE",
+		"dmgPvp": "DMG · PvP",
+		"nrgPve": "NRG · PvE",
+		"nrgPvp": "NRG · PvP",
+		"durPve": "DUR · PvE",
+		"turnsPvp": "TURNS · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "Атаки",
+		"kindAriaLabel": "Тип атаки",
+		"kind": { "all": "Все", "fast": "Быстрые", "charged": "Заряженные" },
+		"count_one": "{{count}} атака",
+		"count_other": "{{count}} атак"
+	}
+}

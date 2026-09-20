@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "Beranda"
+	},
+	"nav": {
+		"pokedex": { "label": "Pokédex", "hint": "Jelajahi semua Pokémon" },
+		"rankings": { "label": "Peringkat", "hint": "Attacker terbaik per liga dan tipe raid" },
+		"calendar": { "label": "Kalender", "hint": "Event, raid, spawn, dan telur" },
+		"moves": { "label": "Jurus", "hint": "Semua jurus cepat dan jurus utama" },
+		"types": { "label": "Tipe", "hint": "Tabel efektivitas tipe" },
+		"searches": {
+			"label": "Pencarian",
+			"hint": "Buat string pencarian dalam game — pembersihan, IV sempurna, atau kandidat tukar"
+		},
+		"calendarBadge_one": "{{label}} — {{count}} event baru",
+		"calendarBadge_other": "{{label}} — {{count}} event baru"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "Instal GO Pokédex",
+		"title": "Instal GO Pokédex",
+		"iosHint": "Ketuk Bagikan, lalu “Tambah ke Layar Utama” — layar penuh, tanpa bilah browser.",
+		"androidHint": "Tambahkan ke layar utama untuk pengalaman layar penuh seperti aplikasi.",
+		"installButton": "Instal",
+		"dismissAriaLabel": "Tutup"
+	},
+	"placeholder": {
+		"toolsTitle": "Alat",
+		"comingSoon": "Segera hadir di pembaruan berikutnya."
+	}
+}

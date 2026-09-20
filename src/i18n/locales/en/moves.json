@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "Name",
+		"dmgPve": "DMG · PvE",
+		"dmgPvp": "DMG · PvP",
+		"nrgPve": "NRG · PvE",
+		"nrgPvp": "NRG · PvP",
+		"durPve": "DUR · PvE",
+		"turnsPvp": "TURNS · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "Moves",
+		"kindAriaLabel": "Move kind",
+		"kind": { "all": "All", "fast": "Fast", "charged": "Charged" },
+		"count_one": "{{count}} Move",
+		"count_other": "{{count}} Moves"
+	}
+}

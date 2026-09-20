@@ -1,0 +1,38 @@
+{
+	"notFound": "ไม่พบท่า “{{moveId}}”",
+	"sections": {
+		"stats": "สถิติ",
+		"usage": "การใช้งาน",
+		"recommended": "แนะนำ",
+		"alsoLearnedBy": "เรียนรู้ได้โดย",
+		"learnedBy": "เรียนรู้ได้โดย",
+		"eliteFor": "เป็นท่าอีลีทสำหรับ",
+		"legacyFor": "เป็นท่าเลกาซีสำหรับ"
+	},
+	"arena": {
+		"pve": "PvE · เรดและยิม",
+		"pvp": "PvP · ลีก"
+	},
+	"kind": {
+		"fastChip": "ท่าเร็ว",
+		"chargedChip": "ท่าชาร์จ"
+	},
+	"superMega": "ซูเปอร์เมก้า",
+	"statLabels": {
+		"dmg": "DMG",
+		"nrg": "NRG",
+		"dur": "DUR",
+		"turns": "เทิร์น",
+		"dps": "DPS",
+		"eps": "EPS",
+		"dpe": "DPE"
+	},
+	"usageLead": "โปเกมอนที่เรียนรู้ {{name}} ได้",
+	"tiles": {
+		"recommended": "แนะนำ",
+		"mega": "เมก้า",
+		"elite": "อีลีท",
+		"legacy": "เลกาซี"
+	},
+	"noneLearn": "ไม่มีโปเกมอนตัวใดเรียนรู้ท่านี้"
+}

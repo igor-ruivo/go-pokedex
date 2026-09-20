@@ -1,0 +1,18 @@
+{
+	"page": {
+		"title": "Tableau des types",
+		"description": "Lisez une <b>ligne</b> pour voir comment un type attaquant se comporte face à chaque défenseur · lisez une <b>colonne</b> pour voir à quoi un type défenseur résiste."
+	},
+	"legend": {
+		"superEffective": "Super efficace",
+		"resisted": "Résisté",
+		"immune": "Immunisé / double résistance"
+	},
+	"calculator": {
+		"title": "Calculateur de faiblesses",
+		"defendingTypesLabel": "Type(s) défenseur(s) · jusqu'à 2",
+		"takesExtraFrom": "Subit plus de dégâts de",
+		"takesLessFrom": "Subit moins de dégâts de",
+		"nothing": "Rien"
+	}
+}

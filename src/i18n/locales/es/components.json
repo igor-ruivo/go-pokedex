@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filtrar",
+		"clear": "Borrar",
+		"dialogAriaLabel": "Filtros",
+		"typeSectionLabel": "Tipo",
+		"pickOneHint": "elige uno",
+		"pickUpToHint": "elige hasta {{max}} · coincide con ambos"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Ordenar por",
+		"sectionLabel": "Ordenar por",
+		"asc": "Asc",
+		"desc": "Desc"
+	},
+	"ivPicker": {
+		"attack": "ATAQUE",
+		"defense": "DEFENSA",
+		"hp": "PS",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Disminuir",
+		"increaseAriaLabel": "Aumentar"
+	},
+	"shadowMark": {
+		"alt": "Sombra"
+	},
+	"searchBox": {
+		"placeholder": "Buscar Pokémon o movimientos…",
+		"ariaLabel": "Buscar Pokémon o movimientos",
+		"clearAriaLabel": "Borrar búsqueda",
+		"shadowSuffix": "Sombra",
+		"fast": "Rápido",
+		"charged": "Cargado"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "No clasificado como atacante de incursión.",
+		"bestMovesetByType": "Mejor combo de movimientos por tipo",
+		"tapNextMoveset": "Toca para el siguiente combo",
+		"tapSelectType": "Toca para seleccionar este tipo",
+		"legacy": "Legado",
+		"elite": "Elite",
+		"baseAtk": "ATQ base",
+		"typeRank": "Clasificación de {{type}}"
+	}
+}

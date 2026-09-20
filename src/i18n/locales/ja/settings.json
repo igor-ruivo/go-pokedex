@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "言語と設定",
+		"dialogAriaLabel": "設定",
+		"appLanguage": "アプリの言語",
+		"gameLanguage": "ゲームの言語",
+		"moreSettings": "その他の設定",
+		"sprites": "スプライト",
+		"raidRanking": "レイドランキング",
+		"bestBuddy": "なかよし度を考慮",
+		"off": "オフ",
+		"on": "オン",
+		"footer": "この端末に保存されます。"
+	},
+	"page": {
+		"title": "設定",
+		"appLanguage": {
+			"title": "アプリの言語",
+			"desc": "画面上のテキスト。デフォルトは英語です。"
+		},
+		"gameLanguage": {
+			"title": "ゲームの言語",
+			"desc": "Pokémon GOに表示されるポケモン名・わざ名の言語。"
+		},
+		"sprites": {
+			"title": "スプライト",
+			"desc": "各ポケモンに表示するアートワーク。"
+		},
+		"bestBuddy": {
+			"title": "なかよし度を考慮",
+			"desc": "レベル51を到達可能として扱います — 個体値テーブル、削除/検索文字列、最大CP、レベル選択、ベスト個体値/パーセンタイル、レイドカウンター、DPS/TDO/eDPSがすべてレベル50ではなく51まで評価されます。"
+		},
+		"footer": "設定はこの端末に保存されます。"
+	},
+	"spriteOptions": {
+		"official": "公式",
+		"go": "Pokémon GO",
+		"shiny": "GO 色違い"
+	},
+	"toggle": {
+		"off": "オフ",
+		"on": "オン"
+	}
+}

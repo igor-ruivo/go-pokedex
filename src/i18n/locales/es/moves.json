@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "Nombre",
+		"dmgPve": "DAÑO · JcE",
+		"dmgPvp": "DAÑO · JcJ",
+		"nrgPve": "ENERGÍA · JcE",
+		"nrgPvp": "ENERGÍA · JcJ",
+		"durPve": "DUR · JcE",
+		"turnsPvp": "TURNOS · JcJ",
+		"dpsPve": "DPS · JcE",
+		"dpsPvp": "DPS · JcJ",
+		"epsPve": "EPS · JcE",
+		"epsPvp": "EPS · JcJ",
+		"dpePve": "DPE · JcE",
+		"dpePvp": "DPE · JcJ"
+	},
+	"page": {
+		"title": "Movimientos",
+		"kindAriaLabel": "Tipo de movimiento",
+		"kind": { "all": "Todos", "fast": "Rápido", "charged": "Cargado" },
+		"count_one": "{{count}} movimiento",
+		"count_other": "{{count}} movimientos"
+	}
+}

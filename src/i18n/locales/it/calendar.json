@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "Calendario"
+	},
+	"tabs": {
+		"events": "Eventi",
+		"bosses": "Raid",
+		"spawns": "Spawn",
+		"rockets": "Rocket",
+		"eggs": "Uova"
+	},
+	"biomes": {
+		"cities": "Città",
+		"forests": "Foreste",
+		"mountains": "Montagne",
+		"beaches": "Spiagge e acqua",
+		"northernHemisphere": "Emisfero nord",
+		"southernHemisphere": "Emisfero sud",
+		"allAreas": "Tutte le aree"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "Raid di livello superiore", "short": "Livello superiore" },
+			"tier3": { "full": "Raid di livello 3", "short": "Livello 3" },
+			"tier1": { "full": "Raid di livello 1", "short": "Livello 1" }
+		},
+		"shadowPrefix": "Ombra · {{tier}}",
+		"otherRaids": "Altri raid",
+		"nothingScheduled": "Niente in programma.",
+		"nowSlot": "Ora"
+	},
+	"spawns": {
+		"noSeasonalData": "Nessun dato sugli spawn stagionali.",
+		"nowSlot": "Ora",
+		"seasonSlot": "Stagione"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "Intervallo di tempo",
+		"scrollEarlier": "Scorri a date precedenti",
+		"scrollLater": "Scorri a date successive"
+	},
+	"events": {
+		"noEvents": "Nessun evento al momento.",
+		"scheduledCount": "{{count}} eventi in programma",
+		"fallbackTitle": "Evento",
+		"unseenAriaLabel": "Non ancora aperto",
+		"phase": {
+			"season": "Stagione",
+			"live": "In corso",
+			"ended": "Terminato"
+		},
+		"bonuses": "Bonus",
+		"groups": {
+			"featuredSpawns": "Spawn in evidenza",
+			"featuredRaids": "Raid in evidenza",
+			"researchEncounters": "Incontri di ricerca",
+			"eggs": "Uova",
+			"incense": "Incenso",
+			"lures": "Moduli Esca"
+		},
+		"readAnnouncement": "Leggi l'annuncio completo"
+	},
+	"rockets": {
+		"noLineups": "Nessuna formazione Team GO Rocket.",
+		"typeGrunt": "Gregario {{type}}",
+		"genericGrunt": "Gregario",
+		"slotReward": "Ricompensa slot {{slot}}",
+		"slotHeader": "Slot {{slot}}",
+		"catchableTag": "catturabile"
+	},
+	"eggs": {
+		"noPoolData": "Nessun dato sul pool delle uova."
+	},
+	"timeLeft": {
+		"days": "restano {{count}} g",
+		"hours": "restano {{count}} h",
+		"minutes": "restano {{count}} min",
+		"seconds": "restano {{count}} s"
+	}
+}

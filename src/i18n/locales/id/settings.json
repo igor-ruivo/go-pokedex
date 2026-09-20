@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "Bahasa & pengaturan",
+		"dialogAriaLabel": "Pengaturan",
+		"appLanguage": "Bahasa aplikasi",
+		"gameLanguage": "Bahasa game",
+		"moreSettings": "Pengaturan lainnya",
+		"sprites": "Sprite",
+		"raidRanking": "Peringkat raid",
+		"bestBuddy": "Perhitungkan Sahabat Karib",
+		"off": "Mati",
+		"on": "Aktif",
+		"footer": "Disimpan di perangkat ini."
+	},
+	"page": {
+		"title": "Pengaturan",
+		"appLanguage": {
+			"title": "Bahasa aplikasi",
+			"desc": "Teks antarmuka. Bahasa Inggris adalah default."
+		},
+		"gameLanguage": {
+			"title": "Bahasa game",
+			"desc": "Nama Pokémon dan jurus, seperti yang muncul di Pokémon GO."
+		},
+		"sprites": {
+			"title": "Sprite",
+			"desc": "Ilustrasi mana yang ditampilkan untuk setiap Pokémon."
+		},
+		"bestBuddy": {
+			"title": "Perhitungkan Sahabat Karib",
+			"desc": "Anggap level 51 dapat dicapai — tabel IV, string buang/cari, CP maksimum, pemilih level, IV/persentil terbaik, penghitung raid, serta DPS/TDO/eDPS semuanya dihitung hingga level 51, bukan 50."
+		},
+		"footer": "Preferensi disimpan di perangkat ini."
+	},
+	"spriteOptions": {
+		"official": "Resmi",
+		"go": "Pokémon GO",
+		"shiny": "Shiny GO"
+	},
+	"toggle": {
+		"off": "Mati",
+		"on": "Aktif"
+	}
+}

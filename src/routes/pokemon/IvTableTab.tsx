@@ -1,17 +1,16 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName, dec1, statProdPercentile } from '../../lib/format';
 
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
-const LEAGUE_NAME = ['Great', 'Ultra', 'Master'] as const;
 const ROW_H = 44;
 const VISIBLE_ROWS = 50; // show ~50 spreads, then the list scrolls inside itself
 
 type IvFields = [string, string, string];
-const FIELD_LABEL = ['ATK', 'DEF', 'HP'] as const;
 
 const clamp15 = (s: string) => {
 	const n = Number.parseInt(s, 10);
@@ -19,6 +18,17 @@ const clamp15 = (s: string) => {
 };
 
 const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+	const { t } = useTranslation(['pokemonDetail']);
+	const LEAGUE_FULL = [
+		t('pokemonDetail:leagues.greatFull'),
+		t('pokemonDetail:leagues.ultraFull'),
+		t('pokemonDetail:leagues.masterFull'),
+	];
+	const FIELD_LABEL = [
+		t('pokemonDetail:hero.stats.atk'),
+		t('pokemonDetail:hero.stats.def'),
+		t('pokemonDetail:hero.stats.hp'),
+	];
 	const isPvp = league === 0 || league === 1 || league === 2;
 	const rows = useBestIvs(pokemon, isPvp ? CAP[league] : 1500, isPvp);
 
@@ -85,7 +95,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 		return (
 			<div className='r-movecontent'>
 				<div className='r-card' style={{ textAlign: 'center' }}>
-					<p className='r-muted'>IV rankings don’t apply to raids — pick Great, Ultra or Master above.</p>
+					<p className='r-muted'>{t('pokemonDetail:ivTable.notForRaids')}</p>
 				</div>
 			</div>
 		);
@@ -113,8 +123,11 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 	return (
 		<div className='r-movecontent'>
 			<div className='r-section-h'>
-				{LEAGUE_NAME[league]} League · all 4,096 IV spreads for {pokemon.isShadow ? 'Shadow ' : ''}
-				{cleanName(pokemon.speciesName)}
+				{t('pokemonDetail:ivTable.heading', {
+					league: LEAGUE_FULL[league],
+					shadow: pokemon.isShadow ? `${t('pokemonDetail:hero.shadowToggle')} ` : '',
+					name: cleanName(pokemon.speciesName),
+				})}
 			</div>
 
 			<div className='r-iv-search'>
@@ -128,7 +141,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 							pattern='[0-9]*'
 							maxLength={2}
 							placeholder='–'
-							aria-label={`${label} IV, 0 to 15`}
+							aria-label={t('pokemonDetail:ivTable.fieldAriaLabel', { label })}
 						/>
 					</label>
 				))}
@@ -137,7 +150,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 						type='button'
 						className='r-iv-search-clear'
 						onClick={() => setFields(['', '', ''])}
-						aria-label='Clear'
+						aria-label={t('pokemonDetail:ivTable.clearAriaLabel')}
 					>
 						×
 					</button>
@@ -153,28 +166,36 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 						</span>
 						<span className='r-ivt-found-stats'>
 							<span>
-								ATK <b>{dec1(match.battle.A)}</b>
+								{t('pokemonDetail:hero.stats.atk')} <b>{dec1(match.battle.A)}</b>
 							</span>
 							<span>
-								DEF <b>{dec1(match.battle.D)}</b>
+								{t('pokemonDetail:hero.stats.def')} <b>{dec1(match.battle.D)}</b>
 							</span>
 							<span>
-								HP <b>{Math.floor(match.battle.S)}</b>
+								{t('pokemonDetail:hero.stats.hp')} <b>{Math.floor(match.battle.S)}</b>
 							</span>
 						</span>
 						<span className='r-ivt-found-meta'>
-							{match.CP} CP · L{match.L} · {dec1(pctOf(match))}%
+							{match.CP} {t('pokemonDetail:hero.cp')} · L{match.L} · {dec1(pctOf(match))}%
 						</span>
 					</div>
 				) : (
 					<p className='r-muted r-ivt-none'>
-						{triplet ? 'That spread isn’t in the ranking.' : 'Fill in all three (0–15).'}
+						{triplet ? t('pokemonDetail:ivTable.notInRanking') : t('pokemonDetail:ivTable.fillAllThree')}
 					</p>
 				))}
 
 			<div className='r-ivt' onMouseLeave={() => setHover(null)}>
 				<div className='r-ivt-head'>
-					{['#', 'IVs', 'Atk · Def · HP', '%', '', 'CP', 'Lvl'].map((label, c) => (
+					{[
+						t('pokemonDetail:ivTable.columns.rank'),
+						t('pokemonDetail:ivTable.columns.ivs'),
+						t('pokemonDetail:ivTable.columns.stats'),
+						t('pokemonDetail:ivTable.columns.percent'),
+						'',
+						t('pokemonDetail:ivTable.columns.cp'),
+						t('pokemonDetail:ivTable.columns.level'),
+					].map((label, c) => (
 						<span
 							key={c}
 							data-colhot={hover?.c === c ? '' : undefined}

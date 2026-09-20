@@ -1,0 +1,112 @@
+{
+	"loading": "Caricamento…",
+	"pageTitle": {
+		"meta": "Elimina in massa i Pokémon attualmente non rilevanti per il meta",
+		"badIv": "Elimina in massa i Pokémon con IV non perfetti",
+		"trade": "Trova Pokémon da scambiare"
+	},
+	"modeTablist": "Modalità eliminazione di massa",
+	"modeTabs": {
+		"meta": { "full": "Non rilevanti per il meta", "short": "Non-meta" },
+		"badIv": { "full": "IV non perfetti", "short": "IV" },
+		"trade": { "full": "Trova scambiabili", "short": "Scambiabili" }
+	},
+	"badIvWarning": "Questa modalità è aggressiva e perfezionista: l'obiettivo è eliminare ogni cattura che non sia un Pokémon con IV perfetti (100%), senza considerare se la specie sia attualmente buona o scarsa nel meta — controlla bene le categorie e la whitelist qui sotto prima di eseguirla.",
+	"helpText": {
+		"meta": "Solo meta, mai IV: elimina qualsiasi Pokémon che non sia rilevante a livello competitivo da nessuna parte — né in Grande Lega, Ultra Lega o Lega Master, né nei raid — in base alle soglie di rango e al tetto di PL qui sotto. Una specie (o una delle sue evoluzioni successive) deve solo superare la soglia in una di queste per essere risparmiata, e una volta che lo fa, anche ogni sua cattura viene risparmiata, indipendentemente dai suoi IV — questa scheda non ha alcuna opinione sugli IV. Tutto ciò che è pari o superiore al tuo tetto di PL viene sempre mantenuto, così come tutto ciò che è selezionato nelle categorie e nella whitelist qui sotto, indipendentemente dal rango. Un prodotto statistico perfetto per la Lega Master viene sempre mantenuto.",
+		"badIv": "Solo IV, mai meta: ignora completamente il meta attuale — l'obiettivo è eliminare tutto ciò che non è perfettamente 15/15/15, indipendentemente dal fatto che la specie sia rilevante per il meta in questo momento. La ricerca del gioco può abbinare solo intervalli di IV, non valori esatti, quindi questa linea non può sempre essere tracciata con esattezza — per la Grande Lega (1500 PL) e l'Ultra Lega (2500 PL), la maggior parte delle specie viene coperta tramite un intervallo condiviso con Attacco basso/resistenza alta che lo approssima, e qualche centinaio riceve invece un intervallo verificato individualmente, perché quello condiviso non si adatta alle loro statistiche; in entrambi i casi, alcune catture quasi perfette (ma non proprio hundo) proprio al limite possono sfuggire come falsi negativi. La Lega Master non ha un tetto di PL, quindi lì il migliore è davvero sempre quello con IV più alti — la gestione della Lega Master in questa modalità è esatta, non un'approssimazione. Un prodotto statistico perfetto viene sempre mantenuto in ogni lega, così come tutto ciò che è selezionato nelle categorie e nella whitelist qui sotto, indipendentemente dagli IV.",
+		"trade": "Una terza domanda, separata dalle due schede precedenti: quali delle tue catture vale la pena scambiare? Uno scambio Migliore Amico porta sempre ogni statistica a un minimo di 5. In questa modalità, una specie deve superare solo UNA delle quattro soglie qui sotto (Grande, Ultra, Master o Raid) per essere suggerita. La Lega Master e i raid non hanno un tetto di PL, quindi qualsiasi specie rilevante si qualifica solo in base al rango. Grande e Ultra sono più selettive: i loro tetti di PL spesso richiedono la miglior distribuzione possibile con Attacco molto basso, cosa che il minimo di 5 di uno scambio non può mai produrre — quindi queste due leghe contano una specie solo quando la sua migliore distribuzione possibile è davvero qualcosa che uno scambio può raggiungere. In entrambi i casi, una cattura già perfetta — o già alla pari con la migliore distribuzione possibile nella lega che l'ha qualificata — non viene mai suggerita, poiché scambiarla potrebbe solo peggiorarla, mai migliorarla. Le categorie, la whitelist e il tetto di PL qui sotto restringono ulteriormente i suggerimenti, come nelle altre schede."
+	},
+	"readMore": "Leggi di più",
+	"readLess": "Leggi meno",
+	"configuration": "Configurazione",
+	"edit": "Modifica",
+	"hide": "Nascondi",
+	"reset": "Ripristina",
+	"neverDeleteCategory": "Non eliminare mai questa categoria",
+	"neverSuggestCategory": "Non suggerire mai questa categoria",
+	"neverDeletePokemon": "Non eliminare mai questi Pokémon",
+	"neverSuggestPokemon": "Non suggerire mai questi Pokémon",
+	"knobs": {
+		"greatLeague": { "full": "Grande Lega", "short": "Grande" },
+		"ultraLeague": { "full": "Ultra Lega", "short": "Ultra" },
+		"masterLeague": { "full": "Lega Master", "short": "Master" },
+		"raidAttackers": { "full": "Attaccanti da raid", "short": "Raid" },
+		"saveCp": "Salva PL",
+		"simplifiedMode": "Modalità semplificata",
+		"keep3StarPokemon": "Mantieni Pokémon 3*",
+		"ariaKeepTopGreat": "Mantieni il top della Grande Lega",
+		"ariaKeepTopUltra": "Mantieni il top dell'Ultra Lega",
+		"ariaKeepTopMaster": "Mantieni il top della Lega Master",
+		"ariaKeepTopRaid": "Mantieni i migliori attaccanti da raid"
+	},
+	"metaKnobsSubtitle": "Preserva i migliori Pokémon del meta attuale per lega/raid",
+	"badIvKnobsSubtitle": "La modalità semplificata scambia un po' di precisione per una stringa più corta — vedi il tooltip sull'interruttore",
+	"tradeKnobsSubtitle": "Una specie deve superare solo UNA di queste quattro soglie per essere suggerita — Grande e Ultra richiedono anche che uno scambio possa effettivamente raggiungere la loro migliore distribuzione possibile (vedi il testo di aiuto sopra)",
+	"simplifiedTrashTooltip": "Scambia precisione per una stringa più corta: evita di cercare parità di prodotto statistico per la Lega Master (senza tetto) — solo l'hundo esatto (protetto ovunque, incondizionatamente, tramite l'esclusione globale !4*) resta protetto lì. La protezione Grande/Ultra/raid non è interessata.",
+	"simplifiedBadIvTooltip": "Scambia precisione per una stringa più corta: invece di proteggere solo la distribuzione IV migliore esatta di una specie, qualsiasi specie che richiederebbe una di queste eccezioni individuali viene saltata del tutto — un po' come una voce bonus della whitelist. Più corta e semplice, ma con più falsi negativi: alcune catture che la modalità completa colpirebbe correttamente qui restano non colpite.",
+	"tradeOnlyLowIvTooltip": "Restringe i suggerimenti alle catture con Attacco, Difesa e PS tutti chiaramente bassi — altrimenti viene suggerito tutto ciò che non è un hundo.",
+	"toggleOn": "On",
+	"toggleOff": "Off",
+	"protectionMeta": {
+		"favorite": { "label": "Preferito", "description": "Pokémon contrassegnati come preferiti nel gioco." },
+		"tagged": { "label": "Etichettato", "description": "Pokémon con un soprannome o un'etichetta personalizzata." },
+		"legendary": { "label": "Leggendario", "description": "Leggendari da collezione (Mewtwo, Lugia, …)." },
+		"mythical": { "label": "Fatato", "description": "Pokémon fatati (Mew, Celebi, …)." },
+		"ultraBeast": { "label": "Ultracreatura", "description": "Ultracreature (Nihilego, Buzzwole, …)." },
+		"megaEvolvable": {
+			"label": "Mega-evolvibile",
+			"description": "Solo il gioco lo sa — richiede abbastanza Mega Energia accumulata per quella specie in questo momento."
+		},
+		"shadow": { "label": "Ombra", "description": "Ogni Pokémon Ombra, indipendentemente dai suoi IV o rango." },
+		"dynamax": { "label": "Dynamax", "description": "Pokémon in grado di eseguire il Dynamax." },
+		"fusion": { "label": "Fusione", "description": "Pokémon in grado di fondersi, o già fusi." },
+		"gigantamax": { "label": "Gigantamax", "description": "Pokémon in grado di eseguire il Gigantamax." },
+		"background": {
+			"label": "Sfondo",
+			"description": "Pokémon con uno sfondo raro o legato a una località nel loro profilo."
+		},
+		"shiny": { "label": "Shiny", "description": "Ogni Pokémon Shiny." },
+		"costume": { "label": "Costume", "description": "Pokémon con un costume da evento speciale." }
+	},
+	"lockedOnTitle": "I Pokémon {{label}} non possono mai essere scambiati, quindi questo è sempre attivo.",
+	"whitelist": {
+		"searchPlaceholderMeta": "Aggiungi un Pokémon da non eliminare mai…",
+		"searchPlaceholderTrade": "Aggiungi un Pokémon da non suggerire mai…",
+		"clear": "Cancella",
+		"remove": "Rimuovi",
+		"removeLockedTitle": "Protetto perché {{reason}} — disattiva quell'opzione sopra per rimuoverlo",
+		"shadowSuffix": "Ombra",
+		"emptyMeta": "Ancora niente qui — cerca sopra per proteggere un Pokémon specifico indipendentemente dalle categorie sopra.",
+		"emptyTrade": "Ancora niente qui — cerca sopra per escludere un Pokémon specifico dai suggerimenti di scambio indipendentemente dalle categorie sopra.",
+		"summaryEmpty": "Nessun Pokémon protetto individualmente per ora",
+		"summaryManual_one": "{{count}} mantenuto individualmente",
+		"summaryManual_other": "{{count}} mantenuti individualmente",
+		"summaryAuto_one": "{{count}} protetto per categoria",
+		"summaryAuto_other": "{{count}} protetti per categoria"
+	},
+	"compute": "Calcola",
+	"computing": "Calcolo in corso…",
+	"computingMessage": "Calcolo in corso… questo esamina ogni specie, dagli un momento.",
+	"outputPlaceholderMeta": "La tua stringa di ricerca appare qui. Incollala nella barra di ricerca di Pokémon GO, controlla i risultati, poi elimina.",
+	"outputPlaceholderTrade": "La tua stringa di ricerca appare qui. Incollala nella barra di ricerca di Pokémon GO per esaminare i tuoi candidati allo scambio.",
+	"characterCount_one": "{{formatted}} carattere",
+	"characterCount_other": "{{formatted}} caratteri",
+	"lengthWarningMeta": " — ⚠️ potrebbe essere troppo lunga per la barra di ricerca su alcuni telefoni Android; valuta di usare la modalità di eliminazione semplificata sopra se noti che la stringa viene troncata dopo averla incollata nella barra di ricerca di Pokémon GO.",
+	"lengthWarningTrade": " — ⚠️ potrebbe essere troppo lunga per la barra di ricerca su alcuni telefoni Android; incollandola nella barra di ricerca di Pokémon GO la fine della stringa potrebbe venire troncata.",
+	"copySearchString": "Copia stringa di ricerca",
+	"copied": "Copiato ✓",
+	"panelSummary": {
+		"topGreat": "Top {{n}} Grande Lega",
+		"topUltra": "Top {{n}} Ultra Lega",
+		"topMaster": "Top {{n}} Lega Master",
+		"topRaid": "Top {{n}} Raid",
+		"cpKept": "PL ≥ {{cp}} mantenuti",
+		"cpUnder": "PL < {{cp}}",
+		"simplifiedModeSuffix": "Modalità semplificata",
+		"protectsList": "protegge {{list}}",
+		"excludesList": "esclude {{list}}",
+		"nothingExtra": "niente di extra",
+		"onlyClearlyLowIvs": "solo IV chiaramente bassi"
+	}
+}

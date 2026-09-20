@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "Nome",
+		"dmgPve": "DAN · PvE",
+		"dmgPvp": "DAN · PvP",
+		"nrgPve": "ENG · PvE",
+		"nrgPvp": "ENG · PvP",
+		"durPve": "DUR · PvE",
+		"turnsPvp": "TURNI · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "Mosse",
+		"kindAriaLabel": "Tipo di mossa",
+		"kind": { "all": "Tutte", "fast": "Veloce", "charged": "Caricata" },
+		"count_one": "{{count}} mossa",
+		"count_other": "{{count}} mosse"
+	}
+}

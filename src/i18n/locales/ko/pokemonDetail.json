@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "그레이트",
+		"greatFull": "그레이트 리그",
+		"ultra": "울트라",
+		"ultraFull": "울트라 리그",
+		"master": "마스터",
+		"masterFull": "마스터 리그",
+		"raid": "레이드",
+		"raids": "레이드",
+		"raidsFull": "레이드"
+	},
+	"tabs": {
+		"ranks": "랭크",
+		"moves": "기술",
+		"counters": "카운터",
+		"ivTable": "개체값 표",
+		"strings": "검색 문자열",
+		"comingSoon": "“{{tab}}”은(는) 리뉴얼에서 다음으로 추가될 예정입니다."
+	},
+	"loading": {
+		"pokedex": "도감을 불러오는 중…",
+		"notFound": "포켓몬 “{{speciesId}}”를 찾을 수 없습니다."
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "공격", "def": "방어", "hp": "HP" },
+		"level": { "prefix": "Lv", "loading": "Lv …" },
+		"shadowToggle": "섀도",
+		"switchLeagueAriaLabel": "현재 {{league}} 표시 중. 탭하여 리그 전환.",
+		"nextFamilyMemberAriaLabel": "{{current}} — 다음: {{next}}"
+	},
+	"familyLine": {
+		"heading": "{{name}}의 진화 계보"
+	},
+	"tablist": {
+		"ariaLabel": "리그 / 모드"
+	},
+	"board": {
+		"sectionHeading": "리그별 도달 가능한 최고 진화 단계",
+		"notRanked": "랭크 없음",
+		"loading": "불러오는 중…",
+		"attackersSuffix": "{{type}} 타입 어태커",
+		"nextTypeTitle": "{{type}} — 탭하여 다음 타입으로"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "레이드 성능 · {{name}}",
+			"selfShadow": "레이드 성능 · 섀도 {{name}}",
+			"as": "레이드 성능 · {{name}}(으)로",
+			"asShadow": "레이드 성능 · 섀도 {{name}}(으)로"
+		},
+		"rank": "{{type}} 랭크",
+		"baseAtk": "공격 실수치",
+		"notRankedAttacker": "레이드 어태커로 랭크되지 않았습니다.",
+		"bestMovesetByType": "타입별 최고의 기술 조합",
+		"nextMovesetTitle": "탭하면 다음 기술 조합",
+		"selectTypeTitle": "탭하여 이 타입 선택",
+		"ivsBarelyMatterPrefix": "레이드에서는 개체값이 거의 중요하지 않습니다 — 가장 높은 것을 선택하세요",
+		"attackWord": "공격"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "개체값 백분위 · {{name}}",
+			"selfShadow": "개체값 백분위 · 섀도 {{name}}",
+			"as": "개체값 백분위 · {{name}}(으)로",
+			"asShadow": "개체값 백분위 · 섀도 {{name}}(으)로",
+			"purified": "개체값 백분위 · 프리져 {{name}}(으)로"
+		},
+		"ivRank": "{{league}} 개체값 랭크",
+		"perfection": "완성도",
+		"cp": "CP",
+		"cpAtLevel": "Lv{{level}} 기준 CP",
+		"bestSpreadFor": "{{league}} 최고 배분:",
+		"bestSpreadResult": "→ Lv{{level}}에서 CP {{cp}}.",
+		"purifyWarning": "⚠️ 프리져 시 각 스탯에 개체값 +2가 부여된다는 점을 유의하세요.",
+		"purifyUnreachableWarning": "⚠️ 이 랭크 1 배분 자체는 프리져로는 도달할 수 없습니다 — 프리져는 항상 각 스탯을 최소 2 이상으로 올리므로, 섀도 포켓몬은 자신의 개체값과 무관하게 그보다 낮아질 수 없습니다.",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "완벽 개체",
+			"rank1": "{{league}} 랭크 1"
+		}
+	},
+	"effectiveness": {
+		"heading": "타입 상성 · {{name}}",
+		"weakTo": "약점",
+		"resists": "내성",
+		"nothing": "없음"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "티어 1",
+			"t3": "티어 3",
+			"mega": "메가",
+			"t5": "티어 5",
+			"elite": "엘리트",
+			"legendaryMega": "전설의 메가",
+			"primal": "오리진",
+			"superMega": "슈퍼 메가"
+		},
+		"weather": {
+			"none": "날씨 없음",
+			"sunny": "맑음",
+			"rainy": "비",
+			"partlyCloudy": "구름 조금",
+			"cloudy": "흐림",
+			"windy": "강풍",
+			"snow": "눈",
+			"fog": "안개"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "친한 친구",
+			"great": "많이 친한 친구",
+			"ultra": "굉장히 친한 친구",
+			"best": "베스트 프렌드",
+			"forever": "영원한 친구"
+		},
+		"megaLevel": {
+			"base": "기본",
+			"high": "높음",
+			"max": "최대",
+			"superMax": "슈퍼 맥스"
+		},
+		"notRankedInLeague": "{{name}}은(는) {{league}}에서 랭크되지 않았습니다 — 사전 계산된 대전 데이터가 없습니다.",
+		"noData": "데이터 없음.",
+		"strongAgainst": "{{name}}이(가) 강한 상대 · {{league}}",
+		"weakAgainst": "{{name}}이(가) 약한 상대 · {{league}}",
+		"bestRaidCounters": "최고의 레이드 카운터 · {{name}}",
+		"summaryRaidHp": "{{tier}} 레이드 · HP {{hp}}",
+		"partyOf": "{{size}}마리 파티",
+		"friendLabel": "{{label}} 친구",
+		"megaAuraSummary": "메가 {{type}} 오라",
+		"megaLevelSummary": "메가 레벨: {{label}}",
+		"configHide": "숨기기",
+		"configEdit": "편집",
+		"clear": "초기화",
+		"bossTier": "보스 티어",
+		"bossTierTitle": "{{tier}} — HP {{hp}}",
+		"bossTierAriaLabel": "{{tier}} 레이드",
+		"bossTierHint": "{{tier}} 레이드 · HP {{hp}}",
+		"weather_field": "날씨",
+		"weatherHint": "×1.2 · {{types}}",
+		"megaAura": "메가 오라",
+		"noMegaOnTeam": "파티에 메가 없음",
+		"megaOfType": "메가 {{type}}",
+		"megaAuraHint": "×1.3 {{type}} · ×1.1 기타",
+		"megaLevelField": "메가 레벨",
+		"megaLevelHint": "메가/오리진 포켓몬의 플러스 기술에 ×{{mult}}",
+		"megaLevelHintExtra": " · 어태커 레벨 +2",
+		"partyPower": "파티 파워",
+		"solo": "솔로",
+		"friendshipField": "친밀도",
+		"friendshipHint": "데미지 ×{{mult}}",
+		"helpSummary": "이게 무슨 뜻인가요?",
+		"help": {
+			"weatherFriendshipMegaAura": "날씨 · 친밀도 · 메가 오라",
+			"weatherFriendshipMegaAuraDesc": "내 어태커에게 적용되는 데미지 배율입니다. 받는 데미지는 항상 고정된 값을 사용하므로 보스의 기술이 이 수치를 바꾸는 일은 없습니다.",
+			"megaLevelDesc": "메가 또는 오리진 포켓몬 고유의 메가 레벨(진화 후 메가에너지로 상승)은 전용 '플러스' 스페셜 기술에만 보너스를 줍니다 — 그 외 기술에는 영향이 없습니다. 슈퍼 맥스 레벨은 플러스 기술 보유 여부와 관계없이 어태커에게 실질적으로 레벨 +2를 부여합니다.",
+			"bossTierDesc": "보스의 HP(eDPS에 사용)와 방어에 적용되는 CPM을 설정합니다. 보스로부터 자동 추론됩니다 — 엘리트 레이드는 직접 변경하세요."
+		},
+		"includeMegas": "메가 포함",
+		"includeShadows": "섀도 포함",
+		"noCountersMatch": "해당 필터에 맞는 카운터가 없습니다."
+	},
+	"ivTable": {
+		"notForRaids": "개체값 랭킹은 레이드에 적용되지 않습니다 — 위에서 그레이트, 울트라, 마스터 중 하나를 선택하세요.",
+		"heading": "{{league}} · {{shadow}}{{name}}의 전체 4,096개 개체값 배분",
+		"fieldAriaLabel": "{{label}} 개체값, 0부터 15",
+		"clearAriaLabel": "초기화",
+		"notInRanking": "해당 배분은 랭킹에 없습니다.",
+		"fillAllThree": "세 값을 모두 입력하세요(0~15).",
+		"columns": {
+			"rank": "#",
+			"ivs": "개체값",
+			"stats": "공 · 방 · HP",
+			"percent": "%",
+			"cp": "CP",
+			"level": "Lv"
+		}
+	},
+	"moves": {
+		"bestMoveset": "{{league}} 최고의 기술 조합",
+		"unrankedForLeague": "{{name}}은(는) {{league}}에서 랭크되지 않았습니다 — 추천 기술 조합이 없습니다. 배울 수 있는 모든 기술은 아래에 나열되어 있습니다.",
+		"defaultLeague": "리그",
+		"defaultLeagueSelected": "선택한 리그",
+		"allMovesCanLearn": "{{name}}이(가) 배울 수 있는 모든 기술",
+		"fastMoves": "일반 기술",
+		"chargedMoves": "스페셜 기술",
+		"recommended": "추천",
+		"elite": "엘리트",
+		"legacy": "기간 한정",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "검색 문자열은 PvP 전용 기능입니다 — 위에서 그레이트, 울트라, 마스터 중 하나를 선택하세요.",
+		"heading": "{{league}} · 게임 내 검색 문자열",
+		"rankCutoff": "랭크 기준",
+		"topN": "상위 {{n}}",
+		"matchExceptTop": "상위 {{n}}을(를) <em>제외한</em> 모두와 일치",
+		"helperText": "각 줄은 해당 계보가 기준에 도달하는, 강화하지 않은 야생 포획 개체와 일치합니다. 복사해서 Pokémon GO 검색창에 붙여넣으세요.",
+		"copyString": "문자열 복사",
+		"copied": "복사됨 ✓",
+		"clickToCopy": "클릭하여 복사",
+		"sentence": {
+			"caught": "(야생 포획, 강화 안 함)",
+			"findTopSelf": "{{league}}을(를) 위해 {{except}}상위 {{top}} <name></name>{{caught}} 찾기:",
+			"findTopEvolvesTo": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name>{{caught}}을(를) {{league}}을(를) 위해 찾기:",
+			"findTopSelfShadowEither": "{{league}}을(를) 위해 {{except}}상위 {{top}} <name></name> — 섀도 여부 무관 —{{caught}} 찾기:",
+			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name> — 섀도 여부 무관 —{{caught}}을(를) {{league}}을(를) 위해 찾기:",
+			"exceptPrefix": "다음을 제외한 모두: ",
+			"toThePrefix": ""
+		}
+	}
+}

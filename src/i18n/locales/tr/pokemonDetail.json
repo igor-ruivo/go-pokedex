@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "Great",
+		"greatFull": "Great Ligi",
+		"ultra": "Ultra",
+		"ultraFull": "Ultra Ligi",
+		"master": "Master",
+		"masterFull": "Master Ligi",
+		"raid": "Baskın",
+		"raids": "Baskınlar",
+		"raidsFull": "Baskınlar"
+	},
+	"tabs": {
+		"ranks": "Sıralamalar",
+		"moves": "Hareketler",
+		"counters": "Karşı Hamleler",
+		"ivTable": "IV Tablosu",
+		"strings": "Diziler",
+		"comingSoon": "“{{tab}}” yenileme kapsamında sırada."
+	},
+	"loading": {
+		"pokedex": "Pokédex yükleniyor…",
+		"notFound": "“{{speciesId}}” Pokémon'u bulunamadı."
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "SLD", "def": "SAV", "hp": "HP" },
+		"level": { "prefix": "Sv.", "loading": "Sv. …" },
+		"shadowToggle": "Gölge",
+		"switchLeagueAriaLabel": "Şu anda {{league}} gösteriliyor. Lig değiştirmek için dokunun.",
+		"nextFamilyMemberAriaLabel": "{{current}} — sonraki: {{next}}"
+	},
+	"familyLine": {
+		"heading": "{{name}}'in evrim ailesi"
+	},
+	"tablist": {
+		"ariaLabel": "Lig / mod"
+	},
+	"board": {
+		"sectionHeading": "lig başına ulaşılabilir en iyi evrim",
+		"notRanked": "Sıralanmadı",
+		"loading": "Yükleniyor…",
+		"attackersSuffix": "{{type}} saldırganları",
+		"nextTypeTitle": "{{type}} — sonraki tür için dokunun"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "Baskın performansı · {{name}}",
+			"selfShadow": "Baskın performansı · Gölge {{name}}",
+			"as": "Baskın performansı · {{name}} olarak",
+			"asShadow": "Baskın performansı · Gölge {{name}} olarak"
+		},
+		"rank": "{{type}} sıralaması",
+		"baseAtk": "Temel SLD",
+		"notRankedAttacker": "Baskın saldırganı olarak sıralanmadı.",
+		"bestMovesetByType": "Türe göre en iyi hareket seti",
+		"nextMovesetTitle": "Sonraki hareket seti için dokunun",
+		"selectTypeTitle": "Bu türü seçmek için dokunun",
+		"ivsBarelyMatterPrefix": "Baskınlarda IV'ler neredeyse hiç önemli değildir — en yükseğini hedefleyin:",
+		"attackWord": "Saldırı"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "IV Yüzdelik Diliminiz · {{name}}",
+			"selfShadow": "IV Yüzdelik Diliminiz · Gölge {{name}}",
+			"as": "IV Yüzdelik Diliminiz · {{name}} olarak",
+			"asShadow": "IV Yüzdelik Diliminiz · Gölge {{name}} olarak",
+			"purified": "IV Yüzdelik Diliminiz · Saflaştırılmış {{name}} olarak"
+		},
+		"ivRank": "{{league}} IV sıralaması",
+		"perfection": "Mükemmellik",
+		"cp": "CP",
+		"cpAtLevel": "Sv{{level}}'de CP",
+		"bestSpreadFor": "{{league}} için en iyi dağılım:",
+		"bestSpreadResult": "→ Sv{{level}}'de {{cp}} CP.",
+		"purifyWarning": "⚠️ Saflaştırmanın her istatistikte +2 IV kazandırdığını unutmayın.",
+		"purifyUnreachableWarning": "⚠️ O 1. sıradaki dağılımın kendisi saflaştırma yoluyla ulaşılamaz — saflaştırma her istatistiği her zaman en az 2'ye çıkarır, bu yüzden bir Gölge kendi IV'lerine bakılmaksızın asla bunun altına düşemez.",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "Hundo",
+			"rank1": "{{league}} 1. Sıra"
+		}
+	},
+	"effectiveness": {
+		"heading": "Tür etkileşimi · {{name}}",
+		"weakTo": "Şuna karşı zayıf",
+		"resists": "Şuna dirençli",
+		"nothing": "Hiçbiri"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "1. Seviye",
+			"t3": "3. Seviye",
+			"mega": "Mega",
+			"t5": "5. Seviye",
+			"elite": "Elit",
+			"legendaryMega": "Efsanevi Mega",
+			"primal": "İlksel",
+			"superMega": "Süper Mega"
+		},
+		"weather": {
+			"none": "Hava yok",
+			"sunny": "Güneşli / Açık",
+			"rainy": "Yağmurlu",
+			"partlyCloudy": "Parçalı Bulutlu",
+			"cloudy": "Bulutlu",
+			"windy": "Rüzgarlı",
+			"snow": "Karlı",
+			"fog": "Sisli"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "İyi",
+			"great": "Harika",
+			"ultra": "Ultra",
+			"best": "En İyi",
+			"forever": "Sonsuza Dek"
+		},
+		"megaLevel": {
+			"base": "Temel",
+			"high": "Yüksek",
+			"max": "Maks.",
+			"superMax": "Süper Maks."
+		},
+		"notRankedInLeague": "{{name}}, {{league}}'de sıralanmadı — önceden hesaplanmış eşleşme yok.",
+		"noData": "Veri yok.",
+		"strongAgainst": "{{name}} şunlara karşı güçlü · {{league}}",
+		"weakAgainst": "{{name}} şunlara karşı zayıf · {{league}}",
+		"bestRaidCounters": "En iyi baskın karşı hamleleri · {{name}}",
+		"summaryRaidHp": "{{tier}} Baskın · {{hp}} HP",
+		"partyOf": "{{size}} kişilik takım",
+		"friendLabel": "{{label}} Arkadaş",
+		"megaAuraSummary": "Mega {{type}} auraSı",
+		"megaLevelSummary": "Mega Seviyesi: {{label}}",
+		"configHide": "Gizle",
+		"configEdit": "Düzenle",
+		"clear": "Temizle",
+		"bossTier": "Patron seviyesi",
+		"bossTierTitle": "{{tier}} — {{hp}} HP",
+		"bossTierAriaLabel": "{{tier}} baskını",
+		"bossTierHint": "{{tier}} Baskın · {{hp}} HP",
+		"weather_field": "Hava Durumu",
+		"weatherHint": "×1,2 · {{types}}",
+		"megaAura": "Mega aurası",
+		"noMegaOnTeam": "Takımda Mega yok",
+		"megaOfType": "Mega {{type}}",
+		"megaAuraHint": "{{type}} için ×1,3 · diğerleri için ×1,1",
+		"megaLevelField": "Mega Seviyesi",
+		"megaLevelHint": "Bir Mega/İlksel'in kendi Artı hareketinde ×{{mult}}",
+		"megaLevelHintExtra": " · +2 saldırgan seviyesi",
+		"partyPower": "Takım Gücü",
+		"solo": "Solo",
+		"friendshipField": "Arkadaşlık",
+		"friendshipHint": "×{{mult}} hasar",
+		"helpSummary": "Bunlar ne anlama geliyor?",
+		"help": {
+			"weatherFriendshipMegaAura": "Hava Durumu · Arkadaşlık · Mega aurası",
+			"weatherFriendshipMegaAuraDesc": "Saldırganlarınızdaki hasar çarpanları. Gelen hasar her zaman sabit bir değer kullanır, bu yüzden patronun kendi hareketleri bu sayıları asla değiştirmez.",
+			"megaLevelDesc": "Bir Mega veya İlksel'in kendi Mega Seviyesi (evrimleştikten sonra Mega Enerjisi ile yükseltilir) sadece bonus “Artı” şarjlı saldırısını güçlendirir — kadrosundaki diğer her hareket etkilenmez. Süper Maks. Seviye ayrıca saldırgana Artı hareketi olsun olmasın +2 efektif Pokémon seviyesi verir.",
+			"bossTierDesc": "Patron HP'sini (eDPS tarafından kullanılır) ve savunmasına uygulanan CPM'yi belirler. Patrondan çıkarılır — Elit Baskınlar için değiştirin."
+		},
+		"includeMegas": "Megaları Dahil Et",
+		"includeShadows": "Gölgeleri Dahil Et",
+		"noCountersMatch": "Bu filtrelerle eşleşen karşı hamle yok."
+	},
+	"ivTable": {
+		"notForRaids": "IV sıralamaları baskınlar için geçerli değildir — yukarıdan Great, Ultra veya Master'ı seçin.",
+		"heading": "{{league}} · {{shadow}}{{name}} için tüm 4.096 IV dağılımı",
+		"fieldAriaLabel": "{{label}} IV, 0 ile 15 arası",
+		"clearAriaLabel": "Temizle",
+		"notInRanking": "O dağılım sıralamada yok.",
+		"fillAllThree": "Üçünü de doldurun (0–15).",
+		"columns": {
+			"rank": "#",
+			"ivs": "IV'ler",
+			"stats": "Sld · Sav · HP",
+			"percent": "%",
+			"cp": "CP",
+			"level": "Sv."
+		}
+	},
+	"moves": {
+		"bestMoveset": "En iyi {{league}} hareket seti",
+		"unrankedForLeague": "{{name}}, {{league}} için sıralanmadı — önerilen bir hareket seti yok. Öğrenebileceği tüm hareketler aşağıda listelenmiştir.",
+		"defaultLeague": "lig",
+		"defaultLeagueSelected": "seçilen lig",
+		"allMovesCanLearn": "{{name}}'in öğrenebileceği tüm hareketler",
+		"fastMoves": "Hızlı hareketler",
+		"chargedMoves": "Şarjlı hareketler",
+		"recommended": "Önerilen",
+		"elite": "Elit",
+		"legacy": "Eski",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "Arama dizeleri bir PvP özelliğidir — yukarıdan Great, Ultra veya Master'ı seçin.",
+		"heading": "{{league}} · oyun içi arama dizeleri",
+		"rankCutoff": "Sıralama eşiği",
+		"topN": "İlk {{n}}",
+		"matchExceptTop": "İlk {{n}} <em>hariç</em> her şeyi eşleştir",
+		"helperText": "Her satır, ailesi eşiğe ulaşan vahşi, güçlendirilmemiş yakalamalarla eşleşir. Kopyalayın, ardından Pokémon GO arama çubuğuna yapıştırın.",
+		"copyString": "Dizeyi kopyala",
+		"copied": "Kopyalandı ✓",
+		"clickToCopy": "Kopyalamak için tıklayın",
+		"sentence": {
+			"caught": "(vahşi yakalanmış ve hâlâ güçlendirilmemiş)",
+			"findTopSelf": "<league></league> için ilk {{top}} <name></name>{{except}} {{caught}} olanları bul:",
+			"findTopEvolvesTo": "<league></league> için, evrimleştiğinde ilk {{top}} <target></target>{{except}} olacak <name></name> Pokémon'larını {{caught}} bul:",
+			"findTopSelfShadowEither": "<league></league> için ilk {{top}} <name></name>{{except}} — Gölge olsun olmasın — {{caught}} olanları bul:",
+			"findTopEvolvesToShadowEither": "<league></league> için, evrimleştiğinde ilk {{top}} <target></target>{{except}} olacak <name></name> Pokémon'larını — Gölge olsun olmasın — {{caught}} bul:",
+			"exceptPrefix": " dışındaki",
+			"toThePrefix": ""
+		}
+	}
+}

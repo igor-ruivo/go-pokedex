@@ -1,0 +1,44 @@
+{
+	"menu": {
+		"triggerAriaLabel": "Language & settings",
+		"dialogAriaLabel": "Settings",
+		"appLanguage": "App language",
+		"gameLanguage": "Game language",
+		"moreSettings": "More settings",
+		"sprites": "Sprites",
+		"raidRanking": "Raid ranking",
+		"bestBuddy": "Account for Best Buddy",
+		"off": "Off",
+		"on": "On",
+		"footer": "Saved on this device."
+	},
+	"page": {
+		"title": "Settings",
+		"appLanguage": {
+			"title": "App language",
+			"desc": "Interface text. English is the default."
+		},
+		"gameLanguage": {
+			"title": "Game language",
+			"desc": "Pokémon and move names, as they appear in Pokémon GO."
+		},
+		"sprites": {
+			"title": "Sprites",
+			"desc": "Which artwork to show for every Pokémon."
+		},
+		"bestBuddy": {
+			"title": "Account for Best Buddy",
+			"desc": "Treat level 51 as reachable — the IV table, trash/search strings, max CP, level picker, best IVs/percentile, raid counters and DPS/TDO/eDPS all evaluate up to level 51 instead of 50."
+		},
+		"footer": "Preferences are stored on this device."
+	},
+	"spriteOptions": {
+		"official": "Official",
+		"go": "Pokémon GO",
+		"shiny": "GO shiny"
+	},
+	"toggle": {
+		"off": "Off",
+		"on": "On"
+	}
+}

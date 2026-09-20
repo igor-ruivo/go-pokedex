@@ -1,0 +1,216 @@
+{
+	"leagues": {
+		"great": "Great",
+		"greatFull": "Great League",
+		"ultra": "Ultra",
+		"ultraFull": "Ultra League",
+		"master": "Master",
+		"masterFull": "Master League",
+		"raid": "Raid",
+		"raids": "Raids",
+		"raidsFull": "Raids"
+	},
+	"tabs": {
+		"ranks": "Ranks",
+		"moves": "Moves",
+		"counters": "Counters",
+		"ivTable": "IV Table",
+		"strings": "Strings",
+		"comingSoon": "“{{tab}}” is next in the revamp."
+	},
+	"loading": {
+		"pokedex": "Loading Pokédex…",
+		"notFound": "No Pokémon “{{speciesId}}”."
+	},
+	"hero": {
+		"cp": "CP",
+		"stats": { "atk": "ATK", "def": "DEF", "hp": "HP" },
+		"level": { "prefix": "Lvl", "loading": "Lvl …" },
+		"shadowToggle": "Shadow",
+		"switchLeagueAriaLabel": "Currently showing {{league}}. Tap to switch league.",
+		"nextFamilyMemberAriaLabel": "{{current}} — next: {{next}}"
+	},
+	"familyLine": {
+		"heading": "{{name}}’s family line"
+	},
+	"tablist": {
+		"ariaLabel": "League / mode"
+	},
+	"board": {
+		"sectionHeading": "best reachable stage per league",
+		"notRanked": "Not ranked",
+		"loading": "Loading…",
+		"attackersSuffix": "{{type}} attackers",
+		"nextTypeTitle": "{{type}} — tap for next type"
+	},
+	"raid": {
+		"performanceHeading": {
+			"self": "Raid performance · {{name}}",
+			"selfShadow": "Raid performance · Shadow {{name}}",
+			"as": "Raid performance · as {{name}}",
+			"asShadow": "Raid performance · as Shadow {{name}}"
+		},
+		"rank": "{{type}} rank",
+		"baseAtk": "Base ATK",
+		"notRankedAttacker": "Not ranked as a raid attacker.",
+		"bestMovesetByType": "Best moveset by type",
+		"nextMovesetTitle": "Tap for the next moveset",
+		"selectTypeTitle": "Tap to select this type",
+		"ivsBarelyMatterPrefix": "IVs barely matter in raids — chase the highest",
+		"attackWord": "Attack"
+	},
+	"pvp": {
+		"percentileHeading": {
+			"self": "Your IVs Percentile · {{name}}",
+			"selfShadow": "Your IVs Percentile · Shadow {{name}}",
+			"as": "Your IVs Percentile · as {{name}}",
+			"asShadow": "Your IVs Percentile · as Shadow {{name}}",
+			"purified": "Your IVs Percentile · as Purified {{name}}"
+		},
+		"ivRank": "{{league}} IV rank",
+		"perfection": "Perfection",
+		"cp": "CP",
+		"cpAtLevel": "CP @ L{{level}}",
+		"bestSpreadFor": "Best spread for {{league}}:",
+		"bestSpreadResult": "→ {{cp}} CP at L{{level}}.",
+		"purifyWarning": "⚠️ Be aware that purifying gains you +2 IVs on each stat.",
+		"purifyUnreachableWarning": "⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to at least 2, so a Shadow can never land below that no matter its own IVs.",
+		"presets": {
+			"zero": "0 / 0 / 0",
+			"hundo": "Hundo",
+			"rank1": "Rank 1 {{league}}"
+		}
+	},
+	"effectiveness": {
+		"heading": "Type effectiveness · {{name}}",
+		"weakTo": "Weak to",
+		"resists": "Resists",
+		"nothing": "Nothing"
+	},
+	"counters": {
+		"tierLabel": {
+			"t1": "Tier 1",
+			"t3": "Tier 3",
+			"mega": "Mega",
+			"t5": "Tier 5",
+			"elite": "Elite",
+			"legendaryMega": "Legendary Mega",
+			"primal": "Primal",
+			"superMega": "Super Mega"
+		},
+		"weather": {
+			"none": "No weather",
+			"sunny": "Sunny / Clear",
+			"rainy": "Rainy",
+			"partlyCloudy": "Partly Cloudy",
+			"cloudy": "Cloudy",
+			"windy": "Windy",
+			"snow": "Snow",
+			"fog": "Fog"
+		},
+		"friendship": {
+			"none": "—",
+			"good": "Good",
+			"great": "Great",
+			"ultra": "Ultra",
+			"best": "Best",
+			"forever": "Forever"
+		},
+		"megaLevel": {
+			"base": "Base",
+			"high": "High",
+			"max": "Max",
+			"superMax": "Super Max"
+		},
+		"notRankedInLeague": "{{name}} isn’t ranked in {{league}} — no pre-computed match-ups.",
+		"noData": "No data.",
+		"strongAgainst": "{{name}} is strong against · {{league}}",
+		"weakAgainst": "{{name}} is weak against · {{league}}",
+		"bestRaidCounters": "Best raid counters · {{name}}",
+		"summaryRaidHp": "{{tier}} Raid · {{hp}} HP",
+		"partyOf": "Party of {{size}}",
+		"friendLabel": "{{label}} Friend",
+		"megaAuraSummary": "Mega {{type}} aura",
+		"megaLevelSummary": "Mega Level: {{label}}",
+		"configHide": "Hide",
+		"configEdit": "Edit",
+		"clear": "Clear",
+		"bossTier": "Boss tier",
+		"bossTierTitle": "{{tier}} — {{hp}} HP",
+		"bossTierAriaLabel": "{{tier}} raid",
+		"bossTierHint": "{{tier}} Raid · {{hp}} HP",
+		"weather_field": "Weather",
+		"weatherHint": "×1.2 · {{types}}",
+		"megaAura": "Mega aura",
+		"noMegaOnTeam": "No Mega on team",
+		"megaOfType": "Mega {{type}}",
+		"megaAuraHint": "×1.3 {{type}} · ×1.1 others",
+		"megaLevelField": "Mega Level",
+		"megaLevelHint": "×{{mult}} on a Mega/Primal’s own Plus move",
+		"megaLevelHintExtra": " · +2 attacker levels",
+		"partyPower": "Party Power",
+		"solo": "Solo",
+		"friendshipField": "Friendship",
+		"friendshipHint": "×{{mult}} damage",
+		"helpSummary": "What do these mean?",
+		"help": {
+			"weatherFriendshipMegaAura": "Weather · Friendship · Mega aura",
+			"weatherFriendshipMegaAuraDesc": "Damage multipliers on your attackers. Incoming damage always uses one fixed constant, so the boss’s own moves never change these numbers.",
+			"megaLevelDesc": "A Mega or Primal’s own Mega Level (raised with Mega Energy after evolving) boosts its bonus “Plus” charged attack only — every other move on its kit is unaffected. Super Max Level also gives the attacker +2 effective Pokémon levels, whether or not it even has a Plus move.",
+			"bossTierDesc": "Sets the boss HP (used by eDPS) and the CPM applied to its defence. Inferred from the boss — change it for Elite Raids."
+		},
+		"includeMegas": "Include Megas",
+		"includeShadows": "Include Shadows",
+		"noCountersMatch": "No counters match those filters."
+	},
+	"ivTable": {
+		"notForRaids": "IV rankings don’t apply to raids — pick Great, Ultra or Master above.",
+		"heading": "{{league}} · all 4,096 IV spreads for {{shadow}}{{name}}",
+		"fieldAriaLabel": "{{label}} IV, 0 to 15",
+		"clearAriaLabel": "Clear",
+		"notInRanking": "That spread isn’t in the ranking.",
+		"fillAllThree": "Fill in all three (0–15).",
+		"columns": {
+			"rank": "#",
+			"ivs": "IVs",
+			"stats": "Atk · Def · HP",
+			"percent": "%",
+			"cp": "CP",
+			"level": "Lvl"
+		}
+	},
+	"moves": {
+		"bestMoveset": "Best {{league}} moveset",
+		"unrankedForLeague": "{{name}} isn’t ranked for the {{league}} — no recommended moveset. Every move it can learn is listed below.",
+		"defaultLeague": "league",
+		"defaultLeagueSelected": "selected league",
+		"allMovesCanLearn": "All moves {{name}} can learn",
+		"fastMoves": "Fast moves",
+		"chargedMoves": "Charged moves",
+		"recommended": "Recommended",
+		"elite": "Elite",
+		"legacy": "Legacy",
+		"pve": "PvE",
+		"pvp": "PvP"
+	},
+	"searchStrings": {
+		"pvpOnly": "Search strings are a PvP thing — pick Great, Ultra or Master above.",
+		"heading": "{{league}} · in-game search strings",
+		"rankCutoff": "Rank cutoff",
+		"topN": "Top {{n}}",
+		"matchExceptTop": "Match everything <em>except</em> the top {{n}}",
+		"helperText": "Each line matches wild, unpowered catches whose family reaches the cutoff. Copy it, then paste into the Pokémon GO search bar.",
+		"copyString": "Copy string",
+		"copied": "Copied ✓",
+		"clickToCopy": "Click to copy",
+		"sentence": {
+			"caught": "(wild caught and still unpowered)",
+			"findTopSelf": "Find {{except}}top {{top}} <name></name> {{caught}} for <league></league>:",
+			"findTopEvolvesTo": "Find <name></name> {{caught}} that evolve to {{toThe}}{{except}}top {{top}} <target></target> for <league></league>:",
+			"findTopSelfShadowEither": "Find {{except}}top {{top}} <name></name> — Shadow or not — {{caught}} for <league></league>:",
+			"findTopEvolvesToShadowEither": "Find <name></name> — Shadow or not — {{caught}} that evolve to {{toThe}}{{except}}top {{top}} <target></target> for <league></league>:",
+			"exceptPrefix": "all except the ",
+			"toThePrefix": "the "
+		}
+	}
+}

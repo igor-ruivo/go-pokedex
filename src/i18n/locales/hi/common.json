@@ -1,0 +1,31 @@
+{
+	"app": {
+		"name": "GO Pokédex",
+		"homeAriaLabel": "होम"
+	},
+	"nav": {
+		"pokedex": { "label": "Pokédex", "hint": "हर Pokémon ब्राउज़ करें" },
+		"rankings": { "label": "रैंकिंग", "hint": "हर लीग और रेड टाइप के लिए सबसे बेहतरीन अटैकर" },
+		"calendar": { "label": "कैलेंडर", "hint": "इवेंट, रेड, स्पॉन और अंडे" },
+		"moves": { "label": "मूव्स", "hint": "हर फ़ास्ट और चार्ज्ड मूव" },
+		"types": { "label": "टाइप्स", "hint": "टाइप इफेक्टिवनेस चार्ट" },
+		"searches": {
+			"label": "सर्च",
+			"hint": "इन-गेम सर्च स्ट्रिंग बनाएं — क्लीनअप, परफेक्ट IV, या ट्रेड कैंडिडेट्स"
+		},
+		"calendarBadge_one": "{{label}} — {{count}} नया इवेंट",
+		"calendarBadge_other": "{{label}} — {{count}} नए इवेंट"
+	},
+	"installPrompt": {
+		"dialogAriaLabel": "GO Pokédex इंस्टॉल करें",
+		"title": "GO Pokédex इंस्टॉल करें",
+		"iosHint": "शेयर पर टैप करें, फिर “होम स्क्रीन पर जोड़ें” — फ़ुल स्क्रीन, बिना ब्राउज़र बार के।",
+		"androidHint": "फ़ुल-स्क्रीन, ऐप जैसे अनुभव के लिए इसे होम स्क्रीन पर जोड़ें।",
+		"installButton": "इंस्टॉल करें",
+		"dismissAriaLabel": "बंद करें"
+	},
+	"placeholder": {
+		"toolsTitle": "टूल्स",
+		"comingSoon": "रीवैंप में अगला यही आएगा।"
+	}
+}

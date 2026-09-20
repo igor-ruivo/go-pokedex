@@ -1,0 +1,80 @@
+{
+	"shell": {
+		"title": "ปฏิทิน"
+	},
+	"tabs": {
+		"events": "อีเวนต์",
+		"bosses": "เรด",
+		"spawns": "สปอว์น",
+		"rockets": "ร็อกเก็ต",
+		"eggs": "ไข่"
+	},
+	"biomes": {
+		"cities": "เมือง",
+		"forests": "ป่า",
+		"mountains": "ภูเขา",
+		"beaches": "ชายหาดและแหล่งน้ำ",
+		"northernHemisphere": "ซีกโลกเหนือ",
+		"southernHemisphere": "ซีกโลกใต้",
+		"allAreas": "ทุกพื้นที่"
+	},
+	"raids": {
+		"tiers": {
+			"higher": { "full": "เรดระดับสูง", "short": "ระดับสูง" },
+			"tier3": { "full": "เรดระดับ 3", "short": "ระดับ 3" },
+			"tier1": { "full": "เรดระดับ 1", "short": "ระดับ 1" }
+		},
+		"shadowPrefix": "เชโดว์ · {{tier}}",
+		"otherRaids": "เรดอื่น ๆ",
+		"nothingScheduled": "ยังไม่มีกำหนดการ",
+		"nowSlot": "ตอนนี้"
+	},
+	"spawns": {
+		"noSeasonalData": "ไม่มีข้อมูลสปอว์นตามฤดูกาล",
+		"nowSlot": "ตอนนี้",
+		"seasonSlot": "ฤดูกาล"
+	},
+	"datePicker": {
+		"timeframeAriaLabel": "ช่วงเวลา",
+		"scrollEarlier": "เลื่อนไปวันที่ก่อนหน้า",
+		"scrollLater": "เลื่อนไปวันที่ถัดไป"
+	},
+	"events": {
+		"noEvents": "ยังไม่มีอีเวนต์ตอนนี้",
+		"scheduledCount": "อีเวนต์ที่กำหนดไว้ {{count}} รายการ",
+		"fallbackTitle": "อีเวนต์",
+		"unseenAriaLabel": "ยังไม่ได้เปิดดู",
+		"phase": {
+			"season": "ฤดูกาล",
+			"live": "กำลังดำเนินอยู่",
+			"ended": "สิ้นสุดแล้ว"
+		},
+		"bonuses": "โบนัส",
+		"groups": {
+			"featuredSpawns": "สปอว์นเด่น",
+			"featuredRaids": "เรดเด่น",
+			"researchEncounters": "การเผชิญหน้าจากงานวิจัย",
+			"eggs": "ไข่",
+			"incense": "ยาดม",
+			"lures": "ตัวล่อ"
+		},
+		"readAnnouncement": "อ่านประกาศฉบับเต็ม"
+	},
+	"rockets": {
+		"noLineups": "ไม่มีทีมร็อกเก็ต",
+		"typeGrunt": "สมุนธาตุ{{type}}",
+		"genericGrunt": "สมุน",
+		"slotReward": "รางวัลช่อง {{slot}}",
+		"slotHeader": "ช่อง {{slot}}",
+		"catchableTag": "จับได้"
+	},
+	"eggs": {
+		"noPoolData": "ไม่มีข้อมูลกลุ่มไข่"
+	},
+	"timeLeft": {
+		"days": "เหลืออีก {{count}} วัน",
+		"hours": "เหลืออีก {{count}} ชั่วโมง",
+		"minutes": "เหลืออีก {{count}} นาที",
+		"seconds": "เหลืออีก {{count}} วินาที"
+	}
+}

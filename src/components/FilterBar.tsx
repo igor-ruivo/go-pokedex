@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDismiss } from '../hooks/useDismiss';
 import { TYPE_LABEL, typeVar } from '../lib/types';
@@ -21,6 +22,7 @@ const MAX_MULTI = 2;
  * Multi mode caps at two types and always matches BOTH.
  */
 export const FilterBar = ({ types, selected, onChange, single = false }: FilterBarProps) => {
+	const { t } = useTranslation(['components']);
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
@@ -55,35 +57,39 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 					<span className='r-filter-ic' aria-hidden='true'>
 						☰
 					</span>
-					Filter
+					{t('components:filterBar.button')}
 					{count > 0 && <span className='r-filter-count'>{count}</span>}
 				</button>
 
-				{selected.map((t) => (
+				{selected.map((tp) => (
 					<button
-						key={t}
+						key={tp}
 						type='button'
 						className='r-filter-chip'
-						style={{ ['--tc' as string]: typeVar(t) }}
-						onClick={() => toggle(t)}
+						style={{ ['--tc' as string]: typeVar(tp) }}
+						onClick={() => toggle(tp)}
 					>
-						{TYPE_LABEL[t] ?? t}
+						{TYPE_LABEL[tp] ?? tp}
 						<span aria-hidden='true'>×</span>
 					</button>
 				))}
 
 				{count > 0 && (
 					<button type='button' className='r-filter-clear' onClick={() => onChange([])}>
-						Clear
+						{t('components:filterBar.clear')}
 					</button>
 				)}
 			</div>
 
 			{open && (
-				<div className='r-filter-panel' role='dialog' aria-label='Filters'>
+				<div className='r-filter-panel' role='dialog' aria-label={t('components:filterBar.dialogAriaLabel')}>
 					<div className='r-filter-sec-h'>
-						<span>Type</span>
-						<span className='r-filter-hint'>{single ? 'pick one' : `pick up to ${MAX_MULTI} · matches both`}</span>
+						<span>{t('components:filterBar.typeSectionLabel')}</span>
+						<span className='r-filter-hint'>
+							{single
+								? t('components:filterBar.pickOneHint')
+								: t('components:filterBar.pickUpToHint', { max: MAX_MULTI })}
+						</span>
 					</div>
 					<div className='r-filter-types'>
 						{types.map((t) => {

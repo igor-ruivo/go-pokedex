@@ -1,0 +1,48 @@
+{
+	"filterBar": {
+		"button": "Filtrele",
+		"clear": "Temizle",
+		"dialogAriaLabel": "Filtreler",
+		"typeSectionLabel": "Tür",
+		"pickOneHint": "birini seç",
+		"pickUpToHint": "en fazla {{max}} seç · ikisi de eşleşir"
+	},
+	"sortBar": {
+		"dialogAriaLabel": "Sıralama ölçütü",
+		"sectionLabel": "Sıralama ölçütü",
+		"asc": "Artan",
+		"desc": "Azalan"
+	},
+	"ivPicker": {
+		"attack": "SALDIRI",
+		"defense": "SAVUNMA",
+		"hp": "HP",
+		"presetZero": "0 / 0 / 0",
+		"presetHundo": "Hundo"
+	},
+	"stepper": {
+		"decreaseAriaLabel": "Azalt",
+		"increaseAriaLabel": "Artır"
+	},
+	"shadowMark": {
+		"alt": "Gölge"
+	},
+	"searchBox": {
+		"placeholder": "Pokémon veya hareket ara…",
+		"ariaLabel": "Pokémon veya hareket ara",
+		"clearAriaLabel": "Aramayı temizle",
+		"shadowSuffix": "Gölge",
+		"fast": "Hızlı",
+		"charged": "Şarjlı"
+	},
+	"raidTypeCoverage": {
+		"notRanked": "Baskın saldırganı olarak sıralanmadı.",
+		"bestMovesetByType": "Türe göre en iyi hareket seti",
+		"tapNextMoveset": "Sonraki hareket seti için dokunun",
+		"tapSelectType": "Bu türü seçmek için dokunun",
+		"legacy": "Eski",
+		"elite": "Elit",
+		"baseAtk": "Temel SLD",
+		"typeRank": "{{type}} sıralaması"
+	}
+}

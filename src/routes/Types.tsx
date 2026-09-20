@@ -1,4 +1,5 @@
 import { Fragment, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { TYPE_LABEL, typeVar } from '../lib/types';
@@ -48,6 +49,7 @@ const TypeIcon = ({ t, size = 20 }: { t: string; size?: number }) => (
 );
 
 const Types = () => {
+	const { t } = useTranslation(['types']);
 	const [def, setDef] = useState<Array<string>>([]);
 	const [hover, setHover] = useState<{ a: string; d: string } | null>(null);
 
@@ -58,11 +60,10 @@ const Types = () => {
 
 	return (
 		<div className='r-shell r-shell--wide'>
-			<h1 className='r-page-title'>Type chart</h1>
+			<h1 className='r-page-title'>{t('types:page.title')}</h1>
 
 			<p className='r-muted' style={{ margin: '0 2px 12px', fontSize: 12 }}>
-				Read a <b>row</b> for how an attacking type fares against every defender · read a <b>column</b> for what a
-				defending type resists.
+				<Trans i18nKey='types:page.description' components={{ b: <b /> }} />
 			</p>
 
 			<div className='r-tc-scroll'>
@@ -114,15 +115,15 @@ const Types = () => {
 			</div>
 
 			<div className='r-tc-legend'>
-				<span data-t='se'>Super effective</span>
-				<span data-t='nve'>Resisted</span>
-				<span data-t='imm'>Immune / double-resist</span>
+				<span data-t='se'>{t('types:legend.superEffective')}</span>
+				<span data-t='nve'>{t('types:legend.resisted')}</span>
+				<span data-t='imm'>{t('types:legend.immune')}</span>
 			</div>
 
-			<div className='r-section-h'>Weakness calculator</div>
+			<div className='r-section-h'>{t('types:calculator.title')}</div>
 			<div className='r-card r-tc-calc'>
 				<div>
-					<span className='r-tc-pick-l'>Defending type(s) · up to 2</span>
+					<span className='r-tc-pick-l'>{t('types:calculator.defendingTypesLabel')}</span>
 					<div className='r-eff-list'>
 						{ORDER.map((t) => (
 							<button
@@ -142,7 +143,7 @@ const Types = () => {
 				{def.length > 0 && (
 					<div className='r-tc-results'>
 						<div className='r-tc-res'>
-							<h4>Takes extra damage from</h4>
+							<h4>{t('types:calculator.takesExtraFrom')}</h4>
 							<div className='r-eff-list'>
 								{weak.length ? (
 									weak.map(({ type, mult }) => (
@@ -157,12 +158,12 @@ const Types = () => {
 										</span>
 									))
 								) : (
-									<span className='r-muted'>Nothing</span>
+									<span className='r-muted'>{t('types:calculator.nothing')}</span>
 								)}
 							</div>
 						</div>
 						<div className='r-tc-res'>
-							<h4>Takes less damage from</h4>
+							<h4>{t('types:calculator.takesLessFrom')}</h4>
 							<div className='r-eff-list'>
 								{resist.length ? (
 									resist.map(({ type, mult }) => (
@@ -177,7 +178,7 @@ const Types = () => {
 										</span>
 									))
 								) : (
-									<span className='r-muted'>Nothing</span>
+									<span className='r-muted'>{t('types:calculator.nothing')}</span>
 								)}
 							</div>
 						</div>

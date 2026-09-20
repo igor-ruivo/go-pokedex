@@ -1,0 +1,24 @@
+{
+	"sorts": {
+		"name": "İsim",
+		"dmgPve": "HSR · PvE",
+		"dmgPvp": "HSR · PvP",
+		"nrgPve": "ENJ · PvE",
+		"nrgPvp": "ENJ · PvP",
+		"durPve": "SÜRE · PvE",
+		"turnsPvp": "TUR · PvP",
+		"dpsPve": "DPS · PvE",
+		"dpsPvp": "DPS · PvP",
+		"epsPve": "EPS · PvE",
+		"epsPvp": "EPS · PvP",
+		"dpePve": "DPE · PvE",
+		"dpePvp": "DPE · PvP"
+	},
+	"page": {
+		"title": "Hareketler",
+		"kindAriaLabel": "Hareket türü",
+		"kind": { "all": "Tümü", "fast": "Hızlı", "charged": "Şarjlı" },
+		"count_one": "{{count}} Hareket",
+		"count_other": "{{count}} Hareket"
+	}
+}
