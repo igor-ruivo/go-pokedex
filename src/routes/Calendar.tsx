@@ -16,12 +16,21 @@ import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
 import i18n from '../i18n';
 import { spotlightToPost } from '../lib/calendar-events';
-import { dateRange, dayRange, eventPhase, eventStartEnd, nowAsEventTime, relativeDays } from '../lib/format';
+import {
+	dateRange,
+	dayRange,
+	eventPhase,
+	eventStartEnd,
+	nowAsEventTime,
+	relativeDays,
+	sentenceCase,
+} from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { type ILeekduckSpecialRaidBoss, useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
-import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
+import { useGameTranslationsData } from '../utils/game-translations-store';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 
 /** Raid-egg icon key (/public/images/raids) and tier-matcher per raid tier —
  *  labels are looked up from the `calendar:raids.tiers.<key>` i18n keys at
@@ -480,7 +489,12 @@ const EventCard = ({
 						</>
 					)}
 					<Group title={t('calendar:events.groups.featuredSpawns')} entries={post.wild} />
-					<Group title={t('calendar:events.groups.featuredRaids')} entries={post.raids} />
+					<Group
+						title={t('calendar:events.groups.featuredRaids', {
+							raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+						})}
+						entries={post.raids}
+					/>
 					<Group title={t('calendar:events.groups.researchEncounters')} entries={post.researches} />
 					<Group title={t('calendar:events.groups.eggs')} entries={post.eggs} />
 					<Group title={t('calendar:events.groups.incense')} entries={post.incenses} />
@@ -635,11 +649,23 @@ const RaidsTab = () => {
 	const upcomingGroups = groupByRange(upcoming, (p) => p.raids, currentLanguage);
 
 	// Literal t() calls per tier — not a dynamic template key — so
-	// scripts/check-i18n-parity.mjs can statically verify every one.
+	// scripts/check-i18n-parity.mjs can statically verify every one. "raid"
+	// itself always comes from GameTranslator, never website i18n — see
+	// RaidDisplay's other call sites.
+	const raidWord = gameTranslator(GameTranslatorKeys.RaidDisplay, gl);
 	const tierLabels: Record<(typeof RAID_TIERS)[number]['key'], { full: string; short: string }> = {
-		higher: { full: t('calendar:raids.tiers.higher.full'), short: t('calendar:raids.tiers.higher.short') },
-		tier3: { full: t('calendar:raids.tiers.tier3.full'), short: t('calendar:raids.tiers.tier3.short') },
-		tier1: { full: t('calendar:raids.tiers.tier1.full'), short: t('calendar:raids.tiers.tier1.short') },
+		higher: {
+			full: t('calendar:raids.tiers.higher.full', { raid: raidWord }),
+			short: t('calendar:raids.tiers.higher.short'),
+		},
+		tier3: {
+			full: t('calendar:raids.tiers.tier3.full', { raid: raidWord }),
+			short: t('calendar:raids.tiers.tier3.short'),
+		},
+		tier1: {
+			full: t('calendar:raids.tiers.tier1.full', { raid: raidWord }),
+			short: t('calendar:raids.tiers.tier1.short'),
+		},
 	};
 
 	const slots: Array<{ key: string; label: string; entries: Array<IEntry> }> = [
@@ -684,7 +710,7 @@ const RaidsTab = () => {
 					))}
 					{activeEntries.filter((e) => !RAID_TIERS.some((tier) => tier.match(e.kind))).length > 0 && (
 						<Group
-							title={t('calendar:raids.otherRaids')}
+							title={t('calendar:raids.otherRaids', { raid: raidWord })}
 							entries={activeEntries.filter((e) => !RAID_TIERS.some((tier) => tier.match(e.kind)))}
 						/>
 					)}
@@ -801,13 +827,42 @@ const npcAvatar = (trainerId: string): string => {
 	return '/images/NPC/male-grunt.webp';
 };
 
-const prettyTrainer = (id: string) =>
-	id
-		.replace(/[_-]+/g, ' ')
-		.replace(/([a-z])([A-Z])/g, '$1 $2')
-		.trim();
+// Maps a `trainerId` substring to the matching NPC's own GameTranslator key —
+// each value is already the full display name per locale (e.g. "Leader
+// Sierra"/"Boss Sierra"), not just the bare first name.
+const NAMED_TRAINER_KEYS: ReadonlyArray<[string, GameTranslatorKeys]> = [
+	['Sierra', GameTranslatorKeys.SierraDisplay],
+	['Cliff', GameTranslatorKeys.CliffDisplay],
+	['Giovanni', GameTranslatorKeys.GiovanniDisplay],
+	['Arlo', GameTranslatorKeys.ArloDisplay],
+];
 
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+// How to combine a type name with "Grunt" into a title, e.g. "Water Grunt" vs
+// "Recruta de Água" — both `type` and `grunt` are themselves already sourced
+// from GameTranslator, so which one leads (and any connecting word) has to
+// be picked by GAME language (`gl`), not by website UI locale/i18next: a
+// player can run the site in English while their in-game language is
+// Portuguese, and then it's the Portuguese word order that has to apply to
+// these Portuguese words, regardless of what language the rest of the page
+// is in. A plain t() call keyed by website locale would silently reach for
+// the wrong language's word order whenever the two differ.
+const GRUNT_TITLE_ORDER: Record<GameLanguage, (type: string, grunt: string) => string> = {
+	[GameLanguage.en]: (type, grunt) => `${type} ${grunt}`,
+	[GameLanguage.de]: (type, grunt) => `${type}-${grunt}`,
+	[GameLanguage.es]: (type, grunt) => `${grunt} de tipo ${type}`,
+	[GameLanguage.esMx]: (type, grunt) => `${grunt} de tipo ${type}`,
+	[GameLanguage.fr]: (type, grunt) => `${grunt} ${type}`,
+	[GameLanguage.hi]: (type, grunt) => `${type} ${grunt}`,
+	[GameLanguage.id]: (type, grunt) => `${grunt} ${type}`,
+	[GameLanguage.it]: (type, grunt) => `${grunt} ${type}`,
+	[GameLanguage.ja]: (type, grunt) => `${type}タイプの${grunt}`,
+	[GameLanguage.ko]: (type, grunt) => `${type} 타입 로켓단 ${grunt}`,
+	[GameLanguage.ptbr]: (type, grunt) => `${grunt} de ${type}`,
+	[GameLanguage.ru]: (type, grunt) => `${grunt} (${type})`,
+	[GameLanguage.th]: (type, grunt) => `${grunt}ธาตุ${type}`,
+	[GameLanguage.tr]: (type, grunt) => `${type} ${grunt}`,
+	[GameLanguage.zhHant]: (type, grunt) => `${type} 系${grunt}`,
+};
 
 const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; onToggle: () => void }) => {
 	const { t } = useTranslation(['calendar']);
@@ -815,7 +870,7 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 	const { gamemasterPokemon } = usePokemon();
 	const sets = useRelevanceSets();
 	const typeKey = g.type?.toLowerCase();
-	const isNamed = !typeKey && /Sierra|Cliff|Giovanni|Arlo/.test(g.trainerId);
+	const namedTrainerKey = !typeKey ? NAMED_TRAINER_KEYS.find(([needle]) => g.trainerId.includes(needle)) : undefined;
 	const avatar = typeKey ? `/images/types/${typeKey}.png` : npcAvatar(g.trainerId);
 	// Most relevant first (most league/raid dots), family-line order as tiebreak —
 	// same rule the Calendar's other Pokémon chip grids use (see `MiniGrid`).
@@ -832,10 +887,13 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 	const firstCatch = [...g.catchableTiers].sort((a, b) => a - b)[0];
 	const reward = firstCatch != null ? (tiers[firstCatch] ?? []) : [];
 	const title = g.type
-		? t('calendar:rockets.typeGrunt', { type: cap(g.type) })
-		: isNamed
-			? prettyTrainer(g.trainerId)
-			: t('calendar:rockets.genericGrunt');
+		? GRUNT_TITLE_ORDER[gl](
+				gameTypeDisplayTranslator(typeKey ?? '', gl) || g.type,
+				gameTranslator(GameTranslatorKeys.GruntDisplay, gl)
+			)
+		: namedTrainerKey
+			? gameTranslator(namedTrainerKey[1], gl)
+			: gameTranslator(GameTranslatorKeys.GruntDisplay, gl);
 
 	// toggle from anywhere on the card, but never when a Pokémon link was clicked
 	const toggle = (e: ReactMouseEvent | ReactKeyboardEvent) => {
@@ -986,16 +1044,28 @@ const EggsTab = () => {
 /* ---------- shell ---------- */
 const Calendar = () => {
 	const { t } = useTranslation(['calendar']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const { tab } = useParams();
+	// `Shell` already kicks off/subscribes to this same fetch, and normally
+	// its re-render cascades down through the router `<Outlet/>` to this
+	// component too — but this tab bar's own label going blank until some
+	// unrelated navigation forces a re-render (reported: the Raids/Reide tab
+	// disappearing on a hard refresh, only showing up again after clicking
+	// it) means that cascade isn't reliable enough on its own. Subscribing
+	// here directly guarantees this component re-renders the instant the
+	// fetch resolves, independent of whatever's happening upstream.
+	useGameTranslationsData();
 	const active: CalendarTab = (CALENDAR_TABS as ReadonlyArray<string>).includes(tab ?? '')
 		? (tab as CalendarTab)
 		: 'events';
 
 	// Literal t() calls, not a Record built from a dynamic key — see
-	// RaidsTab's tierLabels for why.
+	// RaidsTab's tierLabels for why. "bosses" is the Raids tab — its label
+	// tracks the player's in-game language like every other GameTranslator
+	// use, not the website UI's.
 	const TAB_LABEL: Record<CalendarTab, string> = {
 		events: t('calendar:tabs.events'),
-		bosses: t('calendar:tabs.bosses'),
+		bosses: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 		spawns: t('calendar:tabs.spawns'),
 		rockets: t('calendar:tabs.rockets'),
 		eggs: t('calendar:tabs.eggs'),

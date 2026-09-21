@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Decrease",
 		"increaseAriaLabel": "Increase"
 	},
-	"shadowMark": {
-		"alt": "Shadow"
-	},
 	"searchBox": {
 		"placeholder": "Search Pokémon or moves…",
 		"ariaLabel": "Search Pokémon or moves",
 		"clearAriaLabel": "Clear search",
-		"shadowSuffix": "Shadow",
 		"fast": "Fast",
 		"charged": "Charged"
 	},

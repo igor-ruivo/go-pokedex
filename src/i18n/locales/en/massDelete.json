@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "Keep top Great League",
 		"ariaKeepTopUltra": "Keep top Ultra League",
 		"ariaKeepTopMaster": "Keep top Master League",
-		"ariaKeepTopRaid": "Keep top raid attackers"
+		"ariaKeepTopRaid": "Keep top {{raid}} attackers"
 	},
-	"metaKnobsSubtitle": "Preserve top current meta Pokémon per league/raid",
+	"metaKnobsSubtitle": "Preserve top current meta Pokémon per league/{{raid}}",
 	"badIvKnobsSubtitle": "Simplified trades some accuracy for a shorter string — see the tooltip on the toggle",
 	"tradeKnobsSubtitle": "A species only needs to clear ONE of these four cutoffs to be suggested — Great and Ultra also require a trade to actually be able to reach their best possible spread (see the help text above)",
 	"simplifiedTrashTooltip": "Trades accuracy for a shorter string: skips looking for Master League (uncapped) stat-product ties — only the exact hundo (protected everywhere, unconditionally, via the global !4* exclusion) stays protected there. Great/Ultra/raid protection is unaffected.",
@@ -71,7 +71,7 @@
 	"toggleOff": "Off",
 	"protectionMeta": {
 		"favorite": {
-			"label": "Favorited",
+			"label": "{{favorite}}",
 			"description": "Pokémon marked as a Favorite in-game."
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "Pokémon with a nickname or custom tag."
 		},
 		"legendary": {
-			"label": "Legendary",
+			"label": "{{legendary}}",
 			"description": "Box legendaries (Mewtwo, Lugia, …)."
 		},
 		"mythical": {
-			"label": "Mythical",
+			"label": "{{mythical}}",
 			"description": "Mythicals (Mew, Celebi, …)."
 		},
 		"ultraBeast": {
-			"label": "Ultra Beast",
+			"label": "{{ultraBeast}}",
 			"description": "Ultra Beasts (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "Only the game knows this — needs enough Mega Energy banked for that species right now."
+			"description": "Only the game knows this — needs enough {{megaEnergy}} banked for that species right now."
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "Every Shadow Pokémon, regardless of its own IVs or rank."
 		},
 		"dynamax": {
-			"label": "Dynamax",
+			"label": "{{dynamax}}",
 			"description": "Pokémon able to Dynamax."
 		},
 		"fusion": {
-			"label": "Fusion",
+			"label": "{{fusion}}",
 			"description": "Pokémon able to be fused, or already fused."
 		},
 		"gigantamax": {
-			"label": "Gigantamax",
+			"label": "{{gigantamax}}",
 			"description": "Pokémon able to Gigantamax."
 		},
 		"background": {
-			"label": "Background",
-			"description": "Pokémon with a rare or location background in its profile."
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "Special Background",
-			"description": "Pokémon with a special event background in its profile."
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "Shiny",
+			"label": "{{shiny}}",
 			"description": "Every Shiny Pokémon."
 		},
 		"costume": {
-			"label": "Costume",
+			"label": "{{costume}}",
 			"description": "Pokémon wearing a Special Event costume."
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "Copy search string",
 	"copied": "Copied ✓",
 	"panelSummary": {
-		"topGreat": "Top {{n}} Great League",
-		"topUltra": "Top {{n}} Ultra League",
-		"topMaster": "Top {{n}} Master League",
+		"topGreat": "Top {{n}} {{league}}",
+		"topUltra": "Top {{n}} {{league}}",
+		"topMaster": "Top {{n}} {{league}}",
 		"topRaid": "Top {{n}} {{raid}}",
 		"cpKept": "{{cp}} ≥ {{cpValue}} kept",
 		"cpUnder": "{{cp}} < {{cpValue}}",

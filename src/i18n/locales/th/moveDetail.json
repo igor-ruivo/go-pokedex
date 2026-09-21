@@ -10,7 +10,7 @@
 		"legacyFor": "เป็นท่าเลกาซีสำหรับ"
 	},
 	"arena": {
-		"pve": "PvE · เรดและยิม",
+		"pve": "PvE · {{raid}}และยิม",
 		"pvp": "PvP · ลีก"
 	},
 	"kind": {
@@ -30,7 +30,6 @@
 	"usageLead": "โปเกมอนที่เรียนรู้ {{name}} ได้",
 	"tiles": {
 		"recommended": "แนะนำ",
-		"mega": "เมก้า",
 		"elite": "อีลีท",
 		"legacy": "เลกาซี"
 	},

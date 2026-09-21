@@ -5,8 +5,8 @@
 	},
 	"nav": {
 		"pokedex": { "label": "圖鑑", "hint": "瀏覽所有寶可夢" },
-		"rankings": { "label": "排行榜", "hint": "各聯盟與團體戰屬性的最強攻擊手" },
-		"calendar": { "label": "行事曆", "hint": "活動、團體戰、野生出沒與蛋" },
+		"rankings": { "label": "排行榜", "hint": "各聯盟與{{raid}}屬性的最強攻擊手" },
+		"calendar": { "label": "行事曆", "hint": "活動、{{raid}}、野生出沒與蛋" },
 		"moves": { "label": "招式", "hint": "所有快速招式與特殊招式" },
 		"types": { "label": "屬性", "hint": "屬性相剋表" },
 		"searches": {

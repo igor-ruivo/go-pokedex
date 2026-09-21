@@ -10,7 +10,7 @@
 		"legacyFor": "Is a legacy move for"
 	},
 	"arena": {
-		"pve": "PvE · Raids & Gyms",
+		"pve": "PvE · {{raid}}s & Gyms",
 		"pvp": "PvP · Leagues"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "DMG",
 		"nrg": "NRG",
 		"dur": "DUR",
-		"turns": "Turns",
+		"turns": "TURNS",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Pokémon can learn {{name}}",
 	"tiles": {
 		"recommended": "Recommended",
-		"mega": "Mega",
 		"elite": "Elite",
 		"legacy": "Legacy"
 	},

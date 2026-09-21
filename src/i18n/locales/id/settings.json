@@ -5,7 +5,7 @@
 		"appLanguage": "Bahasa aplikasi",
 		"gameLanguage": "Bahasa game",
 		"sprites": "Sprite",
-		"raidRanking": "Peringkat raid",
+		"raidRanking": "Peringkat {{raid}}",
 		"bestBuddy": "Perhitungkan Sahabat Karib",
 		"off": "Mati",
 		"on": "Aktif",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "Perhitungkan Sahabat Karib",
-			"desc": "Anggap level 51 dapat dicapai — tabel IV, string buang/cari, CP maksimum, pemilih level, IV/persentil terbaik, penghitung raid, serta DPS/TDO/eDPS semuanya dihitung hingga level 51, bukan 50."
+			"desc": "Anggap level 51 dapat dicapai — tabel IV, string buang/cari, CP maksimum, pemilih level, IV/persentil terbaik, penghitung raid, serta DPS/TDO semuanya dihitung hingga level 51, bukan 50."
 		},
 		"footer": "Preferensi disimpan di perangkat ini."
 	},
 	"spriteOptions": {
 		"official": "Resmi",
 		"go": "Pokémon GO",
-		"shiny": "Shiny GO"
+		"shiny": "{{shiny}} GO"
 	},
 	"toggle": {
 		"off": "Mati",

@@ -11,6 +11,7 @@ import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ShadowMark } from './ShadowMark';
 import { handleSpriteError, spriteUrl } from './Sprite';
 
@@ -208,7 +209,7 @@ export const SearchBox = () => {
 											<span className='r-search-name'>
 												{cleanName(hit.p.speciesName)}
 												{hit.p.isShadow && (
-													<em className='r-search-shadow'> · {t('components:searchBox.shadowSuffix')}</em>
+													<em className='r-search-shadow'> · {gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)}</em>
 												)}
 											</span>
 											<span className='r-search-dex'>{dexNo(hit.p.dex)}</span>

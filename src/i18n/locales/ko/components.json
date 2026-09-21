@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "감소",
 		"increaseAriaLabel": "증가"
 	},
-	"shadowMark": {
-		"alt": "섀도"
-	},
 	"searchBox": {
 		"placeholder": "포켓몬 또는 기술 검색…",
 		"ariaLabel": "포켓몬 또는 기술 검색",
 		"clearAriaLabel": "검색 지우기",
-		"shadowSuffix": "섀도",
 		"fast": "일반 기술",
 		"charged": "스페셜 기술"
 	},

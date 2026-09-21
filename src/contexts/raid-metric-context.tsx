@@ -11,7 +11,7 @@ interface RaidMetricContextType {
 const RaidMetricContext = createContext<RaidMetricContextType | undefined>(undefined);
 
 /**
- * Which raid figure (DPS / TDO / eDPS) the whole site ranks and displays by —
+ * Which raid figure (DPS / TDO) the whole site ranks and displays by —
  * one persisted, device-wide choice. Every consumer (Rankings' raid tab, a
  * Pokémon's Counters tab, its "best moveset by type coverage" panel, the
  * Settings menu) reads and writes this same value, so switching it in one

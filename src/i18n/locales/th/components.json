@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "ลด",
 		"increaseAriaLabel": "เพิ่ม"
 	},
-	"shadowMark": {
-		"alt": "เชโดว์"
-	},
 	"searchBox": {
 		"placeholder": "ค้นหาโปเกมอนหรือท่าโจมตี…",
 		"ariaLabel": "ค้นหาโปเกมอนหรือท่าโจมตี",
 		"clearAriaLabel": "ล้างการค้นหา",
-		"shadowSuffix": "เชโดว์",
 		"fast": "เร็ว",
 		"charged": "ชาร์จ"
 	},

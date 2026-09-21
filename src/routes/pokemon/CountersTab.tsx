@@ -11,7 +11,7 @@ import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
 import { useRaidMetric } from '../../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
-import { cleanName } from '../../lib/format';
+import { cleanName, sentenceCase } from '../../lib/format';
 import { R } from '../../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_BLURB, RAID_METRIC_SORTS, type RaidMetric } from '../../lib/raid-metric';
 import { TYPE_KEYS, typeVar } from '../../lib/types';
@@ -87,14 +87,18 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
 		gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
 	];
+	const megaWord = gameTranslator(GameTranslatorKeys.MegaDisplay, gl);
 	const TIER_LABEL: Record<RaidTier, string> = {
 		T1: t('pokemonDetail:counters.tierLabel.t1'),
 		T3: t('pokemonDetail:counters.tierLabel.t3'),
-		MEGA: t('pokemonDetail:counters.tierLabel.mega'),
+		MEGA: megaWord,
 		T5: t('pokemonDetail:counters.tierLabel.t5'),
 		ELITE: gameTranslator(GameTranslatorKeys.EliteRaidTier, gl),
-		LEGENDARY_MEGA: t('pokemonDetail:counters.tierLabel.legendaryMega'),
-		PRIMAL: t('pokemonDetail:counters.tierLabel.primal'),
+		LEGENDARY_MEGA: t('pokemonDetail:counters.tierLabel.legendaryMega', {
+			legendary: gameTranslator(GameTranslatorKeys.LegendaryDisplay, gl),
+			mega: megaWord,
+		}),
+		PRIMAL: sentenceCase(gameTranslator(GameTranslatorKeys.PrimalDisplay, gl)),
 		SUPER_MEGA: t('pokemonDetail:counters.tierLabel.superMega'),
 	};
 	// Weather/Friendship/Mega Level track the player's in-game language where
@@ -202,9 +206,13 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		megaBoostType &&
 			t('pokemonDetail:counters.megaAuraSummary', {
 				type: gameTypeDisplayTranslator(megaBoostType, gl) || megaBoostType,
+				mega: megaWord,
 			}),
 		megaLevel !== 3 &&
-			t('pokemonDetail:counters.megaLevelSummary', { label: MEGA_LEVELS.find((m) => m.level === megaLevel)?.label }),
+			t('pokemonDetail:counters.megaLevelSummary', {
+				label: MEGA_LEVELS.find((m) => m.level === megaLevel)?.label,
+				mega: megaWord,
+			}),
 	]
 		.filter(Boolean)
 		.join('  ·  ');
@@ -344,9 +352,9 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		<div className='r-movecontent'>
 			<div className='r-section-h'>
 				{t('pokemonDetail:counters.bestRaidCounters', {
-				name: cleanName(pokemon.speciesName),
-				raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
-			})}
+					name: cleanName(pokemon.speciesName),
+					raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+				})}
 			</div>
 
 			<div className='r-ctr-metricbar'>
@@ -454,14 +462,14 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 						</div>
 
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.megaAura')}</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.megaAura', { mega: megaWord })}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-iconrow'>
 									<button
 										type='button'
 										className='r-ctr-iconbtn'
-										title={t('pokemonDetail:counters.noMegaOnTeam')}
-										aria-label={t('pokemonDetail:counters.noMegaOnTeam')}
+										title={t('pokemonDetail:counters.noMegaOnTeam', { mega: megaWord })}
+										aria-label={t('pokemonDetail:counters.noMegaOnTeam', { mega: megaWord })}
 										data-active={!megaBoostType}
 										onClick={() => setMegaBoostType('')}
 									>
@@ -474,9 +482,11 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 											className='r-ctr-iconbtn'
 											title={t('pokemonDetail:counters.megaOfType', {
 												type: gameTypeDisplayTranslator(tk, gl) || tk,
+												mega: megaWord,
 											})}
 											aria-label={t('pokemonDetail:counters.megaOfType', {
 												type: gameTypeDisplayTranslator(tk, gl) || tk,
+												mega: megaWord,
 											})}
 											data-active={megaBoostType === tk}
 											onClick={() => setMegaBoostType(megaBoostType === tk ? '' : tk)}
@@ -496,7 +506,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 						</div>
 
 						<div className='r-ctr-cond'>
-							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.megaLevelField')}</span>
+							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.megaLevelField', { mega: megaWord })}</span>
 							<div className='r-ctr-cond-c'>
 								<div className='r-ctr-seg'>
 									{MEGA_LEVELS.map((m) => (
@@ -513,6 +523,8 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								<span className='r-ctr-cond-hint'>
 									{t('pokemonDetail:counters.megaLevelHint', {
 										mult: MEGA_LEVEL_PLUS_MULTIPLIER[megaLevel].toFixed(1),
+										mega: megaWord,
+										primal: sentenceCase(gameTranslator(GameTranslatorKeys.PrimalDisplay, gl)),
 									})}
 									{megaLevel === 4 && t('pokemonDetail:counters.megaLevelHintExtra')}
 								</span>
@@ -535,7 +547,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 						<div className='r-ctr-cond'>
 							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.friendshipField')}</span>
 							<div className='r-ctr-cond-c'>
-								<div className='r-ctr-seg'>
+								<div className='r-ctr-seg r-ctr-seg--scroll'>
 									{FRIENDSHIP.map((f) => (
 										<button
 											key={f.label}
@@ -562,12 +574,16 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								<dd>{RAID_METRIC_BLURB.dps}</dd>
 								<dt>TDO</dt>
 								<dd>{RAID_METRIC_BLURB.tdo}</dd>
-								<dt>eDPS</dt>
-								<dd>{RAID_METRIC_BLURB.edps}</dd>
-								<dt>{t('pokemonDetail:counters.help.weatherFriendshipMegaAura')}</dt>
+								<dt>{t('pokemonDetail:counters.help.weatherFriendshipMegaAura', { mega: megaWord })}</dt>
 								<dd>{t('pokemonDetail:counters.help.weatherFriendshipMegaAuraDesc')}</dd>
-								<dt>{t('pokemonDetail:counters.megaLevelField')}</dt>
-								<dd>{t('pokemonDetail:counters.help.megaLevelDesc')}</dd>
+								<dt>{t('pokemonDetail:counters.megaLevelField', { mega: megaWord })}</dt>
+								<dd>
+								{t('pokemonDetail:counters.help.megaLevelDesc', {
+									mega: megaWord,
+									primal: sentenceCase(gameTranslator(GameTranslatorKeys.PrimalDisplay, gl)),
+									megaEnergy: gameTranslator(GameTranslatorKeys.MegaEnergyDisplay, gl),
+								})}
+							</dd>
 								<dt>{t('pokemonDetail:counters.bossTier')}</dt>
 								<dd>{t('pokemonDetail:counters.help.bossTierDesc')}</dd>
 							</dl>
@@ -584,7 +600,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 					onClick={() => setMega((v) => !v)}
 				>
 					<span className='r-ss-box' aria-hidden='true' />
-					{t('pokemonDetail:counters.includeMegas')}
+					{t('pokemonDetail:counters.includeMegas', { mega: megaWord })}
 				</button>
 				<button
 					type='button'
@@ -593,7 +609,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 					onClick={() => setShadow((v) => !v)}
 				>
 					<span className='r-ss-box' aria-hidden='true' />
-					{t('pokemonDetail:counters.includeShadows')}
+					{t('pokemonDetail:counters.includeShadows', { shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) })}
 				</button>
 			</div>
 

@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Verringern",
 		"increaseAriaLabel": "Erhöhen"
 	},
-	"shadowMark": {
-		"alt": "Schatten"
-	},
 	"searchBox": {
 		"placeholder": "Pokémon oder Attacken suchen…",
 		"ariaLabel": "Pokémon oder Attacken suchen",
 		"clearAriaLabel": "Suche löschen",
-		"shadowSuffix": "Schatten",
 		"fast": "Schnell",
 		"charged": "Lade"
 	},

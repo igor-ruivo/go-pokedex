@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "हायर टियर रेड", "short": "हायर टियर" },
-			"tier3": { "full": "टियर 3 रेड", "short": "टियर 3" },
-			"tier1": { "full": "टियर 1 रेड", "short": "टियर 1" }
+			"higher": { "full": "हायर टियर {{raid}}", "short": "हायर टियर" },
+			"tier3": { "full": "टियर 3 {{raid}}", "short": "टियर 3" },
+			"tier1": { "full": "टियर 1 {{raid}}", "short": "टियर 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "अन्य रेड",
+		"otherRaids": "अन्य {{raid}}",
 		"nothingScheduled": "कुछ भी शेड्यूल नहीं है।",
 		"nowSlot": "अभी"
 	},
@@ -52,7 +52,7 @@
 		"bonuses": "बोनस",
 		"groups": {
 			"featuredSpawns": "फ़ीचर्ड स्पॉन",
-			"featuredRaids": "फ़ीचर्ड रेड",
+			"featuredRaids": "फ़ीचर्ड {{raid}}",
 			"researchEncounters": "रिसर्च एनकाउंटर",
 			"eggs": "अंडे",
 			"incense": "इन्सेंस",
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "कोई रॉकेट लाइनअप नहीं।",
-		"typeGrunt": "{{type}} ग्रंट",
-		"genericGrunt": "ग्रंट",
 		"slotReward": "स्लॉट {{slot}} इनाम",
 		"slotHeader": "स्लॉट {{slot}}",
 		"catchableTag": "पकड़ने योग्य"

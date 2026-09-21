@@ -10,15 +10,13 @@ export type DPSEntry = {
 	dps: number;
 	/** Total damage output = dps × time-on-field (bulk-weighted). */
 	tdo: number;
-	/** Effective DPS: bossHP ÷ time-to-win, incl. faints + relobby downtime. */
-	edps: number;
 	fastMove: string;
 	fastMoveDmg: number;
 	chargedMove: string;
 	chargedMoveDmg: number;
 	speciesId: string;
 	// Only present on the pre-generated per-type feed below — dex-server ranks
-	// each type's list three separate ways since "best" means something
+	// each type's list two separate ways since "best" means something
 	// different per metric (see `RaidMetric`); pick the one matching whichever
 	// the app is currently ranking by (`raidRankOf` in lib/raid-metric.ts), never
 	// just one of these unconditionally. A live-computed entry (a specific
@@ -26,7 +24,6 @@ export type DPSEntry = {
 	// fixed rank of its own, hence optional.
 	dpsRank?: number;
 	tdoRank?: number;
-	edpsRank?: number;
 };
 
 type DPSRank = Record<string, DPSEntry>;
@@ -63,7 +60,7 @@ const combine = (results: Array<UseQueryResult<DPSRank, Error>>): RaidRankerData
 	};
 };
 
-/** Pre-computed raid DPS/TDO/eDPS rankings, one list per attacking type. */
+/** Pre-computed raid DPS/TDO rankings, one list per attacking type. */
 export const useRaidRanker = (): RaidRankerData =>
 	useQueries({
 		queries: RAID_DPS_URLS.map((url) => ({

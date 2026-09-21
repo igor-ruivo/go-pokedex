@@ -30,7 +30,7 @@ export const gameTranslationsTestFixture: GameTranslationsPayload = {
 		tradedSearch: { [GameLanguage.en]: 'traded', [GameLanguage.ptbr]: 'trocado' },
 		cpDisplay: { [GameLanguage.en]: 'CP', [GameLanguage.ptbr]: 'PC' },
 		raidDisplay: { [GameLanguage.en]: 'raid', [GameLanguage.ptbr]: 'Reide' },
-		shadowDisplay: { [GameLanguage.en]: 'Shadow', [GameLanguage.ptbr]: 'Sombroso' },
+		shadowDisplay: { [GameLanguage.en]: 'Shadow', [GameLanguage.ptbr]: 'Sombroso', [GameLanguage.ja]: 'シャドウ' },
 		fastAttackHeader: { [GameLanguage.en]: 'Fast Attack', [GameLanguage.ptbr]: 'Ataque Ágil' },
 		chargedAttackHeader: {
 			[GameLanguage.en]: 'Charged Attack',
@@ -42,6 +42,64 @@ export const gameTranslationsTestFixture: GameTranslationsPayload = {
 		greatLeagueShort: { [GameLanguage.en]: 'Great', [GameLanguage.ptbr]: 'Grande' },
 		ultraLeagueShort: { [GameLanguage.en]: 'Ultra', [GameLanguage.ptbr]: 'Ultra' },
 		masterLeagueShort: { [GameLanguage.en]: 'Master', [GameLanguage.ptbr]: 'Mestra' },
+		// Display-cased versions of the checkbox/filter concepts above — used
+		// by MassDelete's protection-category checkboxes. A third locale (ja)
+		// is included here specifically so tests can prove real per-locale
+		// translation, not just an en/ptbr coincidence.
+		favoriteDisplay: {
+			[GameLanguage.en]: 'Favorite',
+			[GameLanguage.ptbr]: 'Favorito',
+			[GameLanguage.ja]: 'お気に入り',
+		},
+		legendaryDisplay: {
+			[GameLanguage.en]: 'Legendary',
+			[GameLanguage.ptbr]: 'Lendário',
+			[GameLanguage.ja]: '伝説のポケモン',
+		},
+		mythicalDisplay: {
+			[GameLanguage.en]: 'Mythical',
+			[GameLanguage.ptbr]: 'Mítico',
+			[GameLanguage.ja]: '幻のポケモン',
+		},
+		ultraBeastDisplay: {
+			[GameLanguage.en]: 'Ultra Beasts',
+			[GameLanguage.ptbr]: 'Ultracriaturas',
+			[GameLanguage.ja]: 'ウルトラビースト',
+		},
+		megaEvolvableDisplay: {
+			[GameLanguage.en]: 'Can Mega Evolve',
+			[GameLanguage.ptbr]: 'Pode Megaevoluir',
+			[GameLanguage.ja]: 'メガシンカ可能',
+		},
+		dynamaxDisplay: { [GameLanguage.en]: 'Dynamax', [GameLanguage.ptbr]: 'Dinamax', [GameLanguage.ja]: 'ダイマックス' },
+		fusionDisplay: { [GameLanguage.en]: 'Fusion', [GameLanguage.ptbr]: 'Fusão', [GameLanguage.ja]: 'がったい' },
+		gigantamaxDisplay: {
+			[GameLanguage.en]: 'Gigantamax',
+			[GameLanguage.ptbr]: 'Gigamax',
+			[GameLanguage.ja]: 'キョダイマックス',
+		},
+		shinyDisplay: { [GameLanguage.en]: 'Shiny', [GameLanguage.ptbr]: 'Brilhante', [GameLanguage.ja]: '色違い' },
+		costumeDisplay: { [GameLanguage.en]: 'Event', [GameLanguage.ptbr]: 'Evento', [GameLanguage.ja]: 'イベント' },
+		backgroundDisplay: {
+			[GameLanguage.en]: 'Location Background',
+			[GameLanguage.ptbr]: 'Fundo do Local',
+			[GameLanguage.ja]: 'ロケーション背景',
+		},
+		backgroundDescription: {
+			[GameLanguage.en]: 'You got a Location Background!',
+			[GameLanguage.ptbr]: 'Você conseguiu um Fundo do Local!',
+			[GameLanguage.ja]: 'ロケーション背景を手に入れた!',
+		},
+		specialBackgroundDisplay: {
+			[GameLanguage.en]: 'Special Background',
+			[GameLanguage.ptbr]: 'Fundo Especial',
+			[GameLanguage.ja]: 'スペシャル背景',
+		},
+		specialBackgroundDescription: {
+			[GameLanguage.en]: 'These are rare backgrounds for a Pokémon’s summary page.',
+			[GameLanguage.ptbr]: 'São fundos raros para a página de resumo de um Pokémon.',
+			[GameLanguage.ja]: 'ポケモンのサマリーページ用のレアな背景です。',
+		},
 	},
 	types: Object.fromEntries(
 		[

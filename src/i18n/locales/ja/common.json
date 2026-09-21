@@ -5,8 +5,8 @@
 	},
 	"nav": {
 		"pokedex": { "label": "ポケモン図鑑", "hint": "すべてのポケモンを見る" },
-		"rankings": { "label": "ランキング", "hint": "リーグ・レイドタイプ別の最強アタッカー" },
-		"calendar": { "label": "カレンダー", "hint": "イベント・レイド・出現・タマゴ" },
+		"rankings": { "label": "ランキング", "hint": "リーグ・{{raid}}タイプ別の最強アタッカー" },
+		"calendar": { "label": "カレンダー", "hint": "イベント・{{raid}}・出現・タマゴ" },
 		"moves": { "label": "わざ", "hint": "すべてのはやわざ・ゲージわざ" },
 		"types": { "label": "タイプ", "hint": "タイプ相性表" },
 		"searches": {

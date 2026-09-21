@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Diminuir",
 		"increaseAriaLabel": "Aumentar"
 	},
-	"shadowMark": {
-		"alt": "Sombrio"
-	},
 	"searchBox": {
 		"placeholder": "Pesquisar Pokémon ou golpes…",
 		"ariaLabel": "Pesquisar Pokémon ou golpes",
 		"clearAriaLabel": "Limpar pesquisa",
-		"shadowSuffix": "Sombrio",
 		"fast": "Rápido",
 		"charged": "Carregado"
 	},

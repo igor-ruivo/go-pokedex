@@ -10,7 +10,7 @@
 		"legacyFor": "기간 한정 기술로 사용 가능"
 	},
 	"arena": {
-		"pve": "PvE · 레이드 & 체육관",
+		"pve": "PvE · {{raid}} & 체육관",
 		"pvp": "PvP · 리그"
 	},
 	"kind": {
@@ -30,7 +30,6 @@
 	"usageLead": "{{name}}을(를) 배울 수 있는 포켓몬",
 	"tiles": {
 		"recommended": "추천",
-		"mega": "메가",
 		"elite": "엘리트",
 		"legacy": "기간 한정"
 	},

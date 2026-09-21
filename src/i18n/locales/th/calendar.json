@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "เรดระดับสูง", "short": "ระดับสูง" },
-			"tier3": { "full": "เรดระดับ 3", "short": "ระดับ 3" },
-			"tier1": { "full": "เรดระดับ 1", "short": "ระดับ 1" }
+			"higher": { "full": "{{raid}}ระดับสูง", "short": "ระดับสูง" },
+			"tier3": { "full": "{{raid}}ระดับ 3", "short": "ระดับ 3" },
+			"tier1": { "full": "{{raid}}ระดับ 1", "short": "ระดับ 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "เรดอื่น ๆ",
+		"otherRaids": "{{raid}}อื่น ๆ",
 		"nothingScheduled": "ยังไม่มีกำหนดการ",
 		"nowSlot": "ตอนนี้"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "โบนัส",
 		"groups": {
 			"featuredSpawns": "สปอว์นเด่น",
-			"featuredRaids": "เรดเด่น",
-			"researchEncounters": "การเผชิญหน้าจากงานวิจัย",
+			"featuredRaids": "{{raid}}เด่น",
+			"researchEncounters": "การเผชิญหน้าจากงานวิจัยภาคสนาม",
 			"eggs": "ไข่",
 			"incense": "ยาดม",
 			"lures": "ตัวล่อ"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "ไม่มีทีมร็อกเก็ต",
-		"typeGrunt": "สมุนธาตุ{{type}}",
-		"genericGrunt": "สมุน",
 		"slotReward": "รางวัลช่อง {{slot}}",
 		"slotHeader": "ช่อง {{slot}}",
 		"catchableTag": "จับได้"

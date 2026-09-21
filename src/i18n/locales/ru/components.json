@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Уменьшить",
 		"increaseAriaLabel": "Увеличить"
 	},
-	"shadowMark": {
-		"alt": "Теневой"
-	},
 	"searchBox": {
 		"placeholder": "Поиск покемона или атаки…",
 		"ariaLabel": "Поиск покемона или атаки",
 		"clearAriaLabel": "Очистить поиск",
-		"shadowSuffix": "Теневой",
 		"fast": "Быстрая",
 		"charged": "Заряженная"
 	},

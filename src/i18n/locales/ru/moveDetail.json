@@ -10,7 +10,7 @@
 		"legacyFor": "Устаревшая атака для"
 	},
 	"arena": {
-		"pve": "PvE · Рейды и Залы",
+		"pve": "PvE · {{raid}}ы и Залы",
 		"pvp": "PvP · Лиги"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "DMG",
 		"nrg": "NRG",
 		"dur": "DUR",
-		"turns": "Ходы",
+		"turns": "ХОДЫ",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Покемоны, способные изучить {{name}}",
 	"tiles": {
 		"recommended": "Рекомендуемая",
-		"mega": "Мега",
 		"elite": "Элитная",
 		"legacy": "Устаревшая"
 	},

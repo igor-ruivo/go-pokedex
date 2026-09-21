@@ -56,7 +56,7 @@
 		"bestMovesetByType": "타입별 최고의 기술 조합",
 		"nextMovesetTitle": "탭하면 다음 기술 조합",
 		"selectTypeTitle": "탭하여 이 타입 선택",
-		"ivsBarelyMatterPrefix": "레이드에서는 개체값이 거의 중요하지 않습니다 — 가장 높은 것을 선택하세요",
+		"ivsBarelyMatterPrefix": "{{raid}}에서는 개체값이 거의 중요하지 않습니다 — 가장 높은 것을 선택하세요",
 		"attackWord": "공격"
 	},
 	"pvp": {
@@ -71,14 +71,14 @@
 		"perfection": "완성도",
 		"cp": "CP",
 		"cpAtLevel": "Lv{{level}} 기준 {{cp}}",
-		"bestSpreadFor": "{{league}} 최고 배분:",
+		"additionalBestSpreadFor": "{{league}} 추가 최고 배분:",
 		"bestSpreadResult": "→ Lv{{level}}에서 CP {{cp}}.",
 		"purifyWarning": "⚠️ 프리져 시 각 스탯에 개체값 +2가 부여된다는 점을 유의하세요.",
 		"purifyUnreachableWarning": "⚠️ 이 랭크 1 배분 자체는 프리져로는 도달할 수 없습니다 — 프리져는 항상 각 스탯을 최소 2 이상으로 올리므로, 섀도 포켓몬은 자신의 개체값과 무관하게 그보다 낮아질 수 없습니다.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "{{league}} 랭크 1"
+			"rank1": "{{league}} #1"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "티어 1",
 			"t3": "티어 3",
-			"mega": "메가",
 			"t5": "티어 5",
 			"elite": "엘리트",
-			"legendaryMega": "전설의 메가",
-			"primal": "오리진",
+			"legendaryMega": "{{legendary}} {{mega}}",
 			"superMega": "슈퍼 메가"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{tier}} {{raid}} · HP {{hp}}",
 		"partyOf": "{{size}}마리 파티",
 		"friendLabel": "{{label}} 친구",
-		"megaAuraSummary": "메가 {{type}} 오라",
-		"megaLevelSummary": "메가 레벨: {{label}}",
+		"megaAuraSummary": "{{mega}} {{type}} 오라",
+		"megaLevelSummary": "{{mega}} 레벨: {{label}}",
 		"configHide": "숨기기",
 		"configEdit": "편집",
 		"clear": "초기화",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{tier}} {{raid}} · HP {{hp}}",
 		"weather_field": "날씨",
 		"weatherHint": "×1.2 · {{types}}",
-		"megaAura": "메가 오라",
-		"noMegaOnTeam": "파티에 메가 없음",
-		"megaOfType": "메가 {{type}}",
+		"megaAura": "{{mega}} 오라",
+		"noMegaOnTeam": "파티에 {{mega}} 없음",
+		"megaOfType": "{{mega}} {{type}}",
 		"megaAuraHint": "×1.3 {{type}} · ×1.1 기타",
-		"megaLevelField": "메가 레벨",
-		"megaLevelHint": "메가/오리진 포켓몬의 플러스 기술에 ×{{mult}}",
+		"megaLevelField": "{{mega}} 레벨",
+		"megaLevelHint": "{{mega}}/{{primal}} 포켓몬의 플러스 기술에 ×{{mult}}",
 		"megaLevelHintExtra": " · 어태커 레벨 +2",
 		"partyPower": "파티 파워",
 		"solo": "솔로",
@@ -154,17 +152,17 @@
 		"friendshipHint": "데미지 ×{{mult}}",
 		"helpSummary": "이게 무슨 뜻인가요?",
 		"help": {
-			"weatherFriendshipMegaAura": "날씨 · 친밀도 · 메가 오라",
+			"weatherFriendshipMegaAura": "날씨 · 친밀도 · {{mega}} 오라",
 			"weatherFriendshipMegaAuraDesc": "내 어태커에게 적용되는 데미지 배율입니다. 받는 데미지는 항상 고정된 값을 사용하므로 보스의 기술이 이 수치를 바꾸는 일은 없습니다.",
-			"megaLevelDesc": "메가 또는 오리진 포켓몬 고유의 메가 레벨(진화 후 메가에너지로 상승)은 전용 '플러스' 스페셜 기술에만 보너스를 줍니다 — 그 외 기술에는 영향이 없습니다. 슈퍼 맥스 레벨은 플러스 기술 보유 여부와 관계없이 어태커에게 실질적으로 레벨 +2를 부여합니다.",
-			"bossTierDesc": "보스의 HP(eDPS에 사용)와 방어에 적용되는 CPM을 설정합니다. 보스로부터 자동 추론됩니다 — 엘리트 레이드는 직접 변경하세요."
+			"megaLevelDesc": "{{mega}} 또는 {{primal}} 고유의 {{mega}} 레벨(진화 후 {{megaEnergy}}로 상승)은 전용 '플러스' 스페셜 기술에만 보너스를 줍니다 — 그 외 기술에는 영향이 없습니다. 슈퍼 맥스 레벨은 플러스 기술 보유 여부와 관계없이 어태커에게 실질적으로 레벨 +2를 부여합니다.",
+			"bossTierDesc": "표시되는 보스의 HP와 방어에 적용되는 CPM을 설정합니다. 보스로부터 자동 추론됩니다 — 엘리트 레이드는 직접 변경하세요."
 		},
-		"includeMegas": "메가 포함",
-		"includeShadows": "섀도 포함",
+		"includeMegas": "{{mega}} 포함",
+		"includeShadows": "{{shadow}} 포함",
 		"noCountersMatch": "해당 필터에 맞는 카운터가 없습니다."
 	},
 	"ivTable": {
-		"notForRaids": "개체값 랭킹은 레이드에 적용되지 않습니다 — 위에서 그레이트, 울트라, 마스터 중 하나를 선택하세요.",
+		"notForRaids": "개체값 랭킹은 {{raid}}에 적용되지 않습니다 — 위에서 {{great}}, {{ultra}}, {{master}} 중 하나를 선택하세요.",
 		"heading": "{{league}} · {{shadow}}{{name}}의 전체 4,096개 개체값 배분",
 		"fieldAriaLabel": "{{label}} 개체값, 0부터 15",
 		"clearAriaLabel": "초기화",

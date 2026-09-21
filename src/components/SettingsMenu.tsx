@@ -8,7 +8,9 @@ import { useRaidMetric } from '../contexts/raid-metric-context';
 // Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
 import { useDismiss } from '../hooks/useDismiss';
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
+import { sentenceCase } from '../lib/format';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { type LanguageOption, LanguagePicker } from './LanguagePicker';
 
 // Endonyms, not translated — see LanguagePicker's doc for why. All 15
@@ -52,7 +54,12 @@ export const SettingsMenu = () => {
 	const SPRITES: Array<[ImageSource, string]> = [
 		[ImageSource.Official, t('settings:spriteOptions.official')],
 		[ImageSource.GO, t('settings:spriteOptions.go')],
-		[ImageSource.Shiny, t('settings:spriteOptions.shiny')],
+		[
+			ImageSource.Shiny,
+			t('settings:spriteOptions.shiny', {
+				shiny: gameTranslator(GameTranslatorKeys.ShinyDisplay, currentGameLanguage),
+			}),
+		],
 	];
 
 	return (
@@ -108,7 +115,11 @@ export const SettingsMenu = () => {
 					</div>
 
 					<div className='r-setmenu-grp'>
-						<span className='r-setmenu-h'>{t('settings:menu.raidRanking')}</span>
+						<span className='r-setmenu-h'>
+							{t('settings:menu.raidRanking', {
+								raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, currentGameLanguage)),
+							})}
+						</span>
 						<div className='r-set-opts'>
 							{RAID_METRICS.map((m) => (
 								<button

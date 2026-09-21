@@ -533,7 +533,6 @@ export const rank = (r: number): { rank: number } => ({ rank: r });
 export const mockDPSEntry = (overrides: Partial<DPSEntry> & { speciesId: string }): DPSEntry => ({
 	dps: 0,
 	tdo: 0,
-	edps: 0,
 	fastMove: 'mock_fast',
 	fastMoveDmg: 0,
 	chargedMove: 'mock_charged',

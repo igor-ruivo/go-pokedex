@@ -584,7 +584,7 @@ export const computeMoveEffectiveness = (ownMoveType: string, targetType1: strin
 
 /* ---- raid model constants ---------------------------------------------------
  * See the DPS/TDO methodology notes: the offensive side is exact game math; the
- * defensive side (TDO / eDPS) uses one fitted "incoming DPS" constant that is
+ * defensive side (TDO) uses one fitted "incoming DPS" constant that is
  * the same for every boss, matching GamePress / DialgaDex / GO Hub.
  */
 
@@ -592,9 +592,6 @@ export const computeMoveEffectiveness = (ownMoveType: string, targetType1: strin
 export const RAID_INCOMING_DPS_NUMERATOR = 900;
 /** Companion: one absorbed boss charged hit, for the energy-from-damage term. */
 export const RAID_INCOMING_CM_POWER = 11700;
-export const RAID_RESPAWN_SECONDS = 1;
-export const RAID_RELOBBY_SECONDS = 10;
-export const RAID_PARTY_SIZE = 6;
 
 export type RaidTier = 'T1' | 'T3' | 'MEGA' | 'T5' | 'ELITE' | 'LEGENDARY_MEGA' | 'PRIMAL' | 'SUPER_MEGA';
 
@@ -741,7 +738,7 @@ export const weaveDps = ({
 };
 
 export interface RaidOpts {
-	/** Boss tier — sets boss HP (eDPS) and the CPM on the boss's defense. */
+	/** Boss tier — sets the CPM on the boss's defense (and its displayed HP). */
 	tier?: RaidTier | undefined;
 	/** Attacker move types boosted ×1.2 by the current weather. */
 	weatherBoostedTypes?: ReadonlySet<string> | undefined;
@@ -822,20 +819,11 @@ export const computeDPSEntry = (
 		const safeDps = Number.isFinite(dps) && dps > 0 ? dps : 0;
 		const tof = incomingDps > 0 ? attackerHpEff / incomingDps : 0;
 		const tdo = safeDps * tof;
-		let edps = 0;
-		if (tdo > 0 && tof > 0) {
-			const lives = boss.hp / tdo;
-			const deaths = Math.max(0, Math.ceil(lives) - 1);
-			const relobbies = Math.floor(deaths / RAID_PARTY_SIZE);
-			const ttw = lives * tof + (deaths - relobbies) * RAID_RESPAWN_SECONDS + relobbies * RAID_RELOBBY_SECONDS;
-			edps = ttw > 0 ? boss.hp / ttw : 0;
-		}
 		return {
 			fastMove: fast,
 			chargedMove: charged,
 			dps: safeDps,
 			tdo,
-			edps,
 			speciesId: p.speciesId,
 			fastMoveDmg: fastDmg,
 			chargedMoveDmg: chargedDmg,

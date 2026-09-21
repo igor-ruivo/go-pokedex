@@ -10,7 +10,7 @@
 		"legacyFor": "È una mossa storica per"
 	},
 	"arena": {
-		"pve": "PvE · Raid e Palestre",
+		"pve": "PvE · {{raid}} e Palestre",
 		"pvp": "PvP · Leghe"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "DAN",
 		"nrg": "ENG",
 		"dur": "DUR",
-		"turns": "Turni",
+		"turns": "TURNI",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Pokémon che possono apprendere {{name}}",
 	"tiles": {
 		"recommended": "Consigliata",
-		"mega": "Mega",
 		"elite": "Elite",
 		"legacy": "Storica"
 	},

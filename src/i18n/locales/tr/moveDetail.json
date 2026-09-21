@@ -10,7 +10,7 @@
 		"legacyFor": "Şunlar için eski hareket"
 	},
 	"arena": {
-		"pve": "PvE · Baskınlar ve Spor Salonları",
+		"pve": "PvE · {{raid}}lar ve Spor Salonları",
 		"pvp": "PvP · Ligler"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "HSR",
 		"nrg": "ENJ",
 		"dur": "SÜRE",
-		"turns": "Tur",
+		"turns": "TUR",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "{{name}} hareketini öğrenebilen Pokémon'lar",
 	"tiles": {
 		"recommended": "Önerilen",
-		"mega": "Mega",
 		"elite": "Elit",
 		"legacy": "Eski"
 	},

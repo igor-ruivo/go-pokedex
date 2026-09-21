@@ -10,7 +10,7 @@
 		"legacyFor": "इनके लिए लेगसी मूव है"
 	},
 	"arena": {
-		"pve": "PvE · रेड और जिम",
+		"pve": "PvE · {{raid}} और जिम",
 		"pvp": "PvP · लीग"
 	},
 	"kind": {
@@ -30,7 +30,6 @@
 	"usageLead": "{{name}} सीख सकने वाले Pokémon",
 	"tiles": {
 		"recommended": "सुझाया गया",
-		"mega": "मेगा",
 		"elite": "एलीट",
 		"legacy": "लेगसी"
 	},

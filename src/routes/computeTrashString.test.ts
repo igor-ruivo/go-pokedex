@@ -81,7 +81,7 @@ describe('computeTrashString — raid metric switching', () => {
 		const { gamemasterPokemon } = buildMainFixture();
 		const raidDPS = {
 			psychic: {
-				shadowmon: mockDPSEntry({ speciesId: 'shadowmon', dpsRank: 3, tdoRank: 20, edpsRank: 3 }),
+				shadowmon: mockDPSEntry({ speciesId: 'shadowmon', dpsRank: 3, tdoRank: 20 }),
 			},
 		};
 
@@ -106,7 +106,7 @@ describe('computeTrashString — raid metric switching', () => {
 		// by default it'd be bad-for-everything. Only its Mega form is ranked.
 		const raidDPS = {
 			fire: {
-				[megaform.speciesId]: mockDPSEntry({ speciesId: megaform.speciesId, dpsRank: 1, tdoRank: 1, edpsRank: 1 }),
+				[megaform.speciesId]: mockDPSEntry({ speciesId: megaform.speciesId, dpsRank: 1, tdoRank: 1 }),
 			},
 		};
 
@@ -189,7 +189,7 @@ describe('computeTrashString — raid rescue via a later stage (isGoodForRaids, 
 	it("a later stage's good raid rank rescues every earlier stage too", () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
 		const raidDPS = {
-			grass: { venusaur: mockDPSEntry({ speciesId: 'venusaur', dpsRank: 1, tdoRank: 1, edpsRank: 1 }) },
+			grass: { venusaur: mockDPSEntry({ speciesId: 'venusaur', dpsRank: 1, tdoRank: 1 }) },
 		};
 		const args = buildArgs(gamemasterPokemon, {
 			raidDPS,

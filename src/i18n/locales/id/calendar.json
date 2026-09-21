@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Raid Tingkat Tinggi", "short": "Tingkat Tinggi" },
-			"tier3": { "full": "Raid Tingkat 3", "short": "Tingkat 3" },
-			"tier1": { "full": "Raid Tingkat 1", "short": "Tingkat 1" }
+			"higher": { "full": "{{raid}} Tingkat Tinggi", "short": "Tingkat Tinggi" },
+			"tier3": { "full": "{{raid}} Tingkat 3", "short": "Tingkat 3" },
+			"tier1": { "full": "{{raid}} Tingkat 1", "short": "Tingkat 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Raid lainnya",
+		"otherRaids": "{{raid}} lainnya",
 		"nothingScheduled": "Belum ada jadwal.",
 		"nowSlot": "Sekarang"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "Bonus",
 		"groups": {
 			"featuredSpawns": "Spawn unggulan",
-			"featuredRaids": "Raid unggulan",
-			"researchEncounters": "Encounter riset",
+			"featuredRaids": "{{raid}} unggulan",
+			"researchEncounters": "Encounter Penelitian Lapangan",
 			"eggs": "Telur",
 			"incense": "Incense",
 			"lures": "Lure"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "Belum ada line-up Rocket.",
-		"typeGrunt": "Grunt {{type}}",
-		"genericGrunt": "Grunt",
 		"slotReward": "Hadiah slot {{slot}}",
 		"slotHeader": "Slot {{slot}}",
 		"catchableTag": "bisa ditangkap"

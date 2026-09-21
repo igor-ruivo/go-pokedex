@@ -5,7 +5,7 @@
 		"appLanguage": "앱 언어",
 		"gameLanguage": "게임 언어",
 		"sprites": "스프라이트",
-		"raidRanking": "레이드 랭킹",
+		"raidRanking": "{{raid}} 랭킹",
 		"bestBuddy": "베스트프렌드 기준 적용",
 		"off": "끄기",
 		"on": "켜기",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "베스트프렌드 기준 적용",
-			"desc": "레벨 51까지 도달 가능한 것으로 간주합니다 — 개체값 표, 삭제/검색 문자열, 최대 CP, 레벨 선택기, 베스트 개체값/백분위, 레이드 카운터, DPS/TDO/eDPS가 모두 레벨 50이 아닌 51까지 계산됩니다."
+			"desc": "레벨 51까지 도달 가능한 것으로 간주합니다 — 개체값 표, 삭제/검색 문자열, 최대 CP, 레벨 선택기, 베스트 개체값/백분위, 레이드 카운터, DPS/TDO가 모두 레벨 50이 아닌 51까지 계산됩니다."
 		},
 		"footer": "설정은 이 기기에 저장됩니다."
 	},
 	"spriteOptions": {
 		"official": "공식",
 		"go": "Pokémon GO",
-		"shiny": "GO 색이 다른"
+		"shiny": "GO {{shiny}}"
 	},
 	"toggle": {
 		"off": "끄기",

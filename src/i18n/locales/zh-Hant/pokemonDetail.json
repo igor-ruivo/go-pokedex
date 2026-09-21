@@ -56,7 +56,7 @@
 		"bestMovesetByType": "各屬性最佳招式組合",
 		"nextMovesetTitle": "點選查看下一組招式",
 		"selectTypeTitle": "點選選擇此屬性",
-		"ivsBarelyMatterPrefix": "個體值在團體戰中影響甚微 — 追求最高的",
+		"ivsBarelyMatterPrefix": "個體值在{{raid}}中影響甚微 — 追求最高的",
 		"attackWord": "攻擊力"
 	},
 	"pvp": {
@@ -71,14 +71,14 @@
 		"perfection": "完美度",
 		"cp": "CP",
 		"cpAtLevel": "L{{level}} 時的 {{cp}}",
-		"bestSpreadFor": "{{league}} 最佳數值組合：",
+		"additionalBestSpreadFor": "{{league}} 額外的最佳數值組合：",
 		"bestSpreadResult": "→ L{{level}} 時 {{cp}} CP。",
 		"purifyWarning": "⚠️ 請注意，淨化會使每項數值的個體值提升 +2。",
 		"purifyUnreachableWarning": "⚠️ 這個排名第 1 的數值組合本身無法透過淨化達成 — 淨化一律會將每項數值提升至至少 2，因此暗影寶可夢無論個體值如何，都不可能低於此組合。",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "{{league}} 排名第 1"
+			"rank1": "{{league}} #1"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "一星級",
 			"t3": "三星級",
-			"mega": "Mega",
 			"t5": "五星級",
 			"elite": "菁英",
-			"legendaryMega": "傳說 Mega",
-			"primal": "原始",
+			"legendaryMega": "{{legendary}}{{mega}}",
 			"superMega": "究極 Mega"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} 體力",
 		"partyOf": "{{size}} 人小隊",
 		"friendLabel": "{{label}}",
-		"megaAuraSummary": "Mega {{type}} 光環",
-		"megaLevelSummary": "Mega 等級：{{label}}",
+		"megaAuraSummary": "{{mega}} {{type}} 光環",
+		"megaLevelSummary": "{{mega}} 等級：{{label}}",
 		"configHide": "隱藏",
 		"configEdit": "編輯",
 		"clear": "清除",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{tier}} {{raid}} · {{hp}} 體力",
 		"weather_field": "天氣",
 		"weatherHint": "×1.2 · {{types}}",
-		"megaAura": "Mega 光環",
-		"noMegaOnTeam": "隊伍中沒有 Mega 寶可夢",
-		"megaOfType": "Mega {{type}}",
+		"megaAura": "{{mega}} 光環",
+		"noMegaOnTeam": "隊伍中沒有 {{mega}} 寶可夢",
+		"megaOfType": "{{mega}} {{type}}",
 		"megaAuraHint": "×1.3 {{type}} · ×1.1 其他屬性",
-		"megaLevelField": "Mega 等級",
-		"megaLevelHint": "×{{mult}} 用於 Mega／原始寶可夢自身的額外招式",
+		"megaLevelField": "{{mega}} 等級",
+		"megaLevelHint": "×{{mult}} 用於 {{mega}}／{{primal}}寶可夢自身的額外招式",
 		"megaLevelHintExtra": " · 攻擊方等級 +2",
 		"partyPower": "團隊戰力",
 		"solo": "單人",
@@ -154,17 +152,17 @@
 		"friendshipHint": "×{{mult}} 傷害",
 		"helpSummary": "這些代表什麼意思？",
 		"help": {
-			"weatherFriendshipMegaAura": "天氣 · 友誼 · Mega 光環",
+			"weatherFriendshipMegaAura": "天氣 · 友誼 · {{mega}} 光環",
 			"weatherFriendshipMegaAuraDesc": "作用於你攻擊方的傷害加成。首領造成的傷害一律使用固定數值，因此首領本身的招式不會影響這些數字。",
-			"megaLevelDesc": "Mega 或原始寶可夢自身的 Mega 等級（進化後透過 Mega 進化能量提升）只會強化其專屬額外特殊招式，套路中其他招式不受影響。究極極限等級還會讓攻擊方獲得 +2 有效等級，無論是否擁有額外招式。",
-			"bossTierDesc": "設定首領體力（供 eDPS 使用）以及套用於其防禦力的 CPM。系統會依首領自動判斷，菁英團體戰需手動變更。"
+			"megaLevelDesc": "{{mega}}或{{primal}}自身的{{mega}}等級（進化後透過{{megaEnergy}}提升）只會強化其專屬額外特殊招式，套路中其他招式不受影響。究極極限等級還會讓攻擊方獲得 +2 有效等級，無論是否擁有額外招式。",
+			"bossTierDesc": "設定首領顯示的體力以及套用於其防禦力的 CPM。系統會依首領自動判斷，菁英團體戰需手動變更。"
 		},
-		"includeMegas": "包含 Mega",
-		"includeShadows": "包含暗影",
+		"includeMegas": "包含 {{mega}}",
+		"includeShadows": "包含{{shadow}}",
 		"noCountersMatch": "沒有符合篩選條件的對戰技巧。"
 	},
 	"ivTable": {
-		"notForRaids": "個體值排名不適用於團體戰 — 請於上方選擇超級、高級或大師聯盟。",
+		"notForRaids": "個體值排名不適用於{{raid}} — 請於上方選擇{{great}}、{{ultra}}或{{master}}。",
 		"heading": "{{league}} · {{shadow}}{{name}} 的全部 4,096 種個體值組合",
 		"fieldAriaLabel": "{{label}} 個體值，0 至 15",
 		"clearAriaLabel": "清除",

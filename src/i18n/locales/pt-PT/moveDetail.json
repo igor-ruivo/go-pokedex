@@ -10,7 +10,7 @@
 		"legacyFor": "É um golpe legado para"
 	},
 	"arena": {
-		"pve": "PvE · Reides e Ginásios",
+		"pve": "PvE · {{raid}}s e Ginásios",
 		"pvp": "PvP · Ligas"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "DANO",
 		"nrg": "ENG",
 		"dur": "DUR",
-		"turns": "Turnos",
+		"turns": "TURNOS",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Pokémon que podem aprender {{name}}",
 	"tiles": {
 		"recommended": "Recomendado",
-		"mega": "Mega",
 		"elite": "Elite",
 		"legacy": "Legado"
 	},

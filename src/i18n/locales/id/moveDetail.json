@@ -10,7 +10,7 @@
 		"legacyFor": "Merupakan jurus legacy untuk"
 	},
 	"arena": {
-		"pve": "PvE · Raid & Gym",
+		"pve": "PvE · {{raid}} & Gym",
 		"pvp": "PvP · Liga"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "DMG",
 		"nrg": "NRG",
 		"dur": "DUR",
-		"turns": "Giliran",
+		"turns": "GILIRAN",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Pokémon yang bisa mempelajari {{name}}",
 	"tiles": {
 		"recommended": "Direkomendasikan",
-		"mega": "Mega",
 		"elite": "Elite",
 		"legacy": "Legacy"
 	},

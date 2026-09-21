@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "減らす",
 		"increaseAriaLabel": "増やす"
 	},
-	"shadowMark": {
-		"alt": "シャドウ"
-	},
 	"searchBox": {
 		"placeholder": "ポケモンまたはわざを検索…",
 		"ariaLabel": "ポケモンまたはわざを検索",
 		"clearAriaLabel": "検索をクリア",
-		"shadowSuffix": "シャドウ",
 		"fast": "はやわざ",
 		"charged": "ゲージわざ"
 	},

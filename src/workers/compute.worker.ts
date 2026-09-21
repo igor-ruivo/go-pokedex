@@ -197,7 +197,7 @@ export interface RaidComparisonsInput {
 }
 
 /**
- * Every candidate's best-moveset DPS / TDO / eDPS against the real `target`
+ * Every candidate's best-moveset DPS / TDO against the real `target`
  * (tier inferred from Game Master flags unless `opts.tier` overrides it),
  * sorted strongest DPS first.
  */

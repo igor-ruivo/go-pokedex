@@ -15,7 +15,7 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { useDismiss } from '../hooks/useDismiss';
-import { cleanName, dexNo } from '../lib/format';
+import { cleanName, dexNo, sentenceCase } from '../lib/format';
 import { type MassDeleteTab, R } from '../lib/nav';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
 import {
@@ -33,6 +33,7 @@ import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
 import { useSpeciesSearchMetadata } from '../queries/species-search-metadata';
+import { useGameTranslationsData } from '../utils/game-translations-store';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import {
 	ConfigKeys,
@@ -167,14 +168,16 @@ export const DEFAULT_PROTECTION: ProtectionFlags = {
  *  MassDelete) — a `t(\`massDelete:protectionMeta.${key}.label\`)` template
  *  would silently escape scripts/check-i18n-parity.mjs's static scan, same
  *  reasoning as Shell.tsx's NAV array. */
-const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
+export const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 	key: keyof ProtectionFlags;
 	translate: (t: TFunction, gl: GameLanguage) => { label: string; description: string };
 }> = [
 	{
 		key: 'favorite',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.favorite.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.favorite.label', {
+				favorite: gameTranslator(GameTranslatorKeys.FavoriteDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.favorite.description'),
 		}),
 	},
@@ -187,22 +190,28 @@ const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 	},
 	{
 		key: 'legendary',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.legendary.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.legendary.label', {
+				legendary: gameTranslator(GameTranslatorKeys.LegendaryDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.legendary.description'),
 		}),
 	},
 	{
 		key: 'mythical',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.mythical.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.mythical.label', {
+				mythical: gameTranslator(GameTranslatorKeys.MythicalDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.mythical.description'),
 		}),
 	},
 	{
 		key: 'ultraBeast',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.ultraBeast.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.ultraBeast.label', {
+				ultraBeast: gameTranslator(GameTranslatorKeys.UltraBeastDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.ultraBeast.description'),
 		}),
 	},
@@ -212,62 +221,82 @@ const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 			label: t('massDelete:protectionMeta.megaEvolvable.label', {
 				megaEvolvable: gameTranslator(GameTranslatorKeys.MegaEvolvableDisplay, gl),
 			}),
-			description: t('massDelete:protectionMeta.megaEvolvable.description'),
+			description: t('massDelete:protectionMeta.megaEvolvable.description', {
+				megaEnergy: gameTranslator(GameTranslatorKeys.MegaEnergyDisplay, gl),
+			}),
 		}),
 	},
 	{
 		key: 'shadow',
 		translate: (t, gl) => ({
-			label: t('massDelete:protectionMeta.shadow.label', { shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) }),
+			label: t('massDelete:protectionMeta.shadow.label', {
+				shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.shadow.description'),
 		}),
 	},
 	{
 		key: 'dynamax',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.dynamax.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.dynamax.label', {
+				dynamax: gameTranslator(GameTranslatorKeys.DynamaxDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.dynamax.description'),
 		}),
 	},
 	{
 		key: 'fusion',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.fusion.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.fusion.label', {
+				fusion: gameTranslator(GameTranslatorKeys.FusionDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.fusion.description'),
 		}),
 	},
 	{
 		key: 'gigantamax',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.gigantamax.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.gigantamax.label', {
+				gigantamax: gameTranslator(GameTranslatorKeys.GigantamaxDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.gigantamax.description'),
 		}),
 	},
 	{
 		key: 'background',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.background.label'),
-			description: t('massDelete:protectionMeta.background.description'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.background.label', {
+				background: gameTranslator(GameTranslatorKeys.BackgroundDisplay, gl),
+			}),
+			description: t('massDelete:protectionMeta.background.description', {
+				background: gameTranslator(GameTranslatorKeys.BackgroundDescription, gl),
+			}),
 		}),
 	},
 	{
 		key: 'specialBackground',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.specialBackground.label'),
-			description: t('massDelete:protectionMeta.specialBackground.description'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.specialBackground.label', {
+				specialBackground: gameTranslator(GameTranslatorKeys.SpecialBackgroundDisplay, gl),
+			}),
+			description: t('massDelete:protectionMeta.specialBackground.description', {
+				specialBackground: gameTranslator(GameTranslatorKeys.SpecialBackgroundDescription, gl),
+			}),
 		}),
 	},
 	{
 		key: 'shiny',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.shiny.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.shiny.label', { shiny: gameTranslator(GameTranslatorKeys.ShinyDisplay, gl) }),
 			description: t('massDelete:protectionMeta.shiny.description'),
 		}),
 	},
 	{
 		key: 'costume',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.costume.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.costume.label', {
+				costume: gameTranslator(GameTranslatorKeys.CostumeDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.costume.description'),
 		}),
 	},
@@ -1132,7 +1161,10 @@ const WhitelistSearch = ({
 									{p.isShadow && (
 										<em className='r-search-shadow'>
 											{' '}
-											· {t('massDelete:whitelist.shadowSuffix', { shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) })}
+											·{' '}
+											{t('massDelete:whitelist.shadowSuffix', {
+												shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+											})}
 										</em>
 									)}
 								</span>
@@ -1201,6 +1233,11 @@ const MassDelete = () => {
 	const { raidMetric } = useRaidMetric();
 	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
+	// Included in every useMemo below that calls `gameTranslator()` inside its
+	// callback — see this hook's own doc comment for why `gl` alone isn't
+	// enough to keep those memos from serving a stale (pre-load, empty)
+	// result once the async game-translations fetch actually resolves.
+	const gameTranslations = useGameTranslationsData();
 	// Every carve-out/tie-eligibility sweep across all three tabs now honors
 	// this single toggle exclusively — never both 50 and 51 at once — trading
 	// the extra-level accuracy that used to cost real search-string length for
@@ -1341,17 +1378,38 @@ const MassDelete = () => {
 		Object.values(gamemasterPokemon)
 			.filter((p) => !p.aliasId && !p.isMega)
 			.forEach((p) => {
-				if (protect.legendary && p.isLegendary) map.set(p.speciesId, t('massDelete:protectionMeta.legendary.label'));
-				else if (mythicalProtected && p.isMythical) map.set(p.speciesId, t('massDelete:protectionMeta.mythical.label'));
-				else if (protect.ultraBeast && p.isBeast) map.set(p.speciesId, t('massDelete:protectionMeta.ultraBeast.label'));
+				if (protect.legendary && p.isLegendary)
+					map.set(p.speciesId, gameTranslator(GameTranslatorKeys.LegendaryDisplay, gl));
+				else if (mythicalProtected && p.isMythical)
+					map.set(p.speciesId, gameTranslator(GameTranslatorKeys.MythicalDisplay, gl));
+				else if (protect.ultraBeast && p.isBeast)
+					map.set(p.speciesId, gameTranslator(GameTranslatorKeys.UltraBeastDisplay, gl));
 				else if (shadowProtected && p.isShadow)
 					map.set(
 						p.speciesId,
-						t('massDelete:protectionMeta.shadow.label', { shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) })
+						t('massDelete:protectionMeta.shadow.label', {
+							shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+						})
 					);
 			});
 		return map;
-	}, [gamemasterPokemon, protect.legendary, protect.mythical, protect.ultraBeast, protect.shadow, isTrade, t, gl]);
+		// `gameTranslations` isn't read above (`gameTranslator()` reads a
+		// module-level snapshot instead) — listed below anyway so this memo
+		// recomputes once the async game-translations fetch resolves, instead
+		// of caching whatever it returned (typically `''`) on the very first
+		// render. See `useGameTranslationsData`'s own doc comment.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		gamemasterPokemon,
+		protect.legendary,
+		protect.mythical,
+		protect.ultraBeast,
+		protect.shadow,
+		isTrade,
+		t,
+		gl,
+		gameTranslations,
+	]);
 
 	// Two separate, separately-sorted groups (see `byDexFormShadow`) rather than
 	// one merged list —
@@ -1707,7 +1765,12 @@ const MassDelete = () => {
 	// being protected at all.
 	const protectionMeta = useMemo(
 		() => PROTECTION_META_TRANSLATORS.map(({ key, translate }) => ({ key, ...translate(t, gl) })),
-		[t, gl]
+		// `gameTranslations` isn't read in the callback (`gameTranslator()` reads
+		// a module-level snapshot instead) — listed anyway so this recomputes
+		// once the async fetch resolves. See `useGameTranslationsData`'s own
+		// doc comment.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[t, gl, gameTranslations]
 	);
 
 	const protectionSummary = protectionMeta
@@ -1715,18 +1778,26 @@ const MassDelete = () => {
 		.map((m) => m.label)
 		.join(', ');
 	const nothingExtra = t('massDelete:panelSummary.nothingExtra');
-	const keepTopSummary = [
-		t('massDelete:panelSummary.topGreat', { n: trashGreat }),
-		t('massDelete:panelSummary.topUltra', { n: trashUltra }),
-		t('massDelete:panelSummary.topMaster', { n: trashMaster }),
-		t('massDelete:panelSummary.topRaid', { n: trashRaid, raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
-	].join(' · ');
-	const tradeTopSummary = [
-		t('massDelete:panelSummary.topGreat', { n: trashGreat }),
-		t('massDelete:panelSummary.topUltra', { n: trashUltra }),
-		t('massDelete:panelSummary.topMaster', { n: trashMaster }),
-		t('massDelete:panelSummary.topRaid', { n: trashRaid, raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
-	].join(' · ');
+	const topLeagueSummaries = [
+		t('massDelete:panelSummary.topGreat', {
+			n: trashGreat,
+			league: gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
+		}),
+		t('massDelete:panelSummary.topUltra', {
+			n: trashUltra,
+			league: gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
+		}),
+		t('massDelete:panelSummary.topMaster', {
+			n: trashMaster,
+			league: gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
+		}),
+		t('massDelete:panelSummary.topRaid', {
+			n: trashRaid,
+			raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+		}),
+	];
+	const keepTopSummary = topLeagueSummaries.join(' · ');
+	const tradeTopSummary = topLeagueSummaries.join(' · ');
 	const panelSummary = isBadIv
 		? `${t('massDelete:panelSummary.cpKept', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}${simplifiedBadIv ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`
 		: isTrade
@@ -1857,7 +1928,9 @@ const MassDelete = () => {
 					<div className='r-ctr-panel'>
 						{mode === 'meta' && (
 							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:metaKnobsSubtitle')}</p>
+								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
+									{t('massDelete:metaKnobsSubtitle', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+								</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
 										<span>
@@ -1901,11 +1974,21 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-full'>
+												{t('massDelete:knobs.raidAttackers.full', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
+											<i className='r-md-knob-short'>
+												{t('massDelete:knobs.raidAttackers.short', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
 										</span>
 										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											label={t('massDelete:knobs.ariaKeepTopRaid', {
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											})}
 											value={trashRaid}
 											onChange={setTrashRaid}
 											count={2000}
@@ -1915,10 +1998,14 @@ const MassDelete = () => {
 								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
 								<div className='r-md-row-2'>
 									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}</span>
+										<span>
+											{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+										</span>
 										<select
 											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+											aria-label={t('massDelete:knobs.saveCp', {
+												cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
+											})}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -1932,11 +2019,21 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-cp'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-full'>
+												{t('massDelete:knobs.raidAttackers.full', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
+											<i className='r-md-knob-short'>
+												{t('massDelete:knobs.raidAttackers.short', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
 										</span>
 										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											label={t('massDelete:knobs.ariaKeepTopRaid', {
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											})}
 											value={trashRaid}
 											onChange={setTrashRaid}
 											count={2000}
@@ -1965,10 +2062,14 @@ const MassDelete = () => {
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:badIvKnobsSubtitle')}</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
 									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}</span>
+										<span>
+											{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+										</span>
 										<select
 											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+											aria-label={t('massDelete:knobs.saveCp', {
+												cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
+											})}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -2043,11 +2144,21 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-full'>
+												{t('massDelete:knobs.raidAttackers.full', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
+											<i className='r-md-knob-short'>
+												{t('massDelete:knobs.raidAttackers.short', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
 										</span>
 										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											label={t('massDelete:knobs.ariaKeepTopRaid', {
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											})}
 											value={trashRaid}
 											onChange={setTrashRaid}
 											count={2000}
@@ -2057,10 +2168,14 @@ const MassDelete = () => {
 								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
 								<div className='r-md-row-2'>
 									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}</span>
+										<span>
+											{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+										</span>
 										<select
 											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+											aria-label={t('massDelete:knobs.saveCp', {
+												cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
+											})}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -2074,11 +2189,21 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-cp'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-full'>
+												{t('massDelete:knobs.raidAttackers.full', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
+											<i className='r-md-knob-short'>
+												{t('massDelete:knobs.raidAttackers.short', {
+													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+												})}
+											</i>
 										</span>
 										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid')}
+											label={t('massDelete:knobs.ariaKeepTopRaid', {
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											})}
 											value={trashRaid}
 											onChange={setTrashRaid}
 											count={2000}

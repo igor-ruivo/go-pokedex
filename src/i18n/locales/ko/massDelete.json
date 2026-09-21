@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "그레이트 리그 상위 보호",
 		"ariaKeepTopUltra": "울트라 리그 상위 보호",
 		"ariaKeepTopMaster": "마스터 리그 상위 보호",
-		"ariaKeepTopRaid": "레이드 상위 어태커 보호"
+		"ariaKeepTopRaid": "{{raid}} 상위 어태커 보호"
 	},
-	"metaKnobsSubtitle": "리그/레이드별 현재 메타 상위 포켓몬 보호",
+	"metaKnobsSubtitle": "리그/{{raid}}별 현재 메타 상위 포켓몬 보호",
 	"badIvKnobsSubtitle": "간소화는 정확도 대신 더 짧은 문자열을 만듭니다 — 토글의 툴팁 참고",
 	"tradeKnobsSubtitle": "이 네 가지 기준 중 하나만 충족하면 제안됩니다 — 그레이트와 울트라는 교환으로 실제 최고 배분에 도달할 수 있어야 합니다(위 설명 참고)",
 	"simplifiedTrashTooltip": "정확도 대신 더 짧은 문자열을 만듭니다 — 마스터 리그(상한 없음)의 스탯곱 동률 개체 탐색을 생략하고, 완벽한 개체(모든 모드에서 !4* 예외로 항상 보호됨)만 그곳에서 보호합니다. 그레이트/울트라/레이드 보호에는 영향이 없습니다.",
@@ -71,7 +71,7 @@
 	"toggleOff": "꺼짐",
 	"protectionMeta": {
 		"favorite": {
-			"label": "즐겨찾기",
+			"label": "{{favorite}}",
 			"description": "게임 내에서 즐겨찾기로 설정된 포켓몬."
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "닉네임이나 커스텀 태그가 있는 포켓몬."
 		},
 		"legendary": {
-			"label": "전설",
+			"label": "{{legendary}}",
 			"description": "전설의 포켓몬(뮤츠, 루기아 등)."
 		},
 		"mythical": {
-			"label": "환상",
+			"label": "{{mythical}}",
 			"description": "환상의 포켓몬(뮤, 세레비 등)."
 		},
 		"ultraBeast": {
-			"label": "울트라비스트",
+			"label": "{{ultraBeast}}",
 			"description": "울트라비스트(네크로즈마 등)."
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "게임 정보로만 판단 가능 — 현재 해당 종의 메가에너지가 충분히 모여 있는 경우."
+			"description": "게임 정보로만 판단 가능 — 현재 해당 종의 {{megaEnergy}}가 충분히 모여 있는 경우."
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "개체값이나 랭크와 무관하게 모든 섀도 포켓몬."
 		},
 		"dynamax": {
-			"label": "다이맥스",
+			"label": "{{dynamax}}",
 			"description": "다이맥스 가능한 포켓몬."
 		},
 		"fusion": {
-			"label": "합체",
+			"label": "{{fusion}}",
 			"description": "합체 가능하거나 이미 합체된 포켓몬."
 		},
 		"gigantamax": {
-			"label": "거다이맥스",
+			"label": "{{gigantamax}}",
 			"description": "거다이맥스 가능한 포켓몬."
 		},
 		"background": {
-			"label": "배경",
-			"description": "프로필에 희귀하거나 특별한 지역 배경이 있는 포켓몬."
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "스페셜 배경",
-			"description": "프로필에 특별한 이벤트 배경이 있는 포켓몬."
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "색이 다른",
+			"label": "{{shiny}}",
 			"description": "모든 색이 다른 포켓몬."
 		},
 		"costume": {
-			"label": "코스튬",
+			"label": "{{costume}}",
 			"description": "특별 이벤트 코스튬을 착용한 포켓몬."
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "검색 문자열 복사",
 	"copied": "복사됨 ✓",
 	"panelSummary": {
-		"topGreat": "그레이트 리그 상위 {{n}}",
-		"topUltra": "울트라 리그 상위 {{n}}",
-		"topMaster": "마스터 리그 상위 {{n}}",
+		"topGreat": "{{league}} 상위 {{n}}",
+		"topUltra": "{{league}} 상위 {{n}}",
+		"topMaster": "{{league}} 상위 {{n}}",
 		"topRaid": "{{raid}} 상위 {{n}}",
 		"cpKept": "{{cp}} {{cpValue}} 이상 보호",
 		"cpUnder": "{{cp}} {{cpValue}} 미만",

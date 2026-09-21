@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Arena-Kämpfe höherer Stufe", "short": "Höhere Stufe" },
-			"tier3": { "full": "Arena-Kämpfe Stufe 3", "short": "Stufe 3" },
-			"tier1": { "full": "Arena-Kämpfe Stufe 1", "short": "Stufe 1" }
+			"higher": { "full": "{{raid}}s höherer Stufe", "short": "Höhere Stufe" },
+			"tier3": { "full": "{{raid}}s Stufe 3", "short": "Stufe 3" },
+			"tier1": { "full": "{{raid}}s Stufe 1", "short": "Stufe 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Weitere Arena-Kämpfe",
+		"otherRaids": "Weitere {{raid}}s",
 		"nothingScheduled": "Nichts geplant.",
 		"nowSlot": "Jetzt"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "Boni",
 		"groups": {
 			"featuredSpawns": "Vorgestellte Fundorte",
-			"featuredRaids": "Vorgestellte Arena-Kämpfe",
-			"researchEncounters": "Forschungsbegegnungen",
+			"featuredRaids": "Vorgestellte {{raid}}s",
+			"researchEncounters": "Feldforschungsbegegnungen",
 			"eggs": "Eier",
 			"incense": "Rauch",
 			"lures": "Lockmodule"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "Keine Rocket-Aufstellungen.",
-		"typeGrunt": "{{type}}-Rüpel",
-		"genericGrunt": "Rüpel",
 		"slotReward": "Belohnung Platz {{slot}}",
 		"slotHeader": "Platz {{slot}}",
 		"catchableTag": "fangbar"

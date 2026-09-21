@@ -5,7 +5,7 @@
 		"appLanguage": "Idioma da aplicação",
 		"gameLanguage": "Idioma do jogo",
 		"sprites": "Sprites",
-		"raidRanking": "Ranking de reide",
+		"raidRanking": "Ranking de {{raid}}",
 		"bestBuddy": "Considerar Melhor Amigo",
 		"off": "Desligado",
 		"on": "Ligado",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "Considerar Melhor Amigo",
-			"desc": "Tratar o nível 51 como alcançável — a tabela de IVs, as strings de eliminação/pesquisa, o CP máximo, o seletor de nível, os melhores IVs/percentil, os contadores de reide e o DPS/TDO/eDPS passam todos a avaliar até ao nível 51 em vez de 50."
+			"desc": "Tratar o nível 51 como alcançável — a tabela de IVs, as strings de eliminação/pesquisa, o CP máximo, o seletor de nível, os melhores IVs/percentil, os contadores de reide e o DPS/TDO passam todos a avaliar até ao nível 51 em vez de 50."
 		},
 		"footer": "As preferências são guardadas neste dispositivo."
 	},
 	"spriteOptions": {
 		"official": "Oficial",
 		"go": "Pokémon GO",
-		"shiny": "GO brilhante"
+		"shiny": "GO {{shiny}}"
 	},
 	"toggle": {
 		"off": "Desligado",

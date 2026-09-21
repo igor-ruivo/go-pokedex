@@ -56,7 +56,7 @@
 		"bestMovesetByType": "ท่าที่ดีที่สุดตามธาตุ",
 		"nextMovesetTitle": "แตะเพื่อดูชุดท่าถัดไป",
 		"selectTypeTitle": "แตะเพื่อเลือกธาตุนี้",
-		"ivsBarelyMatterPrefix": "IV แทบไม่มีผลในเรด — เน้นค่าที่สูงที่สุด",
+		"ivsBarelyMatterPrefix": "IV แทบไม่มีผลใน{{raid}} — เน้นค่าที่สูงที่สุด",
 		"attackWord": "โจมตี"
 	},
 	"pvp": {
@@ -71,14 +71,14 @@
 		"perfection": "ความสมบูรณ์แบบ",
 		"cp": "CP",
 		"cpAtLevel": "{{cp}} @ L{{level}}",
-		"bestSpreadFor": "ค่าที่ดีที่สุดสำหรับ{{league}}:",
+		"additionalBestSpreadFor": "ค่าที่ดีที่สุดเพิ่มเติมสำหรับ{{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP ที่ L{{level}}",
 		"purifyWarning": "⚠️ โปรดทราบว่าการเพียวริฟายจะเพิ่ม IV +2 ให้ทุกค่าสแตท",
 		"purifyUnreachableWarning": "⚠️ ค่าอันดับ 1 นั้นไม่สามารถเข้าถึงได้แม้จะเพียวริฟาย — การเพียวริฟายจะเพิ่มทุกค่าสแตทให้อย่างน้อย 2 เสมอ ดังนั้นเชโดว์จะไม่มีทางต่ำกว่านั้นไม่ว่า IV เดิมจะเป็นเท่าไร",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "อันดับ 1 {{league}}"
+			"rank1": "#1 {{league}}"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "ระดับ 1",
 			"t3": "ระดับ 3",
-			"mega": "เมก้า",
 			"t5": "ระดับ 5",
 			"elite": "อีลีท",
-			"legendaryMega": "เลเจนดารีเมก้า",
-			"primal": "ไพรมอล",
+			"legendaryMega": "{{legendary}}{{mega}}",
 			"superMega": "ซูเปอร์เมก้า"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{raid}}{{tier}} · {{hp}} HP",
 		"partyOf": "ทีม {{size}} ตัว",
 		"friendLabel": "เพื่อน{{label}}",
-		"megaAuraSummary": "ออร่าเมก้า{{type}}",
-		"megaLevelSummary": "เมก้าเลเวล: {{label}}",
+		"megaAuraSummary": "ออร่า{{mega}}{{type}}",
+		"megaLevelSummary": "{{mega}}เลเวล: {{label}}",
 		"configHide": "ซ่อน",
 		"configEdit": "แก้ไข",
 		"clear": "ล้าง",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{raid}}{{tier}} · {{hp}} HP",
 		"weather_field": "สภาพอากาศ",
 		"weatherHint": "×1.2 · {{types}}",
-		"megaAura": "ออร่าเมก้า",
-		"noMegaOnTeam": "ไม่มีเมก้าในทีม",
-		"megaOfType": "เมก้าธาตุ{{type}}",
+		"megaAura": "ออร่า{{mega}}",
+		"noMegaOnTeam": "ไม่มี{{mega}}ในทีม",
+		"megaOfType": "{{mega}}ธาตุ{{type}}",
 		"megaAuraHint": "×1.3 {{type}} · ×1.1 ธาตุอื่น",
-		"megaLevelField": "เมก้าเลเวล",
-		"megaLevelHint": "×{{mult}} กับท่าพลัสของเมก้า/ไพรมอลเอง",
+		"megaLevelField": "{{mega}}เลเวล",
+		"megaLevelHint": "×{{mult}} กับท่าพลัสของ{{mega}}/{{primal}}เอง",
 		"megaLevelHintExtra": " · +2 เลเวลตัวโจมตี",
 		"partyPower": "พลังทีม",
 		"solo": "เดี่ยว",
@@ -154,17 +152,17 @@
 		"friendshipHint": "×{{mult}} ความเสียหาย",
 		"helpSummary": "ค่าเหล่านี้หมายถึงอะไร?",
 		"help": {
-			"weatherFriendshipMegaAura": "สภาพอากาศ · ความเป็นเพื่อน · ออร่าเมก้า",
+			"weatherFriendshipMegaAura": "สภาพอากาศ · ความเป็นเพื่อน · ออร่า{{mega}}",
 			"weatherFriendshipMegaAuraDesc": "ตัวคูณความเสียหายของตัวโจมตีของคุณ ความเสียหายที่ได้รับใช้ค่าคงที่เสมอ ดังนั้นท่าของบอสจะไม่เปลี่ยนตัวเลขเหล่านี้",
-			"megaLevelDesc": "เมก้าเลเวลของเมก้าหรือไพรมอล (เพิ่มด้วยเมก้าเอนเนอร์จีหลังวิวัฒนาการ) จะเพิ่มพลังให้เฉพาะท่าชาร์จโบนัส “พลัส” เท่านั้น — ท่าอื่นในชุดท่าจะไม่ได้รับผล ซูเปอร์แม็กซ์เลเวลยังให้ตัวโจมตี +2 เลเวลที่มีผล ไม่ว่าจะมีท่าพลัสหรือไม่",
-			"bossTierDesc": "กำหนดค่า HP ของบอส (ใช้ใน eDPS) และตัวคูณ CPM ที่ใช้กับการป้องกันของบอส คำนวณจากตัวบอส — เปลี่ยนได้สำหรับเรดชั้นยอด"
+			"megaLevelDesc": "{{mega}}เลเวลของ{{mega}}หรือ{{primal}} (เพิ่มด้วย{{megaEnergy}}หลังวิวัฒนาการ) จะเพิ่มพลังให้เฉพาะท่าชาร์จโบนัส \"พลัส\" เท่านั้น — ท่าอื่นในชุดท่าจะไม่ได้รับผล ซูเปอร์แม็กซ์เลเวลยังให้ตัวโจมตี +2 เลเวลที่มีผล ไม่ว่าจะมีท่าพลัสหรือไม่",
+			"bossTierDesc": "กำหนดค่า HP ที่แสดงของบอส และตัวคูณ CPM ที่ใช้กับการป้องกันของบอส คำนวณจากตัวบอส — เปลี่ยนได้สำหรับเรดชั้นยอด"
 		},
-		"includeMegas": "รวมเมก้า",
-		"includeShadows": "รวมเชโดว์",
+		"includeMegas": "รวม{{mega}}",
+		"includeShadows": "รวม{{shadow}}",
 		"noCountersMatch": "ไม่มีตัวสวนกลับที่ตรงกับตัวกรองเหล่านี้"
 	},
 	"ivTable": {
-		"notForRaids": "อันดับ IV ไม่ใช้กับเรด — เลือกเกรท อัลตร้า หรือมาสเตอร์ด้านบน",
+		"notForRaids": "อันดับ IV ไม่ใช้กับ{{raid}} — เลือก{{great}} {{ultra}} หรือ{{master}}ด้านบน",
 		"heading": "{{league}} · ทั้งหมด 4,096 ค่า IV ของ{{shadow}}{{name}}",
 		"fieldAriaLabel": "IV {{label}}, 0 ถึง 15",
 		"clearAriaLabel": "ล้าง",

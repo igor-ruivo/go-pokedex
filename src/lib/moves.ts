@@ -2,6 +2,7 @@ import type { GameLanguage } from '../contexts/language-context';
 import type { BuffsType, IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
+import { sentenceCase } from './format';
 
 /**
  * PvP fast-move duration in turns. A PvP turn is 0.5 s, and `pvpCooldown` is
@@ -109,7 +110,7 @@ export const buffInfo = (buffs: BuffsType | undefined, gl: GameLanguage): BuffIn
 		if (!v) continue;
 		const dir: 'raise' | 'lower' = v > 0 ? 'raise' : 'lower';
 		const translatorKey = BUFF_KEY_LOOKUP[who][stat][dir];
-		badges.push({ label: gameTranslator(translatorKey, gl), magnitude: Math.abs(v) });
+		badges.push({ label: sentenceCase(gameTranslator(translatorKey, gl)), magnitude: Math.abs(v) });
 	}
 	if (badges.length === 0) return null;
 

@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "Pertahankan Liga Hebat teratas",
 		"ariaKeepTopUltra": "Pertahankan Liga Ultra teratas",
 		"ariaKeepTopMaster": "Pertahankan Liga Master teratas",
-		"ariaKeepTopRaid": "Pertahankan attacker raid teratas"
+		"ariaKeepTopRaid": "Pertahankan attacker {{raid}} teratas"
 	},
-	"metaKnobsSubtitle": "Pertahankan Pokémon meta teratas saat ini per liga/raid",
+	"metaKnobsSubtitle": "Pertahankan Pokémon meta teratas saat ini per liga/{{raid}}",
 	"badIvKnobsSubtitle": "Mode sederhana menukar sedikit akurasi demi string yang lebih pendek — lihat tooltip pada toggle",
 	"tradeKnobsSubtitle": "Sebuah spesies hanya perlu melewati SATU dari empat batas ini untuk disarankan — Hebat dan Ultra juga mensyaratkan pertukaran benar-benar bisa mencapai spread terbaiknya (lihat teks bantuan di atas)",
 	"simplifiedTrashTooltip": "Menukar akurasi demi string yang lebih pendek: melewatkan pencarian kesetaraan stat product Liga Master (tanpa batas) — hanya hundo persis (dilindungi di mana pun, tanpa syarat, lewat pengecualian global !4*) yang tetap dilindungi di sana. Perlindungan Hebat/Ultra/raid tidak terpengaruh.",
@@ -71,7 +71,7 @@
 	"toggleOff": "Mati",
 	"protectionMeta": {
 		"favorite": {
-			"label": "Favorit",
+			"label": "{{favorite}}",
 			"description": "Pokémon yang ditandai Favorit di dalam game."
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "Pokémon dengan nama panggilan atau tag kustom."
 		},
 		"legendary": {
-			"label": "Legendaris",
+			"label": "{{legendary}}",
 			"description": "Legendaris box (Mewtwo, Lugia, …)."
 		},
 		"mythical": {
-			"label": "Mitos",
+			"label": "{{mythical}}",
 			"description": "Pokémon mitos (Mew, Celebi, …)."
 		},
 		"ultraBeast": {
-			"label": "Ultra Beast",
+			"label": "{{ultraBeast}}",
 			"description": "Ultra Beast (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "Hanya game yang tahu ini — butuh cukup Energi Mega yang tersimpan untuk spesies itu saat ini."
+			"description": "Hanya game yang tahu ini — butuh cukup {{megaEnergy}} yang tersimpan untuk spesies itu saat ini."
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "Setiap Pokémon Shadow, terlepas dari IV atau peringkatnya sendiri."
 		},
 		"dynamax": {
-			"label": "Dynamax",
+			"label": "{{dynamax}}",
 			"description": "Pokémon yang bisa Dynamax."
 		},
 		"fusion": {
-			"label": "Fusion",
+			"label": "{{fusion}}",
 			"description": "Pokémon yang bisa difusi, atau sudah difusi."
 		},
 		"gigantamax": {
-			"label": "Gigantamax",
+			"label": "{{gigantamax}}",
 			"description": "Pokémon yang bisa Gigantamax."
 		},
 		"background": {
-			"label": "Latar Belakang",
-			"description": "Pokémon dengan latar belakang langka atau lokasi khusus di profilnya."
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "Latar Belakang Spesial",
-			"description": "Pokémon dengan latar belakang acara khusus di profilnya."
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "Shiny",
+			"label": "{{shiny}}",
 			"description": "Setiap Pokémon Shiny."
 		},
 		"costume": {
-			"label": "Kostum",
+			"label": "{{costume}}",
 			"description": "Pokémon yang mengenakan kostum Event Spesial."
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "Salin string pencarian",
 	"copied": "Tersalin ✓",
 	"panelSummary": {
-		"topGreat": "Top {{n}} Liga Hebat",
-		"topUltra": "Top {{n}} Liga Ultra",
-		"topMaster": "Top {{n}} Liga Master",
+		"topGreat": "Top {{n}} {{league}}",
+		"topUltra": "Top {{n}} {{league}}",
+		"topMaster": "Top {{n}} {{league}}",
 		"topRaid": "Top {{n}} {{raid}}",
 		"cpKept": "{{cp}} ≥ {{cpValue}} dipertahankan",
 		"cpUnder": "{{cp}} < {{cpValue}}",

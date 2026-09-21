@@ -18,7 +18,7 @@
 	"hint": {
 		"show": "Rangannahmen anzeigen",
 		"hide": "Rangannahmen ausblenden",
-		"text": "Arena-Kampf-Ränge gehen von der besten Schnell- + Ladeattacken-Kombo jedes Pokémon aus, die effektiven {{type}}-Schaden (×1,6) gegen einen Stufe-5-Boss ohne Schatten (200 Verteidigung, Stufe 40) verursacht, mit einem Stufe-50-Angreifer (15 Angriffs-IW) ohne Wetter-, Freundschafts- oder Team-Mega-Aura-Boni. Super-Mega-Pokémon werden mit maximaler Mega-Stufe gerankt."
+		"text": "{{raid}}-Ränge gehen von der besten Schnell- + Ladeattacken-Kombo jedes Pokémon aus, die effektiven {{type}}-Schaden (×1,6) gegen einen Stufe-5-Boss ohne Schatten (200 Verteidigung, Stufe 40) verursacht, mit einem Stufe-50-Angreifer (15 Angriffs-IW) ohne Wetter-, Freundschafts- oder Team-{{mega}}-Aura-Boni. Super-{{mega}}-Pokémon werden mit maximaler {{mega}}-Stufe gerankt."
 	},
 	"empty": {
 		"pickType": "Wähle einen Typ im Filter, um die besten {{raid}}-Angreifer dieses Typs zu sehen.",

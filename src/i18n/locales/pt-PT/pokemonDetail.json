@@ -56,7 +56,7 @@
 		"bestMovesetByType": "Melhor combinação de golpes por tipo",
 		"nextMovesetTitle": "Toque para a combinação seguinte",
 		"selectTypeTitle": "Toque para selecionar este tipo",
-		"ivsBarelyMatterPrefix": "Os IVs quase não importam em reides — procure o mais alto",
+		"ivsBarelyMatterPrefix": "Os IVs quase não importam em {{raid}}s — procure o mais alto",
 		"attackWord": "Ataque"
 	},
 	"pvp": {
@@ -71,14 +71,14 @@
 		"perfection": "Perfeição",
 		"cp": "PC",
 		"cpAtLevel": "{{cp}} @ Nv{{level}}",
-		"bestSpreadFor": "Melhor combinação para {{league}}:",
+		"additionalBestSpreadFor": "Combinação adicional para {{league}}:",
 		"bestSpreadResult": "→ {{cp}} PC ao Nv{{level}}.",
 		"purifyWarning": "⚠️ Tenha em atenção que purificar concede +2 IVs em cada atributo.",
 		"purifyUnreachableWarning": "⚠️ Essa combinação de rank 1 é inalcançável através da purificação — a purificação eleva sempre cada atributo a pelo menos 2, pelo que um Sombroso nunca poderá ficar abaixo desse valor, independentemente dos seus próprios IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "Rank 1 {{league}}"
+			"rank1": "#1 {{league}}"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "Nível 1",
 			"t3": "Nível 3",
-			"mega": "Mega",
 			"t5": "Nível 5",
 			"elite": "Elite",
-			"legendaryMega": "Mega Lendário",
-			"primal": "Primígeno",
+			"legendaryMega": "{{legendary}} {{mega}}",
 			"superMega": "Super Mega"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{raid}} {{tier}} · {{hp}} PS",
 		"partyOf": "Grupo de {{size}}",
 		"friendLabel": "Amigo {{label}}",
-		"megaAuraSummary": "Aura Mega {{type}}",
-		"megaLevelSummary": "Nível Mega: {{label}}",
+		"megaAuraSummary": "Aura {{mega}} {{type}}",
+		"megaLevelSummary": "Nível {{mega}}: {{label}}",
 		"configHide": "Ocultar",
 		"configEdit": "Editar",
 		"clear": "Limpar",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{raid}} {{tier}} · {{hp}} PS",
 		"weather_field": "Clima",
 		"weatherHint": "×1,2 · {{types}}",
-		"megaAura": "Aura Mega",
-		"noMegaOnTeam": "Sem Mega na equipa",
-		"megaOfType": "Mega {{type}}",
+		"megaAura": "Aura {{mega}}",
+		"noMegaOnTeam": "Sem {{mega}} na equipa",
+		"megaOfType": "{{mega}} {{type}}",
 		"megaAuraHint": "×1,3 {{type}} · ×1,1 outros",
-		"megaLevelField": "Nível Mega",
-		"megaLevelHint": "×{{mult}} no golpe carregado “Plus” próprio do Mega/Primígeno",
+		"megaLevelField": "Nível {{mega}}",
+		"megaLevelHint": "×{{mult}} no golpe carregado “Plus” próprio do {{mega}}/{{primal}}",
 		"megaLevelHintExtra": " · +2 níveis de atacante",
 		"partyPower": "Poder de Grupo",
 		"solo": "Solo",
@@ -154,17 +152,17 @@
 		"friendshipHint": "×{{mult}} de dano",
 		"helpSummary": "O que significa isto?",
 		"help": {
-			"weatherFriendshipMegaAura": "Clima · Amizade · Aura Mega",
+			"weatherFriendshipMegaAura": "Clima · Amizade · Aura {{mega}}",
 			"weatherFriendshipMegaAuraDesc": "Multiplicadores de dano nos seus atacantes. O dano recebido usa sempre uma constante fixa, pelo que os próprios golpes do chefe nunca alteram estes números.",
-			"megaLevelDesc": "O Nível Mega próprio de um Mega ou Primígeno (aumentado com Energia Mega depois de evoluir) potencia apenas o seu golpe carregado bónus “Plus” — nenhum outro golpe do seu kit é afetado. O Nível Super Máximo também dá ao atacante +2 níveis efetivos, tenha ou não um golpe Plus.",
-			"bossTierDesc": "Define os PS do chefe (usado pelo eDPS) e o CPM aplicado à sua defesa. Inferido a partir do chefe — altere para Reides de Elite."
+			"megaLevelDesc": "O Nível {{mega}} próprio de um {{mega}} ou {{primal}} (aumentado com {{megaEnergy}} depois de evoluir) potencia apenas o seu golpe carregado bónus “Plus” — nenhum outro golpe do seu kit é afetado. O Nível Super Máximo também dá ao atacante +2 níveis efetivos, tenha ou não um golpe Plus.",
+			"bossTierDesc": "Define os PS apresentados do chefe e o CPM aplicado à sua defesa. Inferido a partir do chefe — altere para Reides de Elite."
 		},
-		"includeMegas": "Incluir Megas",
-		"includeShadows": "Incluir Sombrosos",
+		"includeMegas": "Incluir {{mega}}s",
+		"includeShadows": "Incluir {{shadow}}s",
 		"noCountersMatch": "Nenhum counter corresponde a estes filtros."
 	},
 	"ivTable": {
-		"notForRaids": "As classificações de IV não se aplicam a reides — escolha Grande, Ultra ou Mestra acima.",
+		"notForRaids": "As classificações de IV não se aplicam a {{raid}}s — escolha {{great}}, {{ultra}} ou {{master}} acima.",
 		"heading": "{{league}} · todas as 4.096 combinações de IV de {{shadow}}{{name}}",
 		"fieldAriaLabel": "IV de {{label}}, de 0 a 15",
 		"clearAriaLabel": "Limpar",

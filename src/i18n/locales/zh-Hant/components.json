@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "減少",
 		"increaseAriaLabel": "增加"
 	},
-	"shadowMark": {
-		"alt": "暗影"
-	},
 	"searchBox": {
 		"placeholder": "搜尋寶可夢或招式…",
 		"ariaLabel": "搜尋寶可夢或招式",
 		"clearAriaLabel": "清除搜尋",
-		"shadowSuffix": "暗影",
 		"fast": "快速",
 		"charged": "特殊"
 	},

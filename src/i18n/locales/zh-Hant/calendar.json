@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "高星級團體戰", "short": "高星級" },
-			"tier3": { "full": "三星級團體戰", "short": "三星級" },
-			"tier1": { "full": "一星級團體戰", "short": "一星級" }
+			"higher": { "full": "高星級{{raid}}", "short": "高星級" },
+			"tier3": { "full": "三星級{{raid}}", "short": "三星級" },
+			"tier1": { "full": "一星級{{raid}}", "short": "一星級" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "其他團體戰",
+		"otherRaids": "其他{{raid}}",
 		"nothingScheduled": "目前沒有排定的項目。",
 		"nowSlot": "現在"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "加成",
 		"groups": {
 			"featuredSpawns": "特色出沒",
-			"featuredRaids": "特色團體戰",
-			"researchEncounters": "研究遭遇",
+			"featuredRaids": "特色{{raid}}",
+			"researchEncounters": "田野調查遭遇",
 			"eggs": "蛋",
 			"incense": "薰香",
 			"lures": "誘餌"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "沒有火箭隊陣容資料。",
-		"typeGrunt": "{{type}} 系小嘍囉",
-		"genericGrunt": "小嘍囉",
 		"slotReward": "第 {{slot}} 格獎勵",
 		"slotHeader": "第 {{slot}} 格",
 		"catchableTag": "可捕捉"

@@ -10,7 +10,7 @@
 		"legacyFor": "Es un movimiento legado para"
 	},
 	"arena": {
-		"pve": "JcE · Incursiones y gimnasios",
+		"pve": "JcE · {{raid}} y gimnasios",
 		"pvp": "JcJ · Ligas"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "DAÑO",
 		"nrg": "ENERGÍA",
 		"dur": "DUR",
-		"turns": "Turnos",
+		"turns": "TURNOS",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Pokémon que pueden aprender {{name}}",
 	"tiles": {
 		"recommended": "Recomendado",
-		"mega": "Mega",
 		"elite": "Elite",
 		"legacy": "Legado"
 	},

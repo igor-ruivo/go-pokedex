@@ -18,12 +18,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Incursiones de nivel superior", "short": "Nivel superior" },
-			"tier3": { "full": "Incursiones de nivel 3", "short": "Nivel 3" },
-			"tier1": { "full": "Incursiones de nivel 1", "short": "Nivel 1" }
+			"higher": { "full": "{{raid}} de nivel superior", "short": "Nivel superior" },
+			"tier3": { "full": "{{raid}} de nivel 3", "short": "Nivel 3" },
+			"tier1": { "full": "{{raid}} de nivel 1", "short": "Nivel 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Otras incursiones",
+		"otherRaids": "Otra {{raid}}",
 		"nothingScheduled": "Nada programado.",
 		"nowSlot": "Ahora"
 	},
@@ -46,8 +46,8 @@
 		"bonuses": "Bonificaciones",
 		"groups": {
 			"featuredSpawns": "Apariciones destacadas",
-			"featuredRaids": "Incursiones destacadas",
-			"researchEncounters": "Encuentros de investigación",
+			"featuredRaids": "{{raid}} destacada",
+			"researchEncounters": "Encuentros de Investigación de Campo",
 			"eggs": "Huevos",
 			"incense": "Incienso",
 			"lures": "Módulos señuelo"
@@ -56,8 +56,6 @@
 	},
 	"rockets": {
 		"noLineups": "Sin alineaciones de Rocket.",
-		"typeGrunt": "Recluta de tipo {{type}}",
-		"genericGrunt": "Recluta",
 		"slotReward": "Recompensa del puesto {{slot}}",
 		"slotHeader": "Puesto {{slot}}",
 		"catchableTag": "capturable"

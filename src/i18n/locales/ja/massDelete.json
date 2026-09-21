@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "グレートリーグ上位を保護",
 		"ariaKeepTopUltra": "ハイパーリーグ上位を保護",
 		"ariaKeepTopMaster": "マスターリーグ上位を保護",
-		"ariaKeepTopRaid": "レイド上位アタッカーを保護"
+		"ariaKeepTopRaid": "{{raid}}上位アタッカーを保護"
 	},
-	"metaKnobsSubtitle": "リーグ/レイドごとに現在の環境上位ポケモンを保護",
+	"metaKnobsSubtitle": "リーグ/{{raid}}ごとに現在の環境上位ポケモンを保護",
 	"badIvKnobsSubtitle": "簡易モードは精度と引き換えに文字列を短縮します — トグルのツールチップを参照",
 	"tradeKnobsSubtitle": "種族はこの4つの基準のうち1つを満たせば提案されます — グレートとハイパーは、交換で実際にその最良配分に到達できることも条件です(上の説明を参照)",
 	"simplifiedTrashTooltip": "精度と引き換えに文字列を短縮します — マスターリーグ(CP上限なし)のステータス積タイの個体を探すのを省略し、完全な個体(すべてのモードで無条件に保護される!4*除外により)のみをそこで保護します。グレート・ハイパー・レイドの保護には影響しません。",
@@ -71,7 +71,7 @@
 	"toggleOff": "オフ",
 	"protectionMeta": {
 		"favorite": {
-			"label": "お気に入り",
+			"label": "{{favorite}}",
 			"description": "ゲーム内でお気に入りに設定されたポケモン。"
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "ニックネームまたはカスタムタグが付いたポケモン。"
 		},
 		"legendary": {
-			"label": "伝説",
+			"label": "{{legendary}}",
 			"description": "伝説のポケモン(ミュウツー、ルギアなど)。"
 		},
 		"mythical": {
-			"label": "幻",
+			"label": "{{mythical}}",
 			"description": "幻のポケモン(ミュウ、セレビィなど)。"
 		},
 		"ultraBeast": {
-			"label": "ウルトラビースト",
+			"label": "{{ultraBeast}}",
 			"description": "ウルトラビースト(ネクロズマなど)。"
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "ゲーム側の情報のみで判定 — 現在その種族のメガエナジーが必要数蓄積されている場合。"
+			"description": "ゲーム側の情報のみで判定 — 現在その種族の{{megaEnergy}}が必要数蓄積されている場合。"
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "個体値やランクに関係なく、すべてのシャドウポケモン。"
 		},
 		"dynamax": {
-			"label": "ダイマックス",
+			"label": "{{dynamax}}",
 			"description": "ダイマックスできるポケモン。"
 		},
 		"fusion": {
-			"label": "フュージョン",
+			"label": "{{fusion}}",
 			"description": "フュージョンできる、またはすでにフュージョン済みのポケモン。"
 		},
 		"gigantamax": {
-			"label": "キョダイマックス",
+			"label": "{{gigantamax}}",
 			"description": "キョダイマックスできるポケモン。"
 		},
 		"background": {
-			"label": "背景",
-			"description": "プロフィールにレアまたは特別なロケーション背景を持つポケモン。"
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "スペシャル背景",
-			"description": "プロフィールに特別なイベント背景を持つポケモン。"
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "色違い",
+			"label": "{{shiny}}",
 			"description": "すべての色違いポケモン。"
 		},
 		"costume": {
-			"label": "コスチューム",
+			"label": "{{costume}}",
 			"description": "特別なイベントコスチュームを着たポケモン。"
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "検索文字列をコピー",
 	"copied": "コピーしました ✓",
 	"panelSummary": {
-		"topGreat": "グレートリーグ上位{{n}}",
-		"topUltra": "ハイパーリーグ上位{{n}}",
-		"topMaster": "マスターリーグ上位{{n}}",
+		"topGreat": "{{league}}上位{{n}}",
+		"topUltra": "{{league}}上位{{n}}",
+		"topMaster": "{{league}}上位{{n}}",
 		"topRaid": "{{raid}}上位{{n}}",
 		"cpKept": "{{cp}}{{cpValue}}以上を保護",
 		"cpUnder": "{{cp}}{{cpValue}}未満",

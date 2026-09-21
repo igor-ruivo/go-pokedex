@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Diminuer",
 		"increaseAriaLabel": "Augmenter"
 	},
-	"shadowMark": {
-		"alt": "Ombre"
-	},
 	"searchBox": {
 		"placeholder": "Rechercher un Pokémon ou une capacité…",
 		"ariaLabel": "Rechercher un Pokémon ou une capacité",
 		"clearAriaLabel": "Effacer la recherche",
-		"shadowSuffix": "Ombre",
 		"fast": "Rapide",
 		"charged": "Chargée"
 	},

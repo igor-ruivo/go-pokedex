@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Üst Seviye Baskınlar", "short": "Üst Seviye" },
-			"tier3": { "full": "3. Seviye Baskınlar", "short": "3. Seviye" },
-			"tier1": { "full": "1. Seviye Baskınlar", "short": "1. Seviye" }
+			"higher": { "full": "Üst Seviye {{raid}}lar", "short": "Üst Seviye" },
+			"tier3": { "full": "3. Seviye {{raid}}lar", "short": "3. Seviye" },
+			"tier1": { "full": "1. Seviye {{raid}}lar", "short": "1. Seviye" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Diğer baskınlar",
+		"otherRaids": "Diğer {{raid}}lar",
 		"nothingScheduled": "Planlanmış bir şey yok.",
 		"nowSlot": "Şimdi"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "Bonuslar",
 		"groups": {
 			"featuredSpawns": "Öne çıkan ortaya çıkışlar",
-			"featuredRaids": "Öne çıkan baskınlar",
-			"researchEncounters": "Araştırma karşılaşmaları",
+			"featuredRaids": "Öne çıkan {{raid}}",
+			"researchEncounters": "Alan Araştırması Karşılaşmaları",
 			"eggs": "Yumurtalar",
 			"incense": "Tütsü",
 			"lures": "Çekici Modül"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "Rocket kadrosu yok.",
-		"typeGrunt": "{{type}} Çaylağı",
-		"genericGrunt": "Çaylak",
 		"slotReward": "{{slot}}. slot ödülü",
 		"slotHeader": "{{slot}}. slot",
 		"catchableTag": "yakalanabilir"

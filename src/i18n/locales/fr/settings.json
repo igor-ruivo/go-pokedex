@@ -5,7 +5,7 @@
 		"appLanguage": "Langue de l'appli",
 		"gameLanguage": "Langue du jeu",
 		"sprites": "Sprites",
-		"raidRanking": "Classement des raids",
+		"raidRanking": "Classement des {{raid}}s",
 		"bestBuddy": "Prendre en compte le Meilleur Ami",
 		"off": "Désactivé",
 		"on": "Activé",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "Prendre en compte le Meilleur Ami",
-			"desc": "Considérer le niveau 51 comme atteignable — le tableau des IV, les chaînes de suppression/recherche, les PC max, le sélecteur de niveau, les meilleurs IV/percentile, les calculs de raid et les DPS/TDO/eDPS évaluent alors jusqu'au niveau 51 au lieu de 50."
+			"desc": "Considérer le niveau 51 comme atteignable — le tableau des IV, les chaînes de suppression/recherche, les PC max, le sélecteur de niveau, les meilleurs IV/percentile, les calculs de raid et les DPS/TDO évaluent alors jusqu'au niveau 51 au lieu de 50."
 		},
 		"footer": "Les préférences sont enregistrées sur cet appareil."
 	},
 	"spriteOptions": {
 		"official": "Officiel",
 		"go": "Pokémon GO",
-		"shiny": "GO chromatique"
+		"shiny": "GO {{shiny}}"
 	},
 	"toggle": {
 		"off": "Désactivé",

@@ -56,7 +56,7 @@
 		"bestMovesetByType": "Türe göre en iyi hareket seti",
 		"nextMovesetTitle": "Sonraki hareket seti için dokunun",
 		"selectTypeTitle": "Bu türü seçmek için dokunun",
-		"ivsBarelyMatterPrefix": "Baskınlarda IV'ler neredeyse hiç önemli değildir — en yükseğini hedefleyin:",
+		"ivsBarelyMatterPrefix": "{{raid}}larda IV'ler neredeyse hiç önemli değildir — en yükseğini hedefleyin:",
 		"attackWord": "Saldırı"
 	},
 	"pvp": {
@@ -71,14 +71,14 @@
 		"perfection": "Mükemmellik",
 		"cp": "CP",
 		"cpAtLevel": "Sv{{level}}'de {{cp}}",
-		"bestSpreadFor": "{{league}} için en iyi dağılım:",
+		"additionalBestSpreadFor": "{{league}} için ek en iyi dağılım:",
 		"bestSpreadResult": "→ Sv{{level}}'de {{cp}} CP.",
 		"purifyWarning": "⚠️ Saflaştırmanın her istatistikte +2 IV kazandırdığını unutmayın.",
 		"purifyUnreachableWarning": "⚠️ O 1. sıradaki dağılımın kendisi saflaştırma yoluyla ulaşılamaz — saflaştırma her istatistiği her zaman en az 2'ye çıkarır, bu yüzden bir Gölge kendi IV'lerine bakılmaksızın asla bunun altına düşemez.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "{{league}} 1. Sıra"
+			"rank1": "{{league}} #1"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "1. Seviye",
 			"t3": "3. Seviye",
-			"mega": "Mega",
 			"t5": "5. Seviye",
 			"elite": "Elit",
-			"legendaryMega": "Efsanevi Mega",
-			"primal": "İlksel",
+			"legendaryMega": "{{legendary}} {{mega}}",
 			"superMega": "Süper Mega"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} HP",
 		"partyOf": "{{size}} kişilik takım",
 		"friendLabel": "{{label}} Arkadaş",
-		"megaAuraSummary": "Mega {{type}} auraSı",
-		"megaLevelSummary": "Mega Seviyesi: {{label}}",
+		"megaAuraSummary": "{{mega}} {{type}} auraSı",
+		"megaLevelSummary": "{{mega}} Seviyesi: {{label}}",
 		"configHide": "Gizle",
 		"configEdit": "Düzenle",
 		"clear": "Temizle",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{tier}} {{raid}} · {{hp}} HP",
 		"weather_field": "Hava Durumu",
 		"weatherHint": "×1,2 · {{types}}",
-		"megaAura": "Mega aurası",
-		"noMegaOnTeam": "Takımda Mega yok",
-		"megaOfType": "Mega {{type}}",
+		"megaAura": "{{mega}} aurası",
+		"noMegaOnTeam": "Takımda {{mega}} yok",
+		"megaOfType": "{{mega}} {{type}}",
 		"megaAuraHint": "{{type}} için ×1,3 · diğerleri için ×1,1",
-		"megaLevelField": "Mega Seviyesi",
-		"megaLevelHint": "Bir Mega/İlksel'in kendi Artı hareketinde ×{{mult}}",
+		"megaLevelField": "{{mega}} Seviyesi",
+		"megaLevelHint": "Bir {{mega}}/{{primal}}'in kendi Artı hareketinde ×{{mult}}",
 		"megaLevelHintExtra": " · +2 saldırgan seviyesi",
 		"partyPower": "Takım Gücü",
 		"solo": "Solo",
@@ -154,17 +152,17 @@
 		"friendshipHint": "×{{mult}} hasar",
 		"helpSummary": "Bunlar ne anlama geliyor?",
 		"help": {
-			"weatherFriendshipMegaAura": "Hava Durumu · Arkadaşlık · Mega aurası",
+			"weatherFriendshipMegaAura": "Hava Durumu · Arkadaşlık · {{mega}} aurası",
 			"weatherFriendshipMegaAuraDesc": "Saldırganlarınızdaki hasar çarpanları. Gelen hasar her zaman sabit bir değer kullanır, bu yüzden patronun kendi hareketleri bu sayıları asla değiştirmez.",
-			"megaLevelDesc": "Bir Mega veya İlksel'in kendi Mega Seviyesi (evrimleştikten sonra Mega Enerjisi ile yükseltilir) sadece bonus “Artı” şarjlı saldırısını güçlendirir — kadrosundaki diğer her hareket etkilenmez. Süper Maks. Seviye ayrıca saldırgana Artı hareketi olsun olmasın +2 efektif Pokémon seviyesi verir.",
-			"bossTierDesc": "Patron HP'sini (eDPS tarafından kullanılır) ve savunmasına uygulanan CPM'yi belirler. Patrondan çıkarılır — Elit Baskınlar için değiştirin."
+			"megaLevelDesc": "Bir {{mega}} veya {{primal}}'in kendi {{mega}} Seviyesi (evrimleştikten sonra {{megaEnergy}} ile yükseltilir) sadece bonus “Artı” şarjlı saldırısını güçlendirir — kadrosundaki diğer her hareket etkilenmez. Süper Maks. Seviye ayrıca saldırgana Artı hareketi olsun olmasın +2 efektif Pokémon seviyesi verir.",
+			"bossTierDesc": "Patronun gösterilen HP'sini ve savunmasına uygulanan CPM'yi belirler. Patrondan çıkarılır — Elit Baskınlar için değiştirin."
 		},
-		"includeMegas": "Megaları Dahil Et",
-		"includeShadows": "Gölgeleri Dahil Et",
+		"includeMegas": "{{mega}} Dahil Et",
+		"includeShadows": "{{shadow}} Dahil Et",
 		"noCountersMatch": "Bu filtrelerle eşleşen karşı hamle yok."
 	},
 	"ivTable": {
-		"notForRaids": "IV sıralamaları baskınlar için geçerli değildir — yukarıdan Great, Ultra veya Master'ı seçin.",
+		"notForRaids": "IV sıralamaları {{raid}}lar için geçerli değildir — yukarıdan {{great}}, {{ultra}} veya {{master}}'ı seçin.",
 		"heading": "{{league}} · {{shadow}}{{name}} için tüm 4.096 IV dağılımı",
 		"fieldAriaLabel": "{{label}} IV, 0 ile 15 arası",
 		"clearAriaLabel": "Temizle",

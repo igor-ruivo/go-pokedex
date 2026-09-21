@@ -56,7 +56,7 @@
 		"bestMovesetByType": "Beste Attackenkombo nach Typ",
 		"nextMovesetTitle": "Tippen für die nächste Attackenkombo",
 		"selectTypeTitle": "Tippen, um diesen Typ auszuwählen",
-		"ivsBarelyMatterPrefix": "IWs spielen bei Arena-Kämpfen kaum eine Rolle — strebe die höchste",
+		"ivsBarelyMatterPrefix": "IWs spielen bei {{raid}}s kaum eine Rolle — strebe die höchste",
 		"attackWord": "Angriffs-IW an"
 	},
 	"pvp": {
@@ -71,14 +71,14 @@
 		"perfection": "Perfektion",
 		"cp": "WP",
 		"cpAtLevel": "{{cp}} @ Stufe {{level}}",
-		"bestSpreadFor": "Beste Verteilung für {{league}}:",
+		"additionalBestSpreadFor": "Zusätzliche beste Verteilung für {{league}}:",
 		"bestSpreadResult": "→ {{cp}} WP auf Stufe {{level}}.",
 		"purifyWarning": "⚠️ Beachte, dass Läutern +2 IWs auf jeden Wert gibt.",
 		"purifyUnreachableWarning": "⚠️ Diese Rang-1-Verteilung selbst ist durch Läutern nicht erreichbar — Läutern hebt jeden Wert immer auf mindestens 2 an, sodass ein Schatten-Pokémon unabhängig von seinen eigenen IWs nie darunter landen kann.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "Rang 1 {{league}}"
+			"rank1": "#1 {{league}}"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "Stufe 1",
 			"t3": "Stufe 3",
-			"mega": "Mega",
 			"t5": "Stufe 5",
 			"elite": "Elite",
-			"legendaryMega": "Legendäres Mega",
-			"primal": "Ur",
+			"legendaryMega": "{{legendary}} {{mega}}",
 			"superMega": "Super-Mega"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} KP",
 		"partyOf": "Team aus {{size}}",
 		"friendLabel": "{{label}}-Freund",
-		"megaAuraSummary": "Mega-{{type}}-Aura",
-		"megaLevelSummary": "Mega-Stufe: {{label}}",
+		"megaAuraSummary": "{{mega}}-{{type}}-Aura",
+		"megaLevelSummary": "{{mega}}-Stufe: {{label}}",
 		"configHide": "Ausblenden",
 		"configEdit": "Bearbeiten",
 		"clear": "Zurücksetzen",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{tier}} {{raid}} · {{hp}} KP",
 		"weather_field": "Wetter",
 		"weatherHint": "×1,2 · {{types}}",
-		"megaAura": "Mega-Aura",
-		"noMegaOnTeam": "Kein Mega im Team",
-		"megaOfType": "Mega-{{type}}",
+		"megaAura": "{{mega}}-Aura",
+		"noMegaOnTeam": "Kein {{mega}} im Team",
+		"megaOfType": "{{mega}}-{{type}}",
 		"megaAuraHint": "×1,3 {{type}} · ×1,1 andere",
-		"megaLevelField": "Mega-Stufe",
-		"megaLevelHint": "×{{mult}} auf die eigene Plus-Ladeattacke eines Mega-/Ur-Pokémon",
+		"megaLevelField": "{{mega}}-Stufe",
+		"megaLevelHint": "×{{mult}} auf die eigene Plus-Ladeattacke eines {{mega}}-/{{primal}}-Pokémon",
 		"megaLevelHintExtra": " · +2 Angreiferstufen",
 		"partyPower": "Team-Power",
 		"solo": "Solo",
@@ -154,17 +152,17 @@
 		"friendshipHint": "×{{mult}} Schaden",
 		"helpSummary": "Was bedeutet das?",
 		"help": {
-			"weatherFriendshipMegaAura": "Wetter · Freundschaft · Mega-Aura",
+			"weatherFriendshipMegaAura": "Wetter · Freundschaft · {{mega}}-Aura",
 			"weatherFriendshipMegaAuraDesc": "Schadensmultiplikatoren für deine Angreifer. Eingehender Schaden nutzt immer eine feste Konstante, die Angriffe des Bosses ändern diese Zahlen also nie.",
-			"megaLevelDesc": "Die Mega-Stufe eines Mega- oder Ur-Pokémon (durch Mega-Energie nach der Mega-Entwicklung erhöht) verstärkt nur seine Plus-Ladeattacke — jede andere Attacke im Set bleibt unverändert. Super-Max-Stufe gibt dem Angreifer außerdem +2 effektive Pokémon-Stufen, unabhängig davon, ob es überhaupt eine Plus-Attacke hat.",
-			"bossTierDesc": "Legt die Boss-KP (für eDPS genutzt) und den auf seine Verteidigung angewendeten KPM fest. Wird vom Boss abgeleitet — bei Elite-Arena-Kämpfen ändern."
+			"megaLevelDesc": "Die {{mega}}-Stufe eines {{mega}}- oder {{primal}}-Pokémon (durch {{megaEnergy}} nach der {{mega}}-Entwicklung erhöht) verstärkt nur seine Plus-Ladeattacke — jede andere Attacke im Set bleibt unverändert. Super-Max-Stufe gibt dem Angreifer außerdem +2 effektive Pokémon-Stufen, unabhängig davon, ob es überhaupt eine Plus-Attacke hat.",
+			"bossTierDesc": "Legt die angezeigten Boss-KP und den auf seine Verteidigung angewendeten KPM fest. Wird vom Boss abgeleitet — bei Elite-Arena-Kämpfen ändern."
 		},
-		"includeMegas": "Mega-Pokémon einschließen",
-		"includeShadows": "Schatten-Pokémon einschließen",
+		"includeMegas": "{{mega}}-Pokémon einschließen",
+		"includeShadows": "{{shadow}}-Pokémon einschließen",
 		"noCountersMatch": "Keine Konter entsprechen diesen Filtern."
 	},
 	"ivTable": {
-		"notForRaids": "IW-Ranglisten gelten nicht für Arena-Kämpfe — wähle oben Great, Ultra oder Master.",
+		"notForRaids": "IW-Ranglisten gelten nicht für {{raid}}s — wähle oben {{great}}, {{ultra}} oder {{master}}.",
 		"heading": "{{league}} · alle 4.096 IW-Verteilungen für {{shadow}}{{name}}",
 		"fieldAriaLabel": "{{label}}-IW, 0 bis 15",
 		"clearAriaLabel": "Zurücksetzen",

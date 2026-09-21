@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Raids de haut niveau", "short": "Haut niveau" },
-			"tier3": { "full": "Raids niveau 3", "short": "Niveau 3" },
-			"tier1": { "full": "Raids niveau 1", "short": "Niveau 1" }
+			"higher": { "full": "{{raid}}s de haut niveau", "short": "Haut niveau" },
+			"tier3": { "full": "{{raid}}s niveau 3", "short": "Niveau 3" },
+			"tier1": { "full": "{{raid}}s niveau 1", "short": "Niveau 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Autres raids",
+		"otherRaids": "Autres {{raid}}s",
 		"nothingScheduled": "Rien de prévu.",
 		"nowSlot": "Maintenant"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "Bonus",
 		"groups": {
 			"featuredSpawns": "Apparitions vedettes",
-			"featuredRaids": "Raids vedettes",
-			"researchEncounters": "Rencontres de recherche",
+			"featuredRaids": "{{raid}} en vedette",
+			"researchEncounters": "Rencontres d'Étude de terrain",
 			"eggs": "Œufs",
 			"incense": "Encens",
 			"lures": "Modules Leurre"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "Aucune composition de la Team GO Rocket.",
-		"typeGrunt": "Sbire {{type}}",
-		"genericGrunt": "Sbire",
 		"slotReward": "Récompense emplacement {{slot}}",
 		"slotHeader": "Emplacement {{slot}}",
 		"catchableTag": "capturable"

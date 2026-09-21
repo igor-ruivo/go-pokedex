@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Diminuisci",
 		"increaseAriaLabel": "Aumenta"
 	},
-	"shadowMark": {
-		"alt": "Ombra"
-	},
 	"searchBox": {
 		"placeholder": "Cerca Pokémon o mosse…",
 		"ariaLabel": "Cerca Pokémon o mosse",
 		"clearAriaLabel": "Cancella ricerca",
-		"shadowSuffix": "Ombra",
 		"fast": "Veloce",
 		"charged": "Caricata"
 	},

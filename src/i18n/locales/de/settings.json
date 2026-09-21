@@ -5,7 +5,7 @@
 		"appLanguage": "App-Sprache",
 		"gameLanguage": "Spielsprache",
 		"sprites": "Sprites",
-		"raidRanking": "Arena-Kampf-Rangliste",
+		"raidRanking": "{{raid}}-Rangliste",
 		"bestBuddy": "Besten Freund berücksichtigen",
 		"off": "Aus",
 		"on": "An",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "Besten Freund berücksichtigen",
-			"desc": "Stufe 51 als erreichbar behandeln — die IW-Tabelle, Lösch-/Suchstrings, maximale WP, Stufenwähler, beste IWs/Perzentil, Arena-Kampf-Rechner und DPS/TDO/eDPS berücksichtigen dann alle Stufe 51 statt 50."
+			"desc": "Stufe 51 als erreichbar behandeln — die IW-Tabelle, Lösch-/Suchstrings, maximale WP, Stufenwähler, beste IWs/Perzentil, Arena-Kampf-Rechner und DPS/TDO berücksichtigen dann alle Stufe 51 statt 50."
 		},
 		"footer": "Einstellungen werden auf diesem Gerät gespeichert."
 	},
 	"spriteOptions": {
 		"official": "Offiziell",
 		"go": "Pokémon GO",
-		"shiny": "GO Shiny"
+		"shiny": "GO {{shiny}}"
 	},
 	"toggle": {
 		"off": "Aus",

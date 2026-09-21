@@ -10,7 +10,7 @@
 		"legacyFor": "Ist eine Alt-Attacke für"
 	},
 	"arena": {
-		"pve": "PvE · Arena-Kämpfe & Arenen",
+		"pve": "PvE · {{raid}}s & Arenen",
 		"pvp": "PvP · Ligen"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "SCH",
 		"nrg": "ENG",
 		"dur": "DAU",
-		"turns": "Züge",
+		"turns": "ZÜGE",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Pokémon, die {{name}} erlernen können",
 	"tiles": {
 		"recommended": "Empfohlen",
-		"mega": "Mega",
 		"elite": "Elite",
 		"legacy": "Alt"
 	},

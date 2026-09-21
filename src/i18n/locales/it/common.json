@@ -5,8 +5,8 @@
 	},
 	"nav": {
 		"pokedex": { "label": "Pokédex", "hint": "Sfoglia tutti i Pokémon" },
-		"rankings": { "label": "Classifiche", "hint": "Migliori attaccanti per lega e tipo di raid" },
-		"calendar": { "label": "Calendario", "hint": "Eventi, raid, spawn e uova" },
+		"rankings": { "label": "Classifiche", "hint": "Migliori attaccanti per lega e tipo di {{raid}}" },
+		"calendar": { "label": "Calendario", "hint": "Eventi, {{raid}}, spawn e uova" },
 		"moves": { "label": "Mosse", "hint": "Tutte le mosse veloci e caricate" },
 		"types": { "label": "Tipi", "hint": "Tabella di efficacia dei tipi" },
 		"searches": {

@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "Mantieni il top della Grande Lega",
 		"ariaKeepTopUltra": "Mantieni il top dell'Ultra Lega",
 		"ariaKeepTopMaster": "Mantieni il top della Lega Master",
-		"ariaKeepTopRaid": "Mantieni i migliori attaccanti da raid"
+		"ariaKeepTopRaid": "Mantieni i migliori attaccanti da {{raid}}"
 	},
-	"metaKnobsSubtitle": "Preserva i migliori Pokémon del meta attuale per lega/raid",
+	"metaKnobsSubtitle": "Preserva i migliori Pokémon del meta attuale per lega/{{raid}}",
 	"badIvKnobsSubtitle": "La modalità semplificata scambia un po' di precisione per una stringa più corta — vedi il tooltip sull'interruttore",
 	"tradeKnobsSubtitle": "Una specie deve superare solo UNA di queste quattro soglie per essere suggerita — Grande e Ultra richiedono anche che uno scambio possa effettivamente raggiungere la loro migliore distribuzione possibile (vedi il testo di aiuto sopra)",
 	"simplifiedTrashTooltip": "Scambia precisione per una stringa più corta: evita di cercare parità di prodotto statistico per la Lega Master (senza tetto) — solo l'hundo esatto (protetto ovunque, incondizionatamente, tramite l'esclusione globale !4*) resta protetto lì. La protezione Grande/Ultra/raid non è interessata.",
@@ -71,7 +71,7 @@
 	"toggleOff": "Off",
 	"protectionMeta": {
 		"favorite": {
-			"label": "Preferito",
+			"label": "{{favorite}}",
 			"description": "Pokémon contrassegnati come preferiti nel gioco."
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "Pokémon con un soprannome o un'etichetta personalizzata."
 		},
 		"legendary": {
-			"label": "Leggendario",
+			"label": "{{legendary}}",
 			"description": "Leggendari da collezione (Mewtwo, Lugia, …)."
 		},
 		"mythical": {
-			"label": "Fatato",
+			"label": "{{mythical}}",
 			"description": "Pokémon fatati (Mew, Celebi, …)."
 		},
 		"ultraBeast": {
-			"label": "Ultracreatura",
+			"label": "{{ultraBeast}}",
 			"description": "Ultracreature (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "Solo il gioco lo sa — richiede abbastanza Mega Energia accumulata per quella specie in questo momento."
+			"description": "Solo il gioco lo sa — richiede abbastanza {{megaEnergy}} accumulata per quella specie in questo momento."
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "Ogni Pokémon Ombra, indipendentemente dai suoi IV o rango."
 		},
 		"dynamax": {
-			"label": "Dynamax",
+			"label": "{{dynamax}}",
 			"description": "Pokémon in grado di eseguire il Dynamax."
 		},
 		"fusion": {
-			"label": "Fusione",
+			"label": "{{fusion}}",
 			"description": "Pokémon in grado di fondersi, o già fusi."
 		},
 		"gigantamax": {
-			"label": "Gigantamax",
+			"label": "{{gigantamax}}",
 			"description": "Pokémon in grado di eseguire il Gigantamax."
 		},
 		"background": {
-			"label": "Sfondo",
-			"description": "Pokémon con uno sfondo raro o legato a una località nel loro profilo."
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "Sfondo speciale",
-			"description": "Pokémon con uno sfondo speciale da evento nel loro profilo."
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "Shiny",
+			"label": "{{shiny}}",
 			"description": "Ogni Pokémon Shiny."
 		},
 		"costume": {
-			"label": "Costume",
+			"label": "{{costume}}",
 			"description": "Pokémon con un costume da evento speciale."
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "Copia stringa di ricerca",
 	"copied": "Copiato ✓",
 	"panelSummary": {
-		"topGreat": "Top {{n}} Grande Lega",
-		"topUltra": "Top {{n}} Ultra Lega",
-		"topMaster": "Top {{n}} Lega Master",
+		"topGreat": "Top {{n}} {{league}}",
+		"topUltra": "Top {{n}} {{league}}",
+		"topMaster": "Top {{n}} {{league}}",
 		"topRaid": "Top {{n}} {{raid}}",
 		"cpKept": "{{cp}} ≥ {{cpValue}} mantenuti",
 		"cpUnder": "{{cp}} < {{cpValue}}",

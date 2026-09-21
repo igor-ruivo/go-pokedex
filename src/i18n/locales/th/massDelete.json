@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "เก็บอันดับต้นลีกเกรท",
 		"ariaKeepTopUltra": "เก็บอันดับต้นลีกอัลตร้า",
 		"ariaKeepTopMaster": "เก็บอันดับต้นลีกมาสเตอร์",
-		"ariaKeepTopRaid": "เก็บอันดับต้นตัวโจมตีเรด"
+		"ariaKeepTopRaid": "เก็บอันดับต้นตัวโจมตี{{raid}}"
 	},
-	"metaKnobsSubtitle": "เก็บโปเกมอนเมต้าอันดับต้นในแต่ละลีก/เรดไว้",
+	"metaKnobsSubtitle": "เก็บโปเกมอนเมต้าอันดับต้นในแต่ละลีก/{{raid}}ไว้",
 	"badIvKnobsSubtitle": "โหมดย่อแลกความแม่นยำเพื่อให้ได้สตริงสั้นลง — ดูคำอธิบายที่ตัวสลับ",
 	"tradeKnobsSubtitle": "สปีชีส์เพียงแค่ผ่านหนึ่งในสี่เกณฑ์นี้ก็จะถูกแนะนำ — เกรทและอัลตร้ายังต้องการให้การแลกเปลี่ยนไปถึงค่าที่ดีที่สุดได้จริงด้วย (ดูข้อความช่วยเหลือด้านบน)",
 	"simplifiedTrashTooltip": "แลกความแม่นยำเพื่อสตริงที่สั้นลง: ข้ามการหาสแตทโปรดักต์ที่เสมอกันในลีกมาสเตอร์ (ไม่มีเพดาน) — จะมีแค่ฮันโดที่แม่นยำ (ซึ่งได้รับการปกป้องทุกที่อยู่แล้วผ่านการยกเว้น !4* แบบรวม) ที่ยังคงได้รับการปกป้องตรงนั้น การปกป้องเกรท/อัลตร้า/เรดไม่ได้รับผลกระทบ",
@@ -71,7 +71,7 @@
 	"toggleOff": "ปิด",
 	"protectionMeta": {
 		"favorite": {
-			"label": "รายการโปรด",
+			"label": "{{favorite}}",
 			"description": "โปเกมอนที่ทำเครื่องหมายเป็นรายการโปรดในเกม"
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "โปเกมอนที่มีชื่อเล่นหรือแท็กที่กำหนดเอง"
 		},
 		"legendary": {
-			"label": "เลเจนดารี",
+			"label": "{{legendary}}",
 			"description": "เลเจนดารีกล่อง (Mewtwo, Lugia, …)"
 		},
 		"mythical": {
-			"label": "มายธิคัล",
+			"label": "{{mythical}}",
 			"description": "มายธิคัล (Mew, Celebi, …)"
 		},
 		"ultraBeast": {
-			"label": "อัลตร้าบีสต์",
+			"label": "{{ultraBeast}}",
 			"description": "อัลตร้าบีสต์ (Nihilego, Buzzwole, …)"
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "มีแค่เกมที่รู้เรื่องนี้ — ต้องมีเมก้าเอนเนอร์จีสะสมพอสำหรับสปีชีส์นั้นตอนนี้"
+			"description": "มีแค่เกมที่รู้เรื่องนี้ — ต้องมี{{megaEnergy}}สะสมพอสำหรับสปีชีส์นั้นตอนนี้"
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "โปเกมอนเชโดว์ทุกตัว ไม่ว่า IV หรืออันดับของมันจะเป็นอย่างไร"
 		},
 		"dynamax": {
-			"label": "ไดนาแม็กซ์",
+			"label": "{{dynamax}}",
 			"description": "โปเกมอนที่ไดนาแม็กซ์ได้"
 		},
 		"fusion": {
-			"label": "ฟิวชัน",
+			"label": "{{fusion}}",
 			"description": "โปเกมอนที่ฟิวชันได้ หรือฟิวชันอยู่แล้ว"
 		},
 		"gigantamax": {
-			"label": "ไกกันตาแม็กซ์",
+			"label": "{{gigantamax}}",
 			"description": "โปเกมอนที่ไกกันตาแม็กซ์ได้"
 		},
 		"background": {
-			"label": "พื้นหลัง",
-			"description": "โปเกมอนที่มีพื้นหลังหายากหรือพื้นหลังสถานที่ในโปรไฟล์"
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "พื้นหลังพิเศษ",
-			"description": "โปเกมอนที่มีพื้นหลังกิจกรรมพิเศษในโปรไฟล์"
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "เงางาม",
+			"label": "{{shiny}}",
 			"description": "โปเกมอนเงางามทุกตัว"
 		},
 		"costume": {
-			"label": "ชุดพิเศษ",
+			"label": "{{costume}}",
 			"description": "โปเกมอนที่สวมชุดอีเวนต์พิเศษ"
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "คัดลอกข้อความค้นหา",
 	"copied": "คัดลอกแล้ว ✓",
 	"panelSummary": {
-		"topGreat": "ลีกเกรทท็อป {{n}}",
-		"topUltra": "ลีกอัลตร้าท็อป {{n}}",
-		"topMaster": "ลีกมาสเตอร์ท็อป {{n}}",
+		"topGreat": "{{league}}ท็อป {{n}}",
+		"topUltra": "{{league}}ท็อป {{n}}",
+		"topMaster": "{{league}}ท็อป {{n}}",
 		"topRaid": "{{raid}}ท็อป {{n}}",
 		"cpKept": "เก็บ {{cp}} ≥ {{cpValue}}",
 		"cpUnder": "{{cp}} < {{cpValue}}",

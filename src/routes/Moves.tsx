@@ -12,7 +12,7 @@ import { type Arena, hasBuff, moveDPE, moveDPS, moveEPS } from '../lib/moves';
 import { R } from '../lib/nav';
 import { TYPE_KEYS } from '../lib/types';
 import { useMoves } from '../queries/moves';
-import { gameTypeDisplayTranslator } from '../utils/GameTranslator';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 
 // PvE / PvP are split out so it's unambiguous which stat a sort acts on.
 const useMoveSorts = (t: (key: string) => string): ReadonlyArray<SortOption> => [
@@ -175,8 +175,8 @@ const Moves = () => {
 					{(
 						[
 							['all', t('moves:page.kind.all')],
-							['fast', t('moves:page.kind.fast')],
-							['charged', t('moves:page.kind.charged')],
+							['fast', gameTranslator(GameTranslatorKeys.FastAttackHeaderPlural, gl)],
+							['charged', gameTranslator(GameTranslatorKeys.ChargedAttackHeaderPlural, gl)],
 						] as const
 					).map(([k, label]) => (
 						<button key={k} type='button' data-active={kind === k} onClick={() => setKind(k)}>
@@ -220,7 +220,12 @@ const Moves = () => {
 									<div className='r-move-head'>
 										<span className='r-move-type'>{gameTypeDisplayTranslator(typeKey, gl) || m.type}</span>
 										<b>{m.moveName[gl] ?? cleanName(m.moveId)}</b>
-										<i className='r-move-tag'>{t(m.isFast ? 'moves:page.kind.fast' : 'moves:page.kind.charged')}</i>
+										<i className='r-move-tag'>
+											{gameTranslator(
+												m.isFast ? GameTranslatorKeys.FastAttackHeader : GameTranslatorKeys.ChargedAttackHeader,
+												gl
+											)}
+										</i>
 									</div>
 									<MoveStatRows m={m} gl={gl} />
 								</Link>

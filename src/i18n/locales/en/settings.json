@@ -5,7 +5,7 @@
 		"appLanguage": "App language",
 		"gameLanguage": "Game language",
 		"sprites": "Sprites",
-		"raidRanking": "Raid ranking",
+		"raidRanking": "{{raid}} ranking",
 		"bestBuddy": "Account for Best Buddy",
 		"off": "Off",
 		"on": "On",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "Account for Best Buddy",
-			"desc": "Treat level 51 as reachable — the IV table, trash/search strings, max CP, level picker, best IVs/percentile, raid counters and DPS/TDO/eDPS all evaluate up to level 51 instead of 50."
+			"desc": "Treat level 51 as reachable — the IV table, trash/search strings, max CP, level picker, best IVs/percentile, raid counters and DPS/TDO all evaluate up to level 51 instead of 50."
 		},
 		"footer": "Preferences are stored on this device."
 	},
 	"spriteOptions": {
 		"official": "Official",
 		"go": "Pokémon GO",
-		"shiny": "GO shiny"
+		"shiny": "GO {{shiny}}"
 	},
 	"toggle": {
 		"off": "Off",

@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "Top der Superliga behalten",
 		"ariaKeepTopUltra": "Top der Ultraliga behalten",
 		"ariaKeepTopMaster": "Top der Meisterliga behalten",
-		"ariaKeepTopRaid": "Top-Arena-Kampf-Angreifer behalten"
+		"ariaKeepTopRaid": "Top-{{raid}}-Angreifer behalten"
 	},
-	"metaKnobsSubtitle": "Aktuelle Top-Meta-Pokémon je Liga/Arena-Kampf behalten",
+	"metaKnobsSubtitle": "Aktuelle Top-Meta-Pokémon je Liga/{{raid}} behalten",
 	"badIvKnobsSubtitle": "Vereinfacht tauscht etwas Genauigkeit gegen einen kürzeren String — siehe den Tooltip am Schalter",
 	"tradeKnobsSubtitle": "Eine Spezies muss nur EINEN dieser vier Grenzwerte unterschreiten, um vorgeschlagen zu werden — Great und Ultra erfordern zudem, dass ein Tausch die bestmögliche Verteilung tatsächlich erreichen kann (siehe Hilfetext oben)",
 	"simplifiedTrashTooltip": "Tauscht Genauigkeit gegen einen kürzeren String: verzichtet darauf, nach Statuswert-Produkt-Gleichständen für die Meisterliga (ohne Obergrenze) zu suchen — nur der exakte Hundo bleibt dort geschützt (überall, bedingungslos, durch den globalen !4*-Ausschluss). Der Schutz für Great/Ultra/Arena-Kampf ist davon nicht betroffen.",
@@ -71,7 +71,7 @@
 	"toggleOff": "Aus",
 	"protectionMeta": {
 		"favorite": {
-			"label": "Favorit",
+			"label": "{{favorite}}",
 			"description": "Im Spiel als Favorit markierte Pokémon."
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "Pokémon mit einem Spitznamen oder einer eigenen Markierung."
 		},
 		"legendary": {
-			"label": "Legendär",
+			"label": "{{legendary}}",
 			"description": "Box-Legendäre (Mewtu, Lugia, …)."
 		},
 		"mythical": {
-			"label": "Mystisch",
+			"label": "{{mythical}}",
 			"description": "Mysteriöse Pokémon (Mew, Celebi, …)."
 		},
 		"ultraBeast": {
-			"label": "Ultrabestie",
+			"label": "{{ultraBeast}}",
 			"description": "Ultrabestien (Bluzuken, Zaubeel, …)."
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "Das weiß nur das Spiel — erfordert gerade genug gespeicherte Mega-Energie für diese Spezies."
+			"description": "Das weiß nur das Spiel — erfordert gerade genug gespeicherte {{megaEnergy}} für diese Spezies."
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "Jedes Schatten-Pokémon, unabhängig von eigenen IWs oder Rang."
 		},
 		"dynamax": {
-			"label": "Dynamax",
+			"label": "{{dynamax}}",
 			"description": "Pokémon, die dynamaximieren können."
 		},
 		"fusion": {
-			"label": "Fusion",
+			"label": "{{fusion}}",
 			"description": "Pokémon, die fusioniert werden können oder es bereits sind."
 		},
 		"gigantamax": {
-			"label": "Gigadynamax",
+			"label": "{{gigantamax}}",
 			"description": "Pokémon, die gigadynamaximieren können."
 		},
 		"background": {
-			"label": "Hintergrund",
-			"description": "Pokémon mit einem seltenen oder ortsbezogenen Hintergrund im Profil."
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "Spezialhintergrund",
-			"description": "Pokémon mit einem besonderen Event-Hintergrund im Profil."
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "Schillernd",
+			"label": "{{shiny}}",
 			"description": "Jedes schillernde Pokémon."
 		},
 		"costume": {
-			"label": "Kostüm",
+			"label": "{{costume}}",
 			"description": "Pokémon mit einem Sonderevent-Kostüm."
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "Suchstring kopieren",
 	"copied": "Kopiert ✓",
 	"panelSummary": {
-		"topGreat": "Top {{n}} Superliga",
-		"topUltra": "Top {{n}} Ultraliga",
-		"topMaster": "Top {{n}} Meisterliga",
+		"topGreat": "Top {{n}} {{league}}",
+		"topUltra": "Top {{n}} {{league}}",
+		"topMaster": "Top {{n}} {{league}}",
 		"topRaid": "Top {{n}} {{raid}}",
 		"cpKept": "{{cp}} ≥ {{cpValue}} behalten",
 		"cpUnder": "{{cp}} < {{cpValue}}",

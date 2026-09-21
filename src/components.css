@@ -1134,6 +1134,17 @@
 	padding-top: var(--s4);
 	border-top: 1px dashed var(--border);
 }
+@media (max-width: 520px) {
+	/* Longer game-sourced labels ("Master League rank" etc.) were wrapping
+	   in these narrow columns — claw back the card's own side padding and
+	   tighten the inter-column gap so there's more room per label before it
+	   has to wrap. */
+	.rvmp .r-readout {
+		gap: var(--s1);
+		margin-left: calc(var(--s4) * -1);
+		margin-right: calc(var(--s4) * -1);
+	}
+}
 .rvmp .r-readout div {
 	flex: 1;
 	text-align: center;
@@ -1159,6 +1170,20 @@
 	   `.hi` readout (e.g. the IV-picker's rank) has no `--tc` and falls back
 	   to `--accent` exactly as before. */
 	color: var(--tc, var(--accent));
+}
+
+/* Tied 100%-stat-product spreads — flows them on one line separated by a
+   dot when they fit, wraps one per line once they don't (no manual
+   line-break decision needed, the flex-wrap does it). */
+.rvmp .r-bestspreads-list {
+	display: inline-flex;
+	flex-wrap: wrap;
+}
+.rvmp .r-bestspreads-item {
+	white-space: nowrap;
+}
+.rvmp .r-bestspreads-item:not(:first-child)::before {
+	content: '· ';
 }
 
 /* ---- raid type coverage ------------------------------------------------- */
@@ -5002,6 +5027,18 @@
 .rvmp .r-ctr-seg button[data-active='true'] {
 	color: var(--accent-ink);
 	background: var(--accent);
+}
+/* Friendship's game-sourced labels ("Great Friend", "Ultra Friend"...) run
+   much longer than the short button widths this segmented control was sized
+   for — scroll horizontally instead of clipping/wrapping them. */
+.rvmp .r-ctr-seg--scroll {
+	max-width: 100%;
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+.rvmp .r-ctr-seg--scroll button {
+	white-space: nowrap;
+	flex-shrink: 0;
 }
 
 @media (max-width: 520px) {

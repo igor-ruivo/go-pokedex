@@ -11,6 +11,7 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { sentenceCase } from '../lib/format';
 import { MODE_COLOR, modeLabel, R, RANKING_MODES, type RankingMode } from '../lib/nav';
 import { RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
 import { RAID_TYPE_KEYS, TYPE_KEYS, typeKey } from '../lib/types';
@@ -122,7 +123,7 @@ const Rankings = () => {
 	const sortKey = params.get('sort') ?? 'dex';
 	const sortDir: SortDir = params.get('dir') === 'desc' ? 'desc' : 'asc';
 
-	// which figure (DPS/TDO/eDPS) to rank by is a device-wide setting, shared with
+	// which figure (DPS/TDO) to rank by is a device-wide setting, shared with
 	// the Counters tab and Settings — not a per-page URL param.
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
 	const { maxLevelIndex } = useBestBuddy();
@@ -392,8 +393,12 @@ const Rankings = () => {
 				</div>
 				{showGrid && isRaid && raidType && hintOpen && (
 					<p className='r-muted r-rank-hint'>
-					{t('rankings:hint.text', { type: gameTypeDisplayTranslator(raidType, gl) || raidType })}
-				</p>
+						{t('rankings:hint.text', {
+							type: gameTypeDisplayTranslator(raidType, gl) || raidType,
+							raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+							mega: gameTranslator(GameTranslatorKeys.MegaDisplay, gl),
+						})}
+					</p>
 				)}
 			</div>
 
@@ -405,10 +410,10 @@ const Rankings = () => {
 					</div>
 				)}
 				{showGrid && isRaid && !raidType && (
-				<p className='r-muted r-rank-empty'>
-					{t('rankings:empty.pickType', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
-				</p>
-			)}
+					<p className='r-muted r-rank-empty'>
+						{t('rankings:empty.pickType', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+					</p>
+				)}
 				{showGrid && rows.length === 0 && !(isRaid && !raidType) && (
 					<p className='r-muted' style={{ padding: 24 }}>
 						{t('rankings:empty.nothingMatches')}

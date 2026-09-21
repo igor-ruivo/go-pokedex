@@ -1,5 +1,6 @@
 import type { GameLanguage } from '../contexts/language-context';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
+import { sentenceCase } from './format';
 
 export const R = {
 	pokedex: '/',
@@ -37,7 +38,7 @@ export const modeLabel = (mode: RankingMode, gl: GameLanguage): string => {
 		case 'master':
 			return gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl);
 		case 'raid':
-			return gameTranslator(GameTranslatorKeys.RaidDisplay, gl);
+			return sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl));
 	}
 };
 

@@ -98,7 +98,14 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 		return (
 			<div className='r-movecontent'>
 				<div className='r-card' style={{ textAlign: 'center' }}>
-					<p className='r-muted'>{t('pokemonDetail:ivTable.notForRaids')}</p>
+					<p className='r-muted'>
+						{t('pokemonDetail:ivTable.notForRaids', {
+							raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+							great: gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl),
+							ultra: gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl),
+							master: gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl),
+						})}
+					</p>
 				</div>
 			</div>
 		);

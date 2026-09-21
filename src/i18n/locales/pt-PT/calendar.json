@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Reides de Tier Superior", "short": "Tier Superior" },
-			"tier3": { "full": "Reides de Tier 3", "short": "Tier 3" },
-			"tier1": { "full": "Reides de Tier 1", "short": "Tier 1" }
+			"higher": { "full": "{{raid}}s de Tier Superior", "short": "Tier Superior" },
+			"tier3": { "full": "{{raid}}s de Tier 3", "short": "Tier 3" },
+			"tier1": { "full": "{{raid}}s de Tier 1", "short": "Tier 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Outros reides",
+		"otherRaids": "Outros {{raid}}s",
 		"nothingScheduled": "Nada agendado.",
 		"nowSlot": "Agora"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "Bónus",
 		"groups": {
 			"featuredSpawns": "Spawns em destaque",
-			"featuredRaids": "Reides em destaque",
-			"researchEncounters": "Encontros de investigação",
+			"featuredRaids": "{{raid}} em destaque",
+			"researchEncounters": "Encontros de Investigação de Campo",
 			"eggs": "Ovos",
 			"incense": "Incenso",
 			"lures": "Módulos-Isco"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "Sem alinhamentos da Rocket.",
-		"typeGrunt": "Recruta de {{type}}",
-		"genericGrunt": "Recruta",
 		"slotReward": "Recompensa do slot {{slot}}",
 		"slotHeader": "Slot {{slot}}",
 		"catchableTag": "capturável"

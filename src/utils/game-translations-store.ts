@@ -88,9 +88,21 @@ export function __setGameTranslationsForTests(data: GameTranslationsPayload | nu
 /** Call once per top-level component that renders anything sourced from
  *  `GameTranslator.ts` (currently just `Shell.tsx`, which wraps every route)
  *  so that subtree re-renders once the fetch this same call kicks off
- *  resolves. Components further down the tree don't need their own call —
- *  a parent re-render already re-renders them with the now-populated cache,
- *  same as any other prop/context change. */
+ *  resolves. A component that reads `gameTranslator()`/`gameTypeTranslator()`
+ *  directly in its render body doesn't need its own call — `Shell`'s
+ *  re-render already re-renders it too, same as any other prop/context
+ *  change, so its next call picks up the now-populated cache automatically.
+ *
+ *  A component that wraps a `gameTranslator()`/`gameTypeTranslator()` call
+ *  inside `useMemo`/`useCallback`, though, DOES need its own call here, with
+ *  the result added to that memo's dependency array — otherwise the memo
+ *  itself doesn't know the underlying data changed and keeps returning
+ *  whatever it computed on the first render (typically `''`, since the fetch
+ *  hasn't resolved yet), even though the surrounding component re-rendered.
+ *  This bit real: MassDelete's Shadow/Mega-Evolvable checkbox labels stayed
+ *  blank until something unrelated (e.g. changing GameLanguage) forced their
+ *  `useMemo` to recompute for its own reasons — see git blame on
+ *  `PROTECTION_META_TRANSLATORS`'s call site for the fix. */
 export function useGameTranslationsData(): GameTranslationsPayload | null {
 	startLoad();
 	return useSyncExternalStore(subscribe, getSnapshot);

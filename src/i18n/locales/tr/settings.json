@@ -5,7 +5,7 @@
 		"appLanguage": "Uygulama dili",
 		"gameLanguage": "Oyun dili",
 		"sprites": "Görseller",
-		"raidRanking": "Baskın sıralaması",
+		"raidRanking": "{{raid}} sıralaması",
 		"bestBuddy": "En İyi Dost'u hesaba kat",
 		"off": "Kapalı",
 		"on": "Açık",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "En İyi Dost'u hesaba kat",
-			"desc": "Seviye 51'i ulaşılabilir kabul et — IV tablosu, çöp/arama dizeleri, maksimum CP, seviye seçici, en iyi IV'ler/yüzdelik dilim, baskın sayaçları ve DPS/TDO/eDPS hesaplamalarının tümü seviye 50 yerine 51'e kadar değerlendirilir."
+			"desc": "Seviye 51'i ulaşılabilir kabul et — IV tablosu, çöp/arama dizeleri, maksimum CP, seviye seçici, en iyi IV'ler/yüzdelik dilim, baskın sayaçları ve DPS/TDO hesaplamalarının tümü seviye 50 yerine 51'e kadar değerlendirilir."
 		},
 		"footer": "Tercihler bu cihazda saklanır."
 	},
 	"spriteOptions": {
 		"official": "Resmi",
 		"go": "Pokémon GO",
-		"shiny": "GO Işıltılı"
+		"shiny": "GO {{shiny}}"
 	},
 	"toggle": {
 		"off": "Kapalı",

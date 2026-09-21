@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "保留超級聯盟前段排名",
 		"ariaKeepTopUltra": "保留高級聯盟前段排名",
 		"ariaKeepTopMaster": "保留大師聯盟前段排名",
-		"ariaKeepTopRaid": "保留團體戰攻擊手前段排名"
+		"ariaKeepTopRaid": "保留{{raid}}攻擊手前段排名"
 	},
-	"metaKnobsSubtitle": "保留各聯盟／團體戰目前主流環境中的頂尖寶可夢",
+	"metaKnobsSubtitle": "保留各聯盟／{{raid}}目前主流環境中的頂尖寶可夢",
 	"badIvKnobsSubtitle": "簡化模式以些許準確度換取較短的字串 — 詳見切換開關上的提示",
 	"tradeKnobsSubtitle": "物種只需符合下列四項門檻中的任一項即可被建議 — 超級與高級聯盟另需交換能達成其最佳組合（詳見上方說明文字）",
 	"simplifiedTrashTooltip": "以準確度換取較短字串：略過尋找大師聯盟（無 CP 上限）數值乘積並列的情況 — 只有精確滿值（透過全域「非 3 星」排除，一律無條件受保護）會在此受到保護。超級／高級／團體戰的保護不受影響。",
@@ -71,7 +71,7 @@
 	"toggleOff": "關閉",
 	"protectionMeta": {
 		"favorite": {
-			"label": "已收藏",
+			"label": "{{favorite}}",
 			"description": "在遊戲內標記為最愛的寶可夢。"
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "有暱稱或自訂標籤的寶可夢。"
 		},
 		"legendary": {
-			"label": "傳說",
+			"label": "{{legendary}}",
 			"description": "箱型傳說（超夢、洛奇亞……）。"
 		},
 		"mythical": {
-			"label": "幻之",
+			"label": "{{mythical}}",
 			"description": "幻之寶可夢（夢幻、時拉比……）。"
 		},
 		"ultraBeast": {
-			"label": "究極異獸",
+			"label": "{{ultraBeast}}",
 			"description": "究極異獸（虛吾伊德、爆肌蟲……）。"
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "僅遊戲本身知道 — 需要該物種目前累積足夠的 Mega 進化能量。"
+			"description": "僅遊戲本身知道 — 需要該物種目前累積足夠的{{megaEnergy}}。"
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "所有暗影寶可夢，無論個體值或排名如何。"
 		},
 		"dynamax": {
-			"label": "極巨化",
+			"label": "{{dynamax}}",
 			"description": "可極巨化的寶可夢。"
 		},
 		"fusion": {
-			"label": "融合",
+			"label": "{{fusion}}",
 			"description": "可融合、或已融合的寶可夢。"
 		},
 		"gigantamax": {
-			"label": "超極巨化",
+			"label": "{{gigantamax}}",
 			"description": "可超極巨化的寶可夢。"
 		},
 		"background": {
-			"label": "背景",
-			"description": "個人檔案中擁有稀有或特殊地點背景的寶可夢。"
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "特殊背景",
-			"description": "個人檔案中擁有特殊活動背景的寶可夢。"
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "閃光",
+			"label": "{{shiny}}",
 			"description": "所有閃光寶可夢。"
 		},
 		"costume": {
-			"label": "服裝",
+			"label": "{{costume}}",
 			"description": "穿著特殊活動服裝的寶可夢。"
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "複製搜尋字串",
 	"copied": "已複製 ✓",
 	"panelSummary": {
-		"topGreat": "超級聯盟前 {{n}} 名",
-		"topUltra": "高級聯盟前 {{n}} 名",
-		"topMaster": "大師聯盟前 {{n}} 名",
+		"topGreat": "{{league}}前 {{n}} 名",
+		"topUltra": "{{league}}前 {{n}} 名",
+		"topMaster": "{{league}}前 {{n}} 名",
 		"topRaid": "{{raid}}前 {{n}} 名",
 		"cpKept": "{{cp}} ≥ {{cpValue}} 保留",
 		"cpUnder": "{{cp}} < {{cpValue}}",

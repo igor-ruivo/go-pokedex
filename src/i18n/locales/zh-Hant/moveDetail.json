@@ -10,7 +10,7 @@
 		"legacyFor": "是以下寶可夢的傳承招式"
 	},
 	"arena": {
-		"pve": "PvE · 團體戰與道館戰",
+		"pve": "PvE · {{raid}}與道館戰",
 		"pvp": "PvP · 對戰聯盟"
 	},
 	"kind": {
@@ -30,7 +30,6 @@
 	"usageLead": "能學會 {{name}} 的寶可夢",
 	"tiles": {
 		"recommended": "推薦",
-		"mega": "Mega",
 		"elite": "高級",
 		"legacy": "傳承"
 	},

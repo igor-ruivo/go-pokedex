@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "घटाएं",
 		"increaseAriaLabel": "बढ़ाएं"
 	},
-	"shadowMark": {
-		"alt": "शैडो"
-	},
 	"searchBox": {
 		"placeholder": "Pokémon या मूव्स सर्च करें…",
 		"ariaLabel": "Pokémon या मूव्स सर्च करें",
 		"clearAriaLabel": "सर्च साफ़ करें",
-		"shadowSuffix": "शैडो",
 		"fast": "फ़ास्ट",
 		"charged": "चार्ज्ड"
 	},

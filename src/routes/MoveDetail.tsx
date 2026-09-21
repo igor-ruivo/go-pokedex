@@ -139,7 +139,11 @@ const MoveDetail = () => {
 				<div className='r-mstat'>
 					{(['pve', 'pvp'] as const).map((a) => (
 						<div className='r-mstat-col' key={a}>
-							<span className='r-mstat-arena'>{t(a === 'pve' ? 'moveDetail:arena.pve' : 'moveDetail:arena.pvp')}</span>
+							<span className='r-mstat-arena'>
+								{a === 'pve'
+									? t('moveDetail:arena.pve', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })
+									: t('moveDetail:arena.pvp')}
+							</span>
 							<div className='r-mstat-tiles'>
 								{statsFor(a).map(([label, value]) => (
 									<div className='r-mstat-tile' key={label}>
@@ -180,11 +184,16 @@ const MoveDetail = () => {
 						</div>
 						<div className='r-usage-tile'>
 							<b>{megaCount}</b>
-							<i>{t('moveDetail:tiles.mega')}</i>
+							<i>{gameTranslator(GameTranslatorKeys.MegaDisplay, gl)}</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{eliteCount}</b>
-							<i>{gameTranslator(kind === 'fast' ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm, gl)}</i>
+							<i>
+								{gameTranslator(
+									kind === 'fast' ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm,
+									gl
+								)}
+							</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{legacyCount}</b>

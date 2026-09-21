@@ -56,7 +56,7 @@
 		"bestMovesetByType": "Meilleures capacités par type",
 		"nextMovesetTitle": "Touchez pour les capacités suivantes",
 		"selectTypeTitle": "Touchez pour sélectionner ce type",
-		"ivsBarelyMatterPrefix": "Les IV comptent à peine en raid — visez le plus haut",
+		"ivsBarelyMatterPrefix": "Les IV comptent à peine en {{raid}} — visez le plus haut",
 		"attackWord": "IV d'Attaque possible"
 	},
 	"pvp": {
@@ -71,14 +71,14 @@
 		"perfection": "Perfection",
 		"cp": "PC",
 		"cpAtLevel": "{{cp}} au Niv. {{level}}",
-		"bestSpreadFor": "Meilleure répartition pour {{league}} :",
+		"additionalBestSpreadFor": "Répartition supplémentaire pour {{league}} :",
 		"bestSpreadResult": "→ {{cp}} PC au Niv. {{level}}.",
 		"purifyWarning": "⚠️ Notez que la purification confère +2 IV sur chaque statistique.",
 		"purifyUnreachableWarning": "⚠️ Cette répartition de rang 1 est elle-même inatteignable par purification — la purification remonte toujours chaque statistique à au moins 2, donc un Pokémon Ombre ne peut jamais descendre en dessous, quels que soient ses propres IV.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "Rang 1 {{league}}"
+			"rank1": "#1 {{league}}"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "Niveau 1",
 			"t3": "Niveau 3",
-			"mega": "Méga",
 			"t5": "Niveau 5",
 			"elite": "Élite",
-			"legendaryMega": "Méga légendaire",
-			"primal": "Primal",
+			"legendaryMega": "{{legendary}} {{mega}}",
 			"superMega": "Super Méga"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{raid}} {{tier}} · {{hp}} PV",
 		"partyOf": "Équipe de {{size}}",
 		"friendLabel": "Ami {{label}}",
-		"megaAuraSummary": "Aura Méga {{type}}",
-		"megaLevelSummary": "Niveau Méga : {{label}}",
+		"megaAuraSummary": "Aura {{mega}} {{type}}",
+		"megaLevelSummary": "Niveau {{mega}} : {{label}}",
 		"configHide": "Masquer",
 		"configEdit": "Modifier",
 		"clear": "Réinitialiser",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{raid}} {{tier}} · {{hp}} PV",
 		"weather_field": "Météo",
 		"weatherHint": "×1,2 · {{types}}",
-		"megaAura": "Aura Méga",
-		"noMegaOnTeam": "Aucun Méga dans l'équipe",
-		"megaOfType": "Méga {{type}}",
+		"megaAura": "Aura {{mega}}",
+		"noMegaOnTeam": "Aucun {{mega}} dans l'équipe",
+		"megaOfType": "{{mega}} {{type}}",
 		"megaAuraHint": "×1,3 {{type}} · ×1,1 autres",
-		"megaLevelField": "Niveau Méga",
-		"megaLevelHint": "×{{mult}} sur la capacité chargée Plus propre à un Méga/Primal",
+		"megaLevelField": "Niveau {{mega}}",
+		"megaLevelHint": "×{{mult}} sur la capacité chargée Plus propre à un {{mega}}/{{primal}}",
 		"megaLevelHintExtra": " · +2 niveaux d'attaquant",
 		"partyPower": "Puissance d'équipe",
 		"solo": "Solo",
@@ -154,17 +152,17 @@
 		"friendshipHint": "×{{mult}} de dégâts",
 		"helpSummary": "Que signifient ces éléments ?",
 		"help": {
-			"weatherFriendshipMegaAura": "Météo · Amitié · Aura Méga",
+			"weatherFriendshipMegaAura": "Météo · Amitié · Aura {{mega}}",
 			"weatherFriendshipMegaAuraDesc": "Multiplicateurs de dégâts pour vos attaquants. Les dégâts reçus utilisent toujours une constante fixe, donc les capacités du boss ne changent jamais ces chiffres.",
-			"megaLevelDesc": "Le niveau Méga propre à un Méga ou Primal (augmenté avec de l'Énergie Méga après l'évolution) ne renforce que sa capacité chargée bonus « Plus » — aucune autre capacité de son kit n'est affectée. Le niveau Super Max confère aussi +2 niveaux effectifs à l'attaquant, qu'il ait ou non une capacité Plus.",
-			"bossTierDesc": "Définit les PV du boss (utilisés pour l'eDPS) et le CPM appliqué à sa défense. Déduit du boss — à modifier pour les Raids Élite."
+			"megaLevelDesc": "Le niveau {{mega}} propre à un {{mega}} ou {{primal}} (augmenté avec de l'{{megaEnergy}} après l'évolution) ne renforce que sa capacité chargée bonus « Plus » — aucune autre capacité de son kit n'est affectée. Le niveau Super Max confère aussi +2 niveaux effectifs à l'attaquant, qu'il ait ou non une capacité Plus.",
+			"bossTierDesc": "Définit les PV affichés du boss et le CPM appliqué à sa défense. Déduit du boss — à modifier pour les Raids Élite."
 		},
-		"includeMegas": "Inclure les Méga",
-		"includeShadows": "Inclure les Ombre",
+		"includeMegas": "Inclure les {{mega}}",
+		"includeShadows": "Inclure les {{shadow}}",
 		"noCountersMatch": "Aucun contre ne correspond à ces filtres."
 	},
 	"ivTable": {
-		"notForRaids": "Les classements d'IV ne s'appliquent pas aux raids — choisissez Superbe, Ultra ou Maître ci-dessus.",
+		"notForRaids": "Les classements d'IV ne s'appliquent pas aux {{raid}}s — choisissez {{great}}, {{ultra}} ou {{master}} ci-dessus.",
 		"heading": "{{league}} · les 4 096 répartitions d'IV pour {{shadow}}{{name}}",
 		"fieldAriaLabel": "IV {{label}}, de 0 à 15",
 		"clearAriaLabel": "Réinitialiser",

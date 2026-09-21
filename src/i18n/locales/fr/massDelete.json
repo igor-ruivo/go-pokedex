@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "Garder le top Ligue Superbe",
 		"ariaKeepTopUltra": "Garder le top Ligue Ultra",
 		"ariaKeepTopMaster": "Garder le top Ligue Maître",
-		"ariaKeepTopRaid": "Garder le top des attaquants de raid"
+		"ariaKeepTopRaid": "Garder le top des attaquants de {{raid}}"
 	},
-	"metaKnobsSubtitle": "Préserver les meilleurs Pokémon du meta actuel par ligue/raid",
+	"metaKnobsSubtitle": "Préserver les meilleurs Pokémon du meta actuel par ligue/{{raid}}",
 	"badIvKnobsSubtitle": "Le mode simplifié échange un peu de précision contre une chaîne plus courte — voir l'infobulle sur le bouton",
 	"tradeKnobsSubtitle": "Une espèce n'a besoin de franchir qu'UN SEUL de ces quatre seuils pour être suggérée — Superbe et Ultra exigent aussi qu'un échange puisse réellement atteindre leur meilleure répartition possible (voir le texte d'aide ci-dessus)",
 	"simplifiedTrashTooltip": "Échange de la précision contre une chaîne plus courte : évite de chercher les égalités de produit de statistiques pour la Ligue Maître (sans plafond) — seul le Hundo exact (protégé partout, inconditionnellement, via l'exclusion globale !4*) y reste protégé. La protection Superbe/Ultra/raid n'est pas affectée.",
@@ -71,7 +71,7 @@
 	"toggleOff": "Désactivé",
 	"protectionMeta": {
 		"favorite": {
-			"label": "Favori",
+			"label": "{{favorite}}",
 			"description": "Pokémon marqués comme favoris en jeu."
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "Pokémon avec un surnom ou une étiquette personnalisée."
 		},
 		"legendary": {
-			"label": "Légendaire",
+			"label": "{{legendary}}",
 			"description": "Légendaires de boîte (Mewtwo, Lugia, …)."
 		},
 		"mythical": {
-			"label": "Mythique",
+			"label": "{{mythical}}",
 			"description": "Mythiques (Mew, Celebi, …)."
 		},
 		"ultraBeast": {
-			"label": "Ultra-Chimère",
+			"label": "{{ultraBeast}}",
 			"description": "Ultra-Chimères (Vorasterie, Lucanon, …)."
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "Seul le jeu le sait — nécessite assez d'Méga-Énergie accumulée pour cette espèce en ce moment."
+			"description": "Seul le jeu le sait — nécessite assez d'{{megaEnergy}} accumulée pour cette espèce en ce moment."
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "Tous les Pokémon Ombre, quels que soient leurs IV ou leur rang."
 		},
 		"dynamax": {
-			"label": "Dynamax",
+			"label": "{{dynamax}}",
 			"description": "Pokémon capables de Dynamax."
 		},
 		"fusion": {
-			"label": "Fusion",
+			"label": "{{fusion}}",
 			"description": "Pokémon pouvant être fusionnés, ou déjà fusionnés."
 		},
 		"gigantamax": {
-			"label": "Gigamax",
+			"label": "{{gigantamax}}",
 			"description": "Pokémon capables de Gigamax."
 		},
 		"background": {
-			"label": "Arrière-plan",
-			"description": "Pokémon avec un arrière-plan rare ou géolocalisé dans son profil."
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "Arrière-plan spécial",
-			"description": "Pokémon avec un arrière-plan spécial d'événement dans son profil."
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "Chromatique",
+			"label": "{{shiny}}",
 			"description": "Tous les Pokémon chromatiques."
 		},
 		"costume": {
-			"label": "Costume",
+			"label": "{{costume}}",
 			"description": "Pokémon portant un costume d'événement spécial."
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "Copier la chaîne de recherche",
 	"copied": "Copié ✓",
 	"panelSummary": {
-		"topGreat": "Top {{n}} Ligue Superbe",
-		"topUltra": "Top {{n}} Ligue Ultra",
-		"topMaster": "Top {{n}} Ligue Maître",
+		"topGreat": "Top {{n}} {{league}}",
+		"topUltra": "Top {{n}} {{league}}",
+		"topMaster": "Top {{n}} {{league}}",
 		"topRaid": "Top {{n}} {{raid}}",
 		"cpKept": "{{cp}} ≥ {{cpValue}} conservés",
 		"cpUnder": "{{cp}} < {{cpValue}}",

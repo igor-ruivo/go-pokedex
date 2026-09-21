@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Higher Tier Raids", "short": "Higher Tier" },
-			"tier3": { "full": "Tier 3 Raids", "short": "Tier 3" },
-			"tier1": { "full": "Tier 1 Raids", "short": "Tier 1" }
+			"higher": { "full": "Higher Tier {{raid}}s", "short": "Higher Tier" },
+			"tier3": { "full": "Tier 3 {{raid}}s", "short": "Tier 3" },
+			"tier1": { "full": "Tier 1 {{raid}}s", "short": "Tier 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Other raids",
+		"otherRaids": "Other {{raid}}s",
 		"nothingScheduled": "Nothing scheduled.",
 		"nowSlot": "Now"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "Bonuses",
 		"groups": {
 			"featuredSpawns": "Featured spawns",
-			"featuredRaids": "Featured raids",
-			"researchEncounters": "Research encounters",
+			"featuredRaids": "Featured {{raid}}s",
+			"researchEncounters": "Field Research encounters",
 			"eggs": "Eggs",
 			"incense": "Incense",
 			"lures": "Lures"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "No Rocket line-ups.",
-		"typeGrunt": "{{type}} Grunt",
-		"genericGrunt": "Grunt",
 		"slotReward": "Slot {{slot}} reward",
 		"slotHeader": "Slot {{slot}}",
 		"catchableTag": "catchable"

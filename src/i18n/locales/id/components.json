@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Kurangi",
 		"increaseAriaLabel": "Tambah"
 	},
-	"shadowMark": {
-		"alt": "Shadow"
-	},
 	"searchBox": {
 		"placeholder": "Cari Pokémon atau jurus…",
 		"ariaLabel": "Cari Pokémon atau jurus",
 		"clearAriaLabel": "Hapus pencarian",
-		"shadowSuffix": "Shadow",
 		"fast": "Cepat",
 		"charged": "Utama"
 	},

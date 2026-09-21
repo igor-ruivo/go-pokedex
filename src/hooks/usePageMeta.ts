@@ -33,7 +33,7 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 	},
 	'/rankings/raid': {
 		title: 'Best Raid Attackers — GO Pokédex',
-		description: 'Top Pokémon GO raid attackers ranked by DPS, TDO and eDPS, per type.',
+		description: 'Top Pokémon GO raid attackers ranked by DPS and TDO, per type.',
 		image: '/images/og/raids/tier-5.png',
 	},
 	'/moves': {
@@ -107,7 +107,7 @@ const raidTypePage = (typeParam: string | undefined, queryType: string | null) =
 	return {
 		path: `/rankings/raid/${t}`,
 		title: `Best ${capitalize(t)} Raid Attackers — GO Pokédex`,
-		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS, TDO and eDPS.`,
+		description: `Top ${capitalize(t)}-type Pokémon GO raid attackers ranked by DPS and TDO.`,
 		image: `/images/og/types/${t}.png`,
 	};
 };

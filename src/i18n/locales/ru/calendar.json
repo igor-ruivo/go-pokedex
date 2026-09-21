@@ -18,12 +18,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Рейды высокого уровня", "short": "Высокий уровень" },
-			"tier3": { "full": "Рейды 3 уровня", "short": "3 уровень" },
-			"tier1": { "full": "Рейды 1 уровня", "short": "1 уровень" }
+			"higher": { "full": "{{raid}}ы высокого уровня", "short": "Высокий уровень" },
+			"tier3": { "full": "{{raid}}ы 3 уровня", "short": "3 уровень" },
+			"tier1": { "full": "{{raid}}ы 1 уровня", "short": "1 уровень" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Другие рейды",
+		"otherRaids": "Другие {{raid}}ы",
 		"nothingScheduled": "Ничего не запланировано.",
 		"nowSlot": "Сейчас"
 	},
@@ -50,8 +50,8 @@
 		"bonuses": "Бонусы",
 		"groups": {
 			"featuredSpawns": "Особые спавны",
-			"featuredRaids": "Особые рейды",
-			"researchEncounters": "Встречи по исследованиям",
+			"featuredRaids": "Особый {{raid}}",
+			"researchEncounters": "Встречи по полевым исследованиям",
 			"eggs": "Яйца",
 			"incense": "Ладан",
 			"lures": "Приманки"
@@ -60,8 +60,6 @@
 	},
 	"rockets": {
 		"noLineups": "Нет составов Team GO Rocket.",
-		"typeGrunt": "Рядовой ({{type}})",
-		"genericGrunt": "Рядовой",
 		"slotReward": "Награда за слот {{slot}}",
 		"slotHeader": "Слот {{slot}}",
 		"catchableTag": "можно поймать"

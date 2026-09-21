@@ -20,7 +20,7 @@ const BestBuddyContext = createContext<BestBuddyContextType | undefined>(undefin
  * persisted, device-wide choice. Every consumer that evaluates a Pokémon
  * against a level ceiling (the IV table, trash/search strings, a Pokédex
  * square's max CP, the level picker, best-IV/percentile ranking, the raid
- * counters calculators, and the DPS/TDO/eDPS figures computed on the fly)
+ * counters calculators, and the DPS/TDO figures computed on the fly)
  * reads this same value. Pre-generated dex-server data (Rankings' PvP lists
  * and the raid-attacker type rankings) is unaffected — that data is always
  * expressed against level 50, regardless of this setting.

@@ -82,6 +82,16 @@ export const cleanName = (name: string): string => {
 	return s;
 };
 
+/** Normalizes a string to sentence case (first character upper, the rest
+ *  lower) — several data-mined GameTranslator values come back SHOUTY
+ *  ALL-CAPS (e.g. "OPPONENT DEFENSE DROP") since that's how Pokémon GO's own
+ *  client shows them as badges; this is used to tone those down for a
+ *  regular-text UI instead. A no-op for scripts without letter case (CJK,
+ *  Thai, Hindi, …), so safe to apply unconditionally regardless of
+ *  `GameLanguage`. */
+export const sentenceCase = (s: string): string =>
+	s.length ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s;
+
 export const dexNo = (dex: number): string => `#${String(dex).padStart(3, '0')}`;
 
 // Truncate to one decimal (no rounding — matches pvpivs.com), then drop a

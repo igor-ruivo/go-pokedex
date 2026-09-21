@@ -18,7 +18,7 @@
 	"hint": {
 		"show": "Tampilkan asumsi peringkat",
 		"hide": "Sembunyikan asumsi peringkat",
-		"text": "Peringkat raid mengasumsikan kombinasi jurus cepat + utama terbaik tiap Pokémon yang memberikan kerusakan tipe {{type}} Efektif (×1.6) terhadap boss Tingkat 5 non-shadow (200 Pertahanan, level 40), dengan attacker level 50 (IV Serangan 15) dan tanpa bonus cuaca, persahabatan, atau aura Mega rekan satu tim. Pokémon Super Mega diperingkat sebagai Mega Level Maks."
+		"text": "Peringkat {{raid}} mengasumsikan kombinasi jurus cepat + utama terbaik tiap Pokémon yang memberikan kerusakan tipe {{type}} Efektif (×1.6) terhadap boss Tingkat 5 non-shadow (200 Pertahanan, level 40), dengan attacker level 50 (IV Serangan 15) dan tanpa bonus cuaca, persahabatan, atau aura {{mega}} rekan satu tim. Pokémon Super {{mega}} diperingkat sebagai {{mega}} Level Maks."
 	},
 	"empty": {
 		"pickType": "Pilih sebuah tipe di filter untuk melihat attacker {{raid}} terbaik dari tipe tersebut.",

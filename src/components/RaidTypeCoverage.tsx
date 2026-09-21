@@ -54,7 +54,7 @@ export const RaidTypeCoverage = ({
 	}, [pokemon.speciesId]);
 
 	// every attacking-type list this species is ranked in, best rank first
-	// (under whichever figure — DPS/TDO/eDPS — the app is currently ranking by)
+	// (under whichever figure — DPS/TDO — the app is currently ranking by)
 	// — `raidDPS` never has a 'normal' entry at all any more (see useRaidRanker:
 	// Normal is the only type with zero super-effective matchups against
 	// anything, so dex-server doesn't generate that ranking), so no explicit
@@ -102,13 +102,19 @@ export const RaidTypeCoverage = ({
 	);
 	const selRow = rows[selIdx];
 
-	const recFast = selRow?.combo?.f;
-	const recCharged = selRow?.combo?.c;
-	const recType = selRow?.t;
+	// Reported to the parent (MovesTab's "Recommended" tag) separately from
+	// whatever the carousel currently has on screen — `types`/`comboLists` are
+	// both already best-first, so index 0 of each is the one, fixed best
+	// overall combo. Carousel navigation (`typeIdx`/`comboIdx`, driving
+	// `selRow` above) only changes what THIS component displays; it must
+	// never move the "Recommended" tag onto whatever the user is just
+	// browsing.
+	const bestType = types[0]?.type;
+	const bestCombo = bestType ? comboLists[bestType]?.[0] : undefined;
 	useEffect(() => {
 		if (!onRecommend) return;
-		onRecommend(recFast && recCharged && recType ? { fast: recFast, charged: recCharged, type: recType } : null);
-	}, [onRecommend, recFast, recCharged, recType]);
+		onRecommend(bestCombo && bestType ? { fast: bestCombo.f, charged: bestCombo.c, type: bestType } : null);
+	}, [onRecommend, bestCombo, bestType]);
 
 	if (!raidDPSFetchCompleted) {
 		return (

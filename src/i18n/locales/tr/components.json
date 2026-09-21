@@ -24,14 +24,10 @@
 		"decreaseAriaLabel": "Azalt",
 		"increaseAriaLabel": "Artır"
 	},
-	"shadowMark": {
-		"alt": "Gölge"
-	},
 	"searchBox": {
 		"placeholder": "Pokémon veya hareket ara…",
 		"ariaLabel": "Pokémon veya hareket ara",
 		"clearAriaLabel": "Aramayı temizle",
-		"shadowSuffix": "Gölge",
 		"fast": "Hızlı",
 		"charged": "Şarjlı"
 	},

@@ -5,8 +5,8 @@
 	},
 	"nav": {
 		"pokedex": { "label": "포켓몬 도감", "hint": "모든 포켓몬 살펴보기" },
-		"rankings": { "label": "랭킹", "hint": "리그·레이드 타입별 최강 어태커" },
-		"calendar": { "label": "캘린더", "hint": "이벤트·레이드·출현·알" },
+		"rankings": { "label": "랭킹", "hint": "리그·{{raid}} 타입별 최강 어태커" },
+		"calendar": { "label": "캘린더", "hint": "이벤트·{{raid}}·출현·알" },
 		"moves": { "label": "기술", "hint": "모든 일반 기술과 스페셜 기술" },
 		"types": { "label": "타입", "hint": "타입 상성표" },
 		"searches": {

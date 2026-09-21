@@ -5,7 +5,7 @@
 		"appLanguage": "Idioma de la app",
 		"gameLanguage": "Idioma del juego",
 		"sprites": "Sprites",
-		"raidRanking": "Clasificación de incursión",
+		"raidRanking": "Clasificación de {{raid}}",
 		"bestBuddy": "Considerar Mejor Amigo",
 		"off": "Desactivado",
 		"on": "Activado",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "Considerar Mejor Amigo",
-			"desc": "Trata el nivel 51 como alcanzable — la tabla de IVs, las cadenas de basura/búsqueda, el PC máximo, el selector de nivel, los mejores IVs/percentil, los contadores de incursión y el DPS/TDO/eDPS pasan a evaluarse hasta el nivel 51 en lugar del 50."
+			"desc": "Trata el nivel 51 como alcanzable — la tabla de IVs, las cadenas de basura/búsqueda, el PC máximo, el selector de nivel, los mejores IVs/percentil, los contadores de incursión y el DPS/TDO pasan a evaluarse hasta el nivel 51 en lugar del 50."
 		},
 		"footer": "Las preferencias se guardan en este dispositivo."
 	},
 	"spriteOptions": {
 		"official": "Oficial",
 		"go": "Pokémon GO",
-		"shiny": "Shiny de GO"
+		"shiny": "{{shiny}} de GO"
 	},
 	"toggle": {
 		"off": "Desactivado",

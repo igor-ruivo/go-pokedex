@@ -56,7 +56,7 @@
 		"bestMovesetByType": "Best moveset by type",
 		"nextMovesetTitle": "Tap for the next moveset",
 		"selectTypeTitle": "Tap to select this type",
-		"ivsBarelyMatterPrefix": "IVs barely matter in raids — chase the highest",
+		"ivsBarelyMatterPrefix": "IVs barely matter in {{raid}}s — chase the highest",
 		"attackWord": "Attack"
 	},
 	"pvp": {
@@ -67,18 +67,18 @@
 			"asShadow": "Your IVs Percentile · as {{shadow}} {{name}}",
 			"purified": "Your IVs Percentile · as Purified {{name}}"
 		},
-		"ivRank": "{{league}} IV rank",
+		"ivRank": "{{league}} rank",
 		"perfection": "Perfection",
 		"cp": "CP",
 		"cpAtLevel": "{{cp}} @ L{{level}}",
-		"bestSpreadFor": "Best spread for {{league}}:",
+		"additionalBestSpreadFor": "Additional best spread for {{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP at L{{level}}.",
 		"purifyWarning": "⚠️ Be aware that purifying gains you +2 IVs on each stat.",
 		"purifyUnreachableWarning": "⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to at least 2, so a Shadow can never land below that no matter its own IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
-			"rank1": "Rank 1 {{league}}"
+			"rank1": "#1 {{league}}"
 		}
 	},
 	"effectiveness": {
@@ -91,11 +91,9 @@
 		"tierLabel": {
 			"t1": "Tier 1",
 			"t3": "Tier 3",
-			"mega": "Mega",
 			"t5": "Tier 5",
 			"elite": "Elite",
-			"legendaryMega": "Legendary Mega",
-			"primal": "Primal",
+			"legendaryMega": "{{legendary}} {{mega}}",
 			"superMega": "Super Mega"
 		},
 		"weather": {
@@ -130,8 +128,8 @@
 		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} HP",
 		"partyOf": "Party of {{size}}",
 		"friendLabel": "{{label}} Friend",
-		"megaAuraSummary": "Mega {{type}} aura",
-		"megaLevelSummary": "Mega Level: {{label}}",
+		"megaAuraSummary": "{{mega}} {{type}} aura",
+		"megaLevelSummary": "{{mega}} Level: {{label}}",
 		"configHide": "Hide",
 		"configEdit": "Edit",
 		"clear": "Clear",
@@ -141,12 +139,12 @@
 		"bossTierHint": "{{tier}} {{raid}} · {{hp}} HP",
 		"weather_field": "Weather",
 		"weatherHint": "×1.2 · {{types}}",
-		"megaAura": "Mega aura",
-		"noMegaOnTeam": "No Mega on team",
-		"megaOfType": "Mega {{type}}",
+		"megaAura": "{{mega}} aura",
+		"noMegaOnTeam": "No {{mega}} on team",
+		"megaOfType": "{{mega}} {{type}}",
 		"megaAuraHint": "×1.3 {{type}} · ×1.1 others",
-		"megaLevelField": "Mega Level",
-		"megaLevelHint": "×{{mult}} on a Mega/Primal’s own Plus move",
+		"megaLevelField": "{{mega}} Level",
+		"megaLevelHint": "×{{mult}} on a {{mega}}/{{primal}}’s own Plus move",
 		"megaLevelHintExtra": " · +2 attacker levels",
 		"partyPower": "Party Power",
 		"solo": "Solo",
@@ -154,17 +152,17 @@
 		"friendshipHint": "×{{mult}} damage",
 		"helpSummary": "What do these mean?",
 		"help": {
-			"weatherFriendshipMegaAura": "Weather · Friendship · Mega aura",
+			"weatherFriendshipMegaAura": "Weather · Friendship · {{mega}} aura",
 			"weatherFriendshipMegaAuraDesc": "Damage multipliers on your attackers. Incoming damage always uses one fixed constant, so the boss’s own moves never change these numbers.",
-			"megaLevelDesc": "A Mega or Primal’s own Mega Level (raised with Mega Energy after evolving) boosts its bonus “Plus” charged attack only — every other move on its kit is unaffected. Super Max Level also gives the attacker +2 effective Pokémon levels, whether or not it even has a Plus move.",
-			"bossTierDesc": "Sets the boss HP (used by eDPS) and the CPM applied to its defence. Inferred from the boss — change it for Elite Raids."
+			"megaLevelDesc": "A {{mega}} or {{primal}}’s own {{mega}} Level (raised with {{megaEnergy}} after evolving) boosts its bonus “Plus” charged attack only — every other move on its kit is unaffected. Super Max Level also gives the attacker +2 effective Pokémon levels, whether or not it even has a Plus move.",
+			"bossTierDesc": "Sets the boss's displayed HP and the CPM applied to its defence. Inferred from the boss — change it for Elite Raids."
 		},
-		"includeMegas": "Include Megas",
-		"includeShadows": "Include Shadows",
+		"includeMegas": "Include {{mega}}",
+		"includeShadows": "Include {{shadow}}",
 		"noCountersMatch": "No counters match those filters."
 	},
 	"ivTable": {
-		"notForRaids": "IV rankings don’t apply to raids — pick Great, Ultra or Master above.",
+		"notForRaids": "IV rankings don’t apply to {{raid}}s — pick {{great}}, {{ultra}} or {{master}} above.",
 		"heading": "{{league}} · all 4,096 IV spreads for {{shadow}}{{name}}",
 		"fieldAriaLabel": "{{label}} IV, 0 to 15",
 		"clearAriaLabel": "Clear",

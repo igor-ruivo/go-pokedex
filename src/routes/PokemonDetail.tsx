@@ -1,4 +1,5 @@
-import type { MouseEvent as ReactMouseEvent } from 'react';
+import type { TFunction } from 'i18next';
+import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -13,9 +14,10 @@ import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
+import { useBestIvs } from '../hooks/useBestIvs';
 import useComputeIVs from '../hooks/useComputeIVs';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
-import { cleanName, dec1, dexNo, ordinal, rankPerfection } from '../lib/format';
+import { cleanName, dec1, dexNo, ordinal, rankPerfection, sentenceCase } from '../lib/format';
 import { R } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
 import { accentStyle, typeKey, typeVar } from '../lib/types';
@@ -31,6 +33,7 @@ import {
 	fetchReachablePokemonIncludingSelf,
 	levelToLevelIndex,
 	MAX_LEVEL,
+	type RankEntry,
 	sortByFamilyLine,
 } from '../utils/pokemon-helper';
 import CountersTab from './pokemon/CountersTab';
@@ -58,6 +61,8 @@ const LG_ICON: Record<LeagueId, string> = {
 	2: '/images/leagues/master.png',
 	3: '/images/raids/tier-5.png',
 };
+/** PvP CP cap per `PvpLeague` — Master has none. */
+const PVP_CP_CAP: Record<PvpLeague, number> = { 0: 1500, 1: 2500, 2: Number.MAX_VALUE };
 
 const TABS = [
 	['Ranks', 'ranks'],
@@ -68,6 +73,39 @@ const TABS = [
 ] as const;
 type TabLabel = (typeof TABS)[number][0];
 const SLUG_TO_TAB = Object.fromEntries(TABS.map(([label, slug]) => [slug, label])) as Record<string, TabLabel>;
+
+// Renders a t() call with one or more of its interpolated values wrapped in
+// a colored <b>, regardless of where the translated sentence actually places
+// them (word order varies per locale — see bestSpreadFor/bestSpreadsForCount
+// call sites below). Works by interpolating a unique sentinel for each
+// colored param, then splitting the RESULT string on those sentinels — so
+// this never needs to know/guess the sentence's own structure per locale.
+const renderWithColoredParams = (
+	t: TFunction,
+	key: string,
+	colored: Record<string, { value: string; color: string }>
+): Array<ReactNode> => {
+	const sentinelValues = Object.fromEntries(Object.keys(colored).map((k) => [k, `\u0001${k}\u0001`]));
+	const raw = t(key, sentinelValues);
+	// A literal U+0001 sentinel can't collide with real translation text — the
+	// control character itself is the point (see the doc comment above).
+	// eslint-disable-next-line no-control-regex
+	const parts = raw.split(/\u0001(\w+)\u0001/);
+	// `<span>`, not `<b>` — `.r-readout b` (and similar sibling rules) style
+	// any bold element by tag, not class, so a `<b>` here would silently pick
+	// up whatever unrelated bold styling (e.g. the big Fredoka rank-number
+	// font) happens to apply in that container, not just the color this is
+	// actually here to add.
+	return parts.map((part, i) =>
+		i % 2 === 1 ? (
+			<span key={i} style={{ color: colored[part].color, fontWeight: 700 }}>
+				{colored[part].value}
+			</span>
+		) : (
+			part
+		)
+	);
+};
 
 const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
 	if (!ivp) return undefined;
@@ -119,7 +157,7 @@ const PokemonDetail = () => {
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { currentGameLanguage: gl } = useLanguage();
-	// which figure (DPS/TDO/eDPS) ranks raid attackers — the same device-wide
+	// which figure (DPS/TDO) ranks raid attackers — the same device-wide
 	// setting Rankings' raid tab and the Counters tab use.
 	const { raidMetric } = useRaidMetric();
 	const { maxLevel, maxLevelIndex } = useBestBuddy();
@@ -145,8 +183,8 @@ const PokemonDetail = () => {
 		},
 		{
 			...LEAGUE_META[3],
-			label: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
-			full: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+			label: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+			full: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 		},
 	];
 	// Visible tab text, keyed by the (stable, English, comparison-only) slug —
@@ -251,8 +289,8 @@ const PokemonDetail = () => {
 				});
 
 		// every attacking-type list this species is ranked in, best rank first
-		// under whichever figure (DPS/TDO/eDPS) is currently chosen — dex-server
-		// bakes in all three per entry precisely so this doesn't have to re-rank
+		// under whichever figure (DPS/TDO) is currently chosen — dex-server
+		// bakes in both per entry precisely so this doesn't have to re-rank
 		// the list itself just to switch metrics (see `raidRankOf`).
 		// `raidDPS` never has a 'normal' entry at all any more (see useRaidRanker:
 		// Normal is the only type with zero super-effective matchups against
@@ -294,6 +332,18 @@ const PokemonDetail = () => {
 	const pvpCandidates = boardData.pvp[pvpLeague] ?? [];
 	const pvpMember = pvpCandidates[Math.min(cpos(pvpLeague).p, Math.max(0, pvpCandidates.length - 1))] ?? pokemon;
 	const slice = !isRaid ? leagueSlice(ivPercents[pvpMember?.speciesId ?? ''], pvpLeague) : undefined;
+	// All 4,096 spreads, brute-forced locally (same computation IvTableTab's
+	// own list uses) — `slice.perfect` above is only ever ONE rank-1 spread
+	// from the precomputed server dataset, but several spreads can genuinely
+	// tie for rank 1 (same rounded stat product); this is what lets the
+	// summary below list every one of them instead of picking just one.
+	const bestIvRows = useBestIvs(pvpMember, PVP_CP_CAP[pvpLeague], !isRaid);
+	const tiedBestSpreads = useMemo(() => {
+		if (bestIvRows.length === 0) return [];
+		const prodOf = (r: RankEntry) => Math.round(r.battle.A * r.battle.D * r.battle.S);
+		const topProd = prodOf(bestIvRows[0]);
+		return bestIvRows.filter((r) => prodOf(r) === topProd);
+	}, [bestIvRows]);
 	// Viewing a Shadow whose best reachable candidate isn't one: the picker
 	// asks for *this Shadow's own* IVs, not the target's — so the IV/CP/rank
 	// math already assumes the +2-per-stat purification bonus (see the worker),
@@ -422,7 +472,7 @@ const PokemonDetail = () => {
 	// fast+charged combos per attacking type for the carouseled raid member,
 	// best-first by whichever metric is chosen.
 	const comboLists = useMemo(() => {
-		const out: Record<string, Array<{ f: string; c: string; dps: number; tdo: number; edps: number }>> = {};
+		const out: Record<string, Array<{ f: string; c: string; dps: number; tdo: number }>> = {};
 		const raid = boardData.raid;
 		const sel = raid[Math.min(carousel[3]?.p ?? 0, Math.max(0, raid.length - 1))];
 		if (!sel?.p || !movesFetchCompleted || Object.keys(moves).length === 0) return out;
@@ -434,7 +484,7 @@ const PokemonDetail = () => {
 				.flatMap((f) =>
 					tc.map((c) => {
 						const e = computeDPSEntry(member, gamemasterPokemon, moves, 15, maxLevelIndex, '', undefined, [f, c]);
-						return { f, c, dps: e.dps, tdo: e.tdo, edps: e.edps };
+						return { f, c, dps: e.dps, tdo: e.tdo };
 					})
 				)
 				.sort((a, b) => b[raidMetric] - a[raidMetric])
@@ -1062,10 +1112,10 @@ const PokemonDetail = () => {
 									<div className='r-readout'>
 										<div>
 											<i>
-											{t('pokemonDetail:raid.rank', {
-												type: gameTypeDisplayTranslator(raidSelRow.t, gl) || raidSelRow.t,
-											})}
-										</i>
+												{t('pokemonDetail:raid.rank', {
+													type: gameTypeDisplayTranslator(raidSelRow.t, gl) || raidSelRow.t,
+												})}
+											</i>
 											<b className='hi' style={{ ['--tc' as string]: typeVar(raidSelRow.t) }}>
 												{ordinal(raidSelRow.rank)}
 											</b>
@@ -1081,8 +1131,10 @@ const PokemonDetail = () => {
 									</div>
 								) : (
 									<p className='r-muted'>
-									{t('pokemonDetail:raid.notRankedAttacker', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
-								</p>
+										{t('pokemonDetail:raid.notRankedAttacker', {
+											raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+										})}
+									</p>
 								)}
 
 								{raidRows.length > 0 && (
@@ -1157,7 +1209,10 @@ const PokemonDetail = () => {
 
 								{raidSelRow && (
 									<p className='r-muted' style={{ marginTop: 14 }}>
-										{t('pokemonDetail:raid.ivsBarelyMatterPrefix')} <b>{t('pokemonDetail:raid.attackWord')}</b>.
+										{t('pokemonDetail:raid.ivsBarelyMatterPrefix', {
+											raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+										})}{' '}
+										<b>{t('pokemonDetail:raid.attackWord')}</b>.
 									</p>
 								)}
 							</div>
@@ -1210,7 +1265,7 @@ const PokemonDetail = () => {
 												...(league !== 2 && slice
 													? [
 															[
-																t('pokemonDetail:pvp.presets.rank1', { league: LEAGUES[league].label }),
+																t('pokemonDetail:pvp.presets.rank1', { league: LEAGUES[league].full }),
 																{
 																	atk: purifiedIv(slice.perfect.A),
 																	def: purifiedIv(slice.perfect.D),
@@ -1257,7 +1312,11 @@ const PokemonDetail = () => {
 								    guarantee these numbers match the `iv` actually on screen. */}
 								<div className='r-readout'>
 									<div>
-										<i>{t('pokemonDetail:pvp.ivRank', { league: LEAGUES[league].label })}</i>
+										<i>
+											{renderWithColoredParams(t, 'pokemonDetail:pvp.ivRank', {
+												league: { value: LEAGUES[league].full, color: LEAGUES[league].cssVar },
+											})}
+										</i>
 										<b className='hi'>{!readoutReady || !slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
 									</div>
 									<div>
@@ -1276,16 +1335,22 @@ const PokemonDetail = () => {
 										<b>{!readoutReady || !slice ? '…' : slice.cp.toLocaleString()}</b>
 									</div>
 								</div>
-								{readoutReady && slice && (
+								{/* The rank-1 spread itself is already shown above (IV rank / CP @
+								    level) — this only ever needs to add whatever ELSE ties it,
+								    never repeat it. */}
+								{readoutReady && slice && tiedBestSpreads.length > 1 && (
 									<p className='r-muted' style={{ marginTop: 12 }}>
-										{t('pokemonDetail:pvp.bestSpreadFor', { league: LEAGUES[league].label })}{' '}
-										<b>
-											{slice.perfect.A}/{slice.perfect.D}/{slice.perfect.S}
-										</b>{' '}
-										{t('pokemonDetail:pvp.bestSpreadResult', {
-											cp: slice.perfectCP.toLocaleString(),
-											level: slice.perfectLvl,
+										{renderWithColoredParams(t, 'pokemonDetail:pvp.additionalBestSpreadFor', {
+											league: { value: LEAGUES[league].full, color: LEAGUES[league].cssVar },
 										})}
+										<span className='r-bestspreads-list'>
+											{tiedBestSpreads.slice(1).map((r, i) => (
+												<span key={i} className='r-bestspreads-item'>
+													{r.IVs.A}/{r.IVs.D}/{r.IVs.S}{' '}
+													{t('pokemonDetail:pvp.bestSpreadResult', { cp: r.CP.toLocaleString(), level: r.L })}
+												</span>
+											))}
+										</span>
 									</p>
 								)}
 								{purifyOffset > 0 && (

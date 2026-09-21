@@ -5,8 +5,8 @@
 	},
 	"nav": {
 		"pokedex": { "label": "Pokédex", "hint": "Alle Pokémon durchsuchen" },
-		"rankings": { "label": "Ranglisten", "hint": "Beste Angreifer je Liga und Arena-Kampf-Typ" },
-		"calendar": { "label": "Kalender", "hint": "Events, Arena-Kämpfe, Fundorte und Eier" },
+		"rankings": { "label": "Ranglisten", "hint": "Beste Angreifer je Liga und {{raid}}-Typ" },
+		"calendar": { "label": "Kalender", "hint": "Events, {{raid}}s, Fundorte und Eier" },
 		"moves": { "label": "Attacken", "hint": "Alle Schnell- und Ladeattacken" },
 		"types": { "label": "Typen", "hint": "Typ-Effektivitätstabelle" },
 		"searches": {

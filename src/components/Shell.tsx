@@ -2,12 +2,15 @@ import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
+import type { GameLanguage } from '../contexts/language-context';
+import { useLanguage } from '../contexts/language-context';
 import { useTheme } from '../contexts/theme-context';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useScrollToTopOnNavigate } from '../hooks/useScrollToTopOnNavigate';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { R } from '../lib/nav';
 import { useGameTranslationsData } from '../utils/game-translations-store';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { InstallPrompt } from './InstallPrompt';
 import { SearchBox } from './SearchBox';
 import { SettingsMenu } from './SettingsMenu';
@@ -26,7 +29,7 @@ const NAV: Array<{
 	to: string;
 	icon: string;
 	label: (t: TFunction) => string;
-	hint: (t: TFunction) => string;
+	hint: (t: TFunction, gl: GameLanguage) => string;
 	match: (p: string) => boolean;
 }> = [
 	{
@@ -40,14 +43,14 @@ const NAV: Array<{
 		to: R.rankings('great'),
 		icon: '/images/nav/rankings.webp',
 		label: (t) => t('common:nav.rankings.label'),
-		hint: (t) => t('common:nav.rankings.hint'),
+		hint: (t, gl) => t('common:nav.rankings.hint', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
 		match: (p) => p.startsWith('/rankings'),
 	},
 	{
 		to: R.calendar(),
 		icon: '/images/nav/calendar.png',
 		label: (t) => t('common:nav.calendar.label'),
-		hint: (t) => t('common:nav.calendar.hint'),
+		hint: (t, gl) => t('common:nav.calendar.hint', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
 		match: (p) => p.startsWith('/calendar'),
 	},
 	{
@@ -75,6 +78,7 @@ const NAV: Array<{
 
 const Shell = () => {
 	const { t } = useTranslation(['common']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const { pathname } = useLocation();
 	const { dataTheme } = useTheme();
 	usePageMeta();
@@ -104,7 +108,7 @@ const Shell = () => {
 			<nav className='r-bottomnav'>
 				{NAV.map((n) => {
 					const label = n.label(t);
-					const hint = n.hint(t);
+					const hint = n.hint(t, gl);
 					return (
 						<NavLink
 							key={n.to}

@@ -59,9 +59,9 @@
 		"ariaKeepTopGreat": "Great Ligi'nde en üsttekileri tut",
 		"ariaKeepTopUltra": "Ultra Ligi'nde en üsttekileri tut",
 		"ariaKeepTopMaster": "Master Ligi'nde en üsttekileri tut",
-		"ariaKeepTopRaid": "En iyi baskın saldırganlarını tut"
+		"ariaKeepTopRaid": "En iyi {{raid}} saldırganlarını tut"
 	},
-	"metaKnobsSubtitle": "Lig/baskın başına mevcut en iyi meta Pokémon'ları koru",
+	"metaKnobsSubtitle": "Lig/{{raid}} başına mevcut en iyi meta Pokémon'ları koru",
 	"badIvKnobsSubtitle": "Basitleştirilmiş mod, daha kısa bir dize için doğruluktan ödün verir — düğmedeki ipucuna bakın",
 	"tradeKnobsSubtitle": "Önerilmek için bir türün bu dört eşikten sadece BİRİNİ geçmesi yeterlidir — Great ve Ultra ayrıca bir takasın en iyi olası dağılıma gerçekten ulaşabilmesini de gerektirir (yukarıdaki yardım metnine bakın)",
 	"simplifiedTrashTooltip": "Doğruluktan ödün vererek daha kısa bir dize üretir: Master Ligi'nde (sınırsız) istatistik çarpımı eşitliklerini aramayı atlar — sadece tam hundo (genel !4* hariç tutmasıyla her yerde koşulsuz korunan) orada korunmaya devam eder. Great/Ultra/baskın koruması etkilenmez.",
@@ -71,7 +71,7 @@
 	"toggleOff": "Kapalı",
 	"protectionMeta": {
 		"favorite": {
-			"label": "Favori",
+			"label": "{{favorite}}",
 			"description": "Oyun içinde Favori olarak işaretlenmiş Pokémon."
 		},
 		"tagged": {
@@ -79,51 +79,51 @@
 			"description": "Takma adı veya özel etiketi olan Pokémon."
 		},
 		"legendary": {
-			"label": "Efsanevi",
+			"label": "{{legendary}}",
 			"description": "Kutu efsanevileri (Mewtwo, Lugia, …)."
 		},
 		"mythical": {
-			"label": "Söylencesel",
+			"label": "{{mythical}}",
 			"description": "Söylenceseller (Mew, Celebi, …)."
 		},
 		"ultraBeast": {
-			"label": "Ultra Canavar",
+			"label": "{{ultraBeast}}",
 			"description": "Ultra Canavarlar (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
 			"label": "{{megaEvolvable}}",
-			"description": "Bunu sadece oyun bilir — o tür için şu anda yeterli Mega Enerjisi birikmiş olması gerekir."
+			"description": "Bunu sadece oyun bilir — o tür için şu anda yeterli {{megaEnergy}} birikmiş olması gerekir."
 		},
 		"shadow": {
 			"label": "{{shadow}}",
 			"description": "Kendi IV'lerine veya sıralamasına bakılmaksızın her Gölge Pokémon."
 		},
 		"dynamax": {
-			"label": "Dynamax",
+			"label": "{{dynamax}}",
 			"description": "Dynamax yapabilen Pokémon."
 		},
 		"fusion": {
-			"label": "Füzyon",
+			"label": "{{fusion}}",
 			"description": "Füzyon yapabilen veya zaten füzyonlanmış Pokémon."
 		},
 		"gigantamax": {
-			"label": "Gigantamax",
+			"label": "{{gigantamax}}",
 			"description": "Gigantamax yapabilen Pokémon."
 		},
 		"background": {
-			"label": "Arka Plan",
-			"description": "Profilinde nadir veya konuma özel bir arka planı olan Pokémon."
+			"label": "{{background}}",
+			"description": "{{background}}"
 		},
 		"specialBackground": {
-			"label": "Özel Arka Plan",
-			"description": "Profilinde özel etkinlik arka planı olan Pokémon."
+			"label": "{{specialBackground}}",
+			"description": "{{specialBackground}}"
 		},
 		"shiny": {
-			"label": "Işıltılı",
+			"label": "{{shiny}}",
 			"description": "Her Işıltılı Pokémon."
 		},
 		"costume": {
-			"label": "Kostüm",
+			"label": "{{costume}}",
 			"description": "Özel Etkinlik kostümü giyen Pokémon."
 		}
 	},
@@ -155,9 +155,9 @@
 	"copySearchString": "Arama dizesini kopyala",
 	"copied": "Kopyalandı ✓",
 	"panelSummary": {
-		"topGreat": "İlk {{n}} Great Ligi",
-		"topUltra": "İlk {{n}} Ultra Ligi",
-		"topMaster": "İlk {{n}} Master Ligi",
+		"topGreat": "İlk {{n}} {{league}}",
+		"topUltra": "İlk {{n}} {{league}}",
+		"topMaster": "İlk {{n}} {{league}}",
 		"topRaid": "İlk {{n}} {{raid}}",
 		"cpKept": "{{cp}} ≥ {{cpValue}} tutuldu",
 		"cpUnder": "{{cp}} < {{cpValue}}",

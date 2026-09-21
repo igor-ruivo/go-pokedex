@@ -46,7 +46,7 @@ const call = (
 	overrides: Partial<{
 		rankLists: Array<Record<string, { rank: number } | undefined>>;
 		raidDPS: Record<string, Record<string, ReturnType<typeof mockDPSEntry>>>;
-		raidMetric: 'dps' | 'tdo' | 'edps';
+		raidMetric: 'dps' | 'tdo';
 		gl: GameLanguage;
 		trashGreat: number;
 		trashUltra: number;
@@ -609,7 +609,7 @@ describe('computeTradeableString — raid relevance', () => {
 	it('a raid-good species is included regardless of Master rank', () => {
 		const raidmon = mockPokemon({ speciesId: 'raidmon', dex: 603, types: [mockType('fire')] });
 		const gamemasterPokemon = buildGamemaster([raidmon]);
-		const raidDPS = { fire: { raidmon: mockDPSEntry({ speciesId: 'raidmon', dpsRank: 1, tdoRank: 1, edpsRank: 1 }) } };
+		const raidDPS = { fire: { raidmon: mockDPSEntry({ speciesId: 'raidmon', dpsRank: 1, tdoRank: 1 }) } };
 
 		const result = call(gamemasterPokemon, { raidDPS, raidMetric: 'dps', trashRaid: 5 });
 
@@ -620,7 +620,7 @@ describe('computeTradeableString — raid relevance', () => {
 		const raidmon = mockPokemon({ speciesId: 'raidtied', dex: 704, types: [mockType('fire')] });
 		const gamemasterPokemon = buildGamemaster([raidmon]);
 		const raidDPS = {
-			fire: { raidtied: mockDPSEntry({ speciesId: 'raidtied', dpsRank: 1, tdoRank: 1, edpsRank: 1 }) },
+			fire: { raidtied: mockDPSEntry({ speciesId: 'raidtied', dpsRank: 1, tdoRank: 1 }) },
 		};
 
 		// Populated Master pattern, but no Master rank at all — raid alone

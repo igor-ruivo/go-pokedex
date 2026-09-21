@@ -10,7 +10,7 @@
 		"legacyFor": "過去限定わざとして使用可能"
 	},
 	"arena": {
-		"pve": "PvE · レイド&ジム",
+		"pve": "PvE · {{raid}}&ジム",
 		"pvp": "PvP · リーグ"
 	},
 	"kind": {
@@ -30,7 +30,6 @@
 	"usageLead": "{{name}}を覚えられるポケモン",
 	"tiles": {
 		"recommended": "おすすめ",
-		"mega": "メガ",
 		"elite": "エリート",
 		"legacy": "過去限定"
 	},

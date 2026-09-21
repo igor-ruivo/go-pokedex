@@ -39,7 +39,7 @@ const RelevanceSetsContext = createContext<RelevanceSets | undefined>(undefined)
 export const RelevanceSetsProvider = (props: React.PropsWithChildren<object>) => {
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
-	// Which figure (DPS/TDO/eDPS) counts as "top N" for raids — the same
+	// Which figure (DPS/TDO) counts as "top N" for raids — the same
 	// device-wide setting Rankings' raid tab ranks by, not the feed's own
 	// baked-in `rank` field (always DPS-ordered regardless of this choice).
 	const { raidMetric } = useRaidMetric();

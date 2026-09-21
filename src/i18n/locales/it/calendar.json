@@ -20,12 +20,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Raid di livello superiore", "short": "Livello superiore" },
-			"tier3": { "full": "Raid di livello 3", "short": "Livello 3" },
-			"tier1": { "full": "Raid di livello 1", "short": "Livello 1" }
+			"higher": { "full": "{{raid}} di livello superiore", "short": "Livello superiore" },
+			"tier3": { "full": "{{raid}} di livello 3", "short": "Livello 3" },
+			"tier1": { "full": "{{raid}} di livello 1", "short": "Livello 1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "Altri raid",
+		"otherRaids": "Altri {{raid}}",
 		"nothingScheduled": "Niente in programma.",
 		"nowSlot": "Ora"
 	},
@@ -52,8 +52,8 @@
 		"bonuses": "Bonus",
 		"groups": {
 			"featuredSpawns": "Spawn in evidenza",
-			"featuredRaids": "Raid in evidenza",
-			"researchEncounters": "Incontri di ricerca",
+			"featuredRaids": "{{raid}} in evidenza",
+			"researchEncounters": "Incontri di Ricerca sul Campo",
 			"eggs": "Uova",
 			"incense": "Incenso",
 			"lures": "Moduli Esca"
@@ -62,8 +62,6 @@
 	},
 	"rockets": {
 		"noLineups": "Nessuna formazione Team GO Rocket.",
-		"typeGrunt": "Gregario {{type}}",
-		"genericGrunt": "Gregario",
 		"slotReward": "Ricompensa slot {{slot}}",
 		"slotHeader": "Slot {{slot}}",
 		"catchableTag": "catturabile"

@@ -5,7 +5,7 @@
 		"appLanguage": "Lingua dell'app",
 		"gameLanguage": "Lingua di gioco",
 		"sprites": "Sprite",
-		"raidRanking": "Classifica raid",
+		"raidRanking": "Classifica {{raid}}",
 		"bestBuddy": "Considera il Migliore Amico",
 		"off": "Off",
 		"on": "On",
@@ -27,14 +27,14 @@
 		},
 		"bestBuddy": {
 			"title": "Considera il Migliore Amico",
-			"desc": "Considera il livello 51 come raggiungibile — la tabella IV, le stringhe di eliminazione/ricerca, il PL massimo, il selettore di livello, i migliori IV/percentile, i contatori raid e DPS/TDO/eDPS valutano tutti fino al livello 51 invece che 50."
+			"desc": "Considera il livello 51 come raggiungibile — la tabella IV, le stringhe di eliminazione/ricerca, il PL massimo, il selettore di livello, i migliori IV/percentile, i contatori raid e DPS/TDO valutano tutti fino al livello 51 invece che 50."
 		},
 		"footer": "Le preferenze sono salvate su questo dispositivo."
 	},
 	"spriteOptions": {
 		"official": "Ufficiale",
 		"go": "Pokémon GO",
-		"shiny": "GO shiny"
+		"shiny": "GO {{shiny}}"
 	},
 	"toggle": {
 		"off": "Off",

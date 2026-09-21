@@ -10,7 +10,7 @@
 		"legacyFor": "Est une capacité passée pour"
 	},
 	"arena": {
-		"pve": "PvE · Raids et Arènes",
+		"pve": "PvE · {{raid}}s et Arènes",
 		"pvp": "PvP · Ligues"
 	},
 	"kind": {
@@ -22,7 +22,7 @@
 		"dmg": "DGT",
 		"nrg": "ÉNG",
 		"dur": "DUR",
-		"turns": "Tours",
+		"turns": "TOURS",
 		"dps": "DPS",
 		"eps": "EPS",
 		"dpe": "DPE"
@@ -30,7 +30,6 @@
 	"usageLead": "Pokémon pouvant apprendre {{name}}",
 	"tiles": {
 		"recommended": "Recommandée",
-		"mega": "Méga",
 		"elite": "Élite",
 		"legacy": "Passée"
 	},

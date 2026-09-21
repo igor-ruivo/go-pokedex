@@ -18,12 +18,12 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "上位ティアレイド", "short": "上位ティア" },
-			"tier3": { "full": "ティア3レイド", "short": "ティア3" },
-			"tier1": { "full": "ティア1レイド", "short": "ティア1" }
+			"higher": { "full": "上位ティア{{raid}}", "short": "上位ティア" },
+			"tier3": { "full": "ティア3{{raid}}", "short": "ティア3" },
+			"tier1": { "full": "ティア1{{raid}}", "short": "ティア1" }
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
-		"otherRaids": "その他のレイド",
+		"otherRaids": "その他の{{raid}}",
 		"nothingScheduled": "予定はありません。",
 		"nowSlot": "現在"
 	},
@@ -50,8 +50,8 @@
 		"bonuses": "ボーナス",
 		"groups": {
 			"featuredSpawns": "注目の出現",
-			"featuredRaids": "注目のレイド",
-			"researchEncounters": "リサーチで出会える",
+			"featuredRaids": "注目の{{raid}}",
+			"researchEncounters": "フィールドリサーチの出会い",
 			"eggs": "タマゴ",
 			"incense": "お香",
 			"lures": "ルアーモジュール"
@@ -60,8 +60,6 @@
 	},
 	"rockets": {
 		"noLineups": "ロケット団の編成情報はありません。",
-		"typeGrunt": "{{type}}タイプのしたっぱ",
-		"genericGrunt": "したっぱ",
 		"slotReward": "枠{{slot}}の報酬",
 		"slotHeader": "枠{{slot}}",
 		"catchableTag": "捕獲可能"
