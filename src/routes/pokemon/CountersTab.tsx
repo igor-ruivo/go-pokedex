@@ -578,12 +578,12 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								<dd>{t('pokemonDetail:counters.help.weatherFriendshipMegaAuraDesc')}</dd>
 								<dt>{t('pokemonDetail:counters.megaLevelField', { mega: megaWord })}</dt>
 								<dd>
-								{t('pokemonDetail:counters.help.megaLevelDesc', {
-									mega: megaWord,
-									primal: sentenceCase(gameTranslator(GameTranslatorKeys.PrimalDisplay, gl)),
-									megaEnergy: gameTranslator(GameTranslatorKeys.MegaEnergyDisplay, gl),
-								})}
-							</dd>
+									{t('pokemonDetail:counters.help.megaLevelDesc', {
+										mega: megaWord,
+										primal: sentenceCase(gameTranslator(GameTranslatorKeys.PrimalDisplay, gl)),
+										megaEnergy: gameTranslator(GameTranslatorKeys.MegaEnergyDisplay, gl),
+									})}
+								</dd>
 								<dt>{t('pokemonDetail:counters.bossTier')}</dt>
 								<dd>{t('pokemonDetail:counters.help.bossTierDesc')}</dd>
 							</dl>

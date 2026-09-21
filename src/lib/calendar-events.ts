@@ -2,6 +2,18 @@ import { GameLanguage } from '../contexts/language-context';
 import type { IPostEntry } from '../DTOs/INews';
 import type { ILeekduckSpotlightHour } from '../queries/calendar';
 
+// LeekDuck (unlike pokemongo.com) has no per-locale URLs — every GameLanguage
+// key just repeats the one English page. Same `Object.values` (not
+// `Object.keys`) reasoning as the `bonuses` builder below applies here too.
+export const everyLanguage = (value: string): Record<GameLanguage, string> =>
+	Object.values(GameLanguage).reduce(
+		(acc, key) => {
+			acc[key] = value;
+			return acc;
+		},
+		{} as Record<GameLanguage, string>
+	);
+
 /**
  * Leekduck Spotlight Hours behave like a tiny event of their own — the
  * legacy (pre-revamp) site folded them straight into the Events feed the
@@ -16,7 +28,7 @@ import type { ILeekduckSpotlightHour } from '../queries/calendar';
  */
 export const spotlightToPost = (s: ILeekduckSpotlightHour): IPostEntry => ({
 	id: s.rawUrl,
-	url: s.rawUrl,
+	url: everyLanguage(s.rawUrl),
 	title: s.title,
 	subtitle: s.title,
 	startDate: s.date,

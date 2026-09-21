@@ -38,9 +38,7 @@ function startLoad(): void {
 	fetch(gameTranslationsUrl)
 		.then((response) => {
 			if (!response.ok) {
-				throw new Error(
-					`Network response was not ok for ${gameTranslationsUrl} (HTTP ${response.status})`
-				);
+				throw new Error(`Network response was not ok for ${gameTranslationsUrl} (HTTP ${response.status})`);
 			}
 			return response.json() as Promise<GameTranslationsPayload>;
 		})

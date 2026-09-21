@@ -4041,6 +4041,17 @@
 .rvmp .r-md-protect-chip {
 	width: 100%;
 	justify-content: flex-start;
+	/* Without this, a flex item's default min-width is its content's own
+	   intrinsic (unbreakable) width — one long label would then force its
+	   whole grid track wider than the others, which is exactly what threw
+	   every other row's chips out of alignment. */
+	min-width: 0;
+}
+.rvmp .r-md-protect-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
 }
 @media (max-width: 480px) {
 	.rvmp .r-md-protect-grid {

@@ -2253,7 +2253,7 @@ const MassDelete = () => {
 										onClick={lockedOn ? undefined : () => setProtectFlag(m.key)}
 									>
 										<span className='r-ss-box' aria-hidden='true' />
-										{m.label}
+										<span className='r-md-protect-label'>{m.label}</span>
 									</button>
 								);
 							})}

@@ -67,7 +67,10 @@ const STAT_EFFECTS: Array<{ key: StatEffectKey; who: 'own' | 'foe'; stat: 'Attac
 // isn't safe across 15 languages' word order/grammar, so this mirrors the
 // real UI instead. See dex-server's `game-translations-provider.ts` for the
 // data-mined source of each of these 8 keys.
-const BUFF_KEY_LOOKUP: Record<'own' | 'foe', Record<'Attack' | 'Defense', Record<'raise' | 'lower', GameTranslatorKeys>>> = {
+const BUFF_KEY_LOOKUP: Record<
+	'own' | 'foe',
+	Record<'Attack' | 'Defense', Record<'raise' | 'lower', GameTranslatorKeys>>
+> = {
 	own: {
 		Attack: { raise: GameTranslatorKeys.AttackBoostSelf, lower: GameTranslatorKeys.AttackDropSelf },
 		Defense: { raise: GameTranslatorKeys.DefenseBoostSelf, lower: GameTranslatorKeys.DefenseDropSelf },

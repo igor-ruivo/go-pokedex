@@ -156,7 +156,7 @@ const PokemonDetail = () => {
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { moves, movesFetchCompleted } = useMoves();
-	const { currentGameLanguage: gl } = useLanguage();
+	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	// which figure (DPS/TDO) ranks raid attackers — the same device-wide
 	// setting Rankings' raid tab and the Counters tab use.
 	const { raidMetric } = useRaidMetric();
@@ -1058,7 +1058,7 @@ const PokemonDetail = () => {
 										</span>
 										<span className='r-board-fig'>
 											<span className='r-board-rank'>
-												{rank != null ? ordinal(rank) : '—'}
+												{rank != null ? ordinal(rank, currentLanguage) : '—'}
 												{l.id !== 3 && rankChange !== 0 && (
 													<span className='r-delta' data-dir={rankChange > 0 ? 'up' : 'down'}>
 														{rankChange > 0 ? '▲' : '▼'}
@@ -1117,7 +1117,7 @@ const PokemonDetail = () => {
 												})}
 											</i>
 											<b className='hi' style={{ ['--tc' as string]: typeVar(raidSelRow.t) }}>
-												{ordinal(raidSelRow.rank)}
+												{ordinal(raidSelRow.rank, currentLanguage)}
 											</b>
 										</div>
 										<div>
@@ -1167,7 +1167,7 @@ const PokemonDetail = () => {
 													>
 														<span className='r-raidtype-head'>
 															<span className='r-move-type'>{gameTypeDisplayTranslator(rt, gl) || rt}</span>
-															<b>{ordinal(rank)}</b>
+															<b>{ordinal(rank, currentLanguage)}</b>
 															<em>
 																{fmtRaidMetric(combo?.[raidMetric] ?? e[raidMetric], raidMetric)}{' '}
 																{RAID_METRIC_LABEL[raidMetric]}
@@ -1365,8 +1365,8 @@ const PokemonDetail = () => {
 								{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
 									<p className='r-muted' style={{ marginTop: 8 }}>
 										{t('pokemonDetail:pvp.purifyUnreachableWarning', {
-										shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
-									})}
+											shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+										})}
 									</p>
 								)}
 							</div>

@@ -42,7 +42,7 @@ export const RaidTypeCoverage = ({
 	const { gamemasterPokemon } = usePokemon();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
-	const { currentGameLanguage: gl } = useLanguage();
+	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { maxLevelIndex } = useBestBuddy();
 	const { raidMetric } = useRaidMetric();
 
@@ -160,7 +160,7 @@ export const RaidTypeCoverage = ({
 								type: gameTypeDisplayTranslator(selRow.t, gl) || selRow.t,
 							})}
 						</i>
-						<b className='hi'>{ordinal(raidRankOf(selRow.e, raidMetric) ?? 0)}</b>
+						<b className='hi'>{ordinal(raidRankOf(selRow.e, raidMetric) ?? 0, currentLanguage)}</b>
 					</div>
 					<div>
 						<i>DPS</i>
@@ -201,7 +201,7 @@ export const RaidTypeCoverage = ({
 						>
 							<span className='r-raidtype-head'>
 								<span className='r-move-type'>{gameTypeDisplayTranslator(typeKey, gl) || typeKey}</span>
-								<b>{ordinal(raidRankOf(e, raidMetric) ?? 0)}</b>
+								<b>{ordinal(raidRankOf(e, raidMetric) ?? 0, currentLanguage)}</b>
 								<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
 							</span>
 							{combo && (

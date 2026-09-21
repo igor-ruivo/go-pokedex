@@ -20,7 +20,14 @@ export interface IRocketGrunt {
 
 export interface IPostEntry {
 	id: string;
-	url: string;
+	// pokemongo.com actually publishes a separate URL per locale (unlike
+	// LeekDuck, an English-only fan site) — this tracks GameLanguage, same
+	// as `title`/`subtitle`/`bonuses` below, so "View original" opens in
+	// whichever language the post itself is being read in. LeekDuck-sourced
+	// posts (spotlightToPost/specialToPost in Calendar.tsx) have no real
+	// per-locale URL to offer, so every GameLanguage key just repeats their
+	// one English URL.
+	url: Record<GameLanguage, string>;
 	title: Record<GameLanguage, string>;
 	subtitle: Record<GameLanguage, string>;
 	startDate: number;

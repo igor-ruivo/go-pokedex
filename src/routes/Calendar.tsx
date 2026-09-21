@@ -15,7 +15,7 @@ import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
 import i18n from '../i18n';
-import { spotlightToPost } from '../lib/calendar-events';
+import { everyLanguage, spotlightToPost } from '../lib/calendar-events';
 import {
 	dateRange,
 	dayRange,
@@ -109,7 +109,7 @@ const timeLeft = (end: number, now: number): string => {
 /** Leekduck special-boss windows behave like tiny raid-only events. */
 const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
 	id: s.rawUrl,
-	url: s.rawUrl,
+	url: everyLanguage(s.rawUrl),
 	title: s.title,
 	subtitle: s.title,
 	startDate: s.date,
@@ -499,10 +499,10 @@ const EventCard = ({
 					<Group title={t('calendar:events.groups.eggs')} entries={post.eggs} />
 					<Group title={t('calendar:events.groups.incense')} entries={post.incenses} />
 					<Group title={t('calendar:events.groups.lures')} entries={post.lures} />
-					{post.url && (
+					{(post.url[gl] || post.url[GameLanguage.en]) && (
 						<a
 							className='r-ext-link'
-							href={post.url}
+							href={post.url[gl] || post.url[GameLanguage.en]}
 							target='_blank'
 							rel='noopener noreferrer'
 							onClick={(e) => e.stopPropagation()}
@@ -652,7 +652,7 @@ const RaidsTab = () => {
 	// scripts/check-i18n-parity.mjs can statically verify every one. "raid"
 	// itself always comes from GameTranslator, never website i18n — see
 	// RaidDisplay's other call sites.
-	const raidWord = gameTranslator(GameTranslatorKeys.RaidDisplay, gl);
+	const raidWord = sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl));
 	const tierLabels: Record<(typeof RAID_TIERS)[number]['key'], { full: string; short: string }> = {
 		higher: {
 			full: t('calendar:raids.tiers.higher.full', { raid: raidWord }),

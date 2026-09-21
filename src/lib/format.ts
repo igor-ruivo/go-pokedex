@@ -1,3 +1,5 @@
+import type { Locale } from '../i18n';
+
 /** Short labels for the wordy form parentheticals so names stay on one line. */
 const FORM_ABBR: Record<string, string> = {
 	// legendaries / signature forms
@@ -135,10 +137,50 @@ export const statProdPercentile = (
  */
 export const rankPerfection = (rank: number): number => ((4096 - rank) / 4095) * 100;
 
-export const ordinal = (n: number): string => {
-	const s = ['th', 'st', 'nd', 'rd'];
+const ENGLISH_ORDINAL_SUFFIXES = ['th', 'st', 'nd', 'rd'];
+const englishOrdinalSuffix = (n: number): string => {
 	const v = n % 100;
-	return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
+	return ENGLISH_ORDINAL_SUFFIXES[(v - 20) % 10] ?? ENGLISH_ORDINAL_SUFFIXES[v] ?? ENGLISH_ORDINAL_SUFFIXES[0];
+};
+
+/**
+ * Rank-placement adorner ("1st", "2.", "第1名"…) in whichever WEBSITE UI
+ * language (`Locale`) is currently active — this is plain grammar, not a
+ * Pokémon GO concept, so unlike everything sourced from GameTranslator it
+ * tracks the site's own i18next locale, not GameLanguage. `locale` is
+ * required (no English default) so a future call site can't silently ship
+ * English suffixes to every other language by forgetting to pass it.
+ */
+export const ordinal = (n: number, locale: Locale): string => {
+	switch (locale) {
+		case 'de':
+		case 'tr':
+			return `${n}.`;
+		case 'es':
+		case 'es-MX':
+		case 'it':
+		case 'pt-PT':
+			return `${n}º`;
+		case 'fr':
+			return n === 1 ? `${n}er` : `${n}e`;
+		case 'hi':
+			return `${n}वां`;
+		case 'id':
+			return `ke-${n}`;
+		case 'ja':
+			return `${n}位`;
+		case 'ko':
+			return `${n}위`;
+		case 'ru':
+			return `${n}-й`;
+		case 'th':
+			return `${n}`;
+		case 'zh-Hant':
+			return `第${n}名`;
+		case 'en':
+		default:
+			return `${n}${englishOrdinalSuffix(n)}`;
+	}
 };
 
 // Events (and the special-raid-boss windows folded into the same feed) are
@@ -246,7 +288,9 @@ export const dayRange = (start: number, end: number, locale: string): string => 
 		s.getUTCFullYear() === e.getUTCFullYear() &&
 		s.getUTCMonth() === e.getUTCMonth() &&
 		s.getUTCDate() === e.getUTCDate();
-	return sameDay ? dfEventShort(locale).format(s) : `${dfEventShort(locale).format(s)} – ${dfEventShort(locale).format(e)}`;
+	return sameDay
+		? dfEventShort(locale).format(s)
+		: `${dfEventShort(locale).format(s)} – ${dfEventShort(locale).format(e)}`;
 };
 
 export type EventPhase = 'live' | 'soon' | 'ended';
