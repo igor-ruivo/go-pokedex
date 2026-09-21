@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import { PokeMini } from '../components/PokeMini';
 import { useLanguage } from '../contexts/language-context';
-import { cleanName } from '../lib/format';
+import { cleanName, sentenceCase } from '../lib/format';
 import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS, moveOwners } from '../lib/moves';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { useMoves } from '../queries/moves';
@@ -141,7 +141,9 @@ const MoveDetail = () => {
 						<div className='r-mstat-col' key={a}>
 							<span className='r-mstat-arena'>
 								{a === 'pve'
-									? t('moveDetail:arena.pve', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })
+									? t('moveDetail:arena.pve', {
+											raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+										})
 									: t('moveDetail:arena.pvp')}
 							</span>
 							<div className='r-mstat-tiles'>

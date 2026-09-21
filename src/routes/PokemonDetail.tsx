@@ -1089,22 +1089,22 @@ const PokemonDetail = () => {
 									? raidMember.isShadow
 										? t('pokemonDetail:raid.performanceHeading.selfShadow', {
 												name: cleanName(raidMember.speciesName),
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 												shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
 											})
 										: t('pokemonDetail:raid.performanceHeading.self', {
 												name: cleanName(raidMember.speciesName),
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})
 									: raidMember.isShadow
 										? t('pokemonDetail:raid.performanceHeading.asShadow', {
 												name: cleanName(raidMember.speciesName),
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 												shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
 											})
 										: t('pokemonDetail:raid.performanceHeading.as', {
 												name: cleanName(raidMember.speciesName),
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})}
 							</div>
 							<div className='r-card' style={{ ['--accent' as string]: 'var(--lg-raid)' }}>
@@ -1132,7 +1132,7 @@ const PokemonDetail = () => {
 								) : (
 									<p className='r-muted'>
 										{t('pokemonDetail:raid.notRankedAttacker', {
-											raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 										})}
 									</p>
 								)}
@@ -1210,7 +1210,7 @@ const PokemonDetail = () => {
 								{raidSelRow && (
 									<p className='r-muted' style={{ marginTop: 14 }}>
 										{t('pokemonDetail:raid.ivsBarelyMatterPrefix', {
-											raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 										})}{' '}
 										<b>{t('pokemonDetail:raid.attackWord')}</b>.
 									</p>
@@ -1346,7 +1346,7 @@ const PokemonDetail = () => {
 									<p className='r-muted' style={{ marginTop: 12 }}>
 										{renderWithColoredParams(t, 'pokemonDetail:pvp.additionalBestSpreadFor', {
 											league: { value: LEAGUES[league].full, color: LEAGUES[league].cssVar },
-										})}
+										})}{' '}
 										<span className='r-bestspreads-list'>
 											{tiedBestSpreads.slice(1).map((r, i) => (
 												<span key={i} className='r-bestspreads-item'>

@@ -85,7 +85,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
 		gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
 		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
-		gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+		sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 	];
 	const megaWord = gameTranslator(GameTranslatorKeys.MegaDisplay, gl);
 	const TIER_LABEL: Record<RaidTier, string> = {
@@ -197,7 +197,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		t('pokemonDetail:counters.summaryRaidHp', {
 			tier: TIER_LABEL[tier],
 			hp: RAID_BOSS_STATS[tier].hp.toLocaleString(),
-			raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+			raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 		}),
 		weatherKey && WEATHER.find((w) => w.key === weatherKey)?.label,
 		partySize > 1 && t('pokemonDetail:counters.partyOf', { size: partySize }),
@@ -353,7 +353,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 			<div className='r-section-h'>
 				{t('pokemonDetail:counters.bestRaidCounters', {
 					name: cleanName(pokemon.speciesName),
-					raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+					raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 				})}
 			</div>
 
@@ -410,7 +410,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 											})}
 											aria-label={t('pokemonDetail:counters.bossTierAriaLabel', {
 												tier: TIER_LABEL[tierKey],
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})}
 											data-active={tier === tierKey}
 											onClick={() => setTier(tierKey)}
@@ -423,7 +423,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 									{t('pokemonDetail:counters.bossTierHint', {
 										tier: TIER_LABEL[tier],
 										hp: RAID_BOSS_STATS[tier].hp.toLocaleString(),
-										raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+										raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 									})}
 								</span>
 							</div>

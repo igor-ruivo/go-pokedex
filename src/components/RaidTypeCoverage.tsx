@@ -6,7 +6,7 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { cleanName, ordinal } from '../lib/format';
+import { cleanName, ordinal, sentenceCase } from '../lib/format';
 import { R } from '../lib/nav';
 import { raidRankOf } from '../lib/raid-metric';
 import { useMoves } from '../queries/moves';
@@ -126,7 +126,9 @@ export const RaidTypeCoverage = ({
 	if (types.length === 0) {
 		return (
 			<p className='r-muted'>
-				{t('components:raidTypeCoverage.notRanked', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+				{t('components:raidTypeCoverage.notRanked', {
+					raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+				})}
 			</p>
 		);
 	}

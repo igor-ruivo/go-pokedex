@@ -8,6 +8,7 @@ import { useTheme } from '../contexts/theme-context';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useScrollToTopOnNavigate } from '../hooks/useScrollToTopOnNavigate';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
+import { sentenceCase } from '../lib/format';
 import { R } from '../lib/nav';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
@@ -43,14 +44,16 @@ const NAV: Array<{
 		to: R.rankings('great'),
 		icon: '/images/nav/rankings.webp',
 		label: (t) => t('common:nav.rankings.label'),
-		hint: (t, gl) => t('common:nav.rankings.hint', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
+		hint: (t, gl) =>
+			t('common:nav.rankings.hint', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) }),
 		match: (p) => p.startsWith('/rankings'),
 	},
 	{
 		to: R.calendar(),
 		icon: '/images/nav/calendar.png',
 		label: (t) => t('common:nav.calendar.label'),
-		hint: (t, gl) => t('common:nav.calendar.hint', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
+		hint: (t, gl) =>
+			t('common:nav.calendar.hint', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) }),
 		match: (p) => p.startsWith('/calendar'),
 	},
 	{

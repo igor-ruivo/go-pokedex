@@ -49,7 +49,7 @@
 			"as": "Desempenho em {{raid}} · como {{name}}",
 			"asShadow": "Desempenho em {{raid}} · como {{name}} {{shadow}}"
 		},
-		"rank": "rank de {{type}}",
+		"rank": "Rank de {{type}}",
 		"baseAtk": "ATQ base",
 		"notRankedAttacker": "Não classificado como atacante de {{raid}}.",
 		"bestMovesetByType": "Melhor combinação de golpes por tipo",

@@ -1931,7 +1931,9 @@ const MassDelete = () => {
 						{mode === 'meta' && (
 							<>
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									{t('massDelete:metaKnobsSubtitle', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+									{t('massDelete:metaKnobsSubtitle', {
+										raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+									})}
 								</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
@@ -1989,7 +1991,7 @@ const MassDelete = () => {
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid', {
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})}
 											value={trashRaid}
 											onChange={setTrashRaid}
@@ -2034,7 +2036,7 @@ const MassDelete = () => {
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid', {
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})}
 											value={trashRaid}
 											onChange={setTrashRaid}
@@ -2159,7 +2161,7 @@ const MassDelete = () => {
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid', {
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})}
 											value={trashRaid}
 											onChange={setTrashRaid}
@@ -2204,7 +2206,7 @@ const MassDelete = () => {
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid', {
-												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})}
 											value={trashRaid}
 											onChange={setTrashRaid}

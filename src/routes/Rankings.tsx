@@ -412,7 +412,7 @@ const Rankings = () => {
 				)}
 				{showGrid && isRaid && !raidType && (
 					<p className='r-muted r-rank-empty'>
-						{t('rankings:empty.pickType', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+						{t('rankings:empty.pickType', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}
 					</p>
 				)}
 				{showGrid && rows.length === 0 && !(isRaid && !raidType) && (

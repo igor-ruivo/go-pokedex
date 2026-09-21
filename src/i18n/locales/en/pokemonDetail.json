@@ -49,7 +49,7 @@
 			"as": "{{raid}} performance · as {{name}}",
 			"asShadow": "{{raid}} performance · as {{shadow}} {{name}}"
 		},
-		"rank": "{{type}} rank",
+		"rank": "{{type}} Rank",
 		"baseAtk": "Base ATK",
 		"notRankedAttacker": "Not ranked as a {{raid}} attacker.",
 		"bestMovesetByType": "Best moveset by type",

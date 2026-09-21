@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs } from '../../hooks/useBestIvs';
-import { cleanName, dec1, statProdPercentile } from '../../lib/format';
+import { cleanName, dec1, sentenceCase, statProdPercentile } from '../../lib/format';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
@@ -100,7 +100,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 				<div className='r-card' style={{ textAlign: 'center' }}>
 					<p className='r-muted'>
 						{t('pokemonDetail:ivTable.notForRaids', {
-							raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+							raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 							great: gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl),
 							ultra: gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl),
 							master: gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl),
