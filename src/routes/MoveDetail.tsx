@@ -5,13 +5,13 @@ import { useParams } from 'react-router-dom';
 import { PokeMini } from '../components/PokeMini';
 import { useLanguage } from '../contexts/language-context';
 import { cleanName } from '../lib/format';
-import { type Arena, buffText, fastMoveTurns, moveDPE, moveDPS, moveEPS, moveOwners } from '../lib/moves';
+import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS, moveOwners } from '../lib/moves';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
-import { TYPE_LABEL } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 
 /** Small inline placeholder for the Recommended/Also-learned-by grids while
  *  they're still waiting on relevance data — same treatment as Calendar's
@@ -92,7 +92,7 @@ const MoveDetail = () => {
 	const others = owners.filter((p) => !recommendedFor.has(p.speciesId));
 
 	const name = m.moveName[gl] ?? cleanName(moveId);
-	const fx = kind === 'charged' ? buffText(m.buffs) : null;
+	const fx = kind === 'charged' ? buffInfo(m.buffs, gl) : null;
 
 	const statsFor = (a: Arena): Array<[string, string]> => {
 		const pow = a === 'pve' ? m.pvePower : m.pvpPower;
@@ -122,9 +122,12 @@ const MoveDetail = () => {
 				style={{ ['--tc' as string]: `var(--t-${type})`, ['--accent' as string]: `var(--t-${type})` }}
 			>
 				<div className='r-move-hero-badges'>
-					<span className='r-move-type'>{TYPE_LABEL[type] ?? m.type}</span>
+					<span className='r-move-type'>{gameTypeDisplayTranslator(type, gl) || m.type}</span>
 					<span className='r-chip'>
-						{t(kind === 'fast' ? 'moveDetail:kind.fastChip' : 'moveDetail:kind.chargedChip')}
+						{gameTranslator(
+							kind === 'fast' ? GameTranslatorKeys.FastAttackHeader : GameTranslatorKeys.ChargedAttackHeader,
+							gl
+						)}
 					</span>
 					{m.isSuperMega && <span className='r-chip'>{t('moveDetail:superMega')}</span>}
 				</div>
@@ -148,7 +151,19 @@ const MoveDetail = () => {
 						</div>
 					))}
 				</div>
-				{fx && <p className='r-mstat-buff'>{fx}</p>}
+				{fx && (
+					<p className='r-mstat-buff'>
+						{fx.badges.map((b, i) => (
+							<span key={i}>
+								{i > 0 && ' · '}
+								{b.label}
+								{b.magnitude > 1 ? ` ×${b.magnitude}` : ''}
+							</span>
+						))}
+						{' — '}
+						{fx.chanceLabel}: {fx.chancePercent}%
+					</p>
+				)}
 			</div>
 
 			<div className='r-section-h'>{t('moveDetail:sections.usage')}</div>
@@ -169,7 +184,7 @@ const MoveDetail = () => {
 						</div>
 						<div className='r-usage-tile'>
 							<b>{eliteCount}</b>
-							<i>{t('moveDetail:tiles.elite')}</i>
+							<i>{gameTranslator(kind === 'fast' ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm, gl)}</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{legacyCount}</b>

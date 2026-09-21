@@ -24,7 +24,7 @@
 			"tier3": { "full": "3. Seviye Baskınlar", "short": "3. Seviye" },
 			"tier1": { "full": "1. Seviye Baskınlar", "short": "1. Seviye" }
 		},
-		"shadowPrefix": "Gölge · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Diğer baskınlar",
 		"nothingScheduled": "Planlanmış bir şey yok.",
 		"nowSlot": "Şimdi"

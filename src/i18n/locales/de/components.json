@@ -18,7 +18,7 @@
 		"defense": "VERTEIDIGUNG",
 		"hp": "KP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "Hundo"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "Verringern",
@@ -36,7 +36,7 @@
 		"charged": "Lade"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "Nicht als Arena-Kampf-Angreifer eingestuft.",
+		"notRanked": "Nicht als {{raid}}-Angreifer eingestuft.",
 		"bestMovesetByType": "Beste Attackenkombo nach Typ",
 		"tapNextMoveset": "Tippen für die nächste Attackenkombo",
 		"tapSelectType": "Tippen, um diesen Typ auszuwählen",

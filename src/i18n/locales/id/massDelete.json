@@ -50,10 +50,10 @@
 			"short": "Master"
 		},
 		"raidAttackers": {
-			"full": "Attacker Raid",
-			"short": "Raid"
+			"full": "Attacker {{raid}}",
+			"short": "{{raid}}"
 		},
-		"saveCp": "Simpan CP",
+		"saveCp": "Simpan {{cp}}",
 		"simplifiedMode": "Mode sederhana",
 		"keep3StarPokemon": "Pertahankan Pokémon 3*",
 		"ariaKeepTopGreat": "Pertahankan Liga Hebat teratas",
@@ -91,11 +91,11 @@
 			"description": "Ultra Beast (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
-			"label": "Bisa Mega Evolve",
+			"label": "{{megaEvolvable}}",
 			"description": "Hanya game yang tahu ini — butuh cukup Energi Mega yang tersimpan untuk spesies itu saat ini."
 		},
 		"shadow": {
-			"label": "Shadow",
+			"label": "{{shadow}}",
 			"description": "Setiap Pokémon Shadow, terlepas dari IV atau peringkatnya sendiri."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Hapus",
 		"remove": "Hapus",
 		"removeLockedTitle": "Dilindungi karena {{reason}} — matikan itu di atas untuk menghapusnya",
-		"shadowSuffix": "Shadow",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Belum ada apa pun di sini — cari di atas untuk melindungi Pokémon tertentu terlepas dari kategori di atas.",
 		"emptyTrade": "Belum ada apa pun di sini — cari di atas untuk menjaga Pokémon tertentu tetap di luar saran pertukaran terlepas dari kategori di atas.",
 		"summaryEmpty": "Belum ada Pokémon yang dilindungi secara individual",
@@ -158,9 +158,9 @@
 		"topGreat": "Top {{n}} Liga Hebat",
 		"topUltra": "Top {{n}} Liga Ultra",
 		"topMaster": "Top {{n}} Liga Master",
-		"topRaid": "Top {{n}} Raid",
-		"cpKept": "CP ≥ {{cp}} dipertahankan",
-		"cpUnder": "CP < {{cp}}",
+		"topRaid": "Top {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} dipertahankan",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Mode sederhana",
 		"protectsList": "melindungi {{list}}",
 		"excludesList": "mengecualikan {{list}}",

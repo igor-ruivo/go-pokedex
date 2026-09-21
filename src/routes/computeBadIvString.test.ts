@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { __setGameTranslationsForTests } from '../utils/game-translations-store';
+import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
 import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
 import { type BadIvCarveOut, findBadIvCarveOuts } from '../workers/compute.worker';
 import {
@@ -14,6 +16,10 @@ import {
 	mockType,
 } from './mass-delete-fixtures';
 import { computeBadIvString, DEFAULT_PROTECTION } from './MassDelete';
+
+beforeAll(() => {
+	__setGameTranslationsForTests(gameTranslationsTestFixture);
+});
 
 describe('findBadIvCarveOuts — 90%-of-cap-at-15/15/15/L50 pre-filter', () => {
 	it('a species whose hundo max CP never reaches 90% of the cap gets no carve-out at all', () => {

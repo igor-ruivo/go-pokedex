@@ -7,6 +7,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { useScrollToTopOnNavigate } from '../hooks/useScrollToTopOnNavigate';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { R } from '../lib/nav';
+import { useGameTranslationsData } from '../utils/game-translations-store';
 import { InstallPrompt } from './InstallPrompt';
 import { SearchBox } from './SearchBox';
 import { SettingsMenu } from './SettingsMenu';
@@ -79,6 +80,11 @@ const Shell = () => {
 	usePageMeta();
 	useScrollToTopOnNavigate();
 	const unseenEvents = useUnseenEventsCount();
+	// Kicks off the one-time game-translations fetch and re-renders this whole
+	// subtree (every route, via <Outlet/> below) once it resolves — see
+	// `useGameTranslationsData`'s own doc comment for why this lives here and
+	// not per-component.
+	useGameTranslationsData();
 
 	return (
 		<div className='rvmp' data-theme={dataTheme}>

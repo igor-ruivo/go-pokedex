@@ -18,7 +18,7 @@
 		"defense": "DÉFENSE",
 		"hp": "PV",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "Hundo"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "Diminuer",
@@ -36,7 +36,7 @@
 		"charged": "Chargée"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "Non classé comme attaquant de raid.",
+		"notRanked": "Non classé comme attaquant de {{raid}}.",
 		"bestMovesetByType": "Meilleures capacités par type",
 		"tapNextMoveset": "Touchez pour les capacités suivantes",
 		"tapSelectType": "Touchez pour sélectionner ce type",

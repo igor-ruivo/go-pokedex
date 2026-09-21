@@ -1,7 +1,7 @@
 import { computeMoveEffectiveness } from '../utils/pokemon-helper';
-import { TYPE_LABEL } from './types';
+import { TYPE_KEYS } from './types';
 
-const ALL_TYPES = Object.keys(TYPE_LABEL);
+const ALL_TYPES = TYPE_KEYS;
 
 export interface EffEntry {
 	type: string;

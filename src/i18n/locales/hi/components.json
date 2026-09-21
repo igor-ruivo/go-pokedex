@@ -18,7 +18,7 @@
 		"defense": "डिफेंस",
 		"hp": "HP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "हंडो"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "घटाएं",
@@ -36,7 +36,7 @@
 		"charged": "चार्ज्ड"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "रेड अटैकर के रूप में रैंक नहीं किया गया।",
+		"notRanked": "{{raid}} अटैकर के रूप में रैंक नहीं किया गया।",
 		"bestMovesetByType": "टाइप के अनुसार बेस्ट मूवसेट",
 		"tapNextMoveset": "अगले मूवसेट के लिए टैप करें",
 		"tapSelectType": "यह टाइप चुनने के लिए टैप करें",

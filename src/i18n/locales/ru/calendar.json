@@ -22,7 +22,7 @@
 			"tier3": { "full": "Рейды 3 уровня", "short": "3 уровень" },
 			"tier1": { "full": "Рейды 1 уровня", "short": "1 уровень" }
 		},
-		"shadowPrefix": "Теневой · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Другие рейды",
 		"nothingScheduled": "Ничего не запланировано.",
 		"nowSlot": "Сейчас"

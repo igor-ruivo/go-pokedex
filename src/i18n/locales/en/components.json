@@ -18,7 +18,7 @@
 		"defense": "DEFENSE",
 		"hp": "HP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "Hundo"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "Decrease",
@@ -36,7 +36,7 @@
 		"charged": "Charged"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "Not ranked as a raid attacker.",
+		"notRanked": "Not ranked as a {{raid}} attacker.",
 		"bestMovesetByType": "Best moveset by type",
 		"tapNextMoveset": "Tap for the next moveset",
 		"tapSelectType": "Tap to select this type",

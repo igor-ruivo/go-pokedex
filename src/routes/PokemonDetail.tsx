@@ -18,11 +18,12 @@ import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dec1, dexNo, ordinal, rankPerfection } from '../lib/format';
 import { R } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
-import { accentStyle, TYPE_LABEL, typeKey, typeVar } from '../lib/types';
+import { accentStyle, typeKey, typeVar } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import {
 	calculateCP,
 	computeDPSEntry,
@@ -124,13 +125,29 @@ const PokemonDetail = () => {
 	const { maxLevel, maxLevelIndex } = useBestBuddy();
 
 	// Display text for the four league/mode segments — LEAGUE_META (module
-	// scope) carries the stable id/colour, translated here since t() only
-	// exists inside the component.
+	// scope) carries the stable id/colour. League names track the player's
+	// in-game language (GameLanguage), not the website UI's.
 	const LEAGUES = [
-		{ ...LEAGUE_META[0], label: t('pokemonDetail:leagues.great'), full: t('pokemonDetail:leagues.greatFull') },
-		{ ...LEAGUE_META[1], label: t('pokemonDetail:leagues.ultra'), full: t('pokemonDetail:leagues.ultraFull') },
-		{ ...LEAGUE_META[2], label: t('pokemonDetail:leagues.master'), full: t('pokemonDetail:leagues.masterFull') },
-		{ ...LEAGUE_META[3], label: t('pokemonDetail:leagues.raids'), full: t('pokemonDetail:leagues.raidsFull') },
+		{
+			...LEAGUE_META[0],
+			label: gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl),
+			full: gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
+		},
+		{
+			...LEAGUE_META[1],
+			label: gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl),
+			full: gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
+		},
+		{
+			...LEAGUE_META[2],
+			label: gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl),
+			full: gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
+		},
+		{
+			...LEAGUE_META[3],
+			label: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+			full: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+		},
 	];
 	// Visible tab text, keyed by the (stable, English, comparison-only) slug —
 	// TABS/SLUG_TO_TAB/TabLabel above stay untouched since `tab === 'Moves'`
@@ -568,7 +585,11 @@ const PokemonDetail = () => {
 	const raidElite = new Set(raidMember.eliteMoves);
 	const raidLegacy = new Set(raidMember.legacyMoves);
 	const raidMoveTag = (id: string) =>
-		raidLegacy.has(id) ? t('pokemonDetail:moves.legacy') : raidElite.has(id) ? t('pokemonDetail:moves.elite') : null;
+		raidLegacy.has(id)
+			? t('pokemonDetail:moves.legacy')
+			: raidElite.has(id)
+				? gameTranslator(moves[id]?.isFast ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm, gl)
+				: null;
 	const raidRows = (raidSel?.types ?? []).map(({ type, entry, rank }, i) => {
 		const combos = comboLists[type] ?? [];
 		const mIdx = Math.min(cpos(3).m[type] ?? 0, Math.max(0, combos.length - 1));
@@ -739,12 +760,12 @@ const PokemonDetail = () => {
 						<h1 className='r-name'>{cleanName(pokemon.speciesName)}</h1>
 						<div className='r-cp'>
 							<b>{heroReady ? heroCp.toLocaleString() : '…'}</b>
-							<span>{t('pokemonDetail:hero.cp')}</span>
+							<span>{gameTranslator(GameTranslatorKeys.CPDisplay, gl)}</span>
 						</div>
 						<div className='r-types' style={{ justifyContent: 'flex-start', marginTop: 10 }}>
 							{pokemon.types.map((t) => (
 								<span key={String(t)} className='r-type' style={{ ['--tc' as string]: typeVar(t) }}>
-									{TYPE_LABEL[typeKey(t)] ?? String(t)}
+									{gameTypeDisplayTranslator(typeKey(t), gl) || String(t)}
 								</span>
 							))}
 						</div>
@@ -799,7 +820,7 @@ const PokemonDetail = () => {
 							}}
 						>
 							<ShadowMark className='r-toggle-flame' />
-							{t('pokemonDetail:hero.shadowToggle')}
+							{gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)}
 						</button>
 					)}
 				</div>
@@ -934,7 +955,9 @@ const PokemonDetail = () => {
 													className='r-board-type'
 													role='button'
 													tabIndex={0}
-													title={t('pokemonDetail:board.nextTypeTitle', { type: TYPE_LABEL[bestType] ?? bestType })}
+													title={t('pokemonDetail:board.nextTypeTitle', {
+														type: gameTypeDisplayTranslator(bestType, gl) || bestType,
+													})}
 													onClick={(e) => cycleType(e, l.id as LeagueId)}
 													onKeyDown={(e) => {
 														if (e.key === 'Enter' || e.key === ' ') {
@@ -943,7 +966,10 @@ const PokemonDetail = () => {
 														}
 													}}
 												>
-													<img src={`/images/types/${bestType}.png`} alt={TYPE_LABEL[bestType] ?? bestType} />
+													<img
+														src={`/images/types/${bestType}.png`}
+														alt={gameTypeDisplayTranslator(bestType, gl) || bestType}
+													/>
 												</span>
 											)}
 										</span>
@@ -951,7 +977,9 @@ const PokemonDetail = () => {
 											<span className='r-board-lg'>
 												{l.full}
 												{bestType &&
-													` · ${t('pokemonDetail:board.attackersSuffix', { type: TYPE_LABEL[bestType] ?? bestType })}`}
+													` · ${t('pokemonDetail:board.attackersSuffix', {
+														type: gameTypeDisplayTranslator(bestType, gl) || bestType,
+													})}`}
 											</span>
 											<span className='r-board-name'>
 												{member
@@ -1009,17 +1037,35 @@ const PokemonDetail = () => {
 							<div className='r-section-h'>
 								{raidMember.speciesId === self
 									? raidMember.isShadow
-										? t('pokemonDetail:raid.performanceHeading.selfShadow', { name: cleanName(raidMember.speciesName) })
-										: t('pokemonDetail:raid.performanceHeading.self', { name: cleanName(raidMember.speciesName) })
+										? t('pokemonDetail:raid.performanceHeading.selfShadow', {
+												name: cleanName(raidMember.speciesName),
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+											})
+										: t('pokemonDetail:raid.performanceHeading.self', {
+												name: cleanName(raidMember.speciesName),
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											})
 									: raidMember.isShadow
-										? t('pokemonDetail:raid.performanceHeading.asShadow', { name: cleanName(raidMember.speciesName) })
-										: t('pokemonDetail:raid.performanceHeading.as', { name: cleanName(raidMember.speciesName) })}
+										? t('pokemonDetail:raid.performanceHeading.asShadow', {
+												name: cleanName(raidMember.speciesName),
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+												shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+											})
+										: t('pokemonDetail:raid.performanceHeading.as', {
+												name: cleanName(raidMember.speciesName),
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											})}
 							</div>
 							<div className='r-card' style={{ ['--accent' as string]: 'var(--lg-raid)' }}>
 								{raidSelRow ? (
 									<div className='r-readout'>
 										<div>
-											<i>{t('pokemonDetail:raid.rank', { type: TYPE_LABEL[raidSelRow.t] ?? raidSelRow.t })}</i>
+											<i>
+											{t('pokemonDetail:raid.rank', {
+												type: gameTypeDisplayTranslator(raidSelRow.t, gl) || raidSelRow.t,
+											})}
+										</i>
 											<b className='hi' style={{ ['--tc' as string]: typeVar(raidSelRow.t) }}>
 												{ordinal(raidSelRow.rank)}
 											</b>
@@ -1034,7 +1080,9 @@ const PokemonDetail = () => {
 										</div>
 									</div>
 								) : (
-									<p className='r-muted'>{t('pokemonDetail:raid.notRankedAttacker')}</p>
+									<p className='r-muted'>
+									{t('pokemonDetail:raid.notRankedAttacker', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+								</p>
 								)}
 
 								{raidRows.length > 0 && (
@@ -1066,7 +1114,7 @@ const PokemonDetail = () => {
 														}}
 													>
 														<span className='r-raidtype-head'>
-															<span className='r-move-type'>{TYPE_LABEL[rt] ?? rt}</span>
+															<span className='r-move-type'>{gameTypeDisplayTranslator(rt, gl) || rt}</span>
 															<b>{ordinal(rank)}</b>
 															<em>
 																{fmtRaidMetric(combo?.[raidMetric] ?? e[raidMetric], raidMetric)}{' '}
@@ -1125,11 +1173,17 @@ const PokemonDetail = () => {
 									const isSelf = m.speciesId === self;
 									if (isSelf) {
 										return m.isShadow
-											? t('pokemonDetail:pvp.percentileHeading.selfShadow', { name })
+											? t('pokemonDetail:pvp.percentileHeading.selfShadow', {
+													name,
+													shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+												})
 											: t('pokemonDetail:pvp.percentileHeading.self', { name });
 									}
 									return m.isShadow
-										? t('pokemonDetail:pvp.percentileHeading.asShadow', { name })
+										? t('pokemonDetail:pvp.percentileHeading.asShadow', {
+												name,
+												shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+											})
 										: t('pokemonDetail:pvp.percentileHeading.as', { name });
 								})()}
 							</div>
@@ -1213,8 +1267,11 @@ const PokemonDetail = () => {
 									<div>
 										<i>
 											{readoutReady && slice
-												? t('pokemonDetail:pvp.cpAtLevel', { level: slice.lvl })
-												: t('pokemonDetail:pvp.cp')}
+												? t('pokemonDetail:pvp.cpAtLevel', {
+														level: slice.lvl,
+														cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
+													})
+												: gameTranslator(GameTranslatorKeys.CPDisplay, gl)}
 										</i>
 										<b>{!readoutReady || !slice ? '…' : slice.cp.toLocaleString()}</b>
 									</div>
@@ -1261,7 +1318,7 @@ const PokemonDetail = () => {
 											data-double={isDoubleMult(mult) ? '' : undefined}
 											style={{ ['--tc' as string]: `var(--t-${type})` }}
 										>
-											{TYPE_LABEL[type]}
+											{gameTypeDisplayTranslator(type, gl)}
 											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))}
@@ -1280,7 +1337,7 @@ const PokemonDetail = () => {
 											data-double={isDoubleMult(mult) ? '' : undefined}
 											style={{ ['--tc' as string]: `var(--t-${type})` }}
 										>
-											{TYPE_LABEL[type]}
+											{gameTypeDisplayTranslator(type, gl)}
 											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))}

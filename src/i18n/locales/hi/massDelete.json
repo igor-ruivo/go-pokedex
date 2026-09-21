@@ -50,10 +50,10 @@
 			"short": "मास्टर"
 		},
 		"raidAttackers": {
-			"full": "रेड अटैकर",
-			"short": "रेड"
+			"full": "{{raid}} अटैकर",
+			"short": "{{raid}}"
 		},
-		"saveCp": "CP सेव करें",
+		"saveCp": "{{cp}} सेव करें",
 		"simplifiedMode": "सिंपलिफ़ाइड मोड",
 		"keep3StarPokemon": "3* Pokémon रखें",
 		"ariaKeepTopGreat": "टॉप ग्रेट लीग रखें",
@@ -91,11 +91,11 @@
 			"description": "अल्ट्रा बीस्ट (Nihilego, Buzzwole, …)।"
 		},
 		"megaEvolvable": {
-			"label": "मेगा एवॉल्वेबल",
+			"label": "{{megaEvolvable}}",
 			"description": "सिर्फ़ गेम को यह पता है — उस स्पीशीज़ के लिए अभी पर्याप्त मेगा एनर्जी जमा होनी चाहिए।"
 		},
 		"shadow": {
-			"label": "शैडो",
+			"label": "{{shadow}}",
 			"description": "हर शैडो Pokémon, उसके अपने IV या रैंक चाहे जो हों।"
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "साफ़ करें",
 		"remove": "हटाएं",
 		"removeLockedTitle": "प्रोटेक्टेड है क्योंकि यह {{reason}} है — इसे हटाने के लिए ऊपर वह टॉगल बंद करें",
-		"shadowSuffix": "शैडो",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "अभी यहां कुछ नहीं है — किसी खास Pokémon को कैटेगरी से अलग प्रोटेक्ट करने के लिए ऊपर सर्च करें।",
 		"emptyTrade": "अभी यहां कुछ नहीं है — किसी खास Pokémon को कैटेगरी से अलग ट्रेड सुझावों से बाहर रखने के लिए ऊपर सर्च करें।",
 		"summaryEmpty": "अभी तक कोई व्यक्तिगत रूप से प्रोटेक्टेड Pokémon नहीं",
@@ -158,9 +158,9 @@
 		"topGreat": "टॉप {{n}} ग्रेट लीग",
 		"topUltra": "टॉप {{n}} अल्ट्रा लीग",
 		"topMaster": "टॉप {{n}} मास्टर लीग",
-		"topRaid": "टॉप {{n}} रेड",
-		"cpKept": "CP ≥ {{cp}} रखा गया",
-		"cpUnder": "CP < {{cp}}",
+		"topRaid": "टॉप {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} रखा गया",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "सिंपलिफ़ाइड मोड",
 		"protectsList": "{{list}} को प्रोटेक्ट करता है",
 		"excludesList": "{{list}} को बाहर रखता है",

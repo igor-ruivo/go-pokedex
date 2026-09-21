@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../../contexts/language-context';
 import type { IBestIvSpreads, ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
+import { __setGameTranslationsForTests } from '../../utils/game-translations-store';
+import { gameTranslationsTestFixture } from '../../utils/game-translations-test-fixture';
 import { calculateCP, type RankEntry } from '../../utils/pokemon-helper';
 import { buildGamemaster, mockPokemon, mockType } from '../mass-delete-fixtures';
 import {
@@ -12,6 +14,10 @@ import {
 	selectTopIVCombinations,
 	shadowSuffixFor,
 } from './SearchStringsTab';
+
+beforeAll(() => {
+	__setGameTranslationsForTests(gameTranslationsTestFixture);
+});
 
 const EMPTY_BEST_IV_SPREADS: IBestIvSpreads = {
 	great: { level50: [], level51: [] },

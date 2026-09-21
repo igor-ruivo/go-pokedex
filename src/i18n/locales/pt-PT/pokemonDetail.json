@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "Desempenho em reide · {{name}}",
-			"selfShadow": "Desempenho em reide · {{name}} Sombroso",
-			"as": "Desempenho em reide · como {{name}}",
-			"asShadow": "Desempenho em reide · como {{name}} Sombroso"
+			"self": "Desempenho em {{raid}} · {{name}}",
+			"selfShadow": "Desempenho em {{raid}} · {{name}} {{shadow}}",
+			"as": "Desempenho em {{raid}} · como {{name}}",
+			"asShadow": "Desempenho em {{raid}} · como {{name}} {{shadow}}"
 		},
 		"rank": "rank de {{type}}",
 		"baseAtk": "ATQ base",
-		"notRankedAttacker": "Não classificado como atacante de reide.",
+		"notRankedAttacker": "Não classificado como atacante de {{raid}}.",
 		"bestMovesetByType": "Melhor combinação de golpes por tipo",
 		"nextMovesetTitle": "Toque para a combinação seguinte",
 		"selectTypeTitle": "Toque para selecionar este tipo",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "Percentil dos seus IVs · {{name}}",
-			"selfShadow": "Percentil dos seus IVs · {{name}} Sombroso",
+			"selfShadow": "Percentil dos seus IVs · {{name}} {{shadow}}",
 			"as": "Percentil dos seus IVs · como {{name}}",
-			"asShadow": "Percentil dos seus IVs · como {{name}} Sombroso",
+			"asShadow": "Percentil dos seus IVs · como {{name}} {{shadow}}",
 			"purified": "Percentil dos seus IVs · como {{name}} Purificado"
 		},
 		"ivRank": "rank de IV em {{league}}",
 		"perfection": "Perfeição",
 		"cp": "PC",
-		"cpAtLevel": "PC @ Nv{{level}}",
+		"cpAtLevel": "{{cp}} @ Nv{{level}}",
 		"bestSpreadFor": "Melhor combinação para {{league}}:",
 		"bestSpreadResult": "→ {{cp}} PC ao Nv{{level}}.",
 		"purifyWarning": "⚠️ Tenha em atenção que purificar concede +2 IVs em cada atributo.",
 		"purifyUnreachableWarning": "⚠️ Essa combinação de rank 1 é inalcançável através da purificação — a purificação eleva sempre cada atributo a pelo menos 2, pelo que um Sombroso nunca poderá ficar abaixo desse valor, independentemente dos seus próprios IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Hundo",
+			"hundo": "15 / 15 / 15",
 			"rank1": "Rank 1 {{league}}"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "Sem dados.",
 		"strongAgainst": "{{name}} é forte contra · {{league}}",
 		"weakAgainst": "{{name}} é fraco contra · {{league}}",
-		"bestRaidCounters": "Melhores counters de reide · {{name}}",
-		"summaryRaidHp": "Reide {{tier}} · {{hp}} PS",
+		"bestRaidCounters": "Melhores counters de {{raid}} · {{name}}",
+		"summaryRaidHp": "{{raid}} {{tier}} · {{hp}} PS",
 		"partyOf": "Grupo de {{size}}",
 		"friendLabel": "Amigo {{label}}",
 		"megaAuraSummary": "Aura Mega {{type}}",
@@ -137,8 +137,8 @@
 		"clear": "Limpar",
 		"bossTier": "Nível do chefe",
 		"bossTierTitle": "{{tier}} — {{hp}} PS",
-		"bossTierAriaLabel": "Reide {{tier}}",
-		"bossTierHint": "Reide {{tier}} · {{hp}} PS",
+		"bossTierAriaLabel": "{{raid}} {{tier}}",
+		"bossTierHint": "{{raid}} {{tier}} · {{hp}} PS",
 		"weather_field": "Clima",
 		"weatherHint": "×1,2 · {{types}}",
 		"megaAura": "Aura Mega",

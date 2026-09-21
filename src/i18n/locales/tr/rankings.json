@@ -2,7 +2,7 @@
 	"sorts": {
 		"dex": "Dex numarası",
 		"name": "İsim",
-		"cp": "Maks. CP",
+		"cp": "Maks. {{cp}}",
 		"type": "Tür"
 	},
 	"tabs": {
@@ -21,7 +21,7 @@
 		"text": "Baskın sıralamaları, her Pokémon'un Etkili {{type}} türü hasarı (×1,6) veren en iyi hızlı + şarjlı hareket kombinasyonunun, 5. Seviye gölge olmayan bir patrona (200 Savunma, seviye 40) karşı, seviye 50 bir saldırganla (15 Saldırı IV), hava durumu, arkadaşlık veya takım arkadaşı Mega auraSı bonusu olmadan kullanılmasını varsayar. Süper Mega Pokémon'lar Maks. Mega Seviyesi olarak sıralanır."
 	},
 	"empty": {
-		"pickType": "O türün en iyi baskın saldırganlarını görmek için filtreden bir tür seçin.",
+		"pickType": "O türün en iyi {{raid}} saldırganlarını görmek için filtreden bir tür seçin.",
 		"nothingMatches": "Hiçbir şey eşleşmiyor."
 	},
 	"loadingLabel": {

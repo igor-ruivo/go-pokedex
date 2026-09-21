@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useLanguage } from '../contexts/language-context';
 import { useDismiss } from '../hooks/useDismiss';
-import { TYPE_LABEL, typeVar } from '../lib/types';
+import { typeVar } from '../lib/types';
+import { gameTypeDisplayTranslator } from '../utils/GameTranslator';
 
 interface FilterBarProps {
 	/** All selectable type keys (lowercase). */
@@ -23,6 +25,7 @@ const MAX_MULTI = 2;
  */
 export const FilterBar = ({ types, selected, onChange, single = false }: FilterBarProps) => {
 	const { t } = useTranslation(['components']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
@@ -69,7 +72,7 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 						style={{ ['--tc' as string]: typeVar(tp) }}
 						onClick={() => toggle(tp)}
 					>
-						{TYPE_LABEL[tp] ?? tp}
+						{gameTypeDisplayTranslator(tp, gl) || tp}
 						<span aria-hidden='true'>×</span>
 					</button>
 				))}
@@ -104,7 +107,7 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 									style={{ ['--tc' as string]: typeVar(t) }}
 									onClick={() => toggle(t)}
 								>
-									{TYPE_LABEL[t] ?? t}
+									{gameTypeDisplayTranslator(t, gl) || t}
 								</button>
 							);
 						})}

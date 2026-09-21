@@ -22,7 +22,7 @@
 			"tier3": { "full": "티어 3 레이드", "short": "티어 3" },
 			"tier1": { "full": "티어 1 레이드", "short": "티어 1" }
 		},
-		"shadowPrefix": "섀도 · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "다른 레이드",
 		"nothingScheduled": "예정된 일정이 없습니다.",
 		"nowSlot": "지금"

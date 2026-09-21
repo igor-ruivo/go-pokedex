@@ -24,7 +24,7 @@
 			"tier3": { "full": "Reides de Tier 3", "short": "Tier 3" },
 			"tier1": { "full": "Reides de Tier 1", "short": "Tier 1" }
 		},
-		"shadowPrefix": "Sombra · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Outros reides",
 		"nothingScheduled": "Nada agendado.",
 		"nowSlot": "Agora"

@@ -144,15 +144,46 @@ export const ordinal = (n: number): string => {
 // — which is where the "3pm–6pm" (should be 2pm–5pm) bug came from. Reading
 // them with `timeZone: 'UTC'` instead just echoes the encoded wall-clock
 // numbers back out unchanged, which is what "local time" actually means here.
-const dfEventShort = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
-const dfEventTime = new Intl.DateTimeFormat(undefined, {
-	month: 'short',
-	day: 'numeric',
-	hour: 'numeric',
-	minute: '2-digit',
-	timeZone: 'UTC',
-});
-const dfEventTimeOnly = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' });
+// Keyed by website locale (not `undefined`/browser-locale) so the compact
+// date strings actually follow the language the player picked on-site,
+// not whatever their OS/browser happens to be set to — those can disagree
+// (e.g. a pt-PT site pick on an en-US OS used to still render "Jan 15").
+// Cached per locale since `Intl.DateTimeFormat` construction isn't free and
+// these are built from render paths that can run per list item.
+const dfEventShortCache = new Map<string, Intl.DateTimeFormat>();
+const dfEventTimeCache = new Map<string, Intl.DateTimeFormat>();
+const dfEventTimeOnlyCache = new Map<string, Intl.DateTimeFormat>();
+
+const dfEventShort = (locale: string): Intl.DateTimeFormat => {
+	let df = dfEventShortCache.get(locale);
+	if (!df) {
+		df = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+		dfEventShortCache.set(locale, df);
+	}
+	return df;
+};
+const dfEventTime = (locale: string): Intl.DateTimeFormat => {
+	let df = dfEventTimeCache.get(locale);
+	if (!df) {
+		df = new Intl.DateTimeFormat(locale, {
+			month: 'short',
+			day: 'numeric',
+			hour: 'numeric',
+			minute: '2-digit',
+			timeZone: 'UTC',
+		});
+		dfEventTimeCache.set(locale, df);
+	}
+	return df;
+};
+const dfEventTimeOnly = (locale: string): Intl.DateTimeFormat => {
+	let df = dfEventTimeOnlyCache.get(locale);
+	if (!df) {
+		df = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' });
+		dfEventTimeOnlyCache.set(locale, df);
+	}
+	return df;
+};
 
 /** The same "wall-clock numbers encoded as UTC" scheme events use, applied to
  *  *now* — lets `now` be compared directly against `startDate`/`endDate`
@@ -167,7 +198,7 @@ export const nowAsEventTime = (): number => {
 	return d.getTime() - d.getTimezoneOffset() * 60_000;
 };
 
-export const dateRange = (start: number, end: number): string => {
+export const dateRange = (start: number, end: number, locale: string): string => {
 	if (!start && !end) return '';
 	const s = new Date(start);
 	const e = new Date(end);
@@ -180,15 +211,15 @@ export const dateRange = (start: number, end: number): string => {
 		s.getUTCMonth() === e.getUTCMonth() &&
 		s.getUTCDate() === e.getUTCDate();
 	return sameDay
-		? `${dfEventTime.format(s)} – ${dfEventTimeOnly.format(e)}`
-		: `${dfEventShort.format(s)} – ${dfEventShort.format(e)}`;
+		? `${dfEventTime(locale).format(s)} – ${dfEventTimeOnly(locale).format(e)}`
+		: `${dfEventShort(locale).format(s)} – ${dfEventShort(locale).format(e)}`;
 };
 
 /** Explicit "Starts … · Ends …" line for an expanded event card — the
  *  compact `dateRange` above collapses a same-day range to "2:00 PM – 5:00
  *  PM"; this spells both ends out in full, always. */
-export const eventStartEnd = (start: number, end: number): string =>
-	`Starts ${dfEventTime.format(new Date(start))} · Ends ${dfEventTime.format(new Date(end))}`;
+export const eventStartEnd = (start: number, end: number, locale: string): string =>
+	`Starts ${dfEventTime(locale).format(new Date(start))} · Ends ${dfEventTime(locale).format(new Date(end))}`;
 
 /** Day/month only, no time — used for the raid/spawn date-picker tab labels.
  *  Its only callers (groupByRange, for RaidsTab/SpawnsTab's upcoming-window
@@ -197,7 +228,7 @@ export const eventStartEnd = (start: number, end: number): string =>
  *  event starting late at night local time could get bucketed under the
  *  *next* calendar day for a viewer east of it, or the previous one west of
  *  it, instead of the day it's actually local to. */
-export const dayRange = (start: number, end: number): string => {
+export const dayRange = (start: number, end: number, locale: string): string => {
 	if (!start && !end) return '';
 	const s = new Date(start);
 	const e = new Date(end);
@@ -205,7 +236,7 @@ export const dayRange = (start: number, end: number): string => {
 		s.getUTCFullYear() === e.getUTCFullYear() &&
 		s.getUTCMonth() === e.getUTCMonth() &&
 		s.getUTCDate() === e.getUTCDate();
-	return sameDay ? dfEventShort.format(s) : `${dfEventShort.format(s)} – ${dfEventShort.format(e)}`;
+	return sameDay ? dfEventShort(locale).format(s) : `${dfEventShort(locale).format(s)} – ${dfEventShort(locale).format(e)}`;
 };
 
 export type EventPhase = 'live' | 'soon' | 'ended';

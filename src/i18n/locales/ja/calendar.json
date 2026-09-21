@@ -22,7 +22,7 @@
 			"tier3": { "full": "ティア3レイド", "short": "ティア3" },
 			"tier1": { "full": "ティア1レイド", "short": "ティア1" }
 		},
-		"shadowPrefix": "シャドウ · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "その他のレイド",
 		"nothingScheduled": "予定はありません。",
 		"nowSlot": "現在"

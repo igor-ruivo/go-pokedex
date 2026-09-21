@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { __setGameTranslationsForTests } from '../utils/game-translations-store';
+import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
 import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
 import { findBadIvCarveOuts } from '../workers/compute.worker';
 import {
@@ -16,6 +18,10 @@ import {
 	rank,
 } from './mass-delete-fixtures';
 import { computeTrashString, DEFAULT_PROTECTION } from './MassDelete';
+
+beforeAll(() => {
+	__setGameTranslationsForTests(gameTranslationsTestFixture);
+});
 
 /**
  * A two-species (one "special", one plain "control") gamemaster, both

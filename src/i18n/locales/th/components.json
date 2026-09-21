@@ -18,7 +18,7 @@
 		"defense": "ป้องกัน",
 		"hp": "HP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "ฮันโด"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "ลด",
@@ -36,7 +36,7 @@
 		"charged": "ชาร์จ"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "ไม่ได้รับการจัดอันดับเป็นตัวโจมตีเรด",
+		"notRanked": "ไม่ได้รับการจัดอันดับเป็นตัวโจมตี{{raid}}",
 		"bestMovesetByType": "ท่าที่ดีที่สุดตามธาตุ",
 		"tapNextMoveset": "แตะเพื่อดูชุดท่าถัดไป",
 		"tapSelectType": "แตะเพื่อเลือกธาตุนี้",

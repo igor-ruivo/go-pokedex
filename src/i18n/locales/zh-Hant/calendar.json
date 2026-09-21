@@ -24,7 +24,7 @@
 			"tier3": { "full": "三星級團體戰", "short": "三星級" },
 			"tier1": { "full": "一星級團體戰", "short": "一星級" }
 		},
-		"shadowPrefix": "暗影 · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "其他團體戰",
 		"nothingScheduled": "目前沒有排定的項目。",
 		"nowSlot": "現在"

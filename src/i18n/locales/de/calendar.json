@@ -24,7 +24,7 @@
 			"tier3": { "full": "Arena-Kämpfe Stufe 3", "short": "Stufe 3" },
 			"tier1": { "full": "Arena-Kämpfe Stufe 1", "short": "Stufe 1" }
 		},
-		"shadowPrefix": "Schatten · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Weitere Arena-Kämpfe",
 		"nothingScheduled": "Nichts geplant.",
 		"nowSlot": "Jetzt"

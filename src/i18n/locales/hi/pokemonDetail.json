@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "रेड परफॉर्मेंस · {{name}}",
-			"selfShadow": "रेड परफॉर्मेंस · शैडो {{name}}",
-			"as": "रेड परफॉर्मेंस · {{name}} के रूप में",
-			"asShadow": "रेड परफॉर्मेंस · शैडो {{name}} के रूप में"
+			"self": "{{raid}} परफॉर्मेंस · {{name}}",
+			"selfShadow": "{{raid}} परफॉर्मेंस · {{shadow}} {{name}}",
+			"as": "{{raid}} परफॉर्मेंस · {{name}} के रूप में",
+			"asShadow": "{{raid}} परफॉर्मेंस · {{shadow}} {{name}} के रूप में"
 		},
 		"rank": "{{type}} रैंक",
 		"baseAtk": "बेस ATK",
-		"notRankedAttacker": "रेड अटैकर के रूप में रैंक नहीं किया गया।",
+		"notRankedAttacker": "{{raid}} अटैकर के रूप में रैंक नहीं किया गया।",
 		"bestMovesetByType": "टाइप के अनुसार बेस्ट मूवसेट",
 		"nextMovesetTitle": "अगले मूवसेट के लिए टैप करें",
 		"selectTypeTitle": "यह टाइप चुनने के लिए टैप करें",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "आपका IV पर्सेंटाइल · {{name}}",
-			"selfShadow": "आपका IV पर्सेंटाइल · शैडो {{name}}",
+			"selfShadow": "आपका IV पर्सेंटाइल · {{shadow}} {{name}}",
 			"as": "आपका IV पर्सेंटाइल · {{name}} के रूप में",
-			"asShadow": "आपका IV पर्सेंटाइल · शैडो {{name}} के रूप में",
+			"asShadow": "आपका IV पर्सेंटाइल · {{shadow}} {{name}} के रूप में",
 			"purified": "आपका IV पर्सेंटाइल · प्यूरिफाइड {{name}} के रूप में"
 		},
 		"ivRank": "{{league}} IV रैंक",
 		"perfection": "परफेक्शन",
 		"cp": "CP",
-		"cpAtLevel": "CP @ L{{level}}",
+		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"bestSpreadFor": "{{league}} के लिए बेस्ट स्प्रेड:",
 		"bestSpreadResult": "→ L{{level}} पर {{cp}} CP।",
 		"purifyWarning": "⚠️ ध्यान दें, प्यूरिफाई करने से हर स्टैट पर +2 IV मिलते हैं।",
 		"purifyUnreachableWarning": "⚠️ वह रैंक-1 स्प्रेड प्यूरिफाई करके भी नहीं पाया जा सकता — प्यूरिफिकेशन हमेशा हर स्टैट को कम से कम 2 तक बढ़ाता है, इसलिए शैडो कभी उससे नीचे नहीं जा सकता, चाहे उसके अपने IV कुछ भी हों।",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "हंडो",
+			"hundo": "15 / 15 / 15",
 			"rank1": "रैंक 1 {{league}}"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "कोई डेटा नहीं।",
 		"strongAgainst": "{{name}} इनके खिलाफ़ मज़बूत है · {{league}}",
 		"weakAgainst": "{{name}} इनके खिलाफ़ कमज़ोर है · {{league}}",
-		"bestRaidCounters": "बेस्ट रेड काउंटर · {{name}}",
-		"summaryRaidHp": "{{tier}} रेड · {{hp}} HP",
+		"bestRaidCounters": "बेस्ट {{raid}} काउंटर · {{name}}",
+		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} HP",
 		"partyOf": "{{size}} की पार्टी",
 		"friendLabel": "{{label}} फ़्रेंड",
 		"megaAuraSummary": "मेगा {{type}} आभा",
@@ -137,8 +137,8 @@
 		"clear": "साफ़ करें",
 		"bossTier": "बॉस टियर",
 		"bossTierTitle": "{{tier}} — {{hp}} HP",
-		"bossTierAriaLabel": "{{tier}} रेड",
-		"bossTierHint": "{{tier}} रेड · {{hp}} HP",
+		"bossTierAriaLabel": "{{tier}} {{raid}}",
+		"bossTierHint": "{{tier}} {{raid}} · {{hp}} HP",
 		"weather_field": "मौसम",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "मेगा आभा",

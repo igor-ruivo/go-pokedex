@@ -18,7 +18,7 @@
 		"defense": "방어",
 		"hp": "HP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "완벽 개체"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "감소",
@@ -36,7 +36,7 @@
 		"charged": "스페셜 기술"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "레이드 어태커로 랭크되지 않았습니다.",
+		"notRanked": "{{raid}} 어태커로 랭크되지 않았습니다.",
 		"bestMovesetByType": "타입별 최고의 기술 조합",
 		"tapNextMoveset": "탭하면 다음 기술 조합",
 		"tapSelectType": "탭하여 이 타입 선택",

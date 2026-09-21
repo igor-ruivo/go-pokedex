@@ -50,10 +50,10 @@
 			"short": "Maître"
 		},
 		"raidAttackers": {
-			"full": "Attaquants de raid",
-			"short": "Raid"
+			"full": "Attaquants de {{raid}}",
+			"short": "{{raid}}"
 		},
-		"saveCp": "Conserver les PC",
+		"saveCp": "Conserver les {{cp}}",
 		"simplifiedMode": "Mode simplifié",
 		"keep3StarPokemon": "Garder les Pokémon 3*",
 		"ariaKeepTopGreat": "Garder le top Ligue Superbe",
@@ -91,11 +91,11 @@
 			"description": "Ultra-Chimères (Vorasterie, Lucanon, …)."
 		},
 		"megaEvolvable": {
-			"label": "Méga-évoluable",
+			"label": "{{megaEvolvable}}",
 			"description": "Seul le jeu le sait — nécessite assez d'Méga-Énergie accumulée pour cette espèce en ce moment."
 		},
 		"shadow": {
-			"label": "Ombre",
+			"label": "{{shadow}}",
 			"description": "Tous les Pokémon Ombre, quels que soient leurs IV ou leur rang."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Effacer",
 		"remove": "Retirer",
 		"removeLockedTitle": "Protégé car {{reason}} — désactivez cette option ci-dessus pour le retirer",
-		"shadowSuffix": "Ombre",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Rien ici pour l'instant — recherchez ci-dessus pour protéger un Pokémon spécifique indépendamment des catégories ci-dessus.",
 		"emptyTrade": "Rien ici pour l'instant — recherchez ci-dessus pour exclure un Pokémon spécifique des suggestions d'échange indépendamment des catégories ci-dessus.",
 		"summaryEmpty": "Aucun Pokémon protégé individuellement pour l'instant",
@@ -158,9 +158,9 @@
 		"topGreat": "Top {{n}} Ligue Superbe",
 		"topUltra": "Top {{n}} Ligue Ultra",
 		"topMaster": "Top {{n}} Ligue Maître",
-		"topRaid": "Top {{n}} Raid",
-		"cpKept": "PC ≥ {{cp}} conservés",
-		"cpUnder": "PC < {{cp}}",
+		"topRaid": "Top {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} conservés",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Mode simplifié",
 		"protectsList": "protège {{list}}",
 		"excludesList": "exclut {{list}}",

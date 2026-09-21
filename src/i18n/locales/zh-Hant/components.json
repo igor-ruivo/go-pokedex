@@ -18,7 +18,7 @@
 		"defense": "防禦",
 		"hp": "體力",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "滿值"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "減少",
@@ -36,7 +36,7 @@
 		"charged": "特殊"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "未列入團體戰攻擊手排名。",
+		"notRanked": "未列入{{raid}}攻擊手排名。",
 		"bestMovesetByType": "各屬性最佳招式組合",
 		"tapNextMoveset": "點選查看下一組招式",
 		"tapSelectType": "點選選擇此屬性",

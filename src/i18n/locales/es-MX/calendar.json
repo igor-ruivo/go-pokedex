@@ -22,7 +22,7 @@
 			"tier3": { "full": "Incursiones de nivel 3", "short": "Nivel 3" },
 			"tier1": { "full": "Incursiones de nivel 1", "short": "Nivel 1" }
 		},
-		"shadowPrefix": "Sombra · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Otras incursiones",
 		"nothingScheduled": "Nada programado.",
 		"nowSlot": "Ahora"

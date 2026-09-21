@@ -1,4 +1,5 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import type { TFunction } from 'i18next';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -7,20 +8,26 @@ import { FilterBar } from '../components/FilterBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useBestBuddy } from '../contexts/best-buddy-context';
+import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { MODE_COLOR, MODE_LABEL, R, RANKING_MODES, type RankingMode } from '../lib/nav';
+import { MODE_COLOR, modeLabel, R, RANKING_MODES, type RankingMode } from '../lib/nav';
 import { RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
-import { RAID_TYPE_KEYS, TYPE_KEYS, TYPE_LABEL, typeKey } from '../lib/types';
+import { RAID_TYPE_KEYS, TYPE_KEYS, typeKey } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import { calculateCP } from '../utils/pokemon-helper';
 
-const usePokedexSorts = (t: (key: string) => string): ReadonlyArray<SortOption> => [
+const usePokedexSorts = (t: TFunction<'rankings'>, gl: GameLanguage): ReadonlyArray<SortOption> => [
 	{ key: 'dex', label: t('rankings:sorts.dex'), defaultDir: 'asc' },
 	{ key: 'name', label: t('rankings:sorts.name'), defaultDir: 'asc' },
-	{ key: 'cp', label: t('rankings:sorts.cp'), defaultDir: 'desc' },
+	{
+		key: 'cp',
+		label: t('rankings:sorts.cp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) }),
+		defaultDir: 'desc',
+	},
 	{ key: 'type', label: t('rankings:sorts.type'), defaultDir: 'asc' },
 ];
 
@@ -76,7 +83,8 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 
 const Rankings = () => {
 	const { t } = useTranslation(['rankings']);
-	const POKEDEX_SORTS = usePokedexSorts(t);
+	const { currentGameLanguage: gl } = useLanguage();
+	const POKEDEX_SORTS = usePokedexSorts(t, gl);
 	const { league, type: typeParam } = useParams();
 	const mode: RankingMode = (RANKING_MODES as ReadonlyArray<string>).includes(league ?? 'pokedex')
 		? ((league ?? 'pokedex') as RankingMode)
@@ -330,7 +338,7 @@ const Rankings = () => {
 									<span className='r-seg-short'>{t('rankings:tabs.pokedexShort')}</span>
 								</>
 							) : (
-								MODE_LABEL[m]
+								modeLabel(m, gl)
 							)}
 						</button>
 					))}
@@ -365,7 +373,9 @@ const Rankings = () => {
 							: isRaid && !raidType
 								? t('rankings:status.chooseType')
 								: t('rankings:status.count', { count: rows.length })}
-						{isRaid && raidType && t('rankings:status.bestAttackersSuffix', { type: TYPE_LABEL[raidType] })}
+						{isRaid &&
+							raidType &&
+							t('rankings:status.bestAttackersSuffix', { type: gameTypeDisplayTranslator(raidType, gl) })}
 					</span>
 					{showGrid && isRaid && raidType && (
 						<button
@@ -381,7 +391,9 @@ const Rankings = () => {
 					)}
 				</div>
 				{showGrid && isRaid && raidType && hintOpen && (
-					<p className='r-muted r-rank-hint'>{t('rankings:hint.text', { type: TYPE_LABEL[raidType] ?? raidType })}</p>
+					<p className='r-muted r-rank-hint'>
+					{t('rankings:hint.text', { type: gameTypeDisplayTranslator(raidType, gl) || raidType })}
+				</p>
 				)}
 			</div>
 
@@ -392,7 +404,11 @@ const Rankings = () => {
 						{t(mode === 'pokedex' ? 'rankings:loadingLabel.pokedex' : 'rankings:loadingLabel.rankings')}
 					</div>
 				)}
-				{showGrid && isRaid && !raidType && <p className='r-muted r-rank-empty'>{t('rankings:empty.pickType')}</p>}
+				{showGrid && isRaid && !raidType && (
+				<p className='r-muted r-rank-empty'>
+					{t('rankings:empty.pickType', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+				</p>
+			)}
 				{showGrid && rows.length === 0 && !(isRaid && !raidType) && (
 					<p className='r-muted' style={{ padding: 24 }}>
 						{t('rankings:empty.nothingMatches')}

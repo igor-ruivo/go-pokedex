@@ -1,7 +1,8 @@
-import { GameLanguage } from '../contexts/language-context';
+import type { GameLanguage } from '../contexts/language-context';
+import { getGameTranslationsSnapshot } from './game-translations-store';
 
 export enum GameTranslatorKeys {
-	CP,
+	CPSearch,
 	AttackSearch,
 	DefenseSearch,
 	HPSearch,
@@ -19,762 +20,204 @@ export enum GameTranslatorKeys {
 	ShinySearch,
 	CostumeSearch,
 	TradedSearch,
+	CPDisplay,
+	RaidDisplay,
+	ShadowDisplay,
+	FastAttackHeader,
+	ChargedAttackHeader,
+	GreatLeagueLong,
+	UltraLeagueLong,
+	MasterLeagueLong,
+	GreatLeagueShort,
+	UltraLeagueShort,
+	MasterLeagueShort,
+	AttackBoostSelf,
+	AttackBoostTarget,
+	AttackDropSelf,
+	AttackDropTarget,
+	DefenseBoostSelf,
+	DefenseBoostTarget,
+	DefenseDropSelf,
+	DefenseDropTarget,
+	BuffChance,
+	WeatherSunny,
+	WeatherClear,
+	WeatherRainy,
+	WeatherPartlyCloudy,
+	WeatherCloudy,
+	WeatherWindy,
+	WeatherSnow,
+	WeatherFog,
+	FriendshipGood,
+	FriendshipGreat,
+	FriendshipUltra,
+	FriendshipBest,
+	MegaLevelBase,
+	MegaLevelHigh,
+	MegaLevelMax,
+	AdventureSync,
+	Routes,
+	FastAttackHeaderPlural,
+	ChargedAttackHeaderPlural,
+	EliteFastTm,
+	EliteChargedTm,
+	EliteRaidTier,
+	RaidDisplayPlural,
+	MegaEvolvableDisplay,
 }
 
-// Every entry below is a literal token typed into Pokémon GO's own in-game
-// search bar, sourced from Pokémon GO's real client string tables (APK
-// 0.429.1) — not guessed, not machine-translated, not assumed from another
-// locale. There is deliberately no runtime fallback: a locale/key
-// combination with no confirmed value is left out of its Map entirely, and
-// `gameTranslator()` below surfaces that loudly instead of silently
-// substituting English. Run `scripts/check-game-translations.mjs` for a full
-// coverage report.
-const cp = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'cp'],
-	[GameLanguage.ptbr, 'pc'],
-	[GameLanguage.de, 'wp'],
-	[GameLanguage.es, 'pc'],
-	[GameLanguage.esMx, 'pc'],
-	[GameLanguage.fr, 'pc'],
-	[GameLanguage.it, 'pl'],
-	[GameLanguage.tr, 'dg'],
-	[GameLanguage.hi, 'cp'],
-	[GameLanguage.id, 'cp'],
-	[GameLanguage.ja, 'cp'],
-	[GameLanguage.ko, 'cp'],
-	[GameLanguage.ru, 'бс'],
-	[GameLanguage.th, 'cp'],
-	[GameLanguage.zhHant, 'cp'],
-]);
-
-const attackSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'attack'],
-	[GameLanguage.ptbr, 'ataque'],
-	[GameLanguage.de, 'angriffs-wert'],
-	[GameLanguage.it, 'attacco'],
-	[GameLanguage.tr, 'saldırı'],
-	[GameLanguage.es, 'ataque'],
-	[GameLanguage.esMx, 'ataque'],
-	[GameLanguage.fr, 'attaque'],
-	[GameLanguage.hi, 'अटैक'],
-	[GameLanguage.id, 'serangan'],
-	[GameLanguage.ja, 'こうげき'],
-	[GameLanguage.ko, '공격'],
-	[GameLanguage.ru, 'атака'],
-	[GameLanguage.th, 'โจมตี'],
-	[GameLanguage.zhHant, '攻擊'],
-]);
-
-const defenseSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'defense'],
-	[GameLanguage.ptbr, 'defesa'],
-	[GameLanguage.de, 'verteidigungs-wert'],
-	[GameLanguage.esMx, 'defensa'],
-	[GameLanguage.it, 'difesa'],
-	[GameLanguage.tr, 'savunma'],
-	[GameLanguage.es, 'defensa'],
-	[GameLanguage.fr, 'défense'],
-	[GameLanguage.hi, 'डिफ़ेंस'],
-	[GameLanguage.id, 'pertahanan'],
-	[GameLanguage.ja, 'ぼうぎょ'],
-	[GameLanguage.ko, '방어'],
-	[GameLanguage.ru, 'защита'],
-	[GameLanguage.th, 'ป้องกัน'],
-	[GameLanguage.zhHant, '防禦'],
-]);
-
-const hpSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'hp'],
-	[GameLanguage.ptbr, 'ps'],
-	[GameLanguage.de, 'kp'],
-	[GameLanguage.esMx, 'ps'],
-	[GameLanguage.tr, 'sp'],
-	[GameLanguage.es, 'puntos de salud'],
-	[GameLanguage.it, 'punti salute'],
-	[GameLanguage.fr, 'pv'],
-	[GameLanguage.hi, 'hp'],
-	[GameLanguage.id, 'hp'],
-	[GameLanguage.ja, 'hp'],
-	[GameLanguage.ko, 'hp'],
-	[GameLanguage.ru, 'ож'],
-	[GameLanguage.th, 'hp'],
-	[GameLanguage.zhHant, 'hp'],
-]);
-
-const megaEvolve = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'megaevolve'],
-	[GameLanguage.ptbr, 'megaevolui'],
-	[GameLanguage.de, 'megaentwicklung'],
-	[GameLanguage.fr, 'mégaévolue'],
-	[GameLanguage.it, 'megaevoluto'],
-	[GameLanguage.id, 'evolusimega'],
-	[GameLanguage.tr, 'megaevrim'],
-	[GameLanguage.hi, 'मेगा एवॉल्व'],
-	[GameLanguage.ja, 'めがしんか'],
-	[GameLanguage.ko, '메가진화'],
-	[GameLanguage.zhHant, '超級進化'],
-	[GameLanguage.ru, 'мегаэволюция'],
-	[GameLanguage.es, 'megaevoluciona'],
-	[GameLanguage.esMx, 'megaevoluciona'],
-	[GameLanguage.th, 'วิวัฒนาการเมก้า'],
-]);
-
-const ultraBeast = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'ultrabeast'],
-	[GameLanguage.ptbr, 'ultracriatura'],
-	[GameLanguage.de, 'ultrabestie'],
-	[GameLanguage.fr, 'ultra-chimère'],
-	[GameLanguage.it, 'ultracreatura'],
-	[GameLanguage.id, 'ultrabeast'],
-	[GameLanguage.hi, 'अल्ट्राबीस्ट'],
-	[GameLanguage.ja, 'ウルトラビースト'],
-	[GameLanguage.ko, '울트라비스트'],
-	[GameLanguage.zhHant, '究極異獸'],
-	[GameLanguage.es, 'ultraente'],
-	[GameLanguage.esMx, 'ultraente'],
-	[GameLanguage.ru, 'ультрачудовища'],
-	[GameLanguage.th, 'อัลตร้าบีสต์'],
-	[GameLanguage.tr, 'ultrayaratık'],
-]);
-
-const shadowSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'shadow'],
-	[GameLanguage.ptbr, 'sombroso'],
-	[GameLanguage.de, 'crypto'],
-	[GameLanguage.es, 'oscuro'],
-	[GameLanguage.esMx, 'oscuro'],
-	[GameLanguage.fr, 'obscur'],
-	[GameLanguage.it, 'ombra'],
-	[GameLanguage.id, 'bayangan'],
-	[GameLanguage.tr, 'gölge'],
-	[GameLanguage.hi, 'शैडो'],
-	[GameLanguage.ja, 'しゃどう'],
-	[GameLanguage.ko, '그림자'],
-	[GameLanguage.zhHant, '暗影'],
-	[GameLanguage.ru, 'теневые'],
-	[GameLanguage.th, 'ชาโดว์'],
-]);
-
-const legendary = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'legendary'],
-	[GameLanguage.ptbr, 'lendário'],
-	[GameLanguage.de, 'legendär'],
-	[GameLanguage.es, 'legendario'],
-	[GameLanguage.esMx, 'legendario'],
-	[GameLanguage.fr, 'légendaire'],
-	[GameLanguage.it, 'leggendario'],
-	[GameLanguage.id, 'legendaris'],
-	[GameLanguage.tr, 'efsanevi'],
-	[GameLanguage.hi, 'लेजेंडरी'],
-	[GameLanguage.ja, '伝説のポケモン'],
-	[GameLanguage.ko, '전설의 포켓몬'],
-	[GameLanguage.zhHant, '傳說的寶可夢'],
-	[GameLanguage.ru, 'легендарные'],
-	[GameLanguage.th, 'ตำนาน'],
-]);
-
-const mythical = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'mythical'],
-	[GameLanguage.ptbr, 'mítico'],
-	[GameLanguage.de, 'mysteriös'],
-	[GameLanguage.es, 'singular'],
-	[GameLanguage.fr, 'fabuleux'],
-	[GameLanguage.it, 'misterioso'],
-	[GameLanguage.id, 'mitos'],
-	[GameLanguage.tr, 'mitolojik'],
-	[GameLanguage.hi, 'मिथिकल'],
-	[GameLanguage.ja, 'まぼろし'],
-	[GameLanguage.ko, '환상'],
-	[GameLanguage.zhHant, '幻'],
-	[GameLanguage.esMx, 'mítico'],
-	[GameLanguage.ru, 'мифические'],
-	[GameLanguage.th, 'มายา'],
-]);
-
-const favorite = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'favorite'],
-	[GameLanguage.ptbr, 'favorito'],
-	[GameLanguage.de, 'favorit'],
-	[GameLanguage.fr, 'favoris'],
-	[GameLanguage.it, 'preferiti'],
-	[GameLanguage.id, 'favorit'],
-	[GameLanguage.tr, 'favori'],
-	[GameLanguage.hi, 'पसंदीदा'],
-	[GameLanguage.ja, 'お気に入り'],
-	[GameLanguage.ko, '즐겨찾기'],
-	[GameLanguage.zhHant, '我的最愛'],
-	[GameLanguage.es, 'favoritos'],
-	[GameLanguage.esMx, 'favoritos'],
-	[GameLanguage.ru, 'избранные'],
-	[GameLanguage.th, 'รายการโปรด'],
-]);
-
-const dynamaxSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'dynamax'],
-	[GameLanguage.ptbr, 'dinamax'],
-	[GameLanguage.de, 'dynamax'],
-	[GameLanguage.es, 'dinamax'],
-	[GameLanguage.esMx, 'dinamax'],
-	[GameLanguage.fr, 'dynamax'],
-	[GameLanguage.it, 'dynamax'],
-	[GameLanguage.id, 'dynamax'],
-	[GameLanguage.tr, 'dinamaks'],
-	[GameLanguage.hi, 'डायनामैक्स'],
-	[GameLanguage.ja, 'だいまっくす'],
-	[GameLanguage.ko, '다이맥스'],
-	[GameLanguage.zhHant, '極巨化'],
-	[GameLanguage.ru, 'динамакс'],
-	[GameLanguage.th, 'ไดแมกซ์'],
-]);
-
-const fusionSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'fusion'],
-	[GameLanguage.ptbr, 'fusão'],
-	[GameLanguage.de, 'fusion'],
-	[GameLanguage.es, 'fusión'],
-	[GameLanguage.esMx, 'fusión'],
-	[GameLanguage.fr, 'fusion'],
-	[GameLanguage.it, 'fusione'],
-	[GameLanguage.id, 'fusi'],
-	[GameLanguage.tr, 'füzyon'],
-	[GameLanguage.ja, 'がったい'],
-	[GameLanguage.ko, '합체'],
-	[GameLanguage.hi, 'फ़्यूज़न'],
-	[GameLanguage.ru, 'объединение'],
-	[GameLanguage.zhHant, '合體'],
-	[GameLanguage.th, 'รวมร่าง'],
-]);
-
-const gigantamaxSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'gigantamax'],
-	[GameLanguage.ptbr, 'gigamax'],
-	[GameLanguage.de, 'gigadynamax'],
-	[GameLanguage.es, 'gigamax'],
-	[GameLanguage.esMx, 'gigamax'],
-	[GameLanguage.fr, 'gigamax'],
-	[GameLanguage.it, 'gigamax'],
-	[GameLanguage.id, 'gigantamax'],
-	[GameLanguage.tr, 'gigantamaks'],
-	[GameLanguage.ja, 'きょだいまっくす'],
-	[GameLanguage.ko, '거다이 맥스'],
-	[GameLanguage.ru, 'гигантамакс'],
-	[GameLanguage.zhHant, '超極巨化'],
-	[GameLanguage.hi, 'जायगैंटामैक्स'],
-	[GameLanguage.th, 'กิกะแมกซ์'],
-]);
-
-const backgroundSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'background'],
-	[GameLanguage.ptbr, 'fundo'],
-	[GameLanguage.de, 'hintergrund'],
-	[GameLanguage.es, 'fondo'],
-	[GameLanguage.esMx, 'fondo'],
-	[GameLanguage.fr, 'fond'],
-	[GameLanguage.it, 'sfondo'],
-	[GameLanguage.id, 'latarbelakang'],
-	[GameLanguage.tr, 'arkaplan'],
-	[GameLanguage.hi, 'बैकग्राउंड'],
-	[GameLanguage.ja, 'はいけい'],
-	[GameLanguage.ko, '배경'],
-	[GameLanguage.zhHant, '背卡'],
-	[GameLanguage.ru, 'фон'],
-	[GameLanguage.th, 'พื้นหลัง'],
-]);
-
-const specialBackgroundSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'specialbackground'],
-	[GameLanguage.ptbr, 'fundoespecial'],
-	[GameLanguage.zhHant, '特別背卡'],
-	[GameLanguage.fr, 'fondspécial'],
-	[GameLanguage.de, 'spezialhintergrund'],
-	[GameLanguage.hi, 'स्पेशलबैकग्राउंड'],
-	[GameLanguage.id, 'latarbelakangspesial'],
-	[GameLanguage.it, 'sfondospeciale'],
-	[GameLanguage.ja, 'すぺしゃるはいけい'],
-	[GameLanguage.ko, '스페셜배경'],
-	[GameLanguage.ru, 'особыйфон'],
-	[GameLanguage.es, 'fondoespecial'],
-	[GameLanguage.esMx, 'fondoespecial'],
-	[GameLanguage.th, 'พื้นหลังพิเศษ'],
-	[GameLanguage.tr, 'özelarkaplan'],
-]);
-
-const shinySearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'shiny'],
-	[GameLanguage.ptbr, 'brilhante'],
-	[GameLanguage.de, 'schillernd'],
-	[GameLanguage.es, 'variocolor'],
-	[GameLanguage.fr, 'chromatique'],
-	[GameLanguage.it, 'cromatico'],
-	[GameLanguage.id, 'bersinar'],
-	[GameLanguage.tr, 'parlak'],
-	[GameLanguage.hi, 'शाइनी'],
-	[GameLanguage.ja, '色違い'],
-	[GameLanguage.ko, '색이 다른'],
-	[GameLanguage.zhHant, '異色'],
-	[GameLanguage.esMx, 'brillante'],
-	[GameLanguage.ru, 'сияющие'],
-	[GameLanguage.th, 'สีแตกต่าง'],
-]);
-
-const costumeSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'costume'],
-	[GameLanguage.ptbr, 'traje'],
-	[GameLanguage.de, 'kostümiert'],
-	[GameLanguage.es, 'disfraz'],
-	[GameLanguage.esMx, 'disfraz'],
-	[GameLanguage.fr, 'costume'],
-	[GameLanguage.it, 'costume'],
-	[GameLanguage.id, 'kostum'],
-	[GameLanguage.tr, 'kostüm'],
-	[GameLanguage.ja, 'とくべつ'],
-	[GameLanguage.ko, '특별'],
-	[GameLanguage.zhHant, '特殊'],
-	[GameLanguage.hi, 'कॉस्ट्यूम'],
-	[GameLanguage.ru, 'костюм'],
-	[GameLanguage.th, 'เครื่องแต่งกาย'],
-]);
-
-const tradedSearch = new Map<GameLanguage, string>([
-	[GameLanguage.en, 'traded'],
-	[GameLanguage.ptbr, 'trocado'],
-	[GameLanguage.de, 'getauscht'],
-	[GameLanguage.es, 'intercambiados'],
-	[GameLanguage.esMx, 'intercambiados'],
-	[GameLanguage.fr, 'échangé'],
-	[GameLanguage.it, 'scambiato'],
-	[GameLanguage.id, 'ditukarkan'],
-	[GameLanguage.tr, 'takaslanan'],
-	[GameLanguage.hi, 'ट्रेड किये गए'],
-	[GameLanguage.ko, '교환'],
-	[GameLanguage.ja, 'こうかん'],
-	[GameLanguage.zhHant, '交換'],
-	[GameLanguage.ru, 'обменянные'],
-	[GameLanguage.th, 'แลกเปลี่ยน'],
-]);
-
-const translations = new Map<GameTranslatorKeys, Map<GameLanguage, string>>([
-	[GameTranslatorKeys.AttackSearch, attackSearch],
-	[GameTranslatorKeys.DefenseSearch, defenseSearch],
-	[GameTranslatorKeys.HPSearch, hpSearch],
-	[GameTranslatorKeys.CP, cp],
-	[GameTranslatorKeys.ShadowSearch, shadowSearch],
-	[GameTranslatorKeys.Legendary, legendary],
-	[GameTranslatorKeys.Mythical, mythical],
-	[GameTranslatorKeys.MegaEvolve, megaEvolve],
-	[GameTranslatorKeys.UltraBeast, ultraBeast],
-	[GameTranslatorKeys.Favorite, favorite],
-	[GameTranslatorKeys.DynamaxSearch, dynamaxSearch],
-	[GameTranslatorKeys.FusionSearch, fusionSearch],
-	[GameTranslatorKeys.GigantamaxSearch, gigantamaxSearch],
-	[GameTranslatorKeys.BackgroundSearch, backgroundSearch],
-	[GameTranslatorKeys.SpecialBackgroundSearch, specialBackgroundSearch],
-	[GameTranslatorKeys.ShinySearch, shinySearch],
-	[GameTranslatorKeys.CostumeSearch, costumeSearch],
-	[GameTranslatorKeys.TradedSearch, tradedSearch],
-]);
+// Every key here is a literal lookup into `game-translations.json` — the
+// dataset dex-server builds entirely from Pokémon GO's own data-mined client
+// string tables (see dex-server's `game-translations-provider.ts`), never
+// hand-typed here. Nothing in this file is a hardcoded translation any more:
+// this is purely the mapping from "which concept" to "which JSON key", plus
+// the lookup/gap-reporting logic below.
+const TRANSLATION_KEY_NAMES: Record<GameTranslatorKeys, string> = {
+	[GameTranslatorKeys.CPSearch]: 'cpSearch',
+	[GameTranslatorKeys.AttackSearch]: 'attackSearch',
+	[GameTranslatorKeys.DefenseSearch]: 'defenseSearch',
+	[GameTranslatorKeys.HPSearch]: 'hpSearch',
+	[GameTranslatorKeys.MegaEvolve]: 'megaEvolve',
+	[GameTranslatorKeys.UltraBeast]: 'ultraBeast',
+	[GameTranslatorKeys.ShadowSearch]: 'shadowSearch',
+	[GameTranslatorKeys.Legendary]: 'legendary',
+	[GameTranslatorKeys.Mythical]: 'mythical',
+	[GameTranslatorKeys.Favorite]: 'favorite',
+	[GameTranslatorKeys.DynamaxSearch]: 'dynamaxSearch',
+	[GameTranslatorKeys.FusionSearch]: 'fusionSearch',
+	[GameTranslatorKeys.GigantamaxSearch]: 'gigantamaxSearch',
+	[GameTranslatorKeys.BackgroundSearch]: 'backgroundSearch',
+	[GameTranslatorKeys.SpecialBackgroundSearch]: 'specialBackgroundSearch',
+	[GameTranslatorKeys.ShinySearch]: 'shinySearch',
+	[GameTranslatorKeys.CostumeSearch]: 'costumeSearch',
+	[GameTranslatorKeys.TradedSearch]: 'tradedSearch',
+	[GameTranslatorKeys.CPDisplay]: 'cpDisplay',
+	[GameTranslatorKeys.RaidDisplay]: 'raidDisplay',
+	[GameTranslatorKeys.ShadowDisplay]: 'shadowDisplay',
+	[GameTranslatorKeys.FastAttackHeader]: 'fastAttackHeader',
+	[GameTranslatorKeys.ChargedAttackHeader]: 'chargedAttackHeader',
+	[GameTranslatorKeys.GreatLeagueLong]: 'greatLeagueLong',
+	[GameTranslatorKeys.UltraLeagueLong]: 'ultraLeagueLong',
+	[GameTranslatorKeys.MasterLeagueLong]: 'masterLeagueLong',
+	[GameTranslatorKeys.GreatLeagueShort]: 'greatLeagueShort',
+	[GameTranslatorKeys.UltraLeagueShort]: 'ultraLeagueShort',
+	[GameTranslatorKeys.MasterLeagueShort]: 'masterLeagueShort',
+	[GameTranslatorKeys.AttackBoostSelf]: 'attackBoostSelf',
+	[GameTranslatorKeys.AttackBoostTarget]: 'attackBoostTarget',
+	[GameTranslatorKeys.AttackDropSelf]: 'attackDropSelf',
+	[GameTranslatorKeys.AttackDropTarget]: 'attackDropTarget',
+	[GameTranslatorKeys.DefenseBoostSelf]: 'defenseBoostSelf',
+	[GameTranslatorKeys.DefenseBoostTarget]: 'defenseBoostTarget',
+	[GameTranslatorKeys.DefenseDropSelf]: 'defenseDropSelf',
+	[GameTranslatorKeys.DefenseDropTarget]: 'defenseDropTarget',
+	[GameTranslatorKeys.BuffChance]: 'buffChance',
+	[GameTranslatorKeys.WeatherSunny]: 'weatherSunny',
+	[GameTranslatorKeys.WeatherClear]: 'weatherClear',
+	[GameTranslatorKeys.WeatherRainy]: 'weatherRainy',
+	[GameTranslatorKeys.WeatherPartlyCloudy]: 'weatherPartlyCloudy',
+	[GameTranslatorKeys.WeatherCloudy]: 'weatherCloudy',
+	[GameTranslatorKeys.WeatherWindy]: 'weatherWindy',
+	[GameTranslatorKeys.WeatherSnow]: 'weatherSnow',
+	[GameTranslatorKeys.WeatherFog]: 'weatherFog',
+	[GameTranslatorKeys.FriendshipGood]: 'friendshipGood',
+	[GameTranslatorKeys.FriendshipGreat]: 'friendshipGreat',
+	[GameTranslatorKeys.FriendshipUltra]: 'friendshipUltra',
+	[GameTranslatorKeys.FriendshipBest]: 'friendshipBest',
+	[GameTranslatorKeys.MegaLevelBase]: 'megaLevelBase',
+	[GameTranslatorKeys.MegaLevelHigh]: 'megaLevelHigh',
+	[GameTranslatorKeys.MegaLevelMax]: 'megaLevelMax',
+	[GameTranslatorKeys.AdventureSync]: 'adventureSync',
+	[GameTranslatorKeys.Routes]: 'routes',
+	[GameTranslatorKeys.FastAttackHeaderPlural]: 'fastAttackHeaderPlural',
+	[GameTranslatorKeys.ChargedAttackHeaderPlural]: 'chargedAttackHeaderPlural',
+	[GameTranslatorKeys.EliteFastTm]: 'eliteFastTm',
+	[GameTranslatorKeys.EliteChargedTm]: 'eliteChargedTm',
+	[GameTranslatorKeys.EliteRaidTier]: 'eliteRaidTier',
+	[GameTranslatorKeys.RaidDisplayPlural]: 'raidDisplayPlural',
+	[GameTranslatorKeys.MegaEvolvableDisplay]: 'megaEvolvableDisplay',
+};
 
 // Dev-only, de-duplicated so a missing combo doesn't spam the console on
 // every render/keystroke of a search-string builder.
 const warnedGaps = new Set<string>();
 
-const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage) => {
-	const value = translations.get(key)?.get(language);
+/** `''` covers two different situations by design, both rendered the same
+ *  way (an empty placeholder — no English/hardcoded text stands in for a
+ *  language that hasn't been confirmed): the data hasn't finished loading
+ *  yet (expected, no warning), or it has loaded and this exact key/locale
+ *  combination is genuinely missing from `game-translations.json` (a real
+ *  bug — dex-server's own QA is supposed to make this impossible, so it's
+ *  still surfaced loudly in dev). */
+const gameTranslator = (key: GameTranslatorKeys, language: GameLanguage): string => {
+	const data = getGameTranslationsSnapshot();
+	if (!data) return '';
+
+	const translationKey = TRANSLATION_KEY_NAMES[key];
+	const value = data.translations[translationKey]?.[language];
 	if (value !== undefined) return value;
 
 	if (import.meta.env.DEV) {
 		const gapId = `${GameTranslatorKeys[key]}/${language}`;
 		if (!warnedGaps.has(gapId)) {
 			warnedGaps.add(gapId);
-			console.error(`[GameTranslator] no confirmed translation for "${gapId}" — see GameTranslator.ts`);
+			console.error(
+				`[GameTranslator] no confirmed translation for "${gapId}" in the fetched game-translations.json — see dex-server's game-translations-provider.ts.`
+			);
 		}
 	}
 
-	return GameTranslatorKeys[key] ? GameTranslatorKeys[key].toString() : key?.toString();
+	return '';
 };
 
 export default gameTranslator;
 
-// Pokémon type search keywords — used to localize dex-server's
-// English-only `searchFormId` form-disambiguation tokens (see
-// `translateTypeNames` in lib/search-string.ts). Same sourcing and same
-// no-fallback policy as everything above.
-const pokemonTypeSearch = new Map<string, Map<GameLanguage, string>>([
-	[
-		'bug',
-		new Map([
-			[GameLanguage.en, 'bug'],
-			[GameLanguage.ptbr, 'inseto'],
-			[GameLanguage.zhHant, '蟲'],
-			[GameLanguage.fr, 'insecte'],
-			[GameLanguage.de, 'käfer'],
-			[GameLanguage.hi, 'बग'],
-			[GameLanguage.id, 'serangga'],
-			[GameLanguage.it, 'coleottero'],
-			[GameLanguage.ja, 'むし'],
-			[GameLanguage.ko, '벌레'],
-			[GameLanguage.ru, 'насекомое'],
-			[GameLanguage.es, 'bicho'],
-			[GameLanguage.esMx, 'insecto'],
-			[GameLanguage.th, 'แมลง'],
-			[GameLanguage.tr, 'böcek'],
-		]),
-	],
-	[
-		'dark',
-		new Map([
-			[GameLanguage.en, 'dark'],
-			[GameLanguage.ptbr, 'sombrio'],
-			[GameLanguage.zhHant, '惡'],
-			[GameLanguage.fr, 'ténèbres'],
-			[GameLanguage.de, 'unlicht'],
-			[GameLanguage.hi, 'डार्क'],
-			[GameLanguage.id, 'kegelapan'],
-			[GameLanguage.it, 'buio'],
-			[GameLanguage.ja, 'あく'],
-			[GameLanguage.ko, '악'],
-			[GameLanguage.ru, 'тёмный'],
-			[GameLanguage.es, 'siniestro'],
-			[GameLanguage.esMx, 'siniestro'],
-			[GameLanguage.th, 'ความมืด'],
-			[GameLanguage.tr, 'karanlık'],
-		]),
-	],
-	[
-		'dragon',
-		new Map([
-			[GameLanguage.en, 'dragon'],
-			[GameLanguage.ptbr, 'dragão'],
-			[GameLanguage.zhHant, '龍'],
-			[GameLanguage.fr, 'dragon'],
-			[GameLanguage.de, 'drache'],
-			[GameLanguage.hi, 'ड्रैगन'],
-			[GameLanguage.id, 'naga'],
-			[GameLanguage.it, 'drago'],
-			[GameLanguage.ja, 'ドラゴン'],
-			[GameLanguage.ko, '드래곤'],
-			[GameLanguage.ru, 'дракон'],
-			[GameLanguage.es, 'dragón'],
-			[GameLanguage.esMx, 'dragón'],
-			[GameLanguage.th, 'มังกร'],
-			[GameLanguage.tr, 'ejderha'],
-		]),
-	],
-	[
-		'electric',
-		new Map([
-			[GameLanguage.en, 'electric'],
-			[GameLanguage.ptbr, 'elétrico'],
-			[GameLanguage.zhHant, '電'],
-			[GameLanguage.fr, 'électrik'],
-			[GameLanguage.de, 'elektro'],
-			[GameLanguage.hi, 'इलेक्ट्रिक'],
-			[GameLanguage.id, 'listrik'],
-			[GameLanguage.it, 'elettro'],
-			[GameLanguage.ja, 'でんき'],
-			[GameLanguage.ko, '전기'],
-			[GameLanguage.ru, 'электро'],
-			[GameLanguage.es, 'eléctrico'],
-			[GameLanguage.esMx, 'eléctrico'],
-			[GameLanguage.th, 'ไฟฟ้า'],
-			[GameLanguage.tr, 'elektrik'],
-		]),
-	],
-	[
-		'fairy',
-		new Map([
-			[GameLanguage.en, 'fairy'],
-			[GameLanguage.ptbr, 'fada'],
-			[GameLanguage.zhHant, '妖精'],
-			[GameLanguage.fr, 'fée'],
-			[GameLanguage.de, 'fee'],
-			[GameLanguage.hi, 'फ़ेरी'],
-			[GameLanguage.id, 'peri'],
-			[GameLanguage.it, 'folletto'],
-			[GameLanguage.ja, 'フェアリー'],
-			[GameLanguage.ko, '페어리'],
-			[GameLanguage.ru, 'фея'],
-			[GameLanguage.es, 'hada'],
-			[GameLanguage.esMx, 'hada'],
-			[GameLanguage.th, 'แฟรี่'],
-			[GameLanguage.tr, 'peri'],
-		]),
-	],
-	[
-		'fighting',
-		new Map([
-			[GameLanguage.en, 'fighting'],
-			[GameLanguage.ptbr, 'lutador'],
-			[GameLanguage.zhHant, '格鬥'],
-			[GameLanguage.fr, 'combat'],
-			[GameLanguage.de, 'kampf'],
-			[GameLanguage.hi, 'फ़ाइटिंग'],
-			[GameLanguage.id, 'petarung'],
-			[GameLanguage.it, 'lotta'],
-			[GameLanguage.ja, 'かくとう'],
-			[GameLanguage.ko, '격투'],
-			[GameLanguage.ru, 'боевой'],
-			[GameLanguage.es, 'lucha'],
-			[GameLanguage.esMx, 'pelea'],
-			[GameLanguage.th, 'ต่อสู้'],
-			[GameLanguage.tr, 'dövüşçü'],
-		]),
-	],
-	[
-		'fire',
-		new Map([
-			[GameLanguage.en, 'fire'],
-			[GameLanguage.ptbr, 'fogo'],
-			[GameLanguage.zhHant, '火'],
-			[GameLanguage.fr, 'feu'],
-			[GameLanguage.de, 'feuer'],
-			[GameLanguage.hi, 'फ़ायर'],
-			[GameLanguage.id, 'api'],
-			[GameLanguage.it, 'fuoco'],
-			[GameLanguage.ja, 'ほのお'],
-			[GameLanguage.ko, '불꽃'],
-			[GameLanguage.ru, 'огонь'],
-			[GameLanguage.es, 'fuego'],
-			[GameLanguage.esMx, 'fuego'],
-			[GameLanguage.th, 'ไฟ'],
-			[GameLanguage.tr, 'ateş'],
-		]),
-	],
-	[
-		'flying',
-		new Map([
-			[GameLanguage.en, 'flying'],
-			[GameLanguage.ptbr, 'voador'],
-			[GameLanguage.zhHant, '飛行'],
-			[GameLanguage.fr, 'vol'],
-			[GameLanguage.de, 'flug'],
-			[GameLanguage.hi, 'फ़्लाइंग'],
-			[GameLanguage.id, 'terbang'],
-			[GameLanguage.it, 'volante'],
-			[GameLanguage.ja, 'ひこう'],
-			[GameLanguage.ko, '비행'],
-			[GameLanguage.ru, 'летающий'],
-			[GameLanguage.es, 'volador'],
-			[GameLanguage.esMx, 'volador'],
-			[GameLanguage.th, 'บิน'],
-			[GameLanguage.tr, 'uçan'],
-		]),
-	],
-	[
-		'ghost',
-		new Map([
-			[GameLanguage.en, 'ghost'],
-			[GameLanguage.ptbr, 'fantasma'],
-			[GameLanguage.zhHant, '幽靈'],
-			[GameLanguage.fr, 'spectre'],
-			[GameLanguage.de, 'geist'],
-			[GameLanguage.hi, 'घोस्ट'],
-			[GameLanguage.id, 'hantu'],
-			[GameLanguage.it, 'spettro'],
-			[GameLanguage.ja, 'ゴースト'],
-			[GameLanguage.ko, '고스트'],
-			[GameLanguage.ru, 'привидение'],
-			[GameLanguage.es, 'fantasma'],
-			[GameLanguage.esMx, 'fantasma'],
-			[GameLanguage.th, 'ผี'],
-			[GameLanguage.tr, 'hayalet'],
-		]),
-	],
-	[
-		'grass',
-		new Map([
-			[GameLanguage.en, 'grass'],
-			[GameLanguage.ptbr, 'planta'],
-			[GameLanguage.zhHant, '草'],
-			[GameLanguage.fr, 'plante'],
-			[GameLanguage.de, 'pflanze'],
-			[GameLanguage.hi, 'ग्रास'],
-			[GameLanguage.id, 'daun'],
-			[GameLanguage.it, 'erba'],
-			[GameLanguage.ja, 'くさ'],
-			[GameLanguage.ko, '풀'],
-			[GameLanguage.ru, 'трава'],
-			[GameLanguage.es, 'planta'],
-			[GameLanguage.esMx, 'planta'],
-			[GameLanguage.th, 'หญ้า'],
-			[GameLanguage.tr, 'bitki'],
-		]),
-	],
-	[
-		'ground',
-		new Map([
-			[GameLanguage.en, 'ground'],
-			[GameLanguage.ptbr, 'terrestre'],
-			[GameLanguage.zhHant, '地面'],
-			[GameLanguage.fr, 'sol'],
-			[GameLanguage.de, 'boden'],
-			[GameLanguage.hi, 'ग्राउंड'],
-			[GameLanguage.id, 'tanah'],
-			[GameLanguage.it, 'terra'],
-			[GameLanguage.ja, 'じめん'],
-			[GameLanguage.ko, '땅'],
-			[GameLanguage.ru, 'земля'],
-			[GameLanguage.es, 'tierra'],
-			[GameLanguage.esMx, 'tierra'],
-			[GameLanguage.th, 'ดิน'],
-			[GameLanguage.tr, 'yer'],
-		]),
-	],
-	[
-		'ice',
-		new Map([
-			[GameLanguage.en, 'ice'],
-			[GameLanguage.ptbr, 'gelo'],
-			[GameLanguage.zhHant, '冰'],
-			[GameLanguage.fr, 'glace'],
-			[GameLanguage.de, 'eis'],
-			[GameLanguage.hi, 'आइस'],
-			[GameLanguage.id, 'es'],
-			[GameLanguage.it, 'ghiaccio'],
-			[GameLanguage.ja, 'こおり'],
-			[GameLanguage.ko, '얼음'],
-			[GameLanguage.ru, 'лёд'],
-			[GameLanguage.es, 'hielo'],
-			[GameLanguage.esMx, 'hielo'],
-			[GameLanguage.th, 'น้ำแข็ง'],
-			[GameLanguage.tr, 'buz'],
-		]),
-	],
-	[
-		'normal',
-		new Map([
-			[GameLanguage.en, 'normal'],
-			[GameLanguage.ptbr, 'normal'],
-			[GameLanguage.zhHant, '一般'],
-			[GameLanguage.fr, 'normal'],
-			[GameLanguage.de, 'normal'],
-			[GameLanguage.hi, 'नॉर्मल'],
-			[GameLanguage.id, 'normal'],
-			[GameLanguage.it, 'normale'],
-			[GameLanguage.ja, 'ノーマル'],
-			[GameLanguage.ko, '노말'],
-			[GameLanguage.ru, 'обычный'],
-			[GameLanguage.es, 'normal'],
-			[GameLanguage.esMx, 'normal'],
-			[GameLanguage.th, 'ปกติ'],
-			[GameLanguage.tr, 'normal'],
-		]),
-	],
-	[
-		'poison',
-		new Map([
-			[GameLanguage.en, 'poison'],
-			[GameLanguage.ptbr, 'venenoso'],
-			[GameLanguage.zhHant, '毒'],
-			[GameLanguage.fr, 'poison'],
-			[GameLanguage.de, 'gift'],
-			[GameLanguage.hi, 'पॉइज़न'],
-			[GameLanguage.id, 'racun'],
-			[GameLanguage.it, 'veleno'],
-			[GameLanguage.ja, 'どく'],
-			[GameLanguage.ko, '독'],
-			[GameLanguage.ru, 'яд'],
-			[GameLanguage.es, 'veneno'],
-			[GameLanguage.esMx, 'veneno'],
-			[GameLanguage.th, 'พิษ'],
-			[GameLanguage.tr, 'zehir'],
-		]),
-	],
-	[
-		'psychic',
-		new Map([
-			[GameLanguage.en, 'psychic'],
-			[GameLanguage.ptbr, 'psíquico'],
-			[GameLanguage.zhHant, '超能力'],
-			[GameLanguage.fr, 'psy'],
-			[GameLanguage.de, 'psycho'],
-			[GameLanguage.hi, 'साइकिक'],
-			[GameLanguage.id, 'psychic'],
-			[GameLanguage.it, 'psico'],
-			[GameLanguage.ja, 'エスパー'],
-			[GameLanguage.ko, '에스퍼'],
-			[GameLanguage.ru, 'психо'],
-			[GameLanguage.es, 'psíquico'],
-			[GameLanguage.esMx, 'psíquico'],
-			[GameLanguage.th, 'พลังจิต'],
-			[GameLanguage.tr, 'psişik'],
-		]),
-	],
-	[
-		'rock',
-		new Map([
-			[GameLanguage.en, 'rock'],
-			[GameLanguage.ptbr, 'pedra'],
-			[GameLanguage.zhHant, '岩石'],
-			[GameLanguage.fr, 'roche'],
-			[GameLanguage.de, 'gestein'],
-			[GameLanguage.hi, 'रॉक'],
-			[GameLanguage.id, 'bebatuan'],
-			[GameLanguage.it, 'roccia'],
-			[GameLanguage.ja, 'いわ'],
-			[GameLanguage.ko, '바위'],
-			[GameLanguage.ru, 'камень'],
-			[GameLanguage.es, 'roca'],
-			[GameLanguage.esMx, 'roca'],
-			[GameLanguage.th, 'หิน'],
-			[GameLanguage.tr, 'kaya'],
-		]),
-	],
-	[
-		'steel',
-		new Map([
-			[GameLanguage.en, 'steel'],
-			[GameLanguage.ptbr, 'aço'],
-			[GameLanguage.zhHant, '鋼'],
-			[GameLanguage.fr, 'acier'],
-			[GameLanguage.de, 'stahl'],
-			[GameLanguage.hi, 'स्टील'],
-			[GameLanguage.id, 'logam'],
-			[GameLanguage.it, 'acciaio'],
-			[GameLanguage.ja, 'はがね'],
-			[GameLanguage.ko, '강철'],
-			[GameLanguage.ru, 'сталь'],
-			[GameLanguage.es, 'acero'],
-			[GameLanguage.esMx, 'acero'],
-			[GameLanguage.th, 'โลหะ'],
-			[GameLanguage.tr, 'çelik'],
-		]),
-	],
-	[
-		'water',
-		new Map([
-			[GameLanguage.en, 'water'],
-			[GameLanguage.ptbr, 'água'],
-			[GameLanguage.zhHant, '水'],
-			[GameLanguage.fr, 'eau'],
-			[GameLanguage.de, 'wasser'],
-			[GameLanguage.hi, 'वॉटर'],
-			[GameLanguage.id, 'air'],
-			[GameLanguage.it, 'acqua'],
-			[GameLanguage.ja, 'みず'],
-			[GameLanguage.ko, '물'],
-			[GameLanguage.ru, 'вода'],
-			[GameLanguage.es, 'agua'],
-			[GameLanguage.esMx, 'agua'],
-			[GameLanguage.th, 'น้ำ'],
-			[GameLanguage.tr, 'su'],
-		]),
-	],
-]);
-
 const warnedTypeGaps = new Set<string>();
 
+/** Lowercase, in-game search-bar token for a Pokémon type (e.g. typing
+ *  "fire" to filter). Used to localize dex-server's English-only
+ *  `searchFormId` form-disambiguation tokens — see `translateTypeNames` in
+ *  lib/search-string.ts. */
 export const gameTypeTranslator = (type: string, language: GameLanguage): string => {
-	const value = pokemonTypeSearch.get(type)?.get(language);
+	const data = getGameTranslationsSnapshot();
+	if (!data) return '';
+
+	const value = data.types[type]?.search[language];
 	if (value !== undefined) return value;
 
 	if (import.meta.env.DEV) {
 		const gapId = `${type}/${language}`;
 		if (!warnedTypeGaps.has(gapId)) {
 			warnedTypeGaps.add(gapId);
-			console.error(`[GameTranslator] no confirmed type translation for "${gapId}" — see GameTranslator.ts`);
+			console.error(
+				`[GameTranslator] no confirmed type search translation for "${gapId}" in the fetched game-translations.json.`
+			);
 		}
 	}
 
-	return type;
+	return '';
+};
+
+const warnedTypeDisplayGaps = new Set<string>();
+
+/** Properly-cased, in-game display name for a Pokémon type (e.g. "Fire") —
+ *  for type chips/badges, as opposed to `gameTypeTranslator`'s lowercase
+ *  search token. */
+export const gameTypeDisplayTranslator = (type: string, language: GameLanguage): string => {
+	const data = getGameTranslationsSnapshot();
+	if (!data) return '';
+
+	const value = data.types[type]?.display[language];
+	if (value !== undefined) return value;
+
+	if (import.meta.env.DEV) {
+		const gapId = `${type}/${language}`;
+		if (!warnedTypeDisplayGaps.has(gapId)) {
+			warnedTypeDisplayGaps.add(gapId);
+			console.error(
+				`[GameTranslator] no confirmed type display translation for "${gapId}" in the fetched game-translations.json.`
+			);
+		}
+	}
+
+	return '';
 };

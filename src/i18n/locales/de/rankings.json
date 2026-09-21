@@ -2,7 +2,7 @@
 	"sorts": {
 		"dex": "Dex-Nummer",
 		"name": "Name",
-		"cp": "Max. WP",
+		"cp": "Max. {{cp}}",
 		"type": "Typ"
 	},
 	"tabs": {
@@ -21,7 +21,7 @@
 		"text": "Arena-Kampf-Ränge gehen von der besten Schnell- + Ladeattacken-Kombo jedes Pokémon aus, die effektiven {{type}}-Schaden (×1,6) gegen einen Stufe-5-Boss ohne Schatten (200 Verteidigung, Stufe 40) verursacht, mit einem Stufe-50-Angreifer (15 Angriffs-IW) ohne Wetter-, Freundschafts- oder Team-Mega-Aura-Boni. Super-Mega-Pokémon werden mit maximaler Mega-Stufe gerankt."
 	},
 	"empty": {
-		"pickType": "Wähle einen Typ im Filter, um die besten Arena-Kampf-Angreifer dieses Typs zu sehen.",
+		"pickType": "Wähle einen Typ im Filter, um die besten {{raid}}-Angreifer dieses Typs zu sehen.",
 		"nothingMatches": "Nichts passt."
 	},
 	"loadingLabel": {

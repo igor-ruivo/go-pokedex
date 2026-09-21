@@ -8,10 +8,11 @@ import { MoveStatRows } from '../components/MoveStatRows';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useLanguage } from '../contexts/language-context';
 import { cleanName } from '../lib/format';
-import { type Arena, buffText, moveDPE, moveDPS, moveEPS } from '../lib/moves';
+import { type Arena, hasBuff, moveDPE, moveDPS, moveEPS } from '../lib/moves';
 import { R } from '../lib/nav';
-import { TYPE_KEYS, TYPE_LABEL } from '../lib/types';
+import { TYPE_KEYS } from '../lib/types';
 import { useMoves } from '../queries/moves';
+import { gameTypeDisplayTranslator } from '../utils/GameTranslator';
 
 // PvE / PvP are split out so it's unambiguous which stat a sort acts on.
 const useMoveSorts = (t: (key: string) => string): ReadonlyArray<SortOption> => [
@@ -140,7 +141,7 @@ const Moves = () => {
 
 	const rowHeight = (i: number) => {
 		const m = list[i];
-		return m && !m.isFast && buffText(m.buffs) ? ROW_BUFF : ROW_PLAIN;
+		return m && !m.isFast && hasBuff(m.buffs) ? ROW_BUFF : ROW_PLAIN;
 	};
 	const virt = useWindowVirtualizer({
 		count: list.length,
@@ -217,11 +218,11 @@ const Moves = () => {
 									style={{ ['--tc' as string]: `var(--t-${typeKey})` }}
 								>
 									<div className='r-move-head'>
-										<span className='r-move-type'>{TYPE_LABEL[typeKey] ?? m.type}</span>
+										<span className='r-move-type'>{gameTypeDisplayTranslator(typeKey, gl) || m.type}</span>
 										<b>{m.moveName[gl] ?? cleanName(m.moveId)}</b>
 										<i className='r-move-tag'>{t(m.isFast ? 'moves:page.kind.fast' : 'moves:page.kind.charged')}</i>
 									</div>
-									<MoveStatRows m={m} />
+									<MoveStatRows m={m} gl={gl} />
 								</Link>
 							</div>
 						);

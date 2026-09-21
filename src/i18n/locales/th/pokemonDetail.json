@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "ประสิทธิภาพในเรด · {{name}}",
-			"selfShadow": "ประสิทธิภาพในเรด · เชโดว์ {{name}}",
-			"as": "ประสิทธิภาพในเรด · ในฐานะ {{name}}",
-			"asShadow": "ประสิทธิภาพในเรด · ในฐานะเชโดว์ {{name}}"
+			"self": "ประสิทธิภาพใน{{raid}} · {{name}}",
+			"selfShadow": "ประสิทธิภาพใน{{raid}} · {{shadow}} {{name}}",
+			"as": "ประสิทธิภาพใน{{raid}} · ในฐานะ {{name}}",
+			"asShadow": "ประสิทธิภาพใน{{raid}} · ในฐานะ{{shadow}} {{name}}"
 		},
 		"rank": "อันดับธาตุ{{type}}",
 		"baseAtk": "ค่าโจมตีพื้นฐาน",
-		"notRankedAttacker": "ไม่ได้รับการจัดอันดับเป็นตัวโจมตีเรด",
+		"notRankedAttacker": "ไม่ได้รับการจัดอันดับเป็นตัวโจมตี{{raid}}",
 		"bestMovesetByType": "ท่าที่ดีที่สุดตามธาตุ",
 		"nextMovesetTitle": "แตะเพื่อดูชุดท่าถัดไป",
 		"selectTypeTitle": "แตะเพื่อเลือกธาตุนี้",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "เปอร์เซ็นไทล์ IV ของคุณ · {{name}}",
-			"selfShadow": "เปอร์เซ็นไทล์ IV ของคุณ · เชโดว์ {{name}}",
+			"selfShadow": "เปอร์เซ็นไทล์ IV ของคุณ · {{shadow}} {{name}}",
 			"as": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะ {{name}}",
-			"asShadow": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะเชโดว์ {{name}}",
+			"asShadow": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะ{{shadow}} {{name}}",
 			"purified": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะเพียวริฟาย {{name}}"
 		},
 		"ivRank": "อันดับ IV ใน{{league}}",
 		"perfection": "ความสมบูรณ์แบบ",
 		"cp": "CP",
-		"cpAtLevel": "CP @ L{{level}}",
+		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"bestSpreadFor": "ค่าที่ดีที่สุดสำหรับ{{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP ที่ L{{level}}",
 		"purifyWarning": "⚠️ โปรดทราบว่าการเพียวริฟายจะเพิ่ม IV +2 ให้ทุกค่าสแตท",
 		"purifyUnreachableWarning": "⚠️ ค่าอันดับ 1 นั้นไม่สามารถเข้าถึงได้แม้จะเพียวริฟาย — การเพียวริฟายจะเพิ่มทุกค่าสแตทให้อย่างน้อย 2 เสมอ ดังนั้นเชโดว์จะไม่มีทางต่ำกว่านั้นไม่ว่า IV เดิมจะเป็นเท่าไร",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "ฮันโด",
+			"hundo": "15 / 15 / 15",
 			"rank1": "อันดับ 1 {{league}}"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "ไม่มีข้อมูล",
 		"strongAgainst": "{{name}} แข็งแกร่งต่อ · {{league}}",
 		"weakAgainst": "{{name}} อ่อนแอต่อ · {{league}}",
-		"bestRaidCounters": "ตัวสวนกลับเรดที่ดีที่สุด · {{name}}",
-		"summaryRaidHp": "เรด{{tier}} · {{hp}} HP",
+		"bestRaidCounters": "ตัวสวนกลับ{{raid}}ที่ดีที่สุด · {{name}}",
+		"summaryRaidHp": "{{raid}}{{tier}} · {{hp}} HP",
 		"partyOf": "ทีม {{size}} ตัว",
 		"friendLabel": "เพื่อน{{label}}",
 		"megaAuraSummary": "ออร่าเมก้า{{type}}",
@@ -137,8 +137,8 @@
 		"clear": "ล้าง",
 		"bossTier": "ระดับบอส",
 		"bossTierTitle": "{{tier}} — {{hp}} HP",
-		"bossTierAriaLabel": "เรด{{tier}}",
-		"bossTierHint": "เรด{{tier}} · {{hp}} HP",
+		"bossTierAriaLabel": "{{raid}}{{tier}}",
+		"bossTierHint": "{{raid}}{{tier}} · {{hp}} HP",
 		"weather_field": "สภาพอากาศ",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "ออร่าเมก้า",

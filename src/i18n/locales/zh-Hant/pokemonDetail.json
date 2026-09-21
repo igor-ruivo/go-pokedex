@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "團體戰表現 · {{name}}",
-			"selfShadow": "團體戰表現 · 暗影{{name}}",
-			"as": "團體戰表現 · 作為 {{name}}",
-			"asShadow": "團體戰表現 · 作為暗影{{name}}"
+			"self": "{{raid}}表現 · {{name}}",
+			"selfShadow": "{{raid}}表現 · {{shadow}}{{name}}",
+			"as": "{{raid}}表現 · 作為 {{name}}",
+			"asShadow": "{{raid}}表現 · 作為{{shadow}}{{name}}"
 		},
 		"rank": "{{type}} 排名",
 		"baseAtk": "基礎攻擊",
-		"notRankedAttacker": "未列入團體戰攻擊手排名。",
+		"notRankedAttacker": "未列入{{raid}}攻擊手排名。",
 		"bestMovesetByType": "各屬性最佳招式組合",
 		"nextMovesetTitle": "點選查看下一組招式",
 		"selectTypeTitle": "點選選擇此屬性",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "你的個體值百分位 · {{name}}",
-			"selfShadow": "你的個體值百分位 · 暗影{{name}}",
+			"selfShadow": "你的個體值百分位 · {{shadow}}{{name}}",
 			"as": "你的個體值百分位 · 作為 {{name}}",
-			"asShadow": "你的個體值百分位 · 作為暗影{{name}}",
+			"asShadow": "你的個體值百分位 · 作為{{shadow}}{{name}}",
 			"purified": "你的個體值百分位 · 作為淨化{{name}}"
 		},
 		"ivRank": "{{league}} 個體值排名",
 		"perfection": "完美度",
 		"cp": "CP",
-		"cpAtLevel": "L{{level}} 時的 CP",
+		"cpAtLevel": "L{{level}} 時的 {{cp}}",
 		"bestSpreadFor": "{{league}} 最佳數值組合：",
 		"bestSpreadResult": "→ L{{level}} 時 {{cp}} CP。",
 		"purifyWarning": "⚠️ 請注意，淨化會使每項數值的個體值提升 +2。",
 		"purifyUnreachableWarning": "⚠️ 這個排名第 1 的數值組合本身無法透過淨化達成 — 淨化一律會將每項數值提升至至少 2，因此暗影寶可夢無論個體值如何，都不可能低於此組合。",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "滿值",
+			"hundo": "15 / 15 / 15",
 			"rank1": "{{league}} 排名第 1"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "沒有資料。",
 		"strongAgainst": "{{name}} 在 {{league}} 中的優勢對手",
 		"weakAgainst": "{{name}} 在 {{league}} 中的劣勢對手",
-		"bestRaidCounters": "最佳團體戰對戰技巧 · {{name}}",
-		"summaryRaidHp": "{{tier}} 團體戰 · {{hp}} 體力",
+		"bestRaidCounters": "最佳{{raid}}對戰技巧 · {{name}}",
+		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} 體力",
 		"partyOf": "{{size}} 人小隊",
 		"friendLabel": "{{label}}",
 		"megaAuraSummary": "Mega {{type}} 光環",
@@ -137,8 +137,8 @@
 		"clear": "清除",
 		"bossTier": "首領星級",
 		"bossTierTitle": "{{tier}} — {{hp}} 體力",
-		"bossTierAriaLabel": "{{tier}} 團體戰",
-		"bossTierHint": "{{tier}} 團體戰 · {{hp}} 體力",
+		"bossTierAriaLabel": "{{tier}} {{raid}}",
+		"bossTierHint": "{{tier}} {{raid}} · {{hp}} 體力",
 		"weather_field": "天氣",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "Mega 光環",

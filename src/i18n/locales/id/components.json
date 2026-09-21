@@ -18,7 +18,7 @@
 		"defense": "PERTAHANAN",
 		"hp": "HP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "Hundo"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "Kurangi",
@@ -36,7 +36,7 @@
 		"charged": "Utama"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "Belum diperingkat sebagai attacker raid.",
+		"notRanked": "Belum diperingkat sebagai attacker {{raid}}.",
 		"bestMovesetByType": "Moveset terbaik per tipe",
 		"tapNextMoveset": "Ketuk untuk moveset berikutnya",
 		"tapSelectType": "Ketuk untuk memilih tipe ini",

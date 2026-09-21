@@ -50,10 +50,10 @@
 			"short": "Meister"
 		},
 		"raidAttackers": {
-			"full": "Arena-Kampf-Angreifer",
-			"short": "Kampf"
+			"full": "{{raid}}-Angreifer",
+			"short": "{{raid}}"
 		},
-		"saveCp": "WP speichern",
+		"saveCp": "{{cp}} speichern",
 		"simplifiedMode": "Vereinfachter Modus",
 		"keep3StarPokemon": "3*-Pokémon behalten",
 		"ariaKeepTopGreat": "Top der Superliga behalten",
@@ -91,11 +91,11 @@
 			"description": "Ultrabestien (Bluzuken, Zaubeel, …)."
 		},
 		"megaEvolvable": {
-			"label": "Mega-fähig",
+			"label": "{{megaEvolvable}}",
 			"description": "Das weiß nur das Spiel — erfordert gerade genug gespeicherte Mega-Energie für diese Spezies."
 		},
 		"shadow": {
-			"label": "Schatten",
+			"label": "{{shadow}}",
 			"description": "Jedes Schatten-Pokémon, unabhängig von eigenen IWs oder Rang."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Zurücksetzen",
 		"remove": "Entfernen",
 		"removeLockedTitle": "Geschützt, weil es {{reason}} ist — schalte das oben aus, um es zu entfernen",
-		"shadowSuffix": "Schatten",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Hier ist noch nichts — suche oben, um ein bestimmtes Pokémon unabhängig von den Kategorien oben zu schützen.",
 		"emptyTrade": "Hier ist noch nichts — suche oben, um ein bestimmtes Pokémon unabhängig von den Kategorien oben von Tauschvorschlägen auszuschließen.",
 		"summaryEmpty": "Noch keine einzeln geschützten Pokémon",
@@ -158,9 +158,9 @@
 		"topGreat": "Top {{n}} Superliga",
 		"topUltra": "Top {{n}} Ultraliga",
 		"topMaster": "Top {{n}} Meisterliga",
-		"topRaid": "Top {{n}} Arena-Kampf",
-		"cpKept": "WP ≥ {{cp}} behalten",
-		"cpUnder": "WP < {{cp}}",
+		"topRaid": "Top {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} behalten",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Vereinfachter Modus",
 		"protectsList": "schützt {{list}}",
 		"excludesList": "schließt aus {{list}}",

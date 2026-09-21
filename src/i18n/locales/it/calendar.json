@@ -24,7 +24,7 @@
 			"tier3": { "full": "Raid di livello 3", "short": "Livello 3" },
 			"tier1": { "full": "Raid di livello 1", "short": "Livello 1" }
 		},
-		"shadowPrefix": "Ombra · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Altri raid",
 		"nothingScheduled": "Niente in programma.",
 		"nowSlot": "Ora"

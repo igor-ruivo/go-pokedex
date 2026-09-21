@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "Performance en raid · {{name}}",
-			"selfShadow": "Performance en raid · {{name}} Ombre",
-			"as": "Performance en raid · en tant que {{name}}",
-			"asShadow": "Performance en raid · en tant que {{name}} Ombre"
+			"self": "Performance en {{raid}} · {{name}}",
+			"selfShadow": "Performance en {{raid}} · {{name}} {{shadow}}",
+			"as": "Performance en {{raid}} · en tant que {{name}}",
+			"asShadow": "Performance en {{raid}} · en tant que {{name}} {{shadow}}"
 		},
 		"rank": "Rang {{type}}",
 		"baseAtk": "ATT de base",
-		"notRankedAttacker": "Non classé comme attaquant de raid.",
+		"notRankedAttacker": "Non classé comme attaquant de {{raid}}.",
 		"bestMovesetByType": "Meilleures capacités par type",
 		"nextMovesetTitle": "Touchez pour les capacités suivantes",
 		"selectTypeTitle": "Touchez pour sélectionner ce type",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "Votre percentile d'IV · {{name}}",
-			"selfShadow": "Votre percentile d'IV · {{name}} Ombre",
+			"selfShadow": "Votre percentile d'IV · {{name}} {{shadow}}",
 			"as": "Votre percentile d'IV · en tant que {{name}}",
-			"asShadow": "Votre percentile d'IV · en tant que {{name}} Ombre",
+			"asShadow": "Votre percentile d'IV · en tant que {{name}} {{shadow}}",
 			"purified": "Votre percentile d'IV · en tant que {{name}} Purifié"
 		},
 		"ivRank": "Rang IV {{league}}",
 		"perfection": "Perfection",
 		"cp": "PC",
-		"cpAtLevel": "PC au Niv. {{level}}",
+		"cpAtLevel": "{{cp}} au Niv. {{level}}",
 		"bestSpreadFor": "Meilleure répartition pour {{league}} :",
 		"bestSpreadResult": "→ {{cp}} PC au Niv. {{level}}.",
 		"purifyWarning": "⚠️ Notez que la purification confère +2 IV sur chaque statistique.",
 		"purifyUnreachableWarning": "⚠️ Cette répartition de rang 1 est elle-même inatteignable par purification — la purification remonte toujours chaque statistique à au moins 2, donc un Pokémon Ombre ne peut jamais descendre en dessous, quels que soient ses propres IV.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Hundo",
+			"hundo": "15 / 15 / 15",
 			"rank1": "Rang 1 {{league}}"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "Aucune donnée.",
 		"strongAgainst": "{{name}} est fort contre · {{league}}",
 		"weakAgainst": "{{name}} est faible contre · {{league}}",
-		"bestRaidCounters": "Meilleurs contres de raid · {{name}}",
-		"summaryRaidHp": "Raid {{tier}} · {{hp}} PV",
+		"bestRaidCounters": "Meilleurs contres de {{raid}} · {{name}}",
+		"summaryRaidHp": "{{raid}} {{tier}} · {{hp}} PV",
 		"partyOf": "Équipe de {{size}}",
 		"friendLabel": "Ami {{label}}",
 		"megaAuraSummary": "Aura Méga {{type}}",
@@ -137,8 +137,8 @@
 		"clear": "Réinitialiser",
 		"bossTier": "Niveau du boss",
 		"bossTierTitle": "{{tier}} — {{hp}} PV",
-		"bossTierAriaLabel": "Raid {{tier}}",
-		"bossTierHint": "Raid {{tier}} · {{hp}} PV",
+		"bossTierAriaLabel": "{{raid}} {{tier}}",
+		"bossTierHint": "{{raid}} {{tier}} · {{hp}} PV",
 		"weather_field": "Météo",
 		"weatherHint": "×1,2 · {{types}}",
 		"megaAura": "Aura Méga",

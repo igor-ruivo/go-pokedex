@@ -1,8 +1,10 @@
 import { Fragment, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
-import { TYPE_LABEL, typeVar } from '../lib/types';
+import { typeVar } from '../lib/types';
+import { gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import { computeMoveEffectiveness } from '../utils/pokemon-helper';
 
 // Column / row order for the chart (the canonical Pokémon type order).
@@ -36,11 +38,11 @@ const tier = (m: number): 'se' | 'nn' | 'nve' | 'imm' => {
 
 const cellText = (m: number) => (tier(m) === 'nn' ? '' : m.toFixed(m < 1 ? 2 : 1));
 
-const TypeIcon = ({ t, size = 20 }: { t: string; size?: number }) => (
+const TypeIcon = ({ t, gl, size = 20 }: { t: string; gl: GameLanguage; size?: number }) => (
 	<img
 		className='r-tc-ic'
 		src={`/images/types/${t}.png`}
-		alt={TYPE_LABEL[t] ?? t}
+		alt={gameTypeDisplayTranslator(t, gl) || t}
 		width={size}
 		height={size}
 		loading='lazy'
@@ -50,6 +52,7 @@ const TypeIcon = ({ t, size = 20 }: { t: string; size?: number }) => (
 
 const Types = () => {
 	const { t } = useTranslation(['types']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const [def, setDef] = useState<Array<string>>([]);
 	const [hover, setHover] = useState<{ a: string; d: string } | null>(null);
 
@@ -75,9 +78,9 @@ const Types = () => {
 							className='r-tc-colh'
 							data-hot={hover?.d === d ? '' : undefined}
 							style={{ ['--tc' as string]: typeVar(d) }}
-							title={TYPE_LABEL[d]}
+							title={gameTypeDisplayTranslator(d, gl)}
 						>
-							<TypeIcon t={d} size={18} />
+							<TypeIcon t={d} gl={gl} size={18} />
 						</div>
 					))}
 
@@ -87,9 +90,9 @@ const Types = () => {
 								className='r-tc-rowh'
 								data-hot={hover?.a === a ? '' : undefined}
 								style={{ ['--tc' as string]: typeVar(a) }}
-								title={TYPE_LABEL[a]}
+								title={gameTypeDisplayTranslator(a, gl)}
 							>
-								<TypeIcon t={a} size={18} />
+								<TypeIcon t={a} gl={gl} size={18} />
 							</div>
 							{ORDER.map((d) => {
 								const m = computeMoveEffectiveness(a, d);
@@ -103,7 +106,7 @@ const Types = () => {
 										data-axis={onAxis && !isHot ? '' : undefined}
 										data-hot={isHot ? '' : undefined}
 										onMouseEnter={() => setHover({ a, d })}
-										title={`${TYPE_LABEL[a]} → ${TYPE_LABEL[d]}: ${m.toFixed(3)}×`}
+										title={`${gameTypeDisplayTranslator(a, gl)} → ${gameTypeDisplayTranslator(d, gl)}: ${m.toFixed(3)}×`}
 									>
 										{cellText(m)}
 									</div>
@@ -134,7 +137,7 @@ const Types = () => {
 								style={{ ['--tc' as string]: typeVar(t) }}
 								onClick={() => toggleDef(t)}
 							>
-								{TYPE_LABEL[t]}
+								{gameTypeDisplayTranslator(t, gl)}
 							</button>
 						))}
 					</div>
@@ -153,7 +156,7 @@ const Types = () => {
 											data-double={isDoubleMult(mult) ? '' : undefined}
 											style={{ ['--tc' as string]: typeVar(type) }}
 										>
-											{TYPE_LABEL[type]}
+											{gameTypeDisplayTranslator(type, gl)}
 											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))
@@ -173,7 +176,7 @@ const Types = () => {
 											data-double={isDoubleMult(mult) ? '' : undefined}
 											style={{ ['--tc' as string]: typeVar(type) }}
 										>
-											{TYPE_LABEL[type]}
+											{gameTypeDisplayTranslator(type, gl)}
 											<span className='r-eff-mult'>{fmtMult(mult)}</span>
 										</span>
 									))

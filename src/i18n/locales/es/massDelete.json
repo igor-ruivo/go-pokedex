@@ -50,10 +50,10 @@
 			"short": "Máster"
 		},
 		"raidAttackers": {
-			"full": "Atacantes de incursión",
-			"short": "Incursión"
+			"full": "Atacantes de {{raid}}",
+			"short": "{{raid}}"
 		},
-		"saveCp": "Guardar PC",
+		"saveCp": "Guardar {{cp}}",
 		"simplifiedMode": "Modo simplificado",
 		"keep3StarPokemon": "Conservar Pokémon 3*",
 		"ariaKeepTopGreat": "Conservar el top de la Liga Súper",
@@ -91,11 +91,11 @@
 			"description": "Ultraentes (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
-			"label": "Megaevolucionable",
+			"label": "{{megaEvolvable}}",
 			"description": "Solo el juego lo sabe — necesita suficiente Megaenergía acumulada para esa especie ahora mismo."
 		},
 		"shadow": {
-			"label": "Sombra",
+			"label": "{{shadow}}",
 			"description": "Todo Pokémon Sombra, sin importar sus IVs o clasificación."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Borrar",
 		"remove": "Quitar",
 		"removeLockedTitle": "Protegido porque es {{reason}} — desactiva eso arriba para quitarlo",
-		"shadowSuffix": "Sombra",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Nada por aquí todavía — busca arriba para proteger un Pokémon concreto, sin importar las categorías de arriba.",
 		"emptyTrade": "Nada por aquí todavía — busca arriba para mantener a un Pokémon concreto fuera de las sugerencias de intercambio, sin importar las categorías de arriba.",
 		"summaryEmpty": "Aún no hay Pokémon protegidos individualmente",
@@ -158,9 +158,9 @@
 		"topGreat": "Top {{n}} Liga Súper",
 		"topUltra": "Top {{n}} Liga Ultra",
 		"topMaster": "Top {{n}} Liga Máster",
-		"topRaid": "Top {{n}} Incursión",
-		"cpKept": "PC ≥ {{cp}} conservado",
-		"cpUnder": "PC < {{cp}}",
+		"topRaid": "Top {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} conservado",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Modo simplificado",
 		"protectsList": "protege {{list}}",
 		"excludesList": "excluye {{list}}",

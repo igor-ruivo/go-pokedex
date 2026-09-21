@@ -50,10 +50,10 @@
 			"short": "マスター"
 		},
 		"raidAttackers": {
-			"full": "レイドアタッカー",
-			"short": "レイド"
+			"full": "{{raid}}アタッカー",
+			"short": "{{raid}}"
 		},
-		"saveCp": "CPを保存",
+		"saveCp": "{{cp}}を保存",
 		"simplifiedMode": "簡易モード",
 		"keep3StarPokemon": "★3ポケモンを保護",
 		"ariaKeepTopGreat": "グレートリーグ上位を保護",
@@ -91,11 +91,11 @@
 			"description": "ウルトラビースト(ネクロズマなど)。"
 		},
 		"megaEvolvable": {
-			"label": "メガシンカ可能",
+			"label": "{{megaEvolvable}}",
 			"description": "ゲーム側の情報のみで判定 — 現在その種族のメガエナジーが必要数蓄積されている場合。"
 		},
 		"shadow": {
-			"label": "シャドウ",
+			"label": "{{shadow}}",
 			"description": "個体値やランクに関係なく、すべてのシャドウポケモン。"
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "クリア",
 		"remove": "削除",
 		"removeLockedTitle": "{{reason}}のため保護されています — 削除するには上のトグルをオフにしてください",
-		"shadowSuffix": "シャドウ",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "まだありません — 上で検索して、上記カテゴリーに関係なく特定のポケモンを保護できます。",
 		"emptyTrade": "まだありません — 上で検索して、上記カテゴリーに関係なく特定のポケモンを交換対象から除外できます。",
 		"summaryEmpty": "個別保護されたポケモンはまだありません",
@@ -158,9 +158,9 @@
 		"topGreat": "グレートリーグ上位{{n}}",
 		"topUltra": "ハイパーリーグ上位{{n}}",
 		"topMaster": "マスターリーグ上位{{n}}",
-		"topRaid": "レイド上位{{n}}",
-		"cpKept": "CP{{cp}}以上を保護",
-		"cpUnder": "CP{{cp}}未満",
+		"topRaid": "{{raid}}上位{{n}}",
+		"cpKept": "{{cp}}{{cpValue}}以上を保護",
+		"cpUnder": "{{cp}}{{cpValue}}未満",
 		"simplifiedModeSuffix": "簡易モード",
 		"protectsList": "{{list}}を保護",
 		"excludesList": "{{list}}を除外",

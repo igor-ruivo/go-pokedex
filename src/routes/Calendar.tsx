@@ -21,6 +21,7 @@ import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { type ILeekduckSpecialRaidBoss, useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 
 /** Raid-egg icon key (/public/images/raids) and tier-matcher per raid tier —
  *  labels are looked up from the `calendar:raids.tiers.<key>` i18n keys at
@@ -49,11 +50,12 @@ const isActive = (p: { startDate: number; endDate: number }, now: number) => now
 /** Merge a list of dated posts into day-range buckets, deduping their entries. */
 const groupByRange = (
 	posts: Array<IPostEntry>,
-	pick: (p: IPostEntry) => Array<IEntry>
+	pick: (p: IPostEntry) => Array<IEntry>,
+	locale: string
 ): Array<{ label: string; entries: Array<IEntry> }> => {
 	const map = new Map<string, { entries: Array<IEntry>; seen: Set<string>; minStart: number; maxEnd: number }>();
 	for (const p of posts) {
-		const label = dayRange(p.startDate, p.endDate);
+		const label = dayRange(p.startDate, p.endDate, locale);
 		let g = map.get(label);
 		if (!g) {
 			g = { entries: [], seen: new Set(), minStart: p.startDate, maxEnd: p.endDate };
@@ -76,7 +78,9 @@ const groupByRange = (
 	// Events already show (`dateRange` itself still falls back to day-only
 	// for anything spanning more than one day).
 	return [...map.values()].map(({ entries, minStart, maxEnd }) => ({
-		label: dayRange(minStart, maxEnd).includes('–') ? dayRange(minStart, maxEnd) : dateRange(minStart, maxEnd),
+		label: dayRange(minStart, maxEnd, locale).includes('–')
+			? dayRange(minStart, maxEnd, locale)
+			: dateRange(minStart, maxEnd, locale),
 		entries,
 	}));
 };
@@ -388,7 +392,7 @@ const EventCard = ({
 	unseen: boolean;
 }) => {
 	const { t } = useTranslation(['calendar']);
-	const { currentGameLanguage: gl } = useLanguage();
+	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const { imageSource } = useImageSource();
 	// Ticking so a same-day "in Xh/Xm/Xs" countdown (see `relativeDays`) counts
@@ -446,7 +450,7 @@ const EventCard = ({
 						{unseen && <i className='r-event-new' aria-label={t('calendar:events.unseenAriaLabel')} />}
 						{title}
 					</b>
-					<span>{dateRange(post.startDate, post.endDate)}</span>
+					<span>{dateRange(post.startDate, post.endDate, currentLanguage)}</span>
 				</div>
 				{isSeason ? (
 					<i className='r-phase' data-phase='season'>
@@ -464,7 +468,7 @@ const EventCard = ({
 			</button>
 			{open && (
 				<div className='r-event-body'>
-					{!isSeason && <p className='r-event-when'>{eventStartEnd(post.startDate, post.endDate)}</p>}
+					{!isSeason && <p className='r-event-when'>{eventStartEnd(post.startDate, post.endDate, currentLanguage)}</p>}
 					{bonuses.length > 0 && (
 						<>
 							<div className='r-section-h'>{t('calendar:events.bonuses')}</div>
@@ -575,6 +579,7 @@ const EventsTab = () => {
 /* ---------- Raids ---------- */
 const RaidsTab = () => {
 	const { t } = useTranslation(['calendar']);
+	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const {
 		posts,
 		specialBosses,
@@ -627,7 +632,7 @@ const RaidsTab = () => {
 	if (!ready) return <Spinner />;
 
 	const shadow = (id: string) => !!gamemasterPokemon[id]?.isShadow;
-	const upcomingGroups = groupByRange(upcoming, (p) => p.raids);
+	const upcomingGroups = groupByRange(upcoming, (p) => p.raids, currentLanguage);
 
 	// Literal t() calls per tier — not a dynamic template key — so
 	// scripts/check-i18n-parity.mjs can statically verify every one.
@@ -667,7 +672,10 @@ const RaidsTab = () => {
 					{RAID_TIERS.map((tier) => (
 						<Group
 							key={`${tier.key}-shadow`}
-							title={t('calendar:raids.shadowPrefix', { tier: tierLabels[tier.key].short })}
+							title={t('calendar:raids.shadowPrefix', {
+								tier: tierLabels[tier.key].short,
+								shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+							})}
 							egg={tier.egg}
 							entries={activeEntries.filter((e) => tier.match(e.kind) && shadow(e.speciesId))}
 							endMap={showEnd ? endMap : undefined}
@@ -689,6 +697,7 @@ const RaidsTab = () => {
 /* ---------- Spawns ---------- */
 const SpawnsTab = () => {
 	const { t } = useTranslation(['calendar']);
+	const { currentLanguage } = useLanguage();
 	const { season, posts, spotlightHours, seasonFetchCompleted, postsFetchCompleted, spotlightHoursFetchCompleted } =
 		useCalendar();
 	const { fetchCompleted } = usePokemon();
@@ -738,7 +747,8 @@ const SpawnsTab = () => {
 	// only not-yet-started events get their own date tab; live ones are in "Now"
 	const eventGroups = groupByRange(
 		withWild.filter((p) => p.startDate > now),
-		(p) => p.wild
+		(p) => p.wild,
+		currentLanguage
 	);
 	const known = new Set(BIOMES.map(([k]) => k));
 	const wild = season?.wild ?? [];

@@ -50,10 +50,10 @@
 			"short": "Master"
 		},
 		"raidAttackers": {
-			"full": "Attaccanti da raid",
-			"short": "Raid"
+			"full": "Attaccanti da {{raid}}",
+			"short": "{{raid}}"
 		},
-		"saveCp": "Salva PL",
+		"saveCp": "Salva {{cp}}",
 		"simplifiedMode": "Modalità semplificata",
 		"keep3StarPokemon": "Mantieni Pokémon 3*",
 		"ariaKeepTopGreat": "Mantieni il top della Grande Lega",
@@ -91,11 +91,11 @@
 			"description": "Ultracreature (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
-			"label": "Mega-evolvibile",
+			"label": "{{megaEvolvable}}",
 			"description": "Solo il gioco lo sa — richiede abbastanza Mega Energia accumulata per quella specie in questo momento."
 		},
 		"shadow": {
-			"label": "Ombra",
+			"label": "{{shadow}}",
 			"description": "Ogni Pokémon Ombra, indipendentemente dai suoi IV o rango."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Cancella",
 		"remove": "Rimuovi",
 		"removeLockedTitle": "Protetto perché {{reason}} — disattiva quell'opzione sopra per rimuoverlo",
-		"shadowSuffix": "Ombra",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Ancora niente qui — cerca sopra per proteggere un Pokémon specifico indipendentemente dalle categorie sopra.",
 		"emptyTrade": "Ancora niente qui — cerca sopra per escludere un Pokémon specifico dai suggerimenti di scambio indipendentemente dalle categorie sopra.",
 		"summaryEmpty": "Nessun Pokémon protetto individualmente per ora",
@@ -158,9 +158,9 @@
 		"topGreat": "Top {{n}} Grande Lega",
 		"topUltra": "Top {{n}} Ultra Lega",
 		"topMaster": "Top {{n}} Lega Master",
-		"topRaid": "Top {{n}} Raid",
-		"cpKept": "PL ≥ {{cp}} mantenuti",
-		"cpUnder": "PL < {{cp}}",
+		"topRaid": "Top {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} mantenuti",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Modalità semplificata",
 		"protectsList": "protegge {{list}}",
 		"excludesList": "esclude {{list}}",

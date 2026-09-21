@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "レイド性能 · {{name}}",
-			"selfShadow": "レイド性能 · シャドウ{{name}}",
-			"as": "レイド性能 · {{name}}として",
-			"asShadow": "レイド性能 · シャドウ{{name}}として"
+			"self": "{{raid}}性能 · {{name}}",
+			"selfShadow": "{{raid}}性能 · {{shadow}}{{name}}",
+			"as": "{{raid}}性能 · {{name}}として",
+			"asShadow": "{{raid}}性能 · {{shadow}}{{name}}として"
 		},
 		"rank": "{{type}}ランク",
 		"baseAtk": "こうげき実数値",
-		"notRankedAttacker": "レイドアタッカーとしてランク外です。",
+		"notRankedAttacker": "{{raid}}アタッカーとしてランク外です。",
 		"bestMovesetByType": "タイプ別ベストわざ構成",
 		"nextMovesetTitle": "タップで次のわざ構成へ",
 		"selectTypeTitle": "タップしてこのタイプを選択",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "個体値パーセンタイル · {{name}}",
-			"selfShadow": "個体値パーセンタイル · シャドウ{{name}}",
+			"selfShadow": "個体値パーセンタイル · {{shadow}}{{name}}",
 			"as": "個体値パーセンタイル · {{name}}として",
-			"asShadow": "個体値パーセンタイル · シャドウ{{name}}として",
+			"asShadow": "個体値パーセンタイル · {{shadow}}{{name}}として",
 			"purified": "個体値パーセンタイル · きぜつ回復{{name}}として"
 		},
 		"ivRank": "{{league}}個体値ランク",
 		"perfection": "完成度",
 		"cp": "CP",
-		"cpAtLevel": "Lv{{level}}時のCP",
+		"cpAtLevel": "Lv{{level}}時の{{cp}}",
 		"bestSpreadFor": "{{league}}の最良配分:",
 		"bestSpreadResult": "→ Lv{{level}}でCP{{cp}}。",
 		"purifyWarning": "⚠️ きぜつ回復すると各ステータスに+2個体値が付与される点にご注意ください。",
 		"purifyUnreachableWarning": "⚠️ このランク1配分自体は、きぜつ回復では到達できません — きぜつ回復は各ステータスを必ず2以上に引き上げるため、シャドウポケモンは個体値に関係なくそれを下回ることができません。",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "完全個体",
+			"hundo": "15 / 15 / 15",
 			"rank1": "{{league}}ランク1"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "データなし。",
 		"strongAgainst": "{{name}}が得意な相手 · {{league}}",
 		"weakAgainst": "{{name}}が苦手な相手 · {{league}}",
-		"bestRaidCounters": "レイド最強対策 · {{name}}",
-		"summaryRaidHp": "{{tier}}レイド · HP{{hp}}",
+		"bestRaidCounters": "{{raid}}最強対策 · {{name}}",
+		"summaryRaidHp": "{{tier}}{{raid}} · HP{{hp}}",
 		"partyOf": "パーティ{{size}}体",
 		"friendLabel": "{{label}}フレンド",
 		"megaAuraSummary": "メガ{{type}}オーラ",
@@ -137,8 +137,8 @@
 		"clear": "クリア",
 		"bossTier": "ボスティア",
 		"bossTierTitle": "{{tier}} — HP{{hp}}",
-		"bossTierAriaLabel": "{{tier}}レイド",
-		"bossTierHint": "{{tier}}レイド · HP{{hp}}",
+		"bossTierAriaLabel": "{{tier}}{{raid}}",
+		"bossTierHint": "{{tier}}{{raid}} · HP{{hp}}",
 		"weather_field": "天候",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "メガオーラ",

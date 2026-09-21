@@ -24,7 +24,7 @@
 			"tier3": { "full": "Raid Tingkat 3", "short": "Tingkat 3" },
 			"tier1": { "full": "Raid Tingkat 1", "short": "Tingkat 1" }
 		},
-		"shadowPrefix": "Shadow · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Raid lainnya",
 		"nothingScheduled": "Belum ada jadwal.",
 		"nowSlot": "Sekarang"

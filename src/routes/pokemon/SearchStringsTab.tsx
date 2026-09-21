@@ -426,7 +426,7 @@ export const computeSearchString = (
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
-	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
+	const CP = gameTranslator(GameTranslatorKeys.CPSearch, gl);
 
 	let result = translateTypeNames(formId, gl) + shadowSuffix;
 	// Populated tiers render in order as encountered; empty ("find" mode
@@ -491,7 +491,7 @@ export const computeMergedSearchString = (
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
-	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
+	const CP = gameTranslator(GameTranslatorKeys.CPSearch, gl);
 	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 
 	let result = translateTypeNames(formId, gl);
@@ -616,14 +616,14 @@ const Sentence = ({
 
 const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const { t } = useTranslation(['pokemonDetail']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const LEAGUE_FULL = [
-		t('pokemonDetail:leagues.greatFull'),
-		t('pokemonDetail:leagues.ultraFull'),
-		t('pokemonDetail:leagues.masterFull'),
+		gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
+		gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
+		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
 	];
 	const { gamemasterPokemon } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
-	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
 
 	const [top, setTop] = useState(() => {

@@ -43,14 +43,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "Rendimiento en incursión · {{name}}",
-			"selfShadow": "Rendimiento en incursión · {{name}} Sombra",
-			"as": "Rendimiento en incursión · como {{name}}",
-			"asShadow": "Rendimiento en incursión · como {{name}} Sombra"
+			"self": "Rendimiento en {{raid}} · {{name}}",
+			"selfShadow": "Rendimiento en {{raid}} · {{name}} {{shadow}}",
+			"as": "Rendimiento en {{raid}} · como {{name}}",
+			"asShadow": "Rendimiento en {{raid}} · como {{name}} {{shadow}}"
 		},
 		"rank": "Clasificación de {{type}}",
 		"baseAtk": "ATQ base",
-		"notRankedAttacker": "No clasificado como atacante de incursión.",
+		"notRankedAttacker": "No clasificado como atacante de {{raid}}.",
 		"bestMovesetByType": "Mejor combo de movimientos por tipo",
 		"nextMovesetTitle": "Toca para el siguiente combo",
 		"selectTypeTitle": "Toca para seleccionar este tipo",
@@ -60,22 +60,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "Tu percentil de IVs · {{name}}",
-			"selfShadow": "Tu percentil de IVs · {{name}} Sombra",
+			"selfShadow": "Tu percentil de IVs · {{name}} {{shadow}}",
 			"as": "Tu percentil de IVs · como {{name}}",
-			"asShadow": "Tu percentil de IVs · como {{name}} Sombra",
+			"asShadow": "Tu percentil de IVs · como {{name}} {{shadow}}",
 			"purified": "Tu percentil de IVs · como {{name}} Purificado"
 		},
 		"ivRank": "Clasificación de IVs en {{league}}",
 		"perfection": "Perfección",
 		"cp": "PC",
-		"cpAtLevel": "PC al Nv. {{level}}",
+		"cpAtLevel": "{{cp}} al Nv. {{level}}",
 		"bestSpreadFor": "Mejor reparto para {{league}}:",
 		"bestSpreadResult": "→ {{cp}} PC al Nv. {{level}}.",
 		"purifyWarning": "⚠️ Ten en cuenta que purificar te da +2 IVs en cada estadística.",
 		"purifyUnreachableWarning": "⚠️ Ese reparto de rango 1 en sí es inalcanzable purificando — la purificación siempre sube cada estadística a al menos 2, así que un Sombra nunca puede quedar por debajo de eso, sin importar sus propios IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Hundo",
+			"hundo": "15 / 15 / 15",
 			"rank1": "Rango 1 {{league}}"
 		}
 	},
@@ -124,8 +124,8 @@
 		"noData": "Sin datos.",
 		"strongAgainst": "{{name}} es fuerte contra · {{league}}",
 		"weakAgainst": "{{name}} es débil contra · {{league}}",
-		"bestRaidCounters": "Mejores contraataques de incursión · {{name}}",
-		"summaryRaidHp": "Incursión {{tier}} · {{hp}} PS",
+		"bestRaidCounters": "Mejores contraataques de {{raid}} · {{name}}",
+		"summaryRaidHp": "{{raid}} {{tier}} · {{hp}} PS",
 		"partyOf": "Grupo de {{size}}",
 		"friendLabel": "Amigo {{label}}",
 		"megaAuraSummary": "Aura Mega {{type}}",
@@ -135,8 +135,8 @@
 		"clear": "Borrar",
 		"bossTier": "Nivel de jefe",
 		"bossTierTitle": "{{tier}} — {{hp}} PS",
-		"bossTierAriaLabel": "Incursión {{tier}}",
-		"bossTierHint": "Incursión {{tier}} · {{hp}} PS",
+		"bossTierAriaLabel": "{{raid}} {{tier}}",
+		"bossTierHint": "{{raid}} {{tier}} · {{hp}} PS",
 		"weather_field": "Clima",
 		"weatherHint": "×1,2 · {{types}}",
 		"megaAura": "Aura Mega",

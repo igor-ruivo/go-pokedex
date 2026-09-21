@@ -50,10 +50,10 @@
 			"short": "มาสเตอร์"
 		},
 		"raidAttackers": {
-			"full": "ตัวโจมตีเรด",
-			"short": "เรด"
+			"full": "ตัวโจมตี{{raid}}",
+			"short": "{{raid}}"
 		},
-		"saveCp": "บันทึก CP",
+		"saveCp": "บันทึก {{cp}}",
 		"simplifiedMode": "โหมดย่อ",
 		"keep3StarPokemon": "เก็บโปเกมอน 3 ดาว",
 		"ariaKeepTopGreat": "เก็บอันดับต้นลีกเกรท",
@@ -91,11 +91,11 @@
 			"description": "อัลตร้าบีสต์ (Nihilego, Buzzwole, …)"
 		},
 		"megaEvolvable": {
-			"label": "เมก้าอีโวลูชันได้",
+			"label": "{{megaEvolvable}}",
 			"description": "มีแค่เกมที่รู้เรื่องนี้ — ต้องมีเมก้าเอนเนอร์จีสะสมพอสำหรับสปีชีส์นั้นตอนนี้"
 		},
 		"shadow": {
-			"label": "เชโดว์",
+			"label": "{{shadow}}",
 			"description": "โปเกมอนเชโดว์ทุกตัว ไม่ว่า IV หรืออันดับของมันจะเป็นอย่างไร"
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "ล้าง",
 		"remove": "ลบออก",
 		"removeLockedTitle": "ได้รับการปกป้องเพราะเป็น{{reason}} — ปิดตัวสลับด้านบนเพื่อเอาออก",
-		"shadowSuffix": "เชโดว์",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "ยังไม่มีอะไรที่นี่ — ค้นหาด้านบนเพื่อปกป้องโปเกมอนตัวใดตัวหนึ่งเป็นพิเศษ นอกเหนือจากหมวดหมู่ด้านบน",
 		"emptyTrade": "ยังไม่มีอะไรที่นี่ — ค้นหาด้านบนเพื่อกันโปเกมอนตัวใดตัวหนึ่งออกจากคำแนะนำแลกเปลี่ยน นอกเหนือจากหมวดหมู่ด้านบน",
 		"summaryEmpty": "ยังไม่มีโปเกมอนที่ปกป้องเป็นรายตัว",
@@ -158,9 +158,9 @@
 		"topGreat": "ลีกเกรทท็อป {{n}}",
 		"topUltra": "ลีกอัลตร้าท็อป {{n}}",
 		"topMaster": "ลีกมาสเตอร์ท็อป {{n}}",
-		"topRaid": "เรดท็อป {{n}}",
-		"cpKept": "เก็บ CP ≥ {{cp}}",
-		"cpUnder": "CP < {{cp}}",
+		"topRaid": "{{raid}}ท็อป {{n}}",
+		"cpKept": "เก็บ {{cp}} ≥ {{cpValue}}",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "โหมดย่อ",
 		"protectsList": "ปกป้อง {{list}}",
 		"excludesList": "ยกเว้น {{list}}",

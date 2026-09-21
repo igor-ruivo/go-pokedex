@@ -46,9 +46,9 @@
 	"raid": {
 		"performanceHeading": {
 			"self": "Эффективность в рейдах · {{name}}",
-			"selfShadow": "Эффективность в рейдах · Теневой {{name}}",
+			"selfShadow": "Эффективность в рейдах · {{shadow}} {{name}}",
 			"as": "Эффективность в рейдах · как {{name}}",
-			"asShadow": "Эффективность в рейдах · как Теневой {{name}}"
+			"asShadow": "Эффективность в рейдах · как {{shadow}} {{name}}"
 		},
 		"rank": "Рейтинг по типу {{type}}",
 		"baseAtk": "Базовая АТК",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "Процентиль ваших IV · {{name}}",
-			"selfShadow": "Процентиль ваших IV · Теневой {{name}}",
+			"selfShadow": "Процентиль ваших IV · {{shadow}} {{name}}",
 			"as": "Процентиль ваших IV · как {{name}}",
-			"asShadow": "Процентиль ваших IV · как Теневой {{name}}",
+			"asShadow": "Процентиль ваших IV · как {{shadow}} {{name}}",
 			"purified": "Процентиль ваших IV · как Очищенный {{name}}"
 		},
 		"ivRank": "Рейтинг IV в {{league}}",
 		"perfection": "Совершенство",
 		"cp": "CP",
-		"cpAtLevel": "CP на ур. {{level}}",
+		"cpAtLevel": "{{cp}} на ур. {{level}}",
 		"bestSpreadFor": "Лучший набор IV для {{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP на ур. {{level}}.",
 		"purifyWarning": "⚠️ Учтите, что очищение даёт +2 к каждой характеристике IV.",
 		"purifyUnreachableWarning": "⚠️ Этот набор IV 1-го места сам по себе недостижим через очищение — очищение всегда поднимает каждую характеристику минимум до 2, поэтому теневой покемон никогда не может опуститься ниже этого значения, какими бы ни были его собственные IV.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Хандо",
+			"hundo": "15 / 15 / 15",
 			"rank1": "1-е место в {{league}}"
 		}
 	},
@@ -127,7 +127,7 @@
 		"strongAgainst": "{{name}} силён против · {{league}}",
 		"weakAgainst": "{{name}} слаб против · {{league}}",
 		"bestRaidCounters": "Лучшие контрпики для рейда · {{name}}",
-		"summaryRaidHp": "{{tier}} рейд · {{hp}} HP",
+		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} HP",
 		"partyOf": "Команда из {{size}}",
 		"friendLabel": "{{label}} друг",
 		"megaAuraSummary": "Аура Мега-{{type}}",
@@ -137,8 +137,8 @@
 		"clear": "Очистить",
 		"bossTier": "Уровень босса",
 		"bossTierTitle": "{{tier}} — {{hp}} HP",
-		"bossTierAriaLabel": "рейд {{tier}}",
-		"bossTierHint": "{{tier}} рейд · {{hp}} HP",
+		"bossTierAriaLabel": "{{raid}} {{tier}}",
+		"bossTierHint": "{{tier}} {{raid}} · {{hp}} HP",
 		"weather_field": "Погода",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "Мега-аура",

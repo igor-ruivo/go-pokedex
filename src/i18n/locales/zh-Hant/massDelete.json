@@ -50,10 +50,10 @@
 			"short": "大師"
 		},
 		"raidAttackers": {
-			"full": "團體戰攻擊手",
-			"short": "團體戰"
+			"full": "{{raid}}攻擊手",
+			"short": "{{raid}}"
 		},
-		"saveCp": "保留 CP",
+		"saveCp": "保留 {{cp}}",
 		"simplifiedMode": "簡化模式",
 		"keep3StarPokemon": "保留 3 星寶可夢",
 		"ariaKeepTopGreat": "保留超級聯盟前段排名",
@@ -91,11 +91,11 @@
 			"description": "究極異獸（虛吾伊德、爆肌蟲……）。"
 		},
 		"megaEvolvable": {
-			"label": "可 Mega 進化",
+			"label": "{{megaEvolvable}}",
 			"description": "僅遊戲本身知道 — 需要該物種目前累積足夠的 Mega 進化能量。"
 		},
 		"shadow": {
-			"label": "暗影",
+			"label": "{{shadow}}",
 			"description": "所有暗影寶可夢，無論個體值或排名如何。"
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "清除",
 		"remove": "移除",
 		"removeLockedTitle": "因為「{{reason}}」而受保護 — 請先關閉上方對應選項才能移除",
-		"shadowSuffix": "暗影",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "目前尚無項目 — 在上方搜尋以保護特定寶可夢，不受上方分類影響。",
 		"emptyTrade": "目前尚無項目 — 在上方搜尋以讓特定寶可夢不列入交換建議，不受上方分類影響。",
 		"summaryEmpty": "目前沒有個別保護的寶可夢",
@@ -158,9 +158,9 @@
 		"topGreat": "超級聯盟前 {{n}} 名",
 		"topUltra": "高級聯盟前 {{n}} 名",
 		"topMaster": "大師聯盟前 {{n}} 名",
-		"topRaid": "團體戰前 {{n}} 名",
-		"cpKept": "CP ≥ {{cp}} 保留",
-		"cpUnder": "CP < {{cp}}",
+		"topRaid": "{{raid}}前 {{n}} 名",
+		"cpKept": "{{cp}} ≥ {{cpValue}} 保留",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "簡化模式",
 		"protectsList": "保護 {{list}}",
 		"excludesList": "排除 {{list}}",

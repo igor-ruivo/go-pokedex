@@ -50,10 +50,10 @@
 			"short": "마스터"
 		},
 		"raidAttackers": {
-			"full": "레이드 어태커",
-			"short": "레이드"
+			"full": "{{raid}} 어태커",
+			"short": "{{raid}}"
 		},
-		"saveCp": "CP 저장",
+		"saveCp": "{{cp}} 저장",
 		"simplifiedMode": "간소화 모드",
 		"keep3StarPokemon": "★3 포켓몬 보호",
 		"ariaKeepTopGreat": "그레이트 리그 상위 보호",
@@ -91,11 +91,11 @@
 			"description": "울트라비스트(네크로즈마 등)."
 		},
 		"megaEvolvable": {
-			"label": "메가진화 가능",
+			"label": "{{megaEvolvable}}",
 			"description": "게임 정보로만 판단 가능 — 현재 해당 종의 메가에너지가 충분히 모여 있는 경우."
 		},
 		"shadow": {
-			"label": "섀도",
+			"label": "{{shadow}}",
 			"description": "개체값이나 랭크와 무관하게 모든 섀도 포켓몬."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "초기화",
 		"remove": "제거",
 		"removeLockedTitle": "{{reason}}(으)로 보호 중입니다 — 제거하려면 위의 해당 토글을 끄세요",
-		"shadowSuffix": "섀도",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "아직 없습니다 — 위에서 검색해 위 카테고리와 무관하게 특정 포켓몬을 보호하세요.",
 		"emptyTrade": "아직 없습니다 — 위에서 검색해 위 카테고리와 무관하게 특정 포켓몬을 교환 제안에서 제외하세요.",
 		"summaryEmpty": "개별 보호된 포켓몬이 아직 없습니다",
@@ -158,9 +158,9 @@
 		"topGreat": "그레이트 리그 상위 {{n}}",
 		"topUltra": "울트라 리그 상위 {{n}}",
 		"topMaster": "마스터 리그 상위 {{n}}",
-		"topRaid": "레이드 상위 {{n}}",
-		"cpKept": "CP {{cp}} 이상 보호",
-		"cpUnder": "CP {{cp}} 미만",
+		"topRaid": "{{raid}} 상위 {{n}}",
+		"cpKept": "{{cp}} {{cpValue}} 이상 보호",
+		"cpUnder": "{{cp}} {{cpValue}} 미만",
 		"simplifiedModeSuffix": "간소화 모드",
 		"protectsList": "{{list}} 보호",
 		"excludesList": "{{list}} 제외",

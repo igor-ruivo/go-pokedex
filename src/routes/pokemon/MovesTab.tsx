@@ -6,11 +6,11 @@ import { type RaidRecommendation, RaidTypeCoverage } from '../../components/Raid
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
-import { type Arena, buffText, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
+import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
 import { R } from '../../lib/nav';
-import { TYPE_LABEL } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { usePvp } from '../../queries/pvp';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../../utils/GameTranslator';
 
 const EPS = 1e-9;
 
@@ -32,7 +32,7 @@ const MoveRow = ({
 	best?: boolean;
 	recommended?: boolean;
 }) => {
-	const { t } = useTranslation(['pokemonDetail']);
+	const { t } = useTranslation(['pokemonDetail', 'moveDetail']);
 	const { currentGameLanguage } = useLanguage();
 	const { moves } = useMoves();
 	const m = moves[moveId];
@@ -44,23 +44,23 @@ const MoveRow = ({
 	const cd = arena === 'pve' ? m.pveCooldown : m.pvpCooldown;
 
 	const base: Array<[string, string | number]> = [
-		['DMG', pow],
-		['NRG', kind === 'fast' ? `+${nrg}` : nrg],
+		[t('moveDetail:statLabels.dmg'), pow],
+		[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : nrg],
 		...(arena === 'pve'
-			? ([['DUR', `${cd}s`]] as Array<[string, string | number]>)
+			? ([[t('moveDetail:statLabels.dur'), `${cd}s`]] as Array<[string, string | number]>)
 			: kind === 'fast'
-				? ([['TURNS', fastMoveTurns(m)]] as Array<[string, string | number]>)
+				? ([[t('moveDetail:statLabels.turns'), fastMoveTurns(m)]] as Array<[string, string | number]>)
 				: []),
 	];
 	const derived: Array<[string, string | number]> =
 		kind === 'fast'
 			? [
-					['DPS', moveDPS(m, arena, pokemon).toFixed(1)],
-					['EPS', moveEPS(m, arena).toFixed(1)],
+					[t('moveDetail:statLabels.dps'), moveDPS(m, arena, pokemon).toFixed(1)],
+					[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)],
 				]
-			: [['DPE', moveDPE(m, arena, pokemon).toFixed(2)]];
+			: [[t('moveDetail:statLabels.dpe'), moveDPE(m, arena, pokemon).toFixed(2)]];
 	// stat-stage buffs are a PvP-only mechanic
-	const fx = arena === 'pvp' && kind === 'charged' ? buffText(m.buffs) : null;
+	const fx = arena === 'pvp' && kind === 'charged' ? buffInfo(m.buffs, currentGameLanguage) : null;
 
 	return (
 		<Link
@@ -70,7 +70,7 @@ const MoveRow = ({
 			style={{ ['--tc' as string]: `var(--t-${type})` }}
 		>
 			<div className='r-move-head'>
-				<span className='r-move-type'>{TYPE_LABEL[type] ?? m.type}</span>
+				<span className='r-move-type'>{gameTypeDisplayTranslator(type, currentGameLanguage) || m.type}</span>
 				<b>{m.moveName[currentGameLanguage] ?? cleanName(moveId)}</b>
 				{recommended && <i className='r-move-tag r-move-tag--rec'>{t('pokemonDetail:moves.recommended')}</i>}
 				{tags.map((t) => (
@@ -95,7 +95,19 @@ const MoveRow = ({
 					))}
 				</div>
 			</div>
-			{fx && <p className='r-move-buff'>{fx}</p>}
+			{fx && (
+				<p className='r-move-buff'>
+					{fx.badges.map((b, i) => (
+						<span key={i}>
+							{i > 0 && ' · '}
+							{b.label}
+							{b.magnitude > 1 ? ` ×${b.magnitude}` : ''}
+						</span>
+					))}
+					{' — '}
+					{fx.chanceLabel}: {fx.chancePercent}%
+				</p>
+			)}
 		</Link>
 	);
 };
@@ -106,11 +118,13 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { currentGameLanguage } = useLanguage();
 
+	// League names track the player's in-game language (`GameLanguage`), not
+	// the website UI's — same reasoning as every other GameTranslator use.
 	const LEAGUE_LABEL = [
-		t('pokemonDetail:leagues.greatFull'),
-		t('pokemonDetail:leagues.ultraFull'),
-		t('pokemonDetail:leagues.masterFull'),
-		t('pokemonDetail:leagues.raidsFull'),
+		gameTranslator(GameTranslatorKeys.GreatLeagueLong, currentGameLanguage),
+		gameTranslator(GameTranslatorKeys.UltraLeagueLong, currentGameLanguage),
+		gameTranslator(GameTranslatorKeys.MasterLeagueLong, currentGameLanguage),
+		gameTranslator(GameTranslatorKeys.RaidDisplay, currentGameLanguage),
 	];
 
 	const isRaid = league === 3;
@@ -187,7 +201,7 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 				<>
 					<div className='r-section-h'>
 						{t('pokemonDetail:moves.bestMoveset', {
-							league: LEAGUE_LABEL[league] ?? t('pokemonDetail:moves.defaultLeague'),
+							league: LEAGUE_LABEL[league],
 						})}
 					</div>
 					{hasBest ? (
@@ -201,7 +215,7 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 						<p className='r-moves-unranked'>
 							{t('pokemonDetail:moves.unrankedForLeague', {
 								name: cleanName(pokemon.speciesName),
-								league: LEAGUE_LABEL[league] ?? t('pokemonDetail:moves.defaultLeagueSelected'),
+								league: LEAGUE_LABEL[league],
 							})}
 						</p>
 					)}
@@ -211,7 +225,9 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 			<div className='r-section-h r-section-h--big'>
 				{t('pokemonDetail:moves.allMovesCanLearn', { name: cleanName(pokemon.speciesName) })}
 			</div>
-			<div className='r-section-h'>{t('pokemonDetail:moves.fastMoves')}</div>
+			<div className='r-section-h'>
+				{gameTranslator(GameTranslatorKeys.FastAttackHeaderPlural, currentGameLanguage)}
+			</div>
 			<div className='r-movelist r-movelist--scroll'>
 				{fastSorted.map((id) => (
 					<MoveRow
@@ -226,7 +242,9 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 				))}
 			</div>
 
-			<div className='r-section-h'>{t('pokemonDetail:moves.chargedMoves')}</div>
+			<div className='r-section-h'>
+				{gameTranslator(GameTranslatorKeys.ChargedAttackHeaderPlural, currentGameLanguage)}
+			</div>
 			<div className='r-movelist r-movelist--scroll'>
 				{chargedSorted.map((id) => (
 					<MoveRow

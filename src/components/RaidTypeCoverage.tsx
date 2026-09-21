@@ -9,10 +9,10 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { cleanName, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
 import { raidRankOf } from '../lib/raid-metric';
-import { TYPE_LABEL } from '../lib/types';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import { computeDPSEntry } from '../utils/pokemon-helper';
 
 type Combo = { f: string; c: string; dps: number };
@@ -118,7 +118,11 @@ export const RaidTypeCoverage = ({
 		);
 	}
 	if (types.length === 0) {
-		return <p className='r-muted'>{t('components:raidTypeCoverage.notRanked')}</p>;
+		return (
+			<p className='r-muted'>
+				{t('components:raidTypeCoverage.notRanked', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}
+			</p>
+		);
 	}
 
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
@@ -128,7 +132,7 @@ export const RaidTypeCoverage = ({
 		legacy.has(id)
 			? t('components:raidTypeCoverage.legacy')
 			: elite.has(id)
-				? t('components:raidTypeCoverage.elite')
+				? gameTranslator(moves[id]?.isFast ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm, gl)
 				: null;
 	const cycleCombo = (type: string, len: number) =>
 		setComboIdx((c) => ({ ...c, [type]: len ? ((c[type] ?? 0) + 1) % len : 0 }));
@@ -145,7 +149,11 @@ export const RaidTypeCoverage = ({
 			{showReadout && selRow && (
 				<div className='r-readout'>
 					<div>
-						<i>{t('components:raidTypeCoverage.typeRank', { type: TYPE_LABEL[selRow.t] ?? selRow.t })}</i>
+						<i>
+							{t('components:raidTypeCoverage.typeRank', {
+								type: gameTypeDisplayTranslator(selRow.t, gl) || selRow.t,
+							})}
+						</i>
 						<b className='hi'>{ordinal(raidRankOf(selRow.e, raidMetric) ?? 0)}</b>
 					</div>
 					<div>
@@ -186,7 +194,7 @@ export const RaidTypeCoverage = ({
 							}}
 						>
 							<span className='r-raidtype-head'>
-								<span className='r-move-type'>{TYPE_LABEL[typeKey] ?? typeKey}</span>
+								<span className='r-move-type'>{gameTypeDisplayTranslator(typeKey, gl) || typeKey}</span>
 								<b>{ordinal(raidRankOf(e, raidMetric) ?? 0)}</b>
 								<em>{(combo?.dps ?? e.dps).toFixed(1)} DPS</em>
 							</span>

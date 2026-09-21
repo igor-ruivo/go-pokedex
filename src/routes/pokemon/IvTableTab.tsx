@@ -2,9 +2,11 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName, dec1, statProdPercentile } from '../../lib/format';
+import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 
 const CAP = [1500, 2500, Number.MAX_VALUE] as const;
 const ROW_H = 44;
@@ -19,10 +21,11 @@ const clamp15 = (s: string) => {
 
 const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const { t } = useTranslation(['pokemonDetail']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const LEAGUE_FULL = [
-		t('pokemonDetail:leagues.greatFull'),
-		t('pokemonDetail:leagues.ultraFull'),
-		t('pokemonDetail:leagues.masterFull'),
+		gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
+		gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
+		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
 	];
 	const FIELD_LABEL = [
 		t('pokemonDetail:hero.stats.atk'),
@@ -176,7 +179,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 							</span>
 						</span>
 						<span className='r-ivt-found-meta'>
-							{match.CP} {t('pokemonDetail:hero.cp')} · L{match.L} · {dec1(pctOf(match))}%
+							{match.CP} {gameTranslator(GameTranslatorKeys.CPDisplay, gl)} · L{match.L} · {dec1(pctOf(match))}%
 						</span>
 					</div>
 				) : (
@@ -193,7 +196,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 						t('pokemonDetail:ivTable.columns.stats'),
 						t('pokemonDetail:ivTable.columns.percent'),
 						'',
-						t('pokemonDetail:ivTable.columns.cp'),
+						gameTranslator(GameTranslatorKeys.CPDisplay, gl),
 						t('pokemonDetail:ivTable.columns.level'),
 					].map((label, c) => (
 						<span

@@ -18,7 +18,7 @@
 		"defense": "DEFENSA",
 		"hp": "PS",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "Hundo"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "Disminuir",
@@ -36,7 +36,7 @@
 		"charged": "Cargado"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "No clasificado como atacante de incursión.",
+		"notRanked": "No clasificado como atacante de {{raid}}.",
 		"bestMovesetByType": "Mejor combo de movimientos por tipo",
 		"tapNextMoveset": "Toca para el siguiente combo",
 		"tapSelectType": "Toca para seleccionar este tipo",

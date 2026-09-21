@@ -18,7 +18,7 @@
 		"defense": "ぼうぎょ",
 		"hp": "HP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "完全個体"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "減らす",
@@ -36,7 +36,7 @@
 		"charged": "ゲージわざ"
 	},
 	"raidTypeCoverage": {
-		"notRanked": "レイドアタッカーとしてランク外です。",
+		"notRanked": "{{raid}}アタッカーとしてランク外です。",
 		"bestMovesetByType": "タイプ別ベストわざ構成",
 		"tapNextMoveset": "タップで次のわざ構成へ",
 		"tapSelectType": "タップしてこのタイプを選択",

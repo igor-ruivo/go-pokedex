@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "Prestazioni nei raid · {{name}}",
-			"selfShadow": "Prestazioni nei raid · {{name}} Ombra",
-			"as": "Prestazioni nei raid · come {{name}}",
-			"asShadow": "Prestazioni nei raid · come {{name}} Ombra"
+			"self": "Prestazioni nei {{raid}} · {{name}}",
+			"selfShadow": "Prestazioni nei {{raid}} · {{name}} {{shadow}}",
+			"as": "Prestazioni nei {{raid}} · come {{name}}",
+			"asShadow": "Prestazioni nei {{raid}} · come {{name}} {{shadow}}"
 		},
 		"rank": "Rango {{type}}",
 		"baseAtk": "ATT base",
-		"notRankedAttacker": "Non classificato come attaccante da raid.",
+		"notRankedAttacker": "Non classificato come attaccante da {{raid}}.",
 		"bestMovesetByType": "Miglior set di mosse per tipo",
 		"nextMovesetTitle": "Tocca per il set di mosse successivo",
 		"selectTypeTitle": "Tocca per selezionare questo tipo",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "Il tuo percentile IV · {{name}}",
-			"selfShadow": "Il tuo percentile IV · {{name}} Ombra",
+			"selfShadow": "Il tuo percentile IV · {{name}} {{shadow}}",
 			"as": "Il tuo percentile IV · come {{name}}",
-			"asShadow": "Il tuo percentile IV · come {{name}} Ombra",
+			"asShadow": "Il tuo percentile IV · come {{name}} {{shadow}}",
 			"purified": "Il tuo percentile IV · come {{name}} Purificato"
 		},
 		"ivRank": "Rango IV {{league}}",
 		"perfection": "Perfezione",
 		"cp": "PL",
-		"cpAtLevel": "PL al Liv. {{level}}",
+		"cpAtLevel": "{{cp}} al Liv. {{level}}",
 		"bestSpreadFor": "Migliore distribuzione per {{league}}:",
 		"bestSpreadResult": "→ {{cp}} PL al Liv. {{level}}.",
 		"purifyWarning": "⚠️ Tieni presente che la purificazione dà +2 IV su ogni statistica.",
 		"purifyUnreachableWarning": "⚠️ Quella distribuzione di rango 1 non è raggiungibile con la purificazione — la purificazione porta sempre ogni statistica ad almeno 2, quindi un Pokémon Ombra non può mai scendere sotto quel valore, indipendentemente dai suoi IV.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Hundo",
+			"hundo": "15 / 15 / 15",
 			"rank1": "Rango 1 {{league}}"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "Nessun dato.",
 		"strongAgainst": "{{name}} è forte contro · {{league}}",
 		"weakAgainst": "{{name}} è debole contro · {{league}}",
-		"bestRaidCounters": "Migliori contatori da raid · {{name}}",
-		"summaryRaidHp": "Raid {{tier}} · {{hp}} PS",
+		"bestRaidCounters": "Migliori contatori da {{raid}} · {{name}}",
+		"summaryRaidHp": "{{raid}} {{tier}} · {{hp}} PS",
 		"partyOf": "Squadra da {{size}}",
 		"friendLabel": "Amico {{label}}",
 		"megaAuraSummary": "Aura Mega {{type}}",
@@ -137,8 +137,8 @@
 		"clear": "Azzera",
 		"bossTier": "Livello del boss",
 		"bossTierTitle": "{{tier}} — {{hp}} PS",
-		"bossTierAriaLabel": "Raid {{tier}}",
-		"bossTierHint": "Raid {{tier}} · {{hp}} PS",
+		"bossTierAriaLabel": "{{raid}} {{tier}}",
+		"bossTierHint": "{{raid}} {{tier}} · {{hp}} PS",
 		"weather_field": "Meteo",
 		"weatherHint": "×1,2 · {{types}}",
 		"megaAura": "Aura Mega",

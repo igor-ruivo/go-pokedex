@@ -49,23 +49,7 @@ export const TYPE_KEYS: ReadonlyArray<string> = [
  *  filterable there. */
 export const RAID_TYPE_KEYS: ReadonlyArray<string> = TYPE_KEYS.filter((t) => t !== 'normal');
 
-export const TYPE_LABEL: Record<string, string> = {
-	normal: 'Normal',
-	fire: 'Fire',
-	water: 'Water',
-	electric: 'Electric',
-	grass: 'Grass',
-	ice: 'Ice',
-	fighting: 'Fighting',
-	poison: 'Poison',
-	ground: 'Ground',
-	flying: 'Flying',
-	psychic: 'Psychic',
-	bug: 'Bug',
-	rock: 'Rock',
-	ghost: 'Ghost',
-	dragon: 'Dragon',
-	dark: 'Dark',
-	steel: 'Steel',
-	fairy: 'Fairy',
-};
+// No `TYPE_LABEL` here any more — a type's display name is Pokémon GO's own,
+// per the player's in-game language (`GameLanguage`), not a hardcoded
+// English/website-locale string. Use `gameTypeDisplayTranslator(type, gl)`
+// from `utils/GameTranslator.ts` instead, with `gl` from `useLanguage()`.

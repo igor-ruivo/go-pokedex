@@ -50,10 +50,10 @@
 			"short": "Mestra"
 		},
 		"raidAttackers": {
-			"full": "Atacantes de Reide",
-			"short": "Reide"
+			"full": "Atacantes de {{raid}}",
+			"short": "{{raid}}"
 		},
-		"saveCp": "Manter CP",
+		"saveCp": "Manter {{cp}}",
 		"simplifiedMode": "Modo simplificado",
 		"keep3StarPokemon": "Manter Pokémon 3*",
 		"ariaKeepTopGreat": "Manter os melhores da Liga Grande",
@@ -91,11 +91,11 @@
 			"description": "Ultra Bestas (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
-			"label": "Mega-evoluível",
+			"label": "{{megaEvolvable}}",
 			"description": "Só o jogo sabe isto — é necessário ter Mega Energia suficiente acumulada para essa espécie neste momento."
 		},
 		"shadow": {
-			"label": "Sombra",
+			"label": "{{shadow}}",
 			"description": "Todos os Pokémon Sombra, independentemente dos seus IVs ou rank."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Limpar",
 		"remove": "Remover",
 		"removeLockedTitle": "Protegido porque é {{reason}} — desative essa opção acima para o remover",
-		"shadowSuffix": "Sombra",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Ainda nada aqui — pesquise acima para proteger um Pokémon específico, independentemente das categorias acima.",
 		"emptyTrade": "Ainda nada aqui — pesquise acima para manter um Pokémon específico fora das sugestões de troca, independentemente das categorias acima.",
 		"summaryEmpty": "Ainda nenhum Pokémon protegido individualmente",
@@ -158,9 +158,9 @@
 		"topGreat": "Top {{n}} da Liga Grande",
 		"topUltra": "Top {{n}} da Liga Ultra",
 		"topMaster": "Top {{n}} da Liga Mestra",
-		"topRaid": "Top {{n}} de Reide",
-		"cpKept": "CP ≥ {{cp}} mantido",
-		"cpUnder": "CP < {{cp}}",
+		"topRaid": "Top {{n}} de {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} mantido",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Modo simplificado",
 		"protectsList": "protege {{list}}",
 		"excludesList": "exclui {{list}}",

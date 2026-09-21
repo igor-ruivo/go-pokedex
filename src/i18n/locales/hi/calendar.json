@@ -24,7 +24,7 @@
 			"tier3": { "full": "टियर 3 रेड", "short": "टियर 3" },
 			"tier1": { "full": "टियर 1 रेड", "short": "टियर 1" }
 		},
-		"shadowPrefix": "शैडो · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "अन्य रेड",
 		"nothingScheduled": "कुछ भी शेड्यूल नहीं है।",
 		"nowSlot": "अभी"

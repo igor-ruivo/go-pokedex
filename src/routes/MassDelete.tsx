@@ -169,7 +169,7 @@ export const DEFAULT_PROTECTION: ProtectionFlags = {
  *  reasoning as Shell.tsx's NAV array. */
 const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 	key: keyof ProtectionFlags;
-	translate: (t: TFunction) => { label: string; description: string };
+	translate: (t: TFunction, gl: GameLanguage) => { label: string; description: string };
 }> = [
 	{
 		key: 'favorite',
@@ -208,15 +208,17 @@ const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 	},
 	{
 		key: 'megaEvolvable',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.megaEvolvable.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.megaEvolvable.label', {
+				megaEvolvable: gameTranslator(GameTranslatorKeys.MegaEvolvableDisplay, gl),
+			}),
 			description: t('massDelete:protectionMeta.megaEvolvable.description'),
 		}),
 	},
 	{
 		key: 'shadow',
-		translate: (t) => ({
-			label: t('massDelete:protectionMeta.shadow.label'),
+		translate: (t, gl) => ({
+			label: t('massDelete:protectionMeta.shadow.label', { shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) }),
 			description: t('massDelete:protectionMeta.shadow.description'),
 		}),
 	},
@@ -566,7 +568,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 
 	newStr = translateTypeNames(newStr, gl);
 
-	newStr += `&!4*${shadowPurifyHundoGuard(gl)}&!${gameTranslator(GameTranslatorKeys.CP, gl)}${cp}-`;
+	newStr += `&!4*${shadowPurifyHundoGuard(gl)}&!${gameTranslator(GameTranslatorKeys.CPSearch, gl)}${cp}-`;
 	if (protect.tagged) newStr += '&!#';
 	if (protect.favorite) newStr += `&!${gameTranslator(GameTranslatorKeys.Favorite, gl)}`;
 	if (protect.megaEvolvable) newStr += `&!${gameTranslator(GameTranslatorKeys.MegaEvolve, gl)}`;
@@ -647,7 +649,7 @@ export const computeBadIvString = (
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
-	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
+	const CP = gameTranslator(GameTranslatorKeys.CPSearch, gl);
 
 	// Shadow forms mirror their non-shadow counterpart's stats exactly — CP
 	// depends only on base stats, and shadow doesn't change those — so this
@@ -812,7 +814,7 @@ export const computeTradeableString = (
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
 	const S = gameTranslator(GameTranslatorKeys.HPSearch, gl);
-	const CP = gameTranslator(GameTranslatorKeys.CP, gl);
+	const CP = gameTranslator(GameTranslatorKeys.CPSearch, gl);
 	const shadow = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 	const mythical = gameTranslator(GameTranslatorKeys.Mythical, gl);
 
@@ -1048,6 +1050,7 @@ const WhitelistSearch = ({
 	placeholder: string;
 }) => {
 	const { t } = useTranslation(['massDelete']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
 	const [q, setQ] = useState('');
 	const [open, setOpen] = useState(false);
@@ -1126,7 +1129,12 @@ const WhitelistSearch = ({
 								</span>
 								<span className='r-search-name'>
 									{cleanName(p.speciesName)}
-									{p.isShadow && <em className='r-search-shadow'> · {t('massDelete:whitelist.shadowSuffix')}</em>}
+									{p.isShadow && (
+										<em className='r-search-shadow'>
+											{' '}
+											· {t('massDelete:whitelist.shadowSuffix', { shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) })}
+										</em>
+									)}
 								</span>
 								<span className='r-search-dex'>{dexNo(p.dex)}</span>
 							</button>
@@ -1336,10 +1344,14 @@ const MassDelete = () => {
 				if (protect.legendary && p.isLegendary) map.set(p.speciesId, t('massDelete:protectionMeta.legendary.label'));
 				else if (mythicalProtected && p.isMythical) map.set(p.speciesId, t('massDelete:protectionMeta.mythical.label'));
 				else if (protect.ultraBeast && p.isBeast) map.set(p.speciesId, t('massDelete:protectionMeta.ultraBeast.label'));
-				else if (shadowProtected && p.isShadow) map.set(p.speciesId, t('massDelete:protectionMeta.shadow.label'));
+				else if (shadowProtected && p.isShadow)
+					map.set(
+						p.speciesId,
+						t('massDelete:protectionMeta.shadow.label', { shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) })
+					);
 			});
 		return map;
-	}, [gamemasterPokemon, protect.legendary, protect.mythical, protect.ultraBeast, protect.shadow, isTrade, t]);
+	}, [gamemasterPokemon, protect.legendary, protect.mythical, protect.ultraBeast, protect.shadow, isTrade, t, gl]);
 
 	// Two separate, separately-sorted groups (see `byDexFormShadow`) rather than
 	// one merged list —
@@ -1694,8 +1706,8 @@ const MassDelete = () => {
 	// with what the chips themselves show, or it'd read as if they weren't
 	// being protected at all.
 	const protectionMeta = useMemo(
-		() => PROTECTION_META_TRANSLATORS.map(({ key, translate }) => ({ key, ...translate(t) })),
-		[t]
+		() => PROTECTION_META_TRANSLATORS.map(({ key, translate }) => ({ key, ...translate(t, gl) })),
+		[t, gl]
 	);
 
 	const protectionSummary = protectionMeta
@@ -1707,19 +1719,19 @@ const MassDelete = () => {
 		t('massDelete:panelSummary.topGreat', { n: trashGreat }),
 		t('massDelete:panelSummary.topUltra', { n: trashUltra }),
 		t('massDelete:panelSummary.topMaster', { n: trashMaster }),
-		t('massDelete:panelSummary.topRaid', { n: trashRaid }),
+		t('massDelete:panelSummary.topRaid', { n: trashRaid, raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
 	].join(' · ');
 	const tradeTopSummary = [
 		t('massDelete:panelSummary.topGreat', { n: trashGreat }),
 		t('massDelete:panelSummary.topUltra', { n: trashUltra }),
 		t('massDelete:panelSummary.topMaster', { n: trashMaster }),
-		t('massDelete:panelSummary.topRaid', { n: trashRaid }),
+		t('massDelete:panelSummary.topRaid', { n: trashRaid, raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) }),
 	].join(' · ');
 	const panelSummary = isBadIv
-		? `${t('massDelete:panelSummary.cpKept', { cp: cp.toLocaleString() })}${simplifiedBadIv ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`
+		? `${t('massDelete:panelSummary.cpKept', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}${simplifiedBadIv ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`
 		: isTrade
-			? `${tradeTopSummary}${tradeOnlyLowIv ? ` · ${t('massDelete:panelSummary.onlyClearlyLowIvs')}` : ''} · ${t('massDelete:panelSummary.cpUnder', { cp: cp.toLocaleString() })} · ${t('massDelete:panelSummary.excludesList', { list: protectionSummary || nothingExtra })}`
-			: `${keepTopSummary} · ${t('massDelete:panelSummary.cpKept', { cp: cp.toLocaleString() })}${simplifiedTrash ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`;
+			? `${tradeTopSummary}${tradeOnlyLowIv ? ` · ${t('massDelete:panelSummary.onlyClearlyLowIvs')}` : ''} · ${t('massDelete:panelSummary.cpUnder', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })} · ${t('massDelete:panelSummary.excludesList', { list: protectionSummary || nothingExtra })}`
+			: `${keepTopSummary} · ${t('massDelete:panelSummary.cpKept', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}${simplifiedTrash ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`;
 
 	const whitelistSummary =
 		whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0
@@ -1850,8 +1862,8 @@ const MassDelete = () => {
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/great.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.greatLeague.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.greatLeague.short')}</i>
+											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
+											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopGreat')}
@@ -1863,8 +1875,8 @@ const MassDelete = () => {
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/ultra.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.ultraLeague.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.ultraLeague.short')}</i>
+											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
+											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopUltra')}
@@ -1876,8 +1888,8 @@ const MassDelete = () => {
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.masterLeague.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.masterLeague.short')}</i>
+											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
+											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopMaster')}
@@ -1889,8 +1901,8 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid')}
@@ -1903,10 +1915,10 @@ const MassDelete = () => {
 								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
 								<div className='r-md-row-2'>
 									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.saveCp')}</span>
+										<span>{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}</span>
 										<select
 											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp')}
+											aria-label={t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -1920,8 +1932,8 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-cp'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid')}
@@ -1953,10 +1965,10 @@ const MassDelete = () => {
 								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:badIvKnobsSubtitle')}</p>
 								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
 									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.saveCp')}</span>
+										<span>{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}</span>
 										<select
 											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp')}
+											aria-label={t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -1992,8 +2004,8 @@ const MassDelete = () => {
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/great.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.greatLeague.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.greatLeague.short')}</i>
+											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
+											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopGreat')}
@@ -2005,8 +2017,8 @@ const MassDelete = () => {
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/ultra.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.ultraLeague.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.ultraLeague.short')}</i>
+											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
+											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopUltra')}
@@ -2018,8 +2030,8 @@ const MassDelete = () => {
 									<div className='r-md-knob'>
 										<span>
 											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.masterLeague.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.masterLeague.short')}</i>
+											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
+											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopMaster')}
@@ -2031,8 +2043,8 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-inline'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid')}
@@ -2045,10 +2057,10 @@ const MassDelete = () => {
 								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
 								<div className='r-md-row-2'>
 									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.saveCp')}</span>
+										<span>{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}</span>
 										<select
 											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp')}
+											aria-label={t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
 											value={cp}
 											onChange={(e) => setCp(+e.target.value)}
 										>
@@ -2062,8 +2074,8 @@ const MassDelete = () => {
 									<div className='r-md-knob r-md-raid-cp'>
 										<span>
 											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full')}</i>
-											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short')}</i>
+											<i className='r-md-knob-full'>{t('massDelete:knobs.raidAttackers.full', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
+											<i className='r-md-knob-short'>{t('massDelete:knobs.raidAttackers.short', { raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl) })}</i>
 										</span>
 										<NumSelect
 											label={t('massDelete:knobs.ariaKeepTopRaid')}

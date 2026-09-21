@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 
 import { useImageSource } from '../contexts/imageSource-context';
+import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
 import { typeKey, typeVar } from '../lib/types';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ShadowMark } from './ShadowMark';
 import { handleSpriteError, spriteUrl } from './Sprite';
 
@@ -31,6 +33,7 @@ export const PokeCard = ({
 	league?: string | undefined;
 }) => {
 	const { imageSource } = useImageSource();
+	const { currentGameLanguage: gl } = useLanguage();
 	return (
 		<Link
 			to={league ? `${R.pokemon(pokemon.speciesId)}?lg=${league}` : R.pokemon(pokemon.speciesId)}
@@ -63,7 +66,7 @@ export const PokeCard = ({
 			<b className='r-pc-name'>{cleanName(pokemon.speciesName)}</b>
 			{metric?.cp != null && (
 				<span className='r-pc-metric'>
-					{metric.cp.toLocaleString()} <em>CP</em>
+					{metric.cp.toLocaleString()} <em>{gameTranslator(GameTranslatorKeys.CPDisplay, gl)}</em>
 				</span>
 			)}
 			{metric?.score != null && (

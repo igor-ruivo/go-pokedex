@@ -24,7 +24,7 @@
 			"tier3": { "full": "เรดระดับ 3", "short": "ระดับ 3" },
 			"tier1": { "full": "เรดระดับ 1", "short": "ระดับ 1" }
 		},
-		"shadowPrefix": "เชโดว์ · {{tier}}",
+		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "เรดอื่น ๆ",
 		"nothingScheduled": "ยังไม่มีกำหนดการ",
 		"nowSlot": "ตอนนี้"

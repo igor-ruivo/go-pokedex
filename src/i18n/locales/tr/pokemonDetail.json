@@ -46,13 +46,13 @@
 	"raid": {
 		"performanceHeading": {
 			"self": "Baskın performansı · {{name}}",
-			"selfShadow": "Baskın performansı · Gölge {{name}}",
+			"selfShadow": "Baskın performansı · {{shadow}} {{name}}",
 			"as": "Baskın performansı · {{name}} olarak",
-			"asShadow": "Baskın performansı · Gölge {{name}} olarak"
+			"asShadow": "Baskın performansı · {{shadow}} {{name}} olarak"
 		},
 		"rank": "{{type}} sıralaması",
 		"baseAtk": "Temel SLD",
-		"notRankedAttacker": "Baskın saldırganı olarak sıralanmadı.",
+		"notRankedAttacker": "{{raid}} saldırganı olarak sıralanmadı.",
 		"bestMovesetByType": "Türe göre en iyi hareket seti",
 		"nextMovesetTitle": "Sonraki hareket seti için dokunun",
 		"selectTypeTitle": "Bu türü seçmek için dokunun",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "IV Yüzdelik Diliminiz · {{name}}",
-			"selfShadow": "IV Yüzdelik Diliminiz · Gölge {{name}}",
+			"selfShadow": "IV Yüzdelik Diliminiz · {{shadow}} {{name}}",
 			"as": "IV Yüzdelik Diliminiz · {{name}} olarak",
-			"asShadow": "IV Yüzdelik Diliminiz · Gölge {{name}} olarak",
+			"asShadow": "IV Yüzdelik Diliminiz · {{shadow}} {{name}} olarak",
 			"purified": "IV Yüzdelik Diliminiz · Saflaştırılmış {{name}} olarak"
 		},
 		"ivRank": "{{league}} IV sıralaması",
 		"perfection": "Mükemmellik",
 		"cp": "CP",
-		"cpAtLevel": "Sv{{level}}'de CP",
+		"cpAtLevel": "Sv{{level}}'de {{cp}}",
 		"bestSpreadFor": "{{league}} için en iyi dağılım:",
 		"bestSpreadResult": "→ Sv{{level}}'de {{cp}} CP.",
 		"purifyWarning": "⚠️ Saflaştırmanın her istatistikte +2 IV kazandırdığını unutmayın.",
 		"purifyUnreachableWarning": "⚠️ O 1. sıradaki dağılımın kendisi saflaştırma yoluyla ulaşılamaz — saflaştırma her istatistiği her zaman en az 2'ye çıkarır, bu yüzden bir Gölge kendi IV'lerine bakılmaksızın asla bunun altına düşemez.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Hundo",
+			"hundo": "15 / 15 / 15",
 			"rank1": "{{league}} 1. Sıra"
 		}
 	},
@@ -127,7 +127,7 @@
 		"strongAgainst": "{{name}} şunlara karşı güçlü · {{league}}",
 		"weakAgainst": "{{name}} şunlara karşı zayıf · {{league}}",
 		"bestRaidCounters": "En iyi baskın karşı hamleleri · {{name}}",
-		"summaryRaidHp": "{{tier}} Baskın · {{hp}} HP",
+		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} HP",
 		"partyOf": "{{size}} kişilik takım",
 		"friendLabel": "{{label}} Arkadaş",
 		"megaAuraSummary": "Mega {{type}} auraSı",
@@ -138,7 +138,7 @@
 		"bossTier": "Patron seviyesi",
 		"bossTierTitle": "{{tier}} — {{hp}} HP",
 		"bossTierAriaLabel": "{{tier}} baskını",
-		"bossTierHint": "{{tier}} Baskın · {{hp}} HP",
+		"bossTierHint": "{{tier}} {{raid}} · {{hp}} HP",
 		"weather_field": "Hava Durumu",
 		"weatherHint": "×1,2 · {{types}}",
 		"megaAura": "Mega aurası",

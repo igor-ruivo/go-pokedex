@@ -14,10 +14,11 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
 import { R } from '../../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_BLURB, RAID_METRIC_SORTS, type RaidMetric } from '../../lib/raid-metric';
-import { TYPE_KEYS, TYPE_LABEL, typeVar } from '../../lib/types';
+import { TYPE_KEYS, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
+import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../../utils/GameTranslator';
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../../utils/persistent-configs-handler';
 import {
 	guessRaidTier,
@@ -79,50 +80,58 @@ const MEGA_LEVEL_ORDER: ReadonlyArray<MegaLevel> = [1, 2, 3, 4];
 
 const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
 	const { t } = useTranslation(['pokemonDetail']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const LEAGUE_FULL = [
-		t('pokemonDetail:leagues.greatFull'),
-		t('pokemonDetail:leagues.ultraFull'),
-		t('pokemonDetail:leagues.masterFull'),
-		t('pokemonDetail:leagues.raidsFull'),
+		gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
+		gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
+		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
+		gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
 	];
 	const TIER_LABEL: Record<RaidTier, string> = {
 		T1: t('pokemonDetail:counters.tierLabel.t1'),
 		T3: t('pokemonDetail:counters.tierLabel.t3'),
 		MEGA: t('pokemonDetail:counters.tierLabel.mega'),
 		T5: t('pokemonDetail:counters.tierLabel.t5'),
-		ELITE: t('pokemonDetail:counters.tierLabel.elite'),
+		ELITE: gameTranslator(GameTranslatorKeys.EliteRaidTier, gl),
 		LEGENDARY_MEGA: t('pokemonDetail:counters.tierLabel.legendaryMega'),
 		PRIMAL: t('pokemonDetail:counters.tierLabel.primal'),
 		SUPER_MEGA: t('pokemonDetail:counters.tierLabel.superMega'),
 	};
+	// Weather/Friendship/Mega Level track the player's in-game language where
+	// a data-mined source exists. "None"/"Forever"/"Super Max" have no
+	// data-mined equivalent (Forever Friend and Super Mega are recent
+	// additions PokeMiners hasn't dumped yet) — those three stay on the
+	// website's own i18next translation rather than guessing.
 	const WEATHER = [
 		{ ...WEATHER_META[0], label: t('pokemonDetail:counters.weather.none') },
-		{ ...WEATHER_META[1], label: t('pokemonDetail:counters.weather.sunny') },
-		{ ...WEATHER_META[2], label: t('pokemonDetail:counters.weather.rainy') },
-		{ ...WEATHER_META[3], label: t('pokemonDetail:counters.weather.partlyCloudy') },
-		{ ...WEATHER_META[4], label: t('pokemonDetail:counters.weather.cloudy') },
-		{ ...WEATHER_META[5], label: t('pokemonDetail:counters.weather.windy') },
-		{ ...WEATHER_META[6], label: t('pokemonDetail:counters.weather.snow') },
-		{ ...WEATHER_META[7], label: t('pokemonDetail:counters.weather.fog') },
+		{
+			...WEATHER_META[1],
+			label: `${gameTranslator(GameTranslatorKeys.WeatherSunny, gl)} / ${gameTranslator(GameTranslatorKeys.WeatherClear, gl)}`,
+		},
+		{ ...WEATHER_META[2], label: gameTranslator(GameTranslatorKeys.WeatherRainy, gl) },
+		{ ...WEATHER_META[3], label: gameTranslator(GameTranslatorKeys.WeatherPartlyCloudy, gl) },
+		{ ...WEATHER_META[4], label: gameTranslator(GameTranslatorKeys.WeatherCloudy, gl) },
+		{ ...WEATHER_META[5], label: gameTranslator(GameTranslatorKeys.WeatherWindy, gl) },
+		{ ...WEATHER_META[6], label: gameTranslator(GameTranslatorKeys.WeatherSnow, gl) },
+		{ ...WEATHER_META[7], label: gameTranslator(GameTranslatorKeys.WeatherFog, gl) },
 	];
 	const FRIENDSHIP: Array<{ label: string; mult: number }> = [
 		{ label: t('pokemonDetail:counters.friendship.none'), mult: FRIENDSHIP_MULT[0] },
-		{ label: t('pokemonDetail:counters.friendship.good'), mult: FRIENDSHIP_MULT[1] },
-		{ label: t('pokemonDetail:counters.friendship.great'), mult: FRIENDSHIP_MULT[2] },
-		{ label: t('pokemonDetail:counters.friendship.ultra'), mult: FRIENDSHIP_MULT[3] },
-		{ label: t('pokemonDetail:counters.friendship.best'), mult: FRIENDSHIP_MULT[4] },
+		{ label: gameTranslator(GameTranslatorKeys.FriendshipGood, gl), mult: FRIENDSHIP_MULT[1] },
+		{ label: gameTranslator(GameTranslatorKeys.FriendshipGreat, gl), mult: FRIENDSHIP_MULT[2] },
+		{ label: gameTranslator(GameTranslatorKeys.FriendshipUltra, gl), mult: FRIENDSHIP_MULT[3] },
+		{ label: gameTranslator(GameTranslatorKeys.FriendshipBest, gl), mult: FRIENDSHIP_MULT[4] },
 		{ label: t('pokemonDetail:counters.friendship.forever'), mult: FRIENDSHIP_MULT[5] },
 	];
 	const MEGA_LEVELS: Array<{ level: MegaLevel; label: string }> = [
-		{ level: MEGA_LEVEL_ORDER[0], label: t('pokemonDetail:counters.megaLevel.base') },
-		{ level: MEGA_LEVEL_ORDER[1], label: t('pokemonDetail:counters.megaLevel.high') },
-		{ level: MEGA_LEVEL_ORDER[2], label: t('pokemonDetail:counters.megaLevel.max') },
+		{ level: MEGA_LEVEL_ORDER[0], label: gameTranslator(GameTranslatorKeys.MegaLevelBase, gl) },
+		{ level: MEGA_LEVEL_ORDER[1], label: gameTranslator(GameTranslatorKeys.MegaLevelHigh, gl) },
+		{ level: MEGA_LEVEL_ORDER[2], label: gameTranslator(GameTranslatorKeys.MegaLevelMax, gl) },
 		{ level: MEGA_LEVEL_ORDER[3], label: t('pokemonDetail:counters.megaLevel.superMax') },
 	];
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { moves, movesFetchCompleted } = useMoves();
-	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
 
 	const isRaid = league === 3;
@@ -184,12 +193,16 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		t('pokemonDetail:counters.summaryRaidHp', {
 			tier: TIER_LABEL[tier],
 			hp: RAID_BOSS_STATS[tier].hp.toLocaleString(),
+			raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
 		}),
 		weatherKey && WEATHER.find((w) => w.key === weatherKey)?.label,
 		partySize > 1 && t('pokemonDetail:counters.partyOf', { size: partySize }),
 		friendship > 1 &&
 			t('pokemonDetail:counters.friendLabel', { label: FRIENDSHIP.find((f) => f.mult === friendship)?.label }),
-		megaBoostType && t('pokemonDetail:counters.megaAuraSummary', { type: TYPE_LABEL[megaBoostType] ?? megaBoostType }),
+		megaBoostType &&
+			t('pokemonDetail:counters.megaAuraSummary', {
+				type: gameTypeDisplayTranslator(megaBoostType, gl) || megaBoostType,
+			}),
 		megaLevel !== 3 &&
 			t('pokemonDetail:counters.megaLevelSummary', { label: MEGA_LEVELS.find((m) => m.level === megaLevel)?.label }),
 	]
@@ -330,7 +343,10 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 	return (
 		<div className='r-movecontent'>
 			<div className='r-section-h'>
-				{t('pokemonDetail:counters.bestRaidCounters', { name: cleanName(pokemon.speciesName) })}
+				{t('pokemonDetail:counters.bestRaidCounters', {
+				name: cleanName(pokemon.speciesName),
+				raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+			})}
 			</div>
 
 			<div className='r-ctr-metricbar'>
@@ -384,7 +400,10 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 												tier: TIER_LABEL[tierKey],
 												hp: RAID_BOSS_STATS[tierKey].hp.toLocaleString(),
 											})}
-											aria-label={t('pokemonDetail:counters.bossTierAriaLabel', { tier: TIER_LABEL[tierKey] })}
+											aria-label={t('pokemonDetail:counters.bossTierAriaLabel', {
+												tier: TIER_LABEL[tierKey],
+												raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
+											})}
 											data-active={tier === tierKey}
 											onClick={() => setTier(tierKey)}
 										>
@@ -396,6 +415,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 									{t('pokemonDetail:counters.bossTierHint', {
 										tier: TIER_LABEL[tier],
 										hp: RAID_BOSS_STATS[tier].hp.toLocaleString(),
+										raid: gameTranslator(GameTranslatorKeys.RaidDisplay, gl),
 									})}
 								</span>
 							</div>
@@ -426,7 +446,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								{weatherTypes.length > 0 && (
 									<span className='r-ctr-cond-hint'>
 										{t('pokemonDetail:counters.weatherHint', {
-											types: weatherTypes.map((tk) => TYPE_LABEL[tk] ?? tk).join(', '),
+											types: weatherTypes.map((tk) => gameTypeDisplayTranslator(tk, gl) || tk).join(', '),
 										})}
 									</span>
 								)}
@@ -452,8 +472,12 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 											key={tk}
 											type='button'
 											className='r-ctr-iconbtn'
-											title={t('pokemonDetail:counters.megaOfType', { type: TYPE_LABEL[tk] ?? tk })}
-											aria-label={t('pokemonDetail:counters.megaOfType', { type: TYPE_LABEL[tk] ?? tk })}
+											title={t('pokemonDetail:counters.megaOfType', {
+												type: gameTypeDisplayTranslator(tk, gl) || tk,
+											})}
+											aria-label={t('pokemonDetail:counters.megaOfType', {
+												type: gameTypeDisplayTranslator(tk, gl) || tk,
+											})}
 											data-active={megaBoostType === tk}
 											onClick={() => setMegaBoostType(megaBoostType === tk ? '' : tk)}
 										>
@@ -463,7 +487,9 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 								</div>
 								{megaBoostType && (
 									<span className='r-ctr-cond-hint'>
-										{t('pokemonDetail:counters.megaAuraHint', { type: TYPE_LABEL[megaBoostType] ?? megaBoostType })}
+										{t('pokemonDetail:counters.megaAuraHint', {
+											type: gameTypeDisplayTranslator(megaBoostType, gl) || megaBoostType,
+										})}
 									</span>
 								)}
 							</div>

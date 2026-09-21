@@ -27,3 +27,5 @@ export const currentEggsUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/leekduck-eggs.json';
 export const currentRocketsUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/rocket-lineups.json';
+export const gameTranslationsUrl =
+	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/game-translations.json';

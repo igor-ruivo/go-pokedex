@@ -1,5 +1,7 @@
+import type { GameLanguage } from '../contexts/language-context';
 import type { BuffsType, IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 
 /**
  * PvP fast-move duration in turns. A PvP turn is 0.5 s, and `pvpCooldown` is
@@ -45,43 +47,75 @@ export const moveOwners = (moveId: string, gm: Record<string, IGamemasterPokemon
 			(p.fastMoves.includes(moveId) || p.chargedMoves.includes(moveId) || p.extraChargedMoves.includes(moveId))
 	);
 
-const STAT_EFFECTS: Array<{ key: string; who: 'own' | 'foe'; stat: 'Attack' | 'Defense' }> = [
+type StatEffectKey =
+	| 'attackerAttackStatStageChange'
+	| 'attackerDefenseStatStageChange'
+	| 'targetAttackStatStageChange'
+	| 'targetDefenseStatStageChange';
+
+const STAT_EFFECTS: Array<{ key: StatEffectKey; who: 'own' | 'foe'; stat: 'Attack' | 'Defense' }> = [
 	{ key: 'attackerAttackStatStageChange', who: 'own', stat: 'Attack' },
 	{ key: 'attackerDefenseStatStageChange', who: 'own', stat: 'Defense' },
 	{ key: 'targetAttackStatStageChange', who: 'foe', stat: 'Attack' },
 	{ key: 'targetDefenseStatStageChange', who: 'foe', stat: 'Defense' },
 ];
 
-const WHO_LABEL: Record<'own' | 'foe', string> = { own: 'its own', foe: "the foe's" };
+// Pokémon GO's own move-detail screen shows these as short badges (e.g.
+// "ATTACK DROP"), not a constructed sentence — assembling "raise/lower the
+// foe's Attack & Defense by N stages" from independently-translated words
+// isn't safe across 15 languages' word order/grammar, so this mirrors the
+// real UI instead. See dex-server's `game-translations-provider.ts` for the
+// data-mined source of each of these 8 keys.
+const BUFF_KEY_LOOKUP: Record<'own' | 'foe', Record<'Attack' | 'Defense', Record<'raise' | 'lower', GameTranslatorKeys>>> = {
+	own: {
+		Attack: { raise: GameTranslatorKeys.AttackBoostSelf, lower: GameTranslatorKeys.AttackDropSelf },
+		Defense: { raise: GameTranslatorKeys.DefenseBoostSelf, lower: GameTranslatorKeys.DefenseDropSelf },
+	},
+	foe: {
+		Attack: { raise: GameTranslatorKeys.AttackBoostTarget, lower: GameTranslatorKeys.AttackDropTarget },
+		Defense: { raise: GameTranslatorKeys.DefenseBoostTarget, lower: GameTranslatorKeys.DefenseDropTarget },
+	},
+};
 
-/**
- * Human-readable PvP stat-stage effect for a charged move, e.g.
- *   "100% chance to lower the foe's Defense by 1 stage"
- *   "10% chance to raise its own Attack & Defense by 1 stage"
- * Returns null when the move has no stat-stage buff/debuff.
- */
-export const buffText = (buffs: BuffsType | undefined): string | null => {
+export interface BuffBadge {
+	label: string;
+	/** Stat-stage magnitude (usually 1, occasionally 2) — render as a "×N"
+	 *  suffix when >1, the same locale-agnostic convention Pokémon GO's own
+	 *  strings use elsewhere (e.g. "2× Stardust"). */
+	magnitude: number;
+}
+
+export interface BuffInfo {
+	chancePercent: number;
+	chanceLabel: string;
+	badges: Array<BuffBadge>;
+}
+
+/** Whether a charged move has any stat-stage buff/debuff at all — a pure
+ *  boolean check that doesn't need a `GameLanguage` (existence doesn't
+ *  depend on it), for callers that only need to know whether to reserve
+ *  extra layout space (see Moves.tsx's row-height calc). */
+export const hasBuff = (buffs: BuffsType | undefined): boolean =>
+	!!buffs && STAT_EFFECTS.some(({ key }) => !!buffs[key]);
+
+/** PvP stat-stage buff/debuff info for a charged move, as the badges +
+ *  chance the real game UI shows — `null` when the move has none. */
+export const buffInfo = (buffs: BuffsType | undefined, gl: GameLanguage): BuffInfo | null => {
 	if (!buffs) return null;
-	const chance = Math.round(buffs.buffActivationChance * 100);
 
-	// group effects sharing target + direction + magnitude so "Attack & Defense" collapses
-	const groups = new Map<string, { who: 'own' | 'foe'; dir: 'raise' | 'lower'; mag: number; stats: Array<string> }>();
+	const badges: Array<BuffBadge> = [];
 	for (const { key, who, stat } of STAT_EFFECTS) {
 		const v = buffs[key];
 		if (!v) continue;
 		const dir: 'raise' | 'lower' = v > 0 ? 'raise' : 'lower';
-		const mag = Math.abs(v);
-		const gk = `${who}|${dir}|${mag}`;
-		const g = groups.get(gk) ?? { who, dir, mag, stats: [] };
-		g.stats.push(stat);
-		groups.set(gk, g);
+		const translatorKey = BUFF_KEY_LOOKUP[who][stat][dir];
+		badges.push({ label: gameTranslator(translatorKey, gl), magnitude: Math.abs(v) });
 	}
-	if (groups.size === 0) return null;
+	if (badges.length === 0) return null;
 
-	const clauses = [...groups.values()].map(
-		(g) => `${g.dir} ${WHO_LABEL[g.who]} ${g.stats.join(' & ')} by ${g.mag} stage${g.mag === 1 ? '' : 's'}`
-	);
-	const joined =
-		clauses.length === 1 ? clauses[0] : `${clauses.slice(0, -1).join(', ')} and ${clauses[clauses.length - 1]}`;
-	return `${chance}% chance to ${joined}`;
+	return {
+		chancePercent: Math.round(buffs.buffActivationChance * 100),
+		chanceLabel: gameTranslator(GameTranslatorKeys.BuffChance, gl),
+		badges,
+	};
 };

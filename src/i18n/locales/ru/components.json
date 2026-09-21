@@ -18,7 +18,7 @@
 		"defense": "ЗАЩИТА",
 		"hp": "HP",
 		"presetZero": "0 / 0 / 0",
-		"presetHundo": "Хандо"
+		"presetHundo": "15 / 15 / 15"
 	},
 	"stepper": {
 		"decreaseAriaLabel": "Уменьшить",

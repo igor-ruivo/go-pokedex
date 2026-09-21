@@ -1,8 +1,12 @@
+import { useTranslation } from 'react-i18next';
+
+import type { GameLanguage } from '../contexts/language-context';
 import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
-import { type Arena, buffText, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../lib/moves';
+import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../lib/moves';
 
 /** Full PvE + PvP stat readout for a move (no attacker context — raw values). */
-export const MoveStatRows = ({ m }: { m: IGameMasterMove }) => {
+export const MoveStatRows = ({ m, gl }: { m: IGameMasterMove; gl: GameLanguage }) => {
+	const { t } = useTranslation(['moveDetail']);
 	const kind: 'fast' | 'charged' = m.isFast ? 'fast' : 'charged';
 
 	const row = (arena: Arena) => {
@@ -10,23 +14,23 @@ export const MoveStatRows = ({ m }: { m: IGameMasterMove }) => {
 		const nrg = arena === 'pve' ? m.pveEnergy : m.pvpEnergy;
 		const cd = arena === 'pve' ? m.pveCooldown : m.pvpCooldown;
 		const base: Array<[string, string | number]> = [
-			['DMG', pow],
-			['NRG', kind === 'fast' ? `+${nrg}` : nrg],
+			[t('moveDetail:statLabels.dmg'), pow],
+			[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : nrg],
 			// fast: PvE cooldown in seconds / PvP duration in turns. charged: PvE
 			// animation length only — PvP charged moves have no cooldown.
 			...(arena === 'pve'
-				? ([['DUR', `${cd}s`]] as Array<[string, string | number]>)
+				? ([[t('moveDetail:statLabels.dur'), `${cd}s`]] as Array<[string, string | number]>)
 				: kind === 'fast'
-					? ([['TURNS', fastMoveTurns(m)]] as Array<[string, string | number]>)
+					? ([[t('moveDetail:statLabels.turns'), fastMoveTurns(m)]] as Array<[string, string | number]>)
 					: []),
 		];
 		const derived: Array<[string, string | number]> =
 			kind === 'fast'
 				? [
-						['DPS', moveDPS(m, arena).toFixed(1)],
-						['EPS', moveEPS(m, arena).toFixed(1)],
+						[t('moveDetail:statLabels.dps'), moveDPS(m, arena).toFixed(1)],
+						[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)],
 					]
-				: [['DPE', moveDPE(m, arena).toFixed(2)]];
+				: [[t('moveDetail:statLabels.dpe'), moveDPE(m, arena).toFixed(2)]];
 		return (
 			<div key={arena}>
 				<u>{arena === 'pve' ? 'PvE' : 'PvP'}</u>
@@ -45,7 +49,7 @@ export const MoveStatRows = ({ m }: { m: IGameMasterMove }) => {
 		);
 	};
 
-	const fx = kind === 'charged' ? buffText(m.buffs) : null;
+	const fx = kind === 'charged' ? buffInfo(m.buffs, gl) : null;
 
 	return (
 		<>
@@ -53,7 +57,19 @@ export const MoveStatRows = ({ m }: { m: IGameMasterMove }) => {
 				{row('pve')}
 				{row('pvp')}
 			</div>
-			{fx && <p className='r-move-buff'>{fx}</p>}
+			{fx && (
+				<p className='r-move-buff'>
+					{fx.badges.map((b, i) => (
+						<span key={i}>
+							{i > 0 && ' · '}
+							{b.label}
+							{b.magnitude > 1 ? ` ×${b.magnitude}` : ''}
+						</span>
+					))}
+					{' — '}
+					{fx.chanceLabel}: {fx.chancePercent}%
+				</p>
+			)}
 		</>
 	);
 };

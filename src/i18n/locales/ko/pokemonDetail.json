@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "레이드 성능 · {{name}}",
-			"selfShadow": "레이드 성능 · 섀도 {{name}}",
-			"as": "레이드 성능 · {{name}}(으)로",
-			"asShadow": "레이드 성능 · 섀도 {{name}}(으)로"
+			"self": "{{raid}} 성능 · {{name}}",
+			"selfShadow": "{{raid}} 성능 · {{shadow}} {{name}}",
+			"as": "{{raid}} 성능 · {{name}}(으)로",
+			"asShadow": "{{raid}} 성능 · {{shadow}} {{name}}(으)로"
 		},
 		"rank": "{{type}} 랭크",
 		"baseAtk": "공격 실수치",
-		"notRankedAttacker": "레이드 어태커로 랭크되지 않았습니다.",
+		"notRankedAttacker": "{{raid}} 어태커로 랭크되지 않았습니다.",
 		"bestMovesetByType": "타입별 최고의 기술 조합",
 		"nextMovesetTitle": "탭하면 다음 기술 조합",
 		"selectTypeTitle": "탭하여 이 타입 선택",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "개체값 백분위 · {{name}}",
-			"selfShadow": "개체값 백분위 · 섀도 {{name}}",
+			"selfShadow": "개체값 백분위 · {{shadow}} {{name}}",
 			"as": "개체값 백분위 · {{name}}(으)로",
-			"asShadow": "개체값 백분위 · 섀도 {{name}}(으)로",
+			"asShadow": "개체값 백분위 · {{shadow}} {{name}}(으)로",
 			"purified": "개체값 백분위 · 프리져 {{name}}(으)로"
 		},
 		"ivRank": "{{league}} 개체값 랭크",
 		"perfection": "완성도",
 		"cp": "CP",
-		"cpAtLevel": "Lv{{level}} 기준 CP",
+		"cpAtLevel": "Lv{{level}} 기준 {{cp}}",
 		"bestSpreadFor": "{{league}} 최고 배분:",
 		"bestSpreadResult": "→ Lv{{level}}에서 CP {{cp}}.",
 		"purifyWarning": "⚠️ 프리져 시 각 스탯에 개체값 +2가 부여된다는 점을 유의하세요.",
 		"purifyUnreachableWarning": "⚠️ 이 랭크 1 배분 자체는 프리져로는 도달할 수 없습니다 — 프리져는 항상 각 스탯을 최소 2 이상으로 올리므로, 섀도 포켓몬은 자신의 개체값과 무관하게 그보다 낮아질 수 없습니다.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "완벽 개체",
+			"hundo": "15 / 15 / 15",
 			"rank1": "{{league}} 랭크 1"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "데이터 없음.",
 		"strongAgainst": "{{name}}이(가) 강한 상대 · {{league}}",
 		"weakAgainst": "{{name}}이(가) 약한 상대 · {{league}}",
-		"bestRaidCounters": "최고의 레이드 카운터 · {{name}}",
-		"summaryRaidHp": "{{tier}} 레이드 · HP {{hp}}",
+		"bestRaidCounters": "최고의 {{raid}} 카운터 · {{name}}",
+		"summaryRaidHp": "{{tier}} {{raid}} · HP {{hp}}",
 		"partyOf": "{{size}}마리 파티",
 		"friendLabel": "{{label}} 친구",
 		"megaAuraSummary": "메가 {{type}} 오라",
@@ -137,8 +137,8 @@
 		"clear": "초기화",
 		"bossTier": "보스 티어",
 		"bossTierTitle": "{{tier}} — HP {{hp}}",
-		"bossTierAriaLabel": "{{tier}} 레이드",
-		"bossTierHint": "{{tier}} 레이드 · HP {{hp}}",
+		"bossTierAriaLabel": "{{tier}} {{raid}}",
+		"bossTierHint": "{{tier}} {{raid}} · HP {{hp}}",
 		"weather_field": "날씨",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "메가 오라",

@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "Performa raid · {{name}}",
-			"selfShadow": "Performa raid · Shadow {{name}}",
-			"as": "Performa raid · sebagai {{name}}",
-			"asShadow": "Performa raid · sebagai Shadow {{name}}"
+			"self": "Performa {{raid}} · {{name}}",
+			"selfShadow": "Performa {{raid}} · {{shadow}} {{name}}",
+			"as": "Performa {{raid}} · sebagai {{name}}",
+			"asShadow": "Performa {{raid}} · sebagai {{shadow}} {{name}}"
 		},
 		"rank": "Peringkat {{type}}",
 		"baseAtk": "ATK Dasar",
-		"notRankedAttacker": "Belum diperingkat sebagai attacker raid.",
+		"notRankedAttacker": "Belum diperingkat sebagai attacker {{raid}}.",
 		"bestMovesetByType": "Moveset terbaik per tipe",
 		"nextMovesetTitle": "Ketuk untuk moveset berikutnya",
 		"selectTypeTitle": "Ketuk untuk memilih tipe ini",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "Persentil IV Anda · {{name}}",
-			"selfShadow": "Persentil IV Anda · Shadow {{name}}",
+			"selfShadow": "Persentil IV Anda · {{shadow}} {{name}}",
 			"as": "Persentil IV Anda · sebagai {{name}}",
-			"asShadow": "Persentil IV Anda · sebagai Shadow {{name}}",
+			"asShadow": "Persentil IV Anda · sebagai {{shadow}} {{name}}",
 			"purified": "Persentil IV Anda · sebagai Purified {{name}}"
 		},
 		"ivRank": "Peringkat IV {{league}}",
 		"perfection": "Kesempurnaan",
 		"cp": "CP",
-		"cpAtLevel": "CP @ L{{level}}",
+		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"bestSpreadFor": "Spread terbaik untuk {{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP di L{{level}}.",
 		"purifyWarning": "⚠️ Perlu diketahui bahwa memurnikan memberi +2 IV pada setiap stat.",
 		"purifyUnreachableWarning": "⚠️ Spread peringkat 1 itu sendiri tidak bisa dicapai lewat pemurnian — pemurnian selalu menaikkan setiap stat minimal ke 2, jadi Pokémon Shadow tidak akan pernah berada di bawah itu berapa pun IV aslinya.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Hundo",
+			"hundo": "15 / 15 / 15",
 			"rank1": "Peringkat 1 {{league}}"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "Tidak ada data.",
 		"strongAgainst": "{{name}} kuat melawan · {{league}}",
 		"weakAgainst": "{{name}} lemah melawan · {{league}}",
-		"bestRaidCounters": "Counter raid terbaik · {{name}}",
-		"summaryRaidHp": "Raid {{tier}} · {{hp}} HP",
+		"bestRaidCounters": "Counter {{raid}} terbaik · {{name}}",
+		"summaryRaidHp": "{{raid}} {{tier}} · {{hp}} HP",
 		"partyOf": "Party berisi {{size}}",
 		"friendLabel": "Teman {{label}}",
 		"megaAuraSummary": "Aura Mega {{type}}",
@@ -137,8 +137,8 @@
 		"clear": "Hapus",
 		"bossTier": "Tingkat boss",
 		"bossTierTitle": "{{tier}} — {{hp}} HP",
-		"bossTierAriaLabel": "Raid {{tier}}",
-		"bossTierHint": "{{tier}} Raid · {{hp}} HP",
+		"bossTierAriaLabel": "{{raid}} {{tier}}",
+		"bossTierHint": "{{tier}} {{raid}} · {{hp}} HP",
 		"weather_field": "Cuaca",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "Aura Mega",

@@ -50,10 +50,10 @@
 			"short": "Master"
 		},
 		"raidAttackers": {
-			"full": "Raid Attackers",
-			"short": "Raid"
+			"full": "{{raid}} Attackers",
+			"short": "{{raid}}"
 		},
-		"saveCp": "Save CP",
+		"saveCp": "Save {{cp}}",
 		"simplifiedMode": "Simplified mode",
 		"keep3StarPokemon": "Keep 3* Pokémon",
 		"ariaKeepTopGreat": "Keep top Great League",
@@ -91,11 +91,11 @@
 			"description": "Ultra Beasts (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
-			"label": "Mega Evolvable",
+			"label": "{{megaEvolvable}}",
 			"description": "Only the game knows this — needs enough Mega Energy banked for that species right now."
 		},
 		"shadow": {
-			"label": "Shadow",
+			"label": "{{shadow}}",
 			"description": "Every Shadow Pokémon, regardless of its own IVs or rank."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Clear",
 		"remove": "Remove",
 		"removeLockedTitle": "Protected because it’s {{reason}} — toggle that off above to remove it",
-		"shadowSuffix": "Shadow",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Nothing here yet — search above to protect a specific Pokémon regardless of the categories above.",
 		"emptyTrade": "Nothing here yet — search above to keep a specific Pokémon out of trade suggestions regardless of the categories above.",
 		"summaryEmpty": "No individually-protected Pokémon yet",
@@ -158,9 +158,9 @@
 		"topGreat": "Top {{n}} Great League",
 		"topUltra": "Top {{n}} Ultra League",
 		"topMaster": "Top {{n}} Master League",
-		"topRaid": "Top {{n}} Raid",
-		"cpKept": "CP ≥ {{cp}} kept",
-		"cpUnder": "CP < {{cp}}",
+		"topRaid": "Top {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} kept",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Simplified mode",
 		"protectsList": "protects {{list}}",
 		"excludesList": "excludes {{list}}",

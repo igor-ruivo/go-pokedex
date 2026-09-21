@@ -2,7 +2,7 @@
 	"sorts": {
 		"dex": "Dex number",
 		"name": "Name",
-		"cp": "Max CP",
+		"cp": "Max {{cp}}",
 		"type": "Type"
 	},
 	"tabs": {
@@ -21,7 +21,7 @@
 		"text": "Raid ranks assume each Pokémon’s best fast + charged move combo dealing Effective {{type}}-type damage (×1.6) against a Tier 5 non-shadow boss (200 Defense, level 40), with a level 50 attacker (15 Attack IV) and no weather, friendship or teammate Mega-aura bonuses. Super Mega Pokémon are ranked as Max Mega Level."
 	},
 	"empty": {
-		"pickType": "Pick a type in the filter to see the best raid attackers of that type.",
+		"pickType": "Pick a type in the filter to see the best {{raid}} attackers of that type.",
 		"nothingMatches": "Nothing matches."
 	},
 	"loadingLabel": {

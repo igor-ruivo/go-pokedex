@@ -45,14 +45,14 @@
 	},
 	"raid": {
 		"performanceHeading": {
-			"self": "Raid performance · {{name}}",
-			"selfShadow": "Raid performance · Shadow {{name}}",
-			"as": "Raid performance · as {{name}}",
-			"asShadow": "Raid performance · as Shadow {{name}}"
+			"self": "{{raid}} performance · {{name}}",
+			"selfShadow": "{{raid}} performance · {{shadow}} {{name}}",
+			"as": "{{raid}} performance · as {{name}}",
+			"asShadow": "{{raid}} performance · as {{shadow}} {{name}}"
 		},
 		"rank": "{{type}} rank",
 		"baseAtk": "Base ATK",
-		"notRankedAttacker": "Not ranked as a raid attacker.",
+		"notRankedAttacker": "Not ranked as a {{raid}} attacker.",
 		"bestMovesetByType": "Best moveset by type",
 		"nextMovesetTitle": "Tap for the next moveset",
 		"selectTypeTitle": "Tap to select this type",
@@ -62,22 +62,22 @@
 	"pvp": {
 		"percentileHeading": {
 			"self": "Your IVs Percentile · {{name}}",
-			"selfShadow": "Your IVs Percentile · Shadow {{name}}",
+			"selfShadow": "Your IVs Percentile · {{shadow}} {{name}}",
 			"as": "Your IVs Percentile · as {{name}}",
-			"asShadow": "Your IVs Percentile · as Shadow {{name}}",
+			"asShadow": "Your IVs Percentile · as {{shadow}} {{name}}",
 			"purified": "Your IVs Percentile · as Purified {{name}}"
 		},
 		"ivRank": "{{league}} IV rank",
 		"perfection": "Perfection",
 		"cp": "CP",
-		"cpAtLevel": "CP @ L{{level}}",
+		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"bestSpreadFor": "Best spread for {{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP at L{{level}}.",
 		"purifyWarning": "⚠️ Be aware that purifying gains you +2 IVs on each stat.",
 		"purifyUnreachableWarning": "⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to at least 2, so a Shadow can never land below that no matter its own IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
-			"hundo": "Hundo",
+			"hundo": "15 / 15 / 15",
 			"rank1": "Rank 1 {{league}}"
 		}
 	},
@@ -126,8 +126,8 @@
 		"noData": "No data.",
 		"strongAgainst": "{{name}} is strong against · {{league}}",
 		"weakAgainst": "{{name}} is weak against · {{league}}",
-		"bestRaidCounters": "Best raid counters · {{name}}",
-		"summaryRaidHp": "{{tier}} Raid · {{hp}} HP",
+		"bestRaidCounters": "Best {{raid}} counters · {{name}}",
+		"summaryRaidHp": "{{tier}} {{raid}} · {{hp}} HP",
 		"partyOf": "Party of {{size}}",
 		"friendLabel": "{{label}} Friend",
 		"megaAuraSummary": "Mega {{type}} aura",
@@ -137,8 +137,8 @@
 		"clear": "Clear",
 		"bossTier": "Boss tier",
 		"bossTierTitle": "{{tier}} — {{hp}} HP",
-		"bossTierAriaLabel": "{{tier}} raid",
-		"bossTierHint": "{{tier}} Raid · {{hp}} HP",
+		"bossTierAriaLabel": "{{tier}} {{raid}}",
+		"bossTierHint": "{{tier}} {{raid}} · {{hp}} HP",
 		"weather_field": "Weather",
 		"weatherHint": "×1.2 · {{types}}",
 		"megaAura": "Mega aura",

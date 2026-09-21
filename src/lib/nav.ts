@@ -1,3 +1,6 @@
+import type { GameLanguage } from '../contexts/language-context';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
+
 export const R = {
 	pokedex: '/',
 	// `type` is only meaningful for the raid mode — a real, shareable/crawlable
@@ -20,12 +23,22 @@ export const R = {
 export const RANKING_MODES = ['pokedex', 'great', 'ultra', 'master', 'raid'] as const;
 export type RankingMode = (typeof RANKING_MODES)[number];
 
-export const MODE_LABEL: Record<RankingMode, string> = {
-	pokedex: 'Pokédex',
-	great: 'Great',
-	ultra: 'Ultra',
-	master: 'Master',
-	raid: 'Raid',
+// League/raid tab labels track the player's in-game language, sourced from
+// GameTranslator — "Pokédex" isn't a league/raid concept and stays a plain
+// proper noun (near-identical across every locale in practice).
+export const modeLabel = (mode: RankingMode, gl: GameLanguage): string => {
+	switch (mode) {
+		case 'pokedex':
+			return 'Pokédex';
+		case 'great':
+			return gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl);
+		case 'ultra':
+			return gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl);
+		case 'master':
+			return gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl);
+		case 'raid':
+			return gameTranslator(GameTranslatorKeys.RaidDisplay, gl);
+	}
 };
 
 /** Same league identity colours the Pokémon detail page uses for its league tabs. */

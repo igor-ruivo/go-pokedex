@@ -50,10 +50,10 @@
 			"short": "Master"
 		},
 		"raidAttackers": {
-			"full": "Baskın Saldırganları",
-			"short": "Baskın"
+			"full": "{{raid}} Saldırganları",
+			"short": "{{raid}}"
 		},
-		"saveCp": "CP'yi Kaydet",
+		"saveCp": "{{cp}}'yi Kaydet",
 		"simplifiedMode": "Basitleştirilmiş mod",
 		"keep3StarPokemon": "3* Pokémon'ları tut",
 		"ariaKeepTopGreat": "Great Ligi'nde en üsttekileri tut",
@@ -91,11 +91,11 @@
 			"description": "Ultra Canavarlar (Nihilego, Buzzwole, …)."
 		},
 		"megaEvolvable": {
-			"label": "Mega Evrimleşebilir",
+			"label": "{{megaEvolvable}}",
 			"description": "Bunu sadece oyun bilir — o tür için şu anda yeterli Mega Enerjisi birikmiş olması gerekir."
 		},
 		"shadow": {
-			"label": "Gölge",
+			"label": "{{shadow}}",
 			"description": "Kendi IV'lerine veya sıralamasına bakılmaksızın her Gölge Pokémon."
 		},
 		"dynamax": {
@@ -134,7 +134,7 @@
 		"clear": "Temizle",
 		"remove": "Kaldır",
 		"removeLockedTitle": "{{reason}} olduğu için korunuyor — kaldırmak için yukarıdaki ilgili ayarı kapatın",
-		"shadowSuffix": "Gölge",
+		"shadowSuffix": "{{shadow}}",
 		"emptyMeta": "Henüz burada bir şey yok — yukarıdaki kategorilere bakılmaksızın belirli bir Pokémon'u korumak için yukarıda arama yapın.",
 		"emptyTrade": "Henüz burada bir şey yok — yukarıdaki kategorilere bakılmaksızın belirli bir Pokémon'u takas önerilerinden hariç tutmak için yukarıda arama yapın.",
 		"summaryEmpty": "Henüz ayrı ayrı korunan Pokémon yok",
@@ -158,9 +158,9 @@
 		"topGreat": "İlk {{n}} Great Ligi",
 		"topUltra": "İlk {{n}} Ultra Ligi",
 		"topMaster": "İlk {{n}} Master Ligi",
-		"topRaid": "İlk {{n}} Baskın",
-		"cpKept": "CP ≥ {{cp}} tutuldu",
-		"cpUnder": "CP < {{cp}}",
+		"topRaid": "İlk {{n}} {{raid}}",
+		"cpKept": "{{cp}} ≥ {{cpValue}} tutuldu",
+		"cpUnder": "{{cp}} < {{cpValue}}",
 		"simplifiedModeSuffix": "Basitleştirilmiş mod",
 		"protectsList": "{{list}} korur",
 		"excludesList": "{{list}} hariç tutar",
