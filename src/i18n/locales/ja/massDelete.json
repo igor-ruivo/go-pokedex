@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "個体値やランクに関係なく、すべてのシャドウポケモン。"
+			"description": "個体値やランクに関係なく、すべての{{shadow}}ポケモン。"
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

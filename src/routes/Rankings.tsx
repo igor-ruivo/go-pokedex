@@ -397,6 +397,7 @@ const Rankings = () => {
 							type: gameTypeDisplayTranslator(raidType, gl) || raidType,
 							raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 							mega: gameTranslator(GameTranslatorKeys.MegaDisplay, gl),
+							shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
 						})}
 					</p>
 				)}

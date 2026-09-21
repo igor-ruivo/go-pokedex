@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "हर शैडो Pokémon, उसके अपने IV या रैंक चाहे जो हों।"
+			"description": "हर {{shadow}} Pokémon, उसके अपने IV या रैंक चाहे जो हों।"
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "所有暗影寶可夢，無論個體值或排名如何。"
+			"description": "所有{{shadow}}寶可夢，無論個體值或排名如何。"
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

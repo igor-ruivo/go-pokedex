@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "АТК", "def": "ЗАЩ", "hp": "HP" },
 		"level": { "prefix": "Ур.", "loading": "Ур. …" },
-		"shadowToggle": "Теневой",
 		"switchLeagueAriaLabel": "Сейчас показана {{league}}. Нажмите, чтобы сменить лигу.",
 		"nextFamilyMemberAriaLabel": "{{current}} — далее: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "Процентиль ваших IV · {{shadow}} {{name}}",
 			"as": "Процентиль ваших IV · как {{name}}",
 			"asShadow": "Процентиль ваших IV · как {{shadow}} {{name}}",
-			"purified": "Процентиль ваших IV · как Очищенный {{name}}"
+			"purified": "Процентиль ваших IV · как {{purified}} {{name}}"
 		},
-		"ivRank": "Рейтинг IV в {{league}}",
+		"ivRank": "{{league}}",
 		"perfection": "Совершенство",
 		"cp": "CP",
 		"cpAtLevel": "{{cp}} на ур. {{level}}",
 		"additionalBestSpreadFor": "Дополнительный набор IV для {{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP на ур. {{level}}.",
 		"purifyWarning": "⚠️ Учтите, что очищение даёт +2 к каждой характеристике IV.",
-		"purifyUnreachableWarning": "⚠️ Этот набор IV 1-го места сам по себе недостижим через очищение — очищение всегда поднимает каждую характеристику минимум до 2, поэтому теневой покемон никогда не может опуститься ниже этого значения, какими бы ни были его собственные IV.",
+		"purifyUnreachableWarning": "⚠️ Этот набор IV 1-го места сам по себе недостижим через очищение — очищение всегда поднимает каждую характеристику минимум до 2, поэтому {{shadow}} покемон никогда не может опуститься ниже этого значения, какими бы ни были его собственные IV.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(пойман диким и ещё не прокачан)",
 			"findTopSelf": "Найти {{except}}топ {{top}} <name></name> {{caught}} для <league></league>:",
 			"findTopEvolvesTo": "Найти <name></name> {{caught}}, эволюционирующего в {{toThe}}{{except}}топ {{top}} <target></target> для <league></league>:",
-			"findTopSelfShadowEither": "Найти {{except}}топ {{top}} <name></name> — теневой или нет — {{caught}} для <league></league>:",
-			"findTopEvolvesToShadowEither": "Найти <name></name> — теневой или нет — {{caught}}, эволюционирующего в {{toThe}}{{except}}топ {{top}} <target></target> для <league></league>:",
+			"findTopSelfShadowEither": "Найти {{except}}топ {{top}} <name></name> — {{shadow}} или нет — {{caught}} для <league></league>:",
+			"findTopEvolvesToShadowEither": "Найти <name></name> — {{shadow}} или нет — {{caught}}, эволюционирующего в {{toThe}}{{except}}топ {{top}} <target></target> для <league></league>:",
 			"exceptPrefix": "всех, кроме ",
 			"toThePrefix": "то "
 		}

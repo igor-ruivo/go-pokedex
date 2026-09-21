@@ -18,7 +18,7 @@
 	"hint": {
 		"show": "Mostrar premissas da classificação",
 		"hide": "Ocultar premissas da classificação",
-		"text": "As classificações de {{raid}} assumem a melhor combinação de golpe rápido + carregado de cada Pokémon a causar dano Efetivo do tipo {{type}} (×1,6) contra um chefe não Sombroso de Nível 5 (200 de Defesa, nível 40), com um atacante de nível 50 (15 de IV de Ataque) e sem bónus de clima, amizade ou aura {{mega}} de companheiro. Os Pokémon Super {{mega}} são classificados no Nível {{mega}} máximo."
+		"text": "As classificações de {{raid}} assumem a melhor combinação de golpe rápido + carregado de cada Pokémon a causar dano Efetivo do tipo {{type}} (×1,6) contra um chefe não {{shadow}} de Nível 5 (200 de Defesa, nível 40), com um atacante de nível 50 (15 de IV de Ataque) e sem bónus de clima, amizade ou aura {{mega}} de companheiro. Os Pokémon Super {{mega}} são classificados no Nível {{mega}} máximo."
 	},
 	"empty": {
 		"pickType": "Escolha um tipo no filtro para ver os melhores atacantes de {{raid}} desse tipo.",

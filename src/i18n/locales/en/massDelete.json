@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Every Shadow Pokémon, regardless of its own IVs or rank."
+			"description": "Every {{shadow}} Pokémon, regardless of its own IVs or rank."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

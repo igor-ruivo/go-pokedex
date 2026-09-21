@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Setiap Pokémon Shadow, terlepas dari IV atau peringkatnya sendiri."
+			"description": "Setiap Pokémon {{shadow}}, terlepas dari IV atau peringkatnya sendiri."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

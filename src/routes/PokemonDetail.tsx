@@ -1224,7 +1224,11 @@ const PokemonDetail = () => {
 								{(() => {
 									const m = pvpMember ?? pokemon;
 									const name = cleanName(m.speciesName);
-									if (purifyOffset > 0) return t('pokemonDetail:pvp.percentileHeading.purified', { name });
+									if (purifyOffset > 0)
+										return t('pokemonDetail:pvp.percentileHeading.purified', {
+											name,
+											purified: gameTranslator(GameTranslatorKeys.PurifiedDisplay, gl),
+										});
 									const isSelf = m.speciesId === self;
 									if (isSelf) {
 										return m.isShadow
@@ -1360,7 +1364,9 @@ const PokemonDetail = () => {
 								)}
 								{purifyOffset > 0 && slice && (slice.perfect.A < 2 || slice.perfect.D < 2 || slice.perfect.S < 2) && (
 									<p className='r-muted' style={{ marginTop: 8 }}>
-										{t('pokemonDetail:pvp.purifyUnreachableWarning')}
+										{t('pokemonDetail:pvp.purifyUnreachableWarning', {
+										shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+									})}
 									</p>
 								)}
 							</div>

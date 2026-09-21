@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "こう", "def": "ぼう", "hp": "HP" },
 		"level": { "prefix": "Lv", "loading": "Lv …" },
-		"shadowToggle": "シャドウ",
 		"switchLeagueAriaLabel": "現在{{league}}を表示中。タップでリーグ切替。",
 		"nextFamilyMemberAriaLabel": "{{current}} — 次: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "個体値パーセンタイル · {{shadow}}{{name}}",
 			"as": "個体値パーセンタイル · {{name}}として",
 			"asShadow": "個体値パーセンタイル · {{shadow}}{{name}}として",
-			"purified": "個体値パーセンタイル · きぜつ回復{{name}}として"
+			"purified": "個体値パーセンタイル · {{purified}}{{name}}として"
 		},
-		"ivRank": "{{league}}個体値ランク",
+		"ivRank": "{{league}}",
 		"perfection": "完成度",
 		"cp": "CP",
 		"cpAtLevel": "Lv{{level}}時の{{cp}}",
 		"additionalBestSpreadFor": "{{league}}の追加の最良配分:",
 		"bestSpreadResult": "→ Lv{{level}}でCP{{cp}}。",
 		"purifyWarning": "⚠️ きぜつ回復すると各ステータスに+2個体値が付与される点にご注意ください。",
-		"purifyUnreachableWarning": "⚠️ このランク1配分自体は、きぜつ回復では到達できません — きぜつ回復は各ステータスを必ず2以上に引き上げるため、シャドウポケモンは個体値に関係なくそれを下回ることができません。",
+		"purifyUnreachableWarning": "⚠️ このランク1配分自体は、きぜつ回復では到達できません — きぜつ回復は各ステータスを必ず2以上に引き上げるため、{{shadow}}ポケモンは個体値に関係なくそれを下回ることができません。",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(野生捕獲・未強化)",
 			"findTopSelf": "{{league}}向けに、{{except}}上位{{top}}の<name></name>{{caught}}を検索:",
 			"findTopEvolvesTo": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name>{{caught}}を{{league}}向けに検索:",
-			"findTopSelfShadowEither": "{{league}}向けに、{{except}}上位{{top}}の<name></name> — シャドウ問わず —{{caught}}を検索:",
-			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name> — シャドウ問わず —{{caught}}を{{league}}向けに検索:",
+			"findTopSelfShadowEither": "{{league}}向けに、{{except}}上位{{top}}の<name></name> — {{shadow}}問わず —{{caught}}を検索:",
+			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name> — {{shadow}}問わず —{{caught}}を{{league}}向けに検索:",
 			"exceptPrefix": "以下を除くすべて: ",
 			"toThePrefix": ""
 		}

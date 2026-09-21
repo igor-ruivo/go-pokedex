@@ -26,7 +26,6 @@
 		"cp": "WP",
 		"stats": { "atk": "ANG", "def": "VER", "hp": "KP" },
 		"level": { "prefix": "Stufe", "loading": "Stufe …" },
-		"shadowToggle": "Schatten",
 		"switchLeagueAriaLabel": "Zeigt gerade {{league}}. Tippen, um die Liga zu wechseln.",
 		"nextFamilyMemberAriaLabel": "{{current}} — nächste: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "Dein IW-Perzentil · {{shadow}}-{{name}}",
 			"as": "Dein IW-Perzentil · als {{name}}",
 			"asShadow": "Dein IW-Perzentil · als {{shadow}}-{{name}}",
-			"purified": "Dein IW-Perzentil · als geläuterte(s) {{name}}"
+			"purified": "Dein IW-Perzentil · als {{purified}} {{name}}"
 		},
-		"ivRank": "{{league}} IW-Rang",
+		"ivRank": "{{league}}",
 		"perfection": "Perfektion",
 		"cp": "WP",
 		"cpAtLevel": "{{cp}} @ Stufe {{level}}",
 		"additionalBestSpreadFor": "Zusätzliche beste Verteilung für {{league}}:",
 		"bestSpreadResult": "→ {{cp}} WP auf Stufe {{level}}.",
 		"purifyWarning": "⚠️ Beachte, dass Läutern +2 IWs auf jeden Wert gibt.",
-		"purifyUnreachableWarning": "⚠️ Diese Rang-1-Verteilung selbst ist durch Läutern nicht erreichbar — Läutern hebt jeden Wert immer auf mindestens 2 an, sodass ein Schatten-Pokémon unabhängig von seinen eigenen IWs nie darunter landen kann.",
+		"purifyUnreachableWarning": "⚠️ Diese Rang-1-Verteilung selbst ist durch Läutern nicht erreichbar — Läutern hebt jeden Wert immer auf mindestens 2 an, sodass ein {{shadow}}-Pokémon unabhängig von seinen eigenen IWs nie darunter landen kann.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(wild gefangen und noch ungestärkt)",
 			"findTopSelf": "Finde {{except}}Top {{top}} <name></name> {{caught}} für <league></league>:",
 			"findTopEvolvesTo": "Finde <name></name> {{caught}}, das sich zu {{toThe}}{{except}}Top {{top}} <target></target> für <league></league> entwickelt:",
-			"findTopSelfShadowEither": "Finde {{except}}Top {{top}} <name></name> — Schatten oder nicht — {{caught}} für <league></league>:",
-			"findTopEvolvesToShadowEither": "Finde <name></name> — Schatten oder nicht — {{caught}}, das sich zu {{toThe}}{{except}}Top {{top}} <target></target> für <league></league> entwickelt:",
+			"findTopSelfShadowEither": "Finde {{except}}Top {{top}} <name></name> — {{shadow}} oder nicht — {{caught}} für <league></league>:",
+			"findTopEvolvesToShadowEither": "Finde <name></name> — {{shadow}} oder nicht — {{caught}}, das sich zu {{toThe}}{{except}}Top {{top}} <target></target> für <league></league> entwickelt:",
 			"exceptPrefix": "alle außer den ",
 			"toThePrefix": "den "
 		}

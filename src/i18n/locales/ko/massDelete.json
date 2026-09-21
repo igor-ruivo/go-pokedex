@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "개체값이나 랭크와 무관하게 모든 섀도 포켓몬."
+			"description": "개체값이나 랭크와 무관하게 모든 {{shadow}} 포켓몬."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

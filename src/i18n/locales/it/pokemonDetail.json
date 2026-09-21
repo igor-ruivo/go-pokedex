@@ -26,7 +26,6 @@
 		"cp": "PL",
 		"stats": { "atk": "ATT", "def": "DIF", "hp": "PS" },
 		"level": { "prefix": "Liv.", "loading": "Liv. …" },
-		"shadowToggle": "Ombra",
 		"switchLeagueAriaLabel": "Attualmente mostra {{league}}. Tocca per cambiare lega.",
 		"nextFamilyMemberAriaLabel": "{{current}} — successivo: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "Il tuo percentile IV · {{name}} {{shadow}}",
 			"as": "Il tuo percentile IV · come {{name}}",
 			"asShadow": "Il tuo percentile IV · come {{name}} {{shadow}}",
-			"purified": "Il tuo percentile IV · come {{name}} Purificato"
+			"purified": "Il tuo percentile IV · come {{name}} {{purified}}"
 		},
-		"ivRank": "Rango IV {{league}}",
+		"ivRank": "{{league}}",
 		"perfection": "Perfezione",
 		"cp": "PL",
 		"cpAtLevel": "{{cp}} al Liv. {{level}}",
 		"additionalBestSpreadFor": "Distribuzione aggiuntiva per {{league}}:",
 		"bestSpreadResult": "→ {{cp}} PL al Liv. {{level}}.",
 		"purifyWarning": "⚠️ Tieni presente che la purificazione dà +2 IV su ogni statistica.",
-		"purifyUnreachableWarning": "⚠️ Quella distribuzione di rango 1 non è raggiungibile con la purificazione — la purificazione porta sempre ogni statistica ad almeno 2, quindi un Pokémon Ombra non può mai scendere sotto quel valore, indipendentemente dai suoi IV.",
+		"purifyUnreachableWarning": "⚠️ Quella distribuzione di rango 1 non è raggiungibile con la purificazione — la purificazione porta sempre ogni statistica ad almeno 2, quindi un Pokémon {{shadow}} non può mai scendere sotto quel valore, indipendentemente dai suoi IV.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(catturato in natura e ancora non potenziato)",
 			"findTopSelf": "Trova {{except}}il top {{top}} <name></name> {{caught}} per <league></league>:",
 			"findTopEvolvesTo": "Trova <name></name> {{caught}} che evolve in {{toThe}}{{except}}top {{top}} <target></target> per <league></league>:",
-			"findTopSelfShadowEither": "Trova {{except}}il top {{top}} <name></name> — Ombra o no — {{caught}} per <league></league>:",
-			"findTopEvolvesToShadowEither": "Trova <name></name> — Ombra o no — {{caught}} che evolve in {{toThe}}{{except}}top {{top}} <target></target> per <league></league>:",
+			"findTopSelfShadowEither": "Trova {{except}}il top {{top}} <name></name> — {{shadow}} o no — {{caught}} per <league></league>:",
+			"findTopEvolvesToShadowEither": "Trova <name></name> — {{shadow}} o no — {{caught}} che evolve in {{toThe}}{{except}}top {{top}} <target></target> per <league></league>:",
 			"exceptPrefix": "tutti tranne il ",
 			"toThePrefix": "il "
 		}

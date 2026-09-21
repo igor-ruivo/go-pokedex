@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "ATK", "def": "DEF", "hp": "HP" },
 		"level": { "prefix": "Lvl", "loading": "Lvl …" },
-		"shadowToggle": "Shadow",
 		"switchLeagueAriaLabel": "Currently showing {{league}}. Tap to switch league.",
 		"nextFamilyMemberAriaLabel": "{{current}} — next: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "Your IVs Percentile · {{shadow}} {{name}}",
 			"as": "Your IVs Percentile · as {{name}}",
 			"asShadow": "Your IVs Percentile · as {{shadow}} {{name}}",
-			"purified": "Your IVs Percentile · as Purified {{name}}"
+			"purified": "Your IVs Percentile · as {{purified}} {{name}}"
 		},
-		"ivRank": "{{league}} rank",
+		"ivRank": "{{league}}",
 		"perfection": "Perfection",
 		"cp": "CP",
 		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"additionalBestSpreadFor": "Additional best spread for {{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP at L{{level}}.",
 		"purifyWarning": "⚠️ Be aware that purifying gains you +2 IVs on each stat.",
-		"purifyUnreachableWarning": "⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to at least 2, so a Shadow can never land below that no matter its own IVs.",
+		"purifyUnreachableWarning": "⚠️ That rank-1 spread itself is unreachable by purifying — purification always raises every stat to at least 2, so a {{shadow}} can never land below that no matter its own IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(wild caught and still unpowered)",
 			"findTopSelf": "Find {{except}}top {{top}} <name></name> {{caught}} for <league></league>:",
 			"findTopEvolvesTo": "Find <name></name> {{caught}} that evolve to {{toThe}}{{except}}top {{top}} <target></target> for <league></league>:",
-			"findTopSelfShadowEither": "Find {{except}}top {{top}} <name></name> — Shadow or not — {{caught}} for <league></league>:",
-			"findTopEvolvesToShadowEither": "Find <name></name> — Shadow or not — {{caught}} that evolve to {{toThe}}{{except}}top {{top}} <target></target> for <league></league>:",
+			"findTopSelfShadowEither": "Find {{except}}top {{top}} <name></name> — {{shadow}} or not — {{caught}} for <league></league>:",
+			"findTopEvolvesToShadowEither": "Find <name></name> — {{shadow}} or not — {{caught}} that evolve to {{toThe}}{{except}}top {{top}} <target></target> for <league></league>:",
 			"exceptPrefix": "all except the ",
 			"toThePrefix": "the "
 		}

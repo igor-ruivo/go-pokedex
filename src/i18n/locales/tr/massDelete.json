@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Kendi IV'lerine veya sıralamasına bakılmaksızın her Gölge Pokémon."
+			"description": "Kendi IV'lerine veya sıralamasına bakılmaksızın her {{shadow}} Pokémon."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

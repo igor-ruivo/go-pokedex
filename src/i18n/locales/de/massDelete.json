@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Jedes Schatten-Pokémon, unabhängig von eigenen IWs oder Rang."
+			"description": "Jedes {{shadow}}-Pokémon, unabhängig von eigenen IWs oder Rang."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

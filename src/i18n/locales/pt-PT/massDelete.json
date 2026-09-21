@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Todos os Pokémon Sombra, independentemente dos seus IVs ou rank."
+			"description": "Todos os Pokémon {{shadow}}, independentemente dos seus IVs ou rank."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

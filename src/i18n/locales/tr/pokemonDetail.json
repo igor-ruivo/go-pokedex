@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "SLD", "def": "SAV", "hp": "HP" },
 		"level": { "prefix": "Sv.", "loading": "Sv. …" },
-		"shadowToggle": "Gölge",
 		"switchLeagueAriaLabel": "Şu anda {{league}} gösteriliyor. Lig değiştirmek için dokunun.",
 		"nextFamilyMemberAriaLabel": "{{current}} — sonraki: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "IV Yüzdelik Diliminiz · {{shadow}} {{name}}",
 			"as": "IV Yüzdelik Diliminiz · {{name}} olarak",
 			"asShadow": "IV Yüzdelik Diliminiz · {{shadow}} {{name}} olarak",
-			"purified": "IV Yüzdelik Diliminiz · Saflaştırılmış {{name}} olarak"
+			"purified": "IV Yüzdelik Diliminiz · {{purified}} {{name}} olarak"
 		},
-		"ivRank": "{{league}} IV sıralaması",
+		"ivRank": "{{league}}",
 		"perfection": "Mükemmellik",
 		"cp": "CP",
 		"cpAtLevel": "Sv{{level}}'de {{cp}}",
 		"additionalBestSpreadFor": "{{league}} için ek en iyi dağılım:",
 		"bestSpreadResult": "→ Sv{{level}}'de {{cp}} CP.",
 		"purifyWarning": "⚠️ Saflaştırmanın her istatistikte +2 IV kazandırdığını unutmayın.",
-		"purifyUnreachableWarning": "⚠️ O 1. sıradaki dağılımın kendisi saflaştırma yoluyla ulaşılamaz — saflaştırma her istatistiği her zaman en az 2'ye çıkarır, bu yüzden bir Gölge kendi IV'lerine bakılmaksızın asla bunun altına düşemez.",
+		"purifyUnreachableWarning": "⚠️ O 1. sıradaki dağılımın kendisi saflaştırma yoluyla ulaşılamaz — saflaştırma her istatistiği her zaman en az 2'ye çıkarır, bu yüzden bir {{shadow}} kendi IV'lerine bakılmaksızın asla bunun altına düşemez.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(vahşi yakalanmış ve hâlâ güçlendirilmemiş)",
 			"findTopSelf": "<league></league> için ilk {{top}} <name></name>{{except}} {{caught}} olanları bul:",
 			"findTopEvolvesTo": "<league></league> için, evrimleştiğinde ilk {{top}} <target></target>{{except}} olacak <name></name> Pokémon'larını {{caught}} bul:",
-			"findTopSelfShadowEither": "<league></league> için ilk {{top}} <name></name>{{except}} — Gölge olsun olmasın — {{caught}} olanları bul:",
-			"findTopEvolvesToShadowEither": "<league></league> için, evrimleştiğinde ilk {{top}} <target></target>{{except}} olacak <name></name> Pokémon'larını — Gölge olsun olmasın — {{caught}} bul:",
+			"findTopSelfShadowEither": "<league></league> için ilk {{top}} <name></name>{{except}} — {{shadow}} olsun olmasın — {{caught}} olanları bul:",
+			"findTopEvolvesToShadowEither": "<league></league> için, evrimleştiğinde ilk {{top}} <target></target>{{except}} olacak <name></name> Pokémon'larını — {{shadow}} olsun olmasın — {{caught}} bul:",
 			"exceptPrefix": " dışındaki",
 			"toThePrefix": ""
 		}

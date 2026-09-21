@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Todo Pokémon Sombra, sin importar sus IVs o clasificación."
+			"description": "Todo Pokémon {{shadow}}, sin importar sus IVs o clasificación."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

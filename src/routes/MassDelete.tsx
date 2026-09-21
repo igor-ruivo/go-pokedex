@@ -232,7 +232,9 @@ export const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
 			label: t('massDelete:protectionMeta.shadow.label', {
 				shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
 			}),
-			description: t('massDelete:protectionMeta.shadow.description'),
+			description: t('massDelete:protectionMeta.shadow.description', {
+				shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+			}),
 		}),
 	},
 	{

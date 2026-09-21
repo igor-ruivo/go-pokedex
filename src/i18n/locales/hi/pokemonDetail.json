@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "ATK", "def": "DEF", "hp": "HP" },
 		"level": { "prefix": "लेवल", "loading": "लेवल …" },
-		"shadowToggle": "शैडो",
 		"switchLeagueAriaLabel": "अभी {{league}} दिख रही है। लीग बदलने के लिए टैप करें।",
 		"nextFamilyMemberAriaLabel": "{{current}} — अगला: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "आपका IV पर्सेंटाइल · {{shadow}} {{name}}",
 			"as": "आपका IV पर्सेंटाइल · {{name}} के रूप में",
 			"asShadow": "आपका IV पर्सेंटाइल · {{shadow}} {{name}} के रूप में",
-			"purified": "आपका IV पर्सेंटाइल · प्यूरिफाइड {{name}} के रूप में"
+			"purified": "आपका IV पर्सेंटाइल · {{purified}} {{name}} के रूप में"
 		},
-		"ivRank": "{{league}} IV रैंक",
+		"ivRank": "{{league}}",
 		"perfection": "परफेक्शन",
 		"cp": "CP",
 		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"additionalBestSpreadFor": "{{league}} के लिए एक और बेस्ट स्प्रेड:",
 		"bestSpreadResult": "→ L{{level}} पर {{cp}} CP।",
 		"purifyWarning": "⚠️ ध्यान दें, प्यूरिफाई करने से हर स्टैट पर +2 IV मिलते हैं।",
-		"purifyUnreachableWarning": "⚠️ वह रैंक-1 स्प्रेड प्यूरिफाई करके भी नहीं पाया जा सकता — प्यूरिफिकेशन हमेशा हर स्टैट को कम से कम 2 तक बढ़ाता है, इसलिए शैडो कभी उससे नीचे नहीं जा सकता, चाहे उसके अपने IV कुछ भी हों।",
+		"purifyUnreachableWarning": "⚠️ वह रैंक-1 स्प्रेड प्यूरिफाई करके भी नहीं पाया जा सकता — प्यूरिफिकेशन हमेशा हर स्टैट को कम से कम 2 तक बढ़ाता है, इसलिए {{shadow}} कभी उससे नीचे नहीं जा सकता, चाहे उसके अपने IV कुछ भी हों।",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(वाइल्ड कैच और अभी भी अनपावर्ड)",
 			"findTopSelf": "{{except}}टॉप {{top}} <name></name> {{caught}} ढूंढें, <league></league> के लिए:",
 			"findTopEvolvesTo": "<name></name> {{caught}} ढूंढें जो {{toThe}}{{except}}टॉप {{top}} <target></target> में इवॉल्व होते हैं, <league></league> के लिए:",
-			"findTopSelfShadowEither": "{{except}}टॉप {{top}} <name></name> — शैडो हो या न हो — {{caught}} ढूंढें, <league></league> के लिए:",
-			"findTopEvolvesToShadowEither": "<name></name> — शैडो हो या न हो — {{caught}} ढूंढें जो {{toThe}}{{except}}टॉप {{top}} <target></target> में इवॉल्व होते हैं, <league></league> के लिए:",
+			"findTopSelfShadowEither": "{{except}}टॉप {{top}} <name></name> — {{shadow}} हो या न हो — {{caught}} ढूंढें, <league></league> के लिए:",
+			"findTopEvolvesToShadowEither": "<name></name> — {{shadow}} हो या न हो — {{caught}} ढूंढें जो {{toThe}}{{except}}टॉप {{top}} <target></target> में इवॉल्व होते हैं, <league></league> के लिए:",
 			"exceptPrefix": "टॉप को छोड़कर बाक़ी सब ",
 			"toThePrefix": ""
 		}

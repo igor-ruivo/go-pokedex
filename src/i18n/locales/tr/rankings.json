@@ -18,7 +18,7 @@
 	"hint": {
 		"show": "Sıralama varsayımlarını göster",
 		"hide": "Sıralama varsayımlarını gizle",
-		"text": "{{raid}} sıralamaları, her Pokémon'un Etkili {{type}} türü hasarı (×1,6) veren en iyi hızlı + şarjlı hareket kombinasyonunun, 5. Seviye gölge olmayan bir patrona (200 Savunma, seviye 40) karşı, seviye 50 bir saldırganla (15 Saldırı IV), hava durumu, arkadaşlık veya takım arkadaşı {{mega}} aurası bonusu olmadan kullanılmasını varsayar. Süper {{mega}} Pokémon'lar Maks. {{mega}} Seviyesi olarak sıralanır."
+		"text": "{{raid}} sıralamaları, her Pokémon'un Etkili {{type}} türü hasarı (×1,6) veren en iyi hızlı + şarjlı hareket kombinasyonunun, 5. Seviye {{shadow}} olmayan bir patrona (200 Savunma, seviye 40) karşı, seviye 50 bir saldırganla (15 Saldırı IV), hava durumu, arkadaşlık veya takım arkadaşı {{mega}} aurası bonusu olmadan kullanılmasını varsayar. Süper {{mega}} Pokémon'lar Maks. {{mega}} Seviyesi olarak sıralanır."
 	},
 	"empty": {
 		"pickType": "O türün en iyi {{raid}} saldırganlarını görmek için filtreden bir tür seçin.",

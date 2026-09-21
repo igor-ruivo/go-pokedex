@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "공격", "def": "방어", "hp": "HP" },
 		"level": { "prefix": "Lv", "loading": "Lv …" },
-		"shadowToggle": "섀도",
 		"switchLeagueAriaLabel": "현재 {{league}} 표시 중. 탭하여 리그 전환.",
 		"nextFamilyMemberAriaLabel": "{{current}} — 다음: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "개체값 백분위 · {{shadow}} {{name}}",
 			"as": "개체값 백분위 · {{name}}(으)로",
 			"asShadow": "개체값 백분위 · {{shadow}} {{name}}(으)로",
-			"purified": "개체값 백분위 · 프리져 {{name}}(으)로"
+			"purified": "개체값 백분위 · {{purified}} {{name}}(으)로"
 		},
-		"ivRank": "{{league}} 개체값 랭크",
+		"ivRank": "{{league}}",
 		"perfection": "완성도",
 		"cp": "CP",
 		"cpAtLevel": "Lv{{level}} 기준 {{cp}}",
 		"additionalBestSpreadFor": "{{league}} 추가 최고 배분:",
 		"bestSpreadResult": "→ Lv{{level}}에서 CP {{cp}}.",
 		"purifyWarning": "⚠️ 프리져 시 각 스탯에 개체값 +2가 부여된다는 점을 유의하세요.",
-		"purifyUnreachableWarning": "⚠️ 이 랭크 1 배분 자체는 프리져로는 도달할 수 없습니다 — 프리져는 항상 각 스탯을 최소 2 이상으로 올리므로, 섀도 포켓몬은 자신의 개체값과 무관하게 그보다 낮아질 수 없습니다.",
+		"purifyUnreachableWarning": "⚠️ 이 랭크 1 배분 자체는 프리져로는 도달할 수 없습니다 — 프리져는 항상 각 스탯을 최소 2 이상으로 올리므로, {{shadow}} 포켓몬은 자신의 개체값과 무관하게 그보다 낮아질 수 없습니다.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(야생 포획, 강화 안 함)",
 			"findTopSelf": "{{league}}을(를) 위해 {{except}}상위 {{top}} <name></name>{{caught}} 찾기:",
 			"findTopEvolvesTo": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name>{{caught}}을(를) {{league}}을(를) 위해 찾기:",
-			"findTopSelfShadowEither": "{{league}}을(를) 위해 {{except}}상위 {{top}} <name></name> — 섀도 여부 무관 —{{caught}} 찾기:",
-			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name> — 섀도 여부 무관 —{{caught}}을(를) {{league}}을(를) 위해 찾기:",
+			"findTopSelfShadowEither": "{{league}}을(를) 위해 {{except}}상위 {{top}} <name></name> — {{shadow}} 여부 무관 —{{caught}} 찾기:",
+			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name> — {{shadow}} 여부 무관 —{{caught}}을(를) {{league}}을(를) 위해 찾기:",
 			"exceptPrefix": "다음을 제외한 모두: ",
 			"toThePrefix": ""
 		}

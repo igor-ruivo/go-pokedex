@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Каждый теневой покемон, независимо от его IV или рейтинга."
+			"description": "Каждый {{shadow}} покемон, независимо от его IV или рейтинга."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

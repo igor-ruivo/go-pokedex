@@ -135,7 +135,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 			<div className='r-section-h'>
 				{t('pokemonDetail:ivTable.heading', {
 					league: LEAGUE_FULL[league],
-					shadow: pokemon.isShadow ? `${t('pokemonDetail:hero.shadowToggle')} ` : '',
+					shadow: pokemon.isShadow ? `${gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)} ` : '',
 					name: cleanName(pokemon.speciesName),
 				})}
 			</div>

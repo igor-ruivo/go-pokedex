@@ -26,7 +26,6 @@
 		"cp": "PC",
 		"stats": { "atk": "ATT", "def": "DÉF", "hp": "PV" },
 		"level": { "prefix": "Niv.", "loading": "Niv. …" },
-		"shadowToggle": "Ombre",
 		"switchLeagueAriaLabel": "Affiche actuellement {{league}}. Touchez pour changer de ligue.",
 		"nextFamilyMemberAriaLabel": "{{current}} — suivant : {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "Votre percentile d'IV · {{name}} {{shadow}}",
 			"as": "Votre percentile d'IV · en tant que {{name}}",
 			"asShadow": "Votre percentile d'IV · en tant que {{name}} {{shadow}}",
-			"purified": "Votre percentile d'IV · en tant que {{name}} Purifié"
+			"purified": "Votre percentile d'IV · en tant que {{name}} {{purified}}"
 		},
-		"ivRank": "Rang IV {{league}}",
+		"ivRank": "{{league}}",
 		"perfection": "Perfection",
 		"cp": "PC",
 		"cpAtLevel": "{{cp}} au Niv. {{level}}",
 		"additionalBestSpreadFor": "Répartition supplémentaire pour {{league}} :",
 		"bestSpreadResult": "→ {{cp}} PC au Niv. {{level}}.",
 		"purifyWarning": "⚠️ Notez que la purification confère +2 IV sur chaque statistique.",
-		"purifyUnreachableWarning": "⚠️ Cette répartition de rang 1 est elle-même inatteignable par purification — la purification remonte toujours chaque statistique à au moins 2, donc un Pokémon Ombre ne peut jamais descendre en dessous, quels que soient ses propres IV.",
+		"purifyUnreachableWarning": "⚠️ Cette répartition de rang 1 est elle-même inatteignable par purification — la purification remonte toujours chaque statistique à au moins 2, donc un Pokémon {{shadow}} ne peut jamais descendre en dessous, quels que soient ses propres IV.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(capturé à l'état sauvage et encore non renforcé)",
 			"findTopSelf": "Trouver {{except}}le top {{top}} <name></name> {{caught}} pour <league></league> :",
 			"findTopEvolvesTo": "Trouver <name></name> {{caught}} évoluant vers {{toThe}}{{except}}top {{top}} <target></target> pour <league></league> :",
-			"findTopSelfShadowEither": "Trouver {{except}}le top {{top}} <name></name> — Ombre ou non — {{caught}} pour <league></league> :",
-			"findTopEvolvesToShadowEither": "Trouver <name></name> — Ombre ou non — {{caught}} évoluant vers {{toThe}}{{except}}top {{top}} <target></target> pour <league></league> :",
+			"findTopSelfShadowEither": "Trouver {{except}}le top {{top}} <name></name> — {{shadow}} ou non — {{caught}} pour <league></league> :",
+			"findTopEvolvesToShadowEither": "Trouver <name></name> — {{shadow}} ou non — {{caught}} évoluant vers {{toThe}}{{except}}top {{top}} <target></target> pour <league></league> :",
 			"exceptPrefix": "tous sauf le ",
 			"toThePrefix": "le "
 		}

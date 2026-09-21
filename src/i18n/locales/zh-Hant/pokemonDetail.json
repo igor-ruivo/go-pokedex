@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "攻擊", "def": "防禦", "hp": "體力" },
 		"level": { "prefix": "等級", "loading": "等級 …" },
-		"shadowToggle": "暗影",
 		"switchLeagueAriaLabel": "目前顯示 {{league}}。點選以切換聯盟。",
 		"nextFamilyMemberAriaLabel": "{{current}} — 下一個：{{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "你的個體值百分位 · {{shadow}}{{name}}",
 			"as": "你的個體值百分位 · 作為 {{name}}",
 			"asShadow": "你的個體值百分位 · 作為{{shadow}}{{name}}",
-			"purified": "你的個體值百分位 · 作為淨化{{name}}"
+			"purified": "你的個體值百分位 · 作為{{purified}}{{name}}"
 		},
-		"ivRank": "{{league}} 個體值排名",
+		"ivRank": "{{league}}",
 		"perfection": "完美度",
 		"cp": "CP",
 		"cpAtLevel": "L{{level}} 時的 {{cp}}",
 		"additionalBestSpreadFor": "{{league}} 額外的最佳數值組合：",
 		"bestSpreadResult": "→ L{{level}} 時 {{cp}} CP。",
 		"purifyWarning": "⚠️ 請注意，淨化會使每項數值的個體值提升 +2。",
-		"purifyUnreachableWarning": "⚠️ 這個排名第 1 的數值組合本身無法透過淨化達成 — 淨化一律會將每項數值提升至至少 2，因此暗影寶可夢無論個體值如何，都不可能低於此組合。",
+		"purifyUnreachableWarning": "⚠️ 這個排名第 1 的數值組合本身無法透過淨化達成 — 淨化一律會將每項數值提升至至少 2，因此{{shadow}}寶可夢無論個體值如何，都不可能低於此組合。",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "（野生捕獲且尚未強化）",
 			"findTopSelf": "尋找{{except}}前 {{top}} 名的 <name></name>，{{caught}}，適用於 <league></league>：",
 			"findTopEvolvesTo": "尋找 <name></name>，{{caught}}，會進化為{{toThe}}{{except}}前 {{top}} 名的 <target></target>，適用於 <league></league>：",
-			"findTopSelfShadowEither": "尋找{{except}}前 {{top}} 名的 <name></name> — 無論是否為暗影 — {{caught}}，適用於 <league></league>：",
-			"findTopEvolvesToShadowEither": "尋找 <name></name> — 無論是否為暗影 — {{caught}}，會進化為{{toThe}}{{except}}前 {{top}} 名的 <target></target>，適用於 <league></league>：",
+			"findTopSelfShadowEither": "尋找{{except}}前 {{top}} 名的 <name></name> — 無論是否為{{shadow}} — {{caught}}，適用於 <league></league>：",
+			"findTopEvolvesToShadowEither": "尋找 <name></name> — 無論是否為{{shadow}} — {{caught}}，會進化為{{toThe}}{{except}}前 {{top}} 名的 <target></target>，適用於 <league></league>：",
 			"exceptPrefix": "非",
 			"toThePrefix": ""
 		}

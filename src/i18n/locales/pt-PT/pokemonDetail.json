@@ -26,7 +26,6 @@
 		"cp": "PC",
 		"stats": { "atk": "ATQ", "def": "DEF", "hp": "PS" },
 		"level": { "prefix": "Nv.", "loading": "Nv. …" },
-		"shadowToggle": "Sombroso",
 		"switchLeagueAriaLabel": "A mostrar {{league}}. Toque para mudar de liga.",
 		"nextFamilyMemberAriaLabel": "{{current}} — próximo: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "Percentil dos seus IVs · {{name}} {{shadow}}",
 			"as": "Percentil dos seus IVs · como {{name}}",
 			"asShadow": "Percentil dos seus IVs · como {{name}} {{shadow}}",
-			"purified": "Percentil dos seus IVs · como {{name}} Purificado"
+			"purified": "Percentil dos seus IVs · como {{name}} {{purified}}"
 		},
-		"ivRank": "rank de IV em {{league}}",
+		"ivRank": "{{league}}",
 		"perfection": "Perfeição",
 		"cp": "PC",
 		"cpAtLevel": "{{cp}} @ Nv{{level}}",
 		"additionalBestSpreadFor": "Combinação adicional para {{league}}:",
 		"bestSpreadResult": "→ {{cp}} PC ao Nv{{level}}.",
 		"purifyWarning": "⚠️ Tenha em atenção que purificar concede +2 IVs em cada atributo.",
-		"purifyUnreachableWarning": "⚠️ Essa combinação de rank 1 é inalcançável através da purificação — a purificação eleva sempre cada atributo a pelo menos 2, pelo que um Sombroso nunca poderá ficar abaixo desse valor, independentemente dos seus próprios IVs.",
+		"purifyUnreachableWarning": "⚠️ Essa combinação de rank 1 é inalcançável através da purificação — a purificação eleva sempre cada atributo a pelo menos 2, pelo que um {{shadow}} nunca poderá ficar abaixo desse valor, independentemente dos seus próprios IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(capturado selvagem e ainda não reforçado)",
 			"findTopSelf": "Encontre {{except}}o top {{top}} de <name></name> {{caught}} para <league></league>:",
 			"findTopEvolvesTo": "Encontre <name></name> {{caught}} que evolui para {{toThe}}{{except}}o top {{top}} de <target></target> para <league></league>:",
-			"findTopSelfShadowEither": "Encontre {{except}}o top {{top}} de <name></name> — Sombroso ou não — {{caught}} para <league></league>:",
-			"findTopEvolvesToShadowEither": "Encontre <name></name> — Sombroso ou não — {{caught}} que evolui para {{toThe}}{{except}}o top {{top}} de <target></target> para <league></league>:",
+			"findTopSelfShadowEither": "Encontre {{except}}o top {{top}} de <name></name> — {{shadow}} ou não — {{caught}} para <league></league>:",
+			"findTopEvolvesToShadowEither": "Encontre <name></name> — {{shadow}} ou não — {{caught}} que evolui para {{toThe}}{{except}}o top {{top}} de <target></target> para <league></league>:",
 			"exceptPrefix": "todos exceto ",
 			"toThePrefix": ""
 		}

@@ -26,7 +26,6 @@
 		"cp": "PC",
 		"stats": { "atk": "ATQ", "def": "DEF", "hp": "PS" },
 		"level": { "prefix": "Nv.", "loading": "Nv. …" },
-		"shadowToggle": "Sombra",
 		"switchLeagueAriaLabel": "Mostrando {{league}} actualmente. Toca para cambiar de liga.",
 		"nextFamilyMemberAriaLabel": "{{current}} — siguiente: {{next}}"
 	},
@@ -63,16 +62,16 @@
 			"selfShadow": "Tu percentil de IVs · {{name}} {{shadow}}",
 			"as": "Tu percentil de IVs · como {{name}}",
 			"asShadow": "Tu percentil de IVs · como {{name}} {{shadow}}",
-			"purified": "Tu percentil de IVs · como {{name}} Purificado"
+			"purified": "Tu percentil de IVs · como {{name}} {{purified}}"
 		},
-		"ivRank": "Clasificación de IVs en {{league}}",
+		"ivRank": "{{league}}",
 		"perfection": "Perfección",
 		"cp": "PC",
 		"cpAtLevel": "{{cp}} al Nv. {{level}}",
 		"additionalBestSpreadFor": "Reparto adicional para {{league}}:",
 		"bestSpreadResult": "→ {{cp}} PC al Nv. {{level}}.",
 		"purifyWarning": "⚠️ Ten en cuenta que purificar te da +2 IVs en cada estadística.",
-		"purifyUnreachableWarning": "⚠️ Ese reparto de rango 1 en sí es inalcanzable purificando — la purificación siempre sube cada estadística a al menos 2, así que un Sombra nunca puede quedar por debajo de eso, sin importar sus propios IVs.",
+		"purifyUnreachableWarning": "⚠️ Ese reparto de rango 1 en sí es inalcanzable purificando — la purificación siempre sube cada estadística a al menos 2, así que un {{shadow}} nunca puede quedar por debajo de eso, sin importar sus propios IVs.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -203,8 +202,8 @@
 			"caught": "(capturado salvaje y aún sin potenciar)",
 			"findTopSelf": "Buscar {{except}}top {{top}} <name></name> {{caught}} para <league></league>:",
 			"findTopEvolvesTo": "Buscar <name></name> {{caught}} que evolucionen a {{toThe}}{{except}}top {{top}} <target></target> para <league></league>:",
-			"findTopSelfShadowEither": "Buscar {{except}}top {{top}} <name></name> — Sombra o no — {{caught}} para <league></league>:",
-			"findTopEvolvesToShadowEither": "Buscar <name></name> — Sombra o no — {{caught}} que evolucionen a {{toThe}}{{except}}top {{top}} <target></target> para <league></league>:",
+			"findTopSelfShadowEither": "Buscar {{except}}top {{top}} <name></name> — {{shadow}} o no — {{caught}} para <league></league>:",
+			"findTopEvolvesToShadowEither": "Buscar <name></name> — {{shadow}} o no — {{caught}} que evolucionen a {{toThe}}{{except}}top {{top}} <target></target> para <league></league>:",
 			"exceptPrefix": "todo excepto el ",
 			"toThePrefix": "el "
 		}

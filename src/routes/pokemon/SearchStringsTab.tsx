@@ -527,10 +527,10 @@ const ClipIcon = () => (
  *  `--t-*` vars the rest of the app already tints itself from (see
  *  `typeVar`/`accentStyle` in lib/types.ts). */
 const NameLabel = ({ p }: { p: IGamemasterPokemon }) => {
-	const { t } = useTranslation(['pokemonDetail']);
+	const { currentGameLanguage: gl } = useLanguage();
 	return (
 		<span style={{ color: typeVar(p.types[0]), fontWeight: 600 }}>
-			{(p.isShadow ? `${t('pokemonDetail:hero.shadowToggle')} ` : '') + cleanName(p.speciesName)}
+			{(p.isShadow ? `${gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)} ` : '') + cleanName(p.speciesName)}
 		</span>
 	);
 };
@@ -564,6 +564,7 @@ const Sentence = ({
 	leagueColorVar: string;
 }) => {
 	const { t } = useTranslation(['pokemonDetail']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const except = trash ? t('pokemonDetail:searchStrings.sentence.exceptPrefix') : '';
 	// The translated "the"-equivalent belongs right before "top" only in the
 	// default phrasing — the "except" phrasing already supplies its own
@@ -580,7 +581,7 @@ const Sentence = ({
 			return (
 				<Trans
 					i18nKey='pokemonDetail:searchStrings.sentence.findTopSelfShadowEither'
-					values={{ except, top, caught }}
+					values={{ except, top, caught, shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) }}
 					components={{ name: <NameLabel p={p} />, league }}
 				/>
 			);
@@ -588,7 +589,7 @@ const Sentence = ({
 		return (
 			<Trans
 				i18nKey='pokemonDetail:searchStrings.sentence.findTopEvolvesToShadowEither'
-				values={{ except, top, caught, toThe }}
+				values={{ except, top, caught, toThe, shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl) }}
 				components={{ name: <NameLabel p={p} />, target: <NameLabel p={target} />, league }}
 			/>
 		);

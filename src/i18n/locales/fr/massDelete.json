@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Tous les Pokémon Ombre, quels que soient leurs IV ou leur rang."
+			"description": "Tous les Pokémon {{shadow}}, quels que soient leurs IV ou leur rang."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

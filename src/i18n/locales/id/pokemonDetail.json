@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "ATK", "def": "DEF", "hp": "HP" },
 		"level": { "prefix": "Lvl", "loading": "Lvl …" },
-		"shadowToggle": "Shadow",
 		"switchLeagueAriaLabel": "Sedang menampilkan {{league}}. Ketuk untuk ganti liga.",
 		"nextFamilyMemberAriaLabel": "{{current}} — berikutnya: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "Persentil IV Anda · {{shadow}} {{name}}",
 			"as": "Persentil IV Anda · sebagai {{name}}",
 			"asShadow": "Persentil IV Anda · sebagai {{shadow}} {{name}}",
-			"purified": "Persentil IV Anda · sebagai Purified {{name}}"
+			"purified": "Persentil IV Anda · sebagai {{purified}} {{name}}"
 		},
-		"ivRank": "Peringkat IV {{league}}",
+		"ivRank": "{{league}}",
 		"perfection": "Kesempurnaan",
 		"cp": "CP",
 		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"additionalBestSpreadFor": "Spread terbaik tambahan untuk {{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP di L{{level}}.",
 		"purifyWarning": "⚠️ Perlu diketahui bahwa memurnikan memberi +2 IV pada setiap stat.",
-		"purifyUnreachableWarning": "⚠️ Spread peringkat 1 itu sendiri tidak bisa dicapai lewat pemurnian — pemurnian selalu menaikkan setiap stat minimal ke 2, jadi Pokémon Shadow tidak akan pernah berada di bawah itu berapa pun IV aslinya.",
+		"purifyUnreachableWarning": "⚠️ Spread peringkat 1 itu sendiri tidak bisa dicapai lewat pemurnian — pemurnian selalu menaikkan setiap stat minimal ke 2, jadi Pokémon {{shadow}} tidak akan pernah berada di bawah itu berapa pun IV aslinya.",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(tangkapan liar dan belum ditingkatkan)",
 			"findTopSelf": "Temukan {{except}}top {{top}} <name></name> {{caught}} untuk <league></league>:",
 			"findTopEvolvesTo": "Temukan <name></name> {{caught}} yang berevolusi menjadi {{toThe}}{{except}}top {{top}} <target></target> untuk <league></league>:",
-			"findTopSelfShadowEither": "Temukan {{except}}top {{top}} <name></name> — Shadow atau bukan — {{caught}} untuk <league></league>:",
-			"findTopEvolvesToShadowEither": "Temukan <name></name> — Shadow atau bukan — {{caught}} yang berevolusi menjadi {{toThe}}{{except}}top {{top}} <target></target> untuk <league></league>:",
+			"findTopSelfShadowEither": "Temukan {{except}}top {{top}} <name></name> — {{shadow}} atau bukan — {{caught}} untuk <league></league>:",
+			"findTopEvolvesToShadowEither": "Temukan <name></name> — {{shadow}} atau bukan — {{caught}} yang berevolusi menjadi {{toThe}}{{except}}top {{top}} <target></target> untuk <league></league>:",
 			"exceptPrefix": "semua kecuali ",
 			"toThePrefix": "yang "
 		}

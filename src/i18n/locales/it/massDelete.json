@@ -96,7 +96,7 @@
 		},
 		"shadow": {
 			"label": "{{shadow}}",
-			"description": "Ogni Pokémon Ombra, indipendentemente dai suoi IV o rango."
+			"description": "Ogni Pokémon {{shadow}}, indipendentemente dai suoi IV o rango."
 		},
 		"dynamax": {
 			"label": "{{dynamax}}",

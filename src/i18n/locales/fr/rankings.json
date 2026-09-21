@@ -18,7 +18,7 @@
 	"hint": {
 		"show": "Afficher les hypothèses de classement",
 		"hide": "Masquer les hypothèses de classement",
-		"text": "Les classements de {{raid}} supposent la meilleure combinaison de capacité rapide + chargée de chaque Pokémon, infligeant des dégâts de type {{type}} Efficaces (×1,6) à un boss non-Ombre de niveau 5 (200 en Défense, niveau 40), avec un attaquant de niveau 50 (15 IV d'Attaque) et sans bonus de météo, d'amitié ou d'aura {{mega}} d'un coéquipier. Les Pokémon Super {{mega}} sont classés au niveau {{mega}} maximal."
+		"text": "Les classements de {{raid}} supposent la meilleure combinaison de capacité rapide + chargée de chaque Pokémon, infligeant des dégâts de type {{type}} Efficaces (×1,6) à un boss non-{{shadow}} de niveau 5 (200 en Défense, niveau 40), avec un attaquant de niveau 50 (15 IV d'Attaque) et sans bonus de météo, d'amitié ou d'aura {{mega}} d'un coéquipier. Les Pokémon Super {{mega}} sont classés au niveau {{mega}} maximal."
 	},
 	"empty": {
 		"pickType": "Choisissez un type dans le filtre pour voir les meilleurs attaquants de {{raid}} de ce type.",

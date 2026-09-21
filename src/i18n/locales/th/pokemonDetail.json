@@ -26,7 +26,6 @@
 		"cp": "CP",
 		"stats": { "atk": "ATK", "def": "DEF", "hp": "HP" },
 		"level": { "prefix": "เลเวล", "loading": "เลเวล …" },
-		"shadowToggle": "เชโดว์",
 		"switchLeagueAriaLabel": "กำลังแสดง {{league}} แตะเพื่อสลับลีก",
 		"nextFamilyMemberAriaLabel": "{{current}} — ถัดไป: {{next}}"
 	},
@@ -65,16 +64,16 @@
 			"selfShadow": "เปอร์เซ็นไทล์ IV ของคุณ · {{shadow}} {{name}}",
 			"as": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะ {{name}}",
 			"asShadow": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะ{{shadow}} {{name}}",
-			"purified": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะเพียวริฟาย {{name}}"
+			"purified": "เปอร์เซ็นไทล์ IV ของคุณ · ในฐานะ{{purified}} {{name}}"
 		},
-		"ivRank": "อันดับ IV ใน{{league}}",
+		"ivRank": "{{league}}",
 		"perfection": "ความสมบูรณ์แบบ",
 		"cp": "CP",
 		"cpAtLevel": "{{cp}} @ L{{level}}",
 		"additionalBestSpreadFor": "ค่าที่ดีที่สุดเพิ่มเติมสำหรับ{{league}}:",
 		"bestSpreadResult": "→ {{cp}} CP ที่ L{{level}}",
 		"purifyWarning": "⚠️ โปรดทราบว่าการเพียวริฟายจะเพิ่ม IV +2 ให้ทุกค่าสแตท",
-		"purifyUnreachableWarning": "⚠️ ค่าอันดับ 1 นั้นไม่สามารถเข้าถึงได้แม้จะเพียวริฟาย — การเพียวริฟายจะเพิ่มทุกค่าสแตทให้อย่างน้อย 2 เสมอ ดังนั้นเชโดว์จะไม่มีทางต่ำกว่านั้นไม่ว่า IV เดิมจะเป็นเท่าไร",
+		"purifyUnreachableWarning": "⚠️ ค่าอันดับ 1 นั้นไม่สามารถเข้าถึงได้แม้จะเพียวริฟาย — การเพียวริฟายจะเพิ่มทุกค่าสแตทให้อย่างน้อย 2 เสมอ ดังนั้น{{shadow}}จะไม่มีทางต่ำกว่านั้นไม่ว่า IV เดิมจะเป็นเท่าไร",
 		"presets": {
 			"zero": "0 / 0 / 0",
 			"hundo": "15 / 15 / 15",
@@ -205,8 +204,8 @@
 			"caught": "(จับได้ในป่าและยังไม่ได้อัปพลัง)",
 			"findTopSelf": "ค้นหา{{except}}ท็อป {{top}} <name></name> {{caught}} สำหรับ<league></league>:",
 			"findTopEvolvesTo": "ค้นหา <name></name> {{caught}} ที่วิวัฒนาการเป็น{{toThe}}{{except}}ท็อป {{top}} <target></target> สำหรับ<league></league>:",
-			"findTopSelfShadowEither": "ค้นหา{{except}}ท็อป {{top}} <name></name> — เชโดว์หรือไม่ก็ได้ — {{caught}} สำหรับ<league></league>:",
-			"findTopEvolvesToShadowEither": "ค้นหา <name></name> — เชโดว์หรือไม่ก็ได้ — {{caught}} ที่วิวัฒนาการเป็น{{toThe}}{{except}}ท็อป {{top}} <target></target> สำหรับ<league></league>:",
+			"findTopSelfShadowEither": "ค้นหา{{except}}ท็อป {{top}} <name></name> — {{shadow}}หรือไม่ก็ได้ — {{caught}} สำหรับ<league></league>:",
+			"findTopEvolvesToShadowEither": "ค้นหา <name></name> — {{shadow}}หรือไม่ก็ได้ — {{caught}} ที่วิวัฒนาการเป็น{{toThe}}{{except}}ท็อป {{top}} <target></target> สำหรับ<league></league>:",
 			"exceptPrefix": "ทั้งหมดยกเว้น",
 			"toThePrefix": ""
 		}

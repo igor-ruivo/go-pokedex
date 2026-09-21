@@ -18,7 +18,7 @@
 	"hint": {
 		"show": "Show ranking assumptions",
 		"hide": "Hide ranking assumptions",
-		"text": "{{raid}} ranks assume each Pokémon’s best fast + charged move combo dealing Effective {{type}}-type damage (×1.6) against a Tier 5 non-shadow boss (200 Defense, level 40), with a level 50 attacker (15 Attack IV) and no weather, friendship or teammate {{mega}}-aura bonuses. Super {{mega}} Pokémon are ranked as Max {{mega}} Level."
+		"text": "{{raid}} ranks assume each Pokémon’s best fast + charged move combo dealing Effective {{type}}-type damage (×1.6) against a Tier 5 non-{{shadow}} boss (200 Defense, level 40), with a level 50 attacker (15 Attack IV) and no weather, friendship or teammate {{mega}}-aura bonuses. Super {{mega}} Pokémon are ranked as Max {{mega}} Level."
 	},
 	"empty": {
 		"pickType": "Pick a type in the filter to see the best {{raid}} attackers of that type.",
