@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "A sua string de pesquisa aparece aqui. Cole-a na barra de pesquisa do Pokémon GO para rever os seus candidatos a troca.",
 	"characterCount_one": "{{formatted}} carácter",
 	"characterCount_other": "{{formatted}} caracteres",
-	"lengthWarningMeta": " — ⚠️ isto pode ser demasiado longo para a pesquisa em alguns telemóveis Android; considere usar o interruptor de modo de eliminação simplificado acima se reparar que a string é cortada ao colá-la na barra de pesquisa do Pokémon Go.",
-	"lengthWarningTrade": " — ⚠️ isto pode ser demasiado longo para a pesquisa em alguns telemóveis Android; colar na barra de pesquisa do Pokémon GO pode cortar o final da string.",
+	"lengthWarningMeta": " — ⚠️ se for cortada ao colá-la na barra de pesquisa do Pokémon GO, a causa costuma ser o próprio botão de colar do teclado (por exemplo, o atalho da área de transferência do Gboard), que pode cortar silenciosamente textos muito longos; cole antes através da área de transferência do próprio telemóvel (por exemplo, mantenha premida a barra de pesquisa e escolha \"Colar\"), ou use o interruptor de modo de eliminação simplificado acima para encurtar a string.",
+	"lengthWarningTrade": " — ⚠️ se for cortada ao colá-la na barra de pesquisa do Pokémon GO, a causa costuma ser o próprio botão de colar do teclado (por exemplo, o atalho da área de transferência do Gboard), que pode cortar silenciosamente textos muito longos; cole antes através da área de transferência do próprio telemóvel (por exemplo, mantenha premida a barra de pesquisa e escolha \"Colar\").",
 	"copySearchString": "Copiar string de pesquisa",
 	"copied": "Copiado ✓",
 	"panelSummary": {

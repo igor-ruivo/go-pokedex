@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "搜尋字串將顯示於此。貼到 Pokémon GO 的搜尋欄以檢視交換候選名單。",
 	"characterCount_one": "{{formatted}} 個字元",
 	"characterCount_other": "{{formatted}} 個字元",
-	"lengthWarningMeta": " — ⚠️ 部分 Android 手機的搜尋欄可能過長；若貼上後字串被截斷，可考慮使用上方的簡化刪除模式。",
-	"lengthWarningTrade": " — ⚠️ 部分 Android 手機的搜尋欄可能過長；貼到 Pokémon GO 搜尋欄後，字串結尾可能會被截斷。",
+	"lengthWarningMeta": " — ⚠️ 若貼到 Pokémon GO 搜尋欄後字串被截斷，通常是輸入法自己的貼上按鈕（例如 Gboard 的剪貼簿捷徑）造成的，它可能會在不提示的情況下截斷很長的文字；請改用手機系統本身的剪貼簿貼上（例如長按搜尋欄後選擇「貼上」），或使用上方的簡化刪除模式來縮短字串。",
+	"lengthWarningTrade": " — ⚠️ 若貼到 Pokémon GO 搜尋欄後字串被截斷，通常是輸入法自己的貼上按鈕（例如 Gboard 的剪貼簿捷徑）造成的，它可能會在不提示的情況下截斷很長的文字；請改用手機系統本身的剪貼簿貼上（例如長按搜尋欄後選擇「貼上」）。",
 	"copySearchString": "複製搜尋字串",
 	"copied": "已複製 ✓",
 	"panelSummary": {

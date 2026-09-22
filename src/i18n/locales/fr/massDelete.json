@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "Votre chaîne de recherche apparaît ici. Collez-la dans la barre de recherche de Pokémon GO pour examiner vos candidats à l'échange.",
 	"characterCount_one": "{{formatted}} caractère",
 	"characterCount_other": "{{formatted}} caractères",
-	"lengthWarningMeta": " — ⚠️ cela peut être trop long pour la barre de recherche sur certains téléphones Android ; envisagez d'utiliser le mode de suppression simplifié ci-dessus si vous remarquez que la chaîne est tronquée après l'avoir collée dans la barre de recherche de Pokémon GO.",
-	"lengthWarningTrade": " — ⚠️ cela peut être trop long pour la barre de recherche sur certains téléphones Android ; le collage dans la barre de recherche de Pokémon GO peut tronquer la fin de la chaîne.",
+	"lengthWarningMeta": " — ⚠️ si elle est tronquée après l'avoir collée dans la barre de recherche de Pokémon GO, la cause est généralement le bouton « coller » propre à votre clavier (par exemple le raccourci presse-papiers de Gboard), qui peut tronquer silencieusement les textes très longs ; collez plutôt via le presse-papiers natif de votre téléphone (par exemple en restant appuyé sur la barre de recherche puis en choisissant « Coller »), ou utilisez le mode de suppression simplifié ci-dessus pour raccourcir la chaîne.",
+	"lengthWarningTrade": " — ⚠️ si elle est tronquée après l'avoir collée dans la barre de recherche de Pokémon GO, la cause est généralement le bouton « coller » propre à votre clavier (par exemple le raccourci presse-papiers de Gboard), qui peut tronquer silencieusement les textes très longs ; collez plutôt via le presse-papiers natif de votre téléphone (par exemple en restant appuyé sur la barre de recherche puis en choisissant « Coller »).",
 	"copySearchString": "Copier la chaîne de recherche",
 	"copied": "Copié ✓",
 	"panelSummary": {

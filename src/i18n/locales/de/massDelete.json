@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "Dein Suchstring erscheint hier. Füge ihn in die Pokémon-GO-Suchleiste ein, um deine Tauschkandidaten zu prüfen.",
 	"characterCount_one": "{{formatted}} Zeichen",
 	"characterCount_other": "{{formatted}} Zeichen",
-	"lengthWarningMeta": " — ⚠️ das könnte auf manchen Android-Handys zu lang für die Suchleiste sein; nutze ggf. den Schalter für den vereinfachten Löschmodus oben, falls der String nach dem Einfügen in die Pokémon-GO-Suchleiste abgeschnitten wird.",
-	"lengthWarningTrade": " — ⚠️ das könnte auf manchen Android-Handys zu lang für die Suchleiste sein; beim Einfügen in die Pokémon-GO-Suchleiste könnte das Ende des Strings abgeschnitten werden.",
+	"lengthWarningMeta": " — ⚠️ wird der String nach dem Einfügen in die Pokémon-GO-Suchleiste abgeschnitten, liegt das meist an der eigenen Einfügen-Schaltfläche deiner Tastatur-App (z. B. Gboards Zwischenablage-Kurzbefehl), die sehr lange Texte stillschweigend kürzen kann – füge stattdessen über die Zwischenablage deines Telefons ein (z. B. die Suchleiste lange gedrückt halten und „Einfügen“ wählen), oder nutze den Schalter für den vereinfachten Löschmodus oben, um den String zu kürzen.",
+	"lengthWarningTrade": " — ⚠️ wird der String nach dem Einfügen in die Pokémon-GO-Suchleiste abgeschnitten, liegt das meist an der eigenen Einfügen-Schaltfläche deiner Tastatur-App (z. B. Gboards Zwischenablage-Kurzbefehl), die sehr lange Texte stillschweigend kürzen kann – füge stattdessen über die Zwischenablage deines Telefons ein (z. B. die Suchleiste lange gedrückt halten und „Einfügen“ wählen).",
 	"copySearchString": "Suchstring kopieren",
 	"copied": "Kopiert ✓",
 	"panelSummary": {

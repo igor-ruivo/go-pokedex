@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "Your search string appears here. Paste it into the Pokémon GO search bar to review your trade candidates.",
 	"characterCount_one": "{{formatted}} character",
 	"characterCount_other": "{{formatted}} characters",
-	"lengthWarningMeta": " — ⚠️ this may be too long for the search bar on some Android phones; consider using the simplified deletion mode toggle above if you notice the string gets cut-off after pasting it in Pokémon Go's search bar.",
-	"lengthWarningTrade": " — ⚠️ this may be too long for the search bar on some Android phones; pasting it into Pokémon GO's search bar may cut off the end of the string.",
+	"lengthWarningMeta": " — ⚠️ if this gets cut off after pasting into Pokémon GO's search bar, the culprit is usually your keyboard app's own paste button (e.g. Gboard's clipboard shortcut), which can silently truncate very long text — paste using your phone's own clipboard instead (e.g. long-press the search bar and tap Paste), or use the simplified deletion mode toggle above to shorten the string.",
+	"lengthWarningTrade": " — ⚠️ if this gets cut off after pasting into Pokémon GO's search bar, the culprit is usually your keyboard app's own paste button (e.g. Gboard's clipboard shortcut), which can silently truncate very long text — paste using your phone's own clipboard instead (e.g. long-press the search bar and tap Paste).",
 	"copySearchString": "Copy search string",
 	"copied": "Copied ✓",
 	"panelSummary": {

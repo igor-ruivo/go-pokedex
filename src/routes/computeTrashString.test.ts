@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { assertNoEnglishSearchTokenLeak } from '../lib/search-string-test-utils';
 import { __setGameTranslationsForTests } from '../utils/game-translations-store';
 import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
 import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
@@ -386,6 +387,36 @@ describe('computeTrashString — pt-BR translation', () => {
 		// clause — proves `translatePtBrTypeNames` runs over per-species
 		// identity clauses too, not just the tail.
 		expect(result).toContain('&!555,!planta');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
+	});
+
+	it('localizes a per-species Shadow-scoped clause too, not just the tail (regression test — DexExclusion\'s Shadow-scope suffix once hardcoded the English "shadow" keyword regardless of `gl`)', () => {
+		// `protect.shadow` on makes `shadowmon`'s Shadow counterpart itself a
+		// candidate needing its own scoped exclusion clause, distinct from the
+		// flat unconditional tail keyword below — exercises `renderDexExclusion`'s
+		// `shadowScope` branch specifically, not just `ShadowSearch`'s other,
+		// already-localized call sites.
+		const { gamemasterPokemon } = buildMainFixture();
+		const result = computeTrashString(
+			buildArgs(gamemasterPokemon, {
+				gl: GameLanguage.ptbr,
+				protect: { ...DEFAULT_PROTECTION, shadow: true },
+			})
+		);
+
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
+	});
+
+	it('every category toggle on, at once, leaks no raw English token', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const allProtectionsOn = Object.fromEntries(
+			Object.keys(DEFAULT_PROTECTION).map((key) => [key, true])
+		) as unknown as typeof DEFAULT_PROTECTION;
+		const result = computeTrashString(
+			buildArgs(gamemasterPokemon, { gl: GameLanguage.ptbr, protect: allProtectionsOn })
+		);
+
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });
 
@@ -408,6 +439,7 @@ describe('computeTrashString — Shadow-purify hundo guard (unconditional, alway
 		const result = computeTrashString(buildArgs(gamemasterPokemon, { gl: GameLanguage.ptbr }));
 
 		expect(result).toContain('&!4*&0-2ataque,0-2defesa,0-2ps,!sombroso');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });
 

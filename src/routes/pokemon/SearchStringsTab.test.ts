@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../../contexts/language-context';
 import type { IBestIvSpreads, ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
+import { assertNoEnglishSearchTokenLeak } from '../../lib/search-string-test-utils';
 import { __setGameTranslationsForTests } from '../../utils/game-translations-store';
 import { gameTranslationsTestFixture } from '../../utils/game-translations-test-fixture';
 import { calculateCP, type RankEntry } from '../../utils/pokemon-helper';
@@ -430,6 +431,20 @@ describe('computeMergedSearchString — combining the non-Shadow and Shadow-puri
 		expect(result).toContain('&!2*,!shadow,1attack&!2*,!shadow,3-4defense&!2*,!shadow,3-4hp');
 		// Tier 3, Case A: empty on both sides, shared bare clause, nothing after it.
 		expect(result.endsWith('&!3*')).toBe(true);
+	});
+
+	it('localizes the Case B scope suffix for a non-English game language, same as every other keyword this tab emits', () => {
+		const result = computeMergedSearchString(nonShadow, shadow, {
+			trash: false,
+			topIVCombinations: combos,
+			gl: GameLanguage.ptbr,
+			formId: '900',
+		});
+
+		expect(result).toContain('&!1*,sombroso&!1*,!sombroso,1ataque&!1*,!sombroso,3defesa&!1*,!sombroso,3ps');
+		expect(result).toContain('&!2*,sombroso,1ataque&!2*,sombroso,4defesa&!2*,sombroso,4ps');
+		expect(result).toContain('&!2*,!sombroso,1ataque&!2*,!sombroso,3-4defesa&!2*,!sombroso,3-4ps');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 
 	it('documents the known granularity tradeoff: a sub-clause identical on both sides (tier 2’s Attack bucket, "1attack" here) still gets duplicated once per scope, because the merge compares whole tiers (all ~5 of a tier’s clauses together), not each clause independently', () => {

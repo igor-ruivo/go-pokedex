@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
-import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
 import { __setGameTranslationsForTests } from '../utils/game-translations-store';
+import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
 import { canonicalizeDexExclusions, type DexExclusion, renderDexExclusion } from './search-string';
 
 beforeAll(() => {

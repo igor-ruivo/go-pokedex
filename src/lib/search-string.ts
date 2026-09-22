@@ -162,7 +162,8 @@ export interface DexExclusion {
 export const renderDexExclusion = (t: DexExclusion, gl: GameLanguage): string => {
 	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 	const formPart = t.form ? `,${t.form}` : '';
-	const shadowPart = t.shadowScope === 'shadow-only' ? `,!${shadowKw}` : t.shadowScope === 'non-shadow-only' ? `,${shadowKw}` : '';
+	const shadowPart =
+		t.shadowScope === 'shadow-only' ? `,!${shadowKw}` : t.shadowScope === 'non-shadow-only' ? `,${shadowKw}` : '';
 	return `!${t.dex}${formPart}${shadowPart}${t.extra}`;
 };
 

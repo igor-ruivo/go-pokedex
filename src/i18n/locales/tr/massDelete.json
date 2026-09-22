@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "Arama dizeniz burada görünür. Takas adaylarınızı gözden geçirmek için Pokémon GO arama çubuğuna yapıştırın.",
 	"characterCount_one": "{{formatted}} karakter",
 	"characterCount_other": "{{formatted}} karakter",
-	"lengthWarningMeta": " — ⚠️ bu bazı Android telefonlarda arama çubuğu için çok uzun olabilir; Pokémon GO'nun arama çubuğuna yapıştırdıktan sonra dizenin kesildiğini fark ederseniz yukarıdaki basitleştirilmiş silme modu düğmesini kullanmayı düşünün.",
-	"lengthWarningTrade": " — ⚠️ bu bazı Android telefonlarda arama çubuğu için çok uzun olabilir; Pokémon GO'nun arama çubuğuna yapıştırmak dizenin sonunu kesebilir.",
+	"lengthWarningMeta": " — ⚠️ Pokémon GO'nun arama çubuğuna yapıştırdıktan sonra kesiliyorsa, bunun nedeni genellikle klavye uygulamanızın kendi yapıştır düğmesidir (ör. Gboard'ın pano kısayolu); bu, çok uzun metinleri fark ettirmeden kesebilir. Bunun yerine telefonunuzun kendi panosuyla yapıştırın (ör. arama çubuğuna basılı tutup \"Yapıştır\"ı seçin) veya diziyi kısaltmak için yukarıdaki basitleştirilmiş silme modu düğmesini kullanın.",
+	"lengthWarningTrade": " — ⚠️ Pokémon GO'nun arama çubuğuna yapıştırdıktan sonra kesiliyorsa, bunun nedeni genellikle klavye uygulamanızın kendi yapıştır düğmesidir (ör. Gboard'ın pano kısayolu); bu, çok uzun metinleri fark ettirmeden kesebilir. Bunun yerine telefonunuzun kendi panosuyla yapıştırın (ör. arama çubuğuna basılı tutup \"Yapıştır\"ı seçin).",
 	"copySearchString": "Arama dizesini kopyala",
 	"copied": "Kopyalandı ✓",
 	"panelSummary": {

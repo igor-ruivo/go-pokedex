@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "String pencarian Anda akan muncul di sini. Tempel ke bilah pencarian Pokémon GO untuk meninjau kandidat pertukaran Anda.",
 	"characterCount_one": "{{formatted}} karakter",
 	"characterCount_other": "{{formatted}} karakter",
-	"lengthWarningMeta": " — ⚠️ ini mungkin terlalu panjang untuk bilah pencarian di beberapa ponsel Android; pertimbangkan menggunakan toggle mode hapus sederhana di atas jika string terpotong setelah ditempel di bilah pencarian Pokémon GO.",
-	"lengthWarningTrade": " — ⚠️ ini mungkin terlalu panjang untuk bilah pencarian di beberapa ponsel Android; menempelnya ke bilah pencarian Pokémon GO bisa memotong bagian akhir string.",
+	"lengthWarningMeta": " — ⚠️ jika terpotong setelah ditempel di bilah pencarian Pokémon GO, penyebabnya biasanya tombol tempel bawaan aplikasi keyboard kamu sendiri (misalnya pintasan clipboard Gboard), yang bisa memotong teks sangat panjang tanpa pemberitahuan; tempel menggunakan clipboard bawaan ponsel kamu (misalnya tekan lama bilah pencarian lalu pilih \"Tempel\"), atau gunakan toggle mode hapus sederhana di atas untuk memperpendek string.",
+	"lengthWarningTrade": " — ⚠️ jika terpotong setelah ditempel di bilah pencarian Pokémon GO, penyebabnya biasanya tombol tempel bawaan aplikasi keyboard kamu sendiri (misalnya pintasan clipboard Gboard), yang bisa memotong teks sangat panjang tanpa pemberitahuan; tempel menggunakan clipboard bawaan ponsel kamu (misalnya tekan lama bilah pencarian lalu pilih \"Tempel\").",
 	"copySearchString": "Salin string pencarian",
 	"copied": "Tersalin ✓",
 	"panelSummary": {

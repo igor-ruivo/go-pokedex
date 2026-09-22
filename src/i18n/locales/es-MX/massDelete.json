@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "Tu cadena de búsqueda aparece aquí. Pégala en la barra de búsqueda de Pokémon GO para revisar tus candidatos de intercambio.",
 	"characterCount_one": "{{formatted}} carácter",
 	"characterCount_other": "{{formatted}} caracteres",
-	"lengthWarningMeta": " — ⚠️ esto puede ser demasiado largo para la barra de búsqueda en algunos celulares Android; prueba a activar el modo de eliminación simplificado de arriba si notas que la cadena se corta al pegarla en la barra de búsqueda de Pokémon GO.",
-	"lengthWarningTrade": " — ⚠️ esto puede ser demasiado largo para la barra de búsqueda en algunos celulares Android; al pegarlo en la barra de búsqueda de Pokémon GO puede cortarse el final de la cadena.",
+	"lengthWarningMeta": " — ⚠️ si se corta al pegarla en la barra de búsqueda de Pokémon GO, normalmente la causa es el propio botón de pegar de tu teclado (por ejemplo, el acceso directo del portapapeles de Gboard), que puede truncar textos muy largos sin avisar; pega usando el portapapeles de tu celular (por ejemplo, mantén presionada la barra de búsqueda y elige «Pegar»), o activa el modo de eliminación simplificado de arriba para acortar la cadena.",
+	"lengthWarningTrade": " — ⚠️ si se corta al pegarla en la barra de búsqueda de Pokémon GO, normalmente la causa es el propio botón de pegar de tu teclado (por ejemplo, el acceso directo del portapapeles de Gboard), que puede truncar textos muy largos sin avisar; pega usando el portapapeles de tu celular (por ejemplo, mantén presionada la barra de búsqueda y elige «Pegar»).",
 	"copySearchString": "Copiar cadena de búsqueda",
 	"copied": "Copiado ✓",
 	"panelSummary": {

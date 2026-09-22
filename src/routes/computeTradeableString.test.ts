@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { assertNoEnglishSearchTokenLeak } from '../lib/search-string-test-utils';
 import { __setGameTranslationsForTests } from '../utils/game-translations-store';
 import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
 import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
@@ -758,6 +759,7 @@ describe('computeTradeableString — pt-BR translation', () => {
 
 		expect(result).toContain('&!favorito');
 		expect(result).toContain('&!megaevolui');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });
 
@@ -778,6 +780,7 @@ describe('computeTradeableString — flat Shadow/Mythical exclusion (uncondition
 		const result = call(gamemasterPokemon, { gl: GameLanguage.ptbr });
 
 		expect(result).toContain('&!4*&!sombroso&!mítico');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });
 
@@ -827,5 +830,38 @@ describe('computeTradeableString — whitelisting a Shadow form is a no-op', () 
 
 		expect(withoutShadowWhitelisted).toContain('&!800,!grass');
 		expect(withShadowWhitelisted).toBe(withoutShadowWhitelisted);
+	});
+
+	it('localizes the whitelisted form\'s Shadow-scope suffix for a non-English game language (regression test — DexExclusion\'s Shadow-scope suffix once hardcoded the English "shadow" keyword regardless of `gl`)', () => {
+		const water = mockPokemon({ speciesId: 'tradewaterpt', dex: 8000, types: [mockType('water')] });
+		const grass = mockPokemon({ speciesId: 'tradegrasspt', dex: 8000, types: [mockType('grass')] });
+		const grassShadow = mockPokemon({
+			speciesId: 'tradegrasspt_shadow',
+			dex: 8000,
+			isShadow: true,
+			types: [mockType('grass')],
+		});
+		const gamemasterPokemon = buildGamemaster([water, grass, grassShadow]);
+
+		const result = call(gamemasterPokemon, {
+			rankLists: [{}, {}, { [water.speciesId]: rank(1) }],
+			whitelist: new Set([grass.speciesId]),
+			gl: GameLanguage.ptbr,
+		});
+
+		expect(result).toContain('&!8000,!planta,sombroso');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
+	});
+});
+
+describe('computeTradeableString — pt-BR translation, every category toggle at once', () => {
+	it('leaks no raw English token', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const allProtectionsOn = Object.fromEntries(
+			Object.keys(DEFAULT_PROTECTION).map((key) => [key, true])
+		) as unknown as typeof DEFAULT_PROTECTION;
+		const result = call(gamemasterPokemon, { gl: GameLanguage.ptbr, protect: allProtectionsOn });
+
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });

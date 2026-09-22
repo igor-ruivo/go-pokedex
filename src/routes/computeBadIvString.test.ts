@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
+import { assertNoEnglishSearchTokenLeak } from '../lib/search-string-test-utils';
 import { __setGameTranslationsForTests } from '../utils/game-translations-store';
 import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
 import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
@@ -683,6 +684,44 @@ describe('computeBadIvString — simplified mode', () => {
 		expect(result).toContain('!906,!ice,!shadow,0-2attack,4attack,0-3defense,0-3hp');
 	});
 
+	it('localizes a per-form Shadow-scoped clause for a non-English game language (regression test — this exact clause once hardcoded the English "shadow" keyword regardless of `gl`)', () => {
+		const formFire = mockPokemon({ speciesId: 'formfire6pt', dex: 9060, types: [mockType('fire')] });
+		const formIce = mockPokemon({ speciesId: 'formice6pt', dex: 9060, types: [mockType('ice')] });
+		const formFireShadow = mockPokemon({
+			speciesId: 'formfire6pt_shadow',
+			dex: 9060,
+			isShadow: true,
+			types: [mockType('fire')],
+		});
+		const formIceShadow = mockPokemon({
+			speciesId: 'formice6pt_shadow',
+			dex: 9060,
+			isShadow: true,
+			types: [mockType('ice')],
+		});
+		const gamemasterPokemon = buildGamemaster([formFire, formIce, formFireShadow, formIceShadow]);
+
+		const pattern = { A: 11, D: 15, S: 15 };
+		const carveOuts: Array<BadIvCarveOut> = [
+			{ speciesId: formFire.speciesId, cap: 2500, pattern },
+			{ speciesId: formFireShadow.speciesId, cap: 2500, pattern },
+			{ speciesId: formIceShadow.speciesId, cap: 2500, pattern },
+		];
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			carveOuts,
+			GameLanguage.ptbr,
+			2500,
+			DEFAULT_PROTECTION,
+			new Set()
+		);
+
+		expect(result).toContain('!9060,!gelo,!sombroso,0-2ataque,4ataque,0-3defesa,0-3ps');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
+	});
+
 	it('on: a dex with a sibling form left OUT of the exclusion set is never collapsed — the untouched sibling would be wrongly swept into protection too', () => {
 		// Same two forms as above, but only formIce gets a real carve-out this
 		// time (a plain, unremarkable species at dex 901 stays perfectly
@@ -976,6 +1015,7 @@ describe('computeBadIvString — pt-BR translation', () => {
 		expect(result).toContain('&!sombroso');
 		// "grass" -> "planta" inside the whitelist's own disambiguation clause.
 		expect(result).toContain('&!555,!planta');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });
 
@@ -1032,6 +1072,7 @@ describe('computeBadIvString — Shadow-purify hundo guard (unconditional, alway
 		);
 
 		expect(result).toContain('&!4*&0-2ataque,0-2defesa,0-2ps,!sombroso');
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });
 
@@ -1660,5 +1701,31 @@ describe('computeBadIvString — masterCarveOuts (Master League stat-product tie
 		);
 
 		expect(withOmitted).toBe(withExplicitEmpty);
+	});
+});
+
+describe('computeBadIvString — pt-BR translation, every category toggle at once', () => {
+	it('leaks no raw English token', () => {
+		const { gamemasterPokemon } = buildMainFixture();
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
+		const allProtectionsOn = Object.fromEntries(
+			Object.keys(DEFAULT_PROTECTION).map((key) => [key, true])
+		) as unknown as typeof DEFAULT_PROTECTION;
+
+		const result = computeBadIvString(
+			gamemasterPokemon,
+			buildSpeciesSearchMetadata(gamemasterPokemon),
+			carveOuts,
+			GameLanguage.ptbr,
+			1500,
+			allProtectionsOn,
+			new Set()
+		);
+
+		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });

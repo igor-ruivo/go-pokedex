@@ -150,8 +150,8 @@
 	"outputPlaceholderTrade": "검색 문자열이 여기에 표시됩니다. Pokémon GO 검색창에 붙여넣어 교환 후보를 확인하세요.",
 	"characterCount_one": "{{formatted}}자",
 	"characterCount_other": "{{formatted}}자",
-	"lengthWarningMeta": " — ⚠️ 일부 안드로이드 기기에서는 검색창 입력 길이를 초과할 수 있습니다. 붙여넣은 문자열이 잘리면 위의 간소화 삭제 모드를 사용해 보세요.",
-	"lengthWarningTrade": " — ⚠️ 일부 안드로이드 기기에서는 검색창 입력 길이를 초과할 수 있습니다. Pokémon GO 검색창에 붙여넣을 때 끝부분이 잘릴 수 있습니다.",
+	"lengthWarningMeta": " — ⚠️ Pokémon GO 검색창에 붙여넣은 후 문자열이 잘린다면, 보통 원인은 키보드 앱 자체의 붙여넣기 버튼(예: Gboard의 클립보드 단축 기능)이 매우 긴 텍스트를 알림 없이 잘라내기 때문입니다. 대신 휴대폰 자체 클립보드로 붙여넣으세요(예: 검색창을 길게 눌러 '붙여넣기' 선택). 또는 위의 간소화 삭제 모드를 사용해 문자열을 줄이세요.",
+	"lengthWarningTrade": " — ⚠️ Pokémon GO 검색창에 붙여넣은 후 문자열이 잘린다면, 보통 원인은 키보드 앱 자체의 붙여넣기 버튼(예: Gboard의 클립보드 단축 기능)이 매우 긴 텍스트를 알림 없이 잘라내기 때문입니다. 대신 휴대폰 자체 클립보드로 붙여넣으세요(예: 검색창을 길게 눌러 '붙여넣기' 선택).",
 	"copySearchString": "검색 문자열 복사",
 	"copied": "복사됨 ✓",
 	"panelSummary": {
