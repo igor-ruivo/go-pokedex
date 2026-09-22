@@ -270,8 +270,7 @@ export const dateRange = (start: number, end: number, locale: string): string =>
 /** Full date+time for one event boundary — paired with
  *  `calendar:events.startEndLine` for the "Starts … · Ends …" expanded-card
  *  line (the compact `dateRange` above collapses same-day to end-time only). */
-export const formatEventDateTime = (ts: number, locale: string): string =>
-	dfEventTime(locale).format(new Date(ts));
+export const formatEventDateTime = (ts: number, locale: string): string => dfEventTime(locale).format(new Date(ts));
 
 /** Day/month only, no time — used for the raid/spawn date-picker tab labels.
  *  Its only callers (groupByRange, for RaidsTab/SpawnsTab's upcoming-window
@@ -301,4 +300,3 @@ export type EventPhase = 'live' | 'soon' | 'ended';
 // wall clock actually reading between the two times.
 export const eventPhase = (start: number, end: number, now = nowAsEventTime()): EventPhase =>
 	now < start ? 'soon' : now > end ? 'ended' : 'live';
-

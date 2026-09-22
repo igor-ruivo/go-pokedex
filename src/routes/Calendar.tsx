@@ -12,14 +12,7 @@ import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
 import i18n from '../i18n';
 import { everyLanguage, spotlightToPost } from '../lib/calendar-events';
-import {
-	dateRange,
-	dayRange,
-	eventPhase,
-	formatEventDateTime,
-	nowAsEventTime,
-	sentenceCase,
-} from '../lib/format';
+import { dateRange, dayRange, eventPhase, formatEventDateTime, nowAsEventTime, sentenceCase } from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { type ILeekduckSpecialRaidBoss, useCalendar } from '../queries/calendar';
