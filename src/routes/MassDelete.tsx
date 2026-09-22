@@ -594,7 +594,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	// hold simultaneously. Kept anyway for the same shared, tested logic
 	// across all three tabs, and in case that invariant ever changes.
 	for (const t of canonicalizeDexExclusions(exclusions, formsPerDex)) {
-		newStr += (newStr ? '&' : '') + renderDexExclusion(t);
+		newStr += (newStr ? '&' : '') + renderDexExclusion(t, gl);
 	}
 
 	newStr = translateTypeNames(newStr, gl);
@@ -754,7 +754,7 @@ export const computeBadIvString = (
 	// them all into one bare `!<dex>`. See `canonicalizeDexExclusions`'s own
 	// doc comment for the exact soundness conditions.
 	for (const t of canonicalizeDexExclusions(exclusions, formsPerDex)) {
-		result += `&${renderDexExclusion(t)}`;
+		result += `&${renderDexExclusion(t, gl)}`;
 	}
 
 	result = translateTypeNames(result, gl);
@@ -1007,7 +1007,7 @@ export const computeTradeableString = (
 	// tied-rank-1 pattern collapses into one shared clause instead of one per
 	// form.
 	for (const t of canonicalizeDexExclusions(exclusions, formsPerDex)) {
-		result += `&${renderDexExclusion(t)}`;
+		result += `&${renderDexExclusion(t, gl)}`;
 	}
 
 	result = translateTypeNames(result, gl);

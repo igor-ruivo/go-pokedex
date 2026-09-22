@@ -1,6 +1,6 @@
 import { GameLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { gameTypeTranslator } from '../utils/GameTranslator';
+import gameTranslator, { GameTranslatorKeys, gameTypeTranslator } from '../utils/GameTranslator';
 
 /**
  * Shared low-level building blocks for the in-game search-string generators
@@ -157,11 +157,12 @@ export interface DexExclusion {
 }
 
 /** Renders one `DexExclusion` back to the literal fragment it stands for
- *  (everything after the leading `&`). */
-export const renderDexExclusion = (t: DexExclusion): string => {
+ *  (everything after the leading `&`) — the `shadow` keyword itself localized
+ *  via `gl`, same as every other in-game search token this app emits. */
+export const renderDexExclusion = (t: DexExclusion, gl: GameLanguage): string => {
+	const shadowKw = gameTranslator(GameTranslatorKeys.ShadowSearch, gl);
 	const formPart = t.form ? `,${t.form}` : '';
-	const shadowPart =
-		t.shadowScope === 'shadow-only' ? ',!shadow' : t.shadowScope === 'non-shadow-only' ? ',shadow' : '';
+	const shadowPart = t.shadowScope === 'shadow-only' ? `,!${shadowKw}` : t.shadowScope === 'non-shadow-only' ? `,${shadowKw}` : '';
 	return `!${t.dex}${formPart}${shadowPart}${t.extra}`;
 };
 

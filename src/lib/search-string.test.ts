@@ -1,6 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
+import { GameLanguage } from '../contexts/language-context';
+import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
+import { __setGameTranslationsForTests } from '../utils/game-translations-store';
 import { canonicalizeDexExclusions, type DexExclusion, renderDexExclusion } from './search-string';
+
+beforeAll(() => {
+	__setGameTranslationsForTests(gameTranslationsTestFixture);
+});
 
 const bare = (dex: number, form = '', extra = ''): DexExclusion => ({ dex, form, shadowScope: '', extra });
 const shadowOnly = (dex: number, form = '', extra = ''): DexExclusion => ({
@@ -18,25 +25,30 @@ const nonShadowOnly = (dex: number, form = '', extra = ''): DexExclusion => ({
 
 describe('renderDexExclusion', () => {
 	it('bare, single-form dex', () => {
-		expect(renderDexExclusion(bare(300))).toBe('!300');
+		expect(renderDexExclusion(bare(300), GameLanguage.en)).toBe('!300');
 	});
 
 	it('with a form disambiguator', () => {
-		expect(renderDexExclusion(bare(26, 'psychic'))).toBe('!26,psychic');
+		expect(renderDexExclusion(bare(26, 'psychic'), GameLanguage.en)).toBe('!26,psychic');
 	});
 
 	it('with a shadow-only scope', () => {
-		expect(renderDexExclusion(shadowOnly(26, 'psychic'))).toBe('!26,psychic,!shadow');
+		expect(renderDexExclusion(shadowOnly(26, 'psychic'), GameLanguage.en)).toBe('!26,psychic,!shadow');
 	});
 
 	it('with a non-shadow-only scope', () => {
-		expect(renderDexExclusion(nonShadowOnly(26, 'psychic'))).toBe('!26,psychic,shadow');
+		expect(renderDexExclusion(nonShadowOnly(26, 'psychic'), GameLanguage.en)).toBe('!26,psychic,shadow');
 	});
 
 	it('with extra IV-bucket qualifiers', () => {
-		expect(renderDexExclusion(bare(300, '', ',0-3attack,0-3defense,0-2hp,4hp'))).toBe(
+		expect(renderDexExclusion(bare(300, '', ',0-3attack,0-3defense,0-2hp,4hp'), GameLanguage.en)).toBe(
 			'!300,0-3attack,0-3defense,0-2hp,4hp'
 		);
+	});
+
+	it('localizes the shadow keyword for a non-English game language', () => {
+		expect(renderDexExclusion(shadowOnly(26, 'psychic'), GameLanguage.ptbr)).toBe('!26,psychic,!sombroso');
+		expect(renderDexExclusion(nonShadowOnly(26, 'psychic'), GameLanguage.ptbr)).toBe('!26,psychic,sombroso');
 	});
 });
 
