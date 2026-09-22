@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "{{raid}}s de Tier Superior", "short": "Tier Superior" },
-			"tier3": { "full": "{{raid}}s de Tier 3", "short": "Tier 3" },
-			"tier1": { "full": "{{raid}}s de Tier 1", "short": "Tier 1" }
+			"higher": {
+				"full": "{{raid}}s de Tier Superior",
+				"short": "Tier Superior"
+			},
+			"tier3": {
+				"full": "{{raid}}s de Tier 3",
+				"short": "Tier 3"
+			},
+			"tier1": {
+				"full": "{{raid}}s de Tier 1",
+				"short": "Tier 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Outros {{raid}}s",
@@ -58,7 +67,16 @@
 			"incense": "Incenso",
 			"lures": "Módulos-Isco"
 		},
-		"readAnnouncement": "Ler o anúncio completo"
+		"readAnnouncement": "Ler o anúncio completo",
+		"startEndLine": "Começa {{start}} · Termina {{end}}",
+		"startsIn": {
+			"days": "em {{count}}d",
+			"hours": "em {{count}}h",
+			"minutes": "em {{count}}m",
+			"seconds": "em {{count}}s",
+			"tomorrow": "amanhã",
+			"today": "hoje"
+		}
 	},
 	"rockets": {
 		"noLineups": "Sem alinhamentos da Rocket.",

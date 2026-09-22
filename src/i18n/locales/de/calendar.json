@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "{{raid}}s höherer Stufe", "short": "Höhere Stufe" },
-			"tier3": { "full": "{{raid}}s Stufe 3", "short": "Stufe 3" },
-			"tier1": { "full": "{{raid}}s Stufe 1", "short": "Stufe 1" }
+			"higher": {
+				"full": "{{raid}}s höherer Stufe",
+				"short": "Höhere Stufe"
+			},
+			"tier3": {
+				"full": "{{raid}}s Stufe 3",
+				"short": "Stufe 3"
+			},
+			"tier1": {
+				"full": "{{raid}}s Stufe 1",
+				"short": "Stufe 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Weitere {{raid}}s",
@@ -58,7 +67,16 @@
 			"incense": "Rauch",
 			"lures": "Lockmodule"
 		},
-		"readAnnouncement": "Ganze Ankündigung lesen"
+		"readAnnouncement": "Ganze Ankündigung lesen",
+		"startEndLine": "Beginnt {{start}} · Endet {{end}}",
+		"startsIn": {
+			"days": "in {{count}} T.",
+			"hours": "in {{count}} Std.",
+			"minutes": "in {{count}} Min.",
+			"seconds": "in {{count}} Sek.",
+			"tomorrow": "morgen",
+			"today": "heute"
+		}
 	},
 	"rockets": {
 		"noLineups": "Keine Rocket-Aufstellungen.",

@@ -1,5 +1,7 @@
 {
-	"shell": { "title": "カレンダー" },
+	"shell": {
+		"title": "カレンダー"
+	},
 	"tabs": {
 		"events": "イベント",
 		"bosses": "レイド",
@@ -18,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "上位ティア{{raid}}", "short": "上位ティア" },
-			"tier3": { "full": "ティア3{{raid}}", "short": "ティア3" },
-			"tier1": { "full": "ティア1{{raid}}", "short": "ティア1" }
+			"higher": {
+				"full": "上位ティア{{raid}}",
+				"short": "上位ティア"
+			},
+			"tier3": {
+				"full": "ティア3{{raid}}",
+				"short": "ティア3"
+			},
+			"tier1": {
+				"full": "ティア1{{raid}}",
+				"short": "ティア1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "その他の{{raid}}",
@@ -56,7 +67,16 @@
 			"incense": "お香",
 			"lures": "ルアーモジュール"
 		},
-		"readAnnouncement": "お知らせ全文を読む"
+		"readAnnouncement": "お知らせ全文を読む",
+		"startEndLine": "開始 {{start}} · 終了 {{end}}",
+		"startsIn": {
+			"days": "{{count}}日後",
+			"hours": "{{count}}時間後",
+			"minutes": "{{count}}分後",
+			"seconds": "{{count}}秒後",
+			"tomorrow": "明日",
+			"today": "今日"
+		}
 	},
 	"rockets": {
 		"noLineups": "ロケット団の編成情報はありません。",

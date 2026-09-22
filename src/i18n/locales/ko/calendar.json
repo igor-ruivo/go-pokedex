@@ -1,5 +1,7 @@
 {
-	"shell": { "title": "캘린더" },
+	"shell": {
+		"title": "캘린더"
+	},
 	"tabs": {
 		"events": "이벤트",
 		"bosses": "레이드",
@@ -18,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "상위 티어 {{raid}}", "short": "상위 티어" },
-			"tier3": { "full": "티어 3 {{raid}}", "short": "티어 3" },
-			"tier1": { "full": "티어 1 {{raid}}", "short": "티어 1" }
+			"higher": {
+				"full": "상위 티어 {{raid}}",
+				"short": "상위 티어"
+			},
+			"tier3": {
+				"full": "티어 3 {{raid}}",
+				"short": "티어 3"
+			},
+			"tier1": {
+				"full": "티어 1 {{raid}}",
+				"short": "티어 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "다른 {{raid}}",
@@ -56,7 +67,16 @@
 			"incense": "향",
 			"lures": "루어 모듈"
 		},
-		"readAnnouncement": "공지 전문 읽기"
+		"readAnnouncement": "공지 전문 읽기",
+		"startEndLine": "시작 {{start}} · 종료 {{end}}",
+		"startsIn": {
+			"days": "{{count}}일 후",
+			"hours": "{{count}}시간 후",
+			"minutes": "{{count}}분 후",
+			"seconds": "{{count}}초 후",
+			"tomorrow": "내일",
+			"today": "오늘"
+		}
 	},
 	"rockets": {
 		"noLineups": "로켓단 라인업 정보가 없습니다.",

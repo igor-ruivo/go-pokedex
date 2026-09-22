@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "हायर टियर {{raid}}", "short": "हायर टियर" },
-			"tier3": { "full": "टियर 3 {{raid}}", "short": "टियर 3" },
-			"tier1": { "full": "टियर 1 {{raid}}", "short": "टियर 1" }
+			"higher": {
+				"full": "हायर टियर {{raid}}",
+				"short": "हायर टियर"
+			},
+			"tier3": {
+				"full": "टियर 3 {{raid}}",
+				"short": "टियर 3"
+			},
+			"tier1": {
+				"full": "टियर 1 {{raid}}",
+				"short": "टियर 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "अन्य {{raid}}",
@@ -58,7 +67,16 @@
 			"incense": "इन्सेंस",
 			"lures": "ल्यूर"
 		},
-		"readAnnouncement": "पूरी घोषणा पढ़ें"
+		"readAnnouncement": "पूरी घोषणा पढ़ें",
+		"startEndLine": "शुरू {{start}} · समाप्त {{end}}",
+		"startsIn": {
+			"days": "{{count}} दिन में",
+			"hours": "{{count}} घंटे में",
+			"minutes": "{{count}} मिनट में",
+			"seconds": "{{count}} सेकंड में",
+			"tomorrow": "कल",
+			"today": "आज"
+		}
 	},
 	"rockets": {
 		"noLineups": "कोई रॉकेट लाइनअप नहीं।",

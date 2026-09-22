@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Üst Seviye {{raid}}lar", "short": "Üst Seviye" },
-			"tier3": { "full": "3. Seviye {{raid}}lar", "short": "3. Seviye" },
-			"tier1": { "full": "1. Seviye {{raid}}lar", "short": "1. Seviye" }
+			"higher": {
+				"full": "Üst Seviye {{raid}}lar",
+				"short": "Üst Seviye"
+			},
+			"tier3": {
+				"full": "3. Seviye {{raid}}lar",
+				"short": "3. Seviye"
+			},
+			"tier1": {
+				"full": "1. Seviye {{raid}}lar",
+				"short": "1. Seviye"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Diğer {{raid}}lar",
@@ -58,7 +67,16 @@
 			"incense": "Tütsü",
 			"lures": "Çekici Modül"
 		},
-		"readAnnouncement": "Tüm duyuruyu oku"
+		"readAnnouncement": "Tüm duyuruyu oku",
+		"startEndLine": "Başlangıç {{start}} · Bitiş {{end}}",
+		"startsIn": {
+			"days": "{{count}}g sonra",
+			"hours": "{{count}}s sonra",
+			"minutes": "{{count}}dk sonra",
+			"seconds": "{{count}}sn sonra",
+			"tomorrow": "yarın",
+			"today": "bugün"
+		}
 	},
 	"rockets": {
 		"noLineups": "Rocket kadrosu yok.",

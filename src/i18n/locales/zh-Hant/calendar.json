@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "高星級{{raid}}", "short": "高星級" },
-			"tier3": { "full": "三星級{{raid}}", "short": "三星級" },
-			"tier1": { "full": "一星級{{raid}}", "short": "一星級" }
+			"higher": {
+				"full": "高星級{{raid}}",
+				"short": "高星級"
+			},
+			"tier3": {
+				"full": "三星級{{raid}}",
+				"short": "三星級"
+			},
+			"tier1": {
+				"full": "一星級{{raid}}",
+				"short": "一星級"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "其他{{raid}}",
@@ -58,7 +67,16 @@
 			"incense": "薰香",
 			"lures": "誘餌"
 		},
-		"readAnnouncement": "閱讀完整公告"
+		"readAnnouncement": "閱讀完整公告",
+		"startEndLine": "開始 {{start}} · 結束 {{end}}",
+		"startsIn": {
+			"days": "{{count}} 天後",
+			"hours": "{{count}} 小時後",
+			"minutes": "{{count}} 分鐘後",
+			"seconds": "{{count}} 秒後",
+			"tomorrow": "明天",
+			"today": "今天"
+		}
 	},
 	"rockets": {
 		"noLineups": "沒有火箭隊陣容資料。",

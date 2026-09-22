@@ -267,11 +267,11 @@ export const dateRange = (start: number, end: number, locale: string): string =>
 		: `${dfEventShort(locale).format(s)} – ${dfEventShort(locale).format(e)}`;
 };
 
-/** Explicit "Starts … · Ends …" line for an expanded event card — the
- *  compact `dateRange` above collapses a same-day range to "2:00 PM – 5:00
- *  PM"; this spells both ends out in full, always. */
-export const eventStartEnd = (start: number, end: number, locale: string): string =>
-	`Starts ${dfEventTime(locale).format(new Date(start))} · Ends ${dfEventTime(locale).format(new Date(end))}`;
+/** Full date+time for one event boundary — paired with
+ *  `calendar:events.startEndLine` for the "Starts … · Ends …" expanded-card
+ *  line (the compact `dateRange` above collapses same-day to end-time only). */
+export const formatEventDateTime = (ts: number, locale: string): string =>
+	dfEventTime(locale).format(new Date(ts));
 
 /** Day/month only, no time — used for the raid/spawn date-picker tab labels.
  *  Its only callers (groupByRange, for RaidsTab/SpawnsTab's upcoming-window
@@ -302,22 +302,3 @@ export type EventPhase = 'live' | 'soon' | 'ended';
 export const eventPhase = (start: number, end: number, now = nowAsEventTime()): EventPhase =>
 	now < start ? 'soon' : now > end ? 'ended' : 'live';
 
-/**
- * `now` is expected to come from `useLiveNow()` (ticking every second) for
- * anything rendering this live — for same-day events (`d <= 0`) this counts
- * down to the minute/second instead of sitting on a static "today" all day,
- * flipping to `eventPhase`'s own 'live' the moment it reaches zero.
- */
-export const relativeDays = (ts: number, now = nowAsEventTime()): string => {
-	const ms = ts - now;
-	const d = Math.round(ms / 86_400_000);
-	if (d >= 2) return `in ${d}d`;
-	if (d === 1) return 'tomorrow';
-	if (ms <= 0) return 'today';
-	const h = Math.floor(ms / 3_600_000);
-	if (h >= 1) return `in ${h}h`;
-	const m = Math.floor(ms / 60_000);
-	if (m >= 1) return `in ${m}m`;
-	const s = Math.floor(ms / 1000);
-	return `in ${s}s`;
-};

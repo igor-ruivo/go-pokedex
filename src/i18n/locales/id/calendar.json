@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "{{raid}} Tingkat Tinggi", "short": "Tingkat Tinggi" },
-			"tier3": { "full": "{{raid}} Tingkat 3", "short": "Tingkat 3" },
-			"tier1": { "full": "{{raid}} Tingkat 1", "short": "Tingkat 1" }
+			"higher": {
+				"full": "{{raid}} Tingkat Tinggi",
+				"short": "Tingkat Tinggi"
+			},
+			"tier3": {
+				"full": "{{raid}} Tingkat 3",
+				"short": "Tingkat 3"
+			},
+			"tier1": {
+				"full": "{{raid}} Tingkat 1",
+				"short": "Tingkat 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "{{raid}} lainnya",
@@ -58,7 +67,16 @@
 			"incense": "Incense",
 			"lures": "Lure"
 		},
-		"readAnnouncement": "Baca pengumuman lengkap"
+		"readAnnouncement": "Baca pengumuman lengkap",
+		"startEndLine": "Mulai {{start}} · Selesai {{end}}",
+		"startsIn": {
+			"days": "dalam {{count}}h",
+			"hours": "dalam {{count}}j",
+			"minutes": "dalam {{count}}m",
+			"seconds": "dalam {{count}}d",
+			"tomorrow": "besok",
+			"today": "hari ini"
+		}
 	},
 	"rockets": {
 		"noLineups": "Belum ada line-up Rocket.",

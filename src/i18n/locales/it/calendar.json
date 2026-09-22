@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "{{raid}} di livello superiore", "short": "Livello superiore" },
-			"tier3": { "full": "{{raid}} di livello 3", "short": "Livello 3" },
-			"tier1": { "full": "{{raid}} di livello 1", "short": "Livello 1" }
+			"higher": {
+				"full": "{{raid}} di livello superiore",
+				"short": "Livello superiore"
+			},
+			"tier3": {
+				"full": "{{raid}} di livello 3",
+				"short": "Livello 3"
+			},
+			"tier1": {
+				"full": "{{raid}} di livello 1",
+				"short": "Livello 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Altri {{raid}}",
@@ -58,7 +67,16 @@
 			"incense": "Incenso",
 			"lures": "Moduli Esca"
 		},
-		"readAnnouncement": "Leggi l'annuncio completo"
+		"readAnnouncement": "Leggi l'annuncio completo",
+		"startEndLine": "Inizia {{start}} · Termina {{end}}",
+		"startsIn": {
+			"days": "tra {{count}}g",
+			"hours": "tra {{count}}h",
+			"minutes": "tra {{count}}m",
+			"seconds": "tra {{count}}s",
+			"tomorrow": "domani",
+			"today": "oggi"
+		}
 	},
 	"rockets": {
 		"noLineups": "Nessuna formazione Team GO Rocket.",

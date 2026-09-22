@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "{{raid}}ระดับสูง", "short": "ระดับสูง" },
-			"tier3": { "full": "{{raid}}ระดับ 3", "short": "ระดับ 3" },
-			"tier1": { "full": "{{raid}}ระดับ 1", "short": "ระดับ 1" }
+			"higher": {
+				"full": "{{raid}}ระดับสูง",
+				"short": "ระดับสูง"
+			},
+			"tier3": {
+				"full": "{{raid}}ระดับ 3",
+				"short": "ระดับ 3"
+			},
+			"tier1": {
+				"full": "{{raid}}ระดับ 1",
+				"short": "ระดับ 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "{{raid}}อื่น ๆ",
@@ -58,7 +67,16 @@
 			"incense": "ยาดม",
 			"lures": "ตัวล่อ"
 		},
-		"readAnnouncement": "อ่านประกาศฉบับเต็ม"
+		"readAnnouncement": "อ่านประกาศฉบับเต็ม",
+		"startEndLine": "เริ่ม {{start}} · สิ้นสุด {{end}}",
+		"startsIn": {
+			"days": "อีก {{count}} วัน",
+			"hours": "อีก {{count}} ชั่วโมง",
+			"minutes": "อีก {{count}} นาที",
+			"seconds": "อีก {{count}} วินาที",
+			"tomorrow": "พรุ่งนี้",
+			"today": "วันนี้"
+		}
 	},
 	"rockets": {
 		"noLineups": "ไม่มีทีมร็อกเก็ต",

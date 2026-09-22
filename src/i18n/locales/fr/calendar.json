@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "{{raid}}s de haut niveau", "short": "Haut niveau" },
-			"tier3": { "full": "{{raid}}s niveau 3", "short": "Niveau 3" },
-			"tier1": { "full": "{{raid}}s niveau 1", "short": "Niveau 1" }
+			"higher": {
+				"full": "{{raid}}s de haut niveau",
+				"short": "Haut niveau"
+			},
+			"tier3": {
+				"full": "{{raid}}s niveau 3",
+				"short": "Niveau 3"
+			},
+			"tier1": {
+				"full": "{{raid}}s niveau 1",
+				"short": "Niveau 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Autres {{raid}}s",
@@ -58,7 +67,16 @@
 			"incense": "Encens",
 			"lures": "Modules Leurre"
 		},
-		"readAnnouncement": "Lire l'annonce complète"
+		"readAnnouncement": "Lire l'annonce complète",
+		"startEndLine": "Début {{start}} · Fin {{end}}",
+		"startsIn": {
+			"days": "dans {{count}} j",
+			"hours": "dans {{count}} h",
+			"minutes": "dans {{count}} min",
+			"seconds": "dans {{count}} s",
+			"tomorrow": "demain",
+			"today": "aujourd'hui"
+		}
 	},
 	"rockets": {
 		"noLineups": "Aucune composition de la Team GO Rocket.",

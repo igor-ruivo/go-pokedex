@@ -1,8 +1,4 @@
-import type {
-	KeyboardEvent as ReactKeyboardEvent,
-	MouseEvent as ReactMouseEvent,
-	WheelEvent as ReactWheelEvent,
-} from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useParams } from 'react-router-dom';
@@ -20,9 +16,8 @@ import {
 	dateRange,
 	dayRange,
 	eventPhase,
-	eventStartEnd,
+	formatEventDateTime,
 	nowAsEventTime,
-	relativeDays,
 	sentenceCase,
 } from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
@@ -104,6 +99,22 @@ const timeLeft = (end: number, now: number): string => {
 	if (m >= 1) return i18n.t('calendar:timeLeft.minutes', { count: m });
 	const s = Math.floor(ms / 1000);
 	return i18n.t('calendar:timeLeft.seconds', { count: s });
+};
+
+/** Countdown until an event starts — same wall-clock scheme as `timeLeft`,
+ *  but for the start boundary and with "in …" / tomorrow / today wording. */
+const startsIn = (start: number, now: number): string => {
+	const ms = start - now;
+	const d = Math.round(ms / 86_400_000);
+	if (d >= 2) return i18n.t('calendar:events.startsIn.days', { count: d });
+	if (d === 1) return i18n.t('calendar:events.startsIn.tomorrow');
+	if (ms <= 0) return i18n.t('calendar:events.startsIn.today');
+	const h = Math.floor(ms / 3_600_000);
+	if (h >= 1) return i18n.t('calendar:events.startsIn.hours', { count: h });
+	const m = Math.floor(ms / 60_000);
+	if (m >= 1) return i18n.t('calendar:events.startsIn.minutes', { count: m });
+	const s = Math.floor(ms / 1000);
+	return i18n.t('calendar:events.startsIn.seconds', { count: s });
 };
 
 /** Leekduck special-boss windows behave like tiny raid-only events. */
@@ -305,21 +316,24 @@ const DatePicker = ({
 		if (!el) return;
 		updateScrollState();
 		el.addEventListener('scroll', updateScrollState, { passive: true });
+		// React's onWheel is passive — preventDefault() is ignored and the page
+		// scrolls anyway. Native { passive: false } is required to hijack a
+		// vertical wheel into horizontal chip scrolling on desktop.
+		const onWheel = (e: WheelEvent) => {
+			if (el.scrollWidth <= el.clientWidth) return; // nothing to scroll — let the page scroll normally
+			if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // trackpad horizontal — don't fight it
+			e.preventDefault();
+			el.scrollBy({ left: e.deltaY });
+		};
+		el.addEventListener('wheel', onWheel, { passive: false });
 		const ro = new ResizeObserver(updateScrollState);
 		ro.observe(el);
 		return () => {
 			el.removeEventListener('scroll', updateScrollState);
+			el.removeEventListener('wheel', onWheel);
 			ro.disconnect();
 		};
 	}, [slots, updateScrollState]);
-
-	const onWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
-		const el = chipsRef.current;
-		if (!el || el.scrollWidth <= el.clientWidth) return; // nothing to scroll — let the page scroll normally
-		if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // already a horizontal gesture (trackpad) — don't fight it
-		e.preventDefault();
-		el.scrollBy({ left: e.deltaY });
-	};
 
 	const scrollByPage = (dir: 1 | -1) => {
 		const el = chipsRef.current;
@@ -351,7 +365,6 @@ const DatePicker = ({
 					role='tablist'
 					aria-label={t('calendar:datePicker.timeframeAriaLabel')}
 					ref={chipsRef}
-					onWheel={onWheel}
 				>
 					{slots.map((s) => (
 						<button
@@ -404,7 +417,7 @@ const EventCard = ({
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const { imageSource } = useImageSource();
-	// Ticking so a same-day "in Xh/Xm/Xs" countdown (see `relativeDays`) counts
+	// Ticking so a same-day "in Xh/Xm/Xs" countdown (see `startsIn`) counts
 	// down live and flips this card straight to "Live" the instant it starts,
 	// instead of sitting on a static "today" until some unrelated re-render.
 	const now = useLiveNow();
@@ -470,14 +483,21 @@ const EventCard = ({
 						{phase === 'live'
 							? t('calendar:events.phase.live')
 							: phase === 'soon'
-								? relativeDays(post.startDate, now)
+								? startsIn(post.startDate, now)
 								: t('calendar:events.phase.ended')}
 					</i>
 				)}
 			</button>
 			{open && (
 				<div className='r-event-body'>
-					{!isSeason && <p className='r-event-when'>{eventStartEnd(post.startDate, post.endDate, currentLanguage)}</p>}
+					{!isSeason && (
+						<p className='r-event-when'>
+							{t('calendar:events.startEndLine', {
+								start: formatEventDateTime(post.startDate, currentLanguage),
+								end: formatEventDateTime(post.endDate, currentLanguage),
+							})}
+						</p>
+					)}
 					{bonuses.length > 0 && (
 						<>
 							<div className='r-section-h'>{t('calendar:events.bonuses')}</div>

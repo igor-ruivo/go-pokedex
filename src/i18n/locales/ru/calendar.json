@@ -1,5 +1,7 @@
 {
-	"shell": { "title": "Календарь" },
+	"shell": {
+		"title": "Календарь"
+	},
 	"tabs": {
 		"events": "События",
 		"bosses": "Рейды",
@@ -18,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "{{raid}}ы высокого уровня", "short": "Высокий уровень" },
-			"tier3": { "full": "{{raid}}ы 3 уровня", "short": "3 уровень" },
-			"tier1": { "full": "{{raid}}ы 1 уровня", "short": "1 уровень" }
+			"higher": {
+				"full": "{{raid}}ы высокого уровня",
+				"short": "Высокий уровень"
+			},
+			"tier3": {
+				"full": "{{raid}}ы 3 уровня",
+				"short": "3 уровень"
+			},
+			"tier1": {
+				"full": "{{raid}}ы 1 уровня",
+				"short": "1 уровень"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Другие {{raid}}ы",
@@ -56,7 +67,16 @@
 			"incense": "Ладан",
 			"lures": "Приманки"
 		},
-		"readAnnouncement": "Читать полное объявление"
+		"readAnnouncement": "Читать полное объявление",
+		"startEndLine": "Начало {{start}} · Конец {{end}}",
+		"startsIn": {
+			"days": "через {{count}} дн.",
+			"hours": "через {{count}} ч.",
+			"minutes": "через {{count}} мин.",
+			"seconds": "через {{count}} сек.",
+			"tomorrow": "завтра",
+			"today": "сегодня"
+		}
 	},
 	"rockets": {
 		"noLineups": "Нет составов Team GO Rocket.",

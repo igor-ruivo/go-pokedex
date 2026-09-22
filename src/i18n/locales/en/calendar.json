@@ -20,9 +20,18 @@
 	},
 	"raids": {
 		"tiers": {
-			"higher": { "full": "Higher Tier {{raid}}s", "short": "Higher Tier" },
-			"tier3": { "full": "Tier 3 {{raid}}s", "short": "Tier 3" },
-			"tier1": { "full": "Tier 1 {{raid}}s", "short": "Tier 1" }
+			"higher": {
+				"full": "Higher Tier {{raid}}s",
+				"short": "Higher Tier"
+			},
+			"tier3": {
+				"full": "Tier 3 {{raid}}s",
+				"short": "Tier 3"
+			},
+			"tier1": {
+				"full": "Tier 1 {{raid}}s",
+				"short": "Tier 1"
+			}
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Other {{raid}}s",
@@ -58,7 +67,16 @@
 			"incense": "Incense",
 			"lures": "Lures"
 		},
-		"readAnnouncement": "Read the full announcement"
+		"readAnnouncement": "Read the full announcement",
+		"startEndLine": "Starts {{start}} · Ends {{end}}",
+		"startsIn": {
+			"days": "in {{count}}d",
+			"hours": "in {{count}}h",
+			"minutes": "in {{count}}m",
+			"seconds": "in {{count}}s",
+			"tomorrow": "tomorrow",
+			"today": "today"
+		}
 	},
 	"rockets": {
 		"noLineups": "No Rocket line-ups.",
