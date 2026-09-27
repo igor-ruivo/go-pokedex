@@ -2698,6 +2698,15 @@
 	font-size: 12px;
 	color: var(--text-dim);
 }
+/* Collapsed rows also clamp the date/time to a single line — otherwise a
+   long localized range (e.g. with a wrapping em dash) wraps onto a second
+   line and grows the row, same problem the title clamp above prevents. */
+.rvmp .r-event:not([data-open='true']) .r-event-head span {
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
 .rvmp .r-phase {
 	flex: none;
 	font-style: normal;
