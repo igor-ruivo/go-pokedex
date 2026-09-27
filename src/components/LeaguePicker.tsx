@@ -34,12 +34,19 @@ export const LeaguePicker = (props: LeaguePickerProps) => {
 	const chipsRef = useRef<HTMLDivElement | null>(null);
 	const [canScrollLeft, setCanScrollLeft] = useState(false);
 	const [canScrollRight, setCanScrollRight] = useState(false);
+	// Whether the row has any horizontal overflow at all — see IconTabBar's
+	// own note: gates `overflow-x`/`scroll-snap-type` in CSS so this isn't a
+	// scroll container in the first place when there's nothing to scroll,
+	// avoiding a browser quirk that can otherwise swallow page scroll when
+	// hovering an empty scroll-snap container right after a hard refresh.
+	const [scrollable, setScrollable] = useState(false);
 
 	const updateScrollState = useCallback(() => {
 		const el = chipsRef.current;
 		if (!el) return;
 		setCanScrollLeft(el.scrollLeft > 1);
 		setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+		setScrollable(el.scrollWidth > el.clientWidth + 1);
 	}, []);
 
 	// Deliberately no auto-scroll-into-view on pick/select — this used to
@@ -52,14 +59,22 @@ export const LeaguePicker = (props: LeaguePickerProps) => {
 		if (!el) return;
 		updateScrollState();
 		el.addEventListener('scroll', updateScrollState, { passive: true });
-		// Deliberately no wheel-to-horizontal hijack here (unlike Calendar's
-		// DatePicker) — a plain vertical scroll over this row keeps scrolling
-		// the page, same as it would over any other inline content; horizontal
-		// movement is arrow-buttons-only for a mouse, and swipe-only for touch.
+		// React's onWheel is passive — preventDefault() is ignored and the page
+		// scrolls anyway. Native { passive: false } is required to hijack a
+		// vertical wheel into horizontal chip scrolling on desktop (same as
+		// Calendar's DatePicker).
+		const onWheel = (e: WheelEvent) => {
+			if (el.scrollWidth <= el.clientWidth) return; // nothing to scroll — let the page scroll normally
+			if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // trackpad horizontal — don't fight it
+			e.preventDefault();
+			el.scrollBy({ left: e.deltaY });
+		};
+		el.addEventListener('wheel', onWheel, { passive: false });
 		const ro = new ResizeObserver(updateScrollState);
 		ro.observe(el);
 		return () => {
 			el.removeEventListener('scroll', updateScrollState);
+			el.removeEventListener('wheel', onWheel);
 			ro.disconnect();
 		};
 	}, [items, updateScrollState]);
@@ -90,6 +105,7 @@ export const LeaguePicker = (props: LeaguePickerProps) => {
 					role={props.mode === 'toggle' ? 'group' : 'tablist'}
 					aria-label={ariaLabel}
 					ref={chipsRef}
+					data-scrollable={scrollable || undefined}
 				>
 					{items.map((it) => {
 						const active = isActive(it.id);

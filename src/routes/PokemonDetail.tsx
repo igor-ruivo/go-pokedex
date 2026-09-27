@@ -775,8 +775,15 @@ const PokemonDetail = () => {
 	// barely matter there — see the raid tab's own note), so they're always
 	// "ready". Once the user's picked their own spread, `iv`/`level` are theirs
 	// and done changing on their own — never hide them again just because
-	// something else reloads.
-	const heroReady = isRaid || ivTouchedRef.current || !!slice?.perfect;
+	// something else reloads. Before the user's touched anything, this also
+	// waits on `pvpFetchCompleted`: `slice.perfect` alone comes from
+	// `ivPercents`, which only needs the gamemaster data (not any rank list)
+	// to produce a spread — so right after a reload, before the rank lists
+	// land, `pvpMember` is still just the URL's own species (`boardData`'s
+	// `list[p.speciesId]?.rank` filter matches nothing pre-fetch), and this
+	// would flash *that* species' spread/level before snapping to the real
+	// best-reachable one once ranks arrive.
+	const heroReady = isRaid || ivTouchedRef.current || (!!slice?.perfect && pvpFetchCompleted);
 
 	// `heroReady` alone isn't quite enough for the numeric readout below
 	// (rank/percentile/CP): `slice` being non-empty only means `ivPercents`
@@ -793,7 +800,7 @@ const PokemonDetail = () => {
 	// previous spread's numbers while a drag's new value recomputes is the
 	// deliberate, smoother UX `keepPreviousData` exists for in the first
 	// place; only the initial snap-to-rank-1 settling should ever show "…".
-	const readoutReady = isRaid || (ivTouchedRef.current ? !!slice : !!slice?.perfect && !ivStale);
+	const readoutReady = isRaid || (ivTouchedRef.current ? !!slice : !!slice?.perfect && !ivStale && pvpFetchCompleted);
 
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
 	const boardRows = LEAGUES.map((l) => {

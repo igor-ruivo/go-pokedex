@@ -638,15 +638,38 @@
 	border-bottom: 1px solid var(--border);
 }
 .rvmp .r-tabs-strip {
-	display: flex;
+	/* inline-flex, not flex — a block-level flex container stretches to the
+	   scroller's full width even when the tabs themselves don't fill it,
+	   leaving "dead" empty space on the right that's still technically part
+	   of this element. The scroller's border-bottom still spans the full row
+	   regardless. */
+	display: inline-flex;
+	max-width: 100%;
 	flex-wrap: nowrap;
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
+	overflow-x: hidden;
+	/* Explicit, not left to default — per the overflow spec, setting only
+	   `overflow-x` to a non-`visible` value computes the OTHER axis to `auto`
+	   too, not `visible`. That silently made this a vertical scroll container
+	   as well (even with nothing inside it to overflow vertically), which is
+	   what the browser was hit-testing — and getting stuck on right after a
+	   hard reload, until some other mousemove forced it to redo that test —
+	   every time a vertical wheel scroll landed on it. Pinning this to
+	   `hidden` keeps it purely horizontal, so it's never a candidate for
+	   vertical wheel handling in the first place. */
+	overflow-y: hidden;
 	scrollbar-width: none;
-	scroll-snap-type: x proximity;
-	overscroll-behavior-x: contain;
 	gap: var(--s5);
 	min-width: 0;
+}
+/* Only actually a scroll container once it has real overflow to scroll
+   (`data-scrollable`, set from JS off scrollWidth > clientWidth). No
+   `scroll-snap-type`/`overscroll-behavior-x` here (unlike Calendar's
+   DatePicker) — the custom wheel handler in IconTabBar.tsx already covers
+   what `overscroll-behavior-x: contain` was for (not fighting a trackpad's
+   horizontal swipe), so nothing is actually lost by dropping it. */
+.rvmp .r-tabs-strip[data-scrollable] {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
 }
 .rvmp .r-tabs-strip::-webkit-scrollbar {
 	display: none;
@@ -3034,6 +3057,12 @@
 	display: flex;
 	flex-wrap: nowrap;
 	overflow-x: auto;
+	/* Explicit, not left to default — see `.r-tabs-strip`'s own note: an
+	   unset `overflow-y` next to a non-`visible` `overflow-x` silently
+	   becomes a vertical scroll container too, which is what can make a
+	   fresh page load swallow the first vertical wheel scroll over this row
+	   until some other mousemove forces the browser to redo that hit-test. */
+	overflow-y: hidden;
 	-webkit-overflow-scrolling: touch;
 	scrollbar-width: none;
 	gap: 6px;
@@ -3139,16 +3168,28 @@
 	min-width: 0;
 }
 .rvmp .r-lgpick-chips {
-	display: flex;
+	/* inline-flex, not flex — see `.r-tabs-strip`'s own note: a block-level
+	   flex container stretches full width and leaves a scroll-hooked dead
+	   zone past the last chip when there are few leagues. */
+	display: inline-flex;
+	max-width: 100%;
 	flex-wrap: nowrap;
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
+	overflow-x: hidden;
+	/* Explicit, not left to default — see `.r-tabs-strip`'s own note on why
+	   an unset `overflow-y` next to a non-`visible` `overflow-x` silently
+	   becomes a vertical scroll container too. */
+	overflow-y: hidden;
 	scrollbar-width: none;
-	scroll-snap-type: x proximity;
-	overscroll-behavior-x: contain;
 	gap: 6px;
 	padding: 2px 0;
 	min-width: 0;
+}
+/* Only actually a scroll container once it has real overflow — see
+   `.r-tabs-strip[data-scrollable]`'s own note on why there's no
+   `scroll-snap-type`/`overscroll-behavior-x` here either. */
+.rvmp .r-lgpick-chips[data-scrollable] {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
 }
 .rvmp .r-lgpick-chips::-webkit-scrollbar {
 	display: none;
