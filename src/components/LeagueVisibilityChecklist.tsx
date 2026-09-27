@@ -31,7 +31,13 @@ export const LeagueVisibilityChecklist = () => {
 				const icon = leagueIcon(l.id);
 				return (
 					<label className='r-lgcheck-row' key={l.id}>
-						<input type='checkbox' checked={checked} onChange={() => toggleExtraLeague(l.id)} />
+						<input
+							type='checkbox'
+							className='r-lgcheck-input'
+							checked={checked}
+							onChange={() => toggleExtraLeague(l.id)}
+						/>
+						<span className='r-ss-box' aria-hidden='true' />
 						{icon && <img src={icon} alt='' width={18} height={18} />}
 						<span>{leagueTitle(l, gl).full}</span>
 					</label>

@@ -16,7 +16,8 @@
 		"counters": "Contatori",
 		"ivTable": "Tabella IV",
 		"strings": "Stringhe",
-		"comingSoon": "“{{tab}}” arriverà nel prossimo aggiornamento."
+		"comingSoon": "“{{tab}}” arriverà nel prossimo aggiornamento.",
+		"ariaLabel": "Classifiche / Mosse / Contro / Tabella IV / Stringhe"
 	},
 	"loading": {
 		"pokedex": "Caricamento Pokédex…",

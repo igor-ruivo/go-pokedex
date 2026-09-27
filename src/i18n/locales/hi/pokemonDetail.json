@@ -16,7 +16,8 @@
 		"counters": "काउंटर",
 		"ivTable": "IV टेबल",
 		"strings": "स्ट्रिंग्स",
-		"comingSoon": "रीवैंप में अगला “{{tab}}” आएगा।"
+		"comingSoon": "रीवैंप में अगला “{{tab}}” आएगा।",
+		"ariaLabel": "रैंक / मूव्स / काउंटर्स / IV टेबल / स्ट्रिंग्स"
 	},
 	"loading": {
 		"pokedex": "Pokédex लोड हो रहा है…",

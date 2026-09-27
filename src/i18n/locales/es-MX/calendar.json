@@ -7,7 +7,8 @@
 		"bosses": "Incursiones",
 		"spawns": "Apariciones",
 		"rockets": "Rockets",
-		"eggs": "Huevos"
+		"eggs": "Huevos",
+		"ariaLabel": "Eventos / Incursiones / Apariciones / Rockets / Huevos"
 	},
 	"biomes": {
 		"cities": "Ciudades",

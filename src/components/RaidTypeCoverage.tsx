@@ -140,7 +140,7 @@ export const RaidTypeCoverage = ({
 		legacy.has(id)
 			? t('components:raidTypeCoverage.legacy')
 			: elite.has(id)
-				? gameTranslator(moves[id]?.isFast ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm, gl)
+				? t('components:raidTypeCoverage.elite')
 				: null;
 	const cycleCombo = (type: string, len: number) =>
 		setComboIdx((c) => ({ ...c, [type]: len ? ((c[type] ?? 0) + 1) % len : 0 }));

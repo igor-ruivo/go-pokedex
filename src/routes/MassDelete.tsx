@@ -2036,9 +2036,6 @@ const MassDelete = () => {
 							⚙
 						</span>
 						<span className='r-ctr-config-sum'>{panelSummary}</span>
-						<span className='r-ctr-config-chev' aria-hidden='true'>
-							{panelOpen ? t('massDelete:hide') : t('massDelete:edit')}
-						</span>
 					</button>
 					{panelDirty && (
 						<button type='button' className='r-ctr-config-clear' onClick={resetPanel}>
@@ -2474,9 +2471,6 @@ const MassDelete = () => {
 							</svg>
 						</span>
 						<span className='r-ctr-config-sum'>{whitelistSummary}</span>
-						<span className='r-ctr-config-chev' aria-hidden='true'>
-							{wlOpen ? t('massDelete:hide') : t('massDelete:edit')}
-						</span>
 					</button>
 				</div>
 				{wlOpen && (

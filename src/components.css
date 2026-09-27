@@ -705,16 +705,26 @@
 .rvmp .r-tabs-strip button {
 	position: relative;
 	flex: none;
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	padding: 0 2px var(--s3);
+	display: grid;
+	justify-items: center;
+	gap: 4px;
+	padding: 2px 6px var(--s3);
 	font-weight: 700;
-	font-size: 14px;
+	font-size: 11.5px;
 	color: var(--text-faint);
 	white-space: nowrap;
 	scroll-snap-align: start;
 	transition: color 0.15s ease;
+}
+/* Icon+label inline once there's room to spare — stacked (icon on top,
+   same shape as the bottom-nav footer) stays the phone-width default. */
+@media (min-width: 521px) {
+	.rvmp .r-tabs-strip button {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 6px;
+	}
 }
 .rvmp .r-tabs-strip button img,
 .rvmp .r-tabs-strip button svg {
@@ -722,8 +732,6 @@
 	height: 18px;
 	object-fit: contain;
 	flex: none;
-	opacity: 0.75;
-	transition: opacity 0.15s ease;
 }
 .rvmp .r-tabs-strip button:hover {
 	color: var(--text-dim);
@@ -731,10 +739,6 @@
 .rvmp .r-tabs-strip button[data-active='true'] {
 	color: var(--text);
 	font-weight: 800;
-}
-.rvmp .r-tabs-strip button[data-active='true'] img,
-.rvmp .r-tabs-strip button[data-active='true'] svg {
-	opacity: 1;
 }
 .rvmp .r-tabs-strip button[data-active='true']::after {
 	content: '';
@@ -756,6 +760,7 @@
 	padding: var(--s4);
 }
 .rvmp .r-section-h {
+	position: relative;
 	display: flex;
 	align-items: center;
 	gap: var(--s2);
@@ -2363,31 +2368,12 @@
 	font-size: clamp(24px, 6vw, 32px);
 	margin: var(--s5) 0 var(--s3);
 }
-.rvmp .r-tabs--cal {
+/* Calendar's tab bar sits directly under the page title, whose own bottom
+   margin is already enough breathing room — skip r-tabs' usual margin-top
+   there (Pokémon page's IconTabBar always has the league picker between it
+   and the title, so this doesn't affect that usage). */
+.rvmp .r-page-title + .r-tabs {
 	margin-top: 0;
-}
-.rvmp .r-tabs a {
-	position: relative;
-	padding: 0 2px var(--s3);
-	font-weight: 700;
-	font-size: 14px;
-	color: var(--text-faint);
-	white-space: nowrap;
-}
-.rvmp .r-tabs a.is-active {
-	color: var(--text);
-	font-weight: 800;
-}
-.rvmp .r-tabs a.is-active::after {
-	content: '';
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: -1px;
-	height: 3px;
-	border-radius: var(--r-pill);
-	background: var(--accent);
-	box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 /* ===========================================================================
@@ -3228,12 +3214,12 @@
 	font-weight: 700;
 	font-size: 12.5px;
 	white-space: nowrap;
+	/* Same resting look as `.r-datepick-chips button` (border/background/font) —
+	   only the hover/selected treatment below is custom to this picker, tinting
+	   with each league's own accent color instead of one shared `--accent`. */
 	color: var(--text-dim);
-	/* No background at all until hovered/selected — see `.r-hero-mini-lg`,
-	   whose exact hover formula this (and the active/hover rules below)
-	   reuses verbatim. */
-	background: transparent;
-	border: 1px solid transparent;
+	background: var(--surface-2);
+	border: 1px solid var(--border);
 	scroll-snap-align: start;
 	transition:
 		background 0.14s ease,
@@ -3550,6 +3536,13 @@
 	align-items: stretch;
 	gap: 8px;
 	margin-bottom: 10px;
+}
+/* Search Strings' rank-cutoff reuses this component but has a single field
+   (not the IV table's three), so the `label { flex: 1 }` below would stretch
+   it across the whole card — cap it to a sane width instead. */
+.rvmp .r-ss-controls .r-iv-search {
+	max-width: 200px;
+	margin-bottom: 0;
 }
 .rvmp .r-iv-search label {
 	display: flex;
@@ -4868,6 +4861,22 @@
 	width: 30px;
 	height: 30px;
 }
+/* Inside a section heading, the trigger's own 30px hit target is taller than
+   the heading text's line height — flex centering then centers the text
+   within that taller box, visibly dropping it a few pixels versus a plain
+   heading with no button. Take it out of flow instead of shrinking it, so
+   the heading keeps its normal (button-free) height and text position. */
+.rvmp .r-section-h .r-lgfilter {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	/* The transform above creates a new stacking context, so the popover's
+	   own z-index (50) only wins locally — give this wrapper the same
+	   z-index or the leaderboard rows below (which set their own) can still
+	   paint on top of the whole thing. */
+	z-index: 50;
+}
 .rvmp .r-lgfilter-trigger svg {
 	width: 16px;
 	height: 16px;
@@ -4939,11 +4948,29 @@
 .rvmp .r-lgcheck-row:hover {
 	background: var(--surface-2);
 }
-.rvmp .r-lgcheck-row input[type='checkbox'] {
-	flex: none;
-	width: 16px;
-	height: 16px;
-	accent-color: var(--accent);
+/* Same custom checkbox look as `.r-ss-toggle`'s `.r-ss-box` (Search Strings'
+   own toggles) — visually hide the real, still-keyboard-operable checkbox
+   and drive the fake box off its `:checked` state instead. */
+.rvmp .r-lgcheck-row .r-lgcheck-input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+.rvmp .r-lgcheck-row:has(.r-lgcheck-input:focus-visible) .r-ss-box {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+.rvmp .r-lgcheck-row .r-ss-box {
+	flex: 0 0 18px;
+	max-width: 18px;
+}
+.rvmp .r-lgcheck-row .r-lgcheck-input:checked ~ .r-ss-box {
+	background: var(--accent);
+	border-color: var(--accent);
+	box-shadow: inset 0 0 0 3px var(--surface);
 }
 .rvmp .r-lgcheck-row img {
 	flex: none;

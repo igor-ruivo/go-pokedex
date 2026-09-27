@@ -36,9 +36,13 @@ export const moveDPS = (m: IGameMasterMove, a: Arena, pokemon?: IGamemasterPokem
 	(power(m, a) * dmgMult(m, pokemon)) / seconds(m, a);
 /** Energy generated per second (fast moves) — energy isn't boosted by STAB / shadow. */
 export const moveEPS = (m: IGameMasterMove, a: Arena): number => energy(m, a) / seconds(m, a);
-/** Damage per energy spent for a charged move. STAB + shadow applied when a `pokemon` is given. */
-export const moveDPE = (m: IGameMasterMove, a: Arena, pokemon?: IGamemasterPokemon): number =>
-	(power(m, a) * dmgMult(m, pokemon)) / (Math.abs(energy(m, a)) || 1);
+/** Damage per energy spent for a charged move. STAB + shadow applied when a `pokemon` is given.
+ *  A 0-energy-cost move has no meaningful "per energy" figure at all — 0, not
+ *  divide-by-1 (which used to read as a real, if unusually high, DPE). */
+export const moveDPE = (m: IGameMasterMove, a: Arena, pokemon?: IGamemasterPokemon): number => {
+	const cost = Math.abs(energy(m, a));
+	return cost === 0 ? 0 : (power(m, a) * dmgMult(m, pokemon)) / cost;
+};
 
 /** Every non-alias Pokémon that can learn this move (any slot). */
 export const moveOwners = (moveId: string, gm: Record<string, IGamemasterPokemon>): Array<IGamemasterPokemon> =>

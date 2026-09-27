@@ -7,7 +7,8 @@
 		"bosses": "Raid",
 		"spawns": "Spawn",
 		"rockets": "Rocket",
-		"eggs": "Telur"
+		"eggs": "Telur",
+		"ariaLabel": "Event / Raid / Spawn / Rocket / Telur"
 	},
 	"biomes": {
 		"cities": "Perkotaan",

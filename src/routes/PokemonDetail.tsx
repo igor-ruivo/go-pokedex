@@ -95,7 +95,7 @@ const TAB_ICON: Partial<Record<string, string>> = {
 // No dedicated image asset for this one — a plain table/grid glyph instead,
 // matching the other tabs' stroke weight and size.
 const IvTableIcon = () => (
-	<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' aria-hidden='true'>
+	<svg viewBox='0 0 24 24' fill='none' stroke='var(--text)' strokeWidth='2' aria-hidden='true'>
 		<rect x='3' y='4' width='18' height='16' rx='2' />
 		<line x1='3' y1='10' x2='21' y2='10' />
 		<line x1='9' y1='4' x2='9' y2='20' />
@@ -1029,7 +1029,7 @@ const PokemonDetail = () => {
 				}))}
 				activeId={tabParam ?? 'ranks'}
 				onSelect={(slug) => void navigate(`${R.pokemon(speciesId, slug)}${lgParam ? `?lg=${lgParam}` : ''}`)}
-				ariaLabel={t('pokemonDetail:tabsAriaLabel')}
+				ariaLabel={t('pokemonDetail:tabs.ariaLabel')}
 			/>
 
 			{tab === 'Moves' ? (

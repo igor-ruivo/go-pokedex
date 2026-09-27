@@ -1,8 +1,9 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
 import { handleSpriteError, spriteUrl } from '../components/Sprite';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
@@ -41,6 +42,14 @@ const EGG_TIERS: ReadonlyArray<readonly [string, string]> = [
 	['10', '10 km'],
 	['12', '12 km'],
 ];
+
+const TAB_ICON: Record<CalendarTab, string> = {
+	events: '/images/nav/calendar.png',
+	bosses: '/images/raids/tier-5.png',
+	spawns: '/images/nav/spawns-grass.png',
+	rockets: '/images/NPC/male-grunt.webp',
+	eggs: '/images/eggs/10km.png',
+};
 
 const isActive = (p: { startDate: number; endDate: number }, now: number) => now >= p.startDate && now < p.endDate;
 
@@ -1059,6 +1068,7 @@ const Calendar = () => {
 	const { t } = useTranslation(['calendar']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { tab } = useParams();
+	const navigate = useNavigate();
 	// `Shell` already kicks off/subscribes to this same fetch, and normally
 	// its re-render cascades down through the router `<Outlet/>` to this
 	// component too — but this tab bar's own label going blank until some
@@ -1087,18 +1097,12 @@ const Calendar = () => {
 	return (
 		<div className='r-shell'>
 			<h1 className='r-page-title'>{t('calendar:shell.title')}</h1>
-			<nav className='r-tabs r-tabs--cal'>
-				{CALENDAR_TABS.map((tabKey) => (
-					<NavLink
-						key={tabKey}
-						to={R.calendar(tabKey)}
-						aria-current={tabKey === active ? 'page' : undefined}
-						className={({ isActive }) => (isActive ? 'is-active' : '')}
-					>
-						{TAB_LABEL[tabKey]}
-					</NavLink>
-				))}
-			</nav>
+			<IconTabBar
+				items={CALENDAR_TABS.map((tabKey) => ({ id: tabKey, label: TAB_LABEL[tabKey], icon: TAB_ICON[tabKey] }))}
+				activeId={active}
+				onSelect={(id) => void navigate(R.calendar(id as CalendarTab))}
+				ariaLabel={t('calendar:tabs.ariaLabel')}
+			/>
 
 			<div style={{ marginTop: 16 }}>
 				{active === 'events' && <EventsTab />}

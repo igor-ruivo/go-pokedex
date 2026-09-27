@@ -16,7 +16,8 @@
 		"counters": "對戰技巧",
 		"ivTable": "個體值表",
 		"strings": "搜尋字串",
-		"comingSoon": "「{{tab}}」改版即將推出。"
+		"comingSoon": "「{{tab}}」改版即將推出。",
+		"ariaLabel": "排名／招式／剋制／IV 表／搜尋字串"
 	},
 	"loading": {
 		"pokedex": "載入圖鑑中…",

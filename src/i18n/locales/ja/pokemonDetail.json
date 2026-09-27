@@ -16,7 +16,8 @@
 		"counters": "対策",
 		"ivTable": "個体値表",
 		"strings": "検索文字列",
-		"comingSoon": "「{{tab}}」はリニューアルで近日公開予定。"
+		"comingSoon": "「{{tab}}」はリニューアルで近日公開予定。",
+		"ariaLabel": "ランク／わざ／対策／個体値表／検索文字列"
 	},
 	"loading": {
 		"pokedex": "図鑑を読み込み中…",

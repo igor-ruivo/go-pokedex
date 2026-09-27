@@ -16,7 +16,8 @@
 		"counters": "Contres",
 		"ivTable": "Tableau des IV",
 		"strings": "Chaînes",
-		"comingSoon": "« {{tab}} » arrive prochainement dans la refonte."
+		"comingSoon": "« {{tab}} » arrive prochainement dans la refonte.",
+		"ariaLabel": "Classements / Capacités / Contres / Tableau des IV / Recherches"
 	},
 	"loading": {
 		"pokedex": "Chargement du Pokédex…",

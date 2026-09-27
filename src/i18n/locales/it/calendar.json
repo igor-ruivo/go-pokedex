@@ -7,7 +7,8 @@
 		"bosses": "Raid",
 		"spawns": "Spawn",
 		"rockets": "Rocket",
-		"eggs": "Uova"
+		"eggs": "Uova",
+		"ariaLabel": "Eventi / Raid / Spawn / Rocket / Uova"
 	},
 	"biomes": {
 		"cities": "Città",

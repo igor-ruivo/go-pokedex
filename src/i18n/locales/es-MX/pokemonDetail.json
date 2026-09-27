@@ -16,7 +16,8 @@
 		"counters": "Contraataques",
 		"ivTable": "Tabla de IVs",
 		"strings": "Cadenas",
-		"comingSoon": "“{{tab}}” llegará en la próxima renovación."
+		"comingSoon": "“{{tab}}” llegará en la próxima renovación.",
+		"ariaLabel": "Rangos / Movimientos / Contrarrestos / Tabla de IVs / Cadenas"
 	},
 	"loading": {
 		"pokedex": "Cargando Pokédex…",

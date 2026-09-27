@@ -16,7 +16,8 @@
 		"counters": "Konter",
 		"ivTable": "IW-Tabelle",
 		"strings": "Strings",
-		"comingSoon": "„{{tab}}“ kommt als Nächstes im Redesign."
+		"comingSoon": "„{{tab}}“ kommt als Nächstes im Redesign.",
+		"ariaLabel": "Ränge / Attacken / Konter / IV-Tabelle / Suchstrings"
 	},
 	"loading": {
 		"pokedex": "Pokédex wird geladen…",

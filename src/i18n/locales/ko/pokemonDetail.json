@@ -16,7 +16,8 @@
 		"counters": "카운터",
 		"ivTable": "개체값 표",
 		"strings": "검색 문자열",
-		"comingSoon": "“{{tab}}”은(는) 리뉴얼에서 다음으로 추가될 예정입니다."
+		"comingSoon": "“{{tab}}”은(는) 리뉴얼에서 다음으로 추가될 예정입니다.",
+		"ariaLabel": "랭크 / 기술 / 카운터 / 개체값 표 / 검색 문자열"
 	},
 	"loading": {
 		"pokedex": "도감을 불러오는 중…",

@@ -7,7 +7,8 @@
 		"bosses": "Reides",
 		"spawns": "Spawns",
 		"rockets": "Rockets",
-		"eggs": "Ovos"
+		"eggs": "Ovos",
+		"ariaLabel": "Eventos / Reides / Spawns / Rockets / Ovos"
 	},
 	"biomes": {
 		"cities": "Cidades",

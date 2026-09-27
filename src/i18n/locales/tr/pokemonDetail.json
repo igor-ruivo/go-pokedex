@@ -16,7 +16,8 @@
 		"counters": "Karşı Hamleler",
 		"ivTable": "IV Tablosu",
 		"strings": "Diziler",
-		"comingSoon": "“{{tab}}” yenileme kapsamında sırada."
+		"comingSoon": "“{{tab}}” yenileme kapsamında sırada.",
+		"ariaLabel": "Sıralamalar / Hamleler / Karşı Pokémonlar / IV Tablosu / Arama Dizeleri"
 	},
 	"loading": {
 		"pokedex": "Pokédex yükleniyor…",

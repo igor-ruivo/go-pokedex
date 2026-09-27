@@ -16,7 +16,8 @@
 		"counters": "Counters",
 		"ivTable": "IV Table",
 		"strings": "Strings",
-		"comingSoon": "“{{tab}}” is next in the revamp."
+		"comingSoon": "“{{tab}}” is next in the revamp.",
+		"ariaLabel": "Ranks / Moves / Counters / IV Table / Strings"
 	},
 	"loading": {
 		"pokedex": "Loading Pokédex…",

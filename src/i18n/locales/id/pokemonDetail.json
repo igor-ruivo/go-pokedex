@@ -16,7 +16,8 @@
 		"counters": "Counter",
 		"ivTable": "Tabel IV",
 		"strings": "String",
-		"comingSoon": "“{{tab}}” segera hadir di pembaruan berikutnya."
+		"comingSoon": "“{{tab}}” segera hadir di pembaruan berikutnya.",
+		"ariaLabel": "Peringkat / Jurus / Counter / Tabel IV / String"
 	},
 	"loading": {
 		"pokedex": "Memuat Pokédex…",

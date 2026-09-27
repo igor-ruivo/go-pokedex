@@ -229,14 +229,18 @@ const MoveDetail = () => {
 						</>
 					)}
 
-					<div className='r-section-h'>
-						{t(recommended.length > 0 ? 'moveDetail:sections.alsoLearnedBy' : 'moveDetail:sections.learnedBy')}
-					</div>
-					<div className='r-minigrid r-minigrid--fill'>
-						{others.map((p) => (
-							<PokeMini key={p.speciesId} speciesId={p.speciesId} />
-						))}
-					</div>
+					{others.length > 0 && (
+						<>
+							<div className='r-section-h'>
+								{t(recommended.length > 0 ? 'moveDetail:sections.alsoLearnedBy' : 'moveDetail:sections.learnedBy')}
+							</div>
+							<div className='r-minigrid r-minigrid--fill'>
+								{others.map((p) => (
+									<PokeMini key={p.speciesId} speciesId={p.speciesId} />
+								))}
+							</div>
+						</>
+					)}
 
 					{eliteOwners.length > 0 && (
 						<>

@@ -16,7 +16,8 @@
 		"counters": "Counters",
 		"ivTable": "Tabela de IVs",
 		"strings": "Strings",
-		"comingSoon": "“{{tab}}” é o próximo na reformulação."
+		"comingSoon": "“{{tab}}” é o próximo na reformulação.",
+		"ariaLabel": "Classificações / Movimentos / Contra-ataques / Tabela de IVs / Strings"
 	},
 	"loading": {
 		"pokedex": "A carregar Pokédex…",
