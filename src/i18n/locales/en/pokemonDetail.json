@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "best reachable stage per league",
+		"extraLeaguesDivider": "Additional leagues",
 		"notRanked": "Not ranked",
 		"loading": "Loading…",
 		"attackersSuffix": "{{type}} attackers",
@@ -196,7 +197,8 @@
 		"rankCutoff": "Rank cutoff",
 		"topN": "Top {{n}}",
 		"matchExceptTop": "Match everything <em>except</em> the top {{n}}",
-		"helperText": "Each line matches wild, unpowered catches whose family reaches the cutoff. Copy it, then paste into the Pokémon GO search bar.",
+		"cpCapNoteCapped": "Same CP cap, same search string — this list matches any other {{cp}} CP league too.",
+		"cpCapNoteUncapped": "No CP cap here — this list matches any other uncapped league too.",
 		"copyString": "Copy string",
 		"copied": "Copied ✓",
 		"clickToCopy": "Click to copy",
@@ -206,7 +208,7 @@
 			"findTopEvolvesTo": "Find <name></name> {{caught}} that evolve to {{toThe}}{{except}}top {{top}} <target></target> for <league></league>:",
 			"findTopSelfShadowEither": "Find {{except}}top {{top}} <name></name> — {{shadow}} or not — {{caught}} for <league></league>:",
 			"findTopEvolvesToShadowEither": "Find <name></name> — {{shadow}} or not — {{caught}} that evolve to {{toThe}}{{except}}top {{top}} <target></target> for <league></league>:",
-			"exceptPrefix": "all except the ",
+			"exceptPrefix": "except the ",
 			"toThePrefix": "the "
 		}
 	}

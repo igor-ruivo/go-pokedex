@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Araçlar",
 		"comingSoon": "Yenileme kapsamında sırada."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Görünür ligleri seç",
+		"dialogAriaLabel": "Görünür ligler",
+		"hint": "Burada hangi rotasyon/özel kupaların görüneceğini seç",
+		"empty": "Şu anda aktif bir rotasyon kupası yok."
+	},
+	"scroll": {
+		"left": "Sola kaydır",
+		"right": "Sağa kaydır"
 	}
 }

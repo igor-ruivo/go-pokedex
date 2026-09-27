@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "리그별 도달 가능한 최고 진화 단계",
+		"extraLeaguesDivider": "추가 리그",
 		"notRanked": "랭크 없음",
 		"loading": "불러오는 중…",
 		"attackersSuffix": "{{type}} 타입 어태커",
@@ -196,7 +197,8 @@
 		"rankCutoff": "랭크 기준",
 		"topN": "상위 {{n}}",
 		"matchExceptTop": "상위 {{n}}을(를) <em>제외한</em> 모두와 일치",
-		"helperText": "각 줄은 해당 계보가 기준에 도달하는, 강화하지 않은 야생 포획 개체와 일치합니다. 복사해서 Pokémon GO 검색창에 붙여넣으세요.",
+		"cpCapNoteCapped": "CP 상한이 같으면 검색 문자열도 같습니다 — 이 목록은 {{cp}} CP인 다른 리그에도 그대로 적용됩니다.",
+		"cpCapNoteUncapped": "여기에는 CP 상한이 없습니다 — 이 목록은 상한이 없는 다른 리그에도 그대로 적용됩니다.",
 		"copyString": "문자열 복사",
 		"copied": "복사됨 ✓",
 		"clickToCopy": "클릭하여 복사",

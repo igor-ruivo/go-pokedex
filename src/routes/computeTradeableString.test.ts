@@ -58,6 +58,7 @@ const call = (
 		whitelist: Set<string>;
 		onlyLowIv: boolean;
 		cp: number;
+		extraTrade: Parameters<typeof computeTradeableString>[15];
 	}> = {}
 ) =>
 	computeTradeableString(
@@ -75,7 +76,8 @@ const call = (
 		overrides.protect ?? DEFAULT_PROTECTION,
 		overrides.whitelist ?? new Set<string>(),
 		overrides.onlyLowIv ?? false,
-		overrides.cp ?? 2500
+		overrides.cp ?? 2500,
+		overrides.extraTrade ?? []
 	);
 
 describe('computeTradeableString — Master League relevance (pure rank, no IV condition on admission)', () => {
@@ -295,6 +297,63 @@ describe('computeTradeableString — Great/Ultra League relevance (rank + floor-
 		const result = call(gamemasterPokemon, { rankLists, tradeableSpeciesData: {} });
 
 		expect(result).not.toContain('610');
+	});
+});
+
+describe('computeTradeableString — extraTrade (rotating/custom league cutoffs)', () => {
+	it('an uncapped extra league (tier: master) admits on rank alone, same as Master', () => {
+		const goodmon = mockPokemon({ speciesId: 'extramastermon', dex: 620 });
+		const gamemasterPokemon = buildGamemaster([goodmon]);
+
+		const result = call(gamemasterPokemon, {
+			rankLists: [{}, {}, {}],
+			extraTrade: [{ rankList: { extramastermon: rank(1) }, cutoff: 10, tier: 'master' }],
+		});
+
+		expect(result).toContain('620');
+	});
+
+	it('a 1500-cap extra league (tier: great) requires floor-5 eligibility, reused from the great tier data', () => {
+		const floormon = mockPokemon({ speciesId: 'extrafloormon', dex: 621 });
+		const nofloormon = mockPokemon({ speciesId: 'extranofloormon', dex: 622 });
+		const gamemasterPokemon = buildGamemaster([floormon, nofloormon]);
+
+		const result = call(gamemasterPokemon, {
+			rankLists: [{}, {}, {}],
+			extraTrade: [
+				{ rankList: { extrafloormon: rank(1), extranofloormon: rank(1) }, cutoff: 10, tier: 'great' },
+			],
+			tradeableSpeciesData: {
+				extrafloormon: floorEligible({ great: leagueData({ floorOk: true }) }),
+				extranofloormon: floorEligible({ great: leagueData({ floorOk: false }), ultra: leagueData({ floorOk: false }) }),
+			},
+		});
+
+		expect(result).toContain('621');
+		expect(result).not.toContain('622');
+	});
+
+	it('bad in every static league AND every extra league is never admitted', () => {
+		const badmon = mockPokemon({ speciesId: 'extrabadmon', dex: 623 });
+		const gamemasterPokemon = buildGamemaster([badmon]);
+
+		const result = call(gamemasterPokemon, {
+			rankLists: [{}, {}, {}],
+			extraTrade: [{ rankList: {}, cutoff: 10, tier: 'master' }],
+		});
+
+		expect(result).not.toContain('623');
+	});
+
+	it('omitting extraTrade entirely behaves exactly like passing an empty array', () => {
+		const goodmon = mockPokemon({ speciesId: 'goodmon', dex: 601 });
+		const gamemasterPokemon = buildGamemaster([goodmon]);
+		const rankLists = [{}, {}, { goodmon: rank(1) }];
+
+		const withField = call(gamemasterPokemon, { rankLists, extraTrade: [] });
+		const withoutField = call(gamemasterPokemon, { rankLists });
+
+		expect(withField).toBe(withoutField);
 	});
 });
 

@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { handleSpriteError, spriteUrl } from '../../components/Sprite';
-import { Stepper } from '../../components/Stepper';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../../contexts/language-context';
+import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
 import { useBestIvs } from '../../hooks/useBestIvs';
@@ -22,9 +22,6 @@ import {
 	type RankEntry,
 	sortPokemonByBattlePowerAsc,
 } from '../../utils/pokemon-helper';
-
-const CAP = [1500, 2500, Number.MAX_VALUE] as const;
-const LEAGUE_COLOR_VAR = ['--lg-great', '--lg-ultra', '--lg-master'] as const;
 
 /* ---- verbatim from the legacy search-string generator ---------------------- */
 
@@ -536,12 +533,15 @@ const NameLabel = ({ p }: { p: IGamemasterPokemon }) => {
 };
 
 /** A league name painted with that league's own identity colour — the same
- *  `--lg-*` vars used elsewhere (e.g. the league dots on the ranking cards),
- *  not a page-specific colour, so it stays consistent across the app.
- *  `leagueName` is already the full, translated league name (e.g. "Great
- *  League" / "Grande Liga") — see LEAGUE_FULL in SearchStringsTab below. */
+ *  `--lg-*` vars used elsewhere (e.g. the league dots on the ranking cards)
+ *  for the static three, or a rotating cup's own accent color, so it stays
+ *  consistent across the app either way. `leagueName` is already the full,
+ *  translated league name (e.g. "Great League" / "Grande Liga") — see
+ *  `activeLeague.title` in SearchStringsTab below. `colorVar` is a ready CSS
+ *  color value (`var(--lg-great)`, or a rotating cup's own hex), not a var
+ *  name to wrap. */
 const LeagueLabel = ({ leagueName, colorVar }: { leagueName: string; colorVar: string }) => (
-	<span style={{ color: `var(${colorVar})`, fontWeight: 600 }}>{leagueName}</span>
+	<span style={{ color: colorVar, fontWeight: 600 }}>{leagueName}</span>
 );
 
 /** Legacy sentence construction — the wording matters, it tells the user what they're matching.
@@ -615,14 +615,9 @@ const Sentence = ({
 	);
 };
 
-const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+const SearchStringsTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; activeLeague: ActiveLeague }) => {
 	const { t } = useTranslation(['pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
-	const LEAGUE_FULL = [
-		gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
-		gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
-		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
-	];
 	const { gamemasterPokemon } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { imageSource } = useImageSource();
@@ -631,6 +626,19 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 		const v = readPersistentValue(ConfigKeys.TopPokemonInSearchString);
 		return v ? Math.min(4096, Math.max(1, +v)) : 10;
 	});
+	// A free-typed string, not just `top` reflected back — so clearing the
+	// field to type a new number doesn't fight you by snapping back to the
+	// last valid value on every keystroke. Only resets to match `top` once
+	// you leave the field empty (see `onTopBlur`).
+	const [topInput, setTopInput] = useState(() => String(top));
+	const onTopInputChange = (raw: string) => {
+		const digits = raw.replace(/\D/g, '').slice(0, 4);
+		setTopInput(digits);
+		if (digits) setTop(Math.min(4096, Math.max(1, Number(digits))));
+	};
+	const onTopInputBlur = () => {
+		if (!topInput) setTopInput(String(top));
+	};
 	const [trash, setTrash] = useState(() => readPersistentValue(ConfigKeys.TrashString) === 'true');
 	const [copied, setCopied] = useState('');
 	const [open, setOpen] = useState('');
@@ -642,8 +650,8 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 		writePersistentValue(ConfigKeys.TrashString, String(trash));
 	}, [trash]);
 
-	const isPvp = league === 0 || league === 1 || league === 2;
-	const cpCap = isPvp ? CAP[league] : 1500;
+	const isPvp = !activeLeague.isRaid;
+	const cpCap = isPvp ? activeLeague.cpCap : 1500;
 	// Always honors whichever single level ceiling (50, or 51 with Best Buddy)
 	// the player currently has toggled — see the note above
 	// `selectTopIVCombinations`. No cross-level floor: the other level's own
@@ -680,23 +688,27 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 		);
 	}
 
-	const leagueName = LEAGUE_FULL[league];
+	const leagueName = activeLeague.title;
 
 	return (
 		<div className='r-movecontent'>
 			<div className='r-section-h'>{t('pokemonDetail:searchStrings.heading', { league: leagueName })}</div>
 
 			<div className='r-card r-ss-controls'>
-				<div className='r-ss-cut'>
-					<span>{t('pokemonDetail:searchStrings.rankCutoff')}</span>
-					<Stepper
-						value={top}
-						min={1}
-						max={4096}
-						step={1}
-						onChange={(v) => setTop(Math.round(v))}
-						format={(v) => t('pokemonDetail:searchStrings.topN', { n: v })}
-					/>
+				<div className='r-iv-search'>
+					<label>
+						<span>{t('pokemonDetail:searchStrings.rankCutoff')}</span>
+						<input
+							value={topInput}
+							onChange={(e) => onTopInputChange(e.target.value)}
+							onBlur={onTopInputBlur}
+							inputMode='numeric'
+							pattern='[0-9]*'
+							maxLength={4}
+							placeholder='10'
+							aria-label={t('pokemonDetail:searchStrings.rankCutoff')}
+						/>
+					</label>
 				</div>
 				<button
 					type='button'
@@ -711,7 +723,9 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 			</div>
 
 			<p className='r-muted' style={{ margin: '0 2px 12px', fontSize: 12 }}>
-				{t('pokemonDetail:searchStrings.helperText')}
+				{activeLeague.cpCap >= Number.MAX_VALUE
+					? t('pokemonDetail:searchStrings.cpCapNoteUncapped')
+					: t('pokemonDetail:searchStrings.cpCapNoteCapped', { cp: activeLeague.cpCap })}
 			</p>
 
 			{chain.map((entry) => {
@@ -748,7 +762,7 @@ const SearchStringsTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; le
 									top={top}
 									trash={trash}
 									leagueName={leagueName}
-									leagueColorVar={LEAGUE_COLOR_VAR[league]}
+									leagueColorVar={activeLeague.colorVar}
 								/>
 							</p>
 						</div>

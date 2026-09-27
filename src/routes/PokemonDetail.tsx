@@ -1,10 +1,13 @@
 import type { TFunction } from 'i18next';
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import { IconTabBar } from '../components/IconTabBar';
 import { IvPicker, type IVs } from '../components/IvPicker';
+import { LeaguePicker } from '../components/LeaguePicker';
+import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { ShadowMark } from '../components/ShadowMark';
 import { goSpriteUrl, handleSpriteError, Sprite, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
@@ -12,18 +15,22 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
+import { useVisibleLeagues } from '../contexts/visible-leagues-context';
+import type { ActiveLeague } from '../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
 import { useBestIvs } from '../hooks/useBestIvs';
 import useComputeIVs from '../hooks/useComputeIVs';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dec1, dexNo, ordinal, rankPerfection, sentenceCase } from '../lib/format';
+import { leagueColor, leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { R } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
 import { accentStyle, typeKey, typeVar } from '../lib/types';
+import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
-import { usePvp } from '../queries/pvp';
+import { type RankList, usePvp } from '../queries/pvp';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import {
@@ -41,28 +48,33 @@ import IvTableTab from './pokemon/IvTableTab';
 import MovesTab from './pokemon/MovesTab';
 import SearchStringsTab from './pokemon/SearchStringsTab';
 
-/** Just the layout facts (id/colour) — display text is translated inside the
- *  component (see LEAGUES there) since it needs the t() hook. */
-const LEAGUE_META = [
-	{ id: 0, cssVar: 'var(--lg-great)' },
-	{ id: 1, cssVar: 'var(--lg-ultra)' },
-	{ id: 2, cssVar: 'var(--lg-master)' },
-	{ id: 3, cssVar: 'var(--lg-raid)' },
-] as const;
-type LeagueId = 0 | 1 | 2 | 3;
-type PvpLeague = 0 | 1 | 2;
-
-/** `?lg=` on the URL — set when you arrive from a league / raid ranking. */
-const LG_PARAM: Record<string, LeagueId> = { great: 0, ultra: 1, master: 2, raid: 3 };
-const LG_SLUG: Record<LeagueId, string> = { 0: 'great', 1: 'ultra', 2: 'master', 3: 'raid' };
-const LG_ICON: Record<LeagueId, string> = {
-	0: '/images/leagues/great.png',
-	1: '/images/leagues/ultra.png',
-	2: '/images/leagues/master.png',
-	3: '/images/raids/tier-5.png',
+// A league "id" is now the same string dex-server's `leagues.json` (and the
+// URL's `?lg=`) uses everywhere — 'great'/'ultra'/'master'/'raid', or a
+// rotating/custom cup's own id (e.g. `retro-1500`). No more separate numeric
+// index: that used to double as an array position for the static three,
+// which is exactly what broke down once a variable-length list of extra
+// cups could sit between Master and Raid.
+type LeagueId = string;
+/** Great/Ultra/Master/Raid — always present, always first, in that order —
+ *  see `LEAGUES`' own construction below, which this relies on. */
+const STATIC_LEAGUE_COUNT = 4;
+const RAID_ICON = '/images/raids/tier-5.png';
+const STATIC_ICON: Record<string, string> = {
+	great: '/images/leagues/cups/pogo_great_league.png',
+	ultra: '/images/leagues/cups/pogo_ultra_league.png',
+	master: '/images/leagues/cups/pogo_master_league.png',
 };
-/** PvP CP cap per `PvpLeague` — Master has none. */
-const PVP_CP_CAP: Record<PvpLeague, number> = { 0: 1500, 1: 2500, 2: Number.MAX_VALUE };
+const iconFor = (id: LeagueId): string | undefined => (id === 'raid' ? RAID_ICON : (STATIC_ICON[id] ?? leagueIcon(id)));
+const colorFor = (id: LeagueId): string =>
+	id === 'great'
+		? 'var(--lg-great)'
+		: id === 'ultra'
+			? 'var(--lg-ultra)'
+			: id === 'master'
+				? 'var(--lg-master)'
+				: id === 'raid'
+					? 'var(--lg-raid)'
+					: leagueColor(id);
 
 const TABS = [
 	['Ranks', 'ranks'],
@@ -73,6 +85,23 @@ const TABS = [
 ] as const;
 type TabLabel = (typeof TABS)[number][0];
 const SLUG_TO_TAB = Object.fromEntries(TABS.map(([label, slug]) => [slug, label])) as Record<string, TabLabel>;
+
+const TAB_ICON: Partial<Record<string, string>> = {
+	ranks: '/images/nav/rankings.webp',
+	moves: '/images/nav/moves.png',
+	counters: '/images/nav/counters.png',
+	strings: '/images/nav/search-strings.svg',
+};
+// No dedicated image asset for this one — a plain table/grid glyph instead,
+// matching the other tabs' stroke weight and size.
+const IvTableIcon = () => (
+	<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' aria-hidden='true'>
+		<rect x='3' y='4' width='18' height='16' rx='2' />
+		<line x1='3' y1='10' x2='21' y2='10' />
+		<line x1='9' y1='4' x2='9' y2='20' />
+		<line x1='15' y1='4' x2='15' y2='20' />
+	</svg>
+);
 
 // Renders a t() call with one or more of its interpolated values wrapped in
 // a colored <b>, regardless of where the translated sentence actually places
@@ -107,43 +136,47 @@ const renderWithColoredParams = (
 	);
 };
 
-const leagueSlice = (ivp: IIvPercents | undefined, id: PvpLeague) => {
+// Percentile/rank spreads are precomputed server-side for exactly three tiers
+// (1500/2500/uncapped CP cap) — never per specific cup. Every league sharing
+// a cap tier (a rotating 1500-cap cup included) reuses the same tier's
+// fields; only the CP cap itself decides which tier applies, per the product
+// note that IV evaluations never vary by which specific cup you're in.
+const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number) => {
 	if (!ivp) return undefined;
-	switch (id) {
-		case 0:
-			return {
-				rank: ivp.greatLeagueRank,
-				cp: ivp.greatLeagueCP,
-				lvl: ivp.greatLeagueLvl,
-				battle: { A: ivp.greatLeagueAttack, D: ivp.greatLeagueDefense, S: ivp.greatLeagueHP },
-				perfect: ivp.greatLeaguePerfect,
-				perfectCP: ivp.greatLeaguePerfectCP,
-				perfectLvl: ivp.greatLeaguePerfectLevel,
-				perfectBattle: ivp.greatLeaguePerfectBattle,
-			};
-		case 1:
-			return {
-				rank: ivp.ultraLeagueRank,
-				cp: ivp.ultraLeagueCP,
-				lvl: ivp.ultraLeagueLvl,
-				battle: { A: ivp.ultraLeagueAttack, D: ivp.ultraLeagueDefense, S: ivp.ultraLeagueHP },
-				perfect: ivp.ultraLeaguePerfect,
-				perfectCP: ivp.ultraLeaguePerfectCP,
-				perfectLvl: ivp.ultraLeaguePerfectLevel,
-				perfectBattle: ivp.ultraLeaguePerfectBattle,
-			};
-		default:
-			return {
-				rank: ivp.masterLeagueRank,
-				cp: ivp.masterLeagueCP,
-				lvl: ivp.masterLeagueLvl,
-				battle: { A: ivp.masterLeagueAttack, D: ivp.masterLeagueDefense, S: ivp.masterLeagueHP },
-				perfect: ivp.masterLeaguePerfect,
-				perfectCP: ivp.masterLeaguePerfectCP,
-				perfectLvl: ivp.masterLeaguePerfectLevel,
-				perfectBattle: ivp.masterLeaguePerfectBattle,
-			};
+	if (cpCap <= 1500) {
+		return {
+			rank: ivp.greatLeagueRank,
+			cp: ivp.greatLeagueCP,
+			lvl: ivp.greatLeagueLvl,
+			battle: { A: ivp.greatLeagueAttack, D: ivp.greatLeagueDefense, S: ivp.greatLeagueHP },
+			perfect: ivp.greatLeaguePerfect,
+			perfectCP: ivp.greatLeaguePerfectCP,
+			perfectLvl: ivp.greatLeaguePerfectLevel,
+			perfectBattle: ivp.greatLeaguePerfectBattle,
+		};
 	}
+	if (cpCap <= 2500) {
+		return {
+			rank: ivp.ultraLeagueRank,
+			cp: ivp.ultraLeagueCP,
+			lvl: ivp.ultraLeagueLvl,
+			battle: { A: ivp.ultraLeagueAttack, D: ivp.ultraLeagueDefense, S: ivp.ultraLeagueHP },
+			perfect: ivp.ultraLeaguePerfect,
+			perfectCP: ivp.ultraLeaguePerfectCP,
+			perfectLvl: ivp.ultraLeaguePerfectLevel,
+			perfectBattle: ivp.ultraLeaguePerfectBattle,
+		};
+	}
+	return {
+		rank: ivp.masterLeagueRank,
+		cp: ivp.masterLeagueCP,
+		lvl: ivp.masterLeagueLvl,
+		battle: { A: ivp.masterLeagueAttack, D: ivp.masterLeagueDefense, S: ivp.masterLeagueHP },
+		perfect: ivp.masterLeaguePerfect,
+		perfectCP: ivp.masterLeaguePerfectCP,
+		perfectLvl: ivp.masterLeaguePerfectLevel,
+		perfectBattle: ivp.masterLeaguePerfectBattle,
+	};
 };
 
 const PokemonDetail = () => {
@@ -153,7 +186,7 @@ const PokemonDetail = () => {
 	const navigate = useNavigate();
 	const { imageSource } = useImageSource();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
-	const { rankLists, pvpFetchCompleted } = usePvp();
+	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
@@ -161,31 +194,69 @@ const PokemonDetail = () => {
 	// setting Rankings' raid tab and the Counters tab use.
 	const { raidMetric } = useRaidMetric();
 	const { maxLevel, maxLevelIndex } = useBestBuddy();
+	const { leagues } = useLeagueDefinitions();
+	const { isExtraLeagueVisible } = useVisibleLeagues();
 
-	// Display text for the four league/mode segments — LEAGUE_META (module
-	// scope) carries the stable id/colour. League names track the player's
-	// in-game language (GameLanguage), not the website UI's.
-	const LEAGUES = [
+	// This species' own ranked entry, for whichever league is active — the
+	// static three read `rankLists` (positional), any rotating/custom cup
+	// reads `extraRankLists` (keyed by id, see usePvp's own doc comment).
+	const rankListFor = (id: LeagueId): RankList =>
+		id === 'great' ? rankLists[0] : id === 'ultra' ? rankLists[1] : id === 'master' ? rankLists[2] : (extraRankLists[id] ?? {});
+	const cpCapFor = (id: LeagueId): number =>
+		id === 'great'
+			? 1500
+			: id === 'ultra'
+				? 2500
+				: id === 'master'
+					? Number.MAX_VALUE
+					: (leagues.find((l) => l.id === id)?.cpCap ?? Number.MAX_VALUE);
+
+	// Display text for the league/mode segments — great/ultra/master/raid are
+	// always present; any rotating/custom cup the player has made visible
+	// (see visible-leagues-context.tsx) is inserted between Master and Raid.
+	// League names track the player's in-game language (GameLanguage), not
+	// the website UI's — rotating cups don't have a GameLanguage entry, so
+	// their title comes straight from `leagues.json` (already in-game-accurate).
+	const LEAGUES: Array<{ id: LeagueId; cssVar: string; label: string; full: string; cpCap: number }> = [
 		{
-			...LEAGUE_META[0],
-			label: gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl),
-			full: gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
+			id: 'great',
+			cssVar: colorFor('great'),
+			label: gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl) || 'Great',
+			full: gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl) || 'Great League',
+			cpCap: 1500,
 		},
 		{
-			...LEAGUE_META[1],
-			label: gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl),
-			full: gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
+			id: 'ultra',
+			cssVar: colorFor('ultra'),
+			label: gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl) || 'Ultra',
+			full: gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl) || 'Ultra League',
+			cpCap: 2500,
 		},
 		{
-			...LEAGUE_META[2],
-			label: gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl),
-			full: gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
+			id: 'master',
+			cssVar: colorFor('master'),
+			label: gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl) || 'Master',
+			full: gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl) || 'Master League',
+			cpCap: Number.MAX_VALUE,
 		},
 		{
-			...LEAGUE_META[3],
-			label: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-			full: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+			id: 'raid',
+			cssVar: colorFor('raid'),
+			label: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl) || 'Raids'),
+			full: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl) || 'Raids'),
+			cpCap: Number.MAX_VALUE,
 		},
+		// Optional add-ons — whatever rotating/custom cup the player has opted
+		// into seeing (see visible-leagues-context.tsx). Always last: the four
+		// above are the permanent, always-present set (see STATIC_LEAGUE_COUNT
+		// below, which relies on this exact ordering for the leaderboard's
+		// static/optional divider).
+		...extraLeagues(leagues)
+			.filter((l) => isExtraLeagueVisible(l.id))
+			.map((l) => {
+				const { short, full } = leagueTitle(l, gl);
+				return { id: l.id, cssVar: colorFor(l.id), label: short, full, cpCap: l.cpCap };
+			}),
 	];
 	// Visible tab text, keyed by the (stable, English, comparison-only) slug —
 	// TABS/SLUG_TO_TAB/TabLabel above stay untouched since `tab === 'Moves'`
@@ -218,10 +289,10 @@ const PokemonDetail = () => {
 	// this the same way (it's the same param), and any in-page switch (tabs,
 	// leaderboard rows, cycling the sprite type on a raid row…) just rewrites
 	// it via `setLeague` below instead of touching separate component state.
-	const league: LeagueId = LG_PARAM[lgParam] ?? 0;
+	const league: LeagueId = LEAGUES.some((l) => l.id === lgParam) ? lgParam : 'great';
 	const setLeague = (id: LeagueId) => {
 		const next = new URLSearchParams(searchParams);
-		next.set('lg', LG_SLUG[id]);
+		next.set('lg', id);
 		setSearchParams(next, { replace: true });
 	};
 	const [heroSpriteIdx, setHeroSpriteIdx] = useState(0);
@@ -242,7 +313,7 @@ const PokemonDetail = () => {
 		setHeroSpriteIdx(Math.max(0, sprites.indexOf(spriteUrl(pokemon, imageSource))));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [speciesId, imageSource, fetchCompleted]);
-	const isRaid = league === 3;
+	const isRaid = league === 'raid';
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
 	// member the league carousel is on (best reachable by default, not the URL mon).
@@ -276,12 +347,12 @@ const PokemonDetail = () => {
 	// Ordered "best reachable" candidates per league/raid — same idea as the legacy site.
 	const boardData = useMemo(() => {
 		const self = pokemon?.speciesId ?? '';
-		const pvpList = (idx: number) =>
+		const pvpList = (list: RankList) =>
 			[...reachablePvp]
-				.filter((p) => p.speciesId === self || rankLists[idx]?.[p.speciesId]?.rank != null)
+				.filter((p) => p.speciesId === self || list[p.speciesId]?.rank != null)
 				.sort((a, b) => {
-					const ra = rankLists[idx]?.[a.speciesId]?.rank;
-					const rb = rankLists[idx]?.[b.speciesId]?.rank;
+					const ra = list[a.speciesId]?.rank;
+					const rb = list[b.speciesId]?.rank;
 					if (ra == null && rb == null) return a.speciesId.localeCompare(b.speciesId);
 					if (ra == null) return 1;
 					if (rb == null) return -1;
@@ -312,32 +383,47 @@ const PokemonDetail = () => {
 				return ra - rb || a.p.speciesId.localeCompare(b.p.speciesId);
 			});
 
-		return { pvp: [pvpList(0), pvpList(1), pvpList(2)], raid };
-	}, [pokemon, reachablePvp, reachableRaid, rankLists, raidDPS, raidMetric]);
+		const pvp: Record<string, ReturnType<typeof pvpList>> = {};
+		for (const l of LEAGUES) {
+			if (l.id !== 'raid') pvp[l.id] = pvpList(rankListFor(l.id));
+		}
+		return { pvp, raid };
+		// `LEAGUES` itself isn't listed — it's reconstructed fresh every render
+		// from `leagues`/`isExtraLeagueVisible`/`gl`, both of which already are —
+		// but `isExtraLeagueVisible` must be, or toggling a cup newly visible in
+		// the filter (no `leagues`/`gl` change at all) left this memo stale,
+		// showing an empty row until something else (a species change, a full
+		// reload) happened to invalidate it.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [pokemon, reachablePvp, reachableRaid, rankLists, extraRankLists, leagues, raidDPS, raidMetric, isExtraLeagueVisible]);
 
 	// Carousel positions: p = which reachable Pokémon, t = which raid type,
-	// m[type] = which fast+charged combo for that type.
+	// m[type] = which fast+charged combo for that type. Keyed by league id
+	// ('great'/'ultra'/'master'/'raid', or a rotating cup's own id) — plain
+	// string keys, same as every JS object always used under the hood even
+	// back when this looked like a numeric index.
 	type Cpos = { p: number; t: number; m: Record<string, number> };
-	const [carousel, setCarousel] = useState<Record<number, Cpos>>({});
+	const [carousel, setCarousel] = useState<Record<LeagueId, Cpos>>({});
 	useEffect(() => setCarousel({}), [speciesId]);
-	const cpos = (id: number): Cpos => carousel[id] ?? { p: 0, t: 0, m: {} };
-	const candLen = (id: number) => (id === 3 ? boardData.raid.length : (boardData.pvp[id]?.length ?? 0));
+	const cpos = (id: LeagueId): Cpos => carousel[id] ?? { p: 0, t: 0, m: {} };
+	const candLen = (id: LeagueId) => (id === 'raid' ? boardData.raid.length : (boardData.pvp[id]?.length ?? 0));
 
 	// "Your IVs" follows the PvP carousel (best reachable by default), not the URL mon.
-	// Index with `pvpLeague`, not `league` — while on the raid tab `league` is 3,
-	// which would index into `pvpCandidates` (always a PvP league's list) with
-	// whatever position the *raid* carousel happens to be on, picking an
-	// unrelated species out of the PvP list.
-	const pvpLeague: PvpLeague = isRaid ? 0 : (league as PvpLeague);
-	const pvpCandidates = boardData.pvp[pvpLeague] ?? [];
-	const pvpMember = pvpCandidates[Math.min(cpos(pvpLeague).p, Math.max(0, pvpCandidates.length - 1))] ?? pokemon;
-	const slice = !isRaid ? leagueSlice(ivPercents[pvpMember?.speciesId ?? ''], pvpLeague) : undefined;
+	// Falls back to Great — not `league` — on the raid tab: `league` is 'raid'
+	// there, which would look up `pvpCandidates` (always a PvP league's list)
+	// under the *raid* carousel's own position, picking an unrelated species
+	// out of the PvP list.
+	const pvpLeagueId: LeagueId = isRaid ? 'great' : league;
+	const pvpCpCap = cpCapFor(pvpLeagueId);
+	const pvpCandidates = boardData.pvp[pvpLeagueId] ?? [];
+	const pvpMember = pvpCandidates[Math.min(cpos(pvpLeagueId).p, Math.max(0, pvpCandidates.length - 1))] ?? pokemon;
+	const slice = !isRaid ? leagueSlice(ivPercents[pvpMember?.speciesId ?? ''], pvpCpCap) : undefined;
 	// All 4,096 spreads, brute-forced locally (same computation IvTableTab's
 	// own list uses) — `slice.perfect` above is only ever ONE rank-1 spread
 	// from the precomputed server dataset, but several spreads can genuinely
 	// tie for rank 1 (same rounded stat product); this is what lets the
 	// summary below list every one of them instead of picking just one.
-	const bestIvRows = useBestIvs(pvpMember, PVP_CP_CAP[pvpLeague], !isRaid);
+	const bestIvRows = useBestIvs(pvpMember, pvpCpCap, !isRaid);
 	const tiedBestSpreads = useMemo(() => {
 		if (bestIvRows.length === 0) return [];
 		const prodOf = (r: RankEntry) => Math.round(r.battle.A * r.battle.D * r.battle.S);
@@ -433,17 +519,17 @@ const PokemonDetail = () => {
 	};
 	const cycleType = (e: ReactMouseEvent, id: LeagueId) => {
 		e.stopPropagation();
-		if (id !== 3) return;
-		if (league !== 3) {
+		if (id !== 'raid') return;
+		if (league !== 'raid') {
 			setCarousel({});
-			setLeague(3);
+			setLeague('raid');
 			return;
 		}
-		const len = boardData.raid[cpos(3).p]?.types.length ?? 0;
+		const len = boardData.raid[cpos('raid').p]?.types.length ?? 0;
 		setCarousel((c) => {
-			const cur = c[3] ?? { p: 0, t: 0, m: {} };
+			const cur = c.raid ?? { p: 0, t: 0, m: {} };
 			const nextT = len ? (cur.t + 1) % len : 0;
-			return { ...c, [3]: { ...cur, t: nextT, m: withTypeLeft(cur, nextT) } };
+			return { ...c, raid: { ...cur, t: nextT, m: withTypeLeft(cur, nextT) } };
 		});
 	};
 	// mobile-only: `.r-board-type`'s medallion is a ~20px target — enough for a
@@ -456,16 +542,16 @@ const PokemonDetail = () => {
 		cycleType(e, id);
 	};
 	const selectType = (i: number) => {
-		if (league !== 3) setLeague(3);
+		if (league !== 'raid') setLeague('raid');
 		setCarousel((c) => {
-			const cur = c[3] ?? { p: 0, t: 0, m: {} };
-			return { ...c, [3]: { ...cur, t: i, m: withTypeLeft(cur, i) } };
+			const cur = c.raid ?? { p: 0, t: 0, m: {} };
+			return { ...c, raid: { ...cur, t: i, m: withTypeLeft(cur, i) } };
 		});
 	};
 	const cycleMove = (type: string, len: number) => {
 		setCarousel((c) => {
-			const cur = c[3] ?? { p: 0, t: 0, m: {} };
-			return { ...c, [3]: { ...cur, m: { ...cur.m, [type]: len ? ((cur.m[type] ?? 0) + 1) % len : 0 } } };
+			const cur = c.raid ?? { p: 0, t: 0, m: {} };
+			return { ...c, raid: { ...cur, m: { ...cur.m, [type]: len ? ((cur.m[type] ?? 0) + 1) % len : 0 } } };
 		});
 	};
 
@@ -474,7 +560,7 @@ const PokemonDetail = () => {
 	const comboLists = useMemo(() => {
 		const out: Record<string, Array<{ f: string; c: string; dps: number; tdo: number }>> = {};
 		const raid = boardData.raid;
-		const sel = raid[Math.min(carousel[3]?.p ?? 0, Math.max(0, raid.length - 1))];
+		const sel = raid[Math.min(carousel.raid?.p ?? 0, Math.max(0, raid.length - 1))];
 		if (!sel?.p || !movesFetchCompleted || Object.keys(moves).length === 0) return out;
 		const member = sel.p;
 		const charged = [...new Set([...member.chargedMoves, ...(member.extraChargedMoves ?? [])])];
@@ -590,7 +676,23 @@ const PokemonDetail = () => {
 		// would otherwise never retry and the whole thing would stay dead for
 		// that visit. Re-running once `pokemon` itself shows up fixes that.
 	}, [speciesId, pokemon]);
-	const cycleLeague = () => setLeague(((league + 1) % LEAGUES.length) as LeagueId);
+	const cycleLeague = () => {
+		const idx = LEAGUES.findIndex((l) => l.id === league);
+		setLeague(LEAGUES[(idx + 1) % LEAGUES.length].id);
+	};
+	// Non-null: `league` is always validated against `LEAGUES`' own ids above.
+	const activeLeagueMeta = LEAGUES.find((l) => l.id === league)!;
+	// What every tab (Moves/Counters/IV Table/Strings) actually needs to know
+	// about the active league — see `ActiveLeague`'s own doc comment for why
+	// this, not the raw id, is what they take.
+	const activeLeague: ActiveLeague = {
+		id: league,
+		title: activeLeagueMeta.full,
+		cpCap: cpCapFor(league),
+		colorVar: activeLeagueMeta.cssVar,
+		isRaid,
+		rankList: isRaid ? {} : rankListFor(league),
+	};
 
 	if (!fetchCompleted) {
 		return (
@@ -628,9 +730,9 @@ const PokemonDetail = () => {
 	};
 
 	// Raid card follows the raid carousel (which Pokémon + which type + which combo), not the URL mon.
-	const raidSel = boardData.raid[Math.min(cpos(3).p, Math.max(0, boardData.raid.length - 1))];
+	const raidSel = boardData.raid[Math.min(cpos('raid').p, Math.max(0, boardData.raid.length - 1))];
 	const raidMember = raidSel?.p ?? pokemon;
-	const raidSelTypeIdx = Math.min(cpos(3).t, Math.max(0, (raidSel?.types.length ?? 1) - 1));
+	const raidSelTypeIdx = Math.min(cpos('raid').t, Math.max(0, (raidSel?.types.length ?? 1) - 1));
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
 	const raidElite = new Set(raidMember.eliteMoves);
 	const raidLegacy = new Set(raidMember.legacyMoves);
@@ -642,7 +744,7 @@ const PokemonDetail = () => {
 				: null;
 	const raidRows = (raidSel?.types ?? []).map(({ type, entry, rank }, i) => {
 		const combos = comboLists[type] ?? [];
-		const mIdx = Math.min(cpos(3).m[type] ?? 0, Math.max(0, combos.length - 1));
+		const mIdx = Math.min(cpos('raid').m[type] ?? 0, Math.max(0, combos.length - 1));
 		return { t: type, e: entry, rank, on: i === raidSelTypeIdx, combos, mIdx, combo: combos[mIdx] };
 	});
 	const raidSelRow = raidRows[raidSelTypeIdx];
@@ -695,7 +797,7 @@ const PokemonDetail = () => {
 
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
 	const boardRows = LEAGUES.map((l) => {
-		const raidRow = l.id === 3;
+		const raidRow = l.id === 'raid';
 		const ready = raidRow ? raidDPSFetchCompleted : pvpFetchCompleted;
 		const { p, t } = cpos(l.id);
 		let member: IGamemasterPokemon | undefined;
@@ -727,7 +829,7 @@ const PokemonDetail = () => {
 				}
 			} else {
 				member = boardData.pvp[l.id]?.[pIdx];
-				const e = member ? rankLists[l.id]?.[member.speciesId] : undefined;
+				const e = member ? rankListFor(l.id)[member.speciesId] : undefined;
 				if (e) {
 					rank = e.rank;
 					metric = `${e.score.toFixed(1)} pts`;
@@ -739,9 +841,8 @@ const PokemonDetail = () => {
 		// whichever league happens to be selected), same "always there, only
 		// painted when active" treatment `.r-board-lg` already gets. Raid has
 		// no IV-rank concept at all (its `rank` above is already the species'
-		// raid-attacker rank); `leagueSlice` only ever handles 0/1/2, so it's
-		// never called for it.
-		const ivSlice = !raidRow ? leagueSlice(ivPercents[member?.speciesId ?? ''], l.id as PvpLeague) : undefined;
+		// raid-attacker rank), so it's never called for it.
+		const ivSlice = !raidRow ? leagueSlice(ivPercents[member?.speciesId ?? ''], l.cpCap) : undefined;
 		return { l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice };
 	});
 
@@ -785,12 +886,12 @@ const PokemonDetail = () => {
 				<button
 					type='button'
 					className='r-hero-mini-lg'
-					style={{ ['--seg-c' as string]: LEAGUES[league].cssVar }}
+					style={{ ['--seg-c' as string]: activeLeagueMeta.cssVar }}
 					onClick={cycleLeague}
-					aria-label={t('pokemonDetail:hero.switchLeagueAriaLabel', { league: LEAGUES[league].full })}
+					aria-label={t('pokemonDetail:hero.switchLeagueAriaLabel', { league: activeLeagueMeta.full })}
 				>
-					<img src={LG_ICON[league]} alt='' aria-hidden='true' />
-					{league !== 3 ? LEAGUES[league].full : LEAGUES[league].label}
+					{iconFor(league) && <img src={iconFor(league)} alt='' aria-hidden='true' />}
+					{!isRaid ? activeLeagueMeta.full : activeLeagueMeta.label}
 				</button>
 			</div>
 
@@ -913,46 +1014,32 @@ const PokemonDetail = () => {
 			)}
 
 			{/* ---- LEAGUE + TABS ---- */}
-			<div
-				className='r-seg r-seg--league'
-				role='tablist'
-				aria-label={t('pokemonDetail:tablist.ariaLabel')}
-				style={{ ['--seg-count' as string]: LEAGUES.length }}
-			>
-				{LEAGUES.map((l) => (
-					<button
-						key={l.id}
-						type='button'
-						data-active={league === l.id}
-						style={{ ['--seg-c' as string]: l.cssVar }}
-						onClick={() => selectLeague(l.id as LeagueId)}
-					>
-						{l.label}
-					</button>
-				))}
-			</div>
+			<LeaguePicker
+				items={LEAGUES.map((l) => ({ id: l.id, label: l.label, icon: iconFor(l.id), color: l.cssVar }))}
+				activeId={league}
+				onSelect={(id) => selectLeague(id)}
+				ariaLabel={t('pokemonDetail:tablist.ariaLabel')}
+			/>
 
-			<nav className='r-tabs'>
-				{TABS.map(([label, slug]) => (
-					<button
-						key={slug}
-						type='button'
-						aria-current={tab === label ? 'page' : undefined}
-						onClick={() => void navigate(`${R.pokemon(speciesId, slug)}${lgParam ? `?lg=${lgParam}` : ''}`)}
-					>
-						{TAB_LABEL[slug]}
-					</button>
-				))}
-			</nav>
+			<IconTabBar
+				items={TABS.map(([, slug]) => ({
+					id: slug,
+					label: TAB_LABEL[slug],
+					icon: slug === 'iv-table' ? <IvTableIcon /> : (TAB_ICON[slug] ?? ''),
+				}))}
+				activeId={tabParam ?? 'ranks'}
+				onSelect={(slug) => void navigate(`${R.pokemon(speciesId, slug)}${lgParam ? `?lg=${lgParam}` : ''}`)}
+				ariaLabel={t('pokemonDetail:tabsAriaLabel')}
+			/>
 
 			{tab === 'Moves' ? (
-				<MovesTab pokemon={pokemon} league={league} />
+				<MovesTab pokemon={pokemon} activeLeague={activeLeague} />
 			) : tab === 'IV Table' ? (
-				<IvTableTab pokemon={pokemon} league={league} />
+				<IvTableTab pokemon={pokemon} activeLeague={activeLeague} />
 			) : tab === 'Strings' ? (
-				<SearchStringsTab pokemon={pokemon} league={league} />
+				<SearchStringsTab pokemon={pokemon} activeLeague={activeLeague} />
 			) : tab === 'Counters' ? (
-				<CountersTab pokemon={pokemon} league={league} />
+				<CountersTab pokemon={pokemon} activeLeague={activeLeague} />
 			) : tab !== 'Ranks' ? (
 				<div className='r-card' style={{ marginTop: 24, textAlign: 'center' }}>
 					<p className='r-muted'>{t('pokemonDetail:tabs.comingSoon', { tab })}</p>
@@ -960,25 +1047,41 @@ const PokemonDetail = () => {
 			) : (
 				<>
 					{/* ---- LEADERBOARD — best reachable per league; click active row to cycle ---- */}
-					<div className='r-section-h'>{t('pokemonDetail:board.sectionHeading')}</div>
+					<div className='r-section-h'>
+						{t('pokemonDetail:board.sectionHeading')}
+						<LeagueVisibilityMenu />
+					</div>
 					<div className='r-board'>
 						{boardRows.map(
-							({ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice }) => {
+							(
+								{ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice },
+								rowIdx
+							) => {
 								const active = league === l.id;
 								return (
-									<div
-										key={l.id}
-										className='r-board-row'
+									<Fragment key={l.id}>
+										{/* Great/Ultra/Master/Raid are always present and always first (see
+										    `LEAGUES`' own construction) — this marks where the player's own
+										    opt-in add-on leagues (see LeagueVisibilityMenu) start, so the two
+										    groups read as visually distinct rather than one undifferentiated
+										    list that happens to grow. */}
+										{rowIdx === STATIC_LEAGUE_COUNT && (
+											<div className='r-board-divider' role='separator'>
+												<span>{t('pokemonDetail:board.extraLeaguesDivider')}</span>
+											</div>
+										)}
+										<div
+											className='r-board-row'
 										role='button'
 										tabIndex={0}
 										aria-pressed={active}
 										data-active={active}
 										style={{ ['--lg' as string]: l.cssVar }}
-										onClick={() => cycleRow(l.id as LeagueId)}
+										onClick={() => cycleRow(l.id)}
 										onKeyDown={(e) => {
 											if (e.key === 'Enter' || e.key === ' ') {
 												e.preventDefault();
-												cycleRow(l.id as LeagueId);
+												cycleRow(l.id);
 											}
 										}}
 									>
@@ -988,7 +1091,7 @@ const PokemonDetail = () => {
 											   isn't a new independent interactive element to make focusable. */}
 										<span
 											className='r-board-sprite'
-											onClick={bestType ? (e) => spriteClick(e, l.id as LeagueId) : undefined}
+											onClick={bestType ? (e) => spriteClick(e, l.id) : undefined}
 										>
 											{member?.isShadow && <ShadowMark />}
 											{member && (
@@ -1008,11 +1111,11 @@ const PokemonDetail = () => {
 													title={t('pokemonDetail:board.nextTypeTitle', {
 														type: gameTypeDisplayTranslator(bestType, gl) || bestType,
 													})}
-													onClick={(e) => cycleType(e, l.id as LeagueId)}
+													onClick={(e) => cycleType(e, l.id)}
 													onKeyDown={(e) => {
 														if (e.key === 'Enter' || e.key === ' ') {
 															e.preventDefault();
-															cycleType(e as unknown as ReactMouseEvent, l.id as LeagueId);
+															cycleType(e as unknown as ReactMouseEvent, l.id);
 														}
 													}}
 												>
@@ -1042,7 +1145,7 @@ const PokemonDetail = () => {
 											    already the raid-attacker rank, not an IV percentile), so it
 											    never generates one here — the type-carousel pips (which
 											    league rows have no equivalent of) take this slot instead. */}
-											{l.id === 3 ? (
+											{l.id === 'raid' ? (
 												typeCount > 1 && (
 													<span className='r-board-typepips' aria-hidden='true'>
 														{Array.from({ length: typeCount }, (_, i) => (
@@ -1059,7 +1162,7 @@ const PokemonDetail = () => {
 										<span className='r-board-fig'>
 											<span className='r-board-rank'>
 												{rank != null ? ordinal(rank, currentLanguage) : '—'}
-												{l.id !== 3 && rankChange !== 0 && (
+												{l.id !== 'raid' && rankChange !== 0 && (
 													<span className='r-delta' data-dir={rankChange > 0 ? 'up' : 'down'}>
 														{rankChange > 0 ? '▲' : '▼'}
 														{Math.abs(rankChange)}
@@ -1076,6 +1179,7 @@ const PokemonDetail = () => {
 											</span>
 										)}
 									</div>
+									</Fragment>
 								);
 							}
 						)}
@@ -1246,7 +1350,7 @@ const PokemonDetail = () => {
 										: t('pokemonDetail:pvp.percentileHeading.as', { name });
 								})()}
 							</div>
-							<div className='r-card' style={{ ['--accent' as string]: LEAGUES[league].cssVar }}>
+							<div className='r-card' style={{ ['--accent' as string]: activeLeagueMeta.cssVar }}>
 								{/* Only the picker itself (the one thing that can show a literal IV
 								    number) waits on `heroReady` — the readout/paragraphs below it
 								    already fall back to "…" off `slice` alone, so gating the whole
@@ -1266,10 +1370,14 @@ const PokemonDetail = () => {
 											presets={[
 												[t('pokemonDetail:pvp.presets.zero'), { atk: 0, def: 0, hp: 0 }],
 												[t('pokemonDetail:pvp.presets.hundo'), { atk: 15, def: 15, hp: 15 }],
-												...(league !== 2 && slice
+												// No "rank 1" preset for an uncapped tier (Master, or a Mega/rotating
+												// cup sharing its uncapped cap) — the always-shown 15/15/15 preset
+												// already IS that spread there, so a second button for the same
+												// thing would be pure redundant clutter.
+												...(pvpCpCap <= 2500 && slice
 													? [
 															[
-																t('pokemonDetail:pvp.presets.rank1', { league: LEAGUES[league].full }),
+																t('pokemonDetail:pvp.presets.rank1', { league: activeLeagueMeta.full }),
 																{
 																	atk: purifiedIv(slice.perfect.A),
 																	def: purifiedIv(slice.perfect.D),
@@ -1318,7 +1426,7 @@ const PokemonDetail = () => {
 									<div>
 										<i>
 											{renderWithColoredParams(t, 'pokemonDetail:pvp.ivRank', {
-												league: { value: LEAGUES[league].full, color: LEAGUES[league].cssVar },
+												league: { value: activeLeagueMeta.full, color: activeLeagueMeta.cssVar },
 											})}
 										</i>
 										<b className='hi'>{!readoutReady || !slice ? '…' : `#${slice.rank.toLocaleString()}`}</b>
@@ -1345,7 +1453,7 @@ const PokemonDetail = () => {
 								{readoutReady && slice && tiedBestSpreads.length > 1 && (
 									<p className='r-muted' style={{ marginTop: 12 }}>
 										{renderWithColoredParams(t, 'pokemonDetail:pvp.additionalBestSpreadFor', {
-											league: { value: LEAGUES[league].full, color: LEAGUES[league].cssVar },
+											league: { value: activeLeagueMeta.full, color: activeLeagueMeta.cssVar },
 										})}{' '}
 										<span className='r-bestspreads-list'>
 											{tiedBestSpreads.slice(1).map((r, i) => (

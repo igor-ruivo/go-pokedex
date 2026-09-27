@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "圖鑑",
-		"pokedexShort": "圖鑑"
+		"pokedexShort": "圖鑑",
+		"pickerAriaLabel": "聯盟與模式選擇器",
+		"loadingLeagues": "正在載入目前的聯盟…"
 	},
 	"status": {
 		"loading": "載入中…",

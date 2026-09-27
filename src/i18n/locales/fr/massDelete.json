@@ -59,9 +59,11 @@
 		"ariaKeepTopGreat": "Garder le top Ligue Superbe",
 		"ariaKeepTopUltra": "Garder le top Ligue Ultra",
 		"ariaKeepTopMaster": "Garder le top Ligue Maître",
+		"ariaKeepTopExtra": "Garder le top {{league}}",
 		"ariaKeepTopRaid": "Garder le top des attaquants de {{raid}}"
 	},
 	"metaKnobsSubtitle": "Préserver les meilleurs Pokémon du meta actuel par ligue/{{raid}}",
+	"extraLeaguesDivider": "Ligues supplémentaires",
 	"badIvKnobsSubtitle": "Le mode simplifié échange un peu de précision contre une chaîne plus courte — voir l'infobulle sur le bouton",
 	"tradeKnobsSubtitle": "Une espèce n'a besoin de franchir qu'UN SEUL de ces quatre seuils pour être suggérée — Superbe et Ultra exigent aussi qu'un échange puisse réellement atteindre leur meilleure répartition possible (voir le texte d'aide ci-dessus)",
 	"simplifiedTrashTooltip": "Échange de la précision contre une chaîne plus courte : évite de chercher les égalités de produit de statistiques pour la Ligue Maître (sans plafond) — seul le Hundo exact (protégé partout, inconditionnellement, via l'exclusion globale !4*) y reste protégé. La protection Superbe/Ultra/raid n'est pas affectée.",

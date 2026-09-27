@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "meilleur stade atteignable par ligue",
+		"extraLeaguesDivider": "Ligues supplémentaires",
 		"notRanked": "Non classé",
 		"loading": "Chargement…",
 		"attackersSuffix": "attaquants {{type}}",
@@ -196,7 +197,8 @@
 		"rankCutoff": "Seuil de rang",
 		"topN": "Top {{n}}",
 		"matchExceptTop": "Trouver tout <em>sauf</em> le top {{n}}",
-		"helperText": "Chaque ligne cible les captures sauvages et non renforcées dont la famille atteint le seuil. Copiez-la, puis collez-la dans la barre de recherche de Pokémon GO.",
+		"cpCapNoteCapped": "Même plafond de CP, même chaîne de recherche : cette liste vaut aussi pour toute autre ligue à {{cp}} CP.",
+		"cpCapNoteUncapped": "Pas de plafond de CP ici : cette liste vaut aussi pour toute autre ligue sans plafond.",
 		"copyString": "Copier la chaîne",
 		"copied": "Copié ✓",
 		"clickToCopy": "Cliquer pour copier",
@@ -206,7 +208,7 @@
 			"findTopEvolvesTo": "Trouver <name></name> {{caught}} évoluant vers {{toThe}}{{except}}top {{top}} <target></target> pour <league></league> :",
 			"findTopSelfShadowEither": "Trouver {{except}}le top {{top}} <name></name> — {{shadow}} ou non — {{caught}} pour <league></league> :",
 			"findTopEvolvesToShadowEither": "Trouver <name></name> — {{shadow}} ou non — {{caught}} évoluant vers {{toThe}}{{except}}top {{top}} <target></target> pour <league></league> :",
-			"exceptPrefix": "tous sauf le ",
+			"exceptPrefix": "sauf le ",
 			"toThePrefix": "le "
 		}
 	}

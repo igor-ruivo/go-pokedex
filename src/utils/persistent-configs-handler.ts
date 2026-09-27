@@ -79,6 +79,12 @@ export enum ConfigKeys {
 	BadIvSimplifiedMode,
 	TrashSimplifiedMode,
 	TrashKeepSpecialBackground,
+	/** JSON-encoded array of extra (non great/ultra/master) league ids the
+	 *  player has opted into seeing — see visible-leagues-context.tsx. */
+	VisibleExtraLeagues,
+	/** JSON-encoded `Record<leagueId, number>` — one Mass Delete rank-cutoff
+	 *  knob value per extra league the player has made visible. */
+	TrashExtraLeagues,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

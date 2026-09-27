@@ -3,12 +3,12 @@ import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLanguage } from '../../contexts/language-context';
+import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName, dec1, sentenceCase, statProdPercentile } from '../../lib/format';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 
-const CAP = [1500, 2500, Number.MAX_VALUE] as const;
 const ROW_H = 44;
 const VISIBLE_ROWS = 50; // show ~50 spreads, then the list scrolls inside itself
 
@@ -19,21 +19,16 @@ const clamp15 = (s: string) => {
 	return Number.isNaN(n) ? '' : String(Math.max(0, Math.min(15, n)));
 };
 
-const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+const IvTableTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; activeLeague: ActiveLeague }) => {
 	const { t } = useTranslation(['pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
-	const LEAGUE_FULL = [
-		gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
-		gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
-		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
-	];
 	const FIELD_LABEL = [
 		t('pokemonDetail:hero.stats.atk'),
 		t('pokemonDetail:hero.stats.def'),
 		t('pokemonDetail:hero.stats.hp'),
 	];
-	const isPvp = league === 0 || league === 1 || league === 2;
-	const rows = useBestIvs(pokemon, isPvp ? CAP[league] : 1500, isPvp);
+	const isPvp = !activeLeague.isRaid;
+	const rows = useBestIvs(pokemon, isPvp ? activeLeague.cpCap : 1500, isPvp);
 
 	const [fields, setFields] = useState<IvFields>(['', '', '']);
 	const [hover, setHover] = useState<{ r: number; c: number } | null>(null);
@@ -134,7 +129,7 @@ const IvTableTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: 
 		<div className='r-movecontent'>
 			<div className='r-section-h'>
 				{t('pokemonDetail:ivTable.heading', {
-					league: LEAGUE_FULL[league],
+					league: activeLeague.title,
 					shadow: pokemon.isShadow ? `${gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)} ` : '',
 					name: cleanName(pokemon.speciesName),
 				})}

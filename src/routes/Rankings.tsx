@@ -5,19 +5,25 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { FilterBar } from '../components/FilterBar';
+import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
+import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
+import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { sentenceCase } from '../lib/format';
-import { MODE_COLOR, modeLabel, R, RANKING_MODES, type RankingMode } from '../lib/nav';
+import { leagueIcon, leagueTitle } from '../lib/league-visuals';
+import { isKnownRankingMode, modeColor, modeLabel, R, type RankingMode } from '../lib/nav';
 import { RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
 import { RAID_TYPE_KEYS, TYPE_KEYS, typeKey } from '../lib/types';
+import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
+import { useGameTranslationsData } from '../utils/game-translations-store';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import { calculateCP } from '../utils/pokemon-helper';
 
@@ -87,9 +93,12 @@ const Rankings = () => {
 	const { currentGameLanguage: gl } = useLanguage();
 	const POKEDEX_SORTS = usePokedexSorts(t, gl);
 	const { league, type: typeParam } = useParams();
-	const mode: RankingMode = (RANKING_MODES as ReadonlyArray<string>).includes(league ?? 'pokedex')
-		? ((league ?? 'pokedex') as RankingMode)
-		: 'pokedex';
+	const { leagues } = useLeagueDefinitions();
+	const { isExtraLeagueVisible } = useVisibleLeagues();
+	// A rotating cup's id stays a valid mode (a bookmarked/shared link still
+	// resolves) even if the player has since hidden it from the picker below —
+	// visibility only controls which chips render, not whether the route works.
+	const mode: RankingMode = league && isKnownRankingMode(league, leagues) ? league : 'pokedex';
 	const navigate = useNavigate();
 	const [params, setParams] = useSearchParams();
 	const [hintOpen, setHintOpen] = useState(false);
@@ -131,8 +140,30 @@ const Rankings = () => {
 	const raidDir: SortDir = params.get('dir') === 'asc' ? 'asc' : 'desc';
 
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
-	const { rankLists, pvpFetchCompleted } = usePvp();
+	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
+	const isPvpLeagueMode = mode !== 'pokedex' && mode !== 'raid';
+	// `pickerItems` below reads `gameTranslator()` inside a `useMemo` — per
+	// `useGameTranslationsData`'s own doc comment, that memo needs the
+	// snapshot itself in its dependency array, or it can get stuck on
+	// whatever `gameTranslator()` returned on the very first render (typically
+	// '', since the fetch hasn't resolved yet — the static Great/Ultra/
+	// Master/Raid chips would otherwise fall back to their default English
+	// text below and *stay* there even once the real translation loads).
+	const gameTranslations = useGameTranslationsData();
+	// The picker itself (not the rest of the page — see the reverted full-page
+	// gate this replaced) holds off rendering until translations land, rather
+	// than flashing default-English/stripped-PvPoke-title chips for a beat.
+	// Bounded by a timeout rather than gated unconditionally: if the fetch is
+	// ever slow, blocked, or fails outright, the picker still shows up (with
+	// LEAGUES's own default-English text) instead of staying empty forever.
+	const [translationsWaitTimedOut, setTranslationsWaitTimedOut] = useState(false);
+	useEffect(() => {
+		if (gameTranslations) return;
+		const id = window.setTimeout(() => setTranslationsWaitTimedOut(true), 4000);
+		return () => window.clearTimeout(id);
+	}, [gameTranslations]);
+	const pickerReady = !!gameTranslations || translationsWaitTimedOut;
 
 	const typeCsv = selectedTypes.join(',');
 	const rows: Array<Row> = useMemo(() => {
@@ -204,10 +235,12 @@ const Rankings = () => {
 				.filter((row) => byName(row.pokemon));
 		}
 
-		// pvp league
+		// pvp league — the static three read `rankLists` (positional), any
+		// rotating/custom cup reads `extraRankLists` (keyed by league id).
 		if (!pvpFetchCompleted) return [];
-		const idx = mode === 'great' ? 0 : mode === 'ultra' ? 1 : 2;
-		return Object.values(rankLists[idx] ?? {})
+		const list =
+			mode === 'great' ? rankLists[0] : mode === 'ultra' ? rankLists[1] : mode === 'master' ? rankLists[2] : (extraRankLists[mode] ?? {});
+		return Object.values(list)
 			.map((r) => ({ r, p: gamemasterPokemon[r.speciesId] }))
 			.filter((x) => x.p && !x.p.aliasId && byType(x.p) && byName(x.p))
 			.sort((a, b) => a.r.rank - b.r.rank)
@@ -223,6 +256,7 @@ const Rankings = () => {
 		gamemasterPokemon,
 		fetchCompleted,
 		rankLists,
+		extraRankLists,
 		pvpFetchCompleted,
 		raidDPS,
 		raidDPSFetchCompleted,
@@ -288,10 +322,7 @@ const Rankings = () => {
 		setParams(next, { replace: true });
 	};
 
-	const loading =
-		!fetchCompleted ||
-		(mode === 'raid' && !raidDPSFetchCompleted) ||
-		(['great', 'ultra', 'master'].includes(mode) && !pvpFetchCompleted);
+	const loading = !fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
 	// Also wait on `measured` — the grid's column count/tile size default to a
 	// placeholder guess until the first real `ResizeObserver` callback fires
 	// (see `useGridMetrics`), and painting tiles against that guess is what
@@ -300,50 +331,73 @@ const Rankings = () => {
 	// appears already laid out correctly.
 	const showGrid = !loading && measured;
 
+	const visibleExtraLeagues = useMemo(
+		() => extraLeagues(leagues).filter((l) => isExtraLeagueVisible(l.id)),
+		[leagues, isExtraLeagueVisible]
+	);
+	const pickerItems: Array<LeaguePickerItem> = useMemo(
+		() => [
+			{
+				id: 'pokedex',
+				label: t('rankings:tabs.pokedexFull'),
+				shortLabel: t('rankings:tabs.pokedexShort'),
+				icon: '/images/nav/pokedex.png',
+				color: modeColor('pokedex'),
+			},
+			{ id: 'great', label: modeLabel('great', gl, leagues), icon: leagueIcon('great') ?? '/images/leagues/cups/pogo_great_league.png', color: modeColor('great') },
+			{ id: 'ultra', label: modeLabel('ultra', gl, leagues), icon: leagueIcon('ultra') ?? '/images/leagues/cups/pogo_ultra_league.png', color: modeColor('ultra') },
+			{
+				id: 'master',
+				label: modeLabel('master', gl, leagues),
+				icon: leagueIcon('master') ?? '/images/leagues/cups/pogo_master_league.png',
+				color: modeColor('master'),
+			},
+			{ id: 'raid', label: modeLabel('raid', gl, leagues), icon: '/images/raids/tier-5.png', color: modeColor('raid') },
+			// Optional add-ons — always last, same ordering as the Pokémon page's
+			// own league picker/leaderboard (see PokemonDetail.tsx's `LEAGUES`).
+			...visibleExtraLeagues.map((l) => ({ id: l.id, label: leagueTitle(l, gl).short, icon: leagueIcon(l.id), color: modeColor(l.id) })),
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- `gameTranslations`
+		// isn't read directly, it's what tells this memo the underlying
+		// `gameTranslator()` data (read via `modeLabel`/`leagueTitle`) actually
+		// changed — see this hook's own comment above.
+		[t, gl, leagues, visibleExtraLeagues, gameTranslations]
+	);
+
+	const goToMode = (m: RankingMode) => {
+		const pathname = m === 'pokedex' ? R.pokedex : R.rankings(m);
+		const search = new URLSearchParams();
+		// Pokédex and every PvP league (static or rotating) all treat "type" the
+		// same way (up to 2, AND-matched) — carry the current filter across
+		// switches among them. Raid's is a different shape entirely (exactly
+		// one, baked into the path segment), so it neither takes one from, nor
+		// hands one to, those.
+		const carryType = mode !== 'raid' && m !== 'raid' && typeCsv;
+		if (carryType) search.set('type', typeCsv);
+		// The search term, though, is the same free-text name filter everywhere
+		// — Pokédex, every league and raids alike — so it always carries over
+		// regardless of which of those you're switching between. The raw param
+		// (not the lowercased/trimmed `q` above), so the search box's own
+		// displayed casing doesn't get mangled by this.
+		const rawQ = params.get('q');
+		if (rawQ) search.set('q', rawQ);
+		void navigate({ pathname, search: search.toString() ? `?${search.toString()}` : '' });
+	};
+
 	return (
 		<div className='r-shell r-shell--wide'>
 			<div className='r-rank-head'>
-				<div className='r-seg r-seg--wrap r-seg--league' style={{ ['--seg-count' as string]: RANKING_MODES.length }}>
-					{RANKING_MODES.map((m) => (
-						<button
-							key={m}
-							type='button'
-							data-active={mode === m}
-							style={{ ['--seg-c' as string]: MODE_COLOR[m] }}
-							onClick={() => {
-								const pathname = m === 'pokedex' ? R.pokedex : R.rankings(m);
-								const search = new URLSearchParams();
-								// Pokédex and the PvP leagues all treat "type" the same way (up to 2,
-								// AND-matched) — carry the current filter across switches among them.
-								// Raid's is a different shape entirely (exactly one, baked into the
-								// path segment), so it neither takes one from, nor hands one to, those.
-								const carryType = mode !== 'raid' && m !== 'raid' && typeCsv;
-								if (carryType) search.set('type', typeCsv);
-								// The search term, though, is the same free-text name filter
-								// everywhere — Pokédex, every league and raids alike — so it always
-								// carries over regardless of which of those you're switching between.
-								// The raw param (not the lowercased/trimmed `q` above), so the
-								// search box's own displayed casing doesn't get mangled by this.
-								const rawQ = params.get('q');
-								if (rawQ) search.set('q', rawQ);
-								void navigate({ pathname, search: search.toString() ? `?${search.toString()}` : '' });
-							}}
-						>
-							{m === 'pokedex' ? (
-								<>
-									{/* "Pokédex" is the odd one out, length-wise, next to Great/Ultra/
-									    Master/Raid — shortened on phones (see .r-seg-short) so all 5
-									    tabs fit in one row without needing the horizontal scroll the
-									    other four already used to require. */}
-									<span className='r-seg-full'>{t('rankings:tabs.pokedexFull')}</span>
-									<span className='r-seg-short'>{t('rankings:tabs.pokedexShort')}</span>
-								</>
-							) : (
-								modeLabel(m, gl)
-							)}
-						</button>
-					))}
-				</div>
+				{pickerReady ? (
+					<div className='r-league-row'>
+						<LeaguePicker items={pickerItems} activeId={mode} onSelect={goToMode} ariaLabel={t('rankings:tabs.pickerAriaLabel')} />
+						<LeagueVisibilityMenu />
+					</div>
+				) : (
+					<div className='r-league-row-loading'>
+						<span className='r-spinner r-spinner--sm' aria-hidden='true' />
+						{t('rankings:tabs.loadingLeagues')}
+					</div>
+				)}
 				<div className='r-controls'>
 					<FilterBar
 						types={isRaid ? RAID_TYPE_KEYS : TYPE_KEYS}

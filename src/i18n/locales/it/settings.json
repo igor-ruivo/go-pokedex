@@ -7,6 +7,8 @@
 		"sprites": "Sprite",
 		"raidRanking": "Classifica {{raid}}",
 		"bestBuddy": "Considera il Migliore Amico",
+		"extraLeagues": "Leghe extra",
+		"extraLeaguesCount": "{{shown}} di {{total}} visibili",
 		"off": "Off",
 		"on": "On",
 		"footer": "Salvato su questo dispositivo."

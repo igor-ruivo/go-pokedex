@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Ferramentas",
 		"comingSoon": "Brevemente, como parte da reformulação."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Escolher ligas visíveis",
+		"dialogAriaLabel": "Ligas visíveis",
+		"hint": "Escolhe que taças rotativas/personalizadas aparecem aqui",
+		"empty": "De momento não há taças rotativas ativas."
+	},
+	"scroll": {
+		"left": "Deslocar para a esquerda",
+		"right": "Deslocar para a direita"
 	}
 }

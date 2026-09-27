@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "beste erreichbare Stufe je Liga",
+		"extraLeaguesDivider": "Zusätzliche Ligen",
 		"notRanked": "Nicht eingestuft",
 		"loading": "Lädt…",
 		"attackersSuffix": "{{type}}-Angreifer",
@@ -196,7 +197,8 @@
 		"rankCutoff": "Rang-Grenzwert",
 		"topN": "Top {{n}}",
 		"matchExceptTop": "Alles <em>außer</em> den Top {{n}} finden",
-		"helperText": "Jede Zeile trifft auf wilde, ungestärkte Fänge zu, deren Familie den Grenzwert erreicht. Kopiere sie und füge sie in die Pokémon-GO-Suchleiste ein.",
+		"cpCapNoteCapped": "Gleiche CP-Obergrenze, gleicher Suchstring – diese Liste passt auch für jede andere Liga mit {{cp}} CP.",
+		"cpCapNoteUncapped": "Keine CP-Obergrenze hier – diese Liste passt auch für jede andere Liga ohne CP-Grenze.",
 		"copyString": "String kopieren",
 		"copied": "Kopiert ✓",
 		"clickToCopy": "Zum Kopieren klicken",
@@ -206,7 +208,7 @@
 			"findTopEvolvesTo": "Finde <name></name> {{caught}}, das sich zu {{toThe}}{{except}}Top {{top}} <target></target> für <league></league> entwickelt:",
 			"findTopSelfShadowEither": "Finde {{except}}Top {{top}} <name></name> — {{shadow}} oder nicht — {{caught}} für <league></league>:",
 			"findTopEvolvesToShadowEither": "Finde <name></name> — {{shadow}} oder nicht — {{caught}}, das sich zu {{toThe}}{{except}}Top {{top}} <target></target> für <league></league> entwickelt:",
-			"exceptPrefix": "alle außer den ",
+			"exceptPrefix": "außer den ",
 			"toThePrefix": "den "
 		}
 	}

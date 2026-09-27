@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "tahap terbaik yang bisa dicapai per liga",
+		"extraLeaguesDivider": "Liga tambahan",
 		"notRanked": "Belum diperingkat",
 		"loading": "Memuat…",
 		"attackersSuffix": "attacker {{type}}",
@@ -196,7 +197,8 @@
 		"rankCutoff": "Batas peringkat",
 		"topN": "Top {{n}}",
 		"matchExceptTop": "Cocokkan semua <em>kecuali</em> top {{n}}",
-		"helperText": "Setiap baris mencocokkan tangkapan liar yang belum ditingkatkan dari keluarga yang mencapai batas. Salin, lalu tempel ke bilah pencarian Pokémon GO.",
+		"cpCapNoteCapped": "Batas CP sama, string pencarian sama — daftar ini juga berlaku untuk liga {{cp}} CP lainnya.",
+		"cpCapNoteUncapped": "Tidak ada batas CP di sini — daftar ini juga berlaku untuk liga tanpa batas lainnya.",
 		"copyString": "Salin string",
 		"copied": "Tersalin ✓",
 		"clickToCopy": "Klik untuk menyalin",
@@ -206,7 +208,7 @@
 			"findTopEvolvesTo": "Temukan <name></name> {{caught}} yang berevolusi menjadi {{toThe}}{{except}}top {{top}} <target></target> untuk <league></league>:",
 			"findTopSelfShadowEither": "Temukan {{except}}top {{top}} <name></name> — {{shadow}} atau bukan — {{caught}} untuk <league></league>:",
 			"findTopEvolvesToShadowEither": "Temukan <name></name> — {{shadow}} atau bukan — {{caught}} yang berevolusi menjadi {{toThe}}{{except}}top {{top}} <target></target> untuk <league></league>:",
-			"exceptPrefix": "semua kecuali ",
+			"exceptPrefix": "kecuali ",
 			"toThePrefix": "yang "
 		}
 	}

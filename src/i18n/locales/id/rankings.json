@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",
-		"pokedexShort": "Dex"
+		"pokedexShort": "Dex",
+		"pickerAriaLabel": "Pemilih liga dan mode",
+		"loadingLeagues": "Memuat liga saat ini…"
 	},
 	"status": {
 		"loading": "Memuat…",

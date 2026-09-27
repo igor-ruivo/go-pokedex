@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",
-		"pokedexShort": "डेक्स"
+		"pokedexShort": "डेक्स",
+		"pickerAriaLabel": "लीग और मोड चयनकर्ता",
+		"loadingLeagues": "मौजूदा लीग लोड हो रही हैं…"
 	},
 	"status": {
 		"loading": "लोड हो रहा है…",

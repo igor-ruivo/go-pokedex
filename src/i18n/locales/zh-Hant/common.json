@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "工具",
 		"comingSoon": "改版即將推出此功能。"
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "選擇要顯示的聯盟",
+		"dialogAriaLabel": "顯示的聯盟",
+		"hint": "選擇要在此顯示的輪替／自訂盃賽",
+		"empty": "目前沒有正在輪替的盃賽。"
+	},
+	"scroll": {
+		"left": "向左捲動",
+		"right": "向右捲動"
 	}
 }

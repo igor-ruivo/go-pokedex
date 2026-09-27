@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Werkzeuge",
 		"comingSoon": "Kommt als Nächstes im Redesign."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Sichtbare Ligen wählen",
+		"dialogAriaLabel": "Sichtbare Ligen",
+		"hint": "Wähle, welche rotierenden/benutzerdefinierten Cups hier erscheinen",
+		"empty": "Momentan ist kein rotierender Cup aktiv."
+	},
+	"scroll": {
+		"left": "Nach links scrollen",
+		"right": "Nach rechts scrollen"
 	}
 }

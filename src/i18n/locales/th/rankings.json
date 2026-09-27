@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",
-		"pokedexShort": "เด็กซ์"
+		"pokedexShort": "เด็กซ์",
+		"pickerAriaLabel": "ตัวเลือกลีกและโหมด",
+		"loadingLeagues": "กำลังโหลดลีกปัจจุบัน…"
 	},
 	"status": {
 		"loading": "กำลังโหลด…",

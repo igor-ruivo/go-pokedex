@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 
 import { type RaidRecommendation, RaidTypeCoverage } from '../../components/RaidTypeCoverage';
 import { useLanguage } from '../../contexts/language-context';
+import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
 import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
 import { R } from '../../lib/nav';
 import { useMoves } from '../../queries/moves';
-import { usePvp } from '../../queries/pvp';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../../utils/GameTranslator';
 
 const EPS = 1e-9;
@@ -112,22 +112,12 @@ const MoveRow = ({
 	);
 };
 
-const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+const MovesTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; activeLeague: ActiveLeague }) => {
 	const { t } = useTranslation(['pokemonDetail']);
 	const { moves, movesFetchCompleted } = useMoves();
-	const { rankLists, pvpFetchCompleted } = usePvp();
 	const { currentGameLanguage } = useLanguage();
 
-	// League names track the player's in-game language (`GameLanguage`), not
-	// the website UI's — same reasoning as every other GameTranslator use.
-	const LEAGUE_LABEL = [
-		gameTranslator(GameTranslatorKeys.GreatLeagueLong, currentGameLanguage),
-		gameTranslator(GameTranslatorKeys.UltraLeagueLong, currentGameLanguage),
-		gameTranslator(GameTranslatorKeys.MasterLeagueLong, currentGameLanguage),
-		gameTranslator(GameTranslatorKeys.RaidDisplay, currentGameLanguage),
-	];
-
-	const isRaid = league === 3;
+	const isRaid = activeLeague.isRaid;
 	const arena: Arena = isRaid ? 'pve' : 'pvp';
 	const [raidRec, setRaidRec] = useState<RaidRecommendation | null>(null);
 
@@ -150,7 +140,7 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 	// Moveset recommended for the league the user is looking at.
 	// PvP: [fast, charged1, charged2] from the ranking data. Raids: the selected
 	// type's active combo, reported up by <RaidTypeCoverage>.
-	const pvpMoveset = pvpFetchCompleted ? (rankLists[league]?.[pokemon.speciesId]?.moveset ?? []) : [];
+	const pvpMoveset = activeLeague.rankList[pokemon.speciesId]?.moveset ?? [];
 	const recFast = isRaid ? (raidRec?.fast ?? '') : (pvpMoveset[0] ?? '');
 	const recCharged = isRaid ? (raidRec ? [raidRec.charged] : []) : pvpMoveset.slice(1);
 	const hasBest = !isRaid && !!recFast && recCharged.length > 0;
@@ -201,7 +191,7 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 				<>
 					<div className='r-section-h'>
 						{t('pokemonDetail:moves.bestMoveset', {
-							league: LEAGUE_LABEL[league],
+							league: activeLeague.title,
 						})}
 					</div>
 					{hasBest ? (
@@ -215,7 +205,7 @@ const MovesTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: nu
 						<p className='r-moves-unranked'>
 							{t('pokemonDetail:moves.unrankedForLeague', {
 								name: cleanName(pokemon.speciesName),
-								league: LEAGUE_LABEL[league],
+								league: activeLeague.title,
 							})}
 						</p>
 					)}

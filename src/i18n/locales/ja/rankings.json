@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "ポケモン図鑑",
-		"pokedexShort": "図鑑"
+		"pokedexShort": "図鑑",
+		"pickerAriaLabel": "リーグ・モード選択",
+		"loadingLeagues": "現在のリーグを読み込み中…"
 	},
 	"status": {
 		"loading": "読み込み中…",

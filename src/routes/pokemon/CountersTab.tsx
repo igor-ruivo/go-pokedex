@@ -10,6 +10,7 @@ import { useBestBuddy } from '../../contexts/best-buddy-context';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
 import { useRaidMetric } from '../../contexts/raid-metric-context';
+import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName, sentenceCase } from '../../lib/format';
 import { R } from '../../lib/nav';
@@ -29,7 +30,6 @@ import {
 } from '../../utils/pokemon-helper';
 import { getComputeWorker } from '../../workers/compute-client';
 
-const LG_SLUG = ['great', 'ultra', 'master', 'raid'] as const;
 const PVP_TOP = 5;
 const RAID_TOP = 10;
 
@@ -78,15 +78,9 @@ const PARTY_SIZES = [1, 2, 3, 4];
  *  unless the player explicitly changes it here. */
 const MEGA_LEVEL_ORDER: ReadonlyArray<MegaLevel> = [1, 2, 3, 4];
 
-const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league: number }) => {
+const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; activeLeague: ActiveLeague }) => {
 	const { t } = useTranslation(['pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
-	const LEAGUE_FULL = [
-		gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl),
-		gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl),
-		gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl),
-		sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-	];
 	const megaWord = gameTranslator(GameTranslatorKeys.MegaDisplay, gl);
 	const TIER_LABEL: Record<RaidTier, string> = {
 		T1: t('pokemonDetail:counters.tierLabel.t1'),
@@ -134,11 +128,11 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		{ level: MEGA_LEVEL_ORDER[3], label: t('pokemonDetail:counters.megaLevel.superMax') },
 	];
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
-	const { rankLists, pvpFetchCompleted } = usePvp();
+	const { pvpFetchCompleted } = usePvp();
 	const { moves, movesFetchCompleted } = useMoves();
 	const { imageSource } = useImageSource();
 
-	const isRaid = league === 3;
+	const isRaid = activeLeague.isRaid;
 
 	const [mega, setMega] = useState(() => readPersistentValue(ConfigKeys.Mega) !== 'false');
 	const [shadow, setShadow] = useState(() => readPersistentValue(ConfigKeys.Shadow) !== 'false');
@@ -219,8 +213,8 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 
 	// PvP: the pre-computed ranked entry for this exact species (as in the legacy site).
 	const ranked = useMemo(
-		() => (isRaid ? undefined : rankLists[league]?.[pokemon.speciesId]),
-		[isRaid, rankLists, league, pokemon.speciesId]
+		() => (isRaid ? undefined : activeLeague.rankList[pokemon.speciesId]),
+		[isRaid, activeLeague.rankList, pokemon.speciesId]
 	);
 
 	const ready = fetchCompleted && (isRaid ? movesFetchCompleted : pvpFetchCompleted);
@@ -258,7 +252,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 	});
 
 	const navigate = useNavigate();
-	const link = (speciesId: string) => `${R.pokemon(speciesId, 'counters')}?lg=${LG_SLUG[league]}`;
+	const link = (speciesId: string) => `${R.pokemon(speciesId, 'counters')}?lg=${activeLeague.id}`;
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
 
 	if (!ready) {
@@ -278,7 +272,7 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 						<p className='r-muted'>
 							{t('pokemonDetail:counters.notRankedInLeague', {
 								name: cleanName(pokemon.speciesName),
-								league: LEAGUE_FULL[league],
+								league: activeLeague.title,
 							})}
 						</p>
 					</div>
@@ -327,11 +321,11 @@ const CountersTab = ({ pokemon, league }: { pokemon: IGamemasterPokemon; league:
 		return (
 			<div className='r-movecontent'>
 				{section(
-					t('pokemonDetail:counters.strongAgainst', { name, league: LEAGUE_FULL[league] }),
+					t('pokemonDetail:counters.strongAgainst', { name, league: activeLeague.title }),
 					ranked.matchups.slice(0, PVP_TOP)
 				)}
 				{section(
-					t('pokemonDetail:counters.weakAgainst', { name, league: LEAGUE_FULL[league] }),
+					t('pokemonDetail:counters.weakAgainst', { name, league: activeLeague.title }),
 					ranked.counters.slice(0, PVP_TOP)
 				)}
 			</div>

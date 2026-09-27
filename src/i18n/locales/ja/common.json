@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "ツール",
 		"comingSoon": "リニューアルで近日公開予定。"
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "表示するリーグを選択",
+		"dialogAriaLabel": "表示するリーグ",
+		"hint": "ここに表示するローテーション／カスタムカップを選択",
+		"empty": "現在アクティブなローテーションカップはありません。"
+	},
+	"scroll": {
+		"left": "左にスクロール",
+		"right": "右にスクロール"
 	}
 }

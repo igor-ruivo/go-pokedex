@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Outils",
 		"comingSoon": "Bientôt disponible dans la refonte."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Choisir les ligues visibles",
+		"dialogAriaLabel": "Ligues visibles",
+		"hint": "Choisissez quelles coupes rotatives/personnalisées apparaissent ici",
+		"empty": "Aucune coupe rotative n’est active pour le moment."
+	},
+	"scroll": {
+		"left": "Défiler vers la gauche",
+		"right": "Défiler vers la droite"
 	}
 }

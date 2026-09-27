@@ -255,6 +255,48 @@ describe('computeTrashString — no IV consideration at all (meta-only domain)',
 	});
 });
 
+describe('computeTrashString — extraTrash (rotating/custom league cutoffs)', () => {
+	it('a species good in an extra league is protected even though it is bad in every static league', () => {
+		const trademon = mockPokemon({ speciesId: 'trademon', dex: 161 });
+		const gamemasterPokemon = buildGamemaster([trademon]);
+		const args = buildArgs(gamemasterPokemon, {
+			rankLists: [{}, {}, {}],
+			extraTrash: [{ rankList: { trademon: rank(1) }, cutoff: 10 }],
+		});
+
+		const result = computeTrashString(args);
+
+		expect(result).not.toContain('161');
+	});
+
+	it('bad in every static league AND every extra league stays deletable', () => {
+		const trademon = mockPokemon({ speciesId: 'trademon', dex: 161 });
+		// A second, always-good species (good in an extra league) keeps the
+		// deletable set a strict subset of the universe — otherwise the
+		// shortest encoding for "everything is deletable" is a bare `!`
+		// (matches everything), which wouldn't literally spell out "161".
+		const safemon = mockPokemon({ speciesId: 'safemon', dex: 162 });
+		const gamemasterPokemon = buildGamemaster([trademon, safemon]);
+		const args = buildArgs(gamemasterPokemon, {
+			rankLists: [{}, {}, {}],
+			extraTrash: [{ rankList: { safemon: rank(1) }, cutoff: 10 }],
+		});
+
+		const result = computeTrashString(args);
+
+		expect(result).toContain('161');
+		expect(result).not.toContain('162');
+	});
+
+	it('omitting extraTrash entirely behaves exactly like passing an empty array', () => {
+		const { gamemasterPokemon } = buildEvolutionLineFixture();
+		const withField = computeTrashString(buildArgs(gamemasterPokemon, { rankLists: [{}, {}, {}], extraTrash: [] }));
+		const withoutField = computeTrashString(buildArgs(gamemasterPokemon, { rankLists: [{}, {}, {}] }));
+
+		expect(withField).toBe(withoutField);
+	});
+});
+
 describe('computeTrashString — protection toggles', () => {
 	it('favorite/tagged/megaEvolvable are pure tail keywords, independent of any candidate', () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();

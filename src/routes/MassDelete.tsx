@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { ShadowMark } from '../components/ShadowMark';
 import { handleSpriteError, spriteUrl } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
@@ -11,11 +12,13 @@ import { useImageSource } from '../contexts/imageSource-context';
 import type { GameLanguage } from '../contexts/language-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
+import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo, sentenceCase } from '../lib/format';
+import { leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { type MassDeleteTab, R } from '../lib/nav';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
 import {
@@ -28,6 +31,7 @@ import {
 	renderDexExclusion,
 	translateTypeNames,
 } from '../lib/search-string';
+import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
@@ -105,6 +109,26 @@ const readWhitelist = (): Array<string> => {
 		return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : [];
 	} catch {
 		return [];
+	}
+};
+
+/** Rank-cutoff knob value per rotating/custom league the player has made
+ *  visible (see visible-leagues-context.tsx) — same idea as `trashGreat`/
+ *  `trashUltra`/`trashMaster`, just keyed instead of one state var each,
+ *  since the set of extra leagues is dynamic. Missing/invalid entries (a
+ *  cup that's since rotated out, or a freshly-visible one with no saved
+ *  value yet) fall back to `DEFAULT_TRASH_EXTRA` per id at read time. */
+const DEFAULT_TRASH_EXTRA = 50;
+const readTrashExtra = (): Record<string, number> => {
+	try {
+		const raw = readPersistentValue(ConfigKeys.TrashExtraLeagues);
+		const parsed: unknown = raw ? JSON.parse(raw) : {};
+		if (!parsed || typeof parsed !== 'object') return {};
+		return Object.fromEntries(
+			Object.entries(parsed as Record<string, unknown>).filter((e): e is [string, number] => typeof e[1] === 'number')
+		);
+	} catch {
+		return {};
 	}
 };
 
@@ -318,6 +342,19 @@ export const PROTECTION_META_TRANSLATORS: ReadonlyArray<{
    to make (a "keep relevant for trade" checkbox in this tab used to do a
    half-hearted version of what the second tab now does properly) — each tab
    staying in its own lane is what makes all three trustworthy. */
+/** One rotating/custom league's own rank cutoff, for whichever of the two
+ *  tabs below is asking — `computeTrashString`'s `extraTrash` (rank alone)
+ *  or `computeTradeableString`'s `extraTrade` (rank + which cp-cap tier's
+ *  precomputed floor-check/carve-out data to reuse, since that data only
+ *  ever depends on the tier — see `findTradeableSpeciesData`'s own doc
+ *  comment). Optional everywhere it's consumed and defaults to `[]`, so
+ *  every existing call site (and test) that never mentions extra leagues at
+ *  all keeps behaving exactly as before. */
+export interface ExtraLeagueCutoff {
+	rankList: Record<string, { rank: number } | undefined>;
+	cutoff: number;
+}
+
 export interface ComputeArgs {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>;
@@ -330,6 +367,7 @@ export interface ComputeArgs {
 	trashUltra: number;
 	trashMaster: number;
 	trashRaid: number;
+	extraTrash?: ReadonlyArray<ExtraLeagueCutoff>;
 	/** Every non-Shadow species' own tied-for-rank-1 (best stat product) raw
 	 *  IV bucket pattern(s) for the uncapped Master cap only — see
 	 *  `findBadIvCarveOuts` in the compute worker (called here with
@@ -396,6 +434,7 @@ export const computeTrashString = (a: ComputeArgs): string => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		extraTrash = [],
 		masterCarveOuts,
 		protect,
 		whitelist,
@@ -439,11 +478,23 @@ export const computeTrashString = (a: ComputeArgs): string => {
 		const mlLowestRank = Math.min(
 			...reachablePokemon.map((r) => rankLists[2][r.speciesId]?.rank).filter((r): r is number => !!r)
 		);
+		// Any visible rotating/custom cup clearing its own cutoff protects the
+		// species exactly like clearing Great/Ultra/Master's does — same rule,
+		// just looped instead of three named branches, since the set of extra
+		// leagues is dynamic. Vacuously `true` when `extraTrash` is empty, so
+		// this is a no-op for every caller that doesn't pass any.
+		const extraAllBad = extraTrash.every(({ rankList, cutoff }) => {
+			const lowest = Math.min(
+				...reachablePokemon.map((r) => rankList[r.speciesId]?.rank).filter((r): r is number => !!r)
+			);
+			return isBadRank(lowest, cutoff);
+		});
 		return (
 			!isGoodForRaids(p) &&
 			isBadRank(glLowestRank, trashGreat) &&
 			isBadRank(ulLowestRank, trashUltra) &&
-			isBadRank(mlLowestRank, trashMaster)
+			isBadRank(mlLowestRank, trashMaster) &&
+			extraAllBad
 		);
 	};
 
@@ -825,6 +876,17 @@ export const computeBadIvString = (
  * they've already invested CP into, so anything at or above it is never
  * suggested.
  */
+/** An extra league's own rank cutoff for `computeTradeableString`, plus
+ *  which cp-cap tier's precomputed floor-check/carve-out data to reuse for
+ *  it — `great`=1500-cap, `ultra`=2500-cap, `master`=uncapped, chosen by the
+ *  extra league's own `cpCap` (see `tierForCpCap` in MassDelete's component
+ *  body). That data only ever depends on the tier, never the specific cup
+ *  (same principle `leagueSlice` in PokemonDetail.tsx relies on), so no new
+ *  per-cup computation is needed. */
+export interface ExtraTradeLeagueCutoff extends ExtraLeagueCutoff {
+	tier: 'great' | 'ultra' | 'master';
+}
+
 export const computeTradeableString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
 	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>,
@@ -840,7 +902,8 @@ export const computeTradeableString = (
 	protect: ProtectionFlags,
 	whitelist: Set<string>,
 	onlyLowIv: boolean,
-	cp: number
+	cp: number,
+	extraTrade: ReadonlyArray<ExtraTradeLeagueCutoff> = []
 ): string => {
 	const A = gameTranslator(GameTranslatorKeys.AttackSearch, gl);
 	const D = gameTranslator(GameTranslatorKeys.DefenseSearch, gl);
@@ -957,7 +1020,24 @@ export const computeTradeableString = (
 				}
 			}
 
-			if (isGoodForRaids(p) || goodForMaster || goodForGreat || goodForUltra) {
+			// Same admission/carve-out rule as Great/Ultra/Master above, for
+			// every visible rotating/custom cup — reusing whichever tier's
+			// `tradeableSpeciesData` (great/ultra/master) matches that cup's own
+			// cp cap, since that data is tier-scoped, never cup-specific.
+			let goodForExtra = false;
+			for (const { rankList, cutoff, tier } of extraTrade) {
+				for (const r of reachablePokemon) {
+					const data = tradeableSpeciesData[r.speciesId];
+					const rank = rankList[r.speciesId]?.rank;
+					const floorOk = tier === 'master' || data?.[tier].floorOk;
+					if (rank != null && !isBadRank(rank, cutoff) && floorOk) {
+						goodForExtra = true;
+						data?.[tier].patterns.forEach((pattern) => addCarvePattern(p.speciesId, pattern));
+					}
+				}
+			}
+
+			if (isGoodForRaids(p) || goodForMaster || goodForGreat || goodForUltra || goodForExtra) {
 				tradeableDexes.add(p.dex);
 			}
 		});
@@ -1230,7 +1310,7 @@ const MassDelete = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { movesFetchCompleted } = useMoves();
-	const { rankLists, pvpFetchCompleted } = usePvp();
+	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { raidMetric } = useRaidMetric();
 	const { currentGameLanguage: gl } = useLanguage();
@@ -1266,6 +1346,41 @@ const MassDelete = () => {
 	const [trashUltra, setTrashUltra] = useState(() => numCfg(ConfigKeys.TrashUltra, 50));
 	const [trashMaster, setTrashMaster] = useState(() => numCfg(ConfigKeys.TrashMaster, 110));
 	const [trashRaid, setTrashRaid] = useState(() => numCfg(ConfigKeys.TrashRaid, 5));
+	// One rank-cutoff knob per currently-visible rotating/custom league (see
+	// visible-leagues-context.tsx) — a single keyed record rather than one
+	// `useState` per id, since which extra leagues even exist is dynamic.
+	const [trashExtra, setTrashExtra] = useState<Record<string, number>>(readTrashExtra);
+	useEffect(() => void writePersistentValue(ConfigKeys.TrashExtraLeagues, JSON.stringify(trashExtra)), [trashExtra]);
+	const setTrashExtraFor = (id: string) => (next: number) => setTrashExtra((prev) => ({ ...prev, [id]: next }));
+	const { leagues } = useLeagueDefinitions();
+	const { isExtraLeagueVisible } = useVisibleLeagues();
+	const visibleExtraLeagues = useMemo(
+		() => extraLeagues(leagues).filter((l) => isExtraLeagueVisible(l.id)),
+		[leagues, isExtraLeagueVisible]
+	);
+	// Which precomputed tier (great=1500/ultra=2500/master=uncapped) an extra
+	// league's own floor-check/carve-out data comes from — see
+	// `ExtraTradeLeagueCutoff`'s own doc comment for why the specific cup
+	// never matters here, only its cp cap.
+	const tierForCpCap = (cpCap: number): 'great' | 'ultra' | 'master' =>
+		cpCap <= 1500 ? 'great' : cpCap <= 2500 ? 'ultra' : 'master';
+	const extraTrash: Array<ExtraLeagueCutoff> = useMemo(
+		() =>
+			visibleExtraLeagues.map((l) => ({
+				rankList: extraRankLists[l.id] ?? {},
+				cutoff: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
+			})),
+		[visibleExtraLeagues, extraRankLists, trashExtra]
+	);
+	const extraTrade: Array<ExtraTradeLeagueCutoff> = useMemo(
+		() =>
+			visibleExtraLeagues.map((l) => ({
+				rankList: extraRankLists[l.id] ?? {},
+				cutoff: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
+				tier: tierForCpCap(l.cpCap),
+			})),
+		[visibleExtraLeagues, extraRankLists, trashExtra]
+	);
 	// Shared across all three tabs — "never delete/suggest at or above this
 	// CP" is the exact same guard everywhere, just applied to a different
 	// action (delete vs. trade-suggest); one CP dropdown, one setting.
@@ -1519,6 +1634,7 @@ const MassDelete = () => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		extraTrash,
 		cp,
 		gl,
 		raidMetric,
@@ -1553,6 +1669,7 @@ const MassDelete = () => {
 					trashUltra,
 					trashMaster,
 					trashRaid,
+					extraTrash,
 					masterCarveOuts,
 					protect,
 					whitelist: whitelistSet,
@@ -1580,6 +1697,7 @@ const MassDelete = () => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		extraTrash,
 		protect,
 		whitelistSet,
 		simplifiedTrash,
@@ -1675,6 +1793,7 @@ const MassDelete = () => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		extraTrade,
 		gl,
 		raidMetric,
 		protect,
@@ -1712,7 +1831,8 @@ const MassDelete = () => {
 					protect,
 					whitelistSet,
 					tradeOnlyLowIv,
-					cp
+					cp,
+					extraTrade
 				)
 			);
 			setIsCalculatingTrade(false);
@@ -1735,6 +1855,7 @@ const MassDelete = () => {
 		trashUltra,
 		trashMaster,
 		trashRaid,
+		extraTrade,
 		protect,
 		whitelistSet,
 		tradeOnlyLowIv,
@@ -1938,7 +2059,7 @@ const MassDelete = () => {
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
 										<span>
-											<img src='/images/leagues/great.png' alt='' width={20} height={20} />
+											<img src='/images/leagues/cups/pogo_great_league.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
 											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
 										</span>
@@ -1951,7 +2072,7 @@ const MassDelete = () => {
 									</div>
 									<div className='r-md-knob'>
 										<span>
-											<img src='/images/leagues/ultra.png' alt='' width={20} height={20} />
+											<img src='/images/leagues/cups/pogo_ultra_league.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
 											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
 										</span>
@@ -1964,7 +2085,7 @@ const MassDelete = () => {
 									</div>
 									<div className='r-md-knob'>
 										<span>
-											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
+											<img src='/images/leagues/cups/pogo_master_league.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
 											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
 										</span>
@@ -2058,6 +2179,40 @@ const MassDelete = () => {
 										</button>
 									</div>
 								</div>
+								{/* Optional add-ons — their own section, always after Raid regardless
+								    of viewport width (Raid itself moves between `.r-md-raid-inline`
+								    in the grid above and `.r-md-raid-cp` in Row 2 depending on
+								    screen size — this only ever renders after both), and after CP/
+								    Simplified mode above too, so neither reads as belonging to the
+								    add-on leagues. The filter button stays even with zero currently
+								    visible, so it's still discoverable. */}
+								<div className='r-md-extra-leagues-head'>
+									{visibleExtraLeagues.length > 0 && (
+										<div className='r-board-divider'>
+											<span>{t('massDelete:extraLeaguesDivider')}</span>
+										</div>
+									)}
+									<LeagueVisibilityMenu />
+								</div>
+								{visibleExtraLeagues.length > 0 && (
+									<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+										{visibleExtraLeagues.map((l) => (
+											<div className='r-md-knob' key={l.id}>
+												<span>
+													{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}
+													<i className='r-md-knob-full'>{leagueTitle(l, gl).full}</i>
+													<i className='r-md-knob-short'>{leagueTitle(l, gl).short}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
+													value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
+													onChange={setTrashExtraFor(l.id)}
+													count={2000}
+												/>
+											</div>
+										))}
+									</div>
+								)}
 							</>
 						)}
 
@@ -2108,7 +2263,7 @@ const MassDelete = () => {
 								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
 									<div className='r-md-knob'>
 										<span>
-											<img src='/images/leagues/great.png' alt='' width={20} height={20} />
+											<img src='/images/leagues/cups/pogo_great_league.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
 											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
 										</span>
@@ -2121,7 +2276,7 @@ const MassDelete = () => {
 									</div>
 									<div className='r-md-knob'>
 										<span>
-											<img src='/images/leagues/ultra.png' alt='' width={20} height={20} />
+											<img src='/images/leagues/cups/pogo_ultra_league.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
 											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
 										</span>
@@ -2134,7 +2289,7 @@ const MassDelete = () => {
 									</div>
 									<div className='r-md-knob'>
 										<span>
-											<img src='/images/leagues/master.png' alt='' width={20} height={20} />
+											<img src='/images/leagues/cups/pogo_master_league.png' alt='' width={20} height={20} />
 											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
 											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
 										</span>
@@ -2228,6 +2383,40 @@ const MassDelete = () => {
 										</button>
 									</div>
 								</div>
+								{/* Optional add-ons — their own section, always after Raid regardless
+								    of viewport width (Raid itself moves between `.r-md-raid-inline`
+								    in the grid above and `.r-md-raid-cp` in Row 2 depending on
+								    screen size — this only ever renders after both), and after CP/
+								    Simplified mode above too, so neither reads as belonging to the
+								    add-on leagues. The filter button stays even with zero currently
+								    visible, so it's still discoverable. */}
+								<div className='r-md-extra-leagues-head'>
+									{visibleExtraLeagues.length > 0 && (
+										<div className='r-board-divider'>
+											<span>{t('massDelete:extraLeaguesDivider')}</span>
+										</div>
+									)}
+									<LeagueVisibilityMenu />
+								</div>
+								{visibleExtraLeagues.length > 0 && (
+									<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+										{visibleExtraLeagues.map((l) => (
+											<div className='r-md-knob' key={l.id}>
+												<span>
+													{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}
+													<i className='r-md-knob-full'>{leagueTitle(l, gl).full}</i>
+													<i className='r-md-knob-short'>{leagueTitle(l, gl).short}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
+													value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
+													onChange={setTrashExtraFor(l.id)}
+													count={2000}
+												/>
+											</div>
+										))}
+									</div>
+								)}
 							</>
 						)}
 

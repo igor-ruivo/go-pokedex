@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",
-		"pokedexShort": "Dex"
+		"pokedexShort": "Dex",
+		"pickerAriaLabel": "League and mode picker",
+		"loadingLeagues": "Loading current leagues…"
 	},
 	"status": {
 		"loading": "Loading…",

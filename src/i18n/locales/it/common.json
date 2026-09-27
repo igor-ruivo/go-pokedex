@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Strumenti",
 		"comingSoon": "In arrivo nel prossimo aggiornamento."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Scegli le leghe visibili",
+		"dialogAriaLabel": "Leghe visibili",
+		"hint": "Scegli quali coppe a rotazione/personalizzate compaiono qui",
+		"empty": "Al momento nessuna coppa a rotazione è attiva."
+	},
+	"scroll": {
+		"left": "Scorri a sinistra",
+		"right": "Scorri a destra"
 	}
 }

@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "各聯盟最佳可達階段",
+		"extraLeaguesDivider": "額外聯盟",
 		"notRanked": "未列入排名",
 		"loading": "載入中…",
 		"attackersSuffix": "{{type}} 屬性攻擊手",
@@ -196,7 +197,8 @@
 		"rankCutoff": "排名門檻",
 		"topN": "前 {{n}} 名",
 		"matchExceptTop": "比對<em>除了</em>前 {{n}} 名以外的所有項目",
-		"helperText": "每一行會比對達到門檻的野生、未強化捕獲紀錄的該進化家族。複製後貼到 Pokémon GO 的搜尋欄。",
+		"cpCapNoteCapped": "CP 上限相同，搜尋字串就相同——這份清單同樣適用於任何其他 {{cp}} CP 的聯盟。",
+		"cpCapNoteUncapped": "這裡沒有 CP 上限——這份清單同樣適用於任何其他無上限的聯盟。",
 		"copyString": "複製字串",
 		"copied": "已複製 ✓",
 		"clickToCopy": "點選以複製",

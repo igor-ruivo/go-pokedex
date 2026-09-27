@@ -19,17 +19,17 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 	'/rankings/great': {
 		title: 'Great League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Great League (1500 CP), with counters and matchups.',
-		image: '/images/leagues/great.png',
+		image: '/images/leagues/cups/pogo_great_league.png',
 	},
 	'/rankings/ultra': {
 		title: 'Ultra League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Ultra League (2500 CP), with counters and matchups.',
-		image: '/images/leagues/ultra.png',
+		image: '/images/leagues/cups/pogo_ultra_league.png',
 	},
 	'/rankings/master': {
 		title: 'Master League Rankings — GO Pokédex',
 		description: 'Top-ranked Pokémon GO attackers for the Master League, with counters and matchups.',
-		image: '/images/leagues/master.png',
+		image: '/images/leagues/cups/pogo_master_league.png',
 	},
 	'/rankings/raid': {
 		title: 'Best Raid Attackers — GO Pokédex',

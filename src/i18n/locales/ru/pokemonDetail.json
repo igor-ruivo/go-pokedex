@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "лучшая достижимая стадия по лиге",
+		"extraLeaguesDivider": "Дополнительные лиги",
 		"notRanked": "Не в рейтинге",
 		"loading": "Загрузка…",
 		"attackersSuffix": "атакующие типа {{type}}",
@@ -196,7 +197,8 @@
 		"rankCutoff": "Порог рейтинга",
 		"topN": "Топ {{n}}",
 		"matchExceptTop": "Совпадает со всеми, <em>кроме</em> топ {{n}}",
-		"helperText": "Каждая строка находит диких, ещё не прокачанных особей, чья эволюционная линия достигает порога. Скопируйте и вставьте в поиск Pokémon GO.",
+		"cpCapNoteCapped": "Одинаковый лимит CP — одинаковая строка поиска: этот список подходит и для любой другой лиги с лимитом {{cp}} CP.",
+		"cpCapNoteUncapped": "Здесь нет лимита CP — этот список подходит и для любой другой лиги без лимита.",
 		"copyString": "Скопировать строку",
 		"copied": "Скопировано ✓",
 		"clickToCopy": "Нажмите, чтобы скопировать",
@@ -206,7 +208,7 @@
 			"findTopEvolvesTo": "Найти <name></name> {{caught}}, эволюционирующего в {{toThe}}{{except}}топ {{top}} <target></target> для <league></league>:",
 			"findTopSelfShadowEither": "Найти {{except}}топ {{top}} <name></name> — {{shadow}} или нет — {{caught}} для <league></league>:",
 			"findTopEvolvesToShadowEither": "Найти <name></name> — {{shadow}} или нет — {{caught}}, эволюционирующего в {{toThe}}{{except}}топ {{top}} <target></target> для <league></league>:",
-			"exceptPrefix": "всех, кроме ",
+			"exceptPrefix": "кроме ",
 			"toThePrefix": "то "
 		}
 	}

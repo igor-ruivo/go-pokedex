@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "miglior stadio raggiungibile per lega",
+		"extraLeaguesDivider": "Leghe aggiuntive",
 		"notRanked": "Non classificato",
 		"loading": "Caricamento…",
 		"attackersSuffix": "attaccanti {{type}}",
@@ -196,7 +197,8 @@
 		"rankCutoff": "Soglia di rango",
 		"topN": "Top {{n}}",
 		"matchExceptTop": "Trova tutto <em>tranne</em> il top {{n}}",
-		"helperText": "Ogni riga trova i catturati selvatici e non ancora potenziati la cui famiglia raggiunge la soglia. Copiala e incollala nella barra di ricerca di Pokémon GO.",
+		"cpCapNoteCapped": "Stesso limite di CP, stessa stringa di ricerca: questo elenco vale anche per qualsiasi altra lega da {{cp}} CP.",
+		"cpCapNoteUncapped": "Nessun limite di CP qui: questo elenco vale anche per qualsiasi altra lega senza limite.",
 		"copyString": "Copia stringa",
 		"copied": "Copiato ✓",
 		"clickToCopy": "Clicca per copiare",
@@ -206,7 +208,7 @@
 			"findTopEvolvesTo": "Trova <name></name> {{caught}} che evolve in {{toThe}}{{except}}top {{top}} <target></target> per <league></league>:",
 			"findTopSelfShadowEither": "Trova {{except}}il top {{top}} <name></name> — {{shadow}} o no — {{caught}} per <league></league>:",
 			"findTopEvolvesToShadowEither": "Trova <name></name> — {{shadow}} o no — {{caught}} che evolve in {{toThe}}{{except}}top {{top}} <target></target> per <league></league>:",
-			"exceptPrefix": "tutti tranne il ",
+			"exceptPrefix": "tranne il ",
 			"toThePrefix": "il "
 		}
 	}

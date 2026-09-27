@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Herramientas",
 		"comingSoon": "Próximamente en la renovación."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Elegir ligas visibles",
+		"dialogAriaLabel": "Ligas visibles",
+		"hint": "Elige qué copas rotativas/personalizadas aparecen aquí",
+		"empty": "No hay copas rotativas activas ahora mismo."
+	},
+	"scroll": {
+		"left": "Desplazar a la izquierda",
+		"right": "Desplazar a la derecha"
 	}
 }

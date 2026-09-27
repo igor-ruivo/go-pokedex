@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "포켓몬 도감",
-		"pokedexShort": "도감"
+		"pokedexShort": "도감",
+		"pickerAriaLabel": "리그 및 모드 선택기",
+		"loadingLeagues": "현재 리그 불러오는 중…"
 	},
 	"status": {
 		"loading": "불러오는 중…",

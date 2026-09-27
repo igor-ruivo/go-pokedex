@@ -1,6 +1,8 @@
 import type { GameLanguage } from '../contexts/language-context';
+import type { ILeagueDefinition } from '../DTOs/ILeagueDefinition';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { sentenceCase } from './format';
+import { leagueColor, leagueTitle } from './league-visuals';
 
 export const R = {
 	pokedex: '/',
@@ -21,34 +23,74 @@ export const R = {
 	settings: '/settings',
 };
 
-export const RANKING_MODES = ['pokedex', 'great', 'ultra', 'master', 'raid'] as const;
-export type RankingMode = (typeof RANKING_MODES)[number];
+// The always-present modes; any other string is a live league id from
+// `leagues.json` (a rotating/custom cup the player has opted into seeing —
+// see visible-leagues-context.tsx).
+export const STATIC_RANKING_MODES = ['pokedex', 'great', 'ultra', 'master', 'raid'] as const;
+export type RankingMode = string;
+
+/** Is `mode` a real, currently-selectable ranking tab — one of the static
+ *  ones, or a league id from `leagues` (already filtered to whichever the
+ *  player has made visible by the caller). Anything else (a rotated-out or
+ *  never-visible cup id lingering in a URL) falls back to 'pokedex'. */
+export const isKnownRankingMode = (mode: string, leagues: ReadonlyArray<ILeagueDefinition>): boolean =>
+	(STATIC_RANKING_MODES as ReadonlyArray<string>).includes(mode) || leagues.some((l) => l.id === mode);
+
+// Plain English, shown only for the instant before game-translations.json
+// resolves (or in the theoretical case a locale is missing one of these —
+// see `gameTranslator`'s own doc comment on why it otherwise returns '').
+// Callers should still prefer gating a whole page behind the translations
+// load (see Rankings.tsx) rather than leaning on this — it exists so a
+// static league's chip is never blank even for that one frame, matching
+// what a rotating cup's own `leagueTitle` fallback (its stripped PvPoke
+// title) already does unconditionally.
+const DEFAULT_LEAGUE_TEXT = {
+	greatShort: 'Great',
+	ultraShort: 'Ultra',
+	masterShort: 'Master',
+	raid: 'Raids',
+} as const;
 
 // League/raid tab labels track the player's in-game language, sourced from
 // GameTranslator — "Pokédex" isn't a league/raid concept and stays a plain
-// proper noun (near-identical across every locale in practice).
-export const modeLabel = (mode: RankingMode, gl: GameLanguage): string => {
+// proper noun (near-identical across every locale in practice). A rotating
+// cup's title isn't in GameTranslator (it comes straight from PvPoke, whose
+// own title is already in-game-accurate), so it's read off `leagues` instead.
+export const modeLabel = (mode: RankingMode, gl: GameLanguage, leagues: ReadonlyArray<ILeagueDefinition>): string => {
 	switch (mode) {
 		case 'pokedex':
 			return 'Pokédex';
 		case 'great':
-			return gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl);
+			return gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl) || DEFAULT_LEAGUE_TEXT.greatShort;
 		case 'ultra':
-			return gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl);
+			return gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl) || DEFAULT_LEAGUE_TEXT.ultraShort;
 		case 'master':
-			return gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl);
+			return gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl) || DEFAULT_LEAGUE_TEXT.masterShort;
 		case 'raid':
-			return sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl));
+			return sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl) || DEFAULT_LEAGUE_TEXT.raid);
+		default: {
+			const league = leagues.find((l) => l.id === mode);
+			return league ? leagueTitle(league, gl).short : mode;
+		}
 	}
 };
 
 /** Same league identity colours the Pokémon detail page uses for its league tabs. */
-export const MODE_COLOR: Record<RankingMode, string> = {
-	pokedex: 'var(--text-faint)',
-	great: 'var(--lg-great)',
-	ultra: 'var(--lg-ultra)',
-	master: 'var(--lg-master)',
-	raid: 'var(--lg-raid)',
+export const modeColor = (mode: RankingMode): string => {
+	switch (mode) {
+		case 'pokedex':
+			return 'var(--text-faint)';
+		case 'great':
+			return 'var(--lg-great)';
+		case 'ultra':
+			return 'var(--lg-ultra)';
+		case 'master':
+			return 'var(--lg-master)';
+		case 'raid':
+			return 'var(--lg-raid)';
+		default:
+			return leagueColor(mode);
+	}
 };
 
 export const CALENDAR_TABS = ['events', 'bosses', 'spawns', 'rockets', 'eggs'] as const;

@@ -7,6 +7,8 @@
 		"sprites": "Görseller",
 		"raidRanking": "{{raid}} sıralaması",
 		"bestBuddy": "En İyi Dost'u hesaba kat",
+		"extraLeagues": "Ek ligler",
+		"extraLeaguesCount": "{{total}} içinden {{shown}} gösteriliyor",
 		"off": "Kapalı",
 		"on": "Açık",
 		"footer": "Bu cihazda kaydedildi."

@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Tools",
 		"comingSoon": "Coming next in the revamp."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Choose visible leagues",
+		"dialogAriaLabel": "Visible leagues",
+		"hint": "Pick which rotating/custom cups show up here",
+		"empty": "No rotating cups are active right now."
+	},
+	"scroll": {
+		"left": "Scroll left",
+		"right": "Scroll right"
 	}
 }

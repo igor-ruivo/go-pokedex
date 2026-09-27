@@ -623,34 +623,120 @@
 	color: var(--text-faint);
 }
 
-/* ---- tabs -------------------------------------------------------------------- */
+/* ---- tabs (IconTabBar.tsx) -----------------------------------------------
+   Icon + label, an underline on the active one — deliberately NOT the league
+   picker's pill-chip look right above it, so the two read as different
+   *kinds* of control (pick a league vs. pick a section) even though both
+   scroll the same way. Same scroll/fade/chevron mechanics as `.r-lgpick`. */
 .rvmp .r-tabs {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--s3) var(--s5);
 	margin-top: var(--s5);
+	min-width: 0;
+}
+.rvmp .r-tabs-scroller {
+	position: relative;
+	min-width: 0;
 	border-bottom: 1px solid var(--border);
 }
-.rvmp .r-tabs::-webkit-scrollbar {
+.rvmp .r-tabs-strip {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+	scroll-snap-type: x proximity;
+	overscroll-behavior-x: contain;
+	gap: var(--s5);
+	min-width: 0;
+}
+.rvmp .r-tabs-strip::-webkit-scrollbar {
 	display: none;
 }
-.rvmp .r-tabs button {
+.rvmp .r-tabs-scroller[data-fade-left]::before,
+.rvmp .r-tabs-scroller[data-fade-right]::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 1px;
+	width: 20px;
+	pointer-events: none;
+	z-index: 1;
+}
+.rvmp .r-tabs-scroller[data-fade-left]::before {
+	left: 0;
+	background: linear-gradient(to right, var(--bg), transparent);
+}
+.rvmp .r-tabs-scroller[data-fade-right]::after {
+	right: 0;
+	background: linear-gradient(to left, var(--bg), transparent);
+}
+.rvmp .r-tabs-arrow {
+	display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-tabs-arrow {
+		display: grid;
+		place-items: center;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 2;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background: var(--surface-2);
+		border: 1px solid var(--border-strong);
+		color: var(--text);
+		font-size: 15px;
+		line-height: 1;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+	}
+	.rvmp .r-tabs-arrow:hover {
+		background: var(--accent);
+		color: #0c1017;
+		border-color: transparent;
+	}
+	.rvmp .r-tabs-arrow--left {
+		left: -4px;
+	}
+	.rvmp .r-tabs-arrow--right {
+		right: -4px;
+	}
+}
+.rvmp .r-tabs-strip button {
 	position: relative;
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: 6px;
 	padding: 0 2px var(--s3);
 	font-weight: 700;
 	font-size: 14px;
 	color: var(--text-faint);
 	white-space: nowrap;
+	scroll-snap-align: start;
 	transition: color 0.15s ease;
 }
-.rvmp .r-tabs button:hover {
+.rvmp .r-tabs-strip button img,
+.rvmp .r-tabs-strip button svg {
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+	flex: none;
+	opacity: 0.75;
+	transition: opacity 0.15s ease;
+}
+.rvmp .r-tabs-strip button:hover {
 	color: var(--text-dim);
 }
-.rvmp .r-tabs button[aria-current='page'] {
+.rvmp .r-tabs-strip button[data-active='true'] {
 	color: var(--text);
 	font-weight: 800;
 }
-.rvmp .r-tabs button[aria-current='page']::after {
+.rvmp .r-tabs-strip button[data-active='true'] img,
+.rvmp .r-tabs-strip button[data-active='true'] svg {
+	opacity: 1;
+}
+.rvmp .r-tabs-strip button[data-active='true']::after {
 	content: '';
 	position: absolute;
 	left: 0;
@@ -757,6 +843,41 @@
 .rvmp .r-board {
 	display: grid;
 	gap: 8px;
+}
+/* Marks where the always-present Great/Ultra/Master/Raid rows end and the
+   player's own opt-in add-on leagues (see LeagueVisibilityMenu) begin — a
+   labelled rule rather than just more unlabeled vertical gap, so the two
+   groups read as genuinely distinct at a glance. */
+.rvmp .r-board-divider {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 2px 4px;
+	color: var(--text-faint);
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.rvmp .r-board-divider::before,
+.rvmp .r-board-divider::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: var(--border);
+}
+.rvmp .r-board-divider span {
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.rvmp .r-board-divider span::before {
+	content: '';
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--text-faint);
 }
 .rvmp .r-board-row {
 	position: relative;
@@ -1907,6 +2028,30 @@
 .rvmp .r-seg--wrap {
 	margin-top: var(--s2);
 }
+.rvmp .r-league-row {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	margin-top: var(--s4);
+}
+/* Stand-in for `.r-league-row` while game-translations.json is still
+   loading — same slot/spacing so nothing jumps once the real picker pops
+   in, per-chip text just isn't shown blank/default in the meantime. */
+.rvmp .r-league-row-loading {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: var(--s4);
+	padding: 6px 12px;
+	font-size: 12.5px;
+	font-weight: 700;
+	color: var(--text-faint);
+}
+.rvmp .r-league-row .r-lgpick {
+	flex: 1;
+	min-width: 0;
+	margin-top: 0;
+}
 /* ---- filter control ---- */
 .rvmp .r-filter {
 	position: relative;
@@ -2700,8 +2845,17 @@
 }
 /* Collapsed rows also clamp the date/time to a single line — otherwise a
    long localized range (e.g. with a wrapping em dash) wraps onto a second
-   line and grows the row, same problem the title clamp above prevents. */
-.rvmp .r-event:not([data-open='true']) .r-event-head span {
+   line and grows the row, same problem the title clamp above prevents.
+   Scoped to `> div > span` specifically (the date span's exact nesting,
+   `.r-event-head`'s own `<div><b>title</b><span>date</span></div>`) — a
+   bare `.r-event-head span` also matches the Spotlight Hour thumbnail's
+   `.r-event-spotlight-sprites` (a `<span>`, direct child of `.r-event-head`
+   itself, not nested in that div) and the Rocket grunt card's `.r-grunt-id`
+   (ditto), and `display: block` broke both: the sprites span depends on
+   staying `display: flex` to center its sprite image(s) — forced to block,
+   the image(s) fell back to normal inline flow, sitting at the top-left of
+   the box instead of centered. */
+.rvmp .r-event:not([data-open='true']) .r-event-head > div > span {
 	display: block;
 	overflow: hidden;
 	white-space: nowrap;
@@ -2983,6 +3137,148 @@
 	background: var(--accent);
 	border-color: transparent;
 }
+/* ---- league picker (Rankings top bar, Pokémon page league tabs, leaderboard
+   filter) — an icon+label chip strip that scrolls instead of dividing a fixed
+   width evenly (see `.r-seg--league`'s own note on why that broke down once
+   more than 4 leagues could be active at once). Same scroll/fade/chevron
+   mechanics as `.r-datepick` above, just without its own leading icon badge
+   (every chip carries its own league icon instead) and with a per-chip
+   accent color (`--lg-c`) instead of one shared `--accent`. */
+.rvmp .r-lgpick {
+	margin-top: var(--s4);
+	min-width: 0;
+}
+.rvmp .r-lgpick-scroller {
+	position: relative;
+	min-width: 0;
+}
+.rvmp .r-lgpick-chips {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+	scroll-snap-type: x proximity;
+	overscroll-behavior-x: contain;
+	gap: 6px;
+	padding: 2px 0;
+	min-width: 0;
+}
+.rvmp .r-lgpick-chips::-webkit-scrollbar {
+	display: none;
+}
+.rvmp .r-lgpick-scroller[data-fade-left]::before,
+.rvmp .r-lgpick-scroller[data-fade-right]::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 20px;
+	pointer-events: none;
+	z-index: 1;
+}
+.rvmp .r-lgpick-scroller[data-fade-left]::before {
+	left: 0;
+	background: linear-gradient(to right, var(--bg), transparent);
+}
+.rvmp .r-lgpick-scroller[data-fade-right]::after {
+	right: 0;
+	background: linear-gradient(to left, var(--bg), transparent);
+}
+.rvmp .r-lgpick-arrow {
+	display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-lgpick-arrow {
+		display: grid;
+		place-items: center;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 2;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background: var(--surface-2);
+		border: 1px solid var(--border-strong);
+		color: var(--text);
+		font-size: 15px;
+		line-height: 1;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+	}
+	.rvmp .r-lgpick-arrow:hover {
+		background: var(--accent);
+		color: #0c1017;
+		border-color: transparent;
+	}
+	.rvmp .r-lgpick-arrow--left {
+		left: -4px;
+	}
+	.rvmp .r-lgpick-arrow--right {
+		right: -4px;
+	}
+}
+.rvmp .r-lgpick-chips button {
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border-radius: var(--r-pill);
+	font-weight: 700;
+	font-size: 12.5px;
+	white-space: nowrap;
+	color: var(--text-dim);
+	/* No background at all until hovered/selected — see `.r-hero-mini-lg`,
+	   whose exact hover formula this (and the active/hover rules below)
+	   reuses verbatim. */
+	background: transparent;
+	border: 1px solid transparent;
+	scroll-snap-align: start;
+	transition:
+		background 0.14s ease,
+		color 0.14s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-lgpick-chips button img {
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+	flex: none;
+}
+.rvmp .r-lgpick-badge {
+	display: grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	font-style: normal;
+	font-size: 10px;
+	font-weight: 800;
+	flex: none;
+	background: color-mix(in srgb, var(--lg-c) 35%, transparent);
+	color: var(--text);
+}
+.rvmp .r-lgpick-chips button:hover,
+.rvmp .r-lgpick-chips button[data-active='true'] {
+	border-color: color-mix(in srgb, var(--lg-c) 45%, var(--border-strong));
+	background: color-mix(in srgb, var(--lg-c) 12%, transparent);
+}
+.rvmp .r-lgpick-chips button[data-active='true'] {
+	color: var(--lg-c);
+}
+.rvmp .r-lgpick-short {
+	display: none;
+}
+@media (max-width: 520px) {
+	.rvmp .r-lgpick-full {
+		display: none;
+	}
+	.rvmp .r-lgpick-short {
+		display: inline;
+	}
+}
+
 /* "catchable" — a plain tag like `.r-move-tag--rec`, not a border wash on the tile */
 .rvmp .r-catch-tag {
 	font-size: 10px;
@@ -3233,6 +3529,13 @@
 	color: #0c1017;
 	background: var(--accent);
 	border-color: transparent;
+}
+.rvmp .r-set-opts button img {
+	width: 16px;
+	height: 16px;
+	object-fit: contain;
+	vertical-align: middle;
+	margin-right: 5px;
 }
 .rvmp .r-set-opts button i {
 	font-style: normal;
@@ -3867,11 +4170,35 @@
 .rvmp .r-md-knobs-subtitle {
 	margin: 0 0 8px;
 }
+/* Divider + filter button heading the optional add-on leagues' own knobs
+   section — the divider only renders once at least one is visible, but the
+   button stays regardless so the filter itself is always discoverable. */
+.rvmp .r-md-extra-leagues-head {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	margin: 4px 0;
+}
+.rvmp .r-md-extra-leagues-head .r-board-divider {
+	flex: 1;
+	margin: 0;
+	min-width: 0;
+}
 /* "Great League" fits fine standalone, but crammed into 1 of 4 forced-equal
    columns on a narrow phone it just wraps badly — swap to the short form
-   below that width instead of fighting the wrap. */
-.rvmp .r-md-knob-short {
-	display: inline;
+   below that width instead of fighting the wrap. Ellipsized rather than
+   left to wrap even so: a rotating cup's name (e.g. "Mega Color Cup Great")
+   can still be long enough to break onto a second line and blow out this
+   card's fixed-height label slot, throwing off every other card's alignment
+   in the same row. */
+.rvmp .r-md-knob-short,
+.rvmp .r-md-knob-full {
+	display: inline-block;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: bottom;
 }
 .rvmp .r-md-knob-full {
 	display: none;
@@ -3881,7 +4208,7 @@
 		display: none;
 	}
 	.rvmp .r-md-knob-full {
-		display: inline;
+		display: inline-block;
 	}
 }
 .rvmp .r-md-compute {
@@ -4487,10 +4814,149 @@
 	text-transform: uppercase;
 	color: var(--text-dim);
 }
+/* "Extra leagues" collapsible header — a dropdown-style disclosure trigger
+   rather than dumping every rotating cup as a flat row of chips, which
+   stopped fitting cleanly once more than a couple could be active at once. */
+.rvmp .r-setmenu-collapse {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	width: 100%;
+}
+.rvmp .r-setmenu-collapse .r-setmenu-h {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+.rvmp .r-setmenu-count {
+	font-style: normal;
+	font-weight: 700;
+	text-transform: none;
+	letter-spacing: normal;
+	font-size: 11px;
+	color: var(--text-faint);
+}
+.rvmp .r-setmenu-chev {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	color: var(--text-dim);
+	transition: transform 0.14s ease;
+}
+.rvmp .r-setmenu-collapse[aria-expanded='true'] .r-setmenu-chev {
+	transform: rotate(180deg);
+}
 .rvmp .r-setmenu-foot {
 	margin: 2px 0 0;
 	font-size: 11px;
 	color: var(--text-faint);
+}
+
+/* ---- league visibility filter — a small funnel-icon popover placed inline
+   next to whatever league picker/leaderboard it filters (Rankings' top bar,
+   a Pokémon page's leaderboard heading), toggling the exact same
+   visible-leagues-context Settings' "Extra leagues" group does. Same
+   trigger/popover shape as `.r-setmenu` (the app-bar gear), just sized for
+   an inline slot rather than the app bar. */
+.rvmp .r-lgfilter {
+	position: relative;
+	flex: none;
+	display: inline-flex;
+}
+.rvmp .r-lgfilter-trigger {
+	width: 30px;
+	height: 30px;
+}
+.rvmp .r-lgfilter-trigger svg {
+	width: 16px;
+	height: 16px;
+	color: var(--text-dim);
+	transition: color 0.14s ease;
+}
+.rvmp .r-lgfilter-trigger:hover svg,
+.rvmp .r-lgfilter-trigger[aria-expanded='true'] svg {
+	color: var(--text);
+}
+.rvmp .r-lgfilter-pop {
+	position: absolute;
+	z-index: 50;
+	top: calc(100% + 8px);
+	right: 0;
+	width: min(320px, calc(100vw - 24px));
+	max-width: calc(100vw - 24px);
+	padding: var(--s4);
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+	display: grid;
+	gap: var(--s3);
+	overflow-x: hidden;
+	touch-action: none;
+}
+.rvmp .r-lgfilter-hint {
+	margin: 0;
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .r-lgfilter-empty,
+.rvmp .r-lgcheck-empty {
+	margin: 0;
+	font-size: 12.5px;
+	color: var(--text-faint);
+}
+/* Column-picker-style checkbox list — one row per rotating/custom league,
+   shared by the inline filter popover and Settings' own "Extra leagues"
+   section (see LeagueVisibilityChecklist.tsx). */
+.rvmp .r-lgcheck {
+	display: grid;
+	gap: 2px;
+	max-height: 260px;
+	min-width: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	touch-action: pan-y;
+}
+.rvmp .r-lgcheck-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	max-width: 100%;
+	padding: 7px 8px;
+	border-radius: var(--r-sm);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text);
+	cursor: pointer;
+}
+.rvmp .r-lgcheck-row:hover {
+	background: var(--surface-2);
+}
+.rvmp .r-lgcheck-row input[type='checkbox'] {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	accent-color: var(--accent);
+}
+.rvmp .r-lgcheck-row img {
+	flex: none;
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+}
+.rvmp .r-lgcheck-row span {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* ---- bottom nav: 6 items, tighten on phones ---------------------------------- */

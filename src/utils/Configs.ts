@@ -12,6 +12,9 @@ export const pvpokeRankings2500Url =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/ultra-league-pvp.json';
 export const pvpokeRankingsUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/master-league-pvp.json';
+export const leaguesUrl = 'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/leagues.json';
+export const pvpokeRankingFileUrl = (rankingFile: string) =>
+	`https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${rankingFile}`;
 export const movesUrl = 'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/moves.json';
 export const dpsUrl = (type: string) =>
 	`https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${type}-raid-dps-rank.json`;

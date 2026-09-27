@@ -7,7 +7,9 @@
 	},
 	"tabs": {
 		"pokedexFull": "Покедекс",
-		"pokedexShort": "Декс"
+		"pokedexShort": "Декс",
+		"pickerAriaLabel": "Выбор лиги и режима",
+		"loadingLeagues": "Загрузка текущих лиг…"
 	},
 	"status": {
 		"loading": "Загрузка…",

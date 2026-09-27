@@ -85,6 +85,16 @@ export enum GameTranslatorKeys {
 	SierraDisplay,
 	ArloDisplay,
 	CliffDisplay,
+	/** PvPoke's "Retro Cup" — its own in-game data-mined title, used for the
+	 *  rotating-league picker's display name (see league-visuals.ts). */
+	RetroCupTitle,
+	/** Same idea as `RetroCupTitle`, for every other named rotating cup with
+	 *  its own real in-game title — see `CUP_TITLE_KEY` in league-visuals.ts. */
+	LittleCupTitle,
+	ColorCupTitle,
+	FantasyCupTitle,
+	HalloweenCupTitle,
+	CatchCupTitle,
 }
 
 // Every key here is a literal lookup into `game-translations.json` — the
@@ -177,6 +187,12 @@ const TRANSLATION_KEY_NAMES: Record<GameTranslatorKeys, string> = {
 	[GameTranslatorKeys.SierraDisplay]: 'sierraDisplay',
 	[GameTranslatorKeys.ArloDisplay]: 'arloDisplay',
 	[GameTranslatorKeys.CliffDisplay]: 'cliffDisplay',
+	[GameTranslatorKeys.RetroCupTitle]: 'retroCupTitle',
+	[GameTranslatorKeys.LittleCupTitle]: 'littleCupTitle',
+	[GameTranslatorKeys.ColorCupTitle]: 'colorCupTitle',
+	[GameTranslatorKeys.FantasyCupTitle]: 'fantasyCupTitle',
+	[GameTranslatorKeys.HalloweenCupTitle]: 'halloweenCupTitle',
+	[GameTranslatorKeys.CatchCupTitle]: 'catchCupTitle',
 };
 
 // Dev-only, de-duplicated so a missing combo doesn't spam the console on

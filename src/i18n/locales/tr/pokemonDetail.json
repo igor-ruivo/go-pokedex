@@ -37,6 +37,7 @@
 	},
 	"board": {
 		"sectionHeading": "lig başına ulaşılabilir en iyi evrim",
+		"extraLeaguesDivider": "Ek ligler",
 		"notRanked": "Sıralanmadı",
 		"loading": "Yükleniyor…",
 		"attackersSuffix": "{{type}} saldırganları",
@@ -196,7 +197,8 @@
 		"rankCutoff": "Sıralama eşiği",
 		"topN": "İlk {{n}}",
 		"matchExceptTop": "İlk {{n}} <em>hariç</em> her şeyi eşleştir",
-		"helperText": "Her satır, ailesi eşiğe ulaşan vahşi, güçlendirilmemiş yakalamalarla eşleşir. Kopyalayın, ardından Pokémon GO arama çubuğuna yapıştırın.",
+		"cpCapNoteCapped": "Aynı CP tavanı, aynı arama dizesi — bu liste {{cp}} CP tavanına sahip diğer ligler için de geçerlidir.",
+		"cpCapNoteUncapped": "Burada CP tavanı yok — bu liste tavanı olmayan diğer ligler için de geçerlidir.",
 		"copyString": "Dizeyi kopyala",
 		"copied": "Kopyalandı ✓",
 		"clickToCopy": "Kopyalamak için tıklayın",

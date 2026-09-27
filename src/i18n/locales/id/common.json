@@ -27,5 +27,15 @@
 	"placeholder": {
 		"toolsTitle": "Alat",
 		"comingSoon": "Segera hadir di pembaruan berikutnya."
+	},
+	"leagueFilter": {
+		"triggerAriaLabel": "Pilih liga yang terlihat",
+		"dialogAriaLabel": "Liga yang terlihat",
+		"hint": "Pilih cup rotasi/khusus mana yang muncul di sini",
+		"empty": "Tidak ada cup rotasi yang aktif saat ini."
+	},
+	"scroll": {
+		"left": "Gulir ke kiri",
+		"right": "Gulir ke kanan"
 	}
 }
