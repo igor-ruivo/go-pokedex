@@ -36,7 +36,7 @@ import {
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
-import { usePvp } from '../queries/pvp';
+import { type RankList, usePvp } from '../queries/pvp';
 import { type DPSEntry, useRaidRanker } from '../queries/raid-ranker';
 import { useSpeciesSearchMetadata } from '../queries/species-search-metadata';
 import { useGameTranslationsData } from '../utils/game-translations-store';
@@ -1315,13 +1315,118 @@ const formKeyOf = (p: IGamemasterPokemon) => (p.isShadow ? (p.nonShadowSpecies ?
 const byDexFormShadow = (a: { p: IGamemasterPokemon }, b: { p: IGamemasterPokemon }) =>
 	a.p.dex - b.p.dex || formKeyOf(a.p).localeCompare(formKeyOf(b.p)) || Number(a.p.isShadow) - Number(b.p.isShadow);
 
+/**
+ * Thin gate around the actual page — see the `ready` doc comment just below
+ * for the exact bug splitting it out this way fixes. Nothing but these five
+ * fetch-status hooks and the spinner check may live here; every other piece
+ * of state/derived data/JSX belongs in `MassDeleteContent`, which only ever
+ * mounts once `ready` is true.
+ */
 const MassDelete = () => {
-	const { t } = useTranslation(['massDelete', 'settings']);
+	const { t } = useTranslation(['massDelete']);
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { movesFetchCompleted } = useMoves();
 	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
+
+	// This page depends on five separate dex-server feeds (gamemaster, moves,
+	// PvP rankings, raid DPS, species-search-metadata) — three of them
+	// multi-MB and none persisted to disk (see `PERSISTED_QUERY_KEY_PREFIXES`
+	// in query-client.ts). Checked here, in this thin outer component, and
+	// nowhere else — `MassDeleteContent` below (every hook/memo that actually
+	// touches the fetched data) only ever mounts once this is `true`, so its
+	// own first render can never race ahead of this spinner.
+	//
+	// This used to be a plain `if` buried deep inside one giant component
+	// instead — harmless on a full page reload, since every feed starts cold
+	// there, so that giant component's own first render was cheap (every
+	// `useMemo` over `gamemasterPokemon` etc. saw an empty object) regardless
+	// of where the check lived. But on a same-session client-side navigation
+	// (nav bar, a `<Link>`, anything short of a hard reload), `gamemasterPokemon`
+	// (`game-master`, persisted and already warm from whatever page you
+	// navigated FROM) was already fully populated on the very first render —
+	// so every one of those `useMemo`s ran with real, full-size data (the
+	// whitelist chip lists, `autoProtected`, the panel summaries, ...) before
+	// the old `if (!ready)` ever got a chance to bail out, all synchronously
+	// in the same commit that was supposed to just paint this spinner. That's
+	// the actual freeze players were seeing on in-app navigation to this page
+	// (never on reload) — not the on-demand Compute button, not the
+	// whitelist-chip count. Splitting the component is what actually fixes
+	// it: none of that other work exists yet, at all, until `ready` is true.
+	const ready =
+		fetchCompleted &&
+		speciesSearchMetadataFetchCompleted &&
+		movesFetchCompleted &&
+		pvpFetchCompleted &&
+		raidDPSFetchCompleted;
+
+	// Splitting `ready` off into its own gate component (see above) only helps
+	// while a same-session visit is genuinely still WAITING on one of the five
+	// feeds — every one of them has a day-long `staleTime`/week-long `gcTime`
+	// (query-client.ts), so revisiting this page later in the same session
+	// (or arriving here again after having already loaded it once) finds
+	// `ready` already `true` on this component's very FIRST render. Without
+	// this extra state, that first render would go straight to
+	// `<MassDeleteContent/>` — its own first render is unavoidably nontrivial
+	// (this is still a big page), and since nothing painted in between, the
+	// browser shows nothing at all — not even this spinner — until that whole
+	// render finishes. `showContent` forces at least one commit of the cheap
+	// spinner to actually paint first: it starts `false` regardless of
+	// `ready`, so the very first render is always this spinner; only the
+	// `useEffect` below (which, unlike a layout effect, only ever runs AFTER
+	// the browser has painted the current commit) flips it, so
+	// `MassDeleteContent`'s heavy first render always happens in a SEPARATE,
+	// later commit the player already got to see a loading indicator for —
+	// open the page immediately, then show the wheel, same as a hard reload.
+	const [showContent, setShowContent] = useState(false);
+	useEffect(() => {
+		if (ready) setShowContent(true);
+	}, [ready]);
+
+	if (!showContent) {
+		return (
+			<div className='r-loading'>
+				<div className='r-spinner' />
+				{t('massDelete:loading')}
+			</div>
+		);
+	}
+
+	return (
+		<MassDeleteContent
+			gamemasterPokemon={gamemasterPokemon}
+			speciesSearchMetadata={speciesSearchMetadata}
+			rankLists={rankLists}
+			extraRankLists={extraRankLists}
+			raidDPS={raidDPS}
+		/>
+	);
+};
+
+interface MassDeleteContentProps {
+	gamemasterPokemon: Record<string, IGamemasterPokemon>;
+	speciesSearchMetadata: Record<string, ISpeciesSearchMetadata>;
+	rankLists: Array<RankList>;
+	extraRankLists: Record<string, RankList>;
+	raidDPS: Record<string, Record<string, DPSEntry>>;
+}
+
+/**
+ * Everything that only makes sense once every dex-server feed `MassDelete`
+ * above waits on has actually landed. Deliberately split out of `MassDelete`
+ * itself so none of this component's own state/derived data/JSX exists at
+ * all — no hooks run, no memo bodies execute — until then. See `MassDelete`'s
+ * own `ready` doc comment for the exact bug this split fixes.
+ */
+const MassDeleteContent = ({
+	gamemasterPokemon,
+	speciesSearchMetadata,
+	rankLists,
+	extraRankLists,
+	raidDPS,
+}: MassDeleteContentProps) => {
+	const { t } = useTranslation(['massDelete', 'settings']);
 	const { raidMetric } = useRaidMetric();
 	// `gl` (display) drives every label/description on this page; `sgl`
 	// (search) is the only thing that feeds the actual generated search
@@ -1636,7 +1741,11 @@ const MassDelete = () => {
 	// precomputed path once it lands.
 	const speciesSearchMetadataCount = Object.keys(speciesSearchMetadata).length;
 	const { data: masterCarveOuts } = useQuery({
-		enabled: (isCalculating || isCalculatingBadIv) && fetchCompleted && speciesSearchMetadataFetchCompleted,
+		// No `fetchCompleted`/`speciesSearchMetadataFetchCompleted` conjunct here
+		// — this component only ever mounts once `MassDelete`'s own `ready` gate
+		// (all five dex-server feeds landed) is already true, so both are
+		// unconditionally true for this component's entire lifetime.
+		enabled: isCalculating || isCalculatingBadIv,
 		// `preserveMegaIvs` in the key — it's independent of `includeShadowPurify`
 		// (see `findBadIvCarveOuts`'s own doc comment) but still changes this
 		// query's result, so it needs to bust the cache like any other knob here.
@@ -1684,14 +1793,9 @@ const MassDelete = () => {
 	]);
 
 	useEffect(() => {
-		if (
-			!isCalculating ||
-			!fetchCompleted ||
-			!pvpFetchCompleted ||
-			!raidDPSFetchCompleted ||
-			!movesFetchCompleted ||
-			!masterCarveOuts
-		) {
+		// See `masterCarveOuts`'s own comment above — the five fetch-completed
+		// flags are all guaranteed true for this component's whole lifetime.
+		if (!isCalculating || !masterCarveOuts) {
 			return;
 		}
 		const id = window.setTimeout(() => {
@@ -1720,10 +1824,6 @@ const MassDelete = () => {
 		return () => window.clearTimeout(id);
 	}, [
 		isCalculating,
-		fetchCompleted,
-		pvpFetchCompleted,
-		raidDPSFetchCompleted,
-		movesFetchCompleted,
 		masterCarveOuts,
 		gamemasterPokemon,
 		speciesSearchMetadata,
@@ -1752,7 +1852,7 @@ const MassDelete = () => {
 	// toggle itself changes; only the (cheap) string assembly below reacts to
 	// the other knobs.
 	const { data: badIvCarveOuts } = useQuery({
-		enabled: isCalculatingBadIv && fetchCompleted && speciesSearchMetadataFetchCompleted,
+		enabled: isCalculatingBadIv,
 		queryKey: ['bad-iv-carveouts', maxLevel, speciesSearchMetadataCount, preserveMegaIvs],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({
@@ -1774,7 +1874,7 @@ const MassDelete = () => {
 	});
 
 	useEffect(() => {
-		if (!isCalculatingBadIv || !fetchCompleted || !badIvCarveOuts || !masterCarveOuts) return;
+		if (!isCalculatingBadIv || !badIvCarveOuts || !masterCarveOuts) return;
 		const id = window.setTimeout(() => {
 			setBadIvResult(
 				computeBadIvString(
@@ -1794,7 +1894,6 @@ const MassDelete = () => {
 		return () => window.clearTimeout(id);
 	}, [
 		isCalculatingBadIv,
-		fetchCompleted,
 		badIvCarveOuts,
 		masterCarveOuts,
 		gamemasterPokemon,
@@ -1829,7 +1928,7 @@ const MassDelete = () => {
 	// genuinely need it), so sharing one query would force this tab to pay
 	// for work it structurally never needs.
 	const { data: tradeableSpeciesData } = useQuery({
-		enabled: isCalculatingTrade && fetchCompleted && speciesSearchMetadataFetchCompleted,
+		enabled: isCalculatingTrade,
 		queryKey: ['tradeable-species-data', maxLevel, speciesSearchMetadataCount],
 		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon, speciesSearchMetadata, maxLevel }),
 		staleTime: Infinity,
@@ -1857,14 +1956,7 @@ const MassDelete = () => {
 	]);
 
 	useEffect(() => {
-		if (
-			!isCalculatingTrade ||
-			!fetchCompleted ||
-			!pvpFetchCompleted ||
-			!raidDPSFetchCompleted ||
-			!movesFetchCompleted ||
-			!tradeableSpeciesData
-		) {
+		if (!isCalculatingTrade || !tradeableSpeciesData) {
 			return;
 		}
 		const id = window.setTimeout(() => {
@@ -1893,10 +1985,6 @@ const MassDelete = () => {
 		return () => window.clearTimeout(id);
 	}, [
 		isCalculatingTrade,
-		fetchCompleted,
-		pvpFetchCompleted,
-		raidDPSFetchCompleted,
-		movesFetchCompleted,
 		tradeableSpeciesData,
 		gamemasterPokemon,
 		speciesSearchMetadata,
@@ -1926,13 +2014,6 @@ const MassDelete = () => {
 		setCopied(true);
 		window.setTimeout(() => setCopied(false), 1400);
 	};
-
-	const ready =
-		fetchCompleted &&
-		speciesSearchMetadataFetchCompleted &&
-		movesFetchCompleted &&
-		pvpFetchCompleted &&
-		raidDPSFetchCompleted;
 
 	// On the Trade tab, "Shadow" and "Mythical" are always effectively
 	// protected (see the locked-on chips below) regardless of the stored
@@ -2044,21 +2125,6 @@ const MassDelete = () => {
 		: isTrade
 			? t('massDelete:helpText.trade')
 			: t('massDelete:helpText.meta');
-
-	// This page depends on five separate dex-server feeds (gamemaster, moves,
-	// PvP rankings, raid DPS, species-search-metadata) — three of them
-	// multi-MB and none persisted to disk (see `PERSISTED_QUERY_KEY_PREFIXES`
-	// in query-client.ts), so without this gate the page used to render its
-	// full UI immediately with empty data and then silently jump to the real
-	// thing once all five landed, with nothing on screen to explain the wait.
-	if (!ready) {
-		return (
-			<div className='r-loading'>
-				<div className='r-spinner' />
-				{t('massDelete:loading')}
-			</div>
-		);
-	}
 
 	return (
 		<div className='r-shell'>
