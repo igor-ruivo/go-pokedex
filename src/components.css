@@ -4446,6 +4446,17 @@
 	flex-direction: column;
 	min-width: 0;
 }
+/* Groups two (or more) `.r-md-knob` toggles into a single grid cell, stacked
+   vertically — for a pair of related checkbox-style knobs (e.g. Mass
+   Delete's bad-IV tab "Simplified mode"/"Preserve Megas IVs") that should
+   read as one below the other, not scattered diagonally across a 2-up
+   grid's rows. */
+.rvmp .r-md-knob-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+}
 /* Fixed-height label slot, laid out the same way on every card regardless of
    whether this particular one has an icon or wraps to two lines — so the
    select below always starts at the same Y across the whole row instead of
@@ -5193,10 +5204,14 @@
 	top: 50%;
 	transform: translateY(-50%);
 	/* The transform above creates a new stacking context, so the popover's
-	   own z-index (50) only wins locally — give this wrapper the same
-	   z-index or the leaderboard rows below (which set their own) can still
-	   paint on top of the whole thing. */
-	z-index: 50;
+	   own z-index (15) only wins locally — give this wrapper the same
+	   z-index or the leaderboard rows below (which set their own, small
+	   values — 1 through 6 elsewhere in this file) can still paint on top of
+	   the whole thing. Deliberately well BELOW `.r-topbar` (20), `.r-hero-mini`
+	   (25), and `.r-appbar`/`.r-bottomnav` (30) — this popover may overlap
+	   ordinary page content, but must never cover the persistent chrome
+	   around it, on any page it's used on. */
+	z-index: 15;
 }
 .rvmp .r-lgfilter-trigger svg {
 	width: 16px;
@@ -5210,7 +5225,10 @@
 }
 .rvmp .r-lgfilter-pop {
 	position: absolute;
-	z-index: 50;
+	/* See `.r-section-h .r-lgfilter`'s own comment above for why this is 15,
+	   not something that could out-rank `.r-topbar`/`.r-hero-mini`/
+	   `.r-appbar`/`.r-bottomnav`. */
+	z-index: 15;
 	top: calc(100% + 8px);
 	right: 0;
 	width: min(320px, calc(100vw - 24px));

@@ -1954,6 +1954,17 @@ const MassDelete = () => {
 		.map((m) => m.label)
 		.join(', ');
 	const nothingExtra = t('massDelete:panelSummary.nothingExtra');
+	// Rotating/custom leagues currently visible (see LeagueVisibilityMenu) —
+	// shown on both the meta and trade tabs (never the bad-IV one, which
+	// doesn't render that section at all), so their own "keep top N" cutoffs
+	// belong in the summary right alongside Great/Ultra/Master/Raid's, not
+	// silently left out just because they're a variable-length add-on.
+	const extraLeagueSummaries = visibleExtraLeagues.map((l) =>
+		t('massDelete:panelSummary.topExtra', {
+			n: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
+			league: leagueTitle(l, gl).full,
+		})
+	);
 	const topLeagueSummaries = [
 		t('massDelete:panelSummary.topGreat', {
 			n: trashGreat,
@@ -1971,6 +1982,7 @@ const MassDelete = () => {
 			n: trashRaid,
 			raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 		}),
+		...extraLeagueSummaries,
 	];
 	const keepTopSummary = topLeagueSummaries.join(' · ');
 	const tradeTopSummary = topLeagueSummaries.join(' · ');
@@ -2001,6 +2013,7 @@ const MassDelete = () => {
 		((mode === 'meta' || isTrade) && (trashGreat !== 50 || trashUltra !== 50)) ||
 		(isTrade && tradeOnlyLowIv) ||
 		(isBadIv && simplifiedBadIv) ||
+		(isBadIv && preserveMegaIvs) ||
 		(mode === 'meta' && simplifiedTrash);
 	const resetPanel = () => {
 		setProtect(DEFAULT_PROTECTION);
@@ -2015,6 +2028,9 @@ const MassDelete = () => {
 		}
 		if (isTrade) setTradeOnlyLowIv(false);
 		if (isBadIv) setSimplifiedBadIv(false);
+		// Default is false/unchecked — see `preserveMegaIvs`'s own doc comment
+		// on its `useState` initializer.
+		if (isBadIv) setPreserveMegaIvs(false);
 		if (mode === 'meta') setSimplifiedTrash(false);
 	};
 
@@ -2237,11 +2253,22 @@ const MassDelete = () => {
 								    add-on leagues. The filter button stays even with zero currently
 								    visible, so it's still discoverable. */}
 								<div className='r-md-extra-leagues-head'>
-									{visibleExtraLeagues.length > 0 && (
-										<div className='r-board-divider'>
-											<span>{t('massDelete:extraLeaguesDivider')}</span>
-										</div>
-									)}
+									{/* Always rendered, even with zero visible extra leagues right now
+									    (falling back to `noExtraLeaguesDivider`) — this divider is a
+									    `flex: 1` spacer (see components.css), and it's the ONLY thing
+									    pushing the filter button to the right below. Making it
+									    conditional used to mean the button sat flush-left (the lone
+									    flex child, no spacer) whenever no custom league was active yet,
+									    then visibly jumped to the right the moment one got toggled on —
+									    unacceptable movement for a button that's supposed to be a fixed
+									    anchor. */}
+									<div className='r-board-divider'>
+										<span>
+											{visibleExtraLeagues.length > 0
+												? t('massDelete:extraLeaguesDivider')
+												: t('massDelete:noExtraLeaguesDivider')}
+										</span>
+									</div>
 									<LeagueVisibilityMenu />
 								</div>
 								{visibleExtraLeagues.length > 0 && (
@@ -2289,33 +2316,41 @@ const MassDelete = () => {
 											))}
 										</select>
 									</div>
-									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.simplifiedMode')}</span>
-										<button
-											type='button'
-											className='r-ctr-toggle'
-											data-on={simplifiedBadIv ? '' : undefined}
-											aria-pressed={simplifiedBadIv}
-											title={t('massDelete:simplifiedBadIvTooltip')}
-											onClick={() => setSimplifiedBadIv((v) => !v)}
-										>
-											<span className='r-ss-box' aria-hidden='true' />
-											{simplifiedBadIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
-										</button>
-									</div>
-									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.preserveMegaIvs')}</span>
-										<button
-											type='button'
-											className='r-ctr-toggle'
-											data-on={preserveMegaIvs ? '' : undefined}
-											aria-pressed={preserveMegaIvs}
-											title={t('massDelete:preserveMegaIvsTooltip')}
-											onClick={() => setPreserveMegaIvs((v) => !v)}
-										>
-											<span className='r-ss-box' aria-hidden='true' />
-											{preserveMegaIvs ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
-										</button>
+									{/* Stacked together (one grid cell, flex-column inside) rather than
+									    each its own `.r-md-knob` cell in this 2-up grid — the two
+									    checkbox-style toggles read as a related pair (the second only
+									    matters when combined with purification, which this whole tab is
+									    about), so they sit directly one below the other instead of
+									    landing diagonally across two grid rows. */}
+									<div className='r-md-knob-stack'>
+										<div className='r-md-knob'>
+											<span>{t('massDelete:knobs.simplifiedMode')}</span>
+											<button
+												type='button'
+												className='r-ctr-toggle'
+												data-on={simplifiedBadIv ? '' : undefined}
+												aria-pressed={simplifiedBadIv}
+												title={t('massDelete:simplifiedBadIvTooltip')}
+												onClick={() => setSimplifiedBadIv((v) => !v)}
+											>
+												<span className='r-ss-box' aria-hidden='true' />
+												{simplifiedBadIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+											</button>
+										</div>
+										<div className='r-md-knob'>
+											<span>{t('massDelete:knobs.preserveMegaIvs')}</span>
+											<button
+												type='button'
+												className='r-ctr-toggle'
+												data-on={preserveMegaIvs ? '' : undefined}
+												aria-pressed={preserveMegaIvs}
+												title={t('massDelete:preserveMegaIvsTooltip')}
+												onClick={() => setPreserveMegaIvs((v) => !v)}
+											>
+												<span className='r-ss-box' aria-hidden='true' />
+												{preserveMegaIvs ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+											</button>
+										</div>
 									</div>
 								</div>
 							</>
@@ -2455,11 +2490,16 @@ const MassDelete = () => {
 								    add-on leagues. The filter button stays even with zero currently
 								    visible, so it's still discoverable. */}
 								<div className='r-md-extra-leagues-head'>
-									{visibleExtraLeagues.length > 0 && (
-										<div className='r-board-divider'>
-											<span>{t('massDelete:extraLeaguesDivider')}</span>
-										</div>
-									)}
+									{/* See the meta tab's identical block above for why this divider is
+									    always rendered — same "flex:1 spacer keeps the filter button
+									    pinned to the right, unconditionally" reasoning. */}
+									<div className='r-board-divider'>
+										<span>
+											{visibleExtraLeagues.length > 0
+												? t('massDelete:extraLeaguesDivider')
+												: t('massDelete:noExtraLeaguesDivider')}
+										</span>
+									</div>
 									<LeagueVisibilityMenu />
 								</div>
 								{visibleExtraLeagues.length > 0 && (
