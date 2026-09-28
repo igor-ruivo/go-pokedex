@@ -1146,8 +1146,18 @@ export const computeTradeableString = (
 // pass a referentially stable `onChange` (a state setter, or a `useCallback`)
 // or this buys nothing — see `getTrashExtraSetter` below for the one spot
 // that needed a small dedicated fix to actually have one.
-const NumSelect = memo(
-	({ label, value, onChange, count }: { label: string; value: number; onChange: (v: number) => void; count: number }) => (
+const NumSelect = memo(function NumSelect({
+	label,
+	value,
+	onChange,
+	count,
+}: {
+	label: string;
+	value: number;
+	onChange: (v: number) => void;
+	count: number;
+}) {
+	return (
 		<select className='r-md-select' aria-label={label} value={value} onChange={(e) => onChange(+e.target.value)}>
 			{Array.from({ length: count }, (_x, i) => i).map((n) => (
 				<option key={n} value={n}>
@@ -1155,8 +1165,8 @@ const NumSelect = memo(
 				</option>
 			))}
 		</select>
-	)
-);
+	);
+});
 
 /** Pokémon-only typeahead for adding a species to the whitelist — same shape
  *  as the app-bar's `SearchBox`, trimmed to a single result kind. Memoized —
@@ -1671,7 +1681,10 @@ const MassDeleteContent = ({
 		(speciesId: string) => setWhitelist((w) => (w.includes(speciesId) ? w : [...w, speciesId])),
 		[]
 	);
-	const removeFromWhitelist = useCallback((speciesId: string) => setWhitelist((w) => w.filter((s) => s !== speciesId)), []);
+	const removeFromWhitelist = useCallback(
+		(speciesId: string) => setWhitelist((w) => w.filter((s) => s !== speciesId)),
+		[]
+	);
 
 	// Species already covered by one of the category toggles above — shown
 	// alongside the manual whitelist so it's clear at a glance why they'll
@@ -2223,179 +2236,179 @@ const MassDeleteContent = ({
 				<>
 					{isBadIv && (
 						<div className='r-card r-md-warning'>
-					<p style={{ margin: 0 }}>⚠️ {t('massDelete:badIvWarning')}</p>
-				</div>
-			)}
-
-			<div className='r-card r-md-help'>
-				<p className={helpOpen ? '' : 'r-md-help-clamp'}>{activeHelpText}</p>
-				<button type='button' className='r-md-more' onClick={() => setHelpOpen((v) => !v)}>
-					{helpOpen ? t('massDelete:readLess') : t('massDelete:readMore')}
-				</button>
-			</div>
-
-			<div className='r-section-h'>{t('massDelete:configuration')}</div>
-			<div className='r-ctr-config r-md-config' data-open={panelOpen}>
-				<div className='r-ctr-config-bar'>
-					<button
-						type='button'
-						className='r-ctr-config-toggle'
-						aria-expanded={panelOpen}
-						onClick={() => setPanelOpen((o) => !o)}
-					>
-						<span className='r-ctr-config-ic' aria-hidden='true'>
-							⚙
-						</span>
-						<span className='r-ctr-config-sum'>{panelSummary}</span>
-					</button>
-					{panelDirty && (
-						<button type='button' className='r-ctr-config-clear' onClick={resetPanel}>
-							{t('massDelete:reset')}
-						</button>
+							<p style={{ margin: 0 }}>⚠️ {t('massDelete:badIvWarning')}</p>
+						</div>
 					)}
-				</div>
 
-				{panelOpen && (
-					<div className='r-ctr-panel'>
-						{mode === 'meta' && (
-							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
-									{t('massDelete:metaKnobsSubtitle', {
-										raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-									})}
-								</p>
-								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
-									<div className='r-md-knob'>
-										<span>
-											<img src='/images/leagues/cups/pogo_great_league.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
-											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopGreat')}
-											value={trashGreat}
-											onChange={setTrashGreat}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob'>
-										<span>
-											<img src='/images/leagues/cups/pogo_ultra_league.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
-											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopUltra')}
-											value={trashUltra}
-											onChange={setTrashUltra}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob'>
-										<span>
-											<img src='/images/leagues/cups/pogo_master_league.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
-											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopMaster')}
-											value={trashMaster}
-											onChange={setTrashMaster}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob r-md-raid-inline'>
-										<span>
-											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>
-												{t('massDelete:knobs.raidAttackers.full', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-											<i className='r-md-knob-short'>
-												{t('massDelete:knobs.raidAttackers.short', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid', {
+					<div className='r-card r-md-help'>
+						<p className={helpOpen ? '' : 'r-md-help-clamp'}>{activeHelpText}</p>
+						<button type='button' className='r-md-more' onClick={() => setHelpOpen((v) => !v)}>
+							{helpOpen ? t('massDelete:readLess') : t('massDelete:readMore')}
+						</button>
+					</div>
+
+					<div className='r-section-h'>{t('massDelete:configuration')}</div>
+					<div className='r-ctr-config r-md-config' data-open={panelOpen}>
+						<div className='r-ctr-config-bar'>
+							<button
+								type='button'
+								className='r-ctr-config-toggle'
+								aria-expanded={panelOpen}
+								onClick={() => setPanelOpen((o) => !o)}
+							>
+								<span className='r-ctr-config-ic' aria-hidden='true'>
+									⚙
+								</span>
+								<span className='r-ctr-config-sum'>{panelSummary}</span>
+							</button>
+							{panelDirty && (
+								<button type='button' className='r-ctr-config-clear' onClick={resetPanel}>
+									{t('massDelete:reset')}
+								</button>
+							)}
+						</div>
+
+						{panelOpen && (
+							<div className='r-ctr-panel'>
+								{mode === 'meta' && (
+									<>
+										<p className='r-ctr-cond-hint r-md-knobs-subtitle'>
+											{t('massDelete:metaKnobsSubtitle', {
 												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 											})}
-											value={trashRaid}
-											onChange={setTrashRaid}
-											count={2000}
-										/>
-									</div>
-								</div>
-								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
-								<div className='r-md-row-2'>
-									<div className='r-md-knob'>
-										<span>
-											{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
-										</span>
-										<select
-											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp', {
-												cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
-											})}
-											value={cp}
-											onChange={(e) => setCp(+e.target.value)}
-										>
-											{CP_OPTIONS.map((n) => (
-												<option key={n} value={n}>
-													{n}
-												</option>
-											))}
-										</select>
-									</div>
-									<div className='r-md-knob r-md-raid-cp'>
-										<span>
-											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>
-												{t('massDelete:knobs.raidAttackers.full', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-											<i className='r-md-knob-short'>
-												{t('massDelete:knobs.raidAttackers.short', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid', {
-												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-											})}
-											value={trashRaid}
-											onChange={setTrashRaid}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.simplifiedMode')}</span>
-										<button
-											type='button'
-											className='r-ctr-toggle'
-											data-on={simplifiedTrash ? '' : undefined}
-											aria-pressed={simplifiedTrash}
-											title={t('massDelete:simplifiedTrashTooltip')}
-											onClick={() => setSimplifiedTrash((v) => !v)}
-										>
-											<span className='r-ss-box' aria-hidden='true' />
-											{simplifiedTrash ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
-										</button>
-									</div>
-								</div>
-								{/* Optional add-ons — their own section, always after Raid regardless
+										</p>
+										<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+											<div className='r-md-knob'>
+												<span>
+													<img src='/images/leagues/cups/pogo_great_league.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
+													<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopGreat')}
+													value={trashGreat}
+													onChange={setTrashGreat}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob'>
+												<span>
+													<img src='/images/leagues/cups/pogo_ultra_league.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
+													<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopUltra')}
+													value={trashUltra}
+													onChange={setTrashUltra}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob'>
+												<span>
+													<img src='/images/leagues/cups/pogo_master_league.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
+													<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopMaster')}
+													value={trashMaster}
+													onChange={setTrashMaster}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob r-md-raid-inline'>
+												<span>
+													<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>
+														{t('massDelete:knobs.raidAttackers.full', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+													<i className='r-md-knob-short'>
+														{t('massDelete:knobs.raidAttackers.short', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopRaid', {
+														raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+													})}
+													value={trashRaid}
+													onChange={setTrashRaid}
+													count={2000}
+												/>
+											</div>
+										</div>
+										{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
+										<div className='r-md-row-2'>
+											<div className='r-md-knob'>
+												<span>
+													{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+												</span>
+												<select
+													className='r-md-select'
+													aria-label={t('massDelete:knobs.saveCp', {
+														cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
+													})}
+													value={cp}
+													onChange={(e) => setCp(+e.target.value)}
+												>
+													{CP_OPTIONS.map((n) => (
+														<option key={n} value={n}>
+															{n}
+														</option>
+													))}
+												</select>
+											</div>
+											<div className='r-md-knob r-md-raid-cp'>
+												<span>
+													<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>
+														{t('massDelete:knobs.raidAttackers.full', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+													<i className='r-md-knob-short'>
+														{t('massDelete:knobs.raidAttackers.short', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopRaid', {
+														raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+													})}
+													value={trashRaid}
+													onChange={setTrashRaid}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob'>
+												<span>{t('massDelete:knobs.simplifiedMode')}</span>
+												<button
+													type='button'
+													className='r-ctr-toggle'
+													data-on={simplifiedTrash ? '' : undefined}
+													aria-pressed={simplifiedTrash}
+													title={t('massDelete:simplifiedTrashTooltip')}
+													onClick={() => setSimplifiedTrash((v) => !v)}
+												>
+													<span className='r-ss-box' aria-hidden='true' />
+													{simplifiedTrash ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+												</button>
+											</div>
+										</div>
+										{/* Optional add-ons — their own section, always after Raid regardless
 								    of viewport width (Raid itself moves between `.r-md-raid-inline`
 								    in the grid above and `.r-md-raid-cp` in Row 2 depending on
 								    screen size — this only ever renders after both), and after CP/
 								    Simplified mode above too, so neither reads as belonging to the
 								    add-on leagues. The filter button stays even with zero currently
 								    visible, so it's still discoverable. */}
-								<div className='r-md-extra-leagues-head'>
-									{/* Always rendered, even with zero visible extra leagues right now
+										<div className='r-md-extra-leagues-head'>
+											{/* Always rendered, even with zero visible extra leagues right now
 									    (falling back to `noExtraLeaguesDivider`) — this divider is a
 									    `flex: 1` spacer (see components.css), and it's the ONLY thing
 									    pushing the filter button to the right below. Making it
@@ -2404,424 +2417,424 @@ const MassDeleteContent = ({
 									    then visibly jumped to the right the moment one got toggled on —
 									    unacceptable movement for a button that's supposed to be a fixed
 									    anchor. */}
-									<div className='r-board-divider'>
-										<span>
-											{visibleExtraLeagues.length > 0
-												? t('massDelete:extraLeaguesDivider')
-												: t('massDelete:noExtraLeaguesDivider')}
-										</span>
-									</div>
-									<LeagueVisibilityMenu />
-								</div>
-								{visibleExtraLeagues.length > 0 && (
-									<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
-										{visibleExtraLeagues.map((l) => (
-											<div className='r-md-knob' key={l.id}>
+											<div className='r-board-divider'>
 												<span>
-													{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}
-													<i className='r-md-knob-full'>{leagueTitle(l, gl).full}</i>
-													<i className='r-md-knob-short'>{leagueTitle(l, gl).short}</i>
+													{visibleExtraLeagues.length > 0
+														? t('massDelete:extraLeaguesDivider')
+														: t('massDelete:noExtraLeaguesDivider')}
 												</span>
-												<NumSelect
-													label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
-													value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
-													onChange={getTrashExtraSetter(l.id)}
-													count={2000}
-												/>
 											</div>
-										))}
-									</div>
+											<LeagueVisibilityMenu />
+										</div>
+										{visibleExtraLeagues.length > 0 && (
+											<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+												{visibleExtraLeagues.map((l) => (
+													<div className='r-md-knob' key={l.id}>
+														<span>
+															{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}
+															<i className='r-md-knob-full'>{leagueTitle(l, gl).full}</i>
+															<i className='r-md-knob-short'>{leagueTitle(l, gl).short}</i>
+														</span>
+														<NumSelect
+															label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
+															value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
+															onChange={getTrashExtraSetter(l.id)}
+															count={2000}
+														/>
+													</div>
+												))}
+											</div>
+										)}
+									</>
 								)}
-							</>
-						)}
 
-						{mode === 'badIv' && (
-							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:badIvKnobsSubtitle')}</p>
-								<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
-									<div className='r-md-knob'>
-										<span>
-											{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
-										</span>
-										<select
-											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp', {
-												cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
-											})}
-											value={cp}
-											onChange={(e) => setCp(+e.target.value)}
-										>
-											{CP_OPTIONS.map((n) => (
-												<option key={n} value={n}>
-													{n}
-												</option>
-											))}
-										</select>
-									</div>
-									{/* Stacked together (one grid cell, flex-column inside) rather than
+								{mode === 'badIv' && (
+									<>
+										<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:badIvKnobsSubtitle')}</p>
+										<div className='r-md-knobs-grid r-md-knobs-grid--2up'>
+											<div className='r-md-knob'>
+												<span>
+													{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+												</span>
+												<select
+													className='r-md-select'
+													aria-label={t('massDelete:knobs.saveCp', {
+														cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
+													})}
+													value={cp}
+													onChange={(e) => setCp(+e.target.value)}
+												>
+													{CP_OPTIONS.map((n) => (
+														<option key={n} value={n}>
+															{n}
+														</option>
+													))}
+												</select>
+											</div>
+											{/* Stacked together (one grid cell, flex-column inside) rather than
 									    each its own `.r-md-knob` cell in this 2-up grid — the two
 									    checkbox-style toggles read as a related pair (the second only
 									    matters when combined with purification, which this whole tab is
 									    about), so they sit directly one below the other instead of
 									    landing diagonally across two grid rows. */}
-									<div className='r-md-knob-stack'>
-										<div className='r-md-knob'>
-											<span>{t('massDelete:knobs.simplifiedMode')}</span>
-											<button
-												type='button'
-												className='r-ctr-toggle'
-												data-on={simplifiedBadIv ? '' : undefined}
-												aria-pressed={simplifiedBadIv}
-												title={t('massDelete:simplifiedBadIvTooltip')}
-												onClick={() => setSimplifiedBadIv((v) => !v)}
-											>
-												<span className='r-ss-box' aria-hidden='true' />
-												{simplifiedBadIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
-											</button>
+											<div className='r-md-knob-stack'>
+												<div className='r-md-knob'>
+													<span>{t('massDelete:knobs.simplifiedMode')}</span>
+													<button
+														type='button'
+														className='r-ctr-toggle'
+														data-on={simplifiedBadIv ? '' : undefined}
+														aria-pressed={simplifiedBadIv}
+														title={t('massDelete:simplifiedBadIvTooltip')}
+														onClick={() => setSimplifiedBadIv((v) => !v)}
+													>
+														<span className='r-ss-box' aria-hidden='true' />
+														{simplifiedBadIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+													</button>
+												</div>
+												<div className='r-md-knob'>
+													<span>{t('massDelete:knobs.preserveMegaIvs')}</span>
+													<button
+														type='button'
+														className='r-ctr-toggle'
+														data-on={preserveMegaIvs ? '' : undefined}
+														aria-pressed={preserveMegaIvs}
+														title={t('massDelete:preserveMegaIvsTooltip')}
+														onClick={() => setPreserveMegaIvs((v) => !v)}
+													>
+														<span className='r-ss-box' aria-hidden='true' />
+														{preserveMegaIvs ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+													</button>
+												</div>
+											</div>
 										</div>
-										<div className='r-md-knob'>
-											<span>{t('massDelete:knobs.preserveMegaIvs')}</span>
-											<button
-												type='button'
-												className='r-ctr-toggle'
-												data-on={preserveMegaIvs ? '' : undefined}
-												aria-pressed={preserveMegaIvs}
-												title={t('massDelete:preserveMegaIvsTooltip')}
-												onClick={() => setPreserveMegaIvs((v) => !v)}
-											>
-												<span className='r-ss-box' aria-hidden='true' />
-												{preserveMegaIvs ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
-											</button>
-										</div>
-									</div>
-								</div>
-							</>
-						)}
+									</>
+								)}
 
-						{isTrade && (
-							<>
-								<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:tradeKnobsSubtitle')}</p>
-								<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
-									<div className='r-md-knob'>
-										<span>
-											<img src='/images/leagues/cups/pogo_great_league.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
-											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopGreat')}
-											value={trashGreat}
-											onChange={setTrashGreat}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob'>
-										<span>
-											<img src='/images/leagues/cups/pogo_ultra_league.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
-											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopUltra')}
-											value={trashUltra}
-											onChange={setTrashUltra}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob'>
-										<span>
-											<img src='/images/leagues/cups/pogo_master_league.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
-											<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopMaster')}
-											value={trashMaster}
-											onChange={setTrashMaster}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob r-md-raid-inline'>
-										<span>
-											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>
-												{t('massDelete:knobs.raidAttackers.full', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-											<i className='r-md-knob-short'>
-												{t('massDelete:knobs.raidAttackers.short', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid', {
-												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-											})}
-											value={trashRaid}
-											onChange={setTrashRaid}
-											count={2000}
-										/>
-									</div>
-								</div>
-								{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
-								<div className='r-md-row-2'>
-									<div className='r-md-knob'>
-										<span>
-											{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
-										</span>
-										<select
-											className='r-md-select'
-											aria-label={t('massDelete:knobs.saveCp', {
-												cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
-											})}
-											value={cp}
-											onChange={(e) => setCp(+e.target.value)}
-										>
-											{CP_OPTIONS.map((n) => (
-												<option key={n} value={n}>
-													{n}
-												</option>
-											))}
-										</select>
-									</div>
-									<div className='r-md-knob r-md-raid-cp'>
-										<span>
-											<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
-											<i className='r-md-knob-full'>
-												{t('massDelete:knobs.raidAttackers.full', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-											<i className='r-md-knob-short'>
-												{t('massDelete:knobs.raidAttackers.short', {
-													raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-												})}
-											</i>
-										</span>
-										<NumSelect
-											label={t('massDelete:knobs.ariaKeepTopRaid', {
-												raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-											})}
-											value={trashRaid}
-											onChange={setTrashRaid}
-											count={2000}
-										/>
-									</div>
-									<div className='r-md-knob'>
-										<span>{t('massDelete:knobs.keep3StarPokemon')}</span>
-										<button
-											type='button'
-											className='r-ctr-toggle'
-											data-on={tradeOnlyLowIv ? '' : undefined}
-											aria-pressed={tradeOnlyLowIv}
-											title={t('massDelete:tradeOnlyLowIvTooltip')}
-											onClick={() => setTradeOnlyLowIv((v) => !v)}
-										>
-											<span className='r-ss-box' aria-hidden='true' />
-											{tradeOnlyLowIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
-										</button>
-									</div>
-								</div>
-								{/* Optional add-ons — their own section, always after Raid regardless
+								{isTrade && (
+									<>
+										<p className='r-ctr-cond-hint r-md-knobs-subtitle'>{t('massDelete:tradeKnobsSubtitle')}</p>
+										<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+											<div className='r-md-knob'>
+												<span>
+													<img src='/images/leagues/cups/pogo_great_league.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl)}</i>
+													<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.GreatLeagueShort, gl)}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopGreat')}
+													value={trashGreat}
+													onChange={setTrashGreat}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob'>
+												<span>
+													<img src='/images/leagues/cups/pogo_ultra_league.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl)}</i>
+													<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.UltraLeagueShort, gl)}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopUltra')}
+													value={trashUltra}
+													onChange={setTrashUltra}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob'>
+												<span>
+													<img src='/images/leagues/cups/pogo_master_league.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>{gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl)}</i>
+													<i className='r-md-knob-short'>{gameTranslator(GameTranslatorKeys.MasterLeagueShort, gl)}</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopMaster')}
+													value={trashMaster}
+													onChange={setTrashMaster}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob r-md-raid-inline'>
+												<span>
+													<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>
+														{t('massDelete:knobs.raidAttackers.full', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+													<i className='r-md-knob-short'>
+														{t('massDelete:knobs.raidAttackers.short', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopRaid', {
+														raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+													})}
+													value={trashRaid}
+													onChange={setTrashRaid}
+													count={2000}
+												/>
+											</div>
+										</div>
+										{/* Row 2: Wide has CP + Toggle. Narrow has CP + Raid + Toggle */}
+										<div className='r-md-row-2'>
+											<div className='r-md-knob'>
+												<span>
+													{t('massDelete:knobs.saveCp', { cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}
+												</span>
+												<select
+													className='r-md-select'
+													aria-label={t('massDelete:knobs.saveCp', {
+														cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl),
+													})}
+													value={cp}
+													onChange={(e) => setCp(+e.target.value)}
+												>
+													{CP_OPTIONS.map((n) => (
+														<option key={n} value={n}>
+															{n}
+														</option>
+													))}
+												</select>
+											</div>
+											<div className='r-md-knob r-md-raid-cp'>
+												<span>
+													<img src='/images/tx_raid_coin.png' alt='' width={20} height={20} />
+													<i className='r-md-knob-full'>
+														{t('massDelete:knobs.raidAttackers.full', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+													<i className='r-md-knob-short'>
+														{t('massDelete:knobs.raidAttackers.short', {
+															raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+														})}
+													</i>
+												</span>
+												<NumSelect
+													label={t('massDelete:knobs.ariaKeepTopRaid', {
+														raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+													})}
+													value={trashRaid}
+													onChange={setTrashRaid}
+													count={2000}
+												/>
+											</div>
+											<div className='r-md-knob'>
+												<span>{t('massDelete:knobs.keep3StarPokemon')}</span>
+												<button
+													type='button'
+													className='r-ctr-toggle'
+													data-on={tradeOnlyLowIv ? '' : undefined}
+													aria-pressed={tradeOnlyLowIv}
+													title={t('massDelete:tradeOnlyLowIvTooltip')}
+													onClick={() => setTradeOnlyLowIv((v) => !v)}
+												>
+													<span className='r-ss-box' aria-hidden='true' />
+													{tradeOnlyLowIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+												</button>
+											</div>
+										</div>
+										{/* Optional add-ons — their own section, always after Raid regardless
 								    of viewport width (Raid itself moves between `.r-md-raid-inline`
 								    in the grid above and `.r-md-raid-cp` in Row 2 depending on
 								    screen size — this only ever renders after both), and after CP/
 								    Simplified mode above too, so neither reads as belonging to the
 								    add-on leagues. The filter button stays even with zero currently
 								    visible, so it's still discoverable. */}
-								<div className='r-md-extra-leagues-head'>
-									{/* See the meta tab's identical block above for why this divider is
+										<div className='r-md-extra-leagues-head'>
+											{/* See the meta tab's identical block above for why this divider is
 									    always rendered — same "flex:1 spacer keeps the filter button
 									    pinned to the right, unconditionally" reasoning. */}
-									<div className='r-board-divider'>
-										<span>
-											{visibleExtraLeagues.length > 0
-												? t('massDelete:extraLeaguesDivider')
-												: t('massDelete:noExtraLeaguesDivider')}
-										</span>
-									</div>
-									<LeagueVisibilityMenu />
-								</div>
-								{visibleExtraLeagues.length > 0 && (
-									<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
-										{visibleExtraLeagues.map((l) => (
-											<div className='r-md-knob' key={l.id}>
+											<div className='r-board-divider'>
 												<span>
-													{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}
-													<i className='r-md-knob-full'>{leagueTitle(l, gl).full}</i>
-													<i className='r-md-knob-short'>{leagueTitle(l, gl).short}</i>
+													{visibleExtraLeagues.length > 0
+														? t('massDelete:extraLeaguesDivider')
+														: t('massDelete:noExtraLeaguesDivider')}
 												</span>
-												<NumSelect
-													label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
-													value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
-													onChange={getTrashExtraSetter(l.id)}
-													count={2000}
-												/>
 											</div>
-										))}
-									</div>
+											<LeagueVisibilityMenu />
+										</div>
+										{visibleExtraLeagues.length > 0 && (
+											<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
+												{visibleExtraLeagues.map((l) => (
+													<div className='r-md-knob' key={l.id}>
+														<span>
+															{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}
+															<i className='r-md-knob-full'>{leagueTitle(l, gl).full}</i>
+															<i className='r-md-knob-short'>{leagueTitle(l, gl).short}</i>
+														</span>
+														<NumSelect
+															label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
+															value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
+															onChange={getTrashExtraSetter(l.id)}
+															count={2000}
+														/>
+													</div>
+												))}
+											</div>
+										)}
+									</>
 								)}
-							</>
+
+								<div className='r-section-h' style={{ marginTop: 4 }}>
+									{isTrade ? t('massDelete:neverSuggestCategory') : t('massDelete:neverDeleteCategory')}
+								</div>
+								<div className='r-md-protect-grid'>
+									{protectionMeta.map((m) => {
+										// Trading a Shadow or Mythical Pokémon isn't something the
+										// game allows at all, regardless of its IVs —
+										// computeTradeableString excludes every Shadow and Mythical
+										// catch unconditionally, so these two toggles have nothing
+										// left to control there and are locked on to reflect that,
+										// rather than implying they're optional.
+										const lockedOn = isTrade && (m.key === 'shadow' || m.key === 'mythical');
+										return (
+											<button
+												key={m.key}
+												type='button'
+												className='r-ctr-toggle r-md-protect-chip'
+												data-on={lockedOn || protect[m.key] ? '' : undefined}
+												aria-pressed={lockedOn || protect[m.key]}
+												disabled={lockedOn}
+												title={lockedOn ? t('massDelete:lockedOnTitle', { label: m.label }) : m.description}
+												onClick={lockedOn ? undefined : () => setProtectFlag(m.key)}
+											>
+												<span className='r-ss-box' aria-hidden='true' />
+												<span className='r-md-protect-label'>{m.label}</span>
+											</button>
+										);
+									})}
+								</div>
+							</div>
 						)}
-
-						<div className='r-section-h' style={{ marginTop: 4 }}>
-							{isTrade ? t('massDelete:neverSuggestCategory') : t('massDelete:neverDeleteCategory')}
-						</div>
-						<div className='r-md-protect-grid'>
-							{protectionMeta.map((m) => {
-								// Trading a Shadow or Mythical Pokémon isn't something the
-								// game allows at all, regardless of its IVs —
-								// computeTradeableString excludes every Shadow and Mythical
-								// catch unconditionally, so these two toggles have nothing
-								// left to control there and are locked on to reflect that,
-								// rather than implying they're optional.
-								const lockedOn = isTrade && (m.key === 'shadow' || m.key === 'mythical');
-								return (
-									<button
-										key={m.key}
-										type='button'
-										className='r-ctr-toggle r-md-protect-chip'
-										data-on={lockedOn || protect[m.key] ? '' : undefined}
-										aria-pressed={lockedOn || protect[m.key]}
-										disabled={lockedOn}
-										title={lockedOn ? t('massDelete:lockedOnTitle', { label: m.label }) : m.description}
-										onClick={lockedOn ? undefined : () => setProtectFlag(m.key)}
-									>
-										<span className='r-ss-box' aria-hidden='true' />
-										<span className='r-md-protect-label'>{m.label}</span>
-									</button>
-								);
-							})}
-						</div>
 					</div>
-				)}
-			</div>
 
-			<div className='r-section-h'>
-				{isTrade ? t('massDelete:neverSuggestPokemon') : t('massDelete:neverDeletePokemon')}
-			</div>
-			<div className='r-ctr-config' data-open={wlOpen}>
-				<div className='r-ctr-config-bar'>
+					<div className='r-section-h'>
+						{isTrade ? t('massDelete:neverSuggestPokemon') : t('massDelete:neverDeletePokemon')}
+					</div>
+					<div className='r-ctr-config' data-open={wlOpen}>
+						<div className='r-ctr-config-bar'>
+							<button
+								type='button'
+								className='r-ctr-config-toggle'
+								aria-expanded={wlOpen}
+								onClick={() => setWlOpen((o) => !o)}
+							>
+								<span className='r-ctr-config-ic' aria-hidden='true'>
+									<svg viewBox='0 0 24 24' width='15' height='15' fill='none' stroke='currentColor' strokeWidth='2'>
+										<path
+											strokeLinecap='round'
+											strokeLinejoin='round'
+											d='M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6l7-3z'
+										/>
+									</svg>
+								</span>
+								<span className='r-ctr-config-sum'>{whitelistSummary}</span>
+							</button>
+						</div>
+						{wlOpen && (
+							<div className='r-ctr-panel'>
+								<WhitelistSearch
+									gamemasterPokemon={gamemasterPokemon}
+									exclude={whitelistSearchExclude}
+									onPick={addToWhitelist}
+									placeholder={
+										isTrade
+											? t('massDelete:whitelist.searchPlaceholderTrade')
+											: t('massDelete:whitelist.searchPlaceholderMeta')
+									}
+								/>
+								<div className='r-md-wl-chips'>
+									{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
+										<p className='r-muted' style={{ margin: 0 }}>
+											{isTrade ? t('massDelete:whitelist.emptyTrade') : t('massDelete:whitelist.emptyMeta')}
+										</p>
+									)}
+									{whitelistChipsManual.map(({ p, locked, reason }) => (
+										<WhitelistChip
+											key={p.speciesId}
+											p={p}
+											locked={locked}
+											reason={reason}
+											onRemove={removeFromWhitelist}
+										/>
+									))}
+									{whitelistChipsManual.length > 0 && whitelistChipsAuto.length > 0 && (
+										<div className='r-md-wl-divider' aria-hidden='true' />
+									)}
+									{whitelistChipsAuto.map(({ p, locked, reason }) => (
+										<WhitelistChip
+											key={p.speciesId}
+											p={p}
+											locked={locked}
+											reason={reason}
+											onRemove={removeFromWhitelist}
+										/>
+									))}
+								</div>
+							</div>
+						)}
+					</div>
+
+					<div className='r-set-row' style={{ marginBottom: 12 }}>
+						<div className='r-set-head'>
+							<b>{t('settings:menu.gameLanguage')}</b>
+							<span>{t('settings:page.gameLanguage.desc')}</span>
+						</div>
+						<LanguagePicker
+							value={sgl}
+							options={GAME_LANGUAGE_OPTIONS}
+							onChange={updateSearchGameLanguage}
+							ariaLabel={t('settings:menu.gameLanguage')}
+						/>
+					</div>
+
 					<button
 						type='button'
-						className='r-ctr-config-toggle'
-						aria-expanded={wlOpen}
-						onClick={() => setWlOpen((o) => !o)}
-					>
-						<span className='r-ctr-config-ic' aria-hidden='true'>
-							<svg viewBox='0 0 24 24' width='15' height='15' fill='none' stroke='currentColor' strokeWidth='2'>
-								<path
-									strokeLinecap='round'
-									strokeLinejoin='round'
-									d='M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6l7-3z'
-								/>
-							</svg>
-						</span>
-						<span className='r-ctr-config-sum'>{whitelistSummary}</span>
-					</button>
-				</div>
-				{wlOpen && (
-					<div className='r-ctr-panel'>
-						<WhitelistSearch
-							gamemasterPokemon={gamemasterPokemon}
-							exclude={whitelistSearchExclude}
-							onPick={addToWhitelist}
-							placeholder={
-								isTrade
-									? t('massDelete:whitelist.searchPlaceholderTrade')
-									: t('massDelete:whitelist.searchPlaceholderMeta')
+						className='r-md-compute'
+						disabled={activeCalculating}
+						onClick={() => {
+							if (isBadIv) {
+								setBadIvResult('');
+								setIsCalculatingBadIv(true);
+							} else if (isTrade) {
+								setTradeResult('');
+								setIsCalculatingTrade(true);
+							} else {
+								setResult('');
+								setIsCalculating(true);
 							}
-						/>
-						<div className='r-md-wl-chips'>
-							{whitelistChipsManual.length === 0 && whitelistChipsAuto.length === 0 && (
-								<p className='r-muted' style={{ margin: 0 }}>
-									{isTrade ? t('massDelete:whitelist.emptyTrade') : t('massDelete:whitelist.emptyMeta')}
-								</p>
-							)}
-							{whitelistChipsManual.map(({ p, locked, reason }) => (
-								<WhitelistChip
-									key={p.speciesId}
-									p={p}
-									locked={locked}
-									reason={reason}
-									onRemove={removeFromWhitelist}
-								/>
-							))}
-							{whitelistChipsManual.length > 0 && whitelistChipsAuto.length > 0 && (
-								<div className='r-md-wl-divider' aria-hidden='true' />
-							)}
-							{whitelistChipsAuto.map(({ p, locked, reason }) => (
-								<WhitelistChip
-									key={p.speciesId}
-									p={p}
-									locked={locked}
-									reason={reason}
-									onRemove={removeFromWhitelist}
-								/>
-							))}
-						</div>
-					</div>
-				)}
-			</div>
+						}}
+					>
+						{activeCalculating ? t('massDelete:computing') : t('massDelete:compute')}
+					</button>
 
-			<div className='r-set-row' style={{ marginBottom: 12 }}>
-				<div className='r-set-head'>
-					<b>{t('settings:menu.gameLanguage')}</b>
-					<span>{t('settings:page.gameLanguage.desc')}</span>
-				</div>
-				<LanguagePicker
-					value={sgl}
-					options={GAME_LANGUAGE_OPTIONS}
-					onChange={updateSearchGameLanguage}
-					ariaLabel={t('settings:menu.gameLanguage')}
-				/>
-			</div>
-
-			<button
-				type='button'
-				className='r-md-compute'
-				disabled={activeCalculating}
-				onClick={() => {
-					if (isBadIv) {
-						setBadIvResult('');
-						setIsCalculatingBadIv(true);
-					} else if (isTrade) {
-						setTradeResult('');
-						setIsCalculatingTrade(true);
-					} else {
-						setResult('');
-						setIsCalculating(true);
-					}
-				}}
-			>
-				{activeCalculating ? t('massDelete:computing') : t('massDelete:compute')}
-			</button>
-
-			<textarea
-				ref={outRef}
-				className='r-md-out'
-				readOnly
-				value={activeCalculating ? t('massDelete:computingMessage') : activeResult}
-				placeholder={isTrade ? t('massDelete:outputPlaceholderTrade') : t('massDelete:outputPlaceholderMeta')}
-				onClick={copy}
-			/>
-			{activeResult && !activeCalculating && (
-				<p className={`r-md-length-hint${activeResult.length > 5000 ? ' r-md-length-hint--warn' : ''}`}>
-					{t('massDelete:characterCount', {
-						count: activeResult.length,
-						formatted: activeResult.length.toLocaleString(),
-					})}
-					{activeResult.length > 5000 &&
-						(isTrade ? t('massDelete:lengthWarningTrade') : t('massDelete:lengthWarningMeta'))}
-				</p>
-			)}
-			{activeResult && (
-				<button type='button' className='r-md-copy' onClick={copy}>
-					{copied ? t('massDelete:copied') : t('massDelete:copySearchString')}
-				</button>
-			)}
+					<textarea
+						ref={outRef}
+						className='r-md-out'
+						readOnly
+						value={activeCalculating ? t('massDelete:computingMessage') : activeResult}
+						placeholder={isTrade ? t('massDelete:outputPlaceholderTrade') : t('massDelete:outputPlaceholderMeta')}
+						onClick={copy}
+					/>
+					{activeResult && !activeCalculating && (
+						<p className={`r-md-length-hint${activeResult.length > 5000 ? ' r-md-length-hint--warn' : ''}`}>
+							{t('massDelete:characterCount', {
+								count: activeResult.length,
+								formatted: activeResult.length.toLocaleString(),
+							})}
+							{activeResult.length > 5000 &&
+								(isTrade ? t('massDelete:lengthWarningTrade') : t('massDelete:lengthWarningMeta'))}
+						</p>
+					)}
+					{activeResult && (
+						<button type='button' className='r-md-copy' onClick={copy}>
+							{copied ? t('massDelete:copied') : t('massDelete:copySearchString')}
+						</button>
+					)}
 				</>
 			)}
 		</div>

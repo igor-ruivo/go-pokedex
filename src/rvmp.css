@@ -12,9 +12,23 @@
    ============================================================================ */
 
 /* Always reserve the scrollbar gutter so navigating between a short page and a
-   tall one doesn't shift the layout sideways a few pixels. */
+   tall one doesn't shift the layout sideways a few pixels. `overflow-x:
+   hidden` is the actual fix for a real bug: the hero sprite's GO/shiny-GO
+   1.35x zoom (components.css) deliberately sets `.r-hero`'s own `overflow` to
+   `visible` — needed so the bob animation's vertical motion isn't clipped —
+   but `visible` has no directional opt-out: it also lets the zoom's
+   horizontal bleed (the scale grows the sprite equally on all four sides)
+   escape `.r-hero` too, and with nothing above it ever clipping horizontally
+   either, that bleed became part of the WHOLE DOCUMENT's own scrollable
+   width the instant a GO/shiny sprite became the active one, giving the
+   entire page a few pixels of pointless horizontal scroll. Pinning it here
+   (the actual document scroller, above every page's own layout) stops that
+   without touching `.r-hero`'s own vertical overflow at all — nothing on
+   this site is meant to scroll sideways as a whole page, so this is safe
+   everywhere, not just there. */
 html:has(.rvmp) {
 	scrollbar-gutter: stable;
+	overflow-x: hidden;
 }
 
 .rvmp {

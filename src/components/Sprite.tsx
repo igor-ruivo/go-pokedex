@@ -107,8 +107,8 @@ const useSequentialFade = (resolved: string) => {
 		 *  that class's own rule in components.css for the actual transition. */
 		fadeProps: {
 			'data-fade': (phase === 'fadingOut' || phase === 'loading' ? 'hidden' : undefined) as string | undefined,
-			onLoad: handleLoad,
-			onTransitionEnd: handleTransitionEnd,
+			'onLoad': handleLoad,
+			'onTransitionEnd': handleTransitionEnd,
 		},
 	};
 };
