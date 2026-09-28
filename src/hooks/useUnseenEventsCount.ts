@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import { spotlightToPost } from '../lib/calendar-events';
 import { nowAsEventTime } from '../lib/format';
@@ -18,12 +19,24 @@ export const useUnseenEventsCount = (): number => {
 	const { posts, season, spotlightHours, postsFetchCompleted, seasonFetchCompleted, spotlightHoursFetchCompleted } =
 		useCalendar();
 	const { seenIds } = useSeenEvents();
+	const { currentGameLanguage: gl } = useLanguage();
 
 	return useMemo(() => {
 		if (!postsFetchCompleted || !spotlightHoursFetchCompleted) return 0;
 		const now = nowAsEventTime();
-		const events = [...posts, ...spotlightHours.map(spotlightToPost)].filter((p) => p && p.endDate >= now);
+		const events = [...posts, ...spotlightHours.map(spotlightToPost)].filter(
+			(p) => p && p.endDate >= now && p.availableLocales.includes(gl)
+		);
 		const all = seasonFetchCompleted && season ? [season, ...events] : events;
 		return all.filter((p) => !seenIds.has(p.id)).length;
-	}, [posts, spotlightHours, postsFetchCompleted, spotlightHoursFetchCompleted, seasonFetchCompleted, season, seenIds]);
+	}, [
+		posts,
+		spotlightHours,
+		postsFetchCompleted,
+		spotlightHoursFetchCompleted,
+		seasonFetchCompleted,
+		season,
+		seenIds,
+		gl,
+	]);
 };

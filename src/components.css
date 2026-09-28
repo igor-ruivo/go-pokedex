@@ -801,6 +801,12 @@
 	height: 1px;
 	background: var(--border);
 }
+.rvmp .r-section-h-icon {
+	flex: none;
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+}
 .rvmp .r-section-h--big {
 	font-size: 15px;
 	color: var(--text);

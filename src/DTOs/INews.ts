@@ -41,6 +41,14 @@ export interface IPostEntry {
 	incenses: Array<IEntry>;
 	lures: Array<IEntry>;
 	bonuses: Record<GameLanguage, Array<string>>;
+	// Which locales genuinely have their own pokemongo.com post for this event
+	// (as opposed to `title`/`subtitle`/`url`/`bonuses` above, which fall back
+	// to the English post's content for a locale missing its own — see
+	// dex-server's `pairEventTranslations`). LeekDuck-sourced synthetic posts
+	// (`spotlightToPost`/`specialToPost`) have no real per-locale page at all,
+	// so they just list every `GameLanguage` here rather than being filtered
+	// the way real pokemongo.com posts are.
+	availableLocales: Array<GameLanguage>;
 	isRelevant?: boolean;
 	isSpotlight?: boolean;
 }

@@ -43,6 +43,15 @@ const EGG_TIERS: ReadonlyArray<readonly [string, string]> = [
 	['12', '12 km'],
 ];
 
+// No dedicated image asset for a generic "bonuses" concept — a filled,
+// colorful sparkle glyph instead, matching the other section icons' 18px size.
+const BonusesIcon = () => (
+	<svg viewBox='0 0 24 24' aria-hidden='true' className='r-section-h-icon'>
+		<path d='M11 2 13.1 8.9 20 11 13.1 13.1 11 20 8.9 13.1 2 11 8.9 8.9Z' fill='#ffd166' />
+		<path d='M18.5 2 19.4 4.6 22 5.5 19.4 6.4 18.5 9 17.6 6.4 15 5.5 17.6 4.6Z' fill='#ffe8a8' />
+	</svg>
+);
+
 const TAB_ICON: Record<CalendarTab, string> = {
 	events: '/images/nav/calendar.png',
 	bosses: '/images/raids/tier-5.png',
@@ -147,6 +156,7 @@ const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
 		},
 		{} as Record<GameLanguage, Array<string>>
 	),
+	availableLocales: Object.values(GameLanguage),
 });
 
 /* ---------- shared bits ---------- */
@@ -245,6 +255,7 @@ const Group = ({
 	endMap,
 	darker,
 	egg,
+	icon,
 }: {
 	title: string;
 	entries: Array<IEntry>;
@@ -252,6 +263,10 @@ const Group = ({
 	darker?: boolean | undefined;
 	/** Raid-egg icon key in /public/images/raids (raid groups only). */
 	egg?: string | undefined;
+	/** Full icon path for a plain (`.r-section-h`) group heading — mutually
+	 *  exclusive with `egg`, which already renders its own bigger icon+title
+	 *  header. */
+	icon?: string | undefined;
 }) =>
 	entries.length ? (
 		<>
@@ -262,6 +277,7 @@ const Group = ({
 				</div>
 			) : (
 				<div className='r-section-h' data-darker={darker ? '' : undefined}>
+					{icon && <img className='r-section-h-icon' src={icon} alt='' loading='lazy' />}
 					{title}
 				</div>
 			)}
@@ -502,7 +518,10 @@ const EventCard = ({
 					)}
 					{bonuses.length > 0 && (
 						<>
-							<div className='r-section-h'>{t('calendar:events.bonuses')}</div>
+							<div className='r-section-h'>
+								<BonusesIcon />
+								{t('calendar:events.bonuses')}
+							</div>
 							<ul className='r-bonuses'>
 								{bonuses.filter(Boolean).map((b, i) => (
 									<li key={i}>{b}</li>
@@ -510,17 +529,26 @@ const EventCard = ({
 							</ul>
 						</>
 					)}
-					<Group title={t('calendar:events.groups.featuredSpawns')} entries={post.wild} />
+					<Group
+						title={t('calendar:events.groups.featuredSpawns')}
+						entries={post.wild}
+						icon='/images/nav/spawns-grass.png'
+					/>
 					<Group
 						title={t('calendar:events.groups.featuredRaids', {
 							raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 						})}
 						entries={post.raids}
+						icon='/images/raids/tier-5.png'
 					/>
-					<Group title={t('calendar:events.groups.researchEncounters')} entries={post.researches} />
-					<Group title={t('calendar:events.groups.eggs')} entries={post.eggs} />
-					<Group title={t('calendar:events.groups.incense')} entries={post.incenses} />
-					<Group title={t('calendar:events.groups.lures')} entries={post.lures} />
+					<Group
+						title={t('calendar:events.groups.researchEncounters')}
+						entries={post.researches}
+						icon='/images/nav/research.png'
+					/>
+					<Group title={t('calendar:events.groups.eggs')} entries={post.eggs} icon='/images/eggs/10km.png' />
+					<Group title={t('calendar:events.groups.incense')} entries={post.incenses} icon='/images/nav/incense.png' />
+					<Group title={t('calendar:events.groups.lures')} entries={post.lures} icon='/images/nav/lure.png' />
 					{(post.url[gl] || post.url[GameLanguage.en]) && (
 						<a
 							className='r-ext-link'
@@ -565,7 +593,11 @@ const EventsTab = () => {
 		// reshuffling for no visible reason.
 		const dayOf = (time: number) => Math.floor(time / 86_400_000);
 		const events = allPosts
-			.filter((p) => p && p.endDate >= now)
+			// `availableLocales` excludes real pokemongo.com posts that have no
+			// page of their own for the current game language — LeekDuck-sourced
+			// synthetic posts (Spotlight Hours) always list every language here,
+			// so they're never filtered out by this (see their own note).
+			.filter((p) => p && p.endDate >= now && p.availableLocales.includes(gl))
 			.sort((a, b) => {
 				const dayDiff = dayOf(a.startDate) - dayOf(b.startDate);
 				if (dayDiff !== 0) return dayDiff;
