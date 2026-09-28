@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { TFunction } from 'i18next';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -1137,29 +1137,33 @@ export const computeTradeableString = (
 
 /* -------------------------------------------------------------------------- */
 
-const NumSelect = ({
-	label,
-	value,
-	onChange,
-	count,
-}: {
-	label: string;
-	value: number;
-	onChange: (v: number) => void;
-	count: number;
-}) => (
-	<select className='r-md-select' aria-label={label} value={value} onChange={(e) => onChange(+e.target.value)}>
-		{Array.from({ length: count }, (_x, i) => i).map((n) => (
-			<option key={n} value={n}>
-				{n}
-			</option>
-		))}
-	</select>
+// Memoized — this file has a couple dozen instances of these on screen at
+// once (Great/Ultra/Master/Raid/CP/extra-league knobs across all three tabs),
+// none of which have anything to do with most state changes elsewhere on the
+// page. Without `memo`, every one of them re-renders (and its own `<option>`
+// list gets re-diffed) on every keystroke/toggle anywhere on the page, purely
+// because their parent did — a real, measurable chunk of the "any click
+// freezes the UI for a moment" cost this page used to have. Callers must
+// pass a referentially stable `onChange` (a state setter, or a `useCallback`)
+// or this buys nothing — see `getTrashExtraSetter` below for the one spot
+// that needed a small dedicated fix to actually have one.
+const NumSelect = memo(
+	({ label, value, onChange, count }: { label: string; value: number; onChange: (v: number) => void; count: number }) => (
+		<select className='r-md-select' aria-label={label} value={value} onChange={(e) => onChange(+e.target.value)}>
+			{Array.from({ length: count }, (_x, i) => i).map((n) => (
+				<option key={n} value={n}>
+					{n}
+				</option>
+			))}
+		</select>
+	)
 );
 
 /** Pokémon-only typeahead for adding a species to the whitelist — same shape
- *  as the app-bar's `SearchBox`, trimmed to a single result kind. */
-const WhitelistSearch = ({
+ *  as the app-bar's `SearchBox`, trimmed to a single result kind. Memoized —
+ *  see `NumSelect`'s own comment above for why; callers must pass a
+ *  referentially stable `onPick`. */
+const WhitelistSearch = memo(function WhitelistSearch({
 	gamemasterPokemon,
 	exclude,
 	onPick,
@@ -1169,7 +1173,7 @@ const WhitelistSearch = ({
 	exclude: Set<string>;
 	onPick: (speciesId: string) => void;
 	placeholder: string;
-}) => {
+}) {
 	const { t } = useTranslation(['massDelete']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { imageSource } = useImageSource();
@@ -1268,9 +1272,15 @@ const WhitelistSearch = ({
 			)}
 		</div>
 	);
-};
+});
 
-const WhitelistChip = ({
+// Memoized — this is the single biggest offender `NumSelect`'s own comment
+// above describes: a manually-curated whitelist can easily have hundreds of
+// entries (every Shadow, every Legendary, ...), all mounted at once whenever
+// the whitelist panel is open. Without this, toggling ANY unrelated knob
+// elsewhere on the page re-rendered every one of them (each with its own
+// `<img>`) for nothing. Callers must pass a referentially stable `onRemove`.
+const WhitelistChip = memo(function WhitelistChip({
 	p,
 	locked,
 	reason,
@@ -1282,7 +1292,7 @@ const WhitelistChip = ({
 	reason: string;
 	imageSource: ReturnType<typeof useImageSource>['imageSource'];
 	onRemove: (speciesId: string) => void;
-}) => {
+}) {
 	const { t } = useTranslation(['massDelete']);
 	return (
 		<button
@@ -1305,7 +1315,7 @@ const WhitelistChip = ({
 			)}
 		</button>
 	);
-};
+});
 
 // dex, then form (grouping each Shadow right after its precomputed
 // non-Shadow counterpart, via dex-server's own `nonShadowSpecies` field),
@@ -1470,7 +1480,22 @@ const MassDeleteContent = ({
 	// `useState` per id, since which extra leagues even exist is dynamic.
 	const [trashExtra, setTrashExtra] = useState<Record<string, number>>(readTrashExtra);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashExtraLeagues, JSON.stringify(trashExtra)), [trashExtra]);
-	const setTrashExtraFor = (id: string) => (next: number) => setTrashExtra((prev) => ({ ...prev, [id]: next }));
+	// A per-id cache of setters, not a fresh closure every call — each one is
+	// passed straight to a `memo`-wrapped `NumSelect` as its `onChange`, so a
+	// new function identity on every render (the old `(id) => (next) => ...`
+	// curried form always produced one) would defeat that memoization for
+	// every extra-league knob on every unrelated re-render. Cached forever
+	// once created per id — trivial memory cost, and `setTrashExtra` itself
+	// never changes identity, so there's nothing to ever invalidate it over.
+	const trashExtraSettersRef = useRef<Map<string, (next: number) => void>>(new Map());
+	const getTrashExtraSetter = (id: string): ((next: number) => void) => {
+		let setter = trashExtraSettersRef.current.get(id);
+		if (!setter) {
+			setter = (next: number) => setTrashExtra((prev) => ({ ...prev, [id]: next }));
+			trashExtraSettersRef.current.set(id, setter);
+		}
+		return setter;
+	};
 	const { leagues } = useLeagueDefinitions();
 	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
 	const visibleExtraLeagues = useMemo(
@@ -1601,8 +1626,16 @@ const MassDeleteContent = ({
 	const [whitelist, setWhitelist] = useState<Array<string>>(() => readWhitelist());
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashWhitelist, JSON.stringify(whitelist)), [whitelist]);
 	const whitelistSet = useMemo(() => new Set(whitelist), [whitelist]);
-	const addToWhitelist = (speciesId: string) => setWhitelist((w) => (w.includes(speciesId) ? w : [...w, speciesId]));
-	const removeFromWhitelist = (speciesId: string) => setWhitelist((w) => w.filter((s) => s !== speciesId));
+	// `useCallback`, not a plain arrow function — these are passed straight
+	// through to `WhitelistSearch`/`WhitelistChip` (both `memo`-wrapped), so a
+	// fresh function identity every render would defeat that memoization for
+	// every one of potentially hundreds of chips just as completely as not
+	// memoizing them at all.
+	const addToWhitelist = useCallback(
+		(speciesId: string) => setWhitelist((w) => (w.includes(speciesId) ? w : [...w, speciesId])),
+		[]
+	);
+	const removeFromWhitelist = useCallback((speciesId: string) => setWhitelist((w) => w.filter((s) => s !== speciesId)), []);
 
 	// Species already covered by one of the category toggles above — shown
 	// alongside the manual whitelist so it's clear at a glance why they'll
@@ -2349,7 +2382,7 @@ const MassDeleteContent = ({
 												<NumSelect
 													label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
 													value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
-													onChange={setTrashExtraFor(l.id)}
+													onChange={getTrashExtraSetter(l.id)}
 													count={2000}
 												/>
 											</div>
@@ -2580,7 +2613,7 @@ const MassDeleteContent = ({
 												<NumSelect
 													label={t('massDelete:knobs.ariaKeepTopExtra', { league: leagueTitle(l, gl).full })}
 													value={trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA}
-													onChange={setTrashExtraFor(l.id)}
+													onChange={getTrashExtraSetter(l.id)}
 													count={2000}
 												/>
 											</div>
