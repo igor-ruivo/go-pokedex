@@ -4325,6 +4325,40 @@
 .rvmp .r-md-mode-seg {
 	margin-bottom: var(--s4);
 }
+/* Explicit, scoped-higher-specificity restatement of `.r-seg button`'s own
+ * active/inactive color pair, targeting these three tabs specifically —
+ * `color` was staying at whichever value it last had (dark active text
+ * surviving onto the newly-inactive tab's now-dark background, and vice
+ * versa for the newly-active one), even though `background` switched
+ * correctly on the exact same attribute flip. Both are declared here on the
+ * same two rules so there's no ambiguity about which selector is "supposed"
+ * to own `color` for this specific tab strip. */
+.rvmp .r-md-mode-seg button {
+	color: var(--text-dim);
+	transition:
+		background-color 0.18s ease,
+		color 0.18s ease,
+		box-shadow 0.18s ease;
+}
+.rvmp .r-md-mode-seg button[data-active='true'] {
+	color: #0c1017;
+}
+/* The label text sits in a child `<i>` (`.r-md-knob-full`/`.r-md-knob-short`,
+ * one hidden via `display: none` depending on viewport width — see their own
+ * rule), inheriting `color` from the button rather than having it declared
+ * directly. Relying on plain inheritance to carry the button's `color`
+ * transition down to this child rendered a visible lag versus `background`
+ * (which IS declared directly on the button, so it animates right on that
+ * element with no inheritance hop in between) — giving the `<i>` its OWN
+ * `color`/`transition` pair, even though the value is still just `inherit`,
+ * makes the browser animate it as its own transition on this element
+ * directly instead of only via the parent's, keeping it in lockstep with the
+ * background's own animation. */
+.rvmp .r-md-mode-seg button .r-md-knob-full,
+.rvmp .r-md-mode-seg button .r-md-knob-short {
+	color: inherit;
+	transition: color 0.18s ease;
+}
 .rvmp .r-md-warning {
 	margin-bottom: var(--s3);
 	background: color-mix(in srgb, #f5a623 16%, var(--surface));

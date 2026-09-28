@@ -1491,6 +1491,24 @@ const MassDeleteContent = ({
 		if (pendingMode !== null && mode === pendingMode) setPendingMode(null);
 	}, [mode, pendingMode]);
 	const showModeSpinner = pendingMode !== null;
+	// The tab buttons' own highlight is driven by THIS, not `mode`/`pendingMode`
+	// directly — and, on purpose, it only updates in an effect that fires
+	// AFTER `pendingMode` clears, i.e. one commit *after* the new tab's whole
+	// (previously-unmounted) subtree has already been mounted and painted,
+	// never in the SAME commit as that mount. Flipping the highlight instantly
+	// on click (this used to just be `pendingMode ?? mode`) meant its own
+	// `background`/`color` CSS transition had to run WHILE that heavy mount
+	// was hogging the main thread — `background-color` can often still
+	// animate smoothly there (compositor-friendly), but `color` requires
+	// actually re-rasterizing the text glyphs on the main thread, which was
+	// starved by the mount work, so it visibly lagged behind. Deferring the
+	// highlight flip to its own separate, otherwise-idle commit is what
+	// actually fixes that — nothing else is competing for paint time by the
+	// point this changes, so both properties animate together properly.
+	const [highlightedMode, setHighlightedMode] = useState(mode);
+	useEffect(() => {
+		if (pendingMode === null) setHighlightedMode(mode);
+	}, [pendingMode, mode]);
 	const setMode = (next: 'meta' | 'badIv' | 'trade') => {
 		if (next === mode) return;
 		const slug: MassDeleteTab =
@@ -2193,15 +2211,15 @@ const MassDeleteContent = ({
 			<h1 className='r-page-title'>{pageTitle}</h1>
 
 			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label={t('massDelete:modeTablist')}>
-				<button type='button' data-active={mode === 'meta'} onClick={() => setMode('meta')}>
+				<button type='button' data-active={highlightedMode === 'meta'} onClick={() => setMode('meta')}>
 					<i className='r-md-knob-full'>{t('massDelete:modeTabs.meta.full')}</i>
 					<i className='r-md-knob-short'>{t('massDelete:modeTabs.meta.short')}</i>
 				</button>
-				<button type='button' data-active={isBadIv} onClick={() => setMode('badIv')}>
+				<button type='button' data-active={highlightedMode === 'badIv'} onClick={() => setMode('badIv')}>
 					<i className='r-md-knob-full'>{t('massDelete:modeTabs.badIv.full')}</i>
 					<i className='r-md-knob-short'>{t('massDelete:modeTabs.badIv.short')}</i>
 				</button>
-				<button type='button' data-active={isTrade} onClick={() => setMode('trade')}>
+				<button type='button' data-active={highlightedMode === 'trade'} onClick={() => setMode('trade')}>
 					<i className='r-md-knob-full'>{t('massDelete:modeTabs.trade.full')}</i>
 					<i className='r-md-knob-short'>{t('massDelete:modeTabs.trade.short')}</i>
 				</button>
