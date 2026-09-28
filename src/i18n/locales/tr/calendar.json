@@ -86,7 +86,8 @@
 		"catchableTag": "yakalanabilir"
 	},
 	"eggs": {
-		"noPoolData": "Yumurta havuzu verisi yok."
+		"noPoolData": "Yumurta havuzu verisi yok.",
+		"fromFriendGifts": "Arkadaş Hediyelerinden"
 	},
 	"timeLeft": {
 		"days": "{{count}}g kaldı",

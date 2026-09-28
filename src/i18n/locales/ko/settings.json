@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "게임 언어",
-			"desc": "검색창 키워드(shadow, shiny, 전설, CP/HP 등), Pokémon GO 표기 기준. 기본값은 위의 앱 언어를 따릅니다."
+			"desc": "검색창 키워드, Pokémon GO 표기 기준."
 		},
 		"sprites": {
 			"title": "스프라이트",

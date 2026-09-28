@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "Game language",
-			"desc": "Search-bar keyword terms (shadow, shiny, legendary, CP/HP, etc.), as they appear in Pokémon GO. Defaults to your app language above."
+			"desc": "Search-bar keyword terms, as they appear in Pokémon GO."
 		},
 		"sprites": {
 			"title": "Sprites",

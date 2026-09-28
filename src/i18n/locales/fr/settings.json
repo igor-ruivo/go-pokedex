@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "Langue du jeu",
-			"desc": "Mots-clés de la barre de recherche (shadow, chromatique, légendaire, PC/PV, etc.), tels qu'ils apparaissent dans Pokémon GO. Utilise la langue de l'appli ci-dessus par défaut."
+			"desc": "Mots-clés de la barre de recherche, tels qu'ils apparaissent dans Pokémon GO."
 		},
 		"sprites": {
 			"title": "Sprites",

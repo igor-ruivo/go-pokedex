@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "Spielsprache",
-			"desc": "Suchleisten-Schlagwörter (Shadow, Shiny, legendär, KP/WP usw.), wie sie in Pokémon GO erscheinen. Standardmäßig deine App-Sprache oben."
+			"desc": "Suchleisten-Schlagwörter, wie sie in Pokémon GO erscheinen."
 		},
 		"sprites": {
 			"title": "Sprites",

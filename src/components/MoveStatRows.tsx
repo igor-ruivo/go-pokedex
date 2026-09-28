@@ -5,21 +5,13 @@ import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../lib/moves';
 
 /** Full PvE + PvP stat readout for a move (no attacker context — raw values).
- *  `compact` (the Moves list row) drops everything but the one headline
- *  derived figure — DPS for fast moves, DPE for charged — since a long
- *  locale's "Energy"/"Cooldown"/"EPS" labels next to the raw stats were wide
- *  enough to push the row past the card's width; the full readout (dmg/nrg/
- *  cooldown/turns + every derived figure) still renders on the move's own
- *  detail page, which has the room for it. */
-export const MoveStatRows = ({
-	m,
-	gl,
-	compact = false,
-}: {
-	m: IGameMasterMove;
-	gl: GameLanguage;
-	compact?: boolean;
-}) => {
+ *  The raw dmg/nrg/cooldown-or-turns stats always render in full; only the
+ *  derived figures (DPS/EPS for fast, DPE for charged) sit in a single
+ *  shrinkable, ellipsis-truncating group (`.r-move-derived`) — a long
+ *  locale's "Energy"/"Cooldown"/"EPS" labels could otherwise push the row
+ *  past the card's width. Nothing is ever dropped; on a narrow row the
+ *  derived group just ends in "…" instead of overflowing. */
+export const MoveStatRows = ({ m, gl }: { m: IGameMasterMove; gl: GameLanguage }) => {
 	const { t } = useTranslation(['moveDetail']);
 	const kind: 'fast' | 'charged' = m.isFast ? 'fast' : 'charged';
 
@@ -42,26 +34,26 @@ export const MoveStatRows = ({
 			kind === 'fast'
 				? [
 						[t('moveDetail:statLabels.dps'), moveDPS(m, arena).toFixed(1)],
-						...(compact
-							? []
-							: ([[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)]] as Array<[string, string | number]>)),
+						[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)],
 					]
 				: [[t('moveDetail:statLabels.dpe'), moveDPE(m, arena).toFixed(2)]];
 		return (
 			<div key={arena}>
 				<u>{arena === 'pve' ? 'PvE' : 'PvP'}</u>
-				{!compact &&
-					base.map(([k, v]) => (
-						<span key={k}>
-							{k} <b>{v}</b>
-						</span>
-					))}
-				{!compact && <span className='r-move-sep' aria-hidden='true' />}
-				{derived.map(([k, v]) => (
+				{base.map(([k, v]) => (
 					<span key={k}>
 						{k} <b>{v}</b>
 					</span>
 				))}
+				<span className='r-move-sep' aria-hidden='true' />
+				<span className='r-move-derived'>
+					{derived.map(([k, v], i) => (
+						<span key={k}>
+							{i > 0 ? ' · ' : ''}
+							{k} <b>{v}</b>
+						</span>
+					))}
+				</span>
 			</div>
 		);
 	};

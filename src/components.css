@@ -580,6 +580,7 @@
 }
 .rvmp .r-reach-chip {
 	position: relative;
+	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -590,7 +591,12 @@
 	   the only thing that sets its width, so it stays a square everywhere */
 	min-width: 0;
 	aspect-ratio: 1; /* always a square, like the calendar minis */
-	padding: 6px;
+	/* `%`, not a fixed px value — same reason `.r-reach-art`/`.r-shadow-mark`
+	   below are sized in `%` now too: a FIXED-size child can't shrink with a
+	   narrow track, so it was winning the square's own aspect-ratio at small
+	   widths (see those rules' own note). `.r-mini`/`.r-pc` already use this
+	   same container-relative pattern for exactly this reason. */
+	padding: 4%;
 	border-radius: var(--r-sm);
 	/* the standard tile treatment — solid fill, plain border, same as every
 	   other tile grid on the site. */
@@ -616,8 +622,13 @@
 }
 .rvmp .r-reach-art {
 	position: relative;
-	width: 48px;
-	height: 48px;
+	/* `%` (of the now-square chip), not a fixed px size — see `.r-reach-chip`'s
+	   own note: a fixed-size child refuses to shrink below its own pixel size,
+	   which is what was breaking the square on a narrow track. Same value
+	   `.r-pc-art`/`.r-mini`'s sprite already use. */
+	width: 62%;
+	aspect-ratio: 1;
+	flex: none;
 }
 .rvmp .r-reach-chip .r-reach-art img {
 	width: 100%;
@@ -628,17 +639,26 @@
 }
 .rvmp .r-reach-chip > .r-shadow-mark {
 	position: absolute;
-	top: 6px;
-	left: 6px;
-	width: 22px;
-	height: 22px;
+	/* `%`, not a fixed px position/size — same fix as `.r-reach-art` above,
+	   matching `.r-mini > .r-shadow-mark`'s own values. */
+	top: 5%;
+	left: 5%;
+	width: 30%;
+	height: 30%;
 	z-index: 2;
 }
-.rvmp .r-reach-chip span {
+/* the name — `.r-mini > span:not(.r-mini-shiny)`'s own treatment: a `cqi`
+   clamp that scales with this chip's own (now container-relative) width
+   instead of a fixed px size, so it reads bigger on a roomy grid and fits
+   more of a long name on a narrow one, rather than ellipsizing the same
+   amount everywhere regardless of how much room is actually available.
+   `:not(.r-reach-art)` excludes the sprite's own wrapper span. */
+.rvmp .r-reach-chip > span:not(.r-reach-art) {
 	max-width: 100%;
-	font-size: 11px;
-	font-weight: 700;
-	line-height: 1.1;
+	margin-top: 2%;
+	font-size: clamp(8px, 13cqi, 11px);
+	font-weight: 800;
+	line-height: 1.15;
 	text-align: center;
 	color: var(--text-dim);
 	white-space: nowrap;
@@ -1155,6 +1175,13 @@
 	/* neutral until the row is hovered or selected */
 	color: var(--text-faint);
 	transition: color 0.14s ease;
+	/* same one-line + ellipsis treatment as `.r-board-name` right below —
+	   a longer league/cup name in some locales would otherwise wrap onto a
+	   second line instead of staying put next to the species name. */
+	min-width: 0;
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
 }
 .rvmp .r-board-row:hover .r-board-lg,
 .rvmp .r-board-row[data-active='true'] .r-board-lg {
@@ -2511,6 +2538,16 @@
 }
 .rvmp .r-movelist {
 	display: grid;
+	/* Explicit `minmax(0, 1fr)`, not the bare implicit `auto` column this had
+	   before — an `auto` grid track sizes to its content's max-content width
+	   and CAN grow past the grid container itself when that content doesn't
+	   otherwise yield, which is exactly how a move card's row was able to
+	   push the whole page into horizontal scroll no matter how much the
+	   content *inside* the card was told to shrink/ellipsis: the column
+	   holding it was never actually capped to the available width to begin
+	   with. `1fr` alone hits the same "auto" content-based floor before
+	   shrinking; the explicit `0` minimum is what removes it. */
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--s2);
 }
 /* shown in place of the recommended list when the Pokémon isn't ranked */
@@ -2549,6 +2586,7 @@
 	}
 }
 .rvmp .r-move {
+	min-width: 0;
 	background: var(--surface);
 	border: 1px solid var(--border);
 	border-left: 3px solid var(--tc, var(--accent));
@@ -2643,6 +2681,29 @@
 	height: 1px;
 	background: var(--border);
 	margin: 0 2px;
+}
+/* Wraps the derived figures (DPS/EPS for a fast move, DPE for a charged one)
+   as a single shrinkable unit — overrides the `flex: none` every other
+   `.r-move-stats` span gets above, since this is the one group allowed to
+   give up width. The raw dmg/nrg/cooldown stats before it never shrink or
+   truncate; on a card too narrow for everything, `.r-move-sep` collapses
+   first and this ends in "…" rather than pushing the row wider or getting
+   silently dropped. */
+.rvmp .r-move-stats span.r-move-derived {
+	display: inline-block;
+	flex: 0 1 auto;
+	min-width: 0;
+	/* The hard backstop: whatever flex-shrink computes, this group can never
+	   claim more than 60% of the row's own width — so on a 320px-wide card
+	   it's capped well below what "DPS 8.0 · EPS 2.1" needs, and the
+	   ellipsis is guaranteed to kick in rather than depending entirely on
+	   flex-shrink math (which some browsers only apply as a last resort for
+	   a content-sized/`auto`-basis item) to save the row from overflowing. */
+	max-width: 60%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	vertical-align: baseline;
 }
 /* PvP stat-stage effect line on charged moves */
 .rvmp .r-move-buff {
@@ -3559,10 +3620,30 @@
 .rvmp .r-move--link .r-move-head {
 	flex-wrap: nowrap;
 }
+/* Type pill + Legacy/Elite/Recommended tag(s) never shrink or wrap — they're
+   short, fixed content that needs to stay fully readable. Explicit here
+   rather than relying on their default `overflow: visible` refusing to
+   shrink below content width, which is a browser-behavior detail, not a
+   guarantee. */
+.rvmp .r-move--link .r-move-head .r-move-type,
+.rvmp .r-move--link .r-move-head .r-move-tag {
+	flex-shrink: 0;
+}
 .rvmp .r-move--link .r-move-head b {
+	/* `flex-grow: 0` (the default) so a short name still just hugs its own
+	   content, same look as before — the important addition is the hard
+	   `max-width` backstop alongside the existing shrink/min-width: some
+	   translations' move names are long enough on their own that, without a
+	   ceiling, they could still claim enough width to push the type/tag
+	   chips onto a second line even while "shrinking". Capping the name
+	   guarantees the chips always have room and the row always stays on one
+	   line, regardless of how much any given browser's flex-shrink math
+	   actually gives back. */
+	flex: 0 1 auto;
 	min-width: 0;
+	max-width: 50%;
 	white-space: nowrap;
-	overflow: clip;
+	overflow: hidden;
 	text-overflow: ellipsis;
 }
 /* on a card (moves list + a Pokémon's Moves tab) the stat line spans the full
@@ -3570,6 +3651,7 @@
    derived metrics out to the right */
 .rvmp .r-move--link .r-move-stats > div {
 	width: 100%;
+	min-width: 0;
 	flex-wrap: nowrap;
 	overflow: clip;
 }

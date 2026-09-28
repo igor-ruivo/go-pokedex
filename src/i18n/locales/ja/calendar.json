@@ -86,7 +86,8 @@
 		"catchableTag": "捕獲可能"
 	},
 	"eggs": {
-		"noPoolData": "タマゴの排出データはありません。"
+		"noPoolData": "タマゴの排出データはありません。",
+		"fromFriendGifts": "フレンドギフトから"
 	},
 	"timeLeft": {
 		"days": "残り{{count}}日",

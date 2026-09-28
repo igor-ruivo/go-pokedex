@@ -86,7 +86,8 @@
 		"catchableTag": "можно поймать"
 	},
 	"eggs": {
-		"noPoolData": "Нет данных о пуле яиц."
+		"noPoolData": "Нет данных о пуле яиц.",
+		"fromFriendGifts": "Из подарков друзей"
 	},
 	"timeLeft": {
 		"days": "осталось {{count}} дн.",

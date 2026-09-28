@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "Lingua di gioco",
-			"desc": "Parole chiave della barra di ricerca (shadow, shiny, leggendario, CP/HP, ecc.), come appaiono in Pokémon GO. Predefinita sulla lingua dell'app qui sopra."
+			"desc": "Parole chiave della barra di ricerca, come appaiono in Pokémon GO."
 		},
 		"sprites": {
 			"title": "Sprite",

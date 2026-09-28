@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "Idioma del juego",
-			"desc": "Palabras clave de la barra de búsqueda (shadow, shiny, legendario, PC/PS, etc.), tal como aparecen en Pokémon GO. Usa el idioma de la app de arriba de forma predeterminada."
+			"desc": "Palabras clave de la barra de búsqueda, tal como aparecen en Pokémon GO."
 		},
 		"sprites": {
 			"title": "Sprites",

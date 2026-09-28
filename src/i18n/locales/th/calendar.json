@@ -86,7 +86,8 @@
 		"catchableTag": "จับได้"
 	},
 	"eggs": {
-		"noPoolData": "ไม่มีข้อมูลกลุ่มไข่"
+		"noPoolData": "ไม่มีข้อมูลกลุ่มไข่",
+		"fromFriendGifts": "จากของขวัญเพื่อน"
 	},
 	"timeLeft": {
 		"days": "เหลืออีก {{count}} วัน",

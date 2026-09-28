@@ -86,7 +86,8 @@
 		"catchableTag": "bisa ditangkap"
 	},
 	"eggs": {
-		"noPoolData": "Belum ada data pool telur."
+		"noPoolData": "Belum ada data pool telur.",
+		"fromFriendGifts": "Dari Hadiah Teman"
 	},
 	"timeLeft": {
 		"days": "{{count}}h lagi",

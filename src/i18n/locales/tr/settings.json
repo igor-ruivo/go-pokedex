@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "Oyun dili",
-			"desc": "Arama çubuğu anahtar kelimeleri (shadow, shiny, efsanevi, CP/HP vb.), Pokémon GO'daki hâliyle. Varsayılan olarak yukarıdaki uygulama dilini kullanır."
+			"desc": "Arama çubuğu anahtar kelimeleri, Pokémon GO'daki hâliyle."
 		},
 		"sprites": {
 			"title": "Görseller",

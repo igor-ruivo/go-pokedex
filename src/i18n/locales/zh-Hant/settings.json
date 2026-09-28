@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "遊戲語言",
-			"desc": "搜尋列關鍵字（shadow、shiny、傳說、CP/HP 等），依 Pokémon GO 遊戲內顯示為準。預設會跟隨上方的應用程式語言。"
+			"desc": "搜尋列關鍵字，依 Pokémon GO 遊戲內顯示為準。"
 		},
 		"sprites": {
 			"title": "圖鑑圖片",

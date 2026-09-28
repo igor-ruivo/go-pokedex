@@ -86,7 +86,8 @@
 		"catchableTag": "capturable"
 	},
 	"eggs": {
-		"noPoolData": "Sin datos del grupo de huevos."
+		"noPoolData": "Sin datos del grupo de huevos.",
+		"fromFriendGifts": "De regalos de amigos"
 	},
 	"timeLeft": {
 		"days": "quedan {{count}}d",

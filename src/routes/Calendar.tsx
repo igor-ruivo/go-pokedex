@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -1178,6 +1179,16 @@ const RocketsTab = () => {
 };
 
 /* ---------- Eggs ---------- */
+// dex-server ships this one egg-pool comment as a raw, un-localized English
+// constant under every `GameLanguage` key (unlike every other comment, which
+// it does translate per language) — a gap on its end, not something this
+// repo's own i18n resources can fix at the source. Since it's the one known
+// exception, override it with our own translation by matching its literal
+// (case-insensitive) text rather than leaving it stuck in English; every
+// other comment passes through unchanged.
+const eggCommentLabel = (comment: string, t: TFunction): string =>
+	comment.trim().toUpperCase() === 'FROM FRIEND GIFTS' ? t('calendar:eggs.fromFriendGifts') : comment;
+
 const EggsTab = () => {
 	const { t } = useTranslation(['calendar']);
 	const { currentEggs, currentEggsFetchCompleted } = useCalendar();
@@ -1209,7 +1220,7 @@ const EggsTab = () => {
 						{plain.length > 0 && <MiniGrid entries={plain} />}
 						{[...groups.entries()].map(([c, list]) => (
 							<div key={c}>
-								<div className='r-section-h'>{c}</div>
+								<div className='r-section-h'>{eggCommentLabel(c, t)}</div>
 								<MiniGrid entries={list} />
 							</div>
 						))}

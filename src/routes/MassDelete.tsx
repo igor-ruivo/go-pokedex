@@ -2001,19 +2001,6 @@ const MassDelete = () => {
 		<div className='r-shell'>
 			<h1 className='r-page-title'>{pageTitle}</h1>
 
-			<div className='r-set-row' style={{ marginBottom: 12 }}>
-				<div className='r-set-head'>
-					<b>{t('settings:menu.gameLanguage')}</b>
-					<span>{t('settings:page.gameLanguage.desc')}</span>
-				</div>
-				<LanguagePicker
-					value={sgl}
-					options={GAME_LANGUAGE_OPTIONS}
-					onChange={updateSearchGameLanguage}
-					ariaLabel={t('settings:menu.gameLanguage')}
-				/>
-			</div>
-
 			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label={t('massDelete:modeTablist')}>
 				<button type='button' data-active={mode === 'meta'} onClick={() => setMode('meta')}>
 					<i className='r-md-knob-full'>{t('massDelete:modeTabs.meta.full')}</i>
@@ -2536,6 +2523,19 @@ const MassDelete = () => {
 						</div>
 					</div>
 				)}
+			</div>
+
+			<div className='r-set-row' style={{ marginBottom: 12 }}>
+				<div className='r-set-head'>
+					<b>{t('settings:menu.gameLanguage')}</b>
+					<span>{t('settings:page.gameLanguage.desc')}</span>
+				</div>
+				<LanguagePicker
+					value={sgl}
+					options={GAME_LANGUAGE_OPTIONS}
+					onChange={updateSearchGameLanguage}
+					ariaLabel={t('settings:menu.gameLanguage')}
+				/>
 			</div>
 
 			<button

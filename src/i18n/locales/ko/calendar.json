@@ -86,7 +86,8 @@
 		"catchableTag": "포획 가능"
 	},
 	"eggs": {
-		"noPoolData": "부화 데이터가 없습니다."
+		"noPoolData": "부화 데이터가 없습니다.",
+		"fromFriendGifts": "친구 선물에서"
 	},
 	"timeLeft": {
 		"days": "{{count}}일 남음",

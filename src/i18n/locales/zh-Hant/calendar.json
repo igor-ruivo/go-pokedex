@@ -86,7 +86,8 @@
 		"catchableTag": "可捕捉"
 	},
 	"eggs": {
-		"noPoolData": "沒有蛋池資料。"
+		"noPoolData": "沒有蛋池資料。",
+		"fromFriendGifts": "來自好友禮物"
 	},
 	"timeLeft": {
 		"days": "剩 {{count}} 天",

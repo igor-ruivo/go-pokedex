@@ -86,7 +86,8 @@
 		"catchableTag": "catchable"
 	},
 	"eggs": {
-		"noPoolData": "No egg pool data."
+		"noPoolData": "No egg pool data.",
+		"fromFriendGifts": "From Friend Gifts"
 	},
 	"timeLeft": {
 		"days": "{{count}}d left",

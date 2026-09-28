@@ -86,7 +86,8 @@
 		"catchableTag": "पकड़ने योग्य"
 	},
 	"eggs": {
-		"noPoolData": "कोई एग पूल डेटा नहीं।"
+		"noPoolData": "कोई एग पूल डेटा नहीं।",
+		"fromFriendGifts": "फ्रेंड गिफ्ट्स से"
 	},
 	"timeLeft": {
 		"days": "{{count}} दिन बचे",

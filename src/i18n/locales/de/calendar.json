@@ -86,7 +86,8 @@
 		"catchableTag": "fangbar"
 	},
 	"eggs": {
-		"noPoolData": "Keine Daten zum Ei-Pool."
+		"noPoolData": "Keine Daten zum Ei-Pool.",
+		"fromFriendGifts": "Aus Freundesgeschenken"
 	},
 	"timeLeft": {
 		"days": "noch {{count}} T",

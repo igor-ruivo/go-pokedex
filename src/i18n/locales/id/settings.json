@@ -21,7 +21,7 @@
 		},
 		"gameLanguage": {
 			"title": "Bahasa game",
-			"desc": "Kata kunci bilah pencarian (shadow, shiny, legendaris, CP/HP, dll.), seperti yang muncul di Pokémon GO. Default mengikuti bahasa aplikasi di atas."
+			"desc": "Kata kunci bilah pencarian, seperti yang muncul di Pokémon GO."
 		},
 		"sprites": {
 			"title": "Sprite",
