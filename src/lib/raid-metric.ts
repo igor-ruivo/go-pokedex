@@ -13,11 +13,6 @@ export const RAID_METRIC_LABEL: Record<RaidMetric, string> = {
 	tdo: 'TDO',
 };
 
-export const RAID_METRIC_BLURB: Record<RaidMetric, string> = {
-	dps: 'Damage per second while alive. Ignores bulk and downtime — favours glass cannons.',
-	tdo: 'Total damage one copy deals before fainting (DPS × survival). Rewards bulk; ignores boss HP and lobby time.',
-};
-
 export const RAID_METRIC_SORTS: ReadonlyArray<SortOption> = RAID_METRICS.map((key) => ({
 	key,
 	label: RAID_METRIC_LABEL[key],

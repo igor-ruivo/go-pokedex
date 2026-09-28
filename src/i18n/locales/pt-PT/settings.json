@@ -17,11 +17,11 @@
 		"title": "Definições",
 		"appLanguage": {
 			"title": "Idioma da aplicação",
-			"desc": "Texto da interface. O inglês é a predefinição."
+			"desc": "Texto da interface. O inglês é a predefinição. É também o idioma predefinido para as palavras-chave de pesquisa abaixo, a menos que seja substituído nas páginas Eliminação em massa ou Strings de pesquisa."
 		},
 		"gameLanguage": {
 			"title": "Idioma do jogo",
-			"desc": "Nomes de Pokémon e golpes, tal como aparecem no Pokémon GO."
+			"desc": "Palavras-chave da barra de pesquisa (shadow, shiny, lendário, CP/PS, etc.), tal como aparecem no Pokémon GO. Usa o idioma da aplicação acima por predefinição."
 		},
 		"sprites": {
 			"title": "Sprites",

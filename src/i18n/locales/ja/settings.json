@@ -17,11 +17,11 @@
 		"title": "設定",
 		"appLanguage": {
 			"title": "アプリの言語",
-			"desc": "画面上のテキスト。デフォルトは英語です。"
+			"desc": "画面上のテキスト。デフォルトは英語です。下の検索キーワードの言語も、Mass DeleteやSearch Stringsページで上書きしない限り、これに従います。"
 		},
 		"gameLanguage": {
 			"title": "ゲームの言語",
-			"desc": "Pokémon GOに表示されるポケモン名・わざ名の言語。"
+			"desc": "検索バーのキーワード（shadow、シャイニー、伝説、CP/HP など）。Pokémon GO での表記に対応。既定では上のアプリの言語に従います。"
 		},
 		"sprites": {
 			"title": "スプライト",

@@ -753,11 +753,7 @@ const PokemonDetail = () => {
 	const raidElite = new Set(raidMember.eliteMoves);
 	const raidLegacy = new Set(raidMember.legacyMoves);
 	const raidMoveTag = (id: string) =>
-		raidLegacy.has(id)
-			? t('pokemonDetail:moves.legacy')
-			: raidElite.has(id)
-				? gameTranslator(moves[id]?.isFast ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm, gl)
-				: null;
+		raidLegacy.has(id) ? t('pokemonDetail:moves.legacy') : raidElite.has(id) ? t('pokemonDetail:moves.elite') : null;
 	const raidRows = (raidSel?.types ?? []).map(({ type, entry, rank }, i) => {
 		const combos = comboLists[type] ?? [];
 		const mIdx = Math.min(cpos('raid').m[type] ?? 0, Math.max(0, combos.length - 1));

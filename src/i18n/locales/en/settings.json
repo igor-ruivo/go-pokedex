@@ -17,11 +17,11 @@
 		"title": "Settings",
 		"appLanguage": {
 			"title": "App language",
-			"desc": "Interface text. English is the default."
+			"desc": "Interface text. English is the default. Also the default for the search-string keyword terms below, unless overridden on the Mass Delete or Search Strings pages."
 		},
 		"gameLanguage": {
 			"title": "Game language",
-			"desc": "Pokémon and move names, as they appear in Pokémon GO."
+			"desc": "Search-bar keyword terms (shadow, shiny, legendary, CP/HP, etc.), as they appear in Pokémon GO. Defaults to your app language above."
 		},
 		"sprites": {
 			"title": "Sprites",

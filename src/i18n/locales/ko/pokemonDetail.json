@@ -151,6 +151,10 @@
 		"solo": "솔로",
 		"friendshipField": "친밀도",
 		"friendshipHint": "데미지 ×{{mult}}",
+		"metricBlurb": {
+			"dps": "생존 중 초당 데미지. 내구력과 대기 시간을 무시하므로 유리병 대포형 공격수에게 유리합니다.",
+			"tdo": "기절하기 전까지 한 마리가 입히는 총 데미지(DPS × 생존 시간). 내구력을 우대하며 보스 HP와 로비 시간은 무시합니다."
+		},
 		"helpSummary": "이게 무슨 뜻인가요?",
 		"help": {
 			"weatherFriendshipMegaAura": "날씨 · 친밀도 · {{mega}} 오라",
@@ -205,10 +209,10 @@
 		"clickToCopy": "클릭하여 복사",
 		"sentence": {
 			"caught": "(야생 포획, 강화 안 함)",
-			"findTopSelf": "{{league}}을(를) 위해 {{except}}상위 {{top}} <name></name>{{caught}} 찾기:",
-			"findTopEvolvesTo": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name>{{caught}}을(를) {{league}}을(를) 위해 찾기:",
-			"findTopSelfShadowEither": "{{league}}을(를) 위해 {{except}}상위 {{top}} <name></name> — {{shadow}} 여부 무관 —{{caught}} 찾기:",
-			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name> — {{shadow}} 여부 무관 —{{caught}}을(를) {{league}}을(를) 위해 찾기:",
+			"findTopSelf": "<league></league>을(를) 위해 {{except}}상위 {{top}} <name></name>{{caught}} 찾기:",
+			"findTopEvolvesTo": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name>{{caught}}을(를) <league></league>을(를) 위해 찾기:",
+			"findTopSelfShadowEither": "<league></league>을(를) 위해 {{except}}상위 {{top}} <name></name> — {{shadow}} 여부 무관 —{{caught}} 찾기:",
+			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}상위 {{top}} <target></target>(으)로 진화하는 <name></name> — {{shadow}} 여부 무관 —{{caught}}을(를) <league></league>을(를) 위해 찾기:",
 			"exceptPrefix": "다음을 제외한 모두: ",
 			"toThePrefix": ""
 		}

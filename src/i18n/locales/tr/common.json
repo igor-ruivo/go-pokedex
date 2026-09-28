@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Ana sayfa"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "hint": "Tüm Pokémon'lara göz atın" },
+		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Tüm Pokémon'lara göz atın" },
 		"rankings": { "label": "Sıralamalar", "hint": "Lig ve {{raid}} türüne göre en iyi saldırganlar" },
 		"calendar": { "label": "Takvim", "hint": "Etkinlikler, {{raid}}lar, ortaya çıkışlar ve yumurtalar" },
 		"moves": { "label": "Hareketler", "hint": "Tüm hızlı ve şarjlı hareketler" },

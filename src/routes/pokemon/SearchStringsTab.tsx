@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { LanguagePicker } from '../../components/LanguagePicker';
 import { handleSpriteError, spriteUrl } from '../../components/Sprite';
 import { useImageSource } from '../../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../../contexts/language-context';
@@ -9,6 +10,7 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../../DTOs/ISpeciesSearchMetadata';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName } from '../../lib/format';
+import { GAME_LANGUAGE_OPTIONS } from '../../lib/game-language-options';
 import { translateTypeNames } from '../../lib/search-string';
 import { typeVar } from '../../lib/types';
 import { usePokemon } from '../../queries/pokemon';
@@ -616,8 +618,13 @@ const Sentence = ({
 };
 
 const SearchStringsTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; activeLeague: ActiveLeague }) => {
-	const { t } = useTranslation(['pokemonDetail']);
-	const { currentGameLanguage: gl } = useLanguage();
+	const { t } = useTranslation(['pokemonDetail', 'settings']);
+	// The explanatory sentence below (`Sentence`/`NameLabel`) reads display
+	// GameLanguage itself, via its own `useLanguage()` call; `sgl` (search) is
+	// the only thing this component needs directly — it's the only value that
+	// feeds the actual generated search string. See language-context.tsx's
+	// doc comment for why these are deliberately two different values.
+	const { searchGameLanguage: sgl, updateSearchGameLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { imageSource } = useImageSource();
@@ -710,6 +717,15 @@ const SearchStringsTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokem
 						/>
 					</label>
 				</div>
+				<label className='r-ss-gamelang'>
+					<span>{t('settings:menu.gameLanguage')}</span>
+					<LanguagePicker
+						value={sgl}
+						options={GAME_LANGUAGE_OPTIONS}
+						onChange={updateSearchGameLanguage}
+						ariaLabel={t('settings:menu.gameLanguage')}
+					/>
+				</label>
 				<button
 					type='button'
 					className='r-ss-toggle'
@@ -733,13 +749,13 @@ const SearchStringsTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokem
 				const formId = formIdentifierFor(p, speciesSearchMetadata);
 				const str =
 					entry.nonShadow && entry.shadow
-						? computeMergedSearchString(entry.nonShadow, entry.shadow, { trash, topIVCombinations, gl, formId })
+						? computeMergedSearchString(entry.nonShadow, entry.shadow, { trash, topIVCombinations, gl: sgl, formId })
 						: computeSearchString(p, {
 								trash,
 								topIVCombinations,
-								gl,
+								gl: sgl,
 								formId,
-								shadowSuffix: shadowSuffixFor(p, gl),
+								shadowSuffix: shadowSuffixFor(p, sgl),
 							});
 				const key = p.speciesId;
 				const isOpen = open === key;

@@ -17,11 +17,11 @@
 		"title": "설정",
 		"appLanguage": {
 			"title": "앱 언어",
-			"desc": "화면에 표시되는 텍스트입니다. 기본값은 영어입니다."
+			"desc": "화면에 표시되는 텍스트입니다. 기본값은 영어입니다. Mass Delete 또는 Search Strings 페이지에서 재정의하지 않는 한, 아래 검색 키워드의 기본 언어이기도 합니다."
 		},
 		"gameLanguage": {
 			"title": "게임 언어",
-			"desc": "Pokémon GO에 표시되는 포켓몬 및 기술 이름의 언어입니다."
+			"desc": "검색창 키워드(shadow, shiny, 전설, CP/HP 등), Pokémon GO 표기 기준. 기본값은 위의 앱 언어를 따릅니다."
 		},
 		"sprites": {
 			"title": "스프라이트",

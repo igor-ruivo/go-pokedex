@@ -17,11 +17,11 @@
 		"title": "Configuración",
 		"appLanguage": {
 			"title": "Idioma de la app",
-			"desc": "Texto de la interfaz. El inglés es el idioma predeterminado."
+			"desc": "Texto de la interfaz. El inglés es el idioma predeterminado. También es el idioma predeterminado de las palabras clave de búsqueda de abajo, salvo que se anule en Eliminación masiva o en Cadenas de búsqueda."
 		},
 		"gameLanguage": {
 			"title": "Idioma del juego",
-			"desc": "Nombres de Pokémon y movimientos, tal como aparecen en Pokémon GO."
+			"desc": "Palabras clave de la barra de búsqueda (shadow, shiny, legendario, PC/PS, etc.), tal como aparecen en Pokémon GO. Usa el idioma de la app de arriba de forma predeterminada."
 		},
 		"sprites": {
 			"title": "Sprites",

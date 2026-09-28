@@ -151,6 +151,10 @@
 		"solo": "Solo",
 		"friendshipField": "Amizade",
 		"friendshipHint": "×{{mult}} de dano",
+		"metricBlurb": {
+			"dps": "Dano por segundo enquanto está vivo. Ignora a robustez e os tempos mortos — favorece atacantes frágeis.",
+			"tdo": "Dano total que uma unidade causa antes de desmaiar (DPS × sobrevivência). Recompensa a robustez; ignora os PS do chefe e o tempo de lobby."
+		},
 		"helpSummary": "O que significa isto?",
 		"help": {
 			"weatherFriendshipMegaAura": "Clima · Amizade · Aura {{mega}}",

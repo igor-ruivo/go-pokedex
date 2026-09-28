@@ -151,6 +151,10 @@
 		"solo": "Solo",
 		"friendshipField": "Freundschaft",
 		"friendshipHint": "×{{mult}} Schaden",
+		"metricBlurb": {
+			"dps": "Schaden pro Sekunde am Leben. Ignoriert Widerstandsfähigkeit und Ausfallzeiten — begünstigt Glaskanonen.",
+			"tdo": "Gesamtschaden einer Einheit bis zur Kampfunfähigkeit (DPS × Überlebensdauer). Belohnt Widerstandsfähigkeit; ignoriert Boss-KP und Lobbyzeit."
+		},
 		"helpSummary": "Was bedeutet das?",
 		"help": {
 			"weatherFriendshipMegaAura": "Wetter · Freundschaft · {{mega}}-Aura",

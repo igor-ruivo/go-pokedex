@@ -17,11 +17,11 @@
 		"title": "Einstellungen",
 		"appLanguage": {
 			"title": "App-Sprache",
-			"desc": "Text der Oberfläche. Englisch ist die Standardsprache."
+			"desc": "Text der Oberfläche. Englisch ist die Standardsprache. Auch die Standardsprache für die Such-Schlagwörter unten, sofern nicht auf der Seite „Massenlöschung“ oder „Suchstrings“ überschrieben."
 		},
 		"gameLanguage": {
 			"title": "Spielsprache",
-			"desc": "Pokémon- und Attackennamen, wie sie in Pokémon GO erscheinen."
+			"desc": "Suchleisten-Schlagwörter (Shadow, Shiny, legendär, KP/WP usw.), wie sie in Pokémon GO erscheinen. Standardmäßig deine App-Sprache oben."
 		},
 		"sprites": {
 			"title": "Sprites",

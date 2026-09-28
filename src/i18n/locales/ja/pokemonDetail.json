@@ -151,6 +151,10 @@
 		"solo": "ソロ",
 		"friendshipField": "なかよし度",
 		"friendshipHint": "ダメージ×{{mult}}",
+		"metricBlurb": {
+			"dps": "生存中の秒間ダメージ。耐久やダウンタイムを無視するため、紙耐久の高火力アタッカーに有利。",
+			"tdo": "倒れるまでに1体が与える総ダメージ（DPS×生存時間）。耐久を評価し、ボスのHPやロビー時間は考慮しない。"
+		},
 		"helpSummary": "これは何ですか?",
 		"help": {
 			"weatherFriendshipMegaAura": "天候 · なかよし度 · {{mega}}オーラ",
@@ -205,10 +209,10 @@
 		"clickToCopy": "クリックでコピー",
 		"sentence": {
 			"caught": "(野生捕獲・未強化)",
-			"findTopSelf": "{{league}}向けに、{{except}}上位{{top}}の<name></name>{{caught}}を検索:",
-			"findTopEvolvesTo": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name>{{caught}}を{{league}}向けに検索:",
-			"findTopSelfShadowEither": "{{league}}向けに、{{except}}上位{{top}}の<name></name> — {{shadow}}問わず —{{caught}}を検索:",
-			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name> — {{shadow}}問わず —{{caught}}を{{league}}向けに検索:",
+			"findTopSelf": "<league></league>向けに、{{except}}上位{{top}}の<name></name>{{caught}}を検索:",
+			"findTopEvolvesTo": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name>{{caught}}を<league></league>向けに検索:",
+			"findTopSelfShadowEither": "<league></league>向けに、{{except}}上位{{top}}の<name></name> — {{shadow}}問わず —{{caught}}を検索:",
+			"findTopEvolvesToShadowEither": "{{toThe}}{{except}}上位{{top}}の<target></target>に進化する<name></name> — {{shadow}}問わず —{{caught}}を<league></league>向けに検索:",
 			"exceptPrefix": "以下を除くすべて: ",
 			"toThePrefix": ""
 		}

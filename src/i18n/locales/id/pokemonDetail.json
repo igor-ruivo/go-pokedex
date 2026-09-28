@@ -151,6 +151,10 @@
 		"solo": "Solo",
 		"friendshipField": "Persahabatan",
 		"friendshipHint": "×{{mult}} kerusakan",
+		"metricBlurb": {
+			"dps": "Kerusakan per detik selagi hidup. Mengabaikan ketahanan dan waktu jeda — menguntungkan penyerang rapuh.",
+			"tdo": "Total kerusakan satu unit sebelum kalah (DPS × daya tahan). Menghargai ketahanan; mengabaikan HP boss dan waktu lobi."
+		},
 		"helpSummary": "Apa arti semua ini?",
 		"help": {
 			"weatherFriendshipMegaAura": "Cuaca · Persahabatan · Aura {{mega}}",

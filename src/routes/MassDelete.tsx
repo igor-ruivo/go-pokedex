@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { LanguagePicker } from '../components/LanguagePicker';
 import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { ShadowMark } from '../components/ShadowMark';
 import { handleSpriteError, spriteUrl } from '../components/Sprite';
@@ -18,6 +19,7 @@ import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo, sentenceCase } from '../lib/format';
+import { GAME_LANGUAGE_OPTIONS } from '../lib/game-language-options';
 import { leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { type MassDeleteTab, R } from '../lib/nav';
 import { type RaidMetric, raidRankOf } from '../lib/raid-metric';
@@ -1306,14 +1308,18 @@ const byDexFormShadow = (a: { p: IGamemasterPokemon }, b: { p: IGamemasterPokemo
 	a.p.dex - b.p.dex || formKeyOf(a.p).localeCompare(formKeyOf(b.p)) || Number(a.p.isShadow) - Number(b.p.isShadow);
 
 const MassDelete = () => {
-	const { t } = useTranslation(['massDelete']);
+	const { t } = useTranslation(['massDelete', 'settings']);
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
 	const { movesFetchCompleted } = useMoves();
 	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { raidMetric } = useRaidMetric();
-	const { currentGameLanguage: gl } = useLanguage();
+	// `gl` (display) drives every label/description on this page; `sgl`
+	// (search) is the only thing that feeds the actual generated search
+	// strings below — see language-context.tsx's doc comment for why these
+	// are deliberately two different values.
+	const { currentGameLanguage: gl, searchGameLanguage: sgl, updateSearchGameLanguage } = useLanguage();
 	const { imageSource } = useImageSource();
 	// Included in every useMemo below that calls `gameTranslator()` inside its
 	// callback — see this hook's own doc comment for why `gl` alone isn't
@@ -1663,7 +1669,7 @@ const MassDelete = () => {
 					rankLists: rankLists as unknown as ComputeArgs['rankLists'],
 					raidDPS,
 					raidMetric,
-					gl,
+					gl: sgl,
 					cp,
 					trashGreat,
 					trashUltra,
@@ -1691,7 +1697,7 @@ const MassDelete = () => {
 		rankLists,
 		raidDPS,
 		raidMetric,
-		gl,
+		sgl,
 		cp,
 		trashGreat,
 		trashUltra,
@@ -1729,7 +1735,7 @@ const MassDelete = () => {
 					gamemasterPokemon,
 					speciesSearchMetadata,
 					badIvCarveOuts,
-					gl,
+					sgl,
 					cp,
 					protect,
 					whitelistSet,
@@ -1747,7 +1753,7 @@ const MassDelete = () => {
 		masterCarveOuts,
 		gamemasterPokemon,
 		speciesSearchMetadata,
-		gl,
+		sgl,
 		cp,
 		protect,
 		whitelistSet,
@@ -1822,7 +1828,7 @@ const MassDelete = () => {
 					rankLists as unknown as ComputeArgs['rankLists'],
 					raidDPS,
 					raidMetric,
-					gl,
+					sgl,
 					trashGreat,
 					trashUltra,
 					trashMaster,
@@ -1850,7 +1856,7 @@ const MassDelete = () => {
 		rankLists,
 		raidDPS,
 		raidMetric,
-		gl,
+		sgl,
 		trashGreat,
 		trashUltra,
 		trashMaster,
@@ -1994,6 +2000,19 @@ const MassDelete = () => {
 	return (
 		<div className='r-shell'>
 			<h1 className='r-page-title'>{pageTitle}</h1>
+
+			<div className='r-set-row' style={{ marginBottom: 12 }}>
+				<div className='r-set-head'>
+					<b>{t('settings:menu.gameLanguage')}</b>
+					<span>{t('settings:page.gameLanguage.desc')}</span>
+				</div>
+				<LanguagePicker
+					value={sgl}
+					options={GAME_LANGUAGE_OPTIONS}
+					onChange={updateSearchGameLanguage}
+					ariaLabel={t('settings:menu.gameLanguage')}
+				/>
+			</div>
 
 			<div className='r-seg r-seg--wrap r-md-mode-seg' role='tablist' aria-label={t('massDelete:modeTablist')}>
 				<button type='button' data-active={mode === 'meta'} onClick={() => setMode('meta')}>

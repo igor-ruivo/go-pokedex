@@ -17,11 +17,11 @@
 		"title": "設定",
 		"appLanguage": {
 			"title": "應用程式語言",
-			"desc": "介面文字。預設為英文。"
+			"desc": "介面文字。預設為英文。除非在「大量刪除」或「搜尋字串」頁面另行設定，否則下方的搜尋關鍵字也會使用此語言。"
 		},
 		"gameLanguage": {
 			"title": "遊戲語言",
-			"desc": "寶可夢與招式名稱，依 Pokémon GO 遊戲內顯示為準。"
+			"desc": "搜尋列關鍵字（shadow、shiny、傳說、CP/HP 等），依 Pokémon GO 遊戲內顯示為準。預設會跟隨上方的應用程式語言。"
 		},
 		"sprites": {
 			"title": "圖鑑圖片",

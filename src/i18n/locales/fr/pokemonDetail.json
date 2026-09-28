@@ -151,6 +151,10 @@
 		"solo": "Solo",
 		"friendshipField": "Amitié",
 		"friendshipHint": "×{{mult}} de dégâts",
+		"metricBlurb": {
+			"dps": "Dégâts par seconde en vie. Ignore l'endurance et les temps morts — favorise les attaquants fragiles.",
+			"tdo": "Dégâts totaux infligés par un exemplaire avant sa mise K.O. (DPS × survie). Récompense l'endurance ; ignore les PV du boss et le temps de salon."
+		},
 		"helpSummary": "Que signifient ces éléments ?",
 		"help": {
 			"weatherFriendshipMegaAura": "Météo · Amitié · Aura {{mega}}",

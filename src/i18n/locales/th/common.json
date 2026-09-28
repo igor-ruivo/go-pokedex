@@ -4,7 +4,7 @@
 		"homeAriaLabel": "หน้าแรก"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "hint": "ดูโปเกมอนทั้งหมด" },
+		"pokedex": { "label": "Pokédex", "shortLabel": "เด็กซ์", "hint": "ดูโปเกมอนทั้งหมด" },
 		"rankings": { "label": "อันดับ", "hint": "ตัวโจมตีที่ดีที่สุดในแต่ละลีกและประเภท{{raid}}" },
 		"calendar": { "label": "ปฏิทิน", "hint": "อีเวนต์ {{raid}} สปอว์น และไข่" },
 		"moves": { "label": "ท่าโจมตี", "hint": "ท่าเร็วและท่าชาร์จทั้งหมด" },

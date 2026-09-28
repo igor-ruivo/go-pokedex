@@ -151,6 +151,10 @@
 		"solo": "單人",
 		"friendshipField": "友誼程度",
 		"friendshipHint": "×{{mult}} 傷害",
+		"metricBlurb": {
+			"dps": "存活期間的每秒傷害。忽略耐久與空窗期，有利於高輸出但脆弱的攻擊手。",
+			"tdo": "一隻寶可夢在倒下前造成的總傷害（DPS × 存活時間）。獎勵耐久度；不考慮首領血量與大廳等待時間。"
+		},
 		"helpSummary": "這些代表什麼意思？",
 		"help": {
 			"weatherFriendshipMegaAura": "天氣 · 友誼 · {{mega}} 光環",

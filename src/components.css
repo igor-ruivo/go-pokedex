@@ -1960,6 +1960,25 @@
 	font-size: 17px;
 	line-height: 1;
 }
+/* Same short/full swap as `.r-md-knob-short`/`.r-md-knob-full` (Mass
+   Delete's league chips) — a long label (only Pokédex has one, see
+   Shell.tsx's `shortLabel`) can crowd the narrow stacked layout every nav
+   item shares below the 1360px pill breakpoint. */
+.rvmp .r-bn-label-short,
+.rvmp .r-bn-label-full {
+	font-style: normal;
+}
+.rvmp .r-bn-label-full {
+	display: none;
+}
+@media (min-width: 480px) {
+	.rvmp .r-bn-label-short {
+		display: none;
+	}
+	.rvmp .r-bn-label-full {
+		display: inline;
+	}
+}
 /* unseen-events notification dot on the Calendar nav icon — dark ink on a
    solid, deepened red (not `--neg` directly: that's a pastel salmon built
    for text-on-surface, not for something this small carrying its own text).
@@ -4005,6 +4024,14 @@
 	font-weight: 700;
 	color: var(--text-dim);
 }
+.rvmp .r-ss-gamelang {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text-dim);
+}
 .rvmp .r-ss-toggle {
 	display: inline-flex;
 	align-items: center;
@@ -5382,9 +5409,17 @@
 	/* `clip` not `hidden` — `hidden` would make this a scroll container and could
 	   trap the wheel over a row */
 	overflow: clip;
-	text-overflow: ellipsis;
 }
+/* `text-overflow: ellipsis` on the flex container above has no effect — it
+   only applies to a block/inline-level box's own single run of text, and the
+   two move names + "+" separator here are each their own flex-item box, not
+   one continuous run. Truncating each `<a>` individually (its own min-width:
+   0 so it can actually shrink below its content) is what makes a long move
+   name end in "…" instead of just getting clipped mid-word. */
 .rvmp .r-ctr-moves a {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	color: var(--text-dim);
 	text-decoration: none;
 }

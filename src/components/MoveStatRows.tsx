@@ -4,8 +4,22 @@ import type { GameLanguage } from '../contexts/language-context';
 import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../lib/moves';
 
-/** Full PvE + PvP stat readout for a move (no attacker context — raw values). */
-export const MoveStatRows = ({ m, gl }: { m: IGameMasterMove; gl: GameLanguage }) => {
+/** Full PvE + PvP stat readout for a move (no attacker context — raw values).
+ *  `compact` (the Moves list row) drops everything but the one headline
+ *  derived figure — DPS for fast moves, DPE for charged — since a long
+ *  locale's "Energy"/"Cooldown"/"EPS" labels next to the raw stats were wide
+ *  enough to push the row past the card's width; the full readout (dmg/nrg/
+ *  cooldown/turns + every derived figure) still renders on the move's own
+ *  detail page, which has the room for it. */
+export const MoveStatRows = ({
+	m,
+	gl,
+	compact = false,
+}: {
+	m: IGameMasterMove;
+	gl: GameLanguage;
+	compact?: boolean;
+}) => {
 	const { t } = useTranslation(['moveDetail']);
 	const kind: 'fast' | 'charged' = m.isFast ? 'fast' : 'charged';
 
@@ -28,18 +42,21 @@ export const MoveStatRows = ({ m, gl }: { m: IGameMasterMove; gl: GameLanguage }
 			kind === 'fast'
 				? [
 						[t('moveDetail:statLabels.dps'), moveDPS(m, arena).toFixed(1)],
-						[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)],
+						...(compact
+							? []
+							: ([[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)]] as Array<[string, string | number]>)),
 					]
 				: [[t('moveDetail:statLabels.dpe'), moveDPE(m, arena).toFixed(2)]];
 		return (
 			<div key={arena}>
 				<u>{arena === 'pve' ? 'PvE' : 'PvP'}</u>
-				{base.map(([k, v]) => (
-					<span key={k}>
-						{k} <b>{v}</b>
-					</span>
-				))}
-				<span className='r-move-sep' aria-hidden='true' />
+				{!compact &&
+					base.map(([k, v]) => (
+						<span key={k}>
+							{k} <b>{v}</b>
+						</span>
+					))}
+				{!compact && <span className='r-move-sep' aria-hidden='true' />}
 				{derived.map(([k, v]) => (
 					<span key={k}>
 						{k} <b>{v}</b>

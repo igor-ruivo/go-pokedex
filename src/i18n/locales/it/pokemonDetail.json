@@ -151,6 +151,10 @@
 		"solo": "Solo",
 		"friendshipField": "Amicizia",
 		"friendshipHint": "×{{mult}} danno",
+		"metricBlurb": {
+			"dps": "Danno al secondo mentre è in vita. Ignora resistenza e tempi morti — favorisce gli attaccanti fragili.",
+			"tdo": "Danno totale inflitto da una copia prima di essere KO (DPS × sopravvivenza). Premia la resistenza; ignora i PS del boss e il tempo in lobby."
+		},
 		"helpSummary": "Cosa significano questi valori?",
 		"help": {
 			"weatherFriendshipMegaAura": "Meteo · Amicizia · Aura {{mega}}",

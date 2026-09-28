@@ -17,11 +17,11 @@
 		"title": "Pengaturan",
 		"appLanguage": {
 			"title": "Bahasa aplikasi",
-			"desc": "Teks antarmuka. Bahasa Inggris adalah default."
+			"desc": "Teks antarmuka. Bahasa Inggris adalah default. Juga menjadi default untuk kata kunci pencarian di bawah, kecuali ditimpa di halaman Mass Delete atau Search Strings."
 		},
 		"gameLanguage": {
 			"title": "Bahasa game",
-			"desc": "Nama Pokémon dan jurus, seperti yang muncul di Pokémon GO."
+			"desc": "Kata kunci bilah pencarian (shadow, shiny, legendaris, CP/HP, dll.), seperti yang muncul di Pokémon GO. Default mengikuti bahasa aplikasi di atas."
 		},
 		"sprites": {
 			"title": "Sprite",

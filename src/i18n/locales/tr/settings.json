@@ -17,11 +17,11 @@
 		"title": "Ayarlar",
 		"appLanguage": {
 			"title": "Uygulama dili",
-			"desc": "Arayüz metni. Varsayılan dil İngilizce'dir."
+			"desc": "Arayüz metni. Varsayılan dil İngilizce'dir. Mass Delete veya Search Strings sayfalarında değiştirilmedikçe, aşağıdaki arama anahtar kelimeleri için de varsayılan dildir."
 		},
 		"gameLanguage": {
 			"title": "Oyun dili",
-			"desc": "Pokémon ve hareket adları, Pokémon GO'da göründükleri şekilde."
+			"desc": "Arama çubuğu anahtar kelimeleri (shadow, shiny, efsanevi, CP/HP vb.), Pokémon GO'daki hâliyle. Varsayılan olarak yukarıdaki uygulama dilini kullanır."
 		},
 		"sprites": {
 			"title": "Görseller",

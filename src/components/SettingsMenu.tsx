@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
-import { GameLanguage, useLanguage } from '../contexts/language-context';
+import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 // Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
@@ -13,33 +13,8 @@ import { sentenceCase } from '../lib/format';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import { type LanguageOption, LanguagePicker } from './LanguagePicker';
+import { LanguagePicker } from './LanguagePicker';
 import { LeagueVisibilityChecklist } from './LeagueVisibilityChecklist';
-
-// Endonyms, not translated — see LanguagePicker's doc for why. All 15
-// GameLanguage members are listed here even though GameTranslator.ts search
-// keywords are the only thing actually localized per language today —
-// dex-server hasn't shipped per-locale Pokémon/move names yet, so picking,
-// say, Japanese here only changes search-string keywords for now, not
-// species/move names on the rest of the site. That's expected, not a bug —
-// see the dex-server work this is waiting on.
-const GAME_LANGS: Array<LanguageOption<GameLanguage>> = [
-	{ value: GameLanguage.en, label: SUPPORTED_LOCALE_NAMES.en },
-	{ value: GameLanguage.de, label: SUPPORTED_LOCALE_NAMES.de },
-	{ value: GameLanguage.es, label: SUPPORTED_LOCALE_NAMES.es },
-	{ value: GameLanguage.esMx, label: SUPPORTED_LOCALE_NAMES['es-MX'] },
-	{ value: GameLanguage.fr, label: SUPPORTED_LOCALE_NAMES.fr },
-	{ value: GameLanguage.hi, label: SUPPORTED_LOCALE_NAMES.hi },
-	{ value: GameLanguage.id, label: SUPPORTED_LOCALE_NAMES.id },
-	{ value: GameLanguage.it, label: SUPPORTED_LOCALE_NAMES.it },
-	{ value: GameLanguage.ptbr, label: 'Português (BR)' },
-	{ value: GameLanguage.ja, label: SUPPORTED_LOCALE_NAMES.ja },
-	{ value: GameLanguage.ko, label: SUPPORTED_LOCALE_NAMES.ko },
-	{ value: GameLanguage.ru, label: SUPPORTED_LOCALE_NAMES.ru },
-	{ value: GameLanguage.th, label: SUPPORTED_LOCALE_NAMES.th },
-	{ value: GameLanguage.tr, label: SUPPORTED_LOCALE_NAMES.tr },
-	{ value: GameLanguage.zhHant, label: SUPPORTED_LOCALE_NAMES['zh-Hant'] },
-];
 
 /**
  * App-bar language / settings menu. Opens a popover in place instead of routing
@@ -47,7 +22,7 @@ const GAME_LANGS: Array<LanguageOption<GameLanguage>> = [
  */
 export const SettingsMenu = () => {
 	const { t } = useTranslation(['settings']);
-	const { currentLanguage, currentGameLanguage, updateCurrentLanguage, updateCurrentGameLanguage } = useLanguage();
+	const { currentLanguage, currentGameLanguage, updateCurrentLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
 	const { bestBuddy, updateBestBuddy } = useBestBuddy();
@@ -93,16 +68,6 @@ export const SettingsMenu = () => {
 							options={SUPPORTED_LOCALES.map((locale) => ({ value: locale, label: SUPPORTED_LOCALE_NAMES[locale] }))}
 							onChange={updateCurrentLanguage}
 							ariaLabel={t('settings:menu.appLanguage')}
-						/>
-					</div>
-
-					<div className='r-setmenu-grp'>
-						<span className='r-setmenu-h'>{t('settings:menu.gameLanguage')}</span>
-						<LanguagePicker
-							value={currentGameLanguage}
-							options={GAME_LANGS}
-							onChange={updateCurrentGameLanguage}
-							ariaLabel={t('settings:menu.gameLanguage')}
 						/>
 					</div>
 

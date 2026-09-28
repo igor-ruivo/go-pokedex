@@ -7,7 +7,7 @@ import { useLanguage } from '../../contexts/language-context';
 import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
-import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
+import { type Arena, buffInfo, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
 import { R } from '../../lib/nav';
 import { useMoves } from '../../queries/moves';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../../utils/GameTranslator';
@@ -39,25 +39,15 @@ const MoveRow = ({
 	if (!m) return null;
 	const type = m.type.toLowerCase();
 
-	const pow = arena === 'pve' ? m.pvePower : m.pvpPower;
-	const nrg = arena === 'pve' ? m.pveEnergy : m.pvpEnergy;
-	const cd = arena === 'pve' ? m.pveCooldown : m.pvpCooldown;
-
-	const base: Array<[string, string | number]> = [
-		[t('moveDetail:statLabels.dmg'), pow],
-		[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : nrg],
-		...(arena === 'pve'
-			? ([[t('moveDetail:statLabels.dur'), `${cd}s`]] as Array<[string, string | number]>)
-			: kind === 'fast'
-				? ([[t('moveDetail:statLabels.turns'), fastMoveTurns(m)]] as Array<[string, string | number]>)
-				: []),
-	];
+	// Drops the raw dmg/nrg/cooldown stats and everything but the one
+	// headline derived figure (DPS for fast moves, DPE for charged) — same
+	// fix as Moves.tsx's list row (see MoveStatRows.tsx's `compact` doc): a
+	// long locale's "Energy"/"Cooldown"/"EPS" labels were wide enough to push
+	// this row past the card's width. The move's own detail page still shows
+	// the full readout.
 	const derived: Array<[string, string | number]> =
 		kind === 'fast'
-			? [
-					[t('moveDetail:statLabels.dps'), moveDPS(m, arena, pokemon).toFixed(1)],
-					[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)],
-				]
+			? [[t('moveDetail:statLabels.dps'), moveDPS(m, arena, pokemon).toFixed(1)]]
 			: [[t('moveDetail:statLabels.dpe'), moveDPE(m, arena, pokemon).toFixed(2)]];
 	// stat-stage buffs are a PvP-only mechanic
 	const fx = arena === 'pvp' && kind === 'charged' ? buffInfo(m.buffs, currentGameLanguage) : null;
@@ -82,12 +72,6 @@ const MoveRow = ({
 			<div className='r-move-stats'>
 				<div>
 					<u>{arena === 'pve' ? t('pokemonDetail:moves.pve') : t('pokemonDetail:moves.pvp')}</u>
-					{base.map(([k, v]) => (
-						<span key={k}>
-							{k} <b>{v}</b>
-						</span>
-					))}
-					<span className='r-move-sep' aria-hidden='true' />
 					{derived.map(([k, v]) => (
 						<span key={k}>
 							{k} <b>{v}</b>

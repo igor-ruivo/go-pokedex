@@ -30,6 +30,11 @@ const NAV: Array<{
 	to: string;
 	icon: string;
 	label: (t: TFunction) => string;
+	// Only Pokédex needs one — its full label is the one nav word long enough
+	// to threaten wrapping in the narrow stacked (icon-over-label) layout
+	// phones get below the 1360px breakpoint (see `.r-bn-label-short`'s CSS).
+	// Every other item's own label is already short enough not to need this.
+	shortLabel?: (t: TFunction) => string;
 	hint: (t: TFunction, gl: GameLanguage) => string;
 	match: (p: string) => boolean;
 }> = [
@@ -37,6 +42,7 @@ const NAV: Array<{
 		to: R.pokedex,
 		icon: '/images/nav/pokedex.png',
 		label: (t) => t('common:nav.pokedex.label'),
+		shortLabel: (t) => t('common:nav.pokedex.shortLabel'),
 		hint: (t) => t('common:nav.pokedex.hint'),
 		match: (p) => p === '/' || p.startsWith('/pokemon'),
 	},
@@ -111,6 +117,7 @@ const Shell = () => {
 			<nav className='r-bottomnav'>
 				{NAV.map((n) => {
 					const label = n.label(t);
+					const shortLabel = n.shortLabel?.(t) ?? label;
 					const hint = n.hint(t, gl);
 					return (
 						<NavLink
@@ -132,7 +139,10 @@ const Shell = () => {
 									</span>
 								)}
 							</span>
-							<span className='r-bn-label'>{label}</span>
+							<span className='r-bn-label'>
+								<i className='r-bn-label-short'>{shortLabel}</i>
+								<i className='r-bn-label-full'>{label}</i>
+							</span>
 						</NavLink>
 					);
 				})}

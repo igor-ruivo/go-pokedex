@@ -14,7 +14,7 @@ import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName, sentenceCase } from '../../lib/format';
 import { R } from '../../lib/nav';
-import { fmtRaidMetric, RAID_METRIC_BLURB, RAID_METRIC_SORTS, type RaidMetric } from '../../lib/raid-metric';
+import { fmtRaidMetric, RAID_METRIC_SORTS, type RaidMetric } from '../../lib/raid-metric';
 import { TYPE_KEYS, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { usePokemon } from '../../queries/pokemon';
@@ -361,7 +361,9 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 						setMetricDir(d);
 					}}
 				/>
-				<p className='r-ctr-blurb'>{RAID_METRIC_BLURB[metric]}</p>
+				<p className='r-ctr-blurb'>
+					{metric === 'tdo' ? t('pokemonDetail:counters.metricBlurb.tdo') : t('pokemonDetail:counters.metricBlurb.dps')}
+				</p>
 			</div>
 
 			<div className='r-ctr-config' data-open={cfgOpen}>
@@ -565,9 +567,9 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 							<summary>{t('pokemonDetail:counters.helpSummary')}</summary>
 							<dl>
 								<dt>DPS</dt>
-								<dd>{RAID_METRIC_BLURB.dps}</dd>
+								<dd>{t('pokemonDetail:counters.metricBlurb.dps')}</dd>
 								<dt>TDO</dt>
-								<dd>{RAID_METRIC_BLURB.tdo}</dd>
+								<dd>{t('pokemonDetail:counters.metricBlurb.tdo')}</dd>
 								<dt>{t('pokemonDetail:counters.help.weatherFriendshipMegaAura', { mega: megaWord })}</dt>
 								<dd>{t('pokemonDetail:counters.help.weatherFriendshipMegaAuraDesc')}</dd>
 								<dt>{t('pokemonDetail:counters.megaLevelField', { mega: megaWord })}</dt>

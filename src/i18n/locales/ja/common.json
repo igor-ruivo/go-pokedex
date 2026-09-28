@@ -4,7 +4,7 @@
 		"homeAriaLabel": "ホーム"
 	},
 	"nav": {
-		"pokedex": { "label": "ポケモン図鑑", "hint": "すべてのポケモンを見る" },
+		"pokedex": { "label": "ポケモン図鑑", "shortLabel": "図鑑", "hint": "すべてのポケモンを見る" },
 		"rankings": { "label": "ランキング", "hint": "リーグ・{{raid}}タイプ別の最強アタッカー" },
 		"calendar": { "label": "カレンダー", "hint": "イベント・{{raid}}・出現・タマゴ" },
 		"moves": { "label": "わざ", "hint": "すべてのはやわざ・ゲージわざ" },

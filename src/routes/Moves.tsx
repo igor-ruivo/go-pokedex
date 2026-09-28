@@ -229,7 +229,7 @@ const Moves = () => {
 										    width and break the row's layout. */}
 										<i className='r-move-tag'>{m.isFast ? t('moves:page.kind.fast') : t('moves:page.kind.charged')}</i>
 									</div>
-									<MoveStatRows m={m} gl={gl} />
+									<MoveStatRows m={m} gl={gl} compact />
 								</Link>
 							</div>
 						);

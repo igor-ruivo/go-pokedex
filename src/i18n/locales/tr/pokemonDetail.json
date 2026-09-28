@@ -151,6 +151,10 @@
 		"solo": "Solo",
 		"friendshipField": "Arkadaşlık",
 		"friendshipHint": "×{{mult}} hasar",
+		"metricBlurb": {
+			"dps": "Hayattayken saniyedeki hasar. Dayanıklılığı ve boşta geçen süreyi yok sayar — kırılgan saldırganları avantajlı kılar.",
+			"tdo": "Bir birimin bayılmadan önce verdiği toplam hasar (DPS × hayatta kalma). Dayanıklılığı ödüllendirir; boss HP'sini ve lobi süresini yok sayar."
+		},
 		"helpSummary": "Bunlar ne anlama geliyor?",
 		"help": {
 			"weatherFriendshipMegaAura": "Hava Durumu · Arkadaşlık · {{mega}} aurası",

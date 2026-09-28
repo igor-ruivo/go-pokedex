@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Inicio"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "hint": "Explora todos los Pokémon" },
+		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Explora todos los Pokémon" },
 		"rankings": { "label": "Clasificación", "hint": "Los mejores atacantes por liga y tipo de {{raid}}" },
 		"calendar": { "label": "Calendario", "hint": "Eventos, {{raid}}, apariciones y huevos" },
 		"moves": { "label": "Movimientos", "hint": "Todos los movimientos rápidos y cargados" },

@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Home"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "hint": "Browse every Pokémon" },
+		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Browse every Pokémon" },
 		"rankings": { "label": "Rankings", "hint": "Best attackers per league and {{raid}} type" },
 		"calendar": { "label": "Calendar", "hint": "Events, {{raid}}s, spawns and eggs" },
 		"moves": { "label": "Moves", "hint": "Every fast and charged move" },

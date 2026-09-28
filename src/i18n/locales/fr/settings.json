@@ -17,11 +17,11 @@
 		"title": "Paramètres",
 		"appLanguage": {
 			"title": "Langue de l'appli",
-			"desc": "Texte de l'interface. L'anglais est la langue par défaut."
+			"desc": "Texte de l'interface. L'anglais est la langue par défaut. C'est aussi la langue par défaut des mots-clés de recherche ci-dessous, sauf si elle est remplacée sur la page Suppression en masse ou Chaînes de recherche."
 		},
 		"gameLanguage": {
 			"title": "Langue du jeu",
-			"desc": "Noms des Pokémon et des capacités, tels qu'ils apparaissent dans Pokémon GO."
+			"desc": "Mots-clés de la barre de recherche (shadow, chromatique, légendaire, PC/PV, etc.), tels qu'ils apparaissent dans Pokémon GO. Utilise la langue de l'appli ci-dessus par défaut."
 		},
 		"sprites": {
 			"title": "Sprites",
