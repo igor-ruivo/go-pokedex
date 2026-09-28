@@ -16,8 +16,8 @@ import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { sentenceCase } from '../lib/format';
 import { leagueIcon, leagueTitle } from '../lib/league-visuals';
-import { isKnownRankingMode, modeColor, modeLabel, R, type RankingMode } from '../lib/nav';
-import { RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
+import { isKnownRankingMode, modeColor, modeLabel, modeLabelLong, R, type RankingMode } from '../lib/nav';
+import { RAID_METRIC_LABEL, RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
 import { RAID_TYPE_KEYS, TYPE_KEYS, typeKey } from '../lib/types';
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { usePokemon } from '../queries/pokemon';
@@ -406,8 +406,30 @@ const Rankings = () => {
 		void navigate({ pathname, search: search.toString() ? `?${search.toString()}` : '' });
 	};
 
+	// The chip/tab strips already say which ranking is active, but nothing
+	// above them did — the page read as the same blank shell regardless of
+	// Pokédex vs. a specific league vs. Raids. A plain short mode name (the
+	// chip's own label) isn't descriptive enough on its own here though — so
+	// this spells it out: "Best Pokémon for Great League", or, for Raids,
+	// "Best Fire DPS Type Attackers" once a type's picked (falling back to a
+	// generic "Best Raid Attackers" before one is).
+	const pageTitle =
+		mode === 'raid'
+			? raidType
+				? t('rankings:pageTitle.raidWithType', {
+						type: gameTypeDisplayTranslator(raidType, gl) || raidType,
+						metric: RAID_METRIC_LABEL[raidMetric],
+					})
+				: t('rankings:pageTitle.raidNoType', {
+						raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+					})
+			: mode === 'pokedex'
+				? (pickerItems.find((it) => it.id === mode)?.label ?? modeLabel(mode, gl, leagues))
+				: t('rankings:pageTitle.league', { league: modeLabelLong(mode, gl, leagues) });
+
 	return (
 		<div className='r-shell r-shell--wide'>
+			<h1 className='r-page-title'>{pageTitle}</h1>
 			<div className='r-rank-head'>
 				{pickerReady ? (
 					<div className='r-league-row'>

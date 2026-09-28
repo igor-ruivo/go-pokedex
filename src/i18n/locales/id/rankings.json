@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "Pemilih liga dan mode",
 		"loadingLeagues": "Memuat liga saat ini…"
 	},
+	"pageTitle": {
+		"league": "Pokémon Terbaik untuk {{league}}",
+		"raidWithType": "Penyerang Tipe {{type}} {{metric}} Terbaik",
+		"raidNoType": "Penyerang {{raid}} Terbaik"
+	},
 	"status": {
 		"loading": "Memuat…",
 		"chooseType": "Pilih sebuah tipe",

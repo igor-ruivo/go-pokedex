@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "Lig ve mod seçici",
 		"loadingLeagues": "Güncel ligler yükleniyor…"
 	},
+	"pageTitle": {
+		"league": "{{league}} için En İyi Pokémon",
+		"raidWithType": "En İyi {{type}} Tipi {{metric}} Saldırganları",
+		"raidNoType": "En İyi {{raid}} Saldırganları"
+	},
 	"status": {
 		"loading": "Yükleniyor…",
 		"chooseType": "Bir tür seçin",

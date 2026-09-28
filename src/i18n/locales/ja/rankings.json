@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "リーグ・モード選択",
 		"loadingLeagues": "現在のリーグを読み込み中…"
 	},
+	"pageTitle": {
+		"league": "{{league}}のベストポケモン",
+		"raidWithType": "{{type}}タイプ {{metric}} 最強アタッカー",
+		"raidNoType": "{{raid}}最強アタッカー"
+	},
 	"status": {
 		"loading": "読み込み中…",
 		"chooseType": "タイプを選択してください",

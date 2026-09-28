@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "ตัวเลือกลีกและโหมด",
 		"loadingLeagues": "กำลังโหลดลีกปัจจุบัน…"
 	},
+	"pageTitle": {
+		"league": "โปเกมอนที่ดีที่สุดสำหรับ{{league}}",
+		"raidWithType": "ตัวโจมตีธาตุ{{type}} {{metric}} ที่ดีที่สุด",
+		"raidNoType": "ตัวโจมตี{{raid}}ที่ดีที่สุด"
+	},
 	"status": {
 		"loading": "กำลังโหลด…",
 		"chooseType": "เลือกธาตุ",

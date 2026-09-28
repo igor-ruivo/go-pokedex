@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "Liga- und Modusauswahl",
 		"loadingLeagues": "Aktuelle Ligen werden geladen …"
 	},
+	"pageTitle": {
+		"league": "Beste Pokémon für {{league}}",
+		"raidWithType": "Beste {{type}}-{{metric}}-Angreifer",
+		"raidNoType": "Beste {{raid}}-Angreifer"
+	},
 	"status": {
 		"loading": "Lädt…",
 		"chooseType": "Wähle einen Typ",

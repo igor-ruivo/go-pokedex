@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "Выбор лиги и режима",
 		"loadingLeagues": "Загрузка текущих лиг…"
 	},
+	"pageTitle": {
+		"league": "Лучшие покемоны для {{league}}",
+		"raidWithType": "Лучшие атакующие типа {{type}} по {{metric}}",
+		"raidNoType": "Лучшие атакующие для {{raid}}"
+	},
 	"status": {
 		"loading": "Загрузка…",
 		"chooseType": "Выберите тип",

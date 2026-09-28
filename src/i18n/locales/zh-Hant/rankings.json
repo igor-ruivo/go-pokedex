@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "聯盟與模式選擇器",
 		"loadingLeagues": "正在載入目前的聯盟…"
 	},
+	"pageTitle": {
+		"league": "{{league}}最佳寶可夢",
+		"raidWithType": "最佳{{type}}屬性{{metric}}攻擊手",
+		"raidNoType": "最佳{{raid}}攻擊手"
+	},
 	"status": {
 		"loading": "載入中…",
 		"chooseType": "選擇一個屬性",

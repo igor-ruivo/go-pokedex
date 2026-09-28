@@ -48,6 +48,9 @@ const DEFAULT_LEAGUE_TEXT = {
 	greatShort: 'Great',
 	ultraShort: 'Ultra',
 	masterShort: 'Master',
+	greatLong: 'Great League',
+	ultraLong: 'Ultra League',
+	masterLong: 'Master League',
 	raid: 'Raids',
 } as const;
 
@@ -75,11 +78,36 @@ export const modeLabel = (mode: RankingMode, gl: GameLanguage, leagues: Readonly
 	}
 };
 
+/** The long form of `modeLabel` — "Great League", not just "Great" — for
+ *  contexts spelling the league name out in full (the Rankings page title),
+ *  rather than the compact chip label every `modeLabel` call site uses. */
+export const modeLabelLong = (mode: RankingMode, gl: GameLanguage, leagues: ReadonlyArray<ILeagueDefinition>): string => {
+	switch (mode) {
+		case 'pokedex':
+			return 'Pokédex';
+		case 'great':
+			return gameTranslator(GameTranslatorKeys.GreatLeagueLong, gl) || DEFAULT_LEAGUE_TEXT.greatLong;
+		case 'ultra':
+			return gameTranslator(GameTranslatorKeys.UltraLeagueLong, gl) || DEFAULT_LEAGUE_TEXT.ultraLong;
+		case 'master':
+			return gameTranslator(GameTranslatorKeys.MasterLeagueLong, gl) || DEFAULT_LEAGUE_TEXT.masterLong;
+		case 'raid':
+			return sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl) || DEFAULT_LEAGUE_TEXT.raid);
+		default: {
+			const league = leagues.find((l) => l.id === mode);
+			return league ? leagueTitle(league, gl).full : mode;
+		}
+	}
+};
+
 /** Same league identity colours the Pokémon detail page uses for its league tabs. */
 export const modeColor = (mode: RankingMode): string => {
 	switch (mode) {
+		// Red, not a neutral grey — the Pokédex's own brand colour, and it makes
+		// this tab read as its own distinct thing rather than "no league",
+		// consistent with the icon it already carries everywhere else.
 		case 'pokedex':
-			return 'var(--text-faint)';
+			return 'var(--neg)';
 		case 'great':
 			return 'var(--lg-great)';
 		case 'ultra':

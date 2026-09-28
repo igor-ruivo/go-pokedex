@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "리그 및 모드 선택기",
 		"loadingLeagues": "현재 리그 불러오는 중…"
 	},
+	"pageTitle": {
+		"league": "{{league}}을(를) 위한 최고의 포켓몬",
+		"raidWithType": "{{type}} 타입 {{metric}} 최고 공격수",
+		"raidNoType": "최고의 {{raid}} 공격수"
+	},
 	"status": {
 		"loading": "불러오는 중…",
 		"chooseType": "타입을 선택하세요",

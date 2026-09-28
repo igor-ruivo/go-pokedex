@@ -578,25 +578,36 @@
 		scroll-snap-align: start;
 	}
 }
+/* Square via `aspect-ratio: 1`, not `height: 0; padding-bottom: 100%` — that
+   was tried and is actually broken for `.r-reach`'s mobile layout: percentage
+   `padding`/`margin` on a FLEX item resolves against the flex CONTAINER's
+   own width (the whole swipeable row, 400px+), not the item's own
+   flex-basis width, per how CSS resolves percentages for a flex item's
+   containing block — so on a phone this rendered a 94px-wide, 400px+-tall
+   box instead of a square. (A GRID item doesn't have this problem — its
+   containing block for percentages is its own grid area — which is why this
+   looked fine above the 520px breakpoint.) `aspect-ratio` has no such
+   "resolves against what" ambiguity: it relates this box's own two
+   dimensions directly, so it works identically whether the width came from
+   a flex-basis or a grid track. What DOES still need guarding against is
+   content (icon + name) wanting more cross-axis room than the width-derived
+   square allows — `min-width: 0` + `min-height: 0` here (the auto minimum
+   size a flex/grid item gets on each axis, overridden explicitly rather
+   than left to the overflow-based default) plus `overflow: clip` is what
+   lets the box actually hold to the square and clip the rest instead of
+   growing to fit it. */
 .rvmp .r-reach-chip {
 	position: relative;
-	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 2px;
 	width: auto;
-	/* stop a long name from stretching the tile — the flex-basis / grid track is
-	   the only thing that sets its width, so it stays a square everywhere */
 	min-width: 0;
-	aspect-ratio: 1; /* always a square, like the calendar minis */
-	/* `%`, not a fixed px value — same reason `.r-reach-art`/`.r-shadow-mark`
-	   below are sized in `%` now too: a FIXED-size child can't shrink with a
-	   narrow track, so it was winning the square's own aspect-ratio at small
-	   widths (see those rules' own note). `.r-mini`/`.r-pc` already use this
-	   same container-relative pattern for exactly this reason. */
-	padding: 4%;
+	min-height: 0;
+	aspect-ratio: 1;
+	padding: 6px;
 	border-radius: var(--r-sm);
 	/* the standard tile treatment — solid fill, plain border, same as every
 	   other tile grid on the site. */
@@ -620,14 +631,14 @@
 .rvmp .r-reach-chip[data-active='true'] span {
 	color: var(--tc, var(--accent));
 }
+/* Fixed, not a percentage/clamp — this is genuinely fine now that the
+   square itself no longer depends on this box being small (see
+   `.r-reach-chip`'s own note): 48px always, exactly matching the deployed
+   size, with no scaling logic to reason about. */
 .rvmp .r-reach-art {
 	position: relative;
-	/* `%` (of the now-square chip), not a fixed px size — see `.r-reach-chip`'s
-	   own note: a fixed-size child refuses to shrink below its own pixel size,
-	   which is what was breaking the square on a narrow track. Same value
-	   `.r-pc-art`/`.r-mini`'s sprite already use. */
-	width: 62%;
-	aspect-ratio: 1;
+	width: 48px;
+	height: 48px;
 	flex: none;
 }
 .rvmp .r-reach-chip .r-reach-art img {
@@ -637,28 +648,20 @@
 	/* same understated drop-shadow the rankings grid's own sprites use */
 	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
 }
-.rvmp .r-reach-chip > .r-shadow-mark {
+.rvmp .r-reach-chip .r-shadow-mark {
 	position: absolute;
-	/* `%`, not a fixed px position/size — same fix as `.r-reach-art` above,
-	   matching `.r-mini > .r-shadow-mark`'s own values. */
-	top: 5%;
-	left: 5%;
-	width: 30%;
-	height: 30%;
+	top: 6px;
+	left: 6px;
+	width: 22px;
+	height: 22px;
 	z-index: 2;
 }
-/* the name — `.r-mini > span:not(.r-mini-shiny)`'s own treatment: a `cqi`
-   clamp that scales with this chip's own (now container-relative) width
-   instead of a fixed px size, so it reads bigger on a roomy grid and fits
-   more of a long name on a narrow one, rather than ellipsizing the same
-   amount everywhere regardless of how much room is actually available.
-   `:not(.r-reach-art)` excludes the sprite's own wrapper span. */
-.rvmp .r-reach-chip > span:not(.r-reach-art) {
+/* the name. `:not(.r-reach-art)` excludes the sprite's own wrapper span. */
+.rvmp .r-reach-chip span:not(.r-reach-art) {
 	max-width: 100%;
-	margin-top: 2%;
-	font-size: clamp(8px, 13cqi, 11px);
-	font-weight: 800;
-	line-height: 1.15;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.1;
 	text-align: center;
 	color: var(--text-dim);
 	white-space: nowrap;
@@ -715,14 +718,17 @@
 	min-width: 0;
 }
 /* Only actually a scroll container once it has real overflow to scroll
-   (`data-scrollable`, set from JS off scrollWidth > clientWidth). No
-   `scroll-snap-type`/`overscroll-behavior-x` here (unlike Calendar's
-   DatePicker) — the custom wheel handler in IconTabBar.tsx already covers
-   what `overscroll-behavior-x: contain` was for (not fighting a trackpad's
-   horizontal swipe), so nothing is actually lost by dropping it. */
+   (`data-scrollable`, set from JS off scrollWidth > clientWidth). The custom
+   wheel handler in IconTabBar.tsx covers a trackpad's horizontal swipe on
+   desktop, but not a touch swipe — same `scroll-snap-type`/
+   `overscroll-behavior-x` as `.r-reach`'s own swipeable row gives that swipe
+   the same "settle on a tab, don't stop half between two" feel every other
+   swipeable chip/tile strip on the site already has. */
 .rvmp .r-tabs-strip[data-scrollable] {
 	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
+	scroll-snap-type: x proximity;
+	overscroll-behavior-x: contain;
 }
 .rvmp .r-tabs-strip::-webkit-scrollbar {
 	display: none;
@@ -800,6 +806,14 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 6px;
+		/* Same rendered height/font-size as `.r-filter-btn`/`.r-sort-btn`/the
+		   league picker's own chips — only in this single-row layout, not the
+		   2-line stacked one above: forcing icon-over-label onto one 34.84px
+		   line isn't physically fittable, so the stacked mobile tab keeps its
+		   own established size instead of being squashed to match. */
+		height: 34.84px;
+		padding: 0 14px;
+		font-size: 13px;
 	}
 }
 .rvmp .r-tabs-strip button img,
@@ -3347,9 +3361,11 @@
 	min-width: 0;
 }
 /* Only actually a scroll container once it has real overflow — see
-   `.r-tabs-strip[data-scrollable]`'s own note on why there's no
-   `scroll-snap-type`/`overscroll-behavior-x` here either. */
+   `.r-tabs-strip[data-scrollable]`'s own note on why this now gets the same
+   `scroll-snap-type`/`overscroll-behavior-x` as `.r-reach`. */
 .rvmp .r-lgpick-chips[data-scrollable] {
+	scroll-snap-type: x proximity;
+	overscroll-behavior-x: contain;
 	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
 }
@@ -3412,10 +3428,14 @@
 	display: flex;
 	align-items: center;
 	gap: 6px;
-	padding: 6px 12px;
+	/* Same rendered height/font-size as `.r-filter-btn`/`.r-sort-btn` — every
+	   pill-shaped chip control on the site now reads as one consistent size,
+	   rather than this one being very slightly shorter. */
+	height: 34.84px;
+	padding: 0 14px;
 	border-radius: var(--r-pill);
 	font-weight: 700;
-	font-size: 12.5px;
+	font-size: 13px;
 	white-space: nowrap;
 	/* Same resting look as `.r-datepick-chips button` (border/background/font) —
 	   only the hover/selected treatment below is custom to this picker, tinting
@@ -5030,6 +5050,14 @@
 	top: calc(100% + 8px);
 	right: 0;
 	width: min(280px, calc(100vw - 24px));
+	/* On a short phone screen this menu's own content (app + game language,
+	   sprites, raid ranking, best buddy, extra leagues once expanded…) can
+	   run taller than the viewport itself — cap it and let it scroll
+	   internally rather than spilling off-screen with no way to reach the
+	   bottom entries. */
+	max-height: min(75vh, 560px);
+	overflow-y: auto;
+	overscroll-behavior: contain;
 	padding: var(--s4);
 	border-radius: var(--r-md);
 	background: var(--surface);
@@ -5037,9 +5065,11 @@
 	box-shadow: var(--shadow-2);
 	display: grid;
 	gap: var(--s3);
-	/* No scrollable content of its own — without this, a vertical swipe that
-	   starts here falls through to scroll the page behind it instead. */
-	touch-action: none;
+	/* Now that this has scrollable content of its own (see max-height above),
+	   opt back into vertical touch scrolling — `.r-lang-pop`'s own comment
+	   covers why a bare `touch-action: none` would otherwise swallow a swipe
+	   that starts here instead of actually scrolling the menu. */
+	touch-action: pan-y;
 }
 .rvmp .r-setmenu-grp {
 	display: grid;
@@ -5104,8 +5134,11 @@
 	display: inline-flex;
 }
 .rvmp .r-lgfilter-trigger {
-	width: 30px;
-	height: 30px;
+	/* Same size as the league picker chips/tabs sitting next to it
+	   (`.r-lgpick-chips button`/`.r-tabs-strip button`'s row mode) — it used
+	   to read a bit shorter/narrower than its neighbours. */
+	width: 34.84px;
+	height: 34.84px;
 }
 /* Inside a section heading, the trigger's own 30px hit target is taller than
    the heading text's line height — flex centering then centers the text
@@ -5175,7 +5208,15 @@
 	min-width: 0;
 	overflow-x: hidden;
 	overflow-y: auto;
-	overscroll-behavior: contain;
+	/* `auto` (the default), not `contain` — this list nests inside
+	   `.r-setmenu-pop`'s own scrollable "Extra leagues" group. `contain`
+	   stopped the scroll dead at this list's own top/bottom edge instead of
+	   handing it off to the popover around it, so scrolling the popover
+	   while the pointer happened to be over this list did nothing once you
+	   hit that boundary. Letting it chain to `.r-setmenu-pop` (which still
+	   has its own `overscroll-behavior: contain`, so the chain stops there
+	   rather than reaching the page behind it) is what actually gives the
+	   "scroll always keeps working somewhere" behavior that was wanted. */
 	touch-action: pan-y;
 }
 .rvmp .r-lgcheck-row {
@@ -5559,13 +5600,17 @@
 	color: var(--text-dim);
 }
 
-/* collapsible wrapper — collapsed shows just the active-conditions summary */
+/* collapsible wrapper — collapsed shows just the active-conditions summary.
+   No `overflow: hidden` — nothing inside paints an edge-to-edge background
+   that would need clipping to the rounded corners (the toggle bar is
+   transparent, the "clear" button is an inset pill), so there was nothing
+   actually relying on it; it was only clipping `LeagueVisibilityMenu`'s own
+   popover instead, cutting it off at this panel's edge. */
 .rvmp .r-ctr-config {
 	margin-bottom: 14px;
 	background: var(--surface-2);
 	border: 1px solid var(--border);
 	border-radius: var(--r-sm);
-	overflow: hidden;
 }
 .rvmp .r-ctr-config-bar {
 	display: flex;

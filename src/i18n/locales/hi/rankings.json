@@ -11,6 +11,11 @@
 		"pickerAriaLabel": "लीग और मोड चयनकर्ता",
 		"loadingLeagues": "मौजूदा लीग लोड हो रही हैं…"
 	},
+	"pageTitle": {
+		"league": "{{league}} के लिए सर्वश्रेष्ठ Pokémon",
+		"raidWithType": "सर्वश्रेष्ठ {{type}} टाइप {{metric}} अटैकर्स",
+		"raidNoType": "सर्वश्रेष्ठ {{raid}} अटैकर्स"
+	},
 	"status": {
 		"loading": "लोड हो रहा है…",
 		"chooseType": "एक टाइप चुनें",
