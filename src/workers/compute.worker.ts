@@ -240,6 +240,37 @@ export interface BadIvCarveOutsInput {
 	 *  wasted work: confirmed against real data, that pass alone is ~87% of
 	 *  an equivalent Master sweep's total cost. */
 	includeShadowPurify?: boolean;
+	/** Default `true`. Whether the main (non-Shadow) pass considers a
+	 *  candidate's reachable Mega form(s) at all — a plain catch's raw IVs
+	 *  get a carve-out when they're the top-1 (or tied) stat product for a
+	 *  Mega it can reach by evolving, not just for its own non-Mega line.
+	 *
+	 *  Defaults `true` because the shared, uncapped "Master carve-outs" query
+	 *  (`masterCarveOuts` in MassDelete.tsx, consumed by *both* the
+	 *  non-meta-relevant tab's Master stat-product-tie protection and the
+	 *  bad-IV tab) always wants this on — the non-meta-relevant tab has its
+	 *  own separate, already-unconditional Mega-reachability checks
+	 *  (`isGoodForRaids`/`isBadForEverything` in `computeTrashString`), so
+	 *  this needs to stay consistent with those rather than following the
+	 *  bad-IV tab's own toggle. The bad-IV tab's OWN carve-out query
+	 *  (`badIvCarveOuts`) explicitly overrides this to track its "Preserve
+	 *  Megas IVs" checkbox instead — that tab wants Mega reachability to be
+	 *  opt-in, full stop, covering both this pass and `preserveMegaIvs`
+	 *  below. */
+	includeMegaForNonShadow?: boolean;
+	/** Default `false` (opt-in — "Preserve Megas IVs" in Mass Delete's bad-IV
+	 *  tab). When `true`, the Shadow-purify pass (see `includeShadowPurify`)
+	 *  also checks each Shadow candidate's reachable Mega form(s) — a
+	 *  Shadow's evolution line can continue *past* purification into a Mega
+	 *  (Shadow Charmander → purify → Charmander → Charmeleon → Charizard →
+	 *  Mega Charizard X/Y) — so a catch that's exactly the top-1 (or tied)
+	 *  purified stat product for one of those Megas gets a carve-out too,
+	 *  not just for its own Shadow-only evolution line. Off by default: it's
+	 *  extra work for a case that, while real, is narrower than the default
+	 *  Shadow-purify pass already covers (matching what the checkbox next to
+	 *  it protects against by default). No effect at all when
+	 *  `includeShadowPurify` is `false` — nothing to extend. */
+	preserveMegaIvs?: boolean;
 	/** {@link MAX_LEVEL} (50) or 51 (Best Buddy) — the single
 	 *  level ceiling to evaluate every tied-top-1 spread at. Never both: the
 	 *  caller must pass whichever one the player currently has toggled (see
@@ -329,6 +360,8 @@ export const findBadIvCarveOuts = ({
 	speciesSearchMetadata,
 	caps,
 	includeShadowPurify = true,
+	includeMegaForNonShadow = true,
+	preserveMegaIvs = false,
 	maxLevel = MAX_LEVEL,
 }: BadIvCarveOutsInput): Array<BadIvCarveOut> => {
 	const levelIndex = levelToLevelIndex(maxLevel);
@@ -379,19 +412,17 @@ export const findBadIvCarveOuts = ({
 	// clause already protects, so it isn't emitted twice.
 	const rawPatternKeys = new Map<string, Set<string>>();
 	for (const p of candidates) {
-		// `includeMega: true` — a base species' own Mega form is still a real
-		// stage "it could become" (see this function's own doc comment), and
-		// dex-server's `speciesSearchMetadata` already ships `bestIvSpreads`
-		// for Mega species through the same mechanism as everything else, so
-		// there's nothing missing on the data side. Without this, a wild
-		// catch whose Mega form is the actual top-1 stat product for a cap
-		// (1500/2500 both have Mega-legal cups) had no carve-out protecting
-		// it at all, risking that spread being swept up as "bad IV" despite
-		// being exactly what you'd want to keep for Mega-evolving later.
-		// `domainFilter`'s own `!isMega` clause doesn't fight this — it's
-		// only ever applied to evolution-chain children, never to the Mega
-		// branch `includeMega` adds, so nothing else needs to change here.
-		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, domainFilter, true));
+		// `includeMega: includeMegaForNonShadow` — see that option's own doc
+		// comment on `BadIvCarveOutsInput` for why this isn't just a bare
+		// `true`/tied to `preserveMegaIvs` directly: the two carve-out
+		// queries this function serves want different defaults here.
+		// `domainFilter`'s own `!isMega` clause doesn't fight this either way
+		// — it's only ever applied to evolution-chain children, never to the
+		// Mega branch `includeMega` adds, so nothing else needs to change
+		// here regardless of which way this flag goes.
+		const reachable = Array.from(
+			fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, domainFilter, includeMegaForNonShadow)
+		);
 		for (const cap of caps) {
 			const distinctPatterns = new Map<string, BadIvPattern>();
 			for (const r of reachable) {
@@ -440,37 +471,69 @@ export const findBadIvCarveOuts = ({
 			return [];
 		}
 		// dex-server precomputes exactly this pass per Shadow species (`r` here
-		// is always a Shadow form — see `shadowDomainFilter` below) — the only
-		// source of it (no on-the-fly fallback).
+		// is a Shadow form via `shadowDomainFilter` below) *and* per Mega
+		// species (`r` is one of a Shadow's reachable Mega forms, when
+		// `preserveMegaIvs` is on — see that option's own doc comment on
+		// `BadIvCarveOutsInput`) — the only source of this data either way
+		// (no on-the-fly fallback).
 		const metadata = requireSpeciesMetadata(speciesSearchMetadata, r.speciesId);
 		if (!metadata.bestIvSpreadsPurified) {
-			throw new Error(`speciesSearchMetadata for Shadow species "${r.speciesId}" is missing bestIvSpreadsPurified.`);
+			throw new Error(`speciesSearchMetadata for "${r.speciesId}" is missing bestIvSpreadsPurified.`);
 		}
 		const patterns = metadata.bestIvSpreadsPurified[leagueKeyFor(cap)][levelKeyFor(levelIndex / 2 + 1)];
 		purifiedBestCache.set(key, patterns);
 		return patterns;
 	};
 
-	// Skippable entirely by a caller whose own candidates structurally can
-	// never include a Shadow catch (e.g. a trade-suggestion sweep — Shadows
-	// can't be traded at all) — see `includeShadowPurify`'s own doc comment
-	// on `BadIvCarveOutsInput` for why that's worth doing, not just legal.
-	if (includeShadowPurify) {
+	// `shadowCandidates`/`shadowDomainFilter` are shared by both passes below
+	// (only actually built when at least one of them needs it — both flags
+	// default such that neither runs unless a caller opts in).
+	if (includeShadowPurify || preserveMegaIvs) {
 		const shadowCandidates = Object.values(gamemasterPokemon).filter((p) => p.isShadow && !p.aliasId && !p.isMega);
 		const shadowDomainFilter = (r: IGamemasterPokemon) => r.isShadow && !r.aliasId && !r.isMega;
 		for (const p of shadowCandidates) {
-			const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, shadowDomainFilter));
+			// Skippable entirely by a caller whose own candidates structurally
+			// can never include a Shadow catch (e.g. a trade-suggestion sweep —
+			// Shadows can't be traded at all), or one that's opted out purely
+			// for cost (the uncapped Master sweep — see this option's own doc
+			// comment on `BadIvCarveOutsInput` for why that's worth doing, not
+			// just legal) — see `includeShadowPurify`'s own doc comment.
+			const reachable = includeShadowPurify
+				? Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, shadowDomainFilter))
+				: [];
+			// `preserveMegaIvs` — see that option's own doc comment on
+			// `BadIvCarveOutsInput`. Deliberately independent of
+			// `includeShadowPurify` above: the Master-cap sweep always opts out
+			// of the (expensive) default Shadow-purify pass for cost reasons,
+			// but still wants this specific, narrower Mega-reachable check when
+			// the player has it on. No domain filter at all here (just alias
+			// forms excluded) and `includeMega: true`, narrowed to the Mega
+			// entries afterward — `shadowDomainFilter` above exists to keep the
+			// *default* pass cheap and purely Shadow-scoped, which is exactly
+			// the boundary this needs to cross to find a Mega form at all
+			// (every Mega is inherently non-Shadow).
+			const reachableMegas = preserveMegaIvs
+				? Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, (r) => !r.aliasId, true)).filter(
+						(r) => r.isMega
+					)
+				: [];
+			if (reachable.length === 0 && reachableMegas.length === 0) continue;
 			const nonShadowId = p.nonShadowSpecies;
 			for (const cap of caps) {
 				const alreadyCovered = rawPatternKeys.get(`${nonShadowId}|${cap}`);
 				const distinctPatterns = new Map<string, BadIvPattern>();
-				for (const r of reachable) {
+				for (const r of [...reachable, ...reachableMegas]) {
 					for (const best of getBestPurifiedTied(r, cap, levelIndex)) {
 						// The raw spread the game will actually show for this
 						// catch — evaluated against the blanket rules exactly
 						// like the non-Shadow pass, since a raw hundo or a raw
 						// catch already in the default good shape needs no
-						// Shadow-specific help either.
+						// Shadow-specific help either. Ties are handled for
+						// free here: `getBestPurifiedTied` already returns
+						// every tied-top-1 pattern (not just one), and this
+						// dedup-by-bucket-key map keeps every distinct one,
+						// whether it came from the Shadow-only walk or a
+						// reachable Mega.
 						if (isProtectedByBlanket(best)) continue;
 						const key = `${ivBucket(best.A)}-${ivBucket(best.D)}-${ivBucket(best.S)}`;
 						if (alreadyCovered?.has(key)) continue;

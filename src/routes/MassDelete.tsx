@@ -470,7 +470,12 @@ export const computeTrashString = (a: ComputeArgs): string => {
 	};
 
 	const isBadForEverything = (p: IGamemasterPokemon) => {
-		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
+		// `includeMega: true` — same reason as `isGoodForRaids` right above:
+		// a reachable Mega form ranked well in Great/Ultra/Master (or a
+		// rotating cup) must count toward keeping `p`, or a species whose
+		// only real value is its Mega form gets wrongly swept up as "bad for
+		// everything".
+		const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, undefined, true));
 		const glLowestRank = Math.min(
 			...reachablePokemon.map((r) => rankLists[0][r.speciesId]?.rank).filter((r): r is number => !!r)
 		);
@@ -987,8 +992,11 @@ export const computeTradeableString = (
 			// some league — folding that SAME stage's own tied-rank-1
 			// pattern(s) for that league into `p`'s carve-out set. A stage can
 			// qualify `p` through more than one league at once; each
-			// contributes its own patterns independently.
-			const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon));
+			// contributes its own patterns independently. `includeMega: true`
+			// — a reachable Mega form ranked well (Master most commonly) must
+			// be able to qualify `p` as tradeable-worth-keeping too, exactly
+			// like every other reachable stage here.
+			const reachablePokemon = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, undefined, true));
 			let goodForMaster = false;
 			let goodForGreat = false;
 			let goodForUltra = false;
@@ -1405,6 +1413,18 @@ const MassDelete = () => {
 		() => void writePersistentValue(ConfigKeys.BadIvSimplifiedMode, String(simplifiedBadIv)),
 		[simplifiedBadIv]
 	);
+	// Opt-in — see `findBadIvCarveOuts`'s own `preserveMegaIvs` doc comment.
+	// Feeds both `badIvCarveOuts` (1500/2500) and the shared `masterCarveOuts`
+	// query below (uncapped) — the latter is also consumed by the
+	// non-meta-relevant tab, so toggling this here does extend the same
+	// protection there too, not just in this tab. That's accepted, not a bug:
+	// splitting `masterCarveOuts` into a with/without-Mega-preserve pair just
+	// to keep this checkbox scoped to one tab's UI would mean computing it
+	// twice for no real benefit.
+	const [preserveMegaIvs, setPreserveMegaIvs] = useState(
+		() => readPersistentValue(ConfigKeys.PreserveMegaIvs) === 'true'
+	);
+	useEffect(() => void writePersistentValue(ConfigKeys.PreserveMegaIvs, String(preserveMegaIvs)), [preserveMegaIvs]);
 	// Only meaningful for the Non-meta-relevant tab — see `computeTrashString`'s
 	// own doc comment on the `simplified` parameter this feeds.
 	const [simplifiedTrash, setSimplifiedTrash] = useState(
@@ -1617,13 +1637,26 @@ const MassDelete = () => {
 	const speciesSearchMetadataCount = Object.keys(speciesSearchMetadata).length;
 	const { data: masterCarveOuts } = useQuery({
 		enabled: (isCalculating || isCalculatingBadIv) && fetchCompleted && speciesSearchMetadataFetchCompleted,
-		queryKey: ['master-carveouts-no-shadow', maxLevel, speciesSearchMetadataCount],
+		// `preserveMegaIvs` in the key — it's independent of `includeShadowPurify`
+		// (see `findBadIvCarveOuts`'s own doc comment) but still changes this
+		// query's result, so it needs to bust the cache like any other knob here.
+		queryKey: ['master-carveouts-no-shadow', maxLevel, speciesSearchMetadataCount, preserveMegaIvs],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({
 				gamemasterPokemon,
 				speciesSearchMetadata,
 				caps: [Number.MAX_VALUE],
 				includeShadowPurify: false,
+				// No `includeMegaForNonShadow` override here — its default
+				// (`true`) is exactly what this shared query wants: the
+				// non-meta-relevant tab that also consumes this already has its
+				// own unconditional Mega-reachability checks
+				// (`isGoodForRaids`/`isBadForEverything`), so this stays
+				// unconditional too rather than following the bad-IV tab's own
+				// "Preserve Megas IVs" toggle for this specific mechanism. Only
+				// `preserveMegaIvs` (the Shadow-purify-into-Mega extension) is
+				// shared between the two tabs via this query, by design.
+				preserveMegaIvs,
 				maxLevel,
 			}),
 		staleTime: Infinity,
@@ -1720,9 +1753,22 @@ const MassDelete = () => {
 	// the other knobs.
 	const { data: badIvCarveOuts } = useQuery({
 		enabled: isCalculatingBadIv && fetchCompleted && speciesSearchMetadataFetchCompleted,
-		queryKey: ['bad-iv-carveouts', maxLevel, speciesSearchMetadataCount],
+		queryKey: ['bad-iv-carveouts', maxLevel, speciesSearchMetadataCount, preserveMegaIvs],
 		queryFn: () =>
-			getComputeWorker().findBadIvCarveOuts({ gamemasterPokemon, speciesSearchMetadata, caps: [1500, 2500], maxLevel }),
+			getComputeWorker().findBadIvCarveOuts({
+				gamemasterPokemon,
+				speciesSearchMetadata,
+				caps: [1500, 2500],
+				// Both Mega-reachability mechanisms tied to the same "Preserve
+				// Megas IVs" checkbox here — unlike the shared `masterCarveOuts`
+				// query below, this one exists only for the bad-IV tab, so it
+				// has no other tab's already-unconditional Mega handling to stay
+				// consistent with (see `includeMegaForNonShadow`'s own doc
+				// comment on `BadIvCarveOutsInput`).
+				includeMegaForNonShadow: preserveMegaIvs,
+				preserveMegaIvs,
+				maxLevel,
+			}),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});
@@ -1760,14 +1806,15 @@ const MassDelete = () => {
 		simplifiedBadIv,
 	]);
 
-	// changing the CP floor, language, protections, whitelist, or simplified
-	// mode invalidates a stale result. The Best Buddy level toggle does too —
-	// unlike the other knobs here, it DOES change the carve-out sweep itself
-	// (`badIvCarveOuts`/`masterCarveOuts` are both keyed on `maxLevel`), so an
-	// already-displayed string would otherwise silently go stale under it.
+	// changing the CP floor, language, protections, whitelist, simplified
+	// mode, or Preserve Megas IVs invalidates a stale result. The Best Buddy
+	// level toggle does too — unlike the other knobs here, it DOES change the
+	// carve-out sweep itself (`badIvCarveOuts`/`masterCarveOuts` are both
+	// keyed on `maxLevel`), so an already-displayed string would otherwise
+	// silently go stale under it.
 	useEffect(() => {
 		setBadIvResult('');
-	}, [cp, gl, protect, whitelist, simplifiedBadIv, maxLevel]);
+	}, [cp, gl, protect, whitelist, simplifiedBadIv, preserveMegaIvs, maxLevel]);
 
 	// ---- "Find Tradeable" mode ----
 	const [isCalculatingTrade, setIsCalculatingTrade] = useState(false);
@@ -2254,6 +2301,20 @@ const MassDelete = () => {
 										>
 											<span className='r-ss-box' aria-hidden='true' />
 											{simplifiedBadIv ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+										</button>
+									</div>
+									<div className='r-md-knob'>
+										<span>{t('massDelete:knobs.preserveMegaIvs')}</span>
+										<button
+											type='button'
+											className='r-ctr-toggle'
+											data-on={preserveMegaIvs ? '' : undefined}
+											aria-pressed={preserveMegaIvs}
+											title={t('massDelete:preserveMegaIvsTooltip')}
+											onClick={() => setPreserveMegaIvs((v) => !v)}
+										>
+											<span className='r-ss-box' aria-hidden='true' />
+											{preserveMegaIvs ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
 										</button>
 									</div>
 								</div>

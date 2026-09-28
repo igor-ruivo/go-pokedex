@@ -71,14 +71,18 @@ interface LanguageContextType {
 	// Search-string-only GameLanguage: the ONLY thing this controls is the
 	// literal keyword tokens inside a generated Niantic search-bar string
 	// (see src/lib/search-string.ts and the generators in MassDelete.tsx /
-	// SearchStringsTab.tsx). Defaults to `currentGameLanguage` but can be
-	// explicitly overridden via the picker rendered on those two pages —
-	// e.g. the site's UI is in Japanese but the player's actual Pokémon GO
-	// account (and so the strings they'll paste into its search bar) is in
-	// Portuguese. Every other label on those same two pages (explanatory
-	// sentences, protection-checkbox descriptions, chip text, etc.) still
-	// reads `currentGameLanguage` above, not this — only the generated
-	// string itself uses the override.
+	// SearchStringsTab.tsx). Defaults to English — deliberately NOT derived
+	// from `currentGameLanguage`/the device's language the way that one is:
+	// a player's actual Pokémon GO account language has nothing to do with
+	// their browser/OS language, so there's no reason to guess anything but
+	// English here, ever. Explicitly overridden via the picker rendered on
+	// those two pages once the player actually knows their account's search
+	// language differs — e.g. the site's UI is in Japanese but the player's
+	// actual Pokémon GO account (and so the strings they'll paste into its
+	// search bar) is in Portuguese. Every other label on those same two pages
+	// (explanatory sentences, protection-checkbox descriptions, chip text,
+	// etc.) still reads `currentGameLanguage` above, not this — only the
+	// generated string itself uses the override.
 	searchGameLanguage: GameLanguage;
 	updateCurrentLanguage: (newLanguage: Locale) => void;
 	updateSearchGameLanguage: (newLanguage: GameLanguage) => void;
@@ -119,7 +123,10 @@ export const LanguageProvider = (props: React.PropsWithChildren<object>) => {
 		}
 	});
 
-	const searchGameLanguage = searchGameLanguageOverride ?? currentGameLanguage;
+	// Never `currentGameLanguage` here — see the field's own doc comment on
+	// `LanguageContextType` above for why this must never inherit the
+	// device/UI language, even indirectly.
+	const searchGameLanguage = searchGameLanguageOverride ?? GameLanguage.en;
 
 	const updateCurrentLanguage = useCallback((newLanguage: Locale) => {
 		writePersistentValue(ConfigKeys.Language, JSON.stringify(newLanguage));

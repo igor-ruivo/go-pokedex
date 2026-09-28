@@ -85,6 +85,9 @@ export enum ConfigKeys {
 	/** JSON-encoded `Record<leagueId, number>` — one Mass Delete rank-cutoff
 	 *  knob value per extra league the player has made visible. */
 	TrashExtraLeagues,
+	/** Non-perfect-IVs tab only — see `findBadIvCarveOuts`'s own
+	 *  `preserveMegaIvs` doc comment. */
+	PreserveMegaIvs,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

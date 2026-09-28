@@ -159,7 +159,13 @@ export const buildSpeciesSearchMetadata = (
 			bestIvSpreads,
 		};
 
-		if (p.isShadow) {
+		// Mirrors dex-server's own gate (`computeBestIvSpreadsForAllSpecies`,
+		// updated this session): `bestIvSpreadsPurified` is precomputed for
+		// Mega species too, not just Shadow ones — a Shadow's reachable line
+		// can continue past purification into a Mega form (see
+		// `findBadIvCarveOuts`'s `preserveMegaIvs` option), and that Mega's own
+		// purified-tied patterns are looked up exactly like a Shadow's.
+		if (p.isShadow || p.isMega) {
 			const purifiedSpreadsFor = (cap: number): IBestIvSpreads['great'] => ({
 				level50: computeTiedTop1PurifiedPatterns(atk, def, hp, cap, (50 - 1) * 2),
 				level51: computeTiedTop1PurifiedPatterns(atk, def, hp, cap, (51 - 1) * 2),
@@ -526,6 +532,126 @@ export const buildShadowFamilyFixture = () => {
 	});
 	const gamemasterPokemon = buildGamemaster([machop, machoke, machamp, machopShadow, machokeShadow, machampShadow]);
 	return { gamemasterPokemon, machop, machoke, machamp, machopShadow, machokeShadow, machampShadow };
+};
+
+/**
+ * For `findBadIvCarveOuts`'s "Preserve Megas IVs" feature — the non-Shadow
+ * path (`includeMegaForNonShadow`): a plain catch's raw IVs get a carve-out
+ * when they're the top-1 (or tied) stat product for a Mega form it can reach,
+ * not just for its own non-Mega line. Two independent base+Mega pairs, each
+ * isolated on its own dex, so a single `findBadIvCarveOuts` call can exercise
+ * both cap 1500 and cap 2500 (plus, via `masterPair`, the uncapped Master
+ * cap) at once without cross-contamination:
+ * - `greatPair` (Mega base stats 100/132/180): its own raw top-1 at cap 1500
+ *   is the same tied 15/15/14 spread established in `buildBadIvFixture`'s
+ *   `tiedmon` (identical base stats) — bucket 4-4-3, genuinely deviating (not
+ *   a hundo, Attack bucket 4 fails the default low-Attack shape).
+ * - `ultraPair` (Mega base stats 300/100/100): its own raw top-1 at cap 2500
+ *   is the same 11/15/15 spread established in `buildBadIvFixture`'s
+ *   `deviantmon` (identical base stats) — bucket 3-4-4, genuinely deviating.
+ * Each pair's own BASE species has deliberately tiny stats (10/10/10) — its
+ * own raw top-1 never clears the 90%-of-cap pre-filter at 1500/2500, and at
+ * the uncapped Master cap a tiny species' own top-1 is always the exact
+ * hundo (blanket-protected already) — so any carve-out found for the base
+ * species can only have come from its reachable Mega, never from its own
+ * stats.
+ */
+export const buildMegaReachableFixture = () => {
+	const greatBase = mockPokemon({ speciesId: 'ndmgreatbase', dex: 600, baseStats: { atk: 10, def: 10, hp: 10 } });
+	const greatMega = mockPokemon({
+		speciesId: 'ndmgreatbase_mega',
+		dex: 600,
+		isMega: true,
+		baseStats: { atk: 100, def: 132, hp: 180 },
+	});
+	const ultraBase = mockPokemon({ speciesId: 'ndmultrabase', dex: 601, baseStats: { atk: 10, def: 10, hp: 10 } });
+	const ultraMega = mockPokemon({
+		speciesId: 'ndmultrabase_mega',
+		dex: 601,
+		isMega: true,
+		baseStats: { atk: 300, def: 100, hp: 100 },
+	});
+	const gamemasterPokemon = buildGamemaster([greatBase, greatMega, ultraBase, ultraMega]);
+	return { gamemasterPokemon, greatBase, greatMega, ultraBase, ultraMega };
+};
+
+/**
+ * For `findBadIvCarveOuts`'s "Preserve Megas IVs" feature — the Shadow-purify
+ * path (`preserveMegaIvs`): a Shadow's evolution line can continue *past*
+ * purification into a Mega (Shadow Charmander → purify → Charmander →
+ * Charmeleon → Charizard → Mega Charizard X/Y). Each `*Shadow` species shares
+ * its dex/types/form with a `*Base` non-Shadow sibling purely so
+ * `deriveFamilyRelations` (this file's own port of dex-server's family-
+ * relations calculator) links `nonShadowSpecies` between them, exactly like
+ * real gamemaster data — `fetchReachablePokemonIncludingSelf` reads that link
+ * to seed its walk from the Shadow's non-Shadow replica, then follows
+ * `*Base`'s own `family.evolutions` down to `*Final`, which has the Mega
+ * form attached (`megaFormsIds`, derived from the `_mega`-suffixed id).
+ * `greatChain`/`ultraChain` reuse the exact same base stats as
+ * `buildMegaReachableFixture` on their own Mega end, but what matters here is
+ * the *purified* tied pattern (`computeTiedTop1PurifiedPatterns`), not the
+ * raw one — genuinely different math, so callers should derive expected
+ * patterns from that function directly rather than assuming they match the
+ * raw-pattern fixture's own known values.
+ */
+export const buildShadowPurifyMegaFixture = () => {
+	const greatShadow = mockPokemon({ speciesId: 'spmgreatshadow', dex: 700, isShadow: true });
+	const greatBase = mockPokemon({
+		speciesId: 'spmgreatbase',
+		dex: 700,
+		family: { id: 'f-spmgreat', evolutions: ['spmgreatfinal'] },
+	});
+	const greatFinal = mockPokemon({
+		speciesId: 'spmgreatfinal',
+		dex: 702,
+		family: { id: 'f-spmgreat', parent: 'spmgreatbase' },
+	});
+	const greatMega = mockPokemon({
+		speciesId: 'spmgreatfinal_mega',
+		dex: 702,
+		isMega: true,
+		baseStats: { atk: 100, def: 132, hp: 180 },
+	});
+
+	const ultraShadow = mockPokemon({ speciesId: 'spmultrashadow', dex: 710, isShadow: true });
+	const ultraBase = mockPokemon({
+		speciesId: 'spmultrabase',
+		dex: 710,
+		family: { id: 'f-spmultra', evolutions: ['spmultrafinal'] },
+	});
+	const ultraFinal = mockPokemon({
+		speciesId: 'spmultrafinal',
+		dex: 712,
+		family: { id: 'f-spmultra', parent: 'spmultrabase' },
+	});
+	const ultraMega = mockPokemon({
+		speciesId: 'spmultrafinal_mega',
+		dex: 712,
+		isMega: true,
+		baseStats: { atk: 300, def: 100, hp: 100 },
+	});
+
+	const gamemasterPokemon = buildGamemaster([
+		greatShadow,
+		greatBase,
+		greatFinal,
+		greatMega,
+		ultraShadow,
+		ultraBase,
+		ultraFinal,
+		ultraMega,
+	]);
+	return {
+		gamemasterPokemon,
+		greatShadow,
+		greatBase,
+		greatFinal,
+		greatMega,
+		ultraShadow,
+		ultraBase,
+		ultraFinal,
+		ultraMega,
+	};
 };
 
 export const rank = (r: number): { rank: number } => ({ rank: r });
