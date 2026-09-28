@@ -9,7 +9,7 @@ import { IvPicker, type IVs } from '../components/IvPicker';
 import { LeaguePicker } from '../components/LeaguePicker';
 import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { ShadowMark } from '../components/ShadowMark';
-import { goSpriteUrl, handleSpriteError, Sprite, spriteUrl } from '../components/Sprite';
+import { goSpriteUrl, Sprite, SpriteImg, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
@@ -873,12 +873,7 @@ const PokemonDetail = () => {
 				>
 					<span className='r-hero-mini-sprite'>
 						{isShadow && <ShadowMark className='r-shadow-mark' />}
-						<img
-							src={heroSprites[heroIdx] || spriteUrl(pokemon, imageSource)}
-							alt=''
-							aria-hidden='true'
-							onError={handleSpriteError(pokemon)}
-						/>
+						<SpriteImg pokemon={pokemon} src={heroSprites[heroIdx] || undefined} ariaHidden />
 					</span>
 					<span className='r-hero-mini-name'>{cleanName(pokemon.speciesName)}</span>
 				</button>
@@ -997,13 +992,7 @@ const PokemonDetail = () => {
 							>
 								{m.isShadow && <ShadowMark />}
 								<span className='r-reach-art'>
-									<img
-										src={spriteUrl(m, imageSource)}
-										alt=''
-										loading='lazy'
-										decoding='async'
-										onError={handleSpriteError(m)}
-									/>
+									<SpriteImg pokemon={m} loading='lazy' />
 								</span>
 								<span>{cleanName(m.speciesName)}</span>
 							</Link>
@@ -1090,15 +1079,7 @@ const PokemonDetail = () => {
 											   isn't a new independent interactive element to make focusable. */}
 											<span className='r-board-sprite' onClick={bestType ? (e) => spriteClick(e, l.id) : undefined}>
 												{member?.isShadow && <ShadowMark />}
-												{member && (
-													<img
-														src={spriteUrl(member, imageSource)}
-														alt=''
-														loading='lazy'
-														decoding='async'
-														onError={handleSpriteError(member)}
-													/>
-												)}
+												{member && <SpriteImg pokemon={member} loading='lazy' />}
 												{bestType && (
 													<span
 														className='r-board-type'

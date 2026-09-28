@@ -5,9 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir } from '../../components/SortBar';
-import { handleSpriteError, spriteUrl } from '../../components/Sprite';
+import { SpriteImg } from '../../components/Sprite';
 import { useBestBuddy } from '../../contexts/best-buddy-context';
-import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
 import { useRaidMetric } from '../../contexts/raid-metric-context';
 import type { ActiveLeague } from '../../DTOs/IActiveLeague';
@@ -130,7 +129,6 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { pvpFetchCompleted } = usePvp();
 	const { moves, movesFetchCompleted } = useMoves();
-	const { imageSource } = useImageSource();
 
 	const isRaid = activeLeague.isRaid;
 
@@ -299,13 +297,7 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 								<span className='r-ctr-rank'>{i + 1}</span>
 								<span className='r-ctr-art'>
 									{p.isShadow && <ShadowMark />}
-									<img
-										src={spriteUrl(p, imageSource)}
-										alt=''
-										loading='lazy'
-										decoding='async'
-										onError={handleSpriteError(p)}
-									/>
+									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
 								<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>
 								<span className='r-ctr-score' data-tone={m.rating >= 500 ? 'win' : 'lose'}>
@@ -638,13 +630,7 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 								<span className='r-ctr-rank'>{i + 1}</span>
 								<span className='r-ctr-art'>
 									{p.isShadow && <ShadowMark />}
-									<img
-										src={spriteUrl(p, imageSource)}
-										alt=''
-										loading='lazy'
-										decoding='async'
-										onError={handleSpriteError(p)}
-									/>
+									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
 								<div className='r-ctr-mid'>
 									<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>

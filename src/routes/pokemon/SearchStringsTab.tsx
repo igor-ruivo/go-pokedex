@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { LanguagePicker } from '../../components/LanguagePicker';
-import { handleSpriteError, spriteUrl } from '../../components/Sprite';
-import { useImageSource } from '../../contexts/imageSource-context';
+import { SpriteImg } from '../../components/Sprite';
 import { type GameLanguage, useLanguage } from '../../contexts/language-context';
 import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
@@ -627,7 +626,6 @@ const SearchStringsTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokem
 	const { searchGameLanguage: sgl, updateSearchGameLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const { speciesSearchMetadata, fetchCompleted: speciesSearchMetadataFetchCompleted } = useSpeciesSearchMetadata();
-	const { imageSource } = useImageSource();
 
 	const [top, setTop] = useState(() => {
 		const v = readPersistentValue(ConfigKeys.TopPokemonInSearchString);
@@ -763,13 +761,7 @@ const SearchStringsTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokem
 					<div key={key} className='r-ss-block'>
 						<div className='r-ss-head'>
 							<span className='r-ss-sprite'>
-								<img
-									src={spriteUrl(p, imageSource)}
-									alt=''
-									loading='lazy'
-									decoding='async'
-									onError={handleSpriteError(p)}
-								/>
+								<SpriteImg pokemon={p} loading='lazy' />
 							</span>
 							<p className='r-ss-sentence'>
 								<Sentence

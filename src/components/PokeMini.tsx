@@ -1,13 +1,12 @@
 import { Link } from 'react-router-dom';
 
-import { useImageSource } from '../contexts/imageSource-context';
 import { cleanName } from '../lib/format';
 import { R } from '../lib/nav';
 import { LEAGUE_KEYS, useLeagueBadges } from '../lib/relevance';
 import { typeVar } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { ShadowMark } from './ShadowMark';
-import { handleSpriteError, spriteUrl } from './Sprite';
+import { SpriteImg } from './Sprite';
 
 /** Small sprite tile used across the calendar (spawns, raids, eggs, rockets…). */
 export const PokeMini = ({
@@ -25,7 +24,6 @@ export const PokeMini = ({
 	/** Rocket line-ups list base ids, but every mon fought is a Shadow. */
 	forceShadow?: boolean | undefined;
 }) => {
-	const { imageSource } = useImageSource();
 	const { gamemasterPokemon } = usePokemon();
 	const p = gamemasterPokemon[speciesId];
 	const badges = useLeagueBadges(p, gamemasterPokemon);
@@ -49,7 +47,7 @@ export const PokeMini = ({
 					))}
 				</span>
 			)}
-			<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' onError={handleSpriteError(p)} />
+			<SpriteImg pokemon={p} loading='lazy' />
 			<span>{cleanName(p.speciesName)}</span>
 			{note && <em>{note}</em>}
 		</Link>

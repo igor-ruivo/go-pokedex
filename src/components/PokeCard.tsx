@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 
-import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { cleanName, dexNo } from '../lib/format';
@@ -8,7 +7,7 @@ import { R } from '../lib/nav';
 import { typeKey, typeVar } from '../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ShadowMark } from './ShadowMark';
-import { handleSpriteError, spriteUrl } from './Sprite';
+import { SpriteImg } from './Sprite';
 
 export interface CardMetric {
 	rank?: number;
@@ -31,7 +30,6 @@ export const PokeCard = ({
 	/** When set, the detail page opens with this league/raid pre-selected. */
 	league?: string | undefined;
 }) => {
-	const { imageSource } = useImageSource();
 	const { currentGameLanguage: gl } = useLanguage();
 	return (
 		<Link
@@ -54,13 +52,7 @@ export const PokeCard = ({
 				))}
 			</span>
 			<span className='r-pc-art'>
-				<img
-					src={spriteUrl(pokemon, imageSource)}
-					alt=''
-					loading='lazy'
-					decoding='async'
-					onError={handleSpriteError(pokemon)}
-				/>
+				<SpriteImg pokemon={pokemon} loading='lazy' />
 			</span>
 			<b className='r-pc-name'>{cleanName(pokemon.speciesName)}</b>
 			{metric?.cp != null && (

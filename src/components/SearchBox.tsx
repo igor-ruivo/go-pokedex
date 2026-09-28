@@ -2,7 +2,6 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -13,7 +12,7 @@ import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ShadowMark } from './ShadowMark';
-import { handleSpriteError, spriteUrl } from './Sprite';
+import { SpriteImg } from './Sprite';
 
 const MAX_PER_GROUP = 16;
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -33,7 +32,6 @@ export const SearchBox = () => {
 	const [params, setParams] = useSearchParams();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { moves } = useMoves();
-	const { imageSource } = useImageSource();
 	const { currentGameLanguage: gl } = useLanguage();
 
 	const [q, setQ] = useState(params.get('q') ?? '');
@@ -198,13 +196,7 @@ export const SearchBox = () => {
 										<>
 											<span className='r-search-sprite'>
 												{hit.p.isShadow && <ShadowMark />}
-												<img
-													src={spriteUrl(hit.p, imageSource)}
-													alt=''
-													loading='lazy'
-													decoding='async'
-													onError={handleSpriteError(hit.p)}
-												/>
+												<SpriteImg pokemon={hit.p} loading='lazy' />
 											</span>
 											<span className='r-search-name'>
 												{cleanName(hit.p.speciesName)}

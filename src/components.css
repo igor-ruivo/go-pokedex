@@ -364,7 +364,13 @@
 	left: 4%;
 	width: 25%;
 	height: 25%;
-	z-index: 3;
+	/* Must beat the GO/shiny-GO sprite's own z-index (5, below) — a plain
+	   official-artwork `<img>` sets none at all (so this already won against
+	   it by default), but the zoomed GO/shiny-GO one explicitly claims 5,
+	   which used to render right over this mark whenever that was the active
+	   sprite. Same z-index the carousel dots already use for the identical
+	   reason (see that rule's own comment). */
+	z-index: 6;
 	/* bob in lockstep with the hero artwork */
 	animation: r-bob 5s ease-in-out infinite;
 }
@@ -375,6 +381,21 @@
 	object-fit: contain;
 	filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
 	animation: r-bob 5s ease-in-out infinite;
+}
+/* Every Pokémon sprite `<img>` in the app (the hero above, and every plain
+   list/chip/card sprite via `SpriteImg` — Sprite.tsx) carries this class —
+   drives the sequential fade-out-then-fade-in `useSequentialFade` walks
+   through (`data-fade='hidden'` <-> unset). See that hook's own doc comment
+   in Sprite.tsx for the full sequencing/why. Kept as one shared,
+   wrapper-independent rule rather than repeating it per wrapper class (like
+   the GO/shiny-GO zoom selectors below have to, since THAT one also needs to
+   fix up z-index/overflow per wrapper) — a plain opacity transition has no
+   such per-context fiddling to do. */
+.rvmp img.r-fade-sprite {
+	transition: opacity 0.16s ease;
+}
+.rvmp img.r-fade-sprite[data-fade='hidden'] {
+	opacity: 0;
 }
 @keyframes r-bob {
 	0%,
@@ -619,17 +640,11 @@
 .rvmp .r-reach-chip:hover {
 	border-color: var(--border-strong);
 }
-.rvmp .r-reach-chip:hover span {
-	color: var(--tc, var(--accent));
-}
 /* the Pokémon you're currently on: its name stays in its own type colour
    (not just on hover), and its border matches the same hover-strength
    border every other tile uses — hovering it doesn't change anything. */
 .rvmp .r-reach-chip[data-active='true'] {
 	border-color: var(--border-strong);
-}
-.rvmp .r-reach-chip[data-active='true'] span {
-	color: var(--tc, var(--accent));
 }
 /* Fixed, not a percentage/clamp — this is genuinely fine now that the
    square itself no longer depends on this box being small (see
@@ -668,6 +683,23 @@
 	overflow: clip;
 	text-overflow: ellipsis;
 	transition: color 0.14s ease;
+}
+/* This is the actual fix for a real regression: without the trailing
+   `:not(.r-reach-art)` these two matched the base rule above on specificity
+   EXACTLY (three class-equivalent selectors + one type each —
+   `:hover`/`[data-active]` and `:not(.r-reach-art)` all count the same), so
+   CSS broke the tie by source order — and since the base rule happened to
+   sit AFTER these two in the file, it silently won, and the name never
+   actually changed colour on hover or when active. Repeating
+   `:not(.r-reach-art)` here makes these unambiguously MORE specific than the
+   base rule instead, so they win regardless of where either one sits in the
+   file — no longer a fragile ordering dependency that a future unrelated
+   edit could silently reintroduce. */
+.rvmp .r-reach-chip:hover span:not(.r-reach-art) {
+	color: var(--tc, var(--accent));
+}
+.rvmp .r-reach-chip[data-active='true'] span:not(.r-reach-art) {
+	color: var(--tc, var(--accent));
 }
 .rvmp .r-reach-chip b {
 	font-family: Fredoka, sans-serif;
@@ -3591,7 +3623,10 @@
 .rvmp .r-mini > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-board-sprite > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-ctr-art > img:not(.r-shadow-mark)[src*='pogo_assets'],
-.rvmp .r-reach-chip .r-reach-art img[src*='pogo_assets'] {
+.rvmp .r-reach-chip .r-reach-art img[src*='pogo_assets'],
+.rvmp .r-md-wl-sprite > img[src*='pogo_assets'],
+.rvmp .r-search-sprite > img[src*='pogo_assets'],
+.rvmp .r-ss-sprite > img[src*='pogo_assets'] {
 	position: relative;
 	transform: scale(1.35);
 	z-index: 5;

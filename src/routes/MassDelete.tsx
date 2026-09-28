@@ -7,9 +7,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { LanguagePicker } from '../components/LanguagePicker';
 import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { ShadowMark } from '../components/ShadowMark';
-import { handleSpriteError, spriteUrl } from '../components/Sprite';
+import { SpriteImg } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
-import { useImageSource } from '../contexts/imageSource-context';
 import type { GameLanguage } from '../contexts/language-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
@@ -1176,7 +1175,6 @@ const WhitelistSearch = memo(function WhitelistSearch({
 }) {
 	const { t } = useTranslation(['massDelete']);
 	const { currentGameLanguage: gl } = useLanguage();
-	const { imageSource } = useImageSource();
 	const [q, setQ] = useState('');
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
@@ -1244,13 +1242,7 @@ const WhitelistSearch = memo(function WhitelistSearch({
 							<button type='button' role='option' aria-selected={false} onClick={() => pick(p)}>
 								<span className='r-search-sprite'>
 									{p.isShadow && <ShadowMark />}
-									<img
-										src={spriteUrl(p, imageSource)}
-										alt=''
-										loading='lazy'
-										decoding='async'
-										onError={handleSpriteError(p)}
-									/>
+									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
 								<span className='r-search-name'>
 									{cleanName(p.speciesName)}
@@ -1284,13 +1276,11 @@ const WhitelistChip = memo(function WhitelistChip({
 	p,
 	locked,
 	reason,
-	imageSource,
 	onRemove,
 }: {
 	p: IGamemasterPokemon;
 	locked: boolean;
 	reason: string;
-	imageSource: ReturnType<typeof useImageSource>['imageSource'];
 	onRemove: (speciesId: string) => void;
 }) {
 	const { t } = useTranslation(['massDelete']);
@@ -1305,7 +1295,7 @@ const WhitelistChip = memo(function WhitelistChip({
 		>
 			<span className='r-md-wl-sprite'>
 				{p.isShadow && <ShadowMark />}
-				<img src={spriteUrl(p, imageSource)} alt='' loading='lazy' decoding='async' onError={handleSpriteError(p)} />
+				<SpriteImg pokemon={p} loading='lazy' />
 			</span>
 			<span className='r-md-wl-name'>{cleanName(p.speciesName)}</span>
 			{!locked && (
@@ -1443,7 +1433,6 @@ const MassDeleteContent = ({
 	// strings below — see language-context.tsx's doc comment for why these
 	// are deliberately two different values.
 	const { currentGameLanguage: gl, searchGameLanguage: sgl, updateSearchGameLanguage } = useLanguage();
-	const { imageSource } = useImageSource();
 	// Included in every useMemo below that calls `gameTranslator()` inside its
 	// callback — see this hook's own doc comment for why `gl` alone isn't
 	// enough to keep those memos from serving a stale (pre-load, empty)
@@ -2757,7 +2746,6 @@ const MassDeleteContent = ({
 									p={p}
 									locked={locked}
 									reason={reason}
-									imageSource={imageSource}
 									onRemove={removeFromWhitelist}
 								/>
 							))}
@@ -2770,7 +2758,6 @@ const MassDeleteContent = ({
 									p={p}
 									locked={locked}
 									reason={reason}
-									imageSource={imageSource}
 									onRemove={removeFromWhitelist}
 								/>
 							))}
