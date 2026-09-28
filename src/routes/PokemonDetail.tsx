@@ -341,8 +341,15 @@ const PokemonDetail = () => {
 	}, [pokemon, gamemasterPokemon]);
 
 	// Forward-reachable only (you can't devolve) — what "best reachable" means.
+	// `includeMega: true` here too (already `true` for raid below) — a Mega
+	// that isn't legal in a given PvP league simply has no rank entry in that
+	// league's list, so `pvpList`'s own `rank != null` filter drops it right
+	// back out there; this only widens the *candidate* pool so a Mega that
+	// *is* ranked (Master League, a Mega cup) actually gets a chance to show
+	// up as reachable instead of being excluded before ranking is even
+	// considered.
 	const reachablePvp = useMemo(
-		() => (pokemon ? Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon)) : []),
+		() => (pokemon ? Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true)) : []),
 		[pokemon, gamemasterPokemon]
 	);
 	const reachableRaid = useMemo(
