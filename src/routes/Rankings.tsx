@@ -94,7 +94,7 @@ const Rankings = () => {
 	const POKEDEX_SORTS = usePokedexSorts(t, gl);
 	const { league, type: typeParam } = useParams();
 	const { leagues } = useLeagueDefinitions();
-	const { isExtraLeagueVisible } = useVisibleLeagues();
+	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
 	// A rotating cup's id stays a valid mode (a bookmarked/shared link still
 	// resolves) even if the player has since hidden it from the picker below —
 	// visibility only controls which chips render, not whether the route works.

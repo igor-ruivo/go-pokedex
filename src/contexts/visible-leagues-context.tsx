@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useDeferredValue, useMemo, useState } from 'react';
 
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 
@@ -8,6 +8,22 @@ interface VisibleLeaguesContextType {
 	visibleExtraLeagueIds: ReadonlySet<string>;
 	isExtraLeagueVisible: (id: string) => boolean;
 	toggleExtraLeague: (id: string) => void;
+	/** Same set, run through React 18's `useDeferredValue` — lags a render or
+	 *  two behind `visibleExtraLeagueIds`/`isExtraLeagueVisible` by design.
+	 *  Every EXPENSIVE per-toggle recomputation gated on which extra leagues
+	 *  are visible (Rankings'/PokemonDetail's leaderboard `boardData`, Mass
+	 *  Delete's per-league cutoff derivations and search-string rebuild) must
+	 *  read this pair instead of the immediate one above — that's what keeps
+	 *  the checkbox itself (and the persisted value `toggleExtraLeague`
+	 *  writes) snappy under rapid clicking, instead of visually lagging or
+	 *  seeming to "lose"/revert a click while a slow re-render from the
+	 *  PREVIOUS toggle is still catching up on whichever page happens to be
+	 *  open behind the picker. The checklist row's own `checked` prop (see
+	 *  `LeagueVisibilityChecklist.tsx`) must keep reading the immediate
+	 *  `visibleExtraLeagueIds` above, never this one — the checkbox itself
+	 *  should never lag. */
+	deferredVisibleExtraLeagueIds: ReadonlySet<string>;
+	isExtraLeagueVisibleDeferred: (id: string) => boolean;
 }
 
 const VisibleLeaguesContext = createContext<VisibleLeaguesContextType | undefined>(undefined);
@@ -54,9 +70,20 @@ export const VisibleLeaguesProvider = (props: React.PropsWithChildren<object>) =
 
 	const isExtraLeagueVisible = useCallback((id: string) => ids.has(id), [ids]);
 
+	// See this field's own doc comment on `VisibleLeaguesContextType` — deferred
+	// on purpose, so a slow downstream consumer never blocks the next click.
+	const deferredIds = useDeferredValue(ids);
+	const isExtraLeagueVisibleDeferred = useCallback((id: string) => deferredIds.has(id), [deferredIds]);
+
 	const value = useMemo(
-		() => ({ visibleExtraLeagueIds: ids, isExtraLeagueVisible, toggleExtraLeague }),
-		[ids, isExtraLeagueVisible, toggleExtraLeague]
+		() => ({
+			visibleExtraLeagueIds: ids,
+			isExtraLeagueVisible,
+			toggleExtraLeague,
+			deferredVisibleExtraLeagueIds: deferredIds,
+			isExtraLeagueVisibleDeferred,
+		}),
+		[ids, isExtraLeagueVisible, toggleExtraLeague, deferredIds, isExtraLeagueVisibleDeferred]
 	);
 
 	return <VisibleLeaguesContext.Provider value={value}>{props.children}</VisibleLeaguesContext.Provider>;

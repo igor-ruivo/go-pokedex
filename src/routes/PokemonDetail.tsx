@@ -168,7 +168,7 @@ const PokemonDetail = () => {
 	const { raidMetric } = useRaidMetric();
 	const { maxLevel, maxLevelIndex } = useBestBuddy();
 	const { leagues } = useLeagueDefinitions();
-	const { isExtraLeagueVisible } = useVisibleLeagues();
+	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
 
 	// This species' own ranked entry, for whichever league is active — the
 	// static three read `rankLists` (positional), any rotating/custom cup

@@ -1367,7 +1367,7 @@ const MassDelete = () => {
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashExtraLeagues, JSON.stringify(trashExtra)), [trashExtra]);
 	const setTrashExtraFor = (id: string) => (next: number) => setTrashExtra((prev) => ({ ...prev, [id]: next }));
 	const { leagues } = useLeagueDefinitions();
-	const { isExtraLeagueVisible } = useVisibleLeagues();
+	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
 	const visibleExtraLeagues = useMemo(
 		() => extraLeagues(leagues).filter((l) => isExtraLeagueVisible(l.id)),
 		[leagues, isExtraLeagueVisible]
