@@ -3802,6 +3802,13 @@
 	max-width: 200px;
 	margin-bottom: 0;
 }
+/* 200px is still a 3-4 digit rank number's worth of empty pill on a phone —
+   noticeably oversized next to everything else in the controls row there. */
+@media (max-width: 520px) {
+	.rvmp .r-ss-controls .r-iv-search {
+		max-width: 150px;
+	}
+}
 .rvmp .r-iv-search label {
 	display: flex;
 	align-items: center;
@@ -4118,6 +4125,19 @@
 	gap: 14px;
 	margin-bottom: 10px;
 }
+/* Room for `.r-ss-gamelang`'s floating "Idioma do jogo"-style label, which
+   sits entirely outside its own box (`bottom: 100%`, see that rule's own
+   note) — `padding-top`, not `margin-top`: this element IS `.r-card` itself
+   (`<div className='r-card r-ss-controls'>`, one element, not a child of
+   it), so a top margin here only pushes the whole card down and creates
+   space *outside* it — the label still only had `.r-card`'s base padding to
+   clear on the *inside* before crowding the card's own top edge. Extra
+   top padding is what actually gives it room to clear. */
+@media (max-width: 520px) {
+	.rvmp .r-ss-controls {
+		padding-top: 32px;
+	}
+}
 .rvmp .r-ss-cut {
 	display: flex;
 	align-items: center;
@@ -4127,12 +4147,34 @@
 	color: var(--text-dim);
 }
 .rvmp .r-ss-gamelang {
+	position: relative;
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	font-size: 12px;
 	font-weight: 700;
 	color: var(--text-dim);
+}
+/* Move the label out of the flex flow entirely (absolutely positioned above
+   the picker, via a negative-space `bottom: 100%` offset) instead of
+   stacking it in-flow — an in-flow stack (or reserving room for it with
+   `padding-top`, which still counts toward this element's own box height)
+   made this element taller than the single-row rank-cutoff field next to
+   it, so the container's `align-items: center` centered that *taller
+   padded box*, not the picker specifically, against the cutoff field —
+   still visibly off. `bottom: 100%` draws the label entirely outside this
+   element's own box (no padding, no height contribution at all), so
+   `.r-ss-gamelang`'s box is exactly the picker's own height — identical to
+   the cutoff field's — and `align-items: center` on the container lines
+   the two up correctly with nothing left to fight it. */
+@media (max-width: 520px) {
+	.rvmp .r-ss-gamelang > span {
+		position: absolute;
+		bottom: 100%;
+		left: 0;
+		margin-bottom: 4px;
+		white-space: nowrap;
+	}
 }
 .rvmp .r-ss-toggle {
 	display: inline-flex;

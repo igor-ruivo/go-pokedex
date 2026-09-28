@@ -81,7 +81,11 @@ export const modeLabel = (mode: RankingMode, gl: GameLanguage, leagues: Readonly
 /** The long form of `modeLabel` — "Great League", not just "Great" — for
  *  contexts spelling the league name out in full (the Rankings page title),
  *  rather than the compact chip label every `modeLabel` call site uses. */
-export const modeLabelLong = (mode: RankingMode, gl: GameLanguage, leagues: ReadonlyArray<ILeagueDefinition>): string => {
+export const modeLabelLong = (
+	mode: RankingMode,
+	gl: GameLanguage,
+	leagues: ReadonlyArray<ILeagueDefinition>
+): string => {
 	switch (mode) {
 		case 'pokedex':
 			return 'Pokédex';
