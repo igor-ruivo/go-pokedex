@@ -93,5 +93,6 @@
 		"hours": "{{count}}시간 남음",
 		"minutes": "{{count}}분 남음",
 		"seconds": "{{count}}초 남음"
-	}
+	},
+	"slotSource": "<em>{{event}}</em>에서"
 }

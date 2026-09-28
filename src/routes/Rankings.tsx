@@ -239,7 +239,13 @@ const Rankings = () => {
 		// rotating/custom cup reads `extraRankLists` (keyed by league id).
 		if (!pvpFetchCompleted) return [];
 		const list =
-			mode === 'great' ? rankLists[0] : mode === 'ultra' ? rankLists[1] : mode === 'master' ? rankLists[2] : (extraRankLists[mode] ?? {});
+			mode === 'great'
+				? rankLists[0]
+				: mode === 'ultra'
+					? rankLists[1]
+					: mode === 'master'
+						? rankLists[2]
+						: (extraRankLists[mode] ?? {});
 		return Object.values(list)
 			.map((r) => ({ r, p: gamemasterPokemon[r.speciesId] }))
 			.filter((x) => x.p && !x.p.aliasId && byType(x.p) && byName(x.p))
@@ -322,7 +328,8 @@ const Rankings = () => {
 		setParams(next, { replace: true });
 	};
 
-	const loading = !fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
+	const loading =
+		!fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
 	// Also wait on `measured` — the grid's column count/tile size default to a
 	// placeholder guess until the first real `ResizeObserver` callback fires
 	// (see `useGridMetrics`), and painting tiles against that guess is what
@@ -344,8 +351,18 @@ const Rankings = () => {
 				icon: '/images/nav/pokedex.png',
 				color: modeColor('pokedex'),
 			},
-			{ id: 'great', label: modeLabel('great', gl, leagues), icon: leagueIcon('great') ?? '/images/leagues/cups/pogo_great_league.png', color: modeColor('great') },
-			{ id: 'ultra', label: modeLabel('ultra', gl, leagues), icon: leagueIcon('ultra') ?? '/images/leagues/cups/pogo_ultra_league.png', color: modeColor('ultra') },
+			{
+				id: 'great',
+				label: modeLabel('great', gl, leagues),
+				icon: leagueIcon('great') ?? '/images/leagues/cups/pogo_great_league.png',
+				color: modeColor('great'),
+			},
+			{
+				id: 'ultra',
+				label: modeLabel('ultra', gl, leagues),
+				icon: leagueIcon('ultra') ?? '/images/leagues/cups/pogo_ultra_league.png',
+				color: modeColor('ultra'),
+			},
 			{
 				id: 'master',
 				label: modeLabel('master', gl, leagues),
@@ -355,12 +372,17 @@ const Rankings = () => {
 			{ id: 'raid', label: modeLabel('raid', gl, leagues), icon: '/images/raids/tier-5.png', color: modeColor('raid') },
 			// Optional add-ons — always last, same ordering as the Pokémon page's
 			// own league picker/leaderboard (see PokemonDetail.tsx's `LEAGUES`).
-			...visibleExtraLeagues.map((l) => ({ id: l.id, label: leagueTitle(l, gl).short, icon: leagueIcon(l.id), color: modeColor(l.id) })),
+			...visibleExtraLeagues.map((l) => ({
+				id: l.id,
+				label: leagueTitle(l, gl).short,
+				icon: leagueIcon(l.id),
+				color: modeColor(l.id),
+			})),
 		],
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- `gameTranslations`
-		// isn't read directly, it's what tells this memo the underlying
-		// `gameTranslator()` data (read via `modeLabel`/`leagueTitle`) actually
-		// changed — see this hook's own comment above.
+		// `gameTranslations` isn't read directly, it's what tells this memo the
+		// underlying `gameTranslator()` data (read via `modeLabel`/`leagueTitle`)
+		// actually changed — see this hook's own comment above.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[t, gl, leagues, visibleExtraLeagues, gameTranslations]
 	);
 
@@ -389,7 +411,12 @@ const Rankings = () => {
 			<div className='r-rank-head'>
 				{pickerReady ? (
 					<div className='r-league-row'>
-						<LeaguePicker items={pickerItems} activeId={mode} onSelect={goToMode} ariaLabel={t('rankings:tabs.pickerAriaLabel')} />
+						<LeaguePicker
+							items={pickerItems}
+							activeId={mode}
+							onSelect={goToMode}
+							ariaLabel={t('rankings:tabs.pickerAriaLabel')}
+						/>
 						<LeagueVisibilityMenu />
 					</div>
 				) : (

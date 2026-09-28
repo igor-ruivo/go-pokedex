@@ -93,5 +93,6 @@
 		"hours": "{{count}}s kaldı",
 		"minutes": "{{count}}dk kaldı",
 		"seconds": "{{count}}sn kaldı"
-	}
+	},
+	"slotSource": "<em>{{event}}</em> etkinliğinden"
 }

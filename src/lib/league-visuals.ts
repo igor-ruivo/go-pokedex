@@ -72,7 +72,8 @@ const hash = (id: string): number => {
 const isMegaLeague = (id: string): boolean => id.startsWith('mega-');
 
 /** Which cp-cap tier (great=1500/ultra=2500/master=uncapped) a Mega cup's own base league is. */
-const tierForCpCap = (cpCap: number): 'great' | 'ultra' | 'master' => (cpCap <= 1500 ? 'great' : cpCap <= 2500 ? 'ultra' : 'master');
+const tierForCpCap = (cpCap: number): 'great' | 'ultra' | 'master' =>
+	cpCap <= 1500 ? 'great' : cpCap <= 2500 ? 'ultra' : 'master';
 
 /** A Mega league's own cp cap, parsed straight off its id (`mega-1500` → 1500)
  *  — dex-server's own `${format}-${cpCap}` convention, so no separate lookup

@@ -93,5 +93,6 @@
 		"hours": "осталось {{count}} ч.",
 		"minutes": "осталось {{count}} мин.",
 		"seconds": "осталось {{count}} сек."
-	}
+	},
+	"slotSource": "Из <em>{{event}}</em>"
 }

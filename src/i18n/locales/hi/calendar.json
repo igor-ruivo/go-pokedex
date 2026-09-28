@@ -93,5 +93,6 @@
 		"hours": "{{count}} घंटे बचे",
 		"minutes": "{{count}} मिनट बचे",
 		"seconds": "{{count}} सेकंड बचे"
-	}
+	},
+	"slotSource": "<em>{{event}}</em> से"
 }

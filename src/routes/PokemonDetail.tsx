@@ -201,7 +201,13 @@ const PokemonDetail = () => {
 	// static three read `rankLists` (positional), any rotating/custom cup
 	// reads `extraRankLists` (keyed by id, see usePvp's own doc comment).
 	const rankListFor = (id: LeagueId): RankList =>
-		id === 'great' ? rankLists[0] : id === 'ultra' ? rankLists[1] : id === 'master' ? rankLists[2] : (extraRankLists[id] ?? {});
+		id === 'great'
+			? rankLists[0]
+			: id === 'ultra'
+				? rankLists[1]
+				: id === 'master'
+					? rankLists[2]
+					: (extraRankLists[id] ?? {});
 	const cpCapFor = (id: LeagueId): number =>
 		id === 'great'
 			? 1500
@@ -395,7 +401,17 @@ const PokemonDetail = () => {
 		// showing an empty row until something else (a species change, a full
 		// reload) happened to invalidate it.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pokemon, reachablePvp, reachableRaid, rankLists, extraRankLists, leagues, raidDPS, raidMetric, isExtraLeagueVisible]);
+	}, [
+		pokemon,
+		reachablePvp,
+		reachableRaid,
+		rankLists,
+		extraRankLists,
+		leagues,
+		raidDPS,
+		raidMetric,
+		isExtraLeagueVisible,
+	]);
 
 	// Carousel positions: p = which reachable Pokémon, t = which raid type,
 	// m[type] = which fast+charged combo for that type. Keyed by league id
@@ -1079,113 +1095,112 @@ const PokemonDetail = () => {
 										)}
 										<div
 											className='r-board-row'
-										role='button'
-										tabIndex={0}
-										aria-pressed={active}
-										data-active={active}
-										style={{ ['--lg' as string]: l.cssVar }}
-										onClick={() => cycleRow(l.id)}
-										onKeyDown={(e) => {
-											if (e.key === 'Enter' || e.key === ' ') {
-												e.preventDefault();
-												cycleRow(l.id);
-											}
-										}}
-									>
-										{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events --
+											role='button'
+											tabIndex={0}
+											aria-pressed={active}
+											data-active={active}
+											style={{ ['--lg' as string]: l.cssVar }}
+											onClick={() => cycleRow(l.id)}
+											onKeyDown={(e) => {
+												if (e.key === 'Enter' || e.key === ' ') {
+													e.preventDefault();
+													cycleRow(l.id);
+												}
+											}}
+										>
+											{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events --
 											   touch-only convenience wrapper enlarging `.r-board-type`'s tap target; that
 											   button (and the row itself) already carry full keyboard support, so this
 											   isn't a new independent interactive element to make focusable. */}
-										<span
-											className='r-board-sprite'
-											onClick={bestType ? (e) => spriteClick(e, l.id) : undefined}
-										>
-											{member?.isShadow && <ShadowMark />}
-											{member && (
-												<img
-													src={spriteUrl(member, imageSource)}
-													alt=''
-													loading='lazy'
-													decoding='async'
-													onError={handleSpriteError(member)}
-												/>
-											)}
-											{bestType && (
-												<span
-													className='r-board-type'
-													role='button'
-													tabIndex={0}
-													title={t('pokemonDetail:board.nextTypeTitle', {
-														type: gameTypeDisplayTranslator(bestType, gl) || bestType,
-													})}
-													onClick={(e) => cycleType(e, l.id)}
-													onKeyDown={(e) => {
-														if (e.key === 'Enter' || e.key === ' ') {
-															e.preventDefault();
-															cycleType(e as unknown as ReactMouseEvent, l.id);
-														}
-													}}
-												>
+											<span className='r-board-sprite' onClick={bestType ? (e) => spriteClick(e, l.id) : undefined}>
+												{member?.isShadow && <ShadowMark />}
+												{member && (
 													<img
-														src={`/images/types/${bestType}.png`}
-														alt={gameTypeDisplayTranslator(bestType, gl) || bestType}
+														src={spriteUrl(member, imageSource)}
+														alt=''
+														loading='lazy'
+														decoding='async'
+														onError={handleSpriteError(member)}
 													/>
-												</span>
-											)}
-										</span>
-										<span className='r-board-id'>
-											<span className='r-board-lg'>
-												{l.full}
-												{bestType &&
-													` · ${t('pokemonDetail:board.attackersSuffix', {
-														type: gameTypeDisplayTranslator(bestType, gl) || bestType,
-													})}`}
-											</span>
-											<span className='r-board-name'>
-												{member
-													? cleanName(member.speciesName)
-													: ready
-														? t('pokemonDetail:board.notRanked')
-														: t('pokemonDetail:board.loading')}
-											</span>
-											{/* Raid has no IV-rank concept at all (its `rank` above is
-											    already the raid-attacker rank, not an IV percentile), so it
-											    never generates one here — the type-carousel pips (which
-											    league rows have no equivalent of) take this slot instead. */}
-											{l.id === 'raid' ? (
-												typeCount > 1 && (
-													<span className='r-board-typepips' aria-hidden='true'>
-														{Array.from({ length: typeCount }, (_, i) => (
-															<i key={i} data-on={i === typeIdx} />
-														))}
-													</span>
-												)
-											) : (
-												<span className='r-board-ivrank'>
-													{ivSlice ? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%` : '—'}
-												</span>
-											)}
-										</span>
-										<span className='r-board-fig'>
-											<span className='r-board-rank'>
-												{rank != null ? ordinal(rank, currentLanguage) : '—'}
-												{l.id !== 'raid' && rankChange !== 0 && (
-													<span className='r-delta' data-dir={rankChange > 0 ? 'up' : 'down'}>
-														{rankChange > 0 ? '▲' : '▼'}
-														{Math.abs(rankChange)}
+												)}
+												{bestType && (
+													<span
+														className='r-board-type'
+														role='button'
+														tabIndex={0}
+														title={t('pokemonDetail:board.nextTypeTitle', {
+															type: gameTypeDisplayTranslator(bestType, gl) || bestType,
+														})}
+														onClick={(e) => cycleType(e, l.id)}
+														onKeyDown={(e) => {
+															if (e.key === 'Enter' || e.key === ' ') {
+																e.preventDefault();
+																cycleType(e as unknown as ReactMouseEvent, l.id);
+															}
+														}}
+													>
+														<img
+															src={`/images/types/${bestType}.png`}
+															alt={gameTypeDisplayTranslator(bestType, gl) || bestType}
+														/>
 													</span>
 												)}
 											</span>
-											{metric && <span className='r-board-metric'>{metric}</span>}
-										</span>
-										{total > 1 && (
-											<span className='r-board-pips' aria-hidden='true'>
-												{Array.from({ length: total }, (_, i) => (
-													<i key={i} data-on={i === pIdx} />
-												))}
+											<span className='r-board-id'>
+												<span className='r-board-lg'>
+													{l.full}
+													{bestType &&
+														` · ${t('pokemonDetail:board.attackersSuffix', {
+															type: gameTypeDisplayTranslator(bestType, gl) || bestType,
+														})}`}
+												</span>
+												<span className='r-board-name'>
+													{member
+														? cleanName(member.speciesName)
+														: ready
+															? t('pokemonDetail:board.notRanked')
+															: t('pokemonDetail:board.loading')}
+												</span>
+												{/* Raid has no IV-rank concept at all (its `rank` above is
+											    already the raid-attacker rank, not an IV percentile), so it
+											    never generates one here — the type-carousel pips (which
+											    league rows have no equivalent of) take this slot instead. */}
+												{l.id === 'raid' ? (
+													typeCount > 1 && (
+														<span className='r-board-typepips' aria-hidden='true'>
+															{Array.from({ length: typeCount }, (_, i) => (
+																<i key={i} data-on={i === typeIdx} />
+															))}
+														</span>
+													)
+												) : (
+													<span className='r-board-ivrank'>
+														{ivSlice
+															? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%`
+															: '—'}
+													</span>
+												)}
 											</span>
-										)}
-									</div>
+											<span className='r-board-fig'>
+												<span className='r-board-rank'>
+													{rank != null ? ordinal(rank, currentLanguage) : '—'}
+													{l.id !== 'raid' && rankChange !== 0 && (
+														<span className='r-delta' data-dir={rankChange > 0 ? 'up' : 'down'}>
+															{rankChange > 0 ? '▲' : '▼'}
+															{Math.abs(rankChange)}
+														</span>
+													)}
+												</span>
+												{metric && <span className='r-board-metric'>{metric}</span>}
+											</span>
+											{total > 1 && (
+												<span className='r-board-pips' aria-hidden='true'>
+													{Array.from({ length: total }, (_, i) => (
+														<i key={i} data-on={i === pIdx} />
+													))}
+												</span>
+											)}
+										</div>
 									</Fragment>
 								);
 							}

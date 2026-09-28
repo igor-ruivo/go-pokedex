@@ -93,5 +93,6 @@
 		"hours": "{{count}}j lagi",
 		"minutes": "{{count}}m lagi",
 		"seconds": "{{count}}d lagi"
-	}
+	},
+	"slotSource": "Dari <em>{{event}}</em>"
 }

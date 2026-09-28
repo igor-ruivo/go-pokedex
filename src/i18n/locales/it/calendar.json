@@ -93,5 +93,6 @@
 		"hours": "restano {{count}} h",
 		"minutes": "restano {{count}} min",
 		"seconds": "restano {{count}} s"
-	}
+	},
+	"slotSource": "Da <em>{{event}}</em>"
 }

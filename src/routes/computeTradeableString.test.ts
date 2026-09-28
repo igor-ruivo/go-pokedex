@@ -320,12 +320,13 @@ describe('computeTradeableString — extraTrade (rotating/custom league cutoffs)
 
 		const result = call(gamemasterPokemon, {
 			rankLists: [{}, {}, {}],
-			extraTrade: [
-				{ rankList: { extrafloormon: rank(1), extranofloormon: rank(1) }, cutoff: 10, tier: 'great' },
-			],
+			extraTrade: [{ rankList: { extrafloormon: rank(1), extranofloormon: rank(1) }, cutoff: 10, tier: 'great' }],
 			tradeableSpeciesData: {
 				extrafloormon: floorEligible({ great: leagueData({ floorOk: true }) }),
-				extranofloormon: floorEligible({ great: leagueData({ floorOk: false }), ultra: leagueData({ floorOk: false }) }),
+				extranofloormon: floorEligible({
+					great: leagueData({ floorOk: false }),
+					ultra: leagueData({ floorOk: false }),
+				}),
 			},
 		});
 

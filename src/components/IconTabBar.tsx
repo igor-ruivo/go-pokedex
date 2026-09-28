@@ -84,9 +84,18 @@ export const IconTabBar = ({
 
 	return (
 		<div className='r-tabs'>
-			<div className='r-tabs-scroller' data-fade-left={canScrollLeft || undefined} data-fade-right={canScrollRight || undefined}>
+			<div
+				className='r-tabs-scroller'
+				data-fade-left={canScrollLeft || undefined}
+				data-fade-right={canScrollRight || undefined}
+			>
 				{canScrollLeft && (
-					<button type='button' className='r-tabs-arrow r-tabs-arrow--left' aria-label={t('common:scroll.left')} onClick={() => scrollByPage(-1)}>
+					<button
+						type='button'
+						className='r-tabs-arrow r-tabs-arrow--left'
+						aria-label={t('common:scroll.left')}
+						onClick={() => scrollByPage(-1)}
+					>
 						‹
 					</button>
 				)}
@@ -115,7 +124,12 @@ export const IconTabBar = ({
 					})}
 				</div>
 				{canScrollRight && (
-					<button type='button' className='r-tabs-arrow r-tabs-arrow--right' aria-label={t('common:scroll.right')} onClick={() => scrollByPage(1)}>
+					<button
+						type='button'
+						className='r-tabs-arrow r-tabs-arrow--right'
+						aria-label={t('common:scroll.right')}
+						onClick={() => scrollByPage(1)}
+					>
 						›
 					</button>
 				)}

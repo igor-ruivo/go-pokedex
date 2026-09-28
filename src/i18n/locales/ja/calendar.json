@@ -93,5 +93,6 @@
 		"hours": "残り{{count}}時間",
 		"minutes": "残り{{count}}分",
 		"seconds": "残り{{count}}秒"
-	}
+	},
+	"slotSource": "<em>{{event}}</em>より"
 }

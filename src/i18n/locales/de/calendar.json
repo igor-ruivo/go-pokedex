@@ -93,5 +93,6 @@
 		"hours": "noch {{count}} Std.",
 		"minutes": "noch {{count}} Min.",
 		"seconds": "noch {{count}} Sek."
-	}
+	},
+	"slotSource": "Aus <em>{{event}}</em>"
 }

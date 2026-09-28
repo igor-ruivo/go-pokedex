@@ -19,7 +19,13 @@ export interface LeaguePickerItem {
  * vertical space, works by touch-swipe, mouse wheel, or click on desktop.
  */
 type LeaguePickerProps =
-	| { mode?: 'select'; items: ReadonlyArray<LeaguePickerItem>; activeId: string; onSelect: (id: string) => void; ariaLabel: string }
+	| {
+			mode?: 'select';
+			items: ReadonlyArray<LeaguePickerItem>;
+			activeId: string;
+			onSelect: (id: string) => void;
+			ariaLabel: string;
+	  }
 	| {
 			mode: 'toggle';
 			items: ReadonlyArray<LeaguePickerItem>;
@@ -89,7 +95,11 @@ export const LeaguePicker = (props: LeaguePickerProps) => {
 
 	return (
 		<div className='r-lgpick'>
-			<div className='r-lgpick-scroller' data-fade-left={canScrollLeft || undefined} data-fade-right={canScrollRight || undefined}>
+			<div
+				className='r-lgpick-scroller'
+				data-fade-left={canScrollLeft || undefined}
+				data-fade-right={canScrollRight || undefined}
+			>
 				{canScrollLeft && (
 					<button
 						type='button'
@@ -120,7 +130,11 @@ export const LeaguePicker = (props: LeaguePickerProps) => {
 								style={{ ['--lg-c' as string]: it.color }}
 								onClick={() => onPick(it.id)}
 							>
-								{it.icon ? <img src={it.icon} alt='' aria-hidden='true' /> : <i className='r-lgpick-badge'>{it.label[0]}</i>}
+								{it.icon ? (
+									<img src={it.icon} alt='' aria-hidden='true' />
+								) : (
+									<i className='r-lgpick-badge'>{it.label[0]}</i>
+								)}
 								<span className='r-lgpick-full'>{it.label}</span>
 								<span className='r-lgpick-short'>{it.shortLabel ?? it.label}</span>
 							</button>

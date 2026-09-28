@@ -93,5 +93,6 @@
 		"hours": "quedan {{count}}h",
 		"minutes": "quedan {{count}}m",
 		"seconds": "quedan {{count}}s"
-	}
+	},
+	"slotSource": "De <em>{{event}}</em>"
 }

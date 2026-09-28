@@ -93,5 +93,6 @@
 		"hours": "剩 {{count}} 小時",
 		"minutes": "剩 {{count}} 分鐘",
 		"seconds": "剩 {{count}} 秒"
-	}
+	},
+	"slotSource": "來自<em>{{event}}</em>"
 }

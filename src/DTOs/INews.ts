@@ -49,6 +49,12 @@ export interface IPostEntry {
 	// so they just list every `GameLanguage` here rather than being filtered
 	// the way real pokemongo.com posts are.
 	availableLocales: Array<GameLanguage>;
+	// 'leekduck' for the synthetic posts built from Spotlight Hours/Special
+	// Raid Bosses (`spotlightToPost`/`specialToPost`) — LeekDuck is a fan
+	// site, not an official source, so anything crediting "where this came
+	// from" (see `slotSourceLabel`) must never show its own event title, only
+	// the bare site itself.
+	source: 'pokemongo' | 'leekduck';
 	isRelevant?: boolean;
 	isSpotlight?: boolean;
 }

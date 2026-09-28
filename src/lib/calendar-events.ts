@@ -56,5 +56,6 @@ export const spotlightToPost = (s: ILeekduckSpotlightHour): IPostEntry => ({
 		{} as Record<GameLanguage, Array<string>>
 	),
 	availableLocales: Object.values(GameLanguage),
+	source: 'leekduck',
 	isSpotlight: true,
 });

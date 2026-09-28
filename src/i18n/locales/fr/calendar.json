@@ -93,5 +93,6 @@
 		"hours": "encore {{count}} h",
 		"minutes": "encore {{count}} min",
 		"seconds": "encore {{count}} s"
-	}
+	},
+	"slotSource": "De <em>{{event}}</em>"
 }

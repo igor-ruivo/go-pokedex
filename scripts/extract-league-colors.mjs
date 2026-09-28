@@ -5,9 +5,9 @@ import sharp from 'sharp';
 
 const ROOT = 'public/images/leagues';
 const SOLO_FILES = {
-	great: `${ROOT}/great.png`,
-	ultra: `${ROOT}/ultra.png`,
-	master: `${ROOT}/master.png`,
+	'great': `${ROOT}/great.png`,
+	'ultra': `${ROOT}/ultra.png`,
+	'master': `${ROOT}/master.png`,
 	'little-500': `${ROOT}/cups/GBL_littlecup.png`,
 	'remix-1500': `${ROOT}/cups/GBL_littlecupremix.png`,
 	'retro-1500': `${ROOT}/cups/GBL_retrocup.png`,

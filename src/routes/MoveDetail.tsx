@@ -190,12 +190,7 @@ const MoveDetail = () => {
 						</div>
 						<div className='r-usage-tile'>
 							<b>{eliteCount}</b>
-							<i>
-								{gameTranslator(
-									kind === 'fast' ? GameTranslatorKeys.EliteFastTm : GameTranslatorKeys.EliteChargedTm,
-									gl
-								)}
-							</i>
+							<i>{t('moveDetail:tiles.elite')}</i>
 						</div>
 						<div className='r-usage-tile'>
 							<b>{legacyCount}</b>

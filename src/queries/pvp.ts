@@ -4,7 +4,12 @@ import { useMemo } from 'react';
 
 import type { IRankedPokemon } from '../DTOs/IRankedPokemon';
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
-import { pvpokeRankingFileUrl, pvpokeRankings1500Url, pvpokeRankings2500Url, pvpokeRankingsUrl } from '../utils/Configs';
+import {
+	pvpokeRankingFileUrl,
+	pvpokeRankings1500Url,
+	pvpokeRankings2500Url,
+	pvpokeRankingsUrl,
+} from '../utils/Configs';
 import { fetchJsonInWorker } from '../utils/fetch-json';
 
 export const customCupCPLimit = 1500;

@@ -93,5 +93,6 @@
 		"hours": "faltam {{count}}h",
 		"minutes": "faltam {{count}}m",
 		"seconds": "faltam {{count}}s"
-	}
+	},
+	"slotSource": "De <em>{{event}}</em>"
 }

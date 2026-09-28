@@ -1553,6 +1553,13 @@
 	align-items: center;
 	gap: 8px;
 	padding: 7px 14px;
+	/* Same rendered height as the league picker chips (`.r-lgpick-chips
+	   button`, driven by their own 18px icon) — both `.r-stepper` and
+	   `.r-toggle--shadow` build on this base rule, so fixing it here keeps
+	   every hero pill (loading or real Stepper, Shadow toggle) lined up with
+	   the chips instead of each landing on its own slightly different
+	   emergent height. */
+	min-height: 32px;
 	border-radius: var(--r-pill);
 	background: var(--surface-2);
 	border: 1px solid var(--border);
@@ -1583,10 +1590,15 @@
 .rvmp .r-stepper button {
 	display: grid;
 	place-items: center;
-	width: 30px;
-	height: 30px;
+	/* 24px, not 30 — with `.r-stepper`'s own 3px vertical padding and
+	   `.r-toggle`'s 1px border, 24 is exactly what keeps the whole pill at
+	   the same 32px as the chips (24 + 2×3 + 2×1 = 32); 30 made the real
+	   Stepper visibly taller than its own loading placeholder and the Shadow
+	   toggle beside it. */
+	width: 24px;
+	height: 24px;
 	border-radius: var(--r-pill);
-	font-size: 18px;
+	font-size: 15px;
 	font-weight: 700;
 	color: var(--text);
 	background: var(--surface-3);
@@ -1610,6 +1622,32 @@
 .rvmp .r-muted {
 	color: var(--text-dim);
 	font-size: 13.5px;
+}
+/* "From: <event>" credit line above a date/Now chip's grid (Calendar's Raids
+   and Spawns tabs) — small and muted so it reads as a caption, not a heading;
+   the event name itself gets a touch more weight/color to stand out from the
+   "From" lead-in. */
+.rvmp .r-slot-source {
+	margin: 0 0 var(--s3);
+	font-size: 12.5px;
+	color: var(--text-faint);
+}
+.rvmp .r-slot-source em {
+	font-style: normal;
+	font-weight: 700;
+	color: var(--text-dim);
+}
+/* LeekDuck credit variant — a real link (out to the site itself), so it
+   still reads as clickable rather than a dead-end fan-site name. */
+.rvmp .r-slot-source a {
+	font-weight: 700;
+	color: var(--text-dim);
+	text-decoration: underline;
+	text-decoration-color: var(--border-strong);
+	text-underline-offset: 2px;
+}
+.rvmp .r-slot-source a:hover {
+	color: var(--text);
 }
 .rvmp .r-loading {
 	display: flex;
@@ -3297,6 +3335,7 @@
 	border-color: color-mix(in srgb, var(--lg-c) 45%, var(--border-strong));
 	background: color-mix(in srgb, var(--lg-c) 12%, transparent);
 }
+.rvmp .r-lgpick-chips button:hover,
 .rvmp .r-lgpick-chips button[data-active='true'] {
 	color: var(--lg-c);
 }

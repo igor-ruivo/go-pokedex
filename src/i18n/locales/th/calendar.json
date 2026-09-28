@@ -93,5 +93,6 @@
 		"hours": "เหลืออีก {{count}} ชั่วโมง",
 		"minutes": "เหลืออีก {{count}} นาที",
 		"seconds": "เหลืออีก {{count}} วินาที"
-	}
+	},
+	"slotSource": "จาก <em>{{event}}</em>"
 }
