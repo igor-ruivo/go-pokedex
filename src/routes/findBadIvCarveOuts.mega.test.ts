@@ -105,21 +105,23 @@ describe('findBadIvCarveOuts — Preserve Megas IVs: Shadow-purify-into-Mega pat
 			gamemasterPokemon,
 			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [1500, 2500, Number.MAX_VALUE],
-			// Isolates this mechanism specifically from the non-Shadow pass
-			// above (both default `true`, and the two are otherwise
-			// independent) — this is exactly the shape the bad-IV tab's own
-			// query uses when the checkbox is off (see
-			// `includeMegaForNonShadow`'s own doc comment on
-			// `BadIvCarveOutsInput`).
+			// `includeShadowPurify: false` isolates this test to the Mega-only
+			// mechanism specifically — left at its own default (`true`) here,
+			// mockPokemon's default 120/120/120 stats DO produce a genuine
+			// Shadow-only-line carve-out at the uncapped Master cap (no
+			// 90%-of-cap pre-filter applies there — unlike at 1500/2500, where
+			// 120/120/120's own maxCP falls short of it), which would
+			// contaminate this test's "Mega path off means zero entries"
+			// assertion with an unrelated true positive.
+			includeShadowPurify: false,
 			includeMegaForNonShadow: false,
 			preserveMegaIvs: false,
 		});
 
 		// Both Shadows have plain, unremarkable own stats (mockPokemon's
-		// default 120/120/120) — their own Shadow-only purified line (still
-		// evaluated, since `includeShadowPurify` defaults `true`) contributes
-		// nothing either, so these must be empty outright, not just
-		// Mega-free.
+		// default 120/120/120) — with `includeShadowPurify: false` their own
+		// Shadow-only purified line never even runs, so these must be empty
+		// outright, not just Mega-free.
 		expect(carveOuts.some((c) => c.speciesId === greatShadow.speciesId)).toBe(false);
 		expect(carveOuts.some((c) => c.speciesId === ultraShadow.speciesId)).toBe(false);
 	});
@@ -130,6 +132,14 @@ describe('findBadIvCarveOuts — Preserve Megas IVs: Shadow-purify-into-Mega pat
 			gamemasterPokemon,
 			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
 			caps: [1500, 2500, Number.MAX_VALUE],
+			// See the "off" test above for why this must stay `false` here too:
+			// without it, 120/120/120's own genuine Shadow-only-line carve-out
+			// at the uncapped Master cap collides bucket-for-bucket with the
+			// Mega's own purified pattern there, and — since the Shadow-only
+			// pass is evaluated before the Mega pass — silently wins the
+			// dedup, replacing part of the expected Mega-derived pattern set
+			// with the Shadow's own unrelated one.
+			includeShadowPurify: false,
 			includeMegaForNonShadow: false,
 			preserveMegaIvs: true,
 		});
