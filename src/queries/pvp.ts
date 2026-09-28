@@ -12,8 +12,6 @@ import {
 } from '../utils/Configs';
 import { fetchJsonInWorker } from '../utils/fetch-json';
 
-export const customCupCPLimit = 1500;
-
 export type RankList = Record<string, IRankedPokemon>;
 
 interface PvpData {

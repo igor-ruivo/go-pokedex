@@ -16,7 +16,7 @@ import { expose } from 'comlink';
 import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
-import type { IIvPercents } from '../DTOs/ivs';
+import type { IIvPercents, ILeagueIvBlock } from '../DTOs/ivs';
 import type { DPSEntry } from '../queries/raid-ranker';
 import {
 	calculateCP,
@@ -32,10 +32,6 @@ import {
 	type RaidTier,
 	type RankEntry,
 } from '../utils/pokemon-helper';
-
-// Keep in sync with `customCupCPLimit` in src/queries/pvp.ts. Duplicated (not imported)
-// so the worker bundle doesn't pull in TanStack Query.
-const CUSTOM_CUP_CP_LIMIT = 1500;
 
 export interface FamilyMember {
 	speciesId: string;
@@ -77,6 +73,28 @@ const competitionRank = (flat: Array<RankEntry>, idx: number): number => {
 	return i + 1;
 };
 
+/** One league tier's `ILeagueIvBlock` — `undefined` when `flat` is empty,
+ *  i.e. even the CP floor (level 1, 0/0/0 IVs) exceeds this league's cap, so
+ *  there is no legal spread at all (a Mega in Great/Ultra League, most
+ *  commonly). Indexing `flat[0]`/`flat[rankIdx]` unconditionally here used
+ *  to throw for exactly that case (`flat[rankIdx]` is `undefined` once
+ *  `rankIdx` — from `findIndex` on an empty array — is `-1`), which failed
+ *  the whole `familyIvPercents` call, not just this one league's slice. */
+const leagueBlock = (flat: Array<RankEntry>, rankIdx: number): ILeagueIvBlock | undefined => {
+	if (flat.length === 0 || rankIdx === -1) return undefined;
+	return {
+		rank: competitionRank(flat, rankIdx),
+		lvl: flat[rankIdx].L,
+		cp: flat[rankIdx].CP,
+		battle: flat[rankIdx].battle,
+		perfect: flat[0].IVs,
+		perfectLvl: flat[0].L,
+		perfectCP: flat[0].CP,
+		perfectBattle: flat[0].battle,
+		worstBattle: flat[flat.length - 1].battle,
+	};
+};
+
 const familyIvPercents = ({
 	reachable,
 	selfIsShadow,
@@ -94,12 +112,10 @@ const familyIvPercents = ({
 		const effectiveDef = effIV(defenseIV);
 		const effectiveHP = effIV(hpIV);
 
-		const resLC = computeBestIVs(p.atk, p.def, p.hp, CUSTOM_CUP_CP_LIMIT, maxLevel);
 		const resGL = computeBestIVs(p.atk, p.def, p.hp, 1500, maxLevel);
 		const resUL = computeBestIVs(p.atk, p.def, p.hp, 2500, maxLevel);
 		const resML = computeBestIVs(p.atk, p.def, p.hp, Number.MAX_VALUE, maxLevel);
 
-		const flatLResult = Object.values(resLC).flat();
 		const flatGLResult = Object.values(resGL).flat();
 		const flatULResult = Object.values(resUL).flat();
 		const flatMLResult = Object.values(resML).flat();
@@ -107,56 +123,23 @@ const familyIvPercents = ({
 		const matches = (r: (typeof flatGLResult)[number]) =>
 			r.IVs.A === effectiveAtk && r.IVs.D === effectiveDef && r.IVs.S === effectiveHP;
 
-		const rankLIndex = flatLResult.findIndex(matches);
 		const rankGLIndex = flatGLResult.findIndex(matches);
 		const rankULIndex = flatULResult.findIndex(matches);
 		const rankMLIndex = flatMLResult.findIndex(matches);
 
+		const great = leagueBlock(flatGLResult, rankGLIndex);
+		const ultra = leagueBlock(flatULResult, rankULIndex);
+		// Master is always uncapped (`league: Number.MAX_VALUE`), so this can
+		// never actually be empty/`-1` — `leagueBlock`'s return type still
+		// says "possibly undefined" since it doesn't know that, so this is
+		// asserted rather than optional-chained; `IIvPercents.master` stays
+		// required.
+		const master = leagueBlock(flatMLResult, rankMLIndex)!;
+
 		result[p.speciesId] = {
-			greatLeagueRank: competitionRank(flatGLResult, rankGLIndex),
-			greatLeagueLvl: flatGLResult[rankGLIndex].L,
-			greatLeagueCP: flatGLResult[rankGLIndex].CP,
-			greatLeagueAttack: flatGLResult[rankGLIndex].battle.A,
-			greatLeagueDefense: flatGLResult[rankGLIndex].battle.D,
-			greatLeagueHP: flatGLResult[rankGLIndex].battle.S,
-			greatLeaguePerfect: flatGLResult[0].IVs,
-			greatLeaguePerfectLevel: flatGLResult[0].L,
-			greatLeaguePerfectCP: flatGLResult[0].CP,
-			greatLeaguePerfectBattle: flatGLResult[0].battle,
-			greatLeagueWorstBattle: flatGLResult[flatGLResult.length - 1].battle,
-			ultraLeagueRank: competitionRank(flatULResult, rankULIndex),
-			ultraLeagueLvl: flatULResult[rankULIndex].L,
-			ultraLeagueCP: flatULResult[rankULIndex].CP,
-			ultraLeagueAttack: flatULResult[rankULIndex].battle.A,
-			ultraLeagueDefense: flatULResult[rankULIndex].battle.D,
-			ultraLeagueHP: flatULResult[rankULIndex].battle.S,
-			ultraLeaguePerfect: flatULResult[0].IVs,
-			ultraLeaguePerfectLevel: flatULResult[0].L,
-			ultraLeaguePerfectCP: flatULResult[0].CP,
-			ultraLeaguePerfectBattle: flatULResult[0].battle,
-			ultraLeagueWorstBattle: flatULResult[flatULResult.length - 1].battle,
-			masterLeagueRank: competitionRank(flatMLResult, rankMLIndex),
-			masterLeagueLvl: flatMLResult[rankMLIndex].L,
-			masterLeagueCP: flatMLResult[rankMLIndex].CP,
-			masterLeagueAttack: flatMLResult[rankMLIndex].battle.A,
-			masterLeagueDefense: flatMLResult[rankMLIndex].battle.D,
-			masterLeagueHP: flatMLResult[rankMLIndex].battle.S,
-			masterLeaguePerfect: flatMLResult[0].IVs,
-			masterLeaguePerfectLevel: flatMLResult[0].L,
-			masterLeaguePerfectCP: flatMLResult[0].CP,
-			masterLeaguePerfectBattle: flatMLResult[0].battle,
-			masterLeagueWorstBattle: flatMLResult[flatMLResult.length - 1].battle,
-			customLeagueRank: competitionRank(flatLResult, rankLIndex),
-			customLeagueLvl: flatLResult[rankLIndex].L,
-			customLeagueCP: flatLResult[rankLIndex].CP,
-			customLeagueAttack: flatLResult[rankLIndex].battle.A,
-			customLeagueDefense: flatLResult[rankLIndex].battle.D,
-			customLeagueHP: flatLResult[rankLIndex].battle.S,
-			customLeaguePerfect: flatLResult[0].IVs,
-			customLeaguePerfectLevel: flatLResult[0].L,
-			customLeaguePerfectCP: flatLResult[0].CP,
-			customLeaguePerfectBattle: flatLResult[0].battle,
-			customLeagueWorstBattle: flatLResult[flatLResult.length - 1].battle,
+			...(great && { great }),
+			...(ultra && { ultra }),
+			master,
 		};
 	}
 
@@ -396,7 +379,19 @@ export const findBadIvCarveOuts = ({
 	// clause already protects, so it isn't emitted twice.
 	const rawPatternKeys = new Map<string, Set<string>>();
 	for (const p of candidates) {
-		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, domainFilter));
+		// `includeMega: true` — a base species' own Mega form is still a real
+		// stage "it could become" (see this function's own doc comment), and
+		// dex-server's `speciesSearchMetadata` already ships `bestIvSpreads`
+		// for Mega species through the same mechanism as everything else, so
+		// there's nothing missing on the data side. Without this, a wild
+		// catch whose Mega form is the actual top-1 stat product for a cap
+		// (1500/2500 both have Mega-legal cups) had no carve-out protecting
+		// it at all, risking that spread being swept up as "bad IV" despite
+		// being exactly what you'd want to keep for Mega-evolving later.
+		// `domainFilter`'s own `!isMega` clause doesn't fight this — it's
+		// only ever applied to evolution-chain children, never to the Mega
+		// branch `includeMega` adds, so nothing else needs to change here.
+		const reachable = Array.from(fetchReachablePokemonIncludingSelf(p, gamemasterPokemon, domainFilter, true));
 		for (const cap of caps) {
 			const distinctPatterns = new Map<string, BadIvPattern>();
 			for (const r of reachable) {

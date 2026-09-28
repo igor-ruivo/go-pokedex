@@ -4,49 +4,28 @@ export interface ILeaguePerfectStats {
 	S: number;
 }
 
+/** One league tier's full IV readout for a species. */
+export interface ILeagueIvBlock {
+	rank: number;
+	lvl: number;
+	cp: number;
+	battle: ILeaguePerfectStats;
+	perfect: ILeaguePerfectStats;
+	perfectLvl: number;
+	perfectCP: number;
+	perfectBattle: ILeaguePerfectStats;
+	worstBattle: ILeaguePerfectStats;
+}
+
+// One block per CP-cap tier, not 44 individually-optional `great*`/`ultra*`/
+// `master*` fields — `great`/`ultra` are simply omitted (not present, not
+// "present but undefined") whenever a species has no legal spread at all in
+// that tier: its CP floor (level 1, 0/0/0 IVs) already exceeds the cap,
+// which a Mega in Great/Ultra League hits routinely. Master is always
+// uncapped (`league: Number.MAX_VALUE`), so it can never actually be
+// missing and stays required.
 export interface IIvPercents {
-	greatLeagueRank: number;
-	greatLeagueLvl: number;
-	greatLeagueCP: number;
-	greatLeagueAttack: number;
-	greatLeagueDefense: number;
-	greatLeagueHP: number;
-	greatLeaguePerfect: ILeaguePerfectStats;
-	greatLeaguePerfectLevel: number;
-	greatLeaguePerfectCP: number;
-	greatLeaguePerfectBattle: ILeaguePerfectStats;
-	greatLeagueWorstBattle: ILeaguePerfectStats;
-	ultraLeagueRank: number;
-	ultraLeagueLvl: number;
-	ultraLeagueCP: number;
-	ultraLeagueAttack: number;
-	ultraLeagueDefense: number;
-	ultraLeagueHP: number;
-	ultraLeaguePerfect: ILeaguePerfectStats;
-	ultraLeaguePerfectLevel: number;
-	ultraLeaguePerfectCP: number;
-	ultraLeaguePerfectBattle: ILeaguePerfectStats;
-	ultraLeagueWorstBattle: ILeaguePerfectStats;
-	masterLeagueRank: number;
-	masterLeagueLvl: number;
-	masterLeagueCP: number;
-	masterLeagueAttack: number;
-	masterLeagueDefense: number;
-	masterLeagueHP: number;
-	masterLeaguePerfect: ILeaguePerfectStats;
-	masterLeaguePerfectLevel: number;
-	masterLeaguePerfectCP: number;
-	masterLeaguePerfectBattle: ILeaguePerfectStats;
-	masterLeagueWorstBattle: ILeaguePerfectStats;
-	customLeagueRank: number;
-	customLeagueLvl: number;
-	customLeagueCP: number;
-	customLeagueAttack: number;
-	customLeagueDefense: number;
-	customLeagueHP: number;
-	customLeaguePerfect: ILeaguePerfectStats;
-	customLeaguePerfectLevel: number;
-	customLeaguePerfectCP: number;
-	customLeaguePerfectBattle: ILeaguePerfectStats;
-	customLeagueWorstBattle: ILeaguePerfectStats;
+	great?: ILeagueIvBlock;
+	ultra?: ILeagueIvBlock;
+	master: ILeagueIvBlock;
 }

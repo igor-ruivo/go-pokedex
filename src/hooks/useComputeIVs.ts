@@ -51,9 +51,14 @@ const useComputeIVs = ({
 		if (!pokemon || !fetchCompleted) {
 			return [];
 		}
+		// `includeMega: true` — a reachable Mega form (see PokemonDetail.tsx's
+		// own `reachablePvp`) needs an IV-percentile entry too, or its "Best
+		// Reachable" row has nowhere to source its rank/percentile readout
+		// from and stays stuck on "…" forever, with nothing actually loading
+		// (this call's result for that speciesId just never existed).
 		const members = justForSelf
 			? [pokemon]
-			: Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon));
+			: Array.from(fetchReachablePokemonIncludingSelf(pokemon, gamemasterPokemon, undefined, true));
 		return members
 			.filter((p): p is IGamemasterPokemon => !!p)
 			.map((p) => ({

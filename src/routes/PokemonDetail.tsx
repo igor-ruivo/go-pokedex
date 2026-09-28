@@ -18,7 +18,7 @@ import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { ActiveLeague } from '../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import type { IIvPercents } from '../DTOs/ivs';
+import type { IIvPercents, ILeagueIvBlock } from '../DTOs/ivs';
 import { useBestIvs } from '../hooks/useBestIvs';
 import useComputeIVs from '../hooks/useComputeIVs';
 import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
@@ -139,44 +139,17 @@ const renderWithColoredParams = (
 // Percentile/rank spreads are precomputed server-side for exactly three tiers
 // (1500/2500/uncapped CP cap) — never per specific cup. Every league sharing
 // a cap tier (a rotating 1500-cap cup included) reuses the same tier's
-// fields; only the CP cap itself decides which tier applies, per the product
+// block; only the CP cap itself decides which tier applies, per the product
 // note that IV evaluations never vary by which specific cup you're in.
-const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number) => {
+// `great`/`ultra`/`custom` on `IIvPercents` are simply absent for a species
+// with no legal spread in that tier at all (a Mega in Great/Ultra League,
+// most commonly) — `master` (always uncapped) never is, so it's the only
+// branch with nothing to fall back to `undefined` for.
+const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number): ILeagueIvBlock | undefined => {
 	if (!ivp) return undefined;
-	if (cpCap <= 1500) {
-		return {
-			rank: ivp.greatLeagueRank,
-			cp: ivp.greatLeagueCP,
-			lvl: ivp.greatLeagueLvl,
-			battle: { A: ivp.greatLeagueAttack, D: ivp.greatLeagueDefense, S: ivp.greatLeagueHP },
-			perfect: ivp.greatLeaguePerfect,
-			perfectCP: ivp.greatLeaguePerfectCP,
-			perfectLvl: ivp.greatLeaguePerfectLevel,
-			perfectBattle: ivp.greatLeaguePerfectBattle,
-		};
-	}
-	if (cpCap <= 2500) {
-		return {
-			rank: ivp.ultraLeagueRank,
-			cp: ivp.ultraLeagueCP,
-			lvl: ivp.ultraLeagueLvl,
-			battle: { A: ivp.ultraLeagueAttack, D: ivp.ultraLeagueDefense, S: ivp.ultraLeagueHP },
-			perfect: ivp.ultraLeaguePerfect,
-			perfectCP: ivp.ultraLeaguePerfectCP,
-			perfectLvl: ivp.ultraLeaguePerfectLevel,
-			perfectBattle: ivp.ultraLeaguePerfectBattle,
-		};
-	}
-	return {
-		rank: ivp.masterLeagueRank,
-		cp: ivp.masterLeagueCP,
-		lvl: ivp.masterLeagueLvl,
-		battle: { A: ivp.masterLeagueAttack, D: ivp.masterLeagueDefense, S: ivp.masterLeagueHP },
-		perfect: ivp.masterLeaguePerfect,
-		perfectCP: ivp.masterLeaguePerfectCP,
-		perfectLvl: ivp.masterLeaguePerfectLevel,
-		perfectBattle: ivp.masterLeaguePerfectBattle,
-	};
+	if (cpCap <= 1500) return ivp.great;
+	if (cpCap <= 2500) return ivp.ultra;
+	return ivp.master;
 };
 
 const PokemonDetail = () => {
