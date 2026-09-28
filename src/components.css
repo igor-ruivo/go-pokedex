@@ -53,6 +53,16 @@
 	border: 1px solid var(--border);
 	overflow: clip;
 }
+/* The 35%-zoomed GO/shiny-GO hero sprite bobs up and down (`r-bob-go`) —
+   large enough, at the top/bottom of that motion, to reach past `.r-hero`'s
+   own edge, which the `overflow: clip` above would otherwise cut into. The
+   whole sprite must always stay visible, so this drops the clip entirely
+   whenever that's the sprite showing (the decorative glow below no longer
+   gets contained to the rounded corners in that case either, but showing
+   the full sprite wins). */
+.rvmp .r-hero:has(.r-sprite > img[src*='pogo_assets']) {
+	overflow: visible;
+}
 .rvmp .r-hero::after {
 	content: '';
 	position: absolute;
@@ -315,8 +325,18 @@
 	bottom: 2%;
 	transform: translateX(-50%);
 	display: flex;
+	align-items: center;
 	gap: 5px;
-	z-index: 3;
+	/* Above the zoomed GO/shiny-GO sprite's own z-index (5) — otherwise a
+	   35%-bigger, bobbing sprite can render on top of these carousel dots. */
+	z-index: 6;
+	/* A soft pill backdrop so the dots stay visible/legible against any
+	   sprite's own colors instead of just floating bare over the artwork. */
+	padding: 4px 7px;
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--surface) 55%, transparent);
+	backdrop-filter: blur(3px);
+	box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
 }
 .rvmp .r-sprite-dots i {
 	width: 6px;
@@ -363,6 +383,19 @@
 	}
 	50% {
 		transform: translateY(-8px);
+	}
+}
+/* Same bob, with the GO/shiny-GO zoom baked in — a plain `transform` on the
+   element itself would just get overridden every frame by the `r-bob`
+   animation above, since an animated property's keyframe values always win
+   over a separately-set static one rather than composing with it. */
+@keyframes r-bob-go {
+	0%,
+	100% {
+		transform: scale(1.35) translateY(0);
+	}
+	50% {
+		transform: scale(1.35) translateY(-8px);
 	}
 }
 
@@ -1033,7 +1066,9 @@
 		transform 0.12s ease,
 		box-shadow 0.14s ease,
 		filter 0.14s ease;
-	z-index: 3;
+	/* Above the zoomed GO/shiny-GO sprite's own z-index (5) — this type
+	   medallion must always stay on top of the artwork, zoomed or not. */
+	z-index: 6;
 }
 .rvmp .r-board-row[data-active='true'] .r-board-type {
 	/* selected raid league: raid-league contour + glow, mirroring the shadow adorner */
@@ -2687,7 +2722,10 @@
 	top: 4%;
 	left: 50%;
 	transform: translateX(-50%);
-	z-index: 4;
+	/* Above the zoomed GO/shiny-GO sprite's own z-index (5, see the
+	   `[src*='pogo_assets']` rule) — this "time remaining" badge must always
+	   stay on top of the artwork, zoomed or not. */
+	z-index: 6;
 	max-width: 94%;
 	padding: 2px 6px;
 	border-radius: var(--r-pill);
@@ -3444,28 +3482,41 @@
 /* "catchable" is signalled by the `.r-catch-tag` on the tier label — the tile
    itself stays a plain square (no border / background wash). */
 
-/* ---- GO / shiny-GO sprite contour ---------------------------------------------
-   The Pokémon GO icon PNGs are flat cut-outs with no built-in outline, so they
-   read poorly on dark surfaces. Trace a crisp dark edge with stacked drop-shadows
-   (plus a soft ground shadow). Scoped to the PokeMiners asset host so the
-   pokemon.com official artwork — which has its own outline — is left untouched.
-   The `[src*=...]` bumps specificity past each base `img` rule; if `onError`
-   swaps back to the official URL the selector simply stops matching. */
-.rvmp .r-sprite > img:not(.r-sprite-shadow)[src*='pogo_assets'],
+/* Same "zoom in to compensate for GO/shiny-GO's built-in padding" treatment
+   as the hero sprite (see that rule's own note below) — everywhere else a
+   single Pokémon sprite renders. `position: relative` is needed here (unlike
+   the hero, which already had it) since none of these tiles' images set
+   their own `position` otherwise, and `z-index` is a no-op without one. */
 .rvmp .r-pc-art > img[src*='pogo_assets'],
 .rvmp .r-mini > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-board-sprite > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-ctr-art > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-reach-chip .r-reach-art img[src*='pogo_assets'] {
-	filter: drop-shadow(1px 0 0 rgb(0 0 0 / 0.9)) drop-shadow(-1px 0 0 rgb(0 0 0 / 0.9))
-		drop-shadow(0 1px 0 rgb(0 0 0 / 0.9)) drop-shadow(0 -1px 0 rgb(0 0 0 / 0.9))
-		drop-shadow(0 3px 5px rgb(0 0 0 / 0.45));
+	position: relative;
+	transform: scale(1.35);
+	z-index: 5;
 }
-/* the hero sprite is larger — a slightly heavier outline keeps it crisp */
+/* `.r-pc`/`.r-mini`/`.r-reach-chip` clip by design (rounded tile corners) —
+   let this one sprite's zoom spill past that clip instead of getting cut
+   off, same as the user explicitly asked for on the hero. `.r-board-sprite`/
+   `.r-ctr-art` don't clip in the first place, so they need no such override. */
+.rvmp .r-pc:has(> .r-pc-art > img[src*='pogo_assets']),
+.rvmp .r-mini:has(> img[src*='pogo_assets']),
+.rvmp .r-reach-chip:has(.r-reach-art img[src*='pogo_assets']) {
+	overflow: visible;
+}
 .rvmp .r-sprite > img:not(.r-sprite-shadow)[src*='pogo_assets'] {
-	filter: drop-shadow(1.5px 0 0 rgb(0 0 0 / 0.92)) drop-shadow(-1.5px 0 0 rgb(0 0 0 / 0.92))
-		drop-shadow(0 1.5px 0 rgb(0 0 0 / 0.92)) drop-shadow(0 -1.5px 0 rgb(0 0 0 / 0.92))
-		drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
+	/* The GO/shiny-GO assets carry a lot of built-in transparent padding
+	   (unlike the official artwork), so they render visibly smaller in the
+	   same box — zoom in to compensate. The hero's own layout box is
+	   untouched (scale doesn't affect layout), so this is allowed to spill
+	   outside the sprite's own bounds rather than staying starved; raised
+	   above its siblings since it now visually overlaps them. `r-bob-go`
+	   (not the base `r-bob`) bakes the same zoom into every frame of the
+	   bob animation — see that keyframe's own note on why a plain, separate
+	   `transform` here wouldn't survive the animation overriding it. */
+	animation-name: r-bob-go;
+	z-index: 5;
 }
 
 /* ---- Moves list + Move detail --------------------------------------------- */
