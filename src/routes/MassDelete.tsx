@@ -1464,9 +1464,38 @@ const MassDeleteContent = ({
 	const { tab } = useParams();
 	const navigate = useNavigate();
 	const mode: 'meta' | 'badIv' | 'trade' = tab === 'non-perfect-ivs' ? 'badIv' : tab === 'tradeable' ? 'trade' : 'meta';
+	// Switching tabs swaps in a whole different, previously-unmounted subtree
+	// of controls (every knob/select/chip for that tab mounts fresh — nothing
+	// for the `memo` wrapping elsewhere in this file to bail out of, since
+	// none of it exists yet), which is real, visible, one-time render cost —
+	// the same underlying issue `MassDelete`'s own deferred-mount spinner
+	// above addresses for the page's initial load, just triggered by a tab
+	// click instead of a fresh mount.
+	//
+	// `pendingMode` (not a plain boolean) is what actually makes this work:
+	// `navigate()` doesn't necessarily land `mode` (derived from `useParams()`,
+	// i.e. the URL) in the SAME commit as the click that triggered it — router
+	// state can take its own extra render(s) to catch up. A plain "show the
+	// spinner for exactly one commit" flag has no way to know whether `mode`
+	// has actually caught up to the tab that was clicked by the time that one
+	// commit is over, so it was clearing itself (and letting the OLD tab's
+	// content flash back in) before the real switch had happened at all —
+	// exactly the "spinner disappears too soon, then nothing changes for a
+	// bit, THEN it finally switches" symptom this fixes. Tying it to
+	// `mode === pendingMode` instead means the spinner provably stays up for
+	// every commit in between, no matter how many the router needs, and only
+	// clears in the same effect pass that discovers `mode` has truly become
+	// the tab that was asked for.
+	const [pendingMode, setPendingMode] = useState<'meta' | 'badIv' | 'trade' | null>(null);
+	useEffect(() => {
+		if (pendingMode !== null && mode === pendingMode) setPendingMode(null);
+	}, [mode, pendingMode]);
+	const showModeSpinner = pendingMode !== null;
 	const setMode = (next: 'meta' | 'badIv' | 'trade') => {
+		if (next === mode) return;
 		const slug: MassDeleteTab =
 			next === 'badIv' ? 'non-perfect-ivs' : next === 'trade' ? 'tradeable' : 'non-meta-relevant';
+		setPendingMode(next);
 		void navigate(R.searchStrings(slug));
 	};
 	const isTrade = mode === 'trade';
@@ -2178,8 +2207,15 @@ const MassDeleteContent = ({
 				</button>
 			</div>
 
-			{isBadIv && (
-				<div className='r-card r-md-warning'>
+			{showModeSpinner ? (
+				<div className='r-loading'>
+					<div className='r-spinner' />
+					{t('massDelete:loading')}
+				</div>
+			) : (
+				<>
+					{isBadIv && (
+						<div className='r-card r-md-warning'>
 					<p style={{ margin: 0 }}>⚠️ {t('massDelete:badIvWarning')}</p>
 				</div>
 			)}
@@ -2780,6 +2816,8 @@ const MassDeleteContent = ({
 				<button type='button' className='r-md-copy' onClick={copy}>
 					{copied ? t('massDelete:copied') : t('massDelete:copySearchString')}
 				</button>
+			)}
+				</>
 			)}
 		</div>
 	);
