@@ -74,24 +74,56 @@ export const handleSpriteError = (pokemon: IGamemasterPokemon) => (e: React.Synt
 // supposed to transition away from it.
 type FadePhase = 'idle' | 'fadingOut' | 'loading' | 'fadingIn';
 
+// Only a safety net for a `transitionend` that never comes (sprite in a
+// `display: none` tab, reduced motion, an interrupted transition) — must be
+// longer than the slowest `.r-fade-sprite` transition in components.css.
+const FADE_FALLBACK_MS = 700;
+
 const useSequentialFade = (resolved: string) => {
 	const [displayed, setDisplayed] = useState(resolved);
 	const [phase, setPhase] = useState<FadePhase>('idle');
 	const targetRef = useRef(resolved);
+	const phaseRef = useRef<FadePhase>('idle');
+	phaseRef.current = phase;
 
 	useEffect(() => {
 		targetRef.current = resolved;
 		if (resolved === displayed) {
-			setPhase('idle');
+			// Only a fade-out that got reverted back to the current image ends
+			// here. In `loading`/`fadingIn` `displayed` already IS the target —
+			// going `idle` at that point would un-hide the <img> while the browser
+			// is still painting the PREVIOUS bitmap (the new one hasn't loaded).
+			setPhase((p) => (p === 'fadingOut' ? 'idle' : p));
+			return;
+		}
+		if (phaseRef.current === 'loading') {
+			// Still invisible and waiting on the previous target — retarget without
+			// another fade-out (there's nothing visible to fade, and no transition
+			// would fire to advance us).
+			setDisplayed(resolved);
 			return;
 		}
 		setPhase('fadingOut');
+		// Start fetching now, during the fade-out, so the network wait overlaps it.
+		const preload = new Image();
+		preload.src = resolved;
 	}, [resolved, displayed]);
 
-	const handleTransitionEnd = () => {
+	const finishFadeOut = () => {
+		setDisplayed(targetRef.current);
+		setPhase('loading');
+	};
+
+	useEffect(() => {
+		if (phase !== 'fadingOut') return;
+		const id = window.setTimeout(finishFadeOut, FADE_FALLBACK_MS);
+		return () => window.clearTimeout(id);
+	}, [phase]);
+
+	const handleTransitionEnd = (e: React.TransitionEvent<HTMLImageElement>) => {
+		if (e.target !== e.currentTarget || e.propertyName !== 'opacity') return;
 		if (phase === 'fadingOut') {
-			setDisplayed(targetRef.current);
-			setPhase('loading');
+			finishFadeOut();
 		} else if (phase === 'fadingIn') {
 			setPhase('idle');
 		}

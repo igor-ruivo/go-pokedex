@@ -28,13 +28,13 @@ export const LeagueVisibilityMenu = () => {
 				aria-expanded={open}
 				onClick={() => setOpen((o) => !o)}
 			>
-				{/* "column picker" glyph — three columns, the middle one toggled off — the
-				    same visual metaphor a data-table's own show/hide-columns control uses. */}
+				{/* "view columns" glyph — a table frame split into three columns, the
+				    middle one highlighted as the one being picked — the same metaphor a
+				    data-table's own show/hide-columns control uses. */}
 				<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' aria-hidden='true'>
-					<rect x='3' y='4' width='5' height='16' rx='1' />
-					<rect x='9.5' y='4' width='5' height='16' rx='1' strokeDasharray='2 2' />
-					<rect x='16' y='4' width='5' height='16' rx='1' />
-					<path d='M11 10.5l1.5 1.5 2-3' strokeLinecap='round' strokeLinejoin='round' />
+					<rect x='3' y='4' width='18' height='16' rx='2.5' />
+					<rect x='9' y='4' width='6' height='16' fill='currentColor' fillOpacity='0.3' stroke='none' />
+					<path d='M9 4v16M15 4v16' strokeLinecap='round' />
 				</svg>
 			</button>
 

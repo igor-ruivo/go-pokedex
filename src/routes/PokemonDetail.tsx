@@ -274,24 +274,20 @@ const PokemonDetail = () => {
 		next.set('lg', id);
 		setSearchParams(next, { replace: true });
 	};
-	const [heroSpriteIdx, setHeroSpriteIdx] = useState(0);
-	// Default (and re-sync point) for the hero carousel: whichever sprite the
-	// "Sprites" setting prefers, not always the official artwork — landing on a
-	// new Pokémon, or flipping the setting while already here, both snap the
-	// hero (and its mini topbar echo, and the hint dots below it, which just
-	// track this same index) back to that preference. A manual tap/swipe still
-	// freely cycles from there. Guarded for `pokemon` still being undefined
-	// mid-fetch — `fetchCompleted` in the deps re-fires this once it lands.
-	useLayoutEffect(() => {
-		if (!pokemon) return;
-		const sprites = [
-			...new Set(
-				[pokemon.imageUrl, goSpriteUrl(pokemon.goImageUrl), goSpriteUrl(pokemon.shinyGoImageUrl)].filter(Boolean)
-			),
-		];
-		setHeroSpriteIdx(Math.max(0, sprites.indexOf(spriteUrl(pokemon, imageSource))));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [speciesId, imageSource, fetchCompleted]);
+	// `null` = "follow the Sprites setting" (resolved during render below, so the
+	// very first paint of the hero already uses the preferred sprite — a `0`
+	// default snapped afterwards in an effect mounted the official artwork first
+	// and then had to fade over to the right one). A manual tap/swipe stores a
+	// real index and freely cycles from there. Landing on a new Pokémon, or
+	// flipping the setting while already here, goes back to `null`.
+	// The manual index is keyed to the species + setting it was picked under, so
+	// it's already ignored on the very first render after either changes (no
+	// one-frame flash of a stale index while an effect resets it).
+	const heroKey = `${speciesId}:${imageSource}`;
+	const [heroManual, setHeroManual] = useState<{ key: string; idx: number } | null>(null);
+	const heroSpriteIdx = heroManual?.key === heroKey ? heroManual.idx : null;
+	const setHeroSpriteIdx = (update: (i: number | null) => number) =>
+		setHeroManual((prev) => ({ key: heroKey, idx: update(prev?.key === heroKey ? prev.idx : null) }));
 	const isRaid = league === 'raid';
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
@@ -749,8 +745,10 @@ const PokemonDetail = () => {
 			[pokemon.imageUrl, goSpriteUrl(pokemon.goImageUrl), goSpriteUrl(pokemon.shinyGoImageUrl)].filter(Boolean)
 		),
 	];
+	const preferredHeroIdx = Math.max(0, heroSprites.indexOf(spriteUrl(pokemon, imageSource)));
+	const currentHeroIdx = heroSpriteIdx ?? preferredHeroIdx;
 	const heroIdx = heroSprites.length
-		? ((heroSpriteIdx % heroSprites.length) + heroSprites.length) % heroSprites.length
+		? ((currentHeroIdx % heroSprites.length) + heroSprites.length) % heroSprites.length
 		: 0;
 
 	// `iv`/`level` (and so `heroCp`) start at their plain defaults and only snap
@@ -895,9 +893,9 @@ const PokemonDetail = () => {
 					<Sprite
 						pokemon={pokemon}
 						src={heroSprites[heroIdx]}
-						onTap={() => setHeroSpriteIdx((i) => i + 1)}
-						onSwipeLeft={() => setHeroSpriteIdx((i) => i + 1)}
-						onSwipeRight={() => setHeroSpriteIdx((i) => i - 1)}
+						onTap={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
+						onSwipeLeft={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
+						onSwipeRight={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) - 1)}
 						hint={{ count: heroSprites.length, active: heroIdx }}
 					/>
 					<div style={{ flex: 1 }}>

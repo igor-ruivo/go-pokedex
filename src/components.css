@@ -397,6 +397,12 @@
 .rvmp img.r-fade-sprite[data-fade='hidden'] {
 	opacity: 0;
 }
+/* The hero sprite fades much slower than list/chip sprites, so the next
+   image has time to load while the current one is still fading out.
+   Keep `FADE_FALLBACK_MS` (Sprite.tsx) above this. */
+.rvmp .r-sprite > img.r-fade-sprite {
+	transition: opacity 0.45s ease;
+}
 @keyframes r-bob {
 	0%,
 	100% {
@@ -2223,6 +2229,25 @@
 	padding: var(--s3) 0 var(--s2);
 	margin-top: 0;
 	background: linear-gradient(var(--bg) 70%, transparent);
+	/* Own compositing layer + stacking context: on iOS Safari, when this sticky
+	   header changes height after a league switch (the sort button appears /
+	   the chip row reflows), the gradient's stale layer kept painting over the
+	   newly-laid-out controls until the next scroll forced a repaint. */
+	transform: translateZ(0);
+	isolation: isolate;
+}
+.rvmp .r-rank-head > * {
+	position: relative;
+	z-index: 1;
+}
+/* Popover anchor — must stay above the section heading below it. */
+.rvmp .r-rank-head > .r-controls {
+	z-index: 2;
+}
+/* The league-filter popover (`.r-lgfilter-pop`) lives in this row and drops
+   down over the controls below, so this row has to out-rank them. */
+.rvmp .r-rank-head > .r-league-row {
+	z-index: 3;
 }
 .rvmp .r-seg--wrap {
 	margin-top: var(--s2);
