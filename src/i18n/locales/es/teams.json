@@ -54,6 +54,8 @@
 	},
 	"score": {
 		"heading": "Puntuación",
+		"teamScore": "Puntuación del equipo",
+		"points": "{{value}} Pts.",
 		"ringAria": "Puntuación del equipo: {{score}} de 100",
 		"radarAria": "Las seis partes de la puntuación del equipo",
 		"calculating": "Simulando miles de combates…",
@@ -225,17 +227,28 @@
 	},
 	"suggest": {
 		"heading": "Mejoras",
+		"byThreat": "Por puntuación de amenaza",
+		"byScore": "Por puntuación del equipo",
+		"higherBetter": "Una puntuación del equipo más alta es mejor.",
 		"searching": "Probando Pokémon top en cada hueco…",
 		"failed": "No se pudieron calcular las sugerencias. Inténtalo de nuevo en un momento.",
-		"none": "No hemos encontrado fácilmente mejores mejoras.",
+		"none": "No hemos encontrado mejores mejoras.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Puntuación de amenaza {{score}} ({{delta}})"
+		"result": "Puntuación de amenaza {{score}} ({{delta}})",
+		"resultScore": "Puntuación del equipo {{score}} ({{delta}})"
 	},
 	"top": {
 		"intro": "Los equipos con mejor puntuación que hemos encontrado: cada trío de los {{candidates}} mejores Pokémon de la liga, con sus movimientos recomendados y mejores IV, puntuado como el creador. Toca uno para abrirlo en el creador.",
 		"teamScore": "Puntuación del equipo",
 		"note": "Puntuado el {{date}} entre {{total}} equipos posibles. Orden dentro del equipo: líder, cambio, cierre.",
 		"empty": "No hay ningún ranking de equipos disponible ahora mismo. Vuelve pronto.",
-		"threat": "Amenaza"
+		"threat": "Amenaza",
+		"help": {
+			"summary": "¿Qué significan estos números?",
+			"teamScore": "La valoración global, de 0 a 100; más alta es mejor. Una mezcla ponderada de seis partes: cobertura de amenazas {{threat}} %, tipos defensivos {{defense}} %, tipos ofensivos {{offense}} %, resistencia {{bulk}} %, seguridad {{safety}} % y consistencia {{consistency}} %.",
+			"threat": "La medida de PvPoke de lo vulnerable que es el equipo a los seis contras más peligrosos de la liga, con combates simulados con 0 y 1 escudos. Más baja es mejor.",
+			"roles": "Su puntuación de rol de PvPoke en esta liga, sobre 100. Líder indica lo bien que abre el combate, Cambio lo seguro que entra a mitad de combate y Cierre lo bien que remata sin escudos.",
+			"order": "Las flechas muestran el orden de juego: líder, luego el cambio seguro y luego el cierre. Elegimos el orden cuya suma de puntuaciones de rol es la más alta."
+		}
 	}
 }

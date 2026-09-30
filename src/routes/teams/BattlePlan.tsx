@@ -96,7 +96,7 @@ export const BattlePlan = ({
 								</b>
 								<span className='r-tm-step-role'>{names[role]}</span>
 								<span className='r-tm-step-desc'>{descriptions[role]}</span>
-								<span className='r-tm-step-score'>{scoreOf(member, role).toFixed(1)}</span>
+								<span className='r-tm-step-score'>{t('teams:score.points', { value: scoreOf(member, role).toFixed(1) })}</span>
 							</li>
 						</Fragment>
 					);

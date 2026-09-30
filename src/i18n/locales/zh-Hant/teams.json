@@ -54,6 +54,8 @@
 	},
 	"score": {
 		"heading": "分數",
+		"teamScore": "隊伍分數",
+		"points": "{{value}} 分",
 		"ringAria": "隊伍分數 {{score}}（滿分 100）",
 		"radarAria": "隊伍分數的六個組成部分",
 		"calculating": "正在模擬數千場對戰…",
@@ -225,17 +227,28 @@
 	},
 	"suggest": {
 		"heading": "升級建議",
+		"byThreat": "依威脅分數",
+		"byScore": "依隊伍分數",
+		"higherBetter": "隊伍分數越高越好。",
 		"searching": "正在每個位置測試頂尖寶可夢…",
 		"failed": "無法計算建議。請稍後再試。",
-		"none": "不容易找到更好的升級。",
+		"none": "找不到更好的升級。",
 		"swap": "{{out}} → {{in}}",
-		"result": "威脅分數 {{score}}（{{delta}}）"
+		"result": "威脅分數 {{score}}（{{delta}}）",
+		"resultScore": "隊伍分數{{score}}（{{delta}}）"
 	},
 	"top": {
 		"intro": "我們找到的最高分隊伍：聯盟前 {{candidates}} 名寶可夢的每一種三隻組合，搭配推薦招式與頂尖 IV，以建立器相同的方式評分。點選隊伍即可在建立器中開啟。",
 		"teamScore": "隊伍分數",
 		"note": "於 {{date}} 從 {{total}} 種可能的隊伍中評分。隊內順序：先發、換上、收尾。",
 		"empty": "目前沒有隊伍排名，請稍後再來。",
-		"threat": "威脅"
+		"threat": "威脅",
+		"help": {
+			"summary": "這些數字是什麼意思？",
+			"teamScore": "整體評分，0–100，越高越好。由六個部分加權組成：威脅涵蓋 {{threat}}%、防禦屬性 {{defense}}%、攻擊屬性 {{offense}}%、耐久 {{bulk}}%、安全性 {{safety}}% 與穩定性 {{consistency}}%。",
+			"threat": "PvPoke 用來衡量隊伍對聯盟中六個最危險剋制對手有多脆弱的指標，以 0 與 1 張護盾的模擬對戰計算。越低越好。",
+			"roles": "牠在此聯盟的 PvPoke 角色分數（滿分 100）。先發代表開局表現，換上代表中途上場的安全度，收尾代表護盾用完後的終結能力。",
+			"order": "箭頭表示出場順序：先發、安全換上、收尾。我們選擇角色分數總和最高的順序。"
+		}
 	}
 }

@@ -54,6 +54,8 @@
 	},
 	"score": {
 		"heading": "Score",
+		"teamScore": "Score d'équipe",
+		"points": "{{value}} pts",
 		"ringAria": "Score d'équipe : {{score}} sur 100",
 		"radarAria": "Les six composantes du score d'équipe",
 		"calculating": "Simulation de milliers de combats…",
@@ -225,17 +227,28 @@
 	},
 	"suggest": {
 		"heading": "Améliorations",
+		"byThreat": "Par score de menace",
+		"byScore": "Par score d'équipe",
+		"higherBetter": "Un score d'équipe plus élevé est meilleur.",
 		"searching": "Test des Pokémon du top à chaque emplacement…",
 		"failed": "Impossible de calculer les suggestions. Réessaie dans un instant.",
-		"none": "Nous n'avons pas trouvé facilement de meilleures améliorations.",
+		"none": "Nous n'avons pas trouvé de meilleures améliorations.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Score de menace {{score}} ({{delta}})"
+		"result": "Score de menace {{score}} ({{delta}})",
+		"resultScore": "Score d'équipe {{score}} ({{delta}})"
 	},
 	"top": {
 		"intro": "Les équipes les mieux notées que nous ayons trouvées : chaque trio parmi les {{candidates}} meilleurs Pokémon de la ligue, avec ses attaques recommandées et ses meilleurs IV, noté comme le créateur. Touche-en une pour l'ouvrir dans le créateur.",
 		"teamScore": "Score d'équipe",
 		"note": "Noté le {{date}} parmi {{total}} équipes possibles. Ordre dans l'équipe : ouvreur, relais, finisseur.",
 		"empty": "Aucun classement d'équipes n'est disponible pour le moment. Reviens bientôt.",
-		"threat": "Menace"
+		"threat": "Menace",
+		"help": {
+			"summary": "Que signifient ces chiffres ?",
+			"teamScore": "La note globale, de 0 à 100, plus haut est mieux. Un mélange pondéré de six parties : couverture des menaces {{threat}} %, types défensifs {{defense}} %, types offensifs {{offense}} %, robustesse {{bulk}} %, sécurité {{safety}} % et constance {{consistency}} %.",
+			"threat": "La mesure de PvPoke de la vulnérabilité de l'équipe face aux six contres les plus dangereux de la ligue, à partir de combats simulés avec 0 et 1 bouclier. Plus bas est mieux.",
+			"roles": "Son score de rôle PvPoke dans cette ligue, sur 100. Ouvreur indique sa qualité pour lancer le combat, Relais la sûreté de son entrée en cours de combat, Finisseur sa capacité à conclure sans boucliers.",
+			"order": "Les flèches montrent l'ordre de jeu : l'ouvreur, puis le relais sûr, puis le finisseur. Nous retenons l'ordre dont la somme des scores de rôle est la plus haute."
+		}
 	}
 }

@@ -54,6 +54,8 @@
 	},
 	"score": {
 		"heading": "Puan",
+		"teamScore": "Takım puanı",
+		"points": "{{value}} Puan",
 		"ringAria": "Takım puanı 100 üzerinden {{score}}",
 		"radarAria": "Takım puanının altı bileşeni",
 		"calculating": "Binlerce savaş simüle ediliyor…",
@@ -225,17 +227,28 @@
 	},
 	"suggest": {
 		"heading": "İyileştirmeler",
+		"byThreat": "Tehdit puanına göre",
+		"byScore": "Takım puanına göre",
+		"higherBetter": "Daha yüksek takım puanı daha iyidir.",
 		"searching": "Her yuvada üst düzey Pokémon'lar deneniyor…",
 		"failed": "Öneriler hesaplanamadı. Biraz sonra tekrar dene.",
-		"none": "Daha iyi yükseltmeleri kolayca bulamadık.",
+		"none": "Daha iyi yükseltmeler bulunamadı.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Tehdit puanı {{score}} ({{delta}})"
+		"result": "Tehdit puanı {{score}} ({{delta}})",
+		"resultScore": "Takım puanı {{score}} ({{delta}})"
 	},
 	"top": {
 		"intro": "Bulduğumuz en yüksek puanlı takımlar: ligin en iyi {{candidates}} Pokémon’unun her üçlüsü, önerilen hamleleri ve en iyi IV’leriyle, oluşturucudaki gibi puanlandı. Bir takıma dokunarak oluşturucuda aç.",
 		"teamScore": "Takım puanı",
 		"note": "{{date}} tarihinde {{total}} olası takım arasından puanlandı. Takımdaki sıra: açılış, geçiş, kapanış.",
 		"empty": "Şu anda takım sıralaması yok. Yakında tekrar bak.",
-		"threat": "Tehdit"
+		"threat": "Tehdit",
+		"help": {
+			"summary": "Bu sayılar ne anlama geliyor?",
+			"teamScore": "Genel değerlendirme, 0–100, yüksek olan daha iyi. Altı parçanın ağırlıklı karışımı: tehdit kapsamı %{{threat}}, savunma tipleri %{{defense}}, saldırı tipleri %{{offense}}, dayanıklılık %{{bulk}}, güvenlik %{{safety}} ve tutarlılık %{{consistency}}.",
+			"threat": "PvPoke'un, takımın ligin en tehlikeli altı karşı seçimine ne kadar açık olduğunu ölçen değeri; 0 ve 1 kalkanlı simüle edilmiş savaşlardan hesaplanır. Düşük olan daha iyi.",
+			"roles": "Bu ligdeki PvPoke rol puanı, 100 üzerinden. Açılış, maça ne kadar iyi başladığını; Geçiş, savaşın ortasında ne kadar güvenli girdiğini; Kapanış ise kalkanlar bittiğinde ne kadar iyi bitirdiğini gösterir.",
+			"order": "Oklar oynama sırasını gösterir: önce açılış, sonra güvenli geçiş, sonra kapanış. Rol puanları toplamı en yüksek olan sırayı seçiyoruz."
+		}
 	}
 }

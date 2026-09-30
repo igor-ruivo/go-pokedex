@@ -54,6 +54,8 @@
 	},
 	"score": {
 		"heading": "Wertung",
+		"teamScore": "Team-Wertung",
+		"points": "{{value}} Pkt.",
 		"ringAria": "Team-Wertung {{score}} von 100",
 		"radarAria": "Die sechs Teile der Team-Wertung",
 		"calculating": "Tausende Kämpfe werden simuliert …",
@@ -225,17 +227,28 @@
 	},
 	"suggest": {
 		"heading": "Verbesserungen",
+		"byThreat": "Nach Bedrohungswert",
+		"byScore": "Nach Team-Wertung",
+		"higherBetter": "Eine höhere Team-Wertung ist besser.",
 		"searching": "Top-Pokémon werden auf jedem Platz getestet …",
 		"failed": "Vorschläge konnten nicht berechnet werden. Versuche es gleich noch einmal.",
-		"none": "Wir konnten nicht ohne Weiteres bessere Upgrades finden.",
+		"none": "Wir konnten keine besseren Upgrades finden.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Bedrohungswert {{score}} ({{delta}})"
+		"result": "Bedrohungswert {{score}} ({{delta}})",
+		"resultScore": "Team-Wertung {{score}} ({{delta}})"
 	},
 	"top": {
 		"intro": "Die am besten bewerteten Teams: jedes Trio der {{candidates}} besten Pokémon der Liga, jeweils mit empfohlenen Attacken und Top-IVs, bewertet wie im Builder. Tippe auf eines, um es im Builder zu öffnen.",
 		"teamScore": "Team-Wertung",
 		"note": "Bewertet am {{date}} aus {{total}} möglichen Teams. Reihenfolge im Team: Lead, Wechsel, Closer.",
 		"empty": "Zurzeit ist keine Team-Rangliste verfügbar. Schau bald wieder vorbei.",
-		"threat": "Bedrohung"
+		"threat": "Bedrohung",
+		"help": {
+			"summary": "Was bedeuten diese Zahlen?",
+			"teamScore": "Die Gesamtbewertung, 0–100, höher ist besser. Eine gewichtete Mischung aus sechs Teilen: Bedrohungsabdeckung {{threat}} %, Verteidigungstypen {{defense}} %, Angriffstypen {{offense}} %, Robustheit {{bulk}} %, Sicherheit {{safety}} % und Konstanz {{consistency}} %.",
+			"threat": "PvPokes Maß dafür, wie verwundbar das Team gegen die sechs gefährlichsten Konter der Liga ist, aus simulierten Kämpfen mit 0 und 1 Schild. Niedriger ist besser.",
+			"roles": "Seine PvPoke-Rollenwertung in dieser Liga, von 100. Lead zeigt, wie gut es den Kampf eröffnet, Wechsel, wie sicher es mitten im Kampf hereinkommt, Closer, wie gut es ohne Schilde abschließt.",
+			"order": "Die Pfeile zeigen die Reihenfolge: zuerst der Lead, dann der sichere Wechsel, dann der Closer. Wir wählen die Reihenfolge mit der höchsten Summe der Rollenwertungen."
+		}
 	}
 }

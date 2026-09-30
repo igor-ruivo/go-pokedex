@@ -54,6 +54,8 @@
 	},
 	"score": {
 		"heading": "Skor",
+		"teamScore": "Skor tim",
+		"points": "{{value}} Poin",
 		"ringAria": "Skor tim {{score}} dari 100",
 		"radarAria": "Enam bagian skor tim",
 		"calculating": "Mensimulasikan ribuan pertarungan…",
@@ -225,17 +227,28 @@
 	},
 	"suggest": {
 		"heading": "Peningkatan",
+		"byThreat": "Berdasarkan skor ancaman",
+		"byScore": "Berdasarkan skor tim",
+		"higherBetter": "Skor tim yang lebih tinggi lebih baik.",
 		"searching": "Mencoba Pokémon teratas di tiap slot…",
 		"failed": "Saran tidak dapat dihitung. Coba lagi sebentar lagi.",
-		"none": "Tidak mudah menemukan peningkatan yang lebih baik.",
+		"none": "Tidak menemukan peningkatan yang lebih baik.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Skor ancaman {{score}} ({{delta}})"
+		"result": "Skor ancaman {{score}} ({{delta}})",
+		"resultScore": "Skor tim {{score}} ({{delta}})"
 	},
 	"top": {
 		"intro": "Tim dengan skor tertinggi yang kami temukan: setiap trio dari {{candidates}} Pokémon terbaik liga, masing-masing dengan gerakan rekomendasi dan IV terbaik, dinilai seperti di pembuat tim. Ketuk satu untuk membukanya di pembuat tim.",
 		"teamScore": "Skor tim",
 		"note": "Dinilai pada {{date}} dari {{total}} kemungkinan tim. Urutan dalam tim: lead, switch, closer.",
 		"empty": "Belum ada peringkat tim saat ini. Coba lagi nanti.",
-		"threat": "Ancaman"
+		"threat": "Ancaman",
+		"help": {
+			"summary": "Apa arti angka-angka ini?",
+			"teamScore": "Penilaian keseluruhan, 0–100, makin tinggi makin baik. Campuran berbobot dari enam bagian: cakupan ancaman {{threat}}%, tipe bertahan {{defense}}%, tipe menyerang {{offense}}%, ketahanan {{bulk}}%, keamanan {{safety}}% dan konsistensi {{consistency}}%.",
+			"threat": "Ukuran PvPoke tentang seberapa rentan tim terhadap enam counter paling berbahaya di liga, dari pertarungan simulasi dengan 0 dan 1 perisai. Makin rendah makin baik.",
+			"roles": "Skor perannya menurut PvPoke di liga ini, dari 100. Lead menunjukkan seberapa baik ia membuka pertandingan, Switch seberapa aman ia masuk di tengah pertarungan, Closer seberapa baik ia menutup saat perisai habis.",
+			"order": "Panah menunjukkan urutan bermain: lead, lalu switch yang aman, lalu closer. Kami memilih urutan dengan jumlah skor peran tertinggi."
+		}
 	}
 }

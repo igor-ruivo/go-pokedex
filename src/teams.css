@@ -808,6 +808,10 @@
 	color: transparent;
 }
 .rvmp .r-tm-ring-label {
+	/* min-content: each word on its own line ("Team" over "score") */
+	width: min-content;
+	text-align: center;
+	line-height: 1.2;
 	font-size: 11px;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
@@ -1763,6 +1767,14 @@
 }
 
 /* ---- suggestions ---------------------------------------------------------------------------------------- */
+.rvmp .r-tm-suggest-group .r-tm-sub {
+	margin-top: 0;
+}
+.rvmp .r-tm-suggest-divider {
+	margin: var(--s4) 0;
+	border: 0;
+	border-top: 1px solid var(--border);
+}
 .rvmp .r-tm-picks {
 	display: grid;
 	gap: var(--s2);
@@ -2158,6 +2170,9 @@
 	font-size: 13px;
 	color: var(--text-dim);
 }
+.rvmp .r-tm-board-help {
+	margin: 0 0 var(--s3);
+}
 .rvmp .r-tm-board-tools {
 	display: flex;
 	margin: 0 0 var(--s3);
@@ -2169,18 +2184,25 @@
 		right: auto;
 	}
 }
+.rvmp .r-tm[data-tab='top'] {
+	max-width: 1720px;
+}
 .rvmp .r-tm-board-list {
 	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
 	gap: var(--s3);
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
+.rvmp .r-tm-board-list > li {
+	container-type: inline-size;
+}
 .rvmp .r-tm-board-card {
 	--tier-a: var(--text-dim);
 	--tier-b: var(--text);
 	display: grid;
-	grid-template-columns: 34px minmax(0, 1fr) auto;
+	grid-template-columns: 56px minmax(0, 1fr) auto;
 	grid-template-areas:
 		'rank members score'
 		'rank members score';
@@ -2192,10 +2214,8 @@
 	text-align: left;
 	color: inherit;
 	cursor: pointer;
-	background:
-		radial-gradient(60% 140% at 100% 50%, color-mix(in srgb, var(--tier-a) 12%, transparent), transparent 70%),
-		var(--surface-2);
-	border: 1px solid color-mix(in srgb, var(--tier-a) 30%, var(--border));
+	background: var(--surface-2);
+	border: 1px solid var(--border);
 	animation: r-tm-rise 0.45s cubic-bezier(0.2, 0.9, 0.25, 1) calc(var(--i, 0) * 0.04s) both;
 	transition:
 		transform 0.12s ease,
@@ -2203,44 +2223,112 @@
 }
 .rvmp .r-tm-board-card:hover {
 	transform: translateY(-1px);
-	border-color: var(--tier-a);
+	border-color: var(--border-strong);
 }
 .rvmp .r-tm-board-rank {
 	grid-area: rank;
-	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 2px;
 	font-family: Fredoka, sans-serif;
 	font-weight: 600;
 	font-size: 16px;
 	color: var(--text-faint);
 	font-variant-numeric: tabular-nums;
 }
+/* the podium: gold, silver and bronze medals for the first three */
 .rvmp .r-tm-board-rank[data-podium='1'] {
+	--medal: #f2c53d;
+	--medal-edge: #b98a12;
 	color: #f2c53d;
 }
 .rvmp .r-tm-board-rank[data-podium='2'] {
+	--medal: #d5dce6;
+	--medal-edge: #8b98a9;
 	color: #c4cdd8;
 }
 .rvmp .r-tm-board-rank[data-podium='3'] {
+	--medal: #e0a361;
+	--medal-edge: #a8672a;
 	color: #d99a54;
 }
+.rvmp .r-tm-board-medal {
+	width: 34px;
+	height: 34px;
+	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.4));
+}
+.rvmp .r-tm-board-ribbon {
+	fill: var(--medal-edge);
+}
+.rvmp .r-tm-board-disc {
+	fill: var(--medal);
+	stroke: var(--medal-edge);
+	stroke-width: 1.2;
+}
+.rvmp .r-tm-board-ring {
+	fill: none;
+	stroke: var(--medal-edge);
+	stroke-width: 0.8;
+	opacity: 0.7;
+}
+.rvmp .r-tm-board-star {
+	fill: var(--medal-edge);
+}
+/* The three Pokémon share one grid: each is five rows (sprite, name, types, score chip, moves) taken from it with
+   a subgrid, so a row is as tall as its tallest member and everything lines up across them — a single-type Pokémon
+   leaves room where the others have a second line of type chips. */
 .rvmp .r-tm-board-members {
 	grid-area: members;
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: var(--s3);
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+	grid-template-rows: repeat(5, auto);
+	column-gap: var(--s2);
+	row-gap: 2px;
 	min-width: 0;
 }
+/* the play order reads left to right: the same arrow as the Battle plan's flow */
+.rvmp .r-tm-board-arrow {
+	grid-row: 1;
+	align-self: center;
+	width: 24px;
+	height: 15px;
+	fill: none;
+	stroke: var(--text-faint);
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
 .rvmp .r-tm-board-member {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+	grid-row: 1 / span 5;
+	display: grid;
+	grid-template-rows: subgrid;
+	justify-items: center;
+	align-items: start;
 	min-width: 0;
+	padding: var(--s2) 6px;
+	text-align: center;
+}
+/* a grid item won't shrink below its content unless told to: without this the nowrap names and moves pushed the
+   third Pokémon out of the card on narrow screens instead of being ellipsised */
+.rvmp .r-tm-board-member > * {
+	min-width: 0;
+	max-width: 100%;
+}
+.rvmp .r-tm-board-member[data-role='lead'] {
+	--role-c: #58a7ff;
+}
+.rvmp .r-tm-board-member[data-role='switch'] {
+	--role-c: #f5a623;
+}
+.rvmp .r-tm-board-member[data-role='closer'] {
+	--role-c: #ef5b8f;
 }
 .rvmp .r-tm-board-art {
 	position: relative;
 	flex: none;
-	width: 44px;
-	height: 44px;
+	width: 76px;
+	height: 76px;
 }
 .rvmp .r-tm-board-art > img:not(.r-shadow-mark) {
 	width: 100%;
@@ -2253,28 +2341,54 @@
 	top: -2px;
 	left: -2px;
 	z-index: 3;
-	width: 16px;
-	height: 16px;
+	width: 22px;
+	height: 22px;
 }
-.rvmp .r-tm-board-text {
-	display: grid;
-	gap: 1px;
-	min-width: 0;
-}
-.rvmp .r-tm-board-text b {
+.rvmp .r-tm-board-name {
+	max-width: 100%;
+	margin-top: 2px;
 	font-family: Fredoka, sans-serif;
-	font-size: 13px;
+	font-size: 15px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	transition: color 0.12s ease;
 }
-.rvmp .r-tm-board-member:hover .r-tm-board-text b {
+/* hovering a team paints all three names with their own type colour (not one Pokémon at a time) */
+.rvmp .r-tm-board-card:hover .r-tm-board-name {
 	color: var(--tc);
 }
-.rvmp .r-tm-board-text small {
-	font-size: 10.5px;
+.rvmp .r-tm-board-types {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 4px;
+	margin-top: 2px;
+}
+/* that Pokémon's score in its role, the Battle plan's score pill */
+.rvmp .r-tm-board-chip {
+	margin-top: 8px;
+	padding: 2px 11px;
+	border-radius: var(--r-pill);
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	background: color-mix(in srgb, var(--role-c) 18%, transparent);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-tm-board-moves {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: hidden;
+	max-width: 100%;
+	margin-top: 4px;
+	font-size: 12px;
+	line-height: 1.35;
 	color: var(--text-dim);
+}
+.rvmp .r-tm-board-moves > span {
+	max-width: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -2283,52 +2397,93 @@
 	grid-area: score;
 	display: grid;
 	justify-items: end;
-	gap: 1px;
+	gap: var(--s2);
 }
-.rvmp .r-tm-board-score > b {
+.rvmp .r-tm-board-metric {
+	display: grid;
+	justify-items: end;
+	gap: 0;
+}
+.rvmp .r-tm-board-metric > small {
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .r-tm-board-metric > b {
 	font-family: Fredoka, sans-serif;
 	font-weight: 600;
-	font-size: 24px;
-	line-height: 1.1;
+	font-size: 17px;
+	line-height: 1.15;
 	font-variant-numeric: tabular-nums;
+}
+/* the metric the list is sorted by: big, in the tier's colours */
+.rvmp .r-tm-board-metric[data-primary] > b {
+	font-size: 28px;
 	background: linear-gradient(135deg, var(--tier-a), var(--tier-b));
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
 }
-.rvmp .r-tm-board-score > span {
-	font-size: 10.5px;
-	font-weight: 700;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-	color: var(--text-faint);
-	font-variant-numeric: tabular-nums;
-}
-@media (max-width: 719px) {
-	/* phones: rank and score on the first line, the three Pokémon (names only) on the second */
+@container (max-width: 639px) {
+	/* narrow card (a phone, or one of several columns): rank and score on the first line, the three Pokémon (names only) on the second */
 	.rvmp .r-tm-board-card {
-		grid-template-columns: 28px minmax(0, 1fr);
+		grid-template-columns: auto minmax(0, 1fr);
 		grid-template-areas:
 			'rank score'
 			'members members';
 		row-gap: var(--s2);
 		padding: var(--s3);
 	}
+	/* side by side: one row for the two names and one for the two numbers, so both line up across the metrics */
 	.rvmp .r-tm-board-score {
 		grid-auto-flow: column;
+		grid-template-rows: auto auto;
 		justify-content: end;
-		align-items: baseline;
-		gap: var(--s3);
+		align-items: center;
+		column-gap: var(--s4);
+		row-gap: 0;
+	}
+	.rvmp .r-tm-board-metric {
+		grid-row: span 2;
+		grid-template-rows: subgrid;
+		align-items: center;
+		justify-items: center;
+	}
+	.rvmp .r-tm-board-metric[data-primary] > b {
+		font-size: 24px;
+	}
+	.rvmp .r-tm-board-name {
+		font-size: 13.5px;
+	}
+	/* narrow card: the medal and the ordinal sit side by side on the top line */
+	.rvmp .r-tm-board-rank {
+		flex-direction: row;
+		align-items: center;
+		gap: 6px;
+	}
+	.rvmp .r-tm-board-medal {
+		width: 28px;
+		height: 28px;
+	}
+	.rvmp .r-tm-board-art {
+		width: 64px;
+		height: 64px;
+	}
+}
+@container (max-width: 380px) {
+	.rvmp .r-tm-board-art {
+		width: 52px;
+		height: 52px;
 	}
 	.rvmp .r-tm-board-member {
-		flex-direction: column;
-		gap: 2px;
-		text-align: center;
+		padding-inline: 2px;
 	}
-	.rvmp .r-tm-board-text small {
-		display: none;
+	.rvmp .r-tm-board-members {
+		column-gap: var(--s1);
 	}
-	.rvmp .r-tm-board-text b {
-		font-size: 12px;
+	.rvmp .r-tm-board-arrow {
+		width: 16px;
 	}
 }

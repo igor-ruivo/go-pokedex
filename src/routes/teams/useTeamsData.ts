@@ -120,7 +120,7 @@ export const useTeamEvaluation = (
 };
 
 /**
- * Single-slot swap suggestions. Heavier than a rating (every top candidate is simulated), so the caller
+ * Every single-slot swap (each top candidate in each slot) with the threat score it would give. Heavier than a rating (every top candidate is simulated), so the caller
  * enables it once the rating has landed: the worker runs one job at a time and the score shouldn't wait on this.
  */
 export const useTeamSuggestions = (
@@ -139,7 +139,7 @@ export const useTeamSuggestions = (
 			await ensureEvaluator(dataKey(league, data), () =>
 				buildEvaluatorInit(league, data.builder!, data.gamemaster, data.rankList)
 			);
-			return getTeamWorker().suggest(toSlots(team));
+			return getTeamWorker().swaps(toSlots(team));
 		},
 	});
 

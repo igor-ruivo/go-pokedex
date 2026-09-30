@@ -54,6 +54,8 @@
 	},
 	"score": {
 		"heading": "Punteggio",
+		"teamScore": "Punteggio squadra",
+		"points": "{{value}} Pt.",
 		"ringAria": "Punteggio squadra {{score}} su 100",
 		"radarAria": "Le sei parti del punteggio squadra",
 		"calculating": "Simulazione di migliaia di scontri…",
@@ -225,17 +227,28 @@
 	},
 	"suggest": {
 		"heading": "Miglioramenti",
+		"byThreat": "Per punteggio di minaccia",
+		"byScore": "Per punteggio squadra",
+		"higherBetter": "Un punteggio squadra più alto è migliore.",
 		"searching": "Prova dei Pokémon top in ogni posto…",
 		"failed": "Impossibile calcolare i suggerimenti. Riprova tra un momento.",
-		"none": "Non è stato facile trovare potenziamenti migliori.",
+		"none": "Non abbiamo trovato potenziamenti migliori.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Punteggio di minaccia {{score}} ({{delta}})"
+		"result": "Punteggio di minaccia {{score}} ({{delta}})",
+		"resultScore": "Punteggio squadra {{score}} ({{delta}})"
 	},
 	"top": {
 		"intro": "Le squadre col punteggio più alto che abbiamo trovato: ogni terzetto dei {{candidates}} migliori Pokémon della lega, con le mosse consigliate e i migliori IV, valutato come fa il creatore. Tocca una squadra per aprirla nel creatore.",
 		"teamScore": "Punteggio squadra",
 		"note": "Valutato il {{date}} su {{total}} squadre possibili. Ordine nella squadra: apertura, cambio, chiusura.",
 		"empty": "Al momento non è disponibile nessuna classifica di squadre. Riprova presto.",
-		"threat": "Minaccia"
+		"threat": "Minaccia",
+		"help": {
+			"summary": "Cosa significano questi numeri?",
+			"teamScore": "La valutazione complessiva, da 0 a 100, più alto è meglio. Una miscela ponderata di sei parti: copertura delle minacce {{threat}}%, tipi difensivi {{defense}}%, tipi offensivi {{offense}}%, robustezza {{bulk}}%, sicurezza {{safety}}% e costanza {{consistency}}%.",
+			"threat": "La misura di PvPoke di quanto la squadra sia vulnerabile ai sei counter più pericolosi della lega, da battaglie simulate con 0 e 1 scudi. Più basso è meglio.",
+			"roles": "Il suo punteggio di ruolo PvPoke in questa lega, su 100. Apertura indica quanto bene apre lo scontro, Cambio quanto è sicuro il suo ingresso a metà scontro, Chiusura quanto bene conclude senza scudi.",
+			"order": "Le frecce mostrano l'ordine di gioco: apertura, poi il cambio sicuro, poi la chiusura. Scegliamo l'ordine con la somma più alta dei punteggi di ruolo."
+		}
 	}
 }

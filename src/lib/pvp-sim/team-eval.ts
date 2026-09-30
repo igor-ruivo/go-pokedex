@@ -363,25 +363,32 @@ export class TeamEvaluator {
 	}
 
 	/**
-	 * Suggests single-slot swaps that lower (or at worst keep) the team's threat score. Every top
-	 * candidate is simulated once against every threat; each slot swap is then a
-	 * cheap re-ranking of numbers already computed.
+	 * Every single-slot swap of the team for one of the league's top candidates, with the threat score the swapped
+	 * team would have, best (lowest) first. Every candidate is simulated once against every threat; each slot swap
+	 * is then a cheap re-ranking of numbers already computed. Callers pick what to show (see `suggest`).
 	 */
-	suggest(
+	swaps(
 		team: ReadonlyArray<TeamSlot>,
-		options: { candidates?: number; results?: number; onProgress?: (done: number, total: number) => void } = {}
+		options: { candidates?: number; onProgress?: (done: number, total: number) => void } = {}
 	): Array<AlternativePick> {
 		const candidateCount = options.candidates ?? 40;
-		const resultCount = options.results ?? 4;
 
 		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset));
 		const battle = new SimBattle();
 		for (const p of this.pool) p.cachedTraits = undefined;
 
 		// Ratings of every threat against each current teammate
-		const base = this.pool.map((entry) =>
-			members.map((member) => this.simulateMatchup(battle, entry.poke, member).rating)
+		// A Pokémon's "best charged move" (which the threat traits read) depends on the opponent it last faced, so
+		// the state each swapped team would leave behind is captured alongside the ratings — see `rankTeams`.
+		const baseBest = this.pool.map(() => new Array<SimMove | null>(members.length).fill(null));
+		const base = this.pool.map((entry, i) =>
+			members.map((member, k) => {
+				const { rating } = this.simulateMatchup(battle, entry.poke, member);
+				baseBest[i][k] = entry.poke.bestChargedMove;
+				return rating;
+			})
 		);
+		const last = members.length - 1;
 
 		const teamBases = new Set(team.map((slot) => slot.speciesId.replace('_shadow', '')));
 		const candidates = [...this.pool]
@@ -389,7 +396,10 @@ export class TeamEvaluator {
 			.sort((a, b) => a.entry.rank - b.entry.rank)
 			.slice(0, candidateCount);
 
-		const scoreTeam = (ratingsOf: (poolIndex: number) => Array<number>): number => {
+		const scoreTeam = (
+			ratingsOf: (poolIndex: number) => Array<number>,
+			bestOf: (poolIndex: number) => SimMove | null
+		): number => {
 			const rows = this.pool.map((entry, i) => {
 				const ratings = ratingsOf(i);
 				const scoreTotal = ratings.reduce((sum, r) => sum + this.matchupScore(r, entry.inMeta), 0);
@@ -400,25 +410,38 @@ export class TeamEvaluator {
 				};
 			});
 			rows.sort((a, b) => b.score - a.score);
-			for (const p of this.pool) p.cachedTraits = undefined;
+			this.pool.forEach((p, i) => {
+				p.poke.bestChargedMove = bestOf(i);
+				p.cachedTraits = undefined;
+			});
 			return this.pickThreats(rows).threatScore;
 		};
 
-		const currentScore = scoreTeam((i) => base[i]);
+		const currentScore = scoreTeam(
+			(i) => base[i],
+			(i) => baseBest[i][last]
+		);
 		const picks: Array<AlternativePick> = [];
 
 		candidates.forEach((candidate, ci) => {
 			// The candidate needs its own instance when it would face a mirror of itself.
-			const column = this.pool.map((entry) => {
+			const candidateBest = new Array<SimMove | null>(this.pool.length).fill(null);
+			const column = this.pool.map((entry, i) => {
 				const opponent =
 					entry.poke === candidate.poke
 						? this.createPokemon(candidate.entry.speciesId, candidate.entry.moveset)
 						: candidate.poke;
-				return this.simulateMatchup(battle, entry.poke, opponent).rating;
+				const { rating } = this.simulateMatchup(battle, entry.poke, opponent);
+				candidateBest[i] = entry.poke.bestChargedMove;
+				return rating;
 			});
 
 			for (let slot = 0; slot < team.length; slot++) {
-				const threatScore = scoreTeam((i) => base[i].map((r, k) => (k === slot ? column[i] : r)));
+				const threatScore = scoreTeam(
+					(i) => base[i].map((r, k) => (k === slot ? column[i] : r)),
+					// The swapped team's last member is what every pool Pokémon faced last.
+					slot === last ? (i) => candidateBest[i] : (i) => baseBest[i][last]
+				);
 				picks.push({
 					slot,
 					speciesId: candidate.entry.speciesId,
@@ -433,15 +456,16 @@ export class TeamEvaluator {
 
 		battle.clearPokemon();
 
-		picks.sort((a, b) => a.threatScore - b.threatScore);
+		return picks.sort((a, b) => a.threatScore - b.threatScore);
+	}
 
-		// One suggestion per candidate species (the best slot for each), and only swaps that help or change nothing —
-		// a swap that raises the threat score is never an upgrade.
+	/** The swaps that lower (or at worst keep) the threat score: the best slot for each candidate, best first. */
+	suggest(team: ReadonlyArray<TeamSlot>, options: { candidates?: number; results?: number } = {}): Array<AlternativePick> {
 		const seen = new Set<string>();
-		return picks
+		return this.swaps(team, options.candidates === undefined ? {} : { candidates: options.candidates })
 			.filter((p) => (seen.has(p.speciesId) ? false : (seen.add(p.speciesId), true)))
 			.filter((p) => p.delta <= 0)
-			.slice(0, resultCount);
+			.slice(0, options.results ?? 4);
 	}
 	/**
 	 * The threat score of every trio of `candidateIds` (each with its ranking's recommended moveset), exactly as

@@ -17,13 +17,15 @@ interface SortBarProps {
 	sortKey: string;
 	dir: SortDir;
 	onChange: (key: string, dir: SortDir) => void;
+	/** For lists where only one direction makes sense: no asc / desc toggle, and no arrow on the button. */
+	fixedDirection?: boolean;
 }
 
 /**
  * "Order by" control — a button that opens a small panel of sort keys plus an
  * ascending / descending toggle. Sits next to <FilterBar />.
  */
-export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
+export const SortBar = ({ options, sortKey, dir, onChange, fixedDirection = false }: SortBarProps) => {
 	const { t } = useTranslation(['components']);
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
@@ -31,8 +33,9 @@ export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
 	const active = options.find((o) => o.key === sortKey) ?? options[0];
 
 	const pick = (o: SortOption) => {
-		if (o.key === sortKey) onChange(o.key, dir === 'asc' ? 'desc' : 'asc');
-		else onChange(o.key, o.defaultDir ?? 'asc');
+		if (o.key === sortKey) {
+			if (!fixedDirection) onChange(o.key, dir === 'asc' ? 'desc' : 'asc');
+		} else onChange(o.key, o.defaultDir ?? 'asc');
 	};
 
 	return (
@@ -60,31 +63,35 @@ export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
 					<path d='M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4' />
 				</svg>
 				{active.label}
-				<span className='r-sort-dir' aria-hidden='true'>
-					{dir === 'asc' ? '↑' : '↓'}
-				</span>
+				{!fixedDirection && (
+					<span className='r-sort-dir' aria-hidden='true'>
+						{dir === 'asc' ? '↑' : '↓'}
+					</span>
+				)}
 			</button>
 
 			{open && (
 				<div className='r-filter-panel r-sort-panel' role='dialog' aria-label={t('components:sortBar.dialogAriaLabel')}>
 					<div className='r-filter-sec-h'>
 						<span>{t('components:sortBar.sectionLabel')}</span>
-						<div className='r-sort-dirseg'>
-							<button
-								type='button'
-								data-active={dir === 'asc' ? '' : undefined}
-								onClick={() => onChange(sortKey, 'asc')}
-							>
-								↑ {t('components:sortBar.asc')}
-							</button>
-							<button
-								type='button'
-								data-active={dir === 'desc' ? '' : undefined}
-								onClick={() => onChange(sortKey, 'desc')}
-							>
-								↓ {t('components:sortBar.desc')}
-							</button>
-						</div>
+						{!fixedDirection && (
+							<div className='r-sort-dirseg'>
+								<button
+									type='button'
+									data-active={dir === 'asc' ? '' : undefined}
+									onClick={() => onChange(sortKey, 'asc')}
+								>
+									↑ {t('components:sortBar.asc')}
+								</button>
+								<button
+									type='button'
+									data-active={dir === 'desc' ? '' : undefined}
+									onClick={() => onChange(sortKey, 'desc')}
+								>
+									↓ {t('components:sortBar.desc')}
+								</button>
+							</div>
+						)}
 					</div>
 					<div className='r-sort-opts' role='listbox'>
 						{options.map((o) => {

@@ -142,7 +142,7 @@ export const ScoreHero = ({
 					) : (
 						<b className='r-tm-ring-num'>{shown.toFixed(1)}</b>
 					)}
-					<span className='r-tm-ring-label'>{t('teams:score.heading')}</span>
+					<span className='r-tm-ring-label'>{t('teams:score.teamScore')}</span>
 				</div>
 			</div>
 

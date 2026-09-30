@@ -15,6 +15,7 @@ import { CoveragePanel } from './teams/CoveragePanel';
 import { ScoreHero } from './teams/ScoreHero';
 import { StatsPanel } from './teams/StatsPanel';
 import { Suggestions } from './teams/Suggestions';
+import { lastTeamLeague } from './teams/team-memory';
 import { TeamMini } from './teams/TeamMini';
 import { SlotPicker, TeamStage } from './teams/TeamStage';
 import { ThreatPanel } from './teams/ThreatPanel';
@@ -23,6 +24,7 @@ import { TypeProfile } from './teams/TypeProfile';
 import { useTeamAnalysis } from './teams/useTeamAnalysis';
 import { useSimContext, useTeamEvaluation, useTeamsData, useTeamSuggestions } from './teams/useTeamsData';
 import { useTeamState } from './teams/useTeamState';
+import { useTeamUpgrades } from './teams/useTeamUpgrades';
 import { Warnings } from './teams/Warnings';
 
 const LEAGUE_ICON_FALLBACK: Record<TeamLeague, string> = {
@@ -41,11 +43,13 @@ const Teams = () => {
 	const gameTranslations = useGameTranslationsData();
 
 	const leagueParam = params.get('league');
-	const league: TeamLeague = isTeamLeague(leagueParam) ? leagueParam : 'great';
+	// Without a league in the URL, the one visited last in this session (see team-memory.ts).
+	const [rememberedLeague] = useState(lastTeamLeague);
+	const league: TeamLeague = isTeamLeague(leagueParam) ? leagueParam : (rememberedLeague ?? 'great');
 
 	const data = useTeamsData(league);
 	const ctx = useSimContext(league, data);
-	const { team, setMember, setMove, removeMember, replaceTeam, recommendedMoveset } = useTeamState(data);
+	const { team, setMember, setMove, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(data, league, tab === 'builder');
 	const analysis = useTeamAnalysis(league, ctx, data, team);
 
 	const full = team.length === 3;
@@ -82,6 +86,7 @@ const Teams = () => {
 	);
 	const score = parts ? teamScore(parts) : undefined;
 	const tier = score === undefined ? undefined : scoreTier(score);
+	const upgrades = useTeamUpgrades(league, ctx, data, team, suggestionsQuery.data, score);
 
 	// League labels come from the in-game translations (same source as the Rankings picker).
 	const leagueItems: Array<LeaguePickerItem> = useMemo(
@@ -118,19 +123,22 @@ const Teams = () => {
 		{
 			id: 'top',
 			label: t('teams:page.topTab'),
+			// a podium under a star: the best teams, first place in the middle
 			icon: (
 				<svg
 					viewBox='0 0 24 24'
-					width='18'
-					height='18'
-					fill='none'
+					width='20'
+					height='20'
+					fill='currentColor'
 					stroke='currentColor'
-					strokeWidth='2'
-					strokeLinecap='round'
+					strokeWidth='1.2'
 					strokeLinejoin='round'
 					aria-hidden='true'
 				>
-					<path d='M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3' />
+					<path d='M12 1l1.8 3.7 4 .6-2.9 2.8.7 4L12 10.2 8.4 12.1l.7-4-2.9-2.8 4-.6z' />
+					<path d='M8.6 14h6.8v7H8.6z' />
+					<path d='M2 16.6h6V21H2z' opacity='0.55' />
+					<path d='M16 18h6v3h-6z' opacity='0.35' />
 				</svg>
 			),
 		},
@@ -157,6 +165,7 @@ const Teams = () => {
 	return (
 		<div
 			className='r-shell r-shell--wide r-tm'
+			data-tab={tab}
 			data-mini={tab === 'builder' && analysis && parts && full ? '' : undefined}
 		>
 			<h1 className='r-page-title'>{t('teams:page.title')}</h1>
@@ -182,7 +191,14 @@ const Teams = () => {
 
 			{data.ready && tab === 'top' && <TopTeams league={league} data={data} onOpen={openFromTop} />}
 
-			{data.ready && tab === 'builder' && (
+			{data.ready && tab === 'builder' && restoring && (
+				<div className='r-tm-loading'>
+					<span className='r-spinner' aria-hidden='true' />
+					<p>{t('teams:page.loading')}</p>
+				</div>
+			)}
+
+			{data.ready && tab === 'builder' && !restoring && (
 				<>
 					<p className='r-tm-intro'>{t('teams:builder.intro', { league: leagueLabel })}</p>
 
@@ -319,7 +335,7 @@ const Teams = () => {
 								gamemaster={data.gamemaster}
 								loading={!suggestionsQuery.data && !suggestionsQuery.isError}
 								failed={suggestionsQuery.isError}
-								picks={suggestionsQuery.data}
+								upgrades={upgrades}
 								onApply={(pick) => setMember(pick.slot, pick.speciesId)}
 							/>
 						</>

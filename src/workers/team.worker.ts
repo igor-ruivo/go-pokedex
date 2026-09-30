@@ -27,8 +27,9 @@ const api = {
 	evaluate(team: Array<TeamSlot>): TeamEvaluation {
 		return requireEvaluator().evaluate(team);
 	},
-	suggest(team: Array<TeamSlot>): Array<AlternativePick> {
-		return requireEvaluator().suggest(team);
+	/** Every single-slot swap with the threat score it would give — callers choose which to surface. */
+	swaps(team: Array<TeamSlot>): Array<AlternativePick> {
+		return requireEvaluator().swaps(team);
 	},
 };
 
