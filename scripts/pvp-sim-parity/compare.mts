@@ -7,7 +7,7 @@ import path from 'path';
 const DEX = process.env.DEX_SERVER_DIR ?? path.join(import.meta.dirname, '..', '..', '..', 'dex-server');
 
 import TeamBuilderParserImport from '../../../dex-server/src/parsers/teams/team-builder-parser';
-import { PVPOKE_MOVES_URL, metaGroupUrl, trainingAnalysisUrl } from '../../../dex-server/src/parsers/teams/config';
+import { PVPOKE_MOVES_URL, metaGroupUrl } from '../../../dex-server/src/parsers/teams/config';
 import { POKEMON_CONFIG } from '../../../dex-server/src/parsers/pokemon/config/pokemon-config';
 import { TeamEvaluator } from '../../src/lib/pvp-sim/team-eval';
 
@@ -34,7 +34,6 @@ const files: Record<string, unknown> = {
 };
 for (const l of ['great', 'ultra', 'master'] as const) {
 	files[metaGroupUrl(l)] = read(`groups/${l}.json`);
-	files[trainingAnalysisUrl(l)] = read(`training/analysis/all/${{ great: 1500, ultra: 2500, master: 10000 }[l]}.json`);
 }
 const fetcher = { fetchJson: async (u: string) => files[u], fetchText: async () => '', getSkippedFetches: () => [], announceExpectedFetches() {} };
 
@@ -136,7 +135,8 @@ function writeFixtureInputs(
 	const gameMaster = JSON.parse(fs.readFileSync(path.join(DEX, 'data', 'game-master.json'), 'utf8'));
 	const parser = new TeamBuilderParser(fetcher as never, gameMaster);
 	const speciesSearchMetadata = JSON.parse(fs.readFileSync(path.join(DEX, 'data', 'species-search-metadata.json'), 'utf8'));
-	const { builder } = await parser.parse({
+	// dex-server's parser returns the team-builder data itself (its leaderboard half is gone).
+	const builder = await parser.parse({
 		great: rankings.great.map((r) => r.speciesId),
 		ultra: rankings.ultra.map((r) => r.speciesId),
 		master: rankings.master.map((r) => r.speciesId),

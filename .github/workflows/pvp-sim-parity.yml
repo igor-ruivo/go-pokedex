@@ -1,0 +1,77 @@
+name: PvP Simulator Parity
+
+# Runs PvPoke's own, unmodified simulator (downloaded fresh from GitHub) and this repo's TypeScript port on the same
+# teams, and fails — alerting Discord — if a single threat score, threat or matchup rating differs. This is the full
+# comparison, not the hash check: it catches the port drifting from what PvPoke does *today*. Daily, after the
+# data and ranking jobs, and on demand.
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: pvp-sim-parity
+  cancel-in-progress: false
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout go-pokedex
+        uses: actions/checkout@v4
+        with:
+          path: go-pokedex
+
+      - name: Checkout dex-server (the data and the parser that builds the team-builder inputs)
+        uses: actions/checkout@v4
+        with:
+          repository: igor-ruivo/dex-server
+          path: dex-server
+          persist-credentials: false
+
+      - name: Checkout PvPoke (its gamemaster, rankings and groups)
+        uses: actions/checkout@v4
+        with:
+          repository: pvpoke/pvpoke
+          path: pvpoke
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install go-pokedex dependencies
+        working-directory: go-pokedex
+        run: pnpm install --frozen-lockfile
+
+      - name: Install dex-server dependencies (its tsx runs the comparison)
+        working-directory: dex-server
+        run: pnpm install
+
+      - name: Compare the port with PvPoke
+        id: parity
+        working-directory: go-pokedex
+        env:
+          PVPOKE_DIR: ${{ github.workspace }}/pvpoke
+          DEX_SERVER_DIR: ${{ github.workspace }}/dex-server
+        run: pnpm run pvp-sim:parity
+
+      - name: Send Discord notification on failure
+        if: failure()
+        run: |
+          WEB_BASE1="https://dis"
+          WEB_BASE2="cord.com/api/webho"
+          WEB_BASE3="oks/1393406874296127650"
+          WEB_TOK1="v-OSrwbxLyZfsKHuNMkEwhfKavenpXCiA"
+          WEB_TOK2="shmTjlIS0DuqihZMFzrepoUhSZhVf3tF3D3"
+          WEB_URL="$WEB_BASE1$WEB_BASE2$WEB_BASE3/$WEB_TOK1$WEB_TOK2"
+
+          JSON_PAYLOAD="{\"content\":\"<@&1393406141777838151>\",\"embeds\":[{\"title\":\"❌ PvP Simulator Parity Failed\",\"description\":\"go-pokedex's simulator port no longer matches PvPoke's current code (or the check itself broke). Diff PvPoke's source against src/lib/pvp-sim, port the change, re-run pnpm run pvp-sim:parity and update the hashes in dex-server. Logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\"color\":16711680,\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}"
+
+          curl -X POST "$WEB_URL"             -H "Content-Type: application/json"             -d "$JSON_PAYLOAD"

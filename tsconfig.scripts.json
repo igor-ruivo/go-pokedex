@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"incremental": false,
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"types": ["node", "vite/client"]
+	},
+	"include": ["scripts/team-ranking/**/*.mts"]
+}

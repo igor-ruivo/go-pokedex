@@ -44,7 +44,12 @@ const PVP_URLS = [
 const dpsUrl = (type) =>
 	`https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${type}-raid-dps-rank.json`;
 
-const CONCURRENCY = 8;
+// Pages rendered at once. Each page runs the whole app (it processes the full game master), so this is CPU-bound
+// and more tabs is *slower*, not faster: measured on 154 pages, 2 → 104s, 3 → 74s, 4 → 69s, 6 → 75s, 8 → 84s, 12 → 122s.
+// 4 is the default; PRERENDER_CONCURRENCY overrides it (worth re-measuring on a machine with a different CPU).
+const CONCURRENCY = Number(process.env.PRERENDER_CONCURRENCY) || 4;
+// A page that times out or hits a transient error is tried again this many times before it is reported as failed.
+const RETRIES = 2;
 
 const STATIC_PAGES = [
 	{
@@ -335,23 +340,42 @@ const savePage = async (routePath, html) => {
 	await writeFile(path.join(dir, 'index.html'), html, 'utf8');
 };
 
-/** Runs `tasks` (each an async fn) with at most `limit` in flight at once. */
+/** A unit of work with a name, so a failure can say *which* page it was. */
+const task = (label, run) => ({ label, run });
+
+/**
+ * Runs `tasks` with at most `limit` in flight at once. A task that throws is retried up to RETRIES more times;
+ * every failed attempt is logged with the page's name, the attempt number and the error, and what finally
+ * happened (recovered, or gave up) is returned so the run can end with a full account instead of a bare count.
+ */
 const runPool = async (tasks, limit) => {
 	let i = 0;
-	let failed = 0;
+	const failed = [];
+	const recovered = [];
 	const workers = Array.from({ length: limit }, async () => {
 		while (i < tasks.length) {
-			const idx = i++;
-			try {
-				await tasks[idx]();
-			} catch (err) {
-				failed++;
-				console.error(`  ✗ ${err.message}`);
+			const { label, run } = tasks[i++];
+			let lastError;
+			for (let attempt = 1; attempt <= RETRIES + 1; attempt++) {
+				try {
+					await run();
+					lastError = undefined;
+					if (attempt > 1) {
+						recovered.push({ label, attempts: attempt });
+						console.log(`  ✓ ${label} — worked on attempt ${attempt}`);
+					}
+					break;
+				} catch (err) {
+					lastError = err;
+					const firstLine = String(err.message ?? err).split('\n')[0];
+					console.error(`  ✗ ${label} — attempt ${attempt}/${RETRIES + 1}: ${firstLine}`);
+				}
 			}
+			if (lastError) failed.push({ label, message: String(lastError.message ?? lastError).split('\n')[0] });
 		}
 	});
 	await Promise.all(workers);
-	return failed;
+	return { failed, recovered };
 };
 
 const main = async () => {
@@ -396,12 +420,36 @@ const main = async () => {
 	// across ~1,900 loads of the *same* multi-MB game-master/moves JSON this
 	// way, instead of every single page re-fetching them from scratch.
 	const context = await browser.newContext();
+	// The snapshot only needs the markup, never the pixels: every image request is answered at once with a 1×1
+	// transparent PNG (not aborted — an aborted image would fire the app's onError fallbacks and change the HTML).
+	// It removes thousands of sprite downloads, which is most of what each page used to wait for.
+	const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+	if (process.env.PRERENDER_STUB_IMAGES !== '0')
+		await context.route('**/*', (route) =>
+		route.request().resourceType() === 'image'
+			? route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL })
+			: route.continue()
+	);
+	const startedAt = Date.now();
 
 	let done = 0;
 	const total = STATIC_PAGES.length + pokemonList.length + moveList.length;
 	const report = () => {
 		done++;
-		if (done % 100 === 0 || done === total) console.log(`  ${done}/${total}`);
+		if (done % 100 === 0 || done === total) {
+			const elapsed = (Date.now() - startedAt) / 1000;
+			const remaining = (elapsed / done) * (total - done);
+			console.log(`  ${done}/${total} — ${elapsed.toFixed(0)}s elapsed, about ${remaining.toFixed(0)}s left`);
+		}
+	};
+	/** A fresh tab for one page, always closed again — also when the page throws. */
+	const withPage = async (fn) => {
+		const page = await context.newPage();
+		try {
+			return await fn(page);
+		} finally {
+			await page.close().catch(() => {});
+		}
 	};
 
 	// Home doubles as the Pokédex index (R.pokedex === '/'), so a Pokémon's
@@ -419,21 +467,22 @@ const main = async () => {
 		return graphs;
 	};
 
-	const staticTasks = STATIC_PAGES.map(({ path: routePath, title, description, image }) => async () => {
-		const page = await context.newPage();
-		await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
-		await applyMeta(page, {
-			url: `${SITE}${routePath}`,
-			title,
-			description,
-			image,
-			jsonLd: jsonLdForStaticPage(routePath, title),
-		});
-		const html = await page.content();
-		await page.close();
-		await savePage(routePath, html);
-		report();
-	});
+	const staticTasks = STATIC_PAGES.map(({ path: routePath, title, description, image }) =>
+		task(routePath, () =>
+			withPage(async (page) => {
+				await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
+				await applyMeta(page, {
+					url: `${SITE}${routePath}`,
+					title,
+					description,
+					image,
+					jsonLd: jsonLdForStaticPage(routePath, title),
+				});
+				const html = await page.content();
+				await savePage(routePath, html);
+			}).then(report)
+		)
+	);
 
 	// Pokémon sprites come from an external per-species URL (pokemon.imageUrl,
 	// hosted off dex-server's own data) — unlike the local icons above, there's
@@ -451,60 +500,65 @@ const main = async () => {
 		return `${SITE}/images/og/pokemon/${p.speciesId}.png`;
 	};
 
-	const pokemonTasks = pokemonList.map((p) => async () => {
+	const pokemonTasks = pokemonList.map((p) => {
 		const routePath = `/pokemon/${p.speciesId}`;
-		const [page, image] = await Promise.all([context.newPage(), pokemonOgImage(p)]);
-		await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
-		await page.waitForFunction(() => (document.querySelector('h1.r-name')?.textContent ?? '').trim().length > 0, {
-			timeout: 15000,
-		});
-		const types = (p.types ?? []).join('/');
-		await applyMeta(page, {
-			url: `${SITE}${routePath}`,
-			title: `${p.speciesName} — GO Pokédex`,
-			description: `${p.speciesName}${types ? ` (${types})` : ''} in Pokémon GO — IVs, best moveset, PvP rankings and raid counters.`,
-			image,
-			jsonLd: [breadcrumbList([{ name: p.speciesName, path: routePath }])],
-		});
-		const html = await page.content();
-		await page.close();
-		await savePage(routePath, html);
-		report();
+		return task(routePath, () =>
+			withPage(async (page) => {
+				// The share image is fetched while the page loads; failing to get it only costs the image.
+				const imagePromise = pokemonOgImage(p).catch(() => undefined);
+				await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
+				await page.waitForFunction(() => (document.querySelector('h1.r-name')?.textContent ?? '').trim().length > 0, {
+					timeout: 15000,
+				});
+				const types = (p.types ?? []).join('/');
+				await applyMeta(page, {
+					url: `${SITE}${routePath}`,
+					title: `${p.speciesName} — GO Pokédex`,
+					description: `${p.speciesName}${types ? ` (${types})` : ''} in Pokémon GO — IVs, best moveset, PvP rankings and raid counters.`,
+					image: await imagePromise,
+					jsonLd: [breadcrumbList([{ name: p.speciesName, path: routePath }])],
+				});
+				const html = await page.content();
+				await savePage(routePath, html);
+			}).then(report)
+		);
 	});
 
-	const moveTasks = moveList.map((m) => async () => {
+	const moveTasks = moveList.map((m) => {
 		const routePath = `/move/${encodeURIComponent(m.moveId)}`;
-		const page = await context.newPage();
-		await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
-		await page.waitForFunction(() => (document.querySelector('h1.r-name')?.textContent ?? '').trim().length > 0, {
-			timeout: 15000,
-		});
-		const name = m.moveName?.en ?? m.moveId;
-		const typeLabel = m.type ? m.type[0].toUpperCase() + m.type.slice(1) : '';
-		await applyMeta(page, {
-			url: `${SITE}${routePath}`,
-			title: `${name} — GO Pokédex`,
-			description: `${name} (${typeLabel}${m.isFast ? ' · Fast move' : ' · Charged move'}) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.`,
-			image: m.type ? `${SITE}/images/og/types/${m.type}.png` : undefined,
-			jsonLd: [
-				breadcrumbList([
-					{ name: 'Moves', path: '/moves' },
-					{ name, path: routePath },
-				]),
-			],
-		});
-		const html = await page.content();
-		await page.close();
-		await savePage(routePath, html);
-		report();
+		return task(routePath, () =>
+			withPage(async (page) => {
+				await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
+				await page.waitForFunction(() => (document.querySelector('h1.r-name')?.textContent ?? '').trim().length > 0, {
+					timeout: 15000,
+				});
+				const name = m.moveName?.en ?? m.moveId;
+				const typeLabel = m.type ? m.type[0].toUpperCase() + m.type.slice(1) : '';
+				await applyMeta(page, {
+					url: `${SITE}${routePath}`,
+					title: `${name} — GO Pokédex`,
+					description: `${name} (${typeLabel}${m.isFast ? ' · Fast move' : ' · Charged move'}) — Pokémon GO move stats: damage, energy, DPS and best Pokémon that learn it.`,
+					image: m.type ? `${SITE}/images/og/types/${m.type}.png` : undefined,
+					jsonLd: [
+						breadcrumbList([
+							{ name: 'Moves', path: '/moves' },
+							{ name, path: routePath },
+						]),
+					],
+				});
+				const html = await page.content();
+				await savePage(routePath, html);
+			}).then(report)
+		);
 	});
 
+	console.log(`Prerendering with ${CONCURRENCY} pages at once (up to ${RETRIES} retries each)…`);
 	console.log('Prerendering static pages…');
-	await runPool(staticTasks, CONCURRENCY);
+	const staticResult = await runPool(staticTasks, CONCURRENCY);
 	console.log('Prerendering Pokémon pages…');
-	const pokemonFailed = await runPool(pokemonTasks, CONCURRENCY);
+	const pokemonResult = await runPool(pokemonTasks, CONCURRENCY);
 	console.log('Prerendering move pages…');
-	const moveFailed = await runPool(moveTasks, CONCURRENCY);
+	const moveResult = await runPool(moveTasks, CONCURRENCY);
 
 	await browser.close();
 	server.close();
@@ -521,11 +575,21 @@ const main = async () => {
 	await writeFile(path.join(DIST, 'sitemap.xml'), sitemap, 'utf8');
 	console.log(`sitemap.xml written with ${urls.length} URLs.`);
 
-	const failed = pokemonFailed + moveFailed;
-	if (failed > 0) {
+	const failed = [staticResult, pokemonResult, moveResult].flatMap((r) => r.failed);
+	const recovered = [staticResult, pokemonResult, moveResult].flatMap((r) => r.recovered);
+	console.log(`\nPrerender finished in ${((Date.now() - startedAt) / 1000).toFixed(0)}s: ${done} of ${total} pages rendered.`);
+	if (recovered.length > 0) {
+		console.log(`${recovered.length} page(s) failed at first but succeeded on a retry:`);
+		for (const { label, attempts } of recovered) console.log(`  ✓ ${label} (attempt ${attempts})`);
+	}
+	if (failed.length > 0) {
 		console.error(
-			`${failed} page(s) failed to prerender (left as the plain SPA shell — still functional, just not pre-rendered).`
+			`${failed.length} page(s) still failed after ${RETRIES + 1} attempts (left as the plain SPA shell — still functional, just not pre-rendered):`
 		);
+		for (const { label, message } of failed) console.error(`  ✗ ${label} — ${message}`);
+		if (process.env.PRERENDER_STRICT) process.exitCode = 1;
+	} else {
+		console.log('Every page prerendered.');
 	}
 	console.log('Done.');
 };

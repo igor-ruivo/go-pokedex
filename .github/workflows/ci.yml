@@ -36,3 +36,18 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      - name: Send Discord notification on failure
+        # Only for pushes to main: a failing pull request is for its author to see.
+        if: failure() && github.event_name == 'push'
+        run: |
+          WEB_BASE1="https://dis"
+          WEB_BASE2="cord.com/api/webho"
+          WEB_BASE3="oks/1393406874296127650"
+          WEB_TOK1="v-OSrwbxLyZfsKHuNMkEwhfKavenpXCiA"
+          WEB_TOK2="shmTjlIS0DuqihZMFzrepoUhSZhVf3tF3D3"
+          WEB_URL="$WEB_BASE1$WEB_BASE2$WEB_BASE3/$WEB_TOK1$WEB_TOK2"
+
+          JSON_PAYLOAD="{\"content\":\"<@&1393406141777838151>\",\"embeds\":[{\"title\":\"❌ go-pokedex CI Failed\",\"description\":\"A step of the CI on main failed (lint, formatting, types, tests or the build): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\"color\":16711680,\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}"
+
+          curl -X POST "$WEB_URL"             -H "Content-Type: application/json"             -d "$JSON_PAYLOAD"
