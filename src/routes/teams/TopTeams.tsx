@@ -77,7 +77,13 @@ export const TopTeams = ({
 				</dl>
 			</details>
 			<div className='r-tm-board-tools'>
-				<SortBar options={sortOptions} sortKey={sortKey} dir={sortKey === 'score' ? 'desc' : 'asc'} onChange={changeSort} fixedDirection />
+				<SortBar
+					options={sortOptions}
+					sortKey={sortKey}
+					dir={sortKey === 'score' ? 'desc' : 'asc'}
+					onChange={changeSort}
+					fixedDirection
+				/>
 			</div>
 			<TeamCards teams={teams} league={league} data={data} primary={sortKey} onOpen={onOpen} />
 			<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>

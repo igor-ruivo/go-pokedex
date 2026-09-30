@@ -2553,3 +2553,18 @@
 	width: 34px;
 	height: 34px;
 }
+
+/* rank change since the last ranking: the same green ▲ / red ▼ as the PvP rankings' tiles (.r-pc-delta) */
+.rvmp .r-tm-board-delta {
+	font-family: 'Nunito Sans', sans-serif;
+	font-weight: 800;
+	font-size: 11px;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-tm-board-delta[data-dir='up'] {
+	color: var(--pos);
+}
+.rvmp .r-tm-board-delta[data-dir='down'] {
+	color: var(--neg);
+}

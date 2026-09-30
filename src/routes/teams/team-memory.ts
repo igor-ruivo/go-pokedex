@@ -50,6 +50,7 @@ export const rememberTeam = (league: TeamLeague, encoded: string) => {
 /** A team that was deliberately cleared must not come back the next time the page opens. */
 export const forgetTeam = (league: TeamLeague) => {
 	const memory = read();
-	const { [league]: _removed, ...rest } = memory.teams;
-	write({ ...memory, league, teams: rest });
+	const teams = { ...memory.teams };
+	delete teams[league];
+	write({ ...memory, league, teams });
 };

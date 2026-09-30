@@ -47,23 +47,30 @@ describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague
 	});
 });
 
-describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)('%s league swaps', (league, data) => {
-	const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
-	const movesetOf = (speciesId: string) =>
-		data.ranking.find((r) => r.speciesId === speciesId)!.moveset.filter((m) => m !== 'none');
-	const top = [...data.ranking]
-		.sort((a, b) => a.rank - b.rank)
-		.slice(0, 3)
-		.map((r) => r.speciesId);
-	const team = top.map((speciesId) => ({ speciesId, moveset: movesetOf(speciesId) }));
+describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)(
+	'%s league swaps',
+	(league, data) => {
+		const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+		const movesetOf = (speciesId: string) =>
+			data.ranking.find((r) => r.speciesId === speciesId)!.moveset.filter((m) => m !== 'none');
+		const top = [...data.ranking]
+			.sort((a, b) => a.rank - b.rank)
+			.slice(0, 3)
+			.map((r) => r.speciesId);
+		const team = top.map((speciesId) => ({ speciesId, moveset: movesetOf(speciesId) }));
 
-	it('gives every swap the threat score `evaluate` gives the swapped team', () => {
-		const swaps = evaluator.swaps(team, { candidates: 6 });
-		expect(swaps.length).toBeGreaterThan(0);
+		it('gives every swap the threat score `evaluate` gives the swapped team', () => {
+			const swaps = evaluator.swaps(team, { candidates: 6 });
+			expect(swaps.length).toBeGreaterThan(0);
 
-		for (const pick of swaps) {
-			const swapped = team.map((slot, i) => (i === pick.slot ? { speciesId: pick.speciesId, moveset: movesetOf(pick.speciesId) } : slot));
-			expect(pick.threatScore, `${pick.speciesId} in slot ${pick.slot}`).toBe(evaluator.evaluate(swapped).threatScore);
-		}
-	});
-});
+			for (const pick of swaps) {
+				const swapped = team.map((slot, i) =>
+					i === pick.slot ? { speciesId: pick.speciesId, moveset: movesetOf(pick.speciesId) } : slot
+				);
+				expect(pick.threatScore, `${pick.speciesId} in slot ${pick.slot}`).toBe(
+					evaluator.evaluate(swapped).threatScore
+				);
+			}
+		});
+	}
+);

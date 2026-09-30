@@ -7,7 +7,7 @@ import { useFavoriteTeams } from '../../lib/favorite-teams';
 import { type ScoreParts, scoreTier, teamScore, threatPart } from '../../lib/team-analysis';
 import { TeamCards } from './TeamCards';
 import { analyzeTeam } from './useTeamAnalysis';
-import { useSimContext, useTeamEvaluations, type TeamsData } from './useTeamsData';
+import { type TeamsData, useSimContext, useTeamEvaluations } from './useTeamsData';
 
 type SortKey = 'score' | 'threat' | 'added';
 
@@ -39,9 +39,7 @@ export const FavoriteTeams = ({
 	const favorites = useMemo(
 		() =>
 			all.filter(
-				(f) =>
-					f.league === league &&
-					f.members.every((m) => data.rankList[m.speciesId] && data.gamemaster[m.speciesId])
+				(f) => f.league === league && f.members.every((m) => data.rankList[m.speciesId] && data.gamemaster[m.speciesId])
 			),
 		[all, league, data.rankList, data.gamemaster]
 	);
@@ -72,7 +70,9 @@ export const FavoriteTeams = ({
 			const score = teamScore(parts);
 			if (score === undefined) return;
 			// In play order — lead, switch, closer — like the best teams.
-			const order = analysis.roles ? [analysis.roles.order.lead, analysis.roles.order.switch, analysis.roles.order.closer] : [0, 1, 2];
+			const order = analysis.roles
+				? [analysis.roles.order.lead, analysis.roles.order.switch, analysis.roles.order.closer]
+				: [0, 1, 2];
 			rows.push({
 				members: order.map((index) => favorite.members[index]),
 				score,
@@ -125,7 +125,13 @@ export const FavoriteTeams = ({
 					fixedDirection
 				/>
 			</div>
-			<TeamCards teams={teams} league={league} data={data} primary={sortKey === 'threat' ? 'threat' : 'score'} onOpen={onOpen} />
+			<TeamCards
+				teams={teams}
+				league={league}
+				data={data}
+				primary={sortKey === 'threat' ? 'threat' : 'score'}
+				onOpen={onOpen}
+			/>
 			{rated.pending > 0 && (
 				<div className='r-tm-loading'>
 					<span className='r-spinner' aria-hidden='true' />

@@ -30,6 +30,8 @@ const CANDIDATES = Number(process.env.CANDIDATES ?? 50);
 const TOP = Number(process.env.TOP_TEAMS ?? 100);
 const SAMPLE_CHECKS = 6;
 const OUT = process.env.OUT ?? path.join(import.meta.dirname, '..', '..', 'team-ranking.json');
+// The previous run's file (the workflow downloads it from the data branch first). Without it there is nothing to compare.
+const PREVIOUS = process.env.PREVIOUS;
 
 const LEAGUES: Array<{ league: TeamLeague; file: string }> = [
 	{ league: 'great', file: 'great-league-pvp.json' },
@@ -47,12 +49,53 @@ if (!builder.simulator.verified) {
 	throw new Error(`PvPoke's simulator is unverified (${[...builder.simulator.changedSources, ...builder.simulator.unknownMechanics].join(', ')}) — not publishing a team ranking`);
 }
 
+interface PreviousRanking {
+	generatedAt?: string;
+	leagues?: Partial<Record<TeamLeague, { byScore?: Array<RankedTeam>; byThreat?: Array<RankedTeam> }>>;
+}
+
+const previous: PreviousRanking | undefined = (() => {
+	if (!PREVIOUS || !fs.existsSync(PREVIOUS)) return undefined;
+	try {
+		return JSON.parse(fs.readFileSync(PREVIOUS, 'utf8')) as PreviousRanking;
+	} catch {
+		return undefined;
+	}
+})();
+const today = new Date().toISOString().slice(0, 10);
+/** A re-run on the same day keeps the changes already published, instead of comparing today with itself. */
+const previousIsToday = previous?.generatedAt?.slice(0, 10) === today;
+
+/** The same three Pokémon with the same moves are the same team, whatever order they were listed in. */
+const teamKey = (team: { members: Array<{ speciesId: string; moveset: Array<string> }> }) =>
+	team.members
+		.map((m) => [m.speciesId, ...m.moveset].join('-'))
+		.sort()
+		.join('|');
+
+/**
+ * Places gained (positive) or lost (negative) since the previous ranking, for each team of one list. Teams that
+ * weren't in the previous top list, and teams that didn't move, carry no figure.
+ */
+const withRankChanges = (list: Array<RankedTeam>, before: Array<RankedTeam> | undefined): Array<RankedTeam> => {
+	if (!before) return list;
+	const position = new Map(before.map((team, i) => [teamKey(team), { index: i, team }] as const));
+	return list.map((team, i) => {
+		const was = position.get(teamKey(team));
+		if (!was) return team;
+		const change = previousIsToday ? was.team.rankChange : was.index - i;
+		return change ? { ...team, rankChange: change } : team;
+	});
+};
+
 interface RankedTeam {
 	/** In the order the Battle plan plays them: lead, switch, closer. */
 	members: Array<{ speciesId: string; moveset: Array<string> }>;
 	score: number;
 	tier: string;
 	threatScore: number;
+	/** Places gained (+) or lost (−) in this list since the previous ranking; absent for new or unmoved teams. */
+	rankChange?: number;
 	parts: Record<keyof ScoreParts, number>;
 }
 
@@ -152,7 +195,12 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 	// PvPoke's threat score alone (lower is better). The page lets you sort between them.
 	const byScore = [...teams].sort((a, b) => b.score - a.score || a.threatScore - b.threatScore).slice(0, TOP);
 	const byThreat = [...teams].sort((a, b) => a.threatScore - b.threatScore || b.score - a.score).slice(0, TOP);
-	return { totalTeams: teams.length, byScore, byThreat };
+	const before = previous?.leagues?.[league];
+	return {
+		totalTeams: teams.length,
+		byScore: withRankChanges(byScore, before?.byScore),
+		byThreat: withRankChanges(byThreat, before?.byThreat),
+	};
 };
 
 const leagues = Object.fromEntries(LEAGUES.map((l) => [l.league, rankLeague(l)]));

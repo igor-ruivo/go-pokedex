@@ -7,8 +7,8 @@ import { cleanName, dexNo, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
 import { typeKey, typeVar } from '../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
-import { ShadowMark } from './ShadowMark';
 import { RankMedal } from './RankMedal';
+import { ShadowMark } from './ShadowMark';
 import { SpriteImg } from './Sprite';
 
 export interface CardMetric {

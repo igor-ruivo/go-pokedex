@@ -50,7 +50,8 @@ const parse = (raw: string | null): Array<FavoriteTeam> => {
 		return parsed.flatMap((entry: unknown): Array<FavoriteTeam> => {
 			if (typeof entry !== 'object' || entry === null) return [];
 			const { league, members, addedAt } = entry as Partial<FavoriteTeam>;
-			if (!isTeamLeague(league) || !Array.isArray(members) || members.length !== 3 || !members.every(isMember)) return [];
+			if (!isTeamLeague(league) || !Array.isArray(members) || members.length !== 3 || !members.every(isMember))
+				return [];
 			return [{ league, members, addedAt: typeof addedAt === 'number' ? addedAt : 0 }];
 		});
 	} catch {

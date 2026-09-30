@@ -460,7 +460,10 @@ export class TeamEvaluator {
 	}
 
 	/** The swaps that lower (or at worst keep) the threat score: the best slot for each candidate, best first. */
-	suggest(team: ReadonlyArray<TeamSlot>, options: { candidates?: number; results?: number } = {}): Array<AlternativePick> {
+	suggest(
+		team: ReadonlyArray<TeamSlot>,
+		options: { candidates?: number; results?: number } = {}
+	): Array<AlternativePick> {
 		const seen = new Set<string>();
 		return this.swaps(team, options.candidates === undefined ? {} : { candidates: options.candidates })
 			.filter((p) => (seen.has(p.speciesId) ? false : (seen.add(p.speciesId), true)))

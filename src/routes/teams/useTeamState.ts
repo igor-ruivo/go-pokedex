@@ -62,7 +62,6 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 		nextParams.set('t', remembered);
 		setParams(nextParams, { replace: true });
 		// `params` is read, not watched: this reacts to the team going missing, not to other parameters changing.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [restore, data.ready, league, raw]);
 
 	/** A species' recommended moveset for this league (PvPoke's own pick), as `[fast, charged 1, charged 2?]`. */

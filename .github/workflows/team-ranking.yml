@@ -48,12 +48,18 @@ jobs:
         working-directory: go-pokedex
         run: pnpm install --frozen-lockfile
 
+      - name: Fetch the previous ranking (to show rank changes)
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/data/team-ranking.json" \
+            -o "${{ github.workspace }}/previous-team-ranking.json" || echo "No previous ranking yet."
+
       - name: Rank teams
         id: rank-teams
         working-directory: go-pokedex
         env:
           DEX_SERVER_DIR: ${{ github.workspace }}/dex-server
           OUT: ${{ github.workspace }}/team-ranking.json
+          PREVIOUS: ${{ github.workspace }}/previous-team-ranking.json
         run: pnpm run team-ranking
 
       - name: Publish to the data branch

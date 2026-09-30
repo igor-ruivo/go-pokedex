@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { IconTabBar, type IconTabItem } from '../components/IconTabBar';
-import { RankMedal } from '../components/RankMedal';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
+import { RankMedal } from '../components/RankMedal';
 import { useLanguage } from '../contexts/language-context';
 import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
 import { leagueIcon } from '../lib/league-visuals';
@@ -13,11 +13,11 @@ import { encodeTeam, letterGrade, type ScoreParts, scoreTier, teamScore, threatP
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { BattlePlan } from './teams/BattlePlan';
 import { CoveragePanel } from './teams/CoveragePanel';
+import { FavoriteStar } from './teams/FavoriteStar';
+import { FavoriteTeams } from './teams/FavoriteTeams';
 import { ScoreHero } from './teams/ScoreHero';
 import { StatsPanel } from './teams/StatsPanel';
 import { Suggestions } from './teams/Suggestions';
-import { FavoriteStar } from './teams/FavoriteStar';
-import { FavoriteTeams } from './teams/FavoriteTeams';
 import { lastTeamLeague } from './teams/team-memory';
 import { TeamMini } from './teams/TeamMini';
 import { SlotPicker, TeamStage } from './teams/TeamStage';
@@ -57,7 +57,11 @@ const Teams = () => {
 
 	const data = useTeamsData(league);
 	const ctx = useSimContext(league, data);
-	const { team, setMember, setMove, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(data, league, tab === 'builder');
+	const { team, setMember, setMove, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(
+		data,
+		league,
+		tab === 'builder'
+	);
 	const analysis = useTeamAnalysis(league, ctx, data, team);
 
 	const full = team.length === 3;

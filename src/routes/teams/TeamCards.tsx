@@ -50,16 +50,34 @@ export const TeamCards = ({
 			{teams.map((team, index) => {
 				const rank = index + 1;
 				return (
-					<li key={team.members.map((m) => [m.speciesId, ...m.moveset].join('-')).join('|')} style={{ ['--i' as string]: Math.min(index, 12) }}>
+					<li
+						key={team.members.map((m) => [m.speciesId, ...m.moveset].join('-')).join('|')}
+						style={{ ['--i' as string]: Math.min(index, 12) }}
+					>
 						{/* The card is not itself a button: it holds the favorite star, and a button can't hold a button. */}
-						<div className='r-tm-board-card' data-tier={team.tier} data-added={team.addedAt !== undefined ? '' : undefined}>
-							<button type='button' className='r-tm-board-open' aria-label={t('teams:top.open')} onClick={() => onOpen(team)} />
+						<div
+							className='r-tm-board-card'
+							data-tier={team.tier}
+							data-added={team.addedAt !== undefined ? '' : undefined}
+						>
+							<button
+								type='button'
+								className='r-tm-board-open'
+								aria-label={t('teams:top.open')}
+								onClick={() => onOpen(team)}
+							/>
 							<span className='r-tm-board-lead'>
 								{/* a favorite has no place in a ranking: just the star (and, below, when it was added) */}
 								{team.addedAt === undefined && (
 									<span className='r-tm-board-rank' data-podium={rank <= 3 ? rank : undefined}>
 										<RankMedal rank={rank} />
 										<span>{ordinal(rank, currentLanguage)}</span>
+										{team.rankChange ? (
+											<span className='r-tm-board-delta' data-dir={team.rankChange > 0 ? 'up' : 'down'}>
+												{team.rankChange > 0 ? '▲' : '▼'}
+												{Math.abs(team.rankChange)}
+											</span>
+										) : null}
 									</span>
 								)}
 								<FavoriteStar league={league} members={team.members} />

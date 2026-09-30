@@ -85,6 +85,8 @@ export interface RankedTeam {
 	tier: 'elite' | 'strong' | 'solid' | 'shaky' | 'risky';
 	/** PvPoke's threat score for the team — lower is better. */
 	threatScore: number;
+	/** Places gained (+) or lost (−) in the list it is in since the previous ranking; absent for new or unmoved teams. */
+	rankChange?: number;
 }
 
 /** `team-ranking.json` (go-pokedex's `data` branch): every trio of each league's best Pokémon, rated; the top of each list. */
