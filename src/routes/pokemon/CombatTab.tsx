@@ -50,6 +50,8 @@ const CombatTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; act
 			<div className='r-card'>
 				{ranked ? (
 					<CombatHexagon
+						// remount per Pokémon/league so the grow-in animation replays on every switch
+						key={`${pokemon.speciesId}|${activeLeague.title}`}
 						values={{
 							lead: ranked.lead,
 							switch: ranked.switch,
@@ -76,17 +78,19 @@ const CombatTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; act
 					</p>
 				)}
 
-				<details className='r-ctr-help r-hex-help'>
-					<summary>{t('pokemonDetail:combat.helpSummary')}</summary>
-					<dl>
-						{COMBAT_METRICS.map((m) => (
-							<Fragment key={m}>
-								<dt>{labels[m]}</dt>
-								<dd>{descriptions[m]}</dd>
-							</Fragment>
-						))}
-					</dl>
-				</details>
+				{ranked && (
+					<details className='r-ctr-help r-hex-help'>
+						<summary>{t('pokemonDetail:combat.helpSummary')}</summary>
+						<dl>
+							{COMBAT_METRICS.map((m) => (
+								<Fragment key={m}>
+									<dt>{labels[m]}</dt>
+									<dd>{descriptions[m]}</dd>
+								</Fragment>
+							))}
+						</dl>
+					</details>
+				)}
 			</div>
 
 			<div className='r-section-h'>{t('pokemonDetail:effectiveness.heading', { name })}</div>

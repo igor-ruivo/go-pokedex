@@ -55,11 +55,23 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 					className='r-filter-btn'
 					data-on={count > 0}
 					aria-expanded={open}
+					aria-haspopup='dialog'
 					onClick={() => setOpen((o) => !o)}
 				>
-					<span className='r-filter-ic' aria-hidden='true'>
-						☰
-					</span>
+					<svg
+						className='r-filter-ic'
+						viewBox='0 0 24 24'
+						width='16'
+						height='16'
+						fill='none'
+						stroke='currentColor'
+						strokeWidth='2'
+						strokeLinecap='round'
+						strokeLinejoin='round'
+						aria-hidden='true'
+					>
+						<path d='M3 5h18l-7 8v6l-4 2v-8z' />
+					</svg>
 					{single ? t('components:filterBar.typeSectionLabel') : t('components:filterBar.button')}
 					{count > 0 && <span className='r-filter-count'>{count}</span>}
 				</button>

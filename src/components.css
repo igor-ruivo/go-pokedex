@@ -845,7 +845,7 @@
 		align-items: center;
 		gap: 6px;
 		/* Same rendered height/font-size as `.r-filter-btn`/`.r-sort-btn`/the
-		   league picker's own chips — only in this single-row layout, not the
+		   league picker's own chips (height only) — only in this single-row layout, not the
 		   2-line stacked one above: forcing icon-over-label onto one 34.84px
 		   line isn't physically fittable, so the stacked mobile tab keeps its
 		   own established size instead of being squashed to match. */
@@ -2298,20 +2298,34 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 7px;
-	padding: 7px 14px;
-	border-radius: var(--r-pill);
+	/* Toolbar button, not a chip: squared corners + leading SVG icon, so it
+	   never reads as one of the pill-shaped selectable chips (league picker,
+	   date picker) — those choose a view, this opens a control panel. */
+	height: 34.84px;
+	padding: 0 12px;
+	border-radius: 8px;
 	font-weight: 700;
 	font-size: 13px;
 	color: var(--text);
+	background: transparent;
+	border: 1px solid var(--border-strong);
+	transition:
+		background 0.14s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-filter-btn:hover,
+.rvmp .r-filter-btn[aria-expanded='true'] {
 	background: var(--surface-2);
-	border: 1px solid var(--border);
 }
 .rvmp .r-filter-btn[data-on='true'] {
 	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 .rvmp .r-filter-ic {
-	font-size: 12px;
+	flex: none;
 	color: var(--text-dim);
+}
+.rvmp .r-filter-btn[data-on='true'] .r-filter-ic {
+	color: var(--accent);
 }
 .rvmp .r-filter-count {
 	display: grid;
@@ -2385,29 +2399,6 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 6px;
-}
-.rvmp .r-type-chip {
-	flex: none;
-	padding: 6px 12px;
-	border-radius: var(--r-pill);
-	font-weight: 700;
-	font-size: 12px;
-	white-space: nowrap;
-	color: var(--text-dim);
-	background: var(--surface-2);
-	border: 1px solid var(--border);
-	transition: border-color 0.14s ease;
-}
-.rvmp .r-type-chip:not([data-active='true']):not(:disabled):hover {
-	border-color: var(--border-strong);
-}
-.rvmp .r-type-chip[data-active='true'] {
-	color: #0c1017;
-	background: var(--tc, var(--accent));
-	border-color: transparent;
-}
-.rvmp .r-type-chip:disabled {
-	opacity: 0.3;
 }
 
 .rvmp .r-rank-empty {
@@ -5075,32 +5066,67 @@
 		max-width: none;
 	}
 }
+/* Segmented control: one joined bar with a shared border */
 .rvmp .r-sort-dirseg {
 	display: inline-flex;
-	gap: 4px;
+	overflow: hidden;
+	border-radius: 8px;
+	border: 1px solid var(--border-strong);
 }
 .rvmp .r-sort-dirseg button {
-	padding: 5px 10px;
-	border-radius: var(--r-pill);
+	padding: 5px 12px;
 	font-size: 11px;
 	font-weight: 800;
 	color: var(--text-dim);
-	background: var(--surface-2);
-	border: 1px solid var(--border);
-	transition: border-color 0.14s ease;
+	background: transparent;
+	transition:
+		background 0.14s ease,
+		color 0.14s ease;
+}
+.rvmp .r-sort-dirseg button + button {
+	border-left: 1px solid var(--border-strong);
 }
 .rvmp .r-sort-dirseg button:not([data-active]):hover {
-	border-color: var(--border-strong);
+	background: var(--surface-2);
 }
 .rvmp .r-sort-dirseg button[data-active] {
 	color: #0c1017;
 	background: var(--accent);
-	border-color: transparent;
 }
+/* Menu list: one option per row, checkmark on the current one */
 .rvmp .r-sort-opts {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
+	flex-direction: column;
+	gap: 2px;
+	/* Many options on a short phone screen: the list scrolls inside the panel
+	   instead of the panel growing over the whole page. */
+	max-height: min(50vh, 320px);
+	max-height: min(50dvh, 320px);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	/* the panel itself sets `touch-action: none` — re-allow vertical panning here */
+	touch-action: pan-y;
+}
+.rvmp .r-sort-opt {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 9px 10px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 700;
+	text-align: left;
+	color: var(--text);
+	transition: background 0.14s ease;
+}
+.rvmp .r-sort-opt:hover {
+	background: var(--surface-2);
+}
+.rvmp .r-sort-opt[data-active='true'] {
+	color: var(--accent);
+	background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
 /* ---- app-bar language / settings popover --------------------------------- */

@@ -42,11 +42,23 @@ export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
 				className='r-filter-btn r-sort-btn'
 				data-on={sortKey !== options[0].key || dir !== (options[0].defaultDir ?? 'asc')}
 				aria-expanded={open}
+				aria-haspopup='dialog'
 				onClick={() => setOpen((o) => !o)}
 			>
-				<span className='r-filter-ic' aria-hidden='true'>
-					↕
-				</span>
+				<svg
+					className='r-filter-ic'
+					viewBox='0 0 24 24'
+					width='16'
+					height='16'
+					fill='none'
+					stroke='currentColor'
+					strokeWidth='2'
+					strokeLinecap='round'
+					strokeLinejoin='round'
+					aria-hidden='true'
+				>
+					<path d='M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4' />
+				</svg>
 				{active.label}
 				<span className='r-sort-dir' aria-hidden='true'>
 					{dir === 'asc' ? '↑' : '↓'}
@@ -74,18 +86,38 @@ export const SortBar = ({ options, sortKey, dir, onChange }: SortBarProps) => {
 							</button>
 						</div>
 					</div>
-					<div className='r-sort-opts'>
-						{options.map((o) => (
-							<button
-								key={o.key}
-								type='button'
-								className='r-type-chip'
-								data-active={o.key === sortKey}
-								onClick={() => pick(o)}
-							>
-								{o.label}
-							</button>
-						))}
+					<div className='r-sort-opts' role='listbox'>
+						{options.map((o) => {
+							const selected = o.key === sortKey;
+							return (
+								<button
+									key={o.key}
+									type='button'
+									role='option'
+									aria-selected={selected}
+									className='r-sort-opt'
+									data-active={selected}
+									onClick={() => pick(o)}
+								>
+									<span>{o.label}</span>
+									{selected && (
+										<svg
+											viewBox='0 0 24 24'
+											width='16'
+											height='16'
+											fill='none'
+											stroke='currentColor'
+											strokeWidth='2.5'
+											strokeLinecap='round'
+											strokeLinejoin='round'
+											aria-hidden='true'
+										>
+											<path d='M5 12.5l4.5 4.5L19 7.5' />
+										</svg>
+									)}
+								</button>
+							);
+						})}
 					</div>
 				</div>
 			)}
