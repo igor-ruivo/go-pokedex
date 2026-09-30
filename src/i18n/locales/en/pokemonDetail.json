@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "Ranks",
+		"combat": "Combat",
 		"moves": "Moves",
 		"counters": "Counters",
 		"ivTable": "IV Table",
 		"strings": "Strings",
 		"comingSoon": "“{{tab}}” is next in the revamp.",
-		"ariaLabel": "Ranks / Moves / Counters / IV Table / Strings"
+		"ariaLabel": "Ranks / Combat / Moves / Counters / IV Table / Strings"
 	},
 	"loading": {
 		"pokedex": "Loading Pokédex…",
@@ -87,6 +88,39 @@
 		"weakTo": "Weak to",
 		"resists": "Resists",
 		"nothing": "Nothing"
+	},
+	"combat": {
+		"heading": "Combat profile · {{name}} · {{league}}",
+		"notForRaids": "Combat scores don’t apply to {{raid}}s — pick {{great}}, {{ultra}} or {{master}} above.",
+		"notRanked": "{{name}} isn’t ranked in {{league}} — no combat scores.",
+		"chartAriaLabel": "Combat scores of {{name}} in {{league}}",
+		"helpSummary": "What do these mean?",
+		"metrics": {
+			"lead": {
+				"name": "Lead",
+				"desc": "The best Pokémon with shields in play. Capable of applying pressure or winning extended fights, they’re ideal leads in battle."
+			},
+			"switch": {
+				"name": "Switch",
+				"desc": "The best Pokémon to switch to from an unfavorable lead. These Pokémon have safe matchups and can pressure shields or deal heavy damage even in their losses."
+			},
+			"charger": {
+				"name": "Charger",
+				"desc": "The best Pokémon with an energy advantage. Fast energy gain or powerful moves make them dangerous after building up energy. This also factors in a Pokémon’s ability to farm down a weakened opponent or overfarm in advantageous matchups."
+			},
+			"closer": {
+				"name": "Closer",
+				"desc": "The best Pokémon with no shields in play. Bulk or hard-hitting moves allow them to close out matchups."
+			},
+			"consistency": {
+				"name": "Consistency",
+				"desc": "These Pokémon perform the most dependably. They provide consistent damage and rely less on baiting shields than other Pokémon. Shorter Fast Moves also help improve consistency."
+			},
+			"attacker": {
+				"name": "Attacker",
+				"desc": "The best Pokémon against shielded opponents, while unshielded. Their natural bulk, resistances and strong attacks allow them to power through a disadvantage."
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

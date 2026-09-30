@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "Rangs",
+		"combat": "Combat",
 		"moves": "Capacités",
 		"counters": "Contres",
 		"ivTable": "Tableau des IV",
 		"strings": "Chaînes",
 		"comingSoon": "« {{tab}} » arrive prochainement dans la refonte.",
-		"ariaLabel": "Classements / Capacités / Contres / Tableau des IV / Recherches"
+		"ariaLabel": "Classements / Combat / Capacités / Contres / Tableau des IV / Recherches"
 	},
 	"loading": {
 		"pokedex": "Chargement du Pokédex…",
@@ -87,6 +88,39 @@
 		"weakTo": "Faible contre",
 		"resists": "Résiste à",
 		"nothing": "Rien"
+	},
+	"combat": {
+		"heading": "Profil de combat · {{name}} · {{league}}",
+		"notForRaids": "Les scores de combat ne s'appliquent pas aux {{raid}}s — choisissez {{great}}, {{ultra}} ou {{master}} ci-dessus.",
+		"notRanked": "{{name}} n'est pas classé en {{league}} — pas de scores de combat.",
+		"chartAriaLabel": "Scores de combat de {{name}} en {{league}}",
+		"helpSummary": "Que signifient ces éléments ?",
+		"metrics": {
+			"lead": {
+				"name": "Ouverture",
+				"desc": "Les meilleurs Pokémon avec des boucliers en jeu. Capables de mettre la pression ou de gagner les longs combats, ils sont idéaux pour ouvrir."
+			},
+			"switch": {
+				"name": "Relais",
+				"desc": "Les meilleurs Pokémon vers qui switcher depuis une ouverture défavorable. Leurs matchups sont sûrs et ils peuvent pousser les boucliers ou infliger de lourds dégâts même en perdant."
+			},
+			"charger": {
+				"name": "Charge",
+				"desc": "Les meilleurs Pokémon avec un avantage d'énergie. Un gain d'énergie rapide ou des attaques puissantes les rendent dangereux une fois l'énergie accumulée. Cela prend aussi en compte leur capacité à achever un adversaire affaibli ou à sur-accumuler dans les matchups favorables."
+			},
+			"closer": {
+				"name": "Clôture",
+				"desc": "Les meilleurs Pokémon sans boucliers en jeu. Leur robustesse ou leurs attaques puissantes leur permettent de conclure les matchups."
+			},
+			"consistency": {
+				"name": "Régularité",
+				"desc": "Ces Pokémon sont les plus fiables. Ils infligent des dégâts constants et dépendent moins du leurre des boucliers que les autres. Des attaques rapides plus courtes améliorent aussi la régularité."
+			},
+			"attacker": {
+				"name": "Attaquant",
+				"desc": "Les meilleurs Pokémon contre des adversaires avec boucliers, alors qu'ils n'en ont pas. Leur robustesse naturelle, leurs résistances et leurs attaques puissantes leur permettent de surmonter un désavantage."
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

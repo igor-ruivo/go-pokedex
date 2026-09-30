@@ -21,7 +21,6 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents, ILeagueIvBlock } from '../DTOs/ivs';
 import { useBestIvs } from '../hooks/useBestIvs';
 import useComputeIVs from '../hooks/useComputeIVs';
-import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
 import { cleanName, dec1, dexNo, ordinal, rankPerfection, sentenceCase } from '../lib/format';
 import { leagueColor, leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { R } from '../lib/nav';
@@ -43,6 +42,7 @@ import {
 	type RankEntry,
 	sortByFamilyLine,
 } from '../utils/pokemon-helper';
+import CombatTab from './pokemon/CombatTab';
 import CountersTab from './pokemon/CountersTab';
 import IvTableTab from './pokemon/IvTableTab';
 import MovesTab from './pokemon/MovesTab';
@@ -78,6 +78,7 @@ const colorFor = (id: LeagueId): string =>
 
 const TABS = [
 	['Ranks', 'ranks'],
+	['Combat', 'combat'],
 	['Moves', 'moves'],
 	['Counters', 'counters'],
 	['IV Table', 'iv-table'],
@@ -92,14 +93,58 @@ const TAB_ICON: Partial<Record<string, string>> = {
 	counters: '/images/nav/counters.png',
 	strings: '/images/nav/search-strings.svg',
 };
-// No dedicated image asset for this one — a plain table/grid glyph instead,
-// matching the other tabs' stroke weight and size.
+// No dedicated image asset for this one — a small table glyph instead, in two
+// hues (an amber header band, a few highlighted cells) so it holds its own next
+// to the coloured tab images.
 const IvTableIcon = () => (
-	<svg viewBox='0 0 24 24' fill='none' stroke='var(--text)' strokeWidth='2' aria-hidden='true'>
-		<rect x='3' y='4' width='18' height='16' rx='2' />
-		<line x1='3' y1='10' x2='21' y2='10' />
-		<line x1='9' y1='4' x2='9' y2='20' />
-		<line x1='15' y1='4' x2='15' y2='20' />
+	<svg viewBox='0 0 24 24' fill='none' aria-hidden='true'>
+		<rect x='3' y='4' width='18' height='16' rx='2.5' stroke='var(--text)' strokeWidth='1.6' opacity='0.6' />
+		<path d='M3 6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5V10H3z' fill='#ffb020' />
+		<g stroke='var(--text)' strokeWidth='1.4' opacity='0.5'>
+			<line x1='3' y1='10' x2='21' y2='10' />
+			<line x1='3' y1='15' x2='21' y2='15' />
+			<line x1='9' y1='4' x2='9' y2='20' />
+			<line x1='15' y1='4' x2='15' y2='20' />
+		</g>
+		<rect x='9.8' y='10.8' width='4.4' height='3.4' rx='0.8' fill='#4fa3ff' />
+		<rect x='15.8' y='15.8' width='4.4' height='3.4' rx='0.8' fill='#4fa3ff' />
+		<rect x='3.8' y='15.8' width='4.4' height='3.4' rx='0.8' fill='#4fa3ff' />
+	</svg>
+);
+
+// Same idea for Combat, but in colour (two hues only): a mini stat-radar — grid
+// hexagon, a gradient-filled shape and a dot on each axis.
+const CombatIcon = () => (
+	<svg viewBox='0 0 24 24' fill='none' strokeLinejoin='round' aria-hidden='true'>
+		<defs>
+			<linearGradient id='combat-icon-fill' x1='4' y1='3' x2='20' y2='21' gradientUnits='userSpaceOnUse'>
+				<stop offset='0' stopColor='#4fd1c5' />
+				<stop offset='1' stopColor='#6c8cff' />
+			</linearGradient>
+		</defs>
+		<polygon
+			points='12,2 20.66,7 20.66,17 12,22 3.34,17 3.34,7'
+			stroke='var(--text)'
+			strokeWidth='1.4'
+			opacity='0.55'
+		/>
+		<polygon
+			points='12,4.6 18.4,8.6 16.6,15.6 12,19.6 7.2,14.8 6.6,8.4'
+			fill='url(#combat-icon-fill)'
+			fillOpacity='0.75'
+			stroke='url(#combat-icon-fill)'
+			strokeWidth='1.4'
+		/>
+		{[
+			[12, 4.6],
+			[18.4, 8.6],
+			[16.6, 15.6],
+			[12, 19.6],
+			[7.2, 14.8],
+			[6.6, 8.4],
+		].map(([x, y]) => (
+			<circle key={`${x}-${y}`} cx={x} cy={y} r='1.4' fill='#6c8cff' />
+		))}
 	</svg>
 );
 
@@ -243,6 +288,7 @@ const PokemonDetail = () => {
 	// display text.
 	const TAB_LABEL: Record<string, string> = {
 		'ranks': t('pokemonDetail:tabs.ranks'),
+		'combat': t('pokemonDetail:tabs.combat'),
 		'moves': t('pokemonDetail:tabs.moves'),
 		'counters': t('pokemonDetail:tabs.counters'),
 		'iv-table': t('pokemonDetail:tabs.ivTable'),
@@ -584,11 +630,6 @@ const PokemonDetail = () => {
 			levelToLevelIndex(level)
 		);
 	}, [pokemon, iv, level]);
-
-	const matchups = useMemo(
-		() => (pokemon ? typeMatchups(pokemon.types.map((t) => String(t))) : { weak: [], resist: [] }),
-		[pokemon]
-	);
 
 	// Collapsing hero → a compact bar fades in under the app bar once you've
 	// almost finished scrolling past the *whole* hero card, and fades back out
@@ -1001,7 +1042,14 @@ const PokemonDetail = () => {
 
 			{/* ---- LEAGUE + TABS ---- */}
 			<LeaguePicker
-				items={LEAGUES.map((l) => ({ id: l.id, label: l.label, icon: iconFor(l.id), color: l.cssVar }))}
+				items={LEAGUES.map((l, i) => ({
+					id: l.id,
+					label: l.label,
+					icon: iconFor(l.id),
+					color: l.cssVar,
+					dotBefore: l.id === 'raid',
+					extra: i >= STATIC_LEAGUE_COUNT,
+				}))}
 				activeId={league}
 				onSelect={(id) => selectLeague(id)}
 				ariaLabel={t('pokemonDetail:tablist.ariaLabel')}
@@ -1011,7 +1059,7 @@ const PokemonDetail = () => {
 				items={TABS.map(([, slug]) => ({
 					id: slug,
 					label: TAB_LABEL[slug],
-					icon: slug === 'iv-table' ? <IvTableIcon /> : (TAB_ICON[slug] ?? ''),
+					icon: slug === 'iv-table' ? <IvTableIcon /> : slug === 'combat' ? <CombatIcon /> : (TAB_ICON[slug] ?? ''),
 				}))}
 				activeId={tabParam ?? 'ranks'}
 				onSelect={(slug) => void navigate(`${R.pokemon(speciesId, slug)}${lgParam ? `?lg=${lgParam}` : ''}`)}
@@ -1024,6 +1072,8 @@ const PokemonDetail = () => {
 				<IvTableTab pokemon={pokemon} activeLeague={activeLeague} />
 			) : tab === 'Strings' ? (
 				<SearchStringsTab pokemon={pokemon} activeLeague={activeLeague} />
+			) : tab === 'Combat' ? (
+				<CombatTab pokemon={pokemon} activeLeague={activeLeague} />
 			) : tab === 'Counters' ? (
 				<CountersTab pokemon={pokemon} activeLeague={activeLeague} />
 			) : tab !== 'Ranks' ? (
@@ -1051,6 +1101,9 @@ const PokemonDetail = () => {
 										    opt-in add-on leagues (see LeagueVisibilityMenu) start, so the two
 										    groups read as visually distinct rather than one undifferentiated
 										    list that happens to grow. */}
+										{/* PvP leagues end and Raids begin — a plain, unlabeled rule (Raid is
+										    a different kind of ranking, not another league). */}
+										{l.id === 'raid' && <div className='r-board-divider' data-plain='' role='separator' />}
 										{rowIdx === STATIC_LEAGUE_COUNT && (
 											<div className='r-board-divider' role='separator'>
 												<span>{t('pokemonDetail:board.extraLeaguesDivider')}</span>
@@ -1457,53 +1510,6 @@ const PokemonDetail = () => {
 							</div>
 						</>
 					)}
-
-					{/* ---- EFFECTIVENESS ---- */}
-					<div className='r-section-h'>
-						{t('pokemonDetail:effectiveness.heading', { name: cleanName(pokemon.speciesName) })}
-					</div>
-					<div className='r-card'>
-						<div className='r-eff'>
-							<div className='r-eff-col'>
-								<b>{t('pokemonDetail:effectiveness.weakTo')}</b>
-								<div className='r-eff-list'>
-									{matchups.weak.map(({ type, mult }) => (
-										<span
-											key={type}
-											className='r-eff-t'
-											data-double={isDoubleMult(mult) ? '' : undefined}
-											style={{ ['--tc' as string]: `var(--t-${type})` }}
-										>
-											{gameTypeDisplayTranslator(type, gl)}
-											<span className='r-eff-mult'>{fmtMult(mult)}</span>
-										</span>
-									))}
-									{matchups.weak.length === 0 && (
-										<span className='r-muted'>{t('pokemonDetail:effectiveness.nothing')}</span>
-									)}
-								</div>
-							</div>
-							<div className='r-eff-col'>
-								<b>{t('pokemonDetail:effectiveness.resists')}</b>
-								<div className='r-eff-list'>
-									{matchups.resist.map(({ type, mult }) => (
-										<span
-											key={type}
-											className='r-eff-t'
-											data-double={isDoubleMult(mult) ? '' : undefined}
-											style={{ ['--tc' as string]: `var(--t-${type})` }}
-										>
-											{gameTypeDisplayTranslator(type, gl)}
-											<span className='r-eff-mult'>{fmtMult(mult)}</span>
-										</span>
-									))}
-									{matchups.resist.length === 0 && (
-										<span className='r-muted'>{t('pokemonDetail:effectiveness.nothing')}</span>
-									)}
-								</div>
-							</div>
-						</div>
-					</div>
 				</>
 			)}
 		</div>

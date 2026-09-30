@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "Genel",
 		"dex": "Dex numarası",
 		"name": "İsim",
 		"cp": "Maks. {{cp}}",
-		"type": "Tür"
+		"type": "Tür",
+		"statProduct": "Stat çarpımı"
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",

@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "Global",
 		"dex": "Numéro du Pokédex",
 		"name": "Nom",
 		"cp": "{{cp}} max",
-		"type": "Type"
+		"type": "Type",
+		"statProduct": "Produit des stats"
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",

@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "綜合",
 		"dex": "圖鑑編號",
 		"name": "名稱",
 		"cp": "最高 {{cp}}",
-		"type": "屬性"
+		"type": "屬性",
+		"statProduct": "能力值乘積"
 	},
 	"tabs": {
 		"pokedexFull": "圖鑑",

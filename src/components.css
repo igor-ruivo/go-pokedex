@@ -1005,6 +1005,13 @@
 	height: 1px;
 	background: var(--border);
 }
+/* unlabeled variant: one continuous hairline */
+.rvmp .r-board-divider[data-plain] {
+	gap: 0;
+}
+.rvmp .r-board-divider[data-plain]::after {
+	display: none;
+}
 .rvmp .r-board-divider span {
 	flex: none;
 	display: flex;
@@ -3511,6 +3518,23 @@
 	height: 18px;
 	object-fit: contain;
 	flex: none;
+}
+/* separator dot between the league chips and Raids */
+.rvmp .r-lgpick-dot {
+	flex: none;
+	align-self: center;
+	width: 4px;
+	height: 4px;
+	margin: 0 2px;
+	border-radius: 50%;
+	background: var(--text-faint);
+}
+/* custom/rotating cups: their own scrolling row under the main strip */
+.rvmp .r-lgpick-scroller + .r-lgpick-scroller {
+	margin-top: 4px;
+}
+.rvmp .r-league-row:has(.r-lgpick-scroller + .r-lgpick-scroller) {
+	align-items: flex-start;
 }
 .rvmp .r-lgpick-badge {
 	display: grid;
@@ -6090,4 +6114,225 @@
 	background: var(--accent);
 	border-color: var(--accent);
 	box-shadow: inset 0 0 0 3px var(--surface);
+}
+
+/* ---- combat hexagon -------------------------------------------------------- */
+.rvmp .r-hex {
+	--hex-best: var(--t-grass);
+	--hex-worst: color-mix(in srgb, var(--t-fire) 85%, var(--text));
+	margin: 0 auto;
+	max-width: 400px;
+}
+.rvmp .r-hex-stage {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1;
+}
+.rvmp .r-hex-stage > svg {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+.rvmp .r-hex-ring {
+	fill: none;
+	stroke: var(--border);
+	stroke-width: 0.35;
+}
+.rvmp .r-hex-ring[data-outer] {
+	stroke: var(--border-strong);
+	stroke-width: 0.6;
+	fill: color-mix(in srgb, var(--hex-c) 5%, transparent);
+}
+.rvmp .r-hex-spoke {
+	stroke: var(--border);
+	stroke-width: 0.35;
+}
+.rvmp .r-hex-halo {
+	fill: var(--hex-c);
+	opacity: 0.55;
+	transform-origin: 50px 50px;
+	animation:
+		r-hex-grow 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) both,
+		r-hex-breathe 4.5s ease-in-out 0.9s infinite;
+}
+.rvmp .r-hex-echo {
+	fill: var(--hex-c);
+	stroke: var(--hex-c);
+	stroke-width: 0.3;
+	stroke-linejoin: round;
+	transform-origin: 50px 50px;
+	/* each nested copy lands a beat after the one outside it, then they drift
+	   in and out of phase — the "flowing" part */
+	animation:
+		r-hex-grow 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) calc(var(--i) * 0.12s) both,
+		r-hex-breathe 4.5s ease-in-out calc(0.9s + var(--i) * 0.5s) infinite;
+}
+.rvmp .r-hex-shape {
+	stroke: var(--hex-c);
+	stroke-width: 0.9;
+	stroke-linejoin: round;
+	transform-origin: 50px 50px;
+	animation: r-hex-grow 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+.rvmp .r-hex-dot {
+	fill: var(--text);
+	stroke: var(--hex-c);
+	stroke-width: 0.8;
+	animation: r-hex-pop 0.5s ease-out calc(0.5s + var(--i) * 0.07s) both;
+}
+.rvmp .r-hex-dot[data-tone='best'] {
+	fill: var(--hex-best);
+	stroke: var(--surface);
+}
+.rvmp .r-hex-dot[data-tone='worst'] {
+	fill: var(--hex-worst);
+	stroke: var(--surface);
+}
+@keyframes r-hex-grow {
+	from {
+		transform: scale(0.05);
+		opacity: 0;
+	}
+}
+@keyframes r-hex-breathe {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.035);
+	}
+}
+@keyframes r-hex-pop {
+	from {
+		opacity: 0;
+		r: 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.rvmp .r-hex-halo,
+	.rvmp .r-hex-echo,
+	.rvmp .r-hex-shape,
+	.rvmp .r-hex-dot {
+		animation: none;
+	}
+}
+
+.rvmp .r-hex-l {
+	/* a <button> so it's focusable for the tooltip — reset its chrome */
+	background: none;
+	border: 0;
+	font: inherit;
+	color: inherit;
+	position: absolute;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1px;
+	white-space: nowrap;
+	line-height: 1.1;
+	cursor: help;
+	outline: none;
+	border-radius: var(--r-xs);
+	padding: 2px 4px;
+}
+.rvmp .r-hex-l:focus-visible {
+	box-shadow: 0 0 0 2px var(--accent);
+}
+.rvmp .r-hex-name {
+	font-size: clamp(10px, 2.9vw, 12px);
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .r-hex-val {
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: clamp(15px, 4.4vw, 19px);
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-hex-mark {
+	font-size: 0.6em;
+	margin-right: 3px;
+	vertical-align: 0.12em;
+}
+.rvmp .r-hex-l[data-tone='best'] .r-hex-val,
+.rvmp .r-hex-l[data-tone='best'] .r-hex-name {
+	color: var(--hex-best);
+}
+.rvmp .r-hex-l[data-tone='worst'] .r-hex-val,
+.rvmp .r-hex-l[data-tone='worst'] .r-hex-name {
+	color: var(--hex-worst);
+}
+
+/* hover/focus tooltip — desktop (real hover + fine pointer) only; touch users
+   get the same text in the "what do these mean" panel below */
+.rvmp .r-hex-tip {
+	display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-hex-tip {
+		display: block;
+		position: absolute;
+		z-index: 5;
+		width: 250px;
+		padding: 10px 12px;
+		border-radius: var(--r-sm);
+		background: var(--surface-3);
+		border: 1px solid var(--border-strong);
+		box-shadow: var(--shadow-2);
+		color: var(--text-dim);
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.4;
+		letter-spacing: 0;
+		text-align: left;
+		text-transform: none;
+		white-space: normal;
+		pointer-events: none;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.15s ease,
+			visibility 0.15s;
+	}
+	.rvmp .r-hex-tip strong {
+		display: block;
+		margin-bottom: 3px;
+		color: var(--text);
+		font-size: 12.5px;
+		font-weight: 800;
+	}
+	.rvmp .r-hex-l:hover .r-hex-tip,
+	.rvmp .r-hex-l:focus-visible .r-hex-tip {
+		opacity: 1;
+		visibility: visible;
+	}
+	.rvmp .r-hex-l[data-vert='top'] .r-hex-tip {
+		top: calc(100% + 6px);
+	}
+	.rvmp .r-hex-l[data-vert='bottom'] .r-hex-tip {
+		bottom: calc(100% + 6px);
+	}
+	.rvmp .r-hex-l[data-side='left'] .r-hex-tip {
+		left: 0;
+	}
+	.rvmp .r-hex-l[data-side='right'] .r-hex-tip {
+		right: 0;
+	}
+	.rvmp .r-hex-l[data-side='mid'] .r-hex-tip {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+}
+
+.rvmp .r-hex-help {
+	margin-top: var(--s4);
+	padding-top: var(--s3);
+	border-top: 1px solid var(--border);
 }

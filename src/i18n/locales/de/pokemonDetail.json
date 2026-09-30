@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "Ränge",
+		"combat": "Kampf",
 		"moves": "Attacken",
 		"counters": "Konter",
 		"ivTable": "IW-Tabelle",
 		"strings": "Strings",
 		"comingSoon": "„{{tab}}“ kommt als Nächstes im Redesign.",
-		"ariaLabel": "Ränge / Attacken / Konter / IV-Tabelle / Suchstrings"
+		"ariaLabel": "Ränge / Kampf / Attacken / Konter / IV-Tabelle / Suchstrings"
 	},
 	"loading": {
 		"pokedex": "Pokédex wird geladen…",
@@ -87,6 +88,39 @@
 		"weakTo": "Schwach gegen",
 		"resists": "Resistent gegen",
 		"nothing": "Nichts"
+	},
+	"combat": {
+		"heading": "Kampfprofil · {{name}} · {{league}}",
+		"notForRaids": "Kampfwerte gelten nicht für {{raid}}s — wähle oben {{great}}, {{ultra}} oder {{master}}.",
+		"notRanked": "{{name}} ist in {{league}} nicht eingestuft — keine Kampfwerte.",
+		"chartAriaLabel": "Kampfwerte von {{name}} in {{league}}",
+		"helpSummary": "Was bedeutet das?",
+		"metrics": {
+			"lead": {
+				"name": "Lead",
+				"desc": "Die besten Pokémon mit Schilden im Spiel. Sie können Druck aufbauen oder lange Kämpfe gewinnen und sind daher ideale Leads."
+			},
+			"switch": {
+				"name": "Wechsel",
+				"desc": "Die besten Pokémon, um von einem ungünstigen Lead aus einzuwechseln. Sie haben sichere Matchups und können Schilde unter Druck setzen oder selbst in Niederlagen hohen Schaden verursachen."
+			},
+			"charger": {
+				"name": "Charger",
+				"desc": "Die besten Pokémon mit Energievorteil. Schneller Energiegewinn oder starke Attacken machen sie gefährlich, sobald sie Energie aufgebaut haben. Auch die Fähigkeit, einen geschwächten Gegner abzufarmen oder in günstigen Matchups überzufarmen, fließt hier ein."
+			},
+			"closer": {
+				"name": "Closer",
+				"desc": "Die besten Pokémon ohne Schilde im Spiel. Robustheit oder wuchtige Attacken erlauben es ihnen, Matchups abzuschließen."
+			},
+			"consistency": {
+				"name": "Konstanz",
+				"desc": "Diese Pokémon liefern am zuverlässigsten ab. Sie verursachen gleichmäßigen Schaden und sind weniger darauf angewiesen, Schilde zu ködern. Kürzere Schnellattacken verbessern die Konstanz zusätzlich."
+			},
+			"attacker": {
+				"name": "Angreifer",
+				"desc": "Die besten Pokémon gegen Gegner mit Schilden, während sie selbst keine haben. Ihre natürliche Robustheit, Resistenzen und starken Attacken helfen ihnen, einen Nachteil zu überwinden."
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

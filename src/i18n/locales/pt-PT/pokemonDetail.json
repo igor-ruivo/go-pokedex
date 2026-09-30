@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "Ranks",
+		"combat": "Combate",
 		"moves": "Golpes",
 		"counters": "Counters",
 		"ivTable": "Tabela de IVs",
 		"strings": "Strings",
 		"comingSoon": "“{{tab}}” é o próximo na reformulação.",
-		"ariaLabel": "Classificações / Movimentos / Contra-ataques / Tabela de IVs / Strings"
+		"ariaLabel": "Classificações / Combate / Movimentos / Contra-ataques / Tabela de IVs / Strings"
 	},
 	"loading": {
 		"pokedex": "A carregar Pokédex…",
@@ -87,6 +88,39 @@
 		"weakTo": "Fraco contra",
 		"resists": "Resiste a",
 		"nothing": "Nada"
+	},
+	"combat": {
+		"heading": "Perfil de combate · {{name}} · {{league}}",
+		"notForRaids": "As pontuações de combate não se aplicam a {{raid}}s — escolhe {{great}}, {{ultra}} ou {{master}} acima.",
+		"notRanked": "{{name}} não está classificado em {{league}} — sem pontuações de combate.",
+		"chartAriaLabel": "Pontuações de combate de {{name}} em {{league}}",
+		"helpSummary": "O que significam?",
+		"metrics": {
+			"lead": {
+				"name": "Abertura",
+				"desc": "Os melhores Pokémon com escudos em jogo. Capazes de pressionar ou de ganhar combates longos, são ideais para abrir."
+			},
+			"switch": {
+				"name": "Troca",
+				"desc": "Os melhores Pokémon para trocar a partir de uma abertura desfavorável. Têm confrontos seguros e conseguem pressionar escudos ou causar muito dano mesmo nas derrotas."
+			},
+			"charger": {
+				"name": "Carregador",
+				"desc": "Os melhores Pokémon com vantagem de energia. Ganhar energia depressa ou ter ataques poderosos torna-os perigosos depois de acumularem energia. Conta também a capacidade de acabar com um adversário enfraquecido ou de acumular energia extra em confrontos favoráveis."
+			},
+			"closer": {
+				"name": "Fecho",
+				"desc": "Os melhores Pokémon sem escudos em jogo. A resistência ou os ataques fortes permitem-lhes fechar os confrontos."
+			},
+			"consistency": {
+				"name": "Consistência",
+				"desc": "Estes Pokémon são os mais fiáveis. Causam dano constante e dependem menos de enganar os escudos do que os outros. Ataques rápidos mais curtos também ajudam a consistência."
+			},
+			"attacker": {
+				"name": "Atacante",
+				"desc": "Os melhores Pokémon contra adversários com escudos, quando não têm nenhum. A resistência natural, as resistências de tipo e os ataques fortes permitem-lhes superar uma desvantagem."
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "Peringkat",
+		"combat": "Tempur",
 		"moves": "Jurus",
 		"counters": "Counter",
 		"ivTable": "Tabel IV",
 		"strings": "String",
 		"comingSoon": "“{{tab}}” segera hadir di pembaruan berikutnya.",
-		"ariaLabel": "Peringkat / Jurus / Counter / Tabel IV / String"
+		"ariaLabel": "Peringkat / Tempur / Jurus / Counter / Tabel IV / String"
 	},
 	"loading": {
 		"pokedex": "Memuat Pokédex…",
@@ -87,6 +88,39 @@
 		"weakTo": "Lemah terhadap",
 		"resists": "Menahan",
 		"nothing": "Tidak ada"
+	},
+	"combat": {
+		"heading": "Profil tempur · {{name}} · {{league}}",
+		"notForRaids": "Skor tempur tidak berlaku untuk {{raid}} — pilih {{great}}, {{ultra}}, atau {{master}} di atas.",
+		"notRanked": "{{name}} tidak masuk peringkat di {{league}} — tidak ada skor tempur.",
+		"chartAriaLabel": "Skor tempur {{name}} di {{league}}",
+		"helpSummary": "Apa artinya ini?",
+		"metrics": {
+			"lead": {
+				"name": "Pembuka",
+				"desc": "Pokémon terbaik saat perisai masih ada. Mampu menekan lawan atau memenangkan pertarungan panjang, sehingga ideal sebagai pembuka."
+			},
+			"switch": {
+				"name": "Pengganti",
+				"desc": "Pokémon terbaik untuk menggantikan pembuka yang kurang menguntungkan. Pokémon ini punya matchup aman dan bisa menekan perisai atau memberi damage besar meski kalah."
+			},
+			"charger": {
+				"name": "Pengisi",
+				"desc": "Pokémon terbaik dengan keunggulan energi. Pengisian energi cepat atau jurus kuat membuatnya berbahaya setelah energi terkumpul. Ini juga memperhitungkan kemampuan menghabisi lawan yang lemah atau menimbun energi berlebih di matchup yang menguntungkan."
+			},
+			"closer": {
+				"name": "Penutup",
+				"desc": "Pokémon terbaik tanpa perisai. Ketahanan atau jurus bertenaga membuatnya mampu menuntaskan matchup."
+			},
+			"consistency": {
+				"name": "Konsistensi",
+				"desc": "Pokémon ini paling bisa diandalkan. Damage-nya stabil dan tidak terlalu bergantung pada umpan perisai dibanding Pokémon lain. Jurus cepat yang lebih singkat juga membantu konsistensi."
+			},
+			"attacker": {
+				"name": "Penyerang",
+				"desc": "Pokémon terbaik melawan lawan berperisai saat dirinya tanpa perisai. Ketahanan alami, resistensi, dan serangan kuat membuatnya mampu mengatasi kerugian."
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

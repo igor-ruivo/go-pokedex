@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export interface LeaguePickerItem {
@@ -8,6 +9,11 @@ export interface LeaguePickerItem {
 	shortLabel?: string;
 	icon?: string | undefined;
 	color: string;
+	/** Draws a small dot between this chip and the one before it. */
+	dotBefore?: boolean;
+	/** Rotating/custom cups — these wrap onto their own row below the main strip
+	 *  instead of scrolling sideways with everything else. */
+	extra?: boolean;
 }
 
 /**
@@ -34,9 +40,13 @@ type LeaguePickerProps =
 			ariaLabel: string;
 	  };
 
-export const LeaguePicker = (props: LeaguePickerProps) => {
+/**
+ * One horizontally-scrollable chip row: the scroll/fade/chevron mechanics live
+ * here so the main strip and the custom-cups strip below it behave identically
+ * (snap points, arrows, wheel-to-scroll, edge fades).
+ */
+const ScrollRow = ({ children, role, ariaLabel }: { children: ReactNode; role: string; ariaLabel: string }) => {
 	const { t } = useTranslation(['common']);
-	const { items, ariaLabel } = props;
 	const chipsRef = useRef<HTMLDivElement | null>(null);
 	const [canScrollLeft, setCanScrollLeft] = useState(false);
 	const [canScrollRight, setCanScrollRight] = useState(false);
@@ -83,75 +93,93 @@ export const LeaguePicker = (props: LeaguePickerProps) => {
 			el.removeEventListener('wheel', onWheel);
 			ro.disconnect();
 		};
-	}, [items, updateScrollState]);
+	}, [children, updateScrollState]);
 
 	const scrollByPage = (dir: 1 | -1) => {
 		const el = chipsRef.current;
 		el?.scrollBy({ left: dir * (el.clientWidth * 0.8), behavior: 'smooth' });
 	};
 
+	return (
+		<div
+			className='r-lgpick-scroller'
+			data-fade-left={canScrollLeft || undefined}
+			data-fade-right={canScrollRight || undefined}
+		>
+			{canScrollLeft && (
+				<button
+					type='button'
+					className='r-lgpick-arrow r-lgpick-arrow--left'
+					aria-label={t('common:scroll.left')}
+					onClick={() => scrollByPage(-1)}
+				>
+					‹
+				</button>
+			)}
+			<div
+				className='r-lgpick-chips'
+				role={role}
+				aria-label={ariaLabel}
+				ref={chipsRef}
+				data-scrollable={scrollable || undefined}
+			>
+				{children}
+			</div>
+			{canScrollRight && (
+				<button
+					type='button'
+					className='r-lgpick-arrow r-lgpick-arrow--right'
+					aria-label={t('common:scroll.right')}
+					onClick={() => scrollByPage(1)}
+				>
+					›
+				</button>
+			)}
+		</div>
+	);
+};
+
+export const LeaguePicker = (props: LeaguePickerProps) => {
+	const { items: allItems, ariaLabel } = props;
+	const items = allItems.filter((it) => !it.extra);
+	const extraItems = allItems.filter((it) => it.extra);
+	const role = props.mode === 'toggle' ? 'group' : 'tablist';
+
 	const isActive = (id: string) => (props.mode === 'toggle' ? props.selectedIds.has(id) : props.activeId === id);
 	const onPick = (id: string) => (props.mode === 'toggle' ? props.onToggle(id) : props.onSelect(id));
 
+	const renderChip = (it: LeaguePickerItem) => {
+		const active = isActive(it.id);
+		return (
+			<Fragment key={it.id}>
+				{it.dotBefore && <i className='r-lgpick-dot' aria-hidden='true' />}
+				<button
+					type='button'
+					role={props.mode === 'toggle' ? undefined : 'tab'}
+					aria-selected={props.mode === 'toggle' ? undefined : active}
+					aria-pressed={props.mode === 'toggle' ? active : undefined}
+					data-active={active}
+					style={{ ['--lg-c' as string]: it.color }}
+					onClick={() => onPick(it.id)}
+				>
+					{it.icon ? <img src={it.icon} alt='' aria-hidden='true' /> : <i className='r-lgpick-badge'>{it.label[0]}</i>}
+					<span className='r-lgpick-full'>{it.label}</span>
+					<span className='r-lgpick-short'>{it.shortLabel ?? it.label}</span>
+				</button>
+			</Fragment>
+		);
+	};
+
 	return (
 		<div className='r-lgpick'>
-			<div
-				className='r-lgpick-scroller'
-				data-fade-left={canScrollLeft || undefined}
-				data-fade-right={canScrollRight || undefined}
-			>
-				{canScrollLeft && (
-					<button
-						type='button'
-						className='r-lgpick-arrow r-lgpick-arrow--left'
-						aria-label={t('common:scroll.left')}
-						onClick={() => scrollByPage(-1)}
-					>
-						‹
-					</button>
-				)}
-				<div
-					className='r-lgpick-chips'
-					role={props.mode === 'toggle' ? 'group' : 'tablist'}
-					aria-label={ariaLabel}
-					ref={chipsRef}
-					data-scrollable={scrollable || undefined}
-				>
-					{items.map((it) => {
-						const active = isActive(it.id);
-						return (
-							<button
-								key={it.id}
-								type='button'
-								role={props.mode === 'toggle' ? undefined : 'tab'}
-								aria-selected={props.mode === 'toggle' ? undefined : active}
-								aria-pressed={props.mode === 'toggle' ? active : undefined}
-								data-active={active}
-								style={{ ['--lg-c' as string]: it.color }}
-								onClick={() => onPick(it.id)}
-							>
-								{it.icon ? (
-									<img src={it.icon} alt='' aria-hidden='true' />
-								) : (
-									<i className='r-lgpick-badge'>{it.label[0]}</i>
-								)}
-								<span className='r-lgpick-full'>{it.label}</span>
-								<span className='r-lgpick-short'>{it.shortLabel ?? it.label}</span>
-							</button>
-						);
-					})}
-				</div>
-				{canScrollRight && (
-					<button
-						type='button'
-						className='r-lgpick-arrow r-lgpick-arrow--right'
-						aria-label={t('common:scroll.right')}
-						onClick={() => scrollByPage(1)}
-					>
-						›
-					</button>
-				)}
-			</div>
+			<ScrollRow role={role} ariaLabel={ariaLabel}>
+				{items.map(renderChip)}
+			</ScrollRow>
+			{extraItems.length > 0 && (
+				<ScrollRow role={role} ariaLabel={ariaLabel}>
+					{extraItems.map(renderChip)}
+				</ScrollRow>
+			)}
 		</div>
 	);
 };

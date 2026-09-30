@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "Keseluruhan",
 		"dex": "Nomor Dex",
 		"name": "Nama",
 		"cp": "{{cp}} Maks",
-		"type": "Tipe"
+		"type": "Tipe",
+		"statProduct": "Hasil kali stat"
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",

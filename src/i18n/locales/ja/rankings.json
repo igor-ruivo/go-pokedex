@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "総合",
 		"dex": "図鑑番号",
 		"name": "名前",
 		"cp": "最大{{cp}}",
-		"type": "タイプ"
+		"type": "タイプ",
+		"statProduct": "能力値の積"
 	},
 	"tabs": {
 		"pokedexFull": "ポケモン図鑑",

@@ -126,6 +126,8 @@ const pokemonTabTitle = (name: string, tab: string | undefined, kind: string | n
 				: kind === 'charged'
 					? `${name} Charged Moves`
 					: `All ${name} Moves`;
+		case 'combat':
+			return `${name} Combat Stats & Type Effectiveness`;
 		case 'counters':
 			return `Top ${name} Counters`;
 		case 'iv-table':

@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "排名",
+		"combat": "對戰",
 		"moves": "招式",
 		"counters": "對戰技巧",
 		"ivTable": "個體值表",
 		"strings": "搜尋字串",
 		"comingSoon": "「{{tab}}」改版即將推出。",
-		"ariaLabel": "排名／招式／剋制／IV 表／搜尋字串"
+		"ariaLabel": "排名／對戰／招式／剋制／IV 表／搜尋字串"
 	},
 	"loading": {
 		"pokedex": "載入圖鑑中…",
@@ -87,6 +88,33 @@
 		"weakTo": "弱點屬性",
 		"resists": "抵抗屬性",
 		"nothing": "無"
+	},
+	"combat": {
+		"heading": "對戰概況 · {{name}} · {{league}}",
+		"notForRaids": "對戰評分不適用於{{raid}} — 請在上方選擇{{great}}、{{ultra}}或{{master}}。",
+		"notRanked": "{{name}}未進入{{league}}排名 — 沒有對戰評分。",
+		"chartAriaLabel": "{{name}}在{{league}}的對戰評分",
+		"helpSummary": "這是什麼意思？",
+		"metrics": {
+			"lead": { "name": "先鋒", "desc": "在有防護罩的情況下表現最好的寶可夢。能施加壓力或贏得長期戰，是理想的先鋒。" },
+			"switch": {
+				"name": "換入",
+				"desc": "從不利先鋒換入的最佳寶可夢。對局穩定，即使落敗也能逼出防護罩或造成大量傷害。"
+			},
+			"charger": {
+				"name": "蓄能",
+				"desc": "擁有能量優勢的最佳寶可夢。快速獲得能量或強力招式，讓牠們在蓄滿能量後相當危險。同時也考量牠們磨掉虛弱對手，或在有利對局中多蓄能量的能力。"
+			},
+			"closer": { "name": "收尾", "desc": "在沒有防護罩的情況下表現最好的寶可夢。憑藉耐久或高威力招式收下對局。" },
+			"consistency": {
+				"name": "穩定",
+				"desc": "表現最可靠的寶可夢。傷害穩定，比其他寶可夢更少依賴誘騙防護罩。較短的快速招式也有助於提升穩定度。"
+			},
+			"attacker": {
+				"name": "攻擊手",
+				"desc": "在自己沒有防護罩時，對上有防護罩的對手表現最好的寶可夢。天生的耐久、抗性與強力攻擊讓牠們能硬扛劣勢。"
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

@@ -1,8 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { cleanName, dexNo } from '../lib/format';
+import { cleanName, dexNo, ordinal } from '../lib/format';
 import { R } from '../lib/nav';
 import { typeKey, typeVar } from '../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
@@ -15,9 +16,15 @@ export interface CardMetric {
 	dps?: number;
 	tdo?: number;
 	cp?: number;
+	/** A plain whole-number figure (e.g. a base-stat sort), shown as "Pts". */
+	pts?: number;
 	/** PvP rank movement since the last update (+ climbed, − dropped). */
 	rankChange?: number;
 }
+
+/** 14123234 → "14.1M" (locale-aware) — keeps big figures inside the tile footer. */
+const compactNumber = (n: number, locale: string): string =>
+	new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
 
 /** Compact grid tile — same footprint as the calendar / evolution minis. */
 export const PokeCard = ({
@@ -30,7 +37,8 @@ export const PokeCard = ({
 	/** When set, the detail page opens with this league/raid pre-selected. */
 	league?: string | undefined;
 }) => {
-	const { currentGameLanguage: gl } = useLanguage();
+	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
+	const { i18n } = useTranslation();
 	return (
 		<Link
 			to={league ? `${R.pokemon(pokemon.speciesId)}?lg=${league}` : R.pokemon(pokemon.speciesId)}
@@ -38,7 +46,9 @@ export const PokeCard = ({
 			data-shadow={pokemon.isShadow ? '' : undefined}
 			style={{ ['--tc' as string]: typeVar(pokemon.types[0]) }}
 		>
-			<span className='r-pc-rank'>{metric?.rank ?? dexNo(pokemon.dex)}</span>
+			<span className='r-pc-rank'>
+				{metric?.rank != null ? ordinal(metric.rank, currentLanguage) : dexNo(pokemon.dex)}
+			</span>
 			{metric?.rankChange != null && metric.rankChange !== 0 && (
 				<span className='r-pc-delta' data-dir={metric.rankChange > 0 ? 'up' : 'down'}>
 					{metric.rankChange > 0 ? '▲' : '▼'}
@@ -58,6 +68,11 @@ export const PokeCard = ({
 			{metric?.cp != null && (
 				<span className='r-pc-metric'>
 					{metric.cp.toLocaleString()} <em>{gameTranslator(GameTranslatorKeys.CPDisplay, gl)}</em>
+				</span>
+			)}
+			{metric?.pts != null && (
+				<span className='r-pc-metric'>
+					{compactNumber(metric.pts, i18n.language)} <em>Pts</em>
 				</span>
 			)}
 			{metric?.score != null && (

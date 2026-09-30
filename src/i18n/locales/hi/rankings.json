@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "कुल मिलाकर",
 		"dex": "डेक्स नंबर",
 		"name": "नाम",
 		"cp": "अधिकतम {{cp}}",
-		"type": "टाइप"
+		"type": "टाइप",
+		"statProduct": "स्टैट गुणनफल"
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",

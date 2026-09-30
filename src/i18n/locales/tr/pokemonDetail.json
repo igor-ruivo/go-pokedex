@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "Sıralamalar",
+		"combat": "Savaş",
 		"moves": "Hareketler",
 		"counters": "Karşı Hamleler",
 		"ivTable": "IV Tablosu",
 		"strings": "Diziler",
 		"comingSoon": "“{{tab}}” yenileme kapsamında sırada.",
-		"ariaLabel": "Sıralamalar / Hamleler / Karşı Pokémonlar / IV Tablosu / Arama Dizeleri"
+		"ariaLabel": "Sıralamalar / Savaş / Hamleler / Karşı Pokémonlar / IV Tablosu / Arama Dizeleri"
 	},
 	"loading": {
 		"pokedex": "Pokédex yükleniyor…",
@@ -87,6 +88,39 @@
 		"weakTo": "Şuna karşı zayıf",
 		"resists": "Şuna dirençli",
 		"nothing": "Hiçbiri"
+	},
+	"combat": {
+		"heading": "Savaş profili · {{name}} · {{league}}",
+		"notForRaids": "Savaş puanları {{raid}} için geçerli değildir — yukarıdan {{great}}, {{ultra}} veya {{master}} seçin.",
+		"notRanked": "{{name}}, {{league}} sıralamasında yok — savaş puanı yok.",
+		"chartAriaLabel": "{{name}} için {{league}} savaş puanları",
+		"helpSummary": "Bunlar ne anlama geliyor?",
+		"metrics": {
+			"lead": {
+				"name": "Açılış",
+				"desc": "Kalkanlar varken en iyi Pokémonlar. Baskı kurabilir veya uzun dövüşleri kazanabilirler; ideal açılış seçimidir."
+			},
+			"switch": {
+				"name": "Değişim",
+				"desc": "Elverişsiz bir açılıştan geçiş yapmak için en iyi Pokémonlar. Güvenli eşleşmeleri vardır ve kaybettikleri dövüşlerde bile kalkanlara baskı yapabilir veya ağır hasar verebilirler."
+			},
+			"charger": {
+				"name": "Şarj",
+				"desc": "Enerji avantajı olan en iyi Pokémonlar. Hızlı enerji kazanımı veya güçlü hamleler, enerji biriktirdikten sonra onları tehlikeli yapar. Zayıflamış rakibi bitirme veya avantajlı eşleşmelerde fazladan enerji biriktirme yeteneği de hesaba katılır."
+			},
+			"closer": {
+				"name": "Kapanış",
+				"desc": "Kalkan yokken en iyi Pokémonlar. Dayanıklılık veya sert vuran hamleler eşleşmeleri bitirmelerini sağlar."
+			},
+			"consistency": {
+				"name": "Tutarlılık",
+				"desc": "En güvenilir performans gösteren Pokémonlar. İstikrarlı hasar verirler ve kalkan yemlemeye diğerlerinden daha az bağımlıdırlar. Daha kısa Hızlı Hamleler de tutarlılığı artırır."
+			},
+			"attacker": {
+				"name": "Saldırgan",
+				"desc": "Kalkanlı rakiplere karşı, kendi kalkanı yokken en iyi Pokémonlar. Doğal dayanıklılıkları, dirençleri ve güçlü saldırıları dezavantajı aşmalarını sağlar."
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

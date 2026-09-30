@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "종합",
 		"dex": "도감 번호",
 		"name": "이름",
 		"cp": "최대 {{cp}}",
-		"type": "타입"
+		"type": "타입",
+		"statProduct": "능력치 곱"
 	},
 	"tabs": {
 		"pokedexFull": "포켓몬 도감",

@@ -12,12 +12,13 @@
 	},
 	"tabs": {
 		"ranks": "Classifiche",
+		"combat": "Combattimento",
 		"moves": "Mosse",
 		"counters": "Contatori",
 		"ivTable": "Tabella IV",
 		"strings": "Stringhe",
 		"comingSoon": "“{{tab}}” arriverà nel prossimo aggiornamento.",
-		"ariaLabel": "Classifiche / Mosse / Contro / Tabella IV / Stringhe"
+		"ariaLabel": "Classifiche / Combattimento / Mosse / Contro / Tabella IV / Stringhe"
 	},
 	"loading": {
 		"pokedex": "Caricamento Pokédex…",
@@ -87,6 +88,39 @@
 		"weakTo": "Debole contro",
 		"resists": "Resiste a",
 		"nothing": "Niente"
+	},
+	"combat": {
+		"heading": "Profilo di combattimento · {{name}} · {{league}}",
+		"notForRaids": "I punteggi di combattimento non si applicano ai {{raid}} — scegli {{great}}, {{ultra}} o {{master}} qui sopra.",
+		"notRanked": "{{name}} non è in classifica in {{league}} — nessun punteggio di combattimento.",
+		"chartAriaLabel": "Punteggi di combattimento di {{name}} in {{league}}",
+		"helpSummary": "Cosa significano?",
+		"metrics": {
+			"lead": {
+				"name": "Apertura",
+				"desc": "I migliori Pokémon con gli scudi in gioco. Capaci di fare pressione o di vincere scontri lunghi, sono ideali per aprire."
+			},
+			"switch": {
+				"name": "Cambio",
+				"desc": "I migliori Pokémon a cui passare da un’apertura sfavorevole. Hanno scontri sicuri e possono fare pressione sugli scudi o infliggere molti danni anche nelle sconfitte."
+			},
+			"charger": {
+				"name": "Caricatore",
+				"desc": "I migliori Pokémon con vantaggio di energia. Un rapido guadagno di energia o mosse potenti li rendono pericolosi una volta accumulata. Conta anche la capacità di finire un avversario indebolito o di accumulare energia extra negli scontri favorevoli."
+			},
+			"closer": {
+				"name": "Chiusura",
+				"desc": "I migliori Pokémon senza scudi in gioco. Robustezza o mosse potenti permettono loro di chiudere gli scontri."
+			},
+			"consistency": {
+				"name": "Costanza",
+				"desc": "Questi Pokémon rendono nel modo più affidabile. Infliggono danni costanti e dipendono meno dall’ingannare gli scudi rispetto agli altri. Anche le mosse rapide più brevi aiutano la costanza."
+			},
+			"attacker": {
+				"name": "Attaccante",
+				"desc": "I migliori Pokémon contro avversari con scudi, quando non ne hanno. La robustezza naturale, le resistenze e le mosse potenti permettono loro di superare uno svantaggio."
+			}
+		}
 	},
 	"counters": {
 		"tierLabel": {

@@ -14,6 +14,8 @@ import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../lib/combat';
+import { combatMetricDescriptions, combatMetricNames } from '../lib/combat-text';
 import { sentenceCase } from '../lib/format';
 import { leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { isKnownRankingMode, modeColor, modeLabel, modeLabelLong, R, type RankingMode } from '../lib/nav';
@@ -27,7 +29,7 @@ import { useGameTranslationsData } from '../utils/game-translations-store';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import { calculateCP } from '../utils/pokemon-helper';
 
-const usePokedexSorts = (t: TFunction<'rankings'>, gl: GameLanguage): ReadonlyArray<SortOption> => [
+const usePokedexSorts = (t: TFunction<['rankings', 'pokemonDetail']>, gl: GameLanguage): ReadonlyArray<SortOption> => [
 	{ key: 'dex', label: t('rankings:sorts.dex'), defaultDir: 'asc' },
 	{ key: 'name', label: t('rankings:sorts.name'), defaultDir: 'asc' },
 	{
@@ -36,7 +38,33 @@ const usePokedexSorts = (t: TFunction<'rankings'>, gl: GameLanguage): ReadonlyAr
 		defaultDir: 'desc',
 	},
 	{ key: 'type', label: t('rankings:sorts.type'), defaultDir: 'asc' },
+	{ key: 'atk', label: t('pokemonDetail:hero.stats.atk'), defaultDir: 'desc' },
+	{ key: 'def', label: t('pokemonDetail:hero.stats.def'), defaultDir: 'desc' },
+	{ key: 'hp', label: t('pokemonDetail:hero.stats.hp'), defaultDir: 'desc' },
+	{ key: 'prod', label: t('rankings:sorts.statProduct'), defaultDir: 'desc' },
 ];
+
+/** Base-stat figures the Pokédex can be sorted by (shown on the tile as "Pts"). */
+const STAT_SORT_KEYS = ['atk', 'def', 'hp', 'prod'];
+const statOf = (p: IGamemasterPokemon, key: string): number | undefined =>
+	key === 'atk'
+		? p.baseStats.atk
+		: key === 'def'
+			? p.baseStats.def
+			: key === 'hp'
+				? p.baseStats.hp
+				: key === 'prod'
+					? p.baseStats.atk * p.baseStats.def * p.baseStats.hp
+					: undefined;
+
+/** PvP leagues: "Overall" (the ranking's own order, the default) plus PvPoke's six role scores. */
+const usePvpSorts = (t: TFunction<['rankings', 'pokemonDetail']>): ReadonlyArray<SortOption> => {
+	const names = combatMetricNames(t);
+	return [
+		{ key: 'overall', label: t('rankings:sorts.overall'), defaultDir: 'asc' },
+		...COMBAT_METRICS.map((m) => ({ key: m, label: names[m], defaultDir: 'desc' as const })),
+	];
+};
 
 interface Row {
 	pokemon: IGamemasterPokemon;
@@ -89,9 +117,10 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 };
 
 const Rankings = () => {
-	const { t } = useTranslation(['rankings']);
+	const { t } = useTranslation(['rankings', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const POKEDEX_SORTS = usePokedexSorts(t, gl);
+	const PVP_SORTS = usePvpSorts(t);
 	const { league, type: typeParam } = useParams();
 	const { leagues } = useLeagueDefinitions();
 	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
@@ -131,6 +160,10 @@ const Rankings = () => {
 
 	const sortKey = params.get('sort') ?? 'dex';
 	const sortDir: SortDir = params.get('dir') === 'desc' ? 'desc' : 'asc';
+	// PvP leagues: any unknown/absent `sort` (a stale Pokédex value, a hand-edited
+	// URL) falls back to the ranking's own order.
+	const pvpSort: CombatMetric | 'overall' = isCombatMetric(sortKey) ? sortKey : 'overall';
+	const pvpDir: SortDir = pvpSort === 'overall' ? sortDir : params.get('dir') === 'asc' ? 'asc' : 'desc';
 
 	// which figure (DPS/TDO) to rank by is a device-wide setting, shared with
 	// the Counters tab and Settings — not a per-page URL param.
@@ -176,13 +209,16 @@ const Rankings = () => {
 			return wanted.every((w) => has.includes(w));
 		};
 		const byName = (p: IGamemasterPokemon) => !q || p.speciesName.toLowerCase().includes(q);
+		const isDexSort = !['name', 'cp', 'type', ...STAT_SORT_KEYS].includes(sortKey);
 
 		if (mode === 'pokedex') {
-			const arr = Object.values(gamemasterPokemon)
-				.filter((p) => !p.aliasId && !p.isShadow && !p.isMega && byType(p) && byName(p))
-				.map((pokemon) => ({
-					pokemon,
-					metric: {
+			const s = sortDir === 'asc' ? 1 : -1;
+			const isStatSort = STAT_SORT_KEYS.includes(sortKey);
+			return (
+				Object.values(gamemasterPokemon)
+					.filter((p) => !p.aliasId && !p.isShadow && !p.isMega)
+					.map((pokemon) => ({
+						pokemon,
 						cp: calculateCP(
 							pokemon.baseStats.atk,
 							15,
@@ -192,25 +228,42 @@ const Rankings = () => {
 							15,
 							maxLevelIndex
 						),
-					},
-				}));
-			const s = sortDir === 'asc' ? 1 : -1;
-			arr.sort((a, b) => {
-				switch (sortKey) {
-					case 'name':
-						return s * a.pokemon.speciesName.localeCompare(b.pokemon.speciesName);
-					case 'cp':
-						return s * ((a.metric.cp ?? 0) - (b.metric.cp ?? 0)) || a.pokemon.dex - b.pokemon.dex;
-					case 'type': {
-						const at = a.pokemon.types.map((t) => typeKey(t)).join('/');
-						const bt = b.pokemon.types.map((t) => typeKey(t)).join('/');
-						return s * at.localeCompare(bt) || a.pokemon.dex - b.pokemon.dex;
-					}
-					default:
-						return s * (a.pokemon.dex - b.pokemon.dex || a.pokemon.speciesName.localeCompare(b.pokemon.speciesName));
-				}
-			});
-			return arr;
+						stat: statOf(pokemon, sortKey),
+					}))
+					.sort((a, b) => {
+						switch (sortKey) {
+							case 'name':
+								return s * a.pokemon.speciesName.localeCompare(b.pokemon.speciesName);
+							case 'cp':
+								return s * (a.cp - b.cp) || a.pokemon.dex - b.pokemon.dex;
+							case 'type': {
+								const at = a.pokemon.types.map((t) => typeKey(t)).join('/');
+								const bt = b.pokemon.types.map((t) => typeKey(t)).join('/');
+								return s * at.localeCompare(bt) || a.pokemon.dex - b.pokemon.dex;
+							}
+							case 'atk':
+							case 'def':
+							case 'hp':
+							case 'prod':
+								return s * ((a.stat ?? 0) - (b.stat ?? 0)) || a.pokemon.dex - b.pokemon.dex;
+							default:
+								return (
+									s * (a.pokemon.dex - b.pokemon.dex || a.pokemon.speciesName.localeCompare(b.pokemon.speciesName))
+								);
+						}
+					})
+					// Outside a Pokédex-number sort the corner number is the position in
+					// the *full* sorted list (a type/name filter doesn't renumber it).
+					.map((x, i) => ({ ...x, position: i + 1 }))
+					.filter((x) => byType(x.pokemon) && byName(x.pokemon))
+					.map(({ pokemon, cp, stat, position }) => ({
+						pokemon,
+						metric: {
+							...(isDexSort ? {} : { rank: position }),
+							...(isStatSort && stat !== undefined ? { pts: stat } : { cp }),
+						},
+					}))
+			);
 		}
 
 		if (mode === 'raid') {
@@ -246,17 +299,43 @@ const Rankings = () => {
 					: mode === 'master'
 						? rankLists[2]
 						: (extraRankLists[mode] ?? {});
-		return Object.values(list)
-			.map((r) => ({ r, p: gamemasterPokemon[r.speciesId] }))
-			.filter((x) => x.p && !x.p.aliasId && byType(x.p) && byName(x.p))
-			.sort((a, b) => a.r.rank - b.r.rank)
-			.map(({ r, p }) => ({ pokemon: p, metric: { rank: r.rank, score: r.score, rankChange: r.rankChange } }));
+		const ps = pvpDir === 'asc' ? 1 : -1;
+		const isOverall = pvpSort === 'overall' && pvpDir === 'asc';
+		return (
+			Object.values(list)
+				.map((r) => ({ r, p: gamemasterPokemon[r.speciesId] }))
+				.filter((x) => x.p && !x.p.aliasId)
+				// Ties fall back to the overall rank (best first, whichever way the
+				// list is flipped), then to Pokédex number.
+				.sort((a, b) =>
+					pvpSort === 'overall'
+						? ps * (a.r.rank - b.r.rank) || a.p.dex - b.p.dex
+						: ps * (a.r[pvpSort] - b.r[pvpSort]) || a.r.rank - b.r.rank || a.p.dex - b.p.dex
+				)
+				// The corner number is the position in the *full* sorted list (so a
+				// type/name filter doesn't renumber it) — the league's own overall
+				// rank only when that's the order being shown.
+				.map((x, i) => ({ ...x, position: i + 1 }))
+				.filter((x) => byType(x.p) && byName(x.p))
+				.map(({ r, p, position }) => ({
+					pokemon: p,
+					metric: {
+						rank: isOverall ? r.rank : position,
+						// Movement is in the overall ranking — meaningless under any other order.
+						...(isOverall ? { rankChange: r.rankChange } : {}),
+						// The figure shown is whichever score the list is sorted by (label stays "Pts").
+						score: pvpSort === 'overall' ? r.score : r[pvpSort],
+					},
+				}))
+		);
 	}, [
 		mode,
 		q,
 		typeCsv,
 		sortKey,
 		sortDir,
+		pvpSort,
+		pvpDir,
 		raidMetric,
 		raidDir,
 		gamemasterPokemon,
@@ -328,6 +407,18 @@ const Rankings = () => {
 		setParams(next, { replace: true });
 	};
 
+	const setPvpSort = (key: string, dir: SortDir) => {
+		const next = new URLSearchParams(params);
+		if (key === 'overall' && dir === 'asc') {
+			next.delete('sort');
+			next.delete('dir');
+		} else {
+			next.set('sort', key);
+			next.set('dir', dir);
+		}
+		setParams(next, { replace: true });
+	};
+
 	const loading =
 		!fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
 	// Also wait on `measured` — the grid's column count/tile size default to a
@@ -369,7 +460,13 @@ const Rankings = () => {
 				icon: leagueIcon('master') ?? '/images/leagues/cups/pogo_master_league.png',
 				color: modeColor('master'),
 			},
-			{ id: 'raid', label: modeLabel('raid', gl, leagues), icon: '/images/raids/tier-5.png', color: modeColor('raid') },
+			{
+				id: 'raid',
+				label: modeLabel('raid', gl, leagues),
+				icon: '/images/raids/tier-5.png',
+				color: modeColor('raid'),
+				dotBefore: true,
+			},
 			// Optional add-ons — always last, same ordering as the Pokémon page's
 			// own league picker/leaderboard (see PokemonDetail.tsx's `LEAGUES`).
 			...visibleExtraLeagues.map((l) => ({
@@ -377,6 +474,7 @@ const Rankings = () => {
 				label: leagueTitle(l, gl).short,
 				icon: leagueIcon(l.id),
 				color: modeColor(l.id),
+				extra: true,
 			})),
 		],
 		// `gameTranslations` isn't read directly, it's what tells this memo the
@@ -455,6 +553,7 @@ const Rankings = () => {
 						single={isRaid}
 					/>
 					{mode === 'pokedex' && <SortBar options={POKEDEX_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />}
+					{isPvpLeagueMode && <SortBar options={PVP_SORTS} sortKey={pvpSort} dir={pvpDir} onChange={setPvpSort} />}
 					{isRaid && (
 						<SortBar
 							options={RAID_METRIC_SORTS}
@@ -493,7 +592,26 @@ const Rankings = () => {
 							?
 						</button>
 					)}
+					{showGrid && isPvpLeagueMode && pvpSort !== 'overall' && (
+						<button
+							type='button'
+							className='r-rank-hint-toggle'
+							aria-expanded={hintOpen}
+							aria-label={t('pokemonDetail:counters.helpSummary')}
+							title={t('pokemonDetail:counters.helpSummary')}
+							onClick={() => setHintOpen((o) => !o)}
+						>
+							?
+						</button>
+					)}
 				</div>
+				{showGrid && isPvpLeagueMode && pvpSort !== 'overall' && hintOpen && (
+					<p className='r-muted r-rank-hint'>
+						<strong>{combatMetricNames(t)[pvpSort]}</strong>
+						{' — '}
+						{combatMetricDescriptions(t)[pvpSort]}
+					</p>
+				)}
 				{showGrid && isRaid && raidType && hintOpen && (
 					<p className='r-muted r-rank-hint'>
 						{t('rankings:hint.text', {

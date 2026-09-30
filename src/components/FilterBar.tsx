@@ -60,7 +60,7 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 					<span className='r-filter-ic' aria-hidden='true'>
 						☰
 					</span>
-					{t('components:filterBar.button')}
+					{single ? t('components:filterBar.typeSectionLabel') : t('components:filterBar.button')}
 					{count > 0 && <span className='r-filter-count'>{count}</span>}
 				</button>
 

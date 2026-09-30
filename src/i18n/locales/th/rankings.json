@@ -1,9 +1,11 @@
 {
 	"sorts": {
+		"overall": "โดยรวม",
 		"dex": "หมายเลขเด็กซ์",
 		"name": "ชื่อ",
 		"cp": "{{cp}}สูงสุด",
-		"type": "ธาตุ"
+		"type": "ธาตุ",
+		"statProduct": "ผลคูณค่าสถานะ"
 	},
 	"tabs": {
 		"pokedexFull": "Pokédex",
