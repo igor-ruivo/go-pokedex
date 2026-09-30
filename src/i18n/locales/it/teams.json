@@ -1,6 +1,9 @@
 {
 	"page": {
 		"title": "Squadre",
+		"builderTab": "Creatore di squadre",
+		"topTab": "Migliori squadre",
+		"tabsAria": "Sezioni delle squadre",
 		"leagueAria": "Lega",
 		"loading": "Caricamento dei dati delle squadre…",
 		"loadFailed": "Impossibile caricare i dati delle squadre. Controlla la connessione e riprova."
@@ -227,5 +230,12 @@
 		"none": "Non è stato facile trovare potenziamenti migliori.",
 		"swap": "{{out}} → {{in}}",
 		"result": "Punteggio di minaccia {{score}} ({{delta}})"
+	},
+	"top": {
+		"intro": "Le squadre col punteggio più alto che abbiamo trovato: ogni terzetto dei {{candidates}} migliori Pokémon della lega, con le mosse consigliate e i migliori IV, valutato come fa il creatore. Tocca una squadra per aprirla nel creatore.",
+		"teamScore": "Punteggio squadra",
+		"note": "Valutato il {{date}} su {{total}} squadre possibili. Ordine nella squadra: apertura, cambio, chiusura.",
+		"empty": "Al momento non è disponibile nessuna classifica di squadre. Riprova presto.",
+		"threat": "Minaccia"
 	}
 }

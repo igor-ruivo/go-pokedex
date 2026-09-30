@@ -4,7 +4,7 @@ import { createSimContext, type SpeciesInfo } from './context';
 import { type MemberStats, memberStats } from './member';
 import { SimPokemon } from './pokemon';
 import { generateTraits, similarityScore, type Traits } from './traits';
-import type { SimContext } from './types';
+import type { SimContext, SimMove } from './types';
 
 /** One entry of a league's PvPoke ranking: the recommended moveset and role scores. */
 export interface RankedEntry {
@@ -84,6 +84,13 @@ export interface AlternativePick {
 	threatScore: number;
 	/** Change against the current team's threat score on the same basis (negative = better). */
 	delta: number;
+}
+
+export interface RankedTeamThreat {
+	/** Candidate species, in the order given to `rankTeams`. */
+	speciesIds: [string, string, string];
+	/** PvPoke's threat score for the trio — lower is better. */
+	threatScore: number;
 }
 
 /** How many top-ranked species count as "the meta" for coverage checks. */
@@ -435,5 +442,92 @@ export class TeamEvaluator {
 			.filter((p) => (seen.has(p.speciesId) ? false : (seen.add(p.speciesId), true)))
 			.filter((p) => p.delta <= 0)
 			.slice(0, resultCount);
+	}
+	/**
+	 * The threat score of every trio of `candidateIds` (each with its ranking's recommended moveset), exactly as
+	 * `evaluate` would rate them. A Pokémon's matchups don't depend on its teammates, so each candidate is
+	 * simulated once against the whole pool and every trio is then just three of those columns re-ranked — the
+	 * same idea `suggest` uses. Trios that field one species twice (a Shadow and its normal form count as one)
+	 * are skipped.
+	 */
+	rankTeams(
+		candidateIds: ReadonlyArray<string>,
+		onProgress?: (done: number, total: number) => void
+	): Array<RankedTeamThreat> {
+		const battle = new SimBattle();
+		const poolSize = this.pool.length;
+
+		// One column per candidate: every pool entry's rating against it, and that rating's threat-ordering score.
+		const ratings: Array<Float64Array> = [];
+		const scores: Array<Float64Array> = [];
+		// Which charged move each pool Pokémon ends up treating as its best after facing this candidate (see below).
+		const bestMoves: Array<Array<SimMove | null>> = [];
+		candidateIds.forEach((id, k) => {
+			const entry = this.rankingById.get(id);
+			if (!entry) throw new Error(`Unknown candidate: ${id}`);
+			const candidate = this.createPokemon(
+				id,
+				entry.moveset.filter((m) => m !== 'none')
+			);
+			const ratingColumn = new Float64Array(poolSize);
+			const scoreColumn = new Float64Array(poolSize);
+			const bestColumn = new Array<SimMove | null>(poolSize);
+			this.pool.forEach((row, i) => {
+				const { rating } = this.simulateMatchup(battle, row.poke, candidate);
+				ratingColumn[i] = rating;
+				scoreColumn[i] = this.matchupScore(rating, row.inMeta);
+				bestColumn[i] = row.poke.bestChargedMove;
+			});
+			ratings.push(ratingColumn);
+			scores.push(scoreColumn);
+			bestMoves.push(bestColumn);
+			onProgress?.(k + 1, candidateIds.length);
+		});
+		battle.clearPokemon();
+
+		const base = candidateIds.map((id) => id.replace('_shadow', ''));
+		const out: Array<RankedTeamThreat> = [];
+		const order = new Array<number>(poolSize);
+		const rows = new Array<{ entry: PoolEntry; rating: number; score: number }>(poolSize);
+
+		for (let a = 0; a < candidateIds.length; a++) {
+			for (let b = a + 1; b < candidateIds.length; b++) {
+				if (base[b] === base[a]) continue;
+				for (let c = b + 1; c < candidateIds.length; c++) {
+					if (base[c] === base[a] || base[c] === base[b]) continue;
+
+					const score = new Float64Array(poolSize);
+					for (let i = 0; i < poolSize; i++) {
+						score[i] = (scores[a][i] + scores[b][i] + scores[c][i]) / 3;
+						order[i] = i;
+					}
+					// Best threat first; ties keep pool order, as `evaluate`'s stable sort does.
+					order.sort((x, y) => score[y] - score[x] || x - y);
+
+					for (let r = 0; r < poolSize; r++) {
+						const i = order[r];
+						rows[r] = {
+							entry: this.pool[i],
+							rating: Math.floor((ratings[a][i] + ratings[b][i] + ratings[c][i]) / 3),
+							score: score[i],
+						};
+					}
+					// A Pokémon's "best charged move" — which the threat similarity traits read — depends on the opponent it
+					// last faced (PvPoke's own quirk). `evaluate` leaves every pool Pokémon having last faced the team's third
+					// member, so put that state back rather than whichever candidate happened to be simulated last.
+					for (let i = 0; i < poolSize; i++) {
+						this.pool[i].poke.bestChargedMove = bestMoves[c][i];
+						this.pool[i].cachedTraits = undefined;
+					}
+
+					out.push({
+						speciesIds: [candidateIds[a], candidateIds[b], candidateIds[c]],
+						threatScore: this.pickThreats(rows).threatScore,
+					});
+				}
+			}
+		}
+
+		return out;
 	}
 }

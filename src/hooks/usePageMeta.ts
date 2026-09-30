@@ -42,6 +42,12 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 			'Rate a team of 3 for Pokémon GO Great, Ultra and Master League: threat score, type coverage, bulk, and the best lead, switch and closer order.',
 		image: '/images/leagues/great.png',
 	},
+	'/teams/top': {
+		title: 'Best PvP Teams — GO Pokédex',
+		description:
+			'The best 3-Pokémon teams for Pokémon GO Great, Ultra and Master League, ranked with their best movesets and top IVs.',
+		image: '/images/leagues/master.png',
+	},
 	'/moves': {
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',

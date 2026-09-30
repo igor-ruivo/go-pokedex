@@ -71,7 +71,7 @@ const App = () => {
 														<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
 														<Route path='calendar/:tab' element={<Calendar />} />
 														<Route
-															path='teams'
+															path='teams/*'
 															element={
 																<Suspense
 																	fallback={

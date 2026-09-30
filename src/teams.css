@@ -723,27 +723,32 @@
 		border-color 0.6s ease;
 }
 .rvmp .r-tm-hero[data-tier='elite'],
-.rvmp .r-tm-mini[data-tier='elite'] {
+.rvmp .r-tm-mini[data-tier='elite'],
+.rvmp .r-tm-board-card[data-tier='elite'] {
 	--tier-a: #3fd07a;
 	--tier-b: #22d3ee;
 }
 .rvmp .r-tm-hero[data-tier='strong'],
-.rvmp .r-tm-mini[data-tier='strong'] {
+.rvmp .r-tm-mini[data-tier='strong'],
+.rvmp .r-tm-board-card[data-tier='strong'] {
 	--tier-a: #58a7ff;
 	--tier-b: #8b7bff;
 }
 .rvmp .r-tm-hero[data-tier='solid'],
-.rvmp .r-tm-mini[data-tier='solid'] {
+.rvmp .r-tm-mini[data-tier='solid'],
+.rvmp .r-tm-board-card[data-tier='solid'] {
 	--tier-a: #f2c53d;
 	--tier-b: #f59e42;
 }
 .rvmp .r-tm-hero[data-tier='shaky'],
-.rvmp .r-tm-mini[data-tier='shaky'] {
+.rvmp .r-tm-mini[data-tier='shaky'],
+.rvmp .r-tm-board-card[data-tier='shaky'] {
 	--tier-a: #f59e42;
 	--tier-b: #ef7a3d;
 }
 .rvmp .r-tm-hero[data-tier='risky'],
-.rvmp .r-tm-mini[data-tier='risky'] {
+.rvmp .r-tm-mini[data-tier='risky'],
+.rvmp .r-tm-board-card[data-tier='risky'] {
 	--tier-a: #ef5b5b;
 	--tier-b: #d63a7a;
 }
@@ -2144,5 +2149,186 @@
 	.rvmp .r-tm-fit-head {
 		font-size: 9px;
 		letter-spacing: 0.02em;
+	}
+}
+
+/* ---- top teams ------------------------------------------------------------------------------------------ */
+.rvmp .r-tm-board-intro {
+	margin: 0 0 var(--s4);
+	font-size: 13px;
+	color: var(--text-dim);
+}
+.rvmp .r-tm-board-tools {
+	display: flex;
+	margin: 0 0 var(--s3);
+}
+/* the chip sits at the left here (on the rankings pages it is at the right), so its panel opens rightwards */
+@media (min-width: 561px) {
+	.rvmp .r-tm-board-tools .r-sort-panel {
+		left: 0;
+		right: auto;
+	}
+}
+.rvmp .r-tm-board-list {
+	display: grid;
+	gap: var(--s3);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .r-tm-board-card {
+	--tier-a: var(--text-dim);
+	--tier-b: var(--text);
+	display: grid;
+	grid-template-columns: 34px minmax(0, 1fr) auto;
+	grid-template-areas:
+		'rank members score'
+		'rank members score';
+	align-items: center;
+	gap: var(--s3);
+	width: 100%;
+	padding: var(--s3) var(--s4);
+	border-radius: var(--r-md);
+	text-align: left;
+	color: inherit;
+	cursor: pointer;
+	background:
+		radial-gradient(60% 140% at 100% 50%, color-mix(in srgb, var(--tier-a) 12%, transparent), transparent 70%),
+		var(--surface-2);
+	border: 1px solid color-mix(in srgb, var(--tier-a) 30%, var(--border));
+	animation: r-tm-rise 0.45s cubic-bezier(0.2, 0.9, 0.25, 1) calc(var(--i, 0) * 0.04s) both;
+	transition:
+		transform 0.12s ease,
+		border-color 0.12s ease;
+}
+.rvmp .r-tm-board-card:hover {
+	transform: translateY(-1px);
+	border-color: var(--tier-a);
+}
+.rvmp .r-tm-board-rank {
+	grid-area: rank;
+	text-align: center;
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 16px;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-tm-board-rank[data-podium='1'] {
+	color: #f2c53d;
+}
+.rvmp .r-tm-board-rank[data-podium='2'] {
+	color: #c4cdd8;
+}
+.rvmp .r-tm-board-rank[data-podium='3'] {
+	color: #d99a54;
+}
+.rvmp .r-tm-board-members {
+	grid-area: members;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--s3);
+	min-width: 0;
+}
+.rvmp .r-tm-board-member {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+.rvmp .r-tm-board-art {
+	position: relative;
+	flex: none;
+	width: 44px;
+	height: 44px;
+}
+.rvmp .r-tm-board-art > img:not(.r-shadow-mark) {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.35));
+}
+.rvmp .r-tm-board-art > .r-shadow-mark {
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	z-index: 3;
+	width: 16px;
+	height: 16px;
+}
+.rvmp .r-tm-board-text {
+	display: grid;
+	gap: 1px;
+	min-width: 0;
+}
+.rvmp .r-tm-board-text b {
+	font-family: Fredoka, sans-serif;
+	font-size: 13px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	transition: color 0.12s ease;
+}
+.rvmp .r-tm-board-member:hover .r-tm-board-text b {
+	color: var(--tc);
+}
+.rvmp .r-tm-board-text small {
+	font-size: 10.5px;
+	color: var(--text-dim);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rvmp .r-tm-board-score {
+	grid-area: score;
+	display: grid;
+	justify-items: end;
+	gap: 1px;
+}
+.rvmp .r-tm-board-score > b {
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 24px;
+	line-height: 1.1;
+	font-variant-numeric: tabular-nums;
+	background: linear-gradient(135deg, var(--tier-a), var(--tier-b));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+.rvmp .r-tm-board-score > span {
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+@media (max-width: 719px) {
+	/* phones: rank and score on the first line, the three Pokémon (names only) on the second */
+	.rvmp .r-tm-board-card {
+		grid-template-columns: 28px minmax(0, 1fr);
+		grid-template-areas:
+			'rank score'
+			'members members';
+		row-gap: var(--s2);
+		padding: var(--s3);
+	}
+	.rvmp .r-tm-board-score {
+		grid-auto-flow: column;
+		justify-content: end;
+		align-items: baseline;
+		gap: var(--s3);
+	}
+	.rvmp .r-tm-board-member {
+		flex-direction: column;
+		gap: 2px;
+		text-align: center;
+	}
+	.rvmp .r-tm-board-text small {
+		display: none;
+	}
+	.rvmp .r-tm-board-text b {
+		font-size: 12px;
 	}
 }

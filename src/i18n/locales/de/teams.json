@@ -1,6 +1,9 @@
 {
 	"page": {
 		"title": "Teams",
+		"builderTab": "Team-Builder",
+		"topTab": "Top-Teams",
+		"tabsAria": "Team-Bereiche",
 		"leagueAria": "Liga",
 		"loading": "Team-Daten werden geladen …",
 		"loadFailed": "Die Team-Daten konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut."
@@ -227,5 +230,12 @@
 		"none": "Wir konnten nicht ohne Weiteres bessere Upgrades finden.",
 		"swap": "{{out}} → {{in}}",
 		"result": "Bedrohungswert {{score}} ({{delta}})"
+	},
+	"top": {
+		"intro": "Die am besten bewerteten Teams: jedes Trio der {{candidates}} besten Pokémon der Liga, jeweils mit empfohlenen Attacken und Top-IVs, bewertet wie im Builder. Tippe auf eines, um es im Builder zu öffnen.",
+		"teamScore": "Team-Wertung",
+		"note": "Bewertet am {{date}} aus {{total}} möglichen Teams. Reihenfolge im Team: Lead, Wechsel, Closer.",
+		"empty": "Zurzeit ist keine Team-Rangliste verfügbar. Schau bald wieder vorbei.",
+		"threat": "Bedrohung"
 	}
 }

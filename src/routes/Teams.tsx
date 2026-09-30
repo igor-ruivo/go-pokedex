@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { IconTabBar, type IconTabItem } from '../components/IconTabBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
 import { useLanguage } from '../contexts/language-context';
-import { isTeamLeague, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
+import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
 import { leagueIcon } from '../lib/league-visuals';
-import { modeColor, modeLabel, modeLabelLong } from '../lib/nav';
-import { letterGrade, type ScoreParts, scoreTier, teamScore, threatPart } from '../lib/team-analysis';
+import { modeColor, modeLabel, modeLabelLong, R } from '../lib/nav';
+import { encodeTeam, letterGrade, type ScoreParts, scoreTier, teamScore, threatPart } from '../lib/team-analysis';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { BattlePlan } from './teams/BattlePlan';
 import { CoveragePanel } from './teams/CoveragePanel';
@@ -17,6 +18,7 @@ import { Suggestions } from './teams/Suggestions';
 import { TeamMini } from './teams/TeamMini';
 import { SlotPicker, TeamStage } from './teams/TeamStage';
 import { ThreatPanel } from './teams/ThreatPanel';
+import { TopTeams } from './teams/TopTeams';
 import { TypeProfile } from './teams/TypeProfile';
 import { useTeamAnalysis } from './teams/useTeamAnalysis';
 import { useSimContext, useTeamEvaluation, useTeamsData, useTeamSuggestions } from './teams/useTeamsData';
@@ -33,6 +35,9 @@ const Teams = () => {
 	const { t } = useTranslation(['teams', 'common']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const [params, setParams] = useSearchParams();
+	const navigate = useNavigate();
+	// Two views of the same page: the builder, and the best teams we could find.
+	const tab: 'builder' | 'top' = useLocation().pathname.endsWith('/top') ? 'top' : 'builder';
 	const gameTranslations = useGameTranslationsData();
 
 	const leagueParam = params.get('league');
@@ -108,13 +113,55 @@ const Teams = () => {
 		window.setTimeout(() => setCopied(false), 1800);
 	};
 
+	const tabItems: Array<IconTabItem> = [
+		{ id: 'builder', label: t('teams:page.builderTab'), icon: '/images/nav/rankings.webp' },
+		{
+			id: 'top',
+			label: t('teams:page.topTab'),
+			icon: (
+				<svg
+					viewBox='0 0 24 24'
+					width='18'
+					height='18'
+					fill='none'
+					stroke='currentColor'
+					strokeWidth='2'
+					strokeLinecap='round'
+					strokeLinejoin='round'
+					aria-hidden='true'
+				>
+					<path d='M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3' />
+				</svg>
+			),
+		},
+	];
+
+	// Switching tabs keeps the league; a team only travels with a click on the list.
+	const goToTab = (id: string) => {
+		const next = new URLSearchParams();
+		next.set('league', league);
+		void navigate({ pathname: id === 'top' ? R.teamsTop : R.teams, search: `?${next.toString()}` });
+	};
+
+	const openFromTop = (team: RankedTeam) => {
+		const next = new URLSearchParams();
+		next.set('league', league);
+		next.set('t', encodeTeam(team.members));
+		void navigate({ pathname: R.teams, search: `?${next.toString()}` });
+	};
+
 	const leagueLabel = modeLabelLong(league, gl, []);
 	const accent = modeColor(league);
 	const verified = data.builder?.simulator.verified ?? true;
 
 	return (
-		<div className='r-shell r-shell--wide r-tm' data-mini={analysis && parts && full ? '' : undefined}>
+		<div
+			className='r-shell r-shell--wide r-tm'
+			data-mini={tab === 'builder' && analysis && parts && full ? '' : undefined}
+		>
 			<h1 className='r-page-title'>{t('teams:page.title')}</h1>
+
+			<IconTabBar items={tabItems} activeId={tab} onSelect={goToTab} ariaLabel={t('teams:page.tabsAria')} />
 
 			<div className='r-league-row r-tm-leagues'>
 				<LeaguePicker
@@ -133,7 +180,9 @@ const Teams = () => {
 				</div>
 			)}
 
-			{data.ready && (
+			{data.ready && tab === 'top' && <TopTeams league={league} data={data} onOpen={openFromTop} />}
+
+			{data.ready && tab === 'builder' && (
 				<>
 					<p className='r-tm-intro'>{t('teams:builder.intro', { league: leagueLabel })}</p>
 

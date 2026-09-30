@@ -1,0 +1,87 @@
+name: Team Ranking
+
+# Rates every trio of each league's best Pokémon with this repo's own team rating (its port of PvPoke's simulator)
+# and publishes the top of the list as team-ranking.json on the `data` branch, which the Teams page's "Top teams"
+# tab reads. dex-server (the data source) is only read, never written to; main gets no daily commits.
+# Runs shortly after dex-server's 14:00 UTC daily update, so it rates that day's rankings, IVs and PvPoke data.
+
+on:
+  schedule:
+    - cron: '30 15 * * *'
+  workflow_dispatch: # Allows manual trigger
+
+concurrency:
+  group: team-ranking
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  rank-teams:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout go-pokedex
+        uses: actions/checkout@v4
+        with:
+          path: go-pokedex
+
+      - name: Checkout dex-server (the ranking inputs; read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: igor-ruivo/dex-server
+          path: dex-server
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: go-pokedex/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: go-pokedex
+        run: pnpm install --frozen-lockfile
+
+      - name: Rank teams
+        id: rank-teams
+        working-directory: go-pokedex
+        env:
+          DEX_SERVER_DIR: ${{ github.workspace }}/dex-server
+          OUT: ${{ github.workspace }}/team-ranking.json
+        run: pnpm run team-ranking
+
+      - name: Publish to the data branch
+        working-directory: go-pokedex
+        run: |
+          # The branch only ever holds today's file: a fresh single-commit branch, force-pushed, so the
+          # repository doesn't grow by a 100 KB+ file every day.
+          git config user.email "igor.ruivo.97@gmail.com"
+          git config user.name "Igor Ruivo"
+          git checkout --orphan data
+          git rm -rf --quiet .
+          cp "${{ github.workspace }}/team-ranking.json" team-ranking.json
+          git add team-ranking.json
+          git commit -m "Team ranking - $(date -u +%Y-%m-%d)"
+          git push --force origin data
+
+      - name: Send Discord notification on failure
+        if: failure()
+        run: |
+          WEB_BASE1="https://dis"
+          WEB_BASE2="cord.com/api/webho"
+          WEB_BASE3="oks/1393406874296127650"
+          WEB_TOK1="v-OSrwbxLyZfsKHuNMkEwhfKavenpXCiA"
+          WEB_TOK2="shmTjlIS0DuqihZMFzrepoUhSZhVf3tF3D3"
+          WEB_URL="$WEB_BASE1$WEB_BASE2$WEB_BASE3/$WEB_TOK1$WEB_TOK2"
+
+          JSON_PAYLOAD="{\"content\":\"<@&1393406141777838151>\",\"embeds\":[{\"title\":\"❌ Team Ranking Failed\",\"description\":\"The daily go-pokedex team ranking failed. It refuses to publish when PvPoke's simulator is unverified, or when its self-check against the normal team rating disagrees. Please check the GitHub Actions logs for details.\",\"color\":16711680,\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}"
+
+          curl -X POST "$WEB_URL" \
+            -H "Content-Type: application/json" \
+            -d "$JSON_PAYLOAD"

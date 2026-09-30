@@ -1,6 +1,9 @@
 {
 	"page": {
 		"title": "Tim",
+		"builderTab": "Pembuat Tim",
+		"topTab": "Tim terbaik",
+		"tabsAria": "Bagian tim",
 		"leagueAria": "Liga",
 		"loading": "Memuat data tim…",
 		"loadFailed": "Data tim tidak dapat dimuat. Periksa koneksimu lalu coba lagi."
@@ -227,5 +230,12 @@
 		"none": "Tidak mudah menemukan peningkatan yang lebih baik.",
 		"swap": "{{out}} → {{in}}",
 		"result": "Skor ancaman {{score}} ({{delta}})"
+	},
+	"top": {
+		"intro": "Tim dengan skor tertinggi yang kami temukan: setiap trio dari {{candidates}} Pokémon terbaik liga, masing-masing dengan gerakan rekomendasi dan IV terbaik, dinilai seperti di pembuat tim. Ketuk satu untuk membukanya di pembuat tim.",
+		"teamScore": "Skor tim",
+		"note": "Dinilai pada {{date}} dari {{total}} kemungkinan tim. Urutan dalam tim: lead, switch, closer.",
+		"empty": "Belum ada peringkat tim saat ini. Coba lagi nanti.",
+		"threat": "Ancaman"
 	}
 }

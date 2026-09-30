@@ -1,6 +1,9 @@
 {
 	"page": {
 		"title": "Equipos",
+		"builderTab": "Creador de equipos",
+		"topTab": "Mejores equipos",
+		"tabsAria": "Secciones de equipos",
 		"leagueAria": "Liga",
 		"loading": "Cargando datos de equipos…",
 		"loadFailed": "No se pudieron cargar los datos de equipos. Revisa tu conexión e inténtalo de nuevo."
@@ -227,5 +230,12 @@
 		"none": "No pudimos encontrar fácilmente mejores mejoras.",
 		"swap": "{{out}} → {{in}}",
 		"result": "Puntuación de amenaza {{score}} ({{delta}})"
+	},
+	"top": {
+		"intro": "Los equipos con mejor puntuación que encontramos: cada trío de los {{candidates}} mejores Pokémon de la liga, con sus movimientos recomendados y mejores IV, calificado como el creador. Toca uno para abrirlo en el creador.",
+		"teamScore": "Puntuación del equipo",
+		"note": "Calificado el {{date}} entre {{total}} equipos posibles. Orden dentro del equipo: líder, cambio, cierre.",
+		"empty": "No hay un ranking de equipos disponible por ahora. Vuelve pronto.",
+		"threat": "Amenaza"
 	}
 }

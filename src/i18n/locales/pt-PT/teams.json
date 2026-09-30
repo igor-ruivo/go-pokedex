@@ -1,6 +1,9 @@
 {
 	"page": {
 		"title": "Equipas",
+		"builderTab": "Construtor de equipas",
+		"topTab": "Melhores equipas",
+		"tabsAria": "Secções de equipas",
 		"leagueAria": "Liga",
 		"loading": "A carregar os dados das equipas…",
 		"loadFailed": "Não foi possível carregar os dados das equipas. Verifica a ligação e tenta novamente."
@@ -227,5 +230,12 @@
 		"none": "Não foi fácil encontrar melhores melhorias.",
 		"swap": "{{out}} → {{in}}",
 		"result": "Pontuação de ameaça {{score}} ({{delta}})"
+	},
+	"top": {
+		"intro": "As equipas com melhor pontuação que encontrámos: cada trio dos {{candidates}} melhores Pokémon da liga, com os ataques recomendados e os melhores IV, avaliado como o construtor. Toca numa para a abrir no construtor.",
+		"teamScore": "Pontuação da equipa",
+		"note": "Avaliado em {{date}} entre {{total}} equipas possíveis. Ordem na equipa: abertura, troca, fecho.",
+		"empty": "Não há nenhum ranking de equipas disponível neste momento. Volta em breve.",
+		"threat": "Ameaça"
 	}
 }

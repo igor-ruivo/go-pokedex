@@ -70,3 +70,36 @@ export interface TeamBuilderData {
 	excludedThreats: Array<string>;
 	meta: Record<TeamLeague, Array<string>>;
 }
+
+export interface RankedTeamMember {
+	speciesId: string;
+	/** `[fast, charged 1, charged 2?]` as moveIds — the ranking's recommended moveset. */
+	moveset: Array<string>;
+}
+
+export interface RankedTeam {
+	/** In the order the Battle plan plays them: lead, switch, closer. */
+	members: Array<RankedTeamMember>;
+	/** The Team Score, 0–100. */
+	score: number;
+	tier: 'elite' | 'strong' | 'solid' | 'shaky' | 'risky';
+	/** PvPoke's threat score for the team — lower is better. */
+	threatScore: number;
+}
+
+/** `team-ranking.json` (go-pokedex's `data` branch): every trio of each league's best Pokémon, rated; the top of each list. */
+export interface TeamRanking {
+	generatedAt: string;
+	/** How many of the league's best-ranked Pokémon every trio was drawn from. */
+	candidates: number;
+	leagues: Record<
+		TeamLeague,
+		{
+			totalTeams: number;
+			/** The best teams by Team Score (higher is better). */
+			byScore: Array<RankedTeam>;
+			/** The best teams by threat score alone (lower is better). */
+			byThreat: Array<RankedTeam>;
+		}
+	>;
+}

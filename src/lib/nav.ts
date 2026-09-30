@@ -16,6 +16,7 @@ export const R = {
 		tab && tab !== 'ranks' ? `/pokemon/${speciesId}/${tab}` : `/pokemon/${speciesId}`,
 	calendar: (tab = 'events'): string => `/calendar/${tab}`,
 	teams: '/teams',
+	teamsTop: '/teams/top',
 	moves: '/moves',
 	move: (moveId: string): string => `/move/${encodeURIComponent(moveId)}`,
 	types: '/types',

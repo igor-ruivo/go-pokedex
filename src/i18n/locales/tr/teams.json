@@ -1,6 +1,9 @@
 {
 	"page": {
 		"title": "Takımlar",
+		"builderTab": "Takım Oluşturucu",
+		"topTab": "En iyi takımlar",
+		"tabsAria": "Takım bölümleri",
 		"leagueAria": "Lig",
 		"loading": "Takım verileri yükleniyor…",
 		"loadFailed": "Takım verileri yüklenemedi. Bağlantını kontrol edip tekrar dene."
@@ -227,5 +230,12 @@
 		"none": "Daha iyi yükseltmeleri kolayca bulamadık.",
 		"swap": "{{out}} → {{in}}",
 		"result": "Tehdit puanı {{score}} ({{delta}})"
+	},
+	"top": {
+		"intro": "Bulduğumuz en yüksek puanlı takımlar: ligin en iyi {{candidates}} Pokémon’unun her üçlüsü, önerilen hamleleri ve en iyi IV’leriyle, oluşturucudaki gibi puanlandı. Bir takıma dokunarak oluşturucuda aç.",
+		"teamScore": "Takım puanı",
+		"note": "{{date}} tarihinde {{total}} olası takım arasından puanlandı. Takımdaki sıra: açılış, geçiş, kapanış.",
+		"empty": "Şu anda takım sıralaması yok. Yakında tekrar bak.",
+		"threat": "Tehdit"
 	}
 }

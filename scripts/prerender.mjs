@@ -85,6 +85,13 @@ const STATIC_PAGES = [
 		image: `${SITE}/images/leagues/great.png`,
 	},
 	{
+		path: '/teams/top',
+		title: 'Best PvP Teams — GO Pokédex',
+		description:
+			'The best 3-Pokémon teams for Pokémon GO Great, Ultra and Master League, ranked with their best movesets and top IVs.',
+		image: `${SITE}/images/leagues/master.png`,
+	},
+	{
 		path: '/moves',
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',

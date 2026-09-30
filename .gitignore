@@ -24,3 +24,6 @@ yarn-debug.log*
 yarn-error.log*
 
 tsconfig.tsbuildinfo
+
+# written by `pnpm run team-ranking`; the daily workflow publishes it on the data branch
+/team-ranking.json
