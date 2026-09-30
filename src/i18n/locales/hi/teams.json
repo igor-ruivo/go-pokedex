@@ -30,6 +30,7 @@
 	},
 	"picker": {
 		"title": "पोकेमॉन चुनें",
+		"replaceTitle": "{{name}} को इससे बदलें…",
 		"close": "बंद करें",
 		"searchPlaceholder": "{{league}} के पोकेमॉन खोजें…",
 		"inTeam": "पहले से टीम में है",
@@ -108,6 +109,7 @@
 		"simulating": "बैटल का सिमुलेशन हो रहा है…",
 		"needFull": "थ्रेट स्कोर देखने के लिए तीन पोकेमॉन जोड़ें।",
 		"scoreLabel": "थ्रेट स्कोर",
+		"shortLabel": "थ्रेट",
 		"lowerBetter": "कम थ्रेट स्कोर बेहतर होता है।",
 		"gaugeAria": "थ्रेट स्कोर {{score}}, ग्रेड {{grade}}",
 		"better": "बेहतर",

@@ -235,6 +235,7 @@ const PokemonPicker = ({
 	leagueLabel,
 	data,
 	teamBases,
+	replacing,
 	onPick,
 	onClose,
 }: {
@@ -242,10 +243,13 @@ const PokemonPicker = ({
 	data: TeamsData;
 	/** Base species already on the team (a Shadow and its normal form count as one) — labelled, not blocked. */
 	teamBases: ReadonlySet<string>;
+	/** Name of the Pokémon this pick will replace, when the slot isn't empty. */
+	replacing?: string | undefined;
 	onPick: (speciesId: string) => void;
 	onClose: () => void;
 }) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail', 'rankings', 'components']);
+	const title = replacing ? t('teams:picker.replaceTitle', { name: replacing }) : t('teams:picker.title');
 	const { currentLanguage } = useLanguage();
 	const [query, setQuery] = useState('');
 	const [sortKey, setSortKey] = useState<PickerSort>('overall');
@@ -294,9 +298,9 @@ const PokemonPicker = ({
 
 	return (
 		<div className='r-tm-picker-backdrop'>
-			<div className='r-tm-picker' role='dialog' aria-modal='true' aria-label={t('teams:picker.title')} ref={rootRef}>
+			<div className='r-tm-picker' role='dialog' aria-modal='true' aria-label={title} ref={rootRef}>
 				<div className='r-tm-picker-head'>
-					<h2>{t('teams:picker.title')}</h2>
+					<h2>{title}</h2>
 					<button type='button' className='r-icon-btn' aria-label={t('teams:picker.close')} onClick={onClose}>
 						×
 					</button>
@@ -537,6 +541,8 @@ export const SlotPicker = ({
 	onSetMember: (index: number, speciesId: string) => void;
 	onClose: () => void;
 }) => {
+	const current = team[slot] ? data.gamemaster[team[slot].speciesId] : undefined;
+	const replacing = current ? cleanName(current.speciesName) : undefined;
 	const teamBases = useMemo(
 		() => new Set(team.filter((_, i) => i !== slot).map((s) => s.speciesId.replace(/_shadow$/, ''))),
 		[team, slot]
@@ -547,6 +553,7 @@ export const SlotPicker = ({
 			leagueLabel={leagueLabel}
 			data={data}
 			teamBases={teamBases}
+			replacing={replacing}
 			onClose={onClose}
 			onPick={(speciesId) => {
 				onSetMember(slot, speciesId);

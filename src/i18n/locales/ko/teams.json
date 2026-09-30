@@ -30,6 +30,7 @@
 	},
 	"picker": {
 		"title": "포켓몬 선택",
+		"replaceTitle": "{{name}}을(를) 다음으로 교체…",
 		"close": "닫기",
 		"searchPlaceholder": "{{league}} 포켓몬 검색…",
 		"inTeam": "이미 팀에 있음",
@@ -108,6 +109,7 @@
 		"simulating": "배틀을 시뮬레이션하는 중…",
 		"needFull": "위협 점수를 보려면 포켓몬 세 마리를 추가하세요.",
 		"scoreLabel": "위협 점수",
+		"shortLabel": "위협",
 		"lowerBetter": "위협 점수는 낮을수록 좋습니다.",
 		"gaugeAria": "위협 점수 {{score}}, 등급 {{grade}}",
 		"better": "좋음",

@@ -86,7 +86,11 @@ export const BattlePlan = ({
 									<SpriteImg pokemon={member.pokemon} />
 								</button>
 								<b className='r-tm-step-name'>
-									<button type='button' title={t('teams:builder.replace', { name: shortName(member) })} onClick={() => onChangePokemon(roles.order[role])}>
+									<button
+										type='button'
+										title={t('teams:builder.replace', { name: shortName(member) })}
+										onClick={() => onChangePokemon(roles.order[role])}
+									>
 										{shortName(member)}
 									</button>
 								</b>

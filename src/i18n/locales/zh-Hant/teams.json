@@ -30,6 +30,7 @@
 	},
 	"picker": {
 		"title": "選擇寶可夢",
+		"replaceTitle": "將{{name}}更換為…",
 		"close": "關閉",
 		"searchPlaceholder": "搜尋{{league}}的寶可夢…",
 		"inTeam": "已在隊伍中",
@@ -108,6 +109,7 @@
 		"simulating": "正在模擬對戰…",
 		"needFull": "加入三隻寶可夢即可查看威脅分數。",
 		"scoreLabel": "威脅分數",
+		"shortLabel": "威脅",
 		"lowerBetter": "威脅分數越低越好。",
 		"gaugeAria": "威脅分數 {{score}}，評級 {{grade}}",
 		"better": "較佳",

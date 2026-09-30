@@ -70,4 +70,3 @@ export interface TeamBuilderData {
 	excludedThreats: Array<string>;
 	meta: Record<TeamLeague, Array<string>>;
 }
-

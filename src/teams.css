@@ -35,7 +35,6 @@
 	margin: 0 0 var(--s4);
 	font-size: 13px;
 	color: var(--text-dim);
-	max-width: 70ch;
 }
 .rvmp .r-tm-leagues {
 	margin-bottom: var(--s4);
@@ -723,23 +722,28 @@
 		opacity 0.25s ease,
 		border-color 0.6s ease;
 }
-.rvmp .r-tm-hero[data-tier='elite'] {
+.rvmp .r-tm-hero[data-tier='elite'],
+.rvmp .r-tm-mini[data-tier='elite'] {
 	--tier-a: #3fd07a;
 	--tier-b: #22d3ee;
 }
-.rvmp .r-tm-hero[data-tier='strong'] {
+.rvmp .r-tm-hero[data-tier='strong'],
+.rvmp .r-tm-mini[data-tier='strong'] {
 	--tier-a: #58a7ff;
 	--tier-b: #8b7bff;
 }
-.rvmp .r-tm-hero[data-tier='solid'] {
+.rvmp .r-tm-hero[data-tier='solid'],
+.rvmp .r-tm-mini[data-tier='solid'] {
 	--tier-a: #f2c53d;
 	--tier-b: #f59e42;
 }
-.rvmp .r-tm-hero[data-tier='shaky'] {
+.rvmp .r-tm-hero[data-tier='shaky'],
+.rvmp .r-tm-mini[data-tier='shaky'] {
 	--tier-a: #f59e42;
 	--tier-b: #ef7a3d;
 }
-.rvmp .r-tm-hero[data-tier='risky'] {
+.rvmp .r-tm-hero[data-tier='risky'],
+.rvmp .r-tm-mini[data-tier='risky'] {
 	--tier-a: #ef5b5b;
 	--tier-b: #d63a7a;
 }
@@ -992,14 +996,9 @@
 	font-variant-numeric: tabular-nums;
 }
 .rvmp .r-tm-flow-arrow {
-	display: none;
+	display: block;
 	align-self: center;
 	justify-self: center;
-}
-@media (min-width: 720px) {
-	.rvmp .r-tm-flow-arrow {
-		display: block;
-	}
 }
 .rvmp .r-tm-flow-arrow svg {
 	width: 44px;
@@ -1921,4 +1920,229 @@
 .rvmp .r-tm-plan-name {
 	color: var(--tc);
 	font-weight: 700;
+}
+
+/* ---- collapsed team bar (the Pokémon page's .r-hero-mini, for a team) ---------------------------------- */
+.rvmp .r-tm-mini {
+	/* neutral until a tier is known; the tier rules above colour it like the score hero */
+	--tier-a: var(--text-dim);
+	--tier-b: var(--text);
+	--accent: var(--tier-a);
+	justify-content: center;
+	gap: var(--s4);
+}
+.rvmp .r-tm-mini-team {
+	display: flex;
+	gap: var(--s3);
+	min-width: 0;
+}
+/* the three stats are one group on phones; on desktop they lay out as direct children of the bar */
+.rvmp .r-tm-mini-stats {
+	display: contents;
+}
+.rvmp .r-tm-mini-mon {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	min-width: 0;
+	max-width: 76px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+.rvmp .r-tm-mini-name {
+	max-width: 100%;
+	font-family: Fredoka, 'Nunito Sans', sans-serif;
+	font-weight: 700;
+	font-size: 11px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: var(--text);
+	transition: color 0.14s ease;
+}
+.rvmp .r-tm-mini-mon:hover .r-tm-mini-name {
+	color: var(--tc);
+}
+.rvmp .r-tm-mini-stat,
+.rvmp .r-tm-mini-grades {
+	display: flex;
+	flex: none;
+	align-items: center;
+	padding-left: var(--s4);
+	border-left: 1px solid var(--border);
+}
+.rvmp .r-tm-mini-stat {
+	flex-direction: column;
+	justify-content: center;
+	gap: 1px;
+}
+.rvmp .r-tm-mini-stat > span:first-child {
+	font-size: 9.5px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .r-tm-mini-stat > b {
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 18px;
+	line-height: 1.1;
+	font-variant-numeric: tabular-nums;
+}
+/* the Team score wears the score hero's tier gradient, like the ring's number */
+.rvmp .r-tm-mini-score > b {
+	font-size: 22px;
+	background: linear-gradient(135deg, var(--tier-a), var(--tier-b));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+.rvmp .r-tm-mini-grades {
+	gap: 4px;
+	margin: 0;
+	list-style: none;
+}
+.rvmp .r-tm-mini-grades .r-tm-grade {
+	width: 24px;
+	height: 24px;
+	border-radius: 7px;
+	font-size: 13px;
+}
+@media (max-width: 719px) {
+	/* phone width: the team, the threat score with its Coverage card, and the score; tighter, names ellipsise */
+	.rvmp .r-tm-mini {
+		gap: 8px;
+	}
+	/* half the bar for the team, half for the stats (kept close together), with room at the edges */
+	.rvmp .r-tm-mini {
+		padding: 6px 16px;
+	}
+	.rvmp .r-tm-mini-team {
+		flex: 1 1 0;
+		gap: 0;
+	}
+	.rvmp .r-tm-mini-mon {
+		flex: 1 1 0;
+		max-width: none;
+	}
+	.rvmp .r-tm-mini-stats {
+		display: flex;
+		flex: 1 1 0;
+		min-width: 0;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+	}
+	.rvmp .r-tm-mini .r-hero-mini-sprite {
+		width: 30px;
+		height: 30px;
+	}
+	.rvmp .r-tm-mini-name {
+		font-size: 10px;
+	}
+	.rvmp .r-tm-mini-stat,
+	.rvmp .r-tm-mini-grades {
+		padding-left: 8px;
+	}
+	/* the Coverage card is the threat score as a letter: it sits right next to it, no divider between them */
+	.rvmp .r-tm-mini-grades {
+		padding-left: 0;
+		border-left: 0;
+		margin-left: -2px;
+	}
+	.rvmp .r-tm-mini-stat > span:first-child {
+		font-size: 8.5px;
+		letter-spacing: 0.04em;
+	}
+	.rvmp .r-tm-mini-stat > b {
+		font-size: 15px;
+	}
+	.rvmp .r-tm-mini-score > b {
+		font-size: 18px;
+	}
+	/* only the card that belongs to the threat score (Coverage) stays next to it */
+	.rvmp .r-tm-mini-grades li:not([data-key='coverage']) {
+		display: none;
+	}
+	.rvmp .r-tm-mini-grades .r-tm-grade {
+		width: 22px;
+		height: 22px;
+		border-radius: 7px;
+		font-size: 12px;
+	}
+}
+@media (min-width: 900px) {
+	.rvmp .r-tm-mini {
+		max-width: min(880px, calc(100vw - 32px));
+		padding: var(--s2) var(--s5);
+	}
+}
+/* the team bar is pinned under the app bar, so the page leaves room for it */
+.rvmp .r-tm[data-mini] {
+	padding-top: 68px;
+}
+
+/* ---- battle plan on phones: the three steps in one row, joined by small arrows (like the upgrade cells' swap) ---
+   Each step keeps its role-coloured border and stays two-tiered: the Pokémon on top, then role, phrase and score. */
+@media (max-width: 719px) {
+	.rvmp .r-tm-flow {
+		grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr) 16px minmax(0, 1fr);
+		gap: 0;
+		align-items: stretch;
+	}
+	.rvmp .r-tm-flow-arrow svg {
+		width: 16px;
+		height: 16px;
+		stroke-width: 3;
+	}
+	.rvmp .r-tm-step {
+		gap: 2px;
+		padding: var(--s4) 6px var(--s2);
+	}
+	.rvmp .r-tm-step-n {
+		top: 5px;
+		left: 5px;
+		width: 18px;
+		height: 18px;
+		font-size: 11px;
+	}
+	.rvmp .r-tm-step-art {
+		width: 56px;
+		height: 56px;
+	}
+	.rvmp .r-tm-step-art > .r-shadow-mark {
+		width: 18px;
+		height: 18px;
+	}
+	.rvmp .r-tm-step-name {
+		max-width: 100%;
+		font-size: 12px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.rvmp .r-tm-step-role {
+		font-size: 9px;
+		letter-spacing: 0.06em;
+	}
+	.rvmp .r-tm-step-desc {
+		max-width: none;
+		font-size: 10px;
+		line-height: 1.3;
+	}
+	.rvmp .r-tm-step-score {
+		margin-top: auto;
+		padding: 1px 8px;
+		font-size: 12px;
+	}
+	/* the role-fit table below is narrow too: keep its three column titles from running together */
+	.rvmp .r-tm-fit-head {
+		font-size: 9px;
+		letter-spacing: 0.02em;
+	}
 }

@@ -7,13 +7,14 @@ import { useLanguage } from '../contexts/language-context';
 import { isTeamLeague, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
 import { leagueIcon } from '../lib/league-visuals';
 import { modeColor, modeLabel, modeLabelLong } from '../lib/nav';
-import { type ScoreParts, scoreTier, teamScore, threatPart } from '../lib/team-analysis';
+import { letterGrade, type ScoreParts, scoreTier, teamScore, threatPart } from '../lib/team-analysis';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { BattlePlan } from './teams/BattlePlan';
 import { CoveragePanel } from './teams/CoveragePanel';
 import { ScoreHero } from './teams/ScoreHero';
 import { StatsPanel } from './teams/StatsPanel';
 import { Suggestions } from './teams/Suggestions';
+import { TeamMini } from './teams/TeamMini';
 import { SlotPicker, TeamStage } from './teams/TeamStage';
 import { ThreatPanel } from './teams/ThreatPanel';
 import { TypeProfile } from './teams/TypeProfile';
@@ -49,7 +50,12 @@ const Teams = () => {
 	const stale = full && evaluationQuery.isPlaceholderData;
 
 	// Upgrades are looked for automatically, but only after the rating is in — both share one worker.
-	const suggestionsQuery = useTeamSuggestions(league, data, team, evaluationQuery.isSuccess && !evaluationQuery.isFetching);
+	const suggestionsQuery = useTeamSuggestions(
+		league,
+		data,
+		team,
+		evaluationQuery.isSuccess && !evaluationQuery.isFetching
+	);
 
 	const [copied, setCopied] = useState(false);
 	// Which team slot the Pokémon picker is open for — set from a team card or from a Battle plan step.
@@ -94,8 +100,7 @@ const Teams = () => {
 	};
 
 	/** Puts every Pokémon back on PvPoke's recommended moveset for this league. */
-	const resetMoves = () =>
-		replaceTeam(team.map((slot) => ({ ...slot, moveset: recommendedMoveset(slot.speciesId) })));
+	const resetMoves = () => replaceTeam(team.map((slot) => ({ ...slot, moveset: recommendedMoveset(slot.speciesId) })));
 
 	const copyLink = async () => {
 		await navigator.clipboard?.writeText(window.location.href);
@@ -108,7 +113,7 @@ const Teams = () => {
 	const verified = data.builder?.simulator.verified ?? true;
 
 	return (
-		<div className='r-shell r-shell--wide r-tm'>
+		<div className='r-shell r-shell--wide r-tm' data-mini={analysis && parts && full ? '' : undefined}>
 			<h1 className='r-page-title'>{t('teams:page.title')}</h1>
 
 			<div className='r-league-row r-tm-leagues'>
@@ -162,16 +167,33 @@ const Teams = () => {
 						/>
 					)}
 
+					{analysis && parts && full && (
+						<TeamMini
+							members={analysis.members}
+							score={score}
+							tier={tier}
+							threatScore={evaluation?.threatScore}
+							grades={{
+								coverage: evaluation ? letterGrade(1200 - evaluation.threatScore, 680) : undefined,
+								bulk: analysis.grades.bulk.grade,
+								safety: analysis.grades.safety.grade,
+								consistency: analysis.grades.consistency.grade,
+							}}
+							loading={simulating || stale}
+							onChangePokemon={setPickerFor}
+						/>
+					)}
+
 					{full && (
 						<div className='r-tm-actions'>
 							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => void copyLink()}>
 								{copied ? t('teams:builder.copied') : t('teams:builder.copyLink')}
 							</button>
-							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={resetMoves}>
-								{t('teams:builder.resetMoves')}
-							</button>
 							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => replaceTeam([])}>
 								{t('teams:builder.clear')}
+							</button>
+							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={resetMoves}>
+								{t('teams:builder.resetMoves')}
 							</button>
 						</div>
 					)}
@@ -201,18 +223,18 @@ const Teams = () => {
 									evaluation={evaluation}
 									members={analysis.members}
 									gamemaster={data.gamemaster}
-										stale={stale}
-										loading={simulating}
-										onChangePokemon={setPickerFor}
-									/>
+									stale={stale}
+									loading={simulating}
+									onChangePokemon={setPickerFor}
+								/>
 								{evaluation ? (
 									<CoveragePanel
 										evaluation={evaluation}
 										members={analysis.members}
-											gamemaster={data.gamemaster}
-											stale={stale}
-											onChangePokemon={setPickerFor}
-										/>
+										gamemaster={data.gamemaster}
+										stale={stale}
+										onChangePokemon={setPickerFor}
+									/>
 								) : (
 									<div className='r-tm-panel r-tm-loading'>
 										<span className='r-spinner' aria-hidden='true' />

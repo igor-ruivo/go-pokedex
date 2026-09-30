@@ -25,14 +25,14 @@ export const CoveragePanel = ({
 	gamemaster,
 	stale,
 	onChangePokemon,
-	}: {
+}: {
 	evaluation: TeamEvaluation;
 	members: ReadonlyArray<AnalyzedMember>;
 	gamemaster: Record<string, IGamemasterPokemon>;
 	stale: boolean;
 	/** Opens the Pokémon picker for that team slot. */
 	onChangePokemon: (slot: number) => void;
-	}) => {
+}) => {
 	const { t } = useTranslation(['teams']);
 	const { meta } = evaluation;
 	const coveredPct = meta.checked ? (meta.covered / meta.checked) * 100 : 0;
@@ -76,7 +76,12 @@ export const CoveragePanel = ({
 							{m.pokemon.isShadow && <ShadowMark />}
 							<SpriteImg pokemon={m.pokemon} loading='lazy' />
 						</button>
-						<button type='button' className='r-tm-wins-name' title={t('teams:builder.replace', { name: cleanName(m.pokemon.speciesName) })} onClick={() => onChangePokemon(i)}>
+						<button
+							type='button'
+							className='r-tm-wins-name'
+							title={t('teams:builder.replace', { name: cleanName(m.pokemon.speciesName) })}
+							onClick={() => onChangePokemon(i)}
+						>
 							{cleanName(m.pokemon.speciesName)}
 						</button>
 						<span className='r-tm-wins-bar' aria-hidden='true'>

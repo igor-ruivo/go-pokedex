@@ -30,6 +30,7 @@
 	},
 	"picker": {
 		"title": "เลือกโปเกมอน",
+		"replaceTitle": "เปลี่ยน {{name}} เป็น…",
 		"close": "ปิด",
 		"searchPlaceholder": "ค้นหาโปเกมอน{{league}}…",
 		"inTeam": "อยู่ในทีมแล้ว",
@@ -108,6 +109,7 @@
 		"simulating": "กำลังจำลองการต่อสู้…",
 		"needFull": "เพิ่มโปเกมอน 3 ตัวเพื่อดูคะแนนภัยคุกคาม",
 		"scoreLabel": "คะแนนภัยคุกคาม",
+		"shortLabel": "ภัยคุกคาม",
 		"lowerBetter": "คะแนนภัยคุกคามยิ่งต่ำยิ่งดี",
 		"gaugeAria": "คะแนนภัยคุกคาม {{score}} เกรด {{grade}}",
 		"better": "ดีกว่า",

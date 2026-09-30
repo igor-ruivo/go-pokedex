@@ -36,7 +36,7 @@ export const ThreatPanel = ({
 	stale,
 	loading,
 	onChangePokemon,
-	}: {
+}: {
 	evaluation: TeamEvaluation | undefined;
 	members: ReadonlyArray<AnalyzedMember>;
 	gamemaster: Record<string, IGamemasterPokemon>;
@@ -44,7 +44,7 @@ export const ThreatPanel = ({
 	loading: boolean;
 	/** Opens the Pokémon picker for that team slot. */
 	onChangePokemon: (slot: number) => void;
-	}) => {
+}) => {
 	const { t } = useTranslation(['teams']);
 	const notes = threatGradeNotes(t);
 
@@ -77,8 +77,8 @@ export const ThreatPanel = ({
 					</span>
 				</div>
 				<p className='r-tm-threat-note'>
-						{notes[grade]} <span className='r-tm-hint'>{t('teams:threat.lowerBetter')}</span>
-					</p>
+					{notes[grade]} <span className='r-tm-hint'>{t('teams:threat.lowerBetter')}</span>
+				</p>
 			</div>
 
 			<div className='r-tm-gauge' role='img' aria-label={t('teams:threat.gaugeAria', { score, grade })}>
@@ -107,11 +107,7 @@ export const ThreatPanel = ({
 				<div className='r-tm-grid-row r-tm-grid-head' role='row' style={{ ['--cols' as string]: members.length }}>
 					<span role='columnheader' />
 					{members.map((m, i) => (
-						<span
-							key={m.slot.speciesId}
-							role='columnheader'
-							className='r-tm-grid-member'
-							>
+						<span key={m.slot.speciesId} role='columnheader' className='r-tm-grid-member'>
 							<button
 								type='button'
 								style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}
