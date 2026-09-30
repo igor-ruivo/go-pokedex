@@ -283,7 +283,8 @@ const Rankings = () => {
 				.sort((a, b) => s * ((a[raidMetric] ?? 0) - (b[raidMetric] ?? 0)))
 				.map((e, i) => ({
 					pokemon: gamemasterPokemon[e.speciesId],
-					metric: { rank: i + 1, [raidMetric]: e[raidMetric] },
+					// Medals only when the list reads best-first.
+					metric: { rank: i + 1, ...(raidDir === 'desc' ? { podium: true } : {}), [raidMetric]: e[raidMetric] },
 				}))
 				.filter((row) => byName(row.pokemon));
 		}
@@ -321,6 +322,8 @@ const Rankings = () => {
 					pokemon: p,
 					metric: {
 						rank: isOverall ? r.rank : position,
+						// Medals only when the list reads best-first: the overall order ascending, or a score descending.
+						...((pvpSort === 'overall' ? pvpDir === 'asc' : pvpDir === 'desc') ? { podium: true } : {}),
 						// Movement is in the overall ranking — meaningless under any other order.
 						...(isOverall ? { rankChange: r.rankChange } : {}),
 						// The figure shown is whichever score the list is sorted by (label stays "Pts").

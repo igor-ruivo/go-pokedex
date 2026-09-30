@@ -3,6 +3,7 @@
 		"title": "Teams",
 		"builderTab": "Team-Builder",
 		"topTab": "Top-Teams",
+		"favoritesTab": "Favoriten",
 		"tabsAria": "Team-Bereiche",
 		"leagueAria": "Liga",
 		"loading": "Team-Daten werden geladen …",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "Die am besten bewerteten Teams: jedes Trio der {{candidates}} besten Pokémon der Liga, jeweils mit empfohlenen Attacken und Top-IVs, bewertet wie im Builder. Tippe auf eines, um es im Builder zu öffnen.",
+		"open": "Im Builder öffnen",
 		"teamScore": "Team-Wertung",
 		"note": "Bewertet am {{date}} aus {{total}} möglichen Teams. Reihenfolge im Team: Lead, Wechsel, Closer.",
 		"empty": "Zurzeit ist keine Team-Rangliste verfügbar. Schau bald wieder vorbei.",
@@ -250,5 +252,12 @@
 			"roles": "Seine PvPoke-Rollenwertung in dieser Liga, von 100. Lead zeigt, wie gut es den Kampf eröffnet, Wechsel, wie sicher es mitten im Kampf hereinkommt, Closer, wie gut es ohne Schilde abschließt.",
 			"order": "Die Pfeile zeigen die Reihenfolge: zuerst der Lead, dann der sichere Wechsel, dann der Closer. Wir wählen die Reihenfolge mit der höchsten Summe der Rollenwertungen."
 		}
+	},
+	"favorites": {
+		"add": "Zu Favoriten hinzufügen",
+		"remove": "Aus Favoriten entfernen",
+		"empty": "Noch keine Favoriten-Teams in dieser Liga. Tippe auf den Stern eines Teams, um es hier zu speichern.",
+		"sortAdded": "Hinzugefügt am",
+		"added": "Hinzugefügt am {{date}}"
 	}
 }

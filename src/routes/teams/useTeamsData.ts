@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
@@ -118,6 +118,32 @@ export const useTeamEvaluation = (
 		},
 	});
 };
+
+/**
+ * The simulated rating of several teams at once (the favorites list). Same queries, and so the same cache, as
+ * `useTeamEvaluation` — a favorite already rated in the builder is not simulated again. The worker runs one job at a
+ * time, so they resolve one after another.
+ */
+export const useTeamEvaluations = (
+	league: TeamLeague,
+	data: TeamsData,
+	teams: ReadonlyArray<ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>>
+) =>
+	useQueries({
+		queries: teams.map((team) => ({
+			queryKey: ['team-eval', league, encodeTeam(team), data.builder?.simulator.verified],
+			enabled: data.ready && team.length === 3,
+			staleTime: Infinity,
+			gcTime: 10 * 60 * 1000,
+			retry: false,
+			queryFn: async (): Promise<TeamEvaluation> => {
+				await ensureEvaluator(dataKey(league, data), () =>
+					buildEvaluatorInit(league, data.builder!, data.gamemaster, data.rankList)
+				);
+				return getTeamWorker().evaluate(toSlots(team));
+			},
+		})),
+	});
 
 /**
  * Every single-slot swap (each top candidate in each slot) with the threat score it would give. Heavier than a rating (every top candidate is simulated), so the caller

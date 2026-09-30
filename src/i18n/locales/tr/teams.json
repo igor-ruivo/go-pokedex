@@ -3,6 +3,7 @@
 		"title": "Takımlar",
 		"builderTab": "Takım Oluşturucu",
 		"topTab": "En iyi takımlar",
+		"favoritesTab": "Favoriler",
 		"tabsAria": "Takım bölümleri",
 		"leagueAria": "Lig",
 		"loading": "Takım verileri yükleniyor…",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "Bulduğumuz en yüksek puanlı takımlar: ligin en iyi {{candidates}} Pokémon’unun her üçlüsü, önerilen hamleleri ve en iyi IV’leriyle, oluşturucudaki gibi puanlandı. Bir takıma dokunarak oluşturucuda aç.",
+		"open": "Oluşturucuda aç",
 		"teamScore": "Takım puanı",
 		"note": "{{date}} tarihinde {{total}} olası takım arasından puanlandı. Takımdaki sıra: açılış, geçiş, kapanış.",
 		"empty": "Şu anda takım sıralaması yok. Yakında tekrar bak.",
@@ -250,5 +252,12 @@
 			"roles": "Bu ligdeki PvPoke rol puanı, 100 üzerinden. Açılış, maça ne kadar iyi başladığını; Geçiş, savaşın ortasında ne kadar güvenli girdiğini; Kapanış ise kalkanlar bittiğinde ne kadar iyi bitirdiğini gösterir.",
 			"order": "Oklar oynama sırasını gösterir: önce açılış, sonra güvenli geçiş, sonra kapanış. Rol puanları toplamı en yüksek olan sırayı seçiyoruz."
 		}
+	},
+	"favorites": {
+		"add": "Favorilere ekle",
+		"remove": "Favorilerden çıkar",
+		"empty": "Bu ligde henüz favori takım yok. Bir takımı buraya kaydetmek için yıldızına dokun.",
+		"sortAdded": "Eklenme tarihi",
+		"added": "{{date}} tarihinde eklendi"
 	}
 }

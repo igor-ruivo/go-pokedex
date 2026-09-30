@@ -3,6 +3,7 @@
 		"title": "Equipas",
 		"builderTab": "Construtor de equipas",
 		"topTab": "Melhores equipas",
+		"favoritesTab": "Favoritas",
 		"tabsAria": "Secções de equipas",
 		"leagueAria": "Liga",
 		"loading": "A carregar os dados das equipas…",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "As equipas com melhor pontuação que encontrámos: cada trio dos {{candidates}} melhores Pokémon da liga, com os ataques recomendados e os melhores IV, avaliado como o construtor. Toca numa para a abrir no construtor.",
+		"open": "Abrir no construtor",
 		"teamScore": "Pontuação da equipa",
 		"note": "Avaliado em {{date}} entre {{total}} equipas possíveis. Ordem na equipa: abertura, troca, fecho.",
 		"empty": "Não há nenhum ranking de equipas disponível neste momento. Volta em breve.",
@@ -250,5 +252,12 @@
 			"roles": "A sua pontuação de papel no PvPoke nesta liga, em 100. Abertura indica quão bem abre o combate, Troca quão seguro entra a meio do combate e Fecho quão bem termina sem escudos.",
 			"order": "As setas mostram a ordem de jogo: a abertura, depois a troca segura e depois o fecho. Escolhemos a ordem cuja soma das pontuações de papel é a mais alta."
 		}
+	},
+	"favorites": {
+		"add": "Adicionar às favoritas",
+		"remove": "Remover das favoritas",
+		"empty": "Ainda não há equipas favoritas nesta liga. Toca na estrela de uma equipa para a guardar aqui.",
+		"sortAdded": "Data de adição",
+		"added": "Adicionada a {{date}}"
 	}
 }

@@ -3,6 +3,7 @@
 		"title": "Tim",
 		"builderTab": "Pembuat Tim",
 		"topTab": "Tim terbaik",
+		"favoritesTab": "Favorit",
 		"tabsAria": "Bagian tim",
 		"leagueAria": "Liga",
 		"loading": "Memuat data tim…",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "Tim dengan skor tertinggi yang kami temukan: setiap trio dari {{candidates}} Pokémon terbaik liga, masing-masing dengan gerakan rekomendasi dan IV terbaik, dinilai seperti di pembuat tim. Ketuk satu untuk membukanya di pembuat tim.",
+		"open": "Buka di pembuat tim",
 		"teamScore": "Skor tim",
 		"note": "Dinilai pada {{date}} dari {{total}} kemungkinan tim. Urutan dalam tim: lead, switch, closer.",
 		"empty": "Belum ada peringkat tim saat ini. Coba lagi nanti.",
@@ -250,5 +252,12 @@
 			"roles": "Skor perannya menurut PvPoke di liga ini, dari 100. Lead menunjukkan seberapa baik ia membuka pertandingan, Switch seberapa aman ia masuk di tengah pertarungan, Closer seberapa baik ia menutup saat perisai habis.",
 			"order": "Panah menunjukkan urutan bermain: lead, lalu switch yang aman, lalu closer. Kami memilih urutan dengan jumlah skor peran tertinggi."
 		}
+	},
+	"favorites": {
+		"add": "Tambahkan ke favorit",
+		"remove": "Hapus dari favorit",
+		"empty": "Belum ada tim favorit di liga ini. Ketuk bintang pada sebuah tim untuk menyimpannya di sini.",
+		"sortAdded": "Tanggal ditambahkan",
+		"added": "Ditambahkan {{date}}"
 	}
 }

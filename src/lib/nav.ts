@@ -17,6 +17,7 @@ export const R = {
 	calendar: (tab = 'events'): string => `/calendar/${tab}`,
 	teams: '/teams',
 	teamsTop: '/teams/top',
+	teamsFavorites: '/teams/favorites',
 	moves: '/moves',
 	move: (moveId: string): string => `/move/${encodeURIComponent(moveId)}`,
 	types: '/types',

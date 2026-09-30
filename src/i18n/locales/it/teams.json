@@ -3,6 +3,7 @@
 		"title": "Squadre",
 		"builderTab": "Creatore di squadre",
 		"topTab": "Migliori squadre",
+		"favoritesTab": "Preferiti",
 		"tabsAria": "Sezioni delle squadre",
 		"leagueAria": "Lega",
 		"loading": "Caricamento dei dati delle squadre…",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "Le squadre col punteggio più alto che abbiamo trovato: ogni terzetto dei {{candidates}} migliori Pokémon della lega, con le mosse consigliate e i migliori IV, valutato come fa il creatore. Tocca una squadra per aprirla nel creatore.",
+		"open": "Apri nel creatore",
 		"teamScore": "Punteggio squadra",
 		"note": "Valutato il {{date}} su {{total}} squadre possibili. Ordine nella squadra: apertura, cambio, chiusura.",
 		"empty": "Al momento non è disponibile nessuna classifica di squadre. Riprova presto.",
@@ -250,5 +252,12 @@
 			"roles": "Il suo punteggio di ruolo PvPoke in questa lega, su 100. Apertura indica quanto bene apre lo scontro, Cambio quanto è sicuro il suo ingresso a metà scontro, Chiusura quanto bene conclude senza scudi.",
 			"order": "Le frecce mostrano l'ordine di gioco: apertura, poi il cambio sicuro, poi la chiusura. Scegliamo l'ordine con la somma più alta dei punteggi di ruolo."
 		}
+	},
+	"favorites": {
+		"add": "Aggiungi ai preferiti",
+		"remove": "Rimuovi dai preferiti",
+		"empty": "Ancora nessuna squadra preferita in questa lega. Tocca la stella di una squadra per salvarla qui.",
+		"sortAdded": "Data di aggiunta",
+		"added": "Aggiunta il {{date}}"
 	}
 }

@@ -48,6 +48,11 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 			'The best 3-Pokémon teams for Pokémon GO Great, Ultra and Master League, ranked with their best movesets and top IVs.',
 		image: '/images/leagues/master.png',
 	},
+	'/teams/favorites': {
+		title: 'Favorite PvP Teams — GO Pokédex',
+		description: 'Your saved Pokémon GO PvP teams, rated for Great, Ultra and Master League.',
+		image: '/images/leagues/great.png',
+	},
 	'/moves': {
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',

@@ -8,6 +8,7 @@ import { R } from '../lib/nav';
 import { typeKey, typeVar } from '../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ShadowMark } from './ShadowMark';
+import { RankMedal } from './RankMedal';
 import { SpriteImg } from './Sprite';
 
 export interface CardMetric {
@@ -20,6 +21,8 @@ export interface CardMetric {
 	pts?: number;
 	/** PvP rank movement since the last update (+ climbed, − dropped). */
 	rankChange?: number;
+	/** The rank counts down from the best (a ranking read best-first): ranks 1–3 get a medal. */
+	podium?: boolean;
 }
 
 /** 14123234 → "14.1M" (locale-aware) — keeps big figures inside the tile footer. */
@@ -47,6 +50,7 @@ export const PokeCard = ({
 			style={{ ['--tc' as string]: typeVar(pokemon.types[0]) }}
 		>
 			<span className='r-pc-rank'>
+				{metric?.podium && metric.rank != null && <RankMedal rank={metric.rank} />}
 				{metric?.rank != null ? ordinal(metric.rank, currentLanguage) : dexNo(pokemon.dex)}
 			</span>
 			{metric?.rankChange != null && metric.rankChange !== 0 && (

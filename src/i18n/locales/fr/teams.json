@@ -3,6 +3,7 @@
 		"title": "Équipes",
 		"builderTab": "Créateur d'équipe",
 		"topTab": "Meilleures équipes",
+		"favoritesTab": "Favoris",
 		"tabsAria": "Sections des équipes",
 		"leagueAria": "Ligue",
 		"loading": "Chargement des données d'équipe…",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "Les équipes les mieux notées que nous ayons trouvées : chaque trio parmi les {{candidates}} meilleurs Pokémon de la ligue, avec ses attaques recommandées et ses meilleurs IV, noté comme le créateur. Touche-en une pour l'ouvrir dans le créateur.",
+		"open": "Ouvrir dans le créateur",
 		"teamScore": "Score d'équipe",
 		"note": "Noté le {{date}} parmi {{total}} équipes possibles. Ordre dans l'équipe : ouvreur, relais, finisseur.",
 		"empty": "Aucun classement d'équipes n'est disponible pour le moment. Reviens bientôt.",
@@ -250,5 +252,12 @@
 			"roles": "Son score de rôle PvPoke dans cette ligue, sur 100. Ouvreur indique sa qualité pour lancer le combat, Relais la sûreté de son entrée en cours de combat, Finisseur sa capacité à conclure sans boucliers.",
 			"order": "Les flèches montrent l'ordre de jeu : l'ouvreur, puis le relais sûr, puis le finisseur. Nous retenons l'ordre dont la somme des scores de rôle est la plus haute."
 		}
+	},
+	"favorites": {
+		"add": "Ajouter aux favoris",
+		"remove": "Retirer des favoris",
+		"empty": "Aucune équipe favorite dans cette ligue pour l'instant. Touche l'étoile d'une équipe pour l'enregistrer ici.",
+		"sortAdded": "Date d'ajout",
+		"added": "Ajouté le {{date}}"
 	}
 }

@@ -6366,3 +6366,48 @@
 		opacity: 0;
 	}
 }
+
+/* ---- rank medals (RankMedal): gold, silver, bronze ---------------------------------------------------- */
+.rvmp .r-medal {
+	flex: none;
+	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.4));
+}
+.rvmp .r-medal[data-podium='1'] {
+	--medal: #f2c53d;
+	--medal-edge: #b98a12;
+}
+.rvmp .r-medal[data-podium='2'] {
+	--medal: #d5dce6;
+	--medal-edge: #8b98a9;
+}
+.rvmp .r-medal[data-podium='3'] {
+	--medal: #e0a361;
+	--medal-edge: #a8672a;
+}
+.rvmp .r-medal-ribbon {
+	fill: var(--medal-edge);
+}
+.rvmp .r-medal-disc {
+	fill: var(--medal);
+	stroke: var(--medal-edge);
+	stroke-width: 1.2;
+}
+.rvmp .r-medal-ring {
+	fill: none;
+	stroke: var(--medal-edge);
+	stroke-width: 0.8;
+	opacity: 0.7;
+}
+.rvmp .r-medal-star {
+	fill: var(--medal-edge);
+}
+/* on a ranking tile the medal sits in front of the corner number */
+.rvmp .r-pc-rank {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+}
+.rvmp .r-pc-rank .r-medal {
+	width: clamp(11px, 17cqi, 17px);
+	height: clamp(11px, 17cqi, 17px);
+}

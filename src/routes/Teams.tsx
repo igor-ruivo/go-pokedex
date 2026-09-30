@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { IconTabBar, type IconTabItem } from '../components/IconTabBar';
+import { RankMedal } from '../components/RankMedal';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
 import { useLanguage } from '../contexts/language-context';
 import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
@@ -15,6 +16,8 @@ import { CoveragePanel } from './teams/CoveragePanel';
 import { ScoreHero } from './teams/ScoreHero';
 import { StatsPanel } from './teams/StatsPanel';
 import { Suggestions } from './teams/Suggestions';
+import { FavoriteStar } from './teams/FavoriteStar';
+import { FavoriteTeams } from './teams/FavoriteTeams';
 import { lastTeamLeague } from './teams/team-memory';
 import { TeamMini } from './teams/TeamMini';
 import { SlotPicker, TeamStage } from './teams/TeamStage';
@@ -38,8 +41,13 @@ const Teams = () => {
 	const { currentGameLanguage: gl } = useLanguage();
 	const [params, setParams] = useSearchParams();
 	const navigate = useNavigate();
-	// Two views of the same page: the builder, and the best teams we could find.
-	const tab: 'builder' | 'top' = useLocation().pathname.endsWith('/top') ? 'top' : 'builder';
+	// Three views of the same page: the builder, the best teams we could find, and the user's favorites.
+	const { pathname } = useLocation();
+	const tab: 'builder' | 'top' | 'favorites' = pathname.endsWith('/top')
+		? 'top'
+		: pathname.endsWith('/favorites')
+			? 'favorites'
+			: 'builder';
 	const gameTranslations = useGameTranslationsData();
 
 	const leagueParam = params.get('league');
@@ -123,22 +131,15 @@ const Teams = () => {
 		{
 			id: 'top',
 			label: t('teams:page.topTab'),
-			// a podium under a star: the best teams, first place in the middle
+			// a gold medal: the best teams
+			icon: <RankMedal rank={1} size={22} />,
+		},
+		{
+			id: 'favorites',
+			label: t('teams:page.favoritesTab'),
 			icon: (
-				<svg
-					viewBox='0 0 24 24'
-					width='20'
-					height='20'
-					fill='currentColor'
-					stroke='currentColor'
-					strokeWidth='1.2'
-					strokeLinejoin='round'
-					aria-hidden='true'
-				>
-					<path d='M12 1l1.8 3.7 4 .6-2.9 2.8.7 4L12 10.2 8.4 12.1l.7-4-2.9-2.8 4-.6z' />
-					<path d='M8.6 14h6.8v7H8.6z' />
-					<path d='M2 16.6h6V21H2z' opacity='0.55' />
-					<path d='M16 18h6v3h-6z' opacity='0.35' />
+				<svg viewBox='0 0 24 24' width='20' height='20' fill='currentColor' aria-hidden='true'>
+					<path d='M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.3l-5.9 3.1 1.2-6.5L2.5 9.3l6.6-.9z' />
 				</svg>
 			),
 		},
@@ -148,7 +149,10 @@ const Teams = () => {
 	const goToTab = (id: string) => {
 		const next = new URLSearchParams();
 		next.set('league', league);
-		void navigate({ pathname: id === 'top' ? R.teamsTop : R.teams, search: `?${next.toString()}` });
+		void navigate({
+			pathname: id === 'top' ? R.teamsTop : id === 'favorites' ? R.teamsFavorites : R.teams,
+			search: `?${next.toString()}`,
+		});
 	};
 
 	const openFromTop = (team: RankedTeam) => {
@@ -190,6 +194,8 @@ const Teams = () => {
 			)}
 
 			{data.ready && tab === 'top' && <TopTeams league={league} data={data} onOpen={openFromTop} />}
+
+			{data.ready && tab === 'favorites' && <FavoriteTeams league={league} data={data} onOpen={openFromTop} />}
 
 			{data.ready && tab === 'builder' && restoring && (
 				<div className='r-tm-loading'>
@@ -251,6 +257,7 @@ const Teams = () => {
 
 					{full && (
 						<div className='r-tm-actions'>
+							<FavoriteStar league={league} members={team} />
 							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => void copyLink()}>
 								{copied ? t('teams:builder.copied') : t('teams:builder.copyLink')}
 							</button>

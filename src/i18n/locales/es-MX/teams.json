@@ -3,6 +3,7 @@
 		"title": "Equipos",
 		"builderTab": "Creador de equipos",
 		"topTab": "Mejores equipos",
+		"favoritesTab": "Favoritos",
 		"tabsAria": "Secciones de equipos",
 		"leagueAria": "Liga",
 		"loading": "Cargando datos de equipos…",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "Los equipos con mejor puntuación que encontramos: cada trío de los {{candidates}} mejores Pokémon de la liga, con sus movimientos recomendados y mejores IV, calificado como el creador. Toca uno para abrirlo en el creador.",
+		"open": "Abrir en el creador",
 		"teamScore": "Puntuación del equipo",
 		"note": "Calificado el {{date}} entre {{total}} equipos posibles. Orden dentro del equipo: líder, cambio, cierre.",
 		"empty": "No hay un ranking de equipos disponible por ahora. Vuelve pronto.",
@@ -250,5 +252,12 @@
 			"roles": "Su puntuación de rol de PvPoke en esta liga, sobre 100. Líder indica qué tan bien abre el combate, Cambio qué tan seguro entra a mitad del combate y Cierre qué tan bien remata sin escudos.",
 			"order": "Las flechas muestran el orden de juego: líder, luego el cambio seguro y luego el cierre. Elegimos el orden cuya suma de puntuaciones de rol sea la más alta."
 		}
+	},
+	"favorites": {
+		"add": "Agregar a favoritos",
+		"remove": "Quitar de favoritos",
+		"empty": "Todavía no hay equipos favoritos en esta liga. Toca la estrella de un equipo para guardarlo aquí.",
+		"sortAdded": "Fecha de adición",
+		"added": "Agregado el {{date}}"
 	}
 }

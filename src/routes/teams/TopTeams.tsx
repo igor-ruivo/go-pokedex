@@ -1,18 +1,11 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
-import { SpriteImg } from '../../components/Sprite';
-import { TypeChip } from '../../components/TypeChip';
-import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
-import { cleanName, ordinal } from '../../lib/format';
-import { SCORE_WEIGHTS, TEAM_ROLES } from '../../lib/team-analysis';
-import { typeKey, typeVar } from '../../lib/types';
-import { useMoves } from '../../queries/moves';
+import { SCORE_WEIGHTS } from '../../lib/team-analysis';
 import { useTeamRanking } from '../../queries/teams';
-import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
+import { TeamCards } from './TeamCards';
 import type { TeamsData } from './useTeamsData';
 
 /**
@@ -30,13 +23,7 @@ export const TopTeams = ({
 	onOpen: (team: RankedTeam) => void;
 }) => {
 	const { t } = useTranslation(['teams']);
-	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
-	const { moves } = useMoves();
 	const query = useTeamRanking();
-	const metrics = (team: RankedTeam) => [
-		{ label: t('teams:top.teamScore'), value: team.score.toFixed(1) },
-		{ label: t('teams:threat.scoreLabel'), value: String(team.threatScore) },
-	];
 	// The same "Order by" chip as the rankings pages. Each key has its own list of the best teams by that metric.
 	const [sortKey, setSortKey] = useState<'score' | 'threat'>('score');
 
@@ -92,81 +79,7 @@ export const TopTeams = ({
 			<div className='r-tm-board-tools'>
 				<SortBar options={sortOptions} sortKey={sortKey} dir={sortKey === 'score' ? 'desc' : 'asc'} onChange={changeSort} fixedDirection />
 			</div>
-			<ol className='r-tm-board-list'>
-				{teams.map((team, index) => {
-					const rank = index + 1;
-					return (
-						<li key={team.members.map((m) => m.speciesId).join('|')} style={{ ['--i' as string]: Math.min(index, 12) }}>
-							<button type='button' className='r-tm-board-card' data-tier={team.tier} onClick={() => onOpen(team)}>
-								<span className='r-tm-board-rank' data-podium={rank <= 3 ? rank : undefined}>
-									{rank <= 3 && (
-										<svg className='r-tm-board-medal' viewBox='0 0 24 24' aria-hidden='true'>
-											<path className='r-tm-board-ribbon' d='M6.6 1.2h4.1l1.6 6-3.3.9z' />
-											<path className='r-tm-board-ribbon' d='M17.4 1.2h-4.1l-1.6 6 3.3.9z' />
-											<circle className='r-tm-board-disc' cx='12' cy='15.2' r='7.2' />
-											<circle className='r-tm-board-ring' cx='12' cy='15.2' r='4.9' />
-											<path className='r-tm-board-star' d='M12 11.6l1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z' />
-										</svg>
-									)}
-									<span>{ordinal(rank, currentLanguage)}</span>
-								</span>
-								<span className='r-tm-board-score'>
-									{/* both metrics are named; the one being sorted by is the big one */}
-									{(sortKey === 'score' ? metrics(team) : [...metrics(team)].reverse()).map((metric, n) => (
-										<span key={metric.label} className='r-tm-board-metric' data-primary={n === 0 ? '' : undefined}>
-											<small>{metric.label}</small>
-											<b>{metric.value}</b>
-										</span>
-									))}
-								</span>
-								<span className='r-tm-board-members'>
-									{team.members.map((member, i) => {
-										const p = data.gamemaster[member.speciesId];
-										if (!p) return null;
-										// Members come in the order they're played: lead, switch, closer.
-										const role = TEAM_ROLES[i];
-										const roleScore = data.rankList[member.speciesId]?.[role];
-										return (
-											<Fragment key={member.speciesId}>
-												{i > 0 && (
-													<svg className='r-tm-board-arrow' viewBox='0 0 40 24' aria-hidden='true'>
-														<path d='M2 12h30M24 4l10 8-10 8' />
-													</svg>
-												)}
-												<span
-													className='r-tm-board-member'
-													data-role={role}
-													style={{
-														['--tc' as string]: typeVar(p.types[0]),
-														['--tc2' as string]: typeVar(p.types[1] ?? p.types[0]),
-													}}
-												>
-													<span className='r-tm-board-art'>
-														{p.isShadow && <ShadowMark />}
-														<SpriteImg pokemon={p} loading='lazy' />
-													</span>
-													<b className='r-tm-board-name'>{cleanName(p.speciesName)}</b>
-													<span className='r-tm-board-types'>
-	{p.types.map((ty) => (
-		<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
-	))}
-</span>
-													<span className='r-tm-board-chip'>{roleScore === undefined ? '–' : roleScore.toFixed(1)}</span>
-													<span className='r-tm-board-moves'>
-														{member.moveset.map((m) => (
-															<span key={m}>{translateMoveFromMoveId(m, moves, gl)}</span>
-														))}
-													</span>
-												</span>
-											</Fragment>
-										);
-									})}
-								</span>
-							</button>
-						</li>
-					);
-				})}
-			</ol>
+			<TeamCards teams={teams} league={league} data={data} primary={sortKey} onOpen={onOpen} />
 			<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>
 		</div>
 	);

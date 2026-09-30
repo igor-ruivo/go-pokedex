@@ -3,6 +3,7 @@
 		"title": "Teams",
 		"builderTab": "Team Builder",
 		"topTab": "Top teams",
+		"favoritesTab": "Favorites",
 		"tabsAria": "Teams sections",
 		"leagueAria": "League",
 		"loading": "Loading team data…",
@@ -239,6 +240,7 @@
 	},
 	"top": {
 		"intro": "The highest-scoring teams we found: every trio of the {{candidates}} best Pokémon of the league, each with its recommended moves and top IVs, rated like the builder does. Tap one to open it in the builder.",
+		"open": "Open in builder",
 		"teamScore": "Team score",
 		"note": "Rated {{date}} from {{total}} possible teams. Order within each team: lead, switch, closer.",
 		"empty": "No team ranking is available right now. Check back soon.",
@@ -250,5 +252,12 @@
 			"roles": "The chip under each Pokémon: its PvPoke role score in this league, out of 100. Lead is how well it opens the match, Switch how safely it comes in mid-battle, Closer how well it finishes once shields are gone.",
 			"order": "The arrows show the order to play them: lead, then the safe switch, then the closer. We pick the order that adds up to the highest role scores."
 		}
+	},
+	"favorites": {
+		"add": "Add to favorites",
+		"remove": "Remove from favorites",
+		"empty": "No favorite teams in this league yet. Tap the star on a team to save it here.",
+		"sortAdded": "Date added",
+		"added": "Added {{date}}"
 	}
 }
