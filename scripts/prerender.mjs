@@ -423,13 +423,16 @@ const main = async () => {
 	// The snapshot only needs the markup, never the pixels: every image request is answered at once with a 1×1
 	// transparent PNG (not aborted — an aborted image would fire the app's onError fallbacks and change the HTML).
 	// It removes thousands of sprite downloads, which is most of what each page used to wait for.
-	const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
+	const PIXEL = Buffer.from(
+		'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+		'base64'
+	);
 	if (process.env.PRERENDER_STUB_IMAGES !== '0')
 		await context.route('**/*', (route) =>
-		route.request().resourceType() === 'image'
-			? route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL })
-			: route.continue()
-	);
+			route.request().resourceType() === 'image'
+				? route.fulfill({ status: 200, contentType: 'image/png', body: PIXEL })
+				: route.continue()
+		);
 	const startedAt = Date.now();
 
 	let done = 0;
@@ -577,7 +580,9 @@ const main = async () => {
 
 	const failed = [staticResult, pokemonResult, moveResult].flatMap((r) => r.failed);
 	const recovered = [staticResult, pokemonResult, moveResult].flatMap((r) => r.recovered);
-	console.log(`\nPrerender finished in ${((Date.now() - startedAt) / 1000).toFixed(0)}s: ${done} of ${total} pages rendered.`);
+	console.log(
+		`\nPrerender finished in ${((Date.now() - startedAt) / 1000).toFixed(0)}s: ${done} of ${total} pages rendered.`
+	);
 	if (recovered.length > 0) {
 		console.log(`${recovered.length} page(s) failed at first but succeeded on a retry:`);
 		for (const { label, attempts } of recovered) console.log(`  ✓ ${label} (attempt ${attempts})`);
