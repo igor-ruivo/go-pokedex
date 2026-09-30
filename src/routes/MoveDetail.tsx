@@ -100,7 +100,7 @@ const MoveDetail = () => {
 		const cd = a === 'pve' ? m.pveCooldown : m.pvpCooldown;
 		const out: Array<[string, string]> = [
 			[t('moveDetail:statLabels.dmg'), String(pow)],
-			[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : String(nrg)],
+			[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : String(Math.abs(nrg))],
 		];
 		if (a === 'pve') out.push([t('moveDetail:statLabels.dur'), `${cd}s`]);
 		else if (kind === 'fast') out.push([t('moveDetail:statLabels.turns'), String(fastMoveTurns(m))]);

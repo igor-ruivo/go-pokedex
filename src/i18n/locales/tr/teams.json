@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "Takımlar",
-		"builderTab": "Takım Oluşturucu",
-		"leaderboardTab": "En İyi Takımlar",
-		"tabsAria": "Takım bölümleri",
 		"leagueAria": "Lig",
 		"loading": "Takım verileri yükleniyor…",
 		"loadFailed": "Takım verileri yüklenemedi. Bağlantını kontrol edip tekrar dene."
@@ -15,12 +12,13 @@
 		"addMore": "Takımı değerlendirmek için {{n}} tane daha ekle.",
 		"copyLink": "Bağlantıyı kopyala",
 		"copied": "Bağlantı kopyalandı",
-		"openPvpoke": "PvPoke'ta kontrol et",
+		"resetMoves": "Önerilen hamleleri sıfırla",
 		"clear": "Takımı temizle",
 		"emptySlot": "Pokémon ekle",
 		"slotN": "{{n}}. yuva",
 		"remove": "{{name}} çıkar",
 		"change": "{{name}} değiştir",
+		"replace": "{{name}} öğesini değiştir",
 		"cp": "CP",
 		"level": "Seviye",
 		"ivs": "IV",
@@ -34,9 +32,7 @@
 		"title": "Pokémon seç",
 		"close": "Kapat",
 		"searchPlaceholder": "{{league}} Pokémon'larını ara…",
-		"sortAria": "Sırala",
 		"inTeam": "Zaten takımda",
-		"rank": "#{{rank}}",
 		"empty": "Eşleşen Pokémon yok.",
 		"showMore": "Daha fazla göster"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "Takım puanı",
+		"heading": "Puan",
 		"ringAria": "Takım puanı 100 üzerinden {{score}}",
 		"radarAria": "Takım puanının altı bileşeni",
 		"calculating": "Binlerce savaş simüle ediliyor…",
@@ -112,12 +108,12 @@
 		"simulating": "Savaşlar simüle ediliyor…",
 		"needFull": "Tehdit puanını görmek için üç Pokémon ekle.",
 		"scoreLabel": "Tehdit puanı",
+		"lowerBetter": "Daha düşük tehdit puanı daha iyidir.",
 		"gaugeAria": "Tehdit puanı {{score}}, not {{grade}}",
 		"better": "Daha iyi",
 		"worse": "Daha kötü",
 		"gridHeading": "En büyük altı tehdit",
 		"gridAria": "Her tehdidin senin Pokémon'larını ne kadar net yendiği",
-		"metaTitle": "Üst düzey bir meta Pokémon'u",
 		"legendSafe": "Sen kazanırsın",
 		"legendEven": "Dengeli",
 		"legendThreat": "O kazanır",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "Karne",
 		"valueOfGoal": "{{value}} · hedef {{goal}}",
+		"coverage": {
+			"name": "Kapsam",
+			"A": "Bu takım en iyi meta tehditlerine karşı mükemmel kapsama sahip. Büyük zayıflıkları çok az ya da hiç yok.",
+			"B": "Bu takım en iyi meta tehditlerinin çoğunu karşılıyor. Dikkat etmen gereken birkaç zayıflık olabilir.",
+			"C": "Bu takımın kapsamında boşluklar var ve bazı tehditlere karşı savunmasız olabilir. Zayıflıklarını kapatmak için farklı seçimler veya hamle setleri düşün.",
+			"D": "Bu takım belirli tehditlere karşı çok savunmasız. Zayıflıkların üst üste binmemesi için farklı seçimler düşün ya da en iyi metaya karşı iyi performans gösteren Pokémon ara.",
+			"F": "Bu takımın birçok tehdide karşı kapsamı son derece zayıf. Takıma omurga olacak güçlü meta alternatiflerini düşün."
+		},
 		"bulk": {
 			"A": "Mükemmel ortalama dayanıklılık. Kalkanları yönetmeye ve zor durumları aşmaya yardım eder.",
 			"B": "İyi ortalama dayanıklılık. Kalkanları daha kırılgan takım arkadaşların için sakla.",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "İyileştirmeler",
-		"intro": "Her üst düzey Pokémon'u her yuvada dener ve hangi tekil değişimin tehdit puanını en çok düşürdüğünü gösteririz.",
-		"button": "İyileştirme bul",
 		"searching": "Her yuvada üst düzey Pokémon'lar deneniyor…",
 		"failed": "Öneriler hesaplanamadı. Biraz sonra tekrar dene.",
-		"none": "Hiçbir tekil değişim bu takımı iyileştirmiyor. Zaten iyi kurulmuş.",
+		"none": "Daha iyi yükseltmeleri kolayca bulamadık.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Tehdit puanı {{score}} ({{delta}})",
-		"apply": "Değiştir"
-	},
-	"board": {
-		"intro": "PvPoke'un antrenman simülasyonlarındaki en yüksek puanlı takımlar, son güncelleme {{date}}. Tüm meta değil küçük bir örneklem — güçlü çekirdeklerin nasıl göründüğünü görmek için iyi bir yer.",
-		"open": "Oluşturucuda aç",
-		"source": "Kaynak: PvPoke antrenman analizi. Puanlar PvPoke'un takım derecelendirmesidir; 500 dengeli bir maçtır."
+		"result": "Tehdit puanı {{score}} ({{delta}})"
 	}
 }

@@ -54,7 +54,16 @@ export const tierSummaries = (t: TFunction): Record<ScoreTier, string> => ({
 	risky: t('teams:score.tiers.risky.summary'),
 });
 
-export const gradeNotes = (t: TFunction): Record<'bulk' | 'safety' | 'consistency', Record<LetterGrade, string>> => ({
+export const gradeNotes = (
+	t: TFunction
+): Record<'coverage' | 'bulk' | 'safety' | 'consistency', Record<LetterGrade, string>> => ({
+	coverage: {
+		A: t('teams:grades.coverage.A'),
+		B: t('teams:grades.coverage.B'),
+		C: t('teams:grades.coverage.C'),
+		D: t('teams:grades.coverage.D'),
+		F: t('teams:grades.coverage.F'),
+	},
 	bulk: {
 		A: t('teams:grades.bulk.A'),
 		B: t('teams:grades.bulk.B'),

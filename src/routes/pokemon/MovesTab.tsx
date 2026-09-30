@@ -45,7 +45,7 @@ const MoveRow = ({
 
 	const base: Array<[string, string | number]> = [
 		[t('moveDetail:statLabels.dmg'), pow],
-		[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : nrg],
+		[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : Math.abs(nrg)],
 		...(arena === 'pve'
 			? ([[t('moveDetail:statLabels.dur'), `${cd}s`]] as Array<[string, string | number]>)
 			: kind === 'fast'

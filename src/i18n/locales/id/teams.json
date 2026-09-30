@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "Tim",
-		"builderTab": "Pembuat Tim",
-		"leaderboardTab": "Tim Terbaik",
-		"tabsAria": "Bagian tim",
 		"leagueAria": "Liga",
 		"loading": "Memuat data tim…",
 		"loadFailed": "Data tim tidak dapat dimuat. Periksa koneksimu lalu coba lagi."
@@ -15,12 +12,13 @@
 		"addMore": "Tambahkan {{n}} lagi untuk menilai tim.",
 		"copyLink": "Salin tautan",
 		"copied": "Tautan disalin",
-		"openPvpoke": "Cek di PvPoke",
+		"resetMoves": "Atur ulang gerakan yang direkomendasikan",
 		"clear": "Kosongkan tim",
 		"emptySlot": "Tambah Pokémon",
 		"slotN": "Slot {{n}}",
 		"remove": "Hapus {{name}}",
 		"change": "Ganti {{name}}",
+		"replace": "Ganti {{name}}",
 		"cp": "CP",
 		"level": "Level",
 		"ivs": "IV",
@@ -34,9 +32,7 @@
 		"title": "Pilih Pokémon",
 		"close": "Tutup",
 		"searchPlaceholder": "Cari Pokémon {{league}}…",
-		"sortAria": "Urutkan berdasarkan",
 		"inTeam": "Sudah ada di tim",
-		"rank": "#{{rank}}",
 		"empty": "Tidak ada Pokémon yang cocok.",
 		"showMore": "Tampilkan lebih banyak"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "Skor tim",
+		"heading": "Skor",
 		"ringAria": "Skor tim {{score}} dari 100",
 		"radarAria": "Enam bagian skor tim",
 		"calculating": "Mensimulasikan ribuan pertarungan…",
@@ -112,12 +108,12 @@
 		"simulating": "Mensimulasikan pertarungan…",
 		"needFull": "Tambahkan tiga Pokémon untuk melihat skor ancaman.",
 		"scoreLabel": "Skor ancaman",
+		"lowerBetter": "Skor ancaman yang lebih rendah lebih baik.",
 		"gaugeAria": "Skor ancaman {{score}}, nilai {{grade}}",
 		"better": "Lebih baik",
 		"worse": "Lebih buruk",
 		"gridHeading": "Enam ancaman terbesar",
 		"gridAria": "Seberapa telak tiap ancaman mengalahkan tiap Pokémonmu",
-		"metaTitle": "Pokémon meta teratas",
 		"legendSafe": "Kamu menang",
 		"legendEven": "Seimbang",
 		"legendThreat": "Dia menang",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "Rapor",
 		"valueOfGoal": "{{value}} · target {{goal}}",
+		"coverage": {
+			"name": "Cakupan",
+			"A": "Tim ini punya cakupan yang sangat baik terhadap ancaman meta teratas. Hampir tidak ada kelemahan besar.",
+			"B": "Tim ini mencakup sebagian besar ancaman meta teratas. Mungkin ada beberapa kelemahan yang perlu diwaspadai.",
+			"C": "Tim ini punya celah cakupan dan bisa rentan terhadap ancaman tertentu. Pertimbangkan pilihan atau moveset lain untuk menutup kelemahan.",
+			"D": "Tim ini sangat rentan terhadap ancaman tertentu. Pertimbangkan pilihan lain agar kelemahan tidak menumpuk, atau cari Pokémon yang bagus melawan meta teratas.",
+			"F": "Tim ini punya cakupan yang sangat buruk terhadap beberapa ancaman. Pertimbangkan alternatif meta yang kuat sebagai tulang punggung tim."
+		},
 		"bulk": {
 			"A": "Rata-rata ketahanan sangat baik. Membantu mengatur perisai dan melewati situasi sulit.",
 			"B": "Rata-rata ketahanan baik. Simpan perisai untuk rekan yang lebih rapuh.",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "Peningkatan",
-		"intro": "Coba setiap Pokémon teratas di tiap slot dan lihat pertukaran tunggal mana yang paling menurunkan skor ancamanmu.",
-		"button": "Cari peningkatan",
 		"searching": "Mencoba Pokémon teratas di tiap slot…",
 		"failed": "Saran tidak dapat dihitung. Coba lagi sebentar lagi.",
-		"none": "Tak ada pertukaran tunggal yang memperbaiki tim ini. Sudah tersusun dengan baik.",
+		"none": "Tidak mudah menemukan peningkatan yang lebih baik.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Skor ancaman {{score}} ({{delta}})",
-		"apply": "Tukar"
-	},
-	"board": {
-		"intro": "Tim dengan skor terbaik dari simulasi latihan PvPoke, terakhir diperbarui {{date}}. Ini sampel kecil, bukan seluruh meta — tempat bagus untuk melihat seperti apa inti tim yang kuat.",
-		"open": "Buka di pembuat",
-		"source": "Sumber: analisis latihan PvPoke. Skor adalah rating tim PvPoke; 500 berarti pertarungan seimbang."
+		"result": "Skor ancaman {{score}} ({{delta}})"
 	}
 }

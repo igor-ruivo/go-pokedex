@@ -1995,7 +1995,6 @@
 	height: 40px;
 	border-radius: var(--r-pill);
 	background: var(--surface);
-	border: 1px solid var(--border);
 	font-size: 17px;
 }
 
@@ -6179,9 +6178,8 @@
 	fill: var(--hex-c);
 	opacity: 0.55;
 	transform-origin: 50px 50px;
-	animation:
-		r-hex-grow 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) both,
-		r-hex-breathe 4.5s ease-in-out 0.9s infinite;
+	/* the shape itself is eased in JS (CombatHexagon), from the previous radar's values */
+	animation: r-hex-breathe 4.5s ease-in-out infinite;
 }
 .rvmp .r-hex-echo {
 	fill: var(--hex-c);
@@ -6191,22 +6189,18 @@
 	transform-origin: 50px 50px;
 	/* each nested copy lands a beat after the one outside it, then they drift
 	   in and out of phase — the "flowing" part */
-	animation:
-		r-hex-grow 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) calc(var(--i) * 0.12s) both,
-		r-hex-breathe 4.5s ease-in-out calc(0.9s + var(--i) * 0.5s) infinite;
+	animation: r-hex-breathe 4.5s ease-in-out calc(var(--i) * 0.5s) infinite;
 }
 .rvmp .r-hex-shape {
 	stroke: var(--hex-c);
 	stroke-width: 0.9;
 	stroke-linejoin: round;
 	transform-origin: 50px 50px;
-	animation: r-hex-grow 0.9s cubic-bezier(0.2, 0.9, 0.25, 1) both;
 }
 .rvmp .r-hex-dot {
 	fill: var(--text);
 	stroke: var(--hex-c);
 	stroke-width: 0.8;
-	animation: r-hex-pop 0.5s ease-out calc(0.5s + var(--i) * 0.07s) both;
 }
 .rvmp .r-hex-dot[data-tone='best'] {
 	fill: var(--hex-best);
@@ -6215,12 +6209,6 @@
 .rvmp .r-hex-dot[data-tone='worst'] {
 	fill: var(--hex-worst);
 	stroke: var(--surface);
-}
-@keyframes r-hex-grow {
-	from {
-		transform: scale(0.05);
-		opacity: 0;
-	}
 }
 @keyframes r-hex-breathe {
 	0%,
@@ -6231,17 +6219,9 @@
 		transform: scale(1.035);
 	}
 }
-@keyframes r-hex-pop {
-	from {
-		opacity: 0;
-		r: 0;
-	}
-}
 @media (prefers-reduced-motion: reduce) {
 	.rvmp .r-hex-halo,
-	.rvmp .r-hex-echo,
-	.rvmp .r-hex-shape,
-	.rvmp .r-hex-dot {
+	.rvmp .r-hex-echo {
 		animation: none;
 	}
 }
@@ -6339,6 +6319,11 @@
 		opacity: 1;
 		visibility: visible;
 	}
+	/* each label is its own stacking context, so the open one has to outrank its siblings or their text paints over the tooltip */
+	.rvmp .r-hex-l:hover,
+	.rvmp .r-hex-l:focus-visible {
+		z-index: 10;
+	}
 	.rvmp .r-hex-l[data-vert='top'] .r-hex-tip {
 		top: calc(100% + 6px);
 	}
@@ -6361,4 +6346,23 @@
 	margin-top: var(--s4);
 	padding-top: var(--s3);
 	border-top: 1px solid var(--border);
+}
+
+/* ---- page dim while any popover is open (see useDismiss) ------------------------------------------
+   One layer for every popover/menu/picker: the page behind reads as unreachable (the layer also eats
+   clicks — the dismiss hook closes on the press, so the first click outside only closes) while the open
+   popover, lifted above it by the hook, stays bright. */
+.rvmp[data-dim]::after {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: 35;
+	background: rgb(6 9 14 / 0.62);
+	backdrop-filter: blur(4px);
+	animation: r-dim-in 0.18s ease both;
+}
+@keyframes r-dim-in {
+	from {
+		opacity: 0;
+	}
 }

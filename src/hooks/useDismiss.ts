@@ -3,6 +3,50 @@ import { useEffect, useRef } from 'react';
 /** Movement past this many px counts as a scroll drag, not a tap. */
 const SCROLL_THRESHOLD = 10;
 
+/** Stacking level of the page-wide dim layer (`.rvmp[data-dim]::after`, components.css) and of whatever is lifted above it. */
+const DIM_LEVEL = 35;
+const HOST_LEVEL = DIM_LEVEL + 1;
+
+/** How many popovers are open at once (a sort menu inside the Pokémon picker, say), so the dim only lifts with the last. */
+let openCount = 0;
+
+/**
+ * Dims and locks the rest of the page while a popover is open, so the open thing reads as the only live
+ * element: marks the app root (`data-dim` — the CSS draws the layer) and raises the popover's root plus every
+ * positioned ancestor up to the app root above that layer (a sticky top bar, an animated card…, each of which
+ * would otherwise cap the popover below it). Everything it touches is restored on close.
+ */
+const dimPageAround = (host: HTMLElement): (() => void) => {
+	const app = host.closest<HTMLElement>('.rvmp');
+	if (!app) return () => undefined;
+
+	openCount++;
+	app.setAttribute('data-dim', '');
+
+	const restore: Array<() => void> = [];
+	for (let el: HTMLElement | null = host; el && el !== app; el = el.parentElement) {
+		const style = getComputedStyle(el);
+		const positioned = style.position !== 'static';
+		const level = Number(style.zIndex);
+		// Never change an element's `position`: some hosts are static on purpose so their panel anchors to a
+		// wider ancestor (the type filter), and forcing `relative` would re-anchor and shrink it.
+		if (!positioned) continue;
+		if (!Number.isNaN(level) && level >= HOST_LEVEL) continue;
+
+		const { zIndex } = el.style;
+		el.style.zIndex = String(HOST_LEVEL);
+		restore.push(() => {
+			el.style.zIndex = zIndex;
+		});
+	}
+
+	return () => {
+		restore.forEach((undo) => undo());
+		openCount = Math.max(0, openCount - 1);
+		if (openCount === 0) app.removeAttribute('data-dim');
+	};
+};
+
 /**
  * "Click outside / press Escape closes this popover" — with one extra
  * guarantee on touch devices: the dismissing press is **swallowed**. It
@@ -35,6 +79,7 @@ export const useDismiss = <T extends HTMLElement = HTMLDivElement>(open: boolean
 
 	useEffect(() => {
 		if (!open) return;
+		const undim = ref.current ? dimPageAround(ref.current) : undefined;
 		// Desktop has room to spare around a popover, so an outside click is
 		// rarely also a press on some other control by accident — swallowing it
 		// there would just force a second click on whatever it landed on, when
@@ -122,6 +167,7 @@ export const useDismiss = <T extends HTMLElement = HTMLDivElement>(open: boolean
 		document.addEventListener('touchend', onTouchEnd, { capture: true });
 		document.addEventListener('keydown', onKey);
 		return () => {
+			undim?.();
 			document.removeEventListener('pointerdown', onPointerDown, true);
 			document.removeEventListener('touchstart', onTouchStart, true);
 			document.removeEventListener('touchmove', onTouchMove, true);

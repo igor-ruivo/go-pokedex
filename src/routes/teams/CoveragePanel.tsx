@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { ShadowMark } from '../../components/ShadowMark';
 import { SpriteImg } from '../../components/Sprite';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
@@ -23,12 +24,15 @@ export const CoveragePanel = ({
 	members,
 	gamemaster,
 	stale,
-}: {
+	onChangePokemon,
+	}: {
 	evaluation: TeamEvaluation;
 	members: ReadonlyArray<AnalyzedMember>;
 	gamemaster: Record<string, IGamemasterPokemon>;
 	stale: boolean;
-}) => {
+	/** Opens the Pokémon picker for that team slot. */
+	onChangePokemon: (slot: number) => void;
+	}) => {
 	const { t } = useTranslation(['teams']);
 	const { meta } = evaluation;
 	const coveredPct = meta.checked ? (meta.covered / meta.checked) * 100 : 0;
@@ -62,10 +66,19 @@ export const CoveragePanel = ({
 			<ul className='r-tm-wins'>
 				{members.map((m, i) => (
 					<li key={m.slot.speciesId} style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}>
-						<span className='r-tm-wins-ico'>
+						<button
+							type='button'
+							className='r-tm-wins-ico'
+							aria-label={t('teams:builder.change', { name: cleanName(m.pokemon.speciesName) })}
+							title={t('teams:builder.replace', { name: cleanName(m.pokemon.speciesName) })}
+							onClick={() => onChangePokemon(i)}
+						>
+							{m.pokemon.isShadow && <ShadowMark />}
 							<SpriteImg pokemon={m.pokemon} loading='lazy' />
-						</span>
-						<span className='r-tm-wins-name'>{cleanName(m.pokemon.speciesName)}</span>
+						</button>
+						<button type='button' className='r-tm-wins-name' title={t('teams:builder.replace', { name: cleanName(m.pokemon.speciesName) })} onClick={() => onChangePokemon(i)}>
+							{cleanName(m.pokemon.speciesName)}
+						</button>
 						<span className='r-tm-wins-bar' aria-hidden='true'>
 							<i style={{ width: `${meta.checked ? (meta.wins[i] / meta.checked) * 100 : 0}%` }} />
 						</span>
@@ -87,7 +100,10 @@ export const CoveragePanel = ({
 							return (
 								<li key={hole.speciesId}>
 									<Link to={R.pokemon(hole.speciesId)} style={{ ['--tc' as string]: typeVar(p.types[0]) }}>
-										<SpriteImg pokemon={p} loading='lazy' />
+										<span className='r-tm-hole-ico'>
+											{p.isShadow && <ShadowMark />}
+											<SpriteImg pokemon={p} loading='lazy' />
+										</span>
 										<span>{cleanName(p.speciesName)}</span>
 									</Link>
 								</li>

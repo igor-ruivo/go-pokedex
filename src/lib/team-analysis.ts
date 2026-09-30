@@ -94,7 +94,7 @@ export const defenseProfile = (memberTypes: ReadonlyArray<ReadonlyArray<string>>
 		critical: rows.filter((r) => r.status === 'critical').map((r) => r.type),
 		shared: rows.filter((r) => r.weakMembers.length >= 2).map((r) => r.type),
 		exposed: rows.filter((r) => r.weakMembers.length >= 1 && r.resistMembers.length === 0).map((r) => r.type),
-		score: memberTypes.length ? round1((rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100) : 0,
+		score: memberTypes.length ? (rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100 : 0,
 	};
 };
 
@@ -139,7 +139,7 @@ export const offenseProfile = (memberMoveTypes: ReadonlyArray<ReadonlyArray<stri
 		rows,
 		superEffectiveTypes: rows.filter((r) => r.status === 'strong').length,
 		blindSpots: rows.filter((r) => r.status === 'resisted').map((r) => r.type),
-		score: memberMoveTypes.length ? round1((rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100) : 0,
+		score: memberMoveTypes.length ? (rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100 : 0,
 	};
 };
 
@@ -229,14 +229,17 @@ export const SCORE_WEIGHTS: Record<keyof ScoreParts, number> = {
 
 export const PART_KEYS = Object.keys(SCORE_WEIGHTS) as Array<keyof ScoreParts>;
 
-/** Goal-relative parts (bulk, safety, consistency, threat) as 0–100: reaching the goal is 100. */
-export const goalPart = (value: number, goal: number): number => round1(clamp(value / goal) * 100);
-export const threatPart = (threatScore: number): number => round1(clamp(threatCoverage(threatScore)) * 100);
+/**
+ * Goal-relative parts (bulk, safety, consistency, threat) as 0–100: reaching the goal is 100. Parts are kept
+ * unrounded — the Team Score is computed from them as they are; only the display rounds (to one decimal).
+ */
+export const goalPart = (value: number, goal: number): number => clamp(value / goal) * 100;
+export const threatPart = (threatScore: number): number => clamp(threatCoverage(threatScore)) * 100;
 
 /** Weighted 0–100 Team Score, or undefined until every part (the simulated threat score included) is known. */
 export const teamScore = (parts: ScoreParts): number | undefined => {
 	if (parts.threat === undefined) return undefined;
-	return round1(PART_KEYS.reduce((sum, key) => sum + SCORE_WEIGHTS[key] * (parts[key] ?? 0), 0));
+	return PART_KEYS.reduce((sum, key) => sum + SCORE_WEIGHTS[key] * (parts[key] ?? 0), 0);
 };
 
 export type ScoreTier = 'elite' | 'strong' | 'solid' | 'shaky' | 'risky';
@@ -329,10 +332,3 @@ export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescri
 		.filter((parts) => parts.length >= 3)
 		.slice(0, 3)
 		.map(([speciesId, ...moveset]) => ({ speciesId, moveset: moveset.slice(0, 3) }));
-
-/** The same team on PvPoke's own Team Builder, as a cross-check (it accepts move ids in place of pool indices). */
-export const pvpokeTeamUrl = (league: TeamLeague, team: ReadonlyArray<TeamSlotDescriptor>): string => {
-	const cp = { great: 1500, ultra: 2500, master: 10000 }[league];
-	const slots = team.map((t) => `${t.speciesId}-m-${t.moveset.join('-')}`).join(',');
-	return `https://pvpoke.com/team-builder/all/${cp}/${encodeURIComponent(slots)}`;
-};

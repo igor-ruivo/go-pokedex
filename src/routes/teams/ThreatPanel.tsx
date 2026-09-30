@@ -35,13 +35,16 @@ export const ThreatPanel = ({
 	gamemaster,
 	stale,
 	loading,
-}: {
+	onChangePokemon,
+	}: {
 	evaluation: TeamEvaluation | undefined;
 	members: ReadonlyArray<AnalyzedMember>;
 	gamemaster: Record<string, IGamemasterPokemon>;
 	stale: boolean;
 	loading: boolean;
-}) => {
+	/** Opens the Pokémon picker for that team slot. */
+	onChangePokemon: (slot: number) => void;
+	}) => {
 	const { t } = useTranslation(['teams']);
 	const notes = threatGradeNotes(t);
 
@@ -73,7 +76,9 @@ export const ThreatPanel = ({
 						{grade}
 					</span>
 				</div>
-				<p className='r-tm-threat-note'>{notes[grade]}</p>
+				<p className='r-tm-threat-note'>
+						{notes[grade]} <span className='r-tm-hint'>{t('teams:threat.lowerBetter')}</span>
+					</p>
 			</div>
 
 			<div className='r-tm-gauge' role='img' aria-label={t('teams:threat.gaugeAria', { score, grade })}>
@@ -101,16 +106,22 @@ export const ThreatPanel = ({
 			<div className='r-tm-grid' role='table' aria-label={t('teams:threat.gridAria')}>
 				<div className='r-tm-grid-row r-tm-grid-head' role='row' style={{ ['--cols' as string]: members.length }}>
 					<span role='columnheader' />
-					{members.map((m) => (
+					{members.map((m, i) => (
 						<span
 							key={m.slot.speciesId}
 							role='columnheader'
 							className='r-tm-grid-member'
-							title={cleanName(m.pokemon.speciesName)}
-						>
-							<span style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}>
+							>
+							<button
+								type='button'
+								style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}
+								aria-label={t('teams:builder.change', { name: cleanName(m.pokemon.speciesName) })}
+								title={t('teams:builder.replace', { name: cleanName(m.pokemon.speciesName) })}
+								onClick={() => onChangePokemon(i)}
+							>
+								{m.pokemon.isShadow && <ShadowMark />}
 								<SpriteImg pokemon={m.pokemon} loading='lazy' />
-							</span>
+							</button>
 						</span>
 					))}
 				</div>
@@ -137,13 +148,6 @@ export const ThreatPanel = ({
 									{cleanName(p.speciesName)}
 									{p.isShadow && <ShadowMark className='r-tm-shadow-mark' />}
 								</span>
-								{threat.inMeta && (
-									<i
-										className='r-tm-meta-dot'
-										title={t('teams:threat.metaTitle')}
-										aria-label={t('teams:threat.metaTitle')}
-									/>
-								)}
 							</Link>
 							{threat.ratings.map((rating, col) => (
 								<span key={col} role='cell' className='r-tm-rating' data-tone={ratingTone(rating)}>

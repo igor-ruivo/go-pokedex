@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
+import { ShadowMark } from '../../components/ShadowMark';
 import { SpriteImg } from '../../components/Sprite';
 import { TypeChip } from '../../components/TypeChip';
 import { matchupCellText, matchupTier } from '../../lib/effectiveness';
@@ -19,17 +20,33 @@ const toneOf = (mult: number, direction: 'defense' | 'offense'): Tone => {
 	return (direction === 'defense') === isUp ? 'bad' : 'good';
 };
 
-const MemberHeads = ({ members }: { members: ReadonlyArray<AnalyzedMember> }) => (
-	<>
-		{members.map((m) => (
-			<span key={m.slot.speciesId} className='r-tm-mx-head' title={cleanName(m.pokemon.speciesName)}>
-				<span style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}>
-					<SpriteImg pokemon={m.pokemon} loading='lazy' />
+const MemberHeads = ({
+	members,
+	onChangePokemon,
+}: {
+	members: ReadonlyArray<AnalyzedMember>;
+	onChangePokemon: (slot: number) => void;
+}) => {
+	const { t } = useTranslation(['teams']);
+	return (
+		<>
+			{members.map((m, i) => (
+				<span key={m.slot.speciesId} className='r-tm-mx-head'>
+					<button
+						type='button'
+						style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}
+						aria-label={t('teams:builder.change', { name: cleanName(m.pokemon.speciesName) })}
+						title={t('teams:builder.replace', { name: cleanName(m.pokemon.speciesName) })}
+						onClick={() => onChangePokemon(i)}
+					>
+						{m.pokemon.isShadow && <ShadowMark />}
+						<SpriteImg pokemon={m.pokemon} loading='lazy' />
+					</button>
 				</span>
-			</span>
-		))}
-	</>
-);
+			))}
+		</>
+	);
+};
 
 const Cell = ({ mult, direction }: { mult: number; direction: 'defense' | 'offense' }) => (
 	<span
@@ -60,10 +77,13 @@ export const TypeProfile = ({
 	members,
 	defense,
 	offense,
+	onChangePokemon,
 }: {
 	members: ReadonlyArray<AnalyzedMember>;
 	defense: DefenseProfile;
 	offense: OffenseProfile;
+	/** Opens the Pokémon picker for that team slot. */
+	onChangePokemon: (slot: number) => void;
 }) => {
 	const { t } = useTranslation(['teams']);
 	const defenseStatuses = defenseStatusNames(t);
@@ -98,7 +118,7 @@ export const TypeProfile = ({
 				>
 					<div role='row' className='r-tm-mx-row r-tm-mx-headrow'>
 						<span role='columnheader' />
-						<MemberHeads members={members} />
+						<MemberHeads members={members} onChangePokemon={onChangePokemon} />
 						<span role='columnheader' className='r-tm-mx-status' />
 					</div>
 					{defense.rows.map((row) => (
@@ -147,7 +167,7 @@ export const TypeProfile = ({
 				>
 					<div role='row' className='r-tm-mx-row r-tm-mx-headrow'>
 						<span role='columnheader' />
-						<MemberHeads members={members} />
+						<MemberHeads members={members} onChangePokemon={onChangePokemon} />
 						<span role='columnheader' className='r-tm-mx-status' />
 					</div>
 					{offense.rows.map((row) => (

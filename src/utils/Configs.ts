@@ -17,8 +17,6 @@ export const pvpokeRankingFileUrl = (rankingFile: string) =>
 	`https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${rankingFile}`;
 export const teamBuilderUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/team-builder.json';
-export const teamLeaderboardUrl =
-	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/team-leaderboard.json';
 export const movesUrl = 'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/moves.json';
 export const dpsUrl = (type: string) =>
 	`https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/${type}-raid-dps-rank.json`;

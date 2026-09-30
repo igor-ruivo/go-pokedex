@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "Teams",
-		"builderTab": "Team Builder",
-		"leaderboardTab": "Top Teams",
-		"tabsAria": "Teams sections",
 		"leagueAria": "League",
 		"loading": "Loading team data…",
 		"loadFailed": "Couldn't load the team data. Check your connection and try again."
@@ -15,12 +12,13 @@
 		"addMore": "Add {{n}} more to rate the team.",
 		"copyLink": "Copy link",
 		"copied": "Link copied",
-		"openPvpoke": "Check on PvPoke",
+		"resetMoves": "Reset recommended moves",
 		"clear": "Clear team",
 		"emptySlot": "Add a Pokémon",
 		"slotN": "Slot {{n}}",
 		"remove": "Remove {{name}}",
 		"change": "Change {{name}}",
+		"replace": "Replace {{name}}",
 		"cp": "CP",
 		"level": "Level",
 		"ivs": "IVs",
@@ -34,9 +32,7 @@
 		"title": "Choose a Pokémon",
 		"close": "Close",
 		"searchPlaceholder": "Search {{league}} Pokémon…",
-		"sortAria": "Sort by",
 		"inTeam": "Already in team",
-		"rank": "#{{rank}}",
 		"empty": "No Pokémon match.",
 		"showMore": "Show more"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "Team score",
+		"heading": "Score",
 		"ringAria": "Team score {{score}} out of 100",
 		"radarAria": "The six parts of the team score",
 		"calculating": "Simulating thousands of battles…",
@@ -112,12 +108,12 @@
 		"simulating": "Simulating battles…",
 		"needFull": "Add three Pokémon to see the threat score.",
 		"scoreLabel": "Threat score",
+		"lowerBetter": "A lower threat score is better.",
 		"gaugeAria": "Threat score {{score}}, grade {{grade}}",
 		"better": "Better",
 		"worse": "Worse",
 		"gridHeading": "The six biggest threats",
 		"gridAria": "How hard each threat beats each of your Pokémon",
-		"metaTitle": "A top meta Pokémon",
 		"legendSafe": "You win",
 		"legendEven": "Even",
 		"legendThreat": "It wins",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "Report card",
 		"valueOfGoal": "{{value}} · goal {{goal}}",
+		"coverage": {
+			"name": "Coverage",
+			"A": "This team has excellent coverage against top meta threats. It has few or no major vulnerabilities.",
+			"B": "This team covers most top meta threats. There may be a few vulnerabilities to look out for.",
+			"C": "This team has coverage gaps and may be vulnerable to certain threats. Consider alternative picks or movesets to shore up your weaknesses.",
+			"D": "This team is highly vulnerable to certain threats. Consider alternative picks to avoid doubling up on weaknesses, or look for Pokémon that perform well against the top meta.",
+			"F": "This team has extremely poor coverage against multiple threats. Consider strong meta alternatives to anchor this team."
+		},
 		"bulk": {
 			"A": "Excellent average bulk. It will help manage shields and overcome tough scenarios.",
 			"B": "Good average bulk. Save shields for your more fragile teammates.",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "Upgrades",
-		"intro": "Try every top Pokémon in each slot and see which single swap lowers your threat score the most.",
-		"button": "Find upgrades",
 		"searching": "Trying out top Pokémon in every slot…",
 		"failed": "Couldn't compute suggestions. Try again in a moment.",
-		"none": "No single swap improves this team. It's already well built.",
+		"none": "Couldn't easily find better upgrades.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Threat score {{score}} ({{delta}})",
-		"apply": "Swap in"
-	},
-	"board": {
-		"intro": "The best-scoring teams from PvPoke's training simulations, last updated {{date}}. It's a small sample rather than the whole meta — a good place to see what strong cores look like.",
-		"open": "Open in builder",
-		"source": "Source: PvPoke training analysis. Scores are PvPoke's team rating; 500 is an even match."
+		"result": "Threat score {{score}} ({{delta}})"
 	}
 }

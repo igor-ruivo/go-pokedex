@@ -119,16 +119,19 @@ export const useTeamEvaluation = (
 	});
 };
 
-/** Single-slot swap suggestions. Heavier than a rating (every top candidate is simulated), so only runs on request. */
+/**
+ * Single-slot swap suggestions. Heavier than a rating (every top candidate is simulated), so the caller
+ * enables it once the rating has landed: the worker runs one job at a time and the score shouldn't wait on this.
+ */
 export const useTeamSuggestions = (
 	league: TeamLeague,
 	data: TeamsData,
 	team: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>,
-	requested: boolean
+	enabled: boolean
 ) =>
 	useQuery<Array<AlternativePick>>({
 		queryKey: ['team-suggest', league, encodeTeam(team)],
-		enabled: requested && data.ready && team.length === 3,
+		enabled: enabled && data.ready && team.length === 3,
 		staleTime: Infinity,
 		gcTime: 10 * 60 * 1000,
 		retry: false,

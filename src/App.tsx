@@ -70,9 +70,8 @@ const App = () => {
 														<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
 														<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
 														<Route path='calendar/:tab' element={<Calendar />} />
-														<Route path='teams' element={<Navigate to='/teams/builder' replace />} />
 														<Route
-															path='teams/:tab'
+															path='teams'
 															element={
 																<Suspense
 																	fallback={

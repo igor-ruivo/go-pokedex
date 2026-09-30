@@ -68,6 +68,18 @@ export const ScoreHero = ({
 	const names = partNames(t);
 	const descriptions = partDescriptions(t);
 	const shown = useCountUp(score);
+	// Everything waits for the simulated part: the ring keeps its spinner until then, and the bars and radar all start
+	// together (bars from empty, then easing on later changes) instead of the other five growing ahead of the threat one.
+	const ready = parts.threat !== undefined;
+	const [armed, setArmed] = useState(false);
+	useEffect(() => {
+		if (!ready) {
+			setArmed(false);
+			return;
+		}
+		const frame = requestAnimationFrame(() => setArmed(true));
+		return () => cancelAnimationFrame(frame);
+	}, [ready]);
 	const fraction = shown === undefined ? 0 : Math.min(1, Math.max(0, shown / 100));
 
 	const radarValues = {
@@ -125,7 +137,7 @@ export const ScoreHero = ({
 					/>
 				</svg>
 				<div className='r-tm-ring-center'>
-					{shown === undefined ? (
+					{shown === undefined || stale ? (
 						<span className='r-spinner' aria-hidden='true' />
 					) : (
 						<b className='r-tm-ring-num'>{shown.toFixed(1)}</b>
@@ -149,7 +161,8 @@ export const ScoreHero = ({
 				<ul className='r-tm-parts'>
 					{PART_KEYS.map((key) => {
 						const value = parts[key];
-						const loading = key === 'threat' && value === undefined;
+						// the simulated part is being recomputed (first time, or after an edit): spinner and shimmer instead of a stale number
+						const loading = key === 'threat' && (value === undefined || stale);
 						return (
 							<li key={key} data-part={key} data-loading={loading ? '' : undefined}>
 								<div className='r-tm-part-head'>
@@ -159,12 +172,12 @@ export const ScoreHero = ({
 										{loading ? (
 											<span className='r-spinner r-spinner--sm' aria-hidden='true' />
 										) : (
-											(value ?? 0).toFixed(0)
+											(value ?? 0).toFixed(1)
 										)}
 									</b>
 								</div>
 								<div className='r-tm-bar' aria-hidden='true'>
-									<i style={{ width: `${value ?? 0}%` }} />
+									<i style={{ width: armed ? `${value ?? 0}%` : '0%' }} />
 								</div>
 							</li>
 						);
@@ -173,16 +186,18 @@ export const ScoreHero = ({
 			</div>
 
 			<div className='r-tm-radar'>
-				<CombatHexagon
-					// remount on a new score so the grow-in plays for every team change
-					key={score ?? 'pending'}
-					axes={PART_KEYS}
-					values={radarValues}
-					labels={names}
-					descriptions={descriptions}
-					color={accent}
-					ariaLabel={t('teams:score.radarAria')}
-				/>
+				{ready && (
+					<CombatHexagon
+						// remount on a new score so the grow-in plays for every team change
+						key={score ?? 'pending'}
+						axes={PART_KEYS}
+						values={radarValues}
+						labels={names}
+						descriptions={descriptions}
+						color={accent}
+						ariaLabel={t('teams:score.radarAria')}
+					/>
+				)}
 			</div>
 		</section>
 	);

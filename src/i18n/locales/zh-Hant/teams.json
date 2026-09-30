@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "隊伍",
-		"builderTab": "隊伍建構器",
-		"leaderboardTab": "頂尖隊伍",
-		"tabsAria": "隊伍區塊",
 		"leagueAria": "聯盟",
 		"loading": "正在載入隊伍資料…",
 		"loadFailed": "無法載入隊伍資料。請檢查網路連線後再試一次。"
@@ -15,12 +12,13 @@
 		"addMore": "再加入 {{n}} 隻即可評估隊伍。",
 		"copyLink": "複製連結",
 		"copied": "已複製連結",
-		"openPvpoke": "在 PvPoke 上查看",
+		"resetMoves": "重設為推薦招式",
 		"clear": "清空隊伍",
 		"emptySlot": "加入寶可夢",
 		"slotN": "第 {{n}} 格",
 		"remove": "移除 {{name}}",
 		"change": "更換 {{name}}",
+		"replace": "更換{{name}}",
 		"cp": "CP",
 		"level": "等級",
 		"ivs": "個體值",
@@ -34,9 +32,7 @@
 		"title": "選擇寶可夢",
 		"close": "關閉",
 		"searchPlaceholder": "搜尋{{league}}的寶可夢…",
-		"sortAria": "排序方式",
 		"inTeam": "已在隊伍中",
-		"rank": "第 {{rank}} 名",
 		"empty": "沒有符合的寶可夢。",
 		"showMore": "顯示更多"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "隊伍分數",
+		"heading": "分數",
 		"ringAria": "隊伍分數 {{score}}（滿分 100）",
 		"radarAria": "隊伍分數的六個組成部分",
 		"calculating": "正在模擬數千場對戰…",
@@ -112,12 +108,12 @@
 		"simulating": "正在模擬對戰…",
 		"needFull": "加入三隻寶可夢即可查看威脅分數。",
 		"scoreLabel": "威脅分數",
+		"lowerBetter": "威脅分數越低越好。",
 		"gaugeAria": "威脅分數 {{score}}，評級 {{grade}}",
 		"better": "較佳",
 		"worse": "較差",
 		"gridHeading": "六大威脅",
 		"gridAria": "各威脅對你每隻寶可夢的壓制程度",
-		"metaTitle": "頂尖環境寶可夢",
 		"legendSafe": "你獲勝",
 		"legendEven": "勢均力敵",
 		"legendThreat": "對方獲勝",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "成績單",
 		"valueOfGoal": "{{value}}・目標 {{goal}}",
+		"coverage": {
+			"name": "涵蓋率",
+			"A": "這支隊伍對頂尖環境威脅的涵蓋率極佳，幾乎沒有重大弱點。",
+			"B": "這支隊伍涵蓋了大部分頂尖環境威脅，可能有少數弱點需要留意。",
+			"C": "這支隊伍的涵蓋有缺口，可能對某些威脅比較脆弱。可以考慮其他選擇或招式組合來補強弱點。",
+			"D": "這支隊伍對某些威脅非常脆弱。可以考慮其他選擇避免弱點重疊，或尋找對頂尖環境表現良好的寶可夢。",
+			"F": "這支隊伍對多種威脅的涵蓋率極差。可以考慮強力的環境替代選擇來穩住隊伍。"
+		},
 		"bulk": {
 			"A": "平均耐久極佳。有助於管理護盾並度過艱難局面。",
 			"B": "平均耐久良好。把護盾留給比較脆弱的隊友。",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "升級建議",
-		"intro": "把每隻頂尖寶可夢放進每個位置試試，找出哪一次單隻替換最能降低你的威脅分數。",
-		"button": "尋找升級",
 		"searching": "正在每個位置測試頂尖寶可夢…",
 		"failed": "無法計算建議。請稍後再試。",
-		"none": "沒有任何單隻替換能改善這支隊伍，它已經搭配得很好。",
+		"none": "不容易找到更好的升級。",
 		"swap": "{{out}} → {{in}}",
-		"result": "威脅分數 {{score}}（{{delta}}）",
-		"apply": "換上"
-	},
-	"board": {
-		"intro": "PvPoke 訓練模擬中分數最高的隊伍，最後更新於 {{date}}。這只是小樣本而非整個環境，但很適合看看強力核心的樣子。",
-		"open": "在建構器中開啟",
-		"source": "資料來源：PvPoke 訓練分析。分數為 PvPoke 的隊伍評分；500 代表勢均力敵。"
+		"result": "威脅分數 {{score}}（{{delta}}）"
 	}
 }

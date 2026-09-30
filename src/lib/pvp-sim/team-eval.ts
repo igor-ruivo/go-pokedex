@@ -356,7 +356,7 @@ export class TeamEvaluator {
 	}
 
 	/**
-	 * Suggests single-slot swaps that lower the team's threat score. Every top
+	 * Suggests single-slot swaps that lower (or at worst keep) the team's threat score. Every top
 	 * candidate is simulated once against every threat; each slot swap is then a
 	 * cheap re-ranking of numbers already computed.
 	 */
@@ -428,8 +428,12 @@ export class TeamEvaluator {
 
 		picks.sort((a, b) => a.threatScore - b.threatScore);
 
-		// One suggestion per candidate species, the best slot for each
+		// One suggestion per candidate species (the best slot for each), and only swaps that help or change nothing —
+		// a swap that raises the threat score is never an upgrade.
 		const seen = new Set<string>();
-		return picks.filter((p) => (seen.has(p.speciesId) ? false : (seen.add(p.speciesId), true))).slice(0, resultCount);
+		return picks
+			.filter((p) => (seen.has(p.speciesId) ? false : (seen.add(p.speciesId), true)))
+			.filter((p) => p.delta <= 0)
+			.slice(0, resultCount);
 	}
 }

@@ -15,7 +15,7 @@ export const R = {
 	pokemon: (speciesId: string, tab?: string): string =>
 		tab && tab !== 'ranks' ? `/pokemon/${speciesId}/${tab}` : `/pokemon/${speciesId}`,
 	calendar: (tab = 'events'): string => `/calendar/${tab}`,
-	teams: (tab: TeamsTab = 'builder'): string => `/teams/${tab}`,
+	teams: '/teams',
 	moves: '/moves',
 	move: (moveId: string): string => `/move/${encodeURIComponent(moveId)}`,
 	types: '/types',
@@ -128,9 +128,6 @@ export const modeColor = (mode: RankingMode): string => {
 
 export const CALENDAR_TABS = ['events', 'bosses', 'spawns', 'rockets', 'eggs'] as const;
 export type CalendarTab = (typeof CALENDAR_TABS)[number];
-
-export const TEAMS_TABS = ['builder', 'leaderboard'] as const;
-export type TeamsTab = (typeof TEAMS_TABS)[number];
 
 export const MASS_DELETE_TABS = ['non-meta-relevant', 'non-perfect-ivs', 'tradeable'] as const;
 export type MassDeleteTab = (typeof MASS_DELETE_TABS)[number];

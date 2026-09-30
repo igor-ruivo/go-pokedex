@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ShadowMark } from '../../components/ShadowMark';
 import { SpriteImg } from '../../components/Sprite';
 import { cleanName } from '../../lib/format';
 import { type RoleAssignment, TEAM_ROLES, type TeamRole } from '../../lib/team-analysis';
@@ -17,9 +18,12 @@ import type { AnalyzedMember } from './useTeamAnalysis';
 export const BattlePlan = ({
 	members,
 	roles,
+	onChangePokemon,
 }: {
 	members: ReadonlyArray<AnalyzedMember>;
 	roles: RoleAssignment | undefined;
+	/** Opens the Pokémon picker for that team slot (clicking a step's sprite). */
+	onChangePokemon: (slot: number) => void;
 }) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
 	const names = roleNames(t);
@@ -38,6 +42,18 @@ export const BattlePlan = ({
 	const swap = members[roles.order.switch];
 	const closer = members[roles.order.closer];
 	const shortName = (m: AnalyzedMember) => cleanName(m.pokemon.speciesName);
+
+	// The translated sentence with each name swapped for a marker, split back apart so the names can be coloured by type.
+	const MARK = (key: string) => `\uE000${key}\uE001`;
+	const byKey = { lead, switch: swap, closer };
+	const summaryParts = t('teams:plan.summary', {
+		lead: MARK('lead'),
+		switch: MARK('switch'),
+		closer: MARK('closer'),
+		interpolation: { escapeValue: false },
+	})
+		.split(/\uE000(lead|switch|closer)\uE001/)
+		.map((part, i) => (i % 2 === 1 ? { member: byKey[part as keyof typeof byKey] } : part));
 
 	return (
 		<section className='r-tm-panel r-tm-plan'>
@@ -59,10 +75,21 @@ export const BattlePlan = ({
 								style={{ ['--tc' as string]: typeVar(member.pokemon.types[0]), ['--i' as string]: step }}
 							>
 								<span className='r-tm-step-n'>{step + 1}</span>
-								<span className='r-tm-step-art'>
+								<button
+									type='button'
+									className='r-tm-step-art'
+									aria-label={t('teams:builder.change', { name: shortName(member) })}
+									title={t('teams:builder.replace', { name: shortName(member) })}
+									onClick={() => onChangePokemon(roles.order[role])}
+								>
+									{member.pokemon.isShadow && <ShadowMark />}
 									<SpriteImg pokemon={member.pokemon} />
-								</span>
-								<b className='r-tm-step-name'>{shortName(member)}</b>
+								</button>
+								<b className='r-tm-step-name'>
+									<button type='button' title={t('teams:builder.replace', { name: shortName(member) })} onClick={() => onChangePokemon(roles.order[role])}>
+										{shortName(member)}
+									</button>
+								</b>
 								<span className='r-tm-step-role'>{names[role]}</span>
 								<span className='r-tm-step-desc'>{descriptions[role]}</span>
 								<span className='r-tm-step-score'>{scoreOf(member, role).toFixed(1)}</span>
@@ -73,7 +100,15 @@ export const BattlePlan = ({
 			</ol>
 
 			<p className='r-tm-plan-summary'>
-				{t('teams:plan.summary', { lead: shortName(lead), switch: shortName(swap), closer: shortName(closer) })}
+				{summaryParts.map((part, i) =>
+					typeof part === 'string' ? (
+						<Fragment key={i}>{part}</Fragment>
+					) : (
+						<b key={i} className='r-tm-plan-name' style={{ ['--tc' as string]: typeVar(part.member.pokemon.types[0]) }}>
+							{shortName(part.member)}
+						</b>
+					)
+				)}
 			</p>
 			{roles.margin < 4 && <p className='r-tm-plan-note'>{t('teams:plan.closeCall')}</p>}
 
@@ -88,11 +123,20 @@ export const BattlePlan = ({
 				</div>
 				{members.map((member, i) => (
 					<div key={member.slot.speciesId} role='row' className='r-tm-fit-row'>
-						<span role='rowheader' className='r-tm-fit-name'>
-							<span className='r-tm-fit-ico' style={{ ['--tc' as string]: typeVar(member.pokemon.types[0]) }}>
-								<SpriteImg pokemon={member.pokemon} loading='lazy' />
-							</span>
-							{shortName(member)}
+						<span role='rowheader' className='r-tm-fit-head-cell'>
+							<button
+								type='button'
+								className='r-tm-fit-name'
+								style={{ ['--tc' as string]: typeVar(member.pokemon.types[0]) }}
+								title={t('teams:builder.replace', { name: shortName(member) })}
+								onClick={() => onChangePokemon(i)}
+							>
+								<span className='r-tm-wins-ico'>
+									{member.pokemon.isShadow && <ShadowMark />}
+									<SpriteImg pokemon={member.pokemon} loading='lazy' />
+								</span>
+								<span className='r-tm-wins-name'>{shortName(member)}</span>
+							</button>
 						</span>
 						{TEAM_ROLES.map((role) => {
 							const value = scoreOf(member, role);

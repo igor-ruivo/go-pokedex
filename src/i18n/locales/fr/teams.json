@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "Équipes",
-		"builderTab": "Créateur d'équipe",
-		"leaderboardTab": "Meilleures équipes",
-		"tabsAria": "Sections des équipes",
 		"leagueAria": "Ligue",
 		"loading": "Chargement des données d'équipe…",
 		"loadFailed": "Impossible de charger les données d'équipe. Vérifie ta connexion et réessaie."
@@ -15,12 +12,13 @@
 		"addMore": "Ajoute-en {{n}} de plus pour évaluer l'équipe.",
 		"copyLink": "Copier le lien",
 		"copied": "Lien copié",
-		"openPvpoke": "Vérifier sur PvPoke",
+		"resetMoves": "Réinitialiser les attaques recommandées",
 		"clear": "Vider l'équipe",
 		"emptySlot": "Ajouter un Pokémon",
 		"slotN": "Emplacement {{n}}",
 		"remove": "Retirer {{name}}",
 		"change": "Changer {{name}}",
+		"replace": "Remplacer {{name}}",
 		"cp": "PC",
 		"level": "Niveau",
 		"ivs": "IV",
@@ -34,9 +32,7 @@
 		"title": "Choisir un Pokémon",
 		"close": "Fermer",
 		"searchPlaceholder": "Rechercher un Pokémon de la {{league}}…",
-		"sortAria": "Trier par",
 		"inTeam": "Déjà dans l'équipe",
-		"rank": "n° {{rank}}",
 		"empty": "Aucun Pokémon ne correspond.",
 		"showMore": "Afficher plus"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "Score d'équipe",
+		"heading": "Score",
 		"ringAria": "Score d'équipe : {{score}} sur 100",
 		"radarAria": "Les six composantes du score d'équipe",
 		"calculating": "Simulation de milliers de combats…",
@@ -112,12 +108,12 @@
 		"simulating": "Simulation des combats…",
 		"needFull": "Ajoute trois Pokémon pour voir le score de menace.",
 		"scoreLabel": "Score de menace",
+		"lowerBetter": "Un score de menace plus bas est meilleur.",
 		"gaugeAria": "Score de menace {{score}}, note {{grade}}",
 		"better": "Mieux",
 		"worse": "Moins bien",
 		"gridHeading": "Les six plus grandes menaces",
 		"gridAria": "À quel point chaque menace bat chacun de tes Pokémon",
-		"metaTitle": "Un Pokémon du top méta",
 		"legendSafe": "Tu gagnes",
 		"legendEven": "Égal",
 		"legendThreat": "Il gagne",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "Bulletin",
 		"valueOfGoal": "{{value}} · objectif {{goal}}",
+		"coverage": {
+			"name": "Couverture",
+			"A": "Cette équipe offre une excellente couverture face aux principales menaces du méta. Elle a peu ou pas de vulnérabilités majeures.",
+			"B": "Cette équipe couvre la plupart des principales menaces du méta. Quelques vulnérabilités sont à surveiller.",
+			"C": "Cette équipe a des trous de couverture et peut être vulnérable à certaines menaces. Envisage d'autres choix ou d'autres attaques pour combler tes faiblesses.",
+			"D": "Cette équipe est très vulnérable à certaines menaces. Envisage d'autres choix pour éviter de cumuler les faiblesses, ou cherche des Pokémon efficaces face au méta.",
+			"F": "Cette équipe a une couverture extrêmement faible face à plusieurs menaces. Envisage de solides alternatives du méta pour structurer cette équipe."
+		},
 		"bulk": {
 			"A": "Excellente robustesse moyenne. Elle aide à gérer les boucliers et les situations difficiles.",
 			"B": "Bonne robustesse moyenne. Garde des boucliers pour tes coéquipiers les plus fragiles.",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "Améliorations",
-		"intro": "Essaie chaque Pokémon du top à chaque emplacement et découvre quel échange unique réduit le plus ton score de menace.",
-		"button": "Trouver des améliorations",
 		"searching": "Test des Pokémon du top à chaque emplacement…",
 		"failed": "Impossible de calculer les suggestions. Réessaie dans un instant.",
-		"none": "Aucun échange unique n'améliore cette équipe. Elle est déjà bien construite.",
+		"none": "Nous n'avons pas trouvé facilement de meilleures améliorations.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Score de menace {{score}} ({{delta}})",
-		"apply": "Échanger"
-	},
-	"board": {
-		"intro": "Les équipes les mieux notées des simulations d'entraînement de PvPoke, mises à jour le {{date}}. C'est un petit échantillon et non toute la méta, mais idéal pour voir à quoi ressemblent de bons noyaux.",
-		"open": "Ouvrir dans le créateur",
-		"source": "Source : analyse d'entraînement de PvPoke. Les scores sont la note d'équipe de PvPoke ; 500 correspond à un combat équilibré."
+		"result": "Score de menace {{score}} ({{delta}})"
 	}
 }

@@ -1,16 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ShadowMark } from '../../components/ShadowMark';
+import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import { SpriteImg } from '../../components/Sprite';
 import { TypeChip } from '../../components/TypeChip';
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
+import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
 import type { TeamBuilderMove } from '../../DTOs/ITeamBuilder';
 import { useDismiss } from '../../hooks/useDismiss';
-import type { CombatMetric } from '../../lib/combat';
+import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../../lib/combat';
 import { combatMetricNames } from '../../lib/combat-text';
-import { cleanName } from '../../lib/format';
+import { cleanName, ordinal } from '../../lib/format';
+import { type BuffInfo, buffInfo } from '../../lib/moves';
 import { type TeamRole, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
@@ -21,12 +24,37 @@ import type { TeamsData } from './useTeamsData';
 
 /* ------------------------------ Move picker ------------------------------- */
 
+/**
+ * Marks a charged move that raises or lowers stat stages. On desktop, hovering it lists which ones, in the
+ * game's own localized wording and with the activation chance, exactly as the moves rows print them.
+ */
+const BuffMark = ({ info }: { info: BuffInfo }) => {
+	const lines = info.badges.map((b) => `${b.label}${b.magnitude > 1 ? ` ×${b.magnitude}` : ''}`);
+	const chance = `${info.chanceLabel}: ${info.chancePercent}%`;
+	return (
+		<span className='r-tm-buff' role='img' aria-label={`${lines.join(', ')} — ${chance}`}>
+			<svg viewBox='0 0 24 24' aria-hidden='true'>
+				<path d='M10 6.5 11.9 12 17.5 13.9 11.9 15.8 10 21.3 8.1 15.8 2.5 13.9 8.1 12z' />
+				<path d='M18.5 2.5 19.4 5.1 22 6 19.4 6.9 18.5 9.5 17.6 6.9 15 6 17.6 5.1z' />
+			</svg>
+			<span className='r-tm-buff-tip' aria-hidden='true'>
+				{lines.map((line) => (
+					<b key={line}>{line}</b>
+				))}
+				<span>{chance}</span>
+			</span>
+		</span>
+	);
+};
+
 const MoveRow = ({
 	kind,
 	moveId,
 	options,
 	moveTable,
 	recommended,
+	legacy,
+	elite,
 	onChange,
 }: {
 	kind: 'fast' | 'charged';
@@ -34,18 +62,47 @@ const MoveRow = ({
 	options: ReadonlyArray<string>;
 	moveTable: Record<string, TeamBuilderMove>;
 	recommended: ReadonlyArray<string>;
+	/** This Pokémon's Legacy / Elite moves, for the chips. */
+	legacy: ReadonlySet<string>;
+	elite: ReadonlySet<string>;
 	onChange: (moveId: string) => void;
 }) => {
-	const { t } = useTranslation(['teams']);
+	const { t } = useTranslation(['teams', 'moveDetail', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { moves } = useMoves();
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	const name = (id: string) => translateMoveFromMoveId(id, moves, gl);
+	// "DMG 90 · NRG 55", with the localized short labels the moves pages use.
 	const stat = (id: string) => {
 		const m = moveTable[id];
-		return kind === 'fast' ? `${m.power} · +${m.energyGain}` : `${m.power} · ${m.energy}`;
+		return (
+			<>
+				<small>{t('moveDetail:statLabels.dmg')}</small> <b>{m.power}</b> <small>{t('moveDetail:statLabels.nrg')}</small>{' '}
+				<b>{kind === 'fast' ? `+${m.energyGain}` : m.energy}</b>
+				{kind === 'fast' && (
+					<>
+						{' '}
+						<small>{t('moveDetail:statLabels.turns')}</small> <b>{m.turns}</b>
+					</>
+				)}
+			</>
+		);
+	};
+	// What sits after a move's name, in the row and in the menu: the stat-buff mark, then a Legacy / Elite chip.
+	const tag = (id: string) => {
+		const fx = kind === 'charged' ? buffInfo(moves[id]?.buffs, gl) : null;
+		return (
+			<>
+				{fx && <BuffMark info={fx} />}
+				{legacy.has(id) ? (
+					<i className='r-move-tag r-tm-move-tag'>{t('pokemonDetail:moves.legacy')}</i>
+				) : elite.has(id) ? (
+					<i className='r-move-tag r-tm-move-tag'>{t('pokemonDetail:moves.elite')}</i>
+				) : null}
+			</>
+		);
 	};
 
 	if (!moveId) {
@@ -62,6 +119,7 @@ const MoveRow = ({
 						recommended={recommended}
 						name={name}
 						stat={stat}
+						tag={tag}
 						current={undefined}
 						onPick={(id) => {
 							onChange(id);
@@ -83,10 +141,12 @@ const MoveRow = ({
 				aria-expanded={open}
 				aria-haspopup='listbox'
 				aria-label={t('teams:builder.pickMove', { move: name(moveId) })}
+				title={t('teams:builder.replace', { name: name(moveId) })}
 				onClick={() => setOpen((o) => !o)}
 			>
 				<img src={`/images/types/${info.type}.png`} alt='' width={18} height={18} />
 				<span className='r-tm-move-name'>{name(moveId)}</span>
+				{tag(moveId)}
 				<span className='r-tm-move-stat'>{stat(moveId)}</span>
 			</button>
 			{open && (
@@ -96,6 +156,7 @@ const MoveRow = ({
 					recommended={recommended}
 					name={name}
 					stat={stat}
+					tag={tag}
 					current={moveId}
 					onPick={(id) => {
 						onChange(id);
@@ -113,6 +174,7 @@ const MovePopover = ({
 	recommended,
 	name,
 	stat,
+	tag,
 	current,
 	onPick,
 }: {
@@ -120,7 +182,8 @@ const MovePopover = ({
 	moveTable: Record<string, TeamBuilderMove>;
 	recommended: ReadonlyArray<string>;
 	name: (id: string) => string;
-	stat: (id: string) => string;
+	stat: (id: string) => ReactNode;
+	tag: (id: string) => ReactNode;
 	current: string | undefined;
 	onPick: (id: string) => void;
 }) => {
@@ -145,6 +208,7 @@ const MovePopover = ({
 					>
 						<img src={`/images/types/${moveTable[id].type}.png`} alt='' width={18} height={18} />
 						<span className='r-tm-move-name'>{name(id)}</span>
+						{tag(id)}
 						{recommended.includes(id) && (
 							<i
 								className='r-tm-star'
@@ -164,30 +228,38 @@ const MovePopover = ({
 
 /* ----------------------------- Pokémon picker ----------------------------- */
 
-type PickerSort = 'rank' | CombatMetric;
+type PickerSort = 'overall' | CombatMetric;
 const PICKER_PAGE = 48;
 
 const PokemonPicker = ({
 	leagueLabel,
 	data,
-	blockedBases,
+	teamBases,
 	onPick,
 	onClose,
 }: {
 	leagueLabel: string;
 	data: TeamsData;
-	/** Base species already on the team (a Shadow and its normal form count as one). */
-	blockedBases: ReadonlySet<string>;
+	/** Base species already on the team (a Shadow and its normal form count as one) — labelled, not blocked. */
+	teamBases: ReadonlySet<string>;
 	onPick: (speciesId: string) => void;
 	onClose: () => void;
 }) => {
-	const { t } = useTranslation(['teams', 'pokemonDetail', 'rankings']);
+	const { t } = useTranslation(['teams', 'pokemonDetail', 'rankings', 'components']);
+	const { currentLanguage } = useLanguage();
 	const [query, setQuery] = useState('');
-	const [sort, setSort] = useState<PickerSort>('rank');
+	const [sortKey, setSortKey] = useState<PickerSort>('overall');
+	const [sortDir, setSortDir] = useState<SortDir>('asc');
 	const [shown, setShown] = useState(PICKER_PAGE);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const rootRef = useDismiss<HTMLDivElement>(true, onClose);
 	const names = combatMetricNames(t);
+
+	// Same "Order by" options as a league's rankings page: the overall rank, then PvPoke's six role scores.
+	const sortOptions: ReadonlyArray<SortOption> = [
+		{ key: 'overall', label: t('rankings:sorts.overall'), defaultDir: 'asc' },
+		...COMBAT_METRICS.map((m) => ({ key: m, label: names[m], defaultDir: 'desc' as const })),
+	];
 
 	useEffect(() => {
 		inputRef.current?.focus();
@@ -195,17 +267,30 @@ const PokemonPicker = ({
 
 	const rows = useMemo(() => {
 		const q = query.trim().toLowerCase();
-		return Object.values(data.rankList)
-			.filter((r) => data.gamemaster[r.speciesId])
-			.filter((r) => {
-				if (!q) return true;
-				const p = data.gamemaster[r.speciesId];
-				return p.speciesName.toLowerCase().includes(q) || p.types.some((ty) => String(ty).toLowerCase().includes(q));
-			})
-			.sort((a, b) => (sort === 'rank' ? a.rank - b.rank : b[sort] - a[sort]));
-	}, [data.rankList, data.gamemaster, query, sort]);
+		// "Overall" reads best-first when ascending (rank 1 on top); the role scores read highest-first when descending.
+		const order = sortKey === 'overall' ? (sortDir === 'asc' ? 1 : -1) : sortDir === 'desc' ? -1 : 1;
+		const value = (r: IRankedPokemon) => (sortKey === 'overall' ? r.rank : r[sortKey]);
 
-	const sortKeys: Array<PickerSort> = ['rank', 'lead', 'switch', 'closer'];
+		return (
+			Object.values(data.rankList)
+				.filter((r) => data.gamemaster[r.speciesId])
+				.sort((x, y) => order * (value(x) - value(y)))
+				// The number is the position in the *full* sorted list, so searching never renumbers it.
+				.map((r, i) => ({ r, position: i + 1 }))
+				.filter(({ r }) => {
+					if (!q) return true;
+					const p = data.gamemaster[r.speciesId];
+					return p.speciesName.toLowerCase().includes(q) || p.types.some((ty) => String(ty).toLowerCase().includes(q));
+				})
+		);
+	}, [data.rankList, data.gamemaster, query, sortKey, sortDir]);
+
+	const changeSort = (key: string, dir: SortDir) => {
+		if (key !== 'overall' && !isCombatMetric(key)) return;
+		setSortKey(key);
+		setSortDir(dir);
+		setShown(PICKER_PAGE);
+	};
 
 	return (
 		<div className='r-tm-picker-backdrop'>
@@ -216,58 +301,72 @@ const PokemonPicker = ({
 						×
 					</button>
 				</div>
-				<input
-					ref={inputRef}
-					className='r-tm-picker-search'
-					type='search'
-					value={query}
-					placeholder={t('teams:picker.searchPlaceholder', { league: leagueLabel })}
-					onChange={(e) => {
-						setQuery(e.target.value);
-						setShown(PICKER_PAGE);
-					}}
-				/>
-				<div className='r-tm-picker-sorts' role='group' aria-label={t('teams:picker.sortAria')}>
-					{sortKeys.map((key) => (
+
+				<div className='r-search'>
+					<svg className='r-search-icon' viewBox='0 0 24 24' aria-hidden='true'>
+						<circle cx='11' cy='11' r='7' />
+						<line x1='21' y1='21' x2='16.2' y2='16.2' />
+					</svg>
+					<input
+						ref={inputRef}
+						value={query}
+						placeholder={t('teams:picker.searchPlaceholder', { league: leagueLabel })}
+						aria-label={t('teams:picker.searchPlaceholder', { league: leagueLabel })}
+						enterKeyHint='search'
+						autoComplete='off'
+						onChange={(e) => {
+							setQuery(e.target.value);
+							setShown(PICKER_PAGE);
+						}}
+					/>
+					{query && (
 						<button
-							key={key}
 							type='button'
-							data-active={sort === key ? '' : undefined}
+							className='r-search-clear'
+							aria-label={t('components:searchBox.clearAriaLabel')}
 							onClick={() => {
-								setSort(key);
-								setShown(PICKER_PAGE);
+								setQuery('');
+								inputRef.current?.focus();
 							}}
 						>
-							{key === 'rank' ? t('rankings:sorts.overall') : names[key]}
+							×
 						</button>
-					))}
+					)}
 				</div>
+
+				<div className='r-tm-picker-tools'>
+					<SortBar options={sortOptions} sortKey={sortKey} dir={sortDir} onChange={changeSort} />
+				</div>
+
 				<ul className='r-tm-picker-list'>
-					{rows.slice(0, shown).map((r) => {
+					{rows.slice(0, shown).map(({ r, position }) => {
 						const p = data.gamemaster[r.speciesId];
-						const blocked = blockedBases.has(r.speciesId.replace(/_shadow$/, ''));
+						const inTeam = teamBases.has(r.speciesId.replace(/_shadow$/, ''));
+						const score = sortKey === 'overall' ? r.score : r[sortKey];
 						return (
 							<li key={r.speciesId}>
 								<button
 									type='button'
-									disabled={blocked}
 									style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 									onClick={() => onPick(r.speciesId)}
 								>
-									<span className='r-tm-picker-art'>
+									<span className='r-search-sprite'>
+										{p.isShadow && <ShadowMark />}
 										<SpriteImg pokemon={p} loading='lazy' />
 									</span>
 									<span className='r-tm-picker-info'>
-										<b>{cleanName(p.speciesName)}</b>
+										<span className='r-search-name'>{cleanName(p.speciesName)}</span>
 										<span className='r-tm-picker-meta'>
-											{p.isShadow && <ShadowMark className='r-tm-shadow-mark' />}
 											{p.types.map((ty) => (
 												<i key={typeKey(ty)} style={{ background: typeVar(ty) }} />
 											))}
-											<em>{blocked ? t('teams:picker.inTeam') : t('teams:picker.rank', { rank: r.rank })}</em>
+											{inTeam && <em>{t('teams:picker.inTeam')}</em>}
 										</span>
 									</span>
-									<span className='r-tm-picker-score'>{sort === 'rank' ? r.score.toFixed(1) : r[sort].toFixed(1)}</span>
+									<span className='r-tm-picker-side'>
+										<span className='r-search-dex'>{ordinal(position, currentLanguage)}</span>
+										<b>{score.toFixed(1)}</b>
+									</span>
 								</button>
 							</li>
 						);
@@ -275,7 +374,7 @@ const PokemonPicker = ({
 				</ul>
 				{rows.length === 0 && <p className='r-muted r-tm-picker-empty'>{t('teams:picker.empty')}</p>}
 				{shown < rows.length && (
-					<button type='button' className='r-tm-more' onClick={() => setShown((s) => s + PICKER_PAGE)}>
+					<button type='button' className='r-tm-more' onClick={() => setShown((n) => n + PICKER_PAGE)}>
 						{t('teams:picker.showMore')}
 					</button>
 				)}
@@ -330,6 +429,8 @@ const MemberCard = ({
 	const fastOptions = pokemon.fastMoves.filter(validMove);
 	const chargedPool = [...new Set([...pokemon.chargedMoves, ...pokemon.extraChargedMoves])].filter(validMove);
 	const stats = member.stats;
+	const legacy = new Set(pokemon.legacyMoves);
+	const elite = new Set(pokemon.eliteMoves);
 
 	return (
 		<article
@@ -355,6 +456,7 @@ const MemberCard = ({
 				type='button'
 				className='r-tm-art'
 				aria-label={t('teams:builder.change', { name })}
+				title={t('teams:builder.replace', { name: name })}
 				onClick={onChangePokemon}
 			>
 				<span className='r-tm-halo' aria-hidden='true' />
@@ -362,7 +464,11 @@ const MemberCard = ({
 				{pokemon.isShadow && <ShadowMark />}
 			</button>
 
-			<h3 className='r-tm-name'>{name}</h3>
+			<h3 className='r-tm-name'>
+				<button type='button' title={t('teams:builder.replace', { name: name })} onClick={onChangePokemon}>
+					{name}
+				</button>
+			</h3>
 			<div className='r-tm-types'>
 				{pokemon.types.map((ty) => (
 					<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
@@ -391,6 +497,8 @@ const MemberCard = ({
 					options={fastOptions}
 					moveTable={moveTable}
 					recommended={recommended}
+					legacy={legacy}
+					elite={elite}
 					onChange={(id) => onMove(0, id)}
 				/>
 				{[1, 2].map((slot) => (
@@ -401,6 +509,8 @@ const MemberCard = ({
 						options={chargedPool.filter((id) => id === moveset[slot] || !moveset.slice(1).includes(id))}
 						moveTable={moveTable}
 						recommended={recommended}
+						legacy={legacy}
+						elite={elite}
 						onChange={(id) => onMove(slot, id)}
 					/>
 				))}
@@ -411,60 +521,71 @@ const MemberCard = ({
 
 /* --------------------------------- Stage ---------------------------------- */
 
-export const TeamStage = ({
+/** The Pokémon picker for one team slot — opened from a team card or from the Battle plan's step cards. */
+export const SlotPicker = ({
 	leagueLabel,
 	data,
 	team,
-	members,
-	roleOf,
+	slot,
 	onSetMember,
-	onMove,
-	onRemove,
+	onClose,
 }: {
 	leagueLabel: string;
 	data: TeamsData;
 	team: ReadonlyArray<TeamSlotDescriptor>;
-	members: ReadonlyArray<AnalyzedMember>;
-	roleOf: (index: number) => TeamRole | undefined;
+	slot: number;
 	onSetMember: (index: number, speciesId: string) => void;
-	onMove: (index: number, moveIndex: number, moveId: string) => void;
-	onRemove: (index: number) => void;
+	onClose: () => void;
 }) => {
-	const [pickerFor, setPickerFor] = useState<number | null>(null);
-	const blocked = useMemo(() => {
-		const others = team.filter((_, i) => i !== pickerFor);
-		return new Set(others.map((s) => s.speciesId.replace(/_shadow$/, '')));
-	}, [team, pickerFor]);
+	const teamBases = useMemo(
+		() => new Set(team.filter((_, i) => i !== slot).map((s) => s.speciesId.replace(/_shadow$/, ''))),
+		[team, slot]
+	);
 
 	return (
-		<>
-			<div className='r-tm-stage'>
-				{[0, 1, 2].map((i) => (
-					<MemberCard
-						key={i}
-						index={i}
-						member={members[i]}
-						pokemon={team[i] ? data.gamemaster[team[i].speciesId] : undefined}
-						data={data}
-						role={roleOf(i)}
-						onChangePokemon={() => setPickerFor(i)}
-						onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
-						onRemove={() => onRemove(i)}
-					/>
-				))}
-			</div>
-			{pickerFor !== null && (
-				<PokemonPicker
-					leagueLabel={leagueLabel}
-					data={data}
-					blockedBases={blocked}
-					onClose={() => setPickerFor(null)}
-					onPick={(speciesId) => {
-						onSetMember(pickerFor, speciesId);
-						setPickerFor(null);
-					}}
-				/>
-			)}
-		</>
+		<PokemonPicker
+			leagueLabel={leagueLabel}
+			data={data}
+			teamBases={teamBases}
+			onClose={onClose}
+			onPick={(speciesId) => {
+				onSetMember(slot, speciesId);
+				onClose();
+			}}
+		/>
 	);
 };
+
+export const TeamStage = ({
+	data,
+	team,
+	members,
+	roleOf,
+	onChangePokemon,
+	onMove,
+	onRemove,
+}: {
+	data: TeamsData;
+	team: ReadonlyArray<TeamSlotDescriptor>;
+	members: ReadonlyArray<AnalyzedMember>;
+	roleOf: (index: number) => TeamRole | undefined;
+	onChangePokemon: (index: number) => void;
+	onMove: (index: number, moveIndex: number, moveId: string) => void;
+	onRemove: (index: number) => void;
+}) => (
+	<div className='r-tm-stage'>
+		{[0, 1, 2].map((i) => (
+			<MemberCard
+				key={i}
+				index={i}
+				member={members[i]}
+				pokemon={team[i] ? data.gamemaster[team[i].speciesId] : undefined}
+				data={data}
+				role={roleOf(i)}
+				onChangePokemon={() => onChangePokemon(i)}
+				onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
+				onRemove={() => onRemove(i)}
+			/>
+		))}
+	</div>
+);

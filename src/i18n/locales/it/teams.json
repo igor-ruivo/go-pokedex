@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "Squadre",
-		"builderTab": "Crea squadra",
-		"leaderboardTab": "Migliori squadre",
-		"tabsAria": "Sezioni squadre",
 		"leagueAria": "Lega",
 		"loading": "Caricamento dei dati delle squadre…",
 		"loadFailed": "Impossibile caricare i dati delle squadre. Controlla la connessione e riprova."
@@ -15,12 +12,13 @@
 		"addMore": "Aggiungine altri {{n}} per valutare la squadra.",
 		"copyLink": "Copia link",
 		"copied": "Link copiato",
-		"openPvpoke": "Verifica su PvPoke",
+		"resetMoves": "Ripristina le mosse consigliate",
 		"clear": "Svuota squadra",
 		"emptySlot": "Aggiungi un Pokémon",
 		"slotN": "Posto {{n}}",
 		"remove": "Rimuovi {{name}}",
 		"change": "Cambia {{name}}",
+		"replace": "Sostituisci {{name}}",
 		"cp": "PL",
 		"level": "Livello",
 		"ivs": "IV",
@@ -34,9 +32,7 @@
 		"title": "Scegli un Pokémon",
 		"close": "Chiudi",
 		"searchPlaceholder": "Cerca Pokémon della {{league}}…",
-		"sortAria": "Ordina per",
 		"inTeam": "Già in squadra",
-		"rank": "n. {{rank}}",
 		"empty": "Nessun Pokémon corrisponde.",
 		"showMore": "Mostra altri"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "Punteggio squadra",
+		"heading": "Punteggio",
 		"ringAria": "Punteggio squadra {{score}} su 100",
 		"radarAria": "Le sei parti del punteggio squadra",
 		"calculating": "Simulazione di migliaia di scontri…",
@@ -112,12 +108,12 @@
 		"simulating": "Simulazione degli scontri…",
 		"needFull": "Aggiungi tre Pokémon per vedere il punteggio di minaccia.",
 		"scoreLabel": "Punteggio di minaccia",
+		"lowerBetter": "Un punteggio di minaccia più basso è migliore.",
 		"gaugeAria": "Punteggio di minaccia {{score}}, voto {{grade}}",
 		"better": "Meglio",
 		"worse": "Peggio",
 		"gridHeading": "Le sei minacce maggiori",
 		"gridAria": "Con quanta decisione ogni minaccia batte ciascuno dei tuoi Pokémon",
-		"metaTitle": "Un Pokémon top del meta",
 		"legendSafe": "Vinci tu",
 		"legendEven": "Pari",
 		"legendThreat": "Vince lui",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "Pagella",
 		"valueOfGoal": "{{value}} · obiettivo {{goal}}",
+		"coverage": {
+			"name": "Copertura",
+			"A": "Questa squadra ha un'ottima copertura contro le principali minacce del meta. Ha poche o nessuna vulnerabilità importante.",
+			"B": "Questa squadra copre la maggior parte delle principali minacce del meta. Potrebbero esserci alcune vulnerabilità da tenere d'occhio.",
+			"C": "Questa squadra ha buchi di copertura e può essere vulnerabile ad alcune minacce. Valuta altre scelte o set di mosse per rinforzare i punti deboli.",
+			"D": "Questa squadra è molto vulnerabile ad alcune minacce. Valuta altre scelte per non duplicare le debolezze, o cerca Pokémon che vadano bene contro il meta.",
+			"F": "Questa squadra ha una copertura estremamente scarsa contro più minacce. Valuta valide alternative del meta per dare solidità alla squadra."
+		},
 		"bulk": {
 			"A": "Robustezza media eccellente. Aiuta a gestire gli scudi e le situazioni difficili.",
 			"B": "Buona robustezza media. Conserva gli scudi per i compagni più fragili.",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "Miglioramenti",
-		"intro": "Proviamo ogni Pokémon top in ogni posto e vediamo quale singolo scambio abbassa di più il tuo punteggio di minaccia.",
-		"button": "Trova miglioramenti",
 		"searching": "Prova dei Pokémon top in ogni posto…",
 		"failed": "Impossibile calcolare i suggerimenti. Riprova tra un momento.",
-		"none": "Nessuno scambio singolo migliora questa squadra. È già ben costruita.",
+		"none": "Non è stato facile trovare potenziamenti migliori.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Punteggio di minaccia {{score}} ({{delta}})",
-		"apply": "Scambia"
-	},
-	"board": {
-		"intro": "Le squadre con il punteggio migliore nelle simulazioni di allenamento di PvPoke, aggiornate il {{date}}. È un piccolo campione e non l'intero meta, ma utile per vedere come sono i nuclei forti.",
-		"open": "Apri nel creatore",
-		"source": "Fonte: analisi di allenamento di PvPoke. I punteggi sono la valutazione di squadra di PvPoke; 500 è uno scontro pari."
+		"result": "Punteggio di minaccia {{score}} ({{delta}})"
 	}
 }

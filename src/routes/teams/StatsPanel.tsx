@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../contexts/language-context';
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
 import { combatMetricNames } from '../../lib/combat-text';
-import { BULK_GOAL, CONSISTENCY_GOAL, SAFETY_GOAL } from '../../lib/team-analysis';
+import { BULK_GOAL, CONSISTENCY_GOAL, letterGrade, SAFETY_GOAL } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { gradeNotes } from './teams-text';
@@ -31,11 +31,24 @@ const ShareBar = ({ values, members }: { values: ReadonlyArray<number>; members:
  * and PvPoke's three non-simulated grades. All stats are for PvPoke's default
  * IVs at the league's cap, since those are what the ratings were computed with.
  */
-export const StatsPanel = ({ league, analysis }: { league: TeamLeague; analysis: TeamAnalysis }) => {
+/**
+ * @param threatScore the simulated threat score (lower is better), once computed. It becomes the Coverage
+ *                    grade, which is how PvPoke grades a team's coverage.
+ */
+export const StatsPanel = ({
+	league,
+	analysis,
+	threatScore,
+}: {
+	league: TeamLeague;
+	analysis: TeamAnalysis;
+	threatScore: number | undefined;
+}) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail', 'rankings']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { members, totals, grades } = analysis;
 	const notes = gradeNotes(t);
+	const coverageGrade = threatScore === undefined ? undefined : letterGrade(1200 - threatScore, 680);
 
 	const totalsList: Array<{ key: string; label: string; total: string; values: Array<number> }> = [
 		{
@@ -115,6 +128,30 @@ export const StatsPanel = ({ league, analysis }: { league: TeamLeague; analysis:
 			<section className='r-tm-panel'>
 				<h3 className='r-tm-sub'>{t('teams:grades.heading')}</h3>
 				<ul className='r-tm-grades'>
+					<li>
+						{threatScore === undefined || !coverageGrade ? (
+							<>
+								<span className='r-tm-grade'>
+									<span className='r-spinner r-spinner--sm' aria-hidden='true' />
+								</span>
+								<div>
+									<b>{t('teams:grades.coverage.name')}</b>
+									<span className='r-tm-grade-val'>{t('teams:threat.simulating')}</span>
+								</div>
+							</>
+						) : (
+							<>
+								<span className='r-tm-grade' data-grade={coverageGrade}>
+									{coverageGrade}
+								</span>
+								<div>
+									<b>{t('teams:grades.coverage.name')}</b>
+									<span className='r-tm-grade-val'>{`${t('teams:threat.scoreLabel')} ${threatScore}`}</span>
+									<p>{notes.coverage[coverageGrade]}</p>
+								</div>
+							</>
+						)}
+					</li>
 					{gradeCards.map((card) => {
 						const { grade } = grades[card.key];
 						return (

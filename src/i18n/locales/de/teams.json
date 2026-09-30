@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "Teams",
-		"builderTab": "Team-Builder",
-		"leaderboardTab": "Top-Teams",
-		"tabsAria": "Team-Bereiche",
 		"leagueAria": "Liga",
 		"loading": "Team-Daten werden geladen …",
 		"loadFailed": "Die Team-Daten konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut."
@@ -15,12 +12,13 @@
 		"addMore": "Füge noch {{n}} hinzu, um das Team zu bewerten.",
 		"copyLink": "Link kopieren",
 		"copied": "Link kopiert",
-		"openPvpoke": "Auf PvPoke prüfen",
+		"resetMoves": "Empfohlene Attacken zurücksetzen",
 		"clear": "Team leeren",
 		"emptySlot": "Pokémon hinzufügen",
 		"slotN": "Platz {{n}}",
 		"remove": "{{name}} entfernen",
 		"change": "{{name}} ändern",
+		"replace": "{{name}} ersetzen",
 		"cp": "WP",
 		"level": "Level",
 		"ivs": "IVs",
@@ -34,9 +32,7 @@
 		"title": "Pokémon wählen",
 		"close": "Schließen",
 		"searchPlaceholder": "Pokémon der {{league}} suchen …",
-		"sortAria": "Sortieren nach",
 		"inTeam": "Schon im Team",
-		"rank": "#{{rank}}",
 		"empty": "Kein Pokémon gefunden.",
 		"showMore": "Mehr anzeigen"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "Team-Wertung",
+		"heading": "Wertung",
 		"ringAria": "Team-Wertung {{score}} von 100",
 		"radarAria": "Die sechs Teile der Team-Wertung",
 		"calculating": "Tausende Kämpfe werden simuliert …",
@@ -112,12 +108,12 @@
 		"simulating": "Kämpfe werden simuliert …",
 		"needFull": "Füge drei Pokémon hinzu, um den Bedrohungswert zu sehen.",
 		"scoreLabel": "Bedrohungswert",
+		"lowerBetter": "Ein niedrigerer Bedrohungswert ist besser.",
 		"gaugeAria": "Bedrohungswert {{score}}, Note {{grade}}",
 		"better": "Besser",
 		"worse": "Schlechter",
 		"gridHeading": "Die sechs größten Bedrohungen",
 		"gridAria": "Wie deutlich jede Bedrohung jedes deiner Pokémon schlägt",
-		"metaTitle": "Ein Top-Meta-Pokémon",
 		"legendSafe": "Du gewinnst",
 		"legendEven": "Ausgeglichen",
 		"legendThreat": "Es gewinnt",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "Zeugnis",
 		"valueOfGoal": "{{value}} · Ziel {{goal}}",
+		"coverage": {
+			"name": "Abdeckung",
+			"A": "Dieses Team deckt die Top-Meta-Bedrohungen hervorragend ab. Es hat kaum oder keine großen Schwachstellen.",
+			"B": "Dieses Team deckt die meisten Top-Meta-Bedrohungen ab. Auf ein paar Schwachstellen solltest du achten.",
+			"C": "Dieses Team hat Lücken in der Abdeckung und ist gegen manche Bedrohungen verwundbar. Probiere andere Picks oder Attacken, um Schwächen auszugleichen.",
+			"D": "Dieses Team ist gegen bestimmte Bedrohungen sehr verwundbar. Wähle andere Pokémon, damit sich Schwächen nicht doppeln, oder such Pokémon, die gegen die Top-Meta gut abschneiden.",
+			"F": "Dieses Team hat eine extrem schlechte Abdeckung gegen mehrere Bedrohungen. Nimm starke Meta-Alternativen als Grundlage für das Team."
+		},
 		"bulk": {
 			"A": "Ausgezeichnete durchschnittliche Robustheit. Sie hilft beim Schild-Management und in schwierigen Situationen.",
 			"B": "Gute durchschnittliche Robustheit. Spare Schilde für deine zerbrechlicheren Teammitglieder.",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "Verbesserungen",
-		"intro": "Wir probieren jedes Top-Pokémon auf jedem Platz aus und zeigen, welcher einzelne Tausch deinen Bedrohungswert am stärksten senkt.",
-		"button": "Verbesserungen finden",
 		"searching": "Top-Pokémon werden auf jedem Platz getestet …",
 		"failed": "Vorschläge konnten nicht berechnet werden. Versuche es gleich noch einmal.",
-		"none": "Kein einzelner Tausch verbessert dieses Team. Es ist bereits gut aufgebaut.",
+		"none": "Wir konnten nicht ohne Weiteres bessere Upgrades finden.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Bedrohungswert {{score}} ({{delta}})",
-		"apply": "Einwechseln"
-	},
-	"board": {
-		"intro": "Die bestbewerteten Teams aus PvPokes Trainingssimulationen, zuletzt aktualisiert am {{date}}. Das ist eine kleine Stichprobe, nicht das ganze Meta – aber gut, um starke Kerne zu sehen.",
-		"open": "Im Builder öffnen",
-		"source": "Quelle: PvPoke-Trainingsanalyse. Die Werte sind PvPokes Team-Wertung; 500 ist ein ausgeglichenes Duell."
+		"result": "Bedrohungswert {{score}} ({{delta}})"
 	}
 }

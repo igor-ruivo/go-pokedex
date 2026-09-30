@@ -49,7 +49,7 @@ const NAV: Array<{
 		match: (p) => p === '/' || p.startsWith('/pokemon') || p.startsWith('/rankings'),
 	},
 	{
-		to: R.teams(),
+		to: R.teams,
 		icon: '/images/nav/rankings.webp',
 		label: (t) => t('common:nav.teams.label'),
 		hint: (t) => t('common:nav.teams.hint'),

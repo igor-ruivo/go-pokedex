@@ -1,9 +1,6 @@
 {
 	"page": {
 		"title": "Equipas",
-		"builderTab": "Criador de equipas",
-		"leaderboardTab": "Melhores equipas",
-		"tabsAria": "Secções de equipas",
 		"leagueAria": "Liga",
 		"loading": "A carregar os dados das equipas…",
 		"loadFailed": "Não foi possível carregar os dados das equipas. Verifica a ligação e tenta novamente."
@@ -15,12 +12,13 @@
 		"addMore": "Adiciona mais {{n}} para avaliar a equipa.",
 		"copyLink": "Copiar ligação",
 		"copied": "Ligação copiada",
-		"openPvpoke": "Verificar no PvPoke",
+		"resetMoves": "Repor movimentos recomendados",
 		"clear": "Limpar equipa",
 		"emptySlot": "Adicionar um Pokémon",
 		"slotN": "Posição {{n}}",
 		"remove": "Remover {{name}}",
 		"change": "Mudar {{name}}",
+		"replace": "Substituir {{name}}",
 		"cp": "PC",
 		"level": "Nível",
 		"ivs": "IV",
@@ -34,9 +32,7 @@
 		"title": "Escolher um Pokémon",
 		"close": "Fechar",
 		"searchPlaceholder": "Pesquisar Pokémon da {{league}}…",
-		"sortAria": "Ordenar por",
 		"inTeam": "Já está na equipa",
-		"rank": "n.º {{rank}}",
 		"empty": "Nenhum Pokémon corresponde.",
 		"showMore": "Mostrar mais"
 	},
@@ -53,7 +49,7 @@
 		}
 	},
 	"score": {
-		"heading": "Pontuação da equipa",
+		"heading": "Pontuação",
 		"ringAria": "Pontuação da equipa: {{score}} em 100",
 		"radarAria": "As seis partes da pontuação da equipa",
 		"calculating": "A simular milhares de combates…",
@@ -112,12 +108,12 @@
 		"simulating": "A simular combates…",
 		"needFull": "Adiciona três Pokémon para ver a pontuação de ameaça.",
 		"scoreLabel": "Pontuação de ameaça",
+		"lowerBetter": "Quanto mais baixa a pontuação de ameaça, melhor.",
 		"gaugeAria": "Pontuação de ameaça {{score}}, nota {{grade}}",
 		"better": "Melhor",
 		"worse": "Pior",
 		"gridHeading": "As seis maiores ameaças",
 		"gridAria": "Com que clareza cada ameaça vence cada um dos teus Pokémon",
-		"metaTitle": "Um Pokémon de topo do meta",
 		"legendSafe": "Ganhas tu",
 		"legendEven": "Equilibrado",
 		"legendThreat": "Ganha ele",
@@ -179,6 +175,14 @@
 	"grades": {
 		"heading": "Boletim",
 		"valueOfGoal": "{{value}} · objetivo {{goal}}",
+		"coverage": {
+			"name": "Cobertura",
+			"A": "Esta equipa tem uma excelente cobertura contra as principais ameaças do meta. Tem poucas ou nenhuma vulnerabilidade importante.",
+			"B": "Esta equipa cobre a maioria das principais ameaças do meta. Pode haver algumas vulnerabilidades a vigiar.",
+			"C": "Esta equipa tem falhas de cobertura e pode ser vulnerável a certas ameaças. Considera outras escolhas ou conjuntos de ataques para reforçar as fraquezas.",
+			"D": "Esta equipa é muito vulnerável a certas ameaças. Considera outras escolhas para não duplicar fraquezas, ou procura Pokémon que tenham bom desempenho contra o meta.",
+			"F": "Esta equipa tem uma cobertura extremamente fraca contra várias ameaças. Considera alternativas fortes do meta para servir de base à equipa."
+		},
 		"bulk": {
 			"A": "Robustez média excelente. Ajuda a gerir os escudos e a superar situações difíceis.",
 			"B": "Boa robustez média. Guarda escudos para os companheiros mais frágeis.",
@@ -216,18 +220,10 @@
 	},
 	"suggest": {
 		"heading": "Melhorias",
-		"intro": "Experimentamos cada Pokémon de topo em cada posição e vemos que troca única reduz mais a tua pontuação de ameaça.",
-		"button": "Procurar melhorias",
 		"searching": "A experimentar Pokémon de topo em cada posição…",
 		"failed": "Não foi possível calcular as sugestões. Tenta novamente daqui a pouco.",
-		"none": "Nenhuma troca única melhora esta equipa. Já está bem construída.",
+		"none": "Não foi fácil encontrar melhores melhorias.",
 		"swap": "{{out}} → {{in}}",
-		"result": "Pontuação de ameaça {{score}} ({{delta}})",
-		"apply": "Trocar"
-	},
-	"board": {
-		"intro": "As equipas com melhor pontuação nas simulações de treino do PvPoke, atualizadas a {{date}}. É uma amostra pequena e não todo o meta, mas serve para ver como são os núcleos fortes.",
-		"open": "Abrir no criador",
-		"source": "Fonte: análise de treino do PvPoke. As pontuações são a avaliação de equipa do PvPoke; 500 é um combate equilibrado."
+		"result": "Pontuação de ameaça {{score}} ({{delta}})"
 	}
 }

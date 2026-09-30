@@ -1,9 +1,8 @@
 import { isStaticLeague, STATIC_LEAGUE_IDS, type StaticLeagueId } from './ILeagueDefinition';
 
 /**
- * Mirrors dex-server's `team-builder.json` / `team-leaderboard.json` (see its
- * `parsers/types/teams.ts`) — PvPoke's own team-builder inputs and training-
- * analysis team ranking, for Great / Ultra / Master League only.
+ * Mirrors dex-server's `team-builder.json` (see its `parsers/types/teams.ts`) —
+ * PvPoke's own team-builder inputs, for Great / Ultra / Master League only.
  */
 
 /** The Teams view covers the three permanent leagues only. */
@@ -72,19 +71,3 @@ export interface TeamBuilderData {
 	meta: Record<TeamLeague, Array<string>>;
 }
 
-export interface LeaderboardMember {
-	speciesId: string;
-	/** `[fast, charged 1, charged 2?]` as moveIds. */
-	moveset: Array<string>;
-}
-
-export interface LeaderboardTeam {
-	members: Array<LeaderboardMember>;
-	score: number;
-	games: number;
-}
-
-export interface TeamLeaderboard {
-	lastUpdated: string;
-	leagues: Record<TeamLeague, { totalTeams: number; teams: Array<LeaderboardTeam> }>;
-}

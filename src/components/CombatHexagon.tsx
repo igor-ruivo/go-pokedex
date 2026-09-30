@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 import { bestWorst, COMBAT_METRICS, type CombatMetric } from '../lib/combat';
 
@@ -35,6 +35,52 @@ const pointAt = (i: number, r: number): [number, number] => [
 ];
 const toPoints = (pts: Array<[number, number]>) => pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
 
+const TWEEN_MS = 800;
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+/** What the last radar on screen was showing, per axis count — a radar that mounts later starts from it. */
+const lastShown = new Map<number, Array<number>>();
+
+/**
+ * Eases the displayed vertex fractions towards `target`. Starts from whatever the previous radar was showing
+ * (this instance's own last frame after an update, or the last radar that was on screen when a new one
+ * mounts), and only from the centre the very first time any radar is drawn.
+ */
+const useTweenedFractions = (target: ReadonlyArray<number>): ReadonlyArray<number> => {
+	const count = target.length;
+	const [shown, setShown] = useState<Array<number>>(() => lastShown.get(count) ?? target.map(() => 0));
+	const shownRef = useRef(shown);
+	const signature = target.join('|');
+
+	useEffect(() => {
+		const from = shownRef.current.length === count ? shownRef.current : target.map(() => 0);
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const apply = (next: Array<number>) => {
+			shownRef.current = next;
+			lastShown.set(count, next);
+			setShown(next);
+		};
+		if (reduced) {
+			apply([...target]);
+			return;
+		}
+		const start = performance.now();
+		let frame = 0;
+		const step = (now: number) => {
+			const progress = Math.min(1, (now - start) / TWEEN_MS);
+			const eased = easeOut(progress);
+			apply(target.map((to, i) => from[i] + (to - from[i]) * eased));
+			if (progress < 1) frame = requestAnimationFrame(step);
+		};
+		frame = requestAnimationFrame(step);
+		return () => cancelAnimationFrame(frame);
+		// `signature` is `target`'s value; the array itself is a new object every render.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [signature, count]);
+
+	return shown;
+};
+
 /**
  * PvPoke's six role scores as a hexagonal radar — the same look as the stat
  * hexagon in the main-series games, but with three nested "echo" copies of the
@@ -61,7 +107,9 @@ export const CombatHexagon = <K extends string = CombatMetric>({
 		MIN_FRACTION + (1 - MIN_FRACTION) * Math.max(0, Math.min(1, (v - floor) / (100 - floor)));
 	const { best, worst } = bestWorst(values, axes);
 
-	const shape = axes.map((m, i) => pointAt(i, RADIUS * fraction(values[m])));
+	const fractions = useTweenedFractions(axes.map((m) => fraction(values[m])));
+
+	const shape = axes.map((_, i) => pointAt(i, RADIUS * (fractions[i] ?? 0)));
 	const ring = (f: number) => toPoints(axes.map((_, i) => pointAt(i, RADIUS * f)));
 
 	return (
@@ -107,7 +155,6 @@ export const CombatHexagon = <K extends string = CombatMetric>({
 							key={m}
 							className='r-hex-dot'
 							data-tone={best.has(m) ? 'best' : worst.has(m) ? 'worst' : undefined}
-							style={{ ['--i' as string]: i }}
 							cx={shape[i][0]}
 							cy={shape[i][1]}
 							r={1.7}

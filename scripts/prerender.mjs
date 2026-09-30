@@ -78,18 +78,11 @@ const STATIC_PAGES = [
 		image: `${SITE}/images/og/raids/tier-5.png`,
 	},
 	{
-		path: '/teams/builder',
+		path: '/teams',
 		title: 'PvP Team Builder — GO Pokédex',
 		description:
 			'Rate a team of 3 for Pokémon GO Great, Ultra and Master League: threat score, type coverage, bulk, and the best lead, switch and closer order.',
 		image: `${SITE}/images/leagues/great.png`,
-	},
-	{
-		path: '/teams/leaderboard',
-		title: 'Top PvP Teams — GO Pokédex',
-		description:
-			'The best-scoring 3-Pokémon teams for Pokémon GO Great, Ultra and Master League, from PvPoke’s training simulations.',
-		image: `${SITE}/images/leagues/master.png`,
 	},
 	{
 		path: '/moves',
