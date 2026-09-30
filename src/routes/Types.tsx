@@ -2,7 +2,7 @@ import { Fragment, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
-import { fmtMult, isDoubleMult, typeMatchups } from '../lib/effectiveness';
+import { fmtMult, isDoubleMult, matchupCellText, matchupTier, typeMatchups } from '../lib/effectiveness';
 import { typeVar } from '../lib/types';
 import { gameTypeDisplayTranslator } from '../utils/GameTranslator';
 import { computeMoveEffectiveness } from '../utils/pokemon-helper';
@@ -28,15 +28,6 @@ const ORDER = [
 	'dark',
 	'fairy',
 ];
-
-const tier = (m: number): 'se' | 'nn' | 'nve' | 'imm' => {
-	if (m > 1.1) return 'se';
-	if (m > 0.9) return 'nn';
-	if (m > 0.5) return 'nve';
-	return 'imm';
-};
-
-const cellText = (m: number) => (tier(m) === 'nn' ? '' : m.toFixed(m < 1 ? 2 : 1));
 
 const TypeIcon = ({ t, gl, size = 20 }: { t: string; gl: GameLanguage; size?: number }) => (
 	<img
@@ -102,13 +93,13 @@ const Types = () => {
 									<div
 										key={`${a}-${d}`}
 										className='r-tc-cell'
-										data-t={tier(m)}
+										data-t={matchupTier(m)}
 										data-axis={onAxis && !isHot ? '' : undefined}
 										data-hot={isHot ? '' : undefined}
 										onMouseEnter={() => setHover({ a, d })}
 										title={`${gameTypeDisplayTranslator(a, gl)} → ${gameTypeDisplayTranslator(d, gl)}: ${m.toFixed(3)}×`}
 									>
-										{cellText(m)}
+										{matchupCellText(m)}
 									</div>
 								);
 							})}

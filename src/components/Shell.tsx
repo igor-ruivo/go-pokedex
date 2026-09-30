@@ -44,15 +44,16 @@ const NAV: Array<{
 		label: (t) => t('common:nav.pokedex.label'),
 		shortLabel: (t) => t('common:nav.pokedex.shortLabel'),
 		hint: (t) => t('common:nav.pokedex.hint'),
-		match: (p) => p === '/' || p.startsWith('/pokemon'),
+		// Rankings has no nav slot of its own any more (Teams took it) — it lives on as the Pokédex
+		// page's own league tabs, so its routes light up this item.
+		match: (p) => p === '/' || p.startsWith('/pokemon') || p.startsWith('/rankings'),
 	},
 	{
-		to: R.rankings('great'),
+		to: R.teams(),
 		icon: '/images/nav/rankings.webp',
-		label: (t) => t('common:nav.rankings.label'),
-		hint: (t, gl) =>
-			t('common:nav.rankings.hint', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) }),
-		match: (p) => p.startsWith('/rankings'),
+		label: (t) => t('common:nav.teams.label'),
+		hint: (t) => t('common:nav.teams.hint'),
+		match: (p) => p.startsWith('/teams'),
 	},
 	{
 		to: R.calendar(),

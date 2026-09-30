@@ -5,7 +5,7 @@
 	},
 	"nav": {
 		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Tüm Pokémon'lara göz atın" },
-		"rankings": { "label": "Sıralamalar", "hint": "Lig ve {{raid}} türüne göre en iyi saldırganlar" },
+		"teams": { "label": "Takımlar", "hint": "Süper, Ultra ve Master Ligi için 3'lü takımını değerlendir" },
 		"calendar": { "label": "Takvim", "hint": "Etkinlikler, {{raid}}lar, ortaya çıkışlar ve yumurtalar" },
 		"moves": { "label": "Hareketler", "hint": "Tüm hızlı ve şarjlı hareketler" },
 		"types": { "label": "Türler", "hint": "Tür etkileşim tablosu" },

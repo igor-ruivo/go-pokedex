@@ -1,0 +1,233 @@
+{
+	"page": {
+		"title": "Takımlar",
+		"builderTab": "Takım Oluşturucu",
+		"leaderboardTab": "En İyi Takımlar",
+		"tabsAria": "Takım bölümleri",
+		"leagueAria": "Lig",
+		"loading": "Takım verileri yükleniyor…",
+		"loadFailed": "Takım verileri yüklenemedi. Bağlantını kontrol edip tekrar dene."
+	},
+	"builder": {
+		"intro": "{{league}} için üç Pokémon ve hareketlerini seç. Takımı PvPoke gibi değerlendirir, kimin başlaması, değişmesi ve bitirmesi gerektiğini söyleriz.",
+		"unverified": "PvPoke yakın zamanda savaş simülasyonunu değiştirdi; biz uyum sağlayana kadar tehdit puanı pvpoke.com'dan biraz farklı olabilir. Geri kalan her şey etkilenmez.",
+		"emptyHint": "İlk Pokémon'unu ekleyerek başla.",
+		"addMore": "Takımı değerlendirmek için {{n}} tane daha ekle.",
+		"copyLink": "Bağlantıyı kopyala",
+		"copied": "Bağlantı kopyalandı",
+		"openPvpoke": "PvPoke'ta kontrol et",
+		"clear": "Takımı temizle",
+		"emptySlot": "Pokémon ekle",
+		"slotN": "{{n}}. yuva",
+		"remove": "{{name}} çıkar",
+		"change": "{{name}} değiştir",
+		"cp": "CP",
+		"level": "Seviye",
+		"ivs": "IV",
+		"chargedMove": "Yüklü",
+		"addMove": "İkinci Yüklü Saldırı ekle",
+		"pickMove": "Hareketi değiştir ({{move}})",
+		"moveListAria": "Hareketler",
+		"recommended": "PvPoke'un önerdiği hareket"
+	},
+	"picker": {
+		"title": "Pokémon seç",
+		"close": "Kapat",
+		"searchPlaceholder": "{{league}} Pokémon'larını ara…",
+		"sortAria": "Sırala",
+		"inTeam": "Zaten takımda",
+		"rank": "#{{rank}}",
+		"empty": "Eşleşen Pokémon yok.",
+		"showMore": "Daha fazla göster"
+	},
+	"plan": {
+		"heading": "Savaş planı",
+		"needFull": "En iyi oynama sırasını görmek için üç Pokémon ekle.",
+		"summary": "{{lead}} ile başla, güvenli değişim için {{switch}} sakla ve {{closer}} ile bitir.",
+		"closeCall": "Çok yakın — başka bir sıra da neredeyse aynı derecede iyi.",
+		"fitAria": "Her Pokémon'un her role uygunluğu",
+		"roleDescs": {
+			"lead": "Eşit kalkanlarla maça başlar",
+			"switch": "Başlayan zor durumdayken güvenli cevabın",
+			"closer": "Kalkanlar bittikten sonra oyunu bitirir"
+		}
+	},
+	"score": {
+		"heading": "Takım puanı",
+		"ringAria": "Takım puanı 100 üzerinden {{score}}",
+		"radarAria": "Takım puanının altı bileşeni",
+		"calculating": "Binlerce savaş simüle ediliyor…",
+		"needTeam": "Puan almak için üç Pokémon ekle.",
+		"weight": "%{{pct}}",
+		"parts": {
+			"threat": {
+				"name": "Tehdit kapsamı",
+				"desc": "Takımın ligdeki en tehlikeli altı karşı-Pokémon'a karşı ne kadar dayandığı. PvPoke'un tehdit puanından gelir."
+			},
+			"defense": {
+				"name": "Savunma tipleri",
+				"desc": "Takımın kaç saldırı tipini karşılayabildiği ve kaçınızın aynı tipe zayıf olduğu."
+			},
+			"offense": {
+				"name": "Saldırı tipleri",
+				"desc": "Hareketlerinin kaç tipe çok etkili vurduğu ve kaçına dokunamadığı."
+			},
+			"bulk": {
+				"name": "Dayanıklılık",
+				"desc": "Ligin hedefine göre ortalama Savunma × HP. Daha dayanıklı takımlar daha az kalkana ihtiyaç duyar."
+			},
+			"safety": {
+				"name": "Güvenlik",
+				"desc": "Takımın eşleşmelerinin ortalama ne kadar güvenli olduğu, değişim puanlarına göre."
+			},
+			"consistency": {
+				"desc": "Hareket setlerinin yemlere veya şanslı istatistik artışlarına ne kadar az bağımlı olduğu."
+			}
+		},
+		"tiers": {
+			"elite": {
+				"name": "Elit",
+				"summary": "Turnuva seviyesinde bir çekirdek. Gerçek zayıflıkları az ve neredeyse her şey için bir planı var."
+			},
+			"strong": {
+				"name": "Güçlü",
+				"summary": "Çok sağlam bir takım. Akılda tutulacak birkaç boşluk var ama yükselebilir."
+			},
+			"solid": {
+				"name": "Sağlam",
+				"summary": "Kâğıt üzerinde iyi çalışıyor. Sıkılaştırmak için aşağıdaki uyarılara bak."
+			},
+			"shaky": {
+				"name": "Sallantılı",
+				"summary": "Kapsamda veya dayanıklılıkta gerçek boşluklar var. Küçük değişimler büyük fark yaratabilir."
+			},
+			"risky": {
+				"name": "Riskli",
+				"summary": "Bu takım ligin büyük kısmına karşı zorlanacak. Aşağıdaki önerileri dene."
+			}
+		}
+	},
+	"threat": {
+		"heading": "Tehditler ve kapsam",
+		"simulating": "Savaşlar simüle ediliyor…",
+		"needFull": "Tehdit puanını görmek için üç Pokémon ekle.",
+		"scoreLabel": "Tehdit puanı",
+		"gaugeAria": "Tehdit puanı {{score}}, not {{grade}}",
+		"better": "Daha iyi",
+		"worse": "Daha kötü",
+		"gridHeading": "En büyük altı tehdit",
+		"gridAria": "Her tehdidin senin Pokémon'larını ne kadar net yendiği",
+		"metaTitle": "Üst düzey bir meta Pokémon'u",
+		"legendSafe": "Sen kazanırsın",
+		"legendEven": "Dengeli",
+		"legendThreat": "O kazanır",
+		"helpSummary": "Tehdit puanı nedir?",
+		"help": "Takımının belirli Pokémon'lara karşı ne kadar savunmasız olduğunu ölçer — ne kadar düşükse o kadar iyi. Bir tehdidin kaç Pokémon'unu yenebildiğine, ne kadar net yendiğine, sıralamadaki yerine (onunla karşılaşma ihtimalin) ve ne kadar tutarlı performans gösterdiğine bakar. Tablodaki sayılar, tehdidin her Pokémon'una karşı 0 ve 1 kalkan ortalaması olan savaş puanıdır: 500 üzeri kazandığı anlamına gelir.",
+		"grades": {
+			"A": "Mükemmel kapsam. Ligin en iyi karşıları bu takımla zorlanır.",
+			"B": "İyi kapsam. Birkaç tehdide dikkat etmekte fayda var.",
+			"C": "Bazı boşluklar var. Bir avuç Pokémon bu takımı zorlayabilir.",
+			"D": "Belirli tehditlere karşı çok savunmasız. Onları çözen seçimler ara.",
+			"F": "Birkaç üst düzey tehdide karşı çok zayıf kapsam."
+		}
+	},
+	"coverage": {
+		"summary": "İlk {{total}} Pokémon'un {{covered}} tanesi takımındaki biri tarafından yeniliyor, {{secure}} tanesi net şekilde.",
+		"barAria": "{{total}} üst düzey Pokémon'un {{covered}} tanesi kapsanıyor",
+		"legendSecure": "Net şekilde yenilir",
+		"legendCovered": "Yenilir",
+		"legendHole": "Cevap yok",
+		"perMember": "Her Pokémon neyi yener",
+		"beats": "{{n}} tanesini yener",
+		"holesHeading": "Burada kimsenin yenemediği Pokémon'lar",
+		"holesHint": "Bu üst düzey Pokémon'ların takımında iyi bir cevabı yok. Bazılarını çözen bir seçim düşün.",
+		"noHoles": "Her üst düzey Pokémon'un bu takımda bir cevabı var.",
+		"moreHoles": "+{{n}} tane daha"
+	},
+	"typing": {
+		"heading": "Tipler",
+		"defenseHeading": "Savunma",
+		"offenseHeading": "Saldırı",
+		"resisted": "en az bir Pokémon'un dirençli olduğu tip",
+		"critical": "İkiniz veya daha fazlanız bunlara zayıf ve kimse dirençli değil:",
+		"shared": "Ortak zayıflıklar:",
+		"noSharedWeakness": "Hiçbir zayıflık iki Pokémon tarafından paylaşılmıyor.",
+		"hitSuper": "tipe çok etkili vurulur",
+		"blindSpots": "Hiçbir şey bunlara normal hasarla bile vurmuyor:",
+		"noBlindSpots": "Her tipe en az normal hasar veriliyor.",
+		"defenseAria": "Her tipin her Pokémon'una verdiği hasar",
+		"offenseAria": "Hareketlerinin her tipe verdiği en iyi hasar",
+		"status": {
+			"critical": "İki veya daha fazlası zayıf, dirençli yok",
+			"shared": "İki veya daha fazlası zayıf",
+			"exposed": "Biri zayıf, dirençli yok",
+			"covered": "Biri dirençli",
+			"wall": "İki veya daha fazlası dirençli"
+		},
+		"offStatus": {
+			"strong": "Çok etkili vurulur",
+			"neutral": "Normal hasarla vurulur",
+			"resisted": "Yalnızca dirençli vuruşlar"
+		}
+	},
+	"stats": {
+		"heading": "Rakamlar",
+		"totalsHeading": "Takım toplamları",
+		"cp": "CP",
+		"ivNote": "Her Pokémon, bu lig için mümkün olan en iyi IV'lerle (istatistik çarpımında 1. sıra) oluşturulur; bu yüzden puanlar takımı en üst düzeyinde gösterir. PvPoke kendi varsayılan IV'leriyle değerlendirir, bu yüzden rakamları biraz farklı olabilir."
+	},
+	"grades": {
+		"heading": "Karne",
+		"valueOfGoal": "{{value}} · hedef {{goal}}",
+		"bulk": {
+			"A": "Mükemmel ortalama dayanıklılık. Kalkanları yönetmeye ve zor durumları aşmaya yardım eder.",
+			"B": "İyi ortalama dayanıklılık. Kalkanları daha kırılgan takım arkadaşların için sakla.",
+			"C": "Orta dayanıklılık. Daha sık kalkan kullanmak zorunda kalabilirsin.",
+			"D": "Düşük dayanıklılık. Sık sık kalkan kullanmak zorunda kalacaksın. Daha dayanıklı Pokémon'ları düşün.",
+			"F": "Aşırı kırılgan. Kötü durumlardan toparlanmak zor olacak."
+		},
+		"safety": {
+			"A": "Son derece güvenli eşleşmeler. Esnek ve avantajı geri almak için kolayca yön değiştirebilir.",
+			"B": "Çoğunlukla güvenli eşleşmeler. Kaybedilen bir başlangıçtan geri dönebilir.",
+			"C": "Yalnızca biraz güvenli. Güvenli değişimler sınırlı — kalkan harcamaya hazır ol.",
+			"D": "Genelde güvensiz. Başlangıcı kazanmaya ve değişim avantajını korumaya bağlı.",
+			"F": "Çok güvensiz. Başlangıcı kazanmaya ve mükemmel karşıları sıralamaya çok bağlı."
+		},
+		"consistency": {
+			"A": "Son derece tutarlı hareket setleri. Güvenilir hasar.",
+			"B": "Çoğunlukla tutarlı. Nadiren yemlere bağımlı olursun.",
+			"C": "Karışık tutarlılık. Ara sıra yemlere bağımlı olabilirsin.",
+			"D": "Düşük tutarlılık. Sık sık yemlere veya artışlara bağımlı olacaksın.",
+			"F": "Zayıf tutarlılık. Tutan yemlere veya artışlara çok bağımlı olacaksın."
+		}
+	},
+	"warnings": {
+		"heading": "Dikkat et",
+		"none": "İşaretlenecek bir şey yok. Bu takımda belirgin bir çakışma veya boşluk yok.",
+		"duplicateSpecies": "{{names}} aynı Pokémon'un iki kopyası.",
+		"criticalWeakness": "{{names}} bu tipe zayıf ve takımda kimse ona dirençli değil.",
+		"sharedWeakness": "{{names}} bu tipe karşı zayıflığı paylaşıyor.",
+		"sharedTyping": "{{names}} bu tipi paylaşıyor; bu zayıflıklarını üst üste bindiriyor.",
+		"blindSpot": "Hareketlerin bu tiplere normal hasarla bile vuramıyor.",
+		"fragile": "{{name}} bu lig için kırılgan ve kalkanlara bağımlı olacak.",
+		"baitDependent": "{{name}} hasar vermek için yemlere veya istatistik artışlarına bağımlı.",
+		"noLead": "Burada güçlü bir başlangıç Pokémon'u yok.",
+		"noSafeSwitch": "Burada gerçekten güvenli bir değişim seçeneği yok."
+	},
+	"suggest": {
+		"heading": "İyileştirmeler",
+		"intro": "Her üst düzey Pokémon'u her yuvada dener ve hangi tekil değişimin tehdit puanını en çok düşürdüğünü gösteririz.",
+		"button": "İyileştirme bul",
+		"searching": "Her yuvada üst düzey Pokémon'lar deneniyor…",
+		"failed": "Öneriler hesaplanamadı. Biraz sonra tekrar dene.",
+		"none": "Hiçbir tekil değişim bu takımı iyileştirmiyor. Zaten iyi kurulmuş.",
+		"swap": "{{out}} → {{in}}",
+		"result": "Tehdit puanı {{score}} ({{delta}})",
+		"apply": "Değiştir"
+	},
+	"board": {
+		"intro": "PvPoke'un antrenman simülasyonlarındaki en yüksek puanlı takımlar, son güncelleme {{date}}. Tüm meta değil küçük bir örneklem — güçlü çekirdeklerin nasıl göründüğünü görmek için iyi bir yer.",
+		"open": "Oluşturucuda aç",
+		"source": "Kaynak: PvPoke antrenman analizi. Puanlar PvPoke'un takım derecelendirmesidir; 500 dengeli bir maçtır."
+	}
+}

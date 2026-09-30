@@ -28,3 +28,14 @@ export const fmtMult = (mult: number): string => `${mult.toFixed(2)}×`;
 
 /** A stacked matchup — both types push the same way (×2.56 up, or ×0.39 / ×0.24 down). */
 export const isDoubleMult = (mult: number): boolean => mult > 2 || mult < 0.45;
+
+/** Which of the chart's four colour bands a multiplier falls in: super effective, neutral, resisted, or (double-)resisted "immune". */
+export const matchupTier = (m: number): 'se' | 'nn' | 'nve' | 'imm' => {
+	if (m > 1.1) return 'se';
+	if (m > 0.9) return 'nn';
+	if (m > 0.5) return 'nve';
+	return 'imm';
+};
+
+/** Compact chart-cell text for a multiplier — blank for neutral, "1.6" / "0.63" otherwise. */
+export const matchupCellText = (m: number): string => (matchupTier(m) === 'nn' ? '' : m.toFixed(m < 1 ? 2 : 1));

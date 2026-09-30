@@ -36,6 +36,18 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 		description: 'Top Pokémon GO raid attackers ranked by DPS and TDO, per type.',
 		image: '/images/og/raids/tier-5.png',
 	},
+	'/teams/builder': {
+		title: 'PvP Team Builder — GO Pokédex',
+		description:
+			'Rate a team of 3 for Pokémon GO Great, Ultra and Master League: threat score, type coverage, bulk, and the best lead, switch and closer order.',
+		image: '/images/leagues/great.png',
+	},
+	'/teams/leaderboard': {
+		title: 'Top PvP Teams — GO Pokédex',
+		description:
+			'The best-scoring 3-Pokémon teams for Pokémon GO Great, Ultra and Master League, from PvPoke’s training simulations.',
+		image: '/images/leagues/master.png',
+	},
 	'/moves': {
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',

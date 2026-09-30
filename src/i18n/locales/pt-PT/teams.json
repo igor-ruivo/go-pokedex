@@ -1,0 +1,233 @@
+{
+	"page": {
+		"title": "Equipas",
+		"builderTab": "Criador de equipas",
+		"leaderboardTab": "Melhores equipas",
+		"tabsAria": "Secções de equipas",
+		"leagueAria": "Liga",
+		"loading": "A carregar os dados das equipas…",
+		"loadFailed": "Não foi possível carregar os dados das equipas. Verifica a ligação e tenta novamente."
+	},
+	"builder": {
+		"intro": "Escolhe três Pokémon e os respetivos ataques para a {{league}}. Avaliamos a equipa como o PvPoke e dizemos-te quem deve abrir, trocar e fechar.",
+		"unverified": "O PvPoke alterou recentemente a sua simulação de combate, por isso a pontuação de ameaça pode diferir ligeiramente de pvpoke.com até nos atualizarmos. Tudo o resto não é afetado.",
+		"emptyHint": "Começa por adicionar o teu primeiro Pokémon.",
+		"addMore": "Adiciona mais {{n}} para avaliar a equipa.",
+		"copyLink": "Copiar ligação",
+		"copied": "Ligação copiada",
+		"openPvpoke": "Verificar no PvPoke",
+		"clear": "Limpar equipa",
+		"emptySlot": "Adicionar um Pokémon",
+		"slotN": "Posição {{n}}",
+		"remove": "Remover {{name}}",
+		"change": "Mudar {{name}}",
+		"cp": "PC",
+		"level": "Nível",
+		"ivs": "IV",
+		"chargedMove": "Carregado",
+		"addMove": "Adicionar um segundo ataque carregado",
+		"pickMove": "Mudar ataque ({{move}})",
+		"moveListAria": "Ataques",
+		"recommended": "Ataque recomendado pelo PvPoke"
+	},
+	"picker": {
+		"title": "Escolher um Pokémon",
+		"close": "Fechar",
+		"searchPlaceholder": "Pesquisar Pokémon da {{league}}…",
+		"sortAria": "Ordenar por",
+		"inTeam": "Já está na equipa",
+		"rank": "n.º {{rank}}",
+		"empty": "Nenhum Pokémon corresponde.",
+		"showMore": "Mostrar mais"
+	},
+	"plan": {
+		"heading": "Plano de combate",
+		"needFull": "Adiciona três Pokémon para ver a melhor ordem de jogo.",
+		"summary": "Começa com {{lead}}, guarda {{switch}} para a troca segura e termina com {{closer}}.",
+		"closeCall": "Está muito equilibrado: outra ordem é quase tão boa.",
+		"fitAria": "Adequação de cada Pokémon a cada papel",
+		"roleDescs": {
+			"lead": "Abre o combate com escudos iguais",
+			"switch": "A tua resposta segura quando o líder está em apuros",
+			"closer": "Fecha o jogo quando já não há escudos"
+		}
+	},
+	"score": {
+		"heading": "Pontuação da equipa",
+		"ringAria": "Pontuação da equipa: {{score}} em 100",
+		"radarAria": "As seis partes da pontuação da equipa",
+		"calculating": "A simular milhares de combates…",
+		"needTeam": "Adiciona três Pokémon para obter uma pontuação.",
+		"weight": "{{pct}} %",
+		"parts": {
+			"threat": {
+				"name": "Cobertura de ameaças",
+				"desc": "Como a equipa aguenta os seis contras mais perigosos da liga. Vem da pontuação de ameaça do PvPoke."
+			},
+			"defense": {
+				"name": "Tipos defensivos",
+				"desc": "Quantos tipos de ataque a equipa consegue absorver e quantos de vós são fracos ao mesmo."
+			},
+			"offense": {
+				"name": "Tipos ofensivos",
+				"desc": "Quantos tipos os teus ataques atingem de forma super eficaz e quantos não conseguem tocar."
+			},
+			"bulk": {
+				"name": "Robustez",
+				"desc": "Defesa × PS médios face ao objetivo da liga. Uma equipa mais robusta precisa de menos escudos."
+			},
+			"safety": {
+				"name": "Segurança",
+				"desc": "Quão seguros são, em média, os confrontos da equipa, segundo as suas pontuações de troca."
+			},
+			"consistency": {
+				"desc": "Quão pouco os ataques dependem de iscos ou de melhorias de estatísticas com sorte."
+			}
+		},
+		"tiers": {
+			"elite": {
+				"name": "Elite",
+				"summary": "Um núcleo de nível de torneio. Poucas fraquezas reais e um plano para quase tudo."
+			},
+			"strong": {
+				"name": "Forte",
+				"summary": "Uma equipa muito sólida. Há algumas lacunas a vigiar, mas pode subir."
+			},
+			"solid": {
+				"name": "Sólida",
+				"summary": "Funciona bem no papel. Vê os avisos abaixo para a afinar."
+			},
+			"shaky": {
+				"name": "Frágil",
+				"summary": "Lacunas reais de cobertura ou robustez. Pequenas trocas podem fazer grande diferença."
+			},
+			"risky": {
+				"name": "Arriscada",
+				"summary": "Esta equipa vai sofrer contra grande parte da liga. Experimenta as sugestões abaixo."
+			}
+		}
+	},
+	"threat": {
+		"heading": "Ameaças e cobertura",
+		"simulating": "A simular combates…",
+		"needFull": "Adiciona três Pokémon para ver a pontuação de ameaça.",
+		"scoreLabel": "Pontuação de ameaça",
+		"gaugeAria": "Pontuação de ameaça {{score}}, nota {{grade}}",
+		"better": "Melhor",
+		"worse": "Pior",
+		"gridHeading": "As seis maiores ameaças",
+		"gridAria": "Com que clareza cada ameaça vence cada um dos teus Pokémon",
+		"metaTitle": "Um Pokémon de topo do meta",
+		"legendSafe": "Ganhas tu",
+		"legendEven": "Equilibrado",
+		"legendThreat": "Ganha ele",
+		"helpSummary": "O que é a pontuação de ameaça?",
+		"help": "Mede quão vulnerável é a tua equipa a Pokémon específicos: quanto mais baixa, melhor. Considera quantos dos teus Pokémon uma ameaça consegue vencer, com que clareza, quão alto está na classificação (quão provável é encontrá-lo) e quão consistente é. Os números da grelha são a avaliação de combate da ameaça contra cada um dos teus Pokémon, com média entre 0 e 1 escudo: acima de 500 significa que ganha.",
+		"grades": {
+			"A": "Cobertura excelente. Os melhores contras da liga têm dificuldade com esta equipa.",
+			"B": "Boa cobertura. Vale a pena vigiar algumas ameaças.",
+			"C": "Algumas lacunas. Um punhado de Pokémon pode pressionar esta equipa.",
+			"D": "Muito vulnerável a certas ameaças. Procura Pokémon que as resolvam.",
+			"F": "Cobertura muito fraca contra várias ameaças de topo."
+		}
+	},
+	"coverage": {
+		"summary": "{{covered}} dos {{total}} melhores Pokémon são vencidos por alguém da tua equipa, {{secure}} deles com clareza.",
+		"barAria": "{{covered}} de {{total}} Pokémon de topo cobertos",
+		"legendSecure": "Vencido com clareza",
+		"legendCovered": "Vencido",
+		"legendHole": "Sem resposta",
+		"perMember": "O que cada Pokémon vence",
+		"beats": "vence {{n}}",
+		"holesHeading": "Pokémon que ninguém aqui vence",
+		"holesHint": "Estes Pokémon de topo não têm boa resposta na tua equipa. Considera uma escolha que resolva alguns deles.",
+		"noHoles": "Todos os Pokémon de topo têm resposta nesta equipa.",
+		"moreHoles": "+{{n}} mais"
+	},
+	"typing": {
+		"heading": "Tipos",
+		"defenseHeading": "Defesa",
+		"offenseHeading": "Ataque",
+		"resisted": "tipos resistidos por pelo menos um Pokémon",
+		"critical": "Dois ou mais de vós são fracos a estes e ninguém os resiste:",
+		"shared": "Fraquezas partilhadas:",
+		"noSharedWeakness": "Nenhuma fraqueza é partilhada por dois Pokémon.",
+		"hitSuper": "tipos atingidos de forma super eficaz",
+		"blindSpots": "Nada atinge estes nem com dano normal:",
+		"noBlindSpots": "Todos os tipos recebem pelo menos dano normal.",
+		"defenseAria": "Dano de cada tipo a cada um dos teus Pokémon",
+		"offenseAria": "Melhor dano dos teus ataques contra cada tipo",
+		"status": {
+			"critical": "Dois ou mais fracos, nenhum resiste",
+			"shared": "Dois ou mais fracos",
+			"exposed": "Um fraco, nenhum resiste",
+			"covered": "Alguém resiste",
+			"wall": "Dois ou mais resistem"
+		},
+		"offStatus": {
+			"strong": "Atingido de forma super eficaz",
+			"neutral": "Atingido com dano normal",
+			"resisted": "Apenas golpes resistidos"
+		}
+	},
+	"stats": {
+		"heading": "Números",
+		"totalsHeading": "Totais da equipa",
+		"cp": "PC",
+		"ivNote": "Cada Pokémon é construído com os melhores IV possíveis (posição 1 do produto de estatísticas) para esta liga, por isso as pontuações mostram a equipa no seu máximo. O PvPoke avalia com os seus próprios IV predefinidos, pelo que os números dele podem diferir ligeiramente."
+	},
+	"grades": {
+		"heading": "Boletim",
+		"valueOfGoal": "{{value}} · objetivo {{goal}}",
+		"bulk": {
+			"A": "Robustez média excelente. Ajuda a gerir os escudos e a superar situações difíceis.",
+			"B": "Boa robustez média. Guarda escudos para os companheiros mais frágeis.",
+			"C": "Robustez moderada. Podes ter de usar mais escudos.",
+			"D": "Robustez baixa. Vais ter de usar escudos com frequência. Considera Pokémon mais robustos.",
+			"F": "Extremamente frágil. Será difícil recuperar de situações más."
+		},
+		"safety": {
+			"A": "Confrontos extremamente seguros. Flexível e fácil de reorientar para recuperar a vantagem.",
+			"B": "Confrontos maioritariamente seguros. Consegue recuperar de um líder perdido.",
+			"C": "Apenas algo seguro. Poucas trocas seguras: prepara-te para gastar escudos.",
+			"D": "Geralmente pouco seguro. Depende de ganhar a abertura e manter a vantagem de troca.",
+			"F": "Muito pouco seguro. Depende muito de ganhar a abertura e de contras perfeitos."
+		},
+		"consistency": {
+			"A": "Ataques extremamente consistentes. Dano fiável.",
+			"B": "Maioritariamente consistente. Raramente dependerás de iscos.",
+			"C": "Consistência mista. De vez em quando dependerás de iscos.",
+			"D": "Pouca consistência. Vais depender muitas vezes de iscos ou melhorias.",
+			"F": "Consistência fraca. Vais depender muito de acertar iscos ou melhorias."
+		}
+	},
+	"warnings": {
+		"heading": "Atenção a",
+		"none": "Nada a assinalar. Esta equipa não tem sobreposições nem lacunas evidentes.",
+		"duplicateSpecies": "{{names}} são o mesmo Pokémon repetido.",
+		"criticalWeakness": "{{names}} são todos fracos a este tipo e ninguém na equipa o resiste.",
+		"sharedWeakness": "{{names}} partilham uma fraqueza a este tipo.",
+		"sharedTyping": "{{names}} partilham este tipo, o que acumula as suas fraquezas.",
+		"blindSpot": "Os teus ataques não atingem estes tipos nem com dano normal.",
+		"fragile": "{{name}} é frágil para esta liga e vai depender dos escudos.",
+		"baitDependent": "{{name}} depende de iscos ou de melhorias de estatísticas para causar dano.",
+		"noLead": "Ninguém aqui é um bom líder.",
+		"noSafeSwitch": "Ninguém aqui é uma troca verdadeiramente segura."
+	},
+	"suggest": {
+		"heading": "Melhorias",
+		"intro": "Experimentamos cada Pokémon de topo em cada posição e vemos que troca única reduz mais a tua pontuação de ameaça.",
+		"button": "Procurar melhorias",
+		"searching": "A experimentar Pokémon de topo em cada posição…",
+		"failed": "Não foi possível calcular as sugestões. Tenta novamente daqui a pouco.",
+		"none": "Nenhuma troca única melhora esta equipa. Já está bem construída.",
+		"swap": "{{out}} → {{in}}",
+		"result": "Pontuação de ameaça {{score}} ({{delta}})",
+		"apply": "Trocar"
+	},
+	"board": {
+		"intro": "As equipas com melhor pontuação nas simulações de treino do PvPoke, atualizadas a {{date}}. É uma amostra pequena e não todo o meta, mas serve para ver como são os núcleos fortes.",
+		"open": "Abrir no criador",
+		"source": "Fonte: análise de treino do PvPoke. As pontuações são a avaliação de equipa do PvPoke; 500 é um combate equilibrado."
+	}
+}

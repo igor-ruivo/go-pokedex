@@ -1,0 +1,233 @@
+{
+	"page": {
+		"title": "Squadre",
+		"builderTab": "Crea squadra",
+		"leaderboardTab": "Migliori squadre",
+		"tabsAria": "Sezioni squadre",
+		"leagueAria": "Lega",
+		"loading": "Caricamento dei dati delle squadre…",
+		"loadFailed": "Impossibile caricare i dati delle squadre. Controlla la connessione e riprova."
+	},
+	"builder": {
+		"intro": "Scegli tre Pokémon e le loro mosse per la {{league}}. Valutiamo la squadra come fa PvPoke e ti diciamo chi deve aprire, cambiare e chiudere.",
+		"unverified": "PvPoke ha modificato da poco la sua simulazione degli scontri, quindi il punteggio di minaccia può differire leggermente da pvpoke.com finché non ci allineiamo. Tutto il resto non è interessato.",
+		"emptyHint": "Inizia aggiungendo il tuo primo Pokémon.",
+		"addMore": "Aggiungine altri {{n}} per valutare la squadra.",
+		"copyLink": "Copia link",
+		"copied": "Link copiato",
+		"openPvpoke": "Verifica su PvPoke",
+		"clear": "Svuota squadra",
+		"emptySlot": "Aggiungi un Pokémon",
+		"slotN": "Posto {{n}}",
+		"remove": "Rimuovi {{name}}",
+		"change": "Cambia {{name}}",
+		"cp": "PL",
+		"level": "Livello",
+		"ivs": "IV",
+		"chargedMove": "Caricata",
+		"addMove": "Aggiungi una seconda mossa caricata",
+		"pickMove": "Cambia mossa ({{move}})",
+		"moveListAria": "Mosse",
+		"recommended": "Mossa consigliata da PvPoke"
+	},
+	"picker": {
+		"title": "Scegli un Pokémon",
+		"close": "Chiudi",
+		"searchPlaceholder": "Cerca Pokémon della {{league}}…",
+		"sortAria": "Ordina per",
+		"inTeam": "Già in squadra",
+		"rank": "n. {{rank}}",
+		"empty": "Nessun Pokémon corrisponde.",
+		"showMore": "Mostra altri"
+	},
+	"plan": {
+		"heading": "Piano di battaglia",
+		"needFull": "Aggiungi tre Pokémon per vedere l'ordine migliore.",
+		"summary": "Inizia con {{lead}}, tieni {{switch}} per il cambio sicuro e chiudi con {{closer}}.",
+		"closeCall": "È un testa a testa: un altro ordine è quasi altrettanto buono.",
+		"fitAria": "Adattamento di ogni Pokémon a ogni ruolo",
+		"roleDescs": {
+			"lead": "Apre lo scontro a scudi pari",
+			"switch": "La tua risposta sicura quando il Lead è in difficoltà",
+			"closer": "Chiude la partita quando gli scudi sono finiti"
+		}
+	},
+	"score": {
+		"heading": "Punteggio squadra",
+		"ringAria": "Punteggio squadra {{score}} su 100",
+		"radarAria": "Le sei parti del punteggio squadra",
+		"calculating": "Simulazione di migliaia di scontri…",
+		"needTeam": "Aggiungi tre Pokémon per ottenere un punteggio.",
+		"weight": "{{pct}}%",
+		"parts": {
+			"threat": {
+				"name": "Copertura minacce",
+				"desc": "Quanto la squadra regge contro i sei contro più pericolosi della lega. Deriva dal punteggio di minaccia di PvPoke."
+			},
+			"defense": {
+				"name": "Tipi difensivi",
+				"desc": "Quanti tipi di attacco la squadra riesce ad assorbire e quanti di voi sono deboli allo stesso."
+			},
+			"offense": {
+				"name": "Tipi offensivi",
+				"desc": "Quanti tipi le tue mosse colpiscono superefficacemente e quanti non riescono a colpire."
+			},
+			"bulk": {
+				"name": "Robustezza",
+				"desc": "Difesa × PS medi rispetto all'obiettivo della lega. Una squadra più robusta richiede meno scudi."
+			},
+			"safety": {
+				"name": "Sicurezza",
+				"desc": "Quanto sono sicuri in media gli scontri della squadra, in base ai suoi punteggi di cambio."
+			},
+			"consistency": {
+				"desc": "Quanto poco i set di mosse dipendono da esche o da potenziamenti fortunati."
+			}
+		},
+		"tiers": {
+			"elite": {
+				"name": "Élite",
+				"summary": "Un nucleo da torneo. Poche vere debolezze e un piano per quasi tutto."
+			},
+			"strong": {
+				"name": "Forte",
+				"summary": "Una squadra molto solida. Un paio di lacune da tenere d'occhio, ma può salire."
+			},
+			"solid": {
+				"name": "Solida",
+				"summary": "Funziona bene sulla carta. Guarda gli avvisi qui sotto per rifinirla."
+			},
+			"shaky": {
+				"name": "Traballante",
+				"summary": "Vere lacune di copertura o robustezza. Piccoli cambi possono fare una grande differenza."
+			},
+			"risky": {
+				"name": "Rischiosa",
+				"summary": "Questa squadra farà fatica contro buona parte della lega. Prova i suggerimenti qui sotto."
+			}
+		}
+	},
+	"threat": {
+		"heading": "Minacce e copertura",
+		"simulating": "Simulazione degli scontri…",
+		"needFull": "Aggiungi tre Pokémon per vedere il punteggio di minaccia.",
+		"scoreLabel": "Punteggio di minaccia",
+		"gaugeAria": "Punteggio di minaccia {{score}}, voto {{grade}}",
+		"better": "Meglio",
+		"worse": "Peggio",
+		"gridHeading": "Le sei minacce maggiori",
+		"gridAria": "Con quanta decisione ogni minaccia batte ciascuno dei tuoi Pokémon",
+		"metaTitle": "Un Pokémon top del meta",
+		"legendSafe": "Vinci tu",
+		"legendEven": "Pari",
+		"legendThreat": "Vince lui",
+		"helpSummary": "Cos'è il punteggio di minaccia?",
+		"help": "Misura quanto la tua squadra è vulnerabile a Pokémon specifici: più è basso, meglio è. Considera quanti dei tuoi Pokémon una minaccia può battere, quanto nettamente, quanto è in alto in classifica (quanto è probabile incontrarla) e quanto è costante. I numeri nella griglia sono il punteggio di scontro della minaccia contro ciascuno dei tuoi Pokémon, mediato tra 0 e 1 scudo: sopra 500 significa che vince.",
+		"grades": {
+			"A": "Copertura eccellente. I migliori contro della lega faticano contro questa squadra.",
+			"B": "Buona copertura. Alcune minacce meritano attenzione.",
+			"C": "Alcune lacune. Una manciata di Pokémon può mettere in difficoltà questa squadra.",
+			"D": "Molto vulnerabile a certe minacce. Cerca Pokémon che le gestiscano.",
+			"F": "Copertura molto scarsa contro diverse minacce top."
+		}
+	},
+	"coverage": {
+		"summary": "{{covered}} dei primi {{total}} Pokémon sono battuti da qualcuno della tua squadra, {{secure}} in modo netto.",
+		"barAria": "{{covered}} di {{total}} Pokémon top coperti",
+		"legendSecure": "Battuto nettamente",
+		"legendCovered": "Battuto",
+		"legendHole": "Nessuna risposta",
+		"perMember": "Cosa batte ogni Pokémon",
+		"beats": "batte {{n}}",
+		"holesHeading": "Pokémon che nessuno qui batte",
+		"holesHint": "Questi Pokémon top non hanno una buona risposta nella tua squadra. Valuta una scelta che ne gestisca qualcuno.",
+		"noHoles": "Ogni Pokémon top ha una risposta in questa squadra.",
+		"moreHoles": "+{{n}} altri"
+	},
+	"typing": {
+		"heading": "Tipi",
+		"defenseHeading": "Difesa",
+		"offenseHeading": "Attacco",
+		"resisted": "tipi resistiti da almeno un Pokémon",
+		"critical": "Due o più di voi sono deboli a questi e nessuno li resiste:",
+		"shared": "Debolezze condivise:",
+		"noSharedWeakness": "Nessuna debolezza è condivisa da due Pokémon.",
+		"hitSuper": "tipi colpiti superefficacemente",
+		"blindSpots": "Nulla colpisce questi nemmeno con danno neutro:",
+		"noBlindSpots": "Ogni tipo è colpito almeno con danno neutro.",
+		"defenseAria": "Danno di ogni tipo su ciascuno dei tuoi Pokémon",
+		"offenseAria": "Miglior danno delle tue mosse contro ogni tipo",
+		"status": {
+			"critical": "Due o più deboli, nessuno resiste",
+			"shared": "Due o più deboli",
+			"exposed": "Uno debole, nessuno resiste",
+			"covered": "Qualcuno resiste",
+			"wall": "Due o più resistono"
+		},
+		"offStatus": {
+			"strong": "Colpito superefficacemente",
+			"neutral": "Colpito con danno neutro",
+			"resisted": "Solo colpi resistiti"
+		}
+	},
+	"stats": {
+		"heading": "Numeri",
+		"totalsHeading": "Totali della squadra",
+		"cp": "PL",
+		"ivNote": "Ogni Pokémon è costruito con i migliori IV possibili (rango 1 del prodotto delle statistiche) per questa lega, quindi i punteggi mostrano la squadra al suo massimo. PvPoke valuta con i propri IV predefiniti, quindi i suoi numeri possono differire leggermente."
+	},
+	"grades": {
+		"heading": "Pagella",
+		"valueOfGoal": "{{value}} · obiettivo {{goal}}",
+		"bulk": {
+			"A": "Robustezza media eccellente. Aiuta a gestire gli scudi e le situazioni difficili.",
+			"B": "Buona robustezza media. Conserva gli scudi per i compagni più fragili.",
+			"C": "Robustezza moderata. Potresti dover usare più scudi.",
+			"D": "Robustezza bassa. Dovrai usare spesso gli scudi. Valuta Pokémon più robusti.",
+			"F": "Estremamente fragile. Sarà difficile riprendersi dalle situazioni sfavorevoli."
+		},
+		"safety": {
+			"A": "Scontri estremamente sicuri. Flessibile e facile da riorientare per recuperare vantaggio.",
+			"B": "Scontri perlopiù sicuri. Può rimontare un Lead perso.",
+			"C": "Solo in parte sicuro. Pochi cambi sicuri: preparati a spendere scudi.",
+			"D": "In generale poco sicuro. Dipende dal vincere il Lead e mantenere il vantaggio di cambio.",
+			"F": "Molto poco sicuro. Dipende molto dal vincere il Lead e da contro perfetti."
+		},
+		"consistency": {
+			"A": "Set di mosse estremamente costanti. Danno affidabile.",
+			"B": "Perlopiù costante. Raramente dipenderai dalle esche.",
+			"C": "Costanza mista. Ogni tanto dipenderai dalle esche.",
+			"D": "Bassa costanza. Dipenderai spesso da esche o potenziamenti.",
+			"F": "Costanza scarsa. Dipenderai molto da esche o potenziamenti riusciti."
+		}
+	},
+	"warnings": {
+		"heading": "Attenzione a",
+		"none": "Niente da segnalare. Questa squadra non ha sovrapposizioni o lacune evidenti.",
+		"duplicateSpecies": "{{names}} sono lo stesso Pokémon due volte.",
+		"criticalWeakness": "{{names}} sono tutti deboli a questo tipo e nessuno in squadra lo resiste.",
+		"sharedWeakness": "{{names}} condividono una debolezza a questo tipo.",
+		"sharedTyping": "{{names}} condividono questo tipo, il che accumula le loro debolezze.",
+		"blindSpot": "Le tue mosse non colpiscono questi tipi nemmeno con danno neutro.",
+		"fragile": "{{name}} è fragile per questa lega e dipenderà dagli scudi.",
+		"baitDependent": "{{name}} dipende da esche o potenziamenti per fare danno.",
+		"noLead": "Nessuno qui è un buon Lead.",
+		"noSafeSwitch": "Nessuno qui è un cambio davvero sicuro."
+	},
+	"suggest": {
+		"heading": "Miglioramenti",
+		"intro": "Proviamo ogni Pokémon top in ogni posto e vediamo quale singolo scambio abbassa di più il tuo punteggio di minaccia.",
+		"button": "Trova miglioramenti",
+		"searching": "Prova dei Pokémon top in ogni posto…",
+		"failed": "Impossibile calcolare i suggerimenti. Riprova tra un momento.",
+		"none": "Nessuno scambio singolo migliora questa squadra. È già ben costruita.",
+		"swap": "{{out}} → {{in}}",
+		"result": "Punteggio di minaccia {{score}} ({{delta}})",
+		"apply": "Scambia"
+	},
+	"board": {
+		"intro": "Le squadre con il punteggio migliore nelle simulazioni di allenamento di PvPoke, aggiornate il {{date}}. È un piccolo campione e non l'intero meta, ma utile per vedere come sono i nuclei forti.",
+		"open": "Apri nel creatore",
+		"source": "Fonte: analisi di allenamento di PvPoke. I punteggi sono la valutazione di squadra di PvPoke; 500 è uno scontro pari."
+	}
+}

@@ -17,15 +17,16 @@ export const combatValue = (entry: IRankedPokemon, metric: CombatMetric): number
  * (every axis on the max value is "best", every axis on the min is "worst"),
  * and a perfectly flat spread has neither — nothing to single out.
  */
-export const bestWorst = (
-	values: Record<CombatMetric, number>
-): { best: Set<CombatMetric>; worst: Set<CombatMetric> } => {
-	const nums = COMBAT_METRICS.map((m) => values[m]);
+export const bestWorst = <K extends string = CombatMetric>(
+	values: Record<K, number>,
+	axes: ReadonlyArray<K> = COMBAT_METRICS as unknown as ReadonlyArray<K>
+): { best: Set<K>; worst: Set<K> } => {
+	const nums = axes.map((m) => values[m]);
 	const max = Math.max(...nums);
 	const min = Math.min(...nums);
 	if (max === min) return { best: new Set(), worst: new Set() };
 	return {
-		best: new Set(COMBAT_METRICS.filter((m) => values[m] === max)),
-		worst: new Set(COMBAT_METRICS.filter((m) => values[m] === min)),
+		best: new Set(axes.filter((m) => values[m] === max)),
+		worst: new Set(axes.filter((m) => values[m] === min)),
 	};
 };

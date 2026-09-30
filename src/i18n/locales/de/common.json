@@ -5,7 +5,7 @@
 	},
 	"nav": {
 		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Alle Pokémon durchsuchen" },
-		"rankings": { "label": "Ranglisten", "hint": "Beste Angreifer je Liga und {{raid}}-Typ" },
+		"teams": { "label": "Teams", "hint": "Bewerte dein 3er-Team für Super-, Hyper- und Meisterliga" },
 		"calendar": { "label": "Kalender", "hint": "Events, {{raid}}s, Fundorte und Eier" },
 		"moves": { "label": "Attacken", "hint": "Alle Schnell- und Ladeattacken" },
 		"types": { "label": "Typen", "hint": "Typ-Effektivitätstabelle" },

@@ -1,0 +1,233 @@
+{
+	"page": {
+		"title": "Tim",
+		"builderTab": "Pembuat Tim",
+		"leaderboardTab": "Tim Terbaik",
+		"tabsAria": "Bagian tim",
+		"leagueAria": "Liga",
+		"loading": "Memuat data tim…",
+		"loadFailed": "Data tim tidak dapat dimuat. Periksa koneksimu lalu coba lagi."
+	},
+	"builder": {
+		"intro": "Pilih tiga Pokémon beserta jurusnya untuk {{league}}. Kami menilai tim seperti PvPoke, lalu memberi tahu siapa yang sebaiknya memimpin, bergantian, dan menutup.",
+		"unverified": "PvPoke baru-baru ini mengubah simulasi pertarungannya, jadi skor ancaman bisa sedikit berbeda dari pvpoke.com sampai kami menyesuaikan. Hal lainnya tidak terpengaruh.",
+		"emptyHint": "Mulai dengan menambahkan Pokémon pertamamu.",
+		"addMore": "Tambahkan {{n}} lagi untuk menilai tim.",
+		"copyLink": "Salin tautan",
+		"copied": "Tautan disalin",
+		"openPvpoke": "Cek di PvPoke",
+		"clear": "Kosongkan tim",
+		"emptySlot": "Tambah Pokémon",
+		"slotN": "Slot {{n}}",
+		"remove": "Hapus {{name}}",
+		"change": "Ganti {{name}}",
+		"cp": "CP",
+		"level": "Level",
+		"ivs": "IV",
+		"chargedMove": "Isi",
+		"addMove": "Tambah Serangan Isi kedua",
+		"pickMove": "Ganti jurus ({{move}})",
+		"moveListAria": "Jurus",
+		"recommended": "Jurus rekomendasi PvPoke"
+	},
+	"picker": {
+		"title": "Pilih Pokémon",
+		"close": "Tutup",
+		"searchPlaceholder": "Cari Pokémon {{league}}…",
+		"sortAria": "Urutkan berdasarkan",
+		"inTeam": "Sudah ada di tim",
+		"rank": "#{{rank}}",
+		"empty": "Tidak ada Pokémon yang cocok.",
+		"showMore": "Tampilkan lebih banyak"
+	},
+	"plan": {
+		"heading": "Rencana pertarungan",
+		"needFull": "Tambahkan tiga Pokémon untuk melihat urutan main terbaik.",
+		"summary": "Mulai dengan {{lead}}, simpan {{switch}} untuk pergantian aman, dan tutup dengan {{closer}}.",
+		"closeCall": "Sangat tipis — urutan lain hampir sama baiknya.",
+		"fitAria": "Kecocokan tiap Pokémon dengan tiap peran",
+		"roleDescs": {
+			"lead": "Membuka pertandingan dengan perisai yang sama",
+			"switch": "Jawaban amanmu saat pembuka sedang kesulitan",
+			"closer": "Menuntaskan pertandingan setelah perisai habis"
+		}
+	},
+	"score": {
+		"heading": "Skor tim",
+		"ringAria": "Skor tim {{score}} dari 100",
+		"radarAria": "Enam bagian skor tim",
+		"calculating": "Mensimulasikan ribuan pertarungan…",
+		"needTeam": "Tambahkan tiga Pokémon untuk mendapatkan skor.",
+		"weight": "{{pct}}%",
+		"parts": {
+			"threat": {
+				"name": "Cakupan ancaman",
+				"desc": "Seberapa kuat tim menghadapi enam counter paling berbahaya di liga. Berasal dari skor ancaman PvPoke."
+			},
+			"defense": {
+				"name": "Tipe bertahan",
+				"desc": "Berapa banyak tipe serangan yang bisa diserap tim, dan berapa banyak dari kalian yang lemah terhadap tipe yang sama."
+			},
+			"offense": {
+				"name": "Tipe menyerang",
+				"desc": "Berapa banyak tipe yang dihantam sangat efektif oleh jurusmu, dan berapa banyak yang tak bisa disentuh."
+			},
+			"bulk": {
+				"name": "Ketahanan",
+				"desc": "Rata-rata Defense × HP dibanding target liga. Tim yang lebih tahan butuh lebih sedikit perisai."
+			},
+			"safety": {
+				"name": "Keamanan",
+				"desc": "Seberapa aman rata-rata pertandingan tim, berdasarkan skor pergantiannya."
+			},
+			"consistency": {
+				"desc": "Seberapa sedikit set jurus bergantung pada umpan atau peningkatan stat yang beruntung."
+			}
+		},
+		"tiers": {
+			"elite": {
+				"name": "Elite",
+				"summary": "Inti tim kelas turnamen. Hampir tanpa kelemahan nyata dan punya rencana untuk hampir semuanya."
+			},
+			"strong": {
+				"name": "Kuat",
+				"summary": "Tim yang sangat solid. Ada beberapa celah yang perlu diingat, tapi bisa naik peringkat."
+			},
+			"solid": {
+				"name": "Solid",
+				"summary": "Bagus di atas kertas. Lihat peringatan di bawah untuk memperkuatnya."
+			},
+			"shaky": {
+				"name": "Goyah",
+				"summary": "Ada celah nyata dalam cakupan atau ketahanan. Pertukaran kecil bisa membawa perbedaan besar."
+			},
+			"risky": {
+				"name": "Berisiko",
+				"summary": "Tim ini akan kesulitan melawan sebagian besar liga. Coba saran di bawah."
+			}
+		}
+	},
+	"threat": {
+		"heading": "Ancaman dan cakupan",
+		"simulating": "Mensimulasikan pertarungan…",
+		"needFull": "Tambahkan tiga Pokémon untuk melihat skor ancaman.",
+		"scoreLabel": "Skor ancaman",
+		"gaugeAria": "Skor ancaman {{score}}, nilai {{grade}}",
+		"better": "Lebih baik",
+		"worse": "Lebih buruk",
+		"gridHeading": "Enam ancaman terbesar",
+		"gridAria": "Seberapa telak tiap ancaman mengalahkan tiap Pokémonmu",
+		"metaTitle": "Pokémon meta teratas",
+		"legendSafe": "Kamu menang",
+		"legendEven": "Seimbang",
+		"legendThreat": "Dia menang",
+		"helpSummary": "Apa itu skor ancaman?",
+		"help": "Mengukur seberapa rentan timmu terhadap Pokémon tertentu — makin rendah makin baik. Memperhitungkan berapa banyak Pokémonmu yang bisa dikalahkan sebuah ancaman, seberapa telak, seberapa tinggi peringkatnya (seberapa mungkin kamu bertemu dengannya), dan seberapa konsisten performanya. Angka di tabel adalah rating pertarungan ancaman itu melawan tiap Pokémonmu, dirata-rata pada 0 dan 1 perisai: di atas 500 berarti ia menang.",
+		"grades": {
+			"A": "Cakupan sangat baik. Counter terbaik liga kesulitan menghadapi tim ini.",
+			"B": "Cakupan baik. Beberapa ancaman perlu diwaspadai.",
+			"C": "Ada beberapa celah. Segelintir Pokémon bisa menekan tim ini.",
+			"D": "Sangat rentan terhadap ancaman tertentu. Cari pilihan yang bisa mengatasinya.",
+			"F": "Cakupan sangat buruk terhadap beberapa ancaman teratas."
+		}
+	},
+	"coverage": {
+		"summary": "{{covered}} dari {{total}} Pokémon teratas dikalahkan seseorang di timmu, {{secure}} di antaranya dengan telak.",
+		"barAria": "{{covered}} dari {{total}} Pokémon teratas tercakup",
+		"legendSecure": "Dikalahkan telak",
+		"legendCovered": "Dikalahkan",
+		"legendHole": "Tak ada jawaban",
+		"perMember": "Apa yang dikalahkan tiap Pokémon",
+		"beats": "mengalahkan {{n}}",
+		"holesHeading": "Pokémon yang tak dikalahkan siapa pun di sini",
+		"holesHint": "Pokémon teratas ini tidak punya jawaban bagus di timmu. Pertimbangkan pilihan yang bisa mengatasi beberapa di antaranya.",
+		"noHoles": "Setiap Pokémon teratas punya jawaban di tim ini.",
+		"moreHoles": "+{{n}} lagi"
+	},
+	"typing": {
+		"heading": "Tipe",
+		"defenseHeading": "Bertahan",
+		"offenseHeading": "Menyerang",
+		"resisted": "tipe yang ditahan setidaknya oleh satu Pokémon",
+		"critical": "Dua atau lebih dari kalian lemah terhadap ini dan tak ada yang menahannya:",
+		"shared": "Kelemahan bersama:",
+		"noSharedWeakness": "Tak ada kelemahan yang dimiliki dua Pokémon.",
+		"hitSuper": "tipe yang dihantam sangat efektif",
+		"blindSpots": "Tak ada yang menghantam ini bahkan dengan damage normal:",
+		"noBlindSpots": "Setiap tipe terkena setidaknya damage normal.",
+		"defenseAria": "Damage tiap tipe ke tiap Pokémonmu",
+		"offenseAria": "Damage terbaik jurusmu ke tiap tipe",
+		"status": {
+			"critical": "Dua atau lebih lemah, tak ada yang menahan",
+			"shared": "Dua atau lebih lemah",
+			"exposed": "Satu lemah, tak ada yang menahan",
+			"covered": "Ada yang menahan",
+			"wall": "Dua atau lebih menahan"
+		},
+		"offStatus": {
+			"strong": "Dihantam sangat efektif",
+			"neutral": "Dihantam damage normal",
+			"resisted": "Hanya serangan yang ditahan"
+		}
+	},
+	"stats": {
+		"heading": "Angka",
+		"totalsHeading": "Total tim",
+		"cp": "CP",
+		"ivNote": "Setiap Pokémon dibuat dengan IV terbaik yang mungkin (peringkat 1 hasil kali stat) untuk liga ini, jadi skor menunjukkan tim pada batas maksimalnya. PvPoke menilai dengan IV bawaannya sendiri, sehingga angkanya bisa sedikit berbeda."
+	},
+	"grades": {
+		"heading": "Rapor",
+		"valueOfGoal": "{{value}} · target {{goal}}",
+		"bulk": {
+			"A": "Rata-rata ketahanan sangat baik. Membantu mengatur perisai dan melewati situasi sulit.",
+			"B": "Rata-rata ketahanan baik. Simpan perisai untuk rekan yang lebih rapuh.",
+			"C": "Ketahanan sedang. Kamu mungkin perlu lebih sering memakai perisai.",
+			"D": "Ketahanan rendah. Kamu akan sering terpaksa memakai perisai. Pertimbangkan Pokémon yang lebih tahan.",
+			"F": "Sangat rapuh. Sulit bangkit dari situasi buruk."
+		},
+		"safety": {
+			"A": "Pertandingan sangat aman. Fleksibel dan mudah beralih untuk merebut kembali keunggulan.",
+			"B": "Pertandingan umumnya aman. Bisa bangkit dari pembuka yang kalah.",
+			"C": "Hanya cukup aman. Pergantian aman terbatas — siap habiskan perisai.",
+			"D": "Umumnya kurang aman. Bergantung pada kemenangan pembuka dan keunggulan pergantian.",
+			"F": "Sangat tidak aman. Sangat bergantung pada kemenangan pembuka dan counter yang pas."
+		},
+		"consistency": {
+			"A": "Set jurus sangat konsisten. Damage bisa diandalkan.",
+			"B": "Umumnya konsisten. Jarang bergantung pada umpan.",
+			"C": "Konsistensi campuran. Sesekali kamu bergantung pada umpan.",
+			"D": "Konsistensi rendah. Kamu akan sering bergantung pada umpan atau peningkatan stat.",
+			"F": "Konsistensi buruk. Kamu sangat bergantung pada umpan atau peningkatan yang berhasil."
+		}
+	},
+	"warnings": {
+		"heading": "Perhatikan",
+		"none": "Tak ada yang perlu ditandai. Tim ini tak punya tumpang tindih atau celah yang mencolok.",
+		"duplicateSpecies": "{{names}} adalah Pokémon yang sama dua kali.",
+		"criticalWeakness": "{{names}} semuanya lemah terhadap tipe ini dan tak ada yang menahannya di tim.",
+		"sharedWeakness": "{{names}} sama-sama lemah terhadap tipe ini.",
+		"sharedTyping": "{{names}} berbagi tipe ini sehingga kelemahan mereka bertumpuk.",
+		"blindSpot": "Jurusmu tak bisa menghantam tipe-tipe ini bahkan dengan damage normal.",
+		"fragile": "{{name}} rapuh untuk liga ini dan akan bergantung pada perisai.",
+		"baitDependent": "{{name}} bergantung pada umpan atau peningkatan stat untuk memberi damage.",
+		"noLead": "Tak ada yang jadi pembuka kuat di sini.",
+		"noSafeSwitch": "Tak ada yang benar-benar aman untuk bergantian di sini."
+	},
+	"suggest": {
+		"heading": "Peningkatan",
+		"intro": "Coba setiap Pokémon teratas di tiap slot dan lihat pertukaran tunggal mana yang paling menurunkan skor ancamanmu.",
+		"button": "Cari peningkatan",
+		"searching": "Mencoba Pokémon teratas di tiap slot…",
+		"failed": "Saran tidak dapat dihitung. Coba lagi sebentar lagi.",
+		"none": "Tak ada pertukaran tunggal yang memperbaiki tim ini. Sudah tersusun dengan baik.",
+		"swap": "{{out}} → {{in}}",
+		"result": "Skor ancaman {{score}} ({{delta}})",
+		"apply": "Tukar"
+	},
+	"board": {
+		"intro": "Tim dengan skor terbaik dari simulasi latihan PvPoke, terakhir diperbarui {{date}}. Ini sampel kecil, bukan seluruh meta — tempat bagus untuk melihat seperti apa inti tim yang kuat.",
+		"open": "Buka di pembuat",
+		"source": "Sumber: analisis latihan PvPoke. Skor adalah rating tim PvPoke; 500 berarti pertarungan seimbang."
+	}
+}

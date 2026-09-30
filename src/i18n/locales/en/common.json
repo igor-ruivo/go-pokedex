@@ -5,7 +5,7 @@
 	},
 	"nav": {
 		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Browse every Pokémon" },
-		"rankings": { "label": "Rankings", "hint": "Best attackers per league and {{raid}} type" },
+		"teams": { "label": "Teams", "hint": "Rate a team of 3 for Great, Ultra and Master League" },
 		"calendar": { "label": "Calendar", "hint": "Events, {{raid}}s, spawns and eggs" },
 		"moves": { "label": "Moves", "hint": "Every fast and charged move" },
 		"types": { "label": "Types", "hint": "Type effectiveness chart" },

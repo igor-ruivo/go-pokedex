@@ -5,7 +5,7 @@
 	},
 	"nav": {
 		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Explora todos los Pokémon" },
-		"rankings": { "label": "Clasificación", "hint": "Los mejores atacantes por liga y tipo de {{raid}}" },
+		"teams": { "label": "Equipos", "hint": "Valora un equipo de 3 para Liga Super, Ultra y Master" },
 		"calendar": { "label": "Calendario", "hint": "Eventos, {{raid}}, apariciones y huevos" },
 		"moves": { "label": "Movimientos", "hint": "Todos los movimientos rápidos y cargados" },
 		"types": { "label": "Tipos", "hint": "Tabla de efectividad de tipos" },

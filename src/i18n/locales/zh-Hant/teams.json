@@ -1,0 +1,233 @@
+{
+	"page": {
+		"title": "隊伍",
+		"builderTab": "隊伍建構器",
+		"leaderboardTab": "頂尖隊伍",
+		"tabsAria": "隊伍區塊",
+		"leagueAria": "聯盟",
+		"loading": "正在載入隊伍資料…",
+		"loadFailed": "無法載入隊伍資料。請檢查網路連線後再試一次。"
+	},
+	"builder": {
+		"intro": "為{{league}}選擇三隻寶可夢與招式。我們會用與 PvPoke 相同的方式評估隊伍，並告訴你誰該先發、換上與收尾。",
+		"unverified": "PvPoke 最近更改了戰鬥模擬，在我們跟上之前，威脅分數可能與 pvpoke.com 略有出入。其他內容不受影響。",
+		"emptyHint": "先加入你的第一隻寶可夢。",
+		"addMore": "再加入 {{n}} 隻即可評估隊伍。",
+		"copyLink": "複製連結",
+		"copied": "已複製連結",
+		"openPvpoke": "在 PvPoke 上查看",
+		"clear": "清空隊伍",
+		"emptySlot": "加入寶可夢",
+		"slotN": "第 {{n}} 格",
+		"remove": "移除 {{name}}",
+		"change": "更換 {{name}}",
+		"cp": "CP",
+		"level": "等級",
+		"ivs": "個體值",
+		"chargedMove": "蓄力",
+		"addMove": "加入第二個蓄力攻擊",
+		"pickMove": "更換招式（{{move}}）",
+		"moveListAria": "招式",
+		"recommended": "PvPoke 推薦招式"
+	},
+	"picker": {
+		"title": "選擇寶可夢",
+		"close": "關閉",
+		"searchPlaceholder": "搜尋{{league}}的寶可夢…",
+		"sortAria": "排序方式",
+		"inTeam": "已在隊伍中",
+		"rank": "第 {{rank}} 名",
+		"empty": "沒有符合的寶可夢。",
+		"showMore": "顯示更多"
+	},
+	"plan": {
+		"heading": "戰鬥計畫",
+		"needFull": "加入三隻寶可夢即可看到最佳出場順序。",
+		"summary": "以 {{lead}} 先發，把 {{switch}} 留作安全換場，最後由 {{closer}} 收尾。",
+		"closeCall": "差距很小，換個順序也幾乎一樣好。",
+		"fitAria": "各寶可夢的定位適配度",
+		"roleDescs": {
+			"lead": "在護盾數相同時開啟對戰",
+			"switch": "先發陷入劣勢時的安全應對",
+			"closer": "護盾用完後負責結束比賽"
+		}
+	},
+	"score": {
+		"heading": "隊伍分數",
+		"ringAria": "隊伍分數 {{score}}（滿分 100）",
+		"radarAria": "隊伍分數的六個組成部分",
+		"calculating": "正在模擬數千場對戰…",
+		"needTeam": "加入三隻寶可夢即可取得分數。",
+		"weight": "{{pct}}%",
+		"parts": {
+			"threat": {
+				"name": "威脅應對",
+				"desc": "隊伍面對聯盟中六隻最危險的剋制對手時撐得多好。來自 PvPoke 的威脅分數。"
+			},
+			"defense": {
+				"name": "防禦屬性",
+				"desc": "隊伍能承受多少種攻擊屬性，以及有多少隻同時弱於同一屬性。"
+			},
+			"offense": {
+				"name": "攻擊屬性",
+				"desc": "你的招式能打出效果絕佳的屬性數量，以及完全打不動的屬性數量。"
+			},
+			"bulk": {
+				"name": "耐久",
+				"desc": "平均防禦 × HP 相對聯盟目標的比例。越耐打的隊伍需要的護盾越少。"
+			},
+			"safety": {
+				"name": "安全性",
+				"desc": "依換場分數衡量，隊伍對位的平均安全程度。"
+			},
+			"consistency": {
+				"desc": "招式組合對誘餌或運氣型能力提升的依賴程度有多低。"
+			}
+		},
+		"tiers": {
+			"elite": {
+				"name": "菁英",
+				"summary": "賽事等級的核心。幾乎沒有真正的弱點，對絕大多數對手都有對策。"
+			},
+			"strong": {
+				"name": "強力",
+				"summary": "非常穩健的隊伍。有幾個缺口要注意，但有能力向上攀升。"
+			},
+			"solid": {
+				"name": "穩健",
+				"summary": "紙面上運作良好。請參考下方警示來進一步調整。"
+			},
+			"shaky": {
+				"name": "不穩",
+				"summary": "在覆蓋範圍或耐久上有明顯缺口。小幅調整就可能帶來大差異。"
+			},
+			"risky": {
+				"name": "高風險",
+				"summary": "這支隊伍面對聯盟中的大部分對手都會吃力。請試試下方的建議。"
+			}
+		}
+	},
+	"threat": {
+		"heading": "威脅與覆蓋範圍",
+		"simulating": "正在模擬對戰…",
+		"needFull": "加入三隻寶可夢即可查看威脅分數。",
+		"scoreLabel": "威脅分數",
+		"gaugeAria": "威脅分數 {{score}}，評級 {{grade}}",
+		"better": "較佳",
+		"worse": "較差",
+		"gridHeading": "六大威脅",
+		"gridAria": "各威脅對你每隻寶可夢的壓制程度",
+		"metaTitle": "頂尖環境寶可夢",
+		"legendSafe": "你獲勝",
+		"legendEven": "勢均力敵",
+		"legendThreat": "對方獲勝",
+		"helpSummary": "什麼是威脅分數？",
+		"help": "它衡量你的隊伍對特定寶可夢有多脆弱，分數越低越好。計算內容包括一個威脅能擊敗你的幾隻寶可夢、壓制得多徹底、它在排名中的位置（遇到的機率），以及它的表現有多穩定。表格中的數字是該威脅對你每隻寶可夢的對戰評分，取 0 與 1 護盾的平均：超過 500 代表對方獲勝。",
+		"grades": {
+			"A": "覆蓋範圍極佳。聯盟最強的剋制對手也很難對付這支隊伍。",
+			"B": "覆蓋範圍良好。有幾個威脅值得留意。",
+			"C": "有一些缺口。少數寶可夢能壓制這支隊伍。",
+			"D": "對特定威脅非常脆弱。請尋找能應付它們的選擇。",
+			"F": "對多個頂尖威脅的覆蓋範圍很差。"
+		}
+	},
+	"coverage": {
+		"summary": "前 {{total}} 名寶可夢中，有 {{covered}} 隻會被你隊上某隻擊敗，其中 {{secure}} 隻是壓倒性勝利。",
+		"barAria": "前 {{total}} 名寶可夢中已覆蓋 {{covered}} 隻",
+		"legendSecure": "壓倒性擊敗",
+		"legendCovered": "可擊敗",
+		"legendHole": "無對策",
+		"perMember": "各寶可夢能擊敗的對手",
+		"beats": "擊敗 {{n}} 隻",
+		"holesHeading": "隊上無人能擊敗的寶可夢",
+		"holesHint": "這些頂尖寶可夢在你的隊伍中沒有好的對策。可以考慮能應付其中一部分的選擇。",
+		"noHoles": "每隻頂尖寶可夢在這支隊伍中都有對策。",
+		"moreHoles": "另有 {{n}} 隻"
+	},
+	"typing": {
+		"heading": "屬性",
+		"defenseHeading": "防禦",
+		"offenseHeading": "攻擊",
+		"resisted": "種屬性至少有一隻能抵抗",
+		"critical": "兩隻以上弱於這些屬性，且沒有任何一隻能抵抗：",
+		"shared": "共同弱點：",
+		"noSharedWeakness": "沒有任何弱點被兩隻寶可夢共有。",
+		"hitSuper": "種屬性能打出效果絕佳",
+		"blindSpots": "連一般傷害都打不出的屬性：",
+		"noBlindSpots": "每種屬性至少都能打出一般傷害。",
+		"defenseAria": "各屬性對你每隻寶可夢造成的傷害",
+		"offenseAria": "你的招式對各屬性的最佳傷害",
+		"status": {
+			"critical": "兩隻以上弱，無人抵抗",
+			"shared": "兩隻以上弱",
+			"exposed": "一隻弱，無人抵抗",
+			"covered": "有人抵抗",
+			"wall": "兩隻以上抵抗"
+		},
+		"offStatus": {
+			"strong": "效果絕佳",
+			"neutral": "一般傷害",
+			"resisted": "只能打出被抵抗的傷害"
+		}
+	},
+	"stats": {
+		"heading": "數值",
+		"totalsHeading": "隊伍總計",
+		"cp": "CP",
+		"ivNote": "每隻寶可夢都以此聯盟可能的最佳個體值（能力值乘積第 1 名）建構，因此分數呈現的是隊伍的上限。PvPoke 使用自己的預設個體值評分，所以數字可能略有不同。"
+	},
+	"grades": {
+		"heading": "成績單",
+		"valueOfGoal": "{{value}}・目標 {{goal}}",
+		"bulk": {
+			"A": "平均耐久極佳。有助於管理護盾並度過艱難局面。",
+			"B": "平均耐久良好。把護盾留給比較脆弱的隊友。",
+			"C": "耐久中等。你可能需要更常使用護盾。",
+			"D": "耐久偏低。你會經常被迫使用護盾。可考慮更耐打的選擇。",
+			"F": "極度脆弱。很難從劣勢中恢復。"
+		},
+		"safety": {
+			"A": "對位極為安全。靈活，容易重新取回優勢。",
+			"B": "對位大多安全。先發輸掉也能追回。",
+			"C": "僅有一定程度的安全。安全換場有限，要準備好花護盾。",
+			"D": "整體不太安全。依賴贏下先發與保持換場優勢。",
+			"F": "非常不安全。高度依賴贏下先發與完美的剋制對位。"
+		},
+		"consistency": {
+			"A": "招式組合極為穩定。傷害可靠。",
+			"B": "大多穩定。不常需要依賴誘餌。",
+			"C": "穩定度參差。偶爾需要依賴誘餌。",
+			"D": "穩定度偏低。經常要依賴誘餌或能力提升。",
+			"F": "穩定度差。高度依賴誘餌或能力提升成功。"
+		}
+	},
+	"warnings": {
+		"heading": "注意事項",
+		"none": "沒有需要提醒的事項。這支隊伍沒有明顯的重疊或缺口。",
+		"duplicateSpecies": "{{names}} 是同一種寶可夢重複了。",
+		"criticalWeakness": "{{names}} 都弱於此屬性，隊上卻沒有人能抵抗。",
+		"sharedWeakness": "{{names}} 共同弱於此屬性。",
+		"sharedTyping": "{{names}} 共有此屬性，使弱點疊加。",
+		"blindSpot": "你的招式連一般傷害都打不到這些屬性。",
+		"fragile": "{{name}} 在這個聯盟中很脆弱，會依賴護盾。",
+		"baitDependent": "{{name}} 需要依賴誘餌或能力提升才能打出傷害。",
+		"noLead": "隊上沒有強力的先發。",
+		"noSafeSwitch": "隊上沒有真正安全的換場選擇。"
+	},
+	"suggest": {
+		"heading": "升級建議",
+		"intro": "把每隻頂尖寶可夢放進每個位置試試，找出哪一次單隻替換最能降低你的威脅分數。",
+		"button": "尋找升級",
+		"searching": "正在每個位置測試頂尖寶可夢…",
+		"failed": "無法計算建議。請稍後再試。",
+		"none": "沒有任何單隻替換能改善這支隊伍，它已經搭配得很好。",
+		"swap": "{{out}} → {{in}}",
+		"result": "威脅分數 {{score}}（{{delta}}）",
+		"apply": "換上"
+	},
+	"board": {
+		"intro": "PvPoke 訓練模擬中分數最高的隊伍，最後更新於 {{date}}。這只是小樣本而非整個環境，但很適合看看強力核心的樣子。",
+		"open": "在建構器中開啟",
+		"source": "資料來源：PvPoke 訓練分析。分數為 PvPoke 的隊伍評分；500 代表勢均力敵。"
+	}
+}

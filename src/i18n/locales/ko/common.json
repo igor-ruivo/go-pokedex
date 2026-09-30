@@ -5,7 +5,7 @@
 	},
 	"nav": {
 		"pokedex": { "label": "포켓몬 도감", "shortLabel": "도감", "hint": "모든 포켓몬 살펴보기" },
-		"rankings": { "label": "랭킹", "hint": "리그·{{raid}} 타입별 최강 어태커" },
+		"teams": { "label": "팀", "hint": "슈퍼·하이퍼·마스터 리그용 3마리 팀 평가" },
 		"calendar": { "label": "캘린더", "hint": "이벤트·{{raid}}·출현·알" },
 		"moves": { "label": "기술", "hint": "모든 일반 기술과 스페셜 기술" },
 		"types": { "label": "타입", "hint": "타입 상성표" },

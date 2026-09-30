@@ -1,0 +1,233 @@
+{
+	"page": {
+		"title": "Teams",
+		"builderTab": "Team Builder",
+		"leaderboardTab": "Top Teams",
+		"tabsAria": "Teams sections",
+		"leagueAria": "League",
+		"loading": "Loading team data…",
+		"loadFailed": "Couldn't load the team data. Check your connection and try again."
+	},
+	"builder": {
+		"intro": "Pick three Pokémon and their moves for {{league}}. We rate the team the way PvPoke does, then tell you who should lead, switch and close.",
+		"unverified": "PvPoke recently changed how its battle simulation works, so the threat score may differ slightly from pvpoke.com until we catch up. Everything else is unaffected.",
+		"emptyHint": "Start by adding your first Pokémon.",
+		"addMore": "Add {{n}} more to rate the team.",
+		"copyLink": "Copy link",
+		"copied": "Link copied",
+		"openPvpoke": "Check on PvPoke",
+		"clear": "Clear team",
+		"emptySlot": "Add a Pokémon",
+		"slotN": "Slot {{n}}",
+		"remove": "Remove {{name}}",
+		"change": "Change {{name}}",
+		"cp": "CP",
+		"level": "Level",
+		"ivs": "IVs",
+		"chargedMove": "Charged",
+		"addMove": "Add a second Charged Move",
+		"pickMove": "Change move ({{move}})",
+		"moveListAria": "Moves",
+		"recommended": "PvPoke's recommended move"
+	},
+	"picker": {
+		"title": "Choose a Pokémon",
+		"close": "Close",
+		"searchPlaceholder": "Search {{league}} Pokémon…",
+		"sortAria": "Sort by",
+		"inTeam": "Already in team",
+		"rank": "#{{rank}}",
+		"empty": "No Pokémon match.",
+		"showMore": "Show more"
+	},
+	"plan": {
+		"heading": "Battle plan",
+		"needFull": "Add three Pokémon to see the best order to play them.",
+		"summary": "Start with {{lead}}, keep {{switch}} for the safe switch and finish with {{closer}}.",
+		"closeCall": "It's a close call — another order is nearly as good.",
+		"fitAria": "Role fit of each Pokémon",
+		"roleDescs": {
+			"lead": "Opens the match at even shields",
+			"switch": "Your safe answer when the lead is in trouble",
+			"closer": "Wraps up the game once shields are gone"
+		}
+	},
+	"score": {
+		"heading": "Team score",
+		"ringAria": "Team score {{score}} out of 100",
+		"radarAria": "The six parts of the team score",
+		"calculating": "Simulating thousands of battles…",
+		"needTeam": "Add three Pokémon to get a score.",
+		"weight": "{{pct}}%",
+		"parts": {
+			"threat": {
+				"name": "Threat cover",
+				"desc": "How well the team holds up against the six most dangerous counters in the league. Comes from PvPoke's threat score."
+			},
+			"defense": {
+				"name": "Defensive typing",
+				"desc": "How many attack types the team can absorb, and how many of you are weak to the same one."
+			},
+			"offense": {
+				"name": "Offensive typing",
+				"desc": "How many defending types your moves hit super effectively — and how many they can't touch."
+			},
+			"bulk": {
+				"name": "Bulk",
+				"desc": "Average Defense × HP against the league's goal. Bulkier teams can afford fewer shields."
+			},
+			"safety": {
+				"name": "Safety",
+				"desc": "How safe the team's matchups are on average, from its switch scores."
+			},
+			"consistency": {
+				"desc": "How little the movesets depend on baiting or lucky stat boosts."
+			}
+		},
+		"tiers": {
+			"elite": {
+				"name": "Elite",
+				"summary": "A tournament-grade core. Few real weaknesses and a plan for almost everything."
+			},
+			"strong": {
+				"name": "Strong",
+				"summary": "A very solid team. A couple of gaps to keep in mind, but it can climb."
+			},
+			"solid": {
+				"name": "Solid",
+				"summary": "Works well on paper. Look at the warnings below to tighten it up."
+			},
+			"shaky": {
+				"name": "Shaky",
+				"summary": "Real holes in coverage or bulk. Small swaps could make a big difference."
+			},
+			"risky": {
+				"name": "Risky",
+				"summary": "This team will struggle against much of the league. Try the suggestions below."
+			}
+		}
+	},
+	"threat": {
+		"heading": "Threats and coverage",
+		"simulating": "Simulating battles…",
+		"needFull": "Add three Pokémon to see the threat score.",
+		"scoreLabel": "Threat score",
+		"gaugeAria": "Threat score {{score}}, grade {{grade}}",
+		"better": "Better",
+		"worse": "Worse",
+		"gridHeading": "The six biggest threats",
+		"gridAria": "How hard each threat beats each of your Pokémon",
+		"metaTitle": "A top meta Pokémon",
+		"legendSafe": "You win",
+		"legendEven": "Even",
+		"legendThreat": "It wins",
+		"helpSummary": "What is the threat score?",
+		"help": "It measures how vulnerable your team is to specific Pokémon — the lower, the better. It looks at how many of your Pokémon a threat can beat, how hard it beats them, how highly ranked it is (how likely you are to meet it) and how consistently it performs. Numbers in the grid are the threat's own battle rating against each of your Pokémon, averaged over 0 and 1 shields: above 500 means it wins.",
+		"grades": {
+			"A": "Excellent coverage. The league's best counters have a hard time with this team.",
+			"B": "Good coverage. A few threats are worth watching for.",
+			"C": "Some gaps. A handful of Pokémon can push this team around.",
+			"D": "Highly vulnerable to certain threats. Look for picks that handle them.",
+			"F": "Very poor coverage against several top threats."
+		}
+	},
+	"coverage": {
+		"summary": "{{covered}} of the top {{total}} Pokémon are beaten by someone on your team, {{secure}} of them decisively.",
+		"barAria": "{{covered}} of {{total}} top Pokémon covered",
+		"legendSecure": "Beaten decisively",
+		"legendCovered": "Beaten",
+		"legendHole": "No answer",
+		"perMember": "What each Pokémon beats",
+		"beats": "beats {{n}}",
+		"holesHeading": "Pokémon nobody here beats",
+		"holesHint": "These top-ranked Pokémon have no good answer on your team. Consider a pick that handles some of them.",
+		"noHoles": "Every top Pokémon has an answer on this team.",
+		"moreHoles": "+{{n}} more"
+	},
+	"typing": {
+		"heading": "Typing",
+		"defenseHeading": "Defense",
+		"offenseHeading": "Offense",
+		"resisted": "types resisted by at least one Pokémon",
+		"critical": "Two or more of you are weak to these and nobody resists them:",
+		"shared": "Shared weaknesses:",
+		"noSharedWeakness": "No weakness is shared by two Pokémon.",
+		"hitSuper": "types hit super effectively",
+		"blindSpots": "Nothing hits these for even neutral damage:",
+		"noBlindSpots": "Every type is hit for at least neutral damage.",
+		"defenseAria": "Damage each type deals to each of your Pokémon",
+		"offenseAria": "Best damage your moves deal to each type",
+		"status": {
+			"critical": "Two or more weak, none resist",
+			"shared": "Two or more weak",
+			"exposed": "One weak, none resist",
+			"covered": "Someone resists",
+			"wall": "Two or more resist"
+		},
+		"offStatus": {
+			"strong": "Hit super effectively",
+			"neutral": "Hit for neutral damage",
+			"resisted": "Only resisted hits"
+		}
+	},
+	"stats": {
+		"heading": "Numbers",
+		"totalsHeading": "Team totals",
+		"cp": "CP",
+		"ivNote": "Every Pokémon is built with its best possible IVs (rank 1 stat product) for this league, so scores show a team at its ceiling. PvPoke rates with its own default IVs, so its numbers can differ slightly."
+	},
+	"grades": {
+		"heading": "Report card",
+		"valueOfGoal": "{{value}} · goal {{goal}}",
+		"bulk": {
+			"A": "Excellent average bulk. It will help manage shields and overcome tough scenarios.",
+			"B": "Good average bulk. Save shields for your more fragile teammates.",
+			"C": "Moderate bulk. You may be pressured to shield more often.",
+			"D": "Low bulk. You'll be pressured to shield often. Consider bulkier picks.",
+			"F": "Extremely fragile. It will be hard to recover from bad situations."
+		},
+		"safety": {
+			"A": "Extremely safe matchups. Flexible and easy to pivot to regain advantage.",
+			"B": "Mostly safe matchups. It can work back from a lost lead.",
+			"C": "Only somewhat safe. Limited safe switches — be ready to spend shields.",
+			"D": "Generally unsafe. It relies on winning the lead and keeping switch advantage.",
+			"F": "Very unsafe. It relies heavily on winning the lead and lining up perfect counters."
+		},
+		"consistency": {
+			"A": "Extremely consistent movesets. Dependable damage output.",
+			"B": "Mostly consistent. It won't depend on baits often.",
+			"C": "Mixed consistency. You might depend on baits now and then.",
+			"D": "Low consistency. You'll depend on baits or stat boosts often.",
+			"F": "Poor consistency. You'll be highly dependent on landing baits or boosts."
+		}
+	},
+	"warnings": {
+		"heading": "Watch out for",
+		"none": "Nothing to flag. This team has no glaring overlaps or holes.",
+		"duplicateSpecies": "{{names}} are the same Pokémon twice.",
+		"criticalWeakness": "{{names}} are all weak to this type and nobody on the team resists it.",
+		"sharedWeakness": "{{names}} share a weakness to this type.",
+		"sharedTyping": "{{names}} share this type, which stacks their weaknesses.",
+		"blindSpot": "Your moves can't hit these types for even neutral damage.",
+		"fragile": "{{name}} is fragile for this league and will lean on shields.",
+		"baitDependent": "{{name}} depends on baiting or stat boosts to do its damage.",
+		"noLead": "Nobody here is a strong lead.",
+		"noSafeSwitch": "Nobody here is a really safe switch."
+	},
+	"suggest": {
+		"heading": "Upgrades",
+		"intro": "Try every top Pokémon in each slot and see which single swap lowers your threat score the most.",
+		"button": "Find upgrades",
+		"searching": "Trying out top Pokémon in every slot…",
+		"failed": "Couldn't compute suggestions. Try again in a moment.",
+		"none": "No single swap improves this team. It's already well built.",
+		"swap": "{{out}} → {{in}}",
+		"result": "Threat score {{score}} ({{delta}})",
+		"apply": "Swap in"
+	},
+	"board": {
+		"intro": "The best-scoring teams from PvPoke's training simulations, last updated {{date}}. It's a small sample rather than the whole meta — a good place to see what strong cores look like.",
+		"open": "Open in builder",
+		"source": "Source: PvPoke training analysis. Scores are PvPoke's team rating; 500 is an even match."
+	}
+}

@@ -1,7 +1,9 @@
 import './rvmp.css';
 import './components.css';
+import './teams.css';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
@@ -30,6 +32,10 @@ import {
 	queryDehydrateOptions,
 	queryPersister,
 } from './utils/query-client';
+
+// The Teams view carries its own battle-simulator glue and a lot of chart code; nothing else
+// needs it, so it loads on first visit instead of weighing down every page.
+const Teams = lazy(() => import('./routes/Teams'));
 
 // Server state (the dex-server JSON feeds) lives in TanStack Query — see src/queries/.
 // Only genuine client state keeps a Context provider here. Everything is scoped
@@ -64,6 +70,21 @@ const App = () => {
 														<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
 														<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
 														<Route path='calendar/:tab' element={<Calendar />} />
+														<Route path='teams' element={<Navigate to='/teams/builder' replace />} />
+														<Route
+															path='teams/:tab'
+															element={
+																<Suspense
+																	fallback={
+																		<div className='r-tm-loading'>
+																			<span className='r-spinner' aria-hidden='true' />
+																		</div>
+																	}
+																>
+																	<Teams />
+																</Suspense>
+															}
+														/>
 														<Route path='moves' element={<Moves />} />
 														<Route path='move/:moveId' element={<MoveDetail />} />
 														<Route path='types' element={<Types />} />

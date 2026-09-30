@@ -2,12 +2,14 @@ import { useId } from 'react';
 
 import { bestWorst, COMBAT_METRICS, type CombatMetric } from '../lib/combat';
 
-interface CombatHexagonProps {
-	values: Record<CombatMetric, number>;
-	/** Localized axis names, keyed by metric. */
-	labels: Record<CombatMetric, string>;
+interface CombatHexagonProps<K extends string> {
+	/** The six axes, clockwise from the top. Defaults to PvPoke's six combat metrics. */
+	axes?: ReadonlyArray<K>;
+	values: Record<K, number>;
+	/** Localized axis names, keyed by axis. */
+	labels: Record<K, string>;
 	/** Localized one-line explanations, shown as a desktop hover/focus tooltip. */
-	descriptions: Record<CombatMetric, string>;
+	descriptions: Record<K, string>;
 	/** Any CSS colour (`var(--lg-great)` or a rotating cup's own hex). */
 	color: string;
 	ariaLabel: string;
@@ -44,16 +46,23 @@ const toPoints = (pts: Array<[number, number]>) => pts.map(([x, y]) => `${x.toFi
  * lowest score (down to 0 when a score is that low). Each axis prints its
  * exact number.
  */
-export const CombatHexagon = ({ values, labels, descriptions, color, ariaLabel }: CombatHexagonProps) => {
+export const CombatHexagon = <K extends string = CombatMetric>({
+	axes = COMBAT_METRICS as unknown as ReadonlyArray<K>,
+	values,
+	labels,
+	descriptions,
+	color,
+	ariaLabel,
+}: CombatHexagonProps<K>) => {
 	const uid = useId().replace(/:/g, '');
-	const nums = COMBAT_METRICS.map((m) => values[m]);
+	const nums = axes.map((m) => values[m]);
 	const floor = Math.min(70, Math.max(0, Math.floor((Math.min(...nums) - 15) / 10) * 10));
 	const fraction = (v: number) =>
 		MIN_FRACTION + (1 - MIN_FRACTION) * Math.max(0, Math.min(1, (v - floor) / (100 - floor)));
-	const { best, worst } = bestWorst(values);
+	const { best, worst } = bestWorst(values, axes);
 
-	const shape = COMBAT_METRICS.map((m, i) => pointAt(i, RADIUS * fraction(values[m])));
-	const ring = (f: number) => toPoints(COMBAT_METRICS.map((_, i) => pointAt(i, RADIUS * f)));
+	const shape = axes.map((m, i) => pointAt(i, RADIUS * fraction(values[m])));
+	const ring = (f: number) => toPoints(axes.map((_, i) => pointAt(i, RADIUS * f)));
 
 	return (
 		<figure className='r-hex' style={{ ['--hex-c' as string]: color }}>
@@ -73,7 +82,7 @@ export const CombatHexagon = ({ values, labels, descriptions, color, ariaLabel }
 					{[0.25, 0.5, 0.75, 1].map((f) => (
 						<polygon key={f} className='r-hex-ring' data-outer={f === 1 ? '' : undefined} points={ring(f)} />
 					))}
-					{COMBAT_METRICS.map((m, i) => {
+					{axes.map((m, i) => {
 						const [x, y] = pointAt(i, RADIUS);
 						return <line key={m} className='r-hex-spoke' x1={CENTER} y1={CENTER} x2={x} y2={y} />;
 					})}
@@ -93,7 +102,7 @@ export const CombatHexagon = ({ values, labels, descriptions, color, ariaLabel }
 
 					<polygon className='r-hex-shape' fill={`url(#${uid}-fill)`} points={toPoints(shape)} />
 
-					{COMBAT_METRICS.map((m, i) => (
+					{axes.map((m, i) => (
 						<circle
 							key={m}
 							className='r-hex-dot'
@@ -106,7 +115,7 @@ export const CombatHexagon = ({ values, labels, descriptions, color, ariaLabel }
 					))}
 				</svg>
 
-				{COMBAT_METRICS.map((m, i) => {
+				{axes.map((m, i) => {
 					const [x, y] = pointAt(i, LABEL_RADIUS);
 					const tone = best.has(m) ? 'best' : worst.has(m) ? 'worst' : undefined;
 					const tipId = `${uid}-tip-${m}`;

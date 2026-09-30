@@ -5,7 +5,7 @@
 	},
 	"nav": {
 		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Jelajahi semua Pokémon" },
-		"rankings": { "label": "Peringkat", "hint": "Attacker terbaik per liga dan tipe {{raid}}" },
+		"teams": { "label": "Tim", "hint": "Nilai tim berisi 3 untuk Liga Super, Ultra, dan Master" },
 		"calendar": { "label": "Kalender", "hint": "Event, {{raid}}, spawn, dan telur" },
 		"moves": { "label": "Jurus", "hint": "Semua jurus cepat dan jurus utama" },
 		"types": { "label": "Tipe", "hint": "Tabel efektivitas tipe" },
