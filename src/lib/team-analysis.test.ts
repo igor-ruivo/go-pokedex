@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import {
 	assignRoles,
+	bulkPart,
 	decodeTeam,
 	defenseProfile,
 	encodeTeam,
-	goalPart,
 	letterGrade,
 	offenseProfile,
 	SCORE_WEIGHTS,
@@ -93,17 +93,22 @@ describe('team score', () => {
 		expect(teamScore({ threat: 0, defense: 0, offense: 0, bulk: 0, safety: 0, consistency: 0 })).toBe(0);
 	});
 
-	it('maps threat scores through PvPoke’s (1200 − score) / 680 scale', () => {
-		expect(threatPart(520)).toBe(100);
+	it('maps the threat score onto 0–100 between the anchors', () => {
+		// anchored on what the best teams reach (560) and a hopeless team (800); beyond them it is clamped
+		expect(threatPart(560)).toBe(100);
+		expect(threatPart(450)).toBe(100);
+		expect(threatPart(800)).toBe(0);
 		expect(threatPart(1200)).toBe(0);
-		expect(goalPart(11, 22)).toBe(50);
+		expect(threatPart(680)).toBeCloseTo(50);
+		expect(bulkPart('great', 16250)).toBeCloseTo(50);
+		expect(bulkPart('great', 5000)).toBe(0);
 	});
 
 	it('bands the score into tiers', () => {
-		expect(scoreTier(90)).toBe('elite');
-		expect(scoreTier(80)).toBe('strong');
+		expect(scoreTier(99)).toBe('elite');
+		expect(scoreTier(90)).toBe('strong');
 		expect(scoreTier(70)).toBe('solid');
-		expect(scoreTier(60)).toBe('shaky');
+		expect(scoreTier(50)).toBe('shaky');
 		expect(scoreTier(10)).toBe('risky');
 	});
 });

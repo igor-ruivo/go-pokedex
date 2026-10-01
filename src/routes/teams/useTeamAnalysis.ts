@@ -9,10 +9,11 @@ import type { SimContext } from '../../lib/pvp-sim/types';
 import {
 	assignRoles,
 	BULK_GOAL,
+	bulkPart,
 	CONSISTENCY_GOAL,
+	consistencyPart,
 	type DefenseProfile,
 	defenseProfile,
-	goalPart,
 	type LetterGrade,
 	letterGrade,
 	type OffenseProfile,
@@ -20,6 +21,7 @@ import {
 	type RoleAssignment,
 	type RoleScores,
 	SAFETY_GOAL,
+	safetyPart,
 	type TeamSlotDescriptor,
 	type TeamWarning,
 	teamWarnings,
@@ -112,15 +114,15 @@ export const analyzeTeam = (
 	const grades = {
 		bulk: {
 			grade: letterGrade(totals.averageBulk, BULK_GOAL[league]),
-			part: goalPart(totals.averageBulk, BULK_GOAL[league]),
+			part: bulkPart(league, totals.averageBulk),
 		},
 		safety: {
 			grade: letterGrade(totals.averageSafety, SAFETY_GOAL),
-			part: goalPart(totals.averageSafety, SAFETY_GOAL),
+			part: safetyPart(totals.averageSafety),
 		},
 		consistency: {
 			grade: letterGrade(totals.averageConsistency, CONSISTENCY_GOAL),
-			part: goalPart(totals.averageConsistency, CONSISTENCY_GOAL),
+			part: consistencyPart(totals.averageConsistency),
 		},
 	};
 

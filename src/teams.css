@@ -2332,12 +2332,12 @@
 	outline: 2px solid var(--accent);
 	outline-offset: 2px;
 }
+/* drawn in the app root and placed against the screen by ScoreInfo, so no box around the score can clip it */
 .rvmp .r-tm-info-pop {
-	position: absolute;
+	position: fixed;
 	z-index: 60;
-	top: calc(100% + 8px);
-	left: 50%;
-	transform: translateX(calc(-50% + var(--shift, 0px)));
+	top: 0;
+	left: 0;
 	display: grid;
 	gap: 6px;
 	width: min(290px, calc(100vw - 16px));
@@ -2363,11 +2363,6 @@
 		opacity 0.15s ease,
 		visibility 0.15s;
 }
-/* the hero clips what hangs out of it, so its explanation opens over the ring rather than under it */
-.rvmp .r-tm-info[data-over] .r-tm-info-pop {
-	top: 50%;
-	transform: translate(calc(-50% + var(--shift, 0px)), -50%);
-}
 .rvmp .r-tm-info-pop strong {
 	color: var(--text);
 	font-size: 12.5px;
@@ -2381,16 +2376,9 @@
 	text-transform: none;
 	color: inherit;
 }
-.rvmp .r-tm-info[aria-expanded='true'] .r-tm-info-pop {
+.rvmp .r-tm-info-pop[data-shown] {
 	opacity: 1;
 	visibility: visible;
-}
-@media (hover: hover) and (pointer: fine) {
-	.rvmp .r-tm-info:hover .r-tm-info-pop,
-	.rvmp .r-tm-info:focus-visible .r-tm-info-pop {
-		opacity: 1;
-		visibility: visible;
-	}
 }
 
 /* ---- top teams ------------------------------------------------------------------------------------------ */

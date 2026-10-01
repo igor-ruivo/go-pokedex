@@ -137,7 +137,7 @@ export const ScoreHero = ({
 						transform='rotate(-90 60 60)'
 					/>
 				</svg>
-				<ScoreInfo kind='team' over className='r-tm-ring-center'>
+				<ScoreInfo kind='team' className='r-tm-ring-center'>
 					{shown === undefined || stale ? (
 						<span className='r-spinner' aria-hidden='true' />
 					) : (

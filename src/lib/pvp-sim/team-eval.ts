@@ -1,4 +1,5 @@
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
+import type { SlotIvs } from '../team-analysis';
 import { assignRoles, type RoleScores } from '../team-roles';
 import { SimBattle } from './battle';
 import { createSimContext, type SpeciesInfo } from './context';
@@ -39,7 +40,7 @@ export interface TeamSlot {
 	/** `[fast, charged 1, charged 2?]` */
 	moveset: ReadonlyArray<string>;
 	/** IVs picked for this member; absent: the league's best spread. */
-	ivs?: ReadonlyArray<number> | undefined;
+	ivs?: SlotIvs | undefined;
 }
 
 export interface ThreatEntry {
@@ -207,7 +208,7 @@ export class TeamEvaluator {
 		return this.rankingById.has(speciesId);
 	}
 
-	private createPokemon(speciesId: string, moveset: ReadonlyArray<string>, ivs?: ReadonlyArray<number>): SimPokemon {
+	private createPokemon(speciesId: string, moveset: ReadonlyArray<string>, ivs?: SlotIvs): SimPokemon {
 		const species = this.ctx.speciesById(speciesId);
 		if (!species) throw new Error(`Unknown species: ${speciesId}`);
 		return new SimPokemon(species, moveset, this.ctx, ivs);

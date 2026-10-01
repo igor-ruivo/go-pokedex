@@ -1,17 +1,20 @@
 import {
 	type KeyboardEvent,
+	type PointerEvent as ReactPointerEvent,
 	type ReactNode,
 	useEffect,
 	useId,
 	useLayoutEffect,
 	useRef,
+	useState,
 	useSyncExternalStore,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { SCORE_WEIGHTS } from '../../lib/team-analysis';
 
-/** Gap kept between the explanation and the edges of the screen. */
+/** Gap kept between the explanation and the edges of the screen, and between it and the score. */
 const EDGE = 8;
 
 // Which score's explanation is open, shared by every ScoreInfo on the page: opening one closes the other. (Not
@@ -35,16 +38,17 @@ const subscribe = (listener: () => void) => {
  * Makes a score (its number, with whatever is drawn around it) explain itself: hovering it with a mouse, or tapping it,
  * opens a short note on what the score is and how it is calculated. The Team Score note lists the parts it blends; the
  * threat score note adds that it is the heaviest part of the Team Score. Tapping again, tapping elsewhere or Escape closes it.
+ *
+ * The note is drawn in the app root, positioned against the screen, not inside the score's own box: the boxes around the
+ * scores (the hero, the bars) clip whatever hangs out of them. It is centred under the score, flipped above it when there
+ * is no room below, and kept inside the screen on both sides.
  */
 export const ScoreInfo = ({
 	kind,
-	over = false,
 	className,
 	children,
 }: {
 	kind: 'team' | 'threat';
-	/** Opens over the score instead of under it (for a score inside a box that clips what hangs out of it). */
-	over?: boolean;
 	/** The classes of the element this stands in for (it renders a `div`). */
 	className?: string;
 	children: ReactNode;
@@ -56,6 +60,9 @@ export const ScoreInfo = ({
 		() => activeId === tipId,
 		() => false
 	);
+	// A mouse pointer resting on the score, or keyboard focus on it, shows the note too (touch only taps).
+	const [hover, setHover] = useState(false);
+	const shown = open || hover;
 	const rootRef = useRef<HTMLDivElement>(null);
 	const tipRef = useRef<HTMLSpanElement>(null);
 
@@ -85,19 +92,32 @@ export const ScoreInfo = ({
 
 	const pct = (key: keyof typeof SCORE_WEIGHTS) => Math.round(SCORE_WEIGHTS[key] * 100);
 
-	// Centred under the score, then slid back inside the screen when that would run off an edge.
 	const place = () => {
+		const root = rootRef.current;
 		const tip = tipRef.current;
-		if (!tip) return;
-		tip.style.setProperty('--shift', '0px');
-		const { left, right } = tip.getBoundingClientRect();
-		const width = document.documentElement.clientWidth;
-		const shift = left < EDGE ? EDGE - left : right > width - EDGE ? width - EDGE - right : 0;
-		tip.style.setProperty('--shift', `${shift}px`);
+		if (!root || !tip) return;
+		const anchor = root.getBoundingClientRect();
+		const { width, height } = tip.getBoundingClientRect();
+		const screenWidth = document.documentElement.clientWidth;
+		const screenHeight = window.innerHeight;
+		const left = Math.max(EDGE, Math.min(anchor.left + anchor.width / 2 - width / 2, screenWidth - EDGE - width));
+		const below = anchor.bottom + EDGE;
+		const above = anchor.top - EDGE - height;
+		const top = below + height > screenHeight - EDGE && above >= EDGE ? above : below;
+		tip.style.left = `${left}px`;
+		tip.style.top = `${top}px`;
 	};
+	// Placed when it shows, and kept in place while the page scrolls or resizes under it.
 	useLayoutEffect(() => {
-		if (open) place();
-	}, [open]);
+		if (!shown) return;
+		place();
+		window.addEventListener('scroll', place, true);
+		window.addEventListener('resize', place);
+		return () => {
+			window.removeEventListener('scroll', place, true);
+			window.removeEventListener('resize', place);
+		};
+	}, [shown]);
 
 	const toggle = () => setActive(open ? null : tipId);
 	const onKeyDown = (event: KeyboardEvent) => {
@@ -106,6 +126,32 @@ export const ScoreInfo = ({
 			toggle();
 		}
 	};
+	const onPointerEnter = (event: ReactPointerEvent) => {
+		if (event.pointerType === 'mouse') setHover(true);
+	};
+
+	const note = (
+		<span id={tipId} role='tooltip' ref={tipRef} className='r-tm-info-pop' data-shown={shown ? '' : undefined}>
+			<strong>{kind === 'team' ? t('teams:score.teamScore') : t('teams:threat.scoreLabel')}</strong>
+			{kind === 'team' ? (
+				<span>
+					{t('teams:top.help.teamScore', {
+						threat: pct('threat'),
+						defense: pct('defense'),
+						offense: pct('offense'),
+						bulk: pct('bulk'),
+						safety: pct('safety'),
+						consistency: pct('consistency'),
+					})}
+				</span>
+			) : (
+				<>
+					<span>{t('teams:top.help.threat')}</span>
+					<span>{t('teams:threat.partOfScore', { pct: pct('threat') })}</span>
+				</>
+			)}
+		</span>
+	);
 
 	return (
 		<div
@@ -114,34 +160,17 @@ export const ScoreInfo = ({
 			role='button'
 			tabIndex={0}
 			aria-expanded={open}
-			data-over={over ? '' : undefined}
 			aria-describedby={tipId}
 			onClick={toggle}
 			onKeyDown={onKeyDown}
-			onMouseEnter={place}
-			onFocus={place}
+			onPointerEnter={onPointerEnter}
+			onPointerLeave={() => setHover(false)}
+			// keyboard focus shows the note too (a mouse click focuses it as well, so only :focus-visible counts)
+			onFocus={(event) => setHover(event.currentTarget.matches(':focus-visible'))}
+			onBlur={() => setHover(false)}
 		>
 			{children}
-			<span id={tipId} role='tooltip' ref={tipRef} className='r-tm-info-pop' data-open={open ? '' : undefined}>
-				<strong>{kind === 'team' ? t('teams:score.teamScore') : t('teams:threat.scoreLabel')}</strong>
-				{kind === 'team' ? (
-					<span>
-						{t('teams:top.help.teamScore', {
-							threat: pct('threat'),
-							defense: pct('defense'),
-							offense: pct('offense'),
-							bulk: pct('bulk'),
-							safety: pct('safety'),
-							consistency: pct('consistency'),
-						})}
-					</span>
-				) : (
-					<>
-						<span>{t('teams:top.help.threat')}</span>
-						<span>{t('teams:threat.partOfScore', { pct: pct('threat') })}</span>
-					</>
-				)}
-			</span>
+			{createPortal(note, document.querySelector('.rvmp') ?? document.body)}
 		</div>
 	);
 };

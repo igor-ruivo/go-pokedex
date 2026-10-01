@@ -32,6 +32,38 @@ export const threatCoverage = (threatScore: number): number => (1200 - threatSco
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
+/**
+ * What each part of the Team Score is measured against: a value at (or beyond) its floor scores 0, one at (or beyond)
+ * its ceiling scores 100, and everything between is stretched linearly — so a part can never leave 0–100, however bad
+ * or good a team turns out to be. The Team Score is simply the weighted average of these parts (the radar's six values).
+ *
+ * The anchors are fixed numbers, not derived from the teams we happen to rate. They were placed from rating a few hundred
+ * thousand teams (`scripts/team-ranking/calibrate.mts`): the floors sit where teams put together at random from the
+ * ranked Pokémon fall, so such a team scores about 50 and the weakest ones in the 10s and 20s; the ceilings sit at what
+ * the league's best teams reach, so those score 98 and above and the best 100 still 94 or more.
+ */
+export const SCORE_ANCHORS = {
+	/** PvPoke's threat score: 560 is what the best teams reach, 800 a hopeless team (lower is better). */
+	threat: { best: 560, worst: 800 },
+	/** The typing parts are already 0–100 from their own formulas; real teams use only the upper part of that range. */
+	defense: { floor: 55, ceiling: 85 },
+	offense: { floor: 70, ceiling: 94 },
+	/** Average Defense × HP of the three, per league (the stat grows with the CP cap). */
+	bulk: {
+		great: { floor: 12000, ceiling: 20500 },
+		ultra: { floor: 19000, ceiling: 36000 },
+		master: { floor: 26000, ceiling: 45500 },
+	} satisfies Record<TeamLeague, { floor: number; ceiling: number }>,
+	/** Average PvPoke "switch" score of the three. */
+	safety: { floor: 40, ceiling: 80 },
+	/** Average PvPoke moveset consistency of the three. */
+	consistency: { floor: 80, ceiling: 93 },
+};
+
+/** `value` placed between `floor` (0) and `ceiling` (100), clamped to that range. */
+export const stretch = (value: number, floor: number, ceiling: number): number =>
+	clamp((value - floor) / (ceiling - floor)) * 100;
+
 /* ------------------------------ Typing ------------------------------------ */
 
 /** Multiplier of an attacking type against a (one- or two-type) defender, in Pokémon GO's scale. */
@@ -94,7 +126,13 @@ export const defenseProfile = (memberTypes: ReadonlyArray<ReadonlyArray<string>>
 		critical: rows.filter((r) => r.status === 'critical').map((r) => r.type),
 		shared: rows.filter((r) => r.weakMembers.length >= 2).map((r) => r.type),
 		exposed: rows.filter((r) => r.weakMembers.length >= 1 && r.resistMembers.length === 0).map((r) => r.type),
-		score: memberTypes.length ? (rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100 : 0,
+		score: memberTypes.length
+			? stretch(
+					(rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100,
+					SCORE_ANCHORS.defense.floor,
+					SCORE_ANCHORS.defense.ceiling
+				)
+			: 0,
 	};
 };
 
@@ -139,7 +177,13 @@ export const offenseProfile = (memberMoveTypes: ReadonlyArray<ReadonlyArray<stri
 		rows,
 		superEffectiveTypes: rows.filter((r) => r.status === 'strong').length,
 		blindSpots: rows.filter((r) => r.status === 'resisted').map((r) => r.type),
-		score: memberMoveTypes.length ? (rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100 : 0,
+		score: memberMoveTypes.length
+			? stretch(
+					(rows.reduce((sum, r) => sum + value(r), 0) / rows.length) * 100,
+					SCORE_ANCHORS.offense.floor,
+					SCORE_ANCHORS.offense.ceiling
+				)
+			: 0,
 	};
 };
 
@@ -187,11 +231,18 @@ export const SCORE_WEIGHTS: Record<keyof ScoreParts, number> = {
 export const PART_KEYS = Object.keys(SCORE_WEIGHTS) as Array<keyof ScoreParts>;
 
 /**
- * Goal-relative parts (bulk, safety, consistency, threat) as 0–100: reaching the goal is 100. Parts are kept
- * unrounded — the Team Score is computed from them as they are; only the display rounds (to one decimal).
+ * The measured parts (threat, bulk, safety, consistency) as 0–100 against SCORE_ANCHORS. Parts are kept unrounded —
+ * the Team Score is computed from them as they are; only the display rounds (to one decimal). (The letter grades keep
+ * PvPoke's own goals above; they are a separate reading of the same numbers.)
  */
-export const goalPart = (value: number, goal: number): number => clamp(value / goal) * 100;
-export const threatPart = (threatScore: number): number => clamp(threatCoverage(threatScore)) * 100;
+export const threatPart = (threatScore: number): number =>
+	stretch(threatScore, SCORE_ANCHORS.threat.worst, SCORE_ANCHORS.threat.best);
+export const bulkPart = (league: TeamLeague, averageBulk: number): number =>
+	stretch(averageBulk, SCORE_ANCHORS.bulk[league].floor, SCORE_ANCHORS.bulk[league].ceiling);
+export const safetyPart = (averageSafety: number): number =>
+	stretch(averageSafety, SCORE_ANCHORS.safety.floor, SCORE_ANCHORS.safety.ceiling);
+export const consistencyPart = (averageConsistency: number): number =>
+	stretch(averageConsistency, SCORE_ANCHORS.consistency.floor, SCORE_ANCHORS.consistency.ceiling);
 
 /** Weighted 0–100 Team Score, or undefined until every part (the simulated threat score included) is known. */
 export const teamScore = (parts: ScoreParts): number | undefined => {
@@ -201,8 +252,12 @@ export const teamScore = (parts: ScoreParts): number | undefined => {
 
 export type ScoreTier = 'elite' | 'strong' | 'solid' | 'shaky' | 'risky';
 
+/**
+ * A team put together at random from the ranked Pokémon scores about 50, one of the league's best-ranked Pokémon
+ * about 75–80, and the published best teams 95 and up (see `scripts/team-ranking/calibrate.mts`).
+ */
 export const scoreTier = (score: number): ScoreTier =>
-	score >= 88 ? 'elite' : score >= 78 ? 'strong' : score >= 68 ? 'solid' : score >= 55 ? 'shaky' : 'risky';
+	score >= 95 ? 'elite' : score >= 85 ? 'strong' : score >= 65 ? 'solid' : score >= 40 ? 'shaky' : 'risky';
 
 /* ----------------------------- Warnings ----------------------------------- */
 
