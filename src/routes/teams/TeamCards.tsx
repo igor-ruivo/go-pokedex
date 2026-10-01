@@ -47,17 +47,8 @@ export const TeamCard = ({
 
 	// The card is not itself a button: it holds the favorite star, and a button can't hold a button.
 	return (
-		<div
-			className='r-tm-board-card'
-			data-tier={team.tier}
-			data-added={team.addedAt !== undefined ? '' : undefined}
-		>
-			<button
-				type='button'
-				className='r-tm-board-open'
-				aria-label={t('teams:top.open')}
-				onClick={() => onOpen(team)}
-			/>
+		<div className='r-tm-board-card' data-tier={team.tier} data-added={team.addedAt !== undefined ? '' : undefined}>
+			<button type='button' className='r-tm-board-open' aria-label={t('teams:top.open')} onClick={() => onOpen(team)} />
 			<span className='r-tm-board-lead'>
 				{/* a favorite has no place in a ranking: just the star (and, below, when it was added) */}
 				{team.addedAt === undefined && (

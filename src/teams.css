@@ -171,7 +171,8 @@
 	gap: var(--s3);
 	grid-template-columns: 1fr;
 }
-@media (min-width: 720px) {
+/* Three cards side by side only once there is room for their move rows (a phone in landscape is not enough). */
+@media (min-width: 1000px) {
 	.rvmp .r-tm-stage {
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: var(--s4);
@@ -1123,6 +1124,23 @@
 }
 .rvmp .r-tm-fit-cell[data-chosen] > i {
 	background: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+/* small screens (up to 400px): the name column would otherwise grow to its 176px cap and squeeze the score cells
+   against the right edge, leaving a gap after each name. Every row is its own grid, so the column gets a fixed
+   share instead of fitting each name, to keep the three score columns lined up. */
+@media (max-width: 400px) {
+	.rvmp .r-tm-fit-row {
+		grid-template-columns: minmax(90px, 32%) repeat(3, minmax(0, 1fr));
+		gap: 4px;
+	}
+	.rvmp .r-tm-fit-name {
+		gap: 4px;
+		font-size: 12px;
+	}
+	.rvmp .r-tm-fit-name .r-tm-wins-ico {
+		width: 24px;
+		height: 24px;
+	}
 }
 
 /* ---- threat panel ---------------------------------------------------------------------- */

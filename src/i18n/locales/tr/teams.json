@@ -245,6 +245,7 @@
 		"teamScore": "Takım puanı",
 		"note": "{{date}} tarihinde {{total}} olası takım arasından puanlandı. Takımdaki sıra: açılış, geçiş, kapanış.",
 		"empty": "Şu anda takım sıralaması yok. Yakında tekrar bak.",
+		"noMatch": "Sıralamadaki hiçbir takım bu Pokémon'u içermiyor.",
 		"threat": "Tehdit",
 		"help": {
 			"summary": "Bu sayılar ne anlama geliyor?",

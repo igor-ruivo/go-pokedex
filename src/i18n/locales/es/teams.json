@@ -245,6 +245,7 @@
 		"teamScore": "Puntuación del equipo",
 		"note": "Puntuado el {{date}} entre {{total}} equipos posibles. Orden dentro del equipo: líder, cambio, cierre.",
 		"empty": "No hay ningún ranking de equipos disponible ahora mismo. Vuelve pronto.",
+		"noMatch": "Ningún equipo del ranking incluye ese Pokémon.",
 		"threat": "Amenaza",
 		"help": {
 			"summary": "¿Qué significan estos números?",

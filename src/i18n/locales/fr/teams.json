@@ -245,6 +245,7 @@
 		"teamScore": "Score d'équipe",
 		"note": "Noté le {{date}} parmi {{total}} équipes possibles. Ordre dans l'équipe : ouvreur, relais, finisseur.",
 		"empty": "Aucun classement d'équipes n'est disponible pour le moment. Reviens bientôt.",
+		"noMatch": "Aucune équipe du classement ne contient ce Pokémon.",
 		"threat": "Menace",
 		"help": {
 			"summary": "Que signifient ces chiffres ?",

@@ -245,6 +245,7 @@
 		"teamScore": "Punteggio squadra",
 		"note": "Valutato il {{date}} su {{total}} squadre possibili. Ordine nella squadra: apertura, cambio, chiusura.",
 		"empty": "Al momento non è disponibile nessuna classifica di squadre. Riprova presto.",
+		"noMatch": "Nessuna squadra della classifica include quel Pokémon.",
 		"threat": "Minaccia",
 		"help": {
 			"summary": "Cosa significano questi numeri?",

@@ -245,6 +245,7 @@
 		"teamScore": "Skor tim",
 		"note": "Dinilai pada {{date}} dari {{total}} kemungkinan tim. Urutan dalam tim: lead, switch, closer.",
 		"empty": "Belum ada peringkat tim saat ini. Coba lagi nanti.",
+		"noMatch": "Tidak ada tim di peringkat yang menyertakan Pokémon itu.",
 		"threat": "Ancaman",
 		"help": {
 			"summary": "Apa arti angka-angka ini?",

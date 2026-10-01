@@ -245,6 +245,7 @@
 		"teamScore": "Team-Wertung",
 		"note": "Bewertet am {{date}} aus {{total}} möglichen Teams. Reihenfolge im Team: Lead, Wechsel, Closer.",
 		"empty": "Zurzeit ist keine Team-Rangliste verfügbar. Schau bald wieder vorbei.",
+		"noMatch": "Kein Team im Ranking enthält dieses Pokémon.",
 		"threat": "Bedrohung",
 		"help": {
 			"summary": "Was bedeuten diese Zahlen?",
