@@ -82,7 +82,7 @@ export const IvModal = ({
 			onChangeRef.current(next);
 		}, APPLY_DELAY_MS);
 		return () => clearTimeout(id);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [text, overCap, current]);
 
 	const parsed = fields.map((field) => (field === '' ? NaN : Number(field)));

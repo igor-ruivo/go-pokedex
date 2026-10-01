@@ -43,7 +43,11 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 					data.gamemaster[slot.speciesId] &&
 					slot.moveset.every((m) => builder?.moves[m])
 			)
-			.map((slot) => (withinCap(slot) ? slot : { speciesId: slot.speciesId, moveset: slot.moveset, ...(slot.ivs ? { ivs: slot.ivs } : {}) }));
+			.map((slot) =>
+				withinCap(slot)
+					? slot
+					: { speciesId: slot.speciesId, moveset: slot.moveset, ...(slot.ivs ? { ivs: slot.ivs } : {}) }
+			);
 	}, [raw, data, league]);
 
 	const write = useCallback(
