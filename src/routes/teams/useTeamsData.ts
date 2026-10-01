@@ -5,6 +5,7 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { createSimContext, type SpeciesInfo } from '../../lib/pvp-sim/context';
+import { inPvpokeOrder } from '../../lib/pvp-sim/pool-order';
 import type { AlternativePick, EvaluatorInit, TeamEvaluation, TeamSlot } from '../../lib/pvp-sim/team-eval';
 import type { SimContext } from '../../lib/pvp-sim/types';
 import { encodeTeam, type ScoreParts, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
@@ -57,9 +58,10 @@ const buildEvaluatorInit = (
 	gamemaster: Record<string, IGamemasterPokemon>,
 	rankList: Record<string, IRankedPokemon>
 ): EvaluatorInit => {
-	const ranking = Object.values(rankList)
-		.filter((r) => gamemaster[r.speciesId])
-		.map((r) => ({
+	const ranking = inPvpokeOrder(
+		Object.values(rankList).filter((r) => gamemaster[r.speciesId]),
+		gamemaster
+	).map((r) => ({
 			speciesId: r.speciesId,
 			moveset: r.moveset.filter((m) => m !== 'none'),
 			score: r.score,

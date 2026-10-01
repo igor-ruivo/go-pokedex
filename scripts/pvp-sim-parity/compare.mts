@@ -166,6 +166,9 @@ function writeFixtureInputs(
 		consistency: r.scores[5],
 		rank: i + 1,
 	}));
+	// PvPoke keeps the threat it meets first when two rate the same: the pool must come in its Pokémon order.
+	const order = new Map(rawPokemon.map((p, i) => [p.speciesId, i]));
+	ranking.sort((a, b) => (order.get(a.speciesId) ?? Infinity) - (order.get(b.speciesId) ?? Infinity));
 	const species = ranking
 		.map((r) => byId.get(r.speciesId)!)
 		.map((p) => ({ speciesId: p.speciesId, speciesName: p.speciesName, dex: p.dex, types: p.types, baseStats: p.baseStats, isShadow: !!p.tags?.includes('shadow') }));

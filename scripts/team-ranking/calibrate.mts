@@ -15,6 +15,7 @@ import type { IGamemasterPokemon } from '../../src/DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../src/DTOs/IRankedPokemon';
 import type { TeamBuilderData, TeamLeague } from '../../src/DTOs/ITeamBuilder';
 import { createSimContext } from '../../src/lib/pvp-sim/context';
+import { inPvpokeOrder } from '../../src/lib/pvp-sim/pool-order';
 import { type EvaluatorInit, TeamEvaluator } from '../../src/lib/pvp-sim/team-eval';
 import { SCORE_ANCHORS, type ScoreParts, teamScore, threatPart } from '../../src/lib/team-analysis';
 import { analyzeTeam } from '../../src/routes/teams/useTeamAnalysis';
@@ -54,9 +55,10 @@ const quantile = (sorted: Array<number>, q: number) => sorted[Math.min(sorted.le
 const run = ({ league, file }: (typeof LEAGUES)[number]) => {
 	const rankList = read<Record<string, IRankedPokemon>>(file);
 	const moveset = (id: string) => rankList[id].moveset.filter((m) => m !== 'none');
-	const ranking = Object.values(rankList)
-		.filter((r) => gamemaster[r.speciesId])
-		.map((r) => ({
+	const ranking = inPvpokeOrder(
+		Object.values(rankList).filter((r) => gamemaster[r.speciesId]),
+		gamemaster
+	).map((r) => ({
 			speciesId: r.speciesId,
 			moveset: moveset(r.speciesId),
 			score: r.score,
