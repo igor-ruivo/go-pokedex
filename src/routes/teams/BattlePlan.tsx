@@ -128,7 +128,7 @@ export const BattlePlan = ({
 					))}
 				</div>
 				{members.map((member, i) => (
-					<div key={member.slot.speciesId} role='row' className='r-tm-fit-row'>
+					<div key={`${member.slot.speciesId}-${i}`} role='row' className='r-tm-fit-row'>
 						<span role='rowheader' className='r-tm-fit-head-cell'>
 							<button
 								type='button'

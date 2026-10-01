@@ -62,16 +62,16 @@ const buildEvaluatorInit = (
 		Object.values(rankList).filter((r) => gamemaster[r.speciesId]),
 		gamemaster
 	).map((r) => ({
-			speciesId: r.speciesId,
-			moveset: r.moveset.filter((m) => m !== 'none'),
-			score: r.score,
-			lead: r.lead,
-			switch: r.switch,
-			closer: r.closer,
-			charger: r.charger,
-			consistency: r.consistency,
-			rank: r.rank,
-		}));
+		speciesId: r.speciesId,
+		moveset: r.moveset.filter((m) => m !== 'none'),
+		score: r.score,
+		lead: r.lead,
+		switch: r.switch,
+		closer: r.closer,
+		charger: r.charger,
+		consistency: r.consistency,
+		rank: r.rank,
+	}));
 
 	return {
 		league,

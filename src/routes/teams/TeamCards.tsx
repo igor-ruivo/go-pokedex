@@ -85,7 +85,7 @@ export const TeamCard = ({
 					const best = data.builder?.ivs[member.speciesId]?.[league];
 					const ivs = member.ivs ?? (best ? [best[1], best[2], best[3]] : undefined);
 					return (
-						<Fragment key={member.speciesId}>
+						<Fragment key={`${member.speciesId}-${i}`}>
 							{i > 0 && (
 								<svg className='r-tm-board-arrow' viewBox='0 0 40 24' aria-hidden='true'>
 									<path d='M2 12h30M24 4l10 8-10 8' />

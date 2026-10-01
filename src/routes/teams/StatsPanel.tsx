@@ -18,7 +18,7 @@ const ShareBar = ({ values, members }: { values: ReadonlyArray<number>; members:
 		<span className='r-tm-share' aria-hidden='true'>
 			{values.map((v, i) => (
 				<i
-					key={members[i].slot.speciesId}
+					key={`${members[i].slot.speciesId}-${i}`}
 					style={{ width: `${(v / total) * 100}%`, ['--tc' as string]: typeVar(members[i].pokemon.types[0]) }}
 				/>
 			))}

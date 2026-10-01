@@ -65,7 +65,7 @@ export const CoveragePanel = ({
 			<h3 className='r-tm-sub'>{t('teams:coverage.perMember')}</h3>
 			<ul className='r-tm-wins'>
 				{members.map((m, i) => (
-					<li key={m.slot.speciesId} style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}>
+					<li key={`${m.slot.speciesId}-${i}`} style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}>
 						<button
 							type='button'
 							className='r-tm-wins-ico'

@@ -31,7 +31,7 @@ const MemberHeads = ({
 	return (
 		<>
 			{members.map((m, i) => (
-				<span key={m.slot.speciesId} className='r-tm-mx-head'>
+				<span key={`${m.slot.speciesId}-${i}`} className='r-tm-mx-head'>
 					<button
 						type='button'
 						style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}
@@ -127,7 +127,7 @@ export const TypeProfile = ({
 								<TypeChip type={row.type} />
 							</span>
 							{row.mults.map((m, i) => (
-								<Cell key={members[i].slot.speciesId} mult={m} direction='defense' />
+								<Cell key={`${members[i].slot.speciesId}-${i}`} mult={m} direction='defense' />
 							))}
 							<span role='cell' className='r-tm-mx-status' data-status={row.status} title={defenseStatuses[row.status]}>
 								{row.status === 'critical'
@@ -176,7 +176,7 @@ export const TypeProfile = ({
 								<TypeChip type={row.type} />
 							</span>
 							{row.perMember.map((m, i) => (
-								<Cell key={members[i].slot.speciesId} mult={m} direction='offense' />
+								<Cell key={`${members[i].slot.speciesId}-${i}`} mult={m} direction='offense' />
 							))}
 							<span role='cell' className='r-tm-mx-status' data-status={row.status} title={offenseStatuses[row.status]}>
 								{row.status === 'strong' ? '▲' : row.status === 'neutral' ? '·' : '▼'}

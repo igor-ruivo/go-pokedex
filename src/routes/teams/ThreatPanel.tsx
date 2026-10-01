@@ -108,7 +108,7 @@ export const ThreatPanel = ({
 				<div className='r-tm-grid-row r-tm-grid-head' role='row' style={{ ['--cols' as string]: members.length }}>
 					<span role='columnheader' />
 					{members.map((m, i) => (
-						<span key={m.slot.speciesId} role='columnheader' className='r-tm-grid-member'>
+						<span key={`${m.slot.speciesId}-${i}`} role='columnheader' className='r-tm-grid-member'>
 							<button
 								type='button'
 								style={{ ['--tc' as string]: typeVar(m.pokemon.types[0]) }}
