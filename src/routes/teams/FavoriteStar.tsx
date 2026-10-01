@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
 import { isFavoriteTeam, toggleFavoriteTeam, useFavoriteTeams } from '../../lib/favorite-teams';
+import type { SlotIvs } from '../../lib/team-analysis';
 
 /** The star that adds a team to, or removes it from, the favorites (see `lib/favorite-teams.ts`). */
 export const FavoriteStar = ({
@@ -10,7 +11,7 @@ export const FavoriteStar = ({
 	className = '',
 }: {
 	league: TeamLeague;
-	members: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>;
+	members: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string>; ivs?: SlotIvs | undefined }>;
 	className?: string;
 }) => {
 	const { t } = useTranslation(['teams']);

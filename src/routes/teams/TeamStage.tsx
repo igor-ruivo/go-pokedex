@@ -15,10 +15,11 @@ import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../../lib/com
 import { combatMetricNames } from '../../lib/combat-text';
 import { cleanName, ordinal } from '../../lib/format';
 import { type BuffInfo, buffInfo } from '../../lib/moves';
-import { type TeamRole, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import { type SlotIvs, type TeamRole, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
+import { IvModal } from './IvModal';
 import { roleNames } from './teams-text';
 import type { AnalyzedMember } from './useTeamAnalysis';
 import type { TeamsData } from './useTeamsData';
@@ -402,6 +403,7 @@ const MemberCard = ({
 	role,
 	onChangePokemon,
 	onMove,
+	onEditIvs,
 	onRemove,
 	suggestion,
 }: {
@@ -412,6 +414,8 @@ const MemberCard = ({
 	role: TeamRole | undefined;
 	onChangePokemon: () => void;
 	onMove: (moveIndex: number, moveId: string) => void;
+	/** Open the IVs dialog for this member (the stage owns it: a dialog can't sit inside an animated card). */
+	onEditIvs: () => void;
 	onRemove: () => void;
 	/** Only on the empty cards of a team that has one or two Pokémon: finish the team with the best teammates. */
 	suggestion?: { pending: boolean; onSuggest: () => void } | undefined;
@@ -509,7 +513,19 @@ const MemberCard = ({
 				</div>
 				<div>
 					<dt>{t('teams:builder.ivs')}</dt>
-					<dd>{stats.ivs.join('/')}</dd>
+					<dd>
+						<button
+							type='button'
+							className='r-tm-iv-btn'
+							data-custom={member.slot.ivs ? '' : undefined}
+							aria-haspopup='dialog'
+							aria-label={t('teams:builder.ivEdit', { name })}
+							title={t('teams:builder.ivEdit', { name })}
+							onClick={onEditIvs}
+						>
+							{stats.ivs.join('/')}
+						</button>
+					</dd>
 				</div>
 			</dl>
 
@@ -589,6 +605,7 @@ export const TeamStage = ({
 	roleOf,
 	onChangePokemon,
 	onMove,
+	onIvs,
 	onRemove,
 	onSuggest,
 	suggesting,
@@ -599,26 +616,47 @@ export const TeamStage = ({
 	roleOf: (index: number) => TeamRole | undefined;
 	onChangePokemon: (index: number) => void;
 	onMove: (index: number, moveIndex: number, moveId: string) => void;
+	onIvs: (index: number, ivs: SlotIvs | undefined) => void;
 	onRemove: (index: number) => void;
 	/** Finish the team (one or two Pokémon so far) with the best teammates. */
 	onSuggest: () => void;
 	/** That is being worked out: the empty cards show a spinner. */
 	suggesting: boolean;
-}) => (
-	<div className='r-tm-stage'>
-		{[0, 1, 2].map((i) => (
-			<MemberCard
-				key={i}
-				index={i}
-				member={members[i]}
-				pokemon={team[i] ? data.gamemaster[team[i].speciesId] : undefined}
-				data={data}
-				role={roleOf(i)}
-				onChangePokemon={() => onChangePokemon(i)}
-				onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
-				onRemove={() => onRemove(i)}
-				suggestion={team.length >= 1 && team.length < 3 ? { pending: suggesting, onSuggest } : undefined}
-			/>
-		))}
-	</div>
-);
+}) => {
+	// Which member's IVs dialog is open.
+	const [ivsFor, setIvsFor] = useState<number | null>(null);
+	const editing = ivsFor !== null ? members[ivsFor] : undefined;
+	const editingPokemon = ivsFor !== null && team[ivsFor] ? data.gamemaster[team[ivsFor].speciesId] : undefined;
+
+	return (
+		<div className='r-tm-stage'>
+			{[0, 1, 2].map((i) => (
+				<MemberCard
+					key={i}
+					index={i}
+					member={members[i]}
+					pokemon={team[i] ? data.gamemaster[team[i].speciesId] : undefined}
+					data={data}
+					role={roleOf(i)}
+					onChangePokemon={() => onChangePokemon(i)}
+					onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
+					onEditIvs={() => setIvsFor(i)}
+					onRemove={() => onRemove(i)}
+					suggestion={team.length >= 1 && team.length < 3 ? { pending: suggesting, onSuggest } : undefined}
+				/>
+			))}
+			{ivsFor !== null && editing && editingPokemon && (
+				<IvModal
+					name={cleanName(editingPokemon.speciesName)}
+					value={editing.stats.ivs}
+					custom={!!editing.slot.ivs}
+					onApply={(ivs) => {
+						onIvs(ivsFor, ivs);
+						setIvsFor(null);
+					}}
+					onClose={() => setIvsFor(null)}
+				/>
+			)}
+		</div>
+	);
+};

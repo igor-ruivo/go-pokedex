@@ -272,20 +272,43 @@ export const teamWarnings = (input: WarningInput): Array<TeamWarning> => {
 
 /* ------------------------------ Sharing ----------------------------------- */
 
+/** `[attack, defense, HP]` IVs, each 0–15. */
+export type SlotIvs = [number, number, number];
+
 export interface TeamSlotDescriptor {
 	speciesId: string;
 	/** `[fast, charged 1, charged 2?]` */
 	moveset: ReadonlyArray<string>;
+	/** IVs picked for this Pokémon. Absent: the league's best (rank-1) spread, which is what a fresh pick gets. */
+	ivs?: SlotIvs | undefined;
 }
 
-/** `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH,medicham-COUNTER-…` — species and move ids never contain a dash. */
-export const encodeTeam = (team: ReadonlyArray<TeamSlotDescriptor>): string =>
-	team.map((slot) => [slot.speciesId, ...slot.moveset].join('-')).join(',');
+export const isSlotIvs = (value: unknown): value is SlotIvs =>
+	Array.isArray(value) && value.length === 3 && value.every((n) => Number.isInteger(n) && n >= 0 && n <= 15);
+
+/**
+ * One Pokémon of a team as text: `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH`, plus `@0.15.15` when its IVs were picked
+ * (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with other moves or other IVs is
+ * another key.
+ */
+export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs'>): string =>
+	[slot.speciesId, ...slot.moveset].join('-') + (slot.ivs ? `@${slot.ivs.join('.')}` : '');
+
+/** `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH@0.15.15,medicham-COUNTER-…` — see `slotKey`. */
+export const encodeTeam = (team: ReadonlyArray<TeamSlotDescriptor>): string => team.map(slotKey).join(',');
 
 export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescriptor> =>
 	(raw ?? '')
 		.split(',')
-		.map((part) => part.split('-').filter(Boolean))
-		.filter((parts) => parts.length >= 3)
+		.map((part) => {
+			const [moves = '', ivText] = part.split('@');
+			const ivs = ivText?.split('.').map(Number);
+			return { parts: moves.split('-').filter(Boolean), ivs: isSlotIvs(ivs) ? ivs : undefined };
+		})
+		.filter(({ parts }) => parts.length >= 3)
 		.slice(0, 3)
-		.map(([speciesId, ...moveset]) => ({ speciesId, moveset: moveset.slice(0, 3) }));
+		.map(({ parts: [speciesId, ...moveset], ivs }) => ({
+			speciesId,
+			moveset: moveset.slice(0, 3),
+			...(ivs ? { ivs } : {}),
+		}));

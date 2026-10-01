@@ -64,7 +64,7 @@ const sum = (values: ReadonlyArray<number>) => values.reduce((a, b) => a + b, 0)
 
 /**
  * Everything about a team that needs no battle simulation. Each member is
- * built the way the simulator builds it (best, rank-1 IVs for the league)
+ * built the way the simulator builds it (the IVs picked for it, else the league's best, rank-1 spread)
  * so the stats shown here are the stats the threat score was rated with.
  */
 export const analyzeTeam = (
@@ -80,7 +80,7 @@ export const analyzeTeam = (
 		if (!pokemon || slot.moveset.some((m) => !ctx.moves[m])) return undefined;
 
 		const ranked = data.rankList[slot.speciesId];
-		const sim = new SimPokemon(ctx.speciesById(slot.speciesId)!, slot.moveset, ctx);
+		const sim = new SimPokemon(ctx.speciesById(slot.speciesId)!, slot.moveset, ctx, slot.ivs);
 
 		members.push({
 			slot,

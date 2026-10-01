@@ -57,7 +57,7 @@ const Teams = () => {
 
 	const data = useTeamsData(league);
 	const ctx = useSimContext(league, data);
-	const { team, setMember, setMove, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(
+	const { team, setMember, setMove, setIvs, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(
 		data,
 		league,
 		tab === 'builder'
@@ -139,7 +139,15 @@ const Teams = () => {
 	};
 
 	/** Puts every Pokémon back on PvPoke's recommended moveset for this league. */
-	const resetMoves = () => replaceTeam(team.map((slot) => ({ ...slot, moveset: recommendedMoveset(slot.speciesId) })));
+	/** Puts every Pokémon back on PvPoke's recommended moveset and the league's best IVs. */
+	const reset = () =>
+		replaceTeam(team.map((slot) => ({ speciesId: slot.speciesId, moveset: recommendedMoveset(slot.speciesId) })));
+	// Anything to reset: picked IVs, or a moveset other than the recommended one (the Charged Moves in either order).
+	const modified = team.some((slot) => {
+		const recommended = recommendedMoveset(slot.speciesId);
+		const sameCharged = [...slot.moveset.slice(1)].sort().join() === [...recommended.slice(1)].sort().join();
+		return !!slot.ivs || slot.moveset[0] !== recommended[0] || !sameCharged;
+	});
 
 	const copyLink = async () => {
 		await navigator.clipboard?.writeText(window.location.href);
@@ -159,7 +167,7 @@ const Teams = () => {
 			id: 'favorites',
 			label: t('teams:page.favoritesTab'),
 			icon: (
-				<svg viewBox='0 0 24 24' width='20' height='20' fill='#f2c53d' aria-hidden='true'>
+				<svg viewBox='2.3 2.2 19.4 18.4' width='18' height='18' fill='#f2c53d' aria-hidden='true'>
 					<path d='M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.3l-5.9 3.1 1.2-6.5L2.5 9.3l6.6-.9z' />
 				</svg>
 			),
@@ -246,6 +254,7 @@ const Teams = () => {
 						}}
 						onChangePokemon={setPickerFor}
 						onMove={setMove}
+						onIvs={setIvs}
 						onRemove={removeMember}
 						onSuggest={() => void suggestTeammates()}
 						suggesting={suggesting}
@@ -287,8 +296,8 @@ const Teams = () => {
 							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => replaceTeam([])}>
 								{t('teams:builder.clear')}
 							</button>
-							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={resetMoves}>
-								{t('teams:builder.resetMoves')}
+							<button type='button' className='r-tm-btn r-tm-btn--ghost' disabled={!modified} onClick={reset}>
+								{t('teams:builder.reset')}
 							</button>
 						</div>
 					)}

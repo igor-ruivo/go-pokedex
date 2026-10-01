@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
 import type { AlternativePick } from '../../lib/pvp-sim/team-eval';
 import type { SimContext } from '../../lib/pvp-sim/types';
-import { type ScoreParts, teamScore, threatPart } from '../../lib/team-analysis';
+import { type ScoreParts, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
 import { analyzeTeam } from './useTeamAnalysis';
 import type { TeamsData } from './useTeamsData';
 
@@ -41,7 +41,7 @@ export const useTeamUpgrades = (
 	league: TeamLeague,
 	ctx: SimContext | undefined,
 	data: TeamsData,
-	team: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>,
+	team: ReadonlyArray<TeamSlotDescriptor>,
 	swaps: ReadonlyArray<AlternativePick> | undefined,
 	currentScore: number | undefined
 ): TeamUpgrades | undefined =>

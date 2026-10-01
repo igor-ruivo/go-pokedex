@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
-import { decodeTeam, encodeTeam, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import { decodeTeam, encodeTeam, type SlotIvs, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { forgetTeam, lastTeamFor, rememberTeam } from './team-memory';
 import type { TeamsData } from './useTeamsData';
 
@@ -100,6 +100,29 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 		[team, write]
 	);
 
+	/** A species' best (rank-1) IVs for this league — what a Pokémon without picked IVs is rated with. */
+	const defaultIvs = useCallback(
+		(speciesId: string): SlotIvs | undefined => {
+			const spread = data.builder?.ivs[speciesId]?.[league];
+			return spread ? [spread[1], spread[2], spread[3]] : undefined;
+		},
+		[data.builder, league]
+	);
+
+	/** Picks the IVs of one member; `undefined` (or the league's best spread itself) puts it back to the default. */
+	const setIvs = useCallback(
+		(index: number, ivs: SlotIvs | undefined) => {
+			const next = team.map((slot, i) => {
+				if (i !== index) return slot;
+				const best = defaultIvs(slot.speciesId);
+				const custom = ivs && !(best && best.every((n, k) => n === ivs[k])) ? ivs : undefined;
+				return custom ? { ...slot, ivs: custom } : { speciesId: slot.speciesId, moveset: slot.moveset };
+			});
+			write(next);
+		},
+		[team, write, defaultIvs]
+	);
+
 	const removeMember = useCallback((index: number) => write(team.filter((_, i) => i !== index)), [team, write]);
 
 	const replaceTeam = useCallback((next: ReadonlyArray<TeamSlotDescriptor>) => write(next), [write]);
@@ -108,5 +131,5 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	// until then the page shows a spinner, not the empty "pick three Pokémon" state.
 	const restoring = restore && data.ready && !raw && lastTeamFor(league) !== undefined;
 
-	return { team, setMember, setMove, removeMember, replaceTeam, recommendedMoveset, restoring };
+	return { team, setMember, setMove, setIvs, defaultIvs, removeMember, replaceTeam, recommendedMoveset, restoring };
 };

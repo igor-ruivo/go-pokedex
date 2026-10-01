@@ -73,7 +73,9 @@ export class SimPokemon {
 	constructor(
 		private readonly species: SimSpecies,
 		moveset: ReadonlyArray<string>,
-		private readonly ctx: SimContext
+		private readonly ctx: SimContext,
+		/** IVs to use instead of the league's best spread; the level is then the highest the CP cap allows. */
+		private readonly customIvs?: ReadonlyArray<number>
 	) {
 		this.speciesId = species.speciesId;
 		this.speciesName = species.speciesName;
@@ -113,7 +115,11 @@ export class SimPokemon {
 	 */
 	private initialize() {
 		const spread = this.species.bestIvs;
-		if (spread) {
+		const custom = this.customIvs;
+		if (custom) {
+			[this.ivs.atk, this.ivs.def, this.ivs.hp] = custom as [number, number, number];
+			this.setLevel(this.highestFittingLevel());
+		} else if (spread) {
 			this.ivs.atk = spread[1];
 			this.ivs.def = spread[2];
 			this.ivs.hp = spread[3];
@@ -138,6 +144,14 @@ export class SimPokemon {
 		if (this.hasTag('shadow')) this.setShadowType('shadow');
 
 		this.resetMoves();
+	}
+
+	/** The highest level (up to the cap) at which the current IVs stay within the league's CP cap. */
+	private highestFittingLevel(): number {
+		for (let level = this.levelCap; level >= 1; level -= 0.5) {
+			if (this.calculateCP(this.getCPMByLevel(level)) <= this.ctx.cp) return level;
+		}
+		return 1;
 	}
 
 	calculateCP(

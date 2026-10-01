@@ -120,9 +120,13 @@
 		transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
 		filter 0.15s ease;
 }
-.rvmp .r-tm-btn:hover {
+.rvmp .r-tm-btn:hover:not(:disabled) {
 	transform: translateY(-1px);
 	filter: brightness(1.08);
+}
+.rvmp .r-tm-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
 }
 .rvmp .r-tm-btn--ghost {
 	color: var(--text);
@@ -409,6 +413,95 @@
 	font-family: Fredoka, sans-serif;
 	font-weight: 600;
 	font-size: 14px;
+}
+/* the IVs box is a button: tapping it opens the three IV inputs under the facts row */
+.rvmp .r-tm-iv-btn {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	text-decoration: underline dotted color-mix(in srgb, currentColor 55%, transparent);
+	text-underline-offset: 3px;
+}
+.rvmp .r-tm-iv-btn:hover,
+.rvmp .r-tm-iv-btn:focus-visible {
+	color: var(--accent);
+}
+.rvmp .r-tm-iv-btn[data-custom] {
+	color: var(--accent);
+	text-decoration-style: solid;
+}
+.rvmp .r-tm-ivmodal {
+	width: min(360px, 100%);
+}
+.rvmp .r-tm-ivedit {
+	display: flex;
+	justify-content: center;
+	gap: var(--s3);
+	width: 100%;
+}
+.rvmp .r-tm-ivmodal-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--s2);
+}
+.rvmp .r-tm-ivmodal-apply {
+	padding: 8px 18px;
+	font-weight: 700;
+	color: var(--on-accent, #0b1220);
+	background: var(--accent);
+	border: 0;
+	border-radius: var(--r-sm);
+	cursor: pointer;
+}
+.rvmp .r-tm-ivmodal-apply:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+.rvmp .r-tm-ivedit label {
+	display: grid;
+	gap: 2px;
+	justify-items: center;
+}
+.rvmp .r-tm-ivedit label span {
+	font-size: 10px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .r-tm-ivedit input {
+	width: 64px;
+	padding: 10px 4px;
+	text-align: center;
+	font: 600 18px Fredoka, sans-serif;
+	font-variant-numeric: tabular-nums;
+	color: var(--text);
+	background: color-mix(in srgb, var(--surface-2) 80%, transparent);
+	border: 1px solid var(--border);
+	border-radius: var(--r-sm);
+}
+.rvmp .r-tm-ivedit input:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+}
+.rvmp .r-tm-ivedit input[data-invalid] {
+	border-color: var(--neg, #f87171);
+}
+.rvmp .r-tm-ivedit-reset {
+	padding: 8px 12px;
+	font-size: 13px;
+	color: var(--text-dim);
+	background: none;
+	border: 1px solid var(--border);
+	border-radius: var(--r-sm);
+	cursor: pointer;
+}
+.rvmp .r-tm-ivedit-reset:hover {
+	color: var(--accent);
+	border-color: var(--accent);
 }
 .rvmp .r-tm-moves {
 	display: grid;
@@ -2434,6 +2527,12 @@
 	gap: 4px;
 	margin-top: 2px;
 }
+/* the role-score pill and, on a favorite, the IVs under it: one row of the member's grid */
+.rvmp .r-tm-board-role {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 /* that Pokémon's score in its role, the Battle plan's score pill */
 .rvmp .r-tm-board-chip {
 	margin-top: 8px;
@@ -2444,6 +2543,18 @@
 	font-size: 14px;
 	background: color-mix(in srgb, var(--role-c) 18%, transparent);
 	font-variant-numeric: tabular-nums;
+}
+/* a favorite's IVs under each Pokémon; the accent marks IVs picked in the builder (not the league's best spread) */
+.rvmp .r-tm-board-ivs {
+	margin-top: 4px;
+	font-family: Fredoka, sans-serif;
+	font-weight: 600;
+	font-size: 12px;
+	color: var(--text-dim);
+	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-tm-board-ivs[data-custom] {
+	color: var(--accent);
 }
 .rvmp .r-tm-board-moves {
 	display: flex;

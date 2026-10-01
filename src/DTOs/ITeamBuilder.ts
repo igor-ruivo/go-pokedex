@@ -75,6 +75,8 @@ export interface RankedTeamMember {
 	speciesId: string;
 	/** `[fast, charged 1, charged 2?]` as moveIds — the ranking's recommended moveset. */
 	moveset: Array<string>;
+	/** IVs picked for this Pokémon (a favorite can carry them); absent: the league's best spread. */
+	ivs?: [number, number, number];
 }
 
 export interface RankedTeam {

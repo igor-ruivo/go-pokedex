@@ -38,6 +38,8 @@ export interface TeamSlot {
 	speciesId: string;
 	/** `[fast, charged 1, charged 2?]` */
 	moveset: ReadonlyArray<string>;
+	/** IVs picked for this member; absent: the league's best spread. */
+	ivs?: ReadonlyArray<number> | undefined;
 }
 
 export interface ThreatEntry {
@@ -205,10 +207,10 @@ export class TeamEvaluator {
 		return this.rankingById.has(speciesId);
 	}
 
-	private createPokemon(speciesId: string, moveset: ReadonlyArray<string>): SimPokemon {
+	private createPokemon(speciesId: string, moveset: ReadonlyArray<string>, ivs?: ReadonlyArray<number>): SimPokemon {
 		const species = this.ctx.speciesById(speciesId);
 		if (!species) throw new Error(`Unknown species: ${speciesId}`);
-		return new SimPokemon(species, moveset, this.ctx);
+		return new SimPokemon(species, moveset, this.ctx, ivs);
 	}
 
 	/** One Pokémon against another, blending 0-shield and 1-shield results the way the Team Builder does. */
@@ -343,7 +345,7 @@ export class TeamEvaluator {
 	 * six that end up as threats.
 	 */
 	matchups(team: ReadonlyArray<TeamSlot>): Array<{ speciesId: string; rating: number; ratings: Array<number> }> {
-		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset));
+		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset, slot.ivs));
 		return this.rate(members).map((row) => ({
 			speciesId: row.entry.entry.speciesId,
 			rating: row.rating,
@@ -382,7 +384,7 @@ export class TeamEvaluator {
 
 	/** `evaluate` for a team rated in exactly the order given. */
 	private evaluateInOrder(team: ReadonlyArray<TeamSlot>): TeamEvaluation {
-		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset));
+		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset, slot.ivs));
 		const rows = this.rate(members);
 
 		rows.sort((a, b) => b.score - a.score);
@@ -450,7 +452,7 @@ export class TeamEvaluator {
 	): Array<AlternativePick> {
 		const candidateCount = options.candidates ?? 40;
 
-		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset));
+		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset, slot.ivs));
 		const battle = new SimBattle();
 		for (const p of this.pool) p.cachedTraits = undefined;
 
@@ -567,10 +569,11 @@ export class TeamEvaluator {
 		const ratings: Array<Float64Array> = [];
 		const scores: Array<Float64Array> = [];
 		const bestMoves: Array<Array<SimMove | null>> = [];
-		members.forEach(({ speciesId, moveset }, k) => {
+		members.forEach(({ speciesId, moveset, ivs }, k) => {
 			const member = this.createPokemon(
 				speciesId,
-				moveset.filter((m) => m !== 'none')
+				moveset.filter((m) => m !== 'none'),
+				ivs
 			);
 			const ratingColumn = new Float64Array(poolSize);
 			const scoreColumn = new Float64Array(poolSize);

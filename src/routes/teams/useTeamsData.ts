@@ -92,8 +92,8 @@ const ensureEvaluator = async (key: string, build: () => EvaluatorInit) => {
 const dataKey = (league: TeamLeague, data: TeamsData) =>
 	`${league}|${Object.keys(data.rankList).length}|${Object.keys(data.builder?.moves ?? {}).length}`;
 
-const toSlots = (team: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>): Array<TeamSlot> =>
-	team.map(({ speciesId, moveset }) => ({ speciesId, moveset: [...moveset] }));
+const toSlots = (team: ReadonlyArray<TeamSlotDescriptor>): Array<TeamSlot> =>
+	team.map(({ speciesId, moveset, ivs }) => ({ speciesId, moveset: [...moveset], ivs: ivs ? [...ivs] : undefined }));
 
 /**
  * The simulated part of a team's rating (threat score, meta coverage). Runs
@@ -103,7 +103,7 @@ const toSlots = (team: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray
 export const useTeamEvaluation = (
 	league: TeamLeague,
 	data: TeamsData,
-	team: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>
+	team: ReadonlyArray<TeamSlotDescriptor>
 ) => {
 	const enabled = data.ready && team.length === 3;
 
@@ -131,7 +131,7 @@ export const useTeamEvaluation = (
 export const useTeamEvaluations = (
 	league: TeamLeague,
 	data: TeamsData,
-	teams: ReadonlyArray<ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>>
+	teams: ReadonlyArray<ReadonlyArray<TeamSlotDescriptor>>
 ) =>
 	useQueries({
 		queries: teams.map((team) => ({
@@ -156,7 +156,7 @@ export const useTeamEvaluations = (
 export const useTeamSuggestions = (
 	league: TeamLeague,
 	data: TeamsData,
-	team: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string> }>,
+	team: ReadonlyArray<TeamSlotDescriptor>,
 	enabled: boolean
 ) =>
 	useQuery<Array<AlternativePick>>({

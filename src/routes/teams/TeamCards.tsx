@@ -9,7 +9,7 @@ import { TypeChip } from '../../components/TypeChip';
 import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { cleanName, ordinal } from '../../lib/format';
-import { TEAM_ROLES } from '../../lib/team-analysis';
+import { slotKey, TEAM_ROLES } from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
@@ -18,7 +18,7 @@ import type { TeamsData } from './useTeamsData';
 
 type CardTeam = RankedTeam & { addedAt?: number };
 
-const teamKey = (team: RankedTeam) => team.members.map((m) => [m.speciesId, ...m.moveset].join('-')).join('|');
+const teamKey = (team: RankedTeam) => team.members.map(slotKey).join('|');
 
 /** One card of the list; `rank` is the team's place in the full ranking (a filtered list keeps the real places). */
 export const TeamCard = ({
@@ -81,6 +81,9 @@ export const TeamCard = ({
 					// Members come in the order they're played: lead, switch, closer.
 					const role = TEAM_ROLES[i];
 					const roleScore = data.rankList[member.speciesId]?.[role];
+					// A favorite names the IVs each Pokémon is rated with: the ones picked, else the league's best.
+					const best = data.builder?.ivs[member.speciesId]?.[league];
+					const ivs = member.ivs ?? (best ? [best[1], best[2], best[3]] : undefined);
 					return (
 						<Fragment key={member.speciesId}>
 							{i > 0 && (
@@ -106,7 +109,14 @@ export const TeamCard = ({
 										<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
 									))}
 								</span>
-								<span className='r-tm-board-chip'>{roleScore === undefined ? '–' : roleScore.toFixed(1)}</span>
+								<span className='r-tm-board-role'>
+									<span className='r-tm-board-chip'>{roleScore === undefined ? '–' : roleScore.toFixed(1)}</span>
+									{team.addedAt !== undefined && ivs && (
+										<span className='r-tm-board-ivs' data-custom={member.ivs ? '' : undefined} title={t('teams:builder.ivs')}>
+											{ivs.join('/')}
+										</span>
+									)}
+								</span>
 								<span className='r-tm-board-moves'>
 									{member.moveset.map((m) => (
 										<span key={m}>{translateMoveFromMoveId(m, moves, gl)}</span>
