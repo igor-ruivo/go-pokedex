@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDismiss } from '../../hooks/useDismiss';
+import { cpAt } from '../../lib/pvp-sim/cp';
 import { isSlotIvs, type SlotIvs } from '../../lib/team-analysis';
 
 /** How long typing has to pause before the IVs are applied (each change re-rates the team). */
@@ -16,6 +17,10 @@ export const IvModal = ({
 	name,
 	value,
 	custom,
+	level,
+	pinnedLevel,
+	baseStats,
+	cpCap,
 	onChange,
 	onClose,
 }: {
@@ -25,6 +30,12 @@ export const IvModal = ({
 	value: SlotIvs;
 	/** They were picked here (not the league's best spread). */
 	custom: boolean;
+	/** The level the member is rated at, whether it was picked (`pinnedLevel`) or follows the CP cap. */
+	level: number;
+	pinnedLevel: number | undefined;
+	/** What its CP is made of, and the league's cap: IVs that put a picked level over it are refused. */
+	baseStats: { atk: number; def: number; hp: number };
+	cpCap: number;
 	/** The new IVs, or `undefined` for the league's best. */
 	onChange: (ivs: SlotIvs | undefined) => void;
 	onClose: () => void;
@@ -59,15 +70,20 @@ export const IvModal = ({
 	}, [current]);
 
 	const text = fields.join('.');
+	const typedIvs = text.split('.').map((field) => (field === '' ? NaN : Number(field)));
+	// A level that follows the CP cap always fits; a picked one has to still fit with the new IVs.
+	const typedCp = pinnedLevel !== undefined && isSlotIvs(typedIvs) ? cpAt(baseStats, typedIvs, level) : undefined;
+	const overCap = typedCp !== undefined && typedCp > cpCap;
 	useEffect(() => {
-		const next = text.split('.').map((field) => (field === '' ? NaN : Number(field)));
-		if (!isSlotIvs(next) || text === current) return;
+		const next = typedIvs;
+		if (!isSlotIvs(next) || overCap || text === current) return;
 		const id = setTimeout(() => {
 			appliedRef.current = text;
 			onChangeRef.current(next);
 		}, APPLY_DELAY_MS);
 		return () => clearTimeout(id);
-	}, [text, current]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [text, overCap, current]);
 
 	const parsed = fields.map((field) => (field === '' ? NaN : Number(field)));
 
@@ -105,6 +121,12 @@ export const IvModal = ({
 						</label>
 					))}
 				</div>
+
+				{overCap && (
+					<p className='r-tm-ivmodal-cp' data-over=''>
+						{t('teams:builder.ivOverCap', { name, cp: typedCp, cap: cpCap })}
+					</p>
+				)}
 
 				{custom && (
 					<div className='r-tm-ivmodal-actions'>

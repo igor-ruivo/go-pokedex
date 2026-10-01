@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
+import { LEAGUE_CP } from '../../lib/pvp-sim/context';
+import { cpAt } from '../../lib/pvp-sim/cp';
 import { decodeTeam, encodeTeam, type SlotIvs, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { forgetTeam, lastTeamFor, rememberTeam } from './team-memory';
 import type { TeamsData } from './useTeamsData';
@@ -25,11 +27,24 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	const team = useMemo<Array<TeamSlotDescriptor>>(() => {
 		if (!data.ready) return [];
 		const { builder } = data;
-		return decodeTeam(raw).filter(
-			(slot) =>
-				data.rankList[slot.speciesId] && data.gamemaster[slot.speciesId] && slot.moveset.every((m) => builder?.moves[m])
-		);
-	}, [raw, data]);
+		// A level that would put the Pokémon over the league's CP cap (a hand-edited or old link) is dropped: the level then
+		// follows the cap again.
+		const withinCap = (slot: TeamSlotDescriptor) => {
+			if (slot.level === undefined) return true;
+			const spread = builder?.ivs[slot.speciesId]?.[league];
+			const ivs = slot.ivs ?? (spread ? ([spread[1], spread[2], spread[3]] as SlotIvs) : undefined);
+			const base = data.gamemaster[slot.speciesId]?.baseStats;
+			return !ivs || !base || cpAt(base, ivs, slot.level) <= LEAGUE_CP[league];
+		};
+		return decodeTeam(raw)
+			.filter(
+				(slot) =>
+					data.rankList[slot.speciesId] &&
+					data.gamemaster[slot.speciesId] &&
+					slot.moveset.every((m) => builder?.moves[m])
+			)
+			.map((slot) => (withinCap(slot) ? slot : { speciesId: slot.speciesId, moveset: slot.moveset, ...(slot.ivs ? { ivs: slot.ivs } : {}) }));
+	}, [raw, data, league]);
 
 	const write = useCallback(
 		(next: ReadonlyArray<TeamSlotDescriptor>) => {
@@ -115,6 +130,13 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	 */
 	const setBuild = useCallback(
 		(index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => {
+			const target = team[index];
+			if (target && build.level !== undefined) {
+				// Refused: the level would put the Pokémon over the league's CP cap with these IVs.
+				const effectiveIvs = build.ivs ?? defaultIvs(target.speciesId);
+				const base = data.gamemaster[target.speciesId]?.baseStats;
+				if (effectiveIvs && base && cpAt(base, effectiveIvs, build.level) > LEAGUE_CP[league]) return;
+			}
 			const next = team.map((slot, i) => {
 				if (i !== index) return slot;
 				const best = defaultIvs(slot.speciesId);
@@ -128,7 +150,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 			});
 			write(next);
 		},
-		[team, write, defaultIvs]
+		[team, write, defaultIvs, data.gamemaster, league]
 	);
 
 	const removeMember = useCallback((index: number) => write(team.filter((_, i) => i !== index)), [team, write]);

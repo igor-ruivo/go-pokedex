@@ -672,6 +672,10 @@ export const TeamStage = ({
 					name={cleanName(editingPokemon.speciesName)}
 					value={editing.stats.ivs}
 					custom={!!editing.slot.ivs}
+					level={editing.stats.level}
+					pinnedLevel={editing.slot.level}
+					baseStats={editingPokemon.baseStats}
+					cpCap={cpCap}
 					onChange={(ivs) => onBuild(editingFor.index, { ivs, level: editing.slot.level })}
 					onClose={() => setEditingFor(null)}
 				/>
@@ -681,7 +685,8 @@ export const TeamStage = ({
 					name={cleanName(editingPokemon.speciesName)}
 					level={editing.stats.level}
 					custom={editing.slot.level !== undefined}
-					cp={editing.stats.cp}
+					baseStats={editingPokemon.baseStats}
+					ivs={editing.stats.ivs}
 					cpCap={cpCap}
 					onChange={(level) => onBuild(editingFor.index, { ivs: editing.slot.ivs, level })}
 					onClose={() => setEditingFor(null)}
