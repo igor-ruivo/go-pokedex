@@ -33,6 +33,7 @@ const recommended = (cp, ids) =>
 const top = (cp, from, count) => rankings(cp).slice(from, from + count).map((x) => x.speciesId);
 
 const TEAMS = [
+	[1500, recommended(1500, ['toucannon_shadow', 'mimikyu', 'diggersby'])],
 	[1500, recommended(1500, ['aegislash_shield', 'morpeko_full_belly', 'mimikyu'])],
 	[1500, recommended(1500, ['cramorant', 'ninetales_shadow', 'talonflame_shadow'])],
 	[2500, recommended(2500, top(2500, 0, 3))],
