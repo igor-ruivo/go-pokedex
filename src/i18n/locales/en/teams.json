@@ -245,6 +245,7 @@
 		"teamScore": "Team score",
 		"note": "Rated {{date}} from {{total}} possible teams. Order within each team: lead, switch, closer.",
 		"empty": "No team ranking is available right now. Check back soon.",
+		"noMatch": "No team in the ranking includes that Pokémon.",
 		"threat": "Threat",
 		"help": {
 			"summary": "What do these numbers mean?",

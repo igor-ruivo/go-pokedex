@@ -2211,7 +2211,23 @@
 	padding: 0;
 	list-style: none;
 }
-.rvmp .r-tm-board-list > li {
+/* the virtualized list: rows are absolutely placed by the virtualizer, so a card that mounts on scroll doesn't animate in */
+.rvmp .r-tm-board-vlist {
+	position: relative;
+}
+.rvmp .r-tm-board-vrow {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	display: grid;
+	gap: 12px;
+}
+.rvmp .r-tm-board-vlist .r-tm-board-card {
+	animation: none;
+}
+.rvmp .r-tm-board-list > li,
+.rvmp .r-tm-board-item {
 	container-type: inline-size;
 }
 /* the whole card opens the team (the .r-tm-board-open overlay); only the favorite star sits above it */

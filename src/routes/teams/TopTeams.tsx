@@ -1,18 +1,23 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useAfterPaint } from '../../hooks/useAfterPaint';
+import { cleanName } from '../../lib/format';
 import { SCORE_WEIGHTS } from '../../lib/team-analysis';
 import { useTeamRanking } from '../../queries/teams';
-import { TeamCards } from './TeamCards';
+import { VirtualTeamCards } from './TeamCards';
 import type { TeamsData } from './useTeamsData';
+
+const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 /**
  * The best teams we could find: every trio of the league's top Pokémon, each with its ranking's recommended
  * moves and top IVs, rated with the same Team Score the builder shows (see `scripts/team-ranking` and the daily
- * "Team Ranking" workflow). Each row opens that team in the builder.
+ * "Team Ranking" workflow). Each row opens that team in the builder. The lists are long, so they are virtualized, and
+ * the app bar's search (`?q=`) keeps only the teams that include the Pokémon typed there.
  */
 export const TopTeams = ({
 	league,
@@ -30,6 +35,23 @@ export const TopTeams = ({
 
 	// The tab is already showing; the long list of cards renders after the spinner has been painted.
 	const painted = useAfterPaint();
+
+	const [params] = useSearchParams();
+	const term = norm(params.get('q') ?? '');
+	const { gamemaster } = data;
+	const ranking = query.data?.leagues[league];
+	const list = sortKey === 'score' ? ranking?.byScore : ranking?.byThreat;
+	// Each list is already best first (highest Team Score, or lowest threat score); a filtered one keeps the real places.
+	const items = useMemo(() => {
+		const all = (list ?? []).map((team, i) => ({ team, rank: i + 1 }));
+		if (!term) return all;
+		return all.filter(({ team }) =>
+			team.members.some((m) => {
+				const p = gamemaster[m.speciesId];
+				return norm(p ? cleanName(p.speciesName) : m.speciesId).includes(term) || norm(m.speciesId).includes(term);
+			})
+		);
+	}, [list, term, gamemaster]);
 
 	if (query.isError) return <p className='r-muted'>{t('teams:top.empty')}</p>;
 	if (!query.data || !data.ready || !painted) {
@@ -50,14 +72,13 @@ export const TopTeams = ({
 		if (key === 'score' || key === 'threat') setSortKey(key);
 	};
 
-	const { byScore, byThreat, totalTeams } = query.data.leagues[league];
-	// Each list is already best first: highest Team Score, or lowest threat score.
-	const teams = sortKey === 'score' ? byScore : byThreat;
+	const { totalTeams } = query.data.leagues[league];
 	const date = new Date(query.data.generatedAt).toLocaleDateString();
 
 	return (
 		<div className='r-tm-board'>
 			<p className='r-tm-board-intro'>{t('teams:top.intro', { candidates: query.data.candidates })}</p>
+			<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>
 			<details className='r-ctr-help r-tm-board-help'>
 				<summary>{t('teams:top.help.summary')}</summary>
 				<dl>
@@ -89,8 +110,11 @@ export const TopTeams = ({
 					fixedDirection
 				/>
 			</div>
-			<TeamCards teams={teams} league={league} data={data} primary={sortKey} onOpen={onOpen} />
-			<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>
+			{items.length === 0 ? (
+				<p className='r-muted'>{t('teams:top.noMatch')}</p>
+			) : (
+				<VirtualTeamCards items={items} league={league} data={data} primary={sortKey} onOpen={onOpen} />
+			)}
 		</div>
 	);
 };

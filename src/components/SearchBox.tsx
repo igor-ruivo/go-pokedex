@@ -39,11 +39,13 @@ export const SearchBox = () => {
 	const [active, setActive] = useState(0);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false), { dim: false });
 
-	useEffect(() => {
-		setQ(params.get('q') ?? '');
-	}, [params]);
+	const onGrid =
+		pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.moves || pathname === R.teamsTop;
 
-	const onGrid = pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.moves;
+	// Only the grid views mirror `?q=` into the box; elsewhere the box keeps whatever was typed/picked.
+	useEffect(() => {
+		if (onGrid) setQ(params.get('q') ?? '');
+	}, [params, onGrid]);
 	const detailTab = /^\/pokemon\/[^/]+\/([^/]+)/.exec(pathname)?.[1];
 
 	useEffect(() => {
@@ -112,12 +114,14 @@ export const SearchBox = () => {
 
 	// The Pokédex and the rankings filter their own list by what is typed here, so picking a Pokémon there just closes
 	// the dropdown and leaves the list filtered — it doesn't pull you off the ranking you are reading.
-	const onRankingList = pathname === R.pokedex || pathname.startsWith('/rankings');
+	const onRankingList = pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.teamsTop;
 
 	const pick = (hit: Hit) => {
 		setOpen(false);
+		// Leave the picked entry's name in the box (the pick may not navigate away, and even when it does it shows
+		// what was opened).
+		setQ(hit.kind === 'pokemon' ? cleanName(hit.p.speciesName) : (hit.m.moveName[gl] ?? hit.m.moveId));
 		if (hit.kind === 'pokemon' && onRankingList) return;
-		setQ('');
 		if (hit.kind === 'pokemon') {
 			// `?lg=` (which league/raids tab the detail page's picker/readout was
 			// showing) lives in the URL, same as `detailTab` above — carried over

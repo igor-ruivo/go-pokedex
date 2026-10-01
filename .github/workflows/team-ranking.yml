@@ -3,12 +3,19 @@ name: Team Ranking
 # Rates every trio of each league's best Pokémon with this repo's own team rating (its port of PvPoke's simulator)
 # and publishes the top of the list as team-ranking.json on the `data` branch, which the Teams page's "Top teams"
 # tab reads. dex-server (the data source) is only read, never written to; main gets no daily commits.
+# The ranking takes about an hour, so it only runs when its inputs changed (a hash of the dex-server files it reads,
+# its settings and its source — see `inputsHash` in scripts/team-ranking/build.mts); otherwise the job ends in seconds.
 # Runs shortly after dex-server's 14:00 UTC daily update, so it rates that day's rankings, IVs and PvPoke data.
 
 on:
   schedule:
     - cron: '30 15 * * *'
   workflow_dispatch: # Allows manual trigger
+    inputs:
+      force:
+        description: 'Rank even if none of the inputs changed since the published ranking'
+        type: boolean
+        default: false
 
 concurrency:
   group: team-ranking
@@ -60,9 +67,11 @@ jobs:
           DEX_SERVER_DIR: ${{ github.workspace }}/dex-server
           OUT: ${{ github.workspace }}/team-ranking.json
           PREVIOUS: ${{ github.workspace }}/previous-team-ranking.json
+          FORCE: ${{ inputs.force && '1' || '' }}
         run: pnpm run team-ranking
 
       - name: Publish to the data branch
+        if: steps.rank-teams.outputs.skipped != 'true'
         working-directory: go-pokedex
         run: |
           # The branch only ever holds today's file: a fresh single-commit branch, force-pushed, so the

@@ -5,8 +5,11 @@
 //   pnpm run team-ranking     reads the inputs from a dex-server checkout (DEX_SERVER_DIR, default ../dex-server)
 //                             and writes ./team-ranking.json (OUT overrides; git-ignored)
 //
+// The run is skipped (exit 0, GITHUB_OUTPUT skipped=true, nothing written) when the inputs hash equals the one in the
+// previous published file — see `inputsHash`. FORCE=1 ranks anyway.
+//
 // For each of Great / Ultra / Master League:
-//   - candidates: the CANDIDATES best-ranked species (default 50), each with its ranking's recommended moveset
+//   - candidates: the CANDIDATES best-ranked species (default 200), each with its ranking's recommended moveset
 //     and the rank-1 IVs `team-builder.json` carries — the same inputs the builder rates a team with;
 //   - every trio of them (a Shadow and its normal form never share a team) gets PvPoke's threat score from
 //     `TeamEvaluator.rankTeams` (each candidate simulated once, every trio re-ranked from those columns), then the
@@ -14,6 +17,7 @@
 //     order the Battle plan would play it;
 //   - a sample of the trios is re-rated with the ordinary `evaluate` and must agree exactly, so the shortcut
 //     can't drift from the real rating unnoticed.
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
@@ -26,8 +30,10 @@ import { type ScoreParts, scoreTier, teamScore, threatPart } from '../../src/lib
 import { analyzeTeam } from '../../src/routes/teams/useTeamAnalysis';
 
 const DEX = process.env.DEX_SERVER_DIR ?? path.join(import.meta.dirname, '..', '..', '..', 'dex-server');
-const CANDIDATES = Number(process.env.CANDIDATES ?? 50);
-const TOP = Number(process.env.TOP_TEAMS ?? 100);
+const CANDIDATES = Number(process.env.CANDIDATES ?? 200);
+// How many teams each published list keeps (every trio is rated; only the best TOP of each list are written out).
+// The page virtualizes the lists and filters them by the Pokémon typed in the search bar.
+const TOP = Number(process.env.TOP_TEAMS ?? 1000);
 const SAMPLE_CHECKS = 6;
 const OUT = process.env.OUT ?? path.join(import.meta.dirname, '..', '..', 'team-ranking.json');
 // The previous run's file (the workflow downloads it from the data branch first). Without it there is nothing to compare.
@@ -51,6 +57,8 @@ if (!builder.simulator.verified) {
 
 interface PreviousRanking {
 	generatedAt?: string;
+	/** Fingerprint of everything the ranking was computed from (see `inputsHash`). */
+	inputsHash?: string;
 	leagues?: Partial<Record<TeamLeague, { byScore?: Array<RankedTeam>; byThreat?: Array<RankedTeam> }>>;
 }
 
@@ -65,6 +73,55 @@ const previous: PreviousRanking | undefined = (() => {
 const today = new Date().toISOString().slice(0, 10);
 /** A re-run on the same day keeps the changes already published, instead of comparing today with itself. */
 const previousIsToday = previous?.generatedAt?.slice(0, 10) === today;
+
+/**
+ * A fingerprint of everything a ranking is computed from: the dex-server files the script reads (the game master,
+ * `team-builder.json` — PvPoke's moves, meta and simulator fingerprint — and the three league rankings with their
+ * scores), this script's settings, and every source file the script imports, directly or not (the simulator port,
+ * the team scoring…). Line endings are ignored, so a Windows and a Linux checkout agree. Same fingerprint as the
+ * published file → the ranking would come out identical, so the run is skipped.
+ */
+const inputsHash = (): string => {
+	const hash = crypto.createHash('sha256');
+	const add = (label: string, file: string) =>
+		hash
+			.update(label + '\0')
+			.update(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'))
+			.update('\0');
+
+	for (const file of ['game-master.json', 'team-builder.json', ...LEAGUES.map((l) => l.file)]) {
+		add(`data/${file}`, path.join(DEX, 'data', file));
+	}
+	hash.update(JSON.stringify({ CANDIDATES, TOP, SAMPLE_CHECKS }));
+
+	// Walk the script's relative imports to collect its source files.
+	const root = path.join(import.meta.dirname, '..', '..');
+	const seen = new Set<string>();
+	const visit = (file: string) => {
+		if (seen.has(file)) return;
+		seen.add(file);
+		const source = fs.readFileSync(file, 'utf8');
+		for (const m of source.matchAll(/(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g)) {
+			const target = path.resolve(path.dirname(file), m[1]);
+			const found = [
+				target,
+				...['.ts', '.tsx', '.mts', '.json'].map((e) => target + e),
+				...['index.ts', 'index.tsx'].map((i) => path.join(target, i)),
+			].find((c) => fs.existsSync(c) && fs.statSync(c).isFile());
+			if (found) visit(found);
+		}
+	};
+	visit(import.meta.filename);
+	for (const file of [...seen].sort()) add(path.relative(root, file).replace(/\\/g, '/'), file);
+	return hash.digest('hex');
+};
+
+const hashNow = inputsHash();
+if (previous?.inputsHash === hashNow && !process.env.FORCE) {
+	console.log(`Inputs unchanged since the published ranking (${hashNow.slice(0, 12)}) — nothing to rank.`);
+	if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skipped=true\n');
+	process.exit(0);
+}
 
 /** The same three Pokémon with the same moves are the same team, whatever order they were listed in. */
 const teamKey = (team: { members: Array<{ speciesId: string; moveset: Array<string> }> }) =>
@@ -159,7 +216,14 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 	const ctx = createSimContext(league, builder, (id) => init.species.find((s) => s.speciesId === id));
 	const data = { gamemaster, rankList };
 
-	const teams: Array<RankedTeam> = [];
+	// Every trio is analysed, but only the best TOP of each list are kept (pruned as they pile up, so 1.3M teams
+	// never sit in memory at once). The result is exactly the top of the full sort.
+	const byScoreOrder = (a: RankedTeam, b: RankedTeam) => b.score - a.score || a.threatScore - b.threatScore;
+	const byThreatOrder = (a: RankedTeam, b: RankedTeam) => a.threatScore - b.threatScore || b.score - a.score;
+	let byScore: Array<RankedTeam> = [];
+	let byThreat: Array<RankedTeam> = [];
+	const prune = (list: Array<RankedTeam>, order: typeof byScoreOrder) => list.sort(order).slice(0, TOP);
+	let totalTeams = 0;
 	for (const { speciesIds, threatScore } of rated) {
 		const slots = speciesIds.map((id) => ({ speciesId: id, moveset: moveset(id) }));
 		const analysis = analyzeTeam(league, ctx, data, slots);
@@ -177,7 +241,7 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 		if (score === undefined) continue;
 
 		const order = analysis.roles ? [analysis.roles.order.lead, analysis.roles.order.switch, analysis.roles.order.closer] : [0, 1, 2];
-		teams.push({
+		const team: RankedTeam = {
 			members: order.map((i) => slots[i]),
 			score: round1(score),
 			tier: scoreTier(score),
@@ -190,24 +254,29 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 				safety: round1(parts.safety),
 				consistency: round1(parts.consistency),
 			},
-		});
+		};
+		totalTeams++;
+		byScore.push(team);
+		byThreat.push(team);
+		if (byScore.length >= TOP * 4) {
+			byScore = prune(byScore, byScoreOrder);
+			byThreat = prune(byThreat, byThreatOrder);
+		}
 	}
 
 	// Two rankings of the same trios: by the Team Score (the radar's weighted score — higher is better), and by
 	// PvPoke's threat score alone (lower is better). The page lets you sort between them.
-	const byScore = [...teams].sort((a, b) => b.score - a.score || a.threatScore - b.threatScore).slice(0, TOP);
-	const byThreat = [...teams].sort((a, b) => a.threatScore - b.threatScore || b.score - a.score).slice(0, TOP);
 	const before = previous?.leagues?.[league];
 	return {
-		totalTeams: teams.length,
-		byScore: withRankChanges(byScore, before?.byScore),
-		byThreat: withRankChanges(byThreat, before?.byThreat),
+		totalTeams,
+		byScore: withRankChanges(prune(byScore, byScoreOrder), before?.byScore),
+		byThreat: withRankChanges(prune(byThreat, byThreatOrder), before?.byThreat),
 	};
 };
 
 const leagues = Object.fromEntries(LEAGUES.map((l) => [l.league, rankLeague(l)]));
 fs.writeFileSync(
 	OUT,
-	JSON.stringify({ generatedAt: new Date().toISOString(), candidates: CANDIDATES, leagues })
+	JSON.stringify({ generatedAt: new Date().toISOString(), inputsHash: hashNow, candidates: CANDIDATES, leagues })
 );
 console.log(`Wrote ${OUT}`);
