@@ -71,7 +71,8 @@ const MoveRow = ({
 	const { currentGameLanguage: gl } = useLanguage();
 	const { moves } = useMoves();
 	const [open, setOpen] = useState(false);
-	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
+	// The move menu is an inline pick list: it doesn't darken the page.
+	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false), { dim: false });
 
 	const name = (id: string) => translateMoveFromMoveId(id, moves, gl);
 	// "DMG 90 · NRG 55", with the localized short labels the moves pages use.

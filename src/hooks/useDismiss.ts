@@ -68,10 +68,16 @@ const dimPageAround = (host: HTMLElement): (() => void) => {
  *
  * @param open   whether the popover is currently shown
  * @param onClose called to close it (outside press or Escape)
+ * @param options  `dim: false` leaves the page undimmed behind the popover
  * @returns a ref to attach to the popover root (the element wrapping both the
  *          trigger and the panel)
  */
-export const useDismiss = <T extends HTMLElement = HTMLDivElement>(open: boolean, onClose: () => void) => {
+export const useDismiss = <T extends HTMLElement = HTMLDivElement>(
+	open: boolean,
+	onClose: () => void,
+	/** `dim: false` for menus that shouldn't darken the page: a search dropdown (you are still typing into the page) or an inline pick list. */
+	options: { dim?: boolean } = {}
+) => {
 	const ref = useRef<T>(null);
 	// keep the latest onClose without re-subscribing the listeners every render
 	const close = useRef(onClose);
@@ -79,7 +85,7 @@ export const useDismiss = <T extends HTMLElement = HTMLDivElement>(open: boolean
 
 	useEffect(() => {
 		if (!open) return;
-		const undim = ref.current ? dimPageAround(ref.current) : undefined;
+		const undim = options.dim !== false && ref.current ? dimPageAround(ref.current) : undefined;
 		// Desktop has room to spare around a popover, so an outside click is
 		// rarely also a press on some other control by accident — swallowing it
 		// there would just force a second click on whatever it landed on, when

@@ -92,23 +92,6 @@ export const Suggestions = ({
 			{upgrades && (
 				<>
 					<div className='r-tm-suggest-group'>
-						<h3 className='r-tm-sub'>{t('teams:suggest.byThreat')}</h3>
-						<p className='r-tm-hint r-tm-suggest-hint'>{t('teams:threat.lowerBetter')}</p>
-						{upgrades.byThreat.length === 0 ? (
-							<p className='r-tm-good'>{t('teams:suggest.none')}</p>
-						) : (
-							cells(
-								upgrades.byThreat.map((pick) => ({
-									...pick,
-									result: t('teams:suggest.result', { score: pick.threatScore, delta: signed(pick.delta) }),
-								}))
-							)
-						)}
-					</div>
-
-					<hr className='r-tm-suggest-divider' />
-
-					<div className='r-tm-suggest-group'>
 						<h3 className='r-tm-sub'>{t('teams:suggest.byScore')}</h3>
 						<p className='r-tm-hint r-tm-suggest-hint'>{t('teams:suggest.higherBetter')}</p>
 						{upgrades.byScore.length === 0 ? (
@@ -121,6 +104,23 @@ export const Suggestions = ({
 										score: pick.score.toFixed(1),
 										delta: signed(pick.scoreDelta, 1),
 									}),
+								}))
+							)
+						)}
+					</div>
+
+					<hr className='r-tm-suggest-divider' />
+
+					<div className='r-tm-suggest-group'>
+						<h3 className='r-tm-sub'>{t('teams:suggest.byThreat')}</h3>
+						<p className='r-tm-hint r-tm-suggest-hint'>{t('teams:threat.lowerBetter')}</p>
+						{upgrades.byThreat.length === 0 ? (
+							<p className='r-tm-good'>{t('teams:suggest.none')}</p>
+						) : (
+							cells(
+								upgrades.byThreat.map((pick) => ({
+									...pick,
+									result: t('teams:suggest.result', { score: pick.threatScore, delta: signed(pick.delta) }),
 								}))
 							)
 						)}

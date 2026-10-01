@@ -37,7 +37,7 @@ export const SearchBox = () => {
 	const [q, setQ] = useState(params.get('q') ?? '');
 	const [open, setOpen] = useState(false);
 	const [active, setActive] = useState(0);
-	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
+	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false), { dim: false });
 
 	useEffect(() => {
 		setQ(params.get('q') ?? '');
@@ -110,8 +110,13 @@ export const SearchBox = () => {
 
 	useEffect(() => setActive(0), [q]);
 
+	// The Pokédex and the rankings filter their own list by what is typed here, so picking a Pokémon there just closes
+	// the dropdown and leaves the list filtered — it doesn't pull you off the ranking you are reading.
+	const onRankingList = pathname === R.pokedex || pathname.startsWith('/rankings');
+
 	const pick = (hit: Hit) => {
 		setOpen(false);
+		if (hit.kind === 'pokemon' && onRankingList) return;
 		setQ('');
 		if (hit.kind === 'pokemon') {
 			// `?lg=` (which league/raids tab the detail page's picker/readout was

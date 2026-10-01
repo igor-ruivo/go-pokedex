@@ -45,24 +45,46 @@ export const TeamMini = ({
 	const miniRef = useRef<HTMLDivElement>(null);
 	const metrics = combatMetricNames(t);
 
-	// The app bar's height varies, so the bar's `top` is written from it (on mount and on resize); visible from then on.
+	// The bar sits right under the app bar. The app bar is sticky, so on a phone's rubber-band overscroll (a swipe down
+	// at the very top) it is carried down with the page while a fixed element stays put — which let this bar slide
+	// out from under it. So `top` follows the app bar's actual bottom edge, re-read on every scroll tick (iOS fires
+	// them during the bounce, on the window and on the visual viewport) and not just once on mount.
 	useLayoutEffect(() => {
 		const miniEl = miniRef.current;
 		if (!miniEl) return;
+		const gap = () => (window.innerWidth >= 900 ? 10 : 0);
 		const place = () => {
-			const appbarH = document.querySelector('.r-appbar')?.getBoundingClientRect().height ?? 60;
-			miniEl.style.top = `${appbarH + (window.innerWidth >= 900 ? 10 : 0)}px`;
+			const appbar = document.querySelector('.r-appbar');
+			const bottom = appbar ? appbar.getBoundingClientRect().bottom : 60;
+			miniEl.style.top = `${bottom + gap()}px`;
+		};
+		let raf = 0;
+		const schedule = () => {
+			if (!raf) {
+				raf = requestAnimationFrame(() => {
+					raf = 0;
+					place();
+				});
+			}
 		};
 		place();
 		// Visible a frame later, with the fade armed, so it eases in instead of popping.
-		const raf = requestAnimationFrame(() => {
+		const show = requestAnimationFrame(() => {
 			miniEl.dataset.visible = 'true';
 			miniEl.dataset.anim = 'true';
 		});
-		window.addEventListener('resize', place);
+		const viewport = window.visualViewport;
+		window.addEventListener('resize', schedule);
+		window.addEventListener('scroll', schedule, { passive: true });
+		viewport?.addEventListener('scroll', schedule);
+		viewport?.addEventListener('resize', schedule);
 		return () => {
-			cancelAnimationFrame(raf);
-			window.removeEventListener('resize', place);
+			cancelAnimationFrame(show);
+			if (raf) cancelAnimationFrame(raf);
+			window.removeEventListener('resize', schedule);
+			window.removeEventListener('scroll', schedule);
+			viewport?.removeEventListener('scroll', schedule);
+			viewport?.removeEventListener('resize', schedule);
 		};
 	}, []);
 

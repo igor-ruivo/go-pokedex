@@ -142,7 +142,7 @@ const Teams = () => {
 			id: 'favorites',
 			label: t('teams:page.favoritesTab'),
 			icon: (
-				<svg viewBox='0 0 24 24' width='20' height='20' fill='currentColor' aria-hidden='true'>
+				<svg viewBox='0 0 24 24' width='20' height='20' fill='#f2c53d' aria-hidden='true'>
 					<path d='M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.3l-5.9 3.1 1.2-6.5L2.5 9.3l6.6-.9z' />
 				</svg>
 			),

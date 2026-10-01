@@ -2568,3 +2568,17 @@
 .rvmp .r-tm-board-delta[data-dir='down'] {
 	color: var(--neg);
 }
+
+/* phones: the type chips always stack in a column, even when two would fit side by side */
+@media (max-width: 719px) {
+	.rvmp .r-tm-board-types {
+		flex-direction: column;
+		align-items: center;
+	}
+}
+
+/* a card whose move menu is open rises above the cards after it: on a phone they stack, and each card has its own
+   stacking context (its entrance animation), so the menu would otherwise slide under the next card */
+.rvmp .r-tm-card:has(.r-tm-movepop) {
+	z-index: 10;
+}
