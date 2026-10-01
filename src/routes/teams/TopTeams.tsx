@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { useAfterPaint } from '../../hooks/useAfterPaint';
 import { SCORE_WEIGHTS } from '../../lib/team-analysis';
 import { useTeamRanking } from '../../queries/teams';
 import { TeamCards } from './TeamCards';
@@ -27,8 +28,11 @@ export const TopTeams = ({
 	// The same "Order by" chip as the rankings pages. Each key has its own list of the best teams by that metric.
 	const [sortKey, setSortKey] = useState<'score' | 'threat'>('score');
 
+	// The tab is already showing; the long list of cards renders after the spinner has been painted.
+	const painted = useAfterPaint();
+
 	if (query.isError) return <p className='r-muted'>{t('teams:top.empty')}</p>;
-	if (!query.data || !data.ready) {
+	if (!query.data || !data.ready || !painted) {
 		return (
 			<div className='r-tm-loading'>
 				<span className='r-spinner' aria-hidden='true' />

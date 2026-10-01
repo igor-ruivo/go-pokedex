@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { useAfterPaint } from '../../hooks/useAfterPaint';
 import { useFavoriteTeams } from '../../lib/favorite-teams';
 import { type ScoreParts, scoreTier, teamScore, threatPart } from '../../lib/team-analysis';
 import { TeamCards } from './TeamCards';
@@ -86,7 +87,8 @@ export const FavoriteTeams = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [favorites, ctx, data, league, evaluations.map((e) => (e.data ? 1 : 0)).join('')]);
 
-	if (!data.ready) {
+	const painted = useAfterPaint();
+	if (!data.ready || !painted) {
 		return (
 			<div className='r-tm-loading'>
 				<span className='r-spinner' aria-hidden='true' />

@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { RankMedal } from '../../components/RankMedal';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import { SpriteImg } from '../../components/Sprite';
@@ -355,6 +356,7 @@ const PokemonPicker = ({
 									style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 									onClick={() => onPick(r.speciesId)}
 								>
+									<RankMedal rank={position} className='r-tm-picker-medal' />
 									<span className='r-search-sprite'>
 										{p.isShadow && <ShadowMark />}
 										<SpriteImg pokemon={p} loading='lazy' />

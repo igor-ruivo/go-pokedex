@@ -636,6 +636,19 @@
 	border: 1px solid var(--border);
 	text-align: left;
 }
+/* the podium medal for the first three places, pinned to the row's top-left corner */
+.rvmp .r-tm-picker-list button {
+	position: relative;
+}
+.rvmp .r-tm-picker-list .r-tm-picker-medal {
+	position: absolute;
+	top: -5px;
+	left: -5px;
+	width: 18px;
+	height: 18px;
+	z-index: 1;
+	pointer-events: none;
+}
 .rvmp .r-tm-picker-list button:hover,
 .rvmp .r-tm-picker-list button:focus-visible {
 	background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
