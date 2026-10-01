@@ -116,8 +116,10 @@ export const ThreatPanel = ({
 								title={t('teams:builder.replace', { name: cleanName(m.pokemon.speciesName) })}
 								onClick={() => onChangePokemon(i)}
 							>
-								{m.pokemon.isShadow && <ShadowMark />}
-								<SpriteImg pokemon={m.pokemon} loading='lazy' />
+								<span className='r-tm-cell-art'>
+									{m.pokemon.isShadow && <ShadowMark />}
+									<SpriteImg pokemon={m.pokemon} loading='lazy' />
+								</span>
 							</button>
 						</span>
 					))}

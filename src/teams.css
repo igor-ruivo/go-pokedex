@@ -1430,12 +1430,21 @@
 .rvmp .r-tm-grid-member > button,
 .rvmp .r-tm-mx-head > button {
 	position: relative;
+	display: grid;
+	place-items: center;
 	width: 100%;
 	height: 40px;
 	padding: 3px;
 	/* same tile as the threat rows' name cell (.r-tm-grid-threat) */
 	border-radius: var(--r-sm);
 	background: color-mix(in srgb, var(--tc) 10%, var(--surface-2));
+}
+.rvmp .r-tm-cell-art {
+	position: relative;
+	display: block;
+	flex: none;
+	width: 34px;
+	height: 34px;
 }
 .rvmp .r-tm-grid-member img,
 .rvmp .r-tm-mx-head img {
@@ -1601,8 +1610,7 @@
 /* shadow adorners on the small sprites of the threat and coverage panels */
 .rvmp .r-tm-wins-ico > .r-shadow-mark,
 .rvmp .r-tm-hole-ico > .r-shadow-mark,
-.rvmp .r-tm-grid-member > button > .r-shadow-mark,
-.rvmp .r-tm-mx-head > button > .r-shadow-mark,
+.rvmp .r-tm-cell-art > .r-shadow-mark,
 .rvmp .r-tm-swap-ico > .r-shadow-mark {
 	position: absolute;
 	right: -2px;
