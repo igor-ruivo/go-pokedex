@@ -6276,69 +6276,72 @@
 	color: var(--hex-worst);
 }
 
-/* hover/focus tooltip — desktop (real hover + fine pointer) only; touch users
-   get the same text in the "what do these mean" panel below */
+/* axis tooltip: hidden until the label is hovered/focused (mouse) or tapped (touch, `data-open`) */
 .rvmp .r-hex-tip {
-	display: none;
+	display: block;
+	position: absolute;
+	z-index: 5;
+	width: min(250px, 72vw);
+	padding: 10px 12px;
+	border-radius: var(--r-sm);
+	background: var(--surface-3);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+	color: var(--text-dim);
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.4;
+	letter-spacing: 0;
+	text-align: left;
+	text-transform: none;
+	white-space: normal;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		opacity 0.15s ease,
+		visibility 0.15s;
+}
+.rvmp .r-hex-tip strong {
+	display: block;
+	margin-bottom: 3px;
+	color: var(--text);
+	font-size: 12.5px;
+	font-weight: 800;
+}
+.rvmp .r-hex-l[data-open] .r-hex-tip {
+	opacity: 1;
+	visibility: visible;
+}
+/* each label is its own stacking context, so the open one has to outrank its siblings or their text paints over the tooltip */
+.rvmp .r-hex-l[data-open] {
+	z-index: 10;
+}
+.rvmp .r-hex-l[data-vert='top'] .r-hex-tip {
+	top: calc(100% + 6px);
+}
+.rvmp .r-hex-l[data-vert='bottom'] .r-hex-tip {
+	bottom: calc(100% + 6px);
+}
+.rvmp .r-hex-l[data-side='left'] .r-hex-tip {
+	left: 0;
+}
+.rvmp .r-hex-l[data-side='right'] .r-hex-tip {
+	right: 0;
+}
+.rvmp .r-hex-l[data-side='mid'] .r-hex-tip {
+	left: 50%;
+	transform: translateX(-50%);
 }
 @media (hover: hover) and (pointer: fine) {
-	.rvmp .r-hex-tip {
-		display: block;
-		position: absolute;
-		z-index: 5;
-		width: 250px;
-		padding: 10px 12px;
-		border-radius: var(--r-sm);
-		background: var(--surface-3);
-		border: 1px solid var(--border-strong);
-		box-shadow: var(--shadow-2);
-		color: var(--text-dim);
-		font-size: 12px;
-		font-weight: 500;
-		line-height: 1.4;
-		letter-spacing: 0;
-		text-align: left;
-		text-transform: none;
-		white-space: normal;
-		pointer-events: none;
-		opacity: 0;
-		visibility: hidden;
-		transition:
-			opacity 0.15s ease,
-			visibility 0.15s;
-	}
-	.rvmp .r-hex-tip strong {
-		display: block;
-		margin-bottom: 3px;
-		color: var(--text);
-		font-size: 12.5px;
-		font-weight: 800;
-	}
 	.rvmp .r-hex-l:hover .r-hex-tip,
 	.rvmp .r-hex-l:focus-visible .r-hex-tip {
 		opacity: 1;
 		visibility: visible;
 	}
-	/* each label is its own stacking context, so the open one has to outrank its siblings or their text paints over the tooltip */
 	.rvmp .r-hex-l:hover,
 	.rvmp .r-hex-l:focus-visible {
 		z-index: 10;
-	}
-	.rvmp .r-hex-l[data-vert='top'] .r-hex-tip {
-		top: calc(100% + 6px);
-	}
-	.rvmp .r-hex-l[data-vert='bottom'] .r-hex-tip {
-		bottom: calc(100% + 6px);
-	}
-	.rvmp .r-hex-l[data-side='left'] .r-hex-tip {
-		left: 0;
-	}
-	.rvmp .r-hex-l[data-side='right'] .r-hex-tip {
-		right: 0;
-	}
-	.rvmp .r-hex-l[data-side='mid'] .r-hex-tip {
-		left: 50%;
-		transform: translateX(-50%);
 	}
 }
 

@@ -8,7 +8,7 @@ interface CombatHexagonProps<K extends string> {
 	values: Record<K, number>;
 	/** Localized axis names, keyed by axis. */
 	labels: Record<K, string>;
-	/** Localized one-line explanations, shown as a desktop hover/focus tooltip. */
+	/** Localized one-line explanations, shown as a tooltip: on hover/focus with a mouse, on tap on touch screens. */
 	descriptions: Record<K, string>;
 	/** Any CSS colour (`var(--lg-great)` or a rotating cup's own hex). */
 	color: string;
@@ -107,6 +107,24 @@ export const CombatHexagon = <K extends string = CombatMetric>({
 		MIN_FRACTION + (1 - MIN_FRACTION) * Math.max(0, Math.min(1, (v - floor) / (100 - floor)));
 	const { best, worst } = bestWorst(values, axes);
 
+	// Touch screens have no hover: a tap on a label opens its explanation, a tap anywhere else (or Escape) closes it.
+	const [openAxis, setOpenAxis] = useState<K | null>(null);
+	useEffect(() => {
+		if (openAxis === null) return;
+		const onPress = (e: PointerEvent) => {
+			if (!(e.target instanceof Element) || !e.target.closest('.r-hex-l')) setOpenAxis(null);
+		};
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') setOpenAxis(null);
+		};
+		document.addEventListener('pointerdown', onPress);
+		document.addEventListener('keydown', onKey);
+		return () => {
+			document.removeEventListener('pointerdown', onPress);
+			document.removeEventListener('keydown', onKey);
+		};
+	}, [openAxis]);
+
 	const fractions = useTweenedFractions(axes.map((m) => fraction(values[m])));
 
 	const shape = axes.map((_, i) => pointAt(i, RADIUS * (fractions[i] ?? 0)));
@@ -175,7 +193,9 @@ export const CombatHexagon = <K extends string = CombatMetric>({
 							data-side={x < 45 ? 'left' : x > 55 ? 'right' : 'mid'}
 							data-vert={y < 50 ? 'top' : 'bottom'}
 							style={{ left: `${x}%`, top: `${y}%` }}
+							data-open={openAxis === m ? '' : undefined}
 							aria-describedby={tipId}
+							onClick={() => setOpenAxis((current) => (current === m ? null : m))}
 						>
 							<span className='r-hex-name'>{labels[m]}</span>
 							<b className='r-hex-val'>

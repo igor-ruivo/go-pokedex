@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ShadowMark } from '../../components/ShadowMark';
@@ -10,6 +12,45 @@ import type { AnalyzedMember } from './useTeamAnalysis';
 import type { TeamUpgrades } from './useTeamUpgrades';
 
 const signed = (value: number, digits = 0) => `${value > 0 ? '+' : ''}${value.toFixed(digits)}`;
+
+/**
+ * A translated "<label> {{score}} ({{delta}})" line with the two numbers picked out: the resulting score in bold, the
+ * change in bold and coloured (every suggestion is an improvement). The numbers go through the translation as
+ * markers, so each language keeps its own word order and punctuation.
+ */
+const emphasized = (
+	t: TFunction<'teams'>,
+	key: 'teams:suggest.result' | 'teams:suggest.resultScore',
+	score: string,
+	delta: string
+): ReactNode => {
+	const text = t(key, { score: 'score', delta: 'delta' });
+	const parts = text.split(/(score|delta)/);
+	// the longest piece of text is the label ("Threat score"): the one that gives way when the line is too long
+	const label = parts.reduce(
+		(longest, part) => (part.length > longest.length && part !== 'score' && part !== 'delta' ? part : longest),
+		''
+	);
+	return parts.map((part, i) => {
+		if (part === 'score')
+			return (
+				<strong key={i} className='r-tm-pick-num'>
+					{score}
+				</strong>
+			);
+		if (part === 'delta')
+			return (
+				<strong key={i} className='r-tm-pick-delta'>
+					{delta}
+				</strong>
+			);
+		return part ? (
+			<span key={i} className={part === label ? 'r-tm-pick-label' : undefined}>
+				{part}
+			</span>
+		) : null;
+	});
+};
 
 /**
  * Single-swap upgrades: for each of the league's top-ranked Pokémon that isn't on the team, what would one slot
@@ -35,7 +76,7 @@ export const Suggestions = ({
 	const { t } = useTranslation(['teams']);
 
 	/** One cell per upgrade: who goes out, who comes in, and what it does to the number this list is about. */
-	const cells = (picks: ReadonlyArray<AlternativePick & { result: string }>) => (
+	const cells = (picks: ReadonlyArray<AlternativePick & { result: ReactNode }>) => (
 		<ul className='r-tm-picks'>
 			{picks.map((pick) => {
 				const next = gamemaster[pick.speciesId];
@@ -69,7 +110,7 @@ export const Suggestions = ({
 										in: cleanName(next.speciesName),
 									})}
 								</b>
-								<span>{pick.result}</span>
+								<span className='r-tm-pick-result'>{pick.result}</span>
 							</span>
 						</button>
 					</li>
@@ -100,10 +141,7 @@ export const Suggestions = ({
 							cells(
 								upgrades.byScore.map((pick) => ({
 									...pick,
-									result: t('teams:suggest.resultScore', {
-										score: pick.score.toFixed(1),
-										delta: signed(pick.scoreDelta, 1),
-									}),
+									result: emphasized(t, 'teams:suggest.resultScore', pick.score.toFixed(1), signed(pick.scoreDelta, 1)),
 								}))
 							)
 						)}
@@ -120,7 +158,7 @@ export const Suggestions = ({
 							cells(
 								upgrades.byThreat.map((pick) => ({
 									...pick,
-									result: t('teams:suggest.result', { score: pick.threatScore, delta: signed(pick.delta) }),
+									result: emphasized(t, 'teams:suggest.result', String(pick.threatScore), signed(pick.delta)),
 								}))
 							)
 						)}
