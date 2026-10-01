@@ -1,5 +1,6 @@
 import type { TeamLeague } from '../DTOs/ITeamBuilder';
 import { computeMoveEffectiveness } from '../utils/pokemon-helper';
+import type { RoleScores } from './team-roles';
 import { TYPE_KEYS } from './types';
 
 /* ---------------------------------------------------------------------------
@@ -30,7 +31,6 @@ export const CONSISTENCY_GOAL = 98;
 export const threatCoverage = (threatScore: number): number => (1200 - threatScore) / 680;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
-const round1 = (n: number) => Math.round(n * 10) / 10;
 
 /* ------------------------------ Typing ------------------------------------ */
 
@@ -160,50 +160,7 @@ export const sharedTypes = (
 
 /* ------------------------------ Roles ------------------------------------- */
 
-export type TeamRole = 'lead' | 'switch' | 'closer';
-export const TEAM_ROLES: ReadonlyArray<TeamRole> = ['lead', 'switch', 'closer'];
-
-export interface RoleScores {
-	lead: number;
-	switch: number;
-	closer: number;
-}
-
-export interface RoleAssignment {
-	/** Member index per role. */
-	order: Record<TeamRole, number>;
-	/** Sum of the three role scores of the chosen assignment. */
-	total: number;
-	/** Points ahead of the next-best assignment (0 = a coin flip). */
-	margin: number;
-}
-
-const PERMUTATIONS: ReadonlyArray<readonly [number, number, number]> = [
-	[0, 1, 2],
-	[0, 2, 1],
-	[1, 0, 2],
-	[1, 2, 0],
-	[2, 0, 1],
-	[2, 1, 0],
-];
-
-/**
- * The lineup that maximises PvPoke's role scores: who leads, who takes the
- * safe switch, who closes. All six assignments are tried, so a Pokémon that's
- * a good closer but is needed elsewhere is placed where the team gains most.
- * Only defined for a full team of three.
- */
-export const assignRoles = (scores: ReadonlyArray<RoleScores | undefined>): RoleAssignment | undefined => {
-	if (scores.length !== 3 || scores.some((s) => !s)) return undefined;
-	const s = scores as ReadonlyArray<RoleScores>;
-
-	const ranked = PERMUTATIONS.map(([lead, sw, closer]) => ({
-		order: { lead, switch: sw, closer },
-		total: s[lead].lead + s[sw].switch + s[closer].closer,
-	})).sort((a, b) => b.total - a.total);
-
-	return { ...ranked[0], margin: round1(ranked[0].total - ranked[1].total) };
-};
+export { assignRoles, type RoleAssignment, type RoleScores, TEAM_ROLES, type TeamRole } from './team-roles';
 
 /* ------------------------------ Score ------------------------------------- */
 

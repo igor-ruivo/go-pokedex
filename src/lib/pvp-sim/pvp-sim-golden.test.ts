@@ -56,13 +56,13 @@ describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague
 			});
 
 			it('arrives at PvPoke’s threat score and threats', () => {
-				const result = evaluator.evaluate(team);
+				const result = evaluator.evaluate(team, { order: 'given' });
 				expect(result.threatScore).toBe(expected.threatScore);
 				expect(result.threats.map((t) => t.speciesId)).toEqual(expected.threats);
 			});
 
 			it('builds the team members with the same stats and consistency', () => {
-				const { members } = evaluator.evaluate(team);
+				const { members } = evaluator.evaluate(team, { order: 'given' });
 				expect(
 					members.map((m) => ({ speciesId: m.speciesId, level: m.level, cp: m.cp, consistency: m.consistency }))
 				).toEqual(

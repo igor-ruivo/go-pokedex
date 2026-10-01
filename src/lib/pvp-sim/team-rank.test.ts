@@ -74,3 +74,59 @@ describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague
 		});
 	}
 );
+
+describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)(
+	'%s league play order',
+	(league, data) => {
+		const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+		const movesetOf = (speciesId: string) =>
+			data.ranking.find((r) => r.speciesId === speciesId)!.moveset.filter((m) => m !== 'none');
+		const trio = [...data.ranking]
+			.sort((a, b) => a.rank - b.rank)
+			.slice(0, 6)
+			.filter((_, i) => i % 2 === 0)
+			.map((r) => r.speciesId);
+		const slotsOf = (ids: ReadonlyArray<string>) =>
+			ids.map((speciesId) => ({ speciesId, moveset: movesetOf(speciesId) }));
+		const permutations = [
+			[0, 1, 2],
+			[0, 2, 1],
+			[1, 0, 2],
+			[1, 2, 0],
+			[2, 0, 1],
+			[2, 1, 0],
+		];
+
+		it('rates a team the same whatever order its slots are in', () => {
+			const scores = permutations.map((p) => evaluator.evaluate(slotsOf(p.map((i) => trio[i]))).threatScore);
+			expect(new Set(scores).size, `${trio.join(' + ')}: ${scores.join(', ')}`).toBe(1);
+		});
+
+		it('is exactly what PvPoke gives for the team entered in its play order', () => {
+			const given = slotsOf(trio);
+			const rated = evaluator.evaluate(given);
+			const playOrder = evaluator
+				.evaluate(given, { order: 'given' }) // order of the *result's* members is unchanged; the play order comes from the roles
+				.members.map((m) => m.speciesId);
+			expect(playOrder).toEqual(trio);
+
+			const roles = (id: string) => data.ranking.find((r) => r.speciesId === id)!;
+			const best = permutations
+				.map((p) => p.map((i) => trio[i]))
+				.map((ids) => ({ ids, total: roles(ids[0]).lead! + roles(ids[1]).switch + roles(ids[2]).closer! }))
+				.sort((a, b) => b.total - a.total)[0].ids;
+			expect(rated.threatScore).toBe(evaluator.evaluate(slotsOf(best), { order: 'given' }).threatScore);
+		});
+
+		it('returns the per-teammate figures in the order the caller gave', () => {
+			const reversed = slotsOf([...trio].reverse());
+			const result = evaluator.evaluate(reversed);
+			const matchups = evaluator.matchups(reversed);
+			const byId = new Map(matchups.map((row) => [row.speciesId, row.ratings]));
+			result.threats.forEach((threat) => {
+				expect(threat.ratings).toEqual(byId.get(threat.speciesId));
+			});
+			expect(result.members.map((m) => m.speciesId)).toEqual([...trio].reverse());
+		});
+	}
+);

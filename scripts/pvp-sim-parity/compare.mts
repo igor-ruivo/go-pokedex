@@ -87,7 +87,9 @@ function writeFixtureInputs(
 			speciesId: r.speciesId,
 			moveset: r.moveset.filter((mv) => mv !== 'none'),
 			score: r.score,
+			lead: r.scores[0],
 			switch: r.scores[2],
+			closer: r.scores[1],
 			charger: r.scores[3],
 			consistency: r.scores[5],
 			rank: all.indexOf(r) + 1,
@@ -157,7 +159,9 @@ function writeFixtureInputs(
 		speciesId: r.speciesId,
 		moveset: r.moveset.filter((m) => m !== 'none'),
 		score: r.score,
+		lead: r.scores[0],
 		switch: r.scores[2],
+		closer: r.scores[1],
 		charger: r.scores[3],
 		consistency: r.scores[5],
 		rank: i + 1,
@@ -169,7 +173,8 @@ function writeFixtureInputs(
 	const t0 = Date.now();
 	const evaluator = new TeamEvaluator({ league, builder: builder as never, species, ranking });
 	const t1 = Date.now();
-	const result = evaluator.evaluate(team);
+	// PvPoke rates the team in the order it is given, so the comparison does too.
+	const result = evaluator.evaluate(team, { order: 'given' });
 	const t2 = Date.now();
 	console.log(`init ${t1 - t0}ms, evaluate ${t2 - t1}ms, pool ${result.poolSize}`);
 

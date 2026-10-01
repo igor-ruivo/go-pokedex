@@ -1367,102 +1367,470 @@
 			}
 		},
 		"ivs": {
-			"melmetal": { "great": [15.5, 1, 15, 14], "ultra": [26, 0, 13, 15], "master": [50, 15, 15, 15] },
-			"altaria": { "great": [29, 0, 14, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"ninetales_shadow": { "great": [25, 0, 15, 15], "ultra": [50, 9, 15, 15], "master": [50, 15, 15, 15] },
-			"cramorant": { "great": [27, 0, 14, 11], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"tinkaton": { "great": [25.5, 1, 14, 14], "ultra": [49.5, 13, 15, 15], "master": [50, 15, 15, 15] },
-			"mimikyu": { "great": [25.5, 1, 14, 15], "ultra": [50, 14, 14, 15], "master": [50, 15, 15, 15] },
-			"corviknight": { "great": [23.5, 0, 13, 14], "ultra": [48.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"corsola_galarian": { "great": [50, 0, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"altaria_shadow": { "great": [29, 0, 14, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"corviknight_shadow": { "great": [23.5, 0, 13, 14], "ultra": [48.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"florges": { "great": [17.5, 0, 14, 13], "ultra": [29, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"quagsire_shadow": { "great": [29, 0, 15, 14], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"ninetales": { "great": [25, 0, 15, 15], "ultra": [50, 9, 15, 15], "master": [50, 15, 15, 15] },
-			"quagsire": { "great": [29, 0, 15, 14], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"thievul": { "great": [27, 0, 15, 11], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"araquanid": { "great": [35, 0, 10, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"clodsire": { "great": [30.5, 0, 14, 13], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"sableye_shadow": { "great": [49.5, 0, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"marowak": { "great": [33.5, 0, 14, 14], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"stunfisk": { "great": [27, 0, 12, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"vigoroth": { "great": [29, 1, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"jellicent": { "great": [24.5, 1, 14, 14], "ultra": [50, 6, 14, 15], "master": [50, 15, 15, 15] },
-			"empoleon": { "great": [19.5, 0, 13, 15], "ultra": [34.5, 1, 15, 14], "master": [50, 15, 15, 15] },
-			"empoleon_shadow": { "great": [19.5, 0, 13, 15], "ultra": [34.5, 1, 15, 14], "master": [50, 15, 15, 15] },
-			"fearow": { "great": [28.5, 0, 15, 14], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"mantine": { "great": [27.5, 0, 15, 14], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"snorlax": { "great": [17.5, 1, 15, 14], "ultra": [29.5, 0, 12, 15], "master": [50, 15, 15, 15] },
-			"umbreon": { "great": [27.5, 0, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"araquanid_shadow": { "great": [35, 0, 10, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"feraligatr": { "great": [20, 0, 11, 13], "ultra": [35.5, 1, 15, 14], "master": [50, 15, 15, 15] },
-			"azumarill": { "great": [45.5, 0, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"rillaboom": { "great": [17, 0, 12, 13], "ultra": [28, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"annihilape_shadow": { "great": [17, 2, 15, 15], "ultra": [28.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"lapras": { "great": [22, 0, 10, 14], "ultra": [42.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"snorlax_shadow": { "great": [17.5, 1, 15, 14], "ultra": [29.5, 0, 12, 15], "master": [50, 15, 15, 15] },
-			"guzzlord": { "great": [19.5, 1, 15, 15], "ultra": [35.5, 0, 15, 14], "master": [50, 15, 15, 15] },
-			"forretress_shadow": { "great": [25.5, 0, 9, 15], "ultra": [50, 9, 15, 15], "master": [50, 15, 15, 15] },
-			"dondozo": { "great": [19, 0, 15, 15], "ultra": [33.5, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"morpeko_full_belly": { "great": [29, 1, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"medicham": { "great": [50, 5, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"jumpluff": { "great": [43, 0, 14, 14], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"blastoise": { "great": [23, 1, 15, 15], "ultra": [48.5, 0, 12, 15], "master": [50, 15, 15, 15] },
-			"feraligatr_shadow": { "great": [20, 0, 11, 13], "ultra": [35.5, 1, 15, 14], "master": [50, 15, 15, 15] },
-			"lapras_shadow": { "great": [22, 0, 10, 14], "ultra": [42.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"ninetales_alolan": { "great": [25, 0, 14, 12], "ultra": [50, 7, 15, 15], "master": [50, 15, 15, 15] },
-			"moltres_galarian": { "great": [18, 0, 13, 12], "ultra": [29.5, 1, 15, 15], "master": [50, 15, 15, 15] },
-			"ninetales_alolan_shadow": { "great": [25, 0, 14, 12], "ultra": [50, 7, 15, 15], "master": [50, 15, 15, 15] },
-			"dusknoir_shadow": { "great": [24, 0, 14, 13], "ultra": [50, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"aegislash_shield": { "great": [50, 0, 12, 14], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"stunfisk_galarian": { "great": [27, 0, 12, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"registeel": { "great": [24, 0, 8, 15], "ultra": [50, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"dusknoir": { "great": [24, 0, 14, 13], "ultra": [50, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"talonflame_shadow": { "great": [26, 0, 13, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"lickilicky": { "great": [23.5, 0, 15, 10], "ultra": [48.5, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"ursaluna": { "great": [14.5, 0, 14, 15], "ultra": [24, 1, 15, 15], "master": [50, 15, 15, 15] },
-			"ursaluna_shadow": { "great": [14.5, 0, 14, 15], "ultra": [24, 1, 15, 15], "master": [50, 15, 15, 15] },
-			"palkia_shadow": { "great": [14, 0, 14, 12], "ultra": [23, 2, 15, 14], "master": [50, 15, 15, 15] },
-			"skeledirge": { "great": [18.5, 1, 15, 15], "ultra": [32, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"garchomp": { "great": [14, 0, 15, 15], "ultra": [23.5, 0, 14, 13], "master": [50, 15, 15, 15] },
-			"garchomp_shadow": { "great": [14, 0, 15, 15], "ultra": [23.5, 0, 14, 13], "master": [50, 15, 15, 15] },
-			"lugia_shadow": { "great": [15.5, 0, 11, 11], "ultra": [25.5, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"reshiram_shadow": { "great": [14, 0, 13, 8], "ultra": [23, 0, 15, 12], "master": [50, 15, 15, 15] },
-			"lugia": { "great": [15.5, 0, 11, 11], "ultra": [25.5, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"metagross": { "great": [14.5, 2, 15, 15], "ultra": [24.5, 0, 15, 13], "master": [50, 15, 15, 15] },
-			"metagross_shadow": { "great": [14.5, 2, 15, 15], "ultra": [24.5, 0, 15, 13], "master": [50, 15, 15, 15] },
-			"ho_oh": { "great": [14.5, 0, 13, 15], "ultra": [24, 1, 15, 14], "master": [50, 15, 15, 15] },
-			"virizion": { "great": [19, 0, 12, 11], "ultra": [32.5, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"zygarde_complete": { "great": [15, 3, 15, 15], "ultra": [25.5, 0, 15, 12], "master": [50, 15, 15, 15] },
-			"giratina_altered": { "great": [17, 0, 11, 12], "ultra": [28, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"reshiram": { "great": [14, 0, 13, 8], "ultra": [23, 0, 15, 12], "master": [50, 15, 15, 15] },
-			"keldeo_resolute": { "great": [15, 0, 15, 15], "ultra": [25, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"dialga_origin": { "great": [13.5, 2, 15, 13], "ultra": [22.5, 1, 15, 15], "master": [50, 15, 15, 15] },
-			"xerneas": { "great": [15, 0, 9, 13], "ultra": [24.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"palkia_origin": { "great": [13.5, 0, 14, 11], "ultra": [22.5, 0, 15, 10], "master": [50, 15, 15, 15] },
-			"marshadow": { "great": [15, 0, 14, 12], "ultra": [25, 0, 14, 12], "master": [50, 15, 15, 15] },
-			"zekrom": { "great": [14, 0, 13, 8], "ultra": [23, 0, 15, 12], "master": [50, 15, 15, 15] },
-			"kyogre": { "great": [13.5, 0, 15, 14], "ultra": [22.5, 0, 15, 14], "master": [50, 15, 15, 15] },
-			"zamazenta_crowned_shield": { "great": [13.5, 0, 9, 14], "ultra": [22.5, 0, 12, 12], "master": [50, 15, 15, 15] },
-			"necrozma_dusk_mane": { "great": [13.5, 0, 15, 15], "ultra": [22.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"eternatus": { "great": [12.5, 0, 15, 14], "ultra": [21, 0, 13, 13], "master": [50, 15, 15, 15] },
-			"lunala": { "great": [14, 0, 12, 9], "ultra": [23, 0, 14, 14], "master": [50, 15, 15, 15] },
-			"necrozma_dawn_wings": { "great": [13.5, 0, 15, 15], "ultra": [22.5, 0, 15, 15], "master": [50, 15, 15, 15] },
-			"groudon": { "great": [13.5, 0, 15, 14], "ultra": [22.5, 0, 15, 14], "master": [50, 15, 15, 15] },
-			"kyurem_white": { "great": [12, 0, 15, 13], "ultra": [20, 0, 15, 13], "master": [50, 15, 15, 15] },
-			"kyurem_black": { "great": [12, 0, 15, 13], "ultra": [20, 0, 15, 13], "master": [50, 15, 15, 15] },
-			"zacian_crowned_sword": { "great": [11, 1, 15, 14], "ultra": [18.5, 0, 15, 12], "master": [50, 15, 15, 15] },
-			"aegislash_blade": { "great": [22.5, 0, 14, 15], "ultra": [45.5, 0, 14, 15], "master": [50, 15, 15, 15] },
-			"mimikyu_busted": { "great": [25.5, 1, 14, 15], "ultra": [50, 14, 14, 15], "master": [50, 15, 15, 15] },
-			"cramorant_gulping": { "great": [27, 0, 14, 11], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"cramorant_gorging": { "great": [27, 0, 14, 11], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] },
-			"morpeko_hangry": { "great": [29, 1, 15, 15], "ultra": [50, 15, 15, 15], "master": [50, 15, 15, 15] }
+			"melmetal": {
+				"great": [15.5, 1, 15, 14],
+				"ultra": [26, 0, 13, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"altaria": {
+				"great": [29, 0, 14, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"ninetales_shadow": {
+				"great": [25, 0, 15, 15],
+				"ultra": [50, 9, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"cramorant": {
+				"great": [27, 0, 14, 11],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"tinkaton": {
+				"great": [25.5, 1, 14, 14],
+				"ultra": [49.5, 13, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"mimikyu": {
+				"great": [25.5, 1, 14, 15],
+				"ultra": [50, 14, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"corviknight": {
+				"great": [23.5, 0, 13, 14],
+				"ultra": [48.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"corsola_galarian": {
+				"great": [50, 0, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"altaria_shadow": {
+				"great": [29, 0, 14, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"corviknight_shadow": {
+				"great": [23.5, 0, 13, 14],
+				"ultra": [48.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"florges": {
+				"great": [17.5, 0, 14, 13],
+				"ultra": [29, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"quagsire_shadow": {
+				"great": [29, 0, 15, 14],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"ninetales": {
+				"great": [25, 0, 15, 15],
+				"ultra": [50, 9, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"quagsire": {
+				"great": [29, 0, 15, 14],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"thievul": {
+				"great": [27, 0, 15, 11],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"araquanid": {
+				"great": [35, 0, 10, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"clodsire": {
+				"great": [30.5, 0, 14, 13],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"sableye_shadow": {
+				"great": [49.5, 0, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"marowak": {
+				"great": [33.5, 0, 14, 14],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"stunfisk": {
+				"great": [27, 0, 12, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"vigoroth": {
+				"great": [29, 1, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"jellicent": {
+				"great": [24.5, 1, 14, 14],
+				"ultra": [50, 6, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"empoleon": {
+				"great": [19.5, 0, 13, 15],
+				"ultra": [34.5, 1, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"empoleon_shadow": {
+				"great": [19.5, 0, 13, 15],
+				"ultra": [34.5, 1, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"fearow": {
+				"great": [28.5, 0, 15, 14],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"mantine": {
+				"great": [27.5, 0, 15, 14],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"snorlax": {
+				"great": [17.5, 1, 15, 14],
+				"ultra": [29.5, 0, 12, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"umbreon": {
+				"great": [27.5, 0, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"araquanid_shadow": {
+				"great": [35, 0, 10, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"feraligatr": {
+				"great": [20, 0, 11, 13],
+				"ultra": [35.5, 1, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"azumarill": {
+				"great": [45.5, 0, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"rillaboom": {
+				"great": [17, 0, 12, 13],
+				"ultra": [28, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"annihilape_shadow": {
+				"great": [17, 2, 15, 15],
+				"ultra": [28.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"lapras": {
+				"great": [22, 0, 10, 14],
+				"ultra": [42.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"snorlax_shadow": {
+				"great": [17.5, 1, 15, 14],
+				"ultra": [29.5, 0, 12, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"guzzlord": {
+				"great": [19.5, 1, 15, 15],
+				"ultra": [35.5, 0, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"forretress_shadow": {
+				"great": [25.5, 0, 9, 15],
+				"ultra": [50, 9, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"dondozo": {
+				"great": [19, 0, 15, 15],
+				"ultra": [33.5, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"morpeko_full_belly": {
+				"great": [29, 1, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"medicham": {
+				"great": [50, 5, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"jumpluff": {
+				"great": [43, 0, 14, 14],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"blastoise": {
+				"great": [23, 1, 15, 15],
+				"ultra": [48.5, 0, 12, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"feraligatr_shadow": {
+				"great": [20, 0, 11, 13],
+				"ultra": [35.5, 1, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"lapras_shadow": {
+				"great": [22, 0, 10, 14],
+				"ultra": [42.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"ninetales_alolan": {
+				"great": [25, 0, 14, 12],
+				"ultra": [50, 7, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"moltres_galarian": {
+				"great": [18, 0, 13, 12],
+				"ultra": [29.5, 1, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"ninetales_alolan_shadow": {
+				"great": [25, 0, 14, 12],
+				"ultra": [50, 7, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"dusknoir_shadow": {
+				"great": [24, 0, 14, 13],
+				"ultra": [50, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"aegislash_shield": {
+				"great": [50, 0, 12, 14],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"stunfisk_galarian": {
+				"great": [27, 0, 12, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"registeel": {
+				"great": [24, 0, 8, 15],
+				"ultra": [50, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"dusknoir": {
+				"great": [24, 0, 14, 13],
+				"ultra": [50, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"talonflame_shadow": {
+				"great": [26, 0, 13, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"lickilicky": {
+				"great": [23.5, 0, 15, 10],
+				"ultra": [48.5, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"ursaluna": {
+				"great": [14.5, 0, 14, 15],
+				"ultra": [24, 1, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"ursaluna_shadow": {
+				"great": [14.5, 0, 14, 15],
+				"ultra": [24, 1, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"palkia_shadow": {
+				"great": [14, 0, 14, 12],
+				"ultra": [23, 2, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"skeledirge": {
+				"great": [18.5, 1, 15, 15],
+				"ultra": [32, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"garchomp": {
+				"great": [14, 0, 15, 15],
+				"ultra": [23.5, 0, 14, 13],
+				"master": [50, 15, 15, 15]
+			},
+			"garchomp_shadow": {
+				"great": [14, 0, 15, 15],
+				"ultra": [23.5, 0, 14, 13],
+				"master": [50, 15, 15, 15]
+			},
+			"lugia_shadow": {
+				"great": [15.5, 0, 11, 11],
+				"ultra": [25.5, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"reshiram_shadow": {
+				"great": [14, 0, 13, 8],
+				"ultra": [23, 0, 15, 12],
+				"master": [50, 15, 15, 15]
+			},
+			"lugia": {
+				"great": [15.5, 0, 11, 11],
+				"ultra": [25.5, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"metagross": {
+				"great": [14.5, 2, 15, 15],
+				"ultra": [24.5, 0, 15, 13],
+				"master": [50, 15, 15, 15]
+			},
+			"metagross_shadow": {
+				"great": [14.5, 2, 15, 15],
+				"ultra": [24.5, 0, 15, 13],
+				"master": [50, 15, 15, 15]
+			},
+			"ho_oh": {
+				"great": [14.5, 0, 13, 15],
+				"ultra": [24, 1, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"virizion": {
+				"great": [19, 0, 12, 11],
+				"ultra": [32.5, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"zygarde_complete": {
+				"great": [15, 3, 15, 15],
+				"ultra": [25.5, 0, 15, 12],
+				"master": [50, 15, 15, 15]
+			},
+			"giratina_altered": {
+				"great": [17, 0, 11, 12],
+				"ultra": [28, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"reshiram": {
+				"great": [14, 0, 13, 8],
+				"ultra": [23, 0, 15, 12],
+				"master": [50, 15, 15, 15]
+			},
+			"keldeo_resolute": {
+				"great": [15, 0, 15, 15],
+				"ultra": [25, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"dialga_origin": {
+				"great": [13.5, 2, 15, 13],
+				"ultra": [22.5, 1, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"xerneas": {
+				"great": [15, 0, 9, 13],
+				"ultra": [24.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"palkia_origin": {
+				"great": [13.5, 0, 14, 11],
+				"ultra": [22.5, 0, 15, 10],
+				"master": [50, 15, 15, 15]
+			},
+			"marshadow": {
+				"great": [15, 0, 14, 12],
+				"ultra": [25, 0, 14, 12],
+				"master": [50, 15, 15, 15]
+			},
+			"zekrom": {
+				"great": [14, 0, 13, 8],
+				"ultra": [23, 0, 15, 12],
+				"master": [50, 15, 15, 15]
+			},
+			"kyogre": {
+				"great": [13.5, 0, 15, 14],
+				"ultra": [22.5, 0, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"zamazenta_crowned_shield": {
+				"great": [13.5, 0, 9, 14],
+				"ultra": [22.5, 0, 12, 12],
+				"master": [50, 15, 15, 15]
+			},
+			"necrozma_dusk_mane": {
+				"great": [13.5, 0, 15, 15],
+				"ultra": [22.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"eternatus": {
+				"great": [12.5, 0, 15, 14],
+				"ultra": [21, 0, 13, 13],
+				"master": [50, 15, 15, 15]
+			},
+			"lunala": {
+				"great": [14, 0, 12, 9],
+				"ultra": [23, 0, 14, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"necrozma_dawn_wings": {
+				"great": [13.5, 0, 15, 15],
+				"ultra": [22.5, 0, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"groudon": {
+				"great": [13.5, 0, 15, 14],
+				"ultra": [22.5, 0, 15, 14],
+				"master": [50, 15, 15, 15]
+			},
+			"kyurem_white": {
+				"great": [12, 0, 15, 13],
+				"ultra": [20, 0, 15, 13],
+				"master": [50, 15, 15, 15]
+			},
+			"kyurem_black": {
+				"great": [12, 0, 15, 13],
+				"ultra": [20, 0, 15, 13],
+				"master": [50, 15, 15, 15]
+			},
+			"zacian_crowned_sword": {
+				"great": [11, 1, 15, 14],
+				"ultra": [18.5, 0, 15, 12],
+				"master": [50, 15, 15, 15]
+			},
+			"aegislash_blade": {
+				"great": [22.5, 0, 14, 15],
+				"ultra": [45.5, 0, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"mimikyu_busted": {
+				"great": [25.5, 1, 14, 15],
+				"ultra": [50, 14, 14, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"cramorant_gulping": {
+				"great": [27, 0, 14, 11],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"cramorant_gorging": {
+				"great": [27, 0, 14, 11],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			},
+			"morpeko_hangry": {
+				"great": [29, 1, 15, 15],
+				"ultra": [50, 15, 15, 15],
+				"master": [50, 15, 15, 15]
+			}
 		},
 		"forms": {
 			"aegislash_blade": {
 				"speciesId": "aegislash_blade",
-				"baseStats": { "atk": 272, "def": 97, "hp": 155 },
+				"baseStats": {
+					"atk": 272,
+					"def": 97,
+					"hp": 155
+				},
 				"types": ["steel", "ghost"],
 				"fastMoves": ["PSYCHO_CUT", "AIR_SLASH"],
 				"chargedMoves": ["FLASH_CANNON", "GYRO_BALL", "SHADOW_BALL"],
@@ -1476,7 +1844,11 @@
 			},
 			"aegislash_shield": {
 				"speciesId": "aegislash_shield",
-				"baseStats": { "atk": 97, "def": 272, "hp": 155 },
+				"baseStats": {
+					"atk": 97,
+					"def": 272,
+					"hp": 155
+				},
 				"types": ["steel", "ghost"],
 				"fastMoves": ["AEGISLASH_CHARGE_PSYCHO_CUT", "AEGISLASH_CHARGE_AIR_SLASH"],
 				"chargedMoves": ["FLASH_CANNON", "GYRO_BALL", "SHADOW_BALL"],
@@ -1491,7 +1863,11 @@
 			},
 			"mimikyu": {
 				"speciesId": "mimikyu",
-				"baseStats": { "atk": 177, "def": 199, "hp": 146 },
+				"baseStats": {
+					"atk": 177,
+					"def": 199,
+					"hp": 146
+				},
 				"types": ["ghost", "fairy"],
 				"fastMoves": ["SHADOW_CLAW", "HEX"],
 				"chargedMoves": ["SHADOW_SNEAK", "PLAY_ROUGH", "THUNDER"],
@@ -1508,17 +1884,29 @@
 			},
 			"mimikyu_busted": {
 				"speciesId": "mimikyu_busted",
-				"baseStats": { "atk": 177, "def": 199, "hp": 146 },
+				"baseStats": {
+					"atk": 177,
+					"def": 199,
+					"hp": 146
+				},
 				"types": ["ghost", "fairy"],
 				"fastMoves": ["SHADOW_CLAW", "HEX"],
 				"chargedMoves": ["SHADOW_SNEAK", "PLAY_ROUGH", "THUNDER"],
-				"formChange": { "type": "set", "trigger": "none", "resetOnSwitch": false },
+				"formChange": {
+					"type": "set",
+					"trigger": "none",
+					"resetOnSwitch": false
+				},
 				"originalFormId": "mimikyu",
 				"nativeStatBuffs": [0, -1]
 			},
 			"cramorant": {
 				"speciesId": "cramorant",
-				"baseStats": { "atk": 173, "def": 163, "hp": 172 },
+				"baseStats": {
+					"atk": 173,
+					"def": 163,
+					"hp": 172
+				},
 				"types": ["flying", "water"],
 				"fastMoves": ["PECK", "WATER_GUN"],
 				"chargedMoves": ["FLY", "HYDRO_PUMP", "SURF", "DIVE"],
@@ -1533,7 +1921,11 @@
 			},
 			"cramorant_gulping": {
 				"speciesId": "cramorant_gulping",
-				"baseStats": { "atk": 173, "def": 163, "hp": 172 },
+				"baseStats": {
+					"atk": 173,
+					"def": 163,
+					"hp": 172
+				},
 				"types": ["flying", "water"],
 				"fastMoves": ["PECK", "WATER_GUN"],
 				"chargedMoves": ["FLY", "HYDRO_PUMP", "SURF", "DIVE"],
@@ -1548,7 +1940,11 @@
 			},
 			"cramorant_gorging": {
 				"speciesId": "cramorant_gorging",
-				"baseStats": { "atk": 173, "def": 163, "hp": 172 },
+				"baseStats": {
+					"atk": 173,
+					"def": 163,
+					"hp": 172
+				},
 				"types": ["flying", "water"],
 				"fastMoves": ["PECK", "WATER_GUN"],
 				"chargedMoves": ["FLY", "HYDRO_PUMP", "SURF", "DIVE"],
@@ -1563,7 +1959,11 @@
 			},
 			"morpeko_full_belly": {
 				"speciesId": "morpeko_full_belly",
-				"baseStats": { "atk": 192, "def": 121, "hp": 151 },
+				"baseStats": {
+					"atk": 192,
+					"def": 121,
+					"hp": 151
+				},
 				"types": ["electric", "dark"],
 				"fastMoves": ["CHARGE_BEAM", "BITE", "THUNDER_SHOCK"],
 				"chargedMoves": ["SEED_BOMB", "OUTRAGE", "PSYCHIC_FANGS", "AURA_WHEEL_ELECTRIC"],
@@ -1579,7 +1979,11 @@
 			},
 			"morpeko_hangry": {
 				"speciesId": "morpeko_hangry",
-				"baseStats": { "atk": 192, "def": 121, "hp": 151 },
+				"baseStats": {
+					"atk": 192,
+					"def": 121,
+					"hp": 151
+				},
 				"types": ["electric", "dark"],
 				"fastMoves": ["CHARGE_BEAM", "BITE", "THUNDER_SHOCK"],
 				"chargedMoves": ["SEED_BOMB", "OUTRAGE", "PSYCHIC_FANGS", "AURA_WHEEL_DARK"],
@@ -1731,7 +2135,11 @@
 					"speciesName": "Melmetal",
 					"dex": 809,
 					"types": ["steel", "none"],
-					"baseStats": { "atk": 226, "def": 190, "hp": 264 },
+					"baseStats": {
+						"atk": 226,
+						"def": 190,
+						"hp": 264
+					},
 					"isShadow": false
 				},
 				{
@@ -1739,7 +2147,11 @@
 					"speciesName": "Altaria",
 					"dex": 334,
 					"types": ["dragon", "flying"],
-					"baseStats": { "atk": 141, "def": 201, "hp": 181 },
+					"baseStats": {
+						"atk": 141,
+						"def": 201,
+						"hp": 181
+					},
 					"isShadow": false
 				},
 				{
@@ -1747,7 +2159,11 @@
 					"speciesName": "Ninetales (Shadow)",
 					"dex": 38,
 					"types": ["fire", "none"],
-					"baseStats": { "atk": 169, "def": 190, "hp": 177 },
+					"baseStats": {
+						"atk": 169,
+						"def": 190,
+						"hp": 177
+					},
 					"isShadow": true
 				},
 				{
@@ -1755,7 +2171,11 @@
 					"speciesName": "Cramorant",
 					"dex": 845,
 					"types": ["flying", "water"],
-					"baseStats": { "atk": 173, "def": 163, "hp": 172 },
+					"baseStats": {
+						"atk": 173,
+						"def": 163,
+						"hp": 172
+					},
 					"isShadow": false
 				},
 				{
@@ -1763,7 +2183,11 @@
 					"speciesName": "Tinkaton",
 					"dex": 959,
 					"types": ["fairy", "steel"],
-					"baseStats": { "atk": 155, "def": 196, "hp": 198 },
+					"baseStats": {
+						"atk": 155,
+						"def": 196,
+						"hp": 198
+					},
 					"isShadow": false
 				},
 				{
@@ -1771,7 +2195,11 @@
 					"speciesName": "Mimikyu",
 					"dex": 778,
 					"types": ["ghost", "fairy"],
-					"baseStats": { "atk": 177, "def": 199, "hp": 146 },
+					"baseStats": {
+						"atk": 177,
+						"def": 199,
+						"hp": 146
+					},
 					"isShadow": false
 				},
 				{
@@ -1779,7 +2207,11 @@
 					"speciesName": "Corviknight",
 					"dex": 823,
 					"types": ["flying", "steel"],
-					"baseStats": { "atk": 163, "def": 192, "hp": 221 },
+					"baseStats": {
+						"atk": 163,
+						"def": 192,
+						"hp": 221
+					},
 					"isShadow": false
 				},
 				{
@@ -1787,7 +2219,11 @@
 					"speciesName": "Corsola (Galarian)",
 					"dex": 222,
 					"types": ["ghost", "none"],
-					"baseStats": { "atk": 116, "def": 182, "hp": 155 },
+					"baseStats": {
+						"atk": 116,
+						"def": 182,
+						"hp": 155
+					},
 					"isShadow": false
 				},
 				{
@@ -1795,7 +2231,11 @@
 					"speciesName": "Altaria (Shadow)",
 					"dex": 334,
 					"types": ["dragon", "flying"],
-					"baseStats": { "atk": 141, "def": 201, "hp": 181 },
+					"baseStats": {
+						"atk": 141,
+						"def": 201,
+						"hp": 181
+					},
 					"isShadow": true
 				},
 				{
@@ -1803,7 +2243,11 @@
 					"speciesName": "Corviknight (Shadow)",
 					"dex": 823,
 					"types": ["flying", "steel"],
-					"baseStats": { "atk": 163, "def": 192, "hp": 221 },
+					"baseStats": {
+						"atk": 163,
+						"def": 192,
+						"hp": 221
+					},
 					"isShadow": true
 				},
 				{
@@ -1811,7 +2255,11 @@
 					"speciesName": "Florges",
 					"dex": 671,
 					"types": ["fairy", "none"],
-					"baseStats": { "atk": 212, "def": 244, "hp": 186 },
+					"baseStats": {
+						"atk": 212,
+						"def": 244,
+						"hp": 186
+					},
 					"isShadow": false
 				},
 				{
@@ -1819,7 +2267,11 @@
 					"speciesName": "Quagsire (Shadow)",
 					"dex": 195,
 					"types": ["water", "ground"],
-					"baseStats": { "atk": 152, "def": 143, "hp": 216 },
+					"baseStats": {
+						"atk": 152,
+						"def": 143,
+						"hp": 216
+					},
 					"isShadow": true
 				},
 				{
@@ -1827,7 +2279,11 @@
 					"speciesName": "Ninetales",
 					"dex": 38,
 					"types": ["fire", "none"],
-					"baseStats": { "atk": 169, "def": 190, "hp": 177 },
+					"baseStats": {
+						"atk": 169,
+						"def": 190,
+						"hp": 177
+					},
 					"isShadow": false
 				},
 				{
@@ -1835,7 +2291,11 @@
 					"speciesName": "Quagsire",
 					"dex": 195,
 					"types": ["water", "ground"],
-					"baseStats": { "atk": 152, "def": 143, "hp": 216 },
+					"baseStats": {
+						"atk": 152,
+						"def": 143,
+						"hp": 216
+					},
 					"isShadow": false
 				},
 				{
@@ -1843,7 +2303,11 @@
 					"speciesName": "Thievul",
 					"dex": 828,
 					"types": ["dark", "none"],
-					"baseStats": { "atk": 172, "def": 164, "hp": 172 },
+					"baseStats": {
+						"atk": 172,
+						"def": 164,
+						"hp": 172
+					},
 					"isShadow": false
 				},
 				{
@@ -1851,7 +2315,11 @@
 					"speciesName": "Araquanid",
 					"dex": 752,
 					"types": ["water", "bug"],
-					"baseStats": { "atk": 126, "def": 219, "hp": 169 },
+					"baseStats": {
+						"atk": 126,
+						"def": 219,
+						"hp": 169
+					},
 					"isShadow": false
 				},
 				{
@@ -1859,7 +2327,11 @@
 					"speciesName": "Clodsire",
 					"dex": 980,
 					"types": ["poison", "ground"],
-					"baseStats": { "atk": 127, "def": 151, "hp": 277 },
+					"baseStats": {
+						"atk": 127,
+						"def": 151,
+						"hp": 277
+					},
 					"isShadow": false
 				},
 				{
@@ -1867,7 +2339,11 @@
 					"speciesName": "Sableye (Shadow)",
 					"dex": 302,
 					"types": ["dark", "ghost"],
-					"baseStats": { "atk": 141, "def": 136, "hp": 137 },
+					"baseStats": {
+						"atk": 141,
+						"def": 136,
+						"hp": 137
+					},
 					"isShadow": true
 				},
 				{
@@ -1875,7 +2351,11 @@
 					"speciesName": "Marowak",
 					"dex": 105,
 					"types": ["ground", "none"],
-					"baseStats": { "atk": 144, "def": 186, "hp": 155 },
+					"baseStats": {
+						"atk": 144,
+						"def": 186,
+						"hp": 155
+					},
 					"isShadow": false
 				},
 				{
@@ -1883,7 +2363,11 @@
 					"speciesName": "Stunfisk",
 					"dex": 618,
 					"types": ["ground", "electric"],
-					"baseStats": { "atk": 144, "def": 171, "hp": 240 },
+					"baseStats": {
+						"atk": 144,
+						"def": 171,
+						"hp": 240
+					},
 					"isShadow": false
 				},
 				{
@@ -1891,7 +2375,11 @@
 					"speciesName": "Vigoroth",
 					"dex": 288,
 					"types": ["normal", "none"],
-					"baseStats": { "atk": 159, "def": 145, "hp": 190 },
+					"baseStats": {
+						"atk": 159,
+						"def": 145,
+						"hp": 190
+					},
 					"isShadow": false
 				},
 				{
@@ -1899,7 +2387,11 @@
 					"speciesName": "Jellicent",
 					"dex": 593,
 					"types": ["water", "ghost"],
-					"baseStats": { "atk": 159, "def": 178, "hp": 225 },
+					"baseStats": {
+						"atk": 159,
+						"def": 178,
+						"hp": 225
+					},
 					"isShadow": false
 				},
 				{
@@ -1907,7 +2399,11 @@
 					"speciesName": "Empoleon",
 					"dex": 395,
 					"types": ["water", "steel"],
-					"baseStats": { "atk": 210, "def": 186, "hp": 197 },
+					"baseStats": {
+						"atk": 210,
+						"def": 186,
+						"hp": 197
+					},
 					"isShadow": false
 				},
 				{
@@ -1915,7 +2411,11 @@
 					"speciesName": "Empoleon (Shadow)",
 					"dex": 395,
 					"types": ["water", "steel"],
-					"baseStats": { "atk": 210, "def": 186, "hp": 197 },
+					"baseStats": {
+						"atk": 210,
+						"def": 186,
+						"hp": 197
+					},
 					"isShadow": true
 				},
 				{
@@ -1923,7 +2423,11 @@
 					"speciesName": "Fearow",
 					"dex": 22,
 					"types": ["normal", "flying"],
-					"baseStats": { "atk": 182, "def": 133, "hp": 163 },
+					"baseStats": {
+						"atk": 182,
+						"def": 133,
+						"hp": 163
+					},
 					"isShadow": false
 				},
 				{
@@ -1931,7 +2435,11 @@
 					"speciesName": "Mantine",
 					"dex": 226,
 					"types": ["water", "flying"],
-					"baseStats": { "atk": 148, "def": 226, "hp": 163 },
+					"baseStats": {
+						"atk": 148,
+						"def": 226,
+						"hp": 163
+					},
 					"isShadow": false
 				},
 				{
@@ -1939,7 +2447,11 @@
 					"speciesName": "Snorlax",
 					"dex": 143,
 					"types": ["normal", "none"],
-					"baseStats": { "atk": 190, "def": 169, "hp": 330 },
+					"baseStats": {
+						"atk": 190,
+						"def": 169,
+						"hp": 330
+					},
 					"isShadow": false
 				},
 				{
@@ -1947,7 +2459,11 @@
 					"speciesName": "Umbreon",
 					"dex": 197,
 					"types": ["dark", "none"],
-					"baseStats": { "atk": 126, "def": 240, "hp": 216 },
+					"baseStats": {
+						"atk": 126,
+						"def": 240,
+						"hp": 216
+					},
 					"isShadow": false
 				},
 				{
@@ -1955,7 +2471,11 @@
 					"speciesName": "Araquanid (Shadow)",
 					"dex": 752,
 					"types": ["water", "bug"],
-					"baseStats": { "atk": 126, "def": 219, "hp": 169 },
+					"baseStats": {
+						"atk": 126,
+						"def": 219,
+						"hp": 169
+					},
 					"isShadow": true
 				},
 				{
@@ -1963,7 +2483,11 @@
 					"speciesName": "Feraligatr",
 					"dex": 160,
 					"types": ["water", "none"],
-					"baseStats": { "atk": 205, "def": 188, "hp": 198 },
+					"baseStats": {
+						"atk": 205,
+						"def": 188,
+						"hp": 198
+					},
 					"isShadow": false
 				},
 				{
@@ -1971,7 +2495,11 @@
 					"speciesName": "Azumarill",
 					"dex": 184,
 					"types": ["water", "fairy"],
-					"baseStats": { "atk": 112, "def": 152, "hp": 225 },
+					"baseStats": {
+						"atk": 112,
+						"def": 152,
+						"hp": 225
+					},
 					"isShadow": false
 				},
 				{
@@ -1979,7 +2507,11 @@
 					"speciesName": "Annihilape (Shadow)",
 					"dex": 979,
 					"types": ["fighting", "ghost"],
-					"baseStats": { "atk": 220, "def": 178, "hp": 242 },
+					"baseStats": {
+						"atk": 220,
+						"def": 178,
+						"hp": 242
+					},
 					"isShadow": true
 				},
 				{
@@ -1987,7 +2519,11 @@
 					"speciesName": "Forretress (Shadow)",
 					"dex": 205,
 					"types": ["bug", "steel"],
-					"baseStats": { "atk": 161, "def": 205, "hp": 181 },
+					"baseStats": {
+						"atk": 161,
+						"def": 205,
+						"hp": 181
+					},
 					"isShadow": true
 				},
 				{
@@ -1995,7 +2531,11 @@
 					"speciesName": "Morpeko (Full Belly)",
 					"dex": 877,
 					"types": ["electric", "dark"],
-					"baseStats": { "atk": 192, "def": 121, "hp": 151 },
+					"baseStats": {
+						"atk": 192,
+						"def": 121,
+						"hp": 151
+					},
 					"isShadow": false
 				},
 				{
@@ -2003,7 +2543,11 @@
 					"speciesName": "Medicham",
 					"dex": 308,
 					"types": ["fighting", "psychic"],
-					"baseStats": { "atk": 121, "def": 152, "hp": 155 },
+					"baseStats": {
+						"atk": 121,
+						"def": 152,
+						"hp": 155
+					},
 					"isShadow": false
 				},
 				{
@@ -2011,7 +2555,11 @@
 					"speciesName": "Jumpluff",
 					"dex": 189,
 					"types": ["grass", "flying"],
-					"baseStats": { "atk": 118, "def": 183, "hp": 181 },
+					"baseStats": {
+						"atk": 118,
+						"def": 183,
+						"hp": 181
+					},
 					"isShadow": false
 				},
 				{
@@ -2019,7 +2567,11 @@
 					"speciesName": "Aegislash (Shield)",
 					"dex": 681,
 					"types": ["steel", "ghost"],
-					"baseStats": { "atk": 97, "def": 272, "hp": 155 },
+					"baseStats": {
+						"atk": 97,
+						"def": 272,
+						"hp": 155
+					},
 					"isShadow": false
 				},
 				{
@@ -2027,7 +2579,11 @@
 					"speciesName": "Stunfisk (Galarian)",
 					"dex": 618,
 					"types": ["ground", "steel"],
-					"baseStats": { "atk": 144, "def": 171, "hp": 240 },
+					"baseStats": {
+						"atk": 144,
+						"def": 171,
+						"hp": 240
+					},
 					"isShadow": false
 				},
 				{
@@ -2035,7 +2591,11 @@
 					"speciesName": "Talonflame (Shadow)",
 					"dex": 663,
 					"types": ["fire", "flying"],
-					"baseStats": { "atk": 176, "def": 155, "hp": 186 },
+					"baseStats": {
+						"atk": 176,
+						"def": 155,
+						"hp": 186
+					},
 					"isShadow": true
 				},
 				{
@@ -2043,7 +2603,11 @@
 					"speciesName": "Lickilicky",
 					"dex": 463,
 					"types": ["normal", "none"],
-					"baseStats": { "atk": 161, "def": 181, "hp": 242 },
+					"baseStats": {
+						"atk": 161,
+						"def": 181,
+						"hp": 242
+					},
 					"isShadow": false
 				}
 			],
@@ -2055,7 +2619,9 @@
 					"switch": 90.2,
 					"charger": 94.7,
 					"consistency": 94,
-					"rank": 1
+					"rank": 1,
+					"lead": 88.2,
+					"closer": 87.5
 				},
 				{
 					"speciesId": "altaria",
@@ -2064,7 +2630,9 @@
 					"switch": 63.5,
 					"charger": 90.3,
 					"consistency": 95.8,
-					"rank": 2
+					"rank": 2,
+					"lead": 83.7,
+					"closer": 82.9
 				},
 				{
 					"speciesId": "ninetales_shadow",
@@ -2073,7 +2641,9 @@
 					"switch": 87,
 					"charger": 93.1,
 					"consistency": 93.7,
-					"rank": 3
+					"rank": 3,
+					"lead": 82.2,
+					"closer": 81.4
 				},
 				{
 					"speciesId": "cramorant",
@@ -2082,7 +2652,9 @@
 					"switch": 83.5,
 					"charger": 94.9,
 					"consistency": 86.2,
-					"rank": 4
+					"rank": 4,
+					"lead": 88.8,
+					"closer": 86.2
 				},
 				{
 					"speciesId": "tinkaton",
@@ -2091,7 +2663,9 @@
 					"switch": 75.6,
 					"charger": 89.5,
 					"consistency": 80.2,
-					"rank": 5
+					"rank": 5,
+					"lead": 86.5,
+					"closer": 89.3
 				},
 				{
 					"speciesId": "mimikyu",
@@ -2100,7 +2674,9 @@
 					"switch": 100,
 					"charger": 99.3,
 					"consistency": 94.2,
-					"rank": 6
+					"rank": 6,
+					"lead": 100,
+					"closer": 100
 				},
 				{
 					"speciesId": "corviknight",
@@ -2109,7 +2685,9 @@
 					"switch": 87.5,
 					"charger": 92.3,
 					"consistency": 88,
-					"rank": 7
+					"rank": 7,
+					"lead": 88.2,
+					"closer": 87
 				},
 				{
 					"speciesId": "corsola_galarian",
@@ -2118,7 +2696,9 @@
 					"switch": 75.8,
 					"charger": 92.9,
 					"consistency": 92.3,
-					"rank": 8
+					"rank": 8,
+					"lead": 88.5,
+					"closer": 86.2
 				},
 				{
 					"speciesId": "altaria_shadow",
@@ -2127,7 +2707,9 @@
 					"switch": 62,
 					"charger": 90.5,
 					"consistency": 95.8,
-					"rank": 9
+					"rank": 9,
+					"lead": 77.2,
+					"closer": 82.9
 				},
 				{
 					"speciesId": "corviknight_shadow",
@@ -2136,7 +2718,9 @@
 					"switch": 83.1,
 					"charger": 94.6,
 					"consistency": 88,
-					"rank": 10
+					"rank": 10,
+					"lead": 85.3,
+					"closer": 85.8
 				},
 				{
 					"speciesId": "florges",
@@ -2145,7 +2729,9 @@
 					"switch": 71.5,
 					"charger": 89,
 					"consistency": 81.1,
-					"rank": 11
+					"rank": 11,
+					"lead": 80.2,
+					"closer": 81.1
 				},
 				{
 					"speciesId": "quagsire_shadow",
@@ -2154,7 +2740,9 @@
 					"switch": 67,
 					"charger": 93.6,
 					"consistency": 90.7,
-					"rank": 12
+					"rank": 12,
+					"lead": 80.9,
+					"closer": 81.7
 				},
 				{
 					"speciesId": "ninetales",
@@ -2163,7 +2751,9 @@
 					"switch": 84.4,
 					"charger": 93,
 					"consistency": 93.7,
-					"rank": 13
+					"rank": 13,
+					"lead": 83.3,
+					"closer": 84
 				},
 				{
 					"speciesId": "quagsire",
@@ -2172,7 +2762,9 @@
 					"switch": 70.9,
 					"charger": 90.6,
 					"consistency": 90.7,
-					"rank": 14
+					"rank": 14,
+					"lead": 83.6,
+					"closer": 79.1
 				},
 				{
 					"speciesId": "thievul",
@@ -2181,7 +2773,9 @@
 					"switch": 74.9,
 					"charger": 92.6,
 					"consistency": 98.7,
-					"rank": 15
+					"rank": 15,
+					"lead": 84,
+					"closer": 76.9
 				},
 				{
 					"speciesId": "araquanid",
@@ -2190,7 +2784,9 @@
 					"switch": 80.2,
 					"charger": 91,
 					"consistency": 92.1,
-					"rank": 16
+					"rank": 16,
+					"lead": 85.4,
+					"closer": 84.5
 				},
 				{
 					"speciesId": "clodsire",
@@ -2199,7 +2795,9 @@
 					"switch": 80.2,
 					"charger": 91.3,
 					"consistency": 88.1,
-					"rank": 17
+					"rank": 17,
+					"lead": 87.1,
+					"closer": 92.5
 				},
 				{
 					"speciesId": "sableye_shadow",
@@ -2208,7 +2806,9 @@
 					"switch": 89.8,
 					"charger": 96,
 					"consistency": 100,
-					"rank": 18
+					"rank": 18,
+					"lead": 88.2,
+					"closer": 78.2
 				},
 				{
 					"speciesId": "marowak",
@@ -2217,7 +2817,9 @@
 					"switch": 73.1,
 					"charger": 90.8,
 					"consistency": 89.8,
-					"rank": 19
+					"rank": 19,
+					"lead": 82.5,
+					"closer": 80.1
 				},
 				{
 					"speciesId": "stunfisk",
@@ -2226,7 +2828,9 @@
 					"switch": 75.2,
 					"charger": 89.6,
 					"consistency": 89.5,
-					"rank": 20
+					"rank": 20,
+					"lead": 85.4,
+					"closer": 82.5
 				},
 				{
 					"speciesId": "vigoroth",
@@ -2235,7 +2839,9 @@
 					"switch": 92.4,
 					"charger": 95.9,
 					"consistency": 96.4,
-					"rank": 21
+					"rank": 21,
+					"lead": 86.2,
+					"closer": 82.4
 				},
 				{
 					"speciesId": "jellicent",
@@ -2244,7 +2850,9 @@
 					"switch": 70.3,
 					"charger": 90.2,
 					"consistency": 89.5,
-					"rank": 22
+					"rank": 22,
+					"lead": 82.2,
+					"closer": 82.7
 				},
 				{
 					"speciesId": "empoleon",
@@ -2253,7 +2861,9 @@
 					"switch": 85.5,
 					"charger": 93.8,
 					"consistency": 100,
-					"rank": 23
+					"rank": 23,
+					"lead": 81.2,
+					"closer": 85.4
 				},
 				{
 					"speciesId": "empoleon_shadow",
@@ -2262,7 +2872,9 @@
 					"switch": 86.9,
 					"charger": 97.1,
 					"consistency": 100,
-					"rank": 24
+					"rank": 24,
+					"lead": 80.2,
+					"closer": 86.1
 				},
 				{
 					"speciesId": "fearow",
@@ -2271,7 +2883,9 @@
 					"switch": 87,
 					"charger": 93.4,
 					"consistency": 100,
-					"rank": 25
+					"rank": 25,
+					"lead": 80,
+					"closer": 81.1
 				},
 				{
 					"speciesId": "mantine",
@@ -2280,7 +2894,9 @@
 					"switch": 81.4,
 					"charger": 91.7,
 					"consistency": 90.4,
-					"rank": 26
+					"rank": 26,
+					"lead": 83.3,
+					"closer": 82.9
 				},
 				{
 					"speciesId": "snorlax",
@@ -2289,7 +2905,9 @@
 					"switch": 93.9,
 					"charger": 97.5,
 					"consistency": 92.7,
-					"rank": 27
+					"rank": 27,
+					"lead": 86,
+					"closer": 87.2
 				},
 				{
 					"speciesId": "umbreon",
@@ -2298,7 +2916,9 @@
 					"switch": 72.3,
 					"charger": 88.8,
 					"consistency": 94.2,
-					"rank": 28
+					"rank": 28,
+					"lead": 82.8,
+					"closer": 84.5
 				},
 				{
 					"speciesId": "araquanid_shadow",
@@ -2307,7 +2927,9 @@
 					"switch": 72.9,
 					"charger": 91.9,
 					"consistency": 92.1,
-					"rank": 29
+					"rank": 29,
+					"lead": 85.6,
+					"closer": 83.3
 				},
 				{
 					"speciesId": "feraligatr",
@@ -2316,7 +2938,9 @@
 					"switch": 86.4,
 					"charger": 94.8,
 					"consistency": 98.5,
-					"rank": 30
+					"rank": 30,
+					"lead": 78.8,
+					"closer": 84.5
 				},
 				{
 					"speciesId": "azumarill",
@@ -2325,7 +2949,9 @@
 					"switch": 67,
 					"charger": 84.2,
 					"consistency": 93.1,
-					"rank": 32
+					"rank": 32,
+					"lead": 81.1,
+					"closer": 84.5
 				},
 				{
 					"speciesId": "annihilape_shadow",
@@ -2334,7 +2960,9 @@
 					"switch": 71.1,
 					"charger": 94.4,
 					"consistency": 100,
-					"rank": 38
+					"rank": 38,
+					"lead": 82.8,
+					"closer": 74
 				},
 				{
 					"speciesId": "forretress_shadow",
@@ -2343,7 +2971,9 @@
 					"switch": 57.1,
 					"charger": 84.1,
 					"consistency": 97.8,
-					"rank": 48
+					"rank": 48,
+					"lead": 81.1,
+					"closer": 76.4
 				},
 				{
 					"speciesId": "morpeko_full_belly",
@@ -2352,7 +2982,9 @@
 					"switch": 74.6,
 					"charger": 96.8,
 					"consistency": 80.9,
-					"rank": 52
+					"rank": 52,
+					"lead": 88.5,
+					"closer": 80.4
 				},
 				{
 					"speciesId": "medicham",
@@ -2361,7 +2993,9 @@
 					"switch": 62.3,
 					"charger": 88,
 					"consistency": 81,
-					"rank": 54
+					"rank": 54,
+					"lead": 81.9,
+					"closer": 82.9
 				},
 				{
 					"speciesId": "jumpluff",
@@ -2370,7 +3004,9 @@
 					"switch": 80,
 					"charger": 89.1,
 					"consistency": 88.6,
-					"rank": 55
+					"rank": 55,
+					"lead": 83.9,
+					"closer": 87.2
 				},
 				{
 					"speciesId": "aegislash_shield",
@@ -2379,7 +3015,9 @@
 					"switch": 44.2,
 					"charger": 85.8,
 					"consistency": 100,
-					"rank": 80
+					"rank": 80,
+					"lead": 78.2,
+					"closer": 95.4
 				},
 				{
 					"speciesId": "stunfisk_galarian",
@@ -2388,7 +3026,9 @@
 					"switch": 80.3,
 					"charger": 93,
 					"consistency": 79.7,
-					"rank": 86
+					"rank": 86,
+					"lead": 84.6,
+					"closer": 87
 				},
 				{
 					"speciesId": "talonflame_shadow",
@@ -2397,7 +3037,9 @@
 					"switch": 57.1,
 					"charger": 85.7,
 					"consistency": 98.6,
-					"rank": 104
+					"rank": 104,
+					"lead": 71.4,
+					"closer": 65.8
 				},
 				{
 					"speciesId": "lickilicky",
@@ -2406,15 +3048,26 @@
 					"switch": 77.3,
 					"charger": 90.8,
 					"consistency": 93.4,
-					"rank": 129
+					"rank": 129,
+					"lead": 81.2,
+					"closer": 80
 				}
 			],
 			"teams": [
 				{
 					"team": [
-						{ "speciesId": "melmetal", "moveset": ["THUNDER_SHOCK", "DOUBLE_IRON_BASH", "DYNAMIC_PUNCH"] },
-						{ "speciesId": "altaria", "moveset": ["DRAGON_BREATH", "MOONBLAST", "FLAMETHROWER"] },
-						{ "speciesId": "ninetales_shadow", "moveset": ["EMBER", "WEATHER_BALL_FIRE", "ENERGY_BALL"] }
+						{
+							"speciesId": "melmetal",
+							"moveset": ["THUNDER_SHOCK", "DOUBLE_IRON_BASH", "DYNAMIC_PUNCH"]
+						},
+						{
+							"speciesId": "altaria",
+							"moveset": ["DRAGON_BREATH", "MOONBLAST", "FLAMETHROWER"]
+						},
+						{
+							"speciesId": "ninetales_shadow",
+							"moveset": ["EMBER", "WEATHER_BALL_FIRE", "ENERGY_BALL"]
+						}
 					],
 					"expected": {
 						"threatScore": 605,
@@ -2462,8 +3115,20 @@
 							"corviknight_shadow": [386, 327, 259]
 						},
 						"members": [
-							{ "speciesId": "melmetal", "level": 15.5, "cp": 1499, "bulk": 15741.459287525877, "consistency": 94 },
-							{ "speciesId": "altaria", "level": 29, "cp": 1497, "bulk": 21808.583552241325, "consistency": 95.8 },
+							{
+								"speciesId": "melmetal",
+								"level": 15.5,
+								"cp": 1499,
+								"bulk": 15741.459287525877,
+								"consistency": 94
+							},
+							{
+								"speciesId": "altaria",
+								"level": 29,
+								"cp": 1497,
+								"bulk": 21808.583552241325,
+								"consistency": 95.8
+							},
 							{
 								"speciesId": "ninetales_shadow",
 								"level": 25,
@@ -2476,9 +3141,18 @@
 				},
 				{
 					"team": [
-						{ "speciesId": "mimikyu", "moveset": ["SHADOW_CLAW", "SHADOW_SNEAK", "PLAY_ROUGH"] },
-						{ "speciesId": "quagsire_shadow", "moveset": ["MUD_SHOT", "AQUA_TAIL", "STONE_EDGE"] },
-						{ "speciesId": "sableye_shadow", "moveset": ["SHADOW_CLAW", "FOUL_PLAY", "DRAIN_PUNCH"] }
+						{
+							"speciesId": "mimikyu",
+							"moveset": ["SHADOW_CLAW", "SHADOW_SNEAK", "PLAY_ROUGH"]
+						},
+						{
+							"speciesId": "quagsire_shadow",
+							"moveset": ["MUD_SHOT", "AQUA_TAIL", "STONE_EDGE"]
+						},
+						{
+							"speciesId": "sableye_shadow",
+							"moveset": ["SHADOW_CLAW", "FOUL_PLAY", "DRAIN_PUNCH"]
+						}
 					],
 					"expected": {
 						"threatScore": 554,
@@ -2526,7 +3200,13 @@
 							"talonflame_shadow": [363, 154, 367]
 						},
 						"members": [
-							{ "speciesId": "mimikyu", "level": 25.5, "cp": 1500, "bulk": 15518.082011285976, "consistency": 94.2 },
+							{
+								"speciesId": "mimikyu",
+								"level": 25.5,
+								"cp": 1500,
+								"bulk": 15518.082011285976,
+								"consistency": 94.2
+							},
 							{
 								"speciesId": "quagsire_shadow",
 								"level": 29,
@@ -2546,9 +3226,18 @@
 				},
 				{
 					"team": [
-						{ "speciesId": "aegislash_shield", "moveset": ["AEGISLASH_CHARGE_PSYCHO_CUT", "SHADOW_BALL", "GYRO_BALL"] },
-						{ "speciesId": "morpeko_full_belly", "moveset": ["THUNDER_SHOCK", "AURA_WHEEL_ELECTRIC", "PSYCHIC_FANGS"] },
-						{ "speciesId": "mimikyu", "moveset": ["SHADOW_CLAW", "SHADOW_SNEAK", "PLAY_ROUGH"] }
+						{
+							"speciesId": "aegislash_shield",
+							"moveset": ["AEGISLASH_CHARGE_PSYCHO_CUT", "SHADOW_BALL", "GYRO_BALL"]
+						},
+						{
+							"speciesId": "morpeko_full_belly",
+							"moveset": ["THUNDER_SHOCK", "AURA_WHEEL_ELECTRIC", "PSYCHIC_FANGS"]
+						},
+						{
+							"speciesId": "mimikyu",
+							"moveset": ["SHADOW_CLAW", "SHADOW_SNEAK", "PLAY_ROUGH"]
+						}
 					],
 					"expected": {
 						"threatScore": 545,
@@ -2610,15 +3299,30 @@
 								"bulk": 11642.75494670868,
 								"consistency": 80.9
 							},
-							{ "speciesId": "mimikyu", "level": 25.5, "cp": 1500, "bulk": 15518.082011285976, "consistency": 94.2 }
+							{
+								"speciesId": "mimikyu",
+								"level": 25.5,
+								"cp": 1500,
+								"bulk": 15518.082011285976,
+								"consistency": 94.2
+							}
 						]
 					}
 				},
 				{
 					"team": [
-						{ "speciesId": "cramorant", "moveset": ["PECK", "DIVE", "FLY"] },
-						{ "speciesId": "ninetales_shadow", "moveset": ["EMBER", "WEATHER_BALL_FIRE", "ENERGY_BALL"] },
-						{ "speciesId": "medicham", "moveset": ["PSYCHO_CUT", "ICE_PUNCH", "DYNAMIC_PUNCH"] }
+						{
+							"speciesId": "cramorant",
+							"moveset": ["PECK", "DIVE", "FLY"]
+						},
+						{
+							"speciesId": "ninetales_shadow",
+							"moveset": ["EMBER", "WEATHER_BALL_FIRE", "ENERGY_BALL"]
+						},
+						{
+							"speciesId": "medicham",
+							"moveset": ["PSYCHO_CUT", "ICE_PUNCH", "DYNAMIC_PUNCH"]
+						}
 					],
 					"expected": {
 						"threatScore": 634,
@@ -2666,7 +3370,13 @@
 							"corviknight_shadow": [303, 259, 434]
 						},
 						"members": [
-							{ "speciesId": "cramorant", "level": 27, "cp": 1500, "bulk": 15603.65517389773, "consistency": 86.2 },
+							{
+								"speciesId": "cramorant",
+								"level": 27,
+								"cp": 1500,
+								"bulk": 15603.65517389773,
+								"consistency": 86.2
+							},
 							{
 								"speciesId": "ninetales_shadow",
 								"level": 25,
@@ -2674,15 +3384,30 @@
 								"bulk": 14605.489735140107,
 								"consistency": 93.7
 							},
-							{ "speciesId": "medicham", "level": 50, "cp": 1499, "bulk": 19926.874758601174, "consistency": 81 }
+							{
+								"speciesId": "medicham",
+								"level": 50,
+								"cp": 1499,
+								"bulk": 19926.874758601174,
+								"consistency": 81
+							}
 						]
 					}
 				},
 				{
 					"team": [
-						{ "speciesId": "annihilape_shadow", "moveset": ["LOW_KICK", "RAGE_FIST", "ICE_PUNCH"] },
-						{ "speciesId": "azumarill", "moveset": ["BUBBLE", "ICE_BEAM", "PLAY_ROUGH"] },
-						{ "speciesId": "forretress_shadow", "moveset": ["VOLT_SWITCH", "SAND_TOMB", "ROCK_TOMB"] }
+						{
+							"speciesId": "annihilape_shadow",
+							"moveset": ["LOW_KICK", "RAGE_FIST", "ICE_PUNCH"]
+						},
+						{
+							"speciesId": "azumarill",
+							"moveset": ["BUBBLE", "ICE_BEAM", "PLAY_ROUGH"]
+						},
+						{
+							"speciesId": "forretress_shadow",
+							"moveset": ["VOLT_SWITCH", "SAND_TOMB", "ROCK_TOMB"]
+						}
 					],
 					"expected": {
 						"threatScore": 625,
@@ -2744,7 +3469,13 @@
 								"bulk": 12490.600970529867,
 								"consistency": 100
 							},
-							{ "speciesId": "azumarill", "level": 45.5, "cp": 1499, "bulk": 26768.35419829628, "consistency": 93.1 },
+							{
+								"speciesId": "azumarill",
+								"level": 45.5,
+								"cp": 1499,
+								"bulk": 26768.35419829628,
+								"consistency": 93.1
+							},
 							{
 								"speciesId": "forretress_shadow",
 								"level": 25.5,
@@ -2764,7 +3495,11 @@
 					"speciesName": "Tinkaton",
 					"dex": 959,
 					"types": ["fairy", "steel"],
-					"baseStats": { "atk": 155, "def": 196, "hp": 198 },
+					"baseStats": {
+						"atk": 155,
+						"def": 196,
+						"hp": 198
+					},
 					"isShadow": false
 				},
 				{
@@ -2772,7 +3507,11 @@
 					"speciesName": "Corviknight",
 					"dex": 823,
 					"types": ["flying", "steel"],
-					"baseStats": { "atk": 163, "def": 192, "hp": 221 },
+					"baseStats": {
+						"atk": 163,
+						"def": 192,
+						"hp": 221
+					},
 					"isShadow": false
 				},
 				{
@@ -2780,7 +3519,11 @@
 					"speciesName": "Snorlax (Shadow)",
 					"dex": 143,
 					"types": ["normal", "none"],
-					"baseStats": { "atk": 190, "def": 169, "hp": 330 },
+					"baseStats": {
+						"atk": 190,
+						"def": 169,
+						"hp": 330
+					},
 					"isShadow": true
 				},
 				{
@@ -2788,7 +3531,11 @@
 					"speciesName": "Corviknight (Shadow)",
 					"dex": 823,
 					"types": ["flying", "steel"],
-					"baseStats": { "atk": 163, "def": 192, "hp": 221 },
+					"baseStats": {
+						"atk": 163,
+						"def": 192,
+						"hp": 221
+					},
 					"isShadow": true
 				},
 				{
@@ -2796,7 +3543,11 @@
 					"speciesName": "Melmetal",
 					"dex": 809,
 					"types": ["steel", "none"],
-					"baseStats": { "atk": 226, "def": 190, "hp": 264 },
+					"baseStats": {
+						"atk": 226,
+						"def": 190,
+						"hp": 264
+					},
 					"isShadow": false
 				},
 				{
@@ -2804,7 +3555,11 @@
 					"speciesName": "Virizion",
 					"dex": 640,
 					"types": ["grass", "fighting"],
-					"baseStats": { "atk": 192, "def": 229, "hp": 209 },
+					"baseStats": {
+						"atk": 192,
+						"def": 229,
+						"hp": 209
+					},
 					"isShadow": false
 				},
 				{
@@ -2812,7 +3567,11 @@
 					"speciesName": "Zygarde (Complete Forme)",
 					"dex": 718,
 					"types": ["dragon", "ground"],
-					"baseStats": { "atk": 184, "def": 207, "hp": 389 },
+					"baseStats": {
+						"atk": 184,
+						"def": 207,
+						"hp": 389
+					},
 					"isShadow": false
 				},
 				{
@@ -2820,7 +3579,11 @@
 					"speciesName": "Empoleon",
 					"dex": 395,
 					"types": ["water", "steel"],
-					"baseStats": { "atk": 210, "def": 186, "hp": 197 },
+					"baseStats": {
+						"atk": 210,
+						"def": 186,
+						"hp": 197
+					},
 					"isShadow": false
 				},
 				{
@@ -2828,7 +3591,11 @@
 					"speciesName": "Empoleon (Shadow)",
 					"dex": 395,
 					"types": ["water", "steel"],
-					"baseStats": { "atk": 210, "def": 186, "hp": 197 },
+					"baseStats": {
+						"atk": 210,
+						"def": 186,
+						"hp": 197
+					},
 					"isShadow": true
 				},
 				{
@@ -2836,7 +3603,11 @@
 					"speciesName": "Mimikyu",
 					"dex": 778,
 					"types": ["ghost", "fairy"],
-					"baseStats": { "atk": 177, "def": 199, "hp": 146 },
+					"baseStats": {
+						"atk": 177,
+						"def": 199,
+						"hp": 146
+					},
 					"isShadow": false
 				},
 				{
@@ -2844,7 +3615,11 @@
 					"speciesName": "Snorlax",
 					"dex": 143,
 					"types": ["normal", "none"],
-					"baseStats": { "atk": 190, "def": 169, "hp": 330 },
+					"baseStats": {
+						"atk": 190,
+						"def": 169,
+						"hp": 330
+					},
 					"isShadow": false
 				},
 				{
@@ -2852,7 +3627,11 @@
 					"speciesName": "Florges",
 					"dex": 671,
 					"types": ["fairy", "none"],
-					"baseStats": { "atk": 212, "def": 244, "hp": 186 },
+					"baseStats": {
+						"atk": 212,
+						"def": 244,
+						"hp": 186
+					},
 					"isShadow": false
 				},
 				{
@@ -2860,7 +3639,11 @@
 					"speciesName": "Moltres (Galarian)",
 					"dex": 146,
 					"types": ["dark", "flying"],
-					"baseStats": { "atk": 202, "def": 231, "hp": 207 },
+					"baseStats": {
+						"atk": 202,
+						"def": 231,
+						"hp": 207
+					},
 					"isShadow": false
 				},
 				{
@@ -2868,7 +3651,11 @@
 					"speciesName": "Feraligatr (Shadow)",
 					"dex": 160,
 					"types": ["water", "none"],
-					"baseStats": { "atk": 205, "def": 188, "hp": 198 },
+					"baseStats": {
+						"atk": 205,
+						"def": 188,
+						"hp": 198
+					},
 					"isShadow": true
 				},
 				{
@@ -2876,7 +3663,11 @@
 					"speciesName": "Feraligatr",
 					"dex": 160,
 					"types": ["water", "none"],
-					"baseStats": { "atk": 205, "def": 188, "hp": 198 },
+					"baseStats": {
+						"atk": 205,
+						"def": 188,
+						"hp": 198
+					},
 					"isShadow": false
 				},
 				{
@@ -2884,7 +3675,11 @@
 					"speciesName": "Jellicent",
 					"dex": 593,
 					"types": ["water", "ghost"],
-					"baseStats": { "atk": 159, "def": 178, "hp": 225 },
+					"baseStats": {
+						"atk": 159,
+						"def": 178,
+						"hp": 225
+					},
 					"isShadow": false
 				},
 				{
@@ -2892,7 +3687,11 @@
 					"speciesName": "Giratina (Altered)",
 					"dex": 487,
 					"types": ["ghost", "dragon"],
-					"baseStats": { "atk": 187, "def": 225, "hp": 284 },
+					"baseStats": {
+						"atk": 187,
+						"def": 225,
+						"hp": 284
+					},
 					"isShadow": false
 				},
 				{
@@ -2900,7 +3699,11 @@
 					"speciesName": "Cramorant",
 					"dex": 845,
 					"types": ["flying", "water"],
-					"baseStats": { "atk": 173, "def": 163, "hp": 172 },
+					"baseStats": {
+						"atk": 173,
+						"def": 163,
+						"hp": 172
+					},
 					"isShadow": false
 				},
 				{
@@ -2908,7 +3711,11 @@
 					"speciesName": "Guzzlord",
 					"dex": 799,
 					"types": ["dark", "dragon"],
-					"baseStats": { "atk": 188, "def": 99, "hp": 440 },
+					"baseStats": {
+						"atk": 188,
+						"def": 99,
+						"hp": 440
+					},
 					"isShadow": false
 				},
 				{
@@ -2916,7 +3723,11 @@
 					"speciesName": "Skeledirge",
 					"dex": 911,
 					"types": ["fire", "ghost"],
-					"baseStats": { "atk": 207, "def": 178, "hp": 232 },
+					"baseStats": {
+						"atk": 207,
+						"def": 178,
+						"hp": 232
+					},
 					"isShadow": false
 				},
 				{
@@ -2924,7 +3735,11 @@
 					"speciesName": "Rillaboom",
 					"dex": 812,
 					"types": ["grass", "none"],
-					"baseStats": { "atk": 239, "def": 168, "hp": 225 },
+					"baseStats": {
+						"atk": 239,
+						"def": 168,
+						"hp": 225
+					},
 					"isShadow": false
 				},
 				{
@@ -2932,7 +3747,11 @@
 					"speciesName": "Lapras",
 					"dex": 131,
 					"types": ["water", "ice"],
-					"baseStats": { "atk": 165, "def": 174, "hp": 277 },
+					"baseStats": {
+						"atk": 165,
+						"def": 174,
+						"hp": 277
+					},
 					"isShadow": false
 				},
 				{
@@ -2940,7 +3759,11 @@
 					"speciesName": "Lapras (Shadow)",
 					"dex": 131,
 					"types": ["water", "ice"],
-					"baseStats": { "atk": 165, "def": 174, "hp": 277 },
+					"baseStats": {
+						"atk": 165,
+						"def": 174,
+						"hp": 277
+					},
 					"isShadow": true
 				},
 				{
@@ -2948,7 +3771,11 @@
 					"speciesName": "Dusknoir",
 					"dex": 477,
 					"types": ["ghost", "none"],
-					"baseStats": { "atk": 180, "def": 254, "hp": 128 },
+					"baseStats": {
+						"atk": 180,
+						"def": 254,
+						"hp": 128
+					},
 					"isShadow": false
 				},
 				{
@@ -2956,7 +3783,11 @@
 					"speciesName": "Ninetales (Alolan)",
 					"dex": 38,
 					"types": ["ice", "fairy"],
-					"baseStats": { "atk": 170, "def": 193, "hp": 177 },
+					"baseStats": {
+						"atk": 170,
+						"def": 193,
+						"hp": 177
+					},
 					"isShadow": false
 				},
 				{
@@ -2964,7 +3795,11 @@
 					"speciesName": "Dondozo",
 					"dex": 977,
 					"types": ["water", "none"],
-					"baseStats": { "atk": 176, "def": 178, "hp": 312 },
+					"baseStats": {
+						"atk": 176,
+						"def": 178,
+						"hp": 312
+					},
 					"isShadow": false
 				},
 				{
@@ -2972,7 +3807,11 @@
 					"speciesName": "Dusknoir (Shadow)",
 					"dex": 477,
 					"types": ["ghost", "none"],
-					"baseStats": { "atk": 180, "def": 254, "hp": 128 },
+					"baseStats": {
+						"atk": 180,
+						"def": 254,
+						"hp": 128
+					},
 					"isShadow": true
 				},
 				{
@@ -2980,7 +3819,11 @@
 					"speciesName": "Registeel",
 					"dex": 379,
 					"types": ["steel", "none"],
-					"baseStats": { "atk": 143, "def": 285, "hp": 190 },
+					"baseStats": {
+						"atk": 143,
+						"def": 285,
+						"hp": 190
+					},
 					"isShadow": false
 				},
 				{
@@ -2988,7 +3831,11 @@
 					"speciesName": "Blastoise",
 					"dex": 9,
 					"types": ["water", "none"],
-					"baseStats": { "atk": 171, "def": 207, "hp": 188 },
+					"baseStats": {
+						"atk": 171,
+						"def": 207,
+						"hp": 188
+					},
 					"isShadow": false
 				},
 				{
@@ -2996,7 +3843,11 @@
 					"speciesName": "Ninetales (Alolan) (Shadow)",
 					"dex": 38,
 					"types": ["ice", "fairy"],
-					"baseStats": { "atk": 170, "def": 193, "hp": 177 },
+					"baseStats": {
+						"atk": 170,
+						"def": 193,
+						"hp": 177
+					},
 					"isShadow": true
 				},
 				{
@@ -3004,7 +3855,11 @@
 					"speciesName": "Forretress (Shadow)",
 					"dex": 205,
 					"types": ["bug", "steel"],
-					"baseStats": { "atk": 161, "def": 205, "hp": 181 },
+					"baseStats": {
+						"atk": 161,
+						"def": 205,
+						"hp": 181
+					},
 					"isShadow": true
 				},
 				{
@@ -3012,7 +3867,11 @@
 					"speciesName": "Talonflame (Shadow)",
 					"dex": 663,
 					"types": ["fire", "flying"],
-					"baseStats": { "atk": 176, "def": 155, "hp": 186 },
+					"baseStats": {
+						"atk": 176,
+						"def": 155,
+						"hp": 186
+					},
 					"isShadow": true
 				},
 				{
@@ -3020,7 +3879,11 @@
 					"speciesName": "Ninetales (Shadow)",
 					"dex": 38,
 					"types": ["fire", "none"],
-					"baseStats": { "atk": 169, "def": 190, "hp": 177 },
+					"baseStats": {
+						"atk": 169,
+						"def": 190,
+						"hp": 177
+					},
 					"isShadow": true
 				},
 				{
@@ -3028,7 +3891,11 @@
 					"speciesName": "Annihilape (Shadow)",
 					"dex": 979,
 					"types": ["fighting", "ghost"],
-					"baseStats": { "atk": 220, "def": 178, "hp": 242 },
+					"baseStats": {
+						"atk": 220,
+						"def": 178,
+						"hp": 242
+					},
 					"isShadow": true
 				},
 				{
@@ -3036,7 +3903,11 @@
 					"speciesName": "Lickilicky",
 					"dex": 463,
 					"types": ["normal", "none"],
-					"baseStats": { "atk": 161, "def": 181, "hp": 242 },
+					"baseStats": {
+						"atk": 161,
+						"def": 181,
+						"hp": 242
+					},
 					"isShadow": false
 				},
 				{
@@ -3044,7 +3915,11 @@
 					"speciesName": "Stunfisk (Galarian)",
 					"dex": 618,
 					"types": ["ground", "steel"],
-					"baseStats": { "atk": 144, "def": 171, "hp": 240 },
+					"baseStats": {
+						"atk": 144,
+						"def": 171,
+						"hp": 240
+					},
 					"isShadow": false
 				},
 				{
@@ -3052,7 +3927,11 @@
 					"speciesName": "Mantine",
 					"dex": 226,
 					"types": ["water", "flying"],
-					"baseStats": { "atk": 148, "def": 226, "hp": 163 },
+					"baseStats": {
+						"atk": 148,
+						"def": 226,
+						"hp": 163
+					},
 					"isShadow": false
 				},
 				{
@@ -3060,7 +3939,11 @@
 					"speciesName": "Morpeko (Full Belly)",
 					"dex": 877,
 					"types": ["electric", "dark"],
-					"baseStats": { "atk": 192, "def": 121, "hp": 151 },
+					"baseStats": {
+						"atk": 192,
+						"def": 121,
+						"hp": 151
+					},
 					"isShadow": false
 				},
 				{
@@ -3068,7 +3951,11 @@
 					"speciesName": "Aegislash (Shield)",
 					"dex": 681,
 					"types": ["steel", "ghost"],
-					"baseStats": { "atk": 97, "def": 272, "hp": 155 },
+					"baseStats": {
+						"atk": 97,
+						"def": 272,
+						"hp": 155
+					},
 					"isShadow": false
 				},
 				{
@@ -3076,7 +3963,11 @@
 					"speciesName": "Jumpluff",
 					"dex": 189,
 					"types": ["grass", "flying"],
-					"baseStats": { "atk": 118, "def": 183, "hp": 181 },
+					"baseStats": {
+						"atk": 118,
+						"def": 183,
+						"hp": 181
+					},
 					"isShadow": false
 				},
 				{
@@ -3084,7 +3975,11 @@
 					"speciesName": "Azumarill",
 					"dex": 184,
 					"types": ["water", "fairy"],
-					"baseStats": { "atk": 112, "def": 152, "hp": 225 },
+					"baseStats": {
+						"atk": 112,
+						"def": 152,
+						"hp": 225
+					},
 					"isShadow": false
 				}
 			],
@@ -3096,7 +3991,9 @@
 					"switch": 85.1,
 					"charger": 93.8,
 					"consistency": 80.2,
-					"rank": 1
+					"rank": 1,
+					"lead": 92.3,
+					"closer": 97.6
 				},
 				{
 					"speciesId": "corviknight",
@@ -3105,7 +4002,9 @@
 					"switch": 91.9,
 					"charger": 95.1,
 					"consistency": 88,
-					"rank": 2
+					"rank": 2,
+					"lead": 96.9,
+					"closer": 96.3
 				},
 				{
 					"speciesId": "snorlax_shadow",
@@ -3114,7 +4013,9 @@
 					"switch": 99.5,
 					"charger": 100,
 					"consistency": 92.7,
-					"rank": 3
+					"rank": 3,
+					"lead": 93.5,
+					"closer": 92.9
 				},
 				{
 					"speciesId": "corviknight_shadow",
@@ -3123,7 +4024,9 @@
 					"switch": 93.3,
 					"charger": 97.5,
 					"consistency": 90.4,
-					"rank": 4
+					"rank": 4,
+					"lead": 93.4,
+					"closer": 92.9
 				},
 				{
 					"speciesId": "melmetal",
@@ -3132,7 +4035,9 @@
 					"switch": 85.6,
 					"charger": 95.6,
 					"consistency": 94,
-					"rank": 5
+					"rank": 5,
+					"lead": 91.6,
+					"closer": 90.2
 				},
 				{
 					"speciesId": "virizion",
@@ -3141,7 +4046,9 @@
 					"switch": 59.2,
 					"charger": 85.3,
 					"consistency": 100,
-					"rank": 6
+					"rank": 6,
+					"lead": 83.3,
+					"closer": 80.5
 				},
 				{
 					"speciesId": "zygarde_complete",
@@ -3150,7 +4057,9 @@
 					"switch": 77.5,
 					"charger": 93.7,
 					"consistency": 93.4,
-					"rank": 7
+					"rank": 7,
+					"lead": 94.7,
+					"closer": 84.8
 				},
 				{
 					"speciesId": "empoleon",
@@ -3159,7 +4068,9 @@
 					"switch": 83.7,
 					"charger": 93,
 					"consistency": 100,
-					"rank": 8
+					"rank": 8,
+					"lead": 86.6,
+					"closer": 89
 				},
 				{
 					"speciesId": "empoleon_shadow",
@@ -3168,7 +4079,9 @@
 					"switch": 89.3,
 					"charger": 95.1,
 					"consistency": 100,
-					"rank": 9
+					"rank": 9,
+					"lead": 82.8,
+					"closer": 88.7
 				},
 				{
 					"speciesId": "mimikyu",
@@ -3177,7 +4090,9 @@
 					"switch": 100,
 					"charger": 97.9,
 					"consistency": 94.2,
-					"rank": 10
+					"rank": 10,
+					"lead": 100,
+					"closer": 100
 				},
 				{
 					"speciesId": "snorlax",
@@ -3186,7 +4101,9 @@
 					"switch": 91.1,
 					"charger": 94.3,
 					"consistency": 92.7,
-					"rank": 11
+					"rank": 11,
+					"lead": 93.1,
+					"closer": 91.2
 				},
 				{
 					"speciesId": "florges",
@@ -3195,7 +4112,9 @@
 					"switch": 85.2,
 					"charger": 92.1,
 					"consistency": 100,
-					"rank": 12
+					"rank": 12,
+					"lead": 88.1,
+					"closer": 82.5
 				},
 				{
 					"speciesId": "moltres_galarian",
@@ -3204,7 +4123,9 @@
 					"switch": 83.1,
 					"charger": 95.7,
 					"consistency": 88.4,
-					"rank": 13
+					"rank": 13,
+					"lead": 89.7,
+					"closer": 92.4
 				},
 				{
 					"speciesId": "feraligatr_shadow",
@@ -3213,7 +4134,9 @@
 					"switch": 91.7,
 					"charger": 98.1,
 					"consistency": 98.5,
-					"rank": 14
+					"rank": 14,
+					"lead": 85.5,
+					"closer": 89.9
 				},
 				{
 					"speciesId": "feraligatr",
@@ -3222,7 +4145,9 @@
 					"switch": 89.7,
 					"charger": 94.2,
 					"consistency": 98.5,
-					"rank": 15
+					"rank": 15,
+					"lead": 88.6,
+					"closer": 89.2
 				},
 				{
 					"speciesId": "jellicent",
@@ -3231,7 +4156,9 @@
 					"switch": 72.2,
 					"charger": 89.6,
 					"consistency": 89.5,
-					"rank": 16
+					"rank": 16,
+					"lead": 85.4,
+					"closer": 91.2
 				},
 				{
 					"speciesId": "giratina_altered",
@@ -3240,7 +4167,9 @@
 					"switch": 76.1,
 					"charger": 93.4,
 					"consistency": 79.5,
-					"rank": 17
+					"rank": 17,
+					"lead": 91.5,
+					"closer": 93.7
 				},
 				{
 					"speciesId": "cramorant",
@@ -3249,7 +4178,9 @@
 					"switch": 86.2,
 					"charger": 96.3,
 					"consistency": 86.2,
-					"rank": 18
+					"rank": 18,
+					"lead": 93.4,
+					"closer": 90.4
 				},
 				{
 					"speciesId": "guzzlord",
@@ -3258,7 +4189,9 @@
 					"switch": 52.7,
 					"charger": 86.9,
 					"consistency": 95.2,
-					"rank": 19
+					"rank": 19,
+					"lead": 83.6,
+					"closer": 78.9
 				},
 				{
 					"speciesId": "skeledirge",
@@ -3267,7 +4200,9 @@
 					"switch": 60.9,
 					"charger": 87.5,
 					"consistency": 92.3,
-					"rank": 20
+					"rank": 20,
+					"lead": 81.4,
+					"closer": 80.5
 				},
 				{
 					"speciesId": "rillaboom",
@@ -3276,7 +4211,9 @@
 					"switch": 82.5,
 					"charger": 94.8,
 					"consistency": 93.8,
-					"rank": 21
+					"rank": 21,
+					"lead": 91.1,
+					"closer": 82.5
 				},
 				{
 					"speciesId": "lapras",
@@ -3285,7 +4222,9 @@
 					"switch": 91.1,
 					"charger": 94.8,
 					"consistency": 94.3,
-					"rank": 22
+					"rank": 22,
+					"lead": 92.9,
+					"closer": 91.7
 				},
 				{
 					"speciesId": "lapras_shadow",
@@ -3294,7 +4233,9 @@
 					"switch": 89.9,
 					"charger": 96.2,
 					"consistency": 94.3,
-					"rank": 23
+					"rank": 23,
+					"lead": 91.5,
+					"closer": 92.4
 				},
 				{
 					"speciesId": "dusknoir",
@@ -3303,7 +4244,9 @@
 					"switch": 82.8,
 					"charger": 96.7,
 					"consistency": 92.4,
-					"rank": 24
+					"rank": 24,
+					"lead": 92.4,
+					"closer": 85.2
 				},
 				{
 					"speciesId": "ninetales_alolan",
@@ -3312,7 +4255,9 @@
 					"switch": 58.6,
 					"charger": 88.2,
 					"consistency": 99.7,
-					"rank": 25
+					"rank": 25,
+					"lead": 84.6,
+					"closer": 78.9
 				},
 				{
 					"speciesId": "dondozo",
@@ -3321,7 +4266,9 @@
 					"switch": 71.6,
 					"charger": 93,
 					"consistency": 95.1,
-					"rank": 26
+					"rank": 26,
+					"lead": 88.3,
+					"closer": 90.9
 				},
 				{
 					"speciesId": "dusknoir_shadow",
@@ -3330,7 +4277,9 @@
 					"switch": 78.6,
 					"charger": 97.3,
 					"consistency": 92.4,
-					"rank": 27
+					"rank": 27,
+					"lead": 91.6,
+					"closer": 86.2
 				},
 				{
 					"speciesId": "registeel",
@@ -3339,7 +4288,9 @@
 					"switch": 74.4,
 					"charger": 83.4,
 					"consistency": 92.7,
-					"rank": 28
+					"rank": 28,
+					"lead": 88.9,
+					"closer": 95.2
 				},
 				{
 					"speciesId": "blastoise",
@@ -3348,7 +4299,9 @@
 					"switch": 87.4,
 					"charger": 93.4,
 					"consistency": 97.7,
-					"rank": 29
+					"rank": 29,
+					"lead": 86,
+					"closer": 88.5
 				},
 				{
 					"speciesId": "ninetales_alolan_shadow",
@@ -3357,7 +4310,9 @@
 					"switch": 61.1,
 					"charger": 86.9,
 					"consistency": 99.7,
-					"rank": 30
+					"rank": 30,
+					"lead": 82,
+					"closer": 79.6
 				},
 				{
 					"speciesId": "forretress_shadow",
@@ -3366,7 +4321,9 @@
 					"switch": 60.5,
 					"charger": 88,
 					"consistency": 97.8,
-					"rank": 39
+					"rank": 39,
+					"lead": 86,
+					"closer": 84.3
 				},
 				{
 					"speciesId": "talonflame_shadow",
@@ -3375,7 +4332,9 @@
 					"switch": 58.2,
 					"charger": 89.2,
 					"consistency": 88.1,
-					"rank": 56
+					"rank": 56,
+					"lead": 79,
+					"closer": 82.8
 				},
 				{
 					"speciesId": "ninetales_shadow",
@@ -3384,7 +4343,9 @@
 					"switch": 79.2,
 					"charger": 93.1,
 					"consistency": 93.7,
-					"rank": 64
+					"rank": 64,
+					"lead": 84.4,
+					"closer": 86
 				},
 				{
 					"speciesId": "annihilape_shadow",
@@ -3393,7 +4354,9 @@
 					"switch": 73.2,
 					"charger": 93.6,
 					"consistency": 100,
-					"rank": 74
+					"rank": 74,
+					"lead": 84.4,
+					"closer": 77.4
 				},
 				{
 					"speciesId": "lickilicky",
@@ -3402,7 +4365,9 @@
 					"switch": 72.1,
 					"charger": 89.3,
 					"consistency": 93.4,
-					"rank": 100
+					"rank": 100,
+					"lead": 85,
+					"closer": 82.6
 				},
 				{
 					"speciesId": "stunfisk_galarian",
@@ -3411,7 +4376,9 @@
 					"switch": 75.3,
 					"charger": 87.5,
 					"consistency": 79.7,
-					"rank": 128
+					"rank": 128,
+					"lead": 83.4,
+					"closer": 88.2
 				},
 				{
 					"speciesId": "mantine",
@@ -3420,7 +4387,9 @@
 					"switch": 71.8,
 					"charger": 87,
 					"consistency": 90.4,
-					"rank": 131
+					"rank": 131,
+					"lead": 84.2,
+					"closer": 84.5
 				},
 				{
 					"speciesId": "morpeko_full_belly",
@@ -3429,7 +4398,9 @@
 					"switch": 66.4,
 					"charger": 90.6,
 					"consistency": 80.9,
-					"rank": 276
+					"rank": 276,
+					"lead": 75.8,
+					"closer": 71.4
 				},
 				{
 					"speciesId": "aegislash_shield",
@@ -3438,7 +4409,9 @@
 					"switch": 20.1,
 					"charger": 64.8,
 					"consistency": 91.3,
-					"rank": 601
+					"rank": 601,
+					"lead": 53.8,
+					"closer": 81.8
 				},
 				{
 					"speciesId": "jumpluff",
@@ -3447,7 +4420,9 @@
 					"switch": 44.1,
 					"charger": 68.3,
 					"consistency": 88.6,
-					"rank": 696
+					"rank": 696,
+					"lead": 58.8,
+					"closer": 61.6
 				},
 				{
 					"speciesId": "azumarill",
@@ -3456,15 +4431,26 @@
 					"switch": 31.8,
 					"charger": 52.8,
 					"consistency": 93.1,
-					"rank": 813
+					"rank": 813,
+					"lead": 49.1,
+					"closer": 53.9
 				}
 			],
 			"teams": [
 				{
 					"team": [
-						{ "speciesId": "tinkaton", "moveset": ["FAIRY_WIND", "GIGATON_HAMMER", "BULLDOZE"] },
-						{ "speciesId": "corviknight", "moveset": ["SAND_ATTACK", "AIR_CUTTER", "IRON_HEAD"] },
-						{ "speciesId": "snorlax_shadow", "moveset": ["PSYWAVE", "BODY_SLAM", "EARTHQUAKE"] }
+						{
+							"speciesId": "tinkaton",
+							"moveset": ["FAIRY_WIND", "GIGATON_HAMMER", "BULLDOZE"]
+						},
+						{
+							"speciesId": "corviknight",
+							"moveset": ["SAND_ATTACK", "AIR_CUTTER", "IRON_HEAD"]
+						},
+						{
+							"speciesId": "snorlax_shadow",
+							"moveset": ["PSYWAVE", "BODY_SLAM", "EARTHQUAKE"]
+						}
 					],
 					"expected": {
 						"threatScore": 565,
@@ -3520,8 +4506,20 @@
 							"aegislash_shield": [110, 365, 65]
 						},
 						"members": [
-							{ "speciesId": "tinkaton", "level": 49.5, "cp": 2499, "bulk": 31466.233465277866, "consistency": 80.2 },
-							{ "speciesId": "corviknight", "level": 48.5, "cp": 2498, "bulk": 33788.51388218923, "consistency": 88 },
+							{
+								"speciesId": "tinkaton",
+								"level": 49.5,
+								"cp": 2499,
+								"bulk": 31466.233465277866,
+								"consistency": 80.2
+							},
+							{
+								"speciesId": "corviknight",
+								"level": 48.5,
+								"cp": 2498,
+								"bulk": 33788.51388218923,
+								"consistency": 88
+							},
 							{
 								"speciesId": "snorlax_shadow",
 								"level": 29.5,
@@ -3534,9 +4532,18 @@
 				},
 				{
 					"team": [
-						{ "speciesId": "virizion", "moveset": ["DOUBLE_KICK", "LEAF_BLADE", "SACRED_SWORD"] },
-						{ "speciesId": "florges", "moveset": ["FAIRY_WIND", "CHILLING_WATER", "DISARMING_VOICE"] },
-						{ "speciesId": "cramorant", "moveset": ["PECK", "DIVE", "FLY"] }
+						{
+							"speciesId": "virizion",
+							"moveset": ["DOUBLE_KICK", "LEAF_BLADE", "SACRED_SWORD"]
+						},
+						{
+							"speciesId": "florges",
+							"moveset": ["FAIRY_WIND", "CHILLING_WATER", "DISARMING_VOICE"]
+						},
+						{
+							"speciesId": "cramorant",
+							"moveset": ["PECK", "DIVE", "FLY"]
+						}
 					],
 					"expected": {
 						"threatScore": 556,
@@ -3585,9 +4592,27 @@
 							"azumarill": [119, 338, 262]
 						},
 						"members": [
-							{ "speciesId": "virizion", "level": 32.5, "cp": 2498, "bulk": 30305.12823035542, "consistency": 100 },
-							{ "speciesId": "florges", "level": 29, "cp": 2498, "bulk": 26727.115161895752, "consistency": 100 },
-							{ "speciesId": "cramorant", "level": 50, "cp": 2421, "bulk": 23483.02445828913, "consistency": 86.2 }
+							{
+								"speciesId": "virizion",
+								"level": 32.5,
+								"cp": 2498,
+								"bulk": 30305.12823035542,
+								"consistency": 100
+							},
+							{
+								"speciesId": "florges",
+								"level": 29,
+								"cp": 2498,
+								"bulk": 26727.115161895752,
+								"consistency": 100
+							},
+							{
+								"speciesId": "cramorant",
+								"level": 50,
+								"cp": 2421,
+								"bulk": 23483.02445828913,
+								"consistency": 86.2
+							}
 						]
 					}
 				},
@@ -3597,8 +4622,14 @@
 							"speciesId": "aegislash_shield",
 							"moveset": ["AEGISLASH_CHARGE_PSYCHO_CUT", "SHADOW_BALL", "FLASH_CANNON"]
 						},
-						{ "speciesId": "morpeko_full_belly", "moveset": ["THUNDER_SHOCK", "AURA_WHEEL_ELECTRIC", "PSYCHIC_FANGS"] },
-						{ "speciesId": "mimikyu", "moveset": ["SHADOW_CLAW", "SHADOW_SNEAK", "PLAY_ROUGH"] }
+						{
+							"speciesId": "morpeko_full_belly",
+							"moveset": ["THUNDER_SHOCK", "AURA_WHEEL_ELECTRIC", "PSYCHIC_FANGS"]
+						},
+						{
+							"speciesId": "mimikyu",
+							"moveset": ["SHADOW_CLAW", "SHADOW_SNEAK", "PLAY_ROUGH"]
+						}
 					],
 					"expected": {
 						"threatScore": 641,
@@ -3661,15 +4692,30 @@
 								"bulk": 15885.031645297991,
 								"consistency": 80.9
 							},
-							{ "speciesId": "mimikyu", "level": 50, "cp": 2497, "bulk": 24162.827177345735, "consistency": 94.2 }
+							{
+								"speciesId": "mimikyu",
+								"level": 50,
+								"cp": 2497,
+								"bulk": 24162.827177345735,
+								"consistency": 94.2
+							}
 						]
 					}
 				},
 				{
 					"team": [
-						{ "speciesId": "annihilape_shadow", "moveset": ["LOW_KICK", "RAGE_FIST", "ICE_PUNCH"] },
-						{ "speciesId": "azumarill", "moveset": ["BUBBLE", "PLAY_ROUGH", "ICE_BEAM"] },
-						{ "speciesId": "forretress_shadow", "moveset": ["VOLT_SWITCH", "ROCK_TOMB", "SAND_TOMB"] }
+						{
+							"speciesId": "annihilape_shadow",
+							"moveset": ["LOW_KICK", "RAGE_FIST", "ICE_PUNCH"]
+						},
+						{
+							"speciesId": "azumarill",
+							"moveset": ["BUBBLE", "PLAY_ROUGH", "ICE_BEAM"]
+						},
+						{
+							"speciesId": "forretress_shadow",
+							"moveset": ["VOLT_SWITCH", "ROCK_TOMB", "SAND_TOMB"]
+						}
 					],
 					"expected": {
 						"threatScore": 665,
@@ -3725,7 +4771,13 @@
 								"bulk": 20990.34901669627,
 								"consistency": 100
 							},
-							{ "speciesId": "azumarill", "level": 50, "cp": 1795, "bulk": 28206.350890696027, "consistency": 93.1 },
+							{
+								"speciesId": "azumarill",
+								"level": 50,
+								"cp": 1795,
+								"bulk": 28206.350890696027,
+								"consistency": 93.1
+							},
 							{
 								"speciesId": "forretress_shadow",
 								"level": 50,
@@ -3745,7 +4797,11 @@
 					"speciesName": "Palkia (Origin)",
 					"dex": 484,
 					"types": ["water", "dragon"],
-					"baseStats": { "atk": 286, "def": 223, "hp": 189 },
+					"baseStats": {
+						"atk": 286,
+						"def": 223,
+						"hp": 189
+					},
 					"isShadow": false
 				},
 				{
@@ -3753,7 +4809,11 @@
 					"speciesName": "Zacian (Crowned Sword)",
 					"dex": 888,
 					"types": ["fairy", "steel"],
-					"baseStats": { "atk": 332, "def": 240, "hp": 192 },
+					"baseStats": {
+						"atk": 332,
+						"def": 240,
+						"hp": 192
+					},
 					"isShadow": false
 				},
 				{
@@ -3761,7 +4821,11 @@
 					"speciesName": "Zygarde (Complete Forme)",
 					"dex": 718,
 					"types": ["dragon", "ground"],
-					"baseStats": { "atk": 184, "def": 207, "hp": 389 },
+					"baseStats": {
+						"atk": 184,
+						"def": 207,
+						"hp": 389
+					},
 					"isShadow": false
 				},
 				{
@@ -3769,7 +4833,11 @@
 					"speciesName": "Metagross",
 					"dex": 376,
 					"types": ["steel", "psychic"],
-					"baseStats": { "atk": 257, "def": 228, "hp": 190 },
+					"baseStats": {
+						"atk": 257,
+						"def": 228,
+						"hp": 190
+					},
 					"isShadow": false
 				},
 				{
@@ -3777,7 +4845,11 @@
 					"speciesName": "Kyurem (White)",
 					"dex": 646,
 					"types": ["dragon", "ice"],
-					"baseStats": { "atk": 310, "def": 183, "hp": 245 },
+					"baseStats": {
+						"atk": 310,
+						"def": 183,
+						"hp": 245
+					},
 					"isShadow": false
 				},
 				{
@@ -3785,7 +4857,11 @@
 					"speciesName": "Xerneas",
 					"dex": 716,
 					"types": ["fairy", "none"],
-					"baseStats": { "atk": 250, "def": 185, "hp": 246 },
+					"baseStats": {
+						"atk": 250,
+						"def": 185,
+						"hp": 246
+					},
 					"isShadow": false
 				},
 				{
@@ -3793,7 +4869,11 @@
 					"speciesName": "Kyogre",
 					"dex": 382,
 					"types": ["water", "none"],
-					"baseStats": { "atk": 270, "def": 228, "hp": 205 },
+					"baseStats": {
+						"atk": 270,
+						"def": 228,
+						"hp": 205
+					},
 					"isShadow": false
 				},
 				{
@@ -3801,7 +4881,11 @@
 					"speciesName": "Dialga (Origin)",
 					"dex": 483,
 					"types": ["steel", "dragon"],
-					"baseStats": { "atk": 270, "def": 225, "hp": 205 },
+					"baseStats": {
+						"atk": 270,
+						"def": 225,
+						"hp": 205
+					},
 					"isShadow": false
 				},
 				{
@@ -3809,7 +4893,11 @@
 					"speciesName": "Reshiram",
 					"dex": 643,
 					"types": ["dragon", "fire"],
-					"baseStats": { "atk": 275, "def": 211, "hp": 205 },
+					"baseStats": {
+						"atk": 275,
+						"def": 211,
+						"hp": 205
+					},
 					"isShadow": false
 				},
 				{
@@ -3817,7 +4905,11 @@
 					"speciesName": "Ursaluna",
 					"dex": 901,
 					"types": ["ground", "normal"],
-					"baseStats": { "atk": 243, "def": 181, "hp": 277 },
+					"baseStats": {
+						"atk": 243,
+						"def": 181,
+						"hp": 277
+					},
 					"isShadow": false
 				},
 				{
@@ -3825,7 +4917,11 @@
 					"speciesName": "Eternatus",
 					"dex": 890,
 					"types": ["poison", "dragon"],
-					"baseStats": { "atk": 278, "def": 192, "hp": 268 },
+					"baseStats": {
+						"atk": 278,
+						"def": 192,
+						"hp": 268
+					},
 					"isShadow": false
 				},
 				{
@@ -3833,7 +4929,11 @@
 					"speciesName": "Reshiram (Shadow)",
 					"dex": 643,
 					"types": ["dragon", "fire"],
-					"baseStats": { "atk": 275, "def": 211, "hp": 205 },
+					"baseStats": {
+						"atk": 275,
+						"def": 211,
+						"hp": 205
+					},
 					"isShadow": true
 				},
 				{
@@ -3841,7 +4941,11 @@
 					"speciesName": "Kyurem (Black)",
 					"dex": 646,
 					"types": ["dragon", "ice"],
-					"baseStats": { "atk": 310, "def": 183, "hp": 245 },
+					"baseStats": {
+						"atk": 310,
+						"def": 183,
+						"hp": 245
+					},
 					"isShadow": false
 				},
 				{
@@ -3849,7 +4953,11 @@
 					"speciesName": "Lugia",
 					"dex": 249,
 					"types": ["psychic", "flying"],
-					"baseStats": { "atk": 193, "def": 310, "hp": 235 },
+					"baseStats": {
+						"atk": 193,
+						"def": 310,
+						"hp": 235
+					},
 					"isShadow": false
 				},
 				{
@@ -3857,7 +4965,11 @@
 					"speciesName": "Lunala",
 					"dex": 792,
 					"types": ["psychic", "ghost"],
-					"baseStats": { "atk": 255, "def": 191, "hp": 264 },
+					"baseStats": {
+						"atk": 255,
+						"def": 191,
+						"hp": 264
+					},
 					"isShadow": false
 				},
 				{
@@ -3865,7 +4977,11 @@
 					"speciesName": "Zamazenta (Crowned Shield)",
 					"dex": 889,
 					"types": ["fighting", "steel"],
-					"baseStats": { "atk": 250, "def": 292, "hp": 192 },
+					"baseStats": {
+						"atk": 250,
+						"def": 292,
+						"hp": 192
+					},
 					"isShadow": false
 				},
 				{
@@ -3873,7 +4989,11 @@
 					"speciesName": "Ursaluna (Shadow)",
 					"dex": 901,
 					"types": ["ground", "normal"],
-					"baseStats": { "atk": 243, "def": 181, "hp": 277 },
+					"baseStats": {
+						"atk": 243,
+						"def": 181,
+						"hp": 277
+					},
 					"isShadow": true
 				},
 				{
@@ -3881,7 +5001,11 @@
 					"speciesName": "Necrozma (Dawn Wings)",
 					"dex": 800,
 					"types": ["psychic", "ghost"],
-					"baseStats": { "atk": 277, "def": 220, "hp": 200 },
+					"baseStats": {
+						"atk": 277,
+						"def": 220,
+						"hp": 200
+					},
 					"isShadow": false
 				},
 				{
@@ -3889,7 +5013,11 @@
 					"speciesName": "Marshadow",
 					"dex": 802,
 					"types": ["fighting", "ghost"],
-					"baseStats": { "atk": 265, "def": 190, "hp": 207 },
+					"baseStats": {
+						"atk": 265,
+						"def": 190,
+						"hp": 207
+					},
 					"isShadow": false
 				},
 				{
@@ -3897,7 +5025,11 @@
 					"speciesName": "Zekrom",
 					"dex": 644,
 					"types": ["dragon", "electric"],
-					"baseStats": { "atk": 275, "def": 211, "hp": 205 },
+					"baseStats": {
+						"atk": 275,
+						"def": 211,
+						"hp": 205
+					},
 					"isShadow": false
 				},
 				{
@@ -3905,7 +5037,11 @@
 					"speciesName": "Necrozma (Dusk Mane)",
 					"dex": 800,
 					"types": ["psychic", "steel"],
-					"baseStats": { "atk": 277, "def": 220, "hp": 200 },
+					"baseStats": {
+						"atk": 277,
+						"def": 220,
+						"hp": 200
+					},
 					"isShadow": false
 				},
 				{
@@ -3913,7 +5049,11 @@
 					"speciesName": "Lugia (Shadow)",
 					"dex": 249,
 					"types": ["psychic", "flying"],
-					"baseStats": { "atk": 193, "def": 310, "hp": 235 },
+					"baseStats": {
+						"atk": 193,
+						"def": 310,
+						"hp": 235
+					},
 					"isShadow": true
 				},
 				{
@@ -3921,7 +5061,11 @@
 					"speciesName": "Palkia (Shadow)",
 					"dex": 484,
 					"types": ["water", "dragon"],
-					"baseStats": { "atk": 280, "def": 215, "hp": 189 },
+					"baseStats": {
+						"atk": 280,
+						"def": 215,
+						"hp": 189
+					},
 					"isShadow": true
 				},
 				{
@@ -3929,7 +5073,11 @@
 					"speciesName": "Ho-Oh",
 					"dex": 250,
 					"types": ["fire", "flying"],
-					"baseStats": { "atk": 239, "def": 244, "hp": 214 },
+					"baseStats": {
+						"atk": 239,
+						"def": 244,
+						"hp": 214
+					},
 					"isShadow": false
 				},
 				{
@@ -3937,7 +5085,11 @@
 					"speciesName": "Garchomp (Shadow)",
 					"dex": 445,
 					"types": ["dragon", "ground"],
-					"baseStats": { "atk": 261, "def": 193, "hp": 239 },
+					"baseStats": {
+						"atk": 261,
+						"def": 193,
+						"hp": 239
+					},
 					"isShadow": true
 				},
 				{
@@ -3945,7 +5097,11 @@
 					"speciesName": "Groudon",
 					"dex": 383,
 					"types": ["ground", "none"],
-					"baseStats": { "atk": 270, "def": 228, "hp": 205 },
+					"baseStats": {
+						"atk": 270,
+						"def": 228,
+						"hp": 205
+					},
 					"isShadow": false
 				},
 				{
@@ -3953,7 +5109,11 @@
 					"speciesName": "Metagross (Shadow)",
 					"dex": 376,
 					"types": ["steel", "psychic"],
-					"baseStats": { "atk": 257, "def": 228, "hp": 190 },
+					"baseStats": {
+						"atk": 257,
+						"def": 228,
+						"hp": 190
+					},
 					"isShadow": true
 				},
 				{
@@ -3961,7 +5121,11 @@
 					"speciesName": "Melmetal",
 					"dex": 809,
 					"types": ["steel", "none"],
-					"baseStats": { "atk": 226, "def": 190, "hp": 264 },
+					"baseStats": {
+						"atk": 226,
+						"def": 190,
+						"hp": 264
+					},
 					"isShadow": false
 				},
 				{
@@ -3969,7 +5133,11 @@
 					"speciesName": "Keldeo (Resolute)",
 					"dex": 647,
 					"types": ["water", "fighting"],
-					"baseStats": { "atk": 260, "def": 192, "hp": 209 },
+					"baseStats": {
+						"atk": 260,
+						"def": 192,
+						"hp": 209
+					},
 					"isShadow": false
 				},
 				{
@@ -3977,7 +5145,11 @@
 					"speciesName": "Garchomp",
 					"dex": 445,
 					"types": ["dragon", "ground"],
-					"baseStats": { "atk": 261, "def": 193, "hp": 239 },
+					"baseStats": {
+						"atk": 261,
+						"def": 193,
+						"hp": 239
+					},
 					"isShadow": false
 				},
 				{
@@ -3985,7 +5157,11 @@
 					"speciesName": "Annihilape (Shadow)",
 					"dex": 979,
 					"types": ["fighting", "ghost"],
-					"baseStats": { "atk": 220, "def": 178, "hp": 242 },
+					"baseStats": {
+						"atk": 220,
+						"def": 178,
+						"hp": 242
+					},
 					"isShadow": true
 				},
 				{
@@ -3993,7 +5169,11 @@
 					"speciesName": "Feraligatr",
 					"dex": 160,
 					"types": ["water", "none"],
-					"baseStats": { "atk": 205, "def": 188, "hp": 198 },
+					"baseStats": {
+						"atk": 205,
+						"def": 188,
+						"hp": 198
+					},
 					"isShadow": false
 				},
 				{
@@ -4001,7 +5181,11 @@
 					"speciesName": "Empoleon",
 					"dex": 395,
 					"types": ["water", "steel"],
-					"baseStats": { "atk": 210, "def": 186, "hp": 197 },
+					"baseStats": {
+						"atk": 210,
+						"def": 186,
+						"hp": 197
+					},
 					"isShadow": false
 				},
 				{
@@ -4009,7 +5193,11 @@
 					"speciesName": "Lickilicky",
 					"dex": 463,
 					"types": ["normal", "none"],
-					"baseStats": { "atk": 161, "def": 181, "hp": 242 },
+					"baseStats": {
+						"atk": 161,
+						"def": 181,
+						"hp": 242
+					},
 					"isShadow": false
 				}
 			],
@@ -4021,7 +5209,9 @@
 					"switch": 100,
 					"charger": 95.4,
 					"consistency": 88.3,
-					"rank": 1
+					"rank": 1,
+					"lead": 96.3,
+					"closer": 95
 				},
 				{
 					"speciesId": "zacian_crowned_sword",
@@ -4030,7 +5220,9 @@
 					"switch": 63.8,
 					"charger": 88.7,
 					"consistency": 90.6,
-					"rank": 2
+					"rank": 2,
+					"lead": 88.8,
+					"closer": 96.9
 				},
 				{
 					"speciesId": "zygarde_complete",
@@ -4039,7 +5231,9 @@
 					"switch": 77,
 					"charger": 86.8,
 					"consistency": 93.4,
-					"rank": 3
+					"rank": 3,
+					"lead": 92.2,
+					"closer": 86.3
 				},
 				{
 					"speciesId": "metagross",
@@ -4048,7 +5242,9 @@
 					"switch": 93.1,
 					"charger": 94.7,
 					"consistency": 98.2,
-					"rank": 4
+					"rank": 4,
+					"lead": 95.1,
+					"closer": 95.9
 				},
 				{
 					"speciesId": "kyurem_white",
@@ -4057,7 +5253,9 @@
 					"switch": 87.5,
 					"charger": 96.5,
 					"consistency": 85.4,
-					"rank": 5
+					"rank": 5,
+					"lead": 94.8,
+					"closer": 91.5
 				},
 				{
 					"speciesId": "xerneas",
@@ -4066,7 +5264,9 @@
 					"switch": 72.8,
 					"charger": 89.3,
 					"consistency": 94.2,
-					"rank": 6
+					"rank": 6,
+					"lead": 93.6,
+					"closer": 95.3
 				},
 				{
 					"speciesId": "kyogre",
@@ -4075,7 +5275,9 @@
 					"switch": 57.8,
 					"charger": 87.7,
 					"consistency": 86.9,
-					"rank": 7
+					"rank": 7,
+					"lead": 87.8,
+					"closer": 98
 				},
 				{
 					"speciesId": "dialga_origin",
@@ -4084,7 +5286,9 @@
 					"switch": 71.2,
 					"charger": 90.2,
 					"consistency": 84.9,
-					"rank": 8
+					"rank": 8,
+					"lead": 94.3,
+					"closer": 95.5
 				},
 				{
 					"speciesId": "reshiram",
@@ -4093,7 +5297,9 @@
 					"switch": 99.2,
 					"charger": 100,
 					"consistency": 84.6,
-					"rank": 9
+					"rank": 9,
+					"lead": 94.1,
+					"closer": 93.4
 				},
 				{
 					"speciesId": "ursaluna",
@@ -4102,7 +5308,9 @@
 					"switch": 91.1,
 					"charger": 92.2,
 					"consistency": 82.4,
-					"rank": 10
+					"rank": 10,
+					"lead": 98.8,
+					"closer": 93.9
 				},
 				{
 					"speciesId": "eternatus",
@@ -4111,7 +5319,9 @@
 					"switch": 82.8,
 					"charger": 89,
 					"consistency": 93.6,
-					"rank": 11
+					"rank": 11,
+					"lead": 89,
+					"closer": 100
 				},
 				{
 					"speciesId": "reshiram_shadow",
@@ -4120,7 +5330,9 @@
 					"switch": 99.5,
 					"charger": 97.2,
 					"consistency": 84.6,
-					"rank": 12
+					"rank": 12,
+					"lead": 89.2,
+					"closer": 93.6
 				},
 				{
 					"speciesId": "kyurem_black",
@@ -4129,7 +5341,9 @@
 					"switch": 74.2,
 					"charger": 90.2,
 					"consistency": 85.4,
-					"rank": 13
+					"rank": 13,
+					"lead": 82.5,
+					"closer": 89.9
 				},
 				{
 					"speciesId": "lugia",
@@ -4138,7 +5352,9 @@
 					"switch": 86.8,
 					"charger": 89.9,
 					"consistency": 80.4,
-					"rank": 14
+					"rank": 14,
+					"lead": 94.5,
+					"closer": 98.4
 				},
 				{
 					"speciesId": "lunala",
@@ -4147,7 +5363,9 @@
 					"switch": 85.4,
 					"charger": 88.5,
 					"consistency": 100,
-					"rank": 15
+					"rank": 15,
+					"lead": 93.2,
+					"closer": 90.7
 				},
 				{
 					"speciesId": "zamazenta_crowned_shield",
@@ -4156,7 +5374,9 @@
 					"switch": 76.2,
 					"charger": 88.4,
 					"consistency": 100,
-					"rank": 16
+					"rank": 16,
+					"lead": 95.5,
+					"closer": 92.5
 				},
 				{
 					"speciesId": "ursaluna_shadow",
@@ -4165,7 +5385,9 @@
 					"switch": 94.8,
 					"charger": 96.2,
 					"consistency": 82.4,
-					"rank": 17
+					"rank": 17,
+					"lead": 98.3,
+					"closer": 94.5
 				},
 				{
 					"speciesId": "necrozma_dawn_wings",
@@ -4174,7 +5396,9 @@
 					"switch": 86.2,
 					"charger": 96.7,
 					"consistency": 83.3,
-					"rank": 18
+					"rank": 18,
+					"lead": 95.1,
+					"closer": 95.2
 				},
 				{
 					"speciesId": "marshadow",
@@ -4183,7 +5407,9 @@
 					"switch": 89.2,
 					"charger": 91.1,
 					"consistency": 79.9,
-					"rank": 19
+					"rank": 19,
+					"lead": 100,
+					"closer": 84.7
 				},
 				{
 					"speciesId": "zekrom",
@@ -4192,7 +5418,9 @@
 					"switch": 79.2,
 					"charger": 92.5,
 					"consistency": 94,
-					"rank": 20
+					"rank": 20,
+					"lead": 87.3,
+					"closer": 93
 				},
 				{
 					"speciesId": "necrozma_dusk_mane",
@@ -4201,7 +5429,9 @@
 					"switch": 92.1,
 					"charger": 95.8,
 					"consistency": 82.4,
-					"rank": 21
+					"rank": 21,
+					"lead": 90.7,
+					"closer": 92.3
 				},
 				{
 					"speciesId": "lugia_shadow",
@@ -4210,7 +5440,9 @@
 					"switch": 77.6,
 					"charger": 86.2,
 					"consistency": 80.4,
-					"rank": 22
+					"rank": 22,
+					"lead": 85.7,
+					"closer": 97.8
 				},
 				{
 					"speciesId": "palkia_shadow",
@@ -4219,7 +5451,9 @@
 					"switch": 97.6,
 					"charger": 96.7,
 					"consistency": 77.7,
-					"rank": 23
+					"rank": 23,
+					"lead": 96.6,
+					"closer": 79.1
 				},
 				{
 					"speciesId": "ho_oh",
@@ -4228,7 +5462,9 @@
 					"switch": 53,
 					"charger": 79.2,
 					"consistency": 78.6,
-					"rank": 24
+					"rank": 24,
+					"lead": 74.1,
+					"closer": 96.9
 				},
 				{
 					"speciesId": "garchomp_shadow",
@@ -4237,7 +5473,9 @@
 					"switch": 78,
 					"charger": 94,
 					"consistency": 92.5,
-					"rank": 25
+					"rank": 25,
+					"lead": 89.7,
+					"closer": 91.1
 				},
 				{
 					"speciesId": "groudon",
@@ -4246,7 +5484,9 @@
 					"switch": 97.1,
 					"charger": 95,
 					"consistency": 74,
-					"rank": 26
+					"rank": 26,
+					"lead": 96.5,
+					"closer": 99.8
 				},
 				{
 					"speciesId": "metagross_shadow",
@@ -4255,7 +5495,9 @@
 					"switch": 88.7,
 					"charger": 97.5,
 					"consistency": 98.2,
-					"rank": 27
+					"rank": 27,
+					"lead": 90.5,
+					"closer": 89.7
 				},
 				{
 					"speciesId": "melmetal",
@@ -4264,7 +5506,9 @@
 					"switch": 87.2,
 					"charger": 88.8,
 					"consistency": 94,
-					"rank": 28
+					"rank": 28,
+					"lead": 89.3,
+					"closer": 87.7
 				},
 				{
 					"speciesId": "keldeo_resolute",
@@ -4273,7 +5517,9 @@
 					"switch": 69.5,
 					"charger": 86.9,
 					"consistency": 94.7,
-					"rank": 29
+					"rank": 29,
+					"lead": 88.2,
+					"closer": 87.4
 				},
 				{
 					"speciesId": "garchomp",
@@ -4282,7 +5528,9 @@
 					"switch": 81.5,
 					"charger": 87.5,
 					"consistency": 92.5,
-					"rank": 30
+					"rank": 30,
+					"lead": 93.6,
+					"closer": 86
 				},
 				{
 					"speciesId": "annihilape_shadow",
@@ -4291,7 +5539,9 @@
 					"switch": 63.6,
 					"charger": 85.2,
 					"consistency": 100,
-					"rank": 91
+					"rank": 91,
+					"lead": 70.9,
+					"closer": 66.3
 				},
 				{
 					"speciesId": "feraligatr",
@@ -4300,7 +5550,9 @@
 					"switch": 46.3,
 					"charger": 71,
 					"consistency": 98.5,
-					"rank": 166
+					"rank": 166,
+					"lead": 59.2,
+					"closer": 65.8
 				},
 				{
 					"speciesId": "empoleon",
@@ -4309,7 +5561,9 @@
 					"switch": 49.4,
 					"charger": 65.9,
 					"consistency": 100,
-					"rank": 189
+					"rank": 189,
+					"lead": 60.8,
+					"closer": 62.4
 				},
 				{
 					"speciesId": "lickilicky",
@@ -4318,15 +5572,26 @@
 					"switch": 26.6,
 					"charger": 48.6,
 					"consistency": 93.4,
-					"rank": 347
+					"rank": 347,
+					"lead": 40.4,
+					"closer": 44.6
 				}
 			],
 			"teams": [
 				{
 					"team": [
-						{ "speciesId": "palkia_origin", "moveset": ["DRAGON_BREATH", "AQUA_TAIL", "SPACIAL_REND"] },
-						{ "speciesId": "zacian_crowned_sword", "moveset": ["METAL_CLAW", "CLOSE_COMBAT", "BEHEMOTH_BLADE"] },
-						{ "speciesId": "zygarde_complete", "moveset": ["DRAGON_TAIL", "CRUNCH", "BULLDOZE"] }
+						{
+							"speciesId": "palkia_origin",
+							"moveset": ["DRAGON_BREATH", "AQUA_TAIL", "SPACIAL_REND"]
+						},
+						{
+							"speciesId": "zacian_crowned_sword",
+							"moveset": ["METAL_CLAW", "CLOSE_COMBAT", "BEHEMOTH_BLADE"]
+						},
+						{
+							"speciesId": "zygarde_complete",
+							"moveset": ["DRAGON_TAIL", "CRUNCH", "BULLDOZE"]
+						}
 					],
 					"expected": {
 						"threatScore": 538,
@@ -4368,7 +5633,13 @@
 							"lickilicky": [231, 243, 171]
 						},
 						"members": [
-							{ "speciesId": "palkia_origin", "level": 50, "cp": 4683, "bulk": 34198.53035867211, "consistency": 88.3 },
+							{
+								"speciesId": "palkia_origin",
+								"level": 50,
+								"cp": 4683,
+								"bulk": 34198.53035867211,
+								"consistency": 88.3
+							},
 							{
 								"speciesId": "zacian_crowned_sword",
 								"level": 50,
@@ -4388,9 +5659,18 @@
 				},
 				{
 					"team": [
-						{ "speciesId": "xerneas", "moveset": ["GEOMANCY", "CLOSE_COMBAT", "MOONBLAST"] },
-						{ "speciesId": "reshiram_shadow", "moveset": ["DRAGON_BREATH", "FUSION_FLARE", "DRACO_METEOR"] },
-						{ "speciesId": "necrozma_dawn_wings", "moveset": ["SHADOW_CLAW", "DARK_PULSE", "MOONGEIST_BEAM"] }
+						{
+							"speciesId": "xerneas",
+							"moveset": ["GEOMANCY", "CLOSE_COMBAT", "MOONBLAST"]
+						},
+						{
+							"speciesId": "reshiram_shadow",
+							"moveset": ["DRAGON_BREATH", "FUSION_FLARE", "DRACO_METEOR"]
+						},
+						{
+							"speciesId": "necrozma_dawn_wings",
+							"moveset": ["SHADOW_CLAW", "DARK_PULSE", "MOONGEIST_BEAM"]
+						}
 					],
 					"expected": {
 						"threatScore": 521,
@@ -4432,7 +5712,13 @@
 							"empoleon": [346, 291, 297]
 						},
 						"members": [
-							{ "speciesId": "xerneas", "level": 50, "cp": 4275, "bulk": 36805.14103174207, "consistency": 94.2 },
+							{
+								"speciesId": "xerneas",
+								"level": 50,
+								"cp": 4275,
+								"bulk": 36805.14103174207,
+								"consistency": 94.2
+							},
 							{
 								"speciesId": "reshiram_shadow",
 								"level": 50,

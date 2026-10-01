@@ -1,4 +1,5 @@
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { assignRoles, type RoleScores } from '../team-roles';
 import { SimBattle } from './battle';
 import { createSimContext, type SpeciesInfo } from './context';
 import { type MemberStats, memberStats } from './member';
@@ -15,6 +16,12 @@ export interface RankedEntry {
 	charger: number;
 	consistency: number;
 	rank: number;
+	/**
+	 * PvPoke's Lead and Closer scores. With `switch`, they decide the team's play order — and a team is always rated
+	 * in that order (see `TeamEvaluator.evaluate`). Without them the order a team is given is used.
+	 */
+	lead?: number;
+	closer?: number;
 }
 
 export type { SpeciesInfo } from './context';
@@ -121,6 +128,24 @@ interface MatchupResult {
 	opRating: number;
 }
 
+/** Puts values listed by play position back to the positions the caller gave them in (`order[k]` = original index). */
+const placeBack = <T>(values: ReadonlyArray<T>, order: ReadonlyArray<number>): Array<T> => {
+	const out = new Array<T>(values.length);
+	order.forEach((original, k) => {
+		out[original] = values[k];
+	});
+	return out;
+};
+
+/**
+ * The play order of three Pokémon from their role scores: `[lead, switch, closer]` as indices into the input —
+ * the assignment with the highest role scores (see `assignRoles`). Unchanged order when a score is missing.
+ */
+const playOrderOf = (scores: ReadonlyArray<RoleScores | undefined>): Array<number> => {
+	const roles = assignRoles(scores);
+	return roles ? [roles.order.lead, roles.order.switch, roles.order.closer] : scores.map((_, i) => i);
+};
+
 /**
  * Rates teams the way PvPoke's Team Builder does: every Pokémon in the league's
  * ranking is simulated against each teammate (0 and 1 shields, blended), the
@@ -150,6 +175,13 @@ export class TeamEvaluator {
 				inMeta: this.metaSet.has(entry.speciesId),
 				cachedTraits: undefined,
 			}));
+	}
+
+	private roleScoresOf(speciesId: string): RoleScores | undefined {
+		const r = this.rankingById.get(speciesId);
+		return r?.lead !== undefined && r.closer !== undefined
+			? { lead: r.lead, switch: r.switch, closer: r.closer }
+			: undefined;
 	}
 
 	/** Species usable as a team member: anything in this league's ranking. */
@@ -303,8 +335,37 @@ export class TeamEvaluator {
 		}));
 	}
 
-	/** Full team evaluation against every Pokémon in the league's ranking. */
-	evaluate(team: ReadonlyArray<TeamSlot>): TeamEvaluation {
+	/**
+	 * Full team evaluation against every Pokémon in the league's ranking.
+	 *
+	 * PvPoke's threat score depends slightly on the order a team is rated in — which teammate is last decides the
+	 * leftover state the threat-similarity check reads — so the same three Pokémon could score differently in
+	 * different slot orders. To give one team one score, it is always rated in its *play order* (lead, switch,
+	 * closer, from the ranking's role scores), whatever order it was passed in; the per-teammate figures in the
+	 * result are returned in the caller's order. `order: 'given'` rates the team exactly in the order passed — what
+	 * PvPoke itself does with that order (the parity and golden-master tests compare against it).
+	 */
+	evaluate(team: ReadonlyArray<TeamSlot>, options: { order?: 'play' | 'given' } = {}): TeamEvaluation {
+		if (options.order === 'given' || team.length !== 3) return this.evaluateInOrder(team);
+
+		const order = playOrderOf(team.map((slot) => this.roleScoresOf(slot.speciesId)));
+		if (order.every((original, k) => original === k)) return this.evaluateInOrder(team);
+
+		const result = this.evaluateInOrder(order.map((original) => team[original]));
+		return {
+			...result,
+			members: placeBack(result.members, order),
+			threats: result.threats.map((t) => ({
+				...t,
+				ratings: placeBack(t.ratings, order),
+				opRatings: placeBack(t.opRatings, order),
+			})),
+			meta: { ...result.meta, wins: placeBack(result.meta.wins, order) },
+		};
+	}
+
+	/** `evaluate` for a team rated in exactly the order given. */
+	private evaluateInOrder(team: ReadonlyArray<TeamSlot>): TeamEvaluation {
 		const members = team.map((slot) => this.createPokemon(slot.speciesId, slot.moveset));
 		const rows = this.rate(members);
 
@@ -388,7 +449,11 @@ export class TeamEvaluator {
 				return rating;
 			})
 		);
-		const last = members.length - 1;
+		const roleScores = team.map((slot) => this.roleScoresOf(slot.speciesId));
+		// Each team that comes out of a swap is rated in its own play order, so the closer — the member every pool
+		// Pokémon faces last — can change with the swap; the slots below are positions in the *given* team.
+		const fullTeam = team.length === 3;
+		const currentOrder = fullTeam ? playOrderOf(roleScores) : members.map((_, k) => k);
 
 		const teamBases = new Set(team.map((slot) => slot.speciesId.replace('_shadow', '')));
 		const candidates = [...this.pool]
@@ -418,8 +483,8 @@ export class TeamEvaluator {
 		};
 
 		const currentScore = scoreTeam(
-			(i) => base[i],
-			(i) => baseBest[i][last]
+			(i) => currentOrder.map((k) => base[i][k]),
+			(i) => baseBest[i][currentOrder[currentOrder.length - 1]]
 		);
 		const picks: Array<AlternativePick> = [];
 
@@ -436,11 +501,17 @@ export class TeamEvaluator {
 				return rating;
 			});
 
+			const candidateRoles = this.roleScoresOf(candidate.entry.speciesId);
 			for (let slot = 0; slot < team.length; slot++) {
+				// Positions of the swapped team in play order (a position is a slot of the given team).
+				const positions = fullTeam
+					? playOrderOf(roleScores.map((r, k) => (k === slot ? candidateRoles : r)))
+					: members.map((_, k) => k);
+				const closerPosition = positions[positions.length - 1];
 				const threatScore = scoreTeam(
-					(i) => base[i].map((r, k) => (k === slot ? column[i] : r)),
+					(i) => positions.map((k) => (k === slot ? column[i] : base[i][k])),
 					// The swapped team's last member is what every pool Pokémon faced last.
-					slot === last ? (i) => candidateBest[i] : (i) => baseBest[i][last]
+					closerPosition === slot ? (i) => candidateBest[i] : (i) => baseBest[i][closerPosition]
 				);
 				picks.push({
 					slot,
@@ -513,6 +584,7 @@ export class TeamEvaluator {
 		battle.clearPokemon();
 
 		const base = candidateIds.map((id) => id.replace('_shadow', ''));
+		const roleScores = candidateIds.map((id) => this.roleScoresOf(id));
 		const out: Array<RankedTeamThreat> = [];
 		const order = new Array<number>(poolSize);
 		const rows = new Array<{ entry: PoolEntry; rating: number; score: number }>(poolSize);
@@ -523,9 +595,14 @@ export class TeamEvaluator {
 				for (let c = b + 1; c < candidateIds.length; c++) {
 					if (base[c] === base[a] || base[c] === base[b]) continue;
 
+					// The trio is rated in its play order, like `evaluate` does: the sums below run in that order, and the closer
+					// is the member whose battles every pool Pokémon is left remembering.
+					const trio = [a, b, c];
+					const [x, y, z] = playOrderOf(trio.map((k) => roleScores[k])).map((p) => trio[p]);
+
 					const score = new Float64Array(poolSize);
 					for (let i = 0; i < poolSize; i++) {
-						score[i] = (scores[a][i] + scores[b][i] + scores[c][i]) / 3;
+						score[i] = (scores[x][i] + scores[y][i] + scores[z][i]) / 3;
 						order[i] = i;
 					}
 					// Best threat first; ties keep pool order, as `evaluate`'s stable sort does.
@@ -535,20 +612,20 @@ export class TeamEvaluator {
 						const i = order[r];
 						rows[r] = {
 							entry: this.pool[i],
-							rating: Math.floor((ratings[a][i] + ratings[b][i] + ratings[c][i]) / 3),
+							rating: Math.floor((ratings[x][i] + ratings[y][i] + ratings[z][i]) / 3),
 							score: score[i],
 						};
 					}
 					// A Pokémon's "best charged move" — which the threat similarity traits read — depends on the opponent it
-					// last faced (PvPoke's own quirk). `evaluate` leaves every pool Pokémon having last faced the team's third
-					// member, so put that state back rather than whichever candidate happened to be simulated last.
+					// last faced (PvPoke's own quirk). `evaluate` leaves every pool Pokémon having last faced the team's closer (the
+					// last member in play order), so put that state back rather than whichever candidate was simulated last.
 					for (let i = 0; i < poolSize; i++) {
-						this.pool[i].poke.bestChargedMove = bestMoves[c][i];
+						this.pool[i].poke.bestChargedMove = bestMoves[z][i];
 						this.pool[i].cachedTraits = undefined;
 					}
 
 					out.push({
-						speciesIds: [candidateIds[a], candidateIds[b], candidateIds[c]],
+						speciesIds: [candidateIds[x], candidateIds[y], candidateIds[z]],
 						threatScore: this.pickThreats(rows).threatScore,
 					});
 				}
