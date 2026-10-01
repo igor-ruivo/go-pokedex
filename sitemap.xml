@@ -92,9 +92,9 @@
 	<url><loc>https://go-pokedex.com/pokemon/arbok_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/pikachu</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/raichu</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/raichu_alolan</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/raichu_mega_x</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/raichu_mega_y</loc></url>
-	<url><loc>https://go-pokedex.com/pokemon/raichu_alolan</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/sandshrew</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/sandshrew_alolan</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/sandshrew_alolan_shadow</loc></url>
@@ -315,8 +315,8 @@
 	<url><loc>https://go-pokedex.com/pokemon/staryu</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/staryu_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/starmie</loc></url>
-	<url><loc>https://go-pokedex.com/pokemon/starmie_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/starmie_mega</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/starmie_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/mr_mime</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/mr_mime_galarian</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/scyther</loc></url>
@@ -517,8 +517,8 @@
 	<url><loc>https://go-pokedex.com/pokemon/delibird_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/mantine</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/skarmory</loc></url>
-	<url><loc>https://go-pokedex.com/pokemon/skarmory_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/skarmory_mega</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/skarmory_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/houndour</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/houndour_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/houndoom</loc></url>
@@ -836,8 +836,8 @@
 	<url><loc>https://go-pokedex.com/pokemon/staravia</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/staravia_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/staraptor</loc></url>
-	<url><loc>https://go-pokedex.com/pokemon/staraptor_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/staraptor_mega</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/staraptor_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/bidoof</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/bidoof_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/bibarel</loc></url>
@@ -1236,6 +1236,7 @@
 	<url><loc>https://go-pokedex.com/pokemon/reshiram</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/reshiram_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/zekrom</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/zekrom_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/landorus_incarnate</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/landorus_incarnate_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/landorus_therian</loc></url>
@@ -1292,7 +1293,9 @@
 	<url><loc>https://go-pokedex.com/pokemon/skiddo</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/gogoat</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/pancham</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/pancham_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/pangoro</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/pangoro_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/furfrou</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/espurr</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/meowstic_female</loc></url>
@@ -1410,7 +1413,9 @@
 	<url><loc>https://go-pokedex.com/pokemon/araquanid</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/araquanid_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/fomantis</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/fomantis_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/lurantis</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/lurantis_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/morelull</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/shiinotic</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/shiinotic_shadow</loc></url>
@@ -1427,9 +1432,13 @@
 	<url><loc>https://go-pokedex.com/pokemon/oranguru</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/passimian</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/wimpod</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/wimpod_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/golisopod</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/golisopod_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/sandygast</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/sandygast_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/palossand</loc></url>
+	<url><loc>https://go-pokedex.com/pokemon/palossand_shadow</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/komala</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/turtonator</loc></url>
 	<url><loc>https://go-pokedex.com/pokemon/togedemaru</loc></url>
