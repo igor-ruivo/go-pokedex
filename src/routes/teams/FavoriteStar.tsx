@@ -11,7 +11,12 @@ export const FavoriteStar = ({
 	className = '',
 }: {
 	league: TeamLeague;
-	members: ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string>; ivs?: SlotIvs | undefined }>;
+	members: ReadonlyArray<{
+		speciesId: string;
+		moveset: ReadonlyArray<string>;
+		ivs?: SlotIvs | undefined;
+		level?: number | undefined;
+	}>;
 	className?: string;
 }) => {
 	const { t } = useTranslation(['teams']);

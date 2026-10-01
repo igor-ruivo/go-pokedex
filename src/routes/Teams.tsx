@@ -9,6 +9,7 @@ import { useLanguage } from '../contexts/language-context';
 import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
 import { leagueIcon } from '../lib/league-visuals';
 import { modeColor, modeLabel, modeLabelLong, R } from '../lib/nav';
+import { LEAGUE_CP } from '../lib/pvp-sim/context';
 import { encodeTeam, letterGrade, type ScoreParts, scoreTier, teamScore, threatPart } from '../lib/team-analysis';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { BattlePlan } from './teams/BattlePlan';
@@ -57,7 +58,7 @@ const Teams = () => {
 
 	const data = useTeamsData(league);
 	const ctx = useSimContext(league, data);
-	const { team, setMember, setMove, setIvs, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(
+	const { team, setMember, setMove, setBuild, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(
 		data,
 		league,
 		tab === 'builder'
@@ -139,14 +140,14 @@ const Teams = () => {
 	};
 
 	/** Puts every Pokémon back on PvPoke's recommended moveset for this league. */
-	/** Puts every Pokémon back on PvPoke's recommended moveset and the league's best IVs. */
+	/** Puts every Pokémon back on PvPoke's recommended moveset, the league's best IVs and the level the CP cap allows. */
 	const reset = () =>
 		replaceTeam(team.map((slot) => ({ speciesId: slot.speciesId, moveset: recommendedMoveset(slot.speciesId) })));
 	// Anything to reset: picked IVs, or a moveset other than the recommended one (the Charged Moves in either order).
 	const modified = team.some((slot) => {
 		const recommended = recommendedMoveset(slot.speciesId);
 		const sameCharged = [...slot.moveset.slice(1)].sort().join() === [...recommended.slice(1)].sort().join();
-		return !!slot.ivs || slot.moveset[0] !== recommended[0] || !sameCharged;
+		return !!slot.ivs || slot.level !== undefined || slot.moveset[0] !== recommended[0] || !sameCharged;
 	});
 
 	const copyLink = async () => {
@@ -254,7 +255,8 @@ const Teams = () => {
 						}}
 						onChangePokemon={setPickerFor}
 						onMove={setMove}
-						onIvs={setIvs}
+						onBuild={setBuild}
+						cpCap={LEAGUE_CP[league]}
 						onRemove={removeMember}
 						onSuggest={() => void suggestTeammates()}
 						suggesting={suggesting}

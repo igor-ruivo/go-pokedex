@@ -458,6 +458,15 @@
 	gap: var(--s3);
 	width: 100%;
 }
+.rvmp .r-tm-ivmodal-cp {
+	margin: 0;
+	text-align: center;
+	font-size: 12px;
+	color: var(--text-dim);
+}
+.rvmp .r-tm-ivmodal-cp[data-over] {
+	color: var(--neg, #f87171);
+}
 .rvmp .r-tm-ivmodal-actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -546,6 +555,26 @@
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 	color: var(--text-faint);
+}
+/* the sign after a move that isn't PvPoke's recommended one */
+.rvmp .r-tm-warn {
+	display: inline-grid;
+	place-items: center;
+	flex: none;
+	width: 14px;
+	height: 14px;
+	margin-left: 4px;
+	vertical-align: -2px;
+	color: var(--warn, #f5b942);
+}
+.rvmp .r-tm-warn svg {
+	width: 100%;
+	height: 100%;
+	fill: color-mix(in srgb, currentColor 18%, transparent);
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 .rvmp .r-tm-move-name {
 	flex: 0 1 auto;

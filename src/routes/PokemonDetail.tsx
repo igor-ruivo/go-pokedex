@@ -38,7 +38,6 @@ import {
 	fetchPokemonFamily,
 	fetchReachablePokemonIncludingSelf,
 	levelToLevelIndex,
-	MAX_LEVEL,
 	type RankEntry,
 	sortByFamilyLine,
 } from '../utils/pokemon-helper';
@@ -979,12 +978,6 @@ const PokemonDetail = () => {
 							max={maxLevel}
 							step={0.5}
 							onChange={onManualLevelChange}
-							// Best Buddy's level 51 is a flat +1 past 50, not another half-level —
-							// skip the nonexistent 50.5 rung right below it either direction.
-							nextValue={(cur, dir) => {
-								if (dir > 0) return cur === MAX_LEVEL && maxLevel > MAX_LEVEL ? maxLevel : cur + 0.5;
-								return cur === maxLevel && maxLevel > MAX_LEVEL ? MAX_LEVEL : cur - 0.5;
-							}}
 							format={(v) => `${t('pokemonDetail:hero.level.prefix')} ${Number.isInteger(v) ? v : v.toFixed(1)}`}
 						/>
 					) : (

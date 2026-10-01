@@ -20,6 +20,8 @@ import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
 import { IvModal } from './IvModal';
+import { LevelModal } from './LevelModal';
+import { NotRecommendedMark } from './NotRecommendedMark';
 import { roleNames } from './teams-text';
 import type { AnalyzedMember } from './useTeamAnalysis';
 import type { TeamsData } from './useTeamsData';
@@ -150,6 +152,7 @@ const MoveRow = ({
 				<img src={`/images/types/${info.type}.png`} alt='' width={18} height={18} />
 				<span className='r-tm-move-name'>{name(moveId)}</span>
 				{tag(moveId)}
+				{!recommended.includes(moveId) && <NotRecommendedMark />}
 				<span className='r-tm-move-stat'>{stat(moveId)}</span>
 			</button>
 			{open && (
@@ -404,6 +407,7 @@ const MemberCard = ({
 	onChangePokemon,
 	onMove,
 	onEditIvs,
+	onEditLevel,
 	onRemove,
 	suggestion,
 }: {
@@ -414,8 +418,9 @@ const MemberCard = ({
 	role: TeamRole | undefined;
 	onChangePokemon: () => void;
 	onMove: (moveIndex: number, moveId: string) => void;
-	/** Open the IVs dialog for this member (the stage owns it: a dialog can't sit inside an animated card). */
+	/** Open the IVs / the level dialog for this member (the stage owns them: a dialog can't sit inside an animated card). */
 	onEditIvs: () => void;
+	onEditLevel: () => void;
 	onRemove: () => void;
 	/** Only on the empty cards of a team that has one or two Pokémon: finish the team with the best teammates. */
 	suggestion?: { pending: boolean; onSuggest: () => void } | undefined;
@@ -509,7 +514,19 @@ const MemberCard = ({
 				</div>
 				<div>
 					<dt>{t('teams:builder.level')}</dt>
-					<dd>{stats.level}</dd>
+					<dd>
+						<button
+							type='button'
+							className='r-tm-iv-btn'
+							data-custom={member.slot.level !== undefined ? '' : undefined}
+							aria-haspopup='dialog'
+							aria-label={t('teams:builder.levelEdit', { name })}
+							title={t('teams:builder.levelEdit', { name })}
+							onClick={onEditLevel}
+						>
+							{stats.level}
+						</button>
+					</dd>
 				</div>
 				<div>
 					<dt>{t('teams:builder.ivs')}</dt>
@@ -605,7 +622,8 @@ export const TeamStage = ({
 	roleOf,
 	onChangePokemon,
 	onMove,
-	onIvs,
+	onBuild,
+	cpCap,
 	onRemove,
 	onSuggest,
 	suggesting,
@@ -616,17 +634,20 @@ export const TeamStage = ({
 	roleOf: (index: number) => TeamRole | undefined;
 	onChangePokemon: (index: number) => void;
 	onMove: (index: number, moveIndex: number, moveId: string) => void;
-	onIvs: (index: number, ivs: SlotIvs | undefined) => void;
+	onBuild: (index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => void;
+	/** The league's CP cap, to tell when a picked level puts a Pokémon over it. */
+	cpCap: number;
 	onRemove: (index: number) => void;
 	/** Finish the team (one or two Pokémon so far) with the best teammates. */
 	onSuggest: () => void;
 	/** That is being worked out: the empty cards show a spinner. */
 	suggesting: boolean;
 }) => {
-	// Which member's IVs dialog is open.
-	const [ivsFor, setIvsFor] = useState<number | null>(null);
-	const editing = ivsFor !== null ? members[ivsFor] : undefined;
-	const editingPokemon = ivsFor !== null && team[ivsFor] ? data.gamemaster[team[ivsFor].speciesId] : undefined;
+	// Which member's IVs or level dialog is open.
+	const [editingFor, setEditingFor] = useState<{ index: number; kind: 'ivs' | 'level' } | null>(null);
+	const editing = editingFor ? members[editingFor.index] : undefined;
+	const editingPokemon =
+		editingFor && team[editingFor.index] ? data.gamemaster[team[editingFor.index].speciesId] : undefined;
 
 	return (
 		<div className='r-tm-stage'>
@@ -640,18 +661,30 @@ export const TeamStage = ({
 					role={roleOf(i)}
 					onChangePokemon={() => onChangePokemon(i)}
 					onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
-					onEditIvs={() => setIvsFor(i)}
+					onEditIvs={() => setEditingFor({ index: i, kind: 'ivs' })}
+					onEditLevel={() => setEditingFor({ index: i, kind: 'level' })}
 					onRemove={() => onRemove(i)}
 					suggestion={team.length >= 1 && team.length < 3 ? { pending: suggesting, onSuggest } : undefined}
 				/>
 			))}
-			{ivsFor !== null && editing && editingPokemon && (
+			{editingFor && editing && editingPokemon && editingFor.kind === 'ivs' && (
 				<IvModal
 					name={cleanName(editingPokemon.speciesName)}
 					value={editing.stats.ivs}
 					custom={!!editing.slot.ivs}
-					onChange={(ivs) => onIvs(ivsFor, ivs)}
-					onClose={() => setIvsFor(null)}
+					onChange={(ivs) => onBuild(editingFor.index, { ivs, level: editing.slot.level })}
+					onClose={() => setEditingFor(null)}
+				/>
+			)}
+			{editingFor && editing && editingPokemon && editingFor.kind === 'level' && (
+				<LevelModal
+					name={cleanName(editingPokemon.speciesName)}
+					level={editing.stats.level}
+					custom={editing.slot.level !== undefined}
+					cp={editing.stats.cp}
+					cpCap={cpCap}
+					onChange={(level) => onBuild(editingFor.index, { ivs: editing.slot.ivs, level })}
+					onClose={() => setEditingFor(null)}
 				/>
 			)}
 		</div>

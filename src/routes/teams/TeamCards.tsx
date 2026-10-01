@@ -14,6 +14,7 @@ import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
 import { FavoriteStar } from './FavoriteStar';
+import { NotRecommendedMark } from './NotRecommendedMark';
 import type { TeamsData } from './useTeamsData';
 
 type CardTeam = RankedTeam & { addedAt?: number };
@@ -82,6 +83,9 @@ export const TeamCard = ({
 					const role = TEAM_ROLES[i];
 					const roleScore = data.rankList[member.speciesId]?.[role];
 					// A favorite names the IVs each Pokémon is rated with: the ones picked, else the league's best.
+					// A favorite flags the moves PvPoke doesn't recommend for this Pokémon in this league.
+					const favorite = team.addedAt !== undefined;
+					const recommended = data.rankList[member.speciesId]?.moveset;
 					const best = data.builder?.ivs[member.speciesId]?.[league];
 					const ivs = member.ivs ?? (best ? [best[1], best[2], best[3]] : undefined);
 					return (
@@ -114,16 +118,20 @@ export const TeamCard = ({
 									{team.addedAt !== undefined && ivs && (
 										<span
 											className='r-tm-board-ivs'
-											data-custom={member.ivs ? '' : undefined}
+											data-custom={member.ivs || member.level !== undefined ? '' : undefined}
 											title={t('teams:builder.ivs')}
 										>
 											{ivs.join('/')}
+											{member.level !== undefined && ` · L${member.level}`}
 										</span>
 									)}
 								</span>
 								<span className='r-tm-board-moves'>
 									{member.moveset.map((m) => (
-										<span key={m}>{translateMoveFromMoveId(m, moves, gl)}</span>
+										<span key={m}>
+											{translateMoveFromMoveId(m, moves, gl)}
+											{favorite && recommended && !recommended.includes(m) && <NotRecommendedMark />}
+										</span>
 									))}
 								</span>
 							</span>

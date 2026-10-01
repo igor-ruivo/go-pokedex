@@ -77,6 +77,8 @@ export interface RankedTeamMember {
 	moveset: Array<string>;
 	/** IVs picked for this Pokémon (a favorite can carry them); absent: the league's best spread. */
 	ivs?: [number, number, number];
+	/** Level picked for this Pokémon; absent: the highest the CP cap allows. */
+	level?: number;
 }
 
 export interface RankedTeam {

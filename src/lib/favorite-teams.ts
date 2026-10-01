@@ -1,13 +1,13 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
-import { isSlotIvs, type SlotIvs, slotKey } from './team-analysis';
+import { isSlotIvs, isSlotLevel, type SlotIvs, slotKey } from './team-analysis';
 
 /**
  * Favorite teams, kept in localStorage. A favorite is stored as the species ids and the move ids of its three
- * Pokémon (moves by id, not name, so they survive translation changes), the IVs picked for any of them, the league
- * it was saved for, and when. Species, moves and picked IVs are all part of a team's identity — the same Pokémon with
- * other moves or other IVs is another team — while the order they are listed in is not. Scores are never
+ * Pokémon (moves by id, not name, so they survive translation changes), the IVs and level picked for any of them, the league
+ * it was saved for, and when. Species, moves, picked IVs and picked level are all part of a team's identity — the same Pokémon
+ * with other moves, IVs or level is another team — while the order they are listed in is not. Scores are never
  * stored — they are recomputed, so they stay right whenever the ratings change.
  *
  * Every storage access is guarded: storage can be missing or blocked (private windows, blocked site data), and
@@ -21,6 +21,8 @@ export interface FavoriteMember {
 	moveset: Array<string>;
 	/** IVs picked in the builder; absent: the league's best spread. */
 	ivs?: SlotIvs;
+	/** Level picked in the builder; absent: the highest the CP cap allows. */
+	level?: number;
 }
 
 export interface FavoriteTeam {
@@ -30,7 +32,12 @@ export interface FavoriteTeam {
 	addedAt: number;
 }
 
-type Members = ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string>; ivs?: SlotIvs | undefined }>;
+type Members = ReadonlyArray<{
+	speciesId: string;
+	moveset: ReadonlyArray<string>;
+	ivs?: SlotIvs | undefined;
+	level?: number | undefined;
+}>;
 
 /**
  * The same three Pokémon with the same moves and the same IVs are the same team, whatever order they were listed
@@ -45,7 +52,8 @@ const isMember = (value: unknown): value is FavoriteMember =>
 	typeof (value as FavoriteMember).speciesId === 'string' &&
 	Array.isArray((value as FavoriteMember).moveset) &&
 	(value as FavoriteMember).moveset.every((m) => typeof m === 'string') &&
-	((value as FavoriteMember).ivs === undefined || isSlotIvs((value as FavoriteMember).ivs));
+	((value as FavoriteMember).ivs === undefined || isSlotIvs((value as FavoriteMember).ivs)) &&
+	((value as FavoriteMember).level === undefined || isSlotLevel((value as FavoriteMember).level));
 
 const parse = (raw: string | null): Array<FavoriteTeam> => {
 	if (!raw) return [];
@@ -127,6 +135,7 @@ export const toggleFavoriteTeam = (league: TeamLeague, members: Members) => {
 				speciesId: m.speciesId,
 				moveset: [...m.moveset],
 				...(m.ivs ? { ivs: [...m.ivs] as SlotIvs } : {}),
+				...(m.level !== undefined ? { level: m.level } : {}),
 			})),
 			addedAt: Date.now(),
 		},

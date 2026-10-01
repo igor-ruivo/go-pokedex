@@ -95,7 +95,12 @@ const dataKey = (league: TeamLeague, data: TeamsData) =>
 	`${league}|${Object.keys(data.rankList).length}|${Object.keys(data.builder?.moves ?? {}).length}`;
 
 const toSlots = (team: ReadonlyArray<TeamSlotDescriptor>): Array<TeamSlot> =>
-	team.map(({ speciesId, moveset, ivs }) => ({ speciesId, moveset: [...moveset], ivs: ivs ? [...ivs] : undefined }));
+	team.map(({ speciesId, moveset, ivs, level }) => ({
+		speciesId,
+		moveset: [...moveset],
+		ivs: ivs ? [...ivs] : undefined,
+		level,
+	}));
 
 /**
  * The simulated part of a team's rating (threat score, meta coverage). Runs

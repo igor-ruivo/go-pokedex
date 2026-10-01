@@ -343,18 +343,25 @@ export interface TeamSlotDescriptor {
 	moveset: ReadonlyArray<string>;
 	/** IVs picked for this Pokémon. Absent: the league's best (rank-1) spread, which is what a fresh pick gets. */
 	ivs?: SlotIvs | undefined;
+	/** Level picked for this Pokémon (1 to 50, in steps of 0.5). Absent: the highest the league's CP cap allows. */
+	level?: number | undefined;
 }
+
+export const isSlotLevel = (value: unknown): value is number =>
+	typeof value === 'number' && value >= 1 && value <= 50 && Number.isInteger(value * 2);
 
 export const isSlotIvs = (value: unknown): value is SlotIvs =>
 	Array.isArray(value) && value.length === 3 && value.every((n) => Number.isInteger(n) && n >= 0 && n <= 15);
 
 /**
- * One Pokémon of a team as text: `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH`, plus `@0.15.15` when its IVs were picked
- * (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with other moves or other IVs is
- * another key.
+ * One Pokémon of a team as text: `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH`, plus `@0.15.15` when its IVs were picked and
+ * `@L25.5` when its level was (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with
+ * other moves, IVs or level is another key.
  */
-export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs'>): string =>
-	[slot.speciesId, ...slot.moveset].join('-') + (slot.ivs ? `@${slot.ivs.join('.')}` : '');
+export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs' | 'level'>): string =>
+	[slot.speciesId, ...slot.moveset].join('-') +
+	(slot.ivs ? `@${slot.ivs.join('.')}` : '') +
+	(slot.level !== undefined ? `@L${slot.level}` : '');
 
 /** `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH@0.15.15,medicham-COUNTER-…` — see `slotKey`. */
 export const encodeTeam = (team: ReadonlyArray<TeamSlotDescriptor>): string => team.map(slotKey).join(',');
@@ -363,14 +370,25 @@ export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescri
 	(raw ?? '')
 		.split(',')
 		.map((part) => {
-			const [moves = '', ivText] = part.split('@');
-			const ivs = ivText?.split('.').map(Number);
-			return { parts: moves.split('-').filter(Boolean), ivs: isSlotIvs(ivs) ? ivs : undefined };
+			const [moves = '', ...modifiers] = part.split('@');
+			let ivs: SlotIvs | undefined;
+			let level: number | undefined;
+			for (const modifier of modifiers) {
+				if (modifier.startsWith('L')) {
+					const n = Number(modifier.slice(1));
+					if (isSlotLevel(n)) level = n;
+				} else {
+					const picked = modifier.split('.').map(Number);
+					if (isSlotIvs(picked)) ivs = picked;
+				}
+			}
+			return { parts: moves.split('-').filter(Boolean), ivs, level };
 		})
 		.filter(({ parts }) => parts.length >= 3)
 		.slice(0, 3)
-		.map(({ parts: [speciesId, ...moveset], ivs }) => ({
+		.map(({ parts: [speciesId, ...moveset], ivs, level }) => ({
 			speciesId,
 			moveset: moveset.slice(0, 3),
 			...(ivs ? { ivs } : {}),
+			...(level !== undefined ? { level } : {}),
 		}));

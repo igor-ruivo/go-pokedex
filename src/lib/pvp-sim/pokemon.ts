@@ -75,7 +75,9 @@ export class SimPokemon {
 		moveset: ReadonlyArray<string>,
 		private readonly ctx: SimContext,
 		/** IVs to use instead of the league's best spread; the level is then the highest the CP cap allows. */
-		private readonly customIvs?: ReadonlyArray<number>
+		private readonly customIvs?: ReadonlyArray<number>,
+		/** A level picked outright (1 to 50, steps of 0.5), whatever the CP cap says. */
+		private readonly customLevel?: number
 	) {
 		this.speciesId = species.speciesId;
 		this.speciesName = species.speciesName;
@@ -118,16 +120,16 @@ export class SimPokemon {
 		const custom = this.customIvs;
 		if (custom) {
 			[this.ivs.atk, this.ivs.def, this.ivs.hp] = custom as [number, number, number];
-			this.setLevel(this.highestFittingLevel());
+			this.setLevel(this.customLevel ?? this.highestFittingLevel());
 		} else if (spread) {
 			this.ivs.atk = spread[1];
 			this.ivs.def = spread[2];
 			this.ivs.hp = spread[3];
-			this.setLevel(Math.min(this.levelCap, spread[0]));
+			this.setLevel(this.customLevel ?? Math.min(this.levelCap, spread[0]));
 		} else {
 			// No legal spread under the cap: a maxed spread, at the level cap when uncapped.
 			this.ivs.atk = this.ivs.def = this.ivs.hp = 15;
-			this.setLevel(this.ctx.cp === 10000 ? this.levelCap : 1);
+			this.setLevel(this.customLevel ?? (this.ctx.cp === 10000 ? this.levelCap : 1));
 		}
 
 		this.stats.atk = this.cpm * (this.baseStats.atk + this.ivs.atk);

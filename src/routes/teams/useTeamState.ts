@@ -109,14 +109,22 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 		[data.builder, league]
 	);
 
-	/** Picks the IVs of one member; `undefined` (or the league's best spread itself) puts it back to the default. */
-	const setIvs = useCallback(
-		(index: number, ivs: SlotIvs | undefined) => {
+	/**
+	 * Picks the IVs and the level of one member. `undefined` puts one back to its default (for the IVs, the league's best
+	 * spread itself counts as the default; the level then follows the CP cap).
+	 */
+	const setBuild = useCallback(
+		(index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => {
 			const next = team.map((slot, i) => {
 				if (i !== index) return slot;
 				const best = defaultIvs(slot.speciesId);
-				const custom = ivs && !best?.every((n, k) => n === ivs[k]) ? ivs : undefined;
-				return custom ? { ...slot, ivs: custom } : { speciesId: slot.speciesId, moveset: slot.moveset };
+				const ivs = build.ivs && !best?.every((n, k) => n === build.ivs?.[k]) ? build.ivs : undefined;
+				return {
+					speciesId: slot.speciesId,
+					moveset: slot.moveset,
+					...(ivs ? { ivs } : {}),
+					...(build.level !== undefined ? { level: build.level } : {}),
+				};
 			});
 			write(next);
 		},
@@ -131,5 +139,5 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	// until then the page shows a spinner, not the empty "pick three Pokémon" state.
 	const restoring = restore && data.ready && !raw && lastTeamFor(league) !== undefined;
 
-	return { team, setMember, setMove, setIvs, defaultIvs, removeMember, replaceTeam, recommendedMoveset, restoring };
+	return { team, setMember, setMove, setBuild, defaultIvs, removeMember, replaceTeam, recommendedMoveset, restoring };
 };

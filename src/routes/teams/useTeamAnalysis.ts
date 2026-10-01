@@ -82,7 +82,7 @@ export const analyzeTeam = (
 		if (!pokemon || slot.moveset.some((m) => !ctx.moves[m])) return undefined;
 
 		const ranked = data.rankList[slot.speciesId];
-		const sim = new SimPokemon(ctx.speciesById(slot.speciesId)!, slot.moveset, ctx, slot.ivs);
+		const sim = new SimPokemon(ctx.speciesById(slot.speciesId)!, slot.moveset, ctx, slot.ivs, slot.level);
 
 		members.push({
 			slot,

@@ -10,7 +10,7 @@ const APPLY_DELAY_MS = 300;
 /**
  * The IVs of one team member (attack, defense, HP — each 0 to 15), in a dialog like the Pokémon picker. The page is
  * not dimmed behind it, and a complete, valid set is applied as soon as typing pauses, so the scores in the bar above
- * update while you type. "Best IVs" puts the member back to the league's best spread.
+ * update while you type. "Reset" puts the member back to the league's best spread. (The level has its own dialog.)
  */
 export const IvModal = ({
 	name,
@@ -49,7 +49,7 @@ export const IvModal = ({
 		firstRef.current?.select();
 	}, []);
 
-	// The member's IVs changed from outside (Best IVs, the Reset button): show them.
+	// The member's IVs changed from outside (Reset, the page's Reset button): show them.
 	const current = value.join('.');
 	useEffect(() => {
 		if (current !== appliedRef.current) {
@@ -109,7 +109,7 @@ export const IvModal = ({
 				{custom && (
 					<div className='r-tm-ivmodal-actions'>
 						<button type='button' className='r-tm-ivedit-reset' onClick={() => onChange(undefined)}>
-							{t('teams:builder.ivReset')}
+							{t('teams:builder.reset')}
 						</button>
 					</div>
 				)}
