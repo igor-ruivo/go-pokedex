@@ -19,7 +19,7 @@
 		"team-ranking": "tsx scripts/team-ranking/build.mts",
 		"pvp-sim:parity": "node scripts/pvp-sim-parity/run.cjs",
 		"deploy": "pnpm run build && pnpm run prerender && node scripts/deploy.mjs",
-		"deploy:quick": "vite build --no-emptyOutDir && node scripts/deploy.mjs",
+		"deploy:lite": "vite build --no-emptyOutDir && node scripts/prerender.mjs --static-only && node scripts/deploy.mjs --skip-entity-pages",
 		"lint": "npx eslint --fix --ext .ts,.tsx,.mjs ./src ./scripts ./eslint.config.cjs ./prettier.config.cjs ./package.json ./tsconfig.json ./index.html 2>&1 && pnpm run format && pnpm tsc --noEmit && pnpm run i18n:check"
 	},
 	"dependencies": {

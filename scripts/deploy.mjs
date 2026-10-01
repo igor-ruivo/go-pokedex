@@ -10,6 +10,9 @@
 import ghpages from 'gh-pages';
 
 const args = process.argv.slice(2).filter((a) => a !== '--');
+// `--skip-entity-pages` (the `deploy:lite` script): publish everything except the prerendered Pokémon and move pages
+// (and the share images made for them). Those files stay on the branch exactly as the last full deploy left them.
+const skipEntityPages = args.includes('--skip-entity-pages');
 const flagIndex = args.indexOf('-m');
 const message = flagIndex !== -1 ? args[flagIndex + 1] : undefined;
 
@@ -24,7 +27,12 @@ const message = flagIndex !== -1 ? args[flagIndex + 1] : undefined;
 // the branch as an orphan instead of being cleaned up — acceptable; it's
 // invisible to visitors and to crawlers (nothing links to it, it's not in
 // the sitemap), and rare, versus every deploy failing outright.
-ghpages.publish('dist', { add: true, ...(message ? { message } : {}) }, (err) => {
+const options = {
+	add: true,
+	...(skipEntityPages ? { src: ['**/*', '!pokemon/**', '!move/**', '!images/og/pokemon/**'] } : {}),
+	...(message ? { message } : {}),
+};
+ghpages.publish('dist', options, (err) => {
 	if (err) {
 		console.error(err);
 		process.exit(1);

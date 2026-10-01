@@ -3,6 +3,10 @@
 // part of `build`, which CI uses on every push/PR: it's slow (a few minutes)
 // and depends on fetching external data, neither of which CI should pay for).
 //
+// `--static-only` (the `deploy:lite` script) renders only the fixed pages (home, rankings, teams, calendar…) and the
+// sitemap, and leaves every /pokemon/<id> and /move/<id> page alone — those are ~1,900 of the ~1,930 pages and nearly
+// all of the time.
+//
 // Why this exists at all: the site is a client-rendered SPA. Without this,
 // every one of ~1,900 Pokémon/move URLs serves the exact same empty shell
 // (same <title>, same description, no content) until a crawler's own JS
@@ -31,6 +35,7 @@ const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 const SITE = 'https://go-pokedex.com';
 const PORT = 4321;
+const STATIC_ONLY = process.argv.includes('--static-only');
 
 // Must match src/utils/Configs.ts — duplicated here because this script runs
 // under plain Node (no Vite/TS transform), not imported from the app itself.
@@ -436,7 +441,7 @@ const main = async () => {
 	const startedAt = Date.now();
 
 	let done = 0;
-	const total = STATIC_PAGES.length + pokemonList.length + moveList.length;
+	const total = STATIC_PAGES.length + (STATIC_ONLY ? 0 : pokemonList.length + moveList.length);
 	const report = () => {
 		done++;
 		if (done % 100 === 0 || done === total) {
@@ -558,10 +563,12 @@ const main = async () => {
 	console.log(`Prerendering with ${CONCURRENCY} pages at once (up to ${RETRIES} retries each)…`);
 	console.log('Prerendering static pages…');
 	const staticResult = await runPool(staticTasks, CONCURRENCY);
-	console.log('Prerendering Pokémon pages…');
-	const pokemonResult = await runPool(pokemonTasks, CONCURRENCY);
-	console.log('Prerendering move pages…');
-	const moveResult = await runPool(moveTasks, CONCURRENCY);
+	const none = { failed: [], recovered: [] };
+	if (STATIC_ONLY) console.log('--static-only: skipping the Pokémon and move pages.');
+	else console.log('Prerendering Pokémon pages…');
+	const pokemonResult = STATIC_ONLY ? none : await runPool(pokemonTasks, CONCURRENCY);
+	if (!STATIC_ONLY) console.log('Prerendering move pages…');
+	const moveResult = STATIC_ONLY ? none : await runPool(moveTasks, CONCURRENCY);
 
 	await browser.close();
 	server.close();
