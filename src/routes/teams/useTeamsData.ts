@@ -100,11 +100,7 @@ const toSlots = (team: ReadonlyArray<TeamSlotDescriptor>): Array<TeamSlot> =>
  * in a worker; while a new result is being computed the previous one stays
  * available (`isFetching` says it's stale) so panels can dim instead of blank.
  */
-export const useTeamEvaluation = (
-	league: TeamLeague,
-	data: TeamsData,
-	team: ReadonlyArray<TeamSlotDescriptor>
-) => {
+export const useTeamEvaluation = (league: TeamLeague, data: TeamsData, team: ReadonlyArray<TeamSlotDescriptor>) => {
 	const enabled = data.ready && team.length === 3;
 
 	return useQuery<TeamEvaluation>({

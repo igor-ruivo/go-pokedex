@@ -433,6 +433,22 @@
 	color: var(--accent);
 	text-decoration-style: solid;
 }
+/* the page is not dimmed behind the IVs dialog (the scores above update as you type), so a drag must not scroll it
+   either: the dialog has nothing to scroll itself. A tap outside closes it. */
+/* a drag must not scroll the page behind the dialog either: it has nothing to scroll itself. A tap outside closes it. */
+.rvmp .r-tm-picker-backdrop.r-tm-ivmodal-backdrop {
+	touch-action: none;
+	overscroll-behavior: contain;
+}
+/* (the double class outranks .r-tm-picker-backdrop, which comes later in this file)
+   on a phone the dialog sits right under the navbar and the score bar, not in the middle of the screen: the keyboard
+   that opens for the inputs would cover its lower half */
+@media (max-width: 719px) {
+	.rvmp .r-tm-picker-backdrop.r-tm-ivmodal-backdrop {
+		place-items: start center;
+		padding-top: 220px;
+	}
+}
 .rvmp .r-tm-ivmodal {
 	width: min(360px, 100%);
 }
@@ -447,19 +463,6 @@
 	flex-wrap: wrap;
 	justify-content: flex-end;
 	gap: var(--s2);
-}
-.rvmp .r-tm-ivmodal-apply {
-	padding: 8px 18px;
-	font-weight: 700;
-	color: var(--on-accent, #0b1220);
-	background: var(--accent);
-	border: 0;
-	border-radius: var(--r-sm);
-	cursor: pointer;
-}
-.rvmp .r-tm-ivmodal-apply:disabled {
-	opacity: 0.45;
-	cursor: not-allowed;
 }
 .rvmp .r-tm-ivedit label {
 	display: grid;
@@ -476,7 +479,9 @@
 	width: 64px;
 	padding: 10px 4px;
 	text-align: center;
-	font: 600 18px Fredoka, sans-serif;
+	font:
+		600 18px Fredoka,
+		sans-serif;
 	font-variant-numeric: tabular-nums;
 	color: var(--text);
 	background: color-mix(in srgb, var(--surface-2) 80%, transparent);
@@ -1244,6 +1249,7 @@
 	gap: var(--s4);
 }
 .rvmp .r-tm-threat-score {
+	position: relative;
 	display: grid;
 	gap: 2px;
 	grid-template-columns: auto auto;
@@ -2145,6 +2151,7 @@
 	border-left: 1px solid var(--border);
 }
 .rvmp .r-tm-mini-stat {
+	position: relative;
 	flex-direction: column;
 	justify-content: center;
 	gap: 1px;
@@ -2316,7 +2323,87 @@
 	}
 }
 
+/* ---- score explanations (ScoreInfo): hover with a mouse, tap on touch ----------------------------------------- */
+.rvmp .r-tm-info {
+	cursor: pointer;
+	border-radius: var(--r-sm);
+}
+.rvmp .r-tm-info:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+.rvmp .r-tm-info-pop {
+	position: absolute;
+	z-index: 60;
+	top: calc(100% + 8px);
+	left: 50%;
+	transform: translateX(calc(-50% + var(--shift, 0px)));
+	display: grid;
+	gap: 6px;
+	width: min(290px, calc(100vw - 16px));
+	padding: 10px 12px;
+	border-radius: var(--r-sm);
+	background: var(--surface-3);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+	color: var(--text-dim);
+	font-family: inherit;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.4;
+	letter-spacing: 0;
+	text-align: left;
+	text-transform: none;
+	white-space: normal;
+	-webkit-text-fill-color: currentcolor;
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		opacity 0.15s ease,
+		visibility 0.15s;
+}
+/* the hero clips what hangs out of it, so its explanation opens over the ring rather than under it */
+.rvmp .r-tm-info[data-over] .r-tm-info-pop {
+	top: 50%;
+	transform: translate(calc(-50% + var(--shift, 0px)), -50%);
+}
+.rvmp .r-tm-info-pop strong {
+	color: var(--text);
+	font-size: 12.5px;
+	font-weight: 800;
+}
+.rvmp .r-tm-info-pop > span {
+	display: block;
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: 0;
+	text-transform: none;
+	color: inherit;
+}
+.rvmp .r-tm-info[aria-expanded='true'] .r-tm-info-pop {
+	opacity: 1;
+	visibility: visible;
+}
+@media (hover: hover) and (pointer: fine) {
+	.rvmp .r-tm-info:hover .r-tm-info-pop,
+	.rvmp .r-tm-info:focus-visible .r-tm-info-pop {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
 /* ---- top teams ------------------------------------------------------------------------------------------ */
+/* the "?" that folds the intro away, in line with the "rated on…" note */
+.rvmp .r-tm-board-hint {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+	margin: 0 0 var(--s3);
+}
+.rvmp .r-tm-board-hint .r-tm-note {
+	margin: 0;
+}
 .rvmp .r-tm-board-intro {
 	margin: 0 0 var(--s4);
 	font-size: 13px;

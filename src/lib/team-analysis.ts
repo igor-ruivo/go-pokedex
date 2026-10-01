@@ -257,8 +257,15 @@ export const teamWarnings = (input: WarningInput): Array<TeamWarning> => {
 		if (c < 75) out.push({ kind: 'baitDependent', member });
 	});
 
+	// Sharing a type only matters when it stacks a weakness: some attack the shared type is weak to still hits at
+	// least two of the members that share it super effectively. The rest of their typing may cancel it (Normal/Flying
+	// is not weak to Fighting), in which case there is nothing to warn about.
 	for (const { type, members } of sharedTypes(input.memberTypes)) {
-		out.push({ kind: 'sharedTyping', type, members });
+		const stacks = input.defense.rows.some(
+			(row) =>
+				effectiveness(row.type, [type]) > WEAK && members.filter((member) => row.mults[member] > WEAK).length >= 2
+		);
+		if (stacks) out.push({ kind: 'sharedTyping', type, members });
 	}
 
 	const defined = input.roleScores.filter((s): s is RoleScores => !!s);

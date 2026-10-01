@@ -650,10 +650,7 @@ export const TeamStage = ({
 					name={cleanName(editingPokemon.speciesName)}
 					value={editing.stats.ivs}
 					custom={!!editing.slot.ivs}
-					onApply={(ivs) => {
-						onIvs(ivsFor, ivs);
-						setIvsFor(null);
-					}}
+					onChange={(ivs) => onIvs(ivsFor, ivs)}
 					onClose={() => setIvsFor(null)}
 				/>
 			)}

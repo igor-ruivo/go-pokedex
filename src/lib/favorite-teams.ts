@@ -37,10 +37,7 @@ type Members = ReadonlyArray<{ speciesId: string; moveset: ReadonlyArray<string>
  * in. Each Pokémon's text carries its own moves and IVs, so sorting the texts keeps them attached to it.
  */
 export const favoriteKey = (league: TeamLeague, members: Members): string =>
-	`${league}:${members
-		.map(slotKey)
-		.sort()
-		.join('|')}`;
+	`${league}:${members.map(slotKey).sort().join('|')}`;
 
 const isMember = (value: unknown): value is FavoriteMember =>
 	typeof value === 'object' &&

@@ -9,6 +9,7 @@ import { R } from '../../lib/nav';
 import type { TeamEvaluation } from '../../lib/pvp-sim/team-eval';
 import { letterGrade } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
+import { ScoreInfo } from './ScoreInfo';
 import { threatGradeNotes } from './teams-text';
 import type { AnalyzedMember } from './useTeamAnalysis';
 
@@ -69,13 +70,13 @@ export const ThreatPanel = ({
 	return (
 		<section className='r-tm-panel r-tm-threat' data-stale={stale ? '' : undefined}>
 			<div className='r-tm-threat-top'>
-				<div className='r-tm-threat-score'>
+				<ScoreInfo kind='threat' className='r-tm-threat-score'>
 					<span className='r-tm-eyebrow'>{t('teams:threat.scoreLabel')}</span>
 					<b>{score}</b>
 					<span className='r-tm-grade' data-grade={grade}>
 						{grade}
 					</span>
-				</div>
+				</ScoreInfo>
 				<p className='r-tm-threat-note'>
 					{notes[grade]} <span className='r-tm-hint'>{t('teams:threat.lowerBetter')}</span>
 				</p>

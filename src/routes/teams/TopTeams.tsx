@@ -28,10 +28,12 @@ export const TopTeams = ({
 	data: TeamsData;
 	onOpen: (team: RankedTeam) => void;
 }) => {
-	const { t } = useTranslation(['teams']);
+	const { t } = useTranslation(['teams', 'rankings']);
 	const query = useTeamRanking();
 	// The same "Order by" chip as the rankings pages. Each key has its own list of the best teams by that metric.
 	const [sortKey, setSortKey] = useState<'score' | 'threat'>('score');
+	// The intro under the title can be folded away: the list below is long.
+	const [introOpen, setIntroOpen] = useState(false);
 
 	// The tab is already showing; the long list of cards renders after the spinner has been painted.
 	const painted = useAfterPaint();
@@ -77,8 +79,20 @@ export const TopTeams = ({
 
 	return (
 		<div className='r-tm-board'>
-			<p className='r-tm-board-intro'>{t('teams:top.intro', { candidates: query.data.candidates })}</p>
-			<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>
+			<div className='r-tm-board-hint'>
+				<button
+					type='button'
+					className='r-rank-hint-toggle'
+					aria-expanded={introOpen}
+					aria-label={t(introOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
+					title={t(introOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
+					onClick={() => setIntroOpen((open) => !open)}
+				>
+					?
+				</button>
+				<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>
+			</div>
+			{introOpen && <p className='r-tm-board-intro'>{t('teams:top.intro', { candidates: query.data.candidates })}</p>}
 			<details className='r-ctr-help r-tm-board-help'>
 				<summary>{t('teams:top.help.summary')}</summary>
 				<dl>

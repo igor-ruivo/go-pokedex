@@ -112,7 +112,11 @@ export const TeamCard = ({
 								<span className='r-tm-board-role'>
 									<span className='r-tm-board-chip'>{roleScore === undefined ? '–' : roleScore.toFixed(1)}</span>
 									{team.addedAt !== undefined && ivs && (
-										<span className='r-tm-board-ivs' data-custom={member.ivs ? '' : undefined} title={t('teams:builder.ivs')}>
+										<span
+											className='r-tm-board-ivs'
+											data-custom={member.ivs ? '' : undefined}
+											title={t('teams:builder.ivs')}
+										>
 											{ivs.join('/')}
 										</span>
 									)}

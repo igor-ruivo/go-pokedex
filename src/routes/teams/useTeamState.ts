@@ -115,7 +115,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 			const next = team.map((slot, i) => {
 				if (i !== index) return slot;
 				const best = defaultIvs(slot.speciesId);
-				const custom = ivs && !(best && best.every((n, k) => n === ivs[k])) ? ivs : undefined;
+				const custom = ivs && !best?.every((n, k) => n === ivs[k]) ? ivs : undefined;
 				return custom ? { ...slot, ivs: custom } : { speciesId: slot.speciesId, moveset: slot.moveset };
 			});
 			write(next);

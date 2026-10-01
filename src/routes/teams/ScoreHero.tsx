@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CombatHexagon } from '../../components/CombatHexagon';
 import { PART_KEYS, SCORE_WEIGHTS, type ScoreParts, type ScoreTier } from '../../lib/team-analysis';
+import { ScoreInfo } from './ScoreInfo';
 import { partDescriptions, partNames, tierNames, tierSummaries } from './teams-text';
 
 /** Eases a number toward `target` (respecting reduced motion), so score changes read as movement rather than a swap. */
@@ -136,14 +137,14 @@ export const ScoreHero = ({
 						transform='rotate(-90 60 60)'
 					/>
 				</svg>
-				<div className='r-tm-ring-center'>
+				<ScoreInfo kind='team' over className='r-tm-ring-center'>
 					{shown === undefined || stale ? (
 						<span className='r-spinner' aria-hidden='true' />
 					) : (
 						<b className='r-tm-ring-num'>{shown.toFixed(1)}</b>
 					)}
 					<span className='r-tm-ring-label'>{t('teams:score.teamScore')}</span>
-				</div>
+				</ScoreInfo>
 			</div>
 
 			<div className='r-tm-hero-body'>

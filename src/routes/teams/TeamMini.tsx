@@ -7,6 +7,7 @@ import { combatMetricNames } from '../../lib/combat-text';
 import { cleanName } from '../../lib/format';
 import type { LetterGrade, ScoreTier } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
+import { ScoreInfo } from './ScoreInfo';
 import type { AnalyzedMember } from './useTeamAnalysis';
 
 export interface MiniGrades {
@@ -122,14 +123,14 @@ export const TeamMini = ({
 			</div>
 
 			<div className='r-tm-mini-stats'>
-				<div className='r-tm-mini-stat r-tm-mini-threat'>
+				<ScoreInfo kind='threat' className='r-tm-mini-stat r-tm-mini-threat'>
 					<span>{t('teams:threat.shortLabel')}</span>
 					{loading || threatScore === undefined ? (
 						<span className='r-spinner r-spinner--sm' aria-hidden='true' />
 					) : (
 						<b>{threatScore}</b>
 					)}
-				</div>
+				</ScoreInfo>
 
 				<ul className='r-tm-mini-grades' aria-label={t('teams:grades.heading')}>
 					{report.map(({ key, label, grade }) => (
@@ -141,14 +142,14 @@ export const TeamMini = ({
 					))}
 				</ul>
 
-				<div className='r-tm-mini-stat r-tm-mini-score'>
+				<ScoreInfo kind='team' className='r-tm-mini-stat r-tm-mini-score'>
 					<span>{t('teams:score.heading')}</span>
 					{loading || score === undefined ? (
 						<span className='r-spinner r-spinner--sm' aria-hidden='true' />
 					) : (
 						<b>{score.toFixed(1)}</b>
 					)}
-				</div>
+				</ScoreInfo>
 			</div>
 		</div>
 	);
