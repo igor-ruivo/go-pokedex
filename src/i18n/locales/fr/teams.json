@@ -20,6 +20,7 @@
 		"clear": "Vider l'équipe",
 		"emptySlot": "Ajouter un Pokémon",
 		"slotN": "Emplacement {{n}}",
+		"suggestion": "Suggestion",
 		"remove": "Retirer {{name}}",
 		"change": "Changer {{name}}",
 		"replace": "Remplacer {{name}}",

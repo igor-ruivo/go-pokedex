@@ -20,6 +20,7 @@
 		"clear": "Team leeren",
 		"emptySlot": "Pokémon hinzufügen",
 		"slotN": "Platz {{n}}",
+		"suggestion": "Vorschlag",
 		"remove": "{{name}} entfernen",
 		"change": "{{name}} ändern",
 		"replace": "{{name}} ersetzen",

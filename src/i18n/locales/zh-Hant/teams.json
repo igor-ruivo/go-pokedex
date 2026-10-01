@@ -20,6 +20,7 @@
 		"clear": "清空隊伍",
 		"emptySlot": "加入寶可夢",
 		"slotN": "第 {{n}} 格",
+		"suggestion": "建議",
 		"remove": "移除 {{name}}",
 		"change": "更換 {{name}}",
 		"replace": "更換{{name}}",

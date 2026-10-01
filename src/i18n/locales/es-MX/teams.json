@@ -20,6 +20,7 @@
 		"clear": "Vaciar equipo",
 		"emptySlot": "Agregar un Pokémon",
 		"slotN": "Espacio {{n}}",
+		"suggestion": "Sugerencia",
 		"remove": "Quitar a {{name}}",
 		"change": "Cambiar a {{name}}",
 		"replace": "Reemplazar {{name}}",

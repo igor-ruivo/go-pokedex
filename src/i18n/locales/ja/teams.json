@@ -20,6 +20,7 @@
 		"clear": "チームをクリア",
 		"emptySlot": "ポケモンを追加",
 		"slotN": "スロット{{n}}",
+		"suggestion": "おすすめ",
 		"remove": "{{name}}を外す",
 		"change": "{{name}}を変更",
 		"replace": "{{name}}を入れ替える",

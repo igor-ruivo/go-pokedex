@@ -6,11 +6,13 @@ import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { createSimContext, type SpeciesInfo } from '../../lib/pvp-sim/context';
 import type { AlternativePick, EvaluatorInit, TeamEvaluation, TeamSlot } from '../../lib/pvp-sim/team-eval';
-import { encodeTeam } from '../../lib/team-analysis';
+import type { SimContext } from '../../lib/pvp-sim/types';
+import { encodeTeam, type ScoreParts, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
 import { useTeamBuilderData } from '../../queries/teams';
 import { getTeamWorker } from '../../workers/team-client';
+import { analyzeTeam } from './useTeamAnalysis';
 
 const LEAGUE_INDEX: Record<TeamLeague, number> = { great: 0, ultra: 1, master: 2 };
 
@@ -192,3 +194,46 @@ export const useSimContext = (league: TeamLeague, data: TeamsData) =>
 				: undefined,
 		[league, data.builder, data.gamemaster]
 	);
+
+/**
+ * The best way to finish a team of one or two Pokémon: every way of completing it with the league's best-ranked
+ * Pokémon is rated (the threat score in the worker, the rest here), and the one with the highest Team Score wins.
+ * Returns the team with the added Pokémon appended after the ones already on it — they keep their slots and moves.
+ */
+export const completeTeam = async (
+	league: TeamLeague,
+	data: TeamsData,
+	ctx: SimContext,
+	team: ReadonlyArray<TeamSlotDescriptor>
+): Promise<Array<TeamSlotDescriptor> | undefined> => {
+	await ensureEvaluator(dataKey(league, data), () =>
+		buildEvaluatorInit(league, data.builder!, data.gamemaster, data.rankList)
+	);
+	const completions = await getTeamWorker().complete(toSlots(team));
+
+	let best: { score: number; threatScore: number; added: Array<TeamSlotDescriptor> } | undefined;
+	for (const { members, threatScore } of completions) {
+		const analysis = analyzeTeam(league, ctx, data, members);
+		if (!analysis) continue;
+		const parts: ScoreParts = {
+			threat: threatPart(threatScore),
+			defense: analysis.defense.score,
+			offense: analysis.offense.score,
+			bulk: analysis.grades.bulk.part,
+			safety: analysis.grades.safety.part,
+			consistency: analysis.grades.consistency.part,
+		};
+		const score = teamScore(parts);
+		if (score === undefined) continue;
+		if (best && (score < best.score || (score === best.score && threatScore >= best.threatScore))) continue;
+		best = {
+			score,
+			threatScore,
+			// Play order, minus the Pokémon that were already there.
+			added: members
+				.filter((m) => !team.some((t) => t.speciesId === m.speciesId))
+				.map((m) => ({ speciesId: m.speciesId, moveset: [...m.moveset] })),
+		};
+	}
+	return best ? [...team, ...best.added] : undefined;
+};

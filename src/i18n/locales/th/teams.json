@@ -20,6 +20,7 @@
 		"clear": "ล้างทีม",
 		"emptySlot": "เพิ่มโปเกมอน",
 		"slotN": "ช่อง {{n}}",
+		"suggestion": "คำแนะนำ",
 		"remove": "นำ {{name}} ออก",
 		"change": "เปลี่ยน {{name}}",
 		"replace": "เปลี่ยน {{name}}",

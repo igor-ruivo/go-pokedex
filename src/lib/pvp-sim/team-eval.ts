@@ -93,6 +93,22 @@ export interface AlternativePick {
 	delta: number;
 }
 
+export interface TeamCompletion {
+	/** The whole team, in play order. The Pokémon already on it keep their moves; the added ones take the ranking's. */
+	members: Array<TeamSlot>;
+	/** PvPoke's threat score for the completed team — lower is better. */
+	threatScore: number;
+}
+
+/** One Pokémon's matchups against the whole pool, simulated once and reused by every team it appears in. */
+interface MatchupColumns {
+	ratings: Array<Float64Array>;
+	/** Each rating's threat-ordering score. */
+	scores: Array<Float64Array>;
+	/** Which charged move each pool Pokémon ends up treating as its best after facing this Pokémon (see `rankTeams`). */
+	bestMoves: Array<Array<SimMove | null>>;
+}
+
 export interface RankedTeamThreat {
 	/** Candidate species, in the order given to `rankTeams`. */
 	speciesIds: [string, string, string];
@@ -541,6 +557,80 @@ export class TeamEvaluator {
 			.filter((p) => p.delta <= 0)
 			.slice(0, options.results ?? 4);
 	}
+	/** Simulates each member once against the whole pool: the raw material every team they appear in is rated from. */
+	private buildColumns(
+		members: ReadonlyArray<TeamSlot>,
+		onProgress?: (done: number, total: number) => void
+	): MatchupColumns {
+		const battle = new SimBattle();
+		const poolSize = this.pool.length;
+		const ratings: Array<Float64Array> = [];
+		const scores: Array<Float64Array> = [];
+		const bestMoves: Array<Array<SimMove | null>> = [];
+		members.forEach(({ speciesId, moveset }, k) => {
+			const member = this.createPokemon(
+				speciesId,
+				moveset.filter((m) => m !== 'none')
+			);
+			const ratingColumn = new Float64Array(poolSize);
+			const scoreColumn = new Float64Array(poolSize);
+			const bestColumn = new Array<SimMove | null>(poolSize);
+			this.pool.forEach((row, i) => {
+				const { rating } = this.simulateMatchup(battle, row.poke, member);
+				ratingColumn[i] = rating;
+				scoreColumn[i] = this.matchupScore(rating, row.inMeta);
+				bestColumn[i] = row.poke.bestChargedMove;
+			});
+			ratings.push(ratingColumn);
+			scores.push(scoreColumn);
+			bestMoves.push(bestColumn);
+			onProgress?.(k + 1, members.length);
+		});
+		battle.clearPokemon();
+		return { ratings, scores, bestMoves };
+	}
+
+	/**
+	 * Rates one trio from already simulated columns, exactly as `evaluate` would: in its play order (the sums run in
+	 * that order, and the closer is the member whose battles every pool Pokémon is left remembering — PvPoke's own
+	 * quirk, see `evaluate`). `trio` holds column indices; `roles` the role scores per column. Returns the play order.
+	 */
+	private rateTrio(
+		columns: MatchupColumns,
+		trio: readonly [number, number, number],
+		roles: ReadonlyArray<RoleScores | undefined>
+	): { order: [number, number, number]; threatScore: number } {
+		const poolSize = this.pool.length;
+		const { ratings, scores, bestMoves } = columns;
+		const [x, y, z] = playOrderOf(trio.map((k) => roles[k])).map((p) => trio[p]);
+
+		const score = new Float64Array(poolSize);
+		const order = new Array<number>(poolSize);
+		for (let i = 0; i < poolSize; i++) {
+			score[i] = (scores[x][i] + scores[y][i] + scores[z][i]) / 3;
+			order[i] = i;
+		}
+		// Best threat first; ties keep pool order, as `evaluate`'s stable sort does.
+		order.sort((p, q) => score[q] - score[p] || p - q);
+
+		const rows = new Array<{ entry: PoolEntry; rating: number; score: number }>(poolSize);
+		for (let r = 0; r < poolSize; r++) {
+			const i = order[r];
+			rows[r] = {
+				entry: this.pool[i],
+				rating: Math.floor((ratings[x][i] + ratings[y][i] + ratings[z][i]) / 3),
+				score: score[i],
+			};
+		}
+		// `evaluate` leaves every pool Pokémon having last faced the team's closer, so put that state back rather than
+		// whichever Pokémon happened to be simulated last.
+		for (let i = 0; i < poolSize; i++) {
+			this.pool[i].poke.bestChargedMove = bestMoves[z][i];
+			this.pool[i].cachedTraits = undefined;
+		}
+		return { order: [x, y, z], threatScore: this.pickThreats(rows).threatScore };
+	}
+
 	/**
 	 * The threat score of every trio of `candidateIds` (each with its ranking's recommended moveset), exactly as
 	 * `evaluate` would rate them. A Pokémon's matchups don't depend on its teammates, so each candidate is
@@ -552,86 +642,77 @@ export class TeamEvaluator {
 		candidateIds: ReadonlyArray<string>,
 		onProgress?: (done: number, total: number) => void
 	): Array<RankedTeamThreat> {
-		const battle = new SimBattle();
-		const poolSize = this.pool.length;
-
-		// One column per candidate: every pool entry's rating against it, and that rating's threat-ordering score.
-		const ratings: Array<Float64Array> = [];
-		const scores: Array<Float64Array> = [];
-		// Which charged move each pool Pokémon ends up treating as its best after facing this candidate (see below).
-		const bestMoves: Array<Array<SimMove | null>> = [];
-		candidateIds.forEach((id, k) => {
+		const members = candidateIds.map((id) => {
 			const entry = this.rankingById.get(id);
 			if (!entry) throw new Error(`Unknown candidate: ${id}`);
-			const candidate = this.createPokemon(
-				id,
-				entry.moveset.filter((m) => m !== 'none')
-			);
-			const ratingColumn = new Float64Array(poolSize);
-			const scoreColumn = new Float64Array(poolSize);
-			const bestColumn = new Array<SimMove | null>(poolSize);
-			this.pool.forEach((row, i) => {
-				const { rating } = this.simulateMatchup(battle, row.poke, candidate);
-				ratingColumn[i] = rating;
-				scoreColumn[i] = this.matchupScore(rating, row.inMeta);
-				bestColumn[i] = row.poke.bestChargedMove;
-			});
-			ratings.push(ratingColumn);
-			scores.push(scoreColumn);
-			bestMoves.push(bestColumn);
-			onProgress?.(k + 1, candidateIds.length);
+			return { speciesId: id, moveset: entry.moveset };
 		});
-		battle.clearPokemon();
-
+		const columns = this.buildColumns(members, onProgress);
 		const base = candidateIds.map((id) => id.replace('_shadow', ''));
-		const roleScores = candidateIds.map((id) => this.roleScoresOf(id));
+		const roles = candidateIds.map((id) => this.roleScoresOf(id));
 		const out: Array<RankedTeamThreat> = [];
-		const order = new Array<number>(poolSize);
-		const rows = new Array<{ entry: PoolEntry; rating: number; score: number }>(poolSize);
 
 		for (let a = 0; a < candidateIds.length; a++) {
 			for (let b = a + 1; b < candidateIds.length; b++) {
 				if (base[b] === base[a]) continue;
 				for (let c = b + 1; c < candidateIds.length; c++) {
 					if (base[c] === base[a] || base[c] === base[b]) continue;
-
-					// The trio is rated in its play order, like `evaluate` does: the sums below run in that order, and the closer
-					// is the member whose battles every pool Pokémon is left remembering.
-					const trio = [a, b, c];
-					const [x, y, z] = playOrderOf(trio.map((k) => roleScores[k])).map((p) => trio[p]);
-
-					const score = new Float64Array(poolSize);
-					for (let i = 0; i < poolSize; i++) {
-						score[i] = (scores[x][i] + scores[y][i] + scores[z][i]) / 3;
-						order[i] = i;
-					}
-					// Best threat first; ties keep pool order, as `evaluate`'s stable sort does.
-					order.sort((x, y) => score[y] - score[x] || x - y);
-
-					for (let r = 0; r < poolSize; r++) {
-						const i = order[r];
-						rows[r] = {
-							entry: this.pool[i],
-							rating: Math.floor((ratings[x][i] + ratings[y][i] + ratings[z][i]) / 3),
-							score: score[i],
-						};
-					}
-					// A Pokémon's "best charged move" — which the threat similarity traits read — depends on the opponent it
-					// last faced (PvPoke's own quirk). `evaluate` leaves every pool Pokémon having last faced the team's closer (the
-					// last member in play order), so put that state back rather than whichever candidate was simulated last.
-					for (let i = 0; i < poolSize; i++) {
-						this.pool[i].poke.bestChargedMove = bestMoves[z][i];
-						this.pool[i].cachedTraits = undefined;
-					}
-
+					const { order, threatScore } = this.rateTrio(columns, [a, b, c], roles);
 					out.push({
-						speciesIds: [candidateIds[x], candidateIds[y], candidateIds[z]],
-						threatScore: this.pickThreats(rows).threatScore,
+						speciesIds: [candidateIds[order[0]], candidateIds[order[1]], candidateIds[order[2]]],
+						threatScore,
 					});
 				}
 			}
 		}
+		return out;
+	}
 
+	/**
+	 * Every way to finish a team of one or two Pokémon with the league's best-ranked ones (each added Pokémon with
+	 * its ranking's recommended moves), with the threat score of the finished team. The Pokémon already on the team
+	 * keep the moves they have. Same shortcut as `rankTeams`: everyone is simulated once, every completion is then a
+	 * re-ranking of those columns — so it returns exactly what `evaluate` gives each finished team.
+	 */
+	rankCompletions(fixed: ReadonlyArray<TeamSlot>, options: { candidates?: number } = {}): Array<TeamCompletion> {
+		const missing = 3 - fixed.length;
+		if (missing < 1 || missing > 2) return [];
+
+		const fixedBases = new Set(fixed.map((slot) => slot.speciesId.replace('_shadow', '')));
+		const candidates = [...this.pool]
+			.filter((p) => !fixedBases.has(p.entry.speciesId.replace('_shadow', '')))
+			.sort((a, b) => a.entry.rank - b.entry.rank)
+			.slice(0, options.candidates ?? 50)
+			.map((p) => ({ speciesId: p.entry.speciesId, moveset: p.entry.moveset.filter((m) => m !== 'none') }));
+
+		const members = [
+			...fixed.map((slot) => ({ speciesId: slot.speciesId, moveset: [...slot.moveset] })),
+			...candidates,
+		];
+		const columns = this.buildColumns(members);
+		const roles = members.map((m) => this.roleScoresOf(m.speciesId));
+		const bases = members.map((m) => m.speciesId.replace('_shadow', ''));
+		const fixedIndexes = fixed.map((_, k) => k);
+
+		const out: Array<TeamCompletion> = [];
+		const finish = (trio: readonly [number, number, number]) => {
+			const { order, threatScore } = this.rateTrio(columns, trio, roles);
+			out.push({
+				members: order.map((k) => ({ speciesId: members[k].speciesId, moveset: members[k].moveset })),
+				threatScore,
+			});
+		};
+
+		for (let a = fixed.length; a < members.length; a++) {
+			if (missing === 1) {
+				finish([...fixedIndexes, a] as unknown as [number, number, number]);
+				continue;
+			}
+			for (let b = a + 1; b < members.length; b++) {
+				if (bases[b] === bases[a]) continue;
+				finish([...fixedIndexes, a, b] as unknown as [number, number, number]);
+			}
+		}
 		return out;
 	}
 }

@@ -130,3 +130,33 @@ describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague
 		});
 	}
 );
+
+describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)(
+	'%s league completions',
+	(league, data) => {
+		const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+		const movesetOf = (speciesId: string) =>
+			data.ranking.find((r) => r.speciesId === speciesId)!.moveset.filter((m) => m !== 'none');
+		const top = [...data.ranking].sort((a, b) => a.rank - b.rank).map((r) => r.speciesId);
+
+		it.each([1, 2])('rates every completion of a team of %i exactly as `evaluate` rates the finished team', (count) => {
+			const fixed = top.slice(2, 2 + count).map((speciesId) => ({ speciesId, moveset: movesetOf(speciesId) }));
+			const completions = evaluator.rankCompletions(fixed, { candidates: 8 });
+			expect(completions.length).toBeGreaterThan(0);
+			for (const { members, threatScore } of completions) {
+				expect(members).toHaveLength(3);
+				// the Pokémon already on the team are all still there, with their moves
+				for (const slot of fixed) expect(members).toContainEqual(slot);
+				expect(threatScore, members.map((m) => m.speciesId).join(' + ')).toBe(evaluator.evaluate(members).threatScore);
+			}
+		});
+
+		it('never adds a species the team already has', () => {
+			const fixed = [{ speciesId: top[0], moveset: movesetOf(top[0]) }];
+			for (const { members } of evaluator.rankCompletions(fixed, { candidates: 8 })) {
+				const bases = members.map((m) => m.speciesId.replace('_shadow', ''));
+				expect(new Set(bases).size).toBe(3);
+			}
+		});
+	}
+);

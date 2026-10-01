@@ -632,6 +632,8 @@
 	width: 100%;
 	padding: 7px 8px;
 	border-radius: var(--r-sm);
+	/* a default border, so every option reads as its own tile */
+	border: 1px solid var(--border);
 	text-align: left;
 }
 .rvmp .r-tm-picker-list button:hover,
@@ -2581,4 +2583,34 @@
    stacking context (its entrance animation), so the menu would otherwise slide under the next card */
 .rvmp .r-tm-card:has(.r-tm-movepop) {
 	z-index: 10;
+}
+
+/* the empty slot: the add button takes the card, the "Suggestion" link sits under it */
+.rvmp .r-tm-card--empty {
+	cursor: default;
+}
+.rvmp .r-tm-empty-add {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--s2);
+	padding: var(--s3) var(--s5);
+	color: inherit;
+	cursor: pointer;
+}
+.rvmp .r-tm-suggest-link {
+	margin-top: var(--s1);
+	padding: 4px 10px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--accent);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}
+.rvmp .r-tm-suggest-link:hover {
+	filter: brightness(1.2);
+}
+.rvmp .r-tm-card--empty[data-pending] .r-spinner {
+	margin: auto;
 }

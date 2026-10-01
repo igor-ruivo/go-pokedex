@@ -401,6 +401,7 @@ const MemberCard = ({
 	onChangePokemon,
 	onMove,
 	onRemove,
+	suggestion,
 }: {
 	index: number;
 	member: AnalyzedMember | undefined;
@@ -410,6 +411,8 @@ const MemberCard = ({
 	onChangePokemon: () => void;
 	onMove: (moveIndex: number, moveId: string) => void;
 	onRemove: () => void;
+	/** Only on the empty cards of a team that has one or two Pokémon: finish the team with the best teammates. */
+	suggestion?: { pending: boolean; onSuggest: () => void } | undefined;
 }) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
 	const roles = roleNames(t);
@@ -417,13 +420,26 @@ const MemberCard = ({
 
 	if (!member || !pokemon) {
 		return (
-			<button type='button' className='r-tm-card r-tm-card--empty' onClick={onChangePokemon}>
-				<span className='r-tm-plus' aria-hidden='true'>
-					+
-				</span>
-				<b>{t('teams:builder.emptySlot')}</b>
-				<span className='r-muted'>{t('teams:builder.slotN', { n: index + 1 })}</span>
-			</button>
+			<div className='r-tm-card r-tm-card--empty' data-pending={suggestion?.pending ? '' : undefined}>
+				{suggestion?.pending ? (
+					<span className='r-spinner' role='status' aria-label={t('teams:threat.simulating')} />
+				) : (
+					<>
+						<button type='button' className='r-tm-empty-add' onClick={onChangePokemon}>
+							<span className='r-tm-plus' aria-hidden='true'>
+								+
+							</span>
+							<b>{t('teams:builder.emptySlot')}</b>
+							<span className='r-muted'>{t('teams:builder.slotN', { n: index + 1 })}</span>
+						</button>
+						{suggestion && (
+							<button type='button' className='r-tm-suggest-link' onClick={suggestion.onSuggest}>
+								{t('teams:builder.suggestion')}
+							</button>
+						)}
+					</>
+				)}
+			</div>
 		);
 	}
 
@@ -572,6 +588,8 @@ export const TeamStage = ({
 	onChangePokemon,
 	onMove,
 	onRemove,
+	onSuggest,
+	suggesting,
 }: {
 	data: TeamsData;
 	team: ReadonlyArray<TeamSlotDescriptor>;
@@ -580,6 +598,10 @@ export const TeamStage = ({
 	onChangePokemon: (index: number) => void;
 	onMove: (index: number, moveIndex: number, moveId: string) => void;
 	onRemove: (index: number) => void;
+	/** Finish the team (one or two Pokémon so far) with the best teammates. */
+	onSuggest: () => void;
+	/** That is being worked out: the empty cards show a spinner. */
+	suggesting: boolean;
 }) => (
 	<div className='r-tm-stage'>
 		{[0, 1, 2].map((i) => (
@@ -593,6 +615,7 @@ export const TeamStage = ({
 				onChangePokemon={() => onChangePokemon(i)}
 				onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
 				onRemove={() => onRemove(i)}
+				suggestion={team.length >= 1 && team.length < 3 ? { pending: suggesting, onSuggest } : undefined}
 			/>
 		))}
 	</div>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ import { ThreatPanel } from './teams/ThreatPanel';
 import { TopTeams } from './teams/TopTeams';
 import { TypeProfile } from './teams/TypeProfile';
 import { useTeamAnalysis } from './teams/useTeamAnalysis';
-import { useSimContext, useTeamEvaluation, useTeamsData, useTeamSuggestions } from './teams/useTeamsData';
+import { completeTeam, useSimContext, useTeamEvaluation, useTeamsData, useTeamSuggestions } from './teams/useTeamsData';
 import { useTeamState } from './teams/useTeamState';
 import { useTeamUpgrades } from './teams/useTeamUpgrades';
 import { Warnings } from './teams/Warnings';
@@ -79,6 +79,23 @@ const Teams = () => {
 	);
 
 	const [copied, setCopied] = useState(false);
+
+	// "Suggestion" on a team of one or two: work out the best teammates and put them in the empty slots.
+	const [suggesting, setSuggesting] = useState(false);
+	const teamKeyRef = useRef('');
+	teamKeyRef.current = encodeTeam(team);
+	const suggestTeammates = async () => {
+		if (suggesting || !ctx || team.length < 1 || team.length > 2) return;
+		const startedWith = encodeTeam(team);
+		setSuggesting(true);
+		try {
+			const completed = await completeTeam(league, data, ctx, team);
+			// Only if the team is still the one the suggestion was asked for.
+			if (completed && teamKeyRef.current === startedWith) replaceTeam(completed);
+		} finally {
+			setSuggesting(false);
+		}
+	};
 	// Which team slot the Pokémon picker is open for — set from a team card or from a Battle plan step.
 	const [pickerFor, setPickerFor] = useState<number | null>(null);
 
@@ -230,6 +247,8 @@ const Teams = () => {
 						onChangePokemon={setPickerFor}
 						onMove={setMove}
 						onRemove={removeMember}
+						onSuggest={() => void suggestTeammates()}
+						suggesting={suggesting}
 					/>
 					{pickerFor !== null && (
 						<SlotPicker

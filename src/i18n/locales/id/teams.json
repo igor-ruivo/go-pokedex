@@ -20,6 +20,7 @@
 		"clear": "Kosongkan tim",
 		"emptySlot": "Tambah Pokémon",
 		"slotN": "Slot {{n}}",
+		"suggestion": "Saran",
 		"remove": "Hapus {{name}}",
 		"change": "Ganti {{name}}",
 		"replace": "Ganti {{name}}",

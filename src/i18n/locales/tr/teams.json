@@ -20,6 +20,7 @@
 		"clear": "Takımı temizle",
 		"emptySlot": "Pokémon ekle",
 		"slotN": "{{n}}. yuva",
+		"suggestion": "Öneri",
 		"remove": "{{name}} çıkar",
 		"change": "{{name}} değiştir",
 		"replace": "{{name}} öğesini değiştir",

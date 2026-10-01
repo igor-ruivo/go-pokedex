@@ -6,7 +6,13 @@
  */
 import { expose } from 'comlink';
 
-import type { AlternativePick, EvaluatorInit, TeamEvaluation, TeamSlot } from '../lib/pvp-sim/team-eval';
+import type {
+	AlternativePick,
+	EvaluatorInit,
+	TeamCompletion,
+	TeamEvaluation,
+	TeamSlot,
+} from '../lib/pvp-sim/team-eval';
 import { TeamEvaluator } from '../lib/pvp-sim/team-eval';
 
 let evaluator: TeamEvaluator | undefined;
@@ -26,6 +32,10 @@ const api = {
 	},
 	evaluate(team: Array<TeamSlot>): TeamEvaluation {
 		return requireEvaluator().evaluate(team);
+	},
+	/** The ways to finish a team of one or two Pokémon with the league's best, each with its threat score. */
+	complete(fixed: Array<TeamSlot>): Array<TeamCompletion> {
+		return requireEvaluator().rankCompletions(fixed);
 	},
 	/** Every single-slot swap with the threat score it would give — callers choose which to surface. */
 	swaps(team: Array<TeamSlot>): Array<AlternativePick> {

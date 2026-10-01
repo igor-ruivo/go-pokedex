@@ -20,6 +20,7 @@
 		"clear": "팀 비우기",
 		"emptySlot": "포켓몬 추가",
 		"slotN": "슬롯 {{n}}",
+		"suggestion": "추천",
 		"remove": "{{name}} 제거",
 		"change": "{{name}} 변경",
 		"replace": "{{name}} 교체",
