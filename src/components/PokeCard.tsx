@@ -49,7 +49,7 @@ export const PokeCard = ({
 			data-shadow={pokemon.isShadow ? '' : undefined}
 			style={{ ['--tc' as string]: typeVar(pokemon.types[0]) }}
 		>
-			<span className='r-pc-rank'>
+			<span className='r-ctr-rank'>
 				{metric?.podium && metric.rank != null && <RankMedal rank={metric.rank} />}
 				{metric?.rank != null ? ordinal(metric.rank, currentLanguage) : dexNo(pokemon.dex)}
 			</span>

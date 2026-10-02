@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { CounterRankRow } from '../../components/CounterRankRow';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir } from '../../components/SortBar';
 import { SpriteImg } from '../../components/Sprite';
@@ -251,7 +252,6 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 
 	const navigate = useNavigate();
 	const link = (speciesId: string) => `${R.pokemon(speciesId, 'counters')}?lg=${activeLeague.id}`;
-	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
 
 	if (!ready) {
 		return (
@@ -611,44 +611,18 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 					{list.map((e, i) => {
 						const p = gamemasterPokemon[e.speciesId];
 						if (!p) return null;
-						const goToPokemon = () => void navigate(link(e.speciesId));
 						return (
-							<div
+							<CounterRankRow
 								key={e.speciesId}
-								className='r-ctr-row r-ctr-row--raid'
-								style={{ ['--tc' as string]: typeVar(p.types[0]) }}
-								role='link'
-								tabIndex={0}
-								onClick={goToPokemon}
-								onKeyDown={(ev) => {
-									if (ev.key === 'Enter' || ev.key === ' ') {
-										ev.preventDefault();
-										goToPokemon();
-									}
-								}}
-							>
-								<span className='r-ctr-rank'>{i + 1}</span>
-								<span className='r-ctr-art'>
-									{p.isShadow && <ShadowMark />}
-									<SpriteImg pokemon={p} loading='lazy' />
-								</span>
-								<div className='r-ctr-mid'>
-									<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>
-									<span className='r-ctr-moves'>
-										<Link to={R.move(e.fastMove)} onClick={(ev) => ev.stopPropagation()}>
-											{moveName(e.fastMove)}
-										</Link>
-										<i>+</i>
-										<Link to={R.move(e.chargedMove)} onClick={(ev) => ev.stopPropagation()}>
-											{moveName(e.chargedMove)}
-										</Link>
-									</span>
-								</div>
-								<span className='r-ctr-score'>
-									{fmtRaidMetric(e[metric], metric)}
-									<i>{RAID_METRIC_SORTS.find((o) => o.key === metric)?.label}</i>
-								</span>
-							</div>
+								pokemon={p}
+								rank={i + 1}
+								podium
+								moves={[e.fastMove, e.chargedMove]}
+								moveData={moves}
+								score={fmtRaidMetric(e[metric], metric)}
+								scoreLabel={RAID_METRIC_SORTS.find((o) => o.key === metric)?.label}
+								onActivate={() => void navigate(link(e.speciesId))}
+							/>
 						);
 					})}
 				</div>

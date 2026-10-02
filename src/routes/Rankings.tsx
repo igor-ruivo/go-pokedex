@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import { CounterRankRow } from '../components/CounterRankRow';
 import { FilterBar } from '../components/FilterBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
 import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
@@ -19,9 +20,10 @@ import { combatMetricDescriptions, combatMetricNames } from '../lib/combat-text'
 import { sentenceCase } from '../lib/format';
 import { leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { isKnownRankingMode, modeColor, modeLabel, modeLabelLong, R, type RankingMode } from '../lib/nav';
-import { RAID_METRIC_LABEL, RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
+import { fmtRaidMetric, RAID_METRIC_LABEL, RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
 import { RAID_TYPE_KEYS, TYPE_KEYS, typeKey } from '../lib/types';
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
+import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
 import { useRaidRanker } from '../queries/raid-ranker';
@@ -69,9 +71,12 @@ const usePvpSorts = (t: TFunction<['rankings', 'pokemonDetail']>): ReadonlyArray
 interface Row {
 	pokemon: IGamemasterPokemon;
 	metric?: CardMetric;
+	moves?: Array<string>;
 }
 
 const GRID_GAP = 8;
+const RANK_ROW_HEIGHT = 72;
+const RANK_ROW_GAP = 6;
 
 /**
  * Column count + exact row height for the square-tile grid. Rows are uniform, so
@@ -132,6 +137,7 @@ const Rankings = () => {
 	const [params, setParams] = useSearchParams();
 	const [hintOpen, setHintOpen] = useState(false);
 	const q = (params.get('q') ?? '').toLowerCase().trim();
+	const isPokedex = mode === 'pokedex';
 	const isRaid = mode === 'raid';
 	// Switching the league/mode tab is a deliberate "start over" action here —
 	// unlike a Pokémon page's tabs (see useScrollToTopOnNavigate's `pageFamily`,
@@ -175,6 +181,7 @@ const Rankings = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
+	const { moves } = useMoves();
 	const isPvpLeagueMode = mode !== 'pokedex' && mode !== 'raid';
 	// `pickerItems` below reads `gameTranslator()` inside a `useMemo` — per
 	// `useGameTranslationsData`'s own doc comment, that memo needs the
@@ -285,6 +292,7 @@ const Rankings = () => {
 					pokemon: gamemasterPokemon[e.speciesId],
 					// Medals only when the list reads best-first.
 					metric: { rank: i + 1, ...(raidDir === 'desc' ? { podium: true } : {}), [raidMetric]: e[raidMetric] },
+					moves: [e.fastMove, e.chargedMove],
 				}))
 				.filter((row) => byName(row.pokemon));
 		}
@@ -320,6 +328,7 @@ const Rankings = () => {
 				.filter((x) => byType(x.p) && byName(x.p))
 				.map(({ r, p, position }) => ({
 					pokemon: p,
+					moves: r.moveset,
 					metric: {
 						rank: isOverall ? r.rank : position,
 						// Medals only when the list reads best-first: the overall order ascending, or a score descending.
@@ -353,7 +362,7 @@ const Rankings = () => {
 
 	const gridRef = useRef<HTMLDivElement>(null);
 	const { cols, rowHeight, measured } = useGridMetrics(gridRef);
-	const rowCount = Math.ceil(rows.length / cols);
+	const rowCount = isPokedex ? Math.ceil(rows.length / cols) : rows.length;
 
 	const [scrollMargin, setScrollMargin] = useState(0);
 	useEffect(() => {
@@ -362,10 +371,10 @@ const Rankings = () => {
 
 	const virt = useWindowVirtualizer({
 		count: rowCount,
-		estimateSize: () => rowHeight,
+		estimateSize: () => (isPokedex ? rowHeight : RANK_ROW_HEIGHT),
 		overscan: 6,
 		scrollMargin,
-		gap: GRID_GAP,
+		gap: isPokedex ? GRID_GAP : RANK_ROW_GAP,
 	});
 	// `estimateSize` is only consulted the first time a given row index is
 	// measured, then cached per index. Rows measured before a ResizeObserver
@@ -430,7 +439,7 @@ const Rankings = () => {
 	// caused the "huge overlapping tiles" flash on first load. A spinner
 	// instead of the grid until both are true means the grid only ever
 	// appears already laid out correctly.
-	const showGrid = !loading && measured;
+	const showResults = !loading && (!isPokedex || measured);
 
 	const visibleExtraLeagues = useMemo(
 		() => extraLeagues(leagues).filter((l) => isExtraLeagueVisible(l.id)),
@@ -529,7 +538,7 @@ const Rankings = () => {
 				: t('rankings:pageTitle.league', { league: modeLabelLong(mode, gl, leagues) });
 
 	return (
-		<div className='r-shell r-shell--wide'>
+		<div className={isPokedex ? 'r-shell r-shell--wide' : 'r-shell'}>
 			<h1 className='r-page-title'>{pageTitle}</h1>
 			<div className='r-rank-head'>
 				{pickerReady ? (
@@ -574,7 +583,7 @@ const Rankings = () => {
 				</div>
 				<div className='r-section-h'>
 					<span>
-						{!showGrid
+						{!showResults
 							? t('rankings:status.loading')
 							: isRaid && !raidType
 								? t('rankings:status.chooseType')
@@ -583,7 +592,7 @@ const Rankings = () => {
 							raidType &&
 							t('rankings:status.bestAttackersSuffix', { type: gameTypeDisplayTranslator(raidType, gl) })}
 					</span>
-					{showGrid && isRaid && raidType && (
+					{showResults && isRaid && raidType && (
 						<button
 							type='button'
 							className='r-rank-hint-toggle'
@@ -595,7 +604,7 @@ const Rankings = () => {
 							?
 						</button>
 					)}
-					{showGrid && isPvpLeagueMode && pvpSort !== 'overall' && (
+					{showResults && isPvpLeagueMode && pvpSort !== 'overall' && (
 						<button
 							type='button'
 							className='r-rank-hint-toggle'
@@ -608,14 +617,14 @@ const Rankings = () => {
 						</button>
 					)}
 				</div>
-				{showGrid && isPvpLeagueMode && pvpSort !== 'overall' && hintOpen && (
+				{showResults && isPvpLeagueMode && pvpSort !== 'overall' && hintOpen && (
 					<p className='r-muted r-rank-hint'>
 						<strong>{combatMetricNames(t)[pvpSort]}</strong>
 						{' — '}
 						{combatMetricDescriptions(t)[pvpSort]}
 					</p>
 				)}
-				{showGrid && isRaid && raidType && hintOpen && (
+				{showResults && isRaid && raidType && hintOpen && (
 					<p className='r-muted r-rank-hint'>
 						{t('rankings:hint.text', {
 							type: gameTypeDisplayTranslator(raidType, gl) || raidType,
@@ -628,27 +637,28 @@ const Rankings = () => {
 			</div>
 
 			<div ref={gridRef} className='r-grid-vp'>
-				{!showGrid && (
+				{!showResults && (
 					<div className='r-loading'>
 						<div className='r-spinner' />
 						{t(mode === 'pokedex' ? 'rankings:loadingLabel.pokedex' : 'rankings:loadingLabel.rankings')}
 					</div>
 				)}
-				{showGrid && isRaid && !raidType && (
+				{showResults && isRaid && !raidType && (
 					<p className='r-muted r-rank-empty'>
 						{t('rankings:empty.pickType', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}
 					</p>
 				)}
-				{showGrid && rows.length === 0 && !(isRaid && !raidType) && (
+				{showResults && rows.length === 0 && !(isRaid && !raidType) && (
 					<p className='r-muted' style={{ padding: 24 }}>
 						{t('rankings:empty.nothingMatches')}
 					</p>
 				)}
-				{showGrid && (
+				{showResults && (
 					<div style={{ height: virt.getTotalSize(), position: 'relative' }}>
 						{virt.getVirtualItems().map((vi) => {
 							const start = vi.index * cols;
-							const slice = rows.slice(start, start + cols);
+							const slice = isPokedex ? rows.slice(start, start + cols) : [];
+							const row = rows[vi.index];
 							return (
 								<div
 									key={vi.key}
@@ -660,16 +670,40 @@ const Rankings = () => {
 										transform: `translateY(${vi.start - virt.options.scrollMargin}px)`,
 									}}
 								>
-									<div className='r-grid-row' style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-										{slice.map((row) => (
-											<PokeCard
-												key={row.pokemon.speciesId}
-												pokemon={row.pokemon}
-												metric={row.metric}
-												league={mode === 'pokedex' ? undefined : mode}
-											/>
-										))}
-									</div>
+									{isPokedex ? (
+										<div className='r-grid-row' style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+											{slice.map((row) => (
+												<PokeCard key={row.pokemon.speciesId} pokemon={row.pokemon} metric={row.metric} />
+											))}
+										</div>
+									) : row ? (
+										<CounterRankRow
+											pokemon={row.pokemon}
+											rank={row.metric?.rank ?? vi.index + 1}
+											rankChange={row.metric?.rankChange}
+											podium={row.metric?.podium}
+											moveLayout={isPvpLeagueMode ? 'pvp' : 'inline'}
+											moves={row.moves ?? []}
+											moveData={moves}
+											score={
+												row.metric?.dps != null
+													? fmtRaidMetric(row.metric.dps, 'dps')
+													: row.metric?.tdo != null
+														? fmtRaidMetric(row.metric.tdo, 'tdo')
+														: row.metric?.score?.toFixed(1)
+											}
+											scoreLabel={
+												row.metric?.dps != null
+													? RAID_METRIC_LABEL.dps
+													: row.metric?.tdo != null
+														? RAID_METRIC_LABEL.tdo
+														: row.metric?.score != null
+															? 'Pts'
+															: undefined
+											}
+											onActivate={() => void navigate(`${R.pokemon(row.pokemon.speciesId)}?lg=${mode}`)}
+										/>
+									) : null}
 								</div>
 							);
 						})}

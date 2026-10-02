@@ -1022,8 +1022,8 @@ const PokemonDetail = () => {
 									suppressIvResetRef.current = true;
 								}}
 							>
-								{m.isShadow && <ShadowMark />}
 								<span className='r-reach-art'>
+									{m.isShadow && <ShadowMark />}
 									<SpriteImg pokemon={m} loading='lazy' />
 								</span>
 								<span>{cleanName(m.speciesName)}</span>

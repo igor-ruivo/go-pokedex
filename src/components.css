@@ -200,8 +200,8 @@
 }
 .rvmp .r-hero-mini-sprite > .r-shadow-mark {
 	position: absolute;
-	top: -10%;
-	left: -10%;
+	right: -10%;
+	bottom: -10%;
 	width: 42%;
 	height: 42%;
 	z-index: 2;
@@ -361,7 +361,7 @@
 	position: absolute;
 	top: auto;
 	bottom: 7%;
-	left: 4%;
+	right: 4%;
 	width: 25%;
 	height: 25%;
 	/* Must beat the GO/shiny-GO sprite's own z-index (5, below) — a plain
@@ -669,10 +669,10 @@
 	/* same understated drop-shadow the rankings grid's own sprites use */
 	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
 }
-.rvmp .r-reach-chip .r-shadow-mark {
+.rvmp .r-reach-chip .r-reach-art > .r-shadow-mark {
 	position: absolute;
-	top: 6px;
-	left: 6px;
+	right: 6px;
+	bottom: 6px;
 	width: 22px;
 	height: 22px;
 	z-index: 2;
@@ -1115,8 +1115,8 @@
 }
 .rvmp .r-board-sprite > .r-shadow-mark {
 	position: absolute;
-	top: 0;
-	left: 0;
+	right: 0;
+	bottom: 0;
 	width: 22px;
 	height: 22px;
 	z-index: 2;
@@ -1946,8 +1946,8 @@
 }
 .rvmp .r-search-sprite > .r-shadow-mark {
 	position: absolute;
-	top: -2px;
-	left: -2px;
+	right: -2px;
+	bottom: -2px;
 	width: 16px;
 	height: 16px;
 }
@@ -2466,13 +2466,12 @@
 .rvmp .r-pc:hover {
 	border-color: var(--border-strong);
 }
-.rvmp .r-pc-rank {
+.rvmp .r-pc > .r-ctr-rank {
 	position: absolute;
 	top: 4%;
 	left: 6%;
+	z-index: 6;
 	font-family: Fredoka, sans-serif;
-	font-weight: 700;
-	font-size: clamp(7.5px, 10cqi, 10.5px);
 	color: var(--text-faint);
 	font-variant-numeric: tabular-nums;
 	letter-spacing: 0.02em;
@@ -2862,7 +2861,7 @@
 	left: 5%;
 	width: 30%;
 	height: 30%;
-	z-index: 2;
+	z-index: 6;
 }
 /* time-remaining — floats over the sprite / adorners so it can't deform the square */
 .rvmp .r-mini em {
@@ -3223,6 +3222,11 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+.rvmp .r-grunt[data-open='true'] .r-grunt-id i {
+	overflow: visible;
+	text-overflow: clip;
+	white-space: normal;
 }
 /* collapsed catchable peek — one tier, compact minis */
 .rvmp .r-grunt-peek {
@@ -4768,8 +4772,8 @@
 }
 .rvmp .r-md-wl-sprite > .r-shadow-mark {
 	position: absolute;
-	top: -3px;
-	left: -3px;
+	right: -3px;
+	bottom: -3px;
 	width: 12px;
 	height: 12px;
 }
@@ -5638,6 +5642,43 @@
 		background 0.16s ease,
 		border-color 0.16s ease;
 }
+.rvmp .r-rank-row {
+	grid-template-columns: 18px 48px minmax(0, 1fr) auto;
+	height: 72px;
+	box-sizing: border-box;
+}
+.rvmp .r-rank-row > .r-ctr-art {
+	grid-column: 2;
+}
+.rvmp .r-rank-row > .r-ctr-mid {
+	grid-column: 3;
+}
+.rvmp .r-rank-row > .r-ctr-score {
+	grid-column: 4;
+}
+.rvmp .r-rank-row .r-ctr-rank {
+	position: absolute;
+	top: 4px;
+	left: 32px;
+	z-index: 6;
+}
+.rvmp .r-rank-row .r-ctr-rank,
+.rvmp .r-pc > .r-ctr-rank {
+	gap: 3px;
+	padding: 2px 5px;
+	border: 1px solid var(--border);
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	line-height: 1;
+}
+@media (max-width: 520px) {
+	.rvmp .r-rank-row {
+		grid-template-columns: 0px 48px minmax(0, 1fr) auto;
+	}
+	.rvmp .r-rank-row .r-ctr-rank {
+		left: 14px;
+	}
+}
 .rvmp a.r-ctr-row {
 	text-decoration: none;
 	color: inherit;
@@ -5671,12 +5712,33 @@
 	color: var(--text);
 }
 .rvmp .r-ctr-rank {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
 	font-family: Fredoka, sans-serif;
 	font-weight: 800;
 	font-size: 12px;
 	color: var(--text-faint);
 	text-align: center;
 	font-variant-numeric: tabular-nums;
+}
+.rvmp .r-pc > .r-ctr-rank {
+	font-weight: 700;
+	font-size: clamp(7.5px, 10cqi, 10.5px);
+}
+.rvmp .r-rank-row-delta {
+	display: inline-flex;
+	align-items: center;
+	font-size: 9px;
+	font-style: normal;
+	line-height: 1;
+}
+.rvmp .r-rank-row-delta[data-dir='up'] {
+	color: var(--pos);
+}
+.rvmp .r-rank-row-delta[data-dir='down'] {
+	color: var(--neg);
 }
 .rvmp .r-ctr-art {
 	position: relative;
@@ -5702,11 +5764,11 @@
 /* shadow adorner — same placement as the leaderboard's .r-board-sprite */
 .rvmp .r-ctr-art > .r-shadow-mark {
 	position: absolute;
-	top: 0;
-	left: 0;
+	right: 0;
+	bottom: 0;
 	width: 22px;
 	height: 22px;
-	z-index: 2;
+	z-index: 6;
 }
 .rvmp .r-ctr-name {
 	font-family: Fredoka, sans-serif;
@@ -5715,6 +5777,11 @@
 	color: var(--text);
 	text-decoration: none;
 	transition: color 0.14s ease;
+}
+.rvmp .r-rank-row .r-ctr-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .rvmp a.r-ctr-name:hover {
 	color: var(--tc, var(--accent));
@@ -5736,10 +5803,25 @@
 	   trap the wheel over a row */
 	overflow: clip;
 }
+.rvmp .r-rank-row-moves--split {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 2px;
+}
+.rvmp .r-rank-row-moves-line {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	min-width: 0;
+	max-width: 100%;
+}
+.rvmp .r-rank-row-move {
+	display: contents;
+}
 /* `text-overflow: ellipsis` on the flex container above has no effect — it
    only applies to a block/inline-level box's own single run of text, and the
-   two move names + "+" separator here are each their own flex-item box, not
-   one continuous run. Truncating each `<a>` individually (its own min-width:
+   move names + separators here are each their own flex-item box, not one
+   continuous run. Truncating each `<a>` individually (its own min-width:
    0 so it can actually shrink below its content) is what makes a long move
    name end in "…" instead of just getting clipped mid-word. */
 .rvmp .r-ctr-moves a {
@@ -5751,6 +5833,9 @@
 }
 .rvmp .r-ctr-moves a:hover {
 	color: var(--tc, var(--accent));
+}
+.rvmp .r-rank-row .r-ctr-moves a:hover {
+	color: var(--tc, var(--text-dim));
 }
 .rvmp .r-ctr-moves i {
 	font-style: normal;
@@ -6405,12 +6490,12 @@
 	fill: var(--medal-edge);
 }
 /* on a ranking tile the medal sits in front of the corner number */
-.rvmp .r-pc-rank {
+.rvmp .r-pc > .r-ctr-rank {
 	display: flex;
 	align-items: center;
 	gap: 2px;
 }
-.rvmp .r-pc-rank .r-medal {
+.rvmp .r-pc > .r-ctr-rank .r-medal {
 	width: clamp(11px, 17cqi, 17px);
 	height: clamp(11px, 17cqi, 17px);
 }
