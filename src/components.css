@@ -3366,7 +3366,7 @@
 .rvmp .r-datepick-chips button {
 	flex: none;
 	padding: 6px 12px;
-	border-radius: var(--r-pill);
+	border-radius: 8px;
 	font-weight: 700;
 	font-size: 12.5px;
 	white-space: nowrap;
@@ -3894,7 +3894,7 @@
 	flex: 1;
 	min-width: 0;
 	padding: 6px 10px 6px 14px;
-	border-radius: var(--r-pill);
+	border-radius: 8px;
 	background: var(--surface);
 	border: 1px solid var(--border);
 	transition: border-color 0.14s ease;
@@ -4700,6 +4700,12 @@
 .rvmp .r-md-wl-search {
 	position: relative;
 	margin-bottom: var(--s3);
+}
+.rvmp button.r-md-wl-search {
+	width: 100%;
+	text-align: left;
+	font: inherit;
+	cursor: pointer;
 }
 .rvmp .r-md-wl-chips {
 	display: flex;

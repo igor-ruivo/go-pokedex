@@ -90,7 +90,7 @@ describe('sortByCalendarRelevance — tied badge COUNT: importance of which badg
 		expect(result.map((p) => p.speciesId)).toEqual(['greatmon', 'nonemon']);
 	});
 
-	it('exact same badges on both sides: falls straight to sortByFamilyLine (dex order) — rank plays no part at all', () => {
+	it('exact same badges: Pokédex order wins before family grouping', () => {
 		const lowDex = mockPokemon({ speciesId: 'lowdex', dex: 1 });
 		const highDex = mockPokemon({ speciesId: 'highdex', dex: 900 });
 		const gm = buildGamemaster([lowDex, highDex]);
@@ -98,6 +98,44 @@ describe('sortByCalendarRelevance — tied badge COUNT: importance of which badg
 
 		const result = sortByCalendarRelevance([highDex, lowDex], (p) => p.speciesId, gm, sets);
 		expect(result.map((p) => p.speciesId)).toEqual(['lowdex', 'highdex']);
+	});
+
+	it('uses family ordering only when the dex numbers tie', () => {
+		const base = mockPokemon({
+			speciesId: 'base',
+			dex: 100,
+			family: { id: 'f-base', evolutions: ['evolved'] },
+		});
+		const evolved = mockPokemon({
+			speciesId: 'evolved',
+			dex: 300,
+			family: { id: 'f-base', parent: 'base' },
+		});
+		const unrelated = mockPokemon({ speciesId: 'unrelated', dex: 200 });
+		const gm = buildGamemaster([base, evolved, unrelated]);
+		const sets = relevanceSets();
+
+		const result = sortByCalendarRelevance([unrelated, evolved, base], (p) => p.speciesId, gm, sets);
+		expect(result.map((p) => p.speciesId)).toEqual(['base', 'unrelated', 'evolved']);
+	});
+
+	it('same-dex family members stay together in family order', () => {
+		const base = mockPokemon({
+			speciesId: 'base',
+			dex: 100,
+			family: { id: 'f-base', evolutions: ['evolved'] },
+		});
+		const evolved = mockPokemon({
+			speciesId: 'evolved',
+			dex: 100,
+			family: { id: 'f-base', parent: 'base' },
+		});
+		const unrelated = mockPokemon({ speciesId: 'unrelated', dex: 100 });
+		const gm = buildGamemaster([base, evolved, unrelated]);
+		const sets = relevanceSets();
+
+		const result = sortByCalendarRelevance([unrelated, evolved, base], (p) => p.speciesId, gm, sets);
+		expect(result.map((p) => p.speciesId)).toEqual(['base', 'evolved', 'unrelated']);
 	});
 });
 

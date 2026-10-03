@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { LanguagePicker } from '../components/LanguagePicker';
 import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
+import { PokemonPickerModal } from '../components/PokemonPickerModal';
 import { ShadowMark } from '../components/ShadowMark';
 import { SpriteImg } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
@@ -32,6 +33,7 @@ import {
 	renderDexExclusion,
 	translateTypeNames,
 } from '../lib/search-string';
+import { typeKey, typeVar } from '../lib/types';
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
@@ -1177,23 +1179,25 @@ const WhitelistSearch = memo(function WhitelistSearch({
 	exclude,
 	onPick,
 	placeholder,
+	title,
 }: {
 	gamemasterPokemon: Record<string, IGamemasterPokemon>;
 	exclude: Set<string>;
 	onPick: (speciesId: string) => void;
 	placeholder: string;
+	title: string;
 }) {
-	const { t } = useTranslation(['massDelete']);
+	const { t } = useTranslation(['massDelete', 'teams', 'components']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const [q, setQ] = useState('');
 	const [open, setOpen] = useState(false);
+	const inputRef = useRef<HTMLInputElement>(null);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
 	const term = norm(q);
 
 	const results = useMemo(() => {
-		if (!term) return [];
 		const all = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !exclude.has(p.speciesId));
 		const rank = (p: IGamemasterPokemon) => {
 			const hay = [norm(p.speciesName), norm(p.speciesId)];
@@ -1216,63 +1220,81 @@ const WhitelistSearch = memo(function WhitelistSearch({
 	};
 
 	return (
-		<div className='r-search r-md-wl-search' ref={rootRef}>
-			<svg className='r-search-icon' viewBox='0 0 24 24' aria-hidden='true'>
-				<circle cx='11' cy='11' r='7' />
-				<line x1='21' y1='21' x2='16.2' y2='16.2' />
-			</svg>
-			<input
-				value={q}
-				onChange={(e) => {
-					setQ(e.target.value);
-					setOpen(true);
-				}}
-				onFocus={() => setOpen(true)}
-				placeholder={placeholder}
+		<>
+			<button
+				type='button'
+				className='r-search r-md-wl-search'
+				onClick={() => setOpen(true)}
 				aria-label={placeholder}
-				autoComplete='off'
-			/>
-			{q && (
-				<button
-					type='button'
-					className='r-search-clear'
-					aria-label={t('massDelete:whitelist.clear')}
-					onClick={() => {
+			>
+				<svg className='r-search-icon' viewBox='0 0 24 24' aria-hidden='true'>
+					<circle cx='11' cy='11' r='7' />
+					<line x1='21' y1='21' x2='16.2' y2='16.2' />
+				</svg>
+				<span>{placeholder}</span>
+			</button>
+			{open && (
+				<PokemonPickerModal
+					title={title}
+					closeLabel={t('teams:picker.close')}
+					onClose={() => setOpen(false)}
+					query={q}
+					onQueryChange={setQ}
+					placeholder={placeholder}
+					clearAriaLabel={t('massDelete:whitelist.clear')}
+					onClear={() => {
 						setQ('');
-						setOpen(false);
+						inputRef.current?.focus();
 					}}
+					inputRef={inputRef}
+					dialogRef={rootRef}
 				>
-					×
-				</button>
+					{results.length > 0 && (
+						<ul className='r-tm-picker-list' role='listbox'>
+							{results.map((p) => (
+								<li key={p.speciesId}>
+									<button
+										type='button'
+										role='option'
+										aria-selected={false}
+										style={{ ['--tc' as string]: typeVar(p.types[0]) }}
+										onClick={() => pick(p)}
+									>
+										<span className='r-search-sprite'>
+											{p.isShadow && <ShadowMark />}
+											<SpriteImg pokemon={p} loading='lazy' />
+										</span>
+										<span className='r-tm-picker-info'>
+											<span className='r-search-name'>
+												{cleanName(p.speciesName)}
+												{p.isShadow && (
+													<em className='r-search-shadow'>
+														{' '}
+														·{' '}
+														{t('massDelete:whitelist.shadowSuffix', {
+															shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+														})}
+													</em>
+												)}
+											</span>
+											<span className='r-tm-picker-meta'>
+												{p.types.map((ty) => (
+													<i key={typeKey(ty)} style={{ background: typeVar(ty) }} />
+												))}
+											</span>
+										</span>
+										<span className='r-tm-picker-side'>
+											<span className='r-search-dex'>{dexNo(p.dex)}</span>
+										</span>
+									</button>
+								</li>
+							))}
+						</ul>
+					)}
+					{results.length === 0 && <p className='r-muted r-tm-picker-empty'>{t('teams:picker.empty')}</p>}
+				</PokemonPickerModal>
 			)}
-			{open && results.length > 0 && (
-				<ul className='r-search-menu' role='listbox'>
-					{results.map((p) => (
-						<li key={p.speciesId}>
-							<button type='button' role='option' aria-selected={false} onClick={() => pick(p)}>
-								<span className='r-search-sprite'>
-									{p.isShadow && <ShadowMark />}
-									<SpriteImg pokemon={p} loading='lazy' />
-								</span>
-								<span className='r-search-name'>
-									{cleanName(p.speciesName)}
-									{p.isShadow && (
-										<em className='r-search-shadow'>
-											{' '}
-											·{' '}
-											{t('massDelete:whitelist.shadowSuffix', {
-												shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
-											})}
-										</em>
-									)}
-								</span>
-								<span className='r-search-dex'>{dexNo(p.dex)}</span>
-							</button>
-						</li>
-					))}
-				</ul>
-			)}
-		</div>
+		</>
 	);
 });
 
@@ -2741,6 +2763,7 @@ const MassDeleteContent = ({
 									gamemasterPokemon={gamemasterPokemon}
 									exclude={whitelistSearchExclude}
 									onPick={addToWhitelist}
+									title={t(isTrade ? 'massDelete:neverSuggestPokemon' : 'massDelete:neverDeletePokemon')}
 									placeholder={
 										isTrade
 											? t('massDelete:whitelist.searchPlaceholderTrade')

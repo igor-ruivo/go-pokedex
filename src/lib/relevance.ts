@@ -77,9 +77,9 @@ export const useLeagueBadges = (
  *     Master, then Ultra, then Great — see `BADGE_IMPORTANCE`) — presence of
  *     the higher-priority badge wins; the underlying PvP/raid rank NUMBER
  *     plays no part at all here, only whether each badge is present.
- *  5. Exactly the same badges on both sides: rank stops mattering entirely —
- *     falls straight to `sortByFamilyLine`'s own dex/family-branch order,
- *     which also covers a pair of otherwise-unrelated, badge-less species.
+ *  5. Exactly the same badges on both sides: lower Pokédex number wins.
+ *  6. Only when dex numbers also tie, use `sortByFamilyLine` to keep
+ *     same-dex forms/evolution branches in their family order.
  */
 export const sortByCalendarRelevance = <T>(
 	items: ReadonlyArray<T>,
@@ -118,6 +118,10 @@ export const sortByCalendarRelevance = <T>(
 			const hasB = badgesB.has(key);
 			if (hasA !== hasB) return hasA ? -1 : 1;
 		}
+
+		const pokemonA = gamemasterPokemon[idA];
+		const pokemonB = gamemasterPokemon[idB];
+		if (pokemonA && pokemonB && pokemonA.dex !== pokemonB.dex) return pokemonA.dex - pokemonB.dex;
 
 		return (familyRank.get(idA) ?? 0) - (familyRank.get(idB) ?? 0);
 	});

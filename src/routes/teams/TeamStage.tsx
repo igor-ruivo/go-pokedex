@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { PokemonPickerModal } from '../../components/PokemonPickerModal';
 import { RankMedal } from '../../components/RankMedal';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
@@ -271,10 +272,6 @@ const PokemonPicker = ({
 		...COMBAT_METRICS.map((m) => ({ key: m, label: names[m], defaultDir: 'desc' as const })),
 	];
 
-	useEffect(() => {
-		inputRef.current?.focus();
-	}, []);
-
 	const rows = useMemo(() => {
 		const q = query.toLowerCase().replace(/[^a-z0-9]/g, '');
 		// "Overall" reads best-first when ascending (rank 1 on top); the role scores read highest-first when descending.
@@ -304,94 +301,67 @@ const PokemonPicker = ({
 	};
 
 	return (
-		<div className='r-tm-picker-backdrop'>
-			<div className='r-tm-picker' role='dialog' aria-modal='true' aria-label={title} ref={rootRef}>
-				<div className='r-tm-picker-head'>
-					<h2>{title}</h2>
-					<button type='button' className='r-icon-btn' aria-label={t('teams:picker.close')} onClick={onClose}>
-						×
-					</button>
-				</div>
-
-				<div className='r-search'>
-					<svg className='r-search-icon' viewBox='0 0 24 24' aria-hidden='true'>
-						<circle cx='11' cy='11' r='7' />
-						<line x1='21' y1='21' x2='16.2' y2='16.2' />
-					</svg>
-					<input
-						ref={inputRef}
-						value={query}
-						placeholder={t('teams:picker.searchPlaceholder', { league: leagueLabel })}
-						aria-label={t('teams:picker.searchPlaceholder', { league: leagueLabel })}
-						enterKeyHint='search'
-						autoComplete='off'
-						onChange={(e) => {
-							setQuery(e.target.value);
-							setShown(PICKER_PAGE);
-						}}
-					/>
-					{query && (
-						<button
-							type='button'
-							className='r-search-clear'
-							aria-label={t('components:searchBox.clearAriaLabel')}
-							onClick={() => {
-								setQuery('');
-								inputRef.current?.focus();
-							}}
-						>
-							×
-						</button>
-					)}
-				</div>
-
-				<div className='r-tm-picker-tools'>
-					<SortBar options={sortOptions} sortKey={sortKey} dir={sortDir} onChange={changeSort} />
-				</div>
-
-				<ul className='r-tm-picker-list'>
-					{rows.slice(0, shown).map(({ r, position }) => {
-						const p = data.gamemaster[r.speciesId];
-						const inTeam = teamBases.has(r.speciesId.replace(/_shadow$/, ''));
-						const score = sortKey === 'overall' ? r.score : r[sortKey];
-						return (
-							<li key={r.speciesId}>
-								<button
-									type='button'
-									style={{ ['--tc' as string]: typeVar(p.types[0]) }}
-									onClick={() => onPick(r.speciesId)}
-								>
-									<RankMedal rank={position} className='r-tm-picker-medal' />
-									<span className='r-search-sprite'>
-										{p.isShadow && <ShadowMark />}
-										<SpriteImg pokemon={p} loading='lazy' />
+		<PokemonPickerModal
+			title={title}
+			closeLabel={t('teams:picker.close')}
+			onClose={onClose}
+			inputRef={inputRef}
+			dialogRef={rootRef}
+			query={query}
+			onQueryChange={(value) => {
+				setQuery(value);
+				setShown(PICKER_PAGE);
+			}}
+			placeholder={t('teams:picker.searchPlaceholder', { league: leagueLabel })}
+			clearAriaLabel={t('components:searchBox.clearAriaLabel')}
+			onClear={() => {
+				setQuery('');
+				inputRef.current?.focus();
+			}}
+			tools={<SortBar options={sortOptions} sortKey={sortKey} dir={sortDir} onChange={changeSort} />}
+		>
+			<ul className='r-tm-picker-list'>
+				{rows.slice(0, shown).map(({ r, position }) => {
+					const p = data.gamemaster[r.speciesId];
+					const inTeam = teamBases.has(r.speciesId.replace(/_shadow$/, ''));
+					const score = sortKey === 'overall' ? r.score : r[sortKey];
+					return (
+						<li key={r.speciesId}>
+							<button
+								type='button'
+								style={{ ['--tc' as string]: typeVar(p.types[0]) }}
+								onClick={() => onPick(r.speciesId)}
+							>
+								<RankMedal rank={position} className='r-tm-picker-medal' />
+								<span className='r-search-sprite'>
+									{p.isShadow && <ShadowMark />}
+									<SpriteImg pokemon={p} loading='lazy' />
+								</span>
+								<span className='r-tm-picker-info'>
+									<span className='r-search-name'>{cleanName(p.speciesName)}</span>
+									<span className='r-tm-picker-meta'>
+										{p.types.map((ty) => (
+											<i key={typeKey(ty)} style={{ background: typeVar(ty) }} />
+										))}
+										{inTeam && <em>{t('teams:picker.inTeam')}</em>}
 									</span>
-									<span className='r-tm-picker-info'>
-										<span className='r-search-name'>{cleanName(p.speciesName)}</span>
-										<span className='r-tm-picker-meta'>
-											{p.types.map((ty) => (
-												<i key={typeKey(ty)} style={{ background: typeVar(ty) }} />
-											))}
-											{inTeam && <em>{t('teams:picker.inTeam')}</em>}
-										</span>
-									</span>
-									<span className='r-tm-picker-side'>
-										<span className='r-search-dex'>{ordinal(position, currentLanguage)}</span>
-										<b>{score.toFixed(1)}</b>
-									</span>
-								</button>
-							</li>
-						);
-					})}
-				</ul>
-				{rows.length === 0 && <p className='r-muted r-tm-picker-empty'>{t('teams:picker.empty')}</p>}
-				{shown < rows.length && (
-					<button type='button' className='r-tm-more' onClick={() => setShown((n) => n + PICKER_PAGE)}>
-						{t('teams:picker.showMore')}
-					</button>
-				)}
-			</div>
-		</div>
+								</span>
+								<span className='r-tm-picker-side'>
+									<span className='r-search-dex'>{ordinal(position, currentLanguage)}</span>
+									<b>{score.toFixed(1)}</b>
+								</span>
+							</button>
+						</li>
+					);
+				})}
+			</ul>
+			{rows.length === 0 && <p className='r-muted r-tm-picker-empty'>{t('teams:picker.empty')}</p>}
+			{shown < rows.length && (
+				<button type='button' className='r-tm-more' onClick={() => setShown((n) => n + PICKER_PAGE)}>
+					{t('teams:picker.showMore')}
+				</button>
+			)}
+		</PokemonPickerModal>
 	);
 };
 

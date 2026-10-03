@@ -37,8 +37,8 @@ const MoveDetail = () => {
 	// Shadow forms share their base's movepool, so they'd just be duplicates —
 	// hide them, except for Frustration, which only shadows can have. Ordered
 	// the same way Calendar's own subtabs order their chips: most PvP/raid
-	// relevant first, then — on a tie — each evolution family's own line
-	// order (base stage first), falling back to dex/name from there.
+	// relevant first, then dex order; family-line order only breaks ties on
+	// dex number (base stage first).
 	const owners = useMemo(() => {
 		const keepShadows = moveId === 'FRUSTRATION';
 		const filtered = moveOwners(moveId, gamemasterPokemon).filter((p) => keepShadows || !p.isShadow);

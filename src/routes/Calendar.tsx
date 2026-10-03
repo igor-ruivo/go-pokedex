@@ -220,10 +220,9 @@ const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<st
 	const { gamemasterPokemon } = usePokemon();
 	const sets = useRelevanceSets();
 	// Ending soonest first (when `endMap` gives it a countdown at all), then
-	// most relevant (most league/raid dots), family-line order as the final
-	// tiebreak — see `sortByCalendarRelevance`'s own doc comment for the exact
-	// priority chain. Re-sorts every tick so a chip about to expire visibly
-	// climbs to the front as its own countdown counts down.
+	// most relevant (most league/raid dots), dex order, and family order only
+	// for tied dex numbers — see `sortByCalendarRelevance` for the full chain.
+	// Re-sorts every tick so a chip about to expire visibly climbs to the front.
 	const sorted = useMemo(
 		() =>
 			sortByCalendarRelevance(
@@ -1043,8 +1042,8 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 	const typeKey = g.type?.toLowerCase();
 	const namedTrainerKey = !typeKey ? NAMED_TRAINER_KEYS.find(([needle]) => g.trainerId.includes(needle)) : undefined;
 	const avatar = typeKey ? `/images/types/${typeKey}.png` : npcAvatar(g.trainerId);
-	// Most relevant first (most league/raid dots), family-line order as tiebreak —
-	// same rule the Calendar's other Pokémon chip grids use (see `MiniGrid`).
+	// Most relevant first (most league/raid dots), dex order, then family-line
+	// order only for tied dex numbers — same rule the other grids use (see `MiniGrid`).
 	// Memoized for the same reason `MiniGrid` memoizes its own sort: each call
 	// walks every listed species' whole evolution family (`leagueBadgesFor` →
 	// `fetchReachablePokemonIncludingSelf`) — unmemoized and called 3× per
