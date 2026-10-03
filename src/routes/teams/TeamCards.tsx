@@ -13,9 +13,18 @@ import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useOptimalBuild } from '../../hooks/useOptimalBuild';
 import { cleanName, ordinal } from '../../lib/format';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
-import { isBuddy, type SlotIvs, slotIdentityKey, TEAM_ROLES, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import {
+	isBuddy,
+	scoreTier,
+	type SlotIvs,
+	slotIdentityKey,
+	TEAM_ROLES,
+	type TeamSlotDescriptor,
+	threatPart,
+} from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
+import { gameTypeDisplayTranslator } from '../../utils/GameTranslator';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
 import { FavoriteStar } from './FavoriteStar';
 import { NotRecommendedMark } from './NotRecommendedMark';
@@ -82,9 +91,11 @@ export const TeamCard = ({
 	const { moves } = useMoves();
 	const showMemberDetails = showBuildDetails || team.addedAt !== undefined;
 
+	// Each number is coloured by how good it is: the Team Score by its tier, the threat score (lower is better) by the tier
+	// its 0–100 reading falls in.
 	const metrics = [
-		{ label: t('teams:top.teamScore'), value: team.score.toFixed(1) },
-		{ label: t('teams:threat.scoreLabel'), value: String(team.threatScore) },
+		{ label: t('teams:top.teamScore'), value: team.score.toFixed(1), tier: team.tier },
+		{ label: t('teams:threat.scoreLabel'), value: String(team.threatScore), tier: scoreTier(threatPart(team.threatScore)) },
 	];
 
 	// The card is not itself a button: it holds the favorite star, and a button can't hold a button.
@@ -116,7 +127,12 @@ export const TeamCard = ({
 				<span className='r-tm-board-score'>
 					{/* both metrics are named; the one the list is ordered by is the big one */}
 					{(primary === 'score' ? metrics : [...metrics].reverse()).map((metric, n) => (
-						<span key={metric.label} className='r-tm-board-metric' data-primary={n === 0 ? '' : undefined}>
+						<span
+							key={metric.label}
+							className='r-tm-board-metric'
+							data-primary={n === 0 ? '' : undefined}
+							data-tier={metric.tier}
+						>
 							<small>{metric.label}</small>
 							<b>{metric.value}</b>
 						</span>
@@ -136,7 +152,7 @@ export const TeamCard = ({
 					return (
 						<Fragment key={`${member.speciesId}-${i}`}>
 							{i > 0 && (
-								<span className='r-tm-board-member'>
+								<span className='r-tm-board-member' data-link=''>
 									<svg className='r-tm-board-arrow' viewBox='0 0 40 24' aria-hidden='true'>
 										<path d='M2 12h30M24 4l10 8-10 8' />
 									</svg>
@@ -165,7 +181,19 @@ export const TeamCard = ({
 								<b className='r-tm-board-name'>{nicknames?.[slotIdentityKey(member)] ?? cleanName(p.speciesName)}</b>
 								<span className='r-tm-board-types'>
 									{p.types.map((ty) => (
-										<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
+										<Fragment key={typeKey(ty)}>
+											{/* the named pill on wide cards, just the type's symbol on narrow ones (see the CSS) */}
+											<TypeChip type={typeKey(ty)} className='r-tm-board-type-pill' />
+											<img
+												className='r-tm-board-type-icon'
+												src={`/images/types/${typeKey(ty)}.png`}
+												alt={gameTypeDisplayTranslator(typeKey(ty), gl) || typeKey(ty)}
+												title={gameTypeDisplayTranslator(typeKey(ty), gl) || typeKey(ty)}
+												width={22}
+												height={22}
+												loading='lazy'
+											/>
+										</Fragment>
 									))}
 								</span>
 								{showMemberDetails && ivs && (
@@ -176,8 +204,9 @@ export const TeamCard = ({
 										.filter((m) => m !== 'none')
 										.map((m) => (
 											<span key={m}>
-												{translateMoveFromMoveId(m, moves, gl)}
+												{/* the warning comes first, so an ellipsis can't hide it */}
 												{showMemberDetails && recommended && !recommended.includes(m) && <NotRecommendedMark />}
+												{translateMoveFromMoveId(m, moves, gl)}
 											</span>
 										))}
 								</span>

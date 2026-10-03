@@ -2543,12 +2543,15 @@
 	--tier-a: var(--text-dim);
 	--tier-b: var(--text);
 	display: grid;
-	grid-template-columns: 80px minmax(0, 1fr) auto;
+	/* a header (the place and the star, then the score plate, near the top left corner) over the three Pokémon, which get
+	   the full width of the card */
+	grid-template-columns: auto minmax(0, 1fr);
 	grid-template-areas:
-		'rank members score'
-		'rank members score';
+		'rank score'
+		'members members';
 	align-items: center;
-	gap: var(--s3);
+	column-gap: var(--s4);
+	row-gap: var(--s3);
 	width: 100%;
 	padding: var(--s3) var(--s4);
 	border-radius: var(--r-md);
@@ -2588,20 +2591,9 @@
 .rvmp .r-tm-board-lead {
 	grid-area: rank;
 	display: flex;
-	/* the favorite star sits under the medal and the place; the narrow layout puts them side by side again */
-	flex-direction: column;
-	align-items: flex-start;
-	align-self: start;
+	flex-direction: row;
+	align-items: center;
 	gap: var(--s2);
-}
-/* wide cards: with a medal (the podium) the star sits under the medal, on the left; without one (4th and below) it sits right
-   under the place number, which starts at the left edge — the star is 34px wide and the number about 17px, so it is shifted
-   left to centre the two. */
-.rvmp .r-tm-board-rank + .r-tm-star-btn {
-	margin-left: -8px;
-}
-.rvmp .r-tm-board-rank:has(.r-medal) + .r-tm-star-btn {
-	margin-left: 0;
 }
 .rvmp .r-tm-board-rank {
 	/* the medal and the place sit on one line, at any width */
@@ -2664,8 +2656,23 @@
 	justify-items: center;
 	align-items: start;
 	min-width: 0;
-	padding: var(--s2) 6px;
+	padding: var(--s3) 8px;
 	text-align: center;
+	/* a quiet frame around each Pokémon: just a hairline, no extra colour */
+	border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+	border-radius: var(--r-md);
+	transition: border-color 0.12s ease;
+}
+.rvmp .r-tm-board-card:hover .r-tm-board-member {
+	border-color: var(--border-strong);
+}
+/* the arrow cell between two Pokémon is no Pokémon: no frame, no padding */
+.rvmp .r-tm-board-member[data-link] {
+	padding: 0;
+	border-color: transparent;
+}
+.rvmp .r-tm-board-card:hover .r-tm-board-member[data-link] {
+	border-color: transparent;
 }
 /* a grid item won't shrink below its content unless told to: without this the nowrap names and moves pushed the
    third Pokémon out of the card on narrow screens instead of being ellipsised */
@@ -2716,6 +2723,13 @@
 .rvmp .r-tm-board-card:hover .r-tm-board-name {
 	color: var(--tc);
 }
+.rvmp .r-tm-board-type-icon {
+	display: none;
+	flex: none;
+	width: 22px;
+	height: 22px;
+	object-fit: contain;
+}
 .rvmp .r-tm-board-types {
 	display: flex;
 	flex-direction: row;
@@ -2739,30 +2753,50 @@
 .rvmp .r-tm-board-moves {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	overflow: hidden;
+	align-items: stretch;
+	width: 100%;
 	max-width: 100%;
-	margin-top: 4px;
+	margin-top: var(--s2);
 	font-size: 12px;
-	line-height: 1.35;
+	line-height: 1.25;
 	color: var(--text-dim);
 }
+/* one move per line, split by a hairline; a name that doesn't fit is cut with an ellipsis */
 .rvmp .r-tm-board-moves > span {
-	max-width: 100%;
+	min-width: 0;
+	padding: 4px 2px;
+	text-align: center;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+/* the warning for a move that isn't the recommended one sits before the name (so an ellipsis can't cut it off) */
+.rvmp .r-tm-board-moves .r-tm-warn {
+	margin-left: 0;
+	margin-right: 4px;
+}
+.rvmp .r-tm-board-moves > span + span {
+	border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+/* the score panel: a flat, slightly darker plate with a hairline border; the metrics are listed one under the other */
 .rvmp .r-tm-board-score {
 	grid-area: score;
-	display: grid;
-	justify-items: end;
-	gap: var(--s4);
+	justify-self: end;
+	display: flex;
+	align-items: stretch;
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border);
 }
 .rvmp .r-tm-board-metric {
 	display: grid;
-	justify-items: end;
-	gap: 0;
+	justify-items: start;
+	align-content: center;
+	gap: 1px;
+	padding: 6px 14px;
+}
+.rvmp .r-tm-board-metric + .r-tm-board-metric {
+	border-left: 1px solid var(--border);
 }
 .rvmp .r-tm-board-metric > small {
 	font-size: 10px;
@@ -2770,11 +2804,8 @@
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
 	color: var(--text-faint);
-	/* a long label (in any language) breaks onto a second row, balanced, rather than widening the score
-	   column and squeezing the Pokémon names beside it */
-	max-width: 10em;
-	text-align: right;
-	text-wrap: balance;
+	white-space: nowrap;
+	text-align: left;
 	overflow-wrap: break-word;
 }
 .rvmp .r-tm-board-metric > b {
@@ -2784,13 +2815,30 @@
 	line-height: 1.15;
 	font-variant-numeric: tabular-nums;
 }
-/* the metric the list is sorted by: big, in the tier's colours */
+/* each number takes the colour of its tier (the same five as the rest of the Teams view); the metric the list is sorted by
+   is the bigger one */
+.rvmp .r-tm-board-metric[data-tier='elite'] {
+	--metric-c: #3fd07a;
+}
+.rvmp .r-tm-board-metric[data-tier='strong'] {
+	--metric-c: #58a7ff;
+}
+.rvmp .r-tm-board-metric[data-tier='solid'] {
+	--metric-c: #f2c53d;
+}
+.rvmp .r-tm-board-metric[data-tier='shaky'] {
+	--metric-c: #f59e42;
+}
+.rvmp .r-tm-board-metric[data-tier='risky'] {
+	--metric-c: #ef5b5b;
+}
+/* only the number the list is sorted by is painted; the other one stays quiet */
+.rvmp .r-tm-board-metric > b {
+	color: var(--text-dim);
+}
 .rvmp .r-tm-board-metric[data-primary] > b {
-	font-size: 28px;
-	background: linear-gradient(135deg, var(--tier-a), var(--tier-b));
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-size: 24px;
+	color: var(--metric-c, var(--text));
 }
 @container (max-width: 639px) {
 	/* narrow card (a phone, or one of several columns): rank and score on the first line, the three Pokémon (names only) on the second */
@@ -2801,29 +2849,50 @@
 			'members members';
 		row-gap: var(--s2);
 		padding: var(--s3);
-	}
-	/* side by side: one row for the two names and one for the two numbers, so both line up across the metrics */
-	/* narrow card: the two metrics sit side by side, the one the list is sorted by first (it is first in the
-	   markup), each with its label above its value */
-	.rvmp .r-tm-board-score {
-		grid-auto-flow: column;
-		grid-template-rows: auto auto;
-		justify-content: end;
+		grid-template-rows: none;
 		align-items: center;
-		column-gap: var(--s4);
-		row-gap: 0;
+	}
+	/* narrow card: the score plate sits at the right end of the header, a little more compact (its labels may wrap) */
+	.rvmp .r-tm-board-score {
+		justify-self: end;
 	}
 	.rvmp .r-tm-board-metric {
-		grid-row: span 2;
-		grid-template-rows: subgrid;
-		align-items: center;
-		justify-items: center;
+		padding: 5px 10px;
 	}
 	.rvmp .r-tm-board-metric > small {
-		text-align: center;
+		max-width: 8em;
+		white-space: normal;
+		text-wrap: balance;
 	}
-	.rvmp .r-tm-board-metric[data-primary] > b {
-		font-size: 24px;
+	/* the types are just their symbols, side by side, instead of named pills stacked one over the other */
+	.rvmp .r-tm-board-type-pill {
+		display: none;
+	}
+	.rvmp .r-tm-board-type-icon {
+		display: block;
+		width: 20px;
+		height: 20px;
+	}
+	/* …on one small neutral plate, so they read as a single unit rather than two loose icons */
+	.rvmp .r-tm-board-types {
+		gap: 6px;
+		padding: 4px 8px;
+		border-radius: var(--r-pill);
+		background: var(--surface);
+		border: 1px solid var(--border);
+	}
+	/* the Pokémon: a tighter frame and a narrower arrow, and a long name wraps instead of being cut short */
+	.rvmp .r-tm-board-member {
+		padding: var(--s2) 4px;
+	}
+	.rvmp .r-tm-board-arrow,
+	.rvmp .r-tm-board-arrow-placeholder {
+		width: 18px;
+	}
+	.rvmp .r-tm-board-name {
+		white-space: normal;
+		text-wrap: balance;
+		overflow-wrap: anywhere;
 	}
 	.rvmp .r-tm-board-name {
 		font-size: 13.5px;
@@ -2834,14 +2903,6 @@
 		grid-template-areas:
 			'rank'
 			'members';
-	}
-	.rvmp .r-tm-board-rank + .r-tm-star-btn {
-		margin-left: 0;
-	}
-	.rvmp .r-tm-board-lead {
-		flex-direction: row;
-		align-items: center;
-		gap: var(--s3);
 	}
 	.rvmp .r-tm-board-rank .r-medal {
 		width: 28px;
@@ -2954,13 +3015,6 @@
 }
 .rvmp .r-tm-board-delta[data-dir='down'] {
 	color: var(--neg);
-}
-
-/* stack type chips only on small/mobile screens */
-@media (max-width: 719px) {
-	.rvmp .r-tm-board-types {
-		flex-direction: column;
-	}
 }
 
 /* a card whose move menu is open rises above the cards after it: on a phone they stack, and each card has its own
@@ -3159,4 +3213,24 @@
 .rvmp .r-tm-buddy:disabled {
 	cursor: not-allowed;
 	opacity: 0.6;
+}
+/* very small phones: no arrows between the Pokémon, so the three get the whole width */
+@media (max-width: 389px) {
+	.rvmp .r-tm-board-members {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		column-gap: 4px;
+	}
+	.rvmp .r-tm-board-member[data-link] {
+		display: none;
+	}
+}
+/* small phones: the arrows stay but squeezed, with next to no space around them */
+@media (min-width: 390px) and (max-width: 450px) {
+	.rvmp .r-tm-board-members {
+		column-gap: 0;
+	}
+	.rvmp .r-tm-board-arrow,
+	.rvmp .r-tm-board-arrow-placeholder {
+		width: 12px;
+	}
 }
