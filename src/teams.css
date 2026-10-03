@@ -2737,7 +2737,7 @@
 	grid-area: score;
 	display: grid;
 	justify-items: end;
-	gap: var(--s2);
+	gap: var(--s4);
 }
 .rvmp .r-tm-board-metric {
 	display: grid;
@@ -2750,6 +2750,12 @@
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
 	color: var(--text-faint);
+	/* a long label (in any language) breaks onto a second row, balanced, rather than widening the score
+	   column and squeezing the Pokémon names beside it */
+	max-width: 10em;
+	text-align: right;
+	text-wrap: balance;
+	overflow-wrap: break-word;
 }
 .rvmp .r-tm-board-metric > b {
 	font-family: Fredoka, sans-serif;
@@ -2777,6 +2783,8 @@
 		padding: var(--s3);
 	}
 	/* side by side: one row for the two names and one for the two numbers, so both line up across the metrics */
+	/* narrow card: the two metrics sit side by side, the one the list is sorted by first (it is first in the
+	   markup), each with its label above its value */
 	.rvmp .r-tm-board-score {
 		grid-auto-flow: column;
 		grid-template-rows: auto auto;
@@ -2790,6 +2798,9 @@
 		grid-template-rows: subgrid;
 		align-items: center;
 		justify-items: center;
+	}
+	.rvmp .r-tm-board-metric > small {
+		text-align: center;
 	}
 	.rvmp .r-tm-board-metric[data-primary] > b {
 		font-size: 24px;
@@ -2809,6 +2820,12 @@
 	.rvmp .r-tm-board-art {
 		width: 64px;
 		height: 64px;
+	}
+}
+/* very narrow screens: only the metric the list is sorted by */
+@media (max-width: 389px) {
+	.rvmp .r-tm-board-metric:not([data-primary]) {
+		display: none;
 	}
 }
 @container (max-width: 380px) {

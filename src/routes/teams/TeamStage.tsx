@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PokemonPickerModal } from '../../components/PokemonPickerModal';
@@ -12,10 +12,12 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
 import type { TeamBuilderMove } from '../../DTOs/ITeamBuilder';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import { useBestIvs } from '../../hooks/useBestIvs';
 import { useDismiss } from '../../hooks/useDismiss';
 import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../../lib/combat';
 import { combatMetricNames } from '../../lib/combat-text';
 import { cleanName, ordinal } from '../../lib/format';
+import { competitionRanks, ivRankOf } from '../../lib/iv-rank';
 import { type BuffInfo, buffInfo } from '../../lib/moves';
 import { type SlotIvs, type TeamRole, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
@@ -399,6 +401,7 @@ interface MemberCardProps {
 	confirmLabel?: string | undefined;
 	nickname?: string | undefined;
 	onNicknameChange?: ((nickname: string) => void) | undefined;
+	onNicknameFocus?: (() => void) | undefined;
 	nicknameLabel?: string | undefined;
 }
 
@@ -418,6 +421,7 @@ export const MemberCard = ({
 	confirmLabel,
 	nickname,
 	onNicknameChange,
+	onNicknameFocus,
 	nicknameLabel,
 }: MemberCardProps) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
@@ -514,6 +518,7 @@ export const MemberCard = ({
 					maxLength={32}
 					aria-label={nicknameLabel}
 					placeholder={nicknameLabel}
+					onFocus={onNicknameFocus}
 					onChange={(event) => onNicknameChange(event.target.value)}
 				/>
 			)}
@@ -594,6 +599,9 @@ export const MemberCard = ({
 	);
 };
 
+/** A trailing "#<rank>" on a nickname — the part that follows the IVs' rank. */
+const RANK_SUFFIX = /\s*#(\d+)$/;
+
 export const TeamMemberEditor = ({
 	index,
 	member,
@@ -611,11 +619,32 @@ export const TeamMemberEditor = ({
 	nickname,
 	onNicknameChange,
 	nicknameLabel,
-}: Omit<MemberCardProps, 'onEditIvs' | 'onEditLevel'> & {
+}: Omit<MemberCardProps, 'onEditIvs' | 'onEditLevel' | 'onNicknameFocus'> & {
 	cpCap: number;
 	onBuild: (index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => void;
 }) => {
 	const [editing, setEditing] = useState<'ivs' | 'level' | null>(null);
+
+	// A nickname can carry the rank of the member's IVs ("Azumarill #12"). Ties share a rank (1, 1, 3, …), so this
+	// is the competition rank in the league's IV table, the same one the Pokémon page shows.
+	const ivRows = useBestIvs(pokemon, cpCap, !!onNicknameChange && !!pokemon);
+	const ivRank = useMemo(
+		() => (member ? ivRankOf(ivRows, competitionRanks(ivRows), member.stats.ivs) : undefined),
+		[ivRows, member]
+	);
+	// Once the nickname ends in "#<number>", keep that number in step with the IVs as they change.
+	useEffect(() => {
+		if (!onNicknameChange || nickname === undefined || ivRank === undefined) return;
+		const match = RANK_SUFFIX.exec(nickname);
+		if (match && match[1] !== String(ivRank)) onNicknameChange(nickname.replace(RANK_SUFFIX, ` #${ivRank}`));
+	}, [nickname, ivRank, onNicknameChange]);
+	// Starting a nickname: prefill the Pokémon's name and its IV rank.
+	const prefillNickname = () => {
+		if (!onNicknameChange || !pokemon || nickname) return;
+		const name = cleanName(pokemon.speciesName);
+		onNicknameChange((ivRank === undefined ? name : `${name} #${ivRank}`).slice(0, 32));
+	};
+
 	return (
 		<>
 			<MemberCard
@@ -634,6 +663,7 @@ export const TeamMemberEditor = ({
 				confirmLabel={confirmLabel}
 				nickname={nickname}
 				onNicknameChange={onNicknameChange}
+				onNicknameFocus={prefillNickname}
 				nicknameLabel={nicknameLabel}
 			/>
 			{member && pokemon && editing === 'ivs' && (

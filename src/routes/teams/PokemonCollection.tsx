@@ -14,7 +14,7 @@ import { cleanName } from '../../lib/format';
 import { removeCollectionPokemon, saveCollectionPokemon, usePokemonCollection } from '../../lib/pokemon-collection';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import { cpAt } from '../../lib/pvp-sim/cp';
-import { scoreTier, type SlotIvs, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
+import { scoreTier, type SlotIvs, slotKey, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { VirtualTeamCards } from './TeamCards';
@@ -318,20 +318,21 @@ export const PokemonCollection = ({
 			: b.score - a.score || a.threatScore - b.threatScore
 	);
 	const nicknames = useMemo(() => {
-		const counts = new Map<string, number>();
-		saved.forEach((entry) => counts.set(entry.speciesId, (counts.get(entry.speciesId) ?? 0) + 1));
-		return Object.fromEntries(
-			saved.flatMap((entry) =>
-				counts.get(entry.speciesId) === 1 && entry.nickname ? [[entry.speciesId, entry.nickname]] : []
-			)
-		);
+		// Keyed by the build (species + moves + IVs + level), not the species: a team member is one specific saved
+		// entry, so with duplicates of a species each card shows the nickname of the entry it was actually built from.
+		const byBuild: Record<string, string> = {};
+		for (const entry of saved) {
+			const key = slotKey(entry);
+			if (entry.nickname && !(key in byBuild)) byBuild[key] = entry.nickname;
+		}
+		return byBuild;
 	}, [saved]);
 	const filteredTeams = orderedTeams.filter(
 		(team) =>
 			!term ||
 			team.members.some((member) => {
 				const pokemon = data.gamemaster[member.speciesId];
-				const name = nicknames[member.speciesId] ?? (pokemon ? cleanName(pokemon.speciesName) : '');
+				const name = nicknames[slotKey(member)] ?? (pokemon ? cleanName(pokemon.speciesName) : '');
 				return name.toLowerCase().includes(term);
 			})
 	);

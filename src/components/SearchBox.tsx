@@ -8,6 +8,7 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
+import { selectAllOnTouchFocus } from '../lib/select-on-touch';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { ShadowMark } from './ShadowMark';
@@ -152,7 +153,10 @@ export const SearchBox = () => {
 		}
 	};
 
-	const showMenu = open && q === suggestionQuery && suggestionQuery.trim().length > 0 && results.length > 0;
+	// While the debounce is still catching up with what was typed, keep showing the entries computed for the
+	// previous query rather than closing the menu; it only closes once the box is empty or nothing matches.
+	const settled = q === suggestionQuery;
+	const showMenu = open && q.trim().length > 0 && results.length > 0;
 
 	return (
 		<div className='r-search' ref={rootRef}>
@@ -166,7 +170,10 @@ export const SearchBox = () => {
 					setQ(e.target.value);
 					setOpen(true);
 				}}
-				onFocus={() => setOpen(true)}
+				onFocus={(e) => {
+					selectAllOnTouchFocus(e);
+					setOpen(true);
+				}}
 				onKeyDown={(e) => {
 					if (!showMenu) return;
 					if (e.key === 'ArrowDown') {
@@ -177,7 +184,8 @@ export const SearchBox = () => {
 						setActive((i) => Math.max(i - 1, 0));
 					} else if (e.key === 'Enter') {
 						e.preventDefault();
-						const hit = results[active];
+						// Not while the entries on screen still belong to an older query.
+						const hit = settled ? results[active] : undefined;
 						if (hit) pick(hit);
 					} else if (e.key === 'Escape') {
 						setOpen(false);

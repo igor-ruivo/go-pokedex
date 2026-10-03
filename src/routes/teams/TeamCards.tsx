@@ -39,6 +39,7 @@ export const TeamCard = ({
 	primary: 'score' | 'threat';
 	onOpen: (team: RankedTeam) => void;
 	showBuildDetails?: boolean;
+	/** Nickname per build, keyed by `slotKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
 }) => {
 	const { t } = useTranslation(['teams']);
@@ -112,7 +113,7 @@ export const TeamCard = ({
 									{p.isShadow && <ShadowMark />}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
-								<b className='r-tm-board-name'>{nicknames?.[member.speciesId] ?? cleanName(p.speciesName)}</b>
+								<b className='r-tm-board-name'>{nicknames?.[slotKey(member)] ?? cleanName(p.speciesName)}</b>
 								<span className='r-tm-board-types'>
 									{p.types.map((ty) => (
 										<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
@@ -201,6 +202,7 @@ export const VirtualTeamCards = ({
 	primary: 'score' | 'threat';
 	onOpen: (team: RankedTeam) => void;
 	showBuildDetails?: boolean;
+	/** Nickname per build, keyed by `slotKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
 }) => {
 	const listRef = useRef<HTMLDivElement>(null);

@@ -1,5 +1,7 @@
 import type { Ref } from 'react';
 
+import { selectAllOnTouchFocus } from '../lib/select-on-touch';
+
 export const PokemonSearchInput = ({
 	value,
 	onChange,
@@ -26,7 +28,10 @@ export const PokemonSearchInput = ({
 			ref={inputRef}
 			value={value}
 			onChange={(event) => onChange(event.target.value)}
-			onFocus={onFocus}
+			onFocus={(event) => {
+				selectAllOnTouchFocus(event);
+				onFocus?.();
+			}}
 			placeholder={placeholder}
 			aria-label={placeholder}
 			enterKeyHint='search'

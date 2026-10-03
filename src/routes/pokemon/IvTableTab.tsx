@@ -7,6 +7,7 @@ import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useBestIvs } from '../../hooks/useBestIvs';
 import { cleanName, dec1, sentenceCase, statProdPercentile } from '../../lib/format';
+import { competitionRanks } from '../../lib/iv-rank';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 
 const ROW_H = 44;
@@ -75,19 +76,7 @@ const IvTableTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; ac
 		overscan: 12,
 	});
 
-	// "Competition ranking" (1224, not 1234): a spread ties the rank of the one
-	// above it whenever they share the exact (rounded) stat product — `rows` is
-	// already sorted descending, so ties are always adjacent — otherwise it
-	// takes its own 1-based position, which already accounts for every tie
-	// before it (e.g. 1, 1, 3, 4, 5, 6, 7, 7, 7, 10, 11 — never 1, 1, 2, 3…).
-	const ranks = useMemo(() => {
-		const prodOf = (r: (typeof rows)[number]) => Math.round(r.battle.A * r.battle.D * r.battle.S);
-		const out = new Array<number>(rows.length);
-		for (let i = 0; i < rows.length; i++) {
-			out[i] = i > 0 && prodOf(rows[i]) === prodOf(rows[i - 1]) ? out[i - 1] : i + 1;
-		}
-		return out;
-	}, [rows]);
+	const ranks = useMemo(() => competitionRanks(rows), [rows]);
 
 	if (!isPvp) {
 		return (
