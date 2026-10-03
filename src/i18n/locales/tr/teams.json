@@ -274,6 +274,7 @@
 		"intro": "Bu koleksiyon bu tarayıcıya kaydedilir ve her lig için ayrı tutulur. Pokémon ekle, hareketlerini, seviyesini ve IV'lerini ayarla, ardından kaydetmek için onayla.",
 		"count": "Bu lig için {{count}} Pokémon kaydedildi",
 		"confirm": "Onayla",
+		"duplicate": "Bu Pokémon’un aynısı zaten kayıtlı (aynı hareketler, IV’ler ve seviye).",
 		"nickname": "Pokémon takma adı (isteğe bağlı)",
 		"remove": "{{name}} koleksiyondan kaldır",
 		"addShort": "Ekle",

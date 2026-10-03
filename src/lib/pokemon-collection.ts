@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
-import { isSlotIvs, isSlotLevel, type SlotIvs } from './team-analysis';
+import { isSlotIvs, isSlotLevel, type SlotIvs, slotKey } from './team-analysis';
 
 export interface CollectionPokemon {
 	id: string;
@@ -15,6 +15,13 @@ export interface CollectionPokemon {
 	league: TeamLeague;
 	addedAt: number;
 }
+
+/**
+ * What makes two saved Pokémon the same one: species, moves, IVs and level. The Best Buddy flag is not part of it — it only
+ * matters through the level above 50 it allows, and that level is already in the key. The nickname isn't either.
+ */
+export const collectionBuildKey = (entry: Pick<CollectionPokemon, 'speciesId' | 'moveset' | 'ivs' | 'level'>): string =>
+	slotKey({ speciesId: entry.speciesId, moveset: entry.moveset, ivs: entry.ivs, level: entry.level });
 
 const KEY = 'go-pokedex:team-pokemon-collection';
 const listeners = new Set<() => void>();
@@ -134,8 +141,12 @@ export const saveCollectionPokemon = (
 	league: TeamLeague,
 	pokemon: Omit<CollectionPokemon, 'id' | 'league' | 'addedAt'>,
 	replaceId?: string
-) => {
+): boolean => {
 	const current = load();
+	// An exact replica of one already saved in this league (other than the one being replaced) is refused.
+	const key = collectionBuildKey(pokemon);
+	if (current.some((entry) => entry.league === league && entry.id !== replaceId && collectionBuildKey(entry) === key))
+		return false;
 	const replacedIndex = replaceId
 		? current.findIndex((entry) => entry.league === league && entry.id === replaceId)
 		: -1;
@@ -154,6 +165,7 @@ export const saveCollectionPokemon = (
 	if (existing) next.splice(Math.min(replacedIndex, next.length), 0, saved);
 	else next.push(saved);
 	commit(next);
+	return true;
 };
 
 export const removeCollectionPokemon = (league: TeamLeague, id: string) =>

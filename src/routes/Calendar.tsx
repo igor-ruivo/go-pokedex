@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
-import { PokemonSearchInput } from '../components/PokemonSearchInput';
+import { SearchListBar } from '../components/SearchListBar';
 import { SpriteImg } from '../components/Sprite';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
@@ -1176,15 +1176,14 @@ const RocketsTab = () => {
 
 	return (
 		<div>
-			<div className='r-rockets-search'>
-				<PokemonSearchInput
-					value={query}
-					onChange={setQuery}
-					placeholder={t('calendar:tabs.searchRockets')}
-					clearAriaLabel={t('calendar:tabs.rockets')}
-					onClear={() => setQuery('')}
-				/>
-			</div>
+			<SearchListBar
+				value={query}
+				onChange={setQuery}
+				placeholder={t('calendar:tabs.searchRockets')}
+				clearAriaLabel={t('calendar:tabs.rockets')}
+				onClear={() => setQuery('')}
+				label={`${t('calendar:tabs.rockets')}: ${filteredRockets.length}`}
+			/>
 			<div className='r-eventlist'>
 				{filteredRockets.map((g) => (
 					<RocketGrunt

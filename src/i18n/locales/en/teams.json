@@ -274,6 +274,7 @@
 		"intro": "This collection is saved in this browser and kept separate for each league. Add Pokémon, adjust moves, level and IVs, then confirm to save.",
 		"count": "{{count}} Pokémon saved for this league",
 		"confirm": "Confirm",
+		"duplicate": "You already have this exact Pokémon saved (same moves, IVs and level).",
 		"nickname": "Pokémon nickname (optional)",
 		"remove": "Remove {{name}} from collection",
 		"addShort": "Add",

@@ -274,6 +274,7 @@
 		"intro": "Questa raccolta viene salvata in questo browser e separatamente per ogni lega. Aggiungi Pokémon, modifica mosse, livello e IV, poi conferma per salvare.",
 		"count": "{{count}} Pokémon salvati per questa lega",
 		"confirm": "Conferma",
+		"duplicate": "Hai già salvato questo identico Pokémon (stesse mosse, IV e livello).",
 		"nickname": "Soprannome Pokémon (facoltativo)",
 		"remove": "Rimuovi {{name}} dalla raccolta",
 		"addShort": "Aggiungi",

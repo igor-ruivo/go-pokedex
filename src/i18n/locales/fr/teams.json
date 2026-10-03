@@ -274,6 +274,7 @@
 		"intro": "Cette collection est enregistrée dans ce navigateur et séparément pour chaque ligue. Ajoute des Pokémon, règle leurs attaques, leur niveau et leurs IV, puis confirme pour les enregistrer.",
 		"count": "{{count}} Pokémon enregistrés pour cette ligue",
 		"confirm": "Confirmer",
+		"duplicate": "Tu as déjà enregistré ce Pokémon exact (mêmes attaques, IV et niveau).",
 		"nickname": "Surnom du Pokémon (facultatif)",
 		"remove": "Retirer {{name}} de la collection",
 		"addShort": "Ajouter",

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PokemonSearchInput } from '../../components/PokemonSearchInput';
+import { SearchListBar } from '../../components/SearchListBar';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useAfterPaint } from '../../hooks/useAfterPaint';
@@ -34,7 +34,7 @@ export const FavoriteTeams = ({
 	data: TeamsData;
 	onOpen: (team: RankedTeam) => void;
 }) => {
-	const { t } = useTranslation(['teams', 'components']);
+	const { t } = useTranslation(['teams', 'components', 'common']);
 	const all = useFavoriteTeams();
 	const [search, setSearch] = useState('');
 	const [sortKey, setSortKey] = useState<FavoriteSortKey>('added');
@@ -131,14 +131,14 @@ export const FavoriteTeams = ({
 
 	return (
 		<div className='r-tm-board'>
-			<div className='r-tm-board-tools'>
-				<PokemonSearchInput
-					value={search}
-					onChange={setSearch}
-					placeholder={t('teams:top.searchPlaceholder')}
-					clearAriaLabel={t('components:searchBox.clearAriaLabel')}
-					onClear={() => setSearch('')}
-				/>
+			<SearchListBar
+				value={search}
+				onChange={setSearch}
+				placeholder={t('teams:top.searchPlaceholder')}
+				clearAriaLabel={t('components:searchBox.clearAriaLabel')}
+				onClear={() => setSearch('')}
+				label={`${t('common:nav.teams.label')}: ${rated.pending > 0 ? '…' : teams.length}`}
+			>
 				<SortBar
 					options={sortOptions}
 					sortKey={sortKey}
@@ -146,7 +146,7 @@ export const FavoriteTeams = ({
 					onChange={changeSort}
 					fixedDirection
 				/>
-			</div>
+			</SearchListBar>
 			{teams.length > 0 ? (
 				<TeamCards
 					teams={teams}

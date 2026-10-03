@@ -274,6 +274,7 @@
 		"intro": "Koleksi ini disimpan di browser ini dan dipisahkan untuk tiap liga. Tambahkan Pokémon, atur jurus, level, dan IV, lalu konfirmasi untuk menyimpannya.",
 		"count": "{{count}} Pokémon tersimpan untuk liga ini",
 		"confirm": "Konfirmasi",
+		"duplicate": "Kamu sudah menyimpan Pokémon yang persis sama (jurus, IV, dan level sama).",
 		"nickname": "Nama panggilan Pokémon (opsional)",
 		"remove": "Hapus {{name}} dari koleksi",
 		"addShort": "Tambah",

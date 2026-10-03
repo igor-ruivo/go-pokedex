@@ -274,6 +274,7 @@
 		"intro": "Diese Sammlung wird in diesem Browser und getrennt für jede Liga gespeichert. Füge Pokémon hinzu, passe Attacken, Level und IVs an und bestätige zum Speichern.",
 		"count": "{{count}} Pokémon für diese Liga gespeichert",
 		"confirm": "Bestätigen",
+		"duplicate": "Genau dieses Pokémon hast du schon gespeichert (gleiche Attacken, IVs und Level).",
 		"nickname": "Pokémon-Spitzname (optional)",
 		"remove": "{{name}} aus der Sammlung entfernen",
 		"addShort": "Add",

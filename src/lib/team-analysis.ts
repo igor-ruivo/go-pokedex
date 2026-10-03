@@ -381,6 +381,14 @@ export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' |
 	(slot.level !== undefined ? `@L${slot.level}` : '') +
 	(slot.buddy ? '@B' : '');
 
+/**
+ * What identifies a team for rating it: like `encodeTeam`, but without the Best Buddy flag. The flag only matters through
+ * the IVs and the level it sets (which are in the key), so flipping it on its own must not look like a different team —
+ * and so must not re-run its battles.
+ */
+export const evaluationKey = (team: ReadonlyArray<TeamSlotDescriptor>): string =>
+	team.map(({ speciesId, moveset, ivs, level }) => slotKey({ speciesId, moveset, ivs, level })).join(',');
+
 /** `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH@0.15.15,medicham-COUNTER-…` — see `slotKey`. */
 export const encodeTeam = (team: ReadonlyArray<TeamSlotDescriptor>): string => team.map(slotKey).join(',');
 

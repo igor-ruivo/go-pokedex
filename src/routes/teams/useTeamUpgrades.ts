@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
 import type { AlternativePick } from '../../lib/pvp-sim/team-eval';
 import type { SimContext } from '../../lib/pvp-sim/types';
-import { type ScoreParts, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
+import { evaluationKey, type ScoreParts, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
 import { analyzeTeam } from './useTeamAnalysis';
 import type { TeamsData } from './useTeamsData';
 
@@ -44,8 +44,11 @@ export const useTeamUpgrades = (
 	team: ReadonlyArray<TeamSlotDescriptor>,
 	swaps: ReadonlyArray<AlternativePick> | undefined,
 	currentScore: number | undefined
-): TeamUpgrades | undefined =>
-	useMemo(() => {
+): TeamUpgrades | undefined => {
+	// Keyed by what the team is rated on, not by the array: flipping a Best Buddy flag on its own changes neither the
+	// IVs nor the level, so it must not redo every swap's analysis.
+	const teamKey = evaluationKey(team);
+	return useMemo(() => {
 		if (!swaps || !ctx || currentScore === undefined) return undefined;
 
 		const byThreat = bestPerSpecies(swaps)
@@ -76,4 +79,7 @@ export const useTeamUpgrades = (
 			.slice(0, SHOWN);
 
 		return { byThreat, byScore };
-	}, [league, ctx, data, team, swaps, currentScore]);
+		// `team` itself is tracked through `teamKey`.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [league, ctx, data, teamKey, swaps, currentScore]);
+};

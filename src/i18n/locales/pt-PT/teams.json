@@ -274,6 +274,7 @@
 		"intro": "Esta coleção é guardada neste navegador e separada por liga. Adiciona Pokémon, ajusta os ataques, o nível e os IV, e confirma para guardar.",
 		"count": "{{count}} Pokémon guardados nesta liga",
 		"confirm": "Confirmar",
+		"duplicate": "Já tens este Pokémon exato guardado (mesmos ataques, IVs e nível).",
 		"nickname": "Alcunha do Pokémon (opcional)",
 		"remove": "Remover {{name}} da coleção",
 		"addShort": "Adicionar",

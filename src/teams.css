@@ -328,6 +328,33 @@
 		background 0.15s ease,
 		transform 0.15s ease;
 }
+.rvmp .r-tm-confirm[aria-disabled='true'] {
+	cursor: not-allowed;
+	opacity: 0.45;
+}
+.rvmp .r-tm-confirm[aria-disabled='true']:hover {
+	color: var(--pos);
+	background: color-mix(in srgb, var(--pos) 15%, var(--surface-3));
+	transform: none;
+}
+/* the reason a disabled Confirm can't be pressed, shown on a tap (hover uses the native tooltip) */
+.rvmp .r-tm-confirm-tip {
+	position: absolute;
+	top: calc(var(--s2) + 34px);
+	right: var(--s2);
+	z-index: 3;
+	max-width: min(240px, calc(100% - 2 * var(--s2)));
+	cursor: pointer;
+	padding: 8px 10px;
+	border-radius: var(--r-sm);
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: var(--text);
+	background: var(--surface-3);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+}
 .rvmp .r-tm-confirm:hover {
 	color: var(--bg);
 	background: var(--pos);
@@ -2484,30 +2511,6 @@
 }
 .rvmp .r-tm-board-help {
 	margin: 0 0 var(--s3);
-}
-.rvmp .r-tm-board-tools {
-	display: flex;
-	align-items: center;
-	gap: var(--s2);
-	margin: 0 0 var(--s3);
-}
-@media (max-width: 560px) {
-	.rvmp .r-tm-board-tools {
-		flex-wrap: wrap;
-	}
-	.rvmp .r-tm-board-tools > .r-search {
-		flex: 0 0 100%;
-		width: 100%;
-	}
-	.rvmp .r-tm-board-tools > .r-sort {
-		margin-left: auto;
-	}
-}
-@media (min-width: 561px) {
-	.rvmp .r-tm-board-tools .r-sort-panel {
-		left: auto;
-		right: 0;
-	}
 }
 .rvmp .r-tm-board-list {
 	display: grid;

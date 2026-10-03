@@ -398,6 +398,8 @@ interface MemberCardProps {
 	suggestion?: { pending: boolean; onSuggest: () => void } | undefined;
 	onConfirm?: (() => void) | undefined;
 	confirmLabel?: string | undefined;
+	/** Why Confirm can't be pressed right now: it stays visible but disabled, and this shows as its tooltip (a tap shows it too). */
+	confirmDisabledReason?: string | undefined;
 	nickname?: string | undefined;
 	onNicknameChange?: ((nickname: string) => void) | undefined;
 	onNicknameFocus?: (() => void) | undefined;
@@ -423,6 +425,7 @@ export const MemberCard = ({
 	suggestion,
 	onConfirm,
 	confirmLabel,
+	confirmDisabledReason,
 	nickname,
 	onNicknameChange,
 	onNicknameFocus,
@@ -434,6 +437,13 @@ export const MemberCard = ({
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
 	const roles = roleNames(t);
 	const moveTable = data.builder!.moves;
+	// A tap on a disabled Confirm has no hover to rely on: show the reason for a moment.
+	const [reasonShown, setReasonShown] = useState(false);
+	useEffect(() => {
+		if (!reasonShown) return;
+		const id = window.setTimeout(() => setReasonShown(false), 3000);
+		return () => window.clearTimeout(id);
+	}, [reasonShown]);
 
 	if (!member || !pokemon) {
 		return (
@@ -487,15 +497,23 @@ export const MemberCard = ({
 				</span>
 			)}
 			{onConfirm && (
-				<button
-					type='button'
-					className='r-tm-confirm'
-					aria-label={confirmLabel}
-					title={confirmLabel}
-					onClick={onConfirm}
-				>
-					✓
-				</button>
+				<>
+					<button
+						type='button'
+						className='r-tm-confirm'
+						aria-label={confirmLabel}
+						aria-disabled={confirmDisabledReason ? true : undefined}
+						title={confirmDisabledReason ?? confirmLabel}
+						onClick={() => (confirmDisabledReason ? setReasonShown((shown) => !shown) : onConfirm())}
+					>
+						✓
+					</button>
+					{confirmDisabledReason && reasonShown && (
+						<span className='r-tm-confirm-tip' role='status' onClick={() => setReasonShown(false)}>
+							{confirmDisabledReason}
+						</span>
+					)}
+				</>
 			)}
 			<button type='button' className='r-tm-remove' aria-label={t('teams:builder.remove', { name })} onClick={onRemove}>
 				×
@@ -635,6 +653,7 @@ export const TeamMemberEditor = ({
 	suggestion,
 	onConfirm,
 	confirmLabel,
+	confirmDisabledReason,
 	nickname,
 	onNicknameChange,
 	nicknameLabel,
@@ -716,6 +735,7 @@ export const TeamMemberEditor = ({
 				suggestion={suggestion}
 				onConfirm={onConfirm}
 				confirmLabel={confirmLabel}
+				confirmDisabledReason={confirmDisabledReason}
 				nickname={nickname}
 				onNicknameChange={onNicknameChange}
 				onNicknameFocus={prefillNickname}

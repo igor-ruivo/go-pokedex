@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BuddyMark } from '../../components/BuddyMark';
-import { PokemonSearchInput } from '../../components/PokemonSearchInput';
+import { SearchListBar } from '../../components/SearchListBar';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import { SpriteImg } from '../../components/Sprite';
@@ -14,6 +14,7 @@ import { useDismiss } from '../../hooks/useDismiss';
 import { cleanName } from '../../lib/format';
 import {
 	type CollectionPokemon,
+	collectionBuildKey,
 	removeCollectionPokemon,
 	saveCollectionPokemon,
 	usePokemonCollection,
@@ -155,7 +156,7 @@ export const PokemonCollection = ({
 	data: TeamsData;
 	onOpen: (team: RankedTeam) => void;
 }) => {
-	const { t } = useTranslation(['teams', 'components']);
+	const { t } = useTranslation(['teams', 'components', 'common']);
 	const { currentGameLanguage: gameLanguage } = useLanguage();
 	const allSaved = usePokemonCollection();
 	const saved = useMemo(
@@ -239,6 +240,8 @@ export const PokemonCollection = ({
 	const combinations = useMemo(() => {
 		const slots: Array<TeamSlotDescriptor> = saved
 			.flatMap(comboSlots)
+			// Identical builds (e.g. a saved copy of what a Best Buddy's counterpart already is) are one Pokémon.
+			.filter((slot, i, all) => all.findIndex((other) => slotKey(other) === slotKey(slot)) === i)
 			.sort(
 				(a, b) =>
 					(data.rankList[a.speciesId]?.rank ?? Number.MAX_SAFE_INTEGER) -
@@ -395,8 +398,12 @@ export const PokemonCollection = ({
 			...((build.buddy ?? isBuddy(draft.slot)) ? { buddy: true as const } : {}),
 		});
 	};
+	// The draft is an exact replica (species, moves, IVs, level) of another saved Pokémon: it can't be saved.
+	const draftIsDuplicate =
+		!!draft &&
+		saved.some((entry) => entry.id !== draft.entryId && collectionBuildKey(entry) === collectionBuildKey(draft.slot));
 	const saveDraft = () => {
-		if (!draft) return;
+		if (!draft || draftIsDuplicate) return;
 		const nickname = draft.nickname?.trim().slice(0, 32);
 		saveCollectionPokemon(
 			league,
@@ -428,6 +435,8 @@ export const PokemonCollection = ({
 		if (key === 'score' || key === 'threat') setSortKey(key);
 	};
 	const allReady = computedRankingReady || cachedRankedTeams !== undefined;
+	// Still working out the teams (or waiting to be asked to): the count isn't known yet, so it doesn't read as 0.
+	const teamsComputing = pending || (saved.length >= 3 && !allReady);
 
 	return (
 		<div className='r-tm-collection'>
@@ -449,6 +458,7 @@ export const PokemonCollection = ({
 						onRemove={() => setDraft(null)}
 						onConfirm={saveDraft}
 						confirmLabel={t('teams:collection.confirm')}
+						confirmDisabledReason={draftIsDuplicate ? t('teams:collection.duplicate') : undefined}
 						nickname={draft.nickname}
 						nicknameLabel={t('teams:collection.nickname')}
 						onNicknameChange={(nickname) =>
@@ -549,14 +559,14 @@ export const PokemonCollection = ({
 
 			<section className='r-tm-collection-teams'>
 				<h2 className='r-section-h'>{t('teams:collection.teamsHeading')}</h2>
-				<div className='r-tm-board-tools'>
-					<PokemonSearchInput
-						value={search}
-						onChange={setSearch}
-						placeholder={t('teams:top.searchPlaceholder')}
-						clearAriaLabel={t('components:searchBox.clearAriaLabel')}
-						onClear={() => setSearch('')}
-					/>
+				<SearchListBar
+					value={search}
+					onChange={setSearch}
+					placeholder={t('teams:top.searchPlaceholder')}
+					clearAriaLabel={t('components:searchBox.clearAriaLabel')}
+					onClear={() => setSearch('')}
+					label={`${t('common:nav.teams.label')}: ${teamsComputing ? '…' : filteredTeams.length}`}
+				>
 					<SortBar
 						options={sortOptions}
 						sortKey={sortKey}
@@ -564,7 +574,7 @@ export const PokemonCollection = ({
 						onChange={changeSort}
 						fixedDirection
 					/>
-				</div>
+				</SearchListBar>
 				{requiresManualEvaluation && (
 					<div className='r-tm-collection-manual'>
 						<p className='r-muted'>{t('teams:collection.manualNotice')}</p>

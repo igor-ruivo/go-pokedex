@@ -3030,8 +3030,8 @@
 	display: grid;
 	gap: var(--s3);
 }
-.rvmp .r-rockets-search {
-	margin-bottom: var(--s3);
+.rvmp .r-searchlist {
+	margin-bottom: 20px;
 }
 .rvmp .r-event {
 	background: var(--surface);
@@ -5182,6 +5182,8 @@
 	flex: 1 1 auto;
 	min-width: 0;
 	margin: 0;
+	/* as tall as the sort chip, so a row without one (Rocket Grunts) keeps the same height */
+	min-height: 34.83px;
 	white-space: nowrap;
 }
 .rvmp .r-listbar-h > * {

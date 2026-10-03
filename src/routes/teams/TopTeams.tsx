@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PokemonSearchInput } from '../../components/PokemonSearchInput';
+import { SearchListBar } from '../../components/SearchListBar';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useAfterPaint } from '../../hooks/useAfterPaint';
@@ -27,7 +27,7 @@ export const TopTeams = ({
 	data: TeamsData;
 	onOpen: (team: RankedTeam) => void;
 }) => {
-	const { t } = useTranslation(['teams', 'rankings', 'components']);
+	const { t } = useTranslation(['teams', 'rankings', 'components', 'common']);
 	const query = useTeamRanking();
 	// The same "Order by" chip as the rankings pages. Each key has its own list of the best teams by that metric.
 	const [sortKey, setSortKey] = useState<'score' | 'threat'>('score');
@@ -114,14 +114,14 @@ export const TopTeams = ({
 					<dd>{t('teams:top.help.order')}</dd>
 				</dl>
 			</details>
-			<div className='r-tm-board-tools'>
-				<PokemonSearchInput
-					value={search}
-					onChange={setSearch}
-					placeholder={t('teams:top.searchPlaceholder')}
-					clearAriaLabel={t('components:searchBox.clearAriaLabel')}
-					onClear={() => setSearch('')}
-				/>
+			<SearchListBar
+				value={search}
+				onChange={setSearch}
+				placeholder={t('teams:top.searchPlaceholder')}
+				clearAriaLabel={t('components:searchBox.clearAriaLabel')}
+				onClear={() => setSearch('')}
+				label={`${t('common:nav.teams.label')}: ${items.length}`}
+			>
 				<SortBar
 					options={sortOptions}
 					sortKey={sortKey}
@@ -129,7 +129,7 @@ export const TopTeams = ({
 					onChange={changeSort}
 					fixedDirection
 				/>
-			</div>
+			</SearchListBar>
 			{items.length === 0 ? (
 				<p className='r-muted'>{t('teams:top.noMatch')}</p>
 			) : (
