@@ -1,8 +1,8 @@
 {
 	"page": {
 		"title": "Tim",
-		"builderTab": "Pembuat Tim",
-		"topTab": "Tim terbaik",
+		"builderTab": "Pembuat",
+		"topTab": "Peringkat",
 		"favoritesTab": "Favorit",
 		"collectionTab": "Pokémon saya",
 		"tabsAria": "Bagian tim",
@@ -266,7 +266,6 @@
 			"summary": "Apa arti angka-angka ini?",
 			"teamScore": "Penilaian keseluruhan, 0–100, makin tinggi makin baik. Campuran berbobot dari enam bagian: cakupan ancaman {{threat}}%, tipe bertahan {{defense}}%, tipe menyerang {{offense}}%, ketahanan {{bulk}}%, keamanan {{safety}}% dan konsistensi {{consistency}}%.",
 			"threat": "Ukuran PvPoke tentang seberapa rentan tim terhadap enam counter paling berbahaya di liga, dari pertarungan simulasi dengan 0 dan 1 perisai. Makin rendah makin baik.",
-			"roles": "Skor perannya menurut PvPoke di liga ini, dari 100. Lead menunjukkan seberapa baik ia membuka pertandingan, Switch seberapa aman ia masuk di tengah pertarungan, Closer seberapa baik ia menutup saat perisai habis.",
 			"order": "Panah menunjukkan urutan bermain: lead, lalu switch yang aman, lalu closer. Kami memilih urutan dengan jumlah skor peran tertinggi."
 		}
 	},

@@ -170,7 +170,22 @@ const Teams = () => {
 		{
 			id: 'collection',
 			label: t('teams:page.collectionTab'),
-			icon: '/images/nav/pokemon-storage.png',
+			// a trainer's schoolbag (Ash's kind of backpack): the Pokémon you carry
+			icon: (
+				<svg viewBox='0 0 24 24' width='18' height='18' aria-hidden='true'>
+					{/* carrying handle */}
+					<path d='M9.2 5.2V4.4a2.8 2.8 0 0 1 5.6 0v.8' fill='none' stroke='#c9741a' strokeWidth='1.7' strokeLinecap='round' />
+					{/* the bag */}
+					<path d='M5.2 9.2A4.2 4.2 0 0 1 9.4 5h5.2a4.2 4.2 0 0 1 4.2 4.2V19a2 2 0 0 1-2 2H7.2a2 2 0 0 1-2-2z' fill='#f2b134' />
+					{/* top flap */}
+					<path d='M5.2 9.2A4.2 4.2 0 0 1 9.4 5h5.2a4.2 4.2 0 0 1 4.2 4.2v1.3H5.2z' fill='#e0861c' />
+					{/* front pocket */}
+					<path d='M7.4 13.6h9.2a1 1 0 0 1 1 1V18a1.6 1.6 0 0 1-1.6 1.6H8A1.6 1.6 0 0 1 6.4 18v-3.4a1 1 0 0 1 1-1z' fill='#f9d36d' />
+					{/* clasp and zip */}
+					<rect x='10.9' y='9' width='2.2' height='3' rx='0.7' fill='#7a3f0c' />
+					<path d='M8.6 16.4h6.8' stroke='#c9741a' strokeWidth='1.2' strokeLinecap='round' />
+				</svg>
+			),
 		},
 		{
 			id: 'favorites',

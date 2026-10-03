@@ -1,8 +1,8 @@
 {
 	"page": {
 		"title": "Equipos",
-		"builderTab": "Creador de equipos",
-		"topTab": "Mejores equipos",
+		"builderTab": "Creador",
+		"topTab": "Clasificación",
 		"favoritesTab": "Favoritos",
 		"collectionTab": "Mis Pokémon",
 		"tabsAria": "Secciones de equipos",
@@ -266,7 +266,6 @@
 			"summary": "¿Qué significan estos números?",
 			"teamScore": "La valoración global, de 0 a 100; más alta es mejor. Una mezcla ponderada de seis partes: cobertura de amenazas {{threat}} %, tipos defensivos {{defense}} %, tipos ofensivos {{offense}} %, resistencia {{bulk}} %, seguridad {{safety}} % y consistencia {{consistency}} %.",
 			"threat": "La medida de PvPoke de lo vulnerable que es el equipo a los seis contras más peligrosos de la liga, con combates simulados con 0 y 1 escudos. Más baja es mejor.",
-			"roles": "Su puntuación de rol de PvPoke en esta liga, sobre 100. Líder indica lo bien que abre el combate, Cambio lo seguro que entra a mitad de combate y Cierre lo bien que remata sin escudos.",
 			"order": "Las flechas muestran el orden de juego: líder, luego el cambio seguro y luego el cierre. Elegimos el orden cuya suma de puntuaciones de rol es la más alta."
 		}
 	},

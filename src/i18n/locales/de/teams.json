@@ -1,8 +1,8 @@
 {
 	"page": {
 		"title": "Teams",
-		"builderTab": "Team-Builder",
-		"topTab": "Top-Teams",
+		"builderTab": "Builder",
+		"topTab": "Ränge",
 		"favoritesTab": "Favoriten",
 		"collectionTab": "Meine Pokémon",
 		"tabsAria": "Team-Bereiche",
@@ -266,7 +266,6 @@
 			"summary": "Was bedeuten diese Zahlen?",
 			"teamScore": "Die Gesamtbewertung, 0–100, höher ist besser. Eine gewichtete Mischung aus sechs Teilen: Bedrohungsabdeckung {{threat}} %, Verteidigungstypen {{defense}} %, Angriffstypen {{offense}} %, Robustheit {{bulk}} %, Sicherheit {{safety}} % und Konstanz {{consistency}} %.",
 			"threat": "PvPokes Maß dafür, wie verwundbar das Team gegen die sechs gefährlichsten Konter der Liga ist, aus simulierten Kämpfen mit 0 und 1 Schild. Niedriger ist besser.",
-			"roles": "Seine PvPoke-Rollenwertung in dieser Liga, von 100. Lead zeigt, wie gut es den Kampf eröffnet, Wechsel, wie sicher es mitten im Kampf hereinkommt, Closer, wie gut es ohne Schilde abschließt.",
 			"order": "Die Pfeile zeigen die Reihenfolge: zuerst der Lead, dann der sichere Wechsel, dann der Closer. Wir wählen die Reihenfolge mit der höchsten Summe der Rollenwertungen."
 		}
 	},

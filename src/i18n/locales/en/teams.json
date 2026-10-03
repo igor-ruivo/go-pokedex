@@ -1,8 +1,8 @@
 {
 	"page": {
 		"title": "Teams",
-		"builderTab": "Team Builder",
-		"topTab": "Top Teams",
+		"builderTab": "Builder",
+		"topTab": "Ranks",
 		"favoritesTab": "Favorites",
 		"collectionTab": "My Pokémon",
 		"tabsAria": "Teams sections",
@@ -266,7 +266,6 @@
 			"summary": "What do these numbers mean?",
 			"teamScore": "The overall rating, 0–100, higher is better. A weighted blend of six parts: threat cover {{threat}}%, defensive typing {{defense}}%, offensive typing {{offense}}%, bulk {{bulk}}%, safety {{safety}}% and consistency {{consistency}}%.",
 			"threat": "PvPoke's measure of how vulnerable the team is to the league's six most dangerous counters, from simulated battles with 0 and 1 shields. Lower is better.",
-			"roles": "The chip under each Pokémon: its PvPoke role score in this league, out of 100. Lead is how well it opens the match, Switch how safely it comes in mid-battle, Closer how well it finishes once shields are gone.",
 			"order": "The arrows show the order to play them: lead, then the safe switch, then the closer. We pick the order that adds up to the highest role scores."
 		}
 	},

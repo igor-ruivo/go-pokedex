@@ -85,7 +85,6 @@ export const useDismiss = <T extends HTMLElement = HTMLDivElement>(
 
 	useEffect(() => {
 		if (!open) return;
-		const undim = options.dim !== false && ref.current ? dimPageAround(ref.current) : undefined;
 		// Desktop has room to spare around a popover, so an outside click is
 		// rarely also a press on some other control by accident — swallowing it
 		// there would just force a second click on whatever it landed on, when
@@ -94,6 +93,9 @@ export const useDismiss = <T extends HTMLElement = HTMLDivElement>(
 		// below stays reserved for touch, where a fat-finger mis-tap is the
 		// actual risk being guarded against.
 		const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+		// The page is only dimmed on touch devices, where the popover needs to read as the only live thing: never on desktop.
+		const undim = options.dim !== false && !isDesktop && ref.current ? dimPageAround(ref.current) : undefined;
 
 		// A press that's already been handled this tick — guards against a
 		// stray double-fire (e.g. a pen input producing both a pointerdown this

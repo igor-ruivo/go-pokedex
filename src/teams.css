@@ -1031,8 +1031,10 @@
 	color: transparent;
 }
 .rvmp .r-tm-ring-label {
-	/* min-content: each word on its own line ("Team" over "score") */
+	/* min-content: each word on its own line ("Team" over "score"). `keep-all`: Japanese, Chinese and Korean have no
+	   spaces, so without it every character counted as a word of its own and the label ran down the ring one character per line */
 	width: min-content;
+	word-break: keep-all;
 	text-align: center;
 	line-height: 1.2;
 	font-size: 11px;
@@ -2565,11 +2567,13 @@
 		transform 0.12s ease,
 		border-color 0.12s ease;
 }
-/* no scores (an unrated favorite): the Pokémon take the room the score would have had */
+/* no scores (an unrated favorite): the star on its own line, and the Pokémon across the whole width of the card, so the move
+   names are cut as little as possible */
 .rvmp .r-tm-board-card[data-unrated] {
-	/* an empty column as wide as the star's on the right, so the Pokémon sit in the middle of the card */
-	grid-template-columns: 56px minmax(0, 1fr) 56px;
-	grid-template-areas: 'rank members .';
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-areas:
+		'rank'
+		'members';
 }
 .rvmp .r-tm-board-card:hover {
 	transform: translateY(-1px);
@@ -2621,30 +2625,64 @@
    a subgrid, so a row is as tall as its tallest member and everything lines up across them — a single-type Pokémon
    leaves room where the others have a second line of type chips. */
 .rvmp .r-tm-board-members {
+	--seam-gap: var(--s2);
 	grid-area: members;
+	position: relative;
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+	/* the three Pokémon sit side by side with just a small gap: the arrows between them take no room of their own */
+	grid-template-columns: repeat(3, minmax(0, 1fr));
 	grid-template-rows: repeat(5, auto);
-	column-gap: var(--s2);
+	column-gap: var(--seam-gap);
 	row-gap: 2px;
 	min-width: 0;
 }
-.rvmp .r-tm-board-arrow-placeholder {
-	grid-row: 1;
-	align-self: center;
-	width: 24px;
-	height: 15px;
-	fill: none;
+/* the play order reads left to right (the same arrow as the Battle plan's flow): a small round badge floating on the seam
+   between two Pokémon, above their frames. It is a real grid item in the row of the Pokémon's names (the second of the
+   shared rows), at the right edge of the column before the seam and pushed half its width plus half the gap across it, so it
+   points at the names whatever the size of the sprites above. Everything is placed explicitly: the badges overlap the
+   Pokémon's cells, and auto-placement would otherwise push the Pokémon out of their columns. */
+.rvmp .r-tm-board-member:not([data-link]):nth-child(1) {
+	grid-column: 1;
 }
-/* the play order reads left to right: the same arrow as the Battle plan's flow */
-.rvmp .r-tm-board-arrow {
+.rvmp .r-tm-board-member:not([data-link]):nth-child(3) {
+	grid-column: 2;
+}
+.rvmp .r-tm-board-member:not([data-link]):nth-child(5) {
+	grid-column: 3;
+}
+.rvmp .r-tm-board-member[data-link] {
+	z-index: 5;
 	grid-row: 2;
-	margin-top: 4px;
+	display: grid;
+	grid-template-rows: none;
 	align-self: center;
-	width: 24px;
-	height: 15px;
+	justify-self: end;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	margin-top: 4px;
+	padding: 0;
+	border-radius: 50%;
+	background: var(--surface-2);
+	border: 1px solid var(--border-strong);
+	transform: translateX(calc(50% + var(--seam-gap) / 2));
+	pointer-events: none;
+}
+.rvmp .r-tm-board-member[data-link]:nth-child(2) {
+	grid-column: 1;
+}
+.rvmp .r-tm-board-member[data-link]:nth-child(4) {
+	grid-column: 2;
+}
+.rvmp .r-tm-board-arrow-placeholder {
+	display: none;
+}
+.rvmp .r-tm-board-arrow {
+	width: 14px;
+	height: 9px;
+	margin: 0;
 	fill: none;
-	stroke: var(--text-faint);
+	stroke: var(--text-dim);
 	stroke-width: 3;
 	stroke-linecap: round;
 	stroke-linejoin: round;
@@ -2666,13 +2704,9 @@
 .rvmp .r-tm-board-card:hover .r-tm-board-member {
 	border-color: var(--border-strong);
 }
-/* the arrow cell between two Pokémon is no Pokémon: no frame, no padding */
-.rvmp .r-tm-board-member[data-link] {
-	padding: 0;
-	border-color: transparent;
-}
+/* the arrow badge between two Pokémon is no Pokémon: it keeps its own border on hover too */
 .rvmp .r-tm-board-card:hover .r-tm-board-member[data-link] {
-	border-color: transparent;
+	border-color: var(--border-strong);
 }
 /* a grid item won't shrink below its content unless told to: without this the nowrap names and moves pushed the
    third Pokémon out of the card on narrow screens instead of being ellipsised */
@@ -2885,10 +2919,6 @@
 	.rvmp .r-tm-board-member {
 		padding: var(--s2) 4px;
 	}
-	.rvmp .r-tm-board-arrow,
-	.rvmp .r-tm-board-arrow-placeholder {
-		width: 18px;
-	}
 	.rvmp .r-tm-board-name {
 		white-space: normal;
 		text-wrap: balance;
@@ -2928,10 +2958,7 @@
 		padding-inline: 2px;
 	}
 	.rvmp .r-tm-board-members {
-		column-gap: var(--s1);
-	}
-	.rvmp .r-tm-board-arrow {
-		width: 16px;
+		--seam-gap: var(--s1);
 	}
 }
 
@@ -3214,23 +3241,8 @@
 	cursor: not-allowed;
 	opacity: 0.6;
 }
-/* very small phones: no arrows between the Pokémon, so the three get the whole width */
-@media (max-width: 389px) {
-	.rvmp .r-tm-board-members {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		column-gap: 4px;
-	}
-	.rvmp .r-tm-board-member[data-link] {
-		display: none;
-	}
-}
-/* small phones: the arrows stay but squeezed, with next to no space around them */
-@media (min-width: 390px) and (max-width: 450px) {
-	.rvmp .r-tm-board-members {
-		column-gap: 0;
-	}
-	.rvmp .r-tm-board-arrow,
-	.rvmp .r-tm-board-arrow-placeholder {
-		width: 12px;
-	}
+/* the Teams view always starts a little way down, on every tab, whether or not the team bar is showing — so the page doesn't
+   jump when switching tabs */
+.rvmp .r-shell.r-tm {
+	padding-top: 16px;
 }

@@ -108,8 +108,6 @@ export const TopTeams = ({
 					</dd>
 					<dt>{t('teams:threat.scoreLabel')}</dt>
 					<dd>{t('teams:top.help.threat')}</dd>
-					<dt>{t('teams:score.points', { value: '' }).trim()}</dt>
-					<dd>{t('teams:top.help.roles')}</dd>
 					<dt aria-hidden='true'>→</dt>
 					<dd>{t('teams:top.help.order')}</dd>
 				</dl>

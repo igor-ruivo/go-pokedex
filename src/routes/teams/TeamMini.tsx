@@ -18,7 +18,7 @@ export interface MiniGrades {
 	consistency: LetterGrade;
 }
 
-/** The team's compact summary bar, shown after the builder stage scrolls out of view. */
+/** The team's compact summary bar, pinned under the app bar. */
 export const TeamMini = ({
 	members,
 	score,
@@ -41,8 +41,8 @@ export const TeamMini = ({
 	const miniRef = useRef<HTMLDivElement>(null);
 	const metrics = combatMetricNames(t);
 
-	// Match the Pokémon page's collapsed hero: show this only after the builder stage has scrolled past the app bar.
-	// Track the app bar's actual bottom because it can move during mobile rubber-band overscroll.
+	// Always shown, whatever the scroll position (it is a useful summary of the team). It sits right under the app bar, so
+	// track the app bar's actual bottom: it can move during mobile rubber-band overscroll.
 	useLayoutEffect(() => {
 		const miniEl = miniRef.current;
 		if (!miniEl) return;
@@ -51,11 +51,7 @@ export const TeamMini = ({
 			const appbar = document.querySelector('.r-appbar');
 			const bottom = appbar ? appbar.getBoundingClientRect().bottom : 60;
 			miniEl.style.top = `${bottom + gap()}px`;
-			const stage = document.querySelector('.r-tm-stage');
-			const appbarHeight = appbar?.getBoundingClientRect().height ?? 60;
-			miniEl.dataset.visible = String(
-				window.scrollY > appbarHeight && !!stage && stage.getBoundingClientRect().bottom <= appbarHeight
-			);
+			miniEl.dataset.visible = 'true';
 		};
 		let raf = 0;
 		const schedule = () => {

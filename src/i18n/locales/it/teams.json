@@ -1,8 +1,8 @@
 {
 	"page": {
 		"title": "Squadre",
-		"builderTab": "Creatore di squadre",
-		"topTab": "Migliori squadre",
+		"builderTab": "Creatore",
+		"topTab": "Classifiche",
 		"favoritesTab": "Preferiti",
 		"collectionTab": "I miei Pokémon",
 		"tabsAria": "Sezioni delle squadre",
@@ -266,7 +266,6 @@
 			"summary": "Cosa significano questi numeri?",
 			"teamScore": "La valutazione complessiva, da 0 a 100, più alto è meglio. Una miscela ponderata di sei parti: copertura delle minacce {{threat}}%, tipi difensivi {{defense}}%, tipi offensivi {{offense}}%, robustezza {{bulk}}%, sicurezza {{safety}}% e costanza {{consistency}}%.",
 			"threat": "La misura di PvPoke di quanto la squadra sia vulnerabile ai sei counter più pericolosi della lega, da battaglie simulate con 0 e 1 scudi. Più basso è meglio.",
-			"roles": "Il suo punteggio di ruolo PvPoke in questa lega, su 100. Apertura indica quanto bene apre lo scontro, Cambio quanto è sicuro il suo ingresso a metà scontro, Chiusura quanto bene conclude senza scudi.",
 			"order": "Le frecce mostrano l'ordine di gioco: apertura, poi il cambio sicuro, poi la chiusura. Scegliamo l'ordine con la somma più alta dei punteggi di ruolo."
 		}
 	},

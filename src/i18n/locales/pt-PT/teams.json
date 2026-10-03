@@ -1,10 +1,10 @@
 {
 	"page": {
 		"title": "Equipas",
-		"builderTab": "Construtor de equipas",
-		"topTab": "Melhores equipas",
+		"builderTab": "Construtor",
+		"topTab": "Ranks",
 		"favoritesTab": "Favoritas",
-		"collectionTab": "Os meus Pokémon",
+		"collectionTab": "Meus Pokémon",
 		"tabsAria": "Secções de equipas",
 		"leagueAria": "Liga",
 		"loading": "A carregar os dados das equipas…",
@@ -266,7 +266,6 @@
 			"summary": "O que significam estes números?",
 			"teamScore": "A avaliação global, de 0 a 100; mais alta é melhor. Uma mistura ponderada de seis partes: cobertura de ameaças {{threat}} %, tipos defensivos {{defense}} %, tipos ofensivos {{offense}} %, resistência {{bulk}} %, segurança {{safety}} % e consistência {{consistency}} %.",
 			"threat": "A medida do PvPoke de quão vulnerável a equipa é aos seis counters mais perigosos da liga, a partir de combates simulados com 0 e 1 escudos. Mais baixa é melhor.",
-			"roles": "A sua pontuação de papel no PvPoke nesta liga, em 100. Abertura indica quão bem abre o combate, Troca quão seguro entra a meio do combate e Fecho quão bem termina sem escudos.",
 			"order": "As setas mostram a ordem de jogo: a abertura, depois a troca segura e depois o fecho. Escolhemos a ordem cuja soma das pontuações de papel é a mais alta."
 		}
 	},

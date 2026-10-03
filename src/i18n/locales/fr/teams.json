@@ -1,8 +1,8 @@
 {
 	"page": {
 		"title": "Équipes",
-		"builderTab": "Créateur d'équipe",
-		"topTab": "Meilleures équipes",
+		"builderTab": "Créateur",
+		"topTab": "Rangs",
 		"favoritesTab": "Favoris",
 		"collectionTab": "Mes Pokémon",
 		"tabsAria": "Sections des équipes",
@@ -266,7 +266,6 @@
 			"summary": "Que signifient ces chiffres ?",
 			"teamScore": "La note globale, de 0 à 100, plus haut est mieux. Un mélange pondéré de six parties : couverture des menaces {{threat}} %, types défensifs {{defense}} %, types offensifs {{offense}} %, robustesse {{bulk}} %, sécurité {{safety}} % et constance {{consistency}} %.",
 			"threat": "La mesure de PvPoke de la vulnérabilité de l'équipe face aux six contres les plus dangereux de la ligue, à partir de combats simulés avec 0 et 1 bouclier. Plus bas est mieux.",
-			"roles": "Son score de rôle PvPoke dans cette ligue, sur 100. Ouvreur indique sa qualité pour lancer le combat, Relais la sûreté de son entrée en cours de combat, Finisseur sa capacité à conclure sans boucliers.",
 			"order": "Les flèches montrent l'ordre de jeu : l'ouvreur, puis le relais sûr, puis le finisseur. Nous retenons l'ordre dont la somme des scores de rôle est la plus haute."
 		}
 	},
