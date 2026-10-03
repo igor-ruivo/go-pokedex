@@ -109,7 +109,7 @@ export const TeamCard = ({
 									{p.isShadow && <ShadowMark />}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
-								<b className='r-tm-board-name'>{nicknames?.[member.speciesId] || cleanName(p.speciesName)}</b>
+								<b className='r-tm-board-name'>{nicknames?.[member.speciesId] ?? cleanName(p.speciesName)}</b>
 								<span className='r-tm-board-types'>
 									{p.types.map((ty) => (
 										<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
@@ -126,12 +126,14 @@ export const TeamCard = ({
 									</span>
 								)}
 								<span className='r-tm-board-moves'>
-									{member.moveset.map((m) => (
-										<span key={m}>
-											{translateMoveFromMoveId(m, moves, gl)}
-											{showMemberDetails && recommended && !recommended.includes(m) && <NotRecommendedMark />}
-										</span>
-									))}
+									{member.moveset
+										.filter((m) => m !== 'none')
+										.map((m) => (
+											<span key={m}>
+												{translateMoveFromMoveId(m, moves, gl)}
+												{showMemberDetails && recommended && !recommended.includes(m) && <NotRecommendedMark />}
+											</span>
+										))}
 								</span>
 							</span>
 						</Fragment>
@@ -249,7 +251,7 @@ export const VirtualTeamCards = ({
 								primary={primary}
 								onOpen={onOpen}
 								showBuildDetails={showBuildDetails}
-								nicknames={nicknames}
+								{...(nicknames ? { nicknames } : {})}
 							/>
 						</div>
 					</div>

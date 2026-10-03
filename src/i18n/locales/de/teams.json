@@ -18,6 +18,7 @@
 		"copyLink": "Link kopieren",
 		"copied": "Link kopiert",
 		"reset": "Zurücksetzen",
+		"apply": "Anwenden",
 		"clear": "Team leeren",
 		"emptySlot": "Pokémon hinzufügen",
 		"slotN": "Platz {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "Nicht die von PvPoke empfohlene Attacke für diese Liga",
 		"chargedMove": "Lade",
 		"addMove": "Zweite Ladeattacke hinzufügen",
+		"none": "Keine",
 		"pickMove": "Attacke ändern ({{move}})",
 		"moveListAria": "Attacken",
 		"recommended": "Von PvPoke empfohlene Attacke"

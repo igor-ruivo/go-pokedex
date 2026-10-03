@@ -41,7 +41,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 				(slot) =>
 					data.rankList[slot.speciesId] &&
 					data.gamemaster[slot.speciesId] &&
-					slot.moveset.every((m) => builder?.moves[m])
+					slot.moveset.every((m) => m === 'none' || builder?.moves[m])
 			)
 			.map((slot) =>
 				withinCap(slot)

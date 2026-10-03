@@ -18,6 +18,7 @@
 		"copyLink": "リンクをコピー",
 		"copied": "リンクをコピーしました",
 		"reset": "リセット",
+		"apply": "適用",
 		"clear": "チームをクリア",
 		"emptySlot": "ポケモンを追加",
 		"slotN": "スロット{{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "このリーグでPvPokeが推奨する技ではありません",
 		"chargedMove": "ゲージ",
 		"addMove": "2つ目のゲージわざを追加",
+		"none": "なし",
 		"pickMove": "わざを変更（{{move}}）",
 		"moveListAria": "わざ",
 		"recommended": "PvPokeおすすめのわざ"

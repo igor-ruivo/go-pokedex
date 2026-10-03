@@ -18,6 +18,7 @@
 		"copyLink": "複製連結",
 		"copied": "已複製連結",
 		"reset": "重設",
+		"apply": "套用",
 		"clear": "清空隊伍",
 		"emptySlot": "加入寶可夢",
 		"slotN": "第 {{n}} 格",
@@ -36,6 +37,7 @@
 		"notRecommended": "不是 PvPoke 為此聯盟推薦的招式",
 		"chargedMove": "蓄力",
 		"addMove": "加入第二個蓄力攻擊",
+		"none": "無",
 		"pickMove": "更換招式（{{move}}）",
 		"moveListAria": "招式",
 		"recommended": "PvPoke 推薦招式"

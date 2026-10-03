@@ -111,12 +111,14 @@ const MoveRow = ({
 		);
 	};
 
-	if (!moveId) {
+	if (!moveId || moveId === 'none') {
 		return (
 			<div className='r-tm-move' ref={rootRef}>
 				<button type='button' className='r-tm-move-btn r-tm-move-btn--empty' onClick={() => setOpen((o) => !o)}>
 					<span className='r-tm-move-kind'>{t('teams:builder.chargedMove')}</span>
-					<span className='r-tm-move-name'>{t('teams:builder.addMove')}</span>
+					<span className='r-tm-move-name'>
+						{moveId === 'none' ? t('teams:builder.none') : t('teams:builder.addMove')}
+					</span>
 				</button>
 				{open && (
 					<MovePopover
@@ -126,7 +128,7 @@ const MoveRow = ({
 						name={name}
 						stat={stat}
 						tag={tag}
-						current={undefined}
+						current={moveId}
 						onPick={(id) => {
 							onChange(id);
 							setOpen(false);
@@ -197,8 +199,12 @@ const MovePopover = ({
 	const { t } = useTranslation(['teams']);
 	const sorted = useMemo(
 		() =>
-			[...options].sort(
-				(a, b) => Number(recommended.includes(b)) - Number(recommended.includes(a)) || name(a).localeCompare(name(b))
+			[...options].sort((a, b) =>
+				a === 'none'
+					? 1
+					: b === 'none'
+						? -1
+						: Number(recommended.includes(b)) - Number(recommended.includes(a)) || name(a).localeCompare(name(b))
 			),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[options, recommended]
@@ -210,22 +216,28 @@ const MovePopover = ({
 					<button
 						type='button'
 						data-active={id === current ? '' : undefined}
-						style={{ ['--tc' as string]: typeVar(moveTable[id].type) }}
+						style={id === 'none' ? undefined : { ['--tc' as string]: typeVar(moveTable[id].type) }}
 						onClick={() => onPick(id)}
 					>
-						<img src={`/images/types/${moveTable[id].type}.png`} alt='' width={18} height={18} />
-						<span className='r-tm-move-name'>{name(id)}</span>
-						{tag(id)}
-						{recommended.includes(id) && (
-							<i
-								className='r-tm-star'
-								title={t('teams:builder.recommended')}
-								aria-label={t('teams:builder.recommended')}
-							>
-								★
-							</i>
+						{id === 'none' ? (
+							<span className='r-tm-move-name'>{t('teams:builder.none')}</span>
+						) : (
+							<>
+								<img src={`/images/types/${moveTable[id].type}.png`} alt='' width={18} height={18} />
+								<span className='r-tm-move-name'>{name(id)}</span>
+								{tag(id)}
+								{recommended.includes(id) && (
+									<i
+										className='r-tm-star'
+										title={t('teams:builder.recommended')}
+										aria-label={t('teams:builder.recommended')}
+									>
+										★
+									</i>
+								)}
+								<span className='r-tm-move-stat'>{stat(id)}</span>
+							</>
 						)}
-						<span className='r-tm-move-stat'>{stat(id)}</span>
 					</button>
 				</li>
 			))}
@@ -566,7 +578,10 @@ export const MemberCard = ({
 						key={slot}
 						kind='charged'
 						moveId={moveset[slot]}
-						options={chargedPool.filter((id) => id === moveset[slot] || !moveset.slice(1).includes(id))}
+						options={[
+							...chargedPool.filter((id) => id === moveset[slot] || !moveset.slice(1).includes(id)),
+							...(slot === 2 ? ['none'] : []),
+						]}
 						moveTable={moveTable}
 						recommended={recommended}
 						legacy={legacy}

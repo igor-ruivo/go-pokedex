@@ -18,6 +18,7 @@
 		"copyLink": "Copiar enlace",
 		"copied": "Enlace copiado",
 		"reset": "Restablecer",
+		"apply": "Aplicar",
 		"clear": "Vaciar equipo",
 		"emptySlot": "Añadir un Pokémon",
 		"slotN": "Hueco {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "No es el movimiento recomendado por PvPoke para esta liga",
 		"chargedMove": "Cargado",
 		"addMove": "Añadir un segundo ataque cargado",
+		"none": "Ninguno",
 		"pickMove": "Cambiar movimiento ({{move}})",
 		"moveListAria": "Movimientos",
 		"recommended": "Movimiento recomendado por PvPoke"

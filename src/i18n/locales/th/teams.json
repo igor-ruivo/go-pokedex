@@ -18,6 +18,7 @@
 		"copyLink": "คัดลอกลิงก์",
 		"copied": "คัดลอกลิงก์แล้ว",
 		"reset": "รีเซ็ต",
+		"apply": "ใช้",
 		"clear": "ล้างทีม",
 		"emptySlot": "เพิ่มโปเกมอน",
 		"slotN": "ช่อง {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "ไม่ใช่ท่าที่ PvPoke แนะนำสำหรับลีกนี้",
 		"chargedMove": "ชาร์จ",
 		"addMove": "เพิ่มท่าชาร์จที่สอง",
+		"none": "ไม่มี",
 		"pickMove": "เปลี่ยนท่า ({{move}})",
 		"moveListAria": "ท่า",
 		"recommended": "ท่าที่ PvPoke แนะนำ"

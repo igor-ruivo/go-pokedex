@@ -168,31 +168,16 @@ const Teams = () => {
 			icon: <RankMedal rank={1} size={22} />,
 		},
 		{
+			id: 'collection',
+			label: t('teams:page.collectionTab'),
+			icon: '/images/nav/pokemon-storage.png',
+		},
+		{
 			id: 'favorites',
 			label: t('teams:page.favoritesTab'),
 			icon: (
 				<svg viewBox='2.3 2.2 19.4 18.4' width='18' height='18' fill='#f2c53d' aria-hidden='true'>
 					<path d='M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.3l-5.9 3.1 1.2-6.5L2.5 9.3l6.6-.9z' />
-				</svg>
-			),
-		},
-		{
-			id: 'collection',
-			label: t('teams:page.collectionTab'),
-			icon: (
-				<svg
-					viewBox='3 3 18 18'
-					width='20'
-					height='20'
-					fill='none'
-					stroke='currentColor'
-					strokeWidth='2'
-					aria-hidden='true'
-				>
-					<rect x='4' y='4' width='6' height='6' rx='1' />
-					<rect x='14' y='4' width='6' height='6' rx='1' />
-					<rect x='4' y='14' width='6' height='6' rx='1' />
-					<rect x='14' y='14' width='6' height='6' rx='1' />
 				</svg>
 			),
 		},
@@ -259,7 +244,7 @@ const Teams = () => {
 			{data.ready && tab === 'favorites' && <FavoriteTeams league={league} data={data} onOpen={openFromTop} />}
 
 			{data.ready && tab === 'collection' && (
-				<PokemonCollection league={league} leagueLabel={leagueLabel} data={data} onOpen={openFromTop} />
+				<PokemonCollection key={league} league={league} leagueLabel={leagueLabel} data={data} onOpen={openFromTop} />
 			)}
 
 			{data.ready && tab === 'builder' && restoring && (

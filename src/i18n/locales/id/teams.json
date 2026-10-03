@@ -18,6 +18,7 @@
 		"copyLink": "Salin tautan",
 		"copied": "Tautan disalin",
 		"reset": "Atur ulang",
+		"apply": "Terapkan",
 		"clear": "Kosongkan tim",
 		"emptySlot": "Tambah Pokémon",
 		"slotN": "Slot {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "Bukan jurus yang direkomendasikan PvPoke untuk liga ini",
 		"chargedMove": "Isi",
 		"addMove": "Tambah Serangan Isi kedua",
+		"none": "Tidak ada",
 		"pickMove": "Ganti jurus ({{move}})",
 		"moveListAria": "Jurus",
 		"recommended": "Jurus rekomendasi PvPoke"

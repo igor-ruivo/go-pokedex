@@ -18,6 +18,7 @@
 		"copyLink": "Copia link",
 		"copied": "Link copiato",
 		"reset": "Reimposta",
+		"apply": "Applica",
 		"clear": "Svuota squadra",
 		"emptySlot": "Aggiungi un Pokémon",
 		"slotN": "Posto {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "Non è la mossa consigliata da PvPoke per questa lega",
 		"chargedMove": "Caricata",
 		"addMove": "Aggiungi una seconda mossa caricata",
+		"none": "Nessuna",
 		"pickMove": "Cambia mossa ({{move}})",
 		"moveListAria": "Mosse",
 		"recommended": "Mossa consigliata da PvPoke"

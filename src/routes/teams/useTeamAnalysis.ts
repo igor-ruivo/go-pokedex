@@ -79,7 +79,7 @@ export const analyzeTeam = (
 
 	for (const slot of team) {
 		const pokemon = data.gamemaster[slot.speciesId];
-		if (!pokemon || slot.moveset.some((m) => !ctx.moves[m])) return undefined;
+		if (!pokemon || slot.moveset.some((m) => m !== 'none' && !ctx.moves[m])) return undefined;
 
 		const ranked = data.rankList[slot.speciesId];
 		const sim = new SimPokemon(ctx.speciesById(slot.speciesId)!, slot.moveset, ctx, slot.ivs, slot.level);
@@ -90,7 +90,7 @@ export const analyzeTeam = (
 			ranked,
 			stats: memberStats(sim),
 			types: pokemon.types.map((t) => String(t).toLowerCase()),
-			moveTypes: slot.moveset.map((m) => ctx.moves[m].type),
+			moveTypes: slot.moveset.filter((m) => m !== 'none').map((m) => ctx.moves[m].type),
 			roleScores: ranked ? { lead: ranked.lead, switch: ranked.switch, closer: ranked.closer } : undefined,
 		});
 	}

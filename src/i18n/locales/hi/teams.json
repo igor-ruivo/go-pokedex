@@ -18,6 +18,7 @@
 		"copyLink": "लिंक कॉपी करें",
 		"copied": "लिंक कॉपी हो गया",
 		"reset": "रीसेट",
+		"apply": "लागू करें",
 		"clear": "टीम खाली करें",
 		"emptySlot": "पोकेमॉन जोड़ें",
 		"slotN": "स्लॉट {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "इस लीग के लिए PvPoke द्वारा सुझाई गई चाल नहीं है",
 		"chargedMove": "चार्ज्ड",
 		"addMove": "दूसरा चार्ज्ड मूव जोड़ें",
+		"none": "कोई नहीं",
 		"pickMove": "मूव बदलें ({{move}})",
 		"moveListAria": "मूव",
 		"recommended": "PvPoke का सुझाया मूव"

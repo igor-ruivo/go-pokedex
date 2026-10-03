@@ -18,7 +18,8 @@
 		"copyLink": "Copier le lien",
 		"copied": "Lien copié",
 		"reset": "Réinitialiser",
-		"clear": "Vider l'équipe",
+		"apply": "Appliquer",
+		"clear": "Vider l’équipe",
 		"emptySlot": "Ajouter un Pokémon",
 		"slotN": "Emplacement {{n}}",
 		"suggestion": "Suggestion",
@@ -36,6 +37,7 @@
 		"notRecommended": "Ce n'est pas l'attaque recommandée par PvPoke pour cette ligue",
 		"chargedMove": "Chargée",
 		"addMove": "Ajouter une seconde attaque chargée",
+		"none": "Aucune",
 		"pickMove": "Changer d'attaque ({{move}})",
 		"moveListAria": "Attaques",
 		"recommended": "Attaque recommandée par PvPoke"

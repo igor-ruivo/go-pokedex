@@ -6,7 +6,8 @@
 //                             and writes ./team-ranking.json (OUT overrides; git-ignored)
 //
 // The run is skipped (exit 0, GITHUB_OUTPUT skipped=true, nothing written) when the inputs hash equals the one in the
-// previous published file — see `inputsHash`. FORCE=1 ranks anyway.
+// previous published file. On a rank run, the log explains which inputs changed (or whether FORCE=1 / no previous
+// ranking caused it).
 //
 // For each of Great / Ultra / Master League:
 //   - candidates: the CANDIDATES best-ranked species (default 200), each with its ranking's recommended moveset
@@ -58,8 +59,10 @@ if (!builder.simulator.verified) {
 
 interface PreviousRanking {
 	generatedAt?: string;
-	/** Fingerprint of everything the ranking was computed from (see `inputsHash`). */
+	/** Fingerprint of everything the ranking was computed from (see `inputsFingerprint`). */
 	inputsHash?: string;
+	/** Per-input fingerprints, for explaining why a new ranking was or wasn't needed. */
+	inputHashes?: Record<string, string>;
 	leagues?: Partial<Record<TeamLeague, { byScore?: Array<RankedTeam>; byThreat?: Array<RankedTeam> }>>;
 }
 
@@ -82,18 +85,21 @@ const previousIsToday = previous?.generatedAt?.slice(0, 10) === today;
  * the team scoring…). Line endings are ignored, so a Windows and a Linux checkout agree. Same fingerprint as the
  * published file → the ranking would come out identical, so the run is skipped.
  */
-const inputsHash = (): string => {
+const inputsFingerprint = (): { hash: string; parts: Record<string, string> } => {
 	const hash = crypto.createHash('sha256');
-	const add = (label: string, file: string) =>
-		hash
-			.update(label + '\0')
-			.update(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'))
-			.update('\0');
+	const parts: Record<string, string> = {};
+	const add = (label: string, content: string, fingerprintKey = label) => {
+		const normalized = content.replace(/\r\n/g, '\n');
+		parts[fingerprintKey] = crypto.createHash('sha256').update(normalized).digest('hex');
+		hash.update(label + '\0').update(normalized).update('\0');
+	};
 
 	for (const file of ['game-master.json', 'team-builder.json', ...LEAGUES.map((l) => l.file)]) {
-		add(`data/${file}`, path.join(DEX, 'data', file));
+		add(`data/${file}`, fs.readFileSync(path.join(DEX, 'data', file), 'utf8'), `dex-server:data/${file}`);
 	}
-	hash.update(JSON.stringify({ CANDIDATES, TOP, SAMPLE_CHECKS }));
+	const settings = JSON.stringify({ CANDIDATES, TOP, SAMPLE_CHECKS });
+	parts.settings = crypto.createHash('sha256').update(settings).digest('hex');
+	hash.update(settings);
 
 	// Walk the script's relative imports to collect its source files.
 	const root = path.join(import.meta.dirname, '..', '..');
@@ -113,15 +119,41 @@ const inputsHash = (): string => {
 		}
 	};
 	visit(import.meta.filename);
-	for (const file of [...seen].sort()) add(path.relative(root, file).replace(/\\/g, '/'), file);
-	return hash.digest('hex');
+	for (const file of [...seen].sort()) {
+		const relative = path.relative(root, file).replace(/\\/g, '/');
+		add(relative, fs.readFileSync(file, 'utf8'), `source:${relative}`);
+	}
+	return { hash: hash.digest('hex'), parts };
 };
 
-const hashNow = inputsHash();
-if (previous?.inputsHash === hashNow && !process.env.FORCE) {
+const { hash: hashNow, parts: inputHashes } = inputsFingerprint();
+const force = process.env.FORCE === '1';
+const changedInputs = previous?.inputHashes
+	? [...new Set([...Object.keys(previous.inputHashes), ...Object.keys(inputHashes)])]
+			.sort()
+			.filter((key) => previous.inputHashes?.[key] !== inputHashes[key])
+	: [];
+const hasInputHashes = !!previous?.inputHashes && Object.keys(previous.inputHashes).length > 0;
+if (previous?.inputsHash === hashNow && !force && hasInputHashes) {
 	console.log(`Inputs unchanged since the published ranking (${hashNow.slice(0, 12)}) — nothing to rank.`);
 	if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, 'skipped=true\n');
 	process.exit(0);
+}
+if (force) {
+	console.log('Recomputing ranking because FORCE=1 was set.');
+	if (previous?.inputsHash === hashNow) console.log('No ranking inputs changed.');
+	else if (changedInputs.length > 0) console.log(`Changed inputs: ${changedInputs.join(', ')}`);
+	else console.log('Input hashes changed, but the previous ranking has no per-input fingerprints for comparison.');
+} else if (!previous?.inputsHash) {
+	console.log('Recomputing ranking because no previous published ranking with an inputs hash is available.');
+} else if (!hasInputHashes) {
+	console.log(
+		'Recomputing ranking once to add per-input fingerprints to the published result; the previous result only has an overall hash.'
+	);
+} else if (changedInputs.length > 0) {
+	console.log(`Recomputing ranking because these input hashes changed: ${changedInputs.join(', ')}`);
+} else {
+	console.log('Recomputing ranking because the overall inputs hash changed; per-input fingerprints are unavailable.');
 }
 
 /** The same three Pokémon with the same moves are the same team, whatever order they were listed in. */
@@ -279,6 +311,12 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 const leagues = Object.fromEntries(LEAGUES.map((l) => [l.league, rankLeague(l)]));
 fs.writeFileSync(
 	OUT,
-	JSON.stringify({ generatedAt: new Date().toISOString(), inputsHash: hashNow, candidates: CANDIDATES, leagues })
+	JSON.stringify({
+		generatedAt: new Date().toISOString(),
+		inputsHash: hashNow,
+		inputHashes,
+		candidates: CANDIDATES,
+		leagues,
+	})
 );
 console.log(`Wrote ${OUT}`);

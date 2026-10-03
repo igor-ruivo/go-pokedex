@@ -18,6 +18,7 @@
 		"copyLink": "Copiar ligação",
 		"copied": "Ligação copiada",
 		"reset": "Repor",
+		"apply": "Aplicar",
 		"clear": "Limpar equipa",
 		"emptySlot": "Adicionar um Pokémon",
 		"slotN": "Posição {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "Não é o movimento recomendado pelo PvPoke para esta liga",
 		"chargedMove": "Carregado",
 		"addMove": "Adicionar um segundo ataque carregado",
+		"none": "Nenhum",
 		"pickMove": "Mudar ataque ({{move}})",
 		"moveListAria": "Ataques",
 		"recommended": "Ataque recomendado pelo PvPoke"

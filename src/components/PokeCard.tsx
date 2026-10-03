@@ -70,7 +70,7 @@ export const PokeCard = ({
 			<span className='r-pc-art'>
 				<SpriteImg pokemon={pokemon} loading='lazy' />
 			</span>
-			<b className='r-pc-name'>{displayName || cleanName(pokemon.speciesName)}</b>
+			<b className='r-pc-name'>{displayName ?? cleanName(pokemon.speciesName)}</b>
 			{metric?.cp != null && (
 				<span className='r-pc-metric'>
 					{metric.cp.toLocaleString()} <em>{gameTranslator(GameTranslatorKeys.CPDisplay, gl)}</em>

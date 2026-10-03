@@ -18,6 +18,7 @@
 		"copyLink": "링크 복사",
 		"copied": "링크를 복사했습니다",
 		"reset": "초기화",
+		"apply": "적용",
 		"clear": "팀 비우기",
 		"emptySlot": "포켓몬 추가",
 		"slotN": "슬롯 {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "이 리그에서 PvPoke가 추천하는 기술이 아닙니다",
 		"chargedMove": "차지",
 		"addMove": "두 번째 차지 공격 추가",
+		"none": "없음",
 		"pickMove": "기술 변경 ({{move}})",
 		"moveListAria": "기술",
 		"recommended": "PvPoke 추천 기술"

@@ -5,13 +5,10 @@ import { useDismiss } from '../../hooks/useDismiss';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import { isSlotIvs, type SlotIvs } from '../../lib/team-analysis';
 
-/** How long typing has to pause before the IVs are applied (each change re-rates the team). */
-const APPLY_DELAY_MS = 300;
-
 /**
  * The IVs of one team member (attack, defense, HP — each 0 to 15), in a dialog like the Pokémon picker. The page is
- * not dimmed behind it, and a complete, valid set is applied as soon as typing pauses, so the scores in the bar above
- * update while you type. "Reset" puts the member back to the league's best spread. (The level has its own dialog.)
+ * not dimmed behind it. Edits stay local until Apply is pressed; the modal stays open until the changed value is
+ * reflected back by the parent. "Reset" puts the member back to the league's best spread.
  */
 export const IvModal = ({
 	name,
@@ -48,51 +45,63 @@ export const IvModal = ({
 		t('pokemonDetail:hero.stats.hp'),
 	];
 	const [fields, setFields] = useState(() => value.map(String));
-	const rootRef = useDismiss<HTMLDivElement>(true, onClose, { dim: false });
+	const [applying, setApplying] = useState<{ value: SlotIvs | undefined } | null>(null);
+	const closeRef = useRef(onClose);
+	closeRef.current = onClose;
+	const rootRef = useDismiss<HTMLDivElement>(
+		true,
+		() => {
+			if (!applying) onClose();
+		},
+		{ dim: false }
+	);
 	const firstRef = useRef<HTMLInputElement>(null);
-	const onChangeRef = useRef(onChange);
-	onChangeRef.current = onChange;
-	// What was last applied from here, so the value coming back doesn't overwrite what is being typed.
-	const appliedRef = useRef(value.join('.'));
 
 	useEffect(() => {
 		firstRef.current?.focus();
 		firstRef.current?.select();
 	}, []);
 
-	// The member's IVs changed from outside (Reset, the page's Reset button): show them.
 	const current = value.join('.');
 	useEffect(() => {
-		if (current !== appliedRef.current) {
-			appliedRef.current = current;
+		if (!applying) {
 			setFields(current.split('.'));
+			return;
 		}
-	}, [current]);
+		const persisted = applying.value === undefined ? !custom : current === applying.value.join('.');
+		if (persisted) {
+			setApplying(null);
+			closeRef.current();
+		}
+	}, [applying, current, custom]);
 
 	const text = fields.join('.');
 	const typedIvs = text.split('.').map((field) => (field === '' ? NaN : Number(field)));
 	// A level that follows the CP cap always fits; a picked one has to still fit with the new IVs.
 	const typedCp = pinnedLevel !== undefined && isSlotIvs(typedIvs) ? cpAt(baseStats, typedIvs, level) : undefined;
 	const overCap = typedCp !== undefined && typedCp > cpCap;
-	useEffect(() => {
-		const next = typedIvs;
-		if (!isSlotIvs(next) || overCap || text === current) return;
-		const id = setTimeout(() => {
-			appliedRef.current = text;
-			onChangeRef.current(next);
-		}, APPLY_DELAY_MS);
-		return () => clearTimeout(id);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [text, overCap, current]);
-
 	const parsed = fields.map((field) => (field === '' ? NaN : Number(field)));
+	const canApply = isSlotIvs(typedIvs) && !overCap && text !== current && !applying;
+	const apply = (next: SlotIvs | undefined) => {
+		setApplying({ value: next });
+		onChange(next);
+	};
+	const applyTyped = () => {
+		if (isSlotIvs(typedIvs) && !overCap) apply(typedIvs);
+	};
 
 	return (
 		<div className='r-tm-picker-backdrop r-tm-ivmodal-backdrop'>
 			<div className='r-tm-picker r-tm-ivmodal' role='dialog' aria-modal='true' aria-label={title} ref={rootRef}>
 				<div className='r-tm-picker-head'>
 					<h2>{title}</h2>
-					<button type='button' className='r-icon-btn' aria-label={t('teams:picker.close')} onClick={onClose}>
+					<button
+						type='button'
+						className='r-icon-btn'
+						aria-label={t('teams:picker.close')}
+						disabled={!!applying}
+						onClick={onClose}
+					>
 						×
 					</button>
 				</div>
@@ -115,7 +124,7 @@ export const IvModal = ({
 									setFields((prev) => prev.map((old, k) => (k === i ? digits : old)));
 								}}
 								onKeyDown={(e) => {
-									if (e.key === 'Enter') onClose();
+									if (e.key === 'Enter' && canApply) applyTyped();
 								}}
 							/>
 						</label>
@@ -128,13 +137,16 @@ export const IvModal = ({
 					</p>
 				)}
 
-				{custom && (
-					<div className='r-tm-ivmodal-actions'>
-						<button type='button' className='r-tm-ivedit-reset' onClick={() => onChange(undefined)}>
+				<div className='r-tm-ivmodal-actions'>
+					{custom && (
+						<button type='button' className='r-tm-ivedit-reset' disabled={!!applying} onClick={() => apply(undefined)}>
 							{t('teams:builder.reset')}
 						</button>
-					</div>
-				)}
+					)}
+					<button type='button' className='r-tm-btn' disabled={!canApply} onClick={applyTyped}>
+						{t('teams:builder.apply')}
+					</button>
+				</div>
 			</div>
 		</div>
 	);

@@ -5,14 +5,11 @@ import { useDismiss } from '../../hooks/useDismiss';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import { isSlotLevel, type SlotIvs } from '../../lib/team-analysis';
 
-/** How long typing has to pause before the level is applied (each change re-rates the team). */
-const APPLY_DELAY_MS = 300;
-
 /**
  * The level of one team member (1 to 50, in steps of 0.5), in a dialog like the Pokémon picker. Left alone, the level is
  * the highest the league's CP cap allows for the IVs; typing one pins it, but a level that puts the Pokémon over the cap
- * is refused (it says so and is not applied). A valid level is applied as soon as typing pauses, and the page is not
- * dimmed, so the scores in the bar above update while you type. "Reset" goes back to following the cap. (The IVs have their own dialog.)
+ * is refused (it says so and is not applied). Edits stay local until Apply is pressed, and the modal stays open until
+ * the parent reflects the changed value. "Reset" goes back to following the cap.
  */
 export const LevelModal = ({
 	name,
@@ -41,45 +38,57 @@ export const LevelModal = ({
 	const { t } = useTranslation(['teams']);
 	const title = t('teams:builder.levelTitle', { name });
 	const [field, setField] = useState(String(level));
-	const rootRef = useDismiss<HTMLDivElement>(true, onClose, { dim: false });
+	const [applying, setApplying] = useState<{ value: number | undefined } | null>(null);
+	const closeRef = useRef(onClose);
+	closeRef.current = onClose;
+	const rootRef = useDismiss<HTMLDivElement>(
+		true,
+		() => {
+			if (!applying) onClose();
+		},
+		{ dim: false }
+	);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const onChangeRef = useRef(onChange);
-	onChangeRef.current = onChange;
-	// What was last applied from here, so the value coming back doesn't overwrite what is being typed.
-	const appliedRef = useRef(String(level));
 
 	useEffect(() => {
 		inputRef.current?.focus();
 		inputRef.current?.select();
 	}, []);
 
-	// The level changed from outside (Reset, the page's Reset button): show it.
 	const current = String(level);
 	useEffect(() => {
-		if (current !== appliedRef.current) {
-			appliedRef.current = current;
+		if (!applying) {
 			setField(current);
+			return;
 		}
-	}, [current]);
+		const persisted = applying.value === undefined ? !custom : current === String(applying.value);
+		if (persisted) {
+			setApplying(null);
+			closeRef.current();
+		}
+	}, [applying, current, custom]);
 
 	const typed = field === '' ? NaN : Number(field);
 	const typedCp = isSlotLevel(typed) ? cpAt(baseStats, ivs, typed) : undefined;
 	const overCap = typedCp !== undefined && typedCp > cpCap;
-	useEffect(() => {
-		if (!isSlotLevel(typed) || overCap || field === current) return;
-		const id = setTimeout(() => {
-			appliedRef.current = field;
-			onChangeRef.current(typed);
-		}, APPLY_DELAY_MS);
-		return () => clearTimeout(id);
-	}, [field, typed, overCap, current]);
+	const canApply = isSlotLevel(typed) && !overCap && field !== current && !applying;
+	const apply = (next: number | undefined) => {
+		setApplying({ value: next });
+		onChange(next);
+	};
 
 	return (
 		<div className='r-tm-picker-backdrop r-tm-ivmodal-backdrop'>
 			<div className='r-tm-picker r-tm-ivmodal' role='dialog' aria-modal='true' aria-label={title} ref={rootRef}>
 				<div className='r-tm-picker-head'>
 					<h2>{title}</h2>
-					<button type='button' className='r-icon-btn' aria-label={t('teams:picker.close')} onClick={onClose}>
+					<button
+						type='button'
+						className='r-icon-btn'
+						aria-label={t('teams:picker.close')}
+						disabled={!!applying}
+						onClick={onClose}
+					>
 						×
 					</button>
 				</div>
@@ -105,7 +114,7 @@ export const LevelModal = ({
 								)
 							}
 							onKeyDown={(e) => {
-								if (e.key === 'Enter') onClose();
+								if (e.key === 'Enter' && canApply) apply(typed);
 							}}
 						/>
 					</label>
@@ -117,13 +126,16 @@ export const LevelModal = ({
 						: `${t('teams:builder.cp')} ${typedCp ?? cpAt(baseStats, ivs, level)}`}
 				</p>
 
-				{custom && (
-					<div className='r-tm-ivmodal-actions'>
-						<button type='button' className='r-tm-ivedit-reset' onClick={() => onChange(undefined)}>
+				<div className='r-tm-ivmodal-actions'>
+					{custom && (
+						<button type='button' className='r-tm-ivedit-reset' disabled={!!applying} onClick={() => apply(undefined)}>
 							{t('teams:builder.reset')}
 						</button>
-					</div>
-				)}
+					)}
+					<button type='button' className='r-tm-btn' disabled={!canApply} onClick={() => apply(typed)}>
+						{t('teams:builder.apply')}
+					</button>
+				</div>
 			</div>
 		</div>
 	);

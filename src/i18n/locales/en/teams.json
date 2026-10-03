@@ -18,6 +18,7 @@
 		"copyLink": "Copy link",
 		"copied": "Link copied",
 		"reset": "Reset",
+		"apply": "Apply",
 		"clear": "Clear team",
 		"emptySlot": "Add a Pokémon",
 		"slotN": "Slot {{n}}",
@@ -36,6 +37,7 @@
 		"notRecommended": "Not PvPoke's recommended move for this league",
 		"chargedMove": "Charged",
 		"addMove": "Add a second Charged Move",
+		"none": "None",
 		"pickMove": "Change move ({{move}})",
 		"moveListAria": "Moves",
 		"recommended": "PvPoke's recommended move"

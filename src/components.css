@@ -5040,6 +5040,7 @@
 	position: relative;
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: flex-end;
 	align-items: flex-start;
 	gap: 8px;
 	margin-top: var(--s2);

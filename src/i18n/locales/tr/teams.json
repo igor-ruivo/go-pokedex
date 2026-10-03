@@ -18,6 +18,7 @@
 		"copyLink": "Bağlantıyı kopyala",
 		"copied": "Bağlantı kopyalandı",
 		"reset": "Sıfırla",
+		"apply": "Uygula",
 		"clear": "Takımı temizle",
 		"emptySlot": "Pokémon ekle",
 		"slotN": "{{n}}. yuva",
@@ -36,6 +37,7 @@
 		"notRecommended": "Bu lig için PvPoke'un önerdiği hareket değil",
 		"chargedMove": "Yüklü",
 		"addMove": "İkinci Yüklü Saldırı ekle",
+		"none": "Yok",
 		"pickMove": "Hareketi değiştir ({{move}})",
 		"moveListAria": "Hareketler",
 		"recommended": "PvPoke'un önerdiği hareket"

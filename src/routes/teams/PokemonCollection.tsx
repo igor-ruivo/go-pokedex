@@ -1,28 +1,91 @@
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ShadowMark } from '../../components/ShadowMark';
 import { PokemonSearchInput } from '../../components/PokemonSearchInput';
-import { SpriteImg } from '../../components/Sprite';
+import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
+import { SpriteImg } from '../../components/Sprite';
 import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { useDismiss } from '../../hooks/useDismiss';
 import { cleanName, normalizeSearch } from '../../lib/format';
 import { removeCollectionPokemon, saveCollectionPokemon, usePokemonCollection } from '../../lib/pokemon-collection';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import { scoreTier, type SlotIvs, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
+import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { VirtualTeamCards } from './TeamCards';
 import { SlotPicker, TeamMemberEditor } from './TeamStage';
 import { analyzeTeam } from './useTeamAnalysis';
 import { type TeamsData, useSimContext, useTeamEvaluations } from './useTeamsData';
-import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 
 const GRID_GAP = 8;
 const MINI_TILE_MAX_SIZE = 86;
 const AUTO_EVALUATION_LIMIT = 10;
+const RANK_CACHE_VERSION = 3;
+
+const cacheKey = (league: TeamLeague) => `go-pokedex:collection-team-rank:v${RANK_CACHE_VERSION}:${league}`;
+
+const isRankedTeam = (value: unknown): value is RankedTeam => {
+	if (typeof value !== 'object' || value === null) return false;
+	const team = value as Partial<RankedTeam>;
+	return (
+		typeof team.score === 'number' &&
+		typeof team.threatScore === 'number' &&
+		(team.tier === 'elite' ||
+			team.tier === 'strong' ||
+			team.tier === 'solid' ||
+			team.tier === 'shaky' ||
+			team.tier === 'risky') &&
+		Array.isArray(team.members) &&
+		team.members.length === 3 &&
+		team.members.every((member: unknown) => {
+			if (typeof member !== 'object' || member === null) return false;
+			const rankedMember = member as { speciesId?: unknown; moveset?: unknown };
+			return (
+				typeof rankedMember.speciesId === 'string' &&
+				Array.isArray(rankedMember.moveset) &&
+				rankedMember.moveset.every((move: unknown) => typeof move === 'string')
+			);
+		})
+	);
+};
+
+const readRankedCache = (league: TeamLeague, signature: string): Array<RankedTeam> | undefined => {
+	try {
+		const raw = window.sessionStorage.getItem(cacheKey(league));
+		if (!raw) return undefined;
+		const cached: unknown = JSON.parse(raw);
+		if (typeof cached !== 'object' || cached === null) return undefined;
+		const record = cached as { signature?: unknown; teams?: unknown };
+		return record.signature === signature && Array.isArray(record.teams) && record.teams.every(isRankedTeam)
+			? record.teams
+			: undefined;
+	} catch {
+		return undefined;
+	}
+};
+
+const writeRankedCache = (league: TeamLeague, signature: string, teams: ReadonlyArray<RankedTeam>) => {
+	try {
+		window.sessionStorage.setItem(cacheKey(league), JSON.stringify({ signature, teams }));
+	} catch {
+		// Session storage may be unavailable or full; the in-memory ranking still works.
+	}
+};
+
+const hashSignature = (value: string) => {
+	let first = 2166136261;
+	let second = 0x9e3779b9;
+	for (let i = 0; i < value.length; i++) {
+		const code = value.charCodeAt(i);
+		first = Math.imul(first ^ code, 16777619);
+		second = Math.imul(second ^ code, 2246822519);
+	}
+	return `${value.length.toString(36)}-${(first >>> 0).toString(36)}-${(second >>> 0).toString(36)}`;
+};
 
 const buildCombinations = (
 	species: ReadonlyArray<TeamSlotDescriptor>,
@@ -43,7 +106,7 @@ const buildCombinations = (
 						(slot) =>
 							data.gamemaster[slot.speciesId] &&
 							data.rankList[slot.speciesId] &&
-							slot.moveset.every((id) => data.builder?.moves[id])
+							slot.moveset.every((id) => id === 'none' || data.builder?.moves[id])
 					)
 				)
 					continue;
@@ -77,12 +140,15 @@ export const PokemonCollection = ({
 	);
 	const [draft, setDraft] = useState<{ slot: TeamSlotDescriptor; entryId?: string; nickname?: string } | null>(null);
 	const [pickerOpen, setPickerOpen] = useState(false);
+	const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
 	const [search, setSearch] = useState('');
 	const [sortKey, setSortKey] = useState<'score' | 'threat'>('score');
 	const [requestedEvaluationKey, setRequestedEvaluationKey] = useState<string | null>(null);
 	const [gridSize, setGridSize] = useState({ cols: 4, rowHeight: 96, measured: false });
+	const [scrollMargin, setScrollMargin] = useState(0);
 	const gridRef = useRef<HTMLDivElement>(null);
 	const ctx = useSimContext(league, data);
+	const removeDialogRef = useDismiss<HTMLDivElement>(!!removeTarget, () => setRemoveTarget(null));
 
 	useLayoutEffect(() => {
 		const el = gridRef.current;
@@ -107,12 +173,16 @@ export const PokemonCollection = ({
 	}, []);
 
 	const gridItems = useMemo(() => [null, ...saved], [saved]);
-	const gridVirtualizer = useVirtualizer({
+	useLayoutEffect(() => {
+		setScrollMargin(gridRef.current?.offsetTop ?? 0);
+	}, [draft, gridSize.cols, saved.length]);
+
+	const gridVirtualizer = useWindowVirtualizer({
 		count: Math.ceil(gridItems.length / gridSize.cols),
-		getScrollElement: () => gridRef.current,
 		estimateSize: () => gridSize.rowHeight,
 		overscan: 6,
 		gap: GRID_GAP,
+		scrollMargin,
 	});
 	useLayoutEffect(() => {
 		gridVirtualizer.measure();
@@ -153,19 +223,61 @@ export const PokemonCollection = ({
 			);
 		return buildCombinations(slots, data);
 	}, [saved, data]);
+	const rankingSignature = useMemo(() => {
+		const rankedSpecies = Object.entries(data.rankList)
+			.sort(([a], [b]) => a.localeCompare(b))
+			.map(([speciesId, ranking]) => [speciesId, ranking]);
+		const speciesIds = new Set([
+			...Object.keys(data.rankList),
+			...combinations.flatMap((team) => team.map((member) => member.speciesId)),
+		]);
+		const species = [...speciesIds].sort().map((id) => {
+			const pokemon = data.gamemaster[id];
+			return pokemon ? [id, pokemon.dex, pokemon.types, pokemon.baseStats, pokemon.isShadow] : [id, null];
+		});
+		return hashSignature(
+			JSON.stringify({
+				version: RANK_CACHE_VERSION,
+				league,
+				combinations,
+				rankedSpecies,
+				species,
+				builder: data.builder
+					? {
+							simulator: data.builder.simulator,
+							moves: data.builder.moves,
+							ivs: data.builder.ivs,
+							forms: data.builder.forms,
+							excludedThreats: data.builder.excludedThreats,
+							meta: data.builder.meta[league],
+						}
+					: null,
+			})
+		);
+	}, [league, combinations, data.rankList, data.gamemaster, data.builder]);
+	const cachedRankedTeams = data.ready ? readRankedCache(league, rankingSignature) : undefined;
 	const evaluationKey = JSON.stringify(combinations);
 	const requiresManualEvaluation = saved.length > AUTO_EVALUATION_LIMIT && combinations.length > 0;
-	const evaluationRequested = !requiresManualEvaluation || requestedEvaluationKey === evaluationKey;
+	const evaluationRequested =
+		cachedRankedTeams === undefined && (!requiresManualEvaluation || requestedEvaluationKey === evaluationKey);
 	const evaluations = useTeamEvaluations(league, data, evaluationRequested ? combinations : []);
+	const evaluationScores = evaluations.map((result) => result.data?.threatScore ?? null);
+	const evaluationScoresKey = JSON.stringify(evaluationScores);
+	const computedRankingReady =
+		evaluationRequested &&
+		data.ready &&
+		evaluations.length === combinations.length &&
+		evaluations.every((result) => result.data !== undefined && !result.isFetching);
 	const rankedTeams = useMemo(() => {
-		if (!ctx) return [];
+		if (!ctx || !computedRankingReady) return cachedRankedTeams ?? [];
+		const threatScores = JSON.parse(evaluationScoresKey) as Array<number | null>;
 		return combinations
 			.flatMap((members, index): Array<RankedTeam> => {
-				const evaluation = evaluations[index]?.data;
-				const analysis = evaluation ? analyzeTeam(league, ctx, data, members) : undefined;
-				if (!evaluation || !analysis) return [];
+				const threatScore = threatScores[index];
+				const analysis = threatScore !== null ? analyzeTeam(league, ctx, data, members) : undefined;
+				if (threatScore === null || !analysis) return [];
 				const score = teamScore({
-					threat: threatPart(evaluation.threatScore),
+					threat: threatPart(threatScore),
 					defense: analysis.defense.score,
 					offense: analysis.offense.score,
 					bulk: analysis.grades.bulk.part,
@@ -189,48 +301,38 @@ export const PokemonCollection = ({
 						}),
 						score,
 						tier: scoreTier(score),
-						threatScore: evaluation.threatScore,
+						threatScore,
 					},
 				];
 			})
 			.sort((a, b) => b.score - a.score || a.threatScore - b.threatScore);
-		// Query result arrays are recreated while results resolve; their data flags are the meaningful dependency.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [combinations, ctx, data, evaluations.map((result) => (result.data ? 1 : 0)).join(''), league]);
+	}, [cachedRankedTeams, combinations, computedRankingReady, ctx, data, evaluationScoresKey, league]);
+	useEffect(() => {
+		if (computedRankingReady) writeRankedCache(league, rankingSignature, rankedTeams);
+	}, [computedRankingReady, league, rankingSignature, rankedTeams]);
 	const term = normalizeSearch(search);
-	const orderedTeams = useMemo(
-		() =>
-			[...rankedTeams].sort((a, b) =>
-				sortKey === 'threat'
-					? a.threatScore - b.threatScore || b.score - a.score
-					: b.score - a.score || a.threatScore - b.threatScore
-			),
-		[rankedTeams, sortKey]
+	const orderedTeams = [...rankedTeams].sort((a, b) =>
+		sortKey === 'threat'
+			? a.threatScore - b.threatScore || b.score - a.score
+			: b.score - a.score || a.threatScore - b.threatScore
 	);
-	const nicknames = useMemo(
-		() => {
-			const counts = new Map<string, number>();
-			saved.forEach((entry) => counts.set(entry.speciesId, (counts.get(entry.speciesId) ?? 0) + 1));
-			return Object.fromEntries(
-				saved.flatMap((entry) =>
-					counts.get(entry.speciesId) === 1 && entry.nickname ? [[entry.speciesId, entry.nickname]] : []
-				)
-			);
-		},
-		[saved]
-	);
-	const filteredTeams = useMemo(
-		() =>
-			orderedTeams.filter(
-				(team) =>
-					!term ||
-					team.members.some((member) => {
-						const pokemon = data.gamemaster[member.speciesId];
-						const name = nicknames[member.speciesId] || (pokemon ? cleanName(pokemon.speciesName) : member.speciesId);
-						return normalizeSearch(name).includes(term) || normalizeSearch(member.speciesId).includes(term);
-					})
-			),
-		[orderedTeams, term, data.gamemaster, nicknames]
+	const nicknames = useMemo(() => {
+		const counts = new Map<string, number>();
+		saved.forEach((entry) => counts.set(entry.speciesId, (counts.get(entry.speciesId) ?? 0) + 1));
+		return Object.fromEntries(
+			saved.flatMap((entry) =>
+				counts.get(entry.speciesId) === 1 && entry.nickname ? [[entry.speciesId, entry.nickname]] : []
+			)
+		);
+	}, [saved]);
+	const filteredTeams = orderedTeams.filter(
+		(team) =>
+			!term ||
+			team.members.some((member) => {
+				const pokemon = data.gamemaster[member.speciesId];
+				const name = nicknames[member.speciesId] || (pokemon ? cleanName(pokemon.speciesName) : member.speciesId);
+				return normalizeSearch(name).includes(term) || normalizeSearch(member.speciesId).includes(term);
+			})
 	);
 
 	const updateDraft = (next: TeamSlotDescriptor) =>
@@ -292,10 +394,7 @@ export const PokemonCollection = ({
 	const changeSort = (key: string, _dir: SortDir) => {
 		if (key === 'score' || key === 'threat') setSortKey(key);
 	};
-	const allReady =
-		evaluationRequested &&
-		evaluations.length === combinations.length &&
-		evaluations.every((result) => result.data !== undefined && !result.isFetching);
+	const allReady = computedRankingReady || cachedRankedTeams !== undefined;
 
 	return (
 		<div className='r-tm-collection'>
@@ -341,13 +440,10 @@ export const PokemonCollection = ({
 									top: 0,
 									left: 0,
 									width: '100%',
-									transform: `translateY(${virtualRow.start}px)`,
+									transform: `translateY(${virtualRow.start - scrollMargin}px)`,
 								}}
 							>
-								<div
-									className='r-minigrid r-grid-row'
-									style={{ gridTemplateColumns: `repeat(${gridSize.cols}, 1fr)` }}
-								>
+								<div className='r-minigrid r-grid-row' style={{ gridTemplateColumns: `repeat(${gridSize.cols}, 1fr)` }}>
 									{gridItems
 										.slice(virtualRow.index * gridSize.cols, (virtualRow.index + 1) * gridSize.cols)
 										.map((entry, index) => {
@@ -371,7 +467,7 @@ export const PokemonCollection = ({
 															{pokemon.isShadow && <ShadowMark />}
 															<SpriteImg pokemon={pokemon} loading='lazy' />
 															<span className='r-tm-collection-name'>
-																{entry.nickname || cleanName(pokemon.speciesName)}
+																{entry.nickname ?? cleanName(pokemon.speciesName)}
 															</span>
 															{savedCp[entry.id] !== undefined && (
 																<span className='r-tm-collection-cp'>
@@ -384,7 +480,7 @@ export const PokemonCollection = ({
 															type='button'
 															className='r-tm-collection-remove'
 															aria-label={t('teams:collection.remove', { name: pokemon.speciesName })}
-															onClick={() => removeCollectionPokemon(league, entry.id)}
+															onClick={() => setRemoveTarget({ id: entry.id, name: cleanName(pokemon.speciesName) })}
 														>
 															×
 														</button>
@@ -438,7 +534,7 @@ export const PokemonCollection = ({
 				{requiresManualEvaluation && (
 					<div className='r-tm-collection-manual'>
 						<p className='r-muted'>{t('teams:collection.manualNotice')}</p>
-						{!evaluationRequested && (
+						{!evaluationRequested && cachedRankedTeams === undefined && (
 							<button type='button' className='r-tm-btn' onClick={() => setRequestedEvaluationKey(evaluationKey)}>
 								{t('teams:collection.computeTeams')}
 							</button>
@@ -447,7 +543,8 @@ export const PokemonCollection = ({
 				)}
 				{saved.length < 3 ? (
 					<p className='r-muted'>{t('teams:collection.needThree')}</p>
-				) : requiresManualEvaluation && !evaluationRequested ? null : allReady && filteredTeams.length > 0 ? (
+				) : requiresManualEvaluation && !evaluationRequested && cachedRankedTeams === undefined ? null : allReady &&
+				  filteredTeams.length > 0 ? (
 					<VirtualTeamCards
 						items={filteredTeams.map((team) => ({ team, rank: orderedTeams.indexOf(team) + 1 }))}
 						league={league}
@@ -508,6 +605,44 @@ export const PokemonCollection = ({
 					}}
 					onClose={() => setPickerOpen(false)}
 				/>
+			)}
+			{removeTarget && (
+				<div className='r-tm-picker-backdrop'>
+					<div
+						className='r-tm-picker r-tm-collection-remove-dialog'
+						role='alertdialog'
+						aria-modal='true'
+						aria-label={t('teams:collection.remove', { name: removeTarget.name })}
+						ref={removeDialogRef}
+					>
+						<div className='r-tm-picker-head'>
+							<h2>{t('teams:collection.remove', { name: removeTarget.name })}</h2>
+							<button
+								type='button'
+								className='r-icon-btn'
+								aria-label={t('teams:picker.close')}
+								onClick={() => setRemoveTarget(null)}
+							>
+								×
+							</button>
+						</div>
+						<div className='r-tm-collection-remove-actions'>
+							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => setRemoveTarget(null)}>
+								{t('teams:picker.close')}
+							</button>
+							<button
+								type='button'
+								className='r-tm-btn'
+								onClick={() => {
+									removeCollectionPokemon(league, removeTarget.id);
+									setRemoveTarget(null);
+								}}
+							>
+								{t('teams:collection.confirm')}
+							</button>
+						</div>
+					</div>
+				</div>
 			)}
 		</div>
 	);

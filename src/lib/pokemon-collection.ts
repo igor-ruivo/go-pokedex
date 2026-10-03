@@ -133,7 +133,9 @@ export const saveCollectionPokemon = (
 	replaceId?: string
 ) => {
 	const current = load();
-	const replacedIndex = replaceId ? current.findIndex((entry) => entry.league === league && entry.id === replaceId) : -1;
+	const replacedIndex = replaceId
+		? current.findIndex((entry) => entry.league === league && entry.id === replaceId)
+		: -1;
 	const existing = replacedIndex < 0 ? undefined : current[replacedIndex];
 	const next = current.filter((_, index) => index !== replacedIndex);
 	const saved: CollectionPokemon = {
