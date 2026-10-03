@@ -290,6 +290,7 @@
 		"remove": "Quitar de favoritos",
 		"empty": "Aún no hay equipos favoritos en esta liga. Toca la estrella de un equipo para guardarlo aquí.",
 		"sortAdded": "Fecha de adición",
+		"unratedNotice": "Con más de {{limit}} equipos favoritos en una liga, no se valoran automáticamente (cada valoración es una simulación de combates), así que las tarjetas no muestran puntuaciones. Abre un equipo en el constructor para ver su valoración.",
 		"added": "Añadido el {{date}}"
 	}
 }

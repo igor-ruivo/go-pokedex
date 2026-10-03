@@ -15,7 +15,12 @@ import { type TeamsData, useSimContext, useTeamEvaluations } from './useTeamsDat
 
 interface FavoriteRow extends RankedTeam {
 	addedAt: number;
+	/** Not rated: the score fields are placeholders. */
+	unrated?: boolean;
 }
+
+/** Above this many favorites in a league they are not rated automatically (as in My Pokémon): every rating is a battle simulation. */
+const AUTO_RATE_LIMIT = 10;
 
 type FavoriteSortKey = 'added' | 'score' | 'threat';
 
@@ -48,15 +53,30 @@ export const FavoriteTeams = ({
 			),
 		[all, league, data.rankList, data.gamemaster]
 	);
+	const autoRate = favorites.length <= AUTO_RATE_LIMIT;
 	const evaluations = useTeamEvaluations(
 		league,
 		data,
-		favorites.map((f) => f.members)
+		autoRate ? favorites.map((f) => f.members) : []
 	);
 
 	const rated = useMemo(() => {
 		const rows: Array<FavoriteRow> = [];
 		let pending = 0;
+		if (!autoRate) {
+			// Listed as they were saved, each in its own order, with no scores.
+			for (const favorite of favorites) {
+				rows.push({
+					members: favorite.members,
+					score: 0,
+					tier: 'risky',
+					threatScore: 0,
+					addedAt: favorite.addedAt,
+					unrated: true,
+				});
+			}
+			return { rows, pending };
+		}
 		favorites.forEach((favorite, i) => {
 			const evaluation = evaluations[i]?.data;
 			const analysis = ctx && evaluation ? analyzeTeam(league, ctx, data, favorite.members) : undefined;
@@ -89,7 +109,7 @@ export const FavoriteTeams = ({
 		return { rows, pending };
 		// `evaluations` is a new array every render; what matters is each result arriving.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [favorites, ctx, data, league, evaluations.map((e) => (e.data ? 1 : 0)).join('')]);
+	}, [autoRate, favorites, ctx, data, league, evaluations.map((e) => (e.data ? 1 : 0)).join('')]);
 
 	const painted = useAfterPaint();
 	const term = useDebouncedValue(search.trim().toLowerCase(), 220);
@@ -111,6 +131,8 @@ export const FavoriteTeams = ({
 	const changeSort = (key: string, _dir: SortDir) => {
 		if (key === 'added' || key === 'score' || key === 'threat') setSortKey(key);
 	};
+	// Without scores there is nothing to sort by but when they were added.
+	const effectiveSort = autoRate ? sortKey : 'added';
 	// Each criterion always uses its useful direction: newest, highest score, or lowest threat first.
 	const teams = rated.rows
 		.filter(
@@ -122,15 +144,18 @@ export const FavoriteTeams = ({
 				})
 		)
 		.sort((a, b) =>
-			sortKey === 'added'
+			effectiveSort === 'added'
 				? b.addedAt - a.addedAt
-				: sortKey === 'threat'
+				: effectiveSort === 'threat'
 					? a.threatScore - b.threatScore || b.score - a.score
 					: b.score - a.score || a.threatScore - b.threatScore
 		);
 
 	return (
 		<div className='r-tm-board'>
+			{!autoRate && (
+				<p className='r-muted r-tm-board-intro'>{t('teams:favorites.unratedNotice', { limit: AUTO_RATE_LIMIT })}</p>
+			)}
 			<SearchListBar
 				value={search}
 				onChange={setSearch}
@@ -139,20 +164,22 @@ export const FavoriteTeams = ({
 				onClear={() => setSearch('')}
 				label={`${t('common:nav.teams.label')}: ${rated.pending > 0 ? '…' : teams.length}`}
 			>
-				<SortBar
-					options={sortOptions}
-					sortKey={sortKey}
-					dir={sortKey === 'threat' ? 'asc' : 'desc'}
-					onChange={changeSort}
-					fixedDirection
-				/>
+				{autoRate && (
+					<SortBar
+						options={sortOptions}
+						sortKey={sortKey}
+						dir={sortKey === 'threat' ? 'asc' : 'desc'}
+						onChange={changeSort}
+						fixedDirection
+					/>
+				)}
 			</SearchListBar>
 			{teams.length > 0 ? (
 				<TeamCards
 					teams={teams}
 					league={league}
 					data={data}
-					primary={sortKey === 'threat' ? 'threat' : 'score'}
+					primary={effectiveSort === 'threat' ? 'threat' : 'score'}
 					onOpen={onOpen}
 				/>
 			) : rated.pending > 0 ? null : term ? (

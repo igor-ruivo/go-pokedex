@@ -81,6 +81,8 @@ export interface RankedTeamMember {
 	level?: number;
 	/** A Best Buddy (level ceiling 51). */
 	buddy?: true;
+	/** The stand-in for a Best Buddy without its ribbon (shown with a disabled crown). */
+	formerBuddy?: true;
 }
 
 export interface RankedTeam {

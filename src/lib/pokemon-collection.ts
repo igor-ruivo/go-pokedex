@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
-import { isSlotIvs, isSlotLevel, type SlotIvs, slotKey } from './team-analysis';
+import { isSlotIvs, isSlotLevel, type SlotIvs, slotIdentityKey } from './team-analysis';
 
 export interface CollectionPokemon {
 	id: string;
@@ -21,7 +21,7 @@ export interface CollectionPokemon {
  * matters through the level above 50 it allows, and that level is already in the key. The nickname isn't either.
  */
 export const collectionBuildKey = (entry: Pick<CollectionPokemon, 'speciesId' | 'moveset' | 'ivs' | 'level'>): string =>
-	slotKey({ speciesId: entry.speciesId, moveset: entry.moveset, ivs: entry.ivs, level: entry.level });
+	slotIdentityKey(entry);
 
 const KEY = 'go-pokedex:team-pokemon-collection';
 const listeners = new Set<() => void>();

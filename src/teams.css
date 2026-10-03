@@ -2543,7 +2543,7 @@
 	--tier-a: var(--text-dim);
 	--tier-b: var(--text);
 	display: grid;
-	grid-template-columns: 56px minmax(0, 1fr) auto;
+	grid-template-columns: 80px minmax(0, 1fr) auto;
 	grid-template-areas:
 		'rank members score'
 		'rank members score';
@@ -2561,6 +2561,12 @@
 	transition:
 		transform 0.12s ease,
 		border-color 0.12s ease;
+}
+/* no scores (an unrated favorite): the Pokémon take the room the score would have had */
+.rvmp .r-tm-board-card[data-unrated] {
+	/* an empty column as wide as the star's on the right, so the Pokémon sit in the middle of the card */
+	grid-template-columns: 56px minmax(0, 1fr) 56px;
+	grid-template-areas: 'rank members .';
 }
 .rvmp .r-tm-board-card:hover {
 	transform: translateY(-1px);
@@ -2582,16 +2588,27 @@
 .rvmp .r-tm-board-lead {
 	grid-area: rank;
 	display: flex;
-	flex-direction: row;
-	align-items: center;
-	align-self: start;
-	gap: var(--s3);
-}
-.rvmp .r-tm-board-rank {
-	display: flex;
+	/* the favorite star sits under the medal and the place; the narrow layout puts them side by side again */
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 2px;
+	align-self: start;
+	gap: var(--s2);
+}
+/* wide cards: with a medal (the podium) the star sits under the medal, on the left; without one (4th and below) it sits right
+   under the place number, which starts at the left edge — the star is 34px wide and the number about 17px, so it is shifted
+   left to centre the two. */
+.rvmp .r-tm-board-rank + .r-tm-star-btn {
+	margin-left: -8px;
+}
+.rvmp .r-tm-board-rank:has(.r-medal) + .r-tm-star-btn {
+	margin-left: 0;
+}
+.rvmp .r-tm-board-rank {
+	/* the medal and the place sit on one line, at any width */
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 6px;
 	font-family: Fredoka, sans-serif;
 	font-weight: 600;
 	font-size: 16px;
@@ -2811,10 +2828,20 @@
 	.rvmp .r-tm-board-name {
 		font-size: 13.5px;
 	}
-	.rvmp .r-tm-board-rank {
+	/* an unrated card (no score): the star on its own line, the Pokémon under it */
+	.rvmp .r-tm-board-card[data-unrated] {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			'rank'
+			'members';
+	}
+	.rvmp .r-tm-board-rank + .r-tm-star-btn {
+		margin-left: 0;
+	}
+	.rvmp .r-tm-board-lead {
 		flex-direction: row;
 		align-items: center;
-		gap: 6px;
+		gap: var(--s3);
 	}
 	.rvmp .r-tm-board-rank .r-medal {
 		width: 28px;

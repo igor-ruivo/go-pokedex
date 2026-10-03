@@ -11,17 +11,17 @@ import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useDismiss } from '../../hooks/useDismiss';
+import { canonicalSlot } from '../../lib/canonical-slot';
 import { cleanName } from '../../lib/format';
 import {
 	type CollectionPokemon,
-	collectionBuildKey,
 	removeCollectionPokemon,
 	saveCollectionPokemon,
 	usePokemonCollection,
 } from '../../lib/pokemon-collection';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import { cpAt } from '../../lib/pvp-sim/cp';
-import { isBuddy, nonBuddyCounterpart, scoreTier, type SlotIvs, slotKey, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
+import { isBuddy, nonBuddyCounterpart, scoreTier, type SlotIvs, slotIdentityKey, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { VirtualTeamCards } from './TeamCards';
@@ -97,9 +97,10 @@ const hashSignature = (value: string) => {
 
 /**
  * The slots one saved Pokémon takes part in team combinations with. A team can only have one Best Buddy, but that must
- * not keep two Best Buddy-able Pokémon off the same team, so a Best Buddy (above level 50) also gets a temporary plain
- * counterpart (no flag, level 50 at most): the combinations then include both "this one is the buddy" and "the other one
- * is". A Best Buddy at level 50 or less gains nothing from the flag, so it simply counts as a plain Pokémon.
+ * not keep two Best Buddies off the same team, so a Best Buddy above level 50 also gets a temporary counterpart without
+ * the ribbon, one full level lower (see `nonBuddyCounterpart`): the combinations then include both "this one is the
+ * buddy" and "the other one is". A ribbon on a Pokémon at level 50 or less changes nothing about it, so it gets no
+ * counterpart (it would be identical): it is itself, and keeps its ribbon, so its crown still shows.
  */
 const comboSlots = (entry: CollectionPokemon): Array<TeamSlotDescriptor> => {
 	const slot: TeamSlotDescriptor = {
@@ -109,8 +110,7 @@ const comboSlots = (entry: CollectionPokemon): Array<TeamSlotDescriptor> => {
 		...(entry.level !== undefined ? { level: entry.level } : {}),
 		...(entry.buddy ? { buddy: true as const } : {}),
 	};
-	if (!isBuddy(slot)) return [slot];
-	return (slot.level ?? 0) > 50 ? [slot, nonBuddyCounterpart(slot)] : [nonBuddyCounterpart(slot)];
+	return (slot.level ?? 0) > 50 ? [slot, nonBuddyCounterpart(slot)] : [slot];
 };
 
 const buildCombinations = (
@@ -128,7 +128,7 @@ const buildCombinations = (
 				if (cBase === aBase || cBase === bBase) continue;
 				const trio = [species[a], species[b], species[c]];
 				// Only one Pokémon per team can be above level 50 (Best Buddy).
-				if (trio.filter(isBuddy).length > 1) continue;
+				if (trio.filter((slot) => (slot.level ?? 0) > 50).length > 1) continue;
 				if (
 					!trio.every(
 						(slot) =>
@@ -240,15 +240,24 @@ export const PokemonCollection = ({
 	const combinations = useMemo(() => {
 		const slots: Array<TeamSlotDescriptor> = saved
 			.flatMap(comboSlots)
+			// A stand-in goes first, so that when an identical Pokémon was also saved by hand the stand-in is the one kept
+			// (it carries the disabled crown). `sort` is stable, so nothing else moves.
+			.sort((a, b) => Number(!!b.formerBuddy) - Number(!!a.formerBuddy))
 			// Identical builds (e.g. a saved copy of what a Best Buddy's counterpart already is) are one Pokémon.
-			.filter((slot, i, all) => all.findIndex((other) => slotKey(other) === slotKey(slot)) === i)
+			.filter(
+				(slot, i, all) =>
+					all.findIndex(
+						(other) =>
+							slotIdentityKey(canonicalSlot(other, league, data)) === slotIdentityKey(canonicalSlot(slot, league, data))
+					) === i
+			)
 			.sort(
 				(a, b) =>
 					(data.rankList[a.speciesId]?.rank ?? Number.MAX_SAFE_INTEGER) -
 					(data.rankList[b.speciesId]?.rank ?? Number.MAX_SAFE_INTEGER)
 			);
 		return buildCombinations(slots, data);
-	}, [saved, data]);
+	}, [saved, data, league]);
 	const rankingSignature = useMemo(() => {
 		const rankedSpecies = Object.entries(data.rankList)
 			.sort(([a], [b]) => a.localeCompare(b))
@@ -324,6 +333,7 @@ export const PokemonCollection = ({
 								...(member.ivs ? { ivs: [...member.ivs] as SlotIvs } : {}),
 								...(member.level !== undefined ? { level: member.level } : {}),
 								...(member.buddy ? { buddy: true as const } : {}),
+								...(member.formerBuddy ? { formerBuddy: true as const } : {}),
 							};
 						}),
 						score,
@@ -350,18 +360,24 @@ export const PokemonCollection = ({
 		for (const entry of saved) {
 			if (!entry.nickname) continue;
 			// The entry itself, and the variants it takes part in combinations as (see `comboSlots`).
-			for (const key of [slotKey(entry), ...comboSlots(entry).map(slotKey)]) {
+			for (const key of [slotIdentityKey(entry), ...comboSlots(entry).map(slotIdentityKey)]) {
 				if (!(key in byBuild)) byBuild[key] = entry.nickname;
 			}
 		}
 		return byBuild;
 	}, [saved]);
+	// The stand-ins of the Best Buddies (see `comboSlots`), by identity: matched on the cards rather than carried by them, so
+	// they are marked whether the teams were just computed or came from the cache.
+	const standIns = useMemo(
+		() => new Set(saved.flatMap(comboSlots).filter((slot) => slot.formerBuddy).map(slotIdentityKey)),
+		[saved]
+	);
 	const filteredTeams = orderedTeams.filter(
 		(team) =>
 			!term ||
 			team.members.some((member) => {
 				const pokemon = data.gamemaster[member.speciesId];
-				const name = nicknames[slotKey(member)] ?? (pokemon ? cleanName(pokemon.speciesName) : '');
+				const name = nicknames[slotIdentityKey(member)] ?? (pokemon ? cleanName(pokemon.speciesName) : '');
 				return name.toLowerCase().includes(term);
 			})
 	);
@@ -401,7 +417,11 @@ export const PokemonCollection = ({
 	// The draft is an exact replica (species, moves, IVs, level) of another saved Pokémon: it can't be saved.
 	const draftIsDuplicate =
 		!!draft &&
-		saved.some((entry) => entry.id !== draft.entryId && collectionBuildKey(entry) === collectionBuildKey(draft.slot));
+		saved.some(
+			(entry) =>
+				entry.id !== draft.entryId &&
+				slotIdentityKey(canonicalSlot(entry, league, data)) === slotIdentityKey(canonicalSlot(draft.slot, league, data))
+		);
 	const saveDraft = () => {
 		if (!draft || draftIsDuplicate) return;
 		const nickname = draft.nickname?.trim().slice(0, 32);
@@ -597,6 +617,7 @@ export const PokemonCollection = ({
 						onOpen={onOpen}
 						showBuildDetails
 						nicknames={nicknames}
+						standIns={standIns}
 					/>
 				) : allReady && term ? (
 					<p className='r-muted'>{t('teams:top.noMatch')}</p>

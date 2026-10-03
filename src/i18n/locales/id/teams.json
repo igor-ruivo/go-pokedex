@@ -290,6 +290,7 @@
 		"remove": "Hapus dari favorit",
 		"empty": "Belum ada tim favorit di liga ini. Ketuk bintang pada sebuah tim untuk menyimpannya di sini.",
 		"sortAdded": "Tanggal ditambahkan",
+		"unratedNotice": "Jika ada lebih dari {{limit}} tim favorit di satu liga, tim tidak dinilai otomatis (setiap penilaian adalah simulasi pertarungan), jadi kartu tidak menampilkan skor. Buka tim di builder untuk melihat penilaiannya.",
 		"added": "Ditambahkan {{date}}"
 	}
 }

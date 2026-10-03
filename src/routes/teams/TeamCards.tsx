@@ -13,7 +13,7 @@ import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useOptimalBuild } from '../../hooks/useOptimalBuild';
 import { cleanName, ordinal } from '../../lib/format';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
-import { isBuddy, slotKey, type SlotIvs, TEAM_ROLES, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import { isBuddy, type SlotIvs, slotIdentityKey, TEAM_ROLES, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
@@ -21,9 +21,10 @@ import { FavoriteStar } from './FavoriteStar';
 import { NotRecommendedMark } from './NotRecommendedMark';
 import type { TeamsData } from './useTeamsData';
 
-type CardTeam = RankedTeam & { addedAt?: number };
+/** `unrated`: a card without scores (a long favorites list is not rated automatically); the score fields are then placeholders. */
+type CardTeam = RankedTeam & { addedAt?: number; unrated?: boolean };
 
-const teamKey = (team: RankedTeam) => team.members.map(slotKey).join('|');
+const teamKey = (team: RankedTeam) => team.members.map(slotIdentityKey).join('|');
 
 /** The IVs (and pinned level) line of one member; blue when pinned, unless it is what the Best Buddy setting makes optimal. */
 const MemberBuild = ({
@@ -62,6 +63,7 @@ export const TeamCard = ({
 	onOpen,
 	showBuildDetails = false,
 	nicknames,
+	standIns,
 }: {
 	team: CardTeam;
 	rank: number;
@@ -70,8 +72,10 @@ export const TeamCard = ({
 	primary: 'score' | 'threat';
 	onOpen: (team: RankedTeam) => void;
 	showBuildDetails?: boolean;
-	/** Nickname per build, keyed by `slotKey` (species + moves + IVs + level). */
+	/** Nickname per build, keyed by `slotIdentityKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
+	/** Identities (`slotIdentityKey`) of the stand-ins a Best Buddy has in these combinations: they get a disabled crown. */
+	standIns?: ReadonlySet<string>;
 }) => {
 	const { t } = useTranslation(['teams']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
@@ -85,7 +89,12 @@ export const TeamCard = ({
 
 	// The card is not itself a button: it holds the favorite star, and a button can't hold a button.
 	return (
-		<div className='r-tm-board-card' data-tier={team.tier} data-added={team.addedAt !== undefined ? '' : undefined}>
+		<div
+			className='r-tm-board-card'
+			data-tier={team.tier}
+			data-added={team.addedAt !== undefined ? '' : undefined}
+			data-unrated={team.unrated ? '' : undefined}
+		>
 			<button type='button' className='r-tm-board-open' aria-label={t('teams:top.open')} onClick={() => onOpen(team)} />
 			<span className='r-tm-board-lead'>
 				{/* a favorite has no place in a ranking: just the star (and, below, when it was added) */}
@@ -101,17 +110,19 @@ export const TeamCard = ({
 						) : null}
 					</span>
 				)}
-				<FavoriteStar league={league} members={team.members} />
+				<FavoriteStar league={league} members={team.members} data={data} />
 			</span>
-			<span className='r-tm-board-score'>
-				{/* both metrics are named; the one the list is ordered by is the big one */}
-				{(primary === 'score' ? metrics : [...metrics].reverse()).map((metric, n) => (
-					<span key={metric.label} className='r-tm-board-metric' data-primary={n === 0 ? '' : undefined}>
-						<small>{metric.label}</small>
-						<b>{metric.value}</b>
-					</span>
-				))}
-			</span>
+			{!team.unrated && (
+				<span className='r-tm-board-score'>
+					{/* both metrics are named; the one the list is ordered by is the big one */}
+					{(primary === 'score' ? metrics : [...metrics].reverse()).map((metric, n) => (
+						<span key={metric.label} className='r-tm-board-metric' data-primary={n === 0 ? '' : undefined}>
+							<small>{metric.label}</small>
+							<b>{metric.value}</b>
+						</span>
+					))}
+				</span>
+			)}
 			<span className='r-tm-board-members'>
 				{team.members.map((member, i) => {
 					const p = data.gamemaster[member.speciesId];
@@ -142,10 +153,16 @@ export const TeamCard = ({
 							>
 								<span className='r-tm-board-art'>
 									{p.isShadow && <ShadowMark />}
-									{isBuddy(member) && <BuddyMark />}
+									{/* active only for a member that really is above level 50 (the team's one buddy); a ribbon that changes nothing, and the
+									    stand-in of a buddy, show it disabled */}
+									{(member.level ?? 0) > 50 ? (
+										<BuddyMark />
+									) : member.buddy || member.formerBuddy || standIns?.has(slotIdentityKey(member)) ? (
+										<BuddyMark disabled />
+									) : null}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
-								<b className='r-tm-board-name'>{nicknames?.[slotKey(member)] ?? cleanName(p.speciesName)}</b>
+								<b className='r-tm-board-name'>{nicknames?.[slotIdentityKey(member)] ?? cleanName(p.speciesName)}</b>
 								<span className='r-tm-board-types'>
 									{p.types.map((ty) => (
 										<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
@@ -220,6 +237,7 @@ export const VirtualTeamCards = ({
 	onOpen,
 	showBuildDetails = false,
 	nicknames,
+	standIns,
 }: {
 	items: ReadonlyArray<{ team: RankedTeam; rank: number }>;
 	league: TeamLeague;
@@ -227,8 +245,9 @@ export const VirtualTeamCards = ({
 	primary: 'score' | 'threat';
 	onOpen: (team: RankedTeam) => void;
 	showBuildDetails?: boolean;
-	/** Nickname per build, keyed by `slotKey` (species + moves + IVs + level). */
+	/** Nickname per build, keyed by `slotIdentityKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
+	standIns?: ReadonlySet<string>;
 }) => {
 	const listRef = useRef<HTMLDivElement>(null);
 	const [scrollMargin, setScrollMargin] = useState(0);
@@ -282,6 +301,7 @@ export const VirtualTeamCards = ({
 								onOpen={onOpen}
 								showBuildDetails={showBuildDetails}
 								{...(nicknames ? { nicknames } : {})}
+								{...(standIns ? { standIns } : {})}
 							/>
 						</div>
 					</div>

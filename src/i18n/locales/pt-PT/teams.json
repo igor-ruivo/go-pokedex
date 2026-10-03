@@ -290,6 +290,7 @@
 		"remove": "Remover das favoritas",
 		"empty": "Ainda não há equipas favoritas nesta liga. Toca na estrela de uma equipa para a guardar aqui.",
 		"sortAdded": "Data de adição",
+		"unratedNotice": "Com mais de {{limit}} equipas favoritas numa liga, estas não são avaliadas automaticamente (cada avaliação é uma simulação de combates), por isso os cartões não mostram pontuações. Abre uma equipa no construtor para ver a sua avaliação.",
 		"added": "Adicionada a {{date}}"
 	}
 }

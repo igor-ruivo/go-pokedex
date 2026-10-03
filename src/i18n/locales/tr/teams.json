@@ -290,6 +290,7 @@
 		"remove": "Favorilerden çıkar",
 		"empty": "Bu ligde henüz favori takım yok. Bir takımı buraya kaydetmek için yıldızına dokun.",
 		"sortAdded": "Eklenme tarihi",
+		"unratedNotice": "Bir ligde {{limit}} favori takımdan fazlası olduğunda otomatik puanlanmazlar (her puanlama bir savaş simülasyonudur), bu yüzden kartlarda puan görünmez. Puanını görmek için takımı oluşturucuda aç.",
 		"added": "{{date}} tarihinde eklendi"
 	}
 }

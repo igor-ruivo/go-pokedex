@@ -290,6 +290,7 @@
 		"remove": "Remove from favorites",
 		"empty": "No favorite teams in this league yet. Tap the star on a team to save it here.",
 		"sortAdded": "Date added",
+		"unratedNotice": "With more than {{limit}} favorite teams in a league, they are not rated automatically (every rating is a battle simulation), so the cards show no scores. Open a team in the builder to see its rating.",
 		"added": "Added {{date}}"
 	}
 }

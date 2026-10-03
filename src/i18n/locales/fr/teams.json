@@ -290,6 +290,7 @@
 		"remove": "Retirer des favoris",
 		"empty": "Aucune équipe favorite dans cette ligue pour l'instant. Touche l'étoile d'une équipe pour l'enregistrer ici.",
 		"sortAdded": "Date d'ajout",
+		"unratedNotice": "Au-delà de {{limit}} équipes favorites dans une ligue, elles ne sont pas évaluées automatiquement (chaque évaluation est une simulation de combats) : les cartes n’affichent donc pas de score. Ouvre une équipe dans le créateur pour voir son évaluation.",
 		"added": "Ajouté le {{date}}"
 	}
 }

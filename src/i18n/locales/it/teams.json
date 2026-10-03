@@ -290,6 +290,7 @@
 		"remove": "Rimuovi dai preferiti",
 		"empty": "Ancora nessuna squadra preferita in questa lega. Tocca la stella di una squadra per salvarla qui.",
 		"sortAdded": "Data di aggiunta",
+		"unratedNotice": "Con più di {{limit}} squadre preferite in una lega non vengono valutate automaticamente (ogni valutazione è una simulazione di battaglie), quindi le carte non mostrano punteggi. Apri una squadra nel builder per vederne la valutazione.",
 		"added": "Aggiunta il {{date}}"
 	}
 }

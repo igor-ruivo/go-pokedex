@@ -311,7 +311,7 @@ const Teams = () => {
 
 					{full && (
 						<div className='r-tm-actions'>
-							<FavoriteStar league={league} members={team} />
+							<FavoriteStar league={league} members={team} data={data} />
 							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => void copyLink()}>
 								{copied ? t('teams:builder.copied') : t('teams:builder.copyLink')}
 							</button>

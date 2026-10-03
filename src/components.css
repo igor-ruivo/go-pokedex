@@ -6844,3 +6844,12 @@
 .rvmp .r-mini > .r-shadow-mark:has(~ .r-buddy-mark) {
 	top: calc(12% + 26px);
 }
+/* a crown that is switched off (the ribbon changes nothing here, or was taken away): fully opaque, in muted greys — a solid
+   chip behind a desaturated, slightly darkened crown, with a flat ring, so it reads as inactive without looking faded */
+.rvmp .r-buddy-mark--off {
+	background: var(--surface-3);
+	filter: grayscale(1) brightness(0.8) contrast(0.9);
+	box-shadow:
+		0 0 0 1px var(--border-strong),
+		0 2px 5px rgb(0 0 0 / 0.35);
+}

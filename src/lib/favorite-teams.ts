@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
-import { isSlotIvs, isSlotLevel, type SlotIvs, slotKey } from './team-analysis';
+import { isSlotIvs, isSlotLevel, type SlotIvs, slotIdentityKey } from './team-analysis';
 
 /**
  * Favorite teams, kept in localStorage. A favorite is stored as the species ids and the move ids of its three
@@ -39,14 +39,19 @@ type Members = ReadonlyArray<{
 	moveset: ReadonlyArray<string>;
 	ivs?: SlotIvs | undefined;
 	level?: number | undefined;
+	buddy?: true | undefined;
 }>;
+
+/** Puts one member in its canonical form (see `canonicalSlot`), so picks that only restate a default don't make a team another team. */
+type Canon = (member: Members[number]) => Members[number];
+const asIs: Canon = (member) => member;
 
 /**
  * The same three Pokémon with the same moves and the same IVs are the same team, whatever order they were listed
  * in. Each Pokémon's text carries its own moves and IVs, so sorting the texts keeps them attached to it.
  */
-export const favoriteKey = (league: TeamLeague, members: Members): string =>
-	`${league}:${members.map(slotKey).sort().join('|')}`;
+export const favoriteKey = (league: TeamLeague, members: Members, canon: Canon = asIs): string =>
+	`${league}:${members.map((m) => slotIdentityKey(canon(m))).sort().join('|')}`;
 
 const isMember = (value: unknown): value is FavoriteMember =>
 	typeof value === 'object' &&
@@ -116,24 +121,29 @@ const subscribe = (listener: () => void) => {
 /** All favorites (every league), oldest first. Re-renders when one is added or removed, here or in another tab. */
 export const useFavoriteTeams = (): ReadonlyArray<FavoriteTeam> => useSyncExternalStore(subscribe, load, () => []);
 
-export const isFavoriteTeam = (all: ReadonlyArray<FavoriteTeam>, league: TeamLeague, members: Members): boolean => {
-	const key = favoriteKey(league, members);
-	return all.some((f) => favoriteKey(f.league, f.members) === key);
+export const isFavoriteTeam = (
+	all: ReadonlyArray<FavoriteTeam>,
+	league: TeamLeague,
+	members: Members,
+	canon: Canon = asIs
+): boolean => {
+	const key = favoriteKey(league, members, canon);
+	return all.some((f) => favoriteKey(f.league, f.members, canon) === key);
 };
 
 /** Adds the team to the favorites, or removes it if it is already there. */
-export const toggleFavoriteTeam = (league: TeamLeague, members: Members) => {
-	const key = favoriteKey(league, members);
+export const toggleFavoriteTeam = (league: TeamLeague, members: Members, canon: Canon = asIs) => {
+	const key = favoriteKey(league, members, canon);
 	const current = load();
-	if (current.some((f) => favoriteKey(f.league, f.members) === key)) {
-		commit(current.filter((f) => favoriteKey(f.league, f.members) !== key));
+	if (current.some((f) => favoriteKey(f.league, f.members, canon) === key)) {
+		commit(current.filter((f) => favoriteKey(f.league, f.members, canon) !== key));
 		return;
 	}
 	commit([
 		...current,
 		{
 			league,
-			members: members.map((m) => ({
+			members: members.map(canon).map((m) => ({
 				speciesId: m.speciesId,
 				moveset: [...m.moveset],
 				...(m.ivs ? { ivs: [...m.ivs] as SlotIvs } : {}),

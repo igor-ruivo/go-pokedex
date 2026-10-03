@@ -347,17 +347,21 @@ export interface TeamSlotDescriptor {
 	level?: number | undefined;
 	/** A Best Buddy: its level ceiling is 51, and a level above 50 may be picked. Only one Pokémon per team can be. */
 	buddy?: true | undefined;
+	/** Only on the stand-in a Best Buddy gets in the team combinations (see `nonBuddyCounterpart`): it had the ribbon. */
+	formerBuddy?: true | undefined;
 }
 
 /**
- * The same Pokémon as a plain (not Best Buddy) one: no flag, and a level above 50 comes down to 50 — a Best Buddy's IVs
- * were picked for level 51, but still fit the CP cap at 50.
+ * The same Pokémon as it would be without the ribbon: no flag, and one full level lower (two half-level steps) — what
+ * happens to a Best Buddy when its status is removed. Its IVs were picked for a higher level, but still fit the CP cap
+ * one level down. `formerBuddy` marks it as that stand-in (it is shown with a disabled crown); it is not part of its identity.
  */
 export const nonBuddyCounterpart = (slot: TeamSlotDescriptor): TeamSlotDescriptor => ({
 	speciesId: slot.speciesId,
 	moveset: slot.moveset,
 	...(slot.ivs ? { ivs: slot.ivs } : {}),
-	...(slot.level !== undefined ? { level: Math.min(50, slot.level) } : {}),
+	...(slot.level !== undefined ? { level: Math.max(1, slot.level - 1) } : {}),
+	formerBuddy: true,
 });
 
 /** A Best Buddy: flagged as one (a level above 50 implies it, for data saved before the flag existed). */
@@ -387,7 +391,15 @@ export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' |
  * and so must not re-run its battles.
  */
 export const evaluationKey = (team: ReadonlyArray<TeamSlotDescriptor>): string =>
-	team.map(({ speciesId, moveset, ivs, level }) => slotKey({ speciesId, moveset, ivs, level })).join(',');
+	team.map(slotIdentityKey).join(',');
+
+/**
+ * What makes a Pokémon the same one: `slotKey` without the Best Buddy flag. The flag only matters through the IVs and the
+ * level it sets, which are in the key — so a Best Buddy turned on or off on its own is still the same Pokémon (and the same
+ * team, the same favorite, the same saved entry…). `slotKey` itself keeps the flag, so it survives in a link.
+ */
+export const slotIdentityKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs' | 'level'>): string =>
+	slotKey({ speciesId: slot.speciesId, moveset: slot.moveset, ivs: slot.ivs, level: slot.level });
 
 /** `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH@0.15.15,medicham-COUNTER-…` — see `slotKey`. */
 export const encodeTeam = (team: ReadonlyArray<TeamSlotDescriptor>): string => team.map(slotKey).join(',');

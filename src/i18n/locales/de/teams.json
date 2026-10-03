@@ -290,6 +290,7 @@
 		"remove": "Aus Favoriten entfernen",
 		"empty": "Noch keine Favoriten-Teams in dieser Liga. Tippe auf den Stern eines Teams, um es hier zu speichern.",
 		"sortAdded": "Hinzugefügt am",
+		"unratedNotice": "Bei mehr als {{limit}} Favoritenteams in einer Liga werden sie nicht automatisch bewertet (jede Bewertung ist eine Kampfsimulation), daher zeigen die Karten keine Werte. Öffne ein Team im Builder, um seine Bewertung zu sehen.",
 		"added": "Hinzugefügt am {{date}}"
 	}
 }
