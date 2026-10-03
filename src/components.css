@@ -975,7 +975,7 @@
 	gap: 8px;
 }
 /* Marks where the always-present Great/Ultra/Master/Raid rows end and the
-   player's own opt-in add-on leagues (see LeagueVisibilityMenu) begin — a
+   add-on (rotating/custom cup) leagues begin — a
    labelled rule rather than just more unlabeled vertical gap, so the two
    groups read as genuinely distinct at a glance. */
 .rvmp .r-board-divider {
@@ -2224,9 +2224,9 @@
 	position: sticky;
 	top: 57px;
 	z-index: 20;
-	padding: var(--s3) 0 var(--s2);
+	padding: var(--s3) 0 var(--s5);
 	margin-top: 0;
-	background: linear-gradient(var(--bg) 70%, transparent);
+	background: linear-gradient(var(--bg) 88%, transparent);
 	/* Own compositing layer + stacking context: on iOS Safari, when this sticky
 	   header changes height after a league switch (the sort button appears /
 	   the chip row reflows), the gradient's stale layer kept painting over the
@@ -2239,7 +2239,7 @@
 	z-index: 1;
 }
 /* Popover anchor — must stay above the section heading below it. */
-.rvmp .r-rank-head > .r-controls {
+.rvmp .r-rank-head > .r-listbar {
 	z-index: 2;
 }
 /* The league-filter popover (`.r-lgfilter-pop`) lives in this row and drops
@@ -2392,10 +2392,75 @@
 }
 
 .rvmp .r-rank-empty {
-	padding: 40px 24px;
+	padding: 0 24px;
 	text-align: center;
 	font-size: 13.5px;
 	line-height: 1.5;
+}
+/* one-tap type picker shown in place of the empty raid list: square-ish tiles, icon over name,
+   centered (the last, shorter row too); the type's color only shows up in its icon and on hover */
+.rvmp .r-typepick {
+	--cols: 4;
+	--gap: 8px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--gap);
+	max-width: 640px;
+	margin: 18px auto 0;
+}
+@media (min-width: 560px) {
+	.rvmp .r-typepick {
+		--cols: 6;
+		--gap: 10px;
+	}
+}
+.rvmp .r-typepick-btn {
+	flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	padding: 12px 4px 10px;
+	border-radius: 14px;
+	font-weight: 700;
+	font-size: 11.5px;
+	letter-spacing: 0.01em;
+	color: var(--text-dim);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	transition:
+		color 0.14s ease,
+		background 0.14s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-typepick-btn img {
+	width: 32px;
+	height: 32px;
+	object-fit: contain;
+	opacity: 0.92;
+	transition:
+		opacity 0.14s ease,
+		transform 0.14s ease;
+}
+.rvmp .r-typepick-btn span {
+	max-width: 100%;
+	padding: 0 2px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rvmp .r-typepick-btn:hover,
+.rvmp .r-typepick-btn:focus-visible {
+	color: var(--tc);
+	background: var(--surface-2);
+	border-color: color-mix(in srgb, var(--tc) 55%, var(--border-strong));
+}
+.rvmp .r-typepick-btn:hover img,
+.rvmp .r-typepick-btn:focus-visible img {
+	opacity: 1;
+	transform: scale(1.06);
 }
 .rvmp .r-rank-hint {
 	margin-top: 2px;
@@ -3550,11 +3615,51 @@
 	background: var(--text-faint);
 }
 /* custom/rotating cups: their own scrolling row under the main strip */
-.rvmp .r-lgpick-scroller + .r-lgpick-scroller {
+.rvmp .r-lgpick > .r-lgpick-scroller + .r-lgpick-row {
 	margin-top: 4px;
 }
-.rvmp .r-league-row:has(.r-lgpick-scroller + .r-lgpick-scroller) {
-	align-items: flex-start;
+/* last row: chips + (optionally) the custom-cups button on its right */
+.rvmp .r-lgpick-row {
+	display: flex;
+	align-items: center;
+	gap: var(--s2);
+}
+.rvmp .r-lgpick-row > .r-lgpick-scroller {
+	flex: 1;
+	min-width: 0;
+}
+/* the dot between Master and Raid when they share a row (see the media query below) */
+.rvmp .r-lgpick-dot--row {
+	display: none;
+}
+/* At the shell's full width (see `.r-shell`'s max-width) there's room to spare: Raid joins the
+   first row right after Master, split by a dot, and the trailing button hops up too, right-aligned. */
+@media (min-width: 680px) {
+	.rvmp .r-lgpick:has(> .r-lgpick-scroller + .r-lgpick-row) {
+		display: grid;
+		grid-template-columns: minmax(0, max-content) auto auto minmax(0, 1fr);
+		column-gap: var(--s2);
+		align-items: center;
+	}
+	.rvmp .r-lgpick > .r-lgpick-scroller + .r-lgpick-row {
+		display: contents;
+	}
+	.rvmp .r-lgpick > .r-lgpick-scroller:first-child {
+		grid-area: 1 / 1;
+	}
+	.rvmp .r-lgpick > .r-lgpick-row > .r-lgpick-dot--row {
+		display: block;
+		grid-area: 1 / 2;
+		margin: 0;
+	}
+	.rvmp .r-lgpick > .r-lgpick-row > .r-lgpick-scroller {
+		grid-area: 1 / 3;
+		flex: none;
+	}
+	.rvmp .r-lgpick > .r-lgpick-row > :not(.r-lgpick-scroller):not(.r-lgpick-dot--row) {
+		grid-area: 1 / 4;
+		justify-self: end;
+	}
 }
 .rvmp .r-lgpick-badge {
 	display: grid;
@@ -4612,13 +4717,15 @@
 /* Divider + filter button heading the optional add-on leagues' own knobs
    section — the divider only renders once at least one is visible, but the
    button stays regardless so the filter itself is always discoverable. */
-.rvmp .r-md-extra-leagues-head {
+.rvmp .r-md-extra-leagues-head,
+.rvmp .r-board-extra-head {
 	display: flex;
 	align-items: center;
 	gap: var(--s2);
 	margin: 4px 0;
 }
-.rvmp .r-md-extra-leagues-head .r-board-divider {
+.rvmp .r-md-extra-leagues-head .r-board-divider,
+.rvmp .r-board-extra-head .r-board-divider {
 	flex: 1;
 	margin: 0;
 	min-width: 0;
@@ -5045,24 +5152,48 @@
 }
 
 /* ---- filter + sort row ----------------------------------------------------- */
-.rvmp .r-controls {
-	/* the popover anchor for BOTH children: each child only spans its own
+.rvmp .r-listbar {
+	/* the popover anchor for all chips: each child only spans its own
 	   button width, so anchoring the panels here keeps them full-width /
 	   right-aligned instead of squished to the button. */
 	position: relative;
 	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-end;
-	align-items: flex-start;
+	align-items: center;
 	gap: 8px;
 	margin-top: var(--s2);
 }
-.rvmp .r-controls > .r-filter,
-.rvmp .r-controls > .r-sort {
+/* count + trailing rule: takes the leftover width, so the rule runs up to the chips
+   and sits on the same centre line as them */
+.rvmp .r-listbar-h {
+	flex: 1 1 auto;
+	min-width: 0;
+	margin: 0;
+	white-space: nowrap;
+}
+.rvmp .r-listbar-h > * {
+	flex: none;
+	white-space: nowrap;
+}
+/* the count text itself ellipsizes as a last resort, so a long label can never widen the page */
+.rvmp .r-listbar-h > span {
+	flex: 0 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.rvmp .r-listbar > .r-filter,
+.rvmp .r-listbar > .r-sort {
 	position: static;
 	margin-top: 0;
+	flex: none;
 }
-.rvmp .r-controls .r-filter-panel {
+/* the sort chip is the one that gives way: its label ellipsizes so the bar stays on one line */
+.rvmp .r-listbar > .r-sort {
+	/* shrinks well before the count text does */
+	flex: 0 20 auto;
+	min-width: 0;
+}
+.rvmp .r-listbar .r-filter-panel {
 	top: calc(100% + 6px);
 	right: 0;
 	left: auto;
@@ -5073,6 +5204,17 @@
 }
 .rvmp .r-sort-btn {
 	white-space: nowrap;
+	max-width: 100%;
+	min-width: 0;
+}
+.rvmp .r-sort-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.rvmp .r-sort-btn .r-filter-ic,
+.rvmp .r-sort-dir {
+	flex: none;
 }
 .rvmp .r-sort-dir {
 	font-size: 13px;
@@ -5342,6 +5484,104 @@
 .rvmp .r-setmenu-foot {
 	margin: 2px 0 0;
 	font-size: 11px;
+	color: var(--text-faint);
+}
+
+/* ---- custom cups picker — one chip-sized button that opens a list of the
+   rotating/custom cups active right now (CustomLeaguePicker.tsx). Sits at the
+   end of the league picker's last row. */
+.rvmp .r-lgcups {
+	position: relative;
+	flex: none;
+}
+.rvmp .r-lgcups-btn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	/* same rendered height/font as the league chips next to it */
+	height: 34.84px;
+	padding: 0 12px;
+	border-radius: 8px;
+	font-weight: 700;
+	font-size: 13px;
+	white-space: nowrap;
+	color: var(--text-dim);
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	transition:
+		background 0.14s ease,
+		color 0.14s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-lgcups-btn img {
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+	flex: none;
+}
+.rvmp .r-lgcups-btn:hover,
+.rvmp .r-lgcups-btn[aria-expanded='true'] {
+	color: var(--text);
+}
+.rvmp .r-lgcups-btn[data-active='true'] {
+	color: var(--lg-c);
+	border-color: color-mix(in srgb, var(--lg-c) 45%, var(--border-strong));
+	background: color-mix(in srgb, var(--lg-c) 12%, transparent);
+}
+.rvmp .r-lgcups-pop {
+	position: absolute;
+	/* well BELOW .r-topbar (20), .r-hero-mini (25) and .r-appbar/.r-bottomnav (30): may
+	   overlap page content, must never cover the persistent chrome */
+	z-index: 15;
+	top: calc(100% + 6px);
+	right: 0;
+	width: min(300px, calc(100vw - 24px));
+	max-height: 320px;
+	overflow-y: auto;
+	padding: var(--s2);
+	display: grid;
+	gap: 2px;
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	box-shadow: var(--shadow-2);
+}
+.rvmp .r-lgcups-opt {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	padding: 8px;
+	border-radius: var(--r-sm);
+	font-size: 13px;
+	font-weight: 600;
+	text-align: left;
+	color: var(--text);
+}
+.rvmp .r-lgcups-opt:hover {
+	background: var(--surface-2);
+}
+.rvmp .r-lgcups-opt[data-active='true'] {
+	background: var(--surface-2);
+	color: var(--accent);
+}
+.rvmp .r-lgcups-opt img {
+	flex: none;
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+}
+.rvmp .r-lgcups-opt span {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rvmp .r-lgcups-empty {
+	margin: 0;
+	padding: 8px;
+	font-size: 12.5px;
 	color: var(--text-faint);
 }
 
@@ -5923,7 +6163,7 @@
    No `overflow: hidden` — nothing inside paints an edge-to-edge background
    that would need clipping to the rounded corners (the toggle bar is
    transparent, the "clear" button is an inset pill), so there was nothing
-   actually relying on it; it was only clipping `LeagueVisibilityMenu`'s own
+   actually relying on it; it was only clipping an inner
    popover instead, cutting it off at this panel's edge. */
 .rvmp .r-ctr-config {
 	margin-bottom: 14px;
@@ -6542,4 +6782,16 @@
 }
 .rvmp .r-tm-suggest-link:hover {
 	filter: brightness(1.2);
+}
+.rvmp .r-applied-filters {
+	justify-content: flex-end;
+	margin-top: var(--s2);
+	/* the chip is the last thing in the sticky header: pad below it so it stays inside the solid part
+	   of the header gradient instead of hanging over the fade */
+	padding-bottom: var(--s5);
+}
+/* with the applied-filter chips row at the bottom, the chips row pads itself, so the header needs no bottom padding of its own */
+.rvmp .r-rank-head:has(.r-applied-filters) {
+	padding-bottom: 0;
+	background: linear-gradient(var(--bg) 94%, transparent);
 }

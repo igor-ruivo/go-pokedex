@@ -28,8 +28,7 @@ export const R = {
 };
 
 // The always-present modes; any other string is a live league id from
-// `leagues.json` (a rotating/custom cup the player has opted into seeing —
-// see visible-leagues-context.tsx).
+// `leagues.json` (a rotating/custom cup).
 export const STATIC_RANKING_MODES = ['pokedex', 'great', 'ultra', 'master', 'raid'] as const;
 export type RankingMode = string;
 

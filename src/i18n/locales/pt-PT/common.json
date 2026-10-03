@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Início"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Ver todos os Pokémon" },
+		"leagues": { "hint": "Classificações da Liga Great, Ultra e Master" },
 		"teams": { "label": "Equipas", "hint": "Avalia uma equipa de 3 para a Liga Super, Ultra e Mestre" },
 		"calendar": { "label": "Calendário", "hint": "Eventos, {{raid}}s, spawns e ovos" },
 		"moves": { "label": "Golpes", "hint": "Todos os golpes rápidos e carregados" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "Ferramentas",
 		"comingSoon": "Brevemente, como parte da reformulação."
+	},
+	"customLeagues": {
+		"button": "Taças personalizadas",
+		"ariaLabel": "Escolher uma taça personalizada",
+		"empty": "Não há taças personalizadas ativas neste momento."
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "Escolher ligas visíveis",

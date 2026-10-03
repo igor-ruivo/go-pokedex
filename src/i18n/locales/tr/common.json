@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Ana sayfa"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Tüm Pokémon'lara göz atın" },
+		"leagues": { "hint": "Great, Ultra ve Master Lig sıralamaları" },
 		"teams": { "label": "Takımlar", "hint": "Süper, Ultra ve Master Ligi için 3'lü takımını değerlendir" },
 		"calendar": { "label": "Takvim", "hint": "Etkinlikler, {{raid}}lar, ortaya çıkışlar ve yumurtalar" },
 		"moves": { "label": "Hareketler", "hint": "Tüm hızlı ve şarjlı hareketler" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "Araçlar",
 		"comingSoon": "Yenileme kapsamında sırada."
+	},
+	"customLeagues": {
+		"button": "Özel Kupalar",
+		"ariaLabel": "Özel bir kupa seç",
+		"empty": "Şu anda etkin özel kupa yok."
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "Görünür ligleri seç",

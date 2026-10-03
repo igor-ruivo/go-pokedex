@@ -4,7 +4,7 @@
 		"homeAriaLabel": "ホーム"
 	},
 	"nav": {
-		"pokedex": { "label": "ポケモン図鑑", "shortLabel": "図鑑", "hint": "すべてのポケモンを見る" },
+		"leagues": { "hint": "スーパー・ハイパー・マスターリーグのランキング" },
 		"teams": { "label": "チーム", "hint": "スーパー・ハイパー・マスターリーグ向けの3匹チームを評価" },
 		"calendar": { "label": "カレンダー", "hint": "イベント・{{raid}}・出現・タマゴ" },
 		"moves": { "label": "わざ", "hint": "すべてのはやわざ・ゲージわざ" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "ツール",
 		"comingSoon": "リニューアルで近日公開予定。"
+	},
+	"customLeagues": {
+		"button": "カスタムカップ",
+		"ariaLabel": "カスタムカップを選択",
+		"empty": "現在有効なカスタムカップはありません。"
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "表示するリーグを選択",

@@ -65,7 +65,6 @@
 	},
 	"metaKnobsSubtitle": "Pertahankan Pokémon meta teratas saat ini per liga/{{raid}}",
 	"extraLeaguesDivider": "Liga tambahan",
-	"noExtraLeaguesDivider": "Belum ada liga tambahan yang dipilih",
 	"badIvKnobsSubtitle": "Mode sederhana menukar sedikit akurasi demi string yang lebih pendek — lihat tooltip pada toggle",
 	"tradeKnobsSubtitle": "Sebuah spesies hanya perlu melewati SATU dari empat batas ini untuk disarankan — Hebat dan Ultra juga mensyaratkan pertukaran benar-benar bisa mencapai spread terbaiknya (lihat teks bantuan di atas)",
 	"simplifiedTrashTooltip": "Menukar akurasi demi string yang lebih pendek: melewatkan pencarian kesetaraan stat product Liga Master (tanpa batas) — hanya hundo persis (dilindungi di mana pun, tanpa syarat, lewat pengecualian global !4*) yang tetap dilindungi di sana. Perlindungan Hebat/Ultra/raid tidak terpengaruh.",

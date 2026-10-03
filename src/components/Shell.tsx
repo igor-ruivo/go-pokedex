@@ -39,14 +39,12 @@ const NAV: Array<{
 	match: (p: string) => boolean;
 }> = [
 	{
-		to: R.pokedex,
-		icon: '/images/nav/pokedex.png',
-		label: (t) => t('common:nav.pokedex.label'),
-		shortLabel: (t) => t('common:nav.pokedex.shortLabel'),
-		hint: (t) => t('common:nav.pokedex.hint'),
-		// Rankings has no nav slot of its own any more (Teams took it) — it lives on as the Pokédex
-		// page's own league tabs, so its routes light up this item.
-		match: (p) => p === '/' || p.startsWith('/pokemon') || p.startsWith('/rankings'),
+		to: R.rankings('great'),
+		icon: '/images/nav/leagues.png',
+		label: (t) => t('pokemonDetail:tabs.ranks'),
+		hint: (t) => t('common:nav.leagues.hint'),
+		// Pokédex has no nav slot of its own any more — the logo still links to it, so it lights up nothing here.
+		match: (p) => p.startsWith('/rankings'),
 	},
 	{
 		to: R.teams,
@@ -87,7 +85,7 @@ const NAV: Array<{
 ];
 
 const Shell = () => {
-	const { t } = useTranslation(['common']);
+	const { t } = useTranslation(['common', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { pathname } = useLocation();
 	const { dataTheme } = useTheme();

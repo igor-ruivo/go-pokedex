@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "Memuat…",
 		"chooseType": "Pilih sebuah tipe",
-		"count": "{{count}} Pokémon",
-		"bestAttackersSuffix": " · attacker {{type}} terbaik"
+		"count": "{{count}} Pokémon"
 	},
 	"hint": {
 		"show": "Tampilkan asumsi peringkat",

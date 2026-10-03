@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "불러오는 중…",
 		"chooseType": "타입을 선택하세요",
-		"count": "포켓몬 {{count}}마리",
-		"bestAttackersSuffix": " · {{type}} 타입 최강 어태커"
+		"count": "포켓몬 {{count}}마리"
 	},
 	"hint": {
 		"show": "랭킹 산정 기준 보기",

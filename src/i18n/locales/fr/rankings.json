@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "Chargement…",
 		"chooseType": "Choisissez un type",
-		"count": "{{count}} Pokémon",
-		"bestAttackersSuffix": " · meilleurs attaquants {{type}}"
+		"count": "{{count}} Pokémon"
 	},
 	"hint": {
 		"show": "Afficher les hypothèses de classement",

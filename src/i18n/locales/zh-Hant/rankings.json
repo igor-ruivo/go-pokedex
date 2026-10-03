@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "載入中…",
 		"chooseType": "選擇一個屬性",
-		"count": "{{count}} 隻寶可夢",
-		"bestAttackersSuffix": " · 最佳 {{type}} 屬性攻擊手"
+		"count": "{{count}} 隻寶可夢"
 	},
 	"hint": {
 		"show": "顯示排名假設條件",

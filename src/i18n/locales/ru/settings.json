@@ -7,8 +7,6 @@
 		"sprites": "Спрайты",
 		"raidRanking": "Рейтинг {{raid}}ов",
 		"bestBuddy": "Учитывать лучшего друга",
-		"extraLeagues": "Дополнительные лиги",
-		"extraLeaguesCount": "Показано {{shown}} из {{total}}",
 		"off": "Выкл",
 		"on": "Вкл",
 		"footer": "Сохранено на этом устройстве."

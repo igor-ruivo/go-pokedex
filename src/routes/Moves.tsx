@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 
-import { FilterBar } from '../components/FilterBar';
+import { ListBar } from '../components/ListBar';
+import { AppliedFilters, FilterBar } from '../components/FilterBar';
 import { MoveStatRows } from '../components/MoveStatRows';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useLanguage } from '../contexts/language-context';
@@ -189,12 +190,13 @@ const Moves = () => {
 					))}
 				</div>
 
-				<div className='r-controls'>
+				<ListBar
+					label={t('moves:page.count', { count: list.length })}
+					applied={<AppliedFilters selected={type} onChange={setType} />}
+				>
 					<FilterBar types={TYPE_KEYS} selected={type} onChange={setType} single />
 					<SortBar options={MOVE_SORTS} sortKey={sortKey} dir={sortDir} onChange={setSort} />
-				</div>
-
-				<div className='r-section-h'>{t('moves:page.count', { count: list.length })}</div>
+				</ListBar>
 			</div>
 
 			<div ref={listRef}>

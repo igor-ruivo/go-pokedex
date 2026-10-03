@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Home"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Browse every Pokémon" },
+		"leagues": { "hint": "Great, Ultra and Master League rankings" },
 		"teams": { "label": "Teams", "hint": "Rate a team of 3 for Great, Ultra and Master League" },
 		"calendar": { "label": "Calendar", "hint": "Events, {{raid}}s, spawns and eggs" },
 		"moves": { "label": "Moves", "hint": "Every fast and charged move" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "Tools",
 		"comingSoon": "Coming next in the revamp."
+	},
+	"customLeagues": {
+		"button": "Custom Cups",
+		"ariaLabel": "Choose a custom cup",
+		"empty": "No custom cups are active right now."
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "Choose visible leagues",

@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "लोड हो रहा है…",
 		"chooseType": "एक टाइप चुनें",
-		"count": "{{count}} Pokémon",
-		"bestAttackersSuffix": " · बेस्ट {{type}} अटैकर"
+		"count": "{{count}} Pokémon"
 	},
 	"hint": {
 		"show": "रैंकिंग अनुमान दिखाएं",

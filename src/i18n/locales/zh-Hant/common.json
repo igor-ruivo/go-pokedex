@@ -4,7 +4,7 @@
 		"homeAriaLabel": "首頁"
 	},
 	"nav": {
-		"pokedex": { "label": "圖鑑", "shortLabel": "圖鑑", "hint": "瀏覽所有寶可夢" },
+		"leagues": { "hint": "超級、高級與大師聯盟排名" },
 		"teams": { "label": "隊伍", "hint": "為超級、高級與大師聯盟評估 3 隻隊伍" },
 		"calendar": { "label": "行事曆", "hint": "活動、{{raid}}、野生出沒與蛋" },
 		"moves": { "label": "招式", "hint": "所有快速招式與特殊招式" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "工具",
 		"comingSoon": "改版即將推出此功能。"
+	},
+	"customLeagues": {
+		"button": "自訂盃賽",
+		"ariaLabel": "選擇自訂盃賽",
+		"empty": "目前沒有進行中的自訂盃賽。"
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "選擇要顯示的聯盟",

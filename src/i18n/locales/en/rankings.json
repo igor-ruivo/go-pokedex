@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "Loading…",
 		"chooseType": "Choose a type",
-		"count": "{{count}} Pokémon",
-		"bestAttackersSuffix": " · best {{type}} attackers"
+		"count": "{{count}} Pokémon"
 	},
 	"hint": {
 		"show": "Show ranking assumptions",

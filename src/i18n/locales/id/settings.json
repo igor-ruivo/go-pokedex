@@ -7,8 +7,6 @@
 		"sprites": "Sprite",
 		"raidRanking": "Peringkat {{raid}}",
 		"bestBuddy": "Perhitungkan Sahabat Karib",
-		"extraLeagues": "Liga tambahan",
-		"extraLeaguesCount": "{{shown}} dari {{total}} ditampilkan",
 		"off": "Mati",
 		"on": "Aktif",
 		"footer": "Disimpan di perangkat ini."

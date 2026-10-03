@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Startseite"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Alle Pokémon durchsuchen" },
+		"leagues": { "hint": "Ranglisten für Superliga, Hyperliga und Meisterliga" },
 		"teams": { "label": "Teams", "hint": "Bewerte dein 3er-Team für Super-, Hyper- und Meisterliga" },
 		"calendar": { "label": "Kalender", "hint": "Events, {{raid}}s, Fundorte und Eier" },
 		"moves": { "label": "Attacken", "hint": "Alle Schnell- und Ladeattacken" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "Werkzeuge",
 		"comingSoon": "Kommt als Nächstes im Redesign."
+	},
+	"customLeagues": {
+		"button": "Eigene Cups",
+		"ariaLabel": "Eigenen Cup wählen",
+		"empty": "Derzeit sind keine eigenen Cups aktiv."
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "Sichtbare Ligen wählen",

@@ -80,7 +80,8 @@ export enum ConfigKeys {
 	TrashSimplifiedMode,
 	TrashKeepSpecialBackground,
 	/** JSON-encoded array of extra (non great/ultra/master) league ids the
-	 *  player has opted into seeing — see visible-leagues-context.tsx. */
+	 *  player had opted into seeing. No longer used (the visibility filter was removed); kept so
+	 *  the enum's numeric values stay stable. */
 	VisibleExtraLeagues,
 	/** JSON-encoded `Record<leagueId, number>` — one Mass Delete rank-cutoff
 	 *  knob value per extra league the player has made visible. */

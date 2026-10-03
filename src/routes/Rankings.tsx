@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { CounterRankRow } from '../components/CounterRankRow';
-import { FilterBar } from '../components/FilterBar';
+import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
+import { ListBar } from '../components/ListBar';
+import { AppliedFilters, FilterBar } from '../components/FilterBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
-import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { spriteUrl } from '../components/Sprite';
@@ -15,16 +16,15 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
-import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../lib/combat';
 import { combatMetricDescriptions, combatMetricNames } from '../lib/combat-text';
 import { cleanName, sentenceCase } from '../lib/format';
-import { leagueIcon, leagueTitle } from '../lib/league-visuals';
+import { leagueIcon } from '../lib/league-visuals';
 import { isKnownRankingMode, modeColor, modeLabel, modeLabelLong, R, type RankingMode } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
-import { RAID_TYPE_KEYS, TYPE_KEYS, typeKey } from '../lib/types';
-import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
+import { RAID_TYPE_KEYS, TYPE_KEYS, typeKey, typeVar } from '../lib/types';
+import { useLeagueDefinitions } from '../queries/leagues';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
 import { usePvp } from '../queries/pvp';
@@ -148,10 +148,6 @@ const Rankings = () => {
 	const PVP_SORTS = usePvpSorts(t);
 	const { league, type: typeParam } = useParams();
 	const { leagues } = useLeagueDefinitions();
-	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
-	// A rotating cup's id stays a valid mode (a bookmarked/shared link still
-	// resolves) even if the player has since hidden it from the picker below —
-	// visibility only controls which chips render, not whether the route works.
 	const mode: RankingMode = league && isKnownRankingMode(league, leagues) ? league : 'pokedex';
 	const navigate = useNavigate();
 	const [params, setParams] = useSearchParams();
@@ -570,19 +566,8 @@ const Rankings = () => {
 	// sprite decode is also gated before the grid is revealed.
 	const showResults = !loading && (!isPokedex || (measured && (rows.length === 0 || initialSpritesReady)));
 
-	const visibleExtraLeagues = useMemo(
-		() => extraLeagues(leagues).filter((l) => isExtraLeagueVisible(l.id)),
-		[leagues, isExtraLeagueVisible]
-	);
 	const pickerItems: Array<LeaguePickerItem> = useMemo(
 		() => [
-			{
-				id: 'pokedex',
-				label: t('rankings:tabs.pokedexFull'),
-				shortLabel: t('rankings:tabs.pokedexShort'),
-				icon: '/images/nav/pokedex.png',
-				color: modeColor('pokedex'),
-			},
 			{
 				id: 'great',
 				label: modeLabel('great', gl, leagues),
@@ -606,23 +591,15 @@ const Rankings = () => {
 				label: modeLabel('raid', gl, leagues),
 				icon: '/images/raids/tier-5.png',
 				color: modeColor('raid'),
-				dotBefore: true,
-			},
-			// Optional add-ons — always last, same ordering as the Pokémon page's
-			// own league picker/leaderboard (see PokemonDetail.tsx's `LEAGUES`).
-			...visibleExtraLeagues.map((l) => ({
-				id: l.id,
-				label: leagueTitle(l, gl).short,
-				icon: leagueIcon(l.id),
-				color: modeColor(l.id),
+				// Own row below the main strip, same as the custom cups.
 				extra: true,
-			})),
+			},
 		],
 		// `gameTranslations` isn't read directly, it's what tells this memo the
 		// underlying `gameTranslator()` data (read via `modeLabel`/`leagueTitle`)
 		// actually changed — see this hook's own comment above.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[t, gl, leagues, visibleExtraLeagues, gameTranslations]
+		[t, gl, leagues, gameTranslations]
 	);
 
 	const goToMode = (m: RankingMode) => {
@@ -663,22 +640,22 @@ const Rankings = () => {
 						raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
 					})
 			: mode === 'pokedex'
-				? (pickerItems.find((it) => it.id === mode)?.label ?? modeLabel(mode, gl, leagues))
+				? t('rankings:tabs.pokedexFull')
 				: t('rankings:pageTitle.league', { league: modeLabelLong(mode, gl, leagues) });
 
 	return (
 		<div className={isPokedex ? 'r-shell r-shell--wide' : 'r-shell'}>
 			<h1 className='r-page-title'>{pageTitle}</h1>
 			<div className='r-rank-head'>
-				{pickerReady ? (
+				{isPokedex ? null : pickerReady ? (
 					<div className='r-league-row'>
 						<LeaguePicker
 							items={pickerItems}
 							activeId={mode}
 							onSelect={goToMode}
 							ariaLabel={t('rankings:tabs.pickerAriaLabel')}
+							trailing={<CustomLeaguePicker activeId={mode} onSelect={goToMode} />}
 						/>
-						<LeagueVisibilityMenu />
 					</div>
 				) : (
 					<div className='r-league-row-loading'>
@@ -686,7 +663,51 @@ const Rankings = () => {
 						{t('rankings:tabs.loadingLeagues')}
 					</div>
 				)}
-				<div className='r-controls'>
+				<ListBar
+					applied={
+						<AppliedFilters
+							selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes}
+							onChange={setTypes}
+						/>
+					}
+					label={
+						<>
+							{!showResults
+								? t('rankings:status.loading')
+								: isRaid && !raidType
+									? t('rankings:status.chooseType')
+									: t('rankings:status.count', { count: rows.length })}
+						</>
+					}
+					labelExtra={
+						<>
+							{showResults && isRaid && raidType && (
+								<button
+									type='button'
+									className='r-rank-hint-toggle'
+									aria-expanded={hintOpen}
+									aria-label={t(hintOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
+									title={t(hintOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
+									onClick={() => setHintOpen((o) => !o)}
+								>
+									?
+								</button>
+							)}
+							{showResults && isPvpLeagueMode && pvpSort !== 'overall' && (
+								<button
+									type='button'
+									className='r-rank-hint-toggle'
+									aria-expanded={hintOpen}
+									aria-label={t('pokemonDetail:counters.helpSummary')}
+									title={t('pokemonDetail:counters.helpSummary')}
+									onClick={() => setHintOpen((o) => !o)}
+								>
+									?
+								</button>
+							)}
+						</>
+					}
+				>
 					<FilterBar
 						types={isRaid ? RAID_TYPE_KEYS : TYPE_KEYS}
 						selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes}
@@ -709,43 +730,7 @@ const Rankings = () => {
 							}}
 						/>
 					)}
-				</div>
-				<div className='r-section-h'>
-					<span>
-						{!showResults
-							? t('rankings:status.loading')
-							: isRaid && !raidType
-								? t('rankings:status.chooseType')
-								: t('rankings:status.count', { count: rows.length })}
-						{isRaid &&
-							raidType &&
-							t('rankings:status.bestAttackersSuffix', { type: gameTypeDisplayTranslator(raidType, gl) })}
-					</span>
-					{showResults && isRaid && raidType && (
-						<button
-							type='button'
-							className='r-rank-hint-toggle'
-							aria-expanded={hintOpen}
-							aria-label={t(hintOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
-							title={t(hintOpen ? 'rankings:hint.hide' : 'rankings:hint.show')}
-							onClick={() => setHintOpen((o) => !o)}
-						>
-							?
-						</button>
-					)}
-					{showResults && isPvpLeagueMode && pvpSort !== 'overall' && (
-						<button
-							type='button'
-							className='r-rank-hint-toggle'
-							aria-expanded={hintOpen}
-							aria-label={t('pokemonDetail:counters.helpSummary')}
-							title={t('pokemonDetail:counters.helpSummary')}
-							onClick={() => setHintOpen((o) => !o)}
-						>
-							?
-						</button>
-					)}
-				</div>
+				</ListBar>
 				{showResults && isPvpLeagueMode && pvpSort !== 'overall' && hintOpen && (
 					<p className='r-muted r-rank-hint'>
 						<strong>{combatMetricNames(t)[pvpSort]}</strong>
@@ -773,9 +758,25 @@ const Rankings = () => {
 					</div>
 				)}
 				{showResults && isRaid && !raidType && (
-					<p className='r-muted r-rank-empty'>
-						{t('rankings:empty.pickType', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}
-					</p>
+					<div className='r-rank-empty'>
+						<p className='r-muted'>
+							{t('rankings:empty.pickType', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}
+						</p>
+						<div className='r-typepick' role='group' aria-label={t('rankings:empty.pickType', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}>
+							{RAID_TYPE_KEYS.map((tp) => (
+								<button
+									key={tp}
+									type='button'
+									className='r-typepick-btn'
+									style={{ ['--tc' as string]: typeVar(tp) }}
+									onClick={() => setTypes([tp])}
+								>
+									<img src={`/images/types/${tp}.png`} alt='' width={32} height={32} loading='lazy' />
+									<span>{gameTypeDisplayTranslator(tp, gl) || tp}</span>
+								</button>
+							))}
+						</div>
+					</div>
 				)}
 				{showResults && rows.length === 0 && !(isRaid && !raidType) && (
 					<p className='r-muted' style={{ padding: 24 }}>

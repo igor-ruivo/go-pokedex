@@ -7,8 +7,6 @@
 		"sprites": "스프라이트",
 		"raidRanking": "{{raid}} 랭킹",
 		"bestBuddy": "베스트프렌드 기준 적용",
-		"extraLeagues": "추가 리그",
-		"extraLeaguesCount": "{{total}}개 중 {{shown}}개 표시",
 		"off": "끄기",
 		"on": "켜기",
 		"footer": "이 기기에 저장됩니다."

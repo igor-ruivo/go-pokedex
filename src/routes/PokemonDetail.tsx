@@ -6,16 +6,17 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { IconTabBar } from '../components/IconTabBar';
 import { IvPicker, type IVs } from '../components/IvPicker';
-import { LeaguePicker } from '../components/LeaguePicker';
+import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
+import { LeaguePicker } from '../components/LeaguePicker';
 import { ShadowMark } from '../components/ShadowMark';
 import { goSpriteUrl, Sprite, SpriteImg, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
-import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useVisibleLeagues } from '../contexts/visible-leagues-context';
+import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { ActiveLeague } from '../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents, ILeagueIvBlock } from '../DTOs/ivs';
@@ -235,11 +236,14 @@ const PokemonDetail = () => {
 					: (leagues.find((l) => l.id === id)?.cpCap ?? Number.MAX_VALUE);
 
 	// Display text for the league/mode segments — great/ultra/master/raid are
-	// always present; any rotating/custom cup the player has made visible
-	// (see visible-leagues-context.tsx) is inserted between Master and Raid.
+	// always present; any rotating/custom cup the player has made visible (see
+	// visible-leagues-context.tsx) follows them — plus whichever cup is picked from the
+	// custom cups dropdown, shown regardless so its row is never missing.
 	// League names track the player's in-game language (GameLanguage), not
 	// the website UI's — rotating cups don't have a GameLanguage entry, so
 	// their title comes straight from `leagues.json` (already in-game-accurate).
+	// The cup currently in `?lg=` is always listed, even if hidden by the visibility filter.
+	const pickedLeagueId = searchParams.get('lg');
 	const LEAGUES: Array<{ id: LeagueId; cssVar: string; label: string; full: string; cpCap: number }> = [
 		{
 			id: 'great',
@@ -269,13 +273,12 @@ const PokemonDetail = () => {
 			full: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl) || 'Raids'),
 			cpCap: Number.MAX_VALUE,
 		},
-		// Optional add-ons — whatever rotating/custom cup the player has opted
-		// into seeing (see visible-leagues-context.tsx). Always last: the four
+		// Optional add-ons — visible (or currently picked) rotating/custom cups. Always last: the four
 		// above are the permanent, always-present set (see STATIC_LEAGUE_COUNT
 		// below, which relies on this exact ordering for the leaderboard's
 		// static/optional divider).
 		...extraLeagues(leagues)
-			.filter((l) => isExtraLeagueVisible(l.id))
+			.filter((l) => isExtraLeagueVisible(l.id) || l.id === pickedLeagueId)
 			.map((l) => {
 				const { short, full } = leagueTitle(l, gl);
 				return { id: l.id, cssVar: colorFor(l.id), label: short, full, cpCap: l.cpCap };
@@ -416,11 +419,7 @@ const PokemonDetail = () => {
 		}
 		return { pvp, raid };
 		// `LEAGUES` itself isn't listed — it's reconstructed fresh every render
-		// from `leagues`/`isExtraLeagueVisible`/`gl`, both of which already are —
-		// but `isExtraLeagueVisible` must be, or toggling a cup newly visible in
-		// the filter (no `leagues`/`gl` change at all) left this memo stale,
-		// showing an empty row until something else (a species change, a full
-		// reload) happened to invalidate it.
+		// from `leagues`/`isExtraLeagueVisible`/`gl`/the picked cup, all of which are listed.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		pokemon,
@@ -432,6 +431,7 @@ const PokemonDetail = () => {
 		raidDPS,
 		raidMetric,
 		isExtraLeagueVisible,
+		pickedLeagueId,
 	]);
 
 	// Carousel positions: p = which reachable Pokémon, t = which raid type,
@@ -833,6 +833,17 @@ const PokemonDetail = () => {
 	const readoutReady = isRaid || (ivTouchedRef.current ? !!slice : !!slice?.perfect && !ivStale && pvpFetchCompleted);
 
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
+	// The "Additional leagues" rule, with the visibility filter button on its right. Always rendered
+	// (even with none visible, the default) so the button never disappears; the divider is the `flex: 1`
+	// spacer that pins the button to the right.
+	const extraLeaguesHead = (
+		<div className='r-board-extra-head'>
+			<div className='r-board-divider' role='separator'>
+				<span>{t('pokemonDetail:board.extraLeaguesDivider')}</span>
+			</div>
+			<LeagueVisibilityMenu />
+		</div>
+	);
 	const boardRows = LEAGUES.map((l) => {
 		const raidRow = l.id === 'raid';
 		const ready = raidRow ? raidDPSFetchCompleted : pvpFetchCompleted;
@@ -1035,17 +1046,19 @@ const PokemonDetail = () => {
 
 			{/* ---- LEAGUE + TABS ---- */}
 			<LeaguePicker
-				items={LEAGUES.map((l, i) => ({
+				// Custom cups aren't chips: they're picked from the button at the end of the second row.
+				items={LEAGUES.slice(0, STATIC_LEAGUE_COUNT).map((l) => ({
 					id: l.id,
 					label: l.label,
 					icon: iconFor(l.id),
 					color: l.cssVar,
-					dotBefore: l.id === 'raid',
-					extra: i >= STATIC_LEAGUE_COUNT,
+					// Raid wraps onto the second row, next to the custom cups button.
+					extra: l.id === 'raid',
 				}))}
 				activeId={league}
 				onSelect={(id) => selectLeague(id)}
 				ariaLabel={t('pokemonDetail:tablist.ariaLabel')}
+				trailing={<CustomLeaguePicker activeId={league} onSelect={(id) => selectLeague(id)} />}
 			/>
 
 			<IconTabBar
@@ -1078,7 +1091,6 @@ const PokemonDetail = () => {
 					{/* ---- LEADERBOARD — best reachable per league; click active row to cycle ---- */}
 					<div className='r-section-h'>
 						{t('pokemonDetail:board.sectionHeading')}
-						<LeagueVisibilityMenu />
 					</div>
 					<div className='r-board'>
 						{boardRows.map(
@@ -1091,17 +1103,13 @@ const PokemonDetail = () => {
 									<Fragment key={l.id}>
 										{/* Great/Ultra/Master/Raid are always present and always first (see
 										    `LEAGUES`' own construction) — this marks where the player's own
-										    opt-in add-on leagues (see LeagueVisibilityMenu) start, so the two
+										    add-on (rotating/custom cup) leagues start, so the two
 										    groups read as visually distinct rather than one undifferentiated
 										    list that happens to grow. */}
 										{/* PvP leagues end and Raids begin — a plain, unlabeled rule (Raid is
 										    a different kind of ranking, not another league). */}
 										{l.id === 'raid' && <div className='r-board-divider' data-plain='' role='separator' />}
-										{rowIdx === STATIC_LEAGUE_COUNT && (
-											<div className='r-board-divider' role='separator'>
-												<span>{t('pokemonDetail:board.extraLeaguesDivider')}</span>
-											</div>
-										)}
+										{rowIdx === STATIC_LEAGUE_COUNT && extraLeaguesHead}
 										<div
 											className='r-board-row'
 											role='button'
@@ -1206,6 +1214,9 @@ const PokemonDetail = () => {
 								);
 							}
 						)}
+						{/* No add-on league visible (the default): the heading still renders, so the
+						    visibility button stays reachable. */}
+						{boardRows.length <= STATIC_LEAGUE_COUNT && extraLeaguesHead}
 					</div>
 
 					{isRaid ? (

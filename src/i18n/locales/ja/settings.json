@@ -7,8 +7,6 @@
 		"sprites": "スプライト",
 		"raidRanking": "{{raid}}ランキング",
 		"bestBuddy": "なかよし度を考慮",
-		"extraLeagues": "追加リーグ",
-		"extraLeaguesCount": "{{total}}件中{{shown}}件表示",
 		"off": "オフ",
 		"on": "オン",
 		"footer": "この端末に保存されます。"

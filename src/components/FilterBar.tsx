@@ -75,25 +75,6 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 					{single ? t('components:filterBar.typeSectionLabel') : t('components:filterBar.button')}
 					{count > 0 && <span className='r-filter-count'>{count}</span>}
 				</button>
-
-				{selected.map((tp) => (
-					<button
-						key={tp}
-						type='button'
-						className='r-filter-chip'
-						style={{ ['--tc' as string]: typeVar(tp) }}
-						onClick={() => toggle(tp)}
-					>
-						{gameTypeDisplayTranslator(tp, gl) || tp}
-						<span aria-hidden='true'>×</span>
-					</button>
-				))}
-
-				{count > 0 && (
-					<button type='button' className='r-filter-clear' onClick={() => onChange([])}>
-						{t('components:filterBar.clear')}
-					</button>
-				)}
 			</div>
 
 			{open && (
@@ -126,6 +107,37 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 					</div>
 				</div>
 			)}
+		</div>
+	);
+};
+
+/** The applied type chips plus "Clear" — rendered on their own line under the list header. */
+export const AppliedFilters = ({
+	selected,
+	onChange,
+}: Pick<FilterBarProps, 'selected' | 'onChange'>) => {
+	const { t } = useTranslation(['components']);
+	const { currentGameLanguage: gl } = useLanguage();
+
+	if (selected.length === 0) return null;
+
+	return (
+		<div className='r-filter-row r-applied-filters'>
+			{selected.map((tp) => (
+				<button
+					key={tp}
+					type='button'
+					className='r-filter-chip'
+					style={{ ['--tc' as string]: typeVar(tp) }}
+					onClick={() => onChange(selected.filter((x) => x !== tp))}
+				>
+					{gameTypeDisplayTranslator(tp, gl) || tp}
+					<span aria-hidden='true'>×</span>
+				</button>
+			))}
+			<button type='button' className='r-filter-clear' onClick={() => onChange([])}>
+				{t('components:filterBar.clear')}
+			</button>
 		</div>
 	);
 };

@@ -4,7 +4,7 @@
 		"homeAriaLabel": "होम"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "shortLabel": "डेक्स", "hint": "हर Pokémon ब्राउज़ करें" },
+		"leagues": { "hint": "ग्रेट, अल्ट्रा और मास्टर लीग की रैंकिंग" },
 		"teams": { "label": "टीमें", "hint": "ग्रेट, अल्ट्रा और मास्टर लीग के लिए 3 की टीम आँकें" },
 		"calendar": { "label": "कैलेंडर", "hint": "इवेंट, {{raid}}, स्पॉन और अंडे" },
 		"moves": { "label": "मूव्स", "hint": "हर फ़ास्ट और चार्ज्ड मूव" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "टूल्स",
 		"comingSoon": "रीवैंप में अगला यही आएगा।"
+	},
+	"customLeagues": {
+		"button": "कस्टम कप",
+		"ariaLabel": "कस्टम कप चुनें",
+		"empty": "अभी कोई कस्टम कप सक्रिय नहीं है।"
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "दृश्यमान लीग चुनें",

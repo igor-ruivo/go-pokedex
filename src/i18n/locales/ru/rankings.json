@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "Загрузка…",
 		"chooseType": "Выберите тип",
-		"count": "{{count}} покемонов",
-		"bestAttackersSuffix": " · лучшие атакующие типа {{type}}"
+		"count": "{{count}} покемонов"
 	},
 	"hint": {
 		"show": "Показать допущения рейтинга",

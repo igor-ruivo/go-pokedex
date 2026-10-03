@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "Yükleniyor…",
 		"chooseType": "Bir tür seçin",
-		"count": "{{count}} Pokémon",
-		"bestAttackersSuffix": " · en iyi {{type}} saldırganları"
+		"count": "{{count}} Pokémon"
 	},
 	"hint": {
 		"show": "Sıralama varsayımlarını göster",

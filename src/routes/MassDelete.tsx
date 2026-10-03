@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { LanguagePicker } from '../components/LanguagePicker';
-import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { PokemonPickerModal } from '../components/PokemonPickerModal';
 import { ShadowMark } from '../components/ShadowMark';
 import { SpriteImg } from '../components/Sprite';
@@ -13,7 +12,6 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import type { GameLanguage } from '../contexts/language-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
-import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
@@ -116,8 +114,7 @@ const readWhitelist = (): Array<string> => {
 	}
 };
 
-/** Rank-cutoff knob value per rotating/custom league the player has made
- *  visible (see visible-leagues-context.tsx) — same idea as `trashGreat`/
+/** Rank-cutoff knob value per active rotating/custom league — same idea as `trashGreat`/
  *  `trashUltra`/`trashMaster`, just keyed instead of one state var each,
  *  since the set of extra leagues is dynamic. Missing/invalid entries (a
  *  cup that's since rotated out, or a freshly-visible one with no saved
@@ -1544,8 +1541,7 @@ const MassDeleteContent = ({
 	const [trashUltra, setTrashUltra] = useState(() => numCfg(ConfigKeys.TrashUltra, 50));
 	const [trashMaster, setTrashMaster] = useState(() => numCfg(ConfigKeys.TrashMaster, 110));
 	const [trashRaid, setTrashRaid] = useState(() => numCfg(ConfigKeys.TrashRaid, 5));
-	// One rank-cutoff knob per currently-visible rotating/custom league (see
-	// visible-leagues-context.tsx) — a single keyed record rather than one
+	// One rank-cutoff knob per active rotating/custom league — a single keyed record rather than one
 	// `useState` per id, since which extra leagues even exist is dynamic.
 	const [trashExtra, setTrashExtra] = useState<Record<string, number>>(readTrashExtra);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashExtraLeagues, JSON.stringify(trashExtra)), [trashExtra]);
@@ -1566,11 +1562,7 @@ const MassDeleteContent = ({
 		return setter;
 	};
 	const { leagues } = useLeagueDefinitions();
-	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
-	const visibleExtraLeagues = useMemo(
-		() => extraLeagues(leagues).filter((l) => isExtraLeagueVisible(l.id)),
-		[leagues, isExtraLeagueVisible]
-	);
+	const activeExtraLeagues = useMemo(() => extraLeagues(leagues), [leagues]);
 	// Which precomputed tier (great=1500/ultra=2500/master=uncapped) an extra
 	// league's own floor-check/carve-out data comes from — see
 	// `ExtraTradeLeagueCutoff`'s own doc comment for why the specific cup
@@ -1579,20 +1571,20 @@ const MassDeleteContent = ({
 		cpCap <= 1500 ? 'great' : cpCap <= 2500 ? 'ultra' : 'master';
 	const extraTrash: Array<ExtraLeagueCutoff> = useMemo(
 		() =>
-			visibleExtraLeagues.map((l) => ({
+			activeExtraLeagues.map((l) => ({
 				rankList: extraRankLists[l.id] ?? {},
 				cutoff: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
 			})),
-		[visibleExtraLeagues, extraRankLists, trashExtra]
+		[activeExtraLeagues, extraRankLists, trashExtra]
 	);
 	const extraTrade: Array<ExtraTradeLeagueCutoff> = useMemo(
 		() =>
-			visibleExtraLeagues.map((l) => ({
+			activeExtraLeagues.map((l) => ({
 				rankList: extraRankLists[l.id] ?? {},
 				cutoff: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
 				tier: tierForCpCap(l.cpCap),
 			})),
-		[visibleExtraLeagues, extraRankLists, trashExtra]
+		[activeExtraLeagues, extraRankLists, trashExtra]
 	);
 	// Shared across all three tabs — "never delete/suggest at or above this
 	// CP" is the exact same guard everywhere, just applied to a different
@@ -2140,12 +2132,12 @@ const MassDeleteContent = ({
 		.map((m) => m.label)
 		.join(', ');
 	const nothingExtra = t('massDelete:panelSummary.nothingExtra');
-	// Rotating/custom leagues currently visible (see LeagueVisibilityMenu) —
+	// Every active rotating/custom league —
 	// shown on both the meta and trade tabs (never the bad-IV one, which
 	// doesn't render that section at all), so their own "keep top N" cutoffs
 	// belong in the summary right alongside Great/Ultra/Master/Raid's, not
 	// silently left out just because they're a variable-length add-on.
-	const extraLeagueSummaries = visibleExtraLeagues.map((l) =>
+	const extraLeagueSummaries = activeExtraLeagues.map((l) =>
 		t('massDelete:panelSummary.topExtra', {
 			n: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
 			league: leagueTitle(l, gl).full,
@@ -2428,30 +2420,17 @@ const MassDeleteContent = ({
 								    in the grid above and `.r-md-raid-cp` in Row 2 depending on
 								    screen size — this only ever renders after both), and after CP/
 								    Simplified mode above too, so neither reads as belonging to the
-								    add-on leagues. The filter button stays even with zero currently
-								    visible, so it's still discoverable. */}
-										<div className='r-md-extra-leagues-head'>
-											{/* Always rendered, even with zero visible extra leagues right now
-									    (falling back to `noExtraLeaguesDivider`) — this divider is a
-									    `flex: 1` spacer (see components.css), and it's the ONLY thing
-									    pushing the filter button to the right below. Making it
-									    conditional used to mean the button sat flush-left (the lone
-									    flex child, no spacer) whenever no custom league was active yet,
-									    then visibly jumped to the right the moment one got toggled on —
-									    unacceptable movement for a button that's supposed to be a fixed
-									    anchor. */}
-											<div className='r-board-divider'>
-												<span>
-													{visibleExtraLeagues.length > 0
-														? t('massDelete:extraLeaguesDivider')
-														: t('massDelete:noExtraLeaguesDivider')}
-												</span>
+								    add-on leagues. */}
+										{activeExtraLeagues.length > 0 && (
+											<div className='r-md-extra-leagues-head'>
+												<div className='r-board-divider'>
+													<span>{t('massDelete:extraLeaguesDivider')}</span>
+												</div>
 											</div>
-											<LeagueVisibilityMenu />
-										</div>
-										{visibleExtraLeagues.length > 0 && (
+										)}
+										{activeExtraLeagues.length > 0 && (
 											<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
-												{visibleExtraLeagues.map((l) => (
+												{activeExtraLeagues.map((l) => (
 													<div className='r-md-knob' key={l.id}>
 														<span>
 															{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}
@@ -2665,24 +2644,17 @@ const MassDeleteContent = ({
 								    in the grid above and `.r-md-raid-cp` in Row 2 depending on
 								    screen size — this only ever renders after both), and after CP/
 								    Simplified mode above too, so neither reads as belonging to the
-								    add-on leagues. The filter button stays even with zero currently
-								    visible, so it's still discoverable. */}
-										<div className='r-md-extra-leagues-head'>
-											{/* See the meta tab's identical block above for why this divider is
-									    always rendered — same "flex:1 spacer keeps the filter button
-									    pinned to the right, unconditionally" reasoning. */}
-											<div className='r-board-divider'>
-												<span>
-													{visibleExtraLeagues.length > 0
-														? t('massDelete:extraLeaguesDivider')
-														: t('massDelete:noExtraLeaguesDivider')}
-												</span>
+								    add-on leagues. */}
+										{activeExtraLeagues.length > 0 && (
+											<div className='r-md-extra-leagues-head'>
+												<div className='r-board-divider'>
+													<span>{t('massDelete:extraLeaguesDivider')}</span>
+												</div>
 											</div>
-											<LeagueVisibilityMenu />
-										</div>
-										{visibleExtraLeagues.length > 0 && (
+										)}
+										{activeExtraLeagues.length > 0 && (
 											<div className='r-md-knobs-grid r-md-knobs-grid--4up'>
-												{visibleExtraLeagues.map((l) => (
+												{activeExtraLeagues.map((l) => (
 													<div className='r-md-knob' key={l.id}>
 														<span>
 															{leagueIcon(l.id) && <img src={leagueIcon(l.id)} alt='' width={20} height={20} />}

@@ -24,7 +24,10 @@ export interface LeaguePickerItem {
  * width row that scales to any number of chips without wrapping and eating
  * vertical space, works by touch-swipe, mouse wheel, or click on desktop.
  */
-type LeaguePickerProps =
+type LeaguePickerProps = {
+	/** Rendered at the end of the last chip row (e.g. the custom-cups button). */
+	trailing?: ReactNode;
+} & (
 	| {
 			mode?: 'select';
 			items: ReadonlyArray<LeaguePickerItem>;
@@ -38,7 +41,8 @@ type LeaguePickerProps =
 			selectedIds: ReadonlySet<string>;
 			onToggle: (id: string) => void;
 			ariaLabel: string;
-	  };
+	  }
+);
 
 /**
  * One horizontally-scrollable chip row: the scroll/fade/chevron mechanics live
@@ -140,7 +144,7 @@ const ScrollRow = ({ children, role, ariaLabel }: { children: ReactNode; role: s
 };
 
 export const LeaguePicker = (props: LeaguePickerProps) => {
-	const { items: allItems, ariaLabel } = props;
+	const { items: allItems, ariaLabel, trailing } = props;
 	const items = allItems.filter((it) => !it.extra);
 	const extraItems = allItems.filter((it) => it.extra);
 	const role = props.mode === 'toggle' ? 'group' : 'tablist';
@@ -172,13 +176,26 @@ export const LeaguePicker = (props: LeaguePickerProps) => {
 
 	return (
 		<div className='r-lgpick'>
-			<ScrollRow role={role} ariaLabel={ariaLabel}>
-				{items.map(renderChip)}
-			</ScrollRow>
-			{extraItems.length > 0 && (
-				<ScrollRow role={role} ariaLabel={ariaLabel}>
-					{extraItems.map(renderChip)}
-				</ScrollRow>
+			{extraItems.length > 0 ? (
+				<>
+					<ScrollRow role={role} ariaLabel={ariaLabel}>
+						{items.map(renderChip)}
+					</ScrollRow>
+					<div className='r-lgpick-row'>
+						<i className='r-lgpick-dot r-lgpick-dot--row' aria-hidden='true' />
+						<ScrollRow role={role} ariaLabel={ariaLabel}>
+							{extraItems.map(renderChip)}
+						</ScrollRow>
+						{trailing}
+					</div>
+				</>
+			) : (
+				<div className='r-lgpick-row'>
+					<ScrollRow role={role} ariaLabel={ariaLabel}>
+						{items.map(renderChip)}
+					</ScrollRow>
+					{trailing}
+				</div>
 			)}
 		</div>
 	);

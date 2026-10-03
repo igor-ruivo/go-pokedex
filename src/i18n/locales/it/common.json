@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Home"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Sfoglia tutti i Pokémon" },
+		"leagues": { "hint": "Classifiche di Lega Super, Ultra e Master" },
 		"teams": { "label": "Squadre", "hint": "Valuta una squadra di 3 per Lega Super, Ultra e Master" },
 		"calendar": { "label": "Calendario", "hint": "Eventi, {{raid}}, spawn e uova" },
 		"moves": { "label": "Mosse", "hint": "Tutte le mosse veloci e caricate" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "Strumenti",
 		"comingSoon": "In arrivo nel prossimo aggiornamento."
+	},
+	"customLeagues": {
+		"button": "Coppe personalizzate",
+		"ariaLabel": "Scegli una coppa personalizzata",
+		"empty": "Al momento non ci sono coppe personalizzate attive."
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "Scegli le leghe visibili",

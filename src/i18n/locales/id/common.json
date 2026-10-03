@@ -4,7 +4,7 @@
 		"homeAriaLabel": "Beranda"
 	},
 	"nav": {
-		"pokedex": { "label": "Pokédex", "shortLabel": "Dex", "hint": "Jelajahi semua Pokémon" },
+		"leagues": { "hint": "Peringkat Great, Ultra, dan Master League" },
 		"teams": { "label": "Tim", "hint": "Nilai tim berisi 3 untuk Liga Super, Ultra, dan Master" },
 		"calendar": { "label": "Kalender", "hint": "Event, {{raid}}, spawn, dan telur" },
 		"moves": { "label": "Jurus", "hint": "Semua jurus cepat dan jurus utama" },
@@ -27,6 +27,11 @@
 	"placeholder": {
 		"toolsTitle": "Alat",
 		"comingSoon": "Segera hadir di pembaruan berikutnya."
+	},
+	"customLeagues": {
+		"button": "Piala Kustom",
+		"ariaLabel": "Pilih piala kustom",
+		"empty": "Tidak ada piala kustom yang aktif saat ini."
 	},
 	"leagueFilter": {
 		"triggerAriaLabel": "Pilih liga yang terlihat",

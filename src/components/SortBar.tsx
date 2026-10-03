@@ -62,7 +62,7 @@ export const SortBar = ({ options, sortKey, dir, onChange, fixedDirection = fals
 				>
 					<path d='M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4' />
 				</svg>
-				{active.label}
+				<span className='r-sort-label'>{active.label}</span>
 				{!fixedDirection && (
 					<span className='r-sort-dir' aria-hidden='true'>
 						{dir === 'asc' ? '↑' : '↓'}

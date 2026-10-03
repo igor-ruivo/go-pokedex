@@ -5,16 +5,13 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
-import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 // Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
 import { useDismiss } from '../hooks/useDismiss';
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
 import { sentenceCase } from '../lib/format';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
-import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { LanguagePicker } from './LanguagePicker';
-import { LeagueVisibilityChecklist } from './LeagueVisibilityChecklist';
 
 /**
  * App-bar language / settings menu. Opens a popover in place instead of routing
@@ -26,12 +23,7 @@ export const SettingsMenu = () => {
 	const { imageSource, updateImageSource } = useImageSource();
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
 	const { bestBuddy, updateBestBuddy } = useBestBuddy();
-	const { leagues } = useLeagueDefinitions();
-	const { isExtraLeagueVisible } = useVisibleLeagues();
-	const rotatingCups = extraLeagues(leagues);
-	const visibleCupCount = rotatingCups.filter((l) => isExtraLeagueVisible(l.id)).length;
 	const [open, setOpen] = useState(false);
-	const [extraLeaguesOpen, setExtraLeaguesOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	const SPRITES: Array<[ImageSource, string]> = [
@@ -118,35 +110,6 @@ export const SettingsMenu = () => {
 							</button>
 						</div>
 					</div>
-
-					{rotatingCups.length > 0 && (
-						<div className='r-setmenu-grp'>
-							<button
-								type='button'
-								className='r-setmenu-collapse'
-								aria-expanded={extraLeaguesOpen}
-								onClick={() => setExtraLeaguesOpen((o) => !o)}
-							>
-								<span className='r-setmenu-h'>
-									{t('settings:menu.extraLeagues')}
-									<i className='r-setmenu-count'>
-										{t('settings:menu.extraLeaguesCount', { shown: visibleCupCount, total: rotatingCups.length })}
-									</i>
-								</span>
-								<svg
-									className='r-setmenu-chev'
-									viewBox='0 0 24 24'
-									fill='none'
-									stroke='currentColor'
-									strokeWidth='2'
-									aria-hidden='true'
-								>
-									<path d='M6 9l6 6 6-6' strokeLinecap='round' strokeLinejoin='round' />
-								</svg>
-							</button>
-							{extraLeaguesOpen && <LeagueVisibilityChecklist />}
-						</div>
-					)}
 
 					<p className='r-setmenu-foot'>{t('settings:menu.footer')}</p>
 				</div>

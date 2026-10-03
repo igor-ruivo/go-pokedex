@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "กำลังโหลด…",
 		"chooseType": "เลือกธาตุ",
-		"count": "{{count}} ตัว",
-		"bestAttackersSuffix": " · ตัวโจมตีธาตุ{{type}}ที่ดีที่สุด"
+		"count": "{{count}} ตัว"
 	},
 	"hint": {
 		"show": "แสดงสมมติฐานการจัดอันดับ",

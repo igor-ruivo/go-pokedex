@@ -21,8 +21,7 @@
 	"status": {
 		"loading": "読み込み中…",
 		"chooseType": "タイプを選択してください",
-		"count": "ポケモン{{count}}体",
-		"bestAttackersSuffix": " · {{type}}タイプ最強アタッカー"
+		"count": "ポケモン{{count}}体"
 	},
 	"hint": {
 		"show": "ランキングの前提条件を表示",

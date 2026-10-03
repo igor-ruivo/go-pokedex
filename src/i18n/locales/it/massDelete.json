@@ -65,7 +65,6 @@
 	},
 	"metaKnobsSubtitle": "Preserva i migliori Pokémon del meta attuale per lega/{{raid}}",
 	"extraLeaguesDivider": "Leghe aggiuntive",
-	"noExtraLeaguesDivider": "Nessuna lega aggiuntiva selezionata",
 	"badIvKnobsSubtitle": "La modalità semplificata scambia un po' di precisione per una stringa più corta — vedi il tooltip sull'interruttore",
 	"tradeKnobsSubtitle": "Una specie deve superare solo UNA di queste quattro soglie per essere suggerita — Grande e Ultra richiedono anche che uno scambio possa effettivamente raggiungere la loro migliore distribuzione possibile (vedi il testo di aiuto sopra)",
 	"simplifiedTrashTooltip": "Scambia precisione per una stringa più corta: evita di cercare parità di prodotto statistico per la Lega Master (senza tetto) — solo l'hundo esatto (protetto ovunque, incondizionatamente, tramite l'esclusione globale !4*) resta protetto lì. La protezione Grande/Ultra/raid non è interessata.",
