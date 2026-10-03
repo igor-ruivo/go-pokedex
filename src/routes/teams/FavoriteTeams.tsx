@@ -1,26 +1,28 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { PokemonSearchInput } from '../../components/PokemonSearchInput';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useAfterPaint } from '../../hooks/useAfterPaint';
+import { cleanName, normalizeSearch } from '../../lib/format';
 import { useFavoriteTeams } from '../../lib/favorite-teams';
 import { type ScoreParts, scoreTier, teamScore, threatPart } from '../../lib/team-analysis';
 import { TeamCards } from './TeamCards';
 import { analyzeTeam } from './useTeamAnalysis';
 import { type TeamsData, useSimContext, useTeamEvaluations } from './useTeamsData';
 
-type SortKey = 'score' | 'threat' | 'added';
-
 interface FavoriteRow extends RankedTeam {
 	addedAt: number;
 }
+
+type FavoriteSortKey = 'added' | 'score' | 'threat';
 
 /**
  * The teams the user starred in this league, drawn with the same cards as the best teams. A favorite stores only
  * its Pokémon and moves, so each one is rated here the way the builder rates it (the simulated threat score in the
  * worker, everything else on the page) and shown once its rating is in — already rated teams come straight from the
- * builder's cache. Can be ordered by either score or by when it was added.
+ * builder's cache. The list can be filtered by Pokémon and ordered by date added or either score.
  */
 export const FavoriteTeams = ({
 	league,
@@ -31,9 +33,10 @@ export const FavoriteTeams = ({
 	data: TeamsData;
 	onOpen: (team: RankedTeam) => void;
 }) => {
-	const { t } = useTranslation(['teams']);
+	const { t } = useTranslation(['teams', 'components']);
 	const all = useFavoriteTeams();
-	const [sortKey, setSortKey] = useState<SortKey>('score');
+	const [search, setSearch] = useState('');
+	const [sortKey, setSortKey] = useState<FavoriteSortKey>('added');
 	const ctx = useSimContext(league, data);
 
 	// Only teams this league's ranking can still rate: a species that dropped out of it stays saved, just not listed.
@@ -99,26 +102,43 @@ export const FavoriteTeams = ({
 	if (favorites.length === 0) return <p className='r-tm-empty'>{t('teams:favorites.empty')}</p>;
 
 	const sortOptions: ReadonlyArray<SortOption> = [
+		{ key: 'added', label: t('teams:favorites.sortAdded'), defaultDir: 'desc' },
 		{ key: 'score', label: t('teams:top.teamScore'), defaultDir: 'desc' },
 		{ key: 'threat', label: t('teams:threat.scoreLabel'), defaultDir: 'asc' },
-		{ key: 'added', label: t('teams:favorites.sortAdded'), defaultDir: 'desc' },
 	];
 	const changeSort = (key: string, _dir: SortDir) => {
-		if (key === 'score' || key === 'threat' || key === 'added') setSortKey(key);
+		if (key === 'added' || key === 'score' || key === 'threat') setSortKey(key);
 	};
-
-	// Always best first: highest score, lowest threat score, newest first.
-	const teams = [...rated.rows].sort((a, b) =>
-		sortKey === 'threat'
-			? a.threatScore - b.threatScore || b.score - a.score
-			: sortKey === 'added'
+	const term = normalizeSearch(search);
+	// Each criterion always uses its useful direction: newest, highest score, or lowest threat first.
+	const teams = rated.rows
+		.filter(
+			(team) =>
+				!term ||
+				team.members.some((member) => {
+					const pokemon = data.gamemaster[member.speciesId];
+					const name = pokemon ? cleanName(pokemon.speciesName) : member.speciesId;
+					return normalizeSearch(name).includes(term) || normalizeSearch(member.speciesId).includes(term);
+				})
+		)
+		.sort((a, b) =>
+			sortKey === 'added'
 				? b.addedAt - a.addedAt
-				: b.score - a.score || a.threatScore - b.threatScore
-	);
+				: sortKey === 'threat'
+					? a.threatScore - b.threatScore || b.score - a.score
+					: b.score - a.score || a.threatScore - b.threatScore
+		);
 
 	return (
 		<div className='r-tm-board'>
 			<div className='r-tm-board-tools'>
+				<PokemonSearchInput
+					value={search}
+					onChange={setSearch}
+					placeholder={t('teams:top.searchPlaceholder')}
+					clearAriaLabel={t('components:searchBox.clearAriaLabel')}
+					onClear={() => setSearch('')}
+				/>
 				<SortBar
 					options={sortOptions}
 					sortKey={sortKey}
@@ -127,13 +147,19 @@ export const FavoriteTeams = ({
 					fixedDirection
 				/>
 			</div>
-			<TeamCards
-				teams={teams}
-				league={league}
-				data={data}
-				primary={sortKey === 'threat' ? 'threat' : 'score'}
-				onOpen={onOpen}
-			/>
+			{teams.length > 0 ? (
+				<TeamCards
+					teams={teams}
+					league={league}
+					data={data}
+					primary={sortKey === 'threat' ? 'threat' : 'score'}
+					onOpen={onOpen}
+				/>
+			) : rated.pending > 0 ? null : term ? (
+				<p className='r-muted'>{t('teams:top.noMatch')}</p>
+			) : (
+				<p className='r-tm-empty'>{t('teams:favorites.empty')}</p>
+			)}
 			{rated.pending > 0 && (
 				<div className='r-tm-loading'>
 					<span className='r-spinner' aria-hidden='true' />

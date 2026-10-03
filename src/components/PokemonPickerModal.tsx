@@ -43,7 +43,7 @@ export const PokemonPickerModal = ({
 					</button>
 				</div>
 				<PokemonSearchInput
-					inputRef={inputRef}
+					{...(inputRef ? { inputRef } : {})}
 					value={query}
 					placeholder={placeholder}
 					clearAriaLabel={clearAriaLabel}

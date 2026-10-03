@@ -4,6 +4,7 @@
 		"builderTab": "Construtor de equipas",
 		"topTab": "Melhores equipas",
 		"favoritesTab": "Favoritas",
+		"collectionTab": "Os meus Pokémon",
 		"tabsAria": "Secções de equipas",
 		"leagueAria": "Liga",
 		"loading": "A carregar os dados das equipas…",
@@ -253,6 +254,7 @@
 		"note": "Avaliado em {{date}} entre {{total}} equipas possíveis. Ordem na equipa: abertura, troca, fecho.",
 		"empty": "Não há nenhum ranking de equipas disponível neste momento. Volta em breve.",
 		"noMatch": "Nenhuma equipa do ranking inclui esse Pokémon.",
+		"searchPlaceholder": "Pesquisar equipas por Pokémon…",
 		"threat": "Ameaça",
 		"help": {
 			"summary": "O que significam estes números?",
@@ -261,6 +263,20 @@
 			"roles": "A sua pontuação de papel no PvPoke nesta liga, em 100. Abertura indica quão bem abre o combate, Troca quão seguro entra a meio do combate e Fecho quão bem termina sem escudos.",
 			"order": "As setas mostram a ordem de jogo: a abertura, depois a troca segura e depois o fecho. Escolhemos a ordem cuja soma das pontuações de papel é a mais alta."
 		}
+	},
+	"collection": {
+		"intro": "Esta coleção é guardada neste navegador e separada por liga. Adiciona Pokémon, ajusta os ataques, o nível e os IV, e confirma para guardar.",
+		"count": "{{count}} Pokémon guardados nesta liga",
+		"confirm": "Confirmar",
+		"nickname": "Alcunha do Pokémon (opcional)",
+		"remove": "Remover {{name}} da coleção",
+		"addShort": "Adicionar",
+		"teamsHeading": "Melhores equipas da tua coleção",
+		"needThree": "Guarda pelo menos três Pokémon diferentes nesta liga para criar equipas.",
+		"progress": "{{processed}} de {{total}} batalhas processadas; {{missing}} em falta.",
+		"manualNotice": "Com mais de 10 Pokémon, calcular todas as equipas pode demorar. Os resultados temporários não serão guardados na tua coleção; as classificações da liga ou atualizações do simulador poderão alterá-los no futuro.",
+		"computeTeams": "Calcular melhores equipas",
+		"noCombinations": "Não é possível criar uma equipa válida de três Pokémon com esta coleção."
 	},
 	"favorites": {
 		"add": "Adicionar às favoritas",

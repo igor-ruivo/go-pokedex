@@ -4,6 +4,7 @@
 		"builderTab": "Creador de equipos",
 		"topTab": "Mejores equipos",
 		"favoritesTab": "Favoritos",
+		"collectionTab": "Mis Pokémon",
 		"tabsAria": "Secciones de equipos",
 		"leagueAria": "Liga",
 		"loading": "Cargando datos de equipos…",
@@ -253,6 +254,7 @@
 		"note": "Calificado el {{date}} entre {{total}} equipos posibles. Orden dentro del equipo: líder, cambio, cierre.",
 		"empty": "No hay un ranking de equipos disponible por ahora. Vuelve pronto.",
 		"noMatch": "Ningún equipo del ranking incluye ese Pokémon.",
+		"searchPlaceholder": "Buscar equipos por Pokémon…",
 		"threat": "Amenaza",
 		"help": {
 			"summary": "¿Qué significan estos números?",
@@ -261,6 +263,20 @@
 			"roles": "Su puntuación de rol de PvPoke en esta liga, sobre 100. Líder indica qué tan bien abre el combate, Cambio qué tan seguro entra a mitad del combate y Cierre qué tan bien remata sin escudos.",
 			"order": "Las flechas muestran el orden de juego: líder, luego el cambio seguro y luego el cierre. Elegimos el orden cuya suma de puntuaciones de rol sea la más alta."
 		}
+	},
+	"collection": {
+		"intro": "Esta colección se guarda en este navegador y por separado para cada liga. Agrega Pokémon, ajusta sus movimientos, nivel e IV y confirma para guardarlos.",
+		"count": "{{count}} Pokémon guardados en esta liga",
+		"confirm": "Confirmar",
+		"nickname": "Apodo del Pokémon (opcional)",
+		"remove": "Quitar a {{name}} de la colección",
+		"addShort": "Añadir",
+		"teamsHeading": "Mejores equipos de tu colección",
+		"needThree": "Guarda al menos tres Pokémon distintos en esta liga para formar equipos.",
+		"progress": "{{processed}} de {{total}} combates procesados; faltan {{missing}}.",
+		"manualNotice": "Con más de 10 Pokémon, calcular todos los equipos puede tardar. Los resultados son temporales y no se guardarán en tu colección; las clasificaciones de liga o las actualizaciones del simulador podrían cambiarlos más adelante.",
+		"computeTeams": "Calcular mejores equipos",
+		"noCombinations": "No se pueden formar equipos válidos de tres Pokémon con esta colección."
 	},
 	"favorites": {
 		"add": "Agregar a favoritos",

@@ -4,6 +4,7 @@
 		"builderTab": "Team-Builder",
 		"topTab": "Top-Teams",
 		"favoritesTab": "Favoriten",
+		"collectionTab": "Meine Pokémon",
 		"tabsAria": "Team-Bereiche",
 		"leagueAria": "Liga",
 		"loading": "Team-Daten werden geladen …",
@@ -253,6 +254,7 @@
 		"note": "Bewertet am {{date}} aus {{total}} möglichen Teams. Reihenfolge im Team: Lead, Wechsel, Closer.",
 		"empty": "Zurzeit ist keine Team-Rangliste verfügbar. Schau bald wieder vorbei.",
 		"noMatch": "Kein Team im Ranking enthält dieses Pokémon.",
+		"searchPlaceholder": "Teams nach Pokémon durchsuchen …",
 		"threat": "Bedrohung",
 		"help": {
 			"summary": "Was bedeuten diese Zahlen?",
@@ -261,6 +263,20 @@
 			"roles": "Seine PvPoke-Rollenwertung in dieser Liga, von 100. Lead zeigt, wie gut es den Kampf eröffnet, Wechsel, wie sicher es mitten im Kampf hereinkommt, Closer, wie gut es ohne Schilde abschließt.",
 			"order": "Die Pfeile zeigen die Reihenfolge: zuerst der Lead, dann der sichere Wechsel, dann der Closer. Wir wählen die Reihenfolge mit der höchsten Summe der Rollenwertungen."
 		}
+	},
+	"collection": {
+		"intro": "Diese Sammlung wird in diesem Browser und getrennt für jede Liga gespeichert. Füge Pokémon hinzu, passe Attacken, Level und IVs an und bestätige zum Speichern.",
+		"count": "{{count}} Pokémon für diese Liga gespeichert",
+		"confirm": "Bestätigen",
+		"nickname": "Pokémon-Spitzname (optional)",
+		"remove": "{{name}} aus der Sammlung entfernen",
+		"addShort": "Add",
+		"teamsHeading": "Beste Teams aus deiner Sammlung",
+		"needThree": "Speichere mindestens drei verschiedene Pokémon in dieser Liga, um Teams zu bilden.",
+		"progress": "{{processed}} von {{total}} Kämpfen verarbeitet; {{missing}} verbleibend.",
+		"manualNotice": "Bei mehr als 10 Pokémon kann die Berechnung aller Teams eine Weile dauern. Die vorläufigen Ergebnisse werden nicht in deiner Sammlung gespeichert; spätere Liga-Ranglisten oder Simulator-Updates können sie ändern.",
+		"computeTeams": "Beste Teams berechnen",
+		"noCombinations": "Aus dieser Sammlung lassen sich keine gültigen Teams aus drei Pokémon bilden."
 	},
 	"favorites": {
 		"add": "Zu Favoriten hinzufügen",

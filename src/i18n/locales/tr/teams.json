@@ -4,6 +4,7 @@
 		"builderTab": "Takım Oluşturucu",
 		"topTab": "En iyi takımlar",
 		"favoritesTab": "Favoriler",
+		"collectionTab": "Pokémonlarım",
 		"tabsAria": "Takım bölümleri",
 		"leagueAria": "Lig",
 		"loading": "Takım verileri yükleniyor…",
@@ -253,6 +254,7 @@
 		"note": "{{date}} tarihinde {{total}} olası takım arasından puanlandı. Takımdaki sıra: açılış, geçiş, kapanış.",
 		"empty": "Şu anda takım sıralaması yok. Yakında tekrar bak.",
 		"noMatch": "Sıralamadaki hiçbir takım bu Pokémon'u içermiyor.",
+		"searchPlaceholder": "Pokémon'a göre takım ara…",
 		"threat": "Tehdit",
 		"help": {
 			"summary": "Bu sayılar ne anlama geliyor?",
@@ -261,6 +263,20 @@
 			"roles": "Bu ligdeki PvPoke rol puanı, 100 üzerinden. Açılış, maça ne kadar iyi başladığını; Geçiş, savaşın ortasında ne kadar güvenli girdiğini; Kapanış ise kalkanlar bittiğinde ne kadar iyi bitirdiğini gösterir.",
 			"order": "Oklar oynama sırasını gösterir: önce açılış, sonra güvenli geçiş, sonra kapanış. Rol puanları toplamı en yüksek olan sırayı seçiyoruz."
 		}
+	},
+	"collection": {
+		"intro": "Bu koleksiyon bu tarayıcıya kaydedilir ve her lig için ayrı tutulur. Pokémon ekle, hareketlerini, seviyesini ve IV'lerini ayarla, ardından kaydetmek için onayla.",
+		"count": "Bu lig için {{count}} Pokémon kaydedildi",
+		"confirm": "Onayla",
+		"nickname": "Pokémon takma adı (isteğe bağlı)",
+		"remove": "{{name}} koleksiyondan kaldır",
+		"addShort": "Ekle",
+		"teamsHeading": "Koleksiyonundaki en iyi takımlar",
+		"needThree": "Takım oluşturmak için bu ligde en az üç farklı Pokémon kaydet.",
+		"progress": "{{total}} savaşın {{processed}} tanesi işlendi; {{missing}} kaldı.",
+		"manualNotice": "10'dan fazla Pokémon olduğunda tüm takımları hesaplamak zaman alabilir. Geçici sonuçlar koleksiyonuna kaydedilmez; lig sıralamaları veya simülatör güncellemeleri gelecekte sonuçları değiştirebilir.",
+		"computeTeams": "En iyi takımları hesapla",
+		"noCombinations": "Bu koleksiyondan geçerli bir üç Pokémon takımı oluşturulamıyor."
 	},
 	"favorites": {
 		"add": "Favorilere ekle",

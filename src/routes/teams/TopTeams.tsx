@@ -1,23 +1,21 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
 
+import { PokemonSearchInput } from '../../components/PokemonSearchInput';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useAfterPaint } from '../../hooks/useAfterPaint';
-import { cleanName } from '../../lib/format';
+import { cleanName, normalizeSearch } from '../../lib/format';
 import { SCORE_WEIGHTS } from '../../lib/team-analysis';
 import { useTeamRanking } from '../../queries/teams';
 import { VirtualTeamCards } from './TeamCards';
 import type { TeamsData } from './useTeamsData';
 
-const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, '');
-
 /**
  * The best teams we could find: every trio of the league's top Pokémon, each with its ranking's recommended
  * moves and top IVs, rated with the same Team Score the builder shows (see `scripts/team-ranking` and the daily
  * "Team Ranking" workflow). Each row opens that team in the builder. The lists are long, so they are virtualized, and
- * the app bar's search (`?q=`) keeps only the teams that include the Pokémon typed there.
+ * a local Pokémon search keeps only the teams that include the typed species.
  */
 export const TopTeams = ({
 	league,
@@ -28,18 +26,18 @@ export const TopTeams = ({
 	data: TeamsData;
 	onOpen: (team: RankedTeam) => void;
 }) => {
-	const { t } = useTranslation(['teams', 'rankings']);
+	const { t } = useTranslation(['teams', 'rankings', 'components']);
 	const query = useTeamRanking();
 	// The same "Order by" chip as the rankings pages. Each key has its own list of the best teams by that metric.
 	const [sortKey, setSortKey] = useState<'score' | 'threat'>('score');
+	const [search, setSearch] = useState('');
 	// The intro under the title can be folded away: the list below is long.
 	const [introOpen, setIntroOpen] = useState(false);
 
 	// The tab is already showing; the long list of cards renders after the spinner has been painted.
 	const painted = useAfterPaint();
 
-	const [params] = useSearchParams();
-	const term = norm(params.get('q') ?? '');
+	const term = normalizeSearch(search);
 	const { gamemaster } = data;
 	const ranking = query.data?.leagues[league];
 	const list = sortKey === 'score' ? ranking?.byScore : ranking?.byThreat;
@@ -50,7 +48,10 @@ export const TopTeams = ({
 		return all.filter(({ team }) =>
 			team.members.some((m) => {
 				const p = gamemaster[m.speciesId];
-				return norm(p ? cleanName(p.speciesName) : m.speciesId).includes(term) || norm(m.speciesId).includes(term);
+				return (
+					normalizeSearch(p ? cleanName(p.speciesName) : m.speciesId).includes(term) ||
+					normalizeSearch(m.speciesId).includes(term)
+				);
 			})
 		);
 	}, [list, term, gamemaster]);
@@ -116,6 +117,13 @@ export const TopTeams = ({
 				</dl>
 			</details>
 			<div className='r-tm-board-tools'>
+				<PokemonSearchInput
+					value={search}
+					onChange={setSearch}
+					placeholder={t('teams:top.searchPlaceholder')}
+					clearAriaLabel={t('components:searchBox.clearAriaLabel')}
+					onClear={() => setSearch('')}
+				/>
 				<SortBar
 					options={sortOptions}
 					sortKey={sortKey}

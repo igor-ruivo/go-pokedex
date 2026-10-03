@@ -4,6 +4,7 @@
 		"builderTab": "Team Builder",
 		"topTab": "Top teams",
 		"favoritesTab": "Favorites",
+		"collectionTab": "My Pokémon",
 		"tabsAria": "Teams sections",
 		"leagueAria": "League",
 		"loading": "Loading team data…",
@@ -253,6 +254,7 @@
 		"note": "Rated {{date}} from {{total}} possible teams. Order within each team: lead, switch, closer.",
 		"empty": "No team ranking is available right now. Check back soon.",
 		"noMatch": "No team in the ranking includes that Pokémon.",
+		"searchPlaceholder": "Search teams by Pokémon…",
 		"threat": "Threat",
 		"help": {
 			"summary": "What do these numbers mean?",
@@ -261,6 +263,20 @@
 			"roles": "The chip under each Pokémon: its PvPoke role score in this league, out of 100. Lead is how well it opens the match, Switch how safely it comes in mid-battle, Closer how well it finishes once shields are gone.",
 			"order": "The arrows show the order to play them: lead, then the safe switch, then the closer. We pick the order that adds up to the highest role scores."
 		}
+	},
+	"collection": {
+		"intro": "This collection is saved in this browser and kept separate for each league. Add Pokémon, adjust moves, level and IVs, then confirm to save.",
+		"count": "{{count}} Pokémon saved for this league",
+		"confirm": "Confirm",
+		"nickname": "Pokémon nickname (optional)",
+		"remove": "Remove {{name}} from collection",
+		"addShort": "Add",
+		"teamsHeading": "Best teams from your collection",
+		"needThree": "Save at least three different Pokémon in this league to build teams.",
+		"progress": "{{processed}} of {{total}} battles processed; {{missing}} remaining.",
+		"manualNotice": "With more than 10 Pokémon, calculating every team can take a while. Results are temporary and won't be saved with your collection; league rankings or simulator updates may change them later.",
+		"computeTeams": "Calculate best teams",
+		"noCombinations": "No valid three-Pokémon teams can be formed from this collection."
 	},
 	"favorites": {
 		"add": "Add to favorites",

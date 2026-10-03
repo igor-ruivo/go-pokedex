@@ -32,23 +32,25 @@ const compactNumber = (n: number, locale: string): string =>
 /** Compact grid tile — same footprint as the calendar / evolution minis. */
 export const PokeCard = ({
 	pokemon,
+	displayName,
 	metric,
 	league,
+	onActivate,
+	className,
 }: {
 	pokemon: IGamemasterPokemon;
+	displayName?: string | undefined;
 	metric?: CardMetric | undefined;
 	/** When set, the detail page opens with this league/raid pre-selected. */
 	league?: string | undefined;
+	/** Render as an action tile instead of a link (for example, to edit a collection entry). */
+	onActivate?: (() => void) | undefined;
+	className?: string | undefined;
 }) => {
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { i18n } = useTranslation();
-	return (
-		<Link
-			to={league ? `${R.pokemon(pokemon.speciesId)}?lg=${league}` : R.pokemon(pokemon.speciesId)}
-			className='r-pc'
-			data-shadow={pokemon.isShadow ? '' : undefined}
-			style={{ ['--tc' as string]: typeVar(pokemon.types[0]) }}
-		>
+	const content = (
+		<>
 			<span className='r-ctr-rank'>
 				{metric?.podium && metric.rank != null && <RankMedal rank={metric.rank} />}
 				{metric?.rank != null ? ordinal(metric.rank, currentLanguage) : dexNo(pokemon.dex)}
@@ -68,7 +70,7 @@ export const PokeCard = ({
 			<span className='r-pc-art'>
 				<SpriteImg pokemon={pokemon} loading='lazy' />
 			</span>
-			<b className='r-pc-name'>{cleanName(pokemon.speciesName)}</b>
+			<b className='r-pc-name'>{displayName || cleanName(pokemon.speciesName)}</b>
 			{metric?.cp != null && (
 				<span className='r-pc-metric'>
 					{metric.cp.toLocaleString()} <em>{gameTranslator(GameTranslatorKeys.CPDisplay, gl)}</em>
@@ -94,6 +96,20 @@ export const PokeCard = ({
 					{Math.round(metric.tdo).toLocaleString()} <em>TDO</em>
 				</span>
 			)}
+		</>
+	);
+	const props = {
+		'className': className ? `r-pc ${className}` : 'r-pc',
+		'data-shadow': pokemon.isShadow ? '' : undefined,
+		'style': { ['--tc' as string]: typeVar(pokemon.types[0]) },
+	};
+	return onActivate ? (
+		<button type='button' {...props} onClick={onActivate}>
+			{content}
+		</button>
+	) : (
+		<Link to={league ? `${R.pokemon(pokemon.speciesId)}?lg=${league}` : R.pokemon(pokemon.speciesId)} {...props}>
+			{content}
 		</Link>
 	);
 };

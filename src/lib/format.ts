@@ -84,6 +84,14 @@ export const cleanName = (name: string): string => {
 	return s;
 };
 
+/** Case- and accent-insensitive normalization that keeps letters from every writing system. */
+export const normalizeSearch = (value: string): string =>
+	value
+		.normalize('NFKD')
+		.replace(/\p{M}/gu, '')
+		.toLocaleLowerCase()
+		.replace(/[^\p{L}\p{N}]/gu, '');
+
 /** Normalizes a string to sentence case (first character upper, the rest
  *  lower) — several data-mined GameTranslator values come back SHOUTY
  *  ALL-CAPS (e.g. "OPPONENT DEFENSE DROP") since that's how Pokémon GO's own

@@ -18,6 +18,7 @@ export const R = {
 	teams: '/teams',
 	teamsTop: '/teams/top',
 	teamsFavorites: '/teams/favorites',
+	teamsCollection: '/teams/collection',
 	moves: '/moves',
 	move: (moveId: string): string => `/move/${encodeURIComponent(moveId)}`,
 	types: '/types',

@@ -29,6 +29,8 @@ export const TeamCard = ({
 	data,
 	primary,
 	onOpen,
+	showBuildDetails = false,
+	nicknames,
 }: {
 	team: CardTeam;
 	rank: number;
@@ -36,10 +38,13 @@ export const TeamCard = ({
 	data: TeamsData;
 	primary: 'score' | 'threat';
 	onOpen: (team: RankedTeam) => void;
+	showBuildDetails?: boolean;
+	nicknames?: Readonly<Record<string, string>>;
 }) => {
 	const { t } = useTranslation(['teams']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { moves } = useMoves();
+	const showMemberDetails = showBuildDetails || team.addedAt !== undefined;
 
 	const metrics = [
 		{ label: t('teams:top.teamScore'), value: team.score.toFixed(1) },
@@ -81,9 +86,7 @@ export const TeamCard = ({
 					if (!p) return null;
 					// Members come in the order they're played: lead, switch, closer.
 					const role = TEAM_ROLES[i];
-					// A favorite names the IVs each Pokémon is rated with: the ones picked, else the league's best.
-					// A favorite flags the moves PvPoke doesn't recommend for this Pokémon in this league.
-					const favorite = team.addedAt !== undefined;
+					// Custom-build cards show the IVs used for rating and flag moves outside the recommended set.
 					const recommended = data.rankList[member.speciesId]?.moveset;
 					const best = data.builder?.ivs[member.speciesId]?.[league];
 					const ivs = member.ivs ?? (best ? [best[1], best[2], best[3]] : undefined);
@@ -106,13 +109,13 @@ export const TeamCard = ({
 									{p.isShadow && <ShadowMark />}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
-								<b className='r-tm-board-name'>{cleanName(p.speciesName)}</b>
+								<b className='r-tm-board-name'>{nicknames?.[member.speciesId] || cleanName(p.speciesName)}</b>
 								<span className='r-tm-board-types'>
 									{p.types.map((ty) => (
 										<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
 									))}
 								</span>
-								{team.addedAt !== undefined && ivs && (
+								{showMemberDetails && ivs && (
 									<span
 										className='r-tm-board-ivs'
 										data-custom={member.ivs || member.level !== undefined ? '' : undefined}
@@ -126,7 +129,7 @@ export const TeamCard = ({
 									{member.moveset.map((m) => (
 										<span key={m}>
 											{translateMoveFromMoveId(m, moves, gl)}
-											{favorite && recommended && !recommended.includes(m) && <NotRecommendedMark />}
+											{showMemberDetails && recommended && !recommended.includes(m) && <NotRecommendedMark />}
 										</span>
 									))}
 								</span>
@@ -184,12 +187,16 @@ export const VirtualTeamCards = ({
 	data,
 	primary,
 	onOpen,
+	showBuildDetails = false,
+	nicknames,
 }: {
 	items: ReadonlyArray<{ team: RankedTeam; rank: number }>;
 	league: TeamLeague;
 	data: TeamsData;
 	primary: 'score' | 'threat';
 	onOpen: (team: RankedTeam) => void;
+	showBuildDetails?: boolean;
+	nicknames?: Readonly<Record<string, string>>;
 }) => {
 	const listRef = useRef<HTMLDivElement>(null);
 	const [scrollMargin, setScrollMargin] = useState(0);
@@ -241,6 +248,8 @@ export const VirtualTeamCards = ({
 								data={data}
 								primary={primary}
 								onOpen={onOpen}
+								showBuildDetails={showBuildDetails}
+								nicknames={nicknames}
 							/>
 						</div>
 					</div>

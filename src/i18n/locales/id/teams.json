@@ -4,6 +4,7 @@
 		"builderTab": "Pembuat Tim",
 		"topTab": "Tim terbaik",
 		"favoritesTab": "Favorit",
+		"collectionTab": "Pokémon saya",
 		"tabsAria": "Bagian tim",
 		"leagueAria": "Liga",
 		"loading": "Memuat data tim…",
@@ -253,6 +254,7 @@
 		"note": "Dinilai pada {{date}} dari {{total}} kemungkinan tim. Urutan dalam tim: lead, switch, closer.",
 		"empty": "Belum ada peringkat tim saat ini. Coba lagi nanti.",
 		"noMatch": "Tidak ada tim di peringkat yang menyertakan Pokémon itu.",
+		"searchPlaceholder": "Cari tim berdasarkan Pokémon…",
 		"threat": "Ancaman",
 		"help": {
 			"summary": "Apa arti angka-angka ini?",
@@ -261,6 +263,20 @@
 			"roles": "Skor perannya menurut PvPoke di liga ini, dari 100. Lead menunjukkan seberapa baik ia membuka pertandingan, Switch seberapa aman ia masuk di tengah pertarungan, Closer seberapa baik ia menutup saat perisai habis.",
 			"order": "Panah menunjukkan urutan bermain: lead, lalu switch yang aman, lalu closer. Kami memilih urutan dengan jumlah skor peran tertinggi."
 		}
+	},
+	"collection": {
+		"intro": "Koleksi ini disimpan di browser ini dan dipisahkan untuk tiap liga. Tambahkan Pokémon, atur jurus, level, dan IV, lalu konfirmasi untuk menyimpannya.",
+		"count": "{{count}} Pokémon tersimpan untuk liga ini",
+		"confirm": "Konfirmasi",
+		"nickname": "Nama panggilan Pokémon (opsional)",
+		"remove": "Hapus {{name}} dari koleksi",
+		"addShort": "Tambah",
+		"teamsHeading": "Tim terbaik dari koleksimu",
+		"needThree": "Simpan setidaknya tiga Pokémon berbeda di liga ini untuk membuat tim.",
+		"progress": "{{processed}} dari {{total}} pertarungan diproses; {{missing}} tersisa.",
+		"manualNotice": "Dengan lebih dari 10 Pokémon, menghitung semua tim bisa memerlukan waktu. Hasil sementara ini tidak akan disimpan ke koleksimu; peringkat liga atau pembaruan simulator dapat mengubahnya nanti.",
+		"computeTeams": "Hitung tim terbaik",
+		"noCombinations": "Tidak ada tim valid berisi tiga Pokémon yang dapat dibuat dari koleksi ini."
 	},
 	"favorites": {
 		"add": "Tambahkan ke favorit",

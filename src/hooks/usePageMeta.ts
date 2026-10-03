@@ -53,6 +53,12 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 		description: 'Your saved Pokémon GO PvP teams, rated for Great, Ultra and Master League.',
 		image: '/images/leagues/great.png',
 	},
+	'/teams/collection': {
+		title: 'My Pokémon Collection — GO Pokédex',
+		description:
+			'Save Pokémon builds by league, customize their moves and IVs, and compare teams made from your collection.',
+		image: '/images/leagues/great.png',
+	},
 	'/moves': {
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',

@@ -102,6 +102,13 @@ const STATIC_PAGES = [
 		image: `${SITE}/images/leagues/master.png`,
 	},
 	{
+		path: '/teams/collection',
+		title: 'My Pokémon Collection — GO Pokédex',
+		description:
+			'Save Pokémon builds by league, customize their moves and IVs, and compare teams made from your collection.',
+		image: `${SITE}/images/leagues/great.png`,
+	},
+	{
 		path: '/moves',
 		title: 'Moves — GO Pokédex',
 		description: 'Every fast and charged move in Pokémon GO, with PvE and PvP stats.',

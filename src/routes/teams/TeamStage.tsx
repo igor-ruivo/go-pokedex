@@ -369,19 +369,7 @@ const PokemonPicker = ({
 
 const ROLE_NUMBER: Record<TeamRole, number> = { lead: 1, switch: 2, closer: 3 };
 
-const MemberCard = ({
-	index,
-	member,
-	pokemon,
-	data,
-	role,
-	onChangePokemon,
-	onMove,
-	onEditIvs,
-	onEditLevel,
-	onRemove,
-	suggestion,
-}: {
+interface MemberCardProps {
 	index: number;
 	member: AnalyzedMember | undefined;
 	pokemon: IGamemasterPokemon | undefined;
@@ -395,7 +383,31 @@ const MemberCard = ({
 	onRemove: () => void;
 	/** Only on the empty cards of a team that has one or two Pokémon: finish the team with the best teammates. */
 	suggestion?: { pending: boolean; onSuggest: () => void } | undefined;
-}) => {
+	onConfirm?: (() => void) | undefined;
+	confirmLabel?: string | undefined;
+	nickname?: string | undefined;
+	onNicknameChange?: ((nickname: string) => void) | undefined;
+	nicknameLabel?: string | undefined;
+}
+
+export const MemberCard = ({
+	index,
+	member,
+	pokemon,
+	data,
+	role,
+	onChangePokemon,
+	onMove,
+	onEditIvs,
+	onEditLevel,
+	onRemove,
+	suggestion,
+	onConfirm,
+	confirmLabel,
+	nickname,
+	onNicknameChange,
+	nicknameLabel,
+}: MemberCardProps) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
 	const roles = roleNames(t);
 	const moveTable = data.builder!.moves;
@@ -451,6 +463,17 @@ const MemberCard = ({
 					{roles[role]}
 				</span>
 			)}
+			{onConfirm && (
+				<button
+					type='button'
+					className='r-tm-confirm'
+					aria-label={confirmLabel}
+					title={confirmLabel}
+					onClick={onConfirm}
+				>
+					✓
+				</button>
+			)}
 			<button type='button' className='r-tm-remove' aria-label={t('teams:builder.remove', { name })} onClick={onRemove}>
 				×
 			</button>
@@ -472,6 +495,16 @@ const MemberCard = ({
 					{name}
 				</button>
 			</h3>
+			{onNicknameChange && (
+				<input
+					className='r-tm-nickname'
+					value={nickname ?? ''}
+					maxLength={32}
+					aria-label={nicknameLabel}
+					placeholder={nicknameLabel}
+					onChange={(event) => onNicknameChange(event.target.value)}
+				/>
+			)}
 			<div className='r-tm-types'>
 				{pokemon.types.map((ty) => (
 					<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
@@ -546,6 +579,79 @@ const MemberCard = ({
 	);
 };
 
+export const TeamMemberEditor = ({
+	index,
+	member,
+	pokemon,
+	data,
+	role,
+	cpCap,
+	onChangePokemon,
+	onMove,
+	onBuild,
+	onRemove,
+	onConfirm,
+	confirmLabel,
+	nickname,
+	onNicknameChange,
+	nicknameLabel,
+}: Omit<MemberCardProps, 'onEditIvs' | 'onEditLevel'> & {
+	cpCap: number;
+	onBuild: (index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => void;
+}) => {
+	const [editing, setEditing] = useState<'ivs' | 'level' | null>(null);
+	return (
+		<>
+			<MemberCard
+				index={index}
+				member={member}
+				pokemon={pokemon}
+				data={data}
+				role={role}
+				onChangePokemon={onChangePokemon}
+				onMove={onMove}
+				onEditIvs={() => setEditing('ivs')}
+				onEditLevel={() => setEditing('level')}
+				onRemove={onRemove}
+				onConfirm={onConfirm}
+				confirmLabel={confirmLabel}
+				nickname={nickname}
+				onNicknameChange={onNicknameChange}
+				nicknameLabel={nicknameLabel}
+			/>
+			{member && pokemon && editing === 'ivs' && (
+				<IvModal
+					name={cleanName(pokemon.speciesName)}
+					value={member.stats.ivs}
+					custom={!!member.slot.ivs}
+					level={member.stats.level}
+					pinnedLevel={member.slot.level}
+					baseStats={pokemon.baseStats}
+					cpCap={cpCap}
+					onChange={(ivs) => {
+						onBuild(index, { ivs, level: member.slot.level });
+					}}
+					onClose={() => setEditing(null)}
+				/>
+			)}
+			{member && pokemon && editing === 'level' && (
+				<LevelModal
+					name={cleanName(pokemon.speciesName)}
+					level={member.stats.level}
+					custom={member.slot.level !== undefined}
+					baseStats={pokemon.baseStats}
+					ivs={member.stats.ivs}
+					cpCap={cpCap}
+					onChange={(level) => {
+						onBuild(index, { ivs: member.slot.ivs, level });
+					}}
+					onClose={() => setEditing(null)}
+				/>
+			)}
+		</>
+	);
+};
+
 /* --------------------------------- Stage ---------------------------------- */
 
 /** The Pokémon picker for one team slot — opened from a team card or from the Battle plan's step cards. */
@@ -614,55 +720,24 @@ export const TeamStage = ({
 	/** That is being worked out: the empty cards show a spinner. */
 	suggesting: boolean;
 }) => {
-	// Which member's IVs or level dialog is open.
-	const [editingFor, setEditingFor] = useState<{ index: number; kind: 'ivs' | 'level' } | null>(null);
-	const editing = editingFor ? members[editingFor.index] : undefined;
-	const editingPokemon =
-		editingFor && team[editingFor.index] ? data.gamemaster[team[editingFor.index].speciesId] : undefined;
-
 	return (
 		<div className='r-tm-stage'>
 			{[0, 1, 2].map((i) => (
-				<MemberCard
+				<TeamMemberEditor
 					key={i}
 					index={i}
 					member={members[i]}
 					pokemon={team[i] ? data.gamemaster[team[i].speciesId] : undefined}
 					data={data}
 					role={roleOf(i)}
+					cpCap={cpCap}
 					onChangePokemon={() => onChangePokemon(i)}
 					onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
-					onEditIvs={() => setEditingFor({ index: i, kind: 'ivs' })}
-					onEditLevel={() => setEditingFor({ index: i, kind: 'level' })}
+					onBuild={onBuild}
 					onRemove={() => onRemove(i)}
 					suggestion={team.length >= 1 && team.length < 3 ? { pending: suggesting, onSuggest } : undefined}
 				/>
 			))}
-			{editingFor && editing && editingPokemon && editingFor.kind === 'ivs' && (
-				<IvModal
-					name={cleanName(editingPokemon.speciesName)}
-					value={editing.stats.ivs}
-					custom={!!editing.slot.ivs}
-					level={editing.stats.level}
-					pinnedLevel={editing.slot.level}
-					baseStats={editingPokemon.baseStats}
-					cpCap={cpCap}
-					onChange={(ivs) => onBuild(editingFor.index, { ivs, level: editing.slot.level })}
-					onClose={() => setEditingFor(null)}
-				/>
-			)}
-			{editingFor && editing && editingPokemon && editingFor.kind === 'level' && (
-				<LevelModal
-					name={cleanName(editingPokemon.speciesName)}
-					level={editing.stats.level}
-					custom={editing.slot.level !== undefined}
-					baseStats={editingPokemon.baseStats}
-					ivs={editing.stats.ivs}
-					cpCap={cpCap}
-					onChange={(level) => onBuild(editingFor.index, { ivs: editing.slot.ivs, level })}
-					onClose={() => setEditingFor(null)}
-				/>
-			)}
 		</div>
 	);
 };

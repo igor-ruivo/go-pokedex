@@ -4,6 +4,7 @@
 		"builderTab": "Creatore di squadre",
 		"topTab": "Migliori squadre",
 		"favoritesTab": "Preferiti",
+		"collectionTab": "I miei Pokémon",
 		"tabsAria": "Sezioni delle squadre",
 		"leagueAria": "Lega",
 		"loading": "Caricamento dei dati delle squadre…",
@@ -253,6 +254,7 @@
 		"note": "Valutato il {{date}} su {{total}} squadre possibili. Ordine nella squadra: apertura, cambio, chiusura.",
 		"empty": "Al momento non è disponibile nessuna classifica di squadre. Riprova presto.",
 		"noMatch": "Nessuna squadra della classifica include quel Pokémon.",
+		"searchPlaceholder": "Cerca squadre per Pokémon…",
 		"threat": "Minaccia",
 		"help": {
 			"summary": "Cosa significano questi numeri?",
@@ -261,6 +263,20 @@
 			"roles": "Il suo punteggio di ruolo PvPoke in questa lega, su 100. Apertura indica quanto bene apre lo scontro, Cambio quanto è sicuro il suo ingresso a metà scontro, Chiusura quanto bene conclude senza scudi.",
 			"order": "Le frecce mostrano l'ordine di gioco: apertura, poi il cambio sicuro, poi la chiusura. Scegliamo l'ordine con la somma più alta dei punteggi di ruolo."
 		}
+	},
+	"collection": {
+		"intro": "Questa raccolta viene salvata in questo browser e separatamente per ogni lega. Aggiungi Pokémon, modifica mosse, livello e IV, poi conferma per salvare.",
+		"count": "{{count}} Pokémon salvati per questa lega",
+		"confirm": "Conferma",
+		"nickname": "Soprannome Pokémon (facoltativo)",
+		"remove": "Rimuovi {{name}} dalla raccolta",
+		"addShort": "Aggiungi",
+		"teamsHeading": "Migliori squadre della tua raccolta",
+		"needThree": "Salva almeno tre Pokémon diversi in questa lega per creare le squadre.",
+		"progress": "{{processed}} lotte su {{total}} elaborate; {{missing}} rimanenti.",
+		"manualNotice": "Con più di 10 Pokémon, calcolare tutte le squadre può richiedere tempo. I risultati temporanei non verranno salvati nella tua raccolta; le classifiche della lega o gli aggiornamenti del simulatore potranno modificarli in futuro.",
+		"computeTeams": "Calcola le squadre migliori",
+		"noCombinations": "Non è possibile creare una squadra valida di tre Pokémon da questa raccolta."
 	},
 	"favorites": {
 		"add": "Aggiungi ai preferiti",

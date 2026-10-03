@@ -313,6 +313,31 @@
 		color 0.15s ease,
 		background 0.15s ease;
 }
+.rvmp .r-tm-confirm {
+	position: absolute;
+	top: var(--s2);
+	right: calc(var(--s2) + 36px);
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	font-size: 16px;
+	line-height: 1;
+	font-weight: 800;
+	color: var(--pos);
+	background: color-mix(in srgb, var(--pos) 15%, var(--surface-3));
+	transition:
+		color 0.15s ease,
+		background 0.15s ease,
+		transform 0.15s ease;
+}
+.rvmp .r-tm-confirm:hover {
+	color: var(--bg);
+	background: var(--pos);
+	transform: scale(1.06);
+}
 .rvmp .r-tm-remove:hover {
 	color: #fff;
 	background: var(--neg);
@@ -378,6 +403,21 @@
 .rvmp .r-tm-name {
 	font-size: 17px;
 	text-align: center;
+}
+.rvmp .r-tm-nickname {
+	width: min(100%, 240px);
+	padding: 5px 8px;
+	border: 1px solid var(--border);
+	border-radius: var(--r-sm);
+	background: var(--surface-2);
+	color: var(--text);
+	font: inherit;
+	font-size: 12px;
+	text-align: center;
+}
+.rvmp .r-tm-nickname:focus {
+	border-color: var(--accent);
+	outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
 }
 .rvmp .r-tm-types {
 	display: flex;
@@ -2443,13 +2483,14 @@
 }
 .rvmp .r-tm-board-tools {
 	display: flex;
+	align-items: center;
+	gap: var(--s2);
 	margin: 0 0 var(--s3);
 }
-/* the chip sits at the left here (on the rankings pages it is at the right), so its panel opens rightwards */
 @media (min-width: 561px) {
 	.rvmp .r-tm-board-tools .r-sort-panel {
-		left: 0;
-		right: auto;
+		left: auto;
+		right: 0;
 	}
 }
 .rvmp .r-tm-board-list {
@@ -2885,4 +2926,132 @@
 }
 .rvmp .r-tm-card--empty[data-pending] .r-spinner {
 	margin: auto;
+}
+
+/* ---- saved Pokémon collection ------------------------------------------------ */
+.rvmp .r-tm-collection-count {
+	display: inline-flex;
+	margin: 0 0 var(--s2);
+	padding: 5px 11px;
+	border: 1px solid var(--border);
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	font-size: 12px;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	color: var(--text-dim);
+}
+.rvmp .r-tm-collection-editor {
+	position: relative;
+	z-index: 5;
+	width: 100%;
+	margin: 0 0 var(--s4);
+}
+@media (min-width: 1000px) {
+	.rvmp .r-tm-collection-editor {
+		max-width: 372px;
+		margin-right: auto;
+		margin-left: auto;
+	}
+}
+.rvmp .r-tm-collection-grid {
+	min-height: 96px;
+	max-height: min(60vh, 480px);
+	overflow-y: auto;
+	overscroll-behavior-y: auto;
+}
+.rvmp .r-tm-collection-entry {
+	position: relative;
+	min-width: 0;
+	width: 100%;
+}
+.rvmp .r-tm-collection-pokemon {
+	width: 100%;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+.rvmp .r-tm-collection-name {
+	max-width: 100%;
+}
+.rvmp .r-mini > .r-tm-collection-cp {
+	max-width: 100%;
+	margin-top: 2%;
+	font-family: Fredoka, sans-serif;
+	font-size: clamp(7px, 10cqi, 9px);
+	font-weight: 700;
+	line-height: 1.1;
+	color: var(--accent);
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+.rvmp .r-tm-collection-remove {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	z-index: 7;
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border: 1px solid var(--border);
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--surface) 90%, transparent);
+	color: var(--text-dim);
+	font-size: 16px;
+	line-height: 1;
+}
+.rvmp .r-tm-collection-remove:hover {
+	color: #fff;
+	background: var(--neg);
+}
+.rvmp button.r-mini {
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+.rvmp .r-tm-collection-add {
+	width: 100%;
+	gap: var(--s2);
+	color: var(--text-dim);
+}
+.rvmp .r-mini.r-tm-collection-add > .r-tm-plus {
+	width: 42px;
+	height: 42px;
+	font-size: clamp(24px, 34cqi, 30px);
+}
+.rvmp .r-tm-collection-add-label {
+	max-width: 100%;
+	font-size: clamp(8px, 13cqi, 11px);
+	font-weight: 800;
+	line-height: 1;
+	white-space: nowrap;
+}
+@container (max-width: 90px) {
+	.rvmp .r-tm-collection-add-label {
+		display: none;
+	}
+}
+.rvmp .r-tm-collection-teams {
+	margin-top: var(--s6);
+}
+.rvmp .r-tm-collection-manual {
+	display: grid;
+	justify-items: start;
+	gap: var(--s2);
+	margin-bottom: var(--s3);
+}
+.rvmp .r-tm-collection-manual p {
+	margin: 0;
+}
+.rvmp .r-tm-collection-progress {
+	width: min(100%, 420px);
+	display: grid;
+	gap: var(--s1);
+}
+.rvmp .r-tm-collection-progress progress {
+	width: 100%;
+	height: 10px;
+	accent-color: var(--accent);
 }

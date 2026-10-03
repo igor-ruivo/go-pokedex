@@ -39,8 +39,7 @@ export const SearchBox = () => {
 	const [active, setActive] = useState(0);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false), { dim: false });
 
-	const onGrid =
-		pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.moves || pathname === R.teamsTop;
+	const onGrid = pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.moves;
 
 	// Only the grid views mirror `?q=` into the box; elsewhere the box keeps whatever was typed/picked.
 	useEffect(() => {
@@ -114,7 +113,7 @@ export const SearchBox = () => {
 
 	// The Pokédex and the rankings filter their own list by what is typed here, so picking a Pokémon there just closes
 	// the dropdown and leaves the list filtered — it doesn't pull you off the ranking you are reading.
-	const onRankingList = pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.teamsTop;
+	const onRankingList = pathname === R.pokedex || pathname.startsWith('/rankings');
 
 	const pick = (hit: Hit) => {
 		setOpen(false);

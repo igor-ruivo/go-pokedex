@@ -16,6 +16,7 @@ import { BattlePlan } from './teams/BattlePlan';
 import { CoveragePanel } from './teams/CoveragePanel';
 import { FavoriteStar } from './teams/FavoriteStar';
 import { FavoriteTeams } from './teams/FavoriteTeams';
+import { PokemonCollection } from './teams/PokemonCollection';
 import { ScoreHero } from './teams/ScoreHero';
 import { StatsPanel } from './teams/StatsPanel';
 import { Suggestions } from './teams/Suggestions';
@@ -42,13 +43,15 @@ const Teams = () => {
 	const { currentGameLanguage: gl } = useLanguage();
 	const [params, setParams] = useSearchParams();
 	const navigate = useNavigate();
-	// Three views of the same page: the builder, the best teams we could find, and the user's favorites.
+	// Views of the same page: the builder, ranked teams, favorites, and the user's league collection.
 	const { pathname } = useLocation();
-	const tab: 'builder' | 'top' | 'favorites' = pathname.endsWith('/top')
+	const tab: 'builder' | 'top' | 'favorites' | 'collection' = pathname.endsWith('/top')
 		? 'top'
 		: pathname.endsWith('/favorites')
 			? 'favorites'
-			: 'builder';
+			: pathname.endsWith('/collection')
+				? 'collection'
+				: 'builder';
 	const gameTranslations = useGameTranslationsData();
 
 	const leagueParam = params.get('league');
@@ -173,6 +176,26 @@ const Teams = () => {
 				</svg>
 			),
 		},
+		{
+			id: 'collection',
+			label: t('teams:page.collectionTab'),
+			icon: (
+				<svg
+					viewBox='3 3 18 18'
+					width='20'
+					height='20'
+					fill='none'
+					stroke='currentColor'
+					strokeWidth='2'
+					aria-hidden='true'
+				>
+					<rect x='4' y='4' width='6' height='6' rx='1' />
+					<rect x='14' y='4' width='6' height='6' rx='1' />
+					<rect x='4' y='14' width='6' height='6' rx='1' />
+					<rect x='14' y='14' width='6' height='6' rx='1' />
+				</svg>
+			),
+		},
 	];
 
 	// Switching tabs keeps the league; a team only travels with a click on the list.
@@ -180,7 +203,14 @@ const Teams = () => {
 		const next = new URLSearchParams();
 		next.set('league', league);
 		void navigate({
-			pathname: id === 'top' ? R.teamsTop : id === 'favorites' ? R.teamsFavorites : R.teams,
+			pathname:
+				id === 'top'
+					? R.teamsTop
+					: id === 'favorites'
+						? R.teamsFavorites
+						: id === 'collection'
+							? R.teamsCollection
+							: R.teams,
 			search: `?${next.toString()}`,
 		});
 	};
@@ -198,7 +228,9 @@ const Teams = () => {
 
 	return (
 		<div
-			className={tab === 'top' || tab === 'favorites' ? 'r-shell r-tm' : 'r-shell r-shell--wide r-tm'}
+			className={
+				tab === 'top' || tab === 'favorites' || tab === 'collection' ? 'r-shell r-tm' : 'r-shell r-shell--wide r-tm'
+			}
 			data-tab={tab}
 		>
 			<h1 className='r-page-title'>{t('teams:page.title')}</h1>
@@ -225,6 +257,10 @@ const Teams = () => {
 			{data.ready && tab === 'top' && <TopTeams league={league} data={data} onOpen={openFromTop} />}
 
 			{data.ready && tab === 'favorites' && <FavoriteTeams league={league} data={data} onOpen={openFromTop} />}
+
+			{data.ready && tab === 'collection' && (
+				<PokemonCollection league={league} leagueLabel={leagueLabel} data={data} onOpen={openFromTop} />
+			)}
 
 			{data.ready && tab === 'builder' && restoring && (
 				<div className='r-tm-loading'>
