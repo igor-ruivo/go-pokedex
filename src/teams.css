@@ -345,6 +345,8 @@
 	z-index: 3;
 	max-width: min(240px, calc(100% - 2 * var(--s2)));
 	cursor: pointer;
+	font-family: inherit;
+	text-align: left;
 	padding: 8px 10px;
 	border-radius: var(--r-sm);
 	font-size: 12px;

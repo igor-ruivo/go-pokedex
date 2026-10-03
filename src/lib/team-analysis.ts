@@ -390,8 +390,7 @@ export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' |
  * the IVs and the level it sets (which are in the key), so flipping it on its own must not look like a different team —
  * and so must not re-run its battles.
  */
-export const evaluationKey = (team: ReadonlyArray<TeamSlotDescriptor>): string =>
-	team.map(slotIdentityKey).join(',');
+export const evaluationKey = (team: ReadonlyArray<TeamSlotDescriptor>): string => team.map(slotIdentityKey).join(',');
 
 /**
  * What makes a Pokémon the same one: `slotKey` without the Best Buddy flag. The flag only matters through the IVs and the
@@ -427,7 +426,7 @@ export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescri
 		})
 		.filter(({ parts }) => parts.length >= 3)
 		.slice(0, 3)
-				.map(({ parts: [speciesId, ...moveset], ivs, level, buddy }) => ({
+		.map(({ parts: [speciesId, ...moveset], ivs, level, buddy }) => ({
 			speciesId,
 			moveset: moveset.slice(0, 3),
 			...(ivs ? { ivs } : {}),

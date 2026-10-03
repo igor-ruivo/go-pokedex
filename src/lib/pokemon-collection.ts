@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
-import { isSlotIvs, isSlotLevel, type SlotIvs, slotIdentityKey } from './team-analysis';
+import { isSlotIvs, isSlotLevel, slotIdentityKey, type SlotIvs } from './team-analysis';
 
 export interface CollectionPokemon {
 	id: string;

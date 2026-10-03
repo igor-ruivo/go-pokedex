@@ -16,8 +16,8 @@ import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import {
 	isBuddy,
 	scoreTier,
-	type SlotIvs,
 	slotIdentityKey,
+	type SlotIvs,
 	TEAM_ROLES,
 	type TeamSlotDescriptor,
 	threatPart,
@@ -53,7 +53,7 @@ const MemberBuild = ({
 	const { ivsOptimal, levelOptimal } = useOptimalBuild(pokemon, ivs, member.level, isBuddy(member), cpCap);
 	// The level is only worth stating when it's a deliberate one, not the level the cap gives anyway.
 	const showLevel = member.level !== undefined && !levelOptimal;
-	const custom = (member.ivs && !ivsOptimal) || showLevel;
+	const custom = (!!member.ivs && !ivsOptimal) || showLevel;
 	return (
 		<span className='r-tm-board-ivs' data-custom={custom ? '' : undefined} title={title}>
 			{ivs.join('/')}
@@ -95,7 +95,11 @@ export const TeamCard = ({
 	// its 0–100 reading falls in.
 	const metrics = [
 		{ label: t('teams:top.teamScore'), value: team.score.toFixed(1), tier: team.tier },
-		{ label: t('teams:threat.scoreLabel'), value: String(team.threatScore), tier: scoreTier(threatPart(team.threatScore)) },
+		{
+			label: t('teams:threat.scoreLabel'),
+			value: String(team.threatScore),
+			tier: scoreTier(threatPart(team.threatScore)),
+		},
 	];
 
 	// The card is not itself a button: it holds the favorite star, and a button can't hold a button.
@@ -197,7 +201,13 @@ export const TeamCard = ({
 									))}
 								</span>
 								{showMemberDetails && ivs && (
-									<MemberBuild pokemon={p} member={member} ivs={ivs} cpCap={LEAGUE_CP[league]} title={t('teams:builder.ivs')} />
+									<MemberBuild
+										pokemon={p}
+										member={member}
+										ivs={ivs}
+										cpCap={LEAGUE_CP[league]}
+										title={t('teams:builder.ivs')}
+									/>
 								)}
 								<span className='r-tm-board-moves'>
 									{member.moveset

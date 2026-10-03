@@ -54,11 +54,7 @@ export const FavoriteTeams = ({
 		[all, league, data.rankList, data.gamemaster]
 	);
 	const autoRate = favorites.length <= AUTO_RATE_LIMIT;
-	const evaluations = useTeamEvaluations(
-		league,
-		data,
-		autoRate ? favorites.map((f) => f.members) : []
-	);
+	const evaluations = useTeamEvaluations(league, data, autoRate ? favorites.map((f) => f.members) : []);
 
 	const rated = useMemo(() => {
 		const rows: Array<FavoriteRow> = [];

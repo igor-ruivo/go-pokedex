@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
-import { isFavoriteTeam, toggleFavoriteTeam, useFavoriteTeams } from '../../lib/favorite-teams';
 import { canonicalSlot } from '../../lib/canonical-slot';
+import { isFavoriteTeam, toggleFavoriteTeam, useFavoriteTeams } from '../../lib/favorite-teams';
 import type { SlotIvs } from '../../lib/team-analysis';
 import type { TeamsData } from './useTeamsData';
 

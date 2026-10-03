@@ -72,6 +72,5 @@ export const useOptimalBuild = (
 			buddy,
 		};
 		// `ivs` is tracked through `ivKey` so a fresh array with the same numbers doesn't recompute
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [rows50, rows51, pokemon, ivKey, level, isBuddy, cpCap]);
 };

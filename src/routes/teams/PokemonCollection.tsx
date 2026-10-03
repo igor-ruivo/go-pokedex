@@ -21,7 +21,16 @@ import {
 } from '../../lib/pokemon-collection';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import { cpAt } from '../../lib/pvp-sim/cp';
-import { isBuddy, nonBuddyCounterpart, scoreTier, type SlotIvs, slotIdentityKey, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
+import {
+	isBuddy,
+	nonBuddyCounterpart,
+	scoreTier,
+	slotIdentityKey,
+	type SlotIvs,
+	teamScore,
+	type TeamSlotDescriptor,
+	threatPart,
+} from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { VirtualTeamCards } from './TeamCards';
@@ -369,7 +378,13 @@ export const PokemonCollection = ({
 	// The stand-ins of the Best Buddies (see `comboSlots`), by identity: matched on the cards rather than carried by them, so
 	// they are marked whether the teams were just computed or came from the cache.
 	const standIns = useMemo(
-		() => new Set(saved.flatMap(comboSlots).filter((slot) => slot.formerBuddy).map(slotIdentityKey)),
+		() =>
+			new Set(
+				saved
+					.flatMap(comboSlots)
+					.filter((slot) => slot.formerBuddy)
+					.map(slotIdentityKey)
+			),
 		[saved]
 	);
 	const filteredTeams = orderedTeams.filter(

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
-import { isSlotIvs, isSlotLevel, type SlotIvs, slotIdentityKey } from './team-analysis';
+import { isSlotIvs, isSlotLevel, slotIdentityKey, type SlotIvs } from './team-analysis';
 
 /**
  * Favorite teams, kept in localStorage. A favorite is stored as the species ids and the move ids of its three
@@ -51,7 +51,10 @@ const asIs: Canon = (member) => member;
  * in. Each Pokémon's text carries its own moves and IVs, so sorting the texts keeps them attached to it.
  */
 export const favoriteKey = (league: TeamLeague, members: Members, canon: Canon = asIs): string =>
-	`${league}:${members.map((m) => slotIdentityKey(canon(m))).sort().join('|')}`;
+	`${league}:${members
+		.map((m) => slotIdentityKey(canon(m)))
+		.sort()
+		.join('|')}`;
 
 const isMember = (value: unknown): value is FavoriteMember =>
 	typeof value === 'object' &&

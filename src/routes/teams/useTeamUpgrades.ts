@@ -3,7 +3,13 @@ import { useMemo } from 'react';
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
 import type { AlternativePick } from '../../lib/pvp-sim/team-eval';
 import type { SimContext } from '../../lib/pvp-sim/types';
-import { evaluationKey, type ScoreParts, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
+import {
+	evaluationKey,
+	type ScoreParts,
+	teamScore,
+	type TeamSlotDescriptor,
+	threatPart,
+} from '../../lib/team-analysis';
 import { analyzeTeam } from './useTeamAnalysis';
 import type { TeamsData } from './useTeamsData';
 
@@ -80,6 +86,5 @@ export const useTeamUpgrades = (
 
 		return { byThreat, byScore };
 		// `team` itself is tracked through `teamKey`.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [league, ctx, data, teamKey, swaps, currentScore]);
 };

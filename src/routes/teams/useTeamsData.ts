@@ -8,7 +8,13 @@ import { createSimContext, type SpeciesInfo } from '../../lib/pvp-sim/context';
 import { inPvpokeOrder } from '../../lib/pvp-sim/pool-order';
 import type { AlternativePick, EvaluatorInit, TeamEvaluation, TeamSlot } from '../../lib/pvp-sim/team-eval';
 import type { SimContext } from '../../lib/pvp-sim/types';
-import { evaluationKey, type ScoreParts, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
+import {
+	evaluationKey,
+	type ScoreParts,
+	teamScore,
+	type TeamSlotDescriptor,
+	threatPart,
+} from '../../lib/team-analysis';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
 import { useTeamBuilderData } from '../../queries/teams';

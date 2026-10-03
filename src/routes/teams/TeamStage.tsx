@@ -511,9 +511,9 @@ export const MemberCard = ({
 						✓
 					</button>
 					{confirmDisabledReason && reasonShown && (
-						<span className='r-tm-confirm-tip' role='status' onClick={() => setReasonShown(false)}>
+						<button type='button' className='r-tm-confirm-tip' onClick={() => setReasonShown(false)}>
 							{confirmDisabledReason}
-						</span>
+						</button>
 					)}
 				</>
 			)}
@@ -676,13 +676,12 @@ export const TeamMemberEditor = ({
 	// is the competition rank in the league's IV table, the same one the Pokémon page shows. Picked IVs / level that are
 	// exactly what the Best Buddy setting makes optimal read as the defaults, not as something the player pinned.
 	const buddyNow = member ? isBuddy(member.slot) : false;
-	const { ivRank, ivsOptimal, levelOptimal, buddy: buddyBest } = useOptimalBuild(
-		pokemon,
-		member?.stats.ivs,
-		member?.slot.level,
-		buddyNow,
-		cpCap
-	);
+	const {
+		ivRank,
+		ivsOptimal,
+		levelOptimal,
+		buddy: buddyBest,
+	} = useOptimalBuild(pokemon, member?.stats.ivs, member?.slot.level, buddyNow, cpCap);
 	// Any Pokémon can be made a Best Buddy (even one that gains nothing from it in this league); only one per team can be.
 	// Turning it on picks the spread that is best at the level-51 ceiling, and its level when that is above 50. Turning it
 	// off goes back to the defaults.

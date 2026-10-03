@@ -142,12 +142,7 @@ export const LevelModal = ({
 
 				<div className='r-tm-ivmodal-actions'>
 					{custom && !optimal && (
-						<button
-							type='button'
-							className='r-tm-ivedit-reset'
-							disabled={!!applying}
-							onClick={() => apply(bestLevel)}
-						>
+						<button type='button' className='r-tm-ivedit-reset' disabled={!!applying} onClick={() => apply(bestLevel)}>
 							{t('teams:builder.reset')}
 						</button>
 					)}
