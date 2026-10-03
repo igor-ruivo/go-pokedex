@@ -10,14 +10,16 @@ import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker'
 import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
+import { spriteUrl } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
+import { useImageSource } from '../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../lib/combat';
 import { combatMetricDescriptions, combatMetricNames } from '../lib/combat-text';
-import { sentenceCase } from '../lib/format';
+import { cleanName, sentenceCase } from '../lib/format';
 import { leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { isKnownRankingMode, modeColor, modeLabel, modeLabelLong, R, type RankingMode } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, RAID_METRIC_SORTS, type RaidMetric } from '../lib/raid-metric';
@@ -74,9 +76,30 @@ interface Row {
 	moves?: Array<string>;
 }
 
+type PokedexGridRow =
+	| { kind: 'cards'; rows: Array<Row> }
+	| { kind: 'rank'; row: Row }
+	| { kind: 'region'; name: string };
+
+const POKEDEX_REGIONS: ReadonlyArray<{ name: string; maxDex: number }> = [
+	{ name: 'Kanto', maxDex: 151 },
+	{ name: 'Johto', maxDex: 251 },
+	{ name: 'Hoenn', maxDex: 386 },
+	{ name: 'Sinnoh', maxDex: 493 },
+	{ name: 'Unova', maxDex: 649 },
+	{ name: 'Kalos', maxDex: 721 },
+	{ name: 'Alola', maxDex: 809 },
+	{ name: 'Galar', maxDex: 898 },
+	{ name: 'Hisui', maxDex: 905 },
+	{ name: 'Paldea', maxDex: 1025 },
+];
+
+const pokedexRegion = (dex: number) => POKEDEX_REGIONS.find(({ maxDex }) => dex <= maxDex)?.name ?? 'Other';
+
 const GRID_GAP = 8;
 const RANK_ROW_HEIGHT = 72;
 const RANK_ROW_GAP = 6;
+const REGION_HEADER_HEIGHT = 34;
 
 /**
  * Column count + exact row height for the square-tile grid. Rows are uniform, so
@@ -85,19 +108,13 @@ const RANK_ROW_GAP = 6;
  * commit and warns when a route transition is still rendering.
  */
 const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
-	// `measured` stays false until the very first real ResizeObserver callback —
-	// `cols`/`rowHeight` before that are just a placeholder guess, not yet
-	// derived from the container's actual width. Rendering tiles against that
-	// guess (a fixed 96px row height, whatever real square-tile width the
-	// current screen works out to) is what caused the "huge, overlapping
-	// tiles for a split second" flash on first load: the observer's initial
-	// callback doesn't fire synchronously on mount, so there's a real gap
-	// where the grid would otherwise already be painting with wrong numbers.
+	// The first layout-effect measurement gives the grid its actual dimensions
+	// before paint; ResizeObserver keeps those measurements current afterwards.
 	const [metrics, setMetrics] = useState({ cols: 4, rowHeight: 96, measured: false });
 	useLayoutEffect(() => {
 		const el = ref.current;
 		if (!el) return;
-		const ro = new ResizeObserver(() => {
+		const measure = () => {
 			const w = el.clientWidth;
 			if (!w) return;
 			const cols = Math.min(10, Math.max(4, Math.floor(w / 88)));
@@ -114,7 +131,9 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 					? prev
 					: { cols, rowHeight, measured: true };
 			});
-		});
+		};
+		measure();
+		const ro = new ResizeObserver(measure);
 		ro.observe(el);
 		return () => ro.disconnect();
 	}, [ref]);
@@ -124,6 +143,7 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 const Rankings = () => {
 	const { t } = useTranslation(['rankings', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
+	const { imageSource } = useImageSource();
 	const POKEDEX_SORTS = usePokedexSorts(t, gl);
 	const PVP_SORTS = usePvpSorts(t);
 	const { league, type: typeParam } = useParams();
@@ -215,7 +235,7 @@ const Rankings = () => {
 			const has = p.types.map((t) => typeKey(t));
 			return wanted.every((w) => has.includes(w));
 		};
-		const byName = (p: IGamemasterPokemon) => !q || p.speciesName.toLowerCase().includes(q);
+		const byName = (p: IGamemasterPokemon) => !q || cleanName(p.speciesName).toLowerCase().includes(q);
 		const isDexSort = !['name', 'cp', 'type', ...STAT_SORT_KEYS].includes(sortKey);
 
 		if (mode === 'pokedex') {
@@ -223,7 +243,7 @@ const Rankings = () => {
 			const isStatSort = STAT_SORT_KEYS.includes(sortKey);
 			return (
 				Object.values(gamemasterPokemon)
-					.filter((p) => !p.aliasId && !p.isShadow && !p.isMega)
+					.filter((p) => !p.aliasId && !p.isShadow)
 					.map((pokemon) => ({
 						pokemon,
 						cp: calculateCP(
@@ -362,7 +382,116 @@ const Rankings = () => {
 
 	const gridRef = useRef<HTMLDivElement>(null);
 	const { cols, rowHeight, measured } = useGridMetrics(gridRef);
-	const rowCount = isPokedex ? Math.ceil(rows.length / cols) : rows.length;
+	const gridRows = useMemo(() => {
+		if (!isPokedex) return rows.map((row): PokedexGridRow => ({ kind: 'rank', row }));
+		const grouped: Array<PokedexGridRow> = [];
+		const dexSort = !['name', 'cp', 'type', ...STAT_SORT_KEYS].includes(sortKey);
+		const pushCards = (cards: Array<Row>) => {
+			for (let i = 0; i < cards.length; i += cols) grouped.push({ kind: 'cards', rows: cards.slice(i, i + cols) });
+		};
+		if (!dexSort) {
+			pushCards(rows);
+			return grouped;
+		}
+		let region = pokedexRegion(rows[0]?.pokemon.dex ?? 0);
+		if (rows.length > 0) grouped.push({ kind: 'region', name: `rankings:regions.${region.toLowerCase()}` });
+		let cards: Array<Row> = [];
+		for (const row of rows) {
+			const nextRegion = pokedexRegion(row.pokemon.dex);
+			if (region && nextRegion !== region) {
+				pushCards(cards);
+				cards = [];
+				region = nextRegion;
+				grouped.push({ kind: 'region', name: `rankings:regions.${region.toLowerCase()}` });
+			}
+			cards.push(row);
+		}
+		pushCards(cards);
+		return grouped;
+	}, [cols, isPokedex, rows, sortKey]);
+	const rowCount = gridRows.length;
+	const loading =
+		!fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
+	const [readySprites, setReadySprites] = useState<{
+		rows: ReadonlyArray<PokedexGridRow>;
+		imageSource: ReturnType<typeof useImageSource>['imageSource'];
+		cols: number;
+		rowHeight: number;
+		startRow: number;
+		rowCount: number;
+	} | null>(null);
+	const initialSpritesReady =
+		readySprites?.rows === gridRows &&
+		readySprites.imageSource === imageSource &&
+		readySprites.cols === cols &&
+		readySprites.rowHeight === rowHeight;
+	useEffect(() => {
+		if (!isPokedex || !measured || loading || gridRows.length === 0) return;
+		const grid = gridRef.current;
+		if (!grid) return;
+		let cancelled = false;
+		let firstVisibleRow = -1;
+		let lastVisibleRow = -1;
+		let rowTop = grid.getBoundingClientRect().top;
+		const preloadMargin = rowHeight;
+		for (let i = 0; i < gridRows.length; i++) {
+			const currentRow = gridRows[i];
+			const currentHeight = currentRow.kind === 'region' ? REGION_HEADER_HEIGHT : rowHeight;
+			const rowBottom = rowTop + currentHeight;
+			if (rowBottom >= -preloadMargin && rowTop <= window.innerHeight + preloadMargin) {
+				if (firstVisibleRow < 0) firstVisibleRow = i;
+				lastVisibleRow = i;
+			}
+			rowTop = rowBottom + GRID_GAP;
+			if (rowTop > window.innerHeight + preloadMargin) break;
+		}
+		if (firstVisibleRow < 0) {
+			firstVisibleRow = 0;
+			lastVisibleRow = Math.min(gridRows.length - 1, 5);
+		}
+		const visiblePokemon = gridRows
+			.slice(firstVisibleRow, lastVisibleRow + 1)
+			.flatMap((gridRow) => (gridRow.kind === 'cards' ? gridRow.rows.map((row) => row.pokemon) : []));
+		const loadAndDecode = async (src: string): Promise<boolean> => {
+			const image = new Image();
+			image.src = src;
+			if (!image.complete) {
+				const loaded = await new Promise<boolean>((resolve) => {
+					image.onload = () => resolve(true);
+					image.onerror = () => resolve(false);
+				});
+				if (!loaded) return false;
+			}
+			return (
+				image.naturalWidth > 0 &&
+				(await image.decode().then(
+					() => true,
+					() => image.naturalWidth > 0
+				))
+			);
+		};
+		const ready = async (pokemon: IGamemasterPokemon): Promise<void> => {
+			const src = spriteUrl(pokemon, imageSource);
+			const loaded = await loadAndDecode(src);
+			if (!loaded && pokemon.imageUrl && pokemon.imageUrl !== src) await loadAndDecode(pokemon.imageUrl);
+		};
+		void (async () => {
+			await Promise.all(visiblePokemon.map((pokemon) => ready(pokemon)));
+			if (!cancelled) {
+				setReadySprites({
+					rows: gridRows,
+					imageSource,
+					cols,
+					rowHeight,
+					startRow: firstVisibleRow,
+					rowCount: lastVisibleRow - firstVisibleRow + 1,
+				});
+			}
+		})();
+		return () => {
+			cancelled = true;
+		};
+	}, [gridRows, imageSource, isPokedex, loading, measured, cols, rowHeight]);
 
 	const [scrollMargin, setScrollMargin] = useState(0);
 	useEffect(() => {
@@ -371,7 +500,10 @@ const Rankings = () => {
 
 	const virt = useWindowVirtualizer({
 		count: rowCount,
-		estimateSize: () => (isPokedex ? rowHeight : RANK_ROW_HEIGHT),
+		estimateSize: (index) => {
+			const row = gridRows[index];
+			return row?.kind === 'region' ? REGION_HEADER_HEIGHT : isPokedex ? rowHeight : RANK_ROW_HEIGHT;
+		},
 		overscan: 6,
 		scrollMargin,
 		gap: isPokedex ? GRID_GAP : RANK_ROW_GAP,
@@ -431,15 +563,12 @@ const Rankings = () => {
 		setParams(next, { replace: true });
 	};
 
-	const loading =
-		!fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
 	// Also wait on `measured` — the grid's column count/tile size default to a
-	// placeholder guess until the first real `ResizeObserver` callback fires
-	// (see `useGridMetrics`), and painting tiles against that guess is what
-	// caused the "huge overlapping tiles" flash on first load. A spinner
-	// instead of the grid until both are true means the grid only ever
-	// appears already laid out correctly.
-	const showResults = !loading && (!isPokedex || measured);
+	// placeholder guess until its synchronous first measurement (and observer
+	// updates after resize), and painting tiles against that guess is what caused
+	// the "huge overlapping tiles" flash on first load. The initial visible
+	// sprite decode is also gated before the grid is revealed.
+	const showResults = !loading && (!isPokedex || (measured && (rows.length === 0 || initialSpritesReady)));
 
 	const visibleExtraLeagues = useMemo(
 		() => extraLeagues(leagues).filter((l) => isExtraLeagueVisible(l.id)),
@@ -656,9 +785,7 @@ const Rankings = () => {
 				{showResults && (
 					<div style={{ height: virt.getTotalSize(), position: 'relative' }}>
 						{virt.getVirtualItems().map((vi) => {
-							const start = vi.index * cols;
-							const slice = isPokedex ? rows.slice(start, start + cols) : [];
-							const row = rows[vi.index];
+							const virtualRow = gridRows[vi.index];
 							return (
 								<div
 									key={vi.key}
@@ -670,38 +797,59 @@ const Rankings = () => {
 										transform: `translateY(${vi.start - virt.options.scrollMargin}px)`,
 									}}
 								>
-									{isPokedex ? (
-										<div className='r-grid-row' style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-											{slice.map((row) => (
-												<PokeCard key={row.pokemon.speciesId} pokemon={row.pokemon} metric={row.metric} />
-											))}
+									{isPokedex && virtualRow?.kind === 'region' ? (
+										<div className='r-pokedex-region'>
+											<h2>{t(virtualRow.name)}</h2>
+											<i aria-hidden='true' />
 										</div>
-									) : row ? (
+									) : isPokedex && virtualRow?.kind === 'cards' ? (
+										<div className='r-grid-row' style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+											{virtualRow.rows.map((row, cellIndex) => {
+												const animateRow =
+													initialSpritesReady &&
+													readySprites !== null &&
+													vi.index >= readySprites.startRow &&
+													vi.index < readySprites.startRow + readySprites.rowCount;
+												const animationIndex = (vi.index - (readySprites?.startRow ?? 0)) * cols + cellIndex;
+												return (
+													<PokeCard
+														key={row.pokemon.speciesId}
+														pokemon={row.pokemon}
+														metric={row.metric}
+														className={animateRow ? 'r-pc--enter' : undefined}
+														style={
+															animateRow ? { animationDelay: `${Math.min(animationIndex, 24) * 14}ms` } : undefined
+														}
+													/>
+												);
+											})}
+										</div>
+									) : !isPokedex && virtualRow?.kind === 'rank' ? (
 										<CounterRankRow
-											pokemon={row.pokemon}
-											rank={row.metric?.rank ?? vi.index + 1}
-											rankChange={row.metric?.rankChange}
-											podium={row.metric?.podium}
+											pokemon={virtualRow.row.pokemon}
+											rank={virtualRow.row.metric?.rank ?? vi.index + 1}
+											rankChange={virtualRow.row.metric?.rankChange}
+											podium={virtualRow.row.metric?.podium}
 											moveLayout={isPvpLeagueMode ? 'pvp' : 'inline'}
-											moves={row.moves ?? []}
+											moves={virtualRow.row.moves ?? []}
 											moveData={moves}
 											score={
-												row.metric?.dps != null
-													? fmtRaidMetric(row.metric.dps, 'dps')
-													: row.metric?.tdo != null
-														? fmtRaidMetric(row.metric.tdo, 'tdo')
-														: row.metric?.score?.toFixed(1)
+												virtualRow.row.metric?.dps != null
+													? fmtRaidMetric(virtualRow.row.metric.dps, 'dps')
+													: virtualRow.row.metric?.tdo != null
+														? fmtRaidMetric(virtualRow.row.metric.tdo, 'tdo')
+														: virtualRow.row.metric?.score?.toFixed(1)
 											}
 											scoreLabel={
-												row.metric?.dps != null
+												virtualRow.row.metric?.dps != null
 													? RAID_METRIC_LABEL.dps
-													: row.metric?.tdo != null
+													: virtualRow.row.metric?.tdo != null
 														? RAID_METRIC_LABEL.tdo
-														: row.metric?.score != null
+														: virtualRow.row.metric?.score != null
 															? 'Pts'
 															: undefined
 											}
-											onActivate={() => void navigate(`${R.pokemon(row.pokemon.speciesId)}?lg=${mode}`)}
+											onActivate={() => void navigate(`${R.pokemon(virtualRow.row.pokemon.speciesId)}?lg=${mode}`)}
 										/>
 									) : null}
 								</div>

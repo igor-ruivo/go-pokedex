@@ -8,8 +8,9 @@ import { SortBar, type SortDir, type SortOption } from '../../components/SortBar
 import { SpriteImg } from '../../components/Sprite';
 import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useDismiss } from '../../hooks/useDismiss';
-import { cleanName, normalizeSearch } from '../../lib/format';
+import { cleanName } from '../../lib/format';
 import { removeCollectionPokemon, saveCollectionPokemon, usePokemonCollection } from '../../lib/pokemon-collection';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import { cpAt } from '../../lib/pvp-sim/cp';
@@ -310,7 +311,7 @@ export const PokemonCollection = ({
 	useEffect(() => {
 		if (computedRankingReady) writeRankedCache(league, rankingSignature, rankedTeams);
 	}, [computedRankingReady, league, rankingSignature, rankedTeams]);
-	const term = normalizeSearch(search);
+	const term = useDebouncedValue(search.trim().toLowerCase(), 220);
 	const orderedTeams = [...rankedTeams].sort((a, b) =>
 		sortKey === 'threat'
 			? a.threatScore - b.threatScore || b.score - a.score
@@ -330,8 +331,8 @@ export const PokemonCollection = ({
 			!term ||
 			team.members.some((member) => {
 				const pokemon = data.gamemaster[member.speciesId];
-				const name = nicknames[member.speciesId] || (pokemon ? cleanName(pokemon.speciesName) : member.speciesId);
-				return normalizeSearch(name).includes(term) || normalizeSearch(member.speciesId).includes(term);
+				const name = nicknames[member.speciesId] ?? (pokemon ? cleanName(pokemon.speciesName) : '');
+				return name.toLowerCase().includes(term);
 			})
 	);
 

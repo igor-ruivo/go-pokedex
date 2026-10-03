@@ -53,7 +53,7 @@
 	border: 1px solid var(--border);
 	overflow: clip;
 }
-/* The 35%-zoomed GO/shiny-GO hero sprite bobs up and down (`r-bob-go`) —
+/* The 35%-zoomed GO/shiny-GO hero sprite bobs up and down —
    large enough, at the top/bottom of that motion, to reach past `.r-hero`'s
    own edge, which the `overflow: clip` above would otherwise cut into. The
    whole sprite must always stay visible, so this drops the clip entirely
@@ -394,6 +394,11 @@
 .rvmp img.r-fade-sprite {
 	transition: opacity 0.16s ease;
 }
+.rvmp img.r-fade-sprite[src*='pogo_assets'] {
+	/* The individual scale property composes with transforms used by sprite
+	   animations, so every GO/shiny sprite keeps the same 1.35x zoom. */
+	scale: 1.35;
+}
 .rvmp img.r-fade-sprite[data-fade='hidden'] {
 	opacity: 0;
 }
@@ -412,20 +417,6 @@
 		transform: translateY(-8px);
 	}
 }
-/* Same bob, with the GO/shiny-GO zoom baked in — a plain `transform` on the
-   element itself would just get overridden every frame by the `r-bob`
-   animation above, since an animated property's keyframe values always win
-   over a separately-set static one rather than composing with it. */
-@keyframes r-bob-go {
-	0%,
-	100% {
-		transform: scale(1.35) translateY(0);
-	}
-	50% {
-		transform: scale(1.35) translateY(-8px);
-	}
-}
-
 /* stat row */
 .rvmp .r-stats {
 	display: flex;
@@ -2444,6 +2435,28 @@
 	gap: var(--s2);
 	align-items: start;
 }
+.rvmp .r-pokedex-region {
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	height: 34px;
+	padding: 0 2px;
+	color: var(--text-dim);
+	font-family: Fredoka, sans-serif;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+}
+.rvmp .r-pokedex-region h2 {
+	flex: none;
+	margin: 0;
+	font: inherit;
+}
+.rvmp .r-pokedex-region i {
+	flex: 1;
+	height: 1px;
+	background: var(--border-strong);
+}
 
 /* compact tile — always a square; everything scales to the card so 4+ fit on a phone */
 .rvmp .r-pc {
@@ -2462,6 +2475,24 @@
 	border: 1px solid var(--border);
 	text-align: center;
 	transition: border-color 0.14s ease;
+}
+.rvmp .r-pc--enter {
+	animation: r-pc-enter 0.22s ease-out both;
+}
+@keyframes r-pc-enter {
+	from {
+		opacity: 0;
+		transform: translate3d(-5px, 5px, 0) scale(0.985);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.rvmp .r-pc--enter {
+		animation: none;
+	}
 }
 .rvmp .r-pc:hover {
 	border-color: var(--border-strong);
@@ -3039,14 +3070,6 @@
 .rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] img {
 	width: 28px;
 	height: 28px;
-}
-/* GO/shiny sprite assets carry a lot of built-in transparent padding versus
-   the official artwork, so they render visibly smaller at the same box size
-   — scaled up in place to compensate. The layout box itself doesn't grow, so
-   this is allowed to spill over its neighbours slightly rather than stay
-   starved (see EventCard's own note). */
-.rvmp .r-event-head .r-event-spotlight-sprites[data-go] img {
-	transform: scale(1.35);
 }
 .rvmp .r-event-head > div {
 	flex: 1;
@@ -3660,11 +3683,7 @@
 /* "catchable" is signalled by the `.r-catch-tag` on the tier label — the tile
    itself stays a plain square (no border / background wash). */
 
-/* Same "zoom in to compensate for GO/shiny-GO's built-in padding" treatment
-   as the hero sprite (see that rule's own note below) — everywhere else a
-   single Pokémon sprite renders. `position: relative` is needed here (unlike
-   the hero, which already had it) since none of these tiles' images set
-   their own `position` otherwise, and `z-index` is a no-op without one. */
+/* Keep zoomed GO/shiny sprites above adjacent artwork where they overlap. */
 .rvmp .r-pc-art > img[src*='pogo_assets'],
 .rvmp .r-mini > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-board-sprite > img:not(.r-shadow-mark)[src*='pogo_assets'],
@@ -3674,7 +3693,6 @@
 .rvmp .r-search-sprite > img[src*='pogo_assets'],
 .rvmp .r-ss-sprite > img[src*='pogo_assets'] {
 	position: relative;
-	transform: scale(1.35);
 	z-index: 5;
 }
 /* `.r-pc`/`.r-mini`/`.r-reach-chip` clip by design (rounded tile corners) —
@@ -3689,14 +3707,8 @@
 .rvmp .r-sprite > img:not(.r-sprite-shadow)[src*='pogo_assets'] {
 	/* The GO/shiny-GO assets carry a lot of built-in transparent padding
 	   (unlike the official artwork), so they render visibly smaller in the
-	   same box — zoom in to compensate. The hero's own layout box is
-	   untouched (scale doesn't affect layout), so this is allowed to spill
-	   outside the sprite's own bounds rather than staying starved; raised
-	   above its siblings since it now visually overlaps them. `r-bob-go`
-	   (not the base `r-bob`) bakes the same zoom into every frame of the
-	   bob animation — see that keyframe's own note on why a plain, separate
-	   `transform` here wouldn't survive the animation overriding it. */
-	animation-name: r-bob-go;
+	   same box — the shared `scale` rule compensates without overriding the
+	   hero's bob animation. Raise it above its siblings since it overlaps them. */
 	z-index: 5;
 }
 
@@ -5052,8 +5064,9 @@
 }
 .rvmp .r-controls .r-filter-panel {
 	top: calc(100% + 6px);
-	left: 0;
 	right: 0;
+	left: auto;
+	width: min(460px, calc(100vw - 2 * var(--s3)));
 }
 .rvmp .r-sort {
 	position: relative;
@@ -5074,9 +5087,9 @@
 }
 @media (max-width: 560px) {
 	.rvmp .r-sort-panel {
-		left: 0;
+		left: auto;
 		right: 0;
-		max-width: none;
+		width: min(360px, calc(100vw - 2 * var(--s3)));
 	}
 }
 /* Segmented control: one joined bar with a shared border */

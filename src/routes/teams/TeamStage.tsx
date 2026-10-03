@@ -11,6 +11,7 @@ import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
 import type { TeamBuilderMove } from '../../DTOs/ITeamBuilder';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useDismiss } from '../../hooks/useDismiss';
 import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../../lib/combat';
 import { combatMetricNames } from '../../lib/combat-text';
@@ -271,6 +272,7 @@ const PokemonPicker = ({
 	const title = replacing ? t('teams:picker.replaceTitle', { name: replacing }) : t('teams:picker.title');
 	const { currentLanguage } = useLanguage();
 	const [query, setQuery] = useState('');
+	const searchTerm = useDebouncedValue(query.trim().toLowerCase(), 220);
 	const [sortKey, setSortKey] = useState<PickerSort>('overall');
 	const [sortDir, setSortDir] = useState<SortDir>('asc');
 	const [shown, setShown] = useState(PICKER_PAGE);
@@ -285,7 +287,6 @@ const PokemonPicker = ({
 	];
 
 	const rows = useMemo(() => {
-		const q = query.toLowerCase().replace(/[^a-z0-9]/g, '');
 		// "Overall" reads best-first when ascending (rank 1 on top); the role scores read highest-first when descending.
 		const order = sortKey === 'overall' ? (sortDir === 'asc' ? 1 : -1) : sortDir === 'desc' ? -1 : 1;
 		const value = (r: IRankedPokemon) => (sortKey === 'overall' ? r.rank : r[sortKey]);
@@ -297,13 +298,12 @@ const PokemonPicker = ({
 				// The number is the position in the *full* sorted list, so searching never renumbers it.
 				.map((r, i) => ({ r, position: i + 1 }))
 				.filter(({ r }) => {
-					if (!q) return true;
+					if (!searchTerm) return true;
 					const p = data.gamemaster[r.speciesId];
-					const name = p.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '');
-					return name.includes(q);
+					return cleanName(p.speciesName).toLowerCase().includes(searchTerm);
 				})
 		);
-	}, [data.rankList, data.gamemaster, query, sortKey, sortDir]);
+	}, [data.rankList, data.gamemaster, searchTerm, sortKey, sortDir]);
 
 	const changeSort = (key: string, dir: SortDir) => {
 		if (key !== 'overall' && !isCombatMetric(key)) return;
@@ -393,8 +393,6 @@ interface MemberCardProps {
 	onEditIvs: () => void;
 	onEditLevel: () => void;
 	onRemove: () => void;
-	/** Only on the empty cards of a team that has one or two Pokémon: finish the team with the best teammates. */
-	suggestion?: { pending: boolean; onSuggest: () => void } | undefined;
 	onConfirm?: (() => void) | undefined;
 	confirmLabel?: string | undefined;
 	nickname?: string | undefined;
@@ -413,7 +411,6 @@ export const MemberCard = ({
 	onEditIvs,
 	onEditLevel,
 	onRemove,
-	suggestion,
 	onConfirm,
 	confirmLabel,
 	nickname,
@@ -426,25 +423,14 @@ export const MemberCard = ({
 
 	if (!member || !pokemon) {
 		return (
-			<div className='r-tm-card r-tm-card--empty' data-pending={suggestion?.pending ? '' : undefined}>
-				{suggestion?.pending ? (
-					<span className='r-spinner' role='status' aria-label={t('teams:threat.simulating')} />
-				) : (
-					<>
-						<button type='button' className='r-tm-empty-add' onClick={onChangePokemon}>
-							<span className='r-tm-plus' aria-hidden='true'>
-								+
-							</span>
-							<b>{t('teams:builder.emptySlot')}</b>
-							<span className='r-muted'>{t('teams:builder.slotN', { n: index + 1 })}</span>
-						</button>
-						{suggestion && (
-							<button type='button' className='r-tm-suggest-link' onClick={suggestion.onSuggest}>
-								{t('teams:builder.suggestion')}
-							</button>
-						)}
-					</>
-				)}
+			<div className='r-tm-card r-tm-card--empty'>
+				<button type='button' className='r-tm-empty-add' onClick={onChangePokemon}>
+					<span className='r-tm-plus' aria-hidden='true'>
+						+
+					</span>
+					<b>{t('teams:builder.emptySlot')}</b>
+					<span className='r-muted'>{t('teams:builder.slotN', { n: index + 1 })}</span>
+				</button>
 			</div>
 		);
 	}
@@ -717,8 +703,6 @@ export const TeamStage = ({
 	onBuild,
 	cpCap,
 	onRemove,
-	onSuggest,
-	suggesting,
 }: {
 	data: TeamsData;
 	team: ReadonlyArray<TeamSlotDescriptor>;
@@ -730,10 +714,6 @@ export const TeamStage = ({
 	/** The league's CP cap, to tell when a picked level puts a Pokémon over it. */
 	cpCap: number;
 	onRemove: (index: number) => void;
-	/** Finish the team (one or two Pokémon so far) with the best teammates. */
-	onSuggest: () => void;
-	/** That is being worked out: the empty cards show a spinner. */
-	suggesting: boolean;
 }) => {
 	return (
 		<div className='r-tm-stage'>
@@ -750,7 +730,6 @@ export const TeamStage = ({
 					onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
 					onBuild={onBuild}
 					onRemove={() => onRemove(i)}
-					suggestion={team.length >= 1 && team.length < 3 ? { pending: suggesting, onSuggest } : undefined}
 				/>
 			))}
 		</div>

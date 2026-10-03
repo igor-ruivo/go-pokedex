@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -10,14 +10,16 @@ import { cleanName, dexNo } from '../lib/format';
 import { R } from '../lib/nav';
 import { useMoves } from '../queries/moves';
 import { usePokemon } from '../queries/pokemon';
-import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { ShadowMark } from './ShadowMark';
 import { SpriteImg } from './Sprite';
 
 const MAX_PER_GROUP = 16;
-const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+const SUGGESTION_DEBOUNCE_MS = 180;
+const QUERY_DEBOUNCE_MS = 300;
 
 type Hit = { kind: 'pokemon'; p: IGamemasterPokemon } | { kind: 'move'; m: IGameMasterMove };
+
+const pokemonSuggestionName = (pokemon: IGamemasterPokemon): string => cleanName(pokemon.speciesName);
 
 /**
  * App-bar search with a typeahead dropdown over BOTH Pokémon and moves (Pokémon
@@ -35,16 +37,34 @@ export const SearchBox = () => {
 	const { currentGameLanguage: gl } = useLanguage();
 
 	const [q, setQ] = useState(params.get('q') ?? '');
+	const [suggestionQuery, setSuggestionQuery] = useState(params.get('q') ?? '');
 	const [open, setOpen] = useState(false);
 	const [active, setActive] = useState(0);
+	const lastObservedUrlQuery = useRef(params.get('q') ?? '');
+	const lastWrittenQuery = useRef<string | null>(null);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false), { dim: false });
 
 	const onGrid = pathname === R.pokedex || pathname.startsWith('/rankings') || pathname === R.moves;
 
 	// Only the grid views mirror `?q=` into the box; elsewhere the box keeps whatever was typed/picked.
 	useEffect(() => {
-		if (onGrid) setQ(params.get('q') ?? '');
+		if (!onGrid) return;
+		const urlQuery = params.get('q') ?? '';
+		if (urlQuery === lastObservedUrlQuery.current) return;
+		lastObservedUrlQuery.current = urlQuery;
+		if (lastWrittenQuery.current === urlQuery) {
+			lastWrittenQuery.current = null;
+			return;
+		}
+		setQ(urlQuery);
+		setSuggestionQuery(urlQuery);
 	}, [params, onGrid]);
+
+	useEffect(() => {
+		const id = window.setTimeout(() => setSuggestionQuery(q), SUGGESTION_DEBOUNCE_MS);
+		return () => window.clearTimeout(id);
+	}, [q]);
+
 	const detailTab = /^\/pokemon\/[^/]+\/([^/]+)/.exec(pathname)?.[1];
 
 	useEffect(() => {
@@ -55,8 +75,9 @@ export const SearchBox = () => {
 			const p = new URLSearchParams(params);
 			if (next) p.set('q', next);
 			else p.delete('q');
+			lastWrittenQuery.current = next;
 			setParams(p, { replace: true });
-		}, 200);
+		}, QUERY_DEBOUNCE_MS);
 		return () => clearTimeout(id);
 	}, [q, onGrid, params, setParams]);
 
@@ -72,22 +93,17 @@ export const SearchBox = () => {
 	const allMoves = useMemo(() => Object.values(moves), [moves]);
 
 	const { results, splitAt } = useMemo<{ results: Array<Hit>; splitAt: number }>(() => {
-		const term = norm(q);
+		const term = suggestionQuery.trim().toLowerCase();
 		if (!term) return { results: [], splitAt: 0 };
-		const rank = (hay: Array<string>) => {
-			for (const h of hay) {
-				if (h.startsWith(term)) return 0;
-			}
-			for (const h of hay) {
-				if (h.includes(term)) return 1;
-			}
-			return -1;
+		const rank = (label: string) => {
+			const name = label.toLowerCase();
+			return name.startsWith(term) ? 0 : name.includes(term) ? 1 : -1;
 		};
 
 		const pk: Array<{ p: IGamemasterPokemon; s: number }> = [];
 		for (const p of allPokemon) {
-			const s = rank([norm(p.speciesName), norm(p.speciesId)]);
-			if (s >= 0 || String(p.dex) === q.trim()) pk.push({ p, s: s < 0 ? 0 : s });
+			const s = rank(pokemonSuggestionName(p));
+			if (s >= 0) pk.push({ p, s });
 		}
 		pk.sort((a, b) => a.s - b.s || a.p.dex - b.p.dex);
 
@@ -99,7 +115,7 @@ export const SearchBox = () => {
 			const sig = `${label}|${m.pvePower}|${m.pvpPower}|${m.pveEnergy}|${m.pvpEnergy}|${m.pveCooldown}|${m.pvpCooldown}`;
 			if (seen.has(sig)) continue;
 			seen.add(sig);
-			const s = rank([norm(label), norm(m.moveId)]);
+			const s = rank(label);
 			if (s >= 0) mv.push({ m, s });
 		}
 		mv.sort((a, b) => a.s - b.s || (a.m.moveName[gl] ?? a.m.moveId).localeCompare(b.m.moveName[gl] ?? b.m.moveId));
@@ -107,9 +123,9 @@ export const SearchBox = () => {
 		const pkHits = pk.slice(0, MAX_PER_GROUP).map((x): Hit => ({ kind: 'pokemon', p: x.p }));
 		const mvHits = mv.slice(0, MAX_PER_GROUP).map((x): Hit => ({ kind: 'move', m: x.m }));
 		return { results: [...pkHits, ...mvHits], splitAt: pkHits.length && mvHits.length ? pkHits.length : 0 };
-	}, [q, allPokemon, allMoves, gl]);
+	}, [suggestionQuery, allPokemon, allMoves, gl]);
 
-	useEffect(() => setActive(0), [q]);
+	useEffect(() => setActive(0), [suggestionQuery]);
 
 	// The Pokédex and the rankings filter their own list by what is typed here, so picking a Pokémon there just closes
 	// the dropdown and leaves the list filtered — it doesn't pull you off the ranking you are reading.
@@ -119,7 +135,9 @@ export const SearchBox = () => {
 		setOpen(false);
 		// Leave the picked entry's name in the box (the pick may not navigate away, and even when it does it shows
 		// what was opened).
-		setQ(hit.kind === 'pokemon' ? cleanName(hit.p.speciesName) : (hit.m.moveName[gl] ?? hit.m.moveId));
+		const pickedName = hit.kind === 'pokemon' ? pokemonSuggestionName(hit.p) : (hit.m.moveName[gl] ?? hit.m.moveId);
+		setQ(pickedName);
+		setSuggestionQuery(pickedName);
 		if (hit.kind === 'pokemon' && onRankingList) return;
 		if (hit.kind === 'pokemon') {
 			// `?lg=` (which league/raids tab the detail page's picker/readout was
@@ -134,7 +152,7 @@ export const SearchBox = () => {
 		}
 	};
 
-	const showMenu = open && q.trim().length > 0 && results.length > 0;
+	const showMenu = open && q === suggestionQuery && suggestionQuery.trim().length > 0 && results.length > 0;
 
 	return (
 		<div className='r-search' ref={rootRef}>
@@ -180,6 +198,7 @@ export const SearchBox = () => {
 					aria-label={t('components:searchBox.clearAriaLabel')}
 					onClick={() => {
 						setQ('');
+						setSuggestionQuery('');
 						setOpen(false);
 					}}
 				>
@@ -206,12 +225,7 @@ export const SearchBox = () => {
 												{hit.p.isShadow && <ShadowMark />}
 												<SpriteImg pokemon={hit.p} loading='lazy' />
 											</span>
-											<span className='r-search-name'>
-												{cleanName(hit.p.speciesName)}
-												{hit.p.isShadow && (
-													<em className='r-search-shadow'> · {gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)}</em>
-												)}
-											</span>
+											<span className='r-search-name'>{cleanName(hit.p.speciesName)}</span>
 											<span className='r-search-dex'>{dexNo(hit.p.dex)}</span>
 										</>
 									) : (

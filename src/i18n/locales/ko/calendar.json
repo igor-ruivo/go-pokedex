@@ -7,6 +7,7 @@
 		"bosses": "레이드",
 		"spawns": "출현",
 		"rockets": "로켓단",
+		"searchRockets": "로켓단 검색",
 		"eggs": "알",
 		"ariaLabel": "이벤트 / 레이드 / 출현 / 로켓단 / 알"
 	},

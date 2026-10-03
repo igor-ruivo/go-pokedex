@@ -7,6 +7,7 @@
 		"bosses": "Raids",
 		"spawns": "Spawns",
 		"rockets": "Rockets",
+		"searchRockets": "Search through Rockets",
 		"eggs": "Eggs",
 		"ariaLabel": "Events / Raids / Spawns / Rockets / Eggs"
 	},

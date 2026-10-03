@@ -5,7 +5,8 @@ import { PokemonSearchInput } from '../../components/PokemonSearchInput';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useAfterPaint } from '../../hooks/useAfterPaint';
-import { cleanName, normalizeSearch } from '../../lib/format';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import { cleanName } from '../../lib/format';
 import { SCORE_WEIGHTS } from '../../lib/team-analysis';
 import { useTeamRanking } from '../../queries/teams';
 import { VirtualTeamCards } from './TeamCards';
@@ -37,7 +38,7 @@ export const TopTeams = ({
 	// The tab is already showing; the long list of cards renders after the spinner has been painted.
 	const painted = useAfterPaint();
 
-	const term = normalizeSearch(search);
+	const term = useDebouncedValue(search.trim().toLowerCase(), 220);
 	const { gamemaster } = data;
 	const ranking = query.data?.leagues[league];
 	const list = sortKey === 'score' ? ranking?.byScore : ranking?.byThreat;
@@ -48,10 +49,7 @@ export const TopTeams = ({
 		return all.filter(({ team }) =>
 			team.members.some((m) => {
 				const p = gamemaster[m.speciesId];
-				return (
-					normalizeSearch(p ? cleanName(p.speciesName) : m.speciesId).includes(term) ||
-					normalizeSearch(m.speciesId).includes(term)
-				);
+				return !!p && cleanName(p.speciesName).toLowerCase().includes(term);
 			})
 		);
 	}, [list, term, gamemaster]);

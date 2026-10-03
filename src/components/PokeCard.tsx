@@ -37,6 +37,7 @@ export const PokeCard = ({
 	league,
 	onActivate,
 	className,
+	style,
 }: {
 	pokemon: IGamemasterPokemon;
 	displayName?: string | undefined;
@@ -46,6 +47,7 @@ export const PokeCard = ({
 	/** Render as an action tile instead of a link (for example, to edit a collection entry). */
 	onActivate?: (() => void) | undefined;
 	className?: string | undefined;
+	style?: React.CSSProperties | undefined;
 }) => {
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { i18n } = useTranslation();
@@ -101,7 +103,7 @@ export const PokeCard = ({
 	const props = {
 		'className': className ? `r-pc ${className}` : 'r-pc',
 		'data-shadow': pokemon.isShadow ? '' : undefined,
-		'style': { ['--tc' as string]: typeVar(pokemon.types[0]) },
+		'style': { ...style, ['--tc' as string]: typeVar(pokemon.types[0]) },
 	};
 	return onActivate ? (
 		<button type='button' {...props} onClick={onActivate}>

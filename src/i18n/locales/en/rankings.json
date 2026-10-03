@@ -33,6 +33,19 @@
 		"pickType": "Pick a type in the filter to see the best {{raid}} attackers of that type.",
 		"nothingMatches": "Nothing matches."
 	},
+	"regions": {
+		"kanto": "Kanto",
+		"johto": "Johto",
+		"hoenn": "Hoenn",
+		"sinnoh": "Sinnoh",
+		"unova": "Unova",
+		"kalos": "Kalos",
+		"alola": "Alola",
+		"galar": "Galar",
+		"hisui": "Hisui",
+		"paldea": "Paldea",
+		"other": "Other"
+	},
 	"loadingLabel": {
 		"pokedex": "Loading Pokédex…",
 		"rankings": "Loading Rankings…"

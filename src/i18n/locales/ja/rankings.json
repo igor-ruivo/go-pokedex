@@ -33,6 +33,19 @@
 		"pickType": "フィルターでタイプを選択すると、そのタイプの最強{{raid}}アタッカーが表示されます。",
 		"nothingMatches": "一致する結果はありません。"
 	},
+	"regions": {
+		"kanto": "カントー地方",
+		"johto": "ジョウト地方",
+		"hoenn": "ホウエン地方",
+		"sinnoh": "シンオウ地方",
+		"unova": "イッシュ地方",
+		"kalos": "カロス地方",
+		"alola": "アローラ地方",
+		"galar": "ガラル地方",
+		"hisui": "ヒスイ地方",
+		"paldea": "パルデア地方",
+		"other": "その他"
+	},
 	"loadingLabel": {
 		"pokedex": "図鑑を読み込み中…",
 		"rankings": "ランキングを読み込み中…"

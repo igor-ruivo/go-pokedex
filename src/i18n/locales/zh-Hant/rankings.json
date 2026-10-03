@@ -33,6 +33,19 @@
 		"pickType": "在篩選中選擇一個屬性，即可查看該屬性最佳的{{raid}}攻擊手。",
 		"nothingMatches": "沒有符合的項目。"
 	},
+	"regions": {
+		"kanto": "關都地區",
+		"johto": "城都地區",
+		"hoenn": "豐緣地區",
+		"sinnoh": "神奧地區",
+		"unova": "合眾地區",
+		"kalos": "卡洛斯地區",
+		"alola": "阿羅拉地區",
+		"galar": "伽勒爾地區",
+		"hisui": "洗翠地區",
+		"paldea": "帕底亞地區",
+		"other": "其他"
+	},
 	"loadingLabel": {
 		"pokedex": "載入圖鑑中…",
 		"rankings": "載入排行榜中…"

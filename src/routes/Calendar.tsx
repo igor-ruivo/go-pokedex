@@ -8,14 +8,22 @@ import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
 import { PokemonSearchInput } from '../components/PokemonSearchInput';
 import { SpriteImg } from '../components/Sprite';
-import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLiveNow } from '../hooks/useLiveNow';
 import i18n from '../i18n';
 import { everyLanguage, spotlightToPost } from '../lib/calendar-events';
-import { dateRange, dayRange, eventPhase, formatEventDateTime, nowAsEventTime, sentenceCase } from '../lib/format';
+import {
+	cleanName,
+	dateRange,
+	dayRange,
+	eventPhase,
+	formatEventDateTime,
+	nowAsEventTime,
+	sentenceCase,
+} from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { type ILeekduckSpecialRaidBoss, useCalendar } from '../queries/calendar';
@@ -502,7 +510,6 @@ const EventCard = ({
 	const { t } = useTranslation(['calendar']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
-	const { imageSource } = useImageSource();
 	// Ticking so a same-day "in Xh/Xm/Xs" countdown (see `startsIn`) counts
 	// down live and flips this card straight to "Live" the instant it starts,
 	// instead of sitting on a static "today" until some unrelated re-render.
@@ -514,22 +521,15 @@ const EventCard = ({
 	const bonuses = post.bonuses[gl] ?? [];
 	const spotlightMons = post.wild;
 	// The GO/shiny sprite assets carry a lot of built-in transparent padding
-	// (unlike the official artwork), so they render visibly smaller than the
-	// official ones at the same box size — scaled up to compensate (see the
-	// `[data-go]` rule; the layout box itself is untouched, so this is
-	// allowed to overlap neighbours slightly rather than staying starved).
-	const isGoLike = imageSource !== ImageSource.Official;
+	// (unlike the official artwork), so the shared sprite rule scales them
+	// up without changing this layout box.
 	return (
 		<div className='r-event' data-open={open}>
 			<button type='button' className='r-event-head' onClick={onToggle}>
 				{post.isSpotlight ? (
 					<span className='r-event-spotlight'>
 						{post.imageUrl && <img className='r-event-spotlight-bg' src={post.imageUrl} alt='' loading='lazy' />}
-						<span
-							className='r-event-spotlight-sprites'
-							data-count={Math.min(spotlightMons.length, 4)}
-							data-go={isGoLike || undefined}
-						>
+						<span className='r-event-spotlight-sprites' data-count={Math.min(spotlightMons.length, 4)}>
 							{spotlightMons.map((e, i) => {
 								const p = gamemasterPokemon[e.speciesId];
 								if (!p) return null;
@@ -1158,34 +1158,15 @@ const RocketsTab = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const [openId, setOpenId] = useState<string | null>(null);
 	const [query, setQuery] = useState('');
-	const searchQuery = query.trim().toLowerCase();
+	const searchQuery = useDebouncedValue(query.trim().toLowerCase(), 220);
 	const filteredRockets = useMemo(() => {
 		if (!searchQuery) return currentRockets;
 		return currentRockets.filter((g) => {
-			const typeKey = g.type?.toLowerCase();
-			const namedTrainerKey = !typeKey
-				? NAMED_TRAINER_KEYS.find(([needle]) => g.trainerId.includes(needle))
-				: undefined;
-			const trainerName = namedTrainerKey ? gameTranslator(namedTrainerKey[1], gl) : '';
-			const searchableText = [
-				g.trainerId,
-				trainerName,
-				rocketGruntTitle(g, gl),
-				g.phrase[gl] ?? '',
-				g.type ?? '',
-				typeKey ? gameTypeDisplayTranslator(typeKey, gl) : '',
-			];
-			if (searchableText.some((text) => text.toLowerCase().includes(searchQuery))) {
-				return true;
-			}
+			const searchableText = [rocketGruntTitle(g, gl), g.phrase[gl] ?? ''];
+			if (searchableText.some((text) => text.toLowerCase().includes(searchQuery))) return true;
 			return [...g.tier1, ...g.tier2, ...g.tier3].some((speciesId) => {
 				const pokemon = gamemasterPokemon[speciesId];
-				return (
-					pokemon &&
-					(pokemon.speciesName.toLowerCase().includes(searchQuery) ||
-						pokemon.speciesId.toLowerCase().includes(searchQuery) ||
-						String(pokemon.dex) === searchQuery)
-				);
+				return pokemon && cleanName(pokemon.speciesName).toLowerCase().includes(searchQuery);
 			});
 		});
 	}, [currentRockets, gamemasterPokemon, gl, searchQuery]);
@@ -1199,7 +1180,7 @@ const RocketsTab = () => {
 				<PokemonSearchInput
 					value={query}
 					onChange={setQuery}
-					placeholder={t('calendar:tabs.rockets')}
+					placeholder={t('calendar:tabs.searchRockets')}
 					clearAriaLabel={t('calendar:tabs.rockets')}
 					onClear={() => setQuery('')}
 				/>

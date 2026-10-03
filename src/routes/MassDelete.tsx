@@ -17,6 +17,7 @@ import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { ISpeciesSearchMetadata } from '../DTOs/ISpeciesSearchMetadata';
 import { PokemonTypes } from '../DTOs/PokemonTypes';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo, sentenceCase } from '../lib/format';
 import { GAME_LANGUAGE_OPTIONS } from '../lib/game-language-options';
@@ -1193,25 +1194,30 @@ const WhitelistSearch = memo(function WhitelistSearch({
 	const [open, setOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
-
-	const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-	const term = norm(q);
+	const term = useDebouncedValue(q.trim().toLowerCase(), 220);
 
 	const results = useMemo(() => {
 		const all = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !exclude.has(p.speciesId));
 		const rank = (p: IGamemasterPokemon) => {
-			const hay = [norm(p.speciesName), norm(p.speciesId)];
+			const displayName = `${cleanName(p.speciesName)}${
+				p.isShadow
+					? ` · ${t('massDelete:whitelist.shadowSuffix', {
+							shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+						})}`
+					: ''
+			}`.toLowerCase();
+			const hay = [displayName];
 			if (hay.some((h) => h.startsWith(term))) return 0;
 			if (hay.some((h) => h.includes(term))) return 1;
 			return -1;
 		};
 		return all
 			.map((p) => ({ p, s: rank(p) }))
-			.filter((x) => x.s >= 0 || String(x.p.dex) === q.trim())
+			.filter((x) => x.s >= 0)
 			.sort((a, b) => a.s - b.s || a.p.dex - b.p.dex)
 			.slice(0, 20)
 			.map((x) => x.p);
-	}, [term, gamemasterPokemon, exclude, q]);
+	}, [term, gamemasterPokemon, exclude, gl, t]);
 
 	const pick = (p: IGamemasterPokemon) => {
 		onPick(p.speciesId);

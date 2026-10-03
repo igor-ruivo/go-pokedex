@@ -5,8 +5,9 @@ import { PokemonSearchInput } from '../../components/PokemonSearchInput';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useAfterPaint } from '../../hooks/useAfterPaint';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useFavoriteTeams } from '../../lib/favorite-teams';
-import { cleanName, normalizeSearch } from '../../lib/format';
+import { cleanName } from '../../lib/format';
 import { type ScoreParts, scoreTier, teamScore, threatPart } from '../../lib/team-analysis';
 import { TeamCards } from './TeamCards';
 import { analyzeTeam } from './useTeamAnalysis';
@@ -91,6 +92,7 @@ export const FavoriteTeams = ({
 	}, [favorites, ctx, data, league, evaluations.map((e) => (e.data ? 1 : 0)).join('')]);
 
 	const painted = useAfterPaint();
+	const term = useDebouncedValue(search.trim().toLowerCase(), 220);
 	if (!data.ready || !painted) {
 		return (
 			<div className='r-tm-loading'>
@@ -109,7 +111,6 @@ export const FavoriteTeams = ({
 	const changeSort = (key: string, _dir: SortDir) => {
 		if (key === 'added' || key === 'score' || key === 'threat') setSortKey(key);
 	};
-	const term = normalizeSearch(search);
 	// Each criterion always uses its useful direction: newest, highest score, or lowest threat first.
 	const teams = rated.rows
 		.filter(
@@ -117,8 +118,7 @@ export const FavoriteTeams = ({
 				!term ||
 				team.members.some((member) => {
 					const pokemon = data.gamemaster[member.speciesId];
-					const name = pokemon ? cleanName(pokemon.speciesName) : member.speciesId;
-					return normalizeSearch(name).includes(term) || normalizeSearch(member.speciesId).includes(term);
+					return !!pokemon && cleanName(pokemon.speciesName).toLowerCase().includes(term);
 				})
 		)
 		.sort((a, b) =>

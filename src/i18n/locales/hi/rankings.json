@@ -33,6 +33,19 @@
 		"pickType": "उस टाइप के बेस्ट {{raid}} अटैकर देखने के लिए फ़िल्टर में एक टाइप चुनें।",
 		"nothingMatches": "कुछ भी मैच नहीं करता।"
 	},
+	"regions": {
+		"kanto": "कांटो",
+		"johto": "जोहतो",
+		"hoenn": "होएन",
+		"sinnoh": "सिनोह",
+		"unova": "यूनोवा",
+		"kalos": "कालोस",
+		"alola": "अलोला",
+		"galar": "गालार",
+		"hisui": "हिसुई",
+		"paldea": "पाल्डिया",
+		"other": "अन्य"
+	},
 	"loadingLabel": {
 		"pokedex": "Pokédex लोड हो रहा है…",
 		"rankings": "रैंकिंग लोड हो रही है…"

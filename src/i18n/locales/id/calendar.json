@@ -7,6 +7,7 @@
 		"bosses": "Raid",
 		"spawns": "Spawn",
 		"rockets": "Rocket",
+		"searchRockets": "Cari di antara anggota Team GO Rocket",
 		"eggs": "Telur",
 		"ariaLabel": "Event / Raid / Spawn / Rocket / Telur"
 	},
