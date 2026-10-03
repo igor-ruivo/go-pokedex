@@ -345,7 +345,7 @@ const Group = ({
 	icon?: string | undefined;
 }) =>
 	entries.length ? (
-		<>
+		<div className='r-group' data-egg={egg ? '' : undefined}>
 			{egg ? (
 				<div className='r-eggsec-head' data-darker={darker ? '' : undefined}>
 					<img src={`/images/raids/${egg}.png`} alt='' loading='lazy' />
@@ -358,7 +358,7 @@ const Group = ({
 				</div>
 			)}
 			<MiniGrid entries={entries} endMap={endMap} />
-		</>
+		</div>
 	) : null;
 
 const Spinner = () => (

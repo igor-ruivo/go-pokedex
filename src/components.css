@@ -3748,6 +3748,12 @@
 	color: var(--t-ghost);
 }
 
+/* a group of raid / spawn entries under its heading; the raid tiers (egg headings) are spaced out like the eggs list, since
+   their heading has no top margin of its own */
+.rvmp .r-group[data-egg] {
+	margin-top: var(--s5);
+}
+
 /* eggs */
 .rvmp .r-egglist {
 	display: grid;

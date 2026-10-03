@@ -857,15 +857,20 @@
 	z-index: 1;
 	pointer-events: none;
 }
-.rvmp .r-tm-picker-list button:hover,
-.rvmp .r-tm-picker-list button:focus-visible {
+.rvmp .r-tm-picker-list button:not(:disabled):hover,
+.rvmp .r-tm-picker-list button:not(:disabled):focus-visible {
 	background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
+}
+/* already on the team: shown, but really disabled — no hover, not clickable */
+.rvmp .r-tm-picker-list button:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
 }
 .rvmp .r-tm-picker-list button .r-search-name {
 	transition: color 0.14s ease;
 }
-.rvmp .r-tm-picker-list button:hover .r-search-name,
-.rvmp .r-tm-picker-list button:focus-visible .r-search-name {
+.rvmp .r-tm-picker-list button:not(:disabled):hover .r-search-name,
+.rvmp .r-tm-picker-list button:not(:disabled):focus-visible .r-search-name {
 	color: var(--tc, var(--accent));
 }
 .rvmp .r-tm-picker-info {

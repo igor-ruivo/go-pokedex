@@ -343,6 +343,8 @@ const PokemonPicker = ({
 							<button
 								type='button'
 								style={{ ['--tc' as string]: typeVar(p.types[0]) }}
+								// a Pokémon already on the team (shadow or not) can't be picked again
+								disabled={inTeam}
 								onClick={() => onPick(r.speciesId)}
 							>
 								<RankMedal rank={position} className='r-tm-picker-medal' />
