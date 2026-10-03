@@ -2617,9 +2617,17 @@
 	row-gap: 2px;
 	min-width: 0;
 }
+.rvmp .r-tm-board-arrow-placeholder {
+	grid-row: 1;
+	align-self: center;
+	width: 24px;
+	height: 15px;
+	fill: none;
+}
 /* the play order reads left to right: the same arrow as the Battle plan's flow */
 .rvmp .r-tm-board-arrow {
-	grid-row: 1;
+	grid-row: 2;
+	margin-top: 4px;
 	align-self: center;
 	width: 24px;
 	height: 15px;

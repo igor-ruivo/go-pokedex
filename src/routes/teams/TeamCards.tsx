@@ -93,9 +93,12 @@ export const TeamCard = ({
 					return (
 						<Fragment key={`${member.speciesId}-${i}`}>
 							{i > 0 && (
-								<svg className='r-tm-board-arrow' viewBox='0 0 40 24' aria-hidden='true'>
-									<path d='M2 12h30M24 4l10 8-10 8' />
-								</svg>
+								<span className='r-tm-board-member'>
+									<svg className='r-tm-board-arrow' viewBox='0 0 40 24' aria-hidden='true'>
+										<path d='M2 12h30M24 4l10 8-10 8' />
+									</svg>
+									<span className='r-tm-board-arrow-placeholder'></span>
+								</span>
 							)}
 							<span
 								className='r-tm-board-member'
