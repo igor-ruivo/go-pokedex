@@ -4,19 +4,19 @@ import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { IconTabBar } from '../components/IconTabBar';
 import { IvPicker, type IVs } from '../components/IvPicker';
-import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
-import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { LeaguePicker } from '../components/LeaguePicker';
+import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { ShadowMark } from '../components/ShadowMark';
 import { goSpriteUrl, Sprite, SpriteImg, spriteUrl } from '../components/Sprite';
 import { Stepper } from '../components/Stepper';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
-import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
+import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { ActiveLeague } from '../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents, ILeagueIvBlock } from '../DTOs/ivs';
@@ -1089,9 +1089,7 @@ const PokemonDetail = () => {
 			) : (
 				<>
 					{/* ---- LEADERBOARD — best reachable per league; click active row to cycle ---- */}
-					<div className='r-section-h'>
-						{t('pokemonDetail:board.sectionHeading')}
-					</div>
+					<div className='r-section-h'>{t('pokemonDetail:board.sectionHeading')}</div>
 					<div className='r-board'>
 						{boardRows.map(
 							(

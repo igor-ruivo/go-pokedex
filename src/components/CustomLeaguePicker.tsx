@@ -60,10 +60,18 @@ export const CustomLeaguePicker = ({ activeId, onSelect }: CustomLeaguePickerPro
 							<rect x='9' y='4' width='6' height='16' fill='currentColor' fillOpacity='0.3' stroke='none' />
 							<path d='M9 4v16M15 4v16' strokeLinecap='round' />
 						</svg>
-							</>
+					</>
 				)}
 				<span>{active ? leagueTitle(active, gl).short : t('common:customLeagues.button')}</span>
-				<svg viewBox='0 0 24 24' width='14' height='14' fill='none' stroke='currentColor' strokeWidth='2' aria-hidden='true'>
+				<svg
+					viewBox='0 0 24 24'
+					width='14'
+					height='14'
+					fill='none'
+					stroke='currentColor'
+					strokeWidth='2'
+					aria-hidden='true'
+				>
 					<path d='M6 9l6 6 6-6' strokeLinecap='round' strokeLinejoin='round' />
 				</svg>
 			</button>

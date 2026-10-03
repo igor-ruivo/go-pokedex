@@ -3,8 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 
-import { ListBar } from '../components/ListBar';
 import { AppliedFilters, FilterBar } from '../components/FilterBar';
+import { ListBar } from '../components/ListBar';
 import { MoveStatRows } from '../components/MoveStatRows';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useLanguage } from '../contexts/language-context';

@@ -6,9 +6,9 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { CounterRankRow } from '../components/CounterRankRow';
 import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
-import { ListBar } from '../components/ListBar';
 import { AppliedFilters, FilterBar } from '../components/FilterBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
+import { ListBar } from '../components/ListBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { spriteUrl } from '../components/Sprite';
@@ -665,10 +665,7 @@ const Rankings = () => {
 				)}
 				<ListBar
 					applied={
-						<AppliedFilters
-							selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes}
-							onChange={setTypes}
-						/>
+						<AppliedFilters selected={isRaid ? (raidType ? [raidType] : []) : selectedTypes} onChange={setTypes} />
 					}
 					label={
 						<>
@@ -762,7 +759,13 @@ const Rankings = () => {
 						<p className='r-muted'>
 							{t('rankings:empty.pickType', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}
 						</p>
-						<div className='r-typepick' role='group' aria-label={t('rankings:empty.pickType', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) })}>
+						<div
+							className='r-typepick'
+							role='group'
+							aria-label={t('rankings:empty.pickType', {
+								raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+							})}
+						>
 							{RAID_TYPE_KEYS.map((tp) => (
 								<button
 									key={tp}

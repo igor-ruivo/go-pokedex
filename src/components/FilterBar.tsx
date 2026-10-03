@@ -112,10 +112,7 @@ export const FilterBar = ({ types, selected, onChange, single = false }: FilterB
 };
 
 /** The applied type chips plus "Clear" — rendered on their own line under the list header. */
-export const AppliedFilters = ({
-	selected,
-	onChange,
-}: Pick<FilterBarProps, 'selected' | 'onChange'>) => {
+export const AppliedFilters = ({ selected, onChange }: Pick<FilterBarProps, 'selected' | 'onChange'>) => {
 	const { t } = useTranslation(['components']);
 	const { currentGameLanguage: gl } = useLanguage();
 
