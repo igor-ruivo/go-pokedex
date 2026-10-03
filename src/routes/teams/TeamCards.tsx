@@ -1,5 +1,5 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { RankMedal } from '../../components/RankMedal';
@@ -81,7 +81,6 @@ export const TeamCard = ({
 					if (!p) return null;
 					// Members come in the order they're played: lead, switch, closer.
 					const role = TEAM_ROLES[i];
-					const roleScore = data.rankList[member.speciesId]?.[role];
 					// A favorite names the IVs each Pokémon is rated with: the ones picked, else the league's best.
 					// A favorite flags the moves PvPoke doesn't recommend for this Pokémon in this league.
 					const favorite = team.addedAt !== undefined;
@@ -113,19 +112,16 @@ export const TeamCard = ({
 										<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
 									))}
 								</span>
-								<span className='r-tm-board-role'>
-									<span className='r-tm-board-chip'>{roleScore === undefined ? '–' : roleScore.toFixed(1)}</span>
-									{team.addedAt !== undefined && ivs && (
-										<span
-											className='r-tm-board-ivs'
-											data-custom={member.ivs || member.level !== undefined ? '' : undefined}
-											title={t('teams:builder.ivs')}
-										>
-											{ivs.join('/')}
-											{member.level !== undefined && ` · L${member.level}`}
-										</span>
-									)}
-								</span>
+								{team.addedAt !== undefined && ivs && (
+									<span
+										className='r-tm-board-ivs'
+										data-custom={member.ivs || member.level !== undefined ? '' : undefined}
+										title={t('teams:builder.ivs')}
+									>
+										{ivs.join('/')}
+										{member.level !== undefined && ` · L${member.level}`}
+									</span>
+								)}
 								<span className='r-tm-board-moves'>
 									{member.moveset.map((m) => (
 										<span key={m}>
@@ -151,7 +147,7 @@ export const TeamCard = ({
 /**
  * A list of rated teams as cards — the best teams, and the favorites, are both drawn by this. A card shows the
  * position in the list, the two scores (the metric the list is ordered by is the big one), the three Pokémon in
- * play order with their types, role score and moves, and the favorite star; the whole card opens the team in the
+ * play order with their types and moves, and the favorite star; the whole card opens the team in the
  * builder.
  */
 export const TeamCards = ({
@@ -178,13 +174,9 @@ export const TeamCards = ({
 	</ol>
 );
 
-const MIN_CARD_WIDTH = 420;
-const LIST_GAP = 12;
-
 /**
- * The same cards for a list too long to mount at once: only the rows near the viewport exist. The grid is laid out
- * here (columns from the measured width, same minimum card width as the plain list) and rows are measured, since
- * a card's height depends on how its names and moves wrap. `items` carry each team's real rank.
+ * The same cards for a list too long to mount at once: only the cards near the viewport exist. Each card is
+ * measured since its height depends on how its names and moves wrap. `items` carry each team's real rank.
  */
 export const VirtualTeamCards = ({
 	items,
@@ -200,17 +192,13 @@ export const VirtualTeamCards = ({
 	onOpen: (team: RankedTeam) => void;
 }) => {
 	const listRef = useRef<HTMLDivElement>(null);
-	const [cols, setCols] = useState(1);
 	const [scrollMargin, setScrollMargin] = useState(0);
 
-	// Columns follow the list's width; the scroll margin (the list's distance from the top of the page) follows
-	// anything above it that changes height (the help panel opening, the intro wrapping).
+	// The scroll margin follows anything above the list that changes height (the help panel opening, the intro wrapping).
 	useLayoutEffect(() => {
 		const el = listRef.current;
 		if (!el) return;
 		const measure = () => {
-			const width = el.clientWidth;
-			if (width) setCols(Math.max(1, Math.floor((width + LIST_GAP) / (MIN_CARD_WIDTH + LIST_GAP))));
 			const top = el.getBoundingClientRect().top + window.scrollY;
 			setScrollMargin((prev) => (Math.abs(prev - top) < 1 ? prev : top));
 		};
@@ -221,40 +209,43 @@ export const VirtualTeamCards = ({
 		return () => ro.disconnect();
 	}, []);
 
-	const rowCount = Math.ceil(items.length / cols);
 	const virt = useWindowVirtualizer({
-		count: rowCount,
+		count: items.length,
 		estimateSize: () => 130,
 		overscan: 6,
 		scrollMargin,
-		gap: LIST_GAP,
+		gap: 12,
 	});
-	// Different columns mean different rows: forget the heights measured for the old ones.
-	useEffect(() => {
-		virt.measure();
-	}, [cols, virt]);
 
 	return (
 		<div ref={listRef} className='r-tm-board-vlist' role='list' style={{ height: virt.getTotalSize() }}>
-			{virt.getVirtualItems().map((vi) => (
-				<div
-					key={vi.key}
-					ref={virt.measureElement}
-					data-index={vi.index}
-					role='presentation'
-					className='r-tm-board-vrow'
-					style={{
-						gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-						transform: `translateY(${vi.start - virt.options.scrollMargin}px)`,
-					}}
-				>
-					{items.slice(vi.index * cols, vi.index * cols + cols).map(({ team, rank }) => (
-						<div key={teamKey(team)} role='listitem' className='r-tm-board-item'>
-							<TeamCard team={team} rank={rank} league={league} data={data} primary={primary} onOpen={onOpen} />
+			{virt.getVirtualItems().map((vi) => {
+				const item = items[vi.index];
+				if (!item) return null;
+				return (
+					<div
+						key={vi.key}
+						ref={virt.measureElement}
+						data-index={vi.index}
+						role='presentation'
+						className='r-tm-board-vrow'
+						style={{
+							transform: `translateY(${vi.start - virt.options.scrollMargin}px)`,
+						}}
+					>
+						<div role='listitem' className='r-tm-board-item'>
+							<TeamCard
+								team={item.team}
+								rank={item.rank}
+								league={league}
+								data={data}
+								primary={primary}
+								onOpen={onOpen}
+							/>
 						</div>
-					))}
-				</div>
-			))}
+					</div>
+				);
+			})}
 		</div>
 	);
 };

@@ -198,9 +198,8 @@ const Teams = () => {
 
 	return (
 		<div
-			className='r-shell r-shell--wide r-tm'
+			className={tab === 'top' || tab === 'favorites' ? 'r-shell r-tm' : 'r-shell r-shell--wide r-tm'}
 			data-tab={tab}
-			data-mini={tab === 'builder' && analysis && parts && full ? '' : undefined}
 		>
 			<h1 className='r-page-title'>{t('teams:page.title')}</h1>
 

@@ -18,12 +18,7 @@ export interface MiniGrades {
 	consistency: LetterGrade;
 }
 
-/**
- * The Pokémon page's collapsed hero (`.r-hero-mini`), for a team — but pinned: a bar under the app bar that always
- * keeps the team (sprites + names), its threat score, the report-card grades and the Team score in view, whatever the
- * scroll position. It reuses that bar's shell (fixed position, fade, desktop pill); only the show/hide-on-scroll part
- * is gone, so `data-visible` is simply switched on once the bar has been positioned under the app bar.
- */
+/** The team's compact summary bar, shown after the builder stage scrolls out of view. */
 export const TeamMini = ({
 	members,
 	score,
@@ -46,32 +41,33 @@ export const TeamMini = ({
 	const miniRef = useRef<HTMLDivElement>(null);
 	const metrics = combatMetricNames(t);
 
-	// The bar sits right under the app bar. The app bar is sticky, so on a phone's rubber-band overscroll (a swipe down
-	// at the very top) it is carried down with the page while a fixed element stays put — which let this bar slide
-	// out from under it. So `top` follows the app bar's actual bottom edge, re-read on every scroll tick (iOS fires
-	// them during the bounce, on the window and on the visual viewport) and not just once on mount.
+	// Match the Pokémon page's collapsed hero: show this only after the builder stage has scrolled past the app bar.
+	// Track the app bar's actual bottom because it can move during mobile rubber-band overscroll.
 	useLayoutEffect(() => {
 		const miniEl = miniRef.current;
 		if (!miniEl) return;
 		const gap = () => (window.innerWidth >= 900 ? 10 : 0);
-		const place = () => {
+		const update = () => {
 			const appbar = document.querySelector('.r-appbar');
 			const bottom = appbar ? appbar.getBoundingClientRect().bottom : 60;
 			miniEl.style.top = `${bottom + gap()}px`;
+			const stage = document.querySelector('.r-tm-stage');
+			const appbarHeight = appbar?.getBoundingClientRect().height ?? 60;
+			miniEl.dataset.visible = String(
+				window.scrollY > appbarHeight && !!stage && stage.getBoundingClientRect().bottom <= appbarHeight
+			);
 		};
 		let raf = 0;
 		const schedule = () => {
 			if (!raf) {
 				raf = requestAnimationFrame(() => {
 					raf = 0;
-					place();
+					update();
 				});
 			}
 		};
-		place();
-		// Visible a frame later, with the fade armed, so it eases in instead of popping.
 		const show = requestAnimationFrame(() => {
-			miniEl.dataset.visible = 'true';
+			update();
 			miniEl.dataset.anim = 'true';
 		});
 		const viewport = window.visualViewport;

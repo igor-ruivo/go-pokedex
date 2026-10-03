@@ -2304,11 +2304,6 @@
 		padding: var(--s2) var(--s5);
 	}
 }
-/* the team bar is pinned under the app bar, so the page leaves room for it */
-.rvmp .r-tm[data-mini] {
-	padding-top: 68px;
-}
-
 /* ---- battle plan on phones: the three steps in one row, joined by small arrows (like the upgrade cells' swap) ---
    Each step keeps its role-coloured border and stays two-tiered: the Pokémon on top, then role, phrase and score. */
 @media (max-width: 719px) {
@@ -2457,13 +2452,9 @@
 		right: auto;
 	}
 }
-.rvmp .r-tm[data-tab='top'],
-.rvmp .r-tm[data-tab='favorites'] {
-	max-width: 1720px;
-}
 .rvmp .r-tm-board-list {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--s3);
 	margin: 0;
 	padding: 0;
@@ -2478,8 +2469,6 @@
 	top: 0;
 	left: 0;
 	width: 100%;
-	display: grid;
-	gap: 12px;
 }
 .rvmp .r-tm-board-vlist .r-tm-board-card {
 	animation: none;
@@ -2533,9 +2522,10 @@
 .rvmp .r-tm-board-lead {
 	grid-area: rank;
 	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: var(--s2);
+	flex-direction: row;
+	align-items: center;
+	align-self: start;
+	gap: var(--s3);
 }
 .rvmp .r-tm-board-rank {
 	display: flex;
@@ -2643,27 +2633,11 @@
 }
 .rvmp .r-tm-board-types {
 	display: flex;
-	flex-wrap: wrap;
+	flex-direction: row;
+	align-items: center;
 	justify-content: center;
 	gap: 4px;
 	margin-top: 2px;
-}
-/* the role-score pill and, on a favorite, the IVs under it: one row of the member's grid */
-.rvmp .r-tm-board-role {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-/* that Pokémon's score in its role, the Battle plan's score pill */
-.rvmp .r-tm-board-chip {
-	margin-top: 8px;
-	padding: 2px 11px;
-	border-radius: var(--r-pill);
-	font-family: Fredoka, sans-serif;
-	font-weight: 600;
-	font-size: 14px;
-	background: color-mix(in srgb, var(--role-c) 18%, transparent);
-	font-variant-numeric: tabular-nums;
 }
 /* a favorite's IVs under each Pokémon; the accent marks IVs picked in the builder (not the league's best spread) */
 .rvmp .r-tm-board-ivs {
@@ -2757,12 +2731,6 @@
 	}
 	.rvmp .r-tm-board-name {
 		font-size: 13.5px;
-	}
-	/* narrow card: the medal, the ordinal and the star sit side by side on the top line */
-	.rvmp .r-tm-board-lead {
-		flex-direction: row;
-		align-items: center;
-		gap: var(--s3);
 	}
 	.rvmp .r-tm-board-rank {
 		flex-direction: row;
@@ -2876,11 +2844,10 @@
 	color: var(--neg);
 }
 
-/* phones: the type chips always stack in a column, even when two would fit side by side */
+/* stack type chips only on small/mobile screens */
 @media (max-width: 719px) {
 	.rvmp .r-tm-board-types {
 		flex-direction: column;
-		align-items: center;
 	}
 }
 

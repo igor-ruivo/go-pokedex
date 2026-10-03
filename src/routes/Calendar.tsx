@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
+import { PokemonSearchInput } from '../components/PokemonSearchInput';
 import { SpriteImg } from '../components/Sprite';
 import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
@@ -1034,13 +1035,25 @@ const GRUNT_TITLE_ORDER: Record<GameLanguage, (type: string, grunt: string) => s
 	[GameLanguage.zhHant]: (type, grunt) => `${type} 系${grunt}`,
 };
 
+const rocketGruntTitle = (g: IRocketGrunt, gl: GameLanguage): string => {
+	const typeKey = g.type?.toLowerCase();
+	const namedTrainerKey = !typeKey ? NAMED_TRAINER_KEYS.find(([needle]) => g.trainerId.includes(needle)) : undefined;
+	return g.type
+		? GRUNT_TITLE_ORDER[gl](
+				gameTypeDisplayTranslator(typeKey ?? '', gl) || g.type,
+				gameTranslator(GameTranslatorKeys.GruntDisplay, gl)
+			)
+		: namedTrainerKey
+			? gameTranslator(namedTrainerKey[1], gl)
+			: gameTranslator(GameTranslatorKeys.GruntDisplay, gl);
+};
+
 const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; onToggle: () => void }) => {
 	const { t } = useTranslation(['calendar']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const sets = useRelevanceSets();
 	const typeKey = g.type?.toLowerCase();
-	const namedTrainerKey = !typeKey ? NAMED_TRAINER_KEYS.find(([needle]) => g.trainerId.includes(needle)) : undefined;
 	const avatar = typeKey ? `/images/types/${typeKey}.png` : npcAvatar(g.trainerId);
 	// Most relevant first (most league/raid dots), dex order, then family-line
 	// order only for tied dex numbers — same rule the other grids use (see `MiniGrid`).
@@ -1056,14 +1069,7 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 	}, [g, gamemasterPokemon, sets]);
 	const firstCatch = [...g.catchableTiers].sort((a, b) => a - b)[0];
 	const reward = firstCatch != null ? (tiers[firstCatch] ?? []) : [];
-	const title = g.type
-		? GRUNT_TITLE_ORDER[gl](
-				gameTypeDisplayTranslator(typeKey ?? '', gl) || g.type,
-				gameTranslator(GameTranslatorKeys.GruntDisplay, gl)
-			)
-		: namedTrainerKey
-			? gameTranslator(namedTrainerKey[1], gl)
-			: gameTranslator(GameTranslatorKeys.GruntDisplay, gl);
+	const title = rocketGruntTitle(g, gl);
 
 	// toggle from anywhere on the card, but never when a Pokémon link was clicked
 	const toggle = (e: ReactMouseEvent | ReactKeyboardEvent) => {
@@ -1147,23 +1153,68 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 
 const RocketsTab = () => {
 	const { t } = useTranslation(['calendar']);
+	const { currentGameLanguage: gl } = useLanguage();
 	const { currentRockets, currentRocketsFetchCompleted } = useCalendar();
-	const { fetchCompleted } = usePokemon();
+	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const [openId, setOpenId] = useState<string | null>(null);
+	const [query, setQuery] = useState('');
+	const searchQuery = query.trim().toLowerCase();
+	const filteredRockets = useMemo(() => {
+		if (!searchQuery) return currentRockets;
+		return currentRockets.filter((g) => {
+			const typeKey = g.type?.toLowerCase();
+			const namedTrainerKey = !typeKey
+				? NAMED_TRAINER_KEYS.find(([needle]) => g.trainerId.includes(needle))
+				: undefined;
+			const trainerName = namedTrainerKey ? gameTranslator(namedTrainerKey[1], gl) : '';
+			const searchableText = [
+				g.trainerId,
+				trainerName,
+				rocketGruntTitle(g, gl),
+				g.phrase[gl] ?? '',
+				g.type ?? '',
+				typeKey ? gameTypeDisplayTranslator(typeKey, gl) : '',
+			];
+			if (searchableText.some((text) => text.toLowerCase().includes(searchQuery))) {
+				return true;
+			}
+			return [...g.tier1, ...g.tier2, ...g.tier3].some((speciesId) => {
+				const pokemon = gamemasterPokemon[speciesId];
+				return (
+					pokemon &&
+					(pokemon.speciesName.toLowerCase().includes(searchQuery) ||
+						pokemon.speciesId.toLowerCase().includes(searchQuery) ||
+						String(pokemon.dex) === searchQuery)
+				);
+			});
+		});
+	}, [currentRockets, gamemasterPokemon, gl, searchQuery]);
 
 	if (!currentRocketsFetchCompleted || !fetchCompleted) return <Spinner />;
 	if (currentRockets.length === 0) return <p className='r-muted'>{t('calendar:rockets.noLineups')}</p>;
 
 	return (
-		<div className='r-eventlist'>
-			{currentRockets.map((g) => (
-				<RocketGrunt
-					key={g.trainerId}
-					g={g}
-					open={openId === g.trainerId}
-					onToggle={() => setOpenId((p) => (p === g.trainerId ? null : g.trainerId))}
+		<div>
+			<div className='r-rockets-search'>
+				<PokemonSearchInput
+					value={query}
+					onChange={setQuery}
+					placeholder={t('calendar:tabs.rockets')}
+					clearAriaLabel={t('calendar:tabs.rockets')}
+					onClear={() => setQuery('')}
 				/>
-			))}
+			</div>
+			<div className='r-eventlist'>
+				{filteredRockets.map((g) => (
+					<RocketGrunt
+						key={g.trainerId}
+						g={g}
+						open={openId === g.trainerId}
+						onToggle={() => setOpenId((p) => (p === g.trainerId ? null : g.trainerId))}
+					/>
+				))}
+			</div>
+			{filteredRockets.length === 0 && <p className='r-muted'>{t('calendar:rockets.noLineups')}</p>}
 		</div>
 	);
 };

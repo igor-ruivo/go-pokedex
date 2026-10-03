@@ -2934,6 +2934,9 @@
 	display: grid;
 	gap: var(--s3);
 }
+.rvmp .r-rockets-search {
+	margin-bottom: var(--s3);
+}
 .rvmp .r-event {
 	background: var(--surface);
 	border: 1px solid var(--border);

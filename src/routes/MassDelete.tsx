@@ -1221,12 +1221,7 @@ const WhitelistSearch = memo(function WhitelistSearch({
 
 	return (
 		<>
-			<button
-				type='button'
-				className='r-search r-md-wl-search'
-				onClick={() => setOpen(true)}
-				aria-label={placeholder}
-			>
+			<button type='button' className='r-search r-md-wl-search' onClick={() => setOpen(true)} aria-label={placeholder}>
 				<svg className='r-search-icon' viewBox='0 0 24 24' aria-hidden='true'>
 					<circle cx='11' cy='11' r='7' />
 					<line x1='21' y1='21' x2='16.2' y2='16.2' />
