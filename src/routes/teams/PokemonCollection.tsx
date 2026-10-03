@@ -2,6 +2,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { BuddyMark } from '../../components/BuddyMark';
 import { PokemonSearchInput } from '../../components/PokemonSearchInput';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
@@ -11,10 +12,15 @@ import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useDismiss } from '../../hooks/useDismiss';
 import { cleanName } from '../../lib/format';
-import { removeCollectionPokemon, saveCollectionPokemon, usePokemonCollection } from '../../lib/pokemon-collection';
+import {
+	type CollectionPokemon,
+	removeCollectionPokemon,
+	saveCollectionPokemon,
+	usePokemonCollection,
+} from '../../lib/pokemon-collection';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import { cpAt } from '../../lib/pvp-sim/cp';
-import { scoreTier, type SlotIvs, slotKey, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
+import { isBuddy, nonBuddyCounterpart, scoreTier, type SlotIvs, slotKey, teamScore, type TeamSlotDescriptor, threatPart } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { VirtualTeamCards } from './TeamCards';
@@ -88,6 +94,24 @@ const hashSignature = (value: string) => {
 	return `${value.length.toString(36)}-${(first >>> 0).toString(36)}-${(second >>> 0).toString(36)}`;
 };
 
+/**
+ * The slots one saved Pokémon takes part in team combinations with. A team can only have one Best Buddy, but that must
+ * not keep two Best Buddy-able Pokémon off the same team, so a Best Buddy (above level 50) also gets a temporary plain
+ * counterpart (no flag, level 50 at most): the combinations then include both "this one is the buddy" and "the other one
+ * is". A Best Buddy at level 50 or less gains nothing from the flag, so it simply counts as a plain Pokémon.
+ */
+const comboSlots = (entry: CollectionPokemon): Array<TeamSlotDescriptor> => {
+	const slot: TeamSlotDescriptor = {
+		speciesId: entry.speciesId,
+		moveset: entry.moveset,
+		...(entry.ivs ? { ivs: entry.ivs } : {}),
+		...(entry.level !== undefined ? { level: entry.level } : {}),
+		...(entry.buddy ? { buddy: true as const } : {}),
+	};
+	if (!isBuddy(slot)) return [slot];
+	return (slot.level ?? 0) > 50 ? [slot, nonBuddyCounterpart(slot)] : [nonBuddyCounterpart(slot)];
+};
+
 const buildCombinations = (
 	species: ReadonlyArray<TeamSlotDescriptor>,
 	data: TeamsData
@@ -102,6 +126,8 @@ const buildCombinations = (
 				const cBase = species[c].speciesId.replace(/_shadow$/, '');
 				if (cBase === aBase || cBase === bBase) continue;
 				const trio = [species[a], species[b], species[c]];
+				// Only one Pokémon per team can be above level 50 (Best Buddy).
+				if (trio.filter(isBuddy).length > 1) continue;
 				if (
 					!trio.every(
 						(slot) =>
@@ -202,6 +228,7 @@ export const PokemonCollection = ({
 						moveset: entry.moveset,
 						...(entry.ivs ? { ivs: entry.ivs } : {}),
 						...(entry.level !== undefined ? { level: entry.level } : {}),
+						...(entry.buddy ? { buddy: true as const } : {}),
 					};
 					const member = ctx ? analyzeTeam(league, ctx, data, [slot])?.members[0] : undefined;
 					return member ? [[entry.id, member.stats.cp]] : [];
@@ -211,12 +238,7 @@ export const PokemonCollection = ({
 	);
 	const combinations = useMemo(() => {
 		const slots: Array<TeamSlotDescriptor> = saved
-			.map(({ speciesId, moveset, ivs, level }) => ({
-				speciesId,
-				moveset,
-				...(ivs ? { ivs } : {}),
-				...(level !== undefined ? { level } : {}),
-			}))
+			.flatMap(comboSlots)
 			.sort(
 				(a, b) =>
 					(data.rankList[a.speciesId]?.rank ?? Number.MAX_SAFE_INTEGER) -
@@ -298,6 +320,7 @@ export const PokemonCollection = ({
 								moveset: [...member.moveset],
 								...(member.ivs ? { ivs: [...member.ivs] as SlotIvs } : {}),
 								...(member.level !== undefined ? { level: member.level } : {}),
+								...(member.buddy ? { buddy: true as const } : {}),
 							};
 						}),
 						score,
@@ -322,8 +345,11 @@ export const PokemonCollection = ({
 		// entry, so with duplicates of a species each card shows the nickname of the entry it was actually built from.
 		const byBuild: Record<string, string> = {};
 		for (const entry of saved) {
-			const key = slotKey(entry);
-			if (entry.nickname && !(key in byBuild)) byBuild[key] = entry.nickname;
+			if (!entry.nickname) continue;
+			// The entry itself, and the variants it takes part in combinations as (see `comboSlots`).
+			for (const key of [slotKey(entry), ...comboSlots(entry).map(slotKey)]) {
+				if (!(key in byBuild)) byBuild[key] = entry.nickname;
+			}
 		}
 		return byBuild;
 	}, [saved]);
@@ -349,7 +375,10 @@ export const PokemonCollection = ({
 		}
 		updateDraft({ ...draft.slot, moveset });
 	};
-	const setDraftBuild = (_index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => {
+	const setDraftBuild = (
+		_index: number,
+		build: { ivs: SlotIvs | undefined; level: number | undefined; buddy?: boolean | undefined }
+	) => {
 		if (!draft) return;
 		const spread = data.builder?.ivs[draft.slot.speciesId]?.[league];
 		const defaultIvs = spread ? ([spread[1], spread[2], spread[3]] as SlotIvs) : undefined;
@@ -363,6 +392,7 @@ export const PokemonCollection = ({
 			moveset: [...draft.slot.moveset],
 			...(ivs ? { ivs } : {}),
 			...(build.level !== undefined ? { level: build.level } : {}),
+			...((build.buddy ?? isBuddy(draft.slot)) ? { buddy: true as const } : {}),
 		});
 	};
 	const saveDraft = () => {
@@ -375,6 +405,7 @@ export const PokemonCollection = ({
 				moveset: [...draft.slot.moveset],
 				...(draft.slot.ivs ? { ivs: draft.slot.ivs } : {}),
 				...(draft.slot.level !== undefined ? { level: draft.slot.level } : {}),
+				...(isBuddy(draft.slot) ? { buddy: true as const } : {}),
 				...(nickname ? { nickname } : {}),
 			},
 			draft.entryId
@@ -467,6 +498,7 @@ export const PokemonCollection = ({
 															}
 														>
 															{pokemon.isShadow && <ShadowMark />}
+															{isBuddy(entry) && <BuddyMark />}
 															<SpriteImg pokemon={pokemon} loading='lazy' />
 															<span className='r-tm-collection-name'>
 																{entry.nickname ?? cleanName(pokemon.speciesName)}

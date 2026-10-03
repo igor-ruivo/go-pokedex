@@ -23,6 +23,8 @@ export interface FavoriteMember {
 	ivs?: SlotIvs;
 	/** Level picked in the builder; absent: the highest the CP cap allows. */
 	level?: number;
+	/** A Best Buddy (level ceiling 51). */
+	buddy?: true;
 }
 
 export interface FavoriteTeam {
@@ -136,6 +138,7 @@ export const toggleFavoriteTeam = (league: TeamLeague, members: Members) => {
 				moveset: [...m.moveset],
 				...(m.ivs ? { ivs: [...m.ivs] as SlotIvs } : {}),
 				...(m.level !== undefined ? { level: m.level } : {}),
+				...(m.buddy ? { buddy: true as const } : {}),
 			})),
 			addedAt: Date.now(),
 		},

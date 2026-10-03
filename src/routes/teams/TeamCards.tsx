@@ -2,14 +2,18 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { BuddyMark } from '../../components/BuddyMark';
 import { RankMedal } from '../../components/RankMedal';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SpriteImg } from '../../components/Sprite';
 import { TypeChip } from '../../components/TypeChip';
 import { useLanguage } from '../../contexts/language-context';
+import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { useOptimalBuild } from '../../hooks/useOptimalBuild';
 import { cleanName, ordinal } from '../../lib/format';
-import { slotKey, TEAM_ROLES } from '../../lib/team-analysis';
+import { LEAGUE_CP } from '../../lib/pvp-sim/context';
+import { isBuddy, slotKey, type SlotIvs, TEAM_ROLES, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
@@ -20,6 +24,33 @@ import type { TeamsData } from './useTeamsData';
 type CardTeam = RankedTeam & { addedAt?: number };
 
 const teamKey = (team: RankedTeam) => team.members.map(slotKey).join('|');
+
+/** The IVs (and pinned level) line of one member; blue when pinned, unless it is what the Best Buddy setting makes optimal. */
+const MemberBuild = ({
+	pokemon,
+	member,
+	ivs,
+	cpCap,
+	title,
+}: {
+	pokemon: IGamemasterPokemon;
+	member: TeamSlotDescriptor;
+	ivs: SlotIvs;
+	cpCap: number;
+	title: string;
+}) => {
+	// A level that isn't pinned follows the cap, which is optimal by definition.
+	const { ivsOptimal, levelOptimal } = useOptimalBuild(pokemon, ivs, member.level, isBuddy(member), cpCap);
+	// The level is only worth stating when it's a deliberate one, not the level the cap gives anyway.
+	const showLevel = member.level !== undefined && !levelOptimal;
+	const custom = (member.ivs && !ivsOptimal) || showLevel;
+	return (
+		<span className='r-tm-board-ivs' data-custom={custom ? '' : undefined} title={title}>
+			{ivs.join('/')}
+			{showLevel && ` · L${member.level}`}
+		</span>
+	);
+};
 
 /** One card of the list; `rank` is the team's place in the full ranking (a filtered list keeps the real places). */
 export const TeamCard = ({
@@ -111,6 +142,7 @@ export const TeamCard = ({
 							>
 								<span className='r-tm-board-art'>
 									{p.isShadow && <ShadowMark />}
+									{isBuddy(member) && <BuddyMark />}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
 								<b className='r-tm-board-name'>{nicknames?.[slotKey(member)] ?? cleanName(p.speciesName)}</b>
@@ -120,14 +152,7 @@ export const TeamCard = ({
 									))}
 								</span>
 								{showMemberDetails && ivs && (
-									<span
-										className='r-tm-board-ivs'
-										data-custom={member.ivs || member.level !== undefined ? '' : undefined}
-										title={t('teams:builder.ivs')}
-									>
-										{ivs.join('/')}
-										{member.level !== undefined && ` · L${member.level}`}
-									</span>
+									<MemberBuild pokemon={p} member={member} ivs={ivs} cpCap={LEAGUE_CP[league]} title={t('teams:builder.ivs')} />
 								)}
 								<span className='r-tm-board-moves'>
 									{member.moveset

@@ -12,14 +12,13 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
 import type { TeamBuilderMove } from '../../DTOs/ITeamBuilder';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
-import { useBestIvs } from '../../hooks/useBestIvs';
 import { useDismiss } from '../../hooks/useDismiss';
+import { useOptimalBuild } from '../../hooks/useOptimalBuild';
 import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../../lib/combat';
 import { combatMetricNames } from '../../lib/combat-text';
 import { cleanName, ordinal } from '../../lib/format';
-import { competitionRanks, ivRankOf } from '../../lib/iv-rank';
 import { type BuffInfo, buffInfo } from '../../lib/moves';
-import { type SlotIvs, type TeamRole, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import { isBuddy, type SlotIvs, type TeamRole, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { translateMoveFromMoveId } from '../../utils/pokemon-helper';
@@ -402,6 +401,11 @@ interface MemberCardProps {
 	nickname?: string | undefined;
 	onNicknameChange?: ((nickname: string) => void) | undefined;
 	onNicknameFocus?: (() => void) | undefined;
+	/** The IVs / level are what the current Best Buddy setting makes optimal: not shown as picked, even if stored. */
+	ivsOptimal?: boolean | undefined;
+	levelOptimal?: boolean | undefined;
+	/** The Best Buddy toggle, only for a Pokémon that would benefit from it in this league (or already is one). */
+	buddy?: { on: boolean; label: string; hint: string; onToggle: () => void } | undefined;
 	nicknameLabel?: string | undefined;
 }
 
@@ -422,6 +426,9 @@ export const MemberCard = ({
 	nickname,
 	onNicknameChange,
 	onNicknameFocus,
+	ivsOptimal = false,
+	levelOptimal = false,
+	buddy,
 	nicknameLabel,
 }: MemberCardProps) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
@@ -527,6 +534,18 @@ export const MemberCard = ({
 					<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
 				))}
 			</div>
+			{buddy && (
+				<button
+					type='button'
+					className='r-tm-buddy'
+					aria-pressed={buddy.on}
+					title={buddy.hint}
+					onClick={buddy.onToggle}
+				>
+					<img src='/images/buddy-crown.png' alt='' aria-hidden='true' width={18} height={18} />
+					{buddy.label}
+				</button>
+			)}
 
 			<dl className='r-tm-facts'>
 				<div>
@@ -539,7 +558,7 @@ export const MemberCard = ({
 						<button
 							type='button'
 							className='r-tm-iv-btn'
-							data-custom={member.slot.level !== undefined ? '' : undefined}
+							data-custom={member.slot.level !== undefined && !levelOptimal ? '' : undefined}
 							aria-haspopup='dialog'
 							aria-label={t('teams:builder.levelEdit', { name })}
 							title={t('teams:builder.levelEdit', { name })}
@@ -555,7 +574,7 @@ export const MemberCard = ({
 						<button
 							type='button'
 							className='r-tm-iv-btn'
-							data-custom={member.slot.ivs ? '' : undefined}
+							data-custom={member.slot.ivs && !ivsOptimal ? '' : undefined}
 							aria-haspopup='dialog'
 							aria-label={t('teams:builder.ivEdit', { name })}
 							title={t('teams:builder.ivEdit', { name })}
@@ -619,19 +638,55 @@ export const TeamMemberEditor = ({
 	nickname,
 	onNicknameChange,
 	nicknameLabel,
-}: Omit<MemberCardProps, 'onEditIvs' | 'onEditLevel' | 'onNicknameFocus'> & {
+	buddyTaken = false,
+}: Omit<MemberCardProps, 'onEditIvs' | 'onEditLevel' | 'onNicknameFocus' | 'ivsOptimal' | 'levelOptimal' | 'buddy'> & {
 	cpCap: number;
-	onBuild: (index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => void;
+	/** Another member of the team is already above level 50 (Best Buddy): only one per team can be. */
+	buddyTaken?: boolean;
+	onBuild: (
+		index: number,
+		build: { ivs: SlotIvs | undefined; level: number | undefined; buddy?: boolean | undefined }
+	) => void;
 }) => {
+	const { t } = useTranslation(['teams']);
 	const [editing, setEditing] = useState<'ivs' | 'level' | null>(null);
 
 	// A nickname can carry the rank of the member's IVs ("Azumarill #12"). Ties share a rank (1, 1, 3, …), so this
-	// is the competition rank in the league's IV table, the same one the Pokémon page shows.
-	const ivRows = useBestIvs(pokemon, cpCap, !!onNicknameChange && !!pokemon);
-	const ivRank = useMemo(
-		() => (member ? ivRankOf(ivRows, competitionRanks(ivRows), member.stats.ivs) : undefined),
-		[ivRows, member]
+	// is the competition rank in the league's IV table, the same one the Pokémon page shows. Picked IVs / level that are
+	// exactly what the Best Buddy setting makes optimal read as the defaults, not as something the player pinned.
+	const buddyNow = member ? isBuddy(member.slot) : false;
+	const { ivRank, ivsOptimal, levelOptimal, buddy: buddyBest } = useOptimalBuild(
+		pokemon,
+		member?.stats.ivs,
+		member?.slot.level,
+		buddyNow,
+		cpCap
 	);
+	// Any Pokémon can be made a Best Buddy (even one that gains nothing from it in this league); only one per team can be.
+	// Turning it on picks the spread that is best at the level-51 ceiling, and its level when that is above 50. Turning it
+	// off goes back to the defaults.
+	const buddy = member
+		? {
+				on: buddyNow,
+				label: t('teams:builder.bestBuddy'),
+				hint: !buddyNow && buddyTaken ? t('teams:builder.bestBuddyMoveHint') : t('teams:builder.bestBuddyHint'),
+				onToggle: () => {
+					if (buddyNow) onBuild(index, { ivs: undefined, level: undefined, buddy: false });
+					else if (buddyBest) {
+						onBuild(index, {
+							ivs: buddyBest.ivs,
+							level: buddyBest.level > 50 ? buddyBest.level : undefined,
+							buddy: true,
+						});
+					}
+				},
+			}
+		: undefined;
+	// "Reset" in the IVs dialog of a Best Buddy goes to the spread that is best at level 51, not to the level-50 default
+	// (which, at its level, could be over the CP cap).
+	const resetBest = buddyNow && buddyBest ? { ivs: buddyBest.ivs } : undefined;
+	// …and the same for the level, in its own dialog: Reset there leaves the IVs alone, and the IVs' Reset leaves the level.
+	const resetLevel = buddyNow && buddyBest && buddyBest.level > 50 ? buddyBest.level : undefined;
 	// Once the nickname ends in "#<number>", keep that number in step with the IVs as they change.
 	useEffect(() => {
 		if (!onNicknameChange || nickname === undefined || ivRank === undefined) return;
@@ -664,6 +719,9 @@ export const TeamMemberEditor = ({
 				nickname={nickname}
 				onNicknameChange={onNicknameChange}
 				onNicknameFocus={prefillNickname}
+				ivsOptimal={ivsOptimal}
+				levelOptimal={levelOptimal}
+				buddy={buddy}
 				nicknameLabel={nicknameLabel}
 			/>
 			{member && pokemon && editing === 'ivs' && (
@@ -672,11 +730,12 @@ export const TeamMemberEditor = ({
 					value={member.stats.ivs}
 					custom={!!member.slot.ivs}
 					level={member.stats.level}
-					pinnedLevel={member.slot.level}
 					baseStats={pokemon.baseStats}
 					cpCap={cpCap}
-					onChange={(ivs) => {
-						onBuild(index, { ivs, level: member.slot.level });
+					best={resetBest}
+					optimal={ivsOptimal}
+					onChange={(ivs, keepLevel) => {
+						onBuild(index, { ivs, level: member.slot.level ?? keepLevel });
 					}}
 					onClose={() => setEditing(null)}
 				/>
@@ -689,6 +748,9 @@ export const TeamMemberEditor = ({
 					baseStats={pokemon.baseStats}
 					ivs={member.stats.ivs}
 					cpCap={cpCap}
+					buddy={buddyNow}
+					optimal={levelOptimal}
+					bestLevel={resetLevel}
 					onChange={(level) => {
 						onBuild(index, { ivs: member.slot.ivs, level });
 					}}
@@ -758,7 +820,10 @@ export const TeamStage = ({
 	roleOf: (index: number) => TeamRole | undefined;
 	onChangePokemon: (index: number) => void;
 	onMove: (index: number, moveIndex: number, moveId: string) => void;
-	onBuild: (index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => void;
+	onBuild: (
+		index: number,
+		build: { ivs: SlotIvs | undefined; level: number | undefined; buddy?: boolean | undefined }
+	) => void;
 	/** The league's CP cap, to tell when a picked level puts a Pokémon over it. */
 	cpCap: number;
 	onRemove: (index: number) => void;
@@ -778,6 +843,7 @@ export const TeamStage = ({
 					data={data}
 					role={roleOf(i)}
 					cpCap={cpCap}
+					buddyTaken={team.some((slot, k) => k !== i && isBuddy(slot))}
 					onChangePokemon={() => onChangePokemon(i)}
 					onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
 					onBuild={onBuild}

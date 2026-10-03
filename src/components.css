@@ -2910,7 +2910,7 @@
 .rvmp .r-mini:hover {
 	border-color: var(--border-strong);
 }
-.rvmp .r-mini > img:not(.r-shadow-mark) {
+.rvmp .r-mini > img:not(.r-shadow-mark):not(.r-buddy-mark) {
 	width: 62%;
 	aspect-ratio: 1;
 	object-fit: contain;
@@ -3790,7 +3790,7 @@
 
 /* Keep zoomed GO/shiny sprites above adjacent artwork where they overlap. */
 .rvmp .r-pc-art > img[src*='pogo_assets'],
-.rvmp .r-mini > img:not(.r-shadow-mark)[src*='pogo_assets'],
+.rvmp .r-mini > img:not(.r-shadow-mark):not(.r-buddy-mark)[src*='pogo_assets'],
 .rvmp .r-board-sprite > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-ctr-art > img:not(.r-shadow-mark)[src*='pogo_assets'],
 .rvmp .r-reach-chip .r-reach-art img[src*='pogo_assets'],
@@ -6810,4 +6810,35 @@
 .rvmp .r-rank-head:has(.r-applied-filters) {
 	padding-bottom: 0;
 	background: linear-gradient(var(--bg) 94%, transparent);
+}
+/* Best Buddy crown (level above 50) — the corner opposite the shadow mark of each sprite */
+.rvmp .r-buddy-mark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+	width: 24px;
+	height: 24px;
+	object-fit: contain;
+	pointer-events: none;
+	/* a quiet round badge: the card's own surface colour behind the crown and a hairline ring, so it separates from any
+	   sprite without a colour of its own. Fixed padding (not %), for the same reason as the shadow mark. */
+	padding: 2px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--surface) 90%, transparent);
+	box-shadow:
+		0 0 0 1px var(--border-strong),
+		0 2px 6px rgb(0 0 0 / 0.4);
+}
+/* a mini sprite: the crown takes the top left (the top right belongs to the remove cross); a shadow mark that shares
+   the sprite with it steps down underneath */
+.rvmp .r-mini > .r-buddy-mark {
+	top: 12%;
+	left: 12%;
+	width: 22px;
+	height: 22px;
+	z-index: 6;
+}
+.rvmp .r-mini > .r-shadow-mark:has(~ .r-buddy-mark) {
+	top: calc(12% + 26px);
 }

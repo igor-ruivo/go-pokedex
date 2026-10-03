@@ -15,9 +15,10 @@ export const IvModal = ({
 	value,
 	custom,
 	level,
-	pinnedLevel,
 	baseStats,
 	cpCap,
+	best,
+	optimal = false,
 	onChange,
 	onClose,
 }: {
@@ -27,14 +28,20 @@ export const IvModal = ({
 	value: SlotIvs;
 	/** They were picked here (not the league's best spread). */
 	custom: boolean;
-	/** The level the member is rated at, whether it was picked (`pinnedLevel`) or follows the CP cap. */
+	/** The level the member is rated at now, whether it was picked or follows the CP cap. */
 	level: number;
-	pinnedLevel: number | undefined;
 	/** What its CP is made of, and the league's cap: IVs that put a picked level over it are refused. */
 	baseStats: { atk: number; def: number; hp: number };
 	cpCap: number;
-	/** The new IVs, or `undefined` for the league's best. */
-	onChange: (ivs: SlotIvs | undefined) => void;
+	/**
+	 * What "Reset" applies when the league's default isn't the optimum for the player's Best Buddy setting: the best
+	 * spread and the level it needs. Absent: Reset goes back to the league's default.
+	 */
+	best?: { ivs: SlotIvs } | undefined;
+	/** The IVs are already the best for this Pokémon's Best Buddy state: there is nothing to reset to (no Reset button). */
+	optimal?: boolean;
+	/** The new IVs, or `undefined` for the league's default. `keepLevel`: typed IVs pin the level the member has now. */
+	onChange: (ivs: SlotIvs | undefined, keepLevel?: number) => void;
 	onClose: () => void;
 }) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
@@ -78,16 +85,17 @@ export const IvModal = ({
 	const text = fields.join('.');
 	const typedIvs = text.split('.').map((field) => (field === '' ? NaN : Number(field)));
 	// A level that follows the CP cap always fits; a picked one has to still fit with the new IVs.
-	const typedCp = pinnedLevel !== undefined && isSlotIvs(typedIvs) ? cpAt(baseStats, typedIvs, level) : undefined;
+	// Typed IVs keep the level the member has now (they never change it), so they must still fit the cap at that level.
+	const typedCp = isSlotIvs(typedIvs) ? cpAt(baseStats, typedIvs, level) : undefined;
 	const overCap = typedCp !== undefined && typedCp > cpCap;
 	const parsed = fields.map((field) => (field === '' ? NaN : Number(field)));
 	const canApply = isSlotIvs(typedIvs) && !overCap && text !== current && !applying;
-	const apply = (next: SlotIvs | undefined) => {
+	const apply = (next: SlotIvs | undefined, keepLevel?: number) => {
 		setApplying({ value: next });
-		onChange(next);
+		onChange(next, keepLevel);
 	};
 	const applyTyped = () => {
-		if (isSlotIvs(typedIvs) && !overCap) apply(typedIvs);
+		if (isSlotIvs(typedIvs) && !overCap) apply(typedIvs, level);
 	};
 
 	return (
@@ -138,8 +146,13 @@ export const IvModal = ({
 				)}
 
 				<div className='r-tm-ivmodal-actions'>
-					{custom && (
-						<button type='button' className='r-tm-ivedit-reset' disabled={!!applying} onClick={() => apply(undefined)}>
+					{(custom || !!best) && !optimal && (
+						<button
+							type='button'
+							className='r-tm-ivedit-reset'
+							disabled={!!applying}
+							onClick={() => (best ? apply(best.ivs) : apply(undefined))}
+						>
 							{t('teams:builder.reset')}
 						</button>
 					)}

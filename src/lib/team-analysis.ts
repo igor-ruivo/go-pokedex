@@ -343,25 +343,43 @@ export interface TeamSlotDescriptor {
 	moveset: ReadonlyArray<string>;
 	/** IVs picked for this Pokémon. Absent: the league's best (rank-1) spread, which is what a fresh pick gets. */
 	ivs?: SlotIvs | undefined;
-	/** Level picked for this Pokémon (1 to 50, in steps of 0.5). Absent: the highest the league's CP cap allows. */
+	/** Level picked for this Pokémon (1 to 50, in steps of 0.5; up to 51 for a Best Buddy). Absent: the highest the league's CP cap allows. */
 	level?: number | undefined;
+	/** A Best Buddy: its level ceiling is 51, and a level above 50 may be picked. Only one Pokémon per team can be. */
+	buddy?: true | undefined;
 }
 
+/**
+ * The same Pokémon as a plain (not Best Buddy) one: no flag, and a level above 50 comes down to 50 — a Best Buddy's IVs
+ * were picked for level 51, but still fit the CP cap at 50.
+ */
+export const nonBuddyCounterpart = (slot: TeamSlotDescriptor): TeamSlotDescriptor => ({
+	speciesId: slot.speciesId,
+	moveset: slot.moveset,
+	...(slot.ivs ? { ivs: slot.ivs } : {}),
+	...(slot.level !== undefined ? { level: Math.min(50, slot.level) } : {}),
+});
+
+/** A Best Buddy: flagged as one (a level above 50 implies it, for data saved before the flag existed). */
+export const isBuddy = (slot: Pick<TeamSlotDescriptor, 'buddy' | 'level'>): boolean =>
+	slot.buddy === true || (slot.level ?? 0) > 50;
+
 export const isSlotLevel = (value: unknown): value is number =>
-	typeof value === 'number' && value >= 1 && value <= 50 && Number.isInteger(value * 2);
+	typeof value === 'number' && value >= 1 && value <= 51 && Number.isInteger(value * 2);
 
 export const isSlotIvs = (value: unknown): value is SlotIvs =>
 	Array.isArray(value) && value.length === 3 && value.every((n) => Number.isInteger(n) && n >= 0 && n <= 15);
 
 /**
  * One Pokémon of a team as text: `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH`, plus `@0.15.15` when its IVs were picked and
- * `@L25.5` when its level was (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with
+ * `@L25.5` when its level was, `@B` for a Best Buddy (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with
  * other moves, IVs or level is another key.
  */
-export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs' | 'level'>): string =>
+export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs' | 'level' | 'buddy'>): string =>
 	[slot.speciesId, ...slot.moveset].join('-') +
 	(slot.ivs ? `@${slot.ivs.join('.')}` : '') +
-	(slot.level !== undefined ? `@L${slot.level}` : '');
+	(slot.level !== undefined ? `@L${slot.level}` : '') +
+	(slot.buddy ? '@B' : '');
 
 /** `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH@0.15.15,medicham-COUNTER-…` — see `slotKey`. */
 export const encodeTeam = (team: ReadonlyArray<TeamSlotDescriptor>): string => team.map(slotKey).join(',');
@@ -373,8 +391,11 @@ export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescri
 			const [moves = '', ...modifiers] = part.split('@');
 			let ivs: SlotIvs | undefined;
 			let level: number | undefined;
+			let buddy = false;
 			for (const modifier of modifiers) {
-				if (modifier.startsWith('L')) {
+				if (modifier === 'B') {
+					buddy = true;
+				} else if (modifier.startsWith('L')) {
 					const n = Number(modifier.slice(1));
 					if (isSlotLevel(n)) level = n;
 				} else {
@@ -382,13 +403,14 @@ export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescri
 					if (isSlotIvs(picked)) ivs = picked;
 				}
 			}
-			return { parts: moves.split('-').filter(Boolean), ivs, level };
+			return { parts: moves.split('-').filter(Boolean), ivs, level, buddy };
 		})
 		.filter(({ parts }) => parts.length >= 3)
 		.slice(0, 3)
-		.map(({ parts: [speciesId, ...moveset], ivs, level }) => ({
+				.map(({ parts: [speciesId, ...moveset], ivs, level, buddy }) => ({
 			speciesId,
 			moveset: moveset.slice(0, 3),
 			...(ivs ? { ivs } : {}),
 			...(level !== undefined ? { level } : {}),
+			...(buddy ? { buddy: true as const } : {}),
 		}));

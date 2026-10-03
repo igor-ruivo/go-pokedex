@@ -79,6 +79,8 @@ export interface RankedTeamMember {
 	ivs?: [number, number, number];
 	/** Level picked for this Pokémon; absent: the highest the CP cap allows. */
 	level?: number;
+	/** A Best Buddy (level ceiling 51). */
+	buddy?: true;
 }
 
 export interface RankedTeam {

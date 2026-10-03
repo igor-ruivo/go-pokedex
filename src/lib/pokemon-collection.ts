@@ -9,6 +9,8 @@ export interface CollectionPokemon {
 	moveset: Array<string>;
 	ivs?: SlotIvs;
 	level?: number;
+	/** A Best Buddy (level ceiling 51). */
+	buddy?: true;
 	nickname?: string;
 	league: TeamLeague;
 	addedAt: number;
@@ -31,7 +33,8 @@ const isEntry = (value: unknown): value is Omit<CollectionPokemon, 'id'> & { id?
 		(entry.id === undefined || typeof entry.id === 'string') &&
 		(entry.nickname === undefined || typeof entry.nickname === 'string') &&
 		(entry.ivs === undefined || isSlotIvs(entry.ivs)) &&
-		(entry.level === undefined || isSlotLevel(entry.level))
+		(entry.level === undefined || isSlotLevel(entry.level)) &&
+		(entry.buddy === undefined || entry.buddy === true)
 	);
 };
 
@@ -143,6 +146,7 @@ export const saveCollectionPokemon = (
 		id: existing?.id ?? createId(new Set(current.map((entry) => entry.id))),
 		moveset: [...pokemon.moveset],
 		...(pokemon.ivs ? { ivs: [...pokemon.ivs] as SlotIvs } : {}),
+		...(pokemon.buddy ? { buddy: true as const } : {}),
 		...(pokemon.nickname?.trim() ? { nickname: pokemon.nickname.trim().slice(0, 32) } : {}),
 		league,
 		addedAt: existing?.addedAt ?? Date.now(),

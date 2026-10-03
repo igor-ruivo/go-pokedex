@@ -4,11 +4,14 @@ import { useSearchParams } from 'react-router-dom';
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
 import { LEAGUE_CP } from '../../lib/pvp-sim/context';
 import { cpAt } from '../../lib/pvp-sim/cp';
-import { decodeTeam, encodeTeam, type SlotIvs, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import { decodeTeam, encodeTeam, isBuddy, type SlotIvs, type TeamSlotDescriptor } from '../../lib/team-analysis';
 import { forgetTeam, lastTeamFor, rememberTeam } from './team-memory';
 import type { TeamsData } from './useTeamsData';
 
 const MAX_TEAM = 3;
+
+/** `azumarill_shadow` and `azumarill` are the same Pokémon as far as a team is concerned. */
+const baseSpeciesId = (speciesId: string) => speciesId.replace(/_shadow$/, '');
 
 /**
  * The team being edited, kept in the URL (`?t=azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH,…`)
@@ -36,18 +39,35 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 			const base = data.gamemaster[slot.speciesId]?.baseStats;
 			return !ivs || !base || cpAt(base, ivs, slot.level) <= LEAGUE_CP[league];
 		};
+		// The same Pokémon can't be fielded twice, shadow or not (a hand-edited link may try): the first one stays.
+		const bases = new Set<string>();
+		let buddyTaken = false;
 		return decodeTeam(raw)
-			.filter(
-				(slot) =>
-					data.rankList[slot.speciesId] &&
-					data.gamemaster[slot.speciesId] &&
-					slot.moveset.every((m) => m === 'none' || builder?.moves[m])
-			)
-			.map((slot) =>
-				withinCap(slot)
-					? slot
-					: { speciesId: slot.speciesId, moveset: slot.moveset, ...(slot.ivs ? { ivs: slot.ivs } : {}) }
-			);
+			.filter((slot) => {
+				if (
+					!data.rankList[slot.speciesId] ||
+					!data.gamemaster[slot.speciesId] ||
+					!slot.moveset.every((m) => m === 'none' || builder?.moves[m])
+				)
+					return false;
+				const base = baseSpeciesId(slot.speciesId);
+				if (bases.has(base)) return false;
+				bases.add(base);
+				return true;
+			})
+			.map((slot) => {
+				// Only one Pokémon per team can be a Best Buddy: later ones are plain Pokémon again (and a level above 50 goes).
+				const buddy = isBuddy(slot) && !buddyTaken;
+				if (buddy) buddyTaken = true;
+				const keepLevel = slot.level !== undefined && withinCap(slot) && (buddy || slot.level <= 50);
+				return {
+					speciesId: slot.speciesId,
+					moveset: slot.moveset,
+					...(slot.ivs ? { ivs: slot.ivs } : {}),
+					...(keepLevel ? { level: slot.level } : {}),
+					...(buddy ? { buddy: true as const } : {}),
+				};
+			});
 	}, [raw, data, league]);
 
 	const write = useCallback(
@@ -93,6 +113,8 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	/** Puts `speciesId` (with its recommended moves) in `index`, replacing what was there or appending. */
 	const setMember = useCallback(
 		(index: number, speciesId: string) => {
+			// Refused: a teammate is already this Pokémon (shadow or not).
+			if (team.some((slot, i) => i !== index && baseSpeciesId(slot.speciesId) === baseSpeciesId(speciesId))) return;
 			const next = [...team];
 			next[Math.min(index, next.length)] = { speciesId, moveset: recommendedMoveset(speciesId) };
 			write(next.slice(0, MAX_TEAM));
@@ -133,8 +155,13 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	 * spread itself counts as the default; the level then follows the CP cap).
 	 */
 	const setBuild = useCallback(
-		(index: number, build: { ivs: SlotIvs | undefined; level: number | undefined }) => {
+		(index: number, build: { ivs: SlotIvs | undefined; level: number | undefined; buddy?: boolean | undefined }) => {
 			const target = team[index];
+			// Only one Pokémon per team is a Best Buddy: making this one the buddy takes it from the current one, which goes
+			// back to the defaults (the best spread up to level 50, at the level the CP cap allows). A level above 50 needs it too.
+			const buddy = build.buddy ?? (target ? isBuddy(target) : false);
+			const takesBuddy = !!target && buddy && !isBuddy(target);
+			if ((build.level ?? 0) > 50 && !buddy) return;
 			if (target && build.level !== undefined) {
 				// Refused: the level would put the Pokémon over the league's CP cap with these IVs.
 				const effectiveIvs = build.ivs ?? defaultIvs(target.speciesId);
@@ -142,7 +169,9 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 				if (effectiveIvs && base && cpAt(base, effectiveIvs, build.level) > LEAGUE_CP[league]) return;
 			}
 			const next = team.map((slot, i) => {
-				if (i !== index) return slot;
+				if (i !== index) {
+					return takesBuddy && isBuddy(slot) ? { speciesId: slot.speciesId, moveset: slot.moveset } : slot;
+				}
 				const best = defaultIvs(slot.speciesId);
 				const ivs = build.ivs && !best?.every((n, k) => n === build.ivs?.[k]) ? build.ivs : undefined;
 				return {
@@ -150,6 +179,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 					moveset: slot.moveset,
 					...(ivs ? { ivs } : {}),
 					...(build.level !== undefined ? { level: build.level } : {}),
+					...(buddy ? { buddy: true as const } : {}),
 				};
 			});
 			write(next);
