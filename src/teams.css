@@ -713,6 +713,15 @@
 	place-items: center;
 	padding: var(--s3);
 }
+@media (max-width: 719px) {
+	.rvmp .r-tm-picker-backdrop:not(.r-tm-ivmodal-backdrop) {
+		place-items: start center;
+		padding: calc(10dvh + env(safe-area-inset-top)) var(--s3) var(--s3);
+	}
+	.rvmp .r-tm-picker-backdrop:not(.r-tm-ivmodal-backdrop) > .r-tm-picker {
+		max-height: calc(90dvh - 2 * var(--s3));
+	}
+}
 .rvmp .r-tm-picker {
 	display: flex;
 	flex-direction: column;

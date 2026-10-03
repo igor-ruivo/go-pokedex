@@ -276,7 +276,7 @@ const PokemonPicker = ({
 	}, []);
 
 	const rows = useMemo(() => {
-		const q = query.trim().toLowerCase();
+		const q = query.toLowerCase().replace(/[^a-z0-9]/g, '');
 		// "Overall" reads best-first when ascending (rank 1 on top); the role scores read highest-first when descending.
 		const order = sortKey === 'overall' ? (sortDir === 'asc' ? 1 : -1) : sortDir === 'desc' ? -1 : 1;
 		const value = (r: IRankedPokemon) => (sortKey === 'overall' ? r.rank : r[sortKey]);
@@ -290,7 +290,8 @@ const PokemonPicker = ({
 				.filter(({ r }) => {
 					if (!q) return true;
 					const p = data.gamemaster[r.speciesId];
-					return p.speciesName.toLowerCase().includes(q) || p.types.some((ty) => String(ty).toLowerCase().includes(q));
+					const name = p.speciesName.toLowerCase().replace(/[^a-z0-9]/g, '');
+					return name.includes(q);
 				})
 		);
 	}, [data.rankList, data.gamemaster, query, sortKey, sortDir]);
