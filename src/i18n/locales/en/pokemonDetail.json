@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "best reachable stage per league",
 		"extraLeaguesDivider": "Additional leagues",
+		"noExtraLeagues": "No additional leagues shown",
 		"notRanked": "Not ranked",
 		"loading": "Loading…",
 		"attackersSuffix": "{{type}} attackers",

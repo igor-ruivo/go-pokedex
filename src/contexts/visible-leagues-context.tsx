@@ -8,6 +8,8 @@ interface VisibleLeaguesContextType {
 	visibleExtraLeagueIds: ReadonlySet<string>;
 	isExtraLeagueVisible: (id: string) => boolean;
 	toggleExtraLeague: (id: string) => void;
+	/** Idempotent counterpart of `toggleExtraLeague` — safe to call from effects. */
+	setExtraLeagueVisible: (id: string, visible: boolean) => void;
 	/** Same set, run through React 18's `useDeferredValue` — lags a render or
 	 *  two behind `visibleExtraLeagueIds`/`isExtraLeagueVisible` by design.
 	 *  Every EXPENSIVE per-toggle recomputation gated on which extra leagues
@@ -68,6 +70,17 @@ export const VisibleLeaguesProvider = (props: React.PropsWithChildren<object>) =
 		});
 	}, []);
 
+	const setExtraLeagueVisible = useCallback((id: string, visible: boolean) => {
+		setIds((prev) => {
+			if (prev.has(id) === visible) return prev;
+			const next = new Set(prev);
+			if (visible) next.add(id);
+			else next.delete(id);
+			writePersistentValue(ConfigKeys.VisibleExtraLeagues, JSON.stringify(Array.from(next)));
+			return next;
+		});
+	}, []);
+
 	const isExtraLeagueVisible = useCallback((id: string) => ids.has(id), [ids]);
 
 	// See this field's own doc comment on `VisibleLeaguesContextType` — deferred
@@ -80,10 +93,11 @@ export const VisibleLeaguesProvider = (props: React.PropsWithChildren<object>) =
 			visibleExtraLeagueIds: ids,
 			isExtraLeagueVisible,
 			toggleExtraLeague,
+			setExtraLeagueVisible,
 			deferredVisibleExtraLeagueIds: deferredIds,
 			isExtraLeagueVisibleDeferred,
 		}),
-		[ids, isExtraLeagueVisible, toggleExtraLeague, deferredIds, isExtraLeagueVisibleDeferred]
+		[ids, isExtraLeagueVisible, toggleExtraLeague, setExtraLeagueVisible, deferredIds, isExtraLeagueVisibleDeferred]
 	);
 
 	return <VisibleLeaguesContext.Provider value={value}>{props.children}</VisibleLeaguesContext.Provider>;

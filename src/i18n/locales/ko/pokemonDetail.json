@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "리그별 도달 가능한 최고 진화 단계",
 		"extraLeaguesDivider": "추가 리그",
+		"noExtraLeagues": "표시 중인 추가 리그가 없습니다",
 		"notRanked": "랭크 없음",
 		"loading": "불러오는 중…",
 		"attackersSuffix": "{{type}} 타입 어태커",

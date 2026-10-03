@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "各聯盟最佳可達階段",
 		"extraLeaguesDivider": "額外聯盟",
+		"noExtraLeagues": "目前未顯示其他聯盟",
 		"notRanked": "未列入排名",
 		"loading": "載入中…",
 		"attackersSuffix": "{{type}} 屬性攻擊手",

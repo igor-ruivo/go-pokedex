@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "lig başına ulaşılabilir en iyi evrim",
 		"extraLeaguesDivider": "Ek ligler",
+		"noExtraLeagues": "Gösterilen ek lig yok",
 		"notRanked": "Sıralanmadı",
 		"loading": "Yükleniyor…",
 		"attackersSuffix": "{{type}} saldırganları",

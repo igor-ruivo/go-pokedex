@@ -13,7 +13,7 @@ import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
  * (`LeagueVisibilityMenu`), so both read/write the exact same
  * `visible-leagues-context` state and always agree with each other.
  */
-export const LeagueVisibilityChecklist = () => {
+export const LeagueVisibilityChecklist = ({ lockedId }: { lockedId?: string | null | undefined }) => {
 	const { t } = useTranslation(['common']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { leagues } = useLeagueDefinitions();
@@ -27,14 +27,17 @@ export const LeagueVisibilityChecklist = () => {
 	return (
 		<div className='r-lgcheck'>
 			{cups.map((l) => {
-				const checked = visibleExtraLeagueIds.has(l.id);
+				// The cup that's currently selected elsewhere on the page can't be hidden.
+				const locked = l.id === lockedId;
+				const checked = locked || visibleExtraLeagueIds.has(l.id);
 				const icon = leagueIcon(l.id);
 				return (
-					<label className='r-lgcheck-row' key={l.id}>
+					<label className='r-lgcheck-row' key={l.id} data-locked={locked || undefined}>
 						<input
 							type='checkbox'
 							className='r-lgcheck-input'
 							checked={checked}
+							disabled={locked}
 							onChange={() => toggleExtraLeague(l.id)}
 						/>
 						<span className='r-ss-box' aria-hidden='true' />

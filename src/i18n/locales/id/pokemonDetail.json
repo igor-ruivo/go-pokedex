@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "tahap terbaik yang bisa dicapai per liga",
 		"extraLeaguesDivider": "Liga tambahan",
+		"noExtraLeagues": "Tidak ada liga tambahan yang ditampilkan",
 		"notRanked": "Belum diperingkat",
 		"loading": "Memuat…",
 		"attackersSuffix": "attacker {{type}}",

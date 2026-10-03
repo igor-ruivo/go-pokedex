@@ -213,7 +213,11 @@ const PokemonDetail = () => {
 	const { raidMetric } = useRaidMetric();
 	const { maxLevel, maxLevelIndex } = useBestBuddy();
 	const { leagues } = useLeagueDefinitions();
-	const { isExtraLeagueVisibleDeferred: isExtraLeagueVisible } = useVisibleLeagues();
+	const {
+		isExtraLeagueVisibleDeferred: isExtraLeagueVisible,
+		isExtraLeagueVisible: isExtraLeagueTicked,
+		setExtraLeagueVisible,
+	} = useVisibleLeagues();
 
 	// This species' own ranked entry, for whichever league is active — the
 	// static three read `rankLists` (positional), any rotating/custom cup
@@ -242,6 +246,7 @@ const PokemonDetail = () => {
 	// League names track the player's in-game language (GameLanguage), not
 	// the website UI's — rotating cups don't have a GameLanguage entry, so
 	// their title comes straight from `leagues.json` (already in-game-accurate).
+	const isExtraLeagueId = (id: string) => extraLeagues(leagues).some((l) => l.id === id);
 	// The cup currently in `?lg=` is always listed, even if hidden by the visibility filter.
 	const pickedLeagueId = searchParams.get('lg');
 	const LEAGUES: Array<{ id: LeagueId; cssVar: string; label: string; full: string; cpCap: number }> = [
@@ -317,6 +322,33 @@ const PokemonDetail = () => {
 	// leaderboard rows, cycling the sprite type on a raid row…) just rewrites
 	// it via `setLeague` below instead of touching separate component state.
 	const league: LeagueId = LEAGUES.some((l) => l.id === lgParam) ? lgParam : 'great';
+	// The selected league, when it's a rotating/custom cup, must be a ticked one in the leaderboard's
+	// "Additional leagues" list (the checklist locks that tick while it's selected), whether it got
+	// selected from the cups dropdown or arrived via the URL. A tick we added only for that reason is
+	// taken back once another league is selected (or this page is left); one the player made
+	// themselves stays.
+	const autoTicked = useRef(new Set<string>());
+	useEffect(() => {
+		for (const id of autoTicked.current) {
+			if (id === league) continue;
+			setExtraLeagueVisible(id, false);
+			autoTicked.current.delete(id);
+		}
+		if (isExtraLeagueId(league) && !autoTicked.current.has(league)) {
+			if (!isExtraLeagueTicked(league)) {
+				autoTicked.current.add(league);
+				setExtraLeagueVisible(league, true);
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [league, leagues, setExtraLeagueVisible]);
+	useEffect(
+		() => () => {
+			for (const id of autoTicked.current) setExtraLeagueVisible(id, false);
+			autoTicked.current.clear();
+		},
+		[setExtraLeagueVisible]
+	);
 	const setLeague = (id: LeagueId) => {
 		const next = new URLSearchParams(searchParams);
 		next.set('lg', id);
@@ -841,7 +873,7 @@ const PokemonDetail = () => {
 			<div className='r-board-divider' role='separator'>
 				<span>{t('pokemonDetail:board.extraLeaguesDivider')}</span>
 			</div>
-			<LeagueVisibilityMenu />
+			<LeagueVisibilityMenu lockedId={isExtraLeagueId(league) ? league : null} />
 		</div>
 	);
 	const boardRows = LEAGUES.map((l) => {
@@ -1214,7 +1246,12 @@ const PokemonDetail = () => {
 						)}
 						{/* No add-on league visible (the default): the heading still renders, so the
 						    visibility button stays reachable. */}
-						{boardRows.length <= STATIC_LEAGUE_COUNT && extraLeaguesHead}
+						{boardRows.length <= STATIC_LEAGUE_COUNT && (
+							<>
+								{extraLeaguesHead}
+								<p className='r-muted r-board-extra-empty'>{t('pokemonDetail:board.noExtraLeagues')}</p>
+							</>
+						)}
 					</div>
 
 					{isRaid ? (

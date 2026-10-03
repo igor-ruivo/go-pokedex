@@ -38,6 +38,7 @@
 	"board": {
 		"sectionHeading": "mejor etapa alcanzable por liga",
 		"extraLeaguesDivider": "Ligas adicionales",
+		"noExtraLeagues": "No se muestran ligas adicionales",
 		"notRanked": "Sin clasificar",
 		"loading": "Cargando…",
 		"attackersSuffix": "atacantes de {{type}}",

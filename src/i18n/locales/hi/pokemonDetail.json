@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "हर लीग में सबसे बेहतरीन पहुंच योग्य स्टेज",
 		"extraLeaguesDivider": "अतिरिक्त लीग",
+		"noExtraLeagues": "कोई अतिरिक्त लीग नहीं दिखाई जा रही",
 		"notRanked": "रैंक नहीं",
 		"loading": "लोड हो रहा है…",
 		"attackersSuffix": "{{type}} अटैकर",

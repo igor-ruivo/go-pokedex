@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "лучшая достижимая стадия по лиге",
 		"extraLeaguesDivider": "Дополнительные лиги",
+		"noExtraLeagues": "Дополнительные лиги не показаны",
 		"notRanked": "Не в рейтинге",
 		"loading": "Загрузка…",
 		"attackersSuffix": "атакующие типа {{type}}",

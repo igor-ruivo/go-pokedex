@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "ขั้นวิวัฒนาการที่ดีที่สุดในแต่ละลีก",
 		"extraLeaguesDivider": "ลีกเพิ่มเติม",
+		"noExtraLeagues": "ไม่มีลีกเพิ่มเติมที่แสดงอยู่",
 		"notRanked": "ไม่ได้จัดอันดับ",
 		"loading": "กำลังโหลด…",
 		"attackersSuffix": "ตัวโจมตีธาตุ{{type}}",

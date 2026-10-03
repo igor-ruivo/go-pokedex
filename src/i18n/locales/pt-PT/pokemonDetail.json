@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "melhor estágio alcançável por liga",
 		"extraLeaguesDivider": "Ligas adicionais",
+		"noExtraLeagues": "Nenhuma liga adicional a ser mostrada",
 		"notRanked": "Não classificado",
 		"loading": "A carregar…",
 		"attackersSuffix": "atacantes de {{type}}",

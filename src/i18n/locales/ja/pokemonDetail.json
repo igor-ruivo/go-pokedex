@@ -40,6 +40,7 @@
 	"board": {
 		"sectionHeading": "リーグ別 到達可能な最良進化形",
 		"extraLeaguesDivider": "追加リーグ",
+		"noExtraLeagues": "表示中の追加リーグはありません",
 		"notRanked": "ランク外",
 		"loading": "読み込み中…",
 		"attackersSuffix": "{{type}}タイプアタッカー",

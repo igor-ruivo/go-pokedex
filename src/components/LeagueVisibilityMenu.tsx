@@ -14,7 +14,7 @@ import { LeagueVisibilityChecklist } from './LeagueVisibilityChecklist';
  * here or there is the same action either way — always rendered (even with
  * zero active cups right now) so the control stays discoverable.
  */
-export const LeagueVisibilityMenu = () => {
+export const LeagueVisibilityMenu = ({ lockedId }: { lockedId?: string | null | undefined }) => {
 	const { t } = useTranslation(['common']);
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
@@ -41,7 +41,7 @@ export const LeagueVisibilityMenu = () => {
 			{open && (
 				<div className='r-lgfilter-pop' role='dialog' aria-label={t('common:leagueFilter.dialogAriaLabel')}>
 					<p className='r-lgfilter-hint'>{t('common:leagueFilter.hint')}</p>
-					<LeagueVisibilityChecklist />
+					<LeagueVisibilityChecklist lockedId={lockedId} />
 				</div>
 			)}
 		</div>
