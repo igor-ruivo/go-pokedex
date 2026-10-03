@@ -2927,14 +2927,6 @@
 	color: inherit;
 	cursor: pointer;
 }
-.rvmp .r-tm-suggest-action-wrap {
-	display: flex;
-	justify-content: center;
-	margin: 0 0 var(--s3);
-}
-.rvmp .r-tm-suggest-action {
-	min-width: 150px;
-}
 .rvmp .r-tm-card--empty[data-pending] .r-spinner {
 	margin: auto;
 }

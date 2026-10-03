@@ -263,18 +263,6 @@ const Teams = () => {
 							{t('teams:builder.unverified')}
 						</p>
 					)}
-					<div className='r-tm-suggest-action-wrap'>
-						<button
-							type='button'
-							className='r-tm-btn r-tm-suggest-action'
-							onClick={() => void suggestTeammates()}
-							disabled={suggesting || !ctx || team.length < 1 || team.length > 2}
-							aria-busy={suggesting}
-						>
-							{suggesting && <span className='r-spinner' aria-hidden='true' />}
-							{t('teams:builder.suggestion')}
-						</button>
-					</div>
 
 					<TeamStage
 						data={data}
@@ -290,6 +278,8 @@ const Teams = () => {
 						onBuild={setBuild}
 						cpCap={LEAGUE_CP[league]}
 						onRemove={removeMember}
+						onSuggest={() => void suggestTeammates()}
+						suggesting={suggesting}
 					/>
 					{pickerFor !== null && (
 						<SlotPicker

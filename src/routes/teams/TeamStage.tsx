@@ -393,6 +393,8 @@ interface MemberCardProps {
 	onEditIvs: () => void;
 	onEditLevel: () => void;
 	onRemove: () => void;
+	/** Only on the empty cards of a team that has one or two Pokémon: finish the team with the best teammates. */
+	suggestion?: { pending: boolean; onSuggest: () => void } | undefined;
 	onConfirm?: (() => void) | undefined;
 	confirmLabel?: string | undefined;
 	nickname?: string | undefined;
@@ -411,6 +413,7 @@ export const MemberCard = ({
 	onEditIvs,
 	onEditLevel,
 	onRemove,
+	suggestion,
 	onConfirm,
 	confirmLabel,
 	nickname,
@@ -423,14 +426,25 @@ export const MemberCard = ({
 
 	if (!member || !pokemon) {
 		return (
-			<div className='r-tm-card r-tm-card--empty'>
-				<button type='button' className='r-tm-empty-add' onClick={onChangePokemon}>
-					<span className='r-tm-plus' aria-hidden='true'>
-						+
-					</span>
-					<b>{t('teams:builder.emptySlot')}</b>
-					<span className='r-muted'>{t('teams:builder.slotN', { n: index + 1 })}</span>
-				</button>
+			<div className='r-tm-card r-tm-card--empty' data-pending={suggestion?.pending ? '' : undefined}>
+				{suggestion?.pending ? (
+					<span className='r-spinner' role='status' aria-label={t('teams:threat.simulating')} />
+				) : (
+					<>
+						<button type='button' className='r-tm-empty-add' onClick={onChangePokemon}>
+							<span className='r-tm-plus' aria-hidden='true'>
+								+
+							</span>
+							<b>{t('teams:builder.emptySlot')}</b>
+							<span className='r-muted'>{t('teams:builder.slotN', { n: index + 1 })}</span>
+						</button>
+						{suggestion && (
+							<button type='button' className='r-tm-suggest-link' onClick={suggestion.onSuggest}>
+								{t('teams:builder.suggestion')}
+							</button>
+						)}
+					</>
+				)}
 			</div>
 		);
 	}
@@ -591,6 +605,7 @@ export const TeamMemberEditor = ({
 	onMove,
 	onBuild,
 	onRemove,
+	suggestion,
 	onConfirm,
 	confirmLabel,
 	nickname,
@@ -614,6 +629,7 @@ export const TeamMemberEditor = ({
 				onEditIvs={() => setEditing('ivs')}
 				onEditLevel={() => setEditing('level')}
 				onRemove={onRemove}
+				suggestion={suggestion}
 				onConfirm={onConfirm}
 				confirmLabel={confirmLabel}
 				nickname={nickname}
@@ -703,6 +719,8 @@ export const TeamStage = ({
 	onBuild,
 	cpCap,
 	onRemove,
+	onSuggest,
+	suggesting,
 }: {
 	data: TeamsData;
 	team: ReadonlyArray<TeamSlotDescriptor>;
@@ -714,6 +732,10 @@ export const TeamStage = ({
 	/** The league's CP cap, to tell when a picked level puts a Pokémon over it. */
 	cpCap: number;
 	onRemove: (index: number) => void;
+	/** Finish the team (one or two Pokémon so far) with the best teammates. */
+	onSuggest: () => void;
+	/** That is being worked out: the empty cards show a spinner. */
+	suggesting: boolean;
 }) => {
 	return (
 		<div className='r-tm-stage'>
@@ -730,6 +752,7 @@ export const TeamStage = ({
 					onMove={(moveIndex, moveId) => onMove(i, moveIndex, moveId)}
 					onBuild={onBuild}
 					onRemove={() => onRemove(i)}
+					suggestion={team.length >= 1 && team.length < 3 ? { pending: suggesting, onSuggest } : undefined}
 				/>
 			))}
 		</div>
