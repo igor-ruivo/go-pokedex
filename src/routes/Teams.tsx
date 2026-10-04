@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { IconTabBar, type IconTabItem } from '../components/IconTabBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
-import { RankMedal } from '../components/RankMedal';
+import { teamTabIcon } from '../components/team-tab-icons';
 import { useLanguage } from '../contexts/language-context';
 import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
 import { LEAGUE_CP } from '../lib/league-caps';
@@ -170,54 +170,10 @@ const Teams = () => {
 	};
 
 	const tabItems: Array<IconTabItem> = [
-		{ id: 'builder', label: t('teams:page.builderTab'), icon: '/images/nav/rankings.webp' },
-		{
-			id: 'top',
-			label: t('teams:page.topTab'),
-			// a gold medal: the best teams
-			icon: <RankMedal rank={1} size={22} />,
-		},
-		{
-			id: 'collection',
-			label: t('teams:page.collectionTab'),
-			// a trainer's schoolbag (Ash's kind of backpack): the Pokémon you carry
-			icon: (
-				<svg viewBox='0 0 24 24' width='18' height='18' aria-hidden='true'>
-					{/* carrying handle */}
-					<path
-						d='M9.2 5.2V4.4a2.8 2.8 0 0 1 5.6 0v.8'
-						fill='none'
-						stroke='#c9741a'
-						strokeWidth='1.7'
-						strokeLinecap='round'
-					/>
-					{/* the bag */}
-					<path
-						d='M5.2 9.2A4.2 4.2 0 0 1 9.4 5h5.2a4.2 4.2 0 0 1 4.2 4.2V19a2 2 0 0 1-2 2H7.2a2 2 0 0 1-2-2z'
-						fill='#f2b134'
-					/>
-					{/* top flap */}
-					<path d='M5.2 9.2A4.2 4.2 0 0 1 9.4 5h5.2a4.2 4.2 0 0 1 4.2 4.2v1.3H5.2z' fill='#e0861c' />
-					{/* front pocket */}
-					<path
-						d='M7.4 13.6h9.2a1 1 0 0 1 1 1V18a1.6 1.6 0 0 1-1.6 1.6H8A1.6 1.6 0 0 1 6.4 18v-3.4a1 1 0 0 1 1-1z'
-						fill='#f9d36d'
-					/>
-					{/* clasp and zip */}
-					<rect x='10.9' y='9' width='2.2' height='3' rx='0.7' fill='#7a3f0c' />
-					<path d='M8.6 16.4h6.8' stroke='#c9741a' strokeWidth='1.2' strokeLinecap='round' />
-				</svg>
-			),
-		},
-		{
-			id: 'favorites',
-			label: t('teams:page.favoritesTab'),
-			icon: (
-				<svg viewBox='2.3 2.2 19.4 18.4' width='18' height='18' fill='#f2c53d' aria-hidden='true'>
-					<path d='M12 2.4l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.3l-5.9 3.1 1.2-6.5L2.5 9.3l6.6-.9z' />
-				</svg>
-			),
-		},
+		{ id: 'builder', label: t('teams:page.builderTab'), icon: teamTabIcon('builder') },
+		{ id: 'top', label: t('teams:page.topTab'), icon: teamTabIcon('top') },
+		{ id: 'collection', label: t('teams:page.collectionTab'), icon: teamTabIcon('collection') },
+		{ id: 'favorites', label: t('teams:page.favoritesTab'), icon: teamTabIcon('favorites') },
 	];
 
 	// Switching tabs keeps the league; a team only travels with a click on the list.

@@ -41,7 +41,8 @@ describe('the rest of the stylesheets', () => {
 	const FIXED_ART = [
 		/#ff5b5b/, // the logo's red (hero glow, equator line)
 		/rgb\(5 8 14 \/ [0-9.]+\)/, // the scrim at the bottom of an event photograph
-		/rgb\(255 255 255 \/ 0\.1[68]\)/, // frosted pill on a photograph
+		/rgb\(255 255 255 \/ 0\.(?:1[68]|28)\)/, // frosted pill and glass plates on a photograph
+		/rgb\(10 14 22 \/ 0\.5\)/, // the dark glass behind an icon on a photograph
 		/rgb\(244 247 251 \/ 0\.78\)/, // light text on a photograph
 		/#f4f7fb/, // light text on a photograph
 		/#fff\b/, // the white end of a colour-mix

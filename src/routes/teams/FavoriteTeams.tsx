@@ -201,6 +201,24 @@ export const FavoriteTeams = ({
 				<div className='r-tm-loading'>
 					<span className='r-spinner' aria-hidden='true' />
 					<p>{t('teams:threat.simulating')}</p>
+					<div className='r-tm-collection-progress'>
+						<progress
+							value={favorites.length - rated.pending}
+							max={favorites.length}
+							aria-label={t('teams:collection.progress', {
+								processed: favorites.length - rated.pending,
+								total: favorites.length,
+								missing: rated.pending,
+							})}
+						/>
+						<p>
+							{t('teams:collection.progress', {
+								processed: favorites.length - rated.pending,
+								total: favorites.length,
+								missing: rated.pending,
+							})}
+						</p>
+					</div>
 				</div>
 			)}
 		</div>

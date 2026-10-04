@@ -6,6 +6,7 @@ import { LEAGUE_KEYS, useLeagueBadges } from '../lib/relevance';
 import { typeVar } from '../lib/types';
 import { usePokemon } from '../queries/pokemon';
 import { ShadowMark } from './ShadowMark';
+import { SparkleIcon } from './SparkleIcon';
 import { SpriteImg } from './Sprite';
 
 /** Small sprite tile used across the calendar (spawns, raids, eggs, rockets…). */
@@ -38,7 +39,7 @@ export const PokeMini = ({
 			data-catchable={catchable ? '' : undefined}
 			style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 		>
-			{shiny && <span className='r-mini-shiny'>✦</span>}
+			{shiny && <SparkleIcon className='r-mini-shiny' />}
 			{isShadow && <ShadowMark />}
 			{badges.length > 0 && (
 				<span className='r-lg-dots' aria-hidden='true'>

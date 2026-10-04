@@ -42,7 +42,8 @@ export const featuredEvents = (
 	skipId?: string
 ): Array<IPostEntry> => {
 	const usable = posts.filter(
-		(p) => p && p.id !== skipId && p.endDate >= now && p.availableLocales.includes(gl) && !!(p.title[gl] || p.subtitle[gl])
+		(p) =>
+			p && p.id !== skipId && p.endDate >= now && p.availableLocales.includes(gl) && !!(p.title[gl] || p.subtitle[gl])
 	);
 	const live = usable.filter((p) => p.startDate <= now).sort((a, b) => a.endDate - b.endDate);
 	const coming = usable
@@ -64,3 +65,106 @@ export const distinctSpecies = (
 	isKnown: (speciesId: string) => boolean,
 	count: number
 ): Array<string> => [...new Set(entries.map((e) => e.speciesId))].filter(isKnown).slice(0, count);
+
+/** A species an event or a line-up brings, and whether it can be shiny. */
+export interface ShinyEntry {
+	speciesId: string;
+	shiny: boolean;
+}
+
+/**
+ * The first `limit` distinct species of a list of entries that the game master knows, each with its shiny flag (a species
+ * listed twice is shiny if any of its entries is). `more` is how many were left out.
+ */
+export const speciesWithShiny = (
+	entries: ReadonlyArray<Pick<IEntry, 'speciesId' | 'shiny'>>,
+	isKnown: (speciesId: string) => boolean,
+	limit: number
+): { shown: Array<ShinyEntry>; more: number } => {
+	const byId = new Map<string, boolean>();
+	for (const e of entries) {
+		if (!isKnown(e.speciesId)) continue;
+		byId.set(e.speciesId, (byId.get(e.speciesId) ?? false) || !!e.shiny);
+	}
+	const all = [...byId].map(([speciesId, shiny]) => ({ speciesId, shiny }));
+	return { shown: all.slice(0, limit), more: Math.max(0, all.length - limit) };
+};
+
+/** The `count` best attackers of a raid list under the metric in use (rank 1 first); entries without that rank come last. */
+export const topAttackers = <T extends { speciesId: string }>(
+	list: Record<string, T>,
+	rankOf: (entry: T) => number | undefined,
+	count: number
+): Array<T> =>
+	Object.values(list)
+		.sort((a, b) => (rankOf(a) ?? Number.MAX_SAFE_INTEGER) - (rankOf(b) ?? Number.MAX_SAFE_INTEGER))
+		.slice(0, count);
+
+/** A random index in `[0, length)` other than `not` (when there is another to choose). */
+export const randomIndexOtherThan = (
+	length: number,
+	not: number | undefined,
+	random: () => number = Math.random
+): number => {
+	if (length <= 1) return 0;
+	let index = Math.floor(random() * length);
+	if (index === not) index = (index + 1 + Math.floor(random() * (length - 1))) % length;
+	return index;
+};
+
+/** Raid tiers shown on the Home page, most special first: the higher tiers (5 and Mega), then tier 3. */
+const HOME_RAID_ORDER: ReadonlyArray<(kind?: string) => boolean> = [(k) => k === '5' || k === 'mega', (k) => k === '3'];
+
+/**
+ * The raid bosses worth a glance on the Home page: the special tiers (5, Mega) and at most tier 3; no tier 1; and no
+ * Shadow raid unless it is a special-tier one. Ordered by tier, special first.
+ */
+export const homeRaidEntries = <T extends Pick<IEntry, 'speciesId' | 'kind'>>(
+	entries: ReadonlyArray<T>,
+	isShadow: (speciesId: string) => boolean
+): Array<T> => {
+	const out: Array<T> = [];
+	HOME_RAID_ORDER.forEach((match, tierIndex) => {
+		for (const e of entries) {
+			if (!match(e.kind)) continue;
+			if (tierIndex > 0 && isShadow(e.speciesId)) continue;
+			out.push(e);
+		}
+	});
+	return out;
+};
+
+const ROCKET_LEADERS = /giovanni|sierra|cliff|arlo/i;
+
+/** The Shadow Pokémon of a Team GO Rocket line-up that can be caught after the battle: the leaders' first, then the grunts'. */
+export const catchableRocketEntries = (
+	grunts: ReadonlyArray<{
+		trainerId: string;
+		tier1: ReadonlyArray<string>;
+		tier2: ReadonlyArray<string>;
+		tier3: ReadonlyArray<string>;
+		shinyPokemon?: ReadonlyArray<string> | undefined;
+		catchableTiers: ReadonlyArray<number>;
+	}>
+): Array<ShinyEntry> => {
+	const leaders = grunts.filter((g) => ROCKET_LEADERS.test(g.trainerId));
+	const rest = grunts.filter((g) => !ROCKET_LEADERS.test(g.trainerId));
+	return [...leaders, ...rest].flatMap((g) => {
+		const tiers = [g.tier1, g.tier2, g.tier3];
+		return g.catchableTiers.flatMap((i) =>
+			(tiers[i] ?? []).map((speciesId) => ({ speciesId, shiny: !!g.shinyPokemon?.includes(speciesId) }))
+		);
+	});
+};
+
+/** Egg distances from the one people hatch for the most, down to the short ones. */
+const EGG_ORDER = ['10', '12', '7', '5', '2', '1'];
+
+export const orderedEggEntries = <T extends Pick<IEntry, 'kind'>>(entries: ReadonlyArray<T>): Array<T> =>
+	[...entries].sort((a, b) => {
+		const rank = (e: T) => {
+			const i = EGG_ORDER.indexOf(e.kind ?? '');
+			return i < 0 ? EGG_ORDER.length : i;
+		};
+		return rank(a) - rank(b);
+	});

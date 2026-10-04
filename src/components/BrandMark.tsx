@@ -15,30 +15,16 @@ const Ball = ({ ball, clip }: { ball: string; clip: string }) => (
 		<circle cx='150' cy='62' r='16' fill={WHITE} />
 		<circle cx='150' cy='62' r='10.5' fill={INK} />
 		<circle cx='150' cy='62' r='4.5' fill={WHITE} opacity='0.9' />
-		<path d='M121 44A33 33 0 0 1 142 28' fill='none' stroke='#fff' strokeWidth='4' strokeLinecap='round' opacity='0.4' />
+		<path
+			d='M121 44A33 33 0 0 1 142 28'
+			fill='none'
+			stroke='#fff'
+			strokeWidth='4'
+			strokeLinecap='round'
+			opacity='0.4'
+		/>
 	</g>
 );
-
-/** Just the O of the logo: the Poké Ball on its own, to sit inside another icon. */
-export const BallMark = ({ className }: { className?: string }) => {
-	const id = useId();
-	const ball = `${id}-b`;
-	const clip = `${id}-c`;
-	return (
-		<svg className={className} viewBox='100 12 100 100' aria-hidden='true' focusable='false'>
-			<defs>
-				<linearGradient id={ball} gradientUnits='userSpaceOnUse' x1='0' y1='12' x2='0' y2='112'>
-					<stop offset='0.5' stopColor={RED} />
-					<stop offset='0.5' stopColor={WHITE} />
-				</linearGradient>
-				<clipPath id={clip}>
-					<circle cx='150' cy='62' r='45' />
-				</clipPath>
-			</defs>
-			<Ball ball={ball} clip={clip} />
-		</svg>
-	);
-};
 
 /**
  * The GO of "GO Pokédex": the Poké Ball is the O, and a G bites into it, drawn with the ball's own colours turned upside down

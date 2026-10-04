@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
 import { SearchListBar } from '../components/SearchListBar';
+import { SparkleIcon } from '../components/SparkleIcon';
 import { SpriteImg } from '../components/Sprite';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
@@ -54,14 +55,7 @@ const EGG_TIERS: ReadonlyArray<readonly [string, string]> = [
 	['12', '12 km'],
 ];
 
-// No dedicated image asset for a generic "bonuses" concept — a filled,
-// colorful sparkle glyph instead, matching the other section icons' 18px size.
-const BonusesIcon = () => (
-	<svg viewBox='0 0 24 24' aria-hidden='true' className='r-section-h-icon'>
-		<path d='M11 2 13.1 8.9 20 11 13.1 13.1 11 20 8.9 13.1 2 11 8.9 8.9Z' fill='#ffd166' />
-		<path d='M18.5 2 19.4 4.6 22 5.5 19.4 6.4 18.5 9 17.6 6.4 15 5.5 17.6 4.6Z' fill='#ffe8a8' />
-	</svg>
-);
+const BonusesIcon = () => <SparkleIcon className='r-section-h-icon' />;
 
 const TAB_ICON: Record<CalendarTab, string> = {
 	events: '/images/nav/calendar.png',
@@ -438,7 +432,7 @@ const DatePicker = ({
 	return (
 		<div className='r-datepick'>
 			<span className='r-datepick-ic' aria-hidden='true'>
-				📅
+				<img src='/images/nav/calendar.png' alt='' />
 			</span>
 			<div
 				className='r-datepick-scroller'

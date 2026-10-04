@@ -4,7 +4,9 @@
 		"title": "Todo lo que necesitas, mientras juegas.",
 		"subtitle": "Eventos en directo, rankings de ligas, un creador de equipos que conoce tu colección y limpieza del almacenamiento con un toque. Gratis, rápido y en tu idioma.",
 		"ctaTeams": "Crear un equipo",
-		"ctaRegister": "Tus Pokémon"
+		"ctaRegister": "Tus Pokémon",
+		"ctaPvp": "Rankings PvP",
+		"ctaRaid": "Atacantes de incursión"
 	},
 	"now": {
 		"title": "Ocurriendo ahora",
@@ -76,5 +78,9 @@
 		"themeSystem": "Sistema",
 		"themeLight": "Claro",
 		"themeDark": "Oscuro"
+	},
+	"raid": {
+		"title": "Mejores atacantes de incursión",
+		"subtitle": "Los tres mejores de cada uno de los 17 tipos."
 	}
 }

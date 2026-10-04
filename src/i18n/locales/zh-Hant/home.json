@@ -4,7 +4,9 @@
 		"title": "遊玩時需要的一切，都在這裡。",
 		"subtitle": "即時活動、聯盟排名、了解你收藏的隊伍建立器，以及一鍵整理倉庫。免費、快速，還有你的語言。",
 		"ctaTeams": "建立隊伍",
-		"ctaRegister": "你的寶可夢"
+		"ctaRegister": "你的寶可夢",
+		"ctaPvp": "PvP 排名",
+		"ctaRaid": "團體戰攻擊手"
 	},
 	"now": {
 		"title": "正在進行",
@@ -76,5 +78,9 @@
 		"themeSystem": "跟隨系統",
 		"themeLight": "淺色",
 		"themeDark": "深色"
+	},
+	"raid": {
+		"title": "最強團體戰攻擊手",
+		"subtitle": "17 種屬性各自的前三名。"
 	}
 }

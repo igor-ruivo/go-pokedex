@@ -4,7 +4,9 @@
 		"title": "Oynarken ihtiyacın olan her şey.",
 		"subtitle": "Canlı etkinlikler, lig sıralamaları, koleksiyonunu tanıyan bir takım oluşturucu ve tek dokunuşla depolama temizliği. Ücretsiz, hızlı ve kendi dilinde.",
 		"ctaTeams": "Takım kur",
-		"ctaRegister": "Pokémonların"
+		"ctaRegister": "Pokémonların",
+		"ctaPvp": "PvP Sıralaması",
+		"ctaRaid": "Baskın Saldırganları"
 	},
 	"now": {
 		"title": "Şu an olanlar",
@@ -76,5 +78,9 @@
 		"themeSystem": "Sistem",
 		"themeLight": "Açık",
 		"themeDark": "Koyu"
+	},
+	"raid": {
+		"title": "En iyi baskın saldırganları",
+		"subtitle": "17 türün her biri için ilk üç."
 	}
 }

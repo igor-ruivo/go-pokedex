@@ -287,3 +287,9 @@
 		transition: none;
 	}
 }
+
+/* the drawn icons of the menu (the raid face, the schoolbag) sit in the plate at the same size as the images */
+.rvmp .r-menu-ico svg:not(.r-menu-home) {
+	width: 28px;
+	height: 28px;
+}

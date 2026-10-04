@@ -4,7 +4,9 @@
 		"title": "Alles, was du beim Spielen brauchst.",
 		"subtitle": "Live-Events, Liga-Rankings, ein Team-Builder, der deine Sammlung kennt, und Speicher aufräumen mit einem Fingertipp. Kostenlos, schnell und in deiner Sprache.",
 		"ctaTeams": "Team bauen",
-		"ctaRegister": "Deine Pokémon"
+		"ctaRegister": "Deine Pokémon",
+		"ctaPvp": "PvP-Rankings",
+		"ctaRaid": "Raid-Angreifer"
 	},
 	"now": {
 		"title": "Gerade aktuell",
@@ -76,5 +78,9 @@
 		"themeSystem": "System",
 		"themeLight": "Hell",
 		"themeDark": "Dunkel"
+	},
+	"raid": {
+		"title": "Beste Raid-Angreifer",
+		"subtitle": "Die Top 3 für jeden der 17 Typen."
 	}
 }

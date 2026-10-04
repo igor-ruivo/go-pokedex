@@ -22,8 +22,13 @@
 	--surface: #161d29;
 	--surface-2: #1e2735;
 	--surface-3: #26303f;
+	/* a card on the page, and a plate set into it: in the dark theme the card is the lighter one, in the light theme the plate */
+	--card: var(--surface-2);
+	--card-in: var(--surface);
 	--border: color-mix(in srgb, #7f92ad 16%, transparent);
 	--border-strong: color-mix(in srgb, #7f92ad 30%, transparent);
+	/* the outline of a small control (a chip, an icon button): where a hairline is not enough to find it on the page */
+	--ctl-border: color-mix(in srgb, #7f92ad 16%, transparent);
 
 	/* text */
 	--text: #eef2f8;
@@ -35,10 +40,23 @@
 	--accent-ink: #1c0606;
 	/* text on a coloured fill that is one of the theme's own colours (a type chip, an active segment, a badge) */
 	--on-fill: #0c1017;
+	--on-type: #0c1017;
+	--ink-mix: 0%;
 
 	/* light and shadow */
 	--shadow-rgb: 0 0 0;
 	--shadow-k: 1;
+	/* how strong coloured glows (a type-coloured shadow, a league halo) and coloured washes behind cards come out: 1 = full */
+	--glow-k: 1;
+	--wash-k: 1;
+	/* the radar (CombatHexagon, the team radar): how solid its shape is, and its halo */
+	--radar-a: 0.85;
+	--radar-b: 0.4;
+	--radar-halo: 0.55;
+	--radar-dot: #eef2f8;
+	--grass-filter: none;
+	--wx-idle: brightness(0) saturate(100%) invert(78%);
+	--wx-on: brightness(0) saturate(100%) invert(100%);
 	--shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.24);
 	--shadow-2: 0 8px 30px rgb(0 0 0 / 0.4);
 	--glow:
@@ -121,16 +139,16 @@
 	--role-closer: #ef5b8f;
 
 	/* the two ends of a team-score tier's gradient, top tier first */
-	--tier-elite-a: #3fd07a;
-	--tier-elite-b: #22d3ee;
-	--tier-strong-a: #58a7ff;
-	--tier-strong-b: #8b7bff;
-	--tier-solid-a: #f2c53d;
-	--tier-solid-b: #f59e42;
-	--tier-shaky-a: #f59e42;
-	--tier-shaky-b: #ef7a3d;
-	--tier-risky-a: #ef5b5b;
-	--tier-risky-b: #d63a7a;
+	--tier-elite-a: #2fbf7a;
+	--tier-elite-b: #6fd69a;
+	--tier-strong-a: #2fae9c;
+	--tier-strong-b: #66cbb0;
+	--tier-solid-a: #dcae3a;
+	--tier-solid-b: #eec45e;
+	--tier-shaky-a: #e08a3e;
+	--tier-shaky-b: #efa862;
+	--tier-risky-a: #df5a50;
+	--tier-risky-b: #ee8378;
 
 	/* the four steps of a rank-change ribbon */
 	--rb-1: #e0903f;
@@ -139,10 +157,10 @@
 	--rb-4: #d03a85;
 
 	/* data bars (progress, simulation) */
-	--bar-a: #3d7ffb;
-	--bar-b: #5cc6ff;
-	--bar-a-soft: #6aa8ff;
-	--bar-b-soft: #8fe0ff;
+	--bar-a: #4a8fc0;
+	--bar-b: #6cb4d4;
+	--bar-a-soft: #6aa6cc;
+	--bar-b-soft: #8cc6de;
 }
 
 /* ---- light ------------------------------------------------------------------------------------------------------ */
@@ -154,8 +172,11 @@
 	--surface: #ffffff;
 	--surface-2: #eef1f7;
 	--surface-3: #e1e6f0;
+	--card: var(--surface);
+	--card-in: var(--surface-2);
 	--border: color-mix(in srgb, #2b3550 12%, transparent);
 	--border-strong: color-mix(in srgb, #2b3550 26%, transparent);
+	--ctl-border: color-mix(in srgb, #2b3550 24%, transparent);
 
 	--text: #141925;
 	--text-dim: #4a5468;
@@ -164,9 +185,20 @@
 	--accent: #d9333f;
 	--accent-ink: #ffffff;
 	--on-fill: #ffffff;
+	--on-type: #1a2030;
+	--ink-mix: 42%;
 
 	--shadow-rgb: 30 41 59;
 	--shadow-k: 0.45;
+	--glow-k: 0.28;
+	--wash-k: 0.4;
+	--radar-a: 0.34;
+	--radar-b: 0.12;
+	--radar-halo: 0.12;
+	--radar-dot: #ffffff;
+	--grass-filter: saturate(1.5) brightness(0.62) contrast(1.2);
+	--wx-idle: brightness(0) saturate(100%) invert(38%);
+	--wx-on: brightness(0) saturate(100%) invert(8%);
 	--shadow-1:
 		0 1px 2px color-mix(in srgb, #1e293b 8%, transparent), 0 2px 8px color-mix(in srgb, #1e293b 6%, transparent);
 	--shadow-2: 0 8px 30px color-mix(in srgb, #1e293b 14%, transparent);
@@ -174,32 +206,32 @@
 	--hi-2: rgb(255 255 255 / 1);
 	--scrim: rgb(20 26 40 / 0.42);
 
-	--t-normal: #6b7280;
-	--t-fire: #e8590c;
-	--t-water: #1c64d1;
-	--t-electric: #b57c00;
-	--t-grass: #1f9d49;
-	--t-ice: #087f8f;
-	--t-fighting: #c4291f;
-	--t-poison: #9333c7;
-	--t-ground: #a8651b;
-	--t-flying: #4a68c9;
-	--t-psychic: #d6165f;
-	--t-bug: #5f8512;
-	--t-rock: #8a7036;
-	--t-ghost: #5b3fae;
-	--t-dragon: #2952c9;
-	--t-dark: #3f3a48;
-	--t-steel: #1f7f9e;
-	--t-fairy: #cf3a97;
+	--t-normal: #b9c0ca;
+	--t-fire: #ffab75;
+	--t-water: #86b8ff;
+	--t-electric: #ffdf70;
+	--t-grass: #86dc99;
+	--t-ice: #97e3e0;
+	--t-fighting: #f58f86;
+	--t-poison: #d79aed;
+	--t-ground: #eac28e;
+	--t-flying: #bccdf5;
+	--t-psychic: #ffa3c0;
+	--t-bug: #bfe068;
+	--t-rock: #e2d6a8;
+	--t-ghost: #b3a7e8;
+	--t-dragon: #93aff2;
+	--t-dark: #a7a0b3;
+	--t-steel: #a3d0e1;
+	--t-fairy: #f9b9e6;
 
-	--lg-great: #1a63b8;
-	--lg-ultra: #a87a08;
-	--lg-master: #6f3fc4;
-	--lg-raid: #d1481b;
+	--lg-great: #4d8fd6;
+	--lg-ultra: #dcae34;
+	--lg-master: #8a5ccf;
+	--lg-raid: #ee7348;
 
-	--iv-fill: #d1820a;
-	--iv-max: #e0322f;
+	--iv-fill: #f2b24f;
+	--iv-max: #f27a74;
 
 	--pos: #15803d;
 	--neg: #dc2626;
@@ -233,24 +265,24 @@
 	--role-switch: #c77a08;
 	--role-closer: #d63a7a;
 
-	--tier-elite-a: #16a34a;
-	--tier-elite-b: #0e9bb0;
-	--tier-strong-a: #2b6fd6;
-	--tier-strong-b: #6a52e0;
-	--tier-solid-a: #c99a08;
-	--tier-solid-b: #d9720f;
-	--tier-shaky-a: #d9720f;
-	--tier-shaky-b: #d1481b;
-	--tier-risky-a: #d83a3a;
-	--tier-risky-b: #b81f5f;
+	--tier-elite-a: #26a566;
+	--tier-elite-b: #5ec085;
+	--tier-strong-a: #27998c;
+	--tier-strong-b: #55b6a6;
+	--tier-solid-a: #cf9d1c;
+	--tier-solid-b: #e2b84a;
+	--tier-shaky-a: #da7a2e;
+	--tier-shaky-b: #eb9b52;
+	--tier-risky-a: #d2473d;
+	--tier-risky-b: #e5705f;
 
 	--rb-1: #c9741a;
 	--rb-2: #7e9a14;
 	--rb-3: #1f86b8;
 	--rb-4: #b82a6c;
 
-	--bar-a: #2b6fd6;
-	--bar-b: #1f9fd0;
-	--bar-a-soft: #5b8fe0;
-	--bar-b-soft: #5fbde0;
+	--bar-a: #3f86b5;
+	--bar-b: #62a9cc;
+	--bar-a-soft: #5f9cc4;
+	--bar-b-soft: #84bad6;
 }

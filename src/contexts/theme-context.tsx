@@ -40,7 +40,7 @@ const storedTheme = (): Theme => {
 	const cached = readPersistentValue(ConfigKeys.DefaultTheme);
 	if (cached === null) return Theme.System;
 	const value = Number(cached);
-	return value === Theme.Light || value === Theme.Dark ? value : Theme.System;
+	return [Theme.Light, Theme.Dark].find((t) => Number(t) === value) ?? Theme.System;
 };
 
 export const ThemeProvider = (props: React.PropsWithChildren<object>) => {

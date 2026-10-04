@@ -4,7 +4,9 @@
 		"title": "Tudo o que precisas, enquanto jogas.",
 		"subtitle": "Eventos em direto, rankings das ligas, um construtor de equipas que conhece a tua coleção e limpeza do armazenamento com um toque. Grátis, rápido e no teu idioma.",
 		"ctaTeams": "Criar uma equipa",
-		"ctaRegister": "Os teus Pokémon"
+		"ctaRegister": "Os teus Pokémon",
+		"ctaPvp": "Ranks PvP",
+		"ctaRaid": "Atacantes de Reide"
 	},
 	"now": {
 		"title": "A decorrer agora",
@@ -76,5 +78,9 @@
 		"themeSystem": "Sistema",
 		"themeLight": "Claro",
 		"themeDark": "Escuro"
+	},
+	"raid": {
+		"title": "Melhores atacantes de reide",
+		"subtitle": "Os três melhores de cada um dos 17 tipos."
 	}
 }

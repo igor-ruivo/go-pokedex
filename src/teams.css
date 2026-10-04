@@ -5,7 +5,7 @@
 	--tm-good: var(--pos);
 	--tm-bad: var(--neg);
 	--tm-warn: var(--warn);
-	--tm-panel: color-mix(in srgb, var(--surface) 92%, var(--accent) 3%);
+	--tm-panel: color-mix(in srgb, var(--surface), var(--accent) calc(3% * var(--wash-k)));
 }
 
 .rvmp .r-tm-intro {
@@ -163,7 +163,11 @@
 	padding: var(--s5) var(--s3) var(--s3);
 	border-radius: var(--r-lg);
 	background:
-		radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--tc) 26%, transparent), transparent 70%),
+		radial-gradient(
+			120% 70% at 50% 0%,
+			color-mix(in srgb, var(--tc) calc(26% * var(--wash-k)), transparent),
+			transparent 70%
+		),
 		linear-gradient(180deg, color-mix(in srgb, var(--tc2) 8%, var(--surface)), var(--surface));
 	border: 1px solid color-mix(in srgb, var(--tc) 38%, var(--border));
 	box-shadow: var(--shadow-1);
@@ -377,7 +381,11 @@
 	position: absolute;
 	inset: 6px;
 	border-radius: 50%;
-	background: radial-gradient(circle, color-mix(in srgb, var(--tc) 55%, transparent), transparent 68%);
+	background: radial-gradient(
+		circle,
+		color-mix(in srgb, var(--tc) calc(55% * var(--wash-k)), transparent),
+		transparent 68%
+	);
 	filter: blur(6px);
 	animation: r-tm-breathe 4.5s ease-in-out infinite;
 }
@@ -655,7 +663,7 @@
 	height: 14px;
 	margin-left: 4px;
 	vertical-align: -2px;
-	color: var(--warn);
+	color: color-mix(in srgb, var(--warn), var(--text) var(--ink-mix));
 }
 .rvmp .r-tm-warn svg {
 	width: 100%;
@@ -789,7 +797,7 @@
 }
 .rvmp .r-tm-star {
 	font-style: normal;
-	color: var(--iv-fill);
+	color: color-mix(in srgb, var(--iv-fill), var(--text) var(--ink-mix));
 	font-size: 12px;
 }
 
@@ -858,7 +866,7 @@
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	margin: 0;
-	padding: 0;
+	padding: 8px 8px 2px;
 	list-style: none;
 	display: grid;
 	gap: 2px 6px;
@@ -891,6 +899,15 @@
 	z-index: 1;
 	pointer-events: none;
 }
+/* the same round sprite as the ranking and counter rows */
+.rvmp .r-tm-picker-list .r-search-sprite {
+	width: 44px;
+	height: 44px;
+}
+.rvmp .r-tm-picker-list .r-search-sprite > img:not(.r-shadow-mark) {
+	width: 36px;
+	height: 36px;
+}
 .rvmp .r-tm-picker-list button:not(:disabled):hover,
 .rvmp .r-tm-picker-list button:not(:disabled):focus-visible {
 	background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
@@ -905,7 +922,7 @@
 }
 .rvmp .r-tm-picker-list button:not(:disabled):hover .r-search-name,
 .rvmp .r-tm-picker-list button:not(:disabled):focus-visible .r-search-name {
-	color: var(--tc, var(--accent));
+	color: color-mix(in srgb, var(--tc, var(--accent)), var(--text) var(--ink-mix));
 }
 .rvmp .r-tm-picker-info {
 	flex: 1;
@@ -975,11 +992,19 @@
 	border-radius: var(--r-lg);
 	overflow: hidden;
 	background:
-		radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--tier-a) 20%, transparent), transparent 60%),
-		radial-gradient(70% 100% at 100% 100%, color-mix(in srgb, var(--hero-c) 16%, transparent), transparent 60%),
+		radial-gradient(
+			90% 120% at 0% 0%,
+			color-mix(in srgb, var(--tier-a) calc(20% * var(--wash-k)), transparent),
+			transparent 60%
+		),
+		radial-gradient(
+			70% 100% at 100% 100%,
+			color-mix(in srgb, var(--hero-c) calc(16% * var(--wash-k)), transparent),
+			transparent 60%
+		),
 		var(--surface);
 	border: 1px solid color-mix(in srgb, var(--tier-a) 34%, var(--border));
-	box-shadow: 0 10px 40px color-mix(in srgb, var(--tier-a) 14%, transparent);
+	box-shadow: 0 10px 40px color-mix(in srgb, var(--tier-a) calc(14% * var(--glow-k)), transparent);
 	transition:
 		opacity 0.25s ease,
 		border-color 0.6s ease;
@@ -1031,7 +1056,7 @@
 	width: 100%;
 	height: 100%;
 	overflow: visible;
-	filter: drop-shadow(0 0 14px color-mix(in srgb, var(--tier-a) 45%, transparent));
+	filter: drop-shadow(0 0 14px color-mix(in srgb, var(--tier-a) calc(45% * var(--glow-k)), transparent));
 }
 .rvmp .r-tm-ring-track {
 	fill: none;
@@ -1188,7 +1213,11 @@
 	border-radius: var(--r-md);
 	text-align: center;
 	background:
-		radial-gradient(100% 80% at 50% 0%, color-mix(in srgb, var(--tc) 22%, transparent), transparent 70%),
+		radial-gradient(
+			100% 80% at 50% 0%,
+			color-mix(in srgb, var(--tc) calc(22% * var(--wash-k)), transparent),
+			transparent 70%
+		),
 		var(--surface-2);
 	border: 1px solid color-mix(in srgb, var(--role-c) 45%, var(--border));
 	animation: r-tm-rise 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) calc(var(--i) * 0.18s) both;
@@ -1647,16 +1676,20 @@
 .rvmp .r-tm-legend span:first-child {
 	margin-left: 0;
 }
-.rvmp .r-tm-legend span[data-tone='lose'],
-.rvmp .r-tm-legend span[data-kind='secure'] {
+.rvmp .r-tm-legend span[data-tone='lose'] {
 	background: color-mix(in srgb, var(--pos) 60%, var(--surface));
 }
-.rvmp .r-tm-legend span[data-tone='crush'],
-.rvmp .r-tm-legend span[data-kind='hole'] {
+.rvmp .r-tm-legend span[data-kind='secure'] {
+	background: var(--pos);
+}
+.rvmp .r-tm-legend span[data-tone='crush'] {
 	background: color-mix(in srgb, var(--neg) 60%, var(--surface));
 }
+.rvmp .r-tm-legend span[data-kind='hole'] {
+	background: color-mix(in srgb, var(--neg) 30%, var(--surface));
+}
 .rvmp .r-tm-legend span[data-kind='covered'] {
-	background: color-mix(in srgb, var(--pos) 28%, var(--surface));
+	background: color-mix(in srgb, var(--pos) 34%, var(--surface));
 }
 .rvmp .r-tm-threat .r-ctr-help {
 	margin-top: var(--s3);
@@ -1762,7 +1795,7 @@
 	width: 100%;
 }
 .rvmp button.r-tm-wins-name:hover {
-	color: var(--tc);
+	color: color-mix(in srgb, var(--tc), var(--text) var(--ink-mix));
 }
 .rvmp .r-tm-wins-ico > img {
 	width: 100%;
@@ -2031,25 +2064,27 @@
 	color: var(--text-dim);
 }
 .rvmp .r-tm-warn-ico {
+	--wc: var(--text-faint);
 	flex: none;
 	display: grid;
 	place-items: center;
-	width: 24px;
-	height: 24px;
+	width: 26px;
+	height: 26px;
+	border: 1px solid color-mix(in srgb, var(--wc) 45%, var(--border));
 	border-radius: 50%;
 	font-size: 12px;
 	font-weight: 800;
-	color: var(--on-fill);
-	background: var(--text-faint);
+	color: color-mix(in srgb, var(--wc), var(--text) var(--ink-mix));
+	background: color-mix(in srgb, var(--wc) 16%, var(--surface));
 }
 .rvmp .r-tm-warns li[data-severity='high'] .r-tm-warn-ico {
-	background: var(--neg);
+	--wc: var(--neg);
 }
 .rvmp .r-tm-warns li[data-severity='medium'] .r-tm-warn-ico {
-	background: var(--tm-warn);
+	--wc: var(--tm-warn);
 }
 .rvmp .r-tm-warns--clear .r-tm-warn-ico {
-	background: var(--pos);
+	--wc: var(--pos);
 }
 .rvmp .r-tm-warn-text {
 	font-size: 13px;
@@ -2216,7 +2251,7 @@
 /* holes chips and upgrade cells */
 .rvmp .r-tm-holes a:hover > span:not(.r-tm-hole-ico),
 .rvmp .r-tm-pick:hover .r-tm-pick-text b {
-	color: var(--tc);
+	color: color-mix(in srgb, var(--tc), var(--text) var(--ink-mix));
 }
 
 /* names that are buttons (team card, Battle plan step and role-fit rows): plain text, the colour comes from the hover rules */
@@ -2246,12 +2281,12 @@
 }
 .rvmp .r-tm-move-btn:hover .r-tm-move-name,
 .rvmp .r-tm-movepop button:hover .r-tm-move-name {
-	color: var(--tc);
+	color: color-mix(in srgb, var(--tc), var(--text) var(--ink-mix));
 }
 
 /* the Battle plan sentence names each Pokémon in its main type colour */
 .rvmp .r-tm-plan-name {
-	color: var(--tc);
+	color: color-mix(in srgb, var(--tc), var(--text) var(--ink-mix));
 	font-weight: 700;
 }
 
@@ -2298,7 +2333,7 @@
 	transition: color 0.14s ease;
 }
 .rvmp .r-tm-mini-mon:hover .r-tm-mini-name {
-	color: var(--tc);
+	color: color-mix(in srgb, var(--tc), var(--text) var(--ink-mix));
 }
 .rvmp .r-tm-mini-stat,
 .rvmp .r-tm-mini-grades {
@@ -2605,7 +2640,7 @@
 	text-align: left;
 	color: inherit;
 	cursor: pointer;
-	background: var(--surface-2);
+	background: var(--card);
 	border: 1px solid var(--border);
 	animation: r-tm-rise 0.45s cubic-bezier(0.2, 0.9, 0.25, 1) calc(var(--i, 0) * 0.04s) both;
 	transition:
@@ -2800,7 +2835,7 @@
 }
 /* hovering a team paints all three names with their own type colour (not one Pokémon at a time) */
 .rvmp .r-tm-board-card:hover .r-tm-board-name {
-	color: var(--tc);
+	color: color-mix(in srgb, var(--tc), var(--text) var(--ink-mix));
 }
 .rvmp .r-tm-board-type-icon {
 	display: none;
@@ -2864,7 +2899,7 @@
 	display: flex;
 	align-items: stretch;
 	border-radius: var(--r-md);
-	background: var(--surface);
+	background: var(--card-in);
 	border: 1px solid var(--border);
 }
 .rvmp .r-tm-board-metric {
@@ -3032,11 +3067,11 @@
 	stroke-linejoin: round;
 }
 .rvmp .r-tm-star-btn:hover {
-	color: var(--gold);
+	color: color-mix(in srgb, var(--gold), var(--text) var(--ink-mix));
 	transform: scale(1.12);
 }
 .rvmp .r-tm-star-btn[data-on] {
-	color: var(--gold);
+	color: color-mix(in srgb, var(--gold), var(--text) var(--ink-mix));
 }
 .rvmp .r-tm-star-btn[data-on] svg {
 	fill: currentColor;
@@ -3371,4 +3406,14 @@
 				color-mix(in srgb, var(--rb-4) 55%, transparent)
 			)
 			border-box;
+}
+
+/* ---- the score plate of a team card ---- */
+.rvmp .r-tm-board-score {
+	background: color-mix(in srgb, var(--tier-a) calc(9% * var(--wash-k)), var(--card));
+	border: 1px solid color-mix(in srgb, var(--tier-a) 38%, var(--border));
+}
+.rvmp .r-tm-board-score .r-tm-board-metric[data-primary] > b {
+	color: color-mix(in srgb, var(--tier-a), var(--text) var(--ink-mix));
+	font-size: 24px;
 }

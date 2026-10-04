@@ -4,7 +4,9 @@
 		"title": "Tout ce qu’il te faut, pendant que tu joues.",
 		"subtitle": "Événements en direct, classements des ligues, un créateur d’équipes qui connaît ta collection et un nettoyage du stockage en un geste. Gratuit, rapide et dans ta langue.",
 		"ctaTeams": "Créer une équipe",
-		"ctaRegister": "Tes Pokémon"
+		"ctaRegister": "Tes Pokémon",
+		"ctaPvp": "Classements PvP",
+		"ctaRaid": "Attaquants de raid"
 	},
 	"now": {
 		"title": "En ce moment",
@@ -76,5 +78,9 @@
 		"themeSystem": "Système",
 		"themeLight": "Clair",
 		"themeDark": "Sombre"
+	},
+	"raid": {
+		"title": "Meilleurs attaquants de raid",
+		"subtitle": "Le top 3 de chacun des 17 types."
 	}
 }

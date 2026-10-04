@@ -2,14 +2,22 @@ import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
 import type { IEntry, IPostEntry } from '../DTOs/INews';
-import { distinctSpecies, eventHighlights, featuredEvents, topRanked } from './home';
+import {
+	catchableRocketEntries,
+	distinctSpecies,
+	eventHighlights,
+	featuredEvents,
+	homeRaidEntries,
+	orderedEggEntries,
+	randomIndexOtherThan,
+	speciesWithShiny,
+	topAttackers,
+	topRanked,
+} from './home';
 
 const entry = (speciesId: string): IEntry => ({ speciesId, shiny: false });
 const perLanguage = <T>(value: T): Record<GameLanguage, T> =>
-	Object.values(GameLanguage).reduce(
-		(acc, l) => ({ ...acc, [l]: value }),
-		{} as Record<GameLanguage, T>
-	);
+	Object.values(GameLanguage).reduce((acc, l) => ({ ...acc, [l]: value }), {} as Record<GameLanguage, T>);
 const everyLanguage = (value: string) => perLanguage(value);
 
 const post = (id: string, start: number, end: number, extra: Partial<IPostEntry> = {}): IPostEntry => ({
@@ -119,5 +127,91 @@ describe('distinctSpecies', () => {
 	it('keeps the first few distinct known species', () => {
 		const entries = ['a', 'a', 'unknown', 'b', 'c'].map(entry);
 		expect(distinctSpecies(entries, (id) => id !== 'unknown', 2)).toEqual(['a', 'b']);
+	});
+});
+
+describe('speciesWithShiny', () => {
+	it('keeps distinct known species, shiny if any entry of them is, and counts the rest', () => {
+		const entries = [
+			{ speciesId: 'a', shiny: false },
+			{ speciesId: 'a', shiny: true },
+			{ speciesId: 'unknown', shiny: true },
+			{ speciesId: 'b', shiny: false },
+			{ speciesId: 'c', shiny: true },
+		];
+		expect(speciesWithShiny(entries, (id) => id !== 'unknown', 2)).toEqual({
+			shown: [
+				{ speciesId: 'a', shiny: true },
+				{ speciesId: 'b', shiny: false },
+			],
+			more: 1,
+		});
+	});
+});
+
+describe('topAttackers', () => {
+	it('orders by the metric’s rank, rank 1 first, and leaves the unranked for last', () => {
+		type Row = { speciesId: string; r?: number };
+		const list: Record<string, Row> = {
+			x: { speciesId: 'x', r: 3 },
+			y: { speciesId: 'y', r: 1 },
+			z: { speciesId: 'z' },
+			w: { speciesId: 'w', r: 2 },
+		};
+		expect(topAttackers(list, (e) => e.r, 3).map((e) => e.speciesId)).toEqual(['y', 'w', 'x']);
+		expect(topAttackers(list, (e) => e.r, 4).map((e) => e.speciesId)).toEqual(['y', 'w', 'x', 'z']);
+	});
+});
+
+describe('randomIndexOtherThan', () => {
+	it('never returns the excluded index when there is another one', () => {
+		for (let i = 0; i < 200; i++) expect(randomIndexOtherThan(5, 2, Math.random)).not.toBe(2);
+	});
+
+	it('stays in range, and returns 0 for a list of one', () => {
+		expect(randomIndexOtherThan(1, 0)).toBe(0);
+		expect(randomIndexOtherThan(3, undefined, () => 0.999)).toBe(2);
+	});
+});
+
+describe('homeRaidEntries', () => {
+	const e = (speciesId: string, kind: string) => ({ speciesId, kind, shiny: false });
+	const shadow = (id: string) => id.startsWith('s_');
+
+	it('keeps the special tiers first, then tier 3, and drops tier 1', () => {
+		const list = [e('a', '1'), e('b', '3'), e('c', '5'), e('d', 'mega')];
+		expect(homeRaidEntries(list, shadow).map((x) => x.speciesId)).toEqual(['c', 'd', 'b']);
+	});
+
+	it('never shows a Shadow of tier 3 or 1, but a special-tier Shadow stays', () => {
+		const list = [e('s_x', '3'), e('s_y', '1'), e('s_z', '5'), e('p', '3')];
+		expect(homeRaidEntries(list, shadow).map((x) => x.speciesId)).toEqual(['s_z', 'p']);
+	});
+});
+
+describe('catchableRocketEntries', () => {
+	const grunt = (trainerId: string, catchableTiers: Array<number>, shinyPokemon?: Array<string>) => ({
+		trainerId,
+		tier1: [`${trainerId}-1`],
+		tier2: [`${trainerId}-2`],
+		tier3: [`${trainerId}-3`],
+		catchableTiers,
+		shinyPokemon,
+	});
+
+	it('lists only the catchable tiers, the leaders’ first', () => {
+		const result = catchableRocketEntries([grunt('Grunt', [0]), grunt('Leader Cliff', [2]), grunt('Giovanni', [1, 2])]);
+		expect(result.map((x) => x.speciesId)).toEqual(['Leader Cliff-3', 'Giovanni-2', 'Giovanni-3', 'Grunt-1']);
+	});
+
+	it('carries the shiny flag', () => {
+		expect(catchableRocketEntries([grunt('Arlo', [0], ['Arlo-1'])])).toEqual([{ speciesId: 'Arlo-1', shiny: true }]);
+	});
+});
+
+describe('orderedEggEntries', () => {
+	it('puts 10 km first, then 12, 7, 5, 2, 1', () => {
+		const list = ['1', '5', '12', '2', '10', '7'].map((kind) => ({ kind }));
+		expect(orderedEggEntries(list).map((x) => x.kind)).toEqual(['10', '12', '7', '5', '2', '1']);
 	});
 });

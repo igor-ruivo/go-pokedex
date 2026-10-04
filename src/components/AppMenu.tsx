@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
@@ -12,10 +12,11 @@ import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
 import { sentenceCase } from '../lib/format';
 import { R } from '../lib/nav';
-import { NAV } from '../lib/nav-items';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { BrandMark } from './BrandMark';
+import { RaidIcon } from './RaidIcon';
+import { TeamTabIcon } from './team-tab-icons';
 
 const ISSUES_URL = 'https://github.com/igor-ruivo/go-pokedex/issues';
 const CLOSE_MS = 220;
@@ -26,7 +27,7 @@ const CLOSE_MS = 220;
  * outside, Escape, or going to a page, locks the page behind it while open, and gives focus back to its button.
  */
 export const AppMenu = () => {
-	const { t } = useTranslation(['home', 'settings', 'common', 'pokemonDetail']);
+	const { t } = useTranslation(['home', 'settings', 'common', 'pokemonDetail', 'teams']);
 	const { pathname } = useLocation();
 	const { currentLanguage, currentGameLanguage: gl, updateCurrentLanguage } = useLanguage();
 	const { imageSource, updateImageSource } = useImageSource();
@@ -88,30 +89,96 @@ export const AppMenu = () => {
 		],
 	];
 
-	const links = [
+	const onRaid = pathname.startsWith('/rankings/raid');
+	const onRanks = pathname.startsWith('/rankings') && pathname !== R.pokedex && !onRaid;
+	const onCollection = pathname.startsWith(R.teamsCollection);
+	const links: Array<{
+		key: string;
+		to: string;
+		icon: ReactNode;
+		label: string;
+		hint?: string | undefined;
+		active: boolean;
+	}> = [
 		{
 			key: 'home',
 			to: R.home,
-			icon: '/images/nav/pokedex.png',
+			icon: (
+				<svg className='r-menu-home' viewBox='0 0 24 24' aria-hidden='true'>
+					<path d='M4 11.2 12 4l8 7.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z' />
+				</svg>
+			),
 			label: t('home:menu.home'),
-			hint: undefined as string | undefined,
 			active: pathname === R.home,
 		},
-		...NAV.map((n) => ({
-			key: n.to,
-			to: n.to,
-			icon: n.icon,
-			label: n.label(t),
-			hint: n.hint(t, gl) as string | undefined,
-			active: n.match(pathname) && pathname !== R.pokedex,
-		})),
 		{
 			key: 'pokedex',
 			to: R.pokedex,
-			icon: '/images/nav/pokedex.png',
+			icon: <img src='/images/nav/pokedex.png' alt='' />,
 			label: 'Pokédex',
-			hint: undefined as string | undefined,
 			active: pathname === R.pokedex,
+		},
+		{
+			key: 'collection',
+			to: R.teamsCollection,
+			icon: <TeamTabIcon id='collection' size={26} />,
+			label: t('teams:page.collectionTab'),
+			active: onCollection,
+		},
+		{
+			key: 'ranks',
+			to: R.rankings('great'),
+			icon: <img src='/images/nav/leagues.png' alt='' />,
+			label: t('pokemonDetail:tabs.ranks'),
+			hint: t('common:nav.leagues.hint'),
+			active: onRanks,
+		},
+		{
+			key: 'raid',
+			to: R.rankings('raid'),
+			icon: <RaidIcon />,
+			label: t('home:hero.ctaRaid'),
+			active: onRaid,
+		},
+		{
+			key: 'teams',
+			to: R.teams,
+			icon: <img src='/images/nav/rankings.webp' alt='' />,
+			label: t('home:hero.ctaTeams'),
+			hint: t('common:nav.teams.hint'),
+			active: pathname.startsWith('/teams') && !onCollection,
+		},
+		{
+			key: 'calendar',
+			to: R.calendar(),
+			icon: <img src='/images/nav/calendar.png' alt='' />,
+			label: t('common:nav.calendar.label'),
+			hint: t('common:nav.calendar.hint', { raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)) }),
+			active: pathname.startsWith('/calendar'),
+		},
+		{
+			key: 'moves',
+			to: R.moves,
+			icon: <img src='/images/nav/moves.png' alt='' />,
+			label: t('common:nav.moves.label'),
+			hint: t('common:nav.moves.hint'),
+			active: pathname.startsWith('/move'),
+		},
+		{
+			key: 'types',
+			to: R.types,
+			icon: <img src='/images/types/psychic.png' alt='' />,
+			label: t('common:nav.types.label'),
+			hint: t('common:nav.types.hint'),
+			active: pathname.startsWith('/types'),
+		},
+		{
+			key: 'searches',
+			to: R.searchStrings(),
+			icon: <img src='/images/nav/search-strings.svg' alt='' />,
+			label: t('common:nav.searches.label'),
+			hint: t('common:nav.searches.hint'),
+			active: pathname.startsWith('/search-strings') || pathname.startsWith('/trash'),
 		},
 	];
 
@@ -170,14 +237,8 @@ export const AppMenu = () => {
 											<li key={l.key}>
 												<Link to={l.to} className='r-menu-link' aria-current={l.active ? 'page' : undefined}>
 													<span className='r-menu-ico'>
-														{l.key === 'home' ? (
-															<svg className='r-menu-home' viewBox='0 0 24 24' aria-hidden='true'>
-																<path d='M4 11.2 12 4l8 7.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z' />
-															</svg>
-														) : (
-															<img src={l.icon} alt='' />
-														)}
-														{l.to === R.calendar() && unseenEvents > 0 && (
+														{l.icon}
+														{l.key === 'calendar' && unseenEvents > 0 && (
 															<i className='r-menu-badge'>{unseenEvents > 9 ? '9+' : unseenEvents}</i>
 														)}
 													</span>

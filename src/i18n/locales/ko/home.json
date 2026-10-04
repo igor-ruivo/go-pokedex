@@ -4,7 +4,9 @@
 		"title": "플레이하는 동안 필요한 모든 것.",
 		"subtitle": "실시간 이벤트, 리그 랭킹, 내 컬렉션을 아는 팀 빌더, 한 번의 탭으로 보관함 정리. 무료이고 빠르며 내 언어로.",
 		"ctaTeams": "팀 만들기",
-		"ctaRegister": "내 포켓몬"
+		"ctaRegister": "내 포켓몬",
+		"ctaPvp": "PvP 랭킹",
+		"ctaRaid": "레이드 공격수"
 	},
 	"now": {
 		"title": "지금 진행 중",
@@ -76,5 +78,9 @@
 		"themeSystem": "시스템",
 		"themeLight": "라이트",
 		"themeDark": "다크"
+	},
+	"raid": {
+		"title": "최고의 레이드 공격수",
+		"subtitle": "17개 타입별 상위 3."
 	}
 }

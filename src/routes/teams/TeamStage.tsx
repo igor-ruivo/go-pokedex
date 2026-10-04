@@ -374,7 +374,7 @@ const PokemonPicker = ({
 								onClick={() => onPick(r.speciesId)}
 							>
 								<RankMedal rank={position} className='r-tm-picker-medal' />
-								<span className='r-search-sprite'>
+								<span className='r-search-sprite r-ctr-art'>
 									{p.isShadow && <ShadowMark />}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>

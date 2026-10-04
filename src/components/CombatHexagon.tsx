@@ -136,8 +136,8 @@ export const CombatHexagon = <K extends string = CombatMetric>({
 				<svg viewBox='0 0 100 100' aria-hidden='true' focusable='false'>
 					<defs>
 						<radialGradient id={`${uid}-fill`} cx='50%' cy='50%' r='60%'>
-							<stop offset='0%' stopColor='var(--hex-c)' stopOpacity='0.85' />
-							<stop offset='100%' stopColor='var(--hex-c)' stopOpacity='0.4' />
+							<stop offset='0%' style={{ stopColor: 'var(--hex-c)', stopOpacity: 'var(--hex-fill-a)' }} />
+							<stop offset='100%' style={{ stopColor: 'var(--hex-c)', stopOpacity: 'var(--hex-fill-b)' }} />
 						</radialGradient>
 						<filter id={`${uid}-glow`} x='-30%' y='-30%' width='160%' height='160%'>
 							<feGaussianBlur stdDeviation='1.6' />

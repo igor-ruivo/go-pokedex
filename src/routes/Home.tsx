@@ -1,23 +1,34 @@
-import { type CSSProperties, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import { BallMark, BrandMark } from '../components/BrandMark';
+import { BrandMark } from '../components/BrandMark';
+import { RaidIcon } from '../components/RaidIcon';
 import { SpriteImg } from '../components/Sprite';
+import { TeamTabIcon } from '../components/team-tab-icons';
 import { useLanguage } from '../contexts/language-context';
-import type { IPostEntry } from '../DTOs/INews';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import type { IPostEntry } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
-import { cleanName, dateRange } from '../lib/format';
-import { distinctSpecies, eventHighlights, featuredEvents, type HighlightKind, topRanked } from '../lib/home';
-import { leagueIcon } from '../lib/league-visuals';
-import { modeColor, modeLabel, R } from '../lib/nav';
 import { spotlightToPost } from '../lib/calendar-events';
+import { dateRange } from '../lib/format';
+import {
+	catchableRocketEntries,
+	eventHighlights,
+	featuredEvents,
+	type HighlightKind,
+	homeRaidEntries,
+	orderedEggEntries,
+	speciesWithShiny,
+} from '../lib/home';
+import { R } from '../lib/nav';
 import { useCalendar } from '../queries/calendar';
-import { useLeagueDefinitions } from '../queries/leagues';
 import { usePokemon } from '../queries/pokemon';
-import { usePvp } from '../queries/pvp';
+import { LeagueCards } from './home/LeagueCards';
+import { PokeAvatar } from './home/PokeAvatar';
+import { RaidAttackers } from './home/RaidAttackers';
+import { TeamLab } from './home/TeamLab';
 
 const KIND_ICON: Record<HighlightKind, string> = {
 	raids: '/images/raids/tier-5.png',
@@ -28,18 +39,25 @@ const KIND_ICON: Record<HighlightKind, string> = {
 
 const FEATURED_LIMIT = 5;
 
-// Same fallbacks the Rankings league picker uses when a league has no icon of its own.
-const LEAGUE_FALLBACK_ICON = {
-	great: '/images/leagues/cups/pogo_great_league.png',
-	ultra: '/images/leagues/cups/pogo_ultra_league.png',
-	master: '/images/leagues/cups/pogo_master_league.png',
-} as const;
-
-/** A round sprite, the unit all the little "this brings these Pokémon" hints are made of. */
-const Avatar = ({ pokemon, rank }: { pokemon: IGamemasterPokemon; rank?: number }) => (
-	<span className='r-ctr-art h-avatar' title={cleanName(pokemon.speciesName)}>
-		<SpriteImg pokemon={pokemon} loading='lazy' />
-		{rank !== undefined && <i className='h-avatar-rank'>{rank}</i>}
+/** A wrapping row of round sprites (up to a dozen), the shiny ones marked, and how many more there are. */
+const Faces = ({
+	shown,
+	more,
+	pokemon,
+	shadow,
+}: {
+	shown: ReadonlyArray<{ speciesId: string; shiny: boolean }>;
+	more: number;
+	pokemon: Record<string, IGamemasterPokemon>;
+	shadow?: boolean | undefined;
+}) => (
+	<span className='h-faces'>
+		{shown.map((e) =>
+			pokemon[e.speciesId] ? (
+				<PokeAvatar key={e.speciesId} pokemon={pokemon[e.speciesId]} shiny={e.shiny} shadow={shadow} />
+			) : null
+		)}
+		{more > 0 && <i className='h-stack-more'>+{more}</i>}
 	</span>
 );
 
@@ -54,7 +72,7 @@ const AvatarStack = ({
 	pokemon: Record<string, IGamemasterPokemon>;
 }) => (
 	<span className='h-stack'>
-		{ids.map((id) => (pokemon[id] ? <Avatar key={id} pokemon={pokemon[id]} /> : null))}
+		{ids.map((id) => (pokemon[id] ? <PokeAvatar key={id} pokemon={pokemon[id]} /> : null))}
 		{more > 0 && <i className='h-stack-more'>+{more}</i>}
 	</span>
 );
@@ -126,7 +144,9 @@ const EventCard = ({
 	);
 };
 
-const Skeleton = ({ className }: { className: string }) => <span className={`h-skeleton ${className}`} aria-hidden='true' />;
+const Skeleton = ({ className }: { className: string }) => (
+	<span className={`h-skeleton ${className}`} aria-hidden='true' />
+);
 
 const Home = () => {
 	const { t } = useTranslation(['home', 'calendar', 'common', 'teams', 'rankings', 'pokemonDetail']);
@@ -135,23 +155,38 @@ const Home = () => {
 	const unseenEvents = useUnseenEventsCount();
 	const { gamemasterPokemon, fetchCompleted: pokemonReady } = usePokemon();
 	const calendar = useCalendar();
-	const { leagues } = useLeagueDefinitions();
-	const { rankLists } = usePvp();
 
 	const events = useMemo(() => {
 		if (!calendar.postsFetchCompleted) return [];
-		const all = [...calendar.posts, ...(calendar.spotlightHoursFetchCompleted ? calendar.spotlightHours.map(spotlightToPost) : [])];
+		const all = [
+			...calendar.posts,
+			...(calendar.spotlightHoursFetchCompleted ? calendar.spotlightHours.map(spotlightToPost) : []),
+		];
 		return featuredEvents(all, now, gl, FEATURED_LIMIT, calendar.season?.id);
-	}, [calendar.posts, calendar.spotlightHours, calendar.postsFetchCompleted, calendar.spotlightHoursFetchCompleted, calendar.season, now, gl]);
+	}, [
+		calendar.posts,
+		calendar.spotlightHours,
+		calendar.postsFetchCompleted,
+		calendar.spotlightHoursFetchCompleted,
+		calendar.season,
+		now,
+		gl,
+	]);
 
 	const known = (id: string) => !!gamemasterPokemon[id];
+	const FACES = 12;
 	const right = [
 		{
 			to: R.calendar('bosses'),
 			icon: '/images/raids/tier-5.png',
 			title: t('calendar:tabs.bosses'),
 			hint: t('home:right.bosses'),
-			ids: distinctSpecies(calendar.currentBosses, known, 4),
+			...speciesWithShiny(
+				homeRaidEntries(calendar.currentBosses, (id) => !!gamemasterPokemon[id]?.isShadow),
+				known,
+				FACES
+			),
+			shadow: false,
 			ready: calendar.currentBossesFetchCompleted,
 		},
 		{
@@ -159,11 +194,12 @@ const Home = () => {
 			icon: '/images/nav/spawns-grass.png',
 			title: t('calendar:tabs.spawns'),
 			hint: t('home:right.spawns'),
-			ids: distinctSpecies(
+			...speciesWithShiny(
 				events.flatMap((e) => e.wild),
 				known,
-				4
+				FACES
 			),
+			shadow: false,
 			ready: calendar.postsFetchCompleted,
 		},
 		{
@@ -171,11 +207,8 @@ const Home = () => {
 			icon: '/images/NPC/male-grunt.webp',
 			title: t('calendar:tabs.rockets'),
 			hint: t('home:right.rockets'),
-			ids: distinctSpecies(
-				calendar.currentRockets.flatMap((g) => g.tier1.map((speciesId) => ({ speciesId }))),
-				known,
-				4
-			),
+			...speciesWithShiny(catchableRocketEntries(calendar.currentRockets), known, FACES),
+			shadow: true,
 			ready: calendar.currentRocketsFetchCompleted,
 		},
 		{
@@ -183,23 +216,11 @@ const Home = () => {
 			icon: '/images/eggs/10km.png',
 			title: t('calendar:tabs.eggs'),
 			hint: t('home:right.eggs'),
-			ids: distinctSpecies(calendar.currentEggs, known, 4),
+			...speciesWithShiny(orderedEggEntries(calendar.currentEggs), known, FACES),
+			shadow: false,
 			ready: calendar.currentEggsFetchCompleted,
 		},
 	];
-
-	const leagueTiles = (['great', 'ultra', 'master'] as const).map((mode, i) => ({
-		mode,
-		top: topRanked(rankLists[i] ?? {}, 3),
-	}));
-
-	const teamLinks = [
-		{ to: R.teams, label: t('teams:page.builderTab'), icon: '/images/leagues/great.png' },
-		{ to: R.teamsTop, label: t('teams:page.topTab'), icon: '/images/leagues/master.png' },
-		{ to: R.teamsCollection, label: t('teams:page.collectionTab'), icon: '/images/nav/pokemon-storage.png' },
-		{ to: R.teamsFavorites, label: t('teams:page.favoritesTab'), icon: '/images/nav/rankings.webp' },
-	];
-	const trio = topRanked(rankLists[0] ?? {}, 3);
 
 	return (
 		<div className='h-page'>
@@ -214,39 +235,52 @@ const Home = () => {
 				<h1>{t('home:hero.title')}</h1>
 				<p className='h-lede'>{t('home:hero.subtitle')}</p>
 				<nav className='h-dock' aria-label={t('common:app.name')}>
-					<Link to={R.teams} className='h-dock-item'>
-						<img src='/images/nav/rankings.webp' alt='' />
-						<span>{t('home:hero.ctaTeams')}</span>
+					<Link to={R.pokedex} className='h-dock-item'>
+						<span className='h-dock-art'>
+							<img src='/images/nav/pokedex.png' alt='' />
+						</span>
+						<span>Pokédex</span>
 					</Link>
 					<Link to={R.teamsCollection} className='h-dock-item'>
-						<img src='/images/nav/pokemon-storage.png' alt='' />
+						<span className='h-dock-art'>
+							<TeamTabIcon id='collection' size={64} />
+						</span>
 						<span>{t('home:hero.ctaRegister')}</span>
 					</Link>
 					<Link to={R.rankings('great')} className='h-dock-item'>
-						<span className='h-dock-icon h-dock-medal'>
+						<span className='h-dock-art'>
 							<img src='/images/nav/leagues.png' alt='' />
-							<BallMark className='h-dock-ball' />
 						</span>
-						<span>{t('pokemonDetail:tabs.ranks')}</span>
+						<span>{t('home:hero.ctaPvp')}</span>
+					</Link>
+					<Link to={R.rankings('raid')} className='h-dock-item'>
+						<span className='h-dock-art'>
+							<RaidIcon />
+						</span>
+						<span>{t('home:hero.ctaRaid')}</span>
+					</Link>
+					<Link to={R.teams} className='h-dock-item'>
+						<span className='h-dock-art'>
+							<img src='/images/nav/rankings.webp' alt='' />
+						</span>
+						<span>{t('home:hero.ctaTeams')}</span>
 					</Link>
 					<Link to={R.calendar()} className='h-dock-item'>
-						<span className='h-dock-icon'>
+						<span className='h-dock-art'>
 							<img src='/images/nav/calendar.png' alt='' />
 							{unseenEvents > 0 && (
-								<i className='h-dock-badge' aria-label={t('common:nav.calendarBadge', { label: t('common:nav.calendar.label'), count: unseenEvents })}>
+								<i
+									className='h-dock-badge'
+									aria-label={t('common:nav.calendarBadge', {
+										label: t('common:nav.calendar.label'),
+										count: unseenEvents,
+									})}
+								>
 									{unseenEvents > 9 ? '9+' : unseenEvents}
 								</i>
 							)}
 						</span>
 						<span>{t('common:nav.calendar.label')}</span>
-					</Link>
-					<Link to={R.pokedex} className='h-dock-item'>
-						<img src='/images/nav/pokedex.png' alt='' />
-						<span>Pokédex</span>
-					</Link>
-					<Link to={R.moves} className='h-dock-item'>
-						<img src='/images/nav/moves.png' alt='' />
-						<span>{t('common:nav.moves.label')}</span>
 					</Link>
 				</nav>
 			</section>
@@ -296,7 +330,7 @@ const Home = () => {
 							<p>{tile.hint}</p>
 							<span className='h-tile-foot'>
 								{tile.ready ? (
-									<AvatarStack ids={tile.ids} pokemon={gamemasterPokemon} />
+									<Faces shown={tile.shown} more={tile.more} pokemon={gamemasterPokemon} shadow={tile.shadow} />
 								) : (
 									<Skeleton className='h-skeleton--row' />
 								)}
@@ -313,88 +347,12 @@ const Home = () => {
 						<p>{t('home:ranks.subtitle')}</p>
 					</div>
 				</header>
-				<div className='h-tiles h-tiles--3'>
-					{leagueTiles.map(({ mode, top }) => (
-						<div className='h-tile h-tile--league' key={mode} style={{ ['--lg' as string]: modeColor(mode) } as CSSProperties}>
-							<img className='h-tile-icon h-tile-icon--lg' src={leagueIcon(mode) ?? LEAGUE_FALLBACK_ICON[mode]} alt='' loading='lazy' />
-							<h3>
-								<Link to={R.rankings(mode)} className='h-stretch'>
-									{modeLabel(mode, gl, leagues)}
-								</Link>
-							</h3>
-							<ol className='h-top' aria-label={t('home:ranks.top')}>
-								{top.length === 0
-									? [0, 1, 2].map((i) => (
-											<li key={i}>
-												<Skeleton className='h-skeleton--avatar' />
-											</li>
-										))
-									: top.map((id, i) =>
-											gamemasterPokemon[id] ? (
-												<li key={id}>
-													<Link to={R.pokemon(id)} className='h-top-link'>
-														<Avatar pokemon={gamemasterPokemon[id]} rank={i + 1} />
-														<span>{cleanName(gamemasterPokemon[id].speciesName)}</span>
-													</Link>
-												</li>
-											) : null
-										)}
-							</ol>
-						</div>
-					))}
-				</div>
-				<div className='h-tiles h-tiles--2 h-tiles--tight'>
-					<div className='h-tile h-tile--row' style={{ ['--lg' as string]: modeColor('raid') } as CSSProperties}>
-						<img className='h-tile-icon' src='/images/raids/tier-5.png' alt='' loading='lazy' />
-						<div>
-							<h3>
-								<Link to={R.rankings('raid')} className='h-stretch'>
-									{modeLabel('raid', gl, leagues)}
-								</Link>
-							</h3>
-							<p>{t('home:ranks.raid')}</p>
-						</div>
-					</div>
-					<div className='h-tile h-tile--row' style={{ ['--lg' as string]: modeColor('pokedex') } as CSSProperties}>
-						<img className='h-tile-icon' src='/images/nav/pokedex.png' alt='' loading='lazy' />
-						<div>
-							<h3>
-								<Link to={R.pokedex} className='h-stretch'>
-									{modeLabel('pokedex', gl, leagues)}
-								</Link>
-							</h3>
-							<p>{t('home:ranks.pokedex')}</p>
-						</div>
-					</div>
-				</div>
+				<LeagueCards />
 			</section>
 
-			<section className='h-lab' aria-labelledby='h-lab'>
-				<div className='h-lab-copy'>
-					<span className='h-eyebrow h-eyebrow--quiet'>{t('home:teams.title')}</span>
-					<h2 id='h-lab'>{t('home:teams.headline')}</h2>
-					<p>{t('home:teams.body')}</p>
-					<ul className='h-lab-links'>
-						{teamLinks.map((l) => (
-							<li key={l.to}>
-								<Link to={l.to} className='h-chip'>
-									<img src={l.icon} alt='' loading='lazy' />
-									{l.label}
-								</Link>
-							</li>
-						))}
-					</ul>
-				</div>
-				<div className='h-lab-art' aria-hidden='true'>
-					{trio.map((id, i) =>
-						gamemasterPokemon[id] ? (
-							<span className='h-lab-mon' key={id} data-i={i}>
-								<SpriteImg pokemon={gamemasterPokemon[id]} loading='lazy' />
-							</span>
-						) : null
-					)}
-				</div>
-			</section>
+			<RaidAttackers />
+
+			<TeamLab />
 
 			<section className='h-section' aria-labelledby='h-tools'>
 				<header className='h-sh'>

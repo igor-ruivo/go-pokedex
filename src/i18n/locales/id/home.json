@@ -4,7 +4,9 @@
 		"title": "Semua yang kamu butuhkan, saat bermain.",
 		"subtitle": "Event langsung, peringkat liga, pembuat tim yang mengenal koleksimu, dan pembersihan penyimpanan sekali ketuk. Gratis, cepat, dalam bahasamu.",
 		"ctaTeams": "Buat tim",
-		"ctaRegister": "Pokémonmu"
+		"ctaRegister": "Pokémonmu",
+		"ctaPvp": "Peringkat PvP",
+		"ctaRaid": "Penyerang Raid"
 	},
 	"now": {
 		"title": "Sedang berlangsung",
@@ -76,5 +78,9 @@
 		"themeSystem": "Sistem",
 		"themeLight": "Terang",
 		"themeDark": "Gelap"
+	},
+	"raid": {
+		"title": "Penyerang raid terbaik",
+		"subtitle": "Tiga terbaik untuk tiap dari 17 tipe."
 	}
 }
