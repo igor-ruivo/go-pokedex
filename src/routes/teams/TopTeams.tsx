@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SearchListBar } from '../../components/SearchListBar';
@@ -21,10 +21,13 @@ import type { TeamsData } from './useTeamsData';
 export const TopTeams = ({
 	league,
 	data,
+	leagueRow,
 	onOpen,
 }: {
 	league: TeamLeague;
 	data: TeamsData;
+	/** The league picker: it scrolls along with the search header, and stands alone while there is no list. */
+	leagueRow: ReactNode;
 	onOpen: (team: RankedTeam) => void;
 }) => {
 	const { t } = useTranslation(['teams', 'rankings', 'components', 'common']);
@@ -54,13 +57,22 @@ export const TopTeams = ({
 		);
 	}, [list, term, gamemaster]);
 
-	if (query.isError) return <p className='r-muted'>{t('teams:top.empty')}</p>;
+	if (query.isError)
+		return (
+			<>
+				{leagueRow}
+				<p className='r-muted'>{t('teams:top.empty')}</p>
+			</>
+		);
 	if (!query.data || !data.ready || !painted) {
 		return (
-			<div className='r-tm-loading'>
-				<span className='r-spinner' aria-hidden='true' />
-				<p>{t('teams:page.loading')}</p>
-			</div>
+			<>
+				{leagueRow}
+				<div className='r-tm-loading'>
+					<span className='r-spinner' aria-hidden='true' />
+					<p>{t('teams:page.loading')}</p>
+				</div>
+			</>
 		);
 	}
 
@@ -74,7 +86,13 @@ export const TopTeams = ({
 	};
 
 	// A cup that rotated in after the last ranking run has no list yet.
-	if (!ranking) return <p className='r-muted'>{t('teams:top.empty')}</p>;
+	if (!ranking)
+		return (
+			<>
+				{leagueRow}
+				<p className='r-muted'>{t('teams:top.empty')}</p>
+			</>
+		);
 	const { totalTeams } = ranking;
 	const date = new Date(query.data.generatedAt).toLocaleDateString();
 
@@ -125,6 +143,7 @@ export const TopTeams = ({
 				clearAriaLabel={t('components:searchBox.clearAriaLabel')}
 				onClear={() => setSearch('')}
 				label={`${t('common:nav.teams.label')}: ${items.length}`}
+				above={leagueRow}
 			>
 				<SortBar
 					options={sortOptions}

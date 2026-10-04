@@ -30,7 +30,6 @@
 		"level": "Seviye",
 		"ivs": "IV",
 		"ivEdit": "{{name}} için IV'leri değiştir",
-		"ivOverCap": "Bu seviyede {{name}} {{cp}} CP'ye sahip, {{cap}} sınırının üzerinde.",
 		"ivTitle": "{{name}} IV'leri",
 		"levelTitle": "{{name}} seviyesi",
 		"bestBuddyMoveHint": "Bu Pokémon’u En İyi Arkadaş yap; mevcut olan varsayılanlara döner",
@@ -46,7 +45,10 @@
 		"none": "Yok",
 		"pickMove": "Hareketi değiştir ({{move}})",
 		"moveListAria": "Hareketler",
-		"recommended": "PvPoke'un önerdiği hareket"
+		"recommended": "PvPoke'un önerdiği hareket",
+		"overCapReason": "{{cp}} BP, bu ligin {{cap}} BP sınırını aşıyor.",
+		"overCapTitle": "Ligin BP sınırının üstünde",
+		"scoresHidden": "Her Pokémon ligin BP sınırı içine girince puanlar geri gelir."
 	},
 	"picker": {
 		"title": "Pokémon seç",

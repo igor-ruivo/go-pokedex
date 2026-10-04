@@ -481,6 +481,34 @@
 	font-weight: 600;
 	font-size: 14px;
 }
+/* a CP over the league's cap: red (the build is kept, and not rated until it fits) */
+.rvmp .r-tm-facts dd[data-over] {
+	color: var(--neg, #f87171);
+}
+/* the card's Reset: a quiet link under the CP / level / IVs, for a Pokémon that isn't at its best */
+.rvmp .r-tm-reset {
+	align-self: center;
+	margin: 0 0 var(--s1);
+	padding: 2px 6px;
+	border: 0;
+	background: none;
+	color: var(--text-dim);
+	font: inherit;
+	font-size: 12px;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}
+/* the space is always there (the link is only hidden while the Pokémon is at its best), so the card does not change height */
+.rvmp .r-tm-reset[hidden] {
+	display: inline-block;
+	visibility: hidden;
+}
+@media (hover: hover) {
+	.rvmp .r-tm-reset:hover {
+		color: var(--accent);
+	}
+}
 /* the IVs box is a button: tapping it opens the three IV inputs under the facts row */
 .rvmp .r-tm-iv-btn {
 	padding: 0;
@@ -492,9 +520,18 @@
 	text-decoration: underline dotted color-mix(in srgb, currentColor 55%, transparent);
 	text-underline-offset: 3px;
 }
-.rvmp .r-tm-iv-btn:hover,
-.rvmp .r-tm-iv-btn:focus-visible {
-	color: var(--accent);
+/* blue only means "picked, not the best": hovering is a hint on a pointer device, and a focus (the button gets it back when
+   its dialog closes) must not look like a change, so it shows as an outline instead */
+@media (hover: hover) {
+	.rvmp .r-tm-iv-btn:hover {
+		color: var(--accent);
+	}
+}
+.rvmp .r-tm-iv-btn:focus-visible,
+.rvmp .r-tm-reset:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: 3px;
 }
 .rvmp .r-tm-iv-btn[data-custom] {
 	color: var(--accent);
@@ -796,6 +833,14 @@
 	}
 	.rvmp .r-tm-picker-backdrop:not(.r-tm-ivmodal-backdrop) > .r-tm-picker {
 		max-height: calc(90dvh - 2 * var(--s3));
+	}
+}
+/* a short dialog (removing a Pokémon from the collection) stays in the middle of a phone's screen: only the tall pickers sit
+   near the top, so that they do not shift as the keyboard and the results change while typing */
+@media (max-width: 719px) {
+	.rvmp .r-tm-picker-backdrop.r-tm-picker-backdrop--center {
+		place-items: center;
+		padding: var(--s3);
 	}
 }
 .rvmp .r-tm-picker {
@@ -2517,12 +2562,18 @@
 	margin: 0;
 }
 .rvmp .r-tm-board-intro {
-	margin: 0 0 var(--s4);
+	margin: 0 0 var(--s2);
 	font-size: 13px;
 	color: var(--text-dim);
 }
+/* the league picker that follows brings its own top margin */
 .rvmp .r-tm-board-help {
-	margin: 0 0 var(--s3);
+	margin: 0;
+}
+/* the first thing in the tab now (the league picker moved down into the sticky header): the gap the picker used to give */
+.rvmp .r-tm-board > .r-tm-board-hint:first-child,
+.rvmp .r-tm-board > .r-tm-board-intro:first-child {
+	margin-top: var(--s4);
 }
 .rvmp .r-tm-board-list {
 	display: grid;

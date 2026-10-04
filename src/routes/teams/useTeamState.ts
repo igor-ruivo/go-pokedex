@@ -35,7 +35,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 
 	const team = useMemo<Array<TeamSlotDescriptor>>(() => {
 		if (!data.ready) return [];
-		return sanitizeTeam(decodeTeam(raw), data, LEAGUE_CP[league]);
+		return sanitizeTeam(decodeTeam(raw), data);
 	}, [raw, data, league]);
 
 	const write = useCallback(
@@ -127,7 +127,8 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 
 	/**
 	 * Picks the IVs and the level of one member. `undefined` puts one back to its default (for the IVs, the league's best
-	 * spread itself counts as the default; the level then follows the CP cap).
+	 * spread itself counts as the default; the level then follows the CP cap). Returns whether the change was applied: one
+	 * that would put the Pokémon over the league's CP cap, or past the levels its statuses allow, is refused.
 	 */
 	const setBuild = useCallback(
 		(
@@ -137,16 +138,17 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 				level: number | undefined;
 				buddy?: boolean | undefined;
 				superMega?: boolean | undefined;
+				moveset?: ReadonlyArray<string> | undefined;
 			}
 		) => {
 			const next = applyBuild(team, index, build, {
 				isSuperMegaSpecies: (id) => !!data.gamemaster[id]?.isSuperMega,
-				baseStatsOf: (id) => data.gamemaster[id]?.baseStats,
 				defaultIvs,
-				cpCap: LEAGUE_CP[league],
 			});
-			if (!next) return;
+			// refused: say so, so that whoever asked (a dialog) can tell the player
+			if (!next) return false;
 			write(next);
+			return true;
 		},
 		[team, write, defaultIvs, data.gamemaster, league]
 	);

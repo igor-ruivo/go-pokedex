@@ -30,7 +30,6 @@
 		"level": "लेवल",
 		"ivs": "IV",
 		"ivEdit": "{{name}} के IV बदलें",
-		"ivOverCap": "इस लेवल पर {{name}} का CP {{cp}} है, जो {{cap}} की सीमा से ऊपर है।",
 		"ivTitle": "{{name}} के IV",
 		"levelTitle": "{{name}} का लेवल",
 		"bestBuddyMoveHint": "इस Pokémon को बेस्ट बडी बनाएँ; मौजूदा वाला डिफ़ॉल्ट पर लौट जाएगा",
@@ -46,7 +45,10 @@
 		"none": "कोई नहीं",
 		"pickMove": "मूव बदलें ({{move}})",
 		"moveListAria": "मूव",
-		"recommended": "PvPoke का सुझाया मूव"
+		"recommended": "PvPoke का सुझाया मूव",
+		"overCapReason": "CP {{cp}} इस लीग की {{cap}} CP सीमा से ऊपर है।",
+		"overCapTitle": "लीग की CP सीमा से ऊपर",
+		"scoresHidden": "हर पोकेमॉन के लीग की CP सीमा के भीतर आते ही स्कोर वापस आ जाएंगे।"
 	},
 	"picker": {
 		"title": "पोकेमॉन चुनें",

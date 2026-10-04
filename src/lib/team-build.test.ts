@@ -9,11 +9,11 @@ import {
 	ivsChange,
 	levelChange,
 	levelInputState,
+	movesAreRecommended,
 	nicknamesByBuild,
 	pickerBlock,
-	resetTargets,
-	showIvReset,
-	showLevelReset,
+	resetChange,
+	showReset,
 	starterNickname,
 	statusToggle,
 	syncedNickname,
@@ -26,14 +26,10 @@ const slot = (speciesId: string, extra: Partial<TeamSlotDescriptor> = {}): TeamS
 	...extra,
 });
 
-const small = { atk: 50, def: 50, hp: 50 };
-const huge = { atk: 300, def: 300, hp: 300 };
 const bestIvs: Record<string, SlotIvs> = { azumarill: [0, 15, 15], medicham: [5, 15, 15], venusaur_mega: [15, 15, 15] };
 const context: BuildContext = {
 	isSuperMegaSpecies: (id) => id === 'venusaur_mega',
-	baseStatsOf: (id) => (id === 'giant' ? huge : small),
 	defaultIvs: (id) => bestIvs[id],
-	cpCap: 1500,
 };
 
 describe('statusToggle — the Best Buddy and Super Max Mega buttons', () => {
@@ -138,9 +134,10 @@ describe('applyBuild — the team after a build change', () => {
 		expect(applyBuild(team, 2, { ivs: undefined, level: 53.5, superMega: true, buddy: true }, context)).toBeUndefined();
 	});
 
-	it('refuses a level that puts the Pokémon over the CP cap with its IVs', () => {
-		expect(applyBuild([slot('giant')], 0, { ivs: [15, 15, 15], level: 40 }, context)).toBeUndefined();
-		expect(applyBuild([slot('azumarill')], 0, { ivs: [15, 15, 15], level: 40 }, context)).toBeDefined();
+	it('does not refuse a build for the league’s CP cap: the card shows it in red', () => {
+		expect(applyBuild([slot('azumarill')], 0, { ivs: [15, 15, 15], level: 50 }, context)![0]).toEqual(
+			slot('azumarill', { ivs: [15, 15, 15], level: 50 })
+		);
 	});
 
 	it('leaves out IVs that are the league’s best spread, and a status that was not asked for stays as it is', () => {
@@ -168,8 +165,8 @@ describe('applyBuild — the team after a build change', () => {
 });
 
 describe('typing a level', () => {
-	const typed = (typedLevel: number, over = false, max = 52, buddyMax = 53) =>
-		levelInputState({ typed: typedLevel, maxLevel: max, buddyMaxLevel: buddyMax, overCap: over });
+	const typed = (typedLevel: number, max = 52, buddyMax = 53) =>
+		levelInputState({ typed: typedLevel, maxLevel: max, buddyMaxLevel: buddyMax });
 
 	it('takes a level above 50 for a Super Max Mega species even when the status is off, and switches the status on', () => {
 		expect(typed(51).valid).toBe(true);
@@ -209,19 +206,18 @@ describe('typing a level', () => {
 	});
 
 	it('refuses a level above 50 for any other Pokémon, asking for the Best Buddy status instead of switching it on', () => {
-		const other = (level: number) => typed(level, false, 50, 51);
+		const other = (level: number) => typed(level, 50, 51);
 		expect(other(50).valid).toBe(true);
 		expect(other(50.5)).toEqual({ valid: false, needsBuddy: true });
 		expect(other(51)).toEqual({ valid: false, needsBuddy: true });
 		// the Pokémon that is a Best Buddy can go to 51
-		expect(typed(51, false, 51, 51)).toEqual({ valid: true, needsBuddy: false });
+		expect(typed(51, 51, 51)).toEqual({ valid: true, needsBuddy: false });
 	});
 
-	it('is not a level beyond the highest there is, nor a half-step off, nor over the CP cap', () => {
+	it('is not a level beyond the highest there is, nor a half-step off', () => {
 		expect(typed(53.5)).toEqual({ valid: false, needsBuddy: false });
 		expect(typed(50.25)).toEqual({ valid: false, needsBuddy: false });
 		expect(typed(NaN)).toEqual({ valid: false, needsBuddy: false });
-		expect(typed(40, true)).toEqual({ valid: false, needsBuddy: false });
 	});
 
 	it('asks for the Best Buddy status for 53 on a Super Max Mega that is not one', () => {
@@ -251,38 +247,72 @@ describe('resetting', () => {
 		expect(next[0]).toEqual(slot('venusaur_mega', { ivs: [14, 15, 15], superMega: true }));
 	});
 
-	it('goes to the best at the ceiling for a Best Buddy or Super Max Mega, the defaults otherwise', () => {
+	it('goes to the best spread and its level for a Best Buddy or Super Max Mega, the defaults otherwise', () => {
 		const best = { ivs: [15, 15, 15] as SlotIvs, level: 52 };
-		expect(resetTargets({ buddy: false, superMega: true }, best)).toEqual({ ivs: { ivs: [15, 15, 15] }, level: 52 });
-		expect(resetTargets({ buddy: true, superMega: false }, { ivs: [4, 15, 15], level: 50.5 })).toEqual({
-			ivs: { ivs: [4, 15, 15] },
+		expect(resetChange({ buddy: false, superMega: true }, best)).toEqual({ ivs: [15, 15, 15], level: 52 });
+		expect(resetChange({ buddy: true, superMega: false }, { ivs: [4, 15, 15], level: 50.5 })).toEqual({
+			ivs: [4, 15, 15],
 			level: 50.5,
 		});
-		expect(resetTargets({ buddy: false, superMega: false }, best)).toEqual({ ivs: undefined, level: undefined });
+		expect(resetChange({ buddy: false, superMega: false }, best)).toEqual({ ivs: undefined, level: undefined });
 		// a best level that is not above 50 is the CP cap’s own: nothing to reset the level to
-		expect(resetTargets({ buddy: true, superMega: false }, { ivs: [0, 15, 15], level: 45.5 }).level).toBeUndefined();
-		expect(resetTargets({ buddy: true, superMega: false }, undefined)).toEqual({ ivs: undefined, level: undefined });
+		expect(resetChange({ buddy: true, superMega: false }, { ivs: [0, 15, 15], level: 45.5 }).level).toBeUndefined();
+		expect(resetChange({ buddy: true, superMega: false }, undefined)).toEqual({ ivs: undefined, level: undefined });
+	});
+
+	it('resets the IVs and the level together, in one change the page accepts', () => {
+		const stray = slot('venusaur_mega', { ivs: [1, 2, 3], level: 40, superMega: true });
+		const change = resetChange({ buddy: false, superMega: true }, { ivs: [15, 15, 15], level: 52 });
+		expect(applyBuild([stray], 0, change, context)![0]).toEqual(slot('venusaur_mega', { level: 52, superMega: true }));
+	});
+});
+
+describe('resetting the moves too', () => {
+	const recommended = ['BUBBLE', 'ICE_BEAM', 'PLAY_ROUGH'];
+
+	it('asks for the recommended moves along with the IVs and level', () => {
+		expect(resetChange({ buddy: false, superMega: false }, undefined, recommended)).toEqual({
+			ivs: undefined,
+			level: undefined,
+			moveset: recommended,
+		});
+		expect(resetChange({ buddy: false, superMega: false }, undefined)).not.toHaveProperty('moveset');
+	});
+
+	it('puts the moves of the member back in the same change', () => {
+		const stray = slot('azumarill', { moveset: ['X', 'Y', 'Z'], ivs: [1, 2, 3], level: 40 });
+		const next = applyBuild(
+			[stray],
+			0,
+			resetChange({ buddy: false, superMega: false }, undefined, recommended),
+			context
+		)!;
+		expect(next[0]).toEqual(slot('azumarill', { moveset: recommended }));
+	});
+
+	it('knows the recommended moves in either order of the Charged Moves, and nothing to compare against', () => {
+		expect(movesAreRecommended(['BUBBLE', 'PLAY_ROUGH', 'ICE_BEAM'], recommended)).toBe(true);
+		expect(movesAreRecommended(['BUBBLE', 'ICE_BEAM', 'AQUA_TAIL'], recommended)).toBe(false);
+		expect(movesAreRecommended(['BUBBLE', 'ICE_BEAM'], recommended)).toBe(false);
+		expect(movesAreRecommended(['BUBBLE', 'ICE_BEAM'], [])).toBe(true);
+		expect(movesAreRecommended(['BUBBLE', 'ICE_BEAM', 'none'], ['BUBBLE', 'ICE_BEAM', 'none'])).toBe(true);
 	});
 });
 
 describe('when Reset is offered', () => {
-	it('shows the IV reset when the IVs were picked or the best spread differs from the default, unless already the best', () => {
-		expect(showIvReset({ custom: true, best: undefined, optimal: false })).toBe(true);
-		expect(showIvReset({ custom: false, best: { ivs: [4, 15, 15] }, optimal: false })).toBe(true);
-		expect(showIvReset({ custom: true, best: { ivs: [4, 15, 15] }, optimal: true })).toBe(false);
-		expect(showIvReset({ custom: false, best: undefined, optimal: false })).toBe(false);
+	it('is offered when either the IVs or the level are not the best', () => {
+		expect(showReset({ ivsOptimal: false, levelOptimal: true })).toBe(true);
+		expect(showReset({ ivsOptimal: true, levelOptimal: false })).toBe(true);
+		expect(showReset({ ivsOptimal: false, levelOptimal: false })).toBe(true);
 	});
 
-	it('shows the level reset when the level was picked, unless it is already the best', () => {
-		expect(showLevelReset({ custom: true, optimal: false })).toBe(true);
-		expect(showLevelReset({ custom: true, optimal: true })).toBe(false);
-		expect(showLevelReset({ custom: false, optimal: false })).toBe(false);
+	it('is offered when only the moves are not the recommended ones', () => {
+		expect(showReset({ ivsOptimal: true, levelOptimal: true, movesOptimal: false })).toBe(true);
 	});
 
-	it('shows the IV reset as soon as the IVs move away from the best, and hides it when they are back', () => {
-		// not the best spread of a Best Buddy: Reset is offered; best again: it is not
-		expect(showIvReset({ custom: true, best: { ivs: [4, 15, 15] }, optimal: false })).toBe(true);
-		expect(showIvReset({ custom: true, best: { ivs: [4, 15, 15] }, optimal: true })).toBe(false);
+	it('is not offered when everything is the best', () => {
+		expect(showReset({ ivsOptimal: true, levelOptimal: true })).toBe(false);
+		expect(showReset({ ivsOptimal: true, levelOptimal: true, movesOptimal: true })).toBe(false);
 	});
 });
 
@@ -323,9 +353,10 @@ describe('how a member’s build is highlighted on the card', () => {
 
 describe('nicknames and the rank of the IVs', () => {
 	it('keeps a trailing rank in step with the IVs', () => {
-		expect(syncedNickname('Azumarill #12', 3)).toBe('Azumarill #3');
-		expect(syncedNickname('Azumarill#12', 3)).toBe('Azumarill #3');
-		expect(syncedNickname('Azumarill #3', 3)).toBeUndefined();
+		expect(syncedNickname('Azumarill#12', 3)).toBe('Azumarill#3');
+		// a rank typed after a space is attached to the name too
+		expect(syncedNickname('Azumarill #12', 3)).toBe('Azumarill#3');
+		expect(syncedNickname('Azumarill#3', 3)).toBeUndefined();
 	});
 
 	it('leaves a nickname with no rank, or a rank not known yet, alone', () => {
@@ -336,7 +367,7 @@ describe('nicknames and the rank of the IVs', () => {
 	});
 
 	it('starts a nickname as the name with the rank, within 32 characters', () => {
-		expect(starterNickname('Azumarill', 12)).toBe('Azumarill #12');
+		expect(starterNickname('Azumarill', 12)).toBe('Azumarill#12');
 		expect(starterNickname('Azumarill', undefined)).toBe('Azumarill');
 		expect(starterNickname('A'.repeat(40), 1)).toHaveLength(32);
 	});

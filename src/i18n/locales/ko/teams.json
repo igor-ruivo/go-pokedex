@@ -30,7 +30,6 @@
 		"level": "레벨",
 		"ivs": "개체값",
 		"ivEdit": "{{name}}의 IV 변경",
-		"ivOverCap": "이 레벨에서 {{name}}의 CP는 {{cp}}로, 한도 {{cap}}를 넘습니다.",
 		"ivTitle": "{{name}}의 IV",
 		"levelTitle": "{{name}}의 레벨",
 		"bestBuddyMoveHint": "이 포켓몬을 베스트 버디로 지정합니다(현재 베스트 버디는 기본값으로 돌아갑니다)",
@@ -46,7 +45,10 @@
 		"none": "없음",
 		"pickMove": "기술 변경 ({{move}})",
 		"moveListAria": "기술",
-		"recommended": "PvPoke 추천 기술"
+		"recommended": "PvPoke 추천 기술",
+		"overCapReason": "CP {{cp}}이(가) 이 리그의 CP 상한 {{cap}}을(를) 넘습니다.",
+		"overCapTitle": "리그의 CP 상한을 넘음",
+		"scoresHidden": "모든 포켓몬이 리그의 CP 상한 이내가 되면 점수가 다시 표시됩니다."
 	},
 	"picker": {
 		"title": "포켓몬 선택",

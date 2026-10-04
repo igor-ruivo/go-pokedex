@@ -30,7 +30,6 @@
 		"level": "Level",
 		"ivs": "IVs",
 		"ivEdit": "IVs von {{name}} ändern",
-		"ivOverCap": "Auf diesem Level hat {{name}} {{cp}} WP, über dem Limit von {{cap}}.",
 		"ivTitle": "IVs von {{name}}",
 		"levelTitle": "Level von {{name}}",
 		"bestBuddyMoveHint": "Dieses Pokémon zum Besten Kumpel machen; das bisherige kehrt zu den Standardwerten zurück",
@@ -46,7 +45,10 @@
 		"none": "Keine",
 		"pickMove": "Attacke ändern ({{move}})",
 		"moveListAria": "Attacken",
-		"recommended": "Von PvPoke empfohlene Attacke"
+		"recommended": "Von PvPoke empfohlene Attacke",
+		"overCapReason": "WP {{cp}} liegen über der WP-Grenze von {{cap}} dieser Liga.",
+		"overCapTitle": "Über der WP-Grenze der Liga",
+		"scoresHidden": "Die Wertungen kommen zurück, sobald jedes Pokémon innerhalb der WP-Grenze der Liga liegt."
 	},
 	"picker": {
 		"title": "Pokémon wählen",

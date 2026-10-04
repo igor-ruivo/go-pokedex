@@ -30,7 +30,6 @@
 		"level": "等級",
 		"ivs": "個體值",
 		"ivEdit": "變更{{name}}的個體值",
-		"ivOverCap": "在此等級，{{name}}的CP為{{cp}}，超過{{cap}}的上限。",
 		"ivTitle": "{{name}}的個體值",
 		"levelTitle": "{{name}}的等級",
 		"bestBuddyMoveHint": "將這隻寶可夢設為最佳夥伴；目前的會恢復預設值",
@@ -46,7 +45,10 @@
 		"none": "無",
 		"pickMove": "更換招式（{{move}}）",
 		"moveListAria": "招式",
-		"recommended": "PvPoke 推薦招式"
+		"recommended": "PvPoke 推薦招式",
+		"overCapReason": "CP {{cp}} 超過了這個聯盟 {{cap}} 的 CP 上限。",
+		"overCapTitle": "超過聯盟的 CP 上限",
+		"scoresHidden": "當每隻寶可夢都在聯盟的 CP 上限內時，分數就會回來。"
 	},
 	"picker": {
 		"title": "選擇寶可夢",

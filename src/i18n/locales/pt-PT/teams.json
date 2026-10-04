@@ -30,7 +30,6 @@
 		"level": "Nível",
 		"ivs": "IV",
 		"ivEdit": "Alterar os IVs de {{name}}",
-		"ivOverCap": "Neste nível, {{name}} tem {{cp}} CP, acima do limite de {{cap}}.",
 		"ivTitle": "IVs de {{name}}",
 		"levelTitle": "Nível de {{name}}",
 		"bestBuddyMoveHint": "Tornar este Pokémon o Melhor Amigo; o atual volta aos valores predefinidos",
@@ -46,7 +45,10 @@
 		"none": "Nenhum",
 		"pickMove": "Mudar ataque ({{move}})",
 		"moveListAria": "Ataques",
-		"recommended": "Ataque recomendado pelo PvPoke"
+		"recommended": "Ataque recomendado pelo PvPoke",
+		"overCapReason": "Os {{cp}} PC ultrapassam o limite de {{cap}} PC desta liga.",
+		"overCapTitle": "Acima do limite de PC da liga",
+		"scoresHidden": "As pontuações voltam quando todos os Pokémon estiverem dentro do limite de PC da liga."
 	},
 	"picker": {
 		"title": "Escolher um Pokémon",

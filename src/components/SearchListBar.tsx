@@ -14,6 +14,8 @@ export const SearchListBar = ({
 	clearAriaLabel,
 	onClear,
 	label,
+	above,
+	className,
 	children,
 }: {
 	value: string;
@@ -23,10 +25,15 @@ export const SearchListBar = ({
 	onClear: () => void;
 	/** The count (or status) text of the row. */
 	label: ReactNode;
+	/** Something that sticks along with the header, above the search box (the league picker). */
+	above?: ReactNode;
+	/** An extra class for the header (a modifier of `r-searchlist`). */
+	className?: string;
 	/** The sort chip, shown on the right of the rule. */
 	children?: ReactNode;
 }) => (
-	<div className='r-searchlist'>
+	<div className={className ? `r-searchlist ${className}` : 'r-searchlist'}>
+		{above}
 		<PokemonSearchInput
 			value={value}
 			onChange={onChange}

@@ -3030,8 +3030,36 @@
 	display: grid;
 	gap: var(--s3);
 }
+/* The search box and the count row of a list (Rockets, Top teams, My Pokémon's best builds, Favorites) stay under the app bar
+   while the list scrolls, like the Rankings header — fading into the page below it. */
 .rvmp .r-searchlist {
-	margin-bottom: 20px;
+	position: sticky;
+	top: 57px;
+	z-index: 20;
+	/* the top padding is the breathing room between the app bar and the search box while it is stuck */
+	padding: var(--s4) 0 var(--s3);
+	margin-bottom: var(--s2);
+	background: linear-gradient(var(--bg) 88%, transparent);
+	/* same compositing guard as .r-rank-head: a stale gradient layer must not paint over controls that reflow */
+	transform: translateZ(0);
+	isolation: isolate;
+}
+.rvmp .r-searchlist > * {
+	position: relative;
+	z-index: 1;
+}
+/* a league picker carried along above the search box: spaced from the top of the screen exactly like the Rankings header
+   (its header's padding plus the row's own top margin), and over the rows below for its popovers */
+/* Rockets: the same distance from the top of the screen while stuck as the Rankings header (its padding plus the picker row's margin) */
+.rvmp .r-searchlist.r-searchlist--ranklike {
+	padding-top: calc(var(--s3) + var(--s4));
+}
+.rvmp .r-searchlist:has(> .r-league-row) {
+	padding-top: var(--s3);
+}
+.rvmp .r-searchlist > .r-league-row {
+	margin-bottom: var(--s3);
+	z-index: 3;
 }
 .rvmp .r-event {
 	background: var(--surface);

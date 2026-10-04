@@ -20,6 +20,7 @@ import { cleanName, ordinal } from '../../lib/format';
 import { type BuffInfo, buffInfo } from '../../lib/moves';
 import {
 	isBuddy,
+	MAX_MOVES,
 	maxLevelOf,
 	type SlotIvs,
 	speciesFamilyKey,
@@ -30,8 +31,10 @@ import {
 	isUnrecommendedMove,
 	ivsChange,
 	levelChange,
+	movesAreRecommended,
 	pickerBlock,
-	resetTargets,
+	resetChange,
+	showReset,
 	starterNickname,
 	type StatusFlags,
 	statusToggle,
@@ -432,6 +435,10 @@ interface MemberCardProps {
 	/** The IVs / level are what the current Best Buddy setting makes optimal: not shown as picked, even if stored. */
 	ivsOptimal?: boolean | undefined;
 	levelOptimal?: boolean | undefined;
+	/** The Pokémon is not at the best it can be: offered a Reset (IVs and level together). */
+	onReset?: (() => void) | undefined;
+	/** Its CP is over the league's CP cap: shown in red (and the build is not rated). */
+	overCap?: boolean | undefined;
 	/** The Best Buddy toggle, only for a Pokémon that would benefit from it in this league (or already is one). */
 	buddy?: { on: boolean; label: string; hint: string; onToggle: () => void } | undefined;
 	/** The Super Max Mega toggle, only for a species that can be one. */
@@ -459,6 +466,8 @@ export const MemberCard = ({
 	onNicknameFocus,
 	ivsOptimal = false,
 	levelOptimal = false,
+	onReset,
+	overCap = false,
 	buddy,
 	superMega,
 	nicknameLabel,
@@ -620,7 +629,9 @@ export const MemberCard = ({
 			<dl className='r-tm-facts'>
 				<div>
 					<dt>{t('teams:builder.cp')}</dt>
-					<dd>{stats.cp}</dd>
+					<dd data-over={overCap ? '' : undefined} title={overCap ? t('teams:builder.overCapTitle') : undefined}>
+						{stats.cp}
+					</dd>
 				</div>
 				<div>
 					<dt>{t('teams:builder.level')}</dt>
@@ -655,6 +666,17 @@ export const MemberCard = ({
 					</dd>
 				</div>
 			</dl>
+			{/* its space is kept while it is not offered, so the card does not move when it appears */}
+			<button
+				type='button'
+				className='r-tm-reset'
+				hidden={!onReset}
+				tabIndex={onReset ? undefined : -1}
+				aria-hidden={onReset ? undefined : true}
+				onClick={onReset}
+			>
+				{t('teams:builder.reset')}
+			</button>
 
 			<div className='r-tm-moves'>
 				<MoveRow
@@ -726,7 +748,7 @@ export const TeamMemberEditor = ({
 			buddy?: boolean | undefined;
 			superMega?: boolean | undefined;
 		}
-	) => void;
+	) => boolean | void;
 }) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
@@ -747,7 +769,7 @@ export const TeamMemberEditor = ({
 		best,
 		buddy: buddyBest,
 		superMega: superBest,
-	} = useOptimalBuild(pokemon, member?.stats.ivs, member?.slot.level, { buddy: buddyNow, superMega: superNow }, cpCap);
+	} = useOptimalBuild(pokemon, member?.stats.ivs, member?.stats.level, { buddy: buddyNow, superMega: superNow }, cpCap);
 	// Any Pokémon can be made a Best Buddy (even one that gains nothing from it in this league); only one per team can be.
 	// A Mega that can be a Super Max Mega can be that too (two more levels, on top of a Best Buddy's one). Turning either on
 	// picks the spread that is best at the new level ceiling, and its level when that is above 50; turning one off goes back
@@ -777,12 +799,15 @@ export const TeamMemberEditor = ({
 					onToggle: () => flip(superBest, { buddy: buddyNow, superMega: !superNow }, 'superMega'),
 				}
 			: undefined;
-	// "Reset" in the IVs dialog of a Best Buddy / Super Max Mega goes to the spread that is best at its level ceiling, not to
-	// the level-50 default (which, at its level, could be over the CP cap).
-	const reset = resetTargets({ buddy: buddyNow, superMega: superNow }, best);
-	const resetBest = reset.ivs;
-	// …and the same for the level, in its own dialog: Reset there leaves the IVs alone, and the IVs' Reset leaves the level.
-	const resetLevel = reset.level;
+	// The card's Reset puts the IVs, the level AND the moves back to the best the Pokémon can be (with its Best Buddy / Super Max
+	// Mega statuses as they are), whenever any of them isn't.
+	const bestMoves = (pokemon ? (data.rankList[pokemon.speciesId]?.moveset ?? []) : [])
+		.filter((m) => m !== 'none')
+		.slice(0, MAX_MOVES);
+	const movesOptimal = !member || movesAreRecommended(member.slot.moveset, bestMoves);
+	const resetAll = showReset({ ivsOptimal, levelOptimal, movesOptimal })
+		? () => onBuild(index, resetChange({ buddy: buddyNow, superMega: superNow }, best, bestMoves))
+		: undefined;
 	// Once the nickname ends in "#<number>", keep that number in step with the IVs as they change.
 	useEffect(() => {
 		if (!onNicknameChange) return;
@@ -817,6 +842,8 @@ export const TeamMemberEditor = ({
 				onNicknameFocus={prefillNickname}
 				ivsOptimal={ivsOptimal}
 				levelOptimal={levelOptimal}
+				onReset={resetAll}
+				overCap={!!member && member.stats.cp > cpCap}
 				buddy={buddy}
 				superMega={superMega}
 				nicknameLabel={nicknameLabel}
@@ -825,15 +852,8 @@ export const TeamMemberEditor = ({
 				<IvModal
 					name={cleanName(pokemon.speciesName)}
 					value={member.stats.ivs}
-					custom={!!member.slot.ivs}
 					level={member.stats.level}
-					baseStats={pokemon.baseStats}
-					cpCap={cpCap}
-					best={resetBest}
-					optimal={ivsOptimal}
-					onChange={(ivs, keepLevel) => {
-						onBuild(index, ivsChange(member.slot, ivs, keepLevel));
-					}}
+					onChange={(ivs, keepLevel) => onBuild(index, ivsChange(member.slot, ivs, keepLevel))}
 					onClose={() => setEditing(null)}
 				/>
 			)}
@@ -841,14 +861,10 @@ export const TeamMemberEditor = ({
 				<LevelModal
 					name={cleanName(pokemon.speciesName)}
 					level={member.stats.level}
-					custom={member.slot.level !== undefined}
 					baseStats={pokemon.baseStats}
 					ivs={member.stats.ivs}
-					cpCap={cpCap}
 					maxLevel={levelMax}
 					buddyMaxLevel={maxLevelOf({ buddy: true, superMega: !!pokemon.isSuperMega })}
-					optimal={levelOptimal}
-					bestLevel={resetLevel}
 					onChange={(level) => onBuild(index, levelChange(level, member.slot.ivs, pokemon, superNow))}
 					onClose={() => setEditing(null)}
 				/>
@@ -926,7 +942,7 @@ export const TeamStage = ({
 			buddy?: boolean | undefined;
 			superMega?: boolean | undefined;
 		}
-	) => void;
+	) => boolean | void;
 	/** The league's CP cap, to tell when a picked level puts a Pokémon over it. */
 	cpCap: number;
 	onRemove: (index: number) => void;

@@ -30,7 +30,6 @@
 		"level": "Level",
 		"ivs": "IVs",
 		"ivEdit": "Change the IVs of {{name}}",
-		"ivOverCap": "At this level {{name}} has {{cp}} CP, over the {{cap}} cap.",
 		"ivTitle": "IVs of {{name}}",
 		"levelTitle": "Level of {{name}}",
 		"bestBuddyMoveHint": "Make this Pokémon the Best Buddy; the current one goes back to the defaults",
@@ -46,7 +45,10 @@
 		"none": "None",
 		"pickMove": "Change move ({{move}})",
 		"moveListAria": "Moves",
-		"recommended": "PvPoke's recommended move"
+		"recommended": "PvPoke's recommended move",
+		"overCapReason": "CP {{cp}} is over this league's {{cap}} CP cap.",
+		"overCapTitle": "Over the league's CP cap",
+		"scoresHidden": "Scores come back once every Pokémon is within the league's CP cap."
 	},
 	"picker": {
 		"title": "Choose a Pokémon",

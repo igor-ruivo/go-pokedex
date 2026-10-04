@@ -15,7 +15,6 @@ import { isDuplicateBuild } from '../../lib/canonical-slot';
 import { cleanName } from '../../lib/format';
 import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import { removeCollectionPokemon, saveCollectionPokemon, usePokemonCollection } from '../../lib/pokemon-collection';
-import { cpAt } from '../../lib/pvp-sim/cp';
 import {
 	isBuddy,
 	MAX_MOVES,
@@ -252,14 +251,10 @@ export const PokemonCollection = ({
 			buddy?: boolean | undefined;
 			superMega?: boolean | undefined;
 		}
-	) => {
-		if (!draft) return;
+	): boolean => {
+		if (!draft) return false;
 		const spread = bestIvsFor(data.builder, draft.slot.speciesId, LEAGUE_CP[league]);
 		const defaultIvs = spread ? ([spread[1], spread[2], spread[3]] as SlotIvs) : undefined;
-		const effectiveIvs = build.ivs ?? defaultIvs;
-		const base = data.gamemaster[draft.slot.speciesId]?.baseStats;
-		if (build.level !== undefined && effectiveIvs && base && cpAt(base, effectiveIvs, build.level) > LEAGUE_CP[league])
-			return;
 		const ivs = build.ivs && !defaultIvs?.every((value, index) => value === build.ivs?.[index]) ? build.ivs : undefined;
 		updateDraft({
 			speciesId: draft.slot.speciesId,
@@ -269,11 +264,12 @@ export const PokemonCollection = ({
 			...((build.buddy ?? isBuddy(draft.slot)) ? { buddy: true as const } : {}),
 			...((build.superMega ?? draft.slot.superMega) ? { superMega: true as const } : {}),
 		});
+		return true;
 	};
 	// The draft is an exact replica (species, moves, IVs, level) of another saved Pokémon: it can't be saved.
 	const draftIsDuplicate = !!draft && isDuplicateBuild(draft.slot, saved, draft.entryId, league, data);
 	const saveDraft = () => {
-		if (!draft || draftIsDuplicate) return;
+		if (!draft || draftIsDuplicate || (draftMember && draftMember.stats.cp > LEAGUE_CP[league])) return;
 		const nickname = draft.nickname?.trim().slice(0, 32);
 		saveCollectionPokemon(
 			league,
@@ -329,7 +325,13 @@ export const PokemonCollection = ({
 						onRemove={() => setDraft(null)}
 						onConfirm={saveDraft}
 						confirmLabel={t('teams:collection.confirm')}
-						confirmDisabledReason={draftIsDuplicate ? t('teams:collection.duplicate') : undefined}
+						confirmDisabledReason={
+							draftIsDuplicate
+								? t('teams:collection.duplicate')
+								: draftMember && draftMember.stats.cp > LEAGUE_CP[league]
+									? t('teams:builder.overCapReason', { cp: draftMember.stats.cp, cap: LEAGUE_CP[league] })
+									: undefined
+						}
 						nickname={draft.nickname}
 						nicknameLabel={t('teams:collection.nickname')}
 						onNicknameChange={(nickname) =>
@@ -526,7 +528,7 @@ export const PokemonCollection = ({
 				/>
 			)}
 			{removeTarget && (
-				<div className='r-tm-picker-backdrop'>
+				<div className='r-tm-picker-backdrop r-tm-picker-backdrop--center'>
 					<div
 						className='r-tm-picker r-tm-collection-remove-dialog'
 						role='alertdialog'

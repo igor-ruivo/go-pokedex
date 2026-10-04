@@ -30,7 +30,6 @@
 		"level": "เลเวล",
 		"ivs": "IV",
 		"ivEdit": "เปลี่ยน IV ของ {{name}}",
-		"ivOverCap": "ที่เลเวลนี้ {{name}} มี CP {{cp}} เกินขีดจำกัด {{cap}}",
 		"ivTitle": "IV ของ {{name}}",
 		"levelTitle": "เลเวลของ {{name}}",
 		"bestBuddyMoveHint": "ตั้งโปเกมอนตัวนี้เป็นเบสต์บัดดี้ ตัวเดิมจะกลับเป็นค่าเริ่มต้น",
@@ -46,7 +45,10 @@
 		"none": "ไม่มี",
 		"pickMove": "เปลี่ยนท่า ({{move}})",
 		"moveListAria": "ท่า",
-		"recommended": "ท่าที่ PvPoke แนะนำ"
+		"recommended": "ท่าที่ PvPoke แนะนำ",
+		"overCapReason": "CP {{cp}} เกินเพดาน CP {{cap}} ของลีกนี้",
+		"overCapTitle": "เกินเพดาน CP ของลีก",
+		"scoresHidden": "คะแนนจะกลับมาเมื่อโปเกมอนทุกตัวอยู่ในเพดาน CP ของลีก"
 	},
 	"picker": {
 		"title": "เลือกโปเกมอน",

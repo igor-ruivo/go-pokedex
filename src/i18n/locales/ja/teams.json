@@ -30,7 +30,6 @@
 		"level": "レベル",
 		"ivs": "個体値",
 		"ivEdit": "{{name}}の個体値を変更",
-		"ivOverCap": "このレベルでは{{name}}のCPは{{cp}}で、上限{{cap}}を超えています。",
 		"ivTitle": "{{name}}の個体値",
 		"levelTitle": "{{name}}のレベル",
 		"bestBuddyMoveHint": "このポケモンをベストバディにする（今のベストバディは初期値に戻ります）",
@@ -46,7 +45,10 @@
 		"none": "なし",
 		"pickMove": "わざを変更（{{move}}）",
 		"moveListAria": "わざ",
-		"recommended": "PvPokeおすすめのわざ"
+		"recommended": "PvPokeおすすめのわざ",
+		"overCapReason": "CP{{cp}}はこのリーグのCP上限{{cap}}を超えています。",
+		"overCapTitle": "リーグのCP上限を超えています",
+		"scoresHidden": "すべてのポケモンがリーグのCP上限内に収まると、スコアが表示されます。"
 	},
 	"picker": {
 		"title": "ポケモンを選ぶ",

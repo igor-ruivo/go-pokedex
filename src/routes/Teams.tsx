@@ -75,8 +75,11 @@ const Teams = () => {
 	);
 	const analysis = useTeamAnalysis(league, ctx, data, team);
 
-	const full = team.length === 3;
-	const evaluationQuery = useTeamEvaluation(league, data, team);
+	// A build over the league's CP cap (a picked level or IVs the cap doesn't allow) is kept and shown with its CP in red, but it is
+	// not rated: no score, no simulation and no suggestions until every Pokémon fits.
+	const unreachable = !!analysis?.members.some((m) => m.stats.cp > LEAGUE_CP[league]);
+	const full = team.length === 3 && !unreachable;
+	const evaluationQuery = useTeamEvaluation(league, data, full ? team : []);
 	const evaluation = full ? evaluationQuery.data : undefined;
 	const simulating = full && evaluationQuery.isFetching && !evaluationQuery.data;
 	const stale = full && evaluationQuery.isPlaceholderData;
@@ -257,6 +260,18 @@ const Teams = () => {
 		);
 	}
 
+	const leagueRow = (
+		<div className='r-league-row r-tm-leagues'>
+			<LeaguePicker
+				items={leagueItems}
+				activeId={league}
+				onSelect={setLeague}
+				ariaLabel={t('teams:page.leagueAria')}
+				trailing={<CustomLeaguePicker activeId={league} onSelect={setLeague} />}
+			/>
+		</div>
+	);
+
 	return (
 		<div
 			className={
@@ -268,15 +283,8 @@ const Teams = () => {
 
 			<IconTabBar items={tabItems} activeId={tab} onSelect={goToTab} ariaLabel={t('teams:page.tabsAria')} />
 
-			<div className='r-league-row r-tm-leagues'>
-				<LeaguePicker
-					items={leagueItems}
-					activeId={league}
-					onSelect={setLeague}
-					ariaLabel={t('teams:page.leagueAria')}
-					trailing={<CustomLeaguePicker activeId={league} onSelect={setLeague} />}
-				/>
-			</div>
+			{/* Best teams and Favorites carry the picker along with their search header; elsewhere (and until they load) it sits here. */}
+			{!(data.ready && (tab === 'top' || tab === 'favorites')) && leagueRow}
 
 			{data.failed && <p className='r-muted'>{t('teams:page.loadFailed')}</p>}
 			{!data.failed && !data.ready && (
@@ -286,9 +294,13 @@ const Teams = () => {
 				</div>
 			)}
 
-			{data.ready && tab === 'top' && <TopTeams league={league} data={data} onOpen={openFromTop} />}
+			{data.ready && tab === 'top' && (
+				<TopTeams league={league} data={data} leagueRow={leagueRow} onOpen={openFromTop} />
+			)}
 
-			{data.ready && tab === 'favorites' && <FavoriteTeams league={league} data={data} onOpen={openFromTop} />}
+			{data.ready && tab === 'favorites' && (
+				<FavoriteTeams league={league} data={data} leagueRow={leagueRow} onOpen={openFromTop} />
+			)}
 
 			{data.ready && tab === 'collection' && (
 				<PokemonCollection key={league} league={league} leagueLabel={leagueLabel} data={data} onOpen={openFromTop} />
@@ -372,9 +384,10 @@ const Teams = () => {
 					)}
 
 					{team.length === 0 && <p className='r-tm-empty'>{t('teams:builder.emptyHint')}</p>}
-					{team.length > 0 && !full && (
+					{team.length > 0 && team.length < 3 && (
 						<p className='r-tm-empty'>{t('teams:builder.addMore', { n: 3 - team.length })}</p>
 					)}
+					{unreachable && team.length === 3 && <p className='r-tm-empty'>{t('teams:builder.scoresHidden')}</p>}
 
 					{analysis && parts && full && (
 						<>

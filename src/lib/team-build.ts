@@ -1,4 +1,3 @@
-import { cpAt } from './pvp-sim/cp';
 import {
 	BASE_MAX_LEVEL,
 	isBuddy,
@@ -21,6 +20,8 @@ export interface BuildChange {
 	level: number | undefined;
 	buddy?: boolean | undefined;
 	superMega?: boolean | undefined;
+	/** The whole moveset, when the change replaces it (Reset puts back the recommended moves). */
+	moveset?: ReadonlyArray<string> | undefined;
 }
 
 export interface StatusFlags {
@@ -83,23 +84,38 @@ export const ivsChange = (
 });
 
 /**
- * What each Reset goes to for a Best Buddy / Super Max Mega: the spread (or level) that is best at its level ceiling, not the
- * level-50 default (which, at its level, could be over the CP cap). Each leaves the other alone.
+ * What the card's Reset asks for: the Pokémon back to perfection — the IVs, the level AND the moves, all at once. With a Best
+ * Buddy or a Super Max Mega the IVs are the spread that is best at its level ceiling and the level is the one that goes with it
+ * (when that is above 50, otherwise the level follows the CP cap again); without either they are the league's default spread at
+ * the level the CP cap gives. The statuses themselves are left as they are. The moves go back to the ranking's recommended ones
+ * (when there are any). Everything comes from the same spread, so it always fits together.
  */
-export const resetTargets = (
+export const resetChange = (
 	flags: StatusFlags,
-	best: SpreadAndLevel | undefined
-): { ivs: { ivs: SlotIvs } | undefined; level: number | undefined } => ({
-	ivs: (flags.buddy || flags.superMega) && best ? { ivs: best.ivs } : undefined,
-	level: (flags.buddy || flags.superMega) && best && best.level > BASE_MAX_LEVEL ? best.level : undefined,
+	best: SpreadAndLevel | undefined,
+	recommendedMoves: ReadonlyArray<string> = []
+): BuildChange => ({
+	...((flags.buddy || flags.superMega) && best
+		? { ivs: best.ivs, level: best.level > BASE_MAX_LEVEL ? best.level : undefined }
+		: { ivs: undefined, level: undefined }),
+	...(recommendedMoves.length > 0 ? { moveset: recommendedMoves } : {}),
 });
 
-/** The IVs dialog offers Reset when they were picked or the best spread differs from the default, unless they already are the best. */
-export const showIvReset = (state: { custom: boolean; best: unknown; optimal: boolean }): boolean =>
-	(state.custom || !!state.best) && !state.optimal;
+/** Whether a moveset is the recommended one: the same Fast Move and the same Charged Moves, in either order. */
+export const movesAreRecommended = (moveset: ReadonlyArray<string>, recommended: ReadonlyArray<string>): boolean => {
+	const wanted = recommended.filter((m) => m !== 'none');
+	const have = moveset.filter((m) => m !== 'none');
+	if (wanted.length === 0) return true;
+	return (
+		have[0] === wanted[0] &&
+		have.length === wanted.length &&
+		[...have.slice(1)].sort().join() === [...wanted.slice(1)].sort().join()
+	);
+};
 
-/** The level dialog offers Reset when the level was picked, unless it already is the best. */
-export const showLevelReset = (state: { custom: boolean; optimal: boolean }): boolean => state.custom && !state.optimal;
+/** The card offers Reset whenever the IVs, the level or the moves are not the best the Pokémon can have. */
+export const showReset = (state: { ivsOptimal: boolean; levelOptimal: boolean; movesOptimal?: boolean }): boolean =>
+	!(state.ivsOptimal && state.levelOptimal && (state.movesOptimal ?? true));
 
 /**
  * How a member's IVs line reads: the level is stated only when it is a deliberate one (not the level the cap gives anyway),
@@ -115,19 +131,19 @@ export const buildHighlight = (state: {
 	return { showLevel, custom: (state.ivsPicked && !state.ivsOptimal) || showLevel };
 };
 
-/** A trailing "#<rank>" on a nickname — the part that follows the IVs' rank. */
+/** A trailing "#<rank>" on a nickname — the part that follows the IVs' rank, attached to the name ("Azumarill#12"). */
 export const RANK_SUFFIX = /\s*#(\d+)$/;
 
 /** The nickname with its trailing rank brought up to date, or `undefined` when it has none / is current already. */
 export const syncedNickname = (nickname: string | undefined, rank: number | undefined): string | undefined => {
 	if (nickname === undefined || rank === undefined) return undefined;
 	const match = RANK_SUFFIX.exec(nickname);
-	return match && match[1] !== String(rank) ? nickname.replace(RANK_SUFFIX, ` #${rank}`) : undefined;
+	return match && match[1] !== String(rank) ? nickname.replace(RANK_SUFFIX, `#${rank}`) : undefined;
 };
 
-/** The nickname a new one starts as: the Pokémon's name and the rank of its IVs. */
+/** The nickname a new one starts as: the Pokémon's name with the rank of its IVs attached ("Azumarill#12"). */
 export const starterNickname = (name: string, rank: number | undefined): string =>
-	(rank === undefined ? name : `${name} #${rank}`).slice(0, 32);
+	(rank === undefined ? name : `${name}#${rank}`).slice(0, 32);
 
 /** A move the ranking doesn't recommend for the Pokémon is shown with a warning. */
 export const isUnrecommendedMove = (moveId: string, recommended: ReadonlyArray<string>): boolean =>
@@ -157,15 +173,14 @@ export const nicknamesByBuild = <
 export interface BuildContext {
 	/** Whether the species can be a Super Max Mega. */
 	isSuperMegaSpecies: (speciesId: string) => boolean;
-	baseStatsOf: (speciesId: string) => { atk: number; def: number; hp: number } | undefined;
 	/** The league's best spread for a species. */
 	defaultIvs: (speciesId: string) => SlotIvs | undefined;
-	cpCap: number;
 }
 
 /**
  * The team after one member's IVs, level and statuses are set, or `undefined` when the change is refused: a level beyond
- * what the statuses allow (50, +1 Best Buddy, +2 Super Max Mega), or one that puts the Pokémon over the CP cap with its IVs.
+ * what the statuses allow (50, +1 Best Buddy, +2 Super Max Mega). A build that is over the league's CP cap is NOT refused: it is
+ * kept, shown with its CP in red, and simply not rated until it fits.
  * Only one Pokémon per team is a Best Buddy: making this one the buddy takes it from the current one, which goes back to the
  * defaults. A Super Max Mega is only for a species that can be one; a status left out of the change stays as it is.
  */
@@ -181,11 +196,6 @@ export const applyBuild = (
 	const superMega =
 		(build.superMega ?? target?.superMega ?? false) && !!target && context.isSuperMegaSpecies(target.speciesId);
 	if ((build.level ?? 0) > maxLevelOf({ buddy, superMega })) return undefined;
-	if (target && build.level !== undefined) {
-		const effectiveIvs = build.ivs ?? context.defaultIvs(target.speciesId);
-		const base = context.baseStatsOf(target.speciesId);
-		if (effectiveIvs && base && cpAt(base, effectiveIvs, build.level) > context.cpCap) return undefined;
-	}
 	return team.map((slot, i) => {
 		if (i !== index) {
 			return takesBuddy && isBuddy(slot) ? { speciesId: slot.speciesId, moveset: slot.moveset } : slot;
@@ -194,7 +204,7 @@ export const applyBuild = (
 		const ivs = build.ivs && !best?.every((n, k) => n === build.ivs?.[k]) ? build.ivs : undefined;
 		return {
 			speciesId: slot.speciesId,
-			moveset: slot.moveset,
+			moveset: build.moveset ? [...build.moveset] : slot.moveset,
 			...(ivs ? { ivs } : {}),
 			...(build.level !== undefined ? { level: build.level } : {}),
 			...(buddy ? { buddy: true as const } : {}),
@@ -213,9 +223,8 @@ export const levelInputState = (input: {
 	typed: number;
 	maxLevel: number;
 	buddyMaxLevel: number;
-	overCap: boolean;
 }): { valid: boolean; needsBuddy: boolean } => ({
-	valid: isSlotLevel(input.typed) && input.typed <= input.maxLevel && !input.overCap,
+	valid: isSlotLevel(input.typed) && input.typed <= input.maxLevel,
 	needsBuddy: isSlotLevel(input.typed) && input.typed > input.maxLevel && input.typed <= input.buddyMaxLevel,
 });
 

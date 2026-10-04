@@ -30,7 +30,6 @@
 		"level": "Livello",
 		"ivs": "IV",
 		"ivEdit": "Cambia gli IV di {{name}}",
-		"ivOverCap": "A questo livello {{name}} ha {{cp}} PC, oltre il limite di {{cap}}.",
 		"ivTitle": "IV di {{name}}",
 		"levelTitle": "Livello di {{name}}",
 		"bestBuddyMoveHint": "Rendi questo Pokémon il compagno migliore; quello attuale torna ai valori predefiniti",
@@ -46,7 +45,10 @@
 		"none": "Nessuna",
 		"pickMove": "Cambia mossa ({{move}})",
 		"moveListAria": "Mosse",
-		"recommended": "Mossa consigliata da PvPoke"
+		"recommended": "Mossa consigliata da PvPoke",
+		"overCapReason": "I PL {{cp}} superano il limite di {{cap}} PL di questa lega.",
+		"overCapTitle": "Oltre il limite di PL della lega",
+		"scoresHidden": "I punteggi tornano appena ogni Pokémon rientra nel limite di PL della lega."
 	},
 	"picker": {
 		"title": "Scegli un Pokémon",

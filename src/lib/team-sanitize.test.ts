@@ -22,7 +22,6 @@ const gamemaster: TeamRulesData['gamemaster'] = {
 const rankList = Object.fromEntries(Object.keys(gamemaster).map((id) => [id, {}]));
 const move = { abbreviation: '', type: 'normal', power: 0, energy: 0, energyGain: 0, cooldown: 500, turns: 1 };
 const data: TeamRulesData = { gamemaster, rankList, builder: { moves: { A: move, B: move, C: move }, ivs: {} } };
-const GREAT = 1500;
 
 const moveset = ['A', 'B', 'C'];
 const slot = (speciesId: string, extra: Partial<TeamSlotDescriptor> = {}): TeamSlotDescriptor => ({
@@ -30,7 +29,7 @@ const slot = (speciesId: string, extra: Partial<TeamSlotDescriptor> = {}): TeamS
 	moveset,
 	...extra,
 });
-const clean = (slots: Array<TeamSlotDescriptor>) => sanitizeTeam(slots, data, GREAT);
+const clean = (slots: Array<TeamSlotDescriptor>) => sanitizeTeam(slots, data);
 
 describe('sanitizeTeam', () => {
 	it('keeps a valid team as it is', () => {
@@ -116,11 +115,9 @@ describe('sanitizeTeam', () => {
 		expect(clean([slot('azumarill', { level: 50.5 })])[0]).toEqual(slot('azumarill', { level: 50.5, buddy: true }));
 	});
 
-	it('drops a level that would put the Pokémon over the CP cap with its IVs', () => {
-		expect(clean([slot('giant', { ivs: [15, 15, 15], level: 40 })])[0].level).toBeUndefined();
+	it('keeps a level that puts the Pokémon over the CP cap: the builder shows its CP in red instead', () => {
+		expect(clean([slot('giant', { ivs: [15, 15, 15], level: 40 })])[0].level).toBe(40);
 		expect(clean([slot('azumarill', { ivs: [15, 15, 15], level: 40 })])[0].level).toBe(40);
-		// the same level fits a bigger cap
-		expect(sanitizeTeam([slot('giant', { ivs: [15, 15, 15], level: 40 })], data, 10000)[0].level).toBe(40);
 	});
 
 	it('keeps the IVs, moves and order of what it keeps', () => {

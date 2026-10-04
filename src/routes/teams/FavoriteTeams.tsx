@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SearchListBar } from '../../components/SearchListBar';
@@ -33,10 +33,13 @@ type FavoriteSortKey = 'added' | 'score' | 'threat';
 export const FavoriteTeams = ({
 	league,
 	data,
+	leagueRow,
 	onOpen,
 }: {
 	league: TeamLeague;
 	data: TeamsData;
+	/** The league picker: it scrolls along with the search header, and stands alone while there is no list. */
+	leagueRow: ReactNode;
 	onOpen: (team: RankedTeam) => void;
 }) => {
 	const { t } = useTranslation(['teams', 'components', 'common']);
@@ -111,13 +114,22 @@ export const FavoriteTeams = ({
 	const term = useDebouncedValue(search.trim().toLowerCase(), 220);
 	if (!data.ready || !painted) {
 		return (
-			<div className='r-tm-loading'>
-				<span className='r-spinner' aria-hidden='true' />
-				<p>{t('teams:page.loading')}</p>
-			</div>
+			<>
+				{leagueRow}
+				<div className='r-tm-loading'>
+					<span className='r-spinner' aria-hidden='true' />
+					<p>{t('teams:page.loading')}</p>
+				</div>
+			</>
 		);
 	}
-	if (favorites.length === 0) return <p className='r-tm-empty'>{t('teams:favorites.empty')}</p>;
+	if (favorites.length === 0)
+		return (
+			<>
+				{leagueRow}
+				<p className='r-tm-empty'>{t('teams:favorites.empty')}</p>
+			</>
+		);
 
 	const sortOptions: ReadonlyArray<SortOption> = [
 		{ key: 'added', label: t('teams:favorites.sortAdded'), defaultDir: 'desc' },
@@ -153,6 +165,7 @@ export const FavoriteTeams = ({
 				<p className='r-muted r-tm-board-intro'>{t('teams:favorites.unratedNotice', { limit: AUTO_RATE_LIMIT })}</p>
 			)}
 			<SearchListBar
+				above={leagueRow}
 				value={search}
 				onChange={setSearch}
 				placeholder={t('teams:top.searchPlaceholder')}

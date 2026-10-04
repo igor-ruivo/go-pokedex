@@ -1,13 +1,4 @@
-import { bestIvsFor } from './league-caps';
-import { cpAt } from './pvp-sim/cp';
-import {
-	BASE_MAX_LEVEL,
-	isBuddy,
-	maxLevelOf,
-	type SlotIvs,
-	speciesFamilyKey,
-	type TeamSlotDescriptor,
-} from './team-analysis';
+import { BASE_MAX_LEVEL, isBuddy, maxLevelOf, speciesFamilyKey, type TeamSlotDescriptor } from './team-analysis';
 import type { TeamRulesData } from './team-combinations';
 
 /**
@@ -15,21 +6,14 @@ import type { TeamRulesData } from './team-combinations';
  * ranks and whose moves exist; no Pokémon twice (a Shadow, its normal form and every Mega of it are one: the first stays);
  * one Mega at most (a second goes); one Best Buddy at most (later ones are plain Pokémon again, their level above 50 goes);
  * a Super Max Mega only for a species that can be one; a level that could be either of the two statuses (50 to 52 on a species
- * that can be a Super Max Mega, neither written) is not guessed at; and a level only if it fits the CP cap with the Pokémon's IVs and
- * what its flags allow (50, +1 Best Buddy, +2 Super Max Mega) — otherwise the level follows the cap again.
+ * that can be a Super Max Mega, neither written) is not guessed at; and a level only up to what its flags allow (50, +1 Best
+ * Buddy, +2 Super Max Mega) — otherwise the level follows the cap again. A level over the CP cap is kept: the builder shows it
+ * in red.
  */
 export const sanitizeTeam = (
 	slots: ReadonlyArray<TeamSlotDescriptor>,
-	data: TeamRulesData,
-	cpCap: number
+	data: TeamRulesData
 ): Array<TeamSlotDescriptor> => {
-	const withinCap = (slot: TeamSlotDescriptor) => {
-		if (slot.level === undefined) return true;
-		const spread = bestIvsFor(data.builder, slot.speciesId, cpCap);
-		const ivs = slot.ivs ?? (spread ? ([spread[1], spread[2], spread[3]] as SlotIvs) : undefined);
-		const base = data.gamemaster[slot.speciesId]?.baseStats;
-		return !ivs || !base || cpAt(base, ivs, slot.level) <= cpCap;
-	};
 	const bases = new Set<string>();
 	let megaTaken = false;
 	let buddyTaken = false;
@@ -62,7 +46,7 @@ export const sanitizeTeam = (
 			const buddy = isBuddy(slot) && !buddyTaken;
 			if (buddy) buddyTaken = true;
 			const superMega = slot.superMega === true && !!data.gamemaster[slot.speciesId]?.isSuperMega;
-			const keepLevel = slot.level !== undefined && withinCap(slot) && slot.level <= maxLevelOf({ buddy, superMega });
+			const keepLevel = slot.level !== undefined && slot.level <= maxLevelOf({ buddy, superMega });
 			return {
 				speciesId: slot.speciesId,
 				moveset: slot.moveset,

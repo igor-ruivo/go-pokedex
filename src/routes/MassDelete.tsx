@@ -2164,12 +2164,15 @@ const MassDeleteContent = ({
 	// doesn't render that section at all), so their own "keep top N" cutoffs
 	// belong in the summary right alongside Great/Ultra/Master/Raid's, not
 	// silently left out just because they're a variable-length add-on.
-	const extraLeagueSummaries = activeExtraLeagues.map((l) =>
-		t('massDelete:panelSummary.topExtra', {
-			n: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
-			league: leagueTitle(l, gl).full,
-		})
-	);
+	// (a league at 0 is not used at all — nothing to say about it)
+	const extraLeagueSummaries = activeExtraLeagues
+		.filter((l) => (trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA) > 0)
+		.map((l) =>
+			t('massDelete:panelSummary.topExtra', {
+				n: trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA,
+				league: leagueTitle(l, gl).full,
+			})
+		);
 	const topLeagueSummaries = [
 		t('massDelete:panelSummary.topGreat', {
 			n: trashGreat,

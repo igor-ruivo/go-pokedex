@@ -30,7 +30,6 @@
 		"level": "Level",
 		"ivs": "IV",
 		"ivEdit": "Ubah IV {{name}}",
-		"ivOverCap": "Pada level ini {{name}} punya {{cp}} CP, melebihi batas {{cap}}.",
 		"ivTitle": "IV {{name}}",
 		"levelTitle": "Level {{name}}",
 		"bestBuddyMoveHint": "Jadikan Pokémon ini Best Buddy; yang sekarang kembali ke bawaan",
@@ -46,7 +45,10 @@
 		"none": "Tidak ada",
 		"pickMove": "Ganti jurus ({{move}})",
 		"moveListAria": "Jurus",
-		"recommended": "Jurus rekomendasi PvPoke"
+		"recommended": "Jurus rekomendasi PvPoke",
+		"overCapReason": "CP {{cp}} melewati batas {{cap}} CP liga ini.",
+		"overCapTitle": "Melewati batas CP liga",
+		"scoresHidden": "Skor kembali begitu setiap Pokémon berada dalam batas CP liga."
 	},
 	"picker": {
 		"title": "Pilih Pokémon",
