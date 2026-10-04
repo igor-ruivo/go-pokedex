@@ -54,6 +54,7 @@
 		"close": "關閉",
 		"searchPlaceholder": "搜尋{{league}}的寶可夢…",
 		"inTeam": "已在隊伍中",
+		"megaTaken": "每隊只能有一隻超級進化",
 		"empty": "沒有符合的寶可夢。",
 		"showMore": "顯示更多"
 	},

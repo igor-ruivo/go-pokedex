@@ -12,15 +12,13 @@ import {
 	maxLevelOf,
 	type SlotIvs,
 	type TeamSlotDescriptor,
+	speciesFamilyKey,
 	withMove,
 } from '../../lib/team-analysis';
 import { forgetTeam, lastTeamFor, rememberTeam } from './team-memory';
 import type { TeamsData } from './useTeamsData';
 
 const MAX_TEAM = 3;
-
-/** `azumarill_shadow` and `azumarill` are the same Pokémon as far as a team is concerned. */
-const baseSpeciesId = (speciesId: string) => speciesId.replace(/_shadow$/, '');
 
 /**
  * The team being edited, kept in the URL (`?t=azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH,…`)
@@ -50,6 +48,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 		};
 		// The same Pokémon can't be fielded twice, shadow or not (a hand-edited link may try): the first one stays.
 		const bases = new Set<string>();
+		let megaTaken = false;
 		let buddyTaken = false;
 		return decodeTeam(raw)
 			.filter((slot) => {
@@ -59,8 +58,12 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 					!slot.moveset.every((m) => m === 'none' || builder?.moves[m])
 				)
 					return false;
-				const base = baseSpeciesId(slot.speciesId);
+				const base = speciesFamilyKey(slot.speciesId, (x) => data.gamemaster[x]);
 				if (bases.has(base)) return false;
+				// One Mega per team: a second one (any species) goes, as does a repeated Pokémon.
+				const mega = !!data.gamemaster[slot.speciesId]?.isMega;
+				if (mega && megaTaken) return false;
+				if (mega) megaTaken = true;
 				bases.add(base);
 				return true;
 			})
@@ -125,13 +128,17 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	/** Puts `speciesId` (with its recommended moves) in `index`, replacing what was there or appending. */
 	const setMember = useCallback(
 		(index: number, speciesId: string) => {
-			// Refused: a teammate is already this Pokémon (shadow or not).
-			if (team.some((slot, i) => i !== index && baseSpeciesId(slot.speciesId) === baseSpeciesId(speciesId))) return;
+			// Refused: a teammate is already this Pokémon (shadow or not, any Mega of it too).
+			if (team.some((slot, i) => i !== index && speciesFamilyKey(slot.speciesId, (x) => data.gamemaster[x]) === speciesFamilyKey(speciesId, (x) => data.gamemaster[x])))
+				return;
+			// Refused: a teammate is already a Mega (a team has one at most).
+			if (data.gamemaster[speciesId]?.isMega && team.some((slot, i) => i !== index && data.gamemaster[slot.speciesId]?.isMega))
+				return;
 			const next = [...team];
 			next[Math.min(index, next.length)] = { speciesId, moveset: recommendedMoveset(speciesId) };
 			write(next.slice(0, MAX_TEAM));
 		},
-		[team, write, recommendedMoveset]
+		[team, write, recommendedMoveset, data.gamemaster]
 	);
 
 	/** Sets one move of one member: `moveIndex` 0 is the Fast Move, 1 and 2 the Charged Moves. */

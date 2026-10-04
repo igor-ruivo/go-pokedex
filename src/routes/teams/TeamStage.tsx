@@ -18,7 +18,15 @@ import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../../lib/com
 import { combatMetricNames } from '../../lib/combat-text';
 import { cleanName, ordinal } from '../../lib/format';
 import { type BuffInfo, buffInfo } from '../../lib/moves';
-import { BASE_MAX_LEVEL, isBuddy, maxLevelOf, type SlotIvs, type TeamRole, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import {
+	BASE_MAX_LEVEL,
+	isBuddy,
+	maxLevelOf,
+	type SlotIvs,
+	speciesFamilyKey,
+	type TeamRole,
+	type TeamSlotDescriptor,
+} from '../../lib/team-analysis';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
@@ -257,14 +265,17 @@ const PokemonPicker = ({
 	leagueLabel,
 	data,
 	teamBases,
+	megaTaken,
 	replacing,
 	onPick,
 	onClose,
 }: {
 	leagueLabel: string;
 	data: TeamsData;
-	/** Base species already on the team (a Shadow and its normal form count as one) — labelled, not blocked. */
+	/** Base species already on the team (a Shadow, its normal form and any Mega of it count as one) — labelled, not blocked. */
 	teamBases: ReadonlySet<string>;
+	/** A teammate is already a Mega: a team has one at most, so no other Mega can be picked — labelled and blocked too. */
+	megaTaken: boolean;
 	/** Name of the Pokémon this pick will replace, when the slot isn't empty. */
 	replacing?: string | undefined;
 	onPick: (speciesId: string) => void;
@@ -337,7 +348,8 @@ const PokemonPicker = ({
 			<ul className='r-tm-picker-list'>
 				{rows.slice(0, shown).map(({ r, position }) => {
 					const p = data.gamemaster[r.speciesId];
-					const inTeam = teamBases.has(r.speciesId.replace(/_shadow$/, ''));
+					const inTeam = teamBases.has(speciesFamilyKey(r.speciesId, (x) => data.gamemaster[x]));
+					const megaBlocked = !inTeam && megaTaken && p.isMega;
 					const score = sortKey === 'overall' ? r.score : r[sortKey];
 					return (
 						<li key={r.speciesId}>
@@ -345,7 +357,7 @@ const PokemonPicker = ({
 								type='button'
 								style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 								// a Pokémon already on the team (shadow or not) can't be picked again
-								disabled={inTeam}
+								disabled={inTeam || megaBlocked}
 								onClick={() => onPick(r.speciesId)}
 							>
 								<RankMedal rank={position} className='r-tm-picker-medal' />
@@ -360,6 +372,7 @@ const PokemonPicker = ({
 											<i key={typeKey(ty)} style={{ background: typeVar(ty) }} />
 										))}
 										{inTeam && <em>{t('teams:picker.inTeam')}</em>}
+										{megaBlocked && <em>{t('teams:picker.megaTaken')}</em>}
 									</span>
 								</span>
 								<span className='r-tm-picker-side'>
@@ -872,8 +885,8 @@ export const SlotPicker = ({
 	const current = team[slot] ? data.gamemaster[team[slot].speciesId] : undefined;
 	const replacing = current ? cleanName(current.speciesName) : undefined;
 	const teamBases = useMemo(
-		() => new Set(team.filter((_, i) => i !== slot).map((s) => s.speciesId.replace(/_shadow$/, ''))),
-		[team, slot]
+		() => new Set(team.filter((_, i) => i !== slot).map((s) => speciesFamilyKey(s.speciesId, (x) => data.gamemaster[x]))),
+		[team, slot, data.gamemaster]
 	);
 
 	return (
@@ -881,6 +894,7 @@ export const SlotPicker = ({
 			leagueLabel={leagueLabel}
 			data={data}
 			teamBases={teamBases}
+			megaTaken={team.some((s, i) => i !== slot && !!data.gamemaster[s.speciesId]?.isMega)}
 			replacing={replacing}
 			onClose={onClose}
 			onPick={(speciesId) => {

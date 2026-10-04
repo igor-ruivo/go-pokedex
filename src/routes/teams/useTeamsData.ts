@@ -59,6 +59,9 @@ const speciesInfoOf = (p: IGamemasterPokemon): SpeciesInfo => ({
 	types: p.types.map(String),
 	baseStats: p.baseStats,
 	isShadow: p.isShadow,
+	nonShadowSpecies: p.nonShadowSpecies,
+	baseSpecies: p.baseSpecies,
+	isMega: p.isMega,
 	isSuperMega: p.isSuperMega,
 });
 

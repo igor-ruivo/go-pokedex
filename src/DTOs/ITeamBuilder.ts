@@ -85,6 +85,8 @@ export interface RankedTeamMember {
 	buddy?: true;
 	/** The stand-in for a Best Buddy without its ribbon (shown with a disabled crown). */
 	formerBuddy?: true;
+	/** The stand-in for a Super Max Mega without its status (shown with a disabled symbol). */
+	formerSuperMega?: true;
 	/** A Super Max Mega (two more levels). */
 	superMega?: true;
 }

@@ -19,3 +19,19 @@ export const BuddyMark = ({
 		decoding='async'
 	/>
 );
+
+/**
+ * The Super Max Mega symbol — marks a Pokémon saved as a Super Max Mega, stacked right under the Best Buddy crown.
+ * Decorative, like the crown; shares its chip styling and takes its placement from CSS. `disabled`: greyed out, for the
+ * stand-in of a Super Max Mega that has the status taken away.
+ */
+export const SuperMegaMark = ({ disabled = false }: { disabled?: boolean }) => (
+	<img
+		className={disabled ? 'r-buddy-mark r-super-mark r-buddy-mark--off' : 'r-buddy-mark r-super-mark'}
+		src='/images/mega-logo.png'
+		alt=''
+		aria-hidden='true'
+		loading='lazy'
+		decoding='async'
+	/>
+);

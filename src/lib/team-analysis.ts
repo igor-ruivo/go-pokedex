@@ -299,6 +299,8 @@ export type TeamWarning =
 
 export interface WarningInput {
 	speciesIds: ReadonlyArray<string>;
+	/** Maps a speciesId to the species it counts as for "the same Pokémon twice" (see `speciesFamilyKey`). */
+	familyOf: (speciesId: string) => string;
 	memberTypes: ReadonlyArray<ReadonlyArray<string>>;
 	defense: DefenseProfile;
 	offense: OffenseProfile;
@@ -308,12 +310,25 @@ export interface WarningInput {
 	league: TeamLeague;
 }
 
+/**
+ * The species a Pokémon counts as for a team, which can't field one twice: a Shadow is its normal form, and a Mega /
+ * Primal form is the species it evolves from (so two Megas of one species, or a Mega and its base, are one Pokémon).
+ * Read from the game master's relations, never from the id's spelling.
+ */
+export const speciesFamilyKey = (
+	speciesId: string,
+	infoOf: (speciesId: string) => { nonShadowSpecies?: string | undefined; baseSpecies?: string | undefined } | undefined
+): string => {
+	const normal = infoOf(speciesId)?.nonShadowSpecies ?? speciesId;
+	return infoOf(normal)?.baseSpecies ?? normal;
+};
+
 /** Ordered most-serious first. */
 export const teamWarnings = (input: WarningInput): Array<TeamWarning> => {
 	const out: Array<TeamWarning> = [];
-	const base = (id: string) => id.replace(/_shadow$/, '');
+	const base = input.familyOf;
 
-	// The same species twice (Shadow and normal count as the same one)
+	// The same species twice (Shadow, normal and every Mega of it count as the same one)
 	const seen = new Map<string, Array<number>>();
 	input.speciesIds.forEach((id, i) => seen.set(base(id), [...(seen.get(base(id)) ?? []), i]));
 	for (const members of seen.values()) if (members.length > 1) out.push({ kind: 'duplicateSpecies', members });
@@ -395,6 +410,8 @@ export interface TeamSlotDescriptor {
 	buddy?: true | undefined;
 	/** Only on the stand-in a Best Buddy gets in the team combinations (see `nonBuddyCounterpart`): it had the ribbon. */
 	formerBuddy?: true | undefined;
+	/** Same for the stand-in a Super Max Mega gets: it had the status (see `standInsOf`). */
+	formerSuperMega?: true | undefined;
 	/** A Super Max Mega: a Mega at Super Max level, which gives it two more levels (see `SUPER_MEGA_BONUS`). */
 	superMega?: true | undefined;
 }
@@ -409,18 +426,48 @@ export const maxLevelOf = (flags: { buddy?: boolean | undefined; superMega?: boo
 	BASE_MAX_LEVEL + (flags.buddy ? BUDDY_BONUS : 0) + (flags.superMega ? SUPER_MEGA_BONUS : 0);
 
 /**
- * The same Pokémon as it would be without the ribbon: no flag, and one full level lower (two half-level steps) — what
- * happens to a Best Buddy when its status is removed. Its IVs were picked for a higher level, but still fit the CP cap
- * one level down. `formerBuddy` marks it as that stand-in (it is shown with a disabled crown); it is not part of its identity.
+ * The stand-ins a Pokémon takes part in team combinations as, besides itself: the same Pokémon (same IVs, same moves)
+ * without its Best Buddy ribbon (one full level lower), without its Super Max Mega status (two levels lower), or without
+ * both (three lower) — what happens to it when a status is removed. Its IVs were picked for a higher level, but still fit
+ * the CP cap lower down. A status the Pokémon doesn't lean on (its level is within what the remaining statuses reach anyway)
+ * changes nothing about it, so removing it makes no stand-in: it would be identical. `formerBuddy` / `formerSuperMega`
+ * mark what a stand-in lost (it is shown with a disabled crown / symbol); they are not part of its identity.
  */
-export const nonBuddyCounterpart = (slot: TeamSlotDescriptor): TeamSlotDescriptor => ({
-	speciesId: slot.speciesId,
-	moveset: slot.moveset,
-	...(slot.ivs ? { ivs: slot.ivs } : {}),
-	...(slot.level !== undefined ? { level: Math.max(1, slot.level - 1) } : {}),
-	...(slot.superMega ? { superMega: true as const } : {}),
-	formerBuddy: true,
-});
+export const standInsOf = (slot: TeamSlotDescriptor): Array<TeamSlotDescriptor> => {
+	const hadBuddy = isBuddy(slot);
+	const hadSuper = slot.superMega === true;
+	const level = slot.level ?? 0;
+	const out: Array<TeamSlotDescriptor> = [];
+	for (const buddy of hadBuddy ? [true, false] : [false]) {
+		for (const superMega of hadSuper ? [true, false] : [false]) {
+			if (buddy === hadBuddy && superMega === hadSuper) continue;
+			if (level <= maxLevelOf({ buddy, superMega })) continue;
+			const lower = (hadBuddy && !buddy ? BUDDY_BONUS : 0) + (hadSuper && !superMega ? SUPER_MEGA_BONUS : 0);
+			out.push({
+				speciesId: slot.speciesId,
+				moveset: slot.moveset,
+				...(slot.ivs ? { ivs: slot.ivs } : {}),
+				level: Math.max(1, level - lower),
+				...(buddy ? { buddy: true as const } : {}),
+				...(superMega ? { superMega: true as const } : {}),
+				...(hadBuddy && !buddy ? { formerBuddy: true as const } : {}),
+				...(hadSuper && !superMega ? { formerSuperMega: true as const } : {}),
+			});
+		}
+	}
+	return out;
+};
+
+/**
+ * Whether a team respects the one-per-team limits: a single Mega and a single Best Buddy. (A Super Max Mega is a Mega, so
+ * the Mega limit already keeps a team to one.)
+ */
+export const respectsStatusLimits = (
+	team: ReadonlyArray<TeamSlotDescriptor>,
+	isMegaSpecies: (speciesId: string) => boolean
+): boolean =>
+	team.filter((slot) => isMegaSpecies(slot.speciesId)).length <= 1 &&
+	team.filter(exceedsNormalLevel).length <= 1;
 
 /**
  * A level beyond what the Pokémon reaches without being a Best Buddy: above 50, or above 52 for a Super Max Mega (whose two

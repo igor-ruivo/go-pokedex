@@ -54,6 +54,7 @@
 		"close": "Tutup",
 		"searchPlaceholder": "Cari Pokémon {{league}}…",
 		"inTeam": "Sudah ada di tim",
+		"megaTaken": "Hanya satu Mega per tim",
 		"empty": "Tidak ada Pokémon yang cocok.",
 		"showMore": "Tampilkan lebih banyak"
 	},

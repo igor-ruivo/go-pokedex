@@ -54,6 +54,7 @@
 		"close": "Kapat",
 		"searchPlaceholder": "{{league}} Pokémon'larını ara…",
 		"inTeam": "Zaten takımda",
+		"megaTaken": "Takım başına tek Mega",
 		"empty": "Eşleşen Pokémon yok.",
 		"showMore": "Daha fazla göster"
 	},

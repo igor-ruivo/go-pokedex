@@ -54,6 +54,7 @@
 		"close": "닫기",
 		"searchPlaceholder": "{{league}} 포켓몬 검색…",
 		"inTeam": "이미 팀에 있음",
+		"megaTaken": "팀당 메가는 1마리",
 		"empty": "일치하는 포켓몬이 없습니다.",
 		"showMore": "더 보기"
 	},

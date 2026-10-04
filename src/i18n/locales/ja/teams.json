@@ -54,6 +54,7 @@
 		"close": "閉じる",
 		"searchPlaceholder": "{{league}}のポケモンを検索…",
 		"inTeam": "すでにチームにいます",
+		"megaTaken": "メガはチームに1匹まで",
 		"empty": "一致するポケモンがいません。",
 		"showMore": "さらに表示"
 	},

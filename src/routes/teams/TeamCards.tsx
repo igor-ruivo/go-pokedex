@@ -2,7 +2,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { Fragment, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BuddyMark } from '../../components/BuddyMark';
+import { BuddyMark, SuperMegaMark } from '../../components/BuddyMark';
 import { RankMedal } from '../../components/RankMedal';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SpriteImg } from '../../components/Sprite';
@@ -69,6 +69,12 @@ const MemberBuild = ({
 	);
 };
 
+/** Identities of the stand-ins of Best Buddies and Super Max Megas, by what each lost (see `standInsOf`). */
+export interface StandIns {
+	buddy: ReadonlySet<string>;
+	superMega: ReadonlySet<string>;
+}
+
 /** One card of the list; `rank` is the team's place in the full ranking (a filtered list keeps the real places). */
 export const TeamCard = ({
 	team,
@@ -91,7 +97,7 @@ export const TeamCard = ({
 	/** Nickname per build, keyed by `slotIdentityKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
 	/** Identities (`slotIdentityKey`) of the stand-ins a Best Buddy has in these combinations: they get a disabled crown. */
-	standIns?: ReadonlySet<string>;
+	standIns?: StandIns;
 }) => {
 	const { t } = useTranslation(['teams']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
@@ -184,8 +190,13 @@ export const TeamCard = ({
 									    stand-in of a buddy, show it disabled */}
 									{exceedsNormalLevel(member) ? (
 										<BuddyMark />
-									) : member.buddy || member.formerBuddy || standIns?.has(slotIdentityKey(member)) ? (
+									) : member.buddy || member.formerBuddy || standIns?.buddy.has(slotIdentityKey(member)) ? (
 										<BuddyMark disabled />
+									) : null}
+									{member.superMega ? (
+										<SuperMegaMark />
+									) : member.formerSuperMega || standIns?.superMega.has(slotIdentityKey(member)) ? (
+										<SuperMegaMark disabled />
 									) : null}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
@@ -293,7 +304,7 @@ export const VirtualTeamCards = ({
 	showBuildDetails?: boolean;
 	/** Nickname per build, keyed by `slotIdentityKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
-	standIns?: ReadonlySet<string>;
+	standIns?: StandIns;
 }) => {
 	const listRef = useRef<HTMLDivElement>(null);
 	const [scrollMargin, setScrollMargin] = useState(0);

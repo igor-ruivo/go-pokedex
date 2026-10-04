@@ -3207,6 +3207,10 @@
 	width: 22px;
 	height: 22px;
 }
+/* the Super Max Mega symbol sits right under the crown */
+.rvmp .r-tm-board-art > .r-super-mark {
+	top: 29px;
+}
 /* the Best Buddy toggle on a member card: off, a quiet pill; on, tinted like the crown */
 .rvmp .r-tm-buddy {
 	display: inline-flex;

@@ -6850,6 +6850,13 @@
 .rvmp .r-mini > .r-shadow-mark:has(~ .r-buddy-mark) {
 	top: calc(12% + 26px);
 }
+/* the Super Max Mega symbol takes the slot under the crown; a shadow mark steps down below both */
+.rvmp .r-mini > .r-super-mark {
+	top: calc(12% + 26px);
+}
+.rvmp .r-mini > .r-shadow-mark:has(~ .r-super-mark) {
+	top: calc(12% + 52px);
+}
 /* a crown that is switched off (the ribbon changes nothing here, or was taken away): fully opaque, in muted greys — a solid
    chip behind a desaturated, slightly darkened crown, with a flat ring, so it reads as inactive without looking faded */
 .rvmp .r-buddy-mark--off {

@@ -1,7 +1,7 @@
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { highestLevelUnderCap } from '../iv-rank';
 import { bestIvsFor } from '../league-caps';
-import { maxLevelOf, type SlotIvs } from '../team-analysis';
+import { maxLevelOf, type SlotIvs, speciesFamilyKey } from '../team-analysis';
 import { assignRoles, type RoleScores } from '../team-roles';
 import { SimBattle } from './battle';
 import { createSimContext, type SpeciesInfo } from './context';
@@ -186,6 +186,15 @@ const playOrderOf = (scores: ReadonlyArray<RoleScores | undefined>): Array<numbe
 export class TeamEvaluator {
 	private readonly ctx: SimContext;
 	private readonly speciesInfo = new Map<string, SpeciesInfo>();
+
+	/** The species a Pokémon counts as for a team: a Shadow is its normal form, a Mega the species it evolves from. */
+	private isMega(speciesId: string): boolean {
+		return this.speciesInfo.get(speciesId)?.isMega === true;
+	}
+
+	private familyOf(speciesId: string): string {
+		return speciesFamilyKey(speciesId, (id) => this.speciesInfo.get(id));
+	}
 	private readonly pool: Array<PoolEntry>;
 	private readonly rankingById = new Map<string, RankedEntry>();
 	private readonly metaSet: ReadonlySet<string>;
@@ -434,11 +443,11 @@ export class TeamEvaluator {
 		// How the team fares against the top of the ranking
 		const byRank = [...rows].sort((a, b) => a.entry.entry.rank - b.entry.entry.rank);
 		// A Shadow and its normal form are one matchup, and a teammate's own species is not a hole to plug.
-		const seenBase = new Set<string>(team.map((slot) => slot.speciesId.replace('_shadow', '')));
+		const seenBase = new Set<string>(team.map((slot) => this.familyOf(slot.speciesId)));
 		const checked: Array<RatedRow> = [];
 		for (const row of byRank) {
 			if (checked.length >= META_CHECK_COUNT) break;
-			const base = row.entry.entry.speciesId.replace('_shadow', '');
+			const base = this.familyOf(row.entry.entry.speciesId);
 			if (seenBase.has(base)) continue;
 			seenBase.add(base);
 			checked.push(row);
@@ -512,9 +521,9 @@ export class TeamEvaluator {
 		const fullTeam = team.length === 3;
 		const currentOrder = fullTeam ? playOrderOf(roleScores) : members.map((_, k) => k);
 
-		const teamBases = new Set(team.map((slot) => slot.speciesId.replace('_shadow', '')));
+		const teamBases = new Set(team.map((slot) => this.familyOf(slot.speciesId)));
 		const outsiders = [...this.pool]
-			.filter((p) => !teamBases.has(p.entry.speciesId.replace('_shadow', '')))
+			.filter((p) => !teamBases.has(this.familyOf(p.entry.speciesId)))
 			.sort((a, b) => a.entry.rank - b.entry.rank);
 		const top = outsiders.slice(0, candidateCount);
 		// Every Super Max Mega of the league is always a candidate, however far down the ranking it is.
@@ -568,6 +577,9 @@ export class TeamEvaluator {
 
 			const candidateRoles = this.roleScoresOf(candidate.entry.speciesId);
 			for (let slot = 0; slot < team.length; slot++) {
+				// A team has one Mega at most: a Mega can only take the place of the team's own Mega, or of anyone when it has none.
+				if (this.isMega(candidate.entry.speciesId) && team.some((other, k) => k !== slot && this.isMega(other.speciesId)))
+					continue;
 				// Positions of the swapped team in play order (a position is a slot of the given team).
 				const positions = fullTeam
 					? playOrderOf(roleScores.map((r, k) => (k === slot ? candidateRoles : r)))
@@ -688,7 +700,7 @@ export class TeamEvaluator {
 	 * `evaluate` would rate them. A Pokémon's matchups don't depend on its teammates, so each candidate is
 	 * simulated once against the whole pool and every trio is then just three of those columns re-ranked — the
 	 * same idea `suggest` uses. Trios that field one species twice (a Shadow and its normal form count as one)
-	 * are skipped.
+	 * are skipped, and so are those with more than one Mega.
 	 */
 	rankTeams(
 		candidateIds: ReadonlyArray<string>,
@@ -702,8 +714,9 @@ export class TeamEvaluator {
 			return { speciesId: id, moveset: entry.moveset, ...(build ? { ivs: build.ivs, level: build.level } : {}) };
 		});
 		const columns = this.buildColumns(members, onProgress);
-		const base = candidateIds.map((id) => id.replace('_shadow', ''));
+		const base = candidateIds.map((id) => this.familyOf(id));
 		const roles = candidateIds.map((id) => this.roleScoresOf(id));
+		const mega = candidateIds.map((id) => Number(this.isMega(id)));
 		const out: Array<RankedTeamThreat> = [];
 
 		for (let a = 0; a < candidateIds.length; a++) {
@@ -711,6 +724,7 @@ export class TeamEvaluator {
 				if (base[b] === base[a]) continue;
 				for (let c = b + 1; c < candidateIds.length; c++) {
 					if (base[c] === base[a] || base[c] === base[b]) continue;
+					if (mega[a] + mega[b] + mega[c] > 1) continue;
 					const { order, threatScore } = this.rateTrio(columns, [a, b, c], roles);
 					out.push({
 						speciesIds: [candidateIds[order[0]], candidateIds[order[1]], candidateIds[order[2]]],
@@ -732,9 +746,9 @@ export class TeamEvaluator {
 		const missing = 3 - fixed.length;
 		if (missing < 1 || missing > 2) return [];
 
-		const fixedBases = new Set(fixed.map((slot) => slot.speciesId.replace('_shadow', '')));
+		const fixedBases = new Set(fixed.map((slot) => this.familyOf(slot.speciesId)));
 		const outsiders = [...this.pool]
-			.filter((p) => !fixedBases.has(p.entry.speciesId.replace('_shadow', '')))
+			.filter((p) => !fixedBases.has(this.familyOf(p.entry.speciesId)))
 			.sort((a, b) => a.entry.rank - b.entry.rank);
 		const wanted = options.candidates ?? 50;
 		// Every Super Max Mega of the league is always a candidate too, rated at its best build for level 52.
@@ -756,8 +770,10 @@ export class TeamEvaluator {
 		];
 		const columns = this.buildColumns(members);
 		const roles = members.map((m) => this.roleScoresOf(m.speciesId));
-		const bases = members.map((m) => m.speciesId.replace('_shadow', ''));
+		const bases = members.map((m) => this.familyOf(m.speciesId));
 		const fixedIndexes = fixed.map((_, k) => k);
+		const fixedMegas = fixed.filter((slot) => this.isMega(slot.speciesId)).length;
+		const mega = members.map((m) => Number(this.isMega(m.speciesId)));
 
 		const out: Array<TeamCompletion> = [];
 		const finish = (trio: readonly [number, number, number]) => {
@@ -769,12 +785,14 @@ export class TeamEvaluator {
 		};
 
 		for (let a = fixed.length; a < members.length; a++) {
+			// A team has one Mega at most.
+			if (fixedMegas + mega[a] > 1) continue;
 			if (missing === 1) {
 				finish([...fixedIndexes, a] as unknown as [number, number, number]);
 				continue;
 			}
 			for (let b = a + 1; b < members.length; b++) {
-				if (bases[b] === bases[a]) continue;
+				if (bases[b] === bases[a] || fixedMegas + mega[a] + mega[b] > 1) continue;
 				finish([...fixedIndexes, a, b] as unknown as [number, number, number]);
 			}
 		}

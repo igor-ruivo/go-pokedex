@@ -54,6 +54,7 @@
 		"close": "Schließen",
 		"searchPlaceholder": "Pokémon der {{league}} suchen …",
 		"inTeam": "Schon im Team",
+		"megaTaken": "Nur ein Mega pro Team",
 		"empty": "Kein Pokémon gefunden.",
 		"showMore": "Mehr anzeigen"
 	},

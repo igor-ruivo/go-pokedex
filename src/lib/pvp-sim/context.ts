@@ -11,6 +11,11 @@ export interface SpeciesInfo {
 	types: ReadonlyArray<string>;
 	baseStats: { atk: number; def: number; hp: number };
 	isShadow: boolean;
+	/** The relations that make two forms "the same Pokémon" in a team (see `speciesFamilyKey`). */
+	nonShadowSpecies?: string | undefined;
+	baseSpecies?: string | undefined;
+	/** A Mega / Primal form (a team has one at most). */
+	isMega?: boolean | undefined;
 	/** A Mega with a "Plus" move: it can be a Super Max Mega, which the suggestions always consider it as. */
 	isSuperMega?: boolean;
 }

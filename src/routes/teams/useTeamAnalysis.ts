@@ -25,6 +25,7 @@ import {
 	type TeamSlotDescriptor,
 	type TeamWarning,
 	teamWarnings,
+	speciesFamilyKey,
 } from '../../lib/team-analysis';
 import type { TeamsData } from './useTeamsData';
 
@@ -128,6 +129,7 @@ export const analyzeTeam = (
 
 	const warnings = teamWarnings({
 		speciesIds: team.map((t) => t.speciesId),
+		familyOf: (id) => speciesFamilyKey(id, (x) => data.gamemaster[x]),
 		memberTypes: members.map((m) => m.types),
 		defense,
 		offense,

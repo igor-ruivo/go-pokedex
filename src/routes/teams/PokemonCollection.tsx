@@ -2,7 +2,7 @@ import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BuddyMark } from '../../components/BuddyMark';
+import { BuddyMark, SuperMegaMark } from '../../components/BuddyMark';
 import { SearchListBar } from '../../components/SearchListBar';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
@@ -22,17 +22,18 @@ import {
 import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import {
-	exceedsNormalLevel,
 	isBuddy,
+	respectsStatusLimits,
 	MAX_MOVES,
-	nonBuddyCounterpart,
-	scoreTier,
+		scoreTier,
 	slotIdentityKey,
 	type SlotIvs,
 	teamScore,
 	type TeamSlotDescriptor,
 	threatPart,
 	withMove,
+	speciesFamilyKey,
+	standInsOf,
 } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
@@ -108,11 +109,12 @@ const hashSignature = (value: string) => {
 };
 
 /**
- * The slots one saved Pokémon takes part in team combinations with. A team can only have one Best Buddy, but that must
- * not keep two Best Buddies off the same team, so a Best Buddy above level 50 also gets a temporary counterpart without
- * the ribbon, one full level lower (see `nonBuddyCounterpart`): the combinations then include both "this one is the
- * buddy" and "the other one is". A ribbon on a Pokémon at level 50 or less changes nothing about it, so it gets no
- * counterpart (it would be identical): it is itself, and keeps its ribbon, so its crown still shows.
+ * The slots one saved Pokémon takes part in team combinations with. A team can only have one Best Buddy and one Super Max
+ * Mega (and one Mega at all), but that must not keep two of them off the same team, so a Best Buddy / Super Max Mega that
+ * leans on its status also gets temporary counterparts without it — without the ribbon, without the Super Max Mega status,
+ * or without either — each at the level that takes (see `standInsOf`): the combinations then include both "this one is
+ * the buddy" and "the other one is". A status on a Pokémon whose level doesn't need it changes nothing about it, so it
+ * gets no counterpart (it would be identical): it is itself, and keeps its status, so its mark still shows.
  */
 const comboSlots = (entry: CollectionPokemon): Array<TeamSlotDescriptor> => {
 	const slot: TeamSlotDescriptor = {
@@ -123,25 +125,26 @@ const comboSlots = (entry: CollectionPokemon): Array<TeamSlotDescriptor> => {
 		...(entry.buddy ? { buddy: true as const } : {}),
 		...(entry.superMega ? { superMega: true as const } : {}),
 	};
-	return exceedsNormalLevel(slot) ? [slot, nonBuddyCounterpart(slot)] : [slot];
+	return [slot, ...standInsOf(slot)];
 };
 
 const buildCombinations = (
 	species: ReadonlyArray<TeamSlotDescriptor>,
 	data: TeamsData
 ): Array<Array<TeamSlotDescriptor>> => {
+	const familyOf = (id: string) => speciesFamilyKey(id, (x) => data.gamemaster[x]);
 	const teams: Array<Array<TeamSlotDescriptor>> = [];
 	for (let a = 0; a < species.length; a++) {
 		for (let b = a + 1; b < species.length; b++) {
-			const aBase = species[a].speciesId.replace(/_shadow$/, '');
-			const bBase = species[b].speciesId.replace(/_shadow$/, '');
+			const aBase = familyOf(species[a].speciesId);
+			const bBase = familyOf(species[b].speciesId);
 			if (aBase === bBase) continue;
 			for (let c = b + 1; c < species.length; c++) {
-				const cBase = species[c].speciesId.replace(/_shadow$/, '');
+				const cBase = familyOf(species[c].speciesId);
 				if (cBase === aBase || cBase === bBase) continue;
 				const trio = [species[a], species[b], species[c]];
-				// Only one Pokémon per team can be a Best Buddy at a level beyond the normal maximum.
-				if (trio.filter(exceedsNormalLevel).length > 1) continue;
+				// A team has one Mega (so one Super Max Mega) and one Best Buddy at most.
+				if (!respectsStatusLimits(trio, (id) => !!data.gamemaster[id]?.isMega)) continue;
 				if (
 					!trio.every(
 						(slot) =>
@@ -256,7 +259,7 @@ export const PokemonCollection = ({
 			.flatMap(comboSlots)
 			// A stand-in goes first, so that when an identical Pokémon was also saved by hand the stand-in is the one kept
 			// (it carries the disabled crown). `sort` is stable, so nothing else moves.
-			.sort((a, b) => Number(!!b.formerBuddy) - Number(!!a.formerBuddy))
+			.sort((a, b) => Number(!!(b.formerBuddy || b.formerSuperMega)) - Number(!!(a.formerBuddy || a.formerSuperMega)))
 			// Identical builds (e.g. a saved copy of what a Best Buddy's counterpart already is) are one Pokémon.
 			.filter(
 				(slot, i, all) =>
@@ -350,6 +353,7 @@ export const PokemonCollection = ({
 								...(member.buddy ? { buddy: true as const } : {}),
 								...(member.superMega ? { superMega: true as const } : {}),
 								...(member.formerBuddy ? { formerBuddy: true as const } : {}),
+								...(member.formerSuperMega ? { formerSuperMega: true as const } : {}),
 							};
 						}),
 						score,
@@ -382,18 +386,17 @@ export const PokemonCollection = ({
 		}
 		return byBuild;
 	}, [saved]);
-	// The stand-ins of the Best Buddies (see `comboSlots`), by identity: matched on the cards rather than carried by them, so
-	// they are marked whether the teams were just computed or came from the cache.
-	const standIns = useMemo(
-		() =>
-			new Set(
-				saved
-					.flatMap(comboSlots)
-					.filter((slot) => slot.formerBuddy)
-					.map(slotIdentityKey)
-			),
-		[saved]
-	);
+	// The stand-ins of the Best Buddies and Super Max Megas (see `comboSlots`), by identity, each for what it lost: matched on
+	// the cards rather than carried by them, so they are marked whether the teams were just computed or came from the cache.
+	const standIns = useMemo(() => {
+		const stands = saved.flatMap(comboSlots);
+		const identities = (keep: (slot: TeamSlotDescriptor) => boolean) =>
+			new Set(stands.filter(keep).map(slotIdentityKey));
+		return {
+			buddy: identities((slot) => !!slot.formerBuddy),
+			superMega: identities((slot) => !!slot.formerSuperMega),
+		};
+	}, [saved]);
 	const filteredTeams = orderedTeams.filter(
 		(team) =>
 			!term ||
@@ -552,6 +555,7 @@ export const PokemonCollection = ({
 														>
 															{pokemon.isShadow && <ShadowMark />}
 															{isBuddy(entry) && <BuddyMark />}
+															{entry.superMega && <SuperMegaMark />}
 															<SpriteImg pokemon={pokemon} loading='lazy' />
 															<span className='r-tm-collection-name'>
 																{entry.nickname ?? cleanName(pokemon.speciesName)}
