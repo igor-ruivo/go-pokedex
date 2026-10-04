@@ -9,6 +9,7 @@ import { MoveStatRows } from '../components/MoveStatRows';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useLanguage } from '../contexts/language-context';
 import { cleanName } from '../lib/format';
+import { withGenericHiddenPower } from '../lib/hidden-power';
 import { type Arena, hasBuff, moveDPE, moveDPS, moveEPS } from '../lib/moves';
 import { R } from '../lib/nav';
 import { TYPE_KEYS } from '../lib/types';
@@ -90,7 +91,7 @@ const Moves = () => {
 	const list = useMemo(() => {
 		const t = typeCsv.split(',')[0];
 		const seen = new Set<string>();
-		const filtered = Object.values(moves).filter((m) => {
+		const filtered = Object.values(withGenericHiddenPower(moves)).filter((m) => {
 			if (kind === 'fast' && !m.isFast) return false;
 			if (kind === 'charged' && m.isFast) return false;
 			if (t && m.type.toLowerCase() !== t) return false;

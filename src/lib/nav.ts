@@ -2,6 +2,7 @@ import type { GameLanguage } from '../contexts/language-context';
 import type { ILeagueDefinition } from '../DTOs/ILeagueDefinition';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { sentenceCase } from './format';
+import { baseMoveId } from './hidden-power';
 import { leagueColor, leagueTitle } from './league-visuals';
 
 export const R = {
@@ -20,7 +21,8 @@ export const R = {
 	teamsFavorites: '/teams/favorites',
 	teamsCollection: '/teams/collection',
 	moves: '/moves',
-	move: (moveId: string): string => `/move/${encodeURIComponent(moveId)}`,
+	// a Hidden Power of any type is the one Hidden Power page
+	move: (moveId: string): string => `/move/${encodeURIComponent(baseMoveId(moveId))}`,
 	types: '/types',
 	searchStrings: (tab: MassDeleteTab = 'non-meta-relevant'): string => `/search-strings/${tab}`,
 	tools: '/tools',

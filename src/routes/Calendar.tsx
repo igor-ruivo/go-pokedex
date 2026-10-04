@@ -46,6 +46,7 @@ const RAID_TIERS: ReadonlyArray<{ key: 'higher' | 'tier3' | 'tier1'; egg: string
 // every locale this site supports, so there's no UI-chrome string here worth
 // routing through i18n.
 const EGG_TIERS: ReadonlyArray<readonly [string, string]> = [
+	['1', '1 km'],
 	['2', '2 km'],
 	['5', '5 km'],
 	['7', '7 km'],
@@ -1069,6 +1070,9 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 	}, [g, gamemasterPokemon, sets]);
 	const firstCatch = [...g.catchableTiers].sort((a, b) => a - b)[0];
 	const reward = firstCatch != null ? (tiers[firstCatch] ?? []) : [];
+	// The shadow Pokémon of this grunt that can be shiny (dex-server reads the icon off LeekDuck's lineup) — only the ones in a
+	// tier you can catch get the mark: a Pokémon you only fight can never be shiny.
+	const shinyIds = useMemo(() => new Set(g.shinyPokemon ?? []), [g]);
 	const title = rocketGruntTitle(g, gl);
 
 	// toggle from anywhere on the card, but never when a Pokémon link was clicked
@@ -1108,7 +1112,7 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 					{sets.ready ? (
 						<div className='r-minigrid'>
 							{reward.map((id, j) => (
-								<PokeMini key={`${id}-${j}`} speciesId={id} forceShadow />
+								<PokeMini key={`${id}-${j}`} speciesId={id} forceShadow shiny={shinyIds.has(id)} />
 							))}
 						</div>
 					) : (
@@ -1135,6 +1139,7 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 												key={`${id}-${j}`}
 												speciesId={id}
 												forceShadow
+												shiny={g.catchableTiers.includes(i) && shinyIds.has(id)}
 												catchable={g.catchableTiers.includes(i)}
 											/>
 										))}

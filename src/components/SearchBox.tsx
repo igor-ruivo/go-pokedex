@@ -7,6 +7,7 @@ import type { IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { useDismiss } from '../hooks/useDismiss';
 import { cleanName, dexNo } from '../lib/format';
+import { withGenericHiddenPower } from '../lib/hidden-power';
 import { R } from '../lib/nav';
 import { selectAllOnTouchFocus } from '../lib/select-on-touch';
 import { useMoves } from '../queries/moves';
@@ -91,7 +92,8 @@ export const SearchBox = () => {
 				: [],
 		[gamemasterPokemon, fetchCompleted]
 	);
-	const allMoves = useMemo(() => Object.values(moves), [moves]);
+	// Hidden Power once, not once per type (see `withGenericHiddenPower`)
+	const allMoves = useMemo(() => Object.values(withGenericHiddenPower(moves)), [moves]);
 
 	const { results, splitAt } = useMemo<{ results: Array<Hit>; splitAt: number }>(() => {
 		const term = suggestionQuery.trim().toLowerCase();
@@ -112,8 +114,8 @@ export const SearchBox = () => {
 		const mv: Array<{ m: IGameMasterMove; s: number }> = [];
 		for (const m of allMoves) {
 			const label = m.moveName[gl] ?? m.moveId;
-			// collapse only exact cosmetic clones (same name + identical stats)
-			const sig = `${label}|${m.pvePower}|${m.pvpPower}|${m.pveEnergy}|${m.pvpEnergy}|${m.pveCooldown}|${m.pvpCooldown}`;
+			// collapse only exact cosmetic clones (same name, same type, identical stats) — the typed variants of one move (Weather Ball, Hidden Power) are different moves
+			const sig = `${label}|${m.type}|${m.pvePower}|${m.pvpPower}|${m.pveEnergy}|${m.pvpEnergy}|${m.pveCooldown}|${m.pvpCooldown}`;
 			if (seen.has(sig)) continue;
 			seen.add(sig);
 			const s = rank(label);

@@ -3,6 +3,7 @@ import type { BuffsType, IGameMasterMove } from '../DTOs/IGameMasterMove';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { sentenceCase } from './format';
+import { baseMoveId } from './hidden-power';
 
 /**
  * PvP fast-move duration in turns. A PvP turn is 0.5 s, and `pvpCooldown` is
@@ -45,11 +46,15 @@ export const moveDPE = (m: IGameMasterMove, a: Arena, pokemon?: IGamemasterPokem
 };
 
 /** Every non-alias Pokémon that can learn this move (any slot). */
-export const moveOwners = (moveId: string, gm: Record<string, IGamemasterPokemon>): Array<IGamemasterPokemon> =>
+export const moveOwners = <
+	P extends Pick<IGamemasterPokemon, 'aliasId' | 'fastMoves' | 'chargedMoves' | 'extraChargedMoves'>,
+>(
+	moveId: string,
+	gm: Record<string, P>
+): Array<P> =>
 	Object.values(gm).filter(
 		(p) =>
-			!p.aliasId &&
-			(p.fastMoves.includes(moveId) || p.chargedMoves.includes(moveId) || p.extraChargedMoves.includes(moveId))
+			!p.aliasId && [...p.fastMoves, ...p.chargedMoves, ...p.extraChargedMoves].some((id) => baseMoveId(id) === moveId)
 	);
 
 type StatEffectKey =

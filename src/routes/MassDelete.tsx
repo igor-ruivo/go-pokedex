@@ -1578,9 +1578,9 @@ const MassDeleteContent = ({
 	// The CP caps of the active cups that are none of Great / Ultra / Master (a Little Cup's 500): their spreads are their own.
 	const extraCaps = useMemo(
 		() =>
-			[...new Set(activeExtraLeagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000))].sort(
-				(a, b) => a - b
-			),
+			[
+				...new Set(activeExtraLeagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000)),
+			].sort((a, b) => a - b),
 		[activeExtraLeagues]
 	);
 	// Non-perfect IVs tab: the rank-1 spreads of those caps are left out by default; ticking the box protects them too.
@@ -2216,7 +2216,8 @@ const MassDeleteContent = ({
 		cp !== 2500 ||
 		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
 		((mode === 'meta' || isTrade) && (trashGreat !== 50 || trashUltra !== 50)) ||
-		((mode === 'meta' || isTrade) && activeExtraLeagues.some((l) => (trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA) !== DEFAULT_TRASH_EXTRA)) ||
+		((mode === 'meta' || isTrade) &&
+			activeExtraLeagues.some((l) => (trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA) !== DEFAULT_TRASH_EXTRA)) ||
 		(isTrade && tradeOnlyLowIv) ||
 		(isBadIv && simplifiedBadIv) ||
 		(isBadIv && preserveMegaIvs) ||
@@ -2542,7 +2543,9 @@ const MassDeleteContent = ({
 												</div>
 												{extraCaps.length > 0 && (
 													<div className='r-md-knob'>
-														<span>{t('massDelete:knobs.considerSmallCapSpreads', { caps: extraCaps.join(' / ') })}</span>
+														<span>
+															{t('massDelete:knobs.considerSmallCapSpreads', { caps: extraCaps.join(' / ') })}
+														</span>
 														<button
 															type='button'
 															className='r-ctr-toggle'

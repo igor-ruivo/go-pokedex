@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { PokeMini } from '../components/PokeMini';
 import { useLanguage } from '../contexts/language-context';
 import { cleanName, sentenceCase } from '../lib/format';
+import { baseMoveId, withGenericHiddenPower } from '../lib/hidden-power';
 import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS, moveOwners } from '../lib/moves';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { useMoves } from '../queries/moves';
@@ -27,7 +28,9 @@ const MiniGridLoading = () => (
 const MoveDetail = () => {
 	const { t } = useTranslation(['moveDetail']);
 	const { moveId = '' } = useParams();
-	const { moves, movesFetchCompleted } = useMoves();
+	const { moves: rawMoves, movesFetchCompleted } = useMoves();
+	// Hidden Power is one move here, whichever type a ranking or a Pokémon has it in
+	const moves = useMemo(() => withGenericHiddenPower(rawMoves), [rawMoves]);
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists } = usePvp();
 	const { raidDPS } = useRaidRanker();
@@ -51,12 +54,12 @@ const MoveDetail = () => {
 		const s = new Set<string>();
 		for (const list of rankLists) {
 			for (const r of Object.values(list ?? {})) {
-				if (r.moveset?.includes(moveId)) s.add(r.speciesId);
+				if (r.moveset?.some((id) => baseMoveId(id) === moveId)) s.add(r.speciesId);
 			}
 		}
 		for (const list of Object.values(raidDPS)) {
 			for (const e of Object.values(list)) {
-				if (e.fastMove === moveId || e.chargedMove === moveId) s.add(e.speciesId);
+				if (baseMoveId(e.fastMove) === moveId || baseMoveId(e.chargedMove) === moveId) s.add(e.speciesId);
 			}
 		}
 		return s;
@@ -82,8 +85,8 @@ const MoveDetail = () => {
 	const type = m.type.toLowerCase();
 	// `owners` is already in relevance order (see its own useMemo above) —
 	// filtering it preserves that order, no separate sort needed here.
-	const eliteOwners = owners.filter((p) => p.eliteMoves.includes(moveId));
-	const legacyOwners = owners.filter((p) => p.legacyMoves.includes(moveId));
+	const eliteOwners = owners.filter((p) => p.eliteMoves.some((id) => baseMoveId(id) === moveId));
+	const legacyOwners = owners.filter((p) => p.legacyMoves.some((id) => baseMoveId(id) === moveId));
 	const eliteCount = eliteOwners.length;
 	const legacyCount = legacyOwners.length;
 	const megaCount = owners.filter((p) => p.isMega).length;

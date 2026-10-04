@@ -17,6 +17,8 @@ export interface IGameMasterMove {
 	pveEnergy: number;
 	buffs?: BuffsType;
 	moveName: Record<GameLanguage, string>;
+	/** Only on the typed variants of one move (Hidden Power): the name without the type. */
+	groupName?: Record<GameLanguage, string>;
 }
 
 export interface BuffsType {

@@ -505,11 +505,16 @@ export const MemberCard = ({
 	// Two Charged Moves, or three for a Mega Pokémon in a Mega cup (the ranking's moveset says which).
 	const chargedSlots = Math.max(2, recommended.filter((m) => m !== 'none').length - 1, moveset.length - 1);
 	const validMove = (id: string) => !!moveTable[id];
-	const fastOptions = pokemon.fastMoves.filter(validMove);
-	const chargedPool = [...new Set([...pokemon.chargedMoves, ...pokemon.extraChargedMoves])].filter(validMove);
+	// The pool is PvPoke's, like the move table it is checked against: one source, not the game master's lists next to it.
+	// (Data from before dex-server shipped the pools falls back to the game master's.)
+	const pool = data.builder?.pools?.[pokemon.speciesId];
+	const fastOptions = (pool?.fast ?? pokemon.fastMoves).filter(validMove);
+	const chargedPool = [...new Set(pool?.charged ?? [...pokemon.chargedMoves, ...pokemon.extraChargedMoves])].filter(
+		validMove
+	);
 	const stats = member.stats;
-	const legacy = new Set(pokemon.legacyMoves);
-	const elite = new Set(pokemon.eliteMoves);
+	const legacy = new Set(pool?.legacy ?? pokemon.legacyMoves);
+	const elite = new Set(pool?.elite ?? pokemon.eliteMoves);
 
 	return (
 		<article

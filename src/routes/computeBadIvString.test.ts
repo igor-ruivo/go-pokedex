@@ -1757,7 +1757,12 @@ describe('findBadIvCarveOuts — a cup capped at 500 CP (opt-in: “Consider 500
 		const withCapKeys = new Set(withCap.map(key));
 		expect(without.length).toBeGreaterThan(0);
 		expect(without.every((c) => withCapKeys.has(key(c)))).toBe(true);
-		expect(withCap.filter((c) => c.cap !== 500).map(key).sort()).toEqual(without.map(key).sort());
+		expect(
+			withCap
+				.filter((c) => c.cap !== 500)
+				.map(key)
+				.sort()
+		).toEqual(without.map(key).sort());
 	});
 
 	it('adds carve-outs only for the 500 cap, none the default shape or the exact hundo already protects', () => {
@@ -1829,7 +1834,16 @@ describe('findBadIvCarveOuts — a cup capped at 500 CP (opt-in: “Consider 500
 		const { gamemasterPokemon } = buildBadIvFixture();
 		const metadata = buildSpeciesSearchMetadata(gamemasterPokemon, [500]);
 		const build = (carveOuts: Array<BadIvCarveOut>, simplified = false) =>
-			computeBadIvString(gamemasterPokemon, metadata, carveOuts, GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set(), simplified);
+			computeBadIvString(
+				gamemasterPokemon,
+				metadata,
+				carveOuts,
+				GameLanguage.en,
+				1500,
+				DEFAULT_PROTECTION,
+				new Set(),
+				simplified
+			);
 		const off = findBadIvCarveOuts({ gamemasterPokemon, speciesSearchMetadata: metadata, caps: [1500, 2500] });
 		const on = findBadIvCarveOuts({ gamemasterPokemon, speciesSearchMetadata: metadata, caps: [1500, 2500, 500] });
 		const reference = findBadIvCarveOuts({

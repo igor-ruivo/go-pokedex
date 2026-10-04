@@ -2224,7 +2224,7 @@
 	position: sticky;
 	top: 57px;
 	z-index: 20;
-	padding: var(--s3) 0 var(--s5);
+	padding: var(--s3) 0 var(--s3);
 	margin-top: 0;
 	background: linear-gradient(var(--bg) 88%, transparent);
 	/* Own compositing layer + stacking context: on iOS Safari, when this sticky
@@ -6822,7 +6822,7 @@
 	margin-top: var(--s2);
 	/* the chip is the last thing in the sticky header: pad below it so it stays inside the solid part
 	   of the header gradient instead of hanging over the fade */
-	padding-bottom: var(--s5);
+	padding-bottom: var(--s3);
 }
 /* with the applied-filter chips row at the bottom, the chips row pads itself, so the header needs no bottom padding of its own */
 .rvmp .r-rank-head:has(.r-applied-filters) {

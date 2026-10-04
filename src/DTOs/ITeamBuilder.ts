@@ -63,12 +63,22 @@ export interface SimulatorStatus {
 	unknownMechanics: Array<string>;
 }
 
+/** The moves a species can use; `elite` need an Elite TM, `legacy` can no longer be learned. */
+export interface TeamBuilderMovePool {
+	fast: Array<string>;
+	charged: Array<string>;
+	elite: Array<string>;
+	legacy: Array<string>;
+}
+
 export interface TeamBuilderData {
 	simulator: SimulatorStatus;
 	moves: Record<string, TeamBuilderMove>;
 	/** Rank-1 spread per ranked species and CP cap (see `ivsKeyForCap`) — every Pokémon is rated at its ceiling. */
 	ivs: Record<string, Partial<Record<string, BestIvs>>>;
 	forms: Record<string, TeamBuilderForm>;
+	/** The moves each ranked species can use, from PvPoke's data like `moves` itself (absent in data from before dex-server shipped them). */
+	pools?: Record<string, TeamBuilderMovePool>;
 	excludedThreats: Array<string>;
 	meta: Record<string, Array<string>>;
 }

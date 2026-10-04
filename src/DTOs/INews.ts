@@ -15,6 +15,8 @@ export interface IRocketGrunt {
 	tier1: Array<string>;
 	tier2: Array<string>;
 	tier3: Array<string>;
+	/** The shadow ids among the three tiers that can be shiny (absent in data from before dex-server shipped it). */
+	shinyPokemon?: Array<string>;
 	catchableTiers: Array<number>;
 }
 

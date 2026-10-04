@@ -49,7 +49,10 @@ const useComputeIVs = ({
 	// Caps of the cups that are neither Great, Ultra nor uncapped: their IV ranks can't be read from those tiers.
 	const { leagues } = useLeagueDefinitions();
 	const extraCaps = useMemo(
-		() => [...new Set(leagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000))].sort((a, b) => a - b),
+		() =>
+			[...new Set(leagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000))].sort(
+				(a, b) => a - b
+			),
 		[leagues]
 	);
 

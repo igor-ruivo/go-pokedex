@@ -940,7 +940,9 @@ describe('computeTradeableString — an extra league capped at 500 CP (its own t
 		const gamemasterPokemon = buildGamemaster([floormon, nofloormon]);
 
 		const result = call(gamemasterPokemon, {
-			extraTrade: [{ rankList: { smallcapfloormon: rank(1), smallcapnofloormon: rank(1) }, cutoff: 10, tier: 'cap-500' }],
+			extraTrade: [
+				{ rankList: { smallcapfloormon: rank(1), smallcapnofloormon: rank(1) }, cutoff: 10, tier: 'cap-500' },
+			],
 			tradeableSpeciesData: {
 				smallcapfloormon: floorEligible(extra(true)),
 				smallcapnofloormon: floorEligible(extra(false)),
@@ -991,7 +993,11 @@ describe('computeTradeableString — an extra league capped at 500 CP (its own t
 
 describe('findTradeableSpeciesData — extra CP caps', () => {
 	const mon = mockPokemon({ speciesId: 'smallcapdatamon', dex: 3, baseStats: { atk: 120, def: 120, hp: 120 } });
-	const lowAttack = mockPokemon({ speciesId: 'smallcaplowattackmon', dex: 4, baseStats: { atk: 250, def: 100, hp: 100 } });
+	const lowAttack = mockPokemon({
+		speciesId: 'smallcaplowattackmon',
+		dex: 4,
+		baseStats: { atk: 250, def: 100, hp: 100 },
+	});
 
 	it('adds a cap-<n> entry per species for each extra cap, built from the 500 CP spreads', () => {
 		const gamemasterPokemon = buildGamemaster([mon, lowAttack]);

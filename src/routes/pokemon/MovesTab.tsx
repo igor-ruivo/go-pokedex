@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -7,6 +7,7 @@ import { useLanguage } from '../../contexts/language-context';
 import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
+import { baseMoveId, baseMoveIds, withGenericHiddenPower } from '../../lib/hidden-power';
 import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
 import { R } from '../../lib/nav';
 import { useMoves } from '../../queries/moves';
@@ -34,7 +35,8 @@ const MoveRow = ({
 }) => {
 	const { t } = useTranslation(['pokemonDetail', 'moveDetail']);
 	const { currentGameLanguage } = useLanguage();
-	const { moves } = useMoves();
+	const { moves: rawMoves } = useMoves();
+	const moves = useMemo(() => withGenericHiddenPower(rawMoves), [rawMoves]);
 	const m = moves[moveId];
 	if (!m) return null;
 	const type = m.type.toLowerCase();
@@ -121,7 +123,9 @@ const MoveRow = ({
 
 const MovesTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; activeLeague: ActiveLeague }) => {
 	const { t } = useTranslation(['pokemonDetail']);
-	const { moves, movesFetchCompleted } = useMoves();
+	const { moves: rawMoves, movesFetchCompleted } = useMoves();
+	// Hidden Power once, not once per type: the Pokémon's own moves and the recommendation are read through `baseMoveId`
+	const moves = useMemo(() => withGenericHiddenPower(rawMoves), [rawMoves]);
 	const { currentGameLanguage } = useLanguage();
 
 	const isRaid = activeLeague.isRaid;
@@ -136,20 +140,20 @@ const MovesTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; acti
 		);
 	}
 
-	const elite = new Set(pokemon.eliteMoves);
-	const legacy = new Set(pokemon.legacyMoves);
+	const elite = new Set(baseMoveIds(pokemon.eliteMoves));
+	const legacy = new Set(baseMoveIds(pokemon.legacyMoves));
 	const tagsFor = (id: string) =>
 		[elite.has(id) ? t('pokemonDetail:moves.elite') : '', legacy.has(id) ? t('pokemonDetail:moves.legacy') : ''].filter(
 			Boolean
 		);
-	const charged = Array.from(new Set([...pokemon.chargedMoves, ...pokemon.extraChargedMoves]));
+	const charged = baseMoveIds([...pokemon.chargedMoves, ...pokemon.extraChargedMoves]);
 
 	// Moveset recommended for the league the user is looking at.
 	// PvP: [fast, charged1, charged2] from the ranking data. Raids: the selected
 	// type's active combo, reported up by <RaidTypeCoverage>.
-	const pvpMoveset = activeLeague.rankList[pokemon.speciesId]?.moveset ?? [];
-	const recFast = isRaid ? (raidRec?.fast ?? '') : (pvpMoveset[0] ?? '');
-	const recCharged = isRaid ? (raidRec ? [raidRec.charged] : []) : pvpMoveset.slice(1);
+	const pvpMoveset = (activeLeague.rankList[pokemon.speciesId]?.moveset ?? []).map(baseMoveId);
+	const recFast = isRaid ? baseMoveId(raidRec?.fast ?? '') : (pvpMoveset[0] ?? '');
+	const recCharged = isRaid ? (raidRec ? [baseMoveId(raidRec.charged)] : []) : pvpMoveset.slice(1);
 	const hasBest = !isRaid && !!recFast && recCharged.length > 0;
 	const recSet = new Set([recFast, ...recCharged].filter(Boolean));
 
@@ -187,7 +191,7 @@ const MovesTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; acti
 		return byTypeThenName(a, b);
 	};
 
-	const fastSorted = [...pokemon.fastMoves].sort(fastCmp);
+	const fastSorted = baseMoveIds(pokemon.fastMoves).sort(fastCmp);
 	const chargedSorted = [...charged].sort(chargedCmp);
 
 	return (
