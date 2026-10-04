@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { LEAGUE_CP } from '../league-caps';
 import golden from './__fixtures__/golden.json';
 import { type RankedEntry, type SpeciesInfo, TeamEvaluator } from './team-eval';
 
@@ -20,7 +21,13 @@ const builder = {
 } as unknown as TeamBuilderData;
 
 describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)('%s league', (league, data) => {
-	const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+	const evaluator = new TeamEvaluator({
+		league,
+		cpCap: LEAGUE_CP[league],
+		builder,
+		species: data.species,
+		ranking: data.ranking,
+	});
 	const candidates = [...data.ranking]
 		.sort((a, b) => a.rank - b.rank)
 		.slice(0, 7)
@@ -50,7 +57,13 @@ describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague
 describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)(
 	'%s league swaps',
 	(league, data) => {
-		const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+		const evaluator = new TeamEvaluator({
+			league,
+			cpCap: LEAGUE_CP[league],
+			builder,
+			species: data.species,
+			ranking: data.ranking,
+		});
 		const movesetOf = (speciesId: string) =>
 			data.ranking.find((r) => r.speciesId === speciesId)!.moveset.filter((m) => m !== 'none');
 		const top = [...data.ranking]
@@ -78,7 +91,13 @@ describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague
 describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)(
 	'%s league play order',
 	(league, data) => {
-		const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+		const evaluator = new TeamEvaluator({
+			league,
+			cpCap: LEAGUE_CP[league],
+			builder,
+			species: data.species,
+			ranking: data.ranking,
+		});
 		const movesetOf = (speciesId: string) =>
 			data.ranking.find((r) => r.speciesId === speciesId)!.moveset.filter((m) => m !== 'none');
 		const trio = [...data.ranking]
@@ -134,7 +153,13 @@ describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague
 describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)(
 	'%s league completions',
 	(league, data) => {
-		const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+		const evaluator = new TeamEvaluator({
+			league,
+			cpCap: LEAGUE_CP[league],
+			builder,
+			species: data.species,
+			ranking: data.ranking,
+		});
 		const movesetOf = (speciesId: string) =>
 			data.ranking.find((r) => r.speciesId === speciesId)!.moveset.filter((m) => m !== 'none');
 		const top = [...data.ranking].sort((a, b) => a.rank - b.rank).map((r) => r.speciesId);

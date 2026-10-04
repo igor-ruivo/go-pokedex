@@ -22,10 +22,10 @@ import {
 	type RoleScores,
 	SAFETY_GOAL,
 	safetyPart,
+	speciesFamilyKey,
 	type TeamSlotDescriptor,
 	type TeamWarning,
 	teamWarnings,
-	speciesFamilyKey,
 } from '../../lib/team-analysis';
 import type { TeamsData } from './useTeamsData';
 

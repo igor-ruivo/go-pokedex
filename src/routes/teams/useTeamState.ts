@@ -11,8 +11,8 @@ import {
 	MAX_MOVES,
 	maxLevelOf,
 	type SlotIvs,
-	type TeamSlotDescriptor,
 	speciesFamilyKey,
+	type TeamSlotDescriptor,
 	withMove,
 } from '../../lib/team-analysis';
 import { forgetTeam, lastTeamFor, rememberTeam } from './team-memory';
@@ -129,10 +129,20 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	const setMember = useCallback(
 		(index: number, speciesId: string) => {
 			// Refused: a teammate is already this Pokémon (shadow or not, any Mega of it too).
-			if (team.some((slot, i) => i !== index && speciesFamilyKey(slot.speciesId, (x) => data.gamemaster[x]) === speciesFamilyKey(speciesId, (x) => data.gamemaster[x])))
+			if (
+				team.some(
+					(slot, i) =>
+						i !== index &&
+						speciesFamilyKey(slot.speciesId, (x) => data.gamemaster[x]) ===
+							speciesFamilyKey(speciesId, (x) => data.gamemaster[x])
+				)
+			)
 				return;
 			// Refused: a teammate is already a Mega (a team has one at most).
-			if (data.gamemaster[speciesId]?.isMega && team.some((slot, i) => i !== index && data.gamemaster[slot.speciesId]?.isMega))
+			if (
+				data.gamemaster[speciesId]?.isMega &&
+				team.some((slot, i) => i !== index && data.gamemaster[slot.speciesId]?.isMega)
+			)
 				return;
 			const next = [...team];
 			next[Math.min(index, next.length)] = { speciesId, moveset: recommendedMoveset(speciesId) };

@@ -93,7 +93,11 @@ export const TopTeams = ({
 				</button>
 				<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>
 			</div>
-			{introOpen && <p className='r-tm-board-intro'>{t('teams:top.intro', { candidates: ranking.candidates ?? query.data.candidates })}</p>}
+			{introOpen && (
+				<p className='r-tm-board-intro'>
+					{t('teams:top.intro', { candidates: ranking.candidates ?? query.data.candidates })}
+				</p>
+			)}
 			<details className='r-ctr-help r-tm-board-help'>
 				<summary>{t('teams:top.help.summary')}</summary>
 				<dl>

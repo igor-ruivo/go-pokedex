@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { LEAGUE_CP } from '../league-caps';
 import golden from './__fixtures__/golden.json';
 import { DamageMultiplier } from './damage';
 import { type RankedEntry, type SpeciesInfo, TeamEvaluator, type TeamSlot } from './team-eval';
@@ -39,7 +40,13 @@ const builder = {
 } as unknown as TeamBuilderData;
 
 describe.each(Object.entries(golden.leagues) as Array<[TeamLeague, FixtureLeague]>)('%s league', (league, data) => {
-	const evaluator = new TeamEvaluator({ league, builder, species: data.species, ranking: data.ranking });
+	const evaluator = new TeamEvaluator({
+		league,
+		cpCap: LEAGUE_CP[league],
+		builder,
+		species: data.species,
+		ranking: data.ranking,
+	});
 
 	it('has fixture teams to check', () => {
 		expect(data.teams.length).toBeGreaterThan(0);

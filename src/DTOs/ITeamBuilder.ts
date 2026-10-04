@@ -111,16 +111,16 @@ export interface TeamRanking {
 	/** Only the leagues that were rated are here: a cup that rotated in after the last run has no entry yet. */
 	leagues: Partial<
 		Record<
-		TeamLeague,
-		{
-			totalTeams: number;
-			/** The sample this league used (the same as `candidates` today). */
-			candidates?: number;
-			/** The best teams by Team Score (higher is better). */
-			byScore: Array<RankedTeam>;
-			/** The best teams by threat score alone (lower is better). */
-			byThreat: Array<RankedTeam>;
-		}
+			TeamLeague,
+			{
+				totalTeams: number;
+				/** The sample this league used (the same as `candidates` today). */
+				candidates?: number;
+				/** The best teams by Team Score (higher is better). */
+				byScore: Array<RankedTeam>;
+				/** The best teams by threat score alone (lower is better). */
+				byThreat: Array<RankedTeam>;
+			}
 		>
 	>;
 }

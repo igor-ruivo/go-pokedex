@@ -527,7 +527,10 @@ export class TeamEvaluator {
 			.sort((a, b) => a.entry.rank - b.entry.rank);
 		const top = outsiders.slice(0, candidateCount);
 		// Every Super Max Mega of the league is always a candidate, however far down the ranking it is.
-		const candidates = [...top, ...outsiders.slice(candidateCount).filter((p) => this.superMegaBuild(p.entry.speciesId))];
+		const candidates = [
+			...top,
+			...outsiders.slice(candidateCount).filter((p) => this.superMegaBuild(p.entry.speciesId)),
+		];
 
 		const scoreTeam = (
 			ratingsOf: (poolIndex: number) => Array<number>,
@@ -578,7 +581,10 @@ export class TeamEvaluator {
 			const candidateRoles = this.roleScoresOf(candidate.entry.speciesId);
 			for (let slot = 0; slot < team.length; slot++) {
 				// A team has one Mega at most: a Mega can only take the place of the team's own Mega, or of anyone when it has none.
-				if (this.isMega(candidate.entry.speciesId) && team.some((other, k) => k !== slot && this.isMega(other.speciesId)))
+				if (
+					this.isMega(candidate.entry.speciesId) &&
+					team.some((other, k) => k !== slot && this.isMega(other.speciesId))
+				)
 					continue;
 				// Positions of the swapped team in play order (a position is a slot of the given team).
 				const positions = fullTeam
@@ -765,7 +771,12 @@ export class TeamEvaluator {
 		});
 
 		const members: Array<TeamSlot> = [
-			...fixed.map((slot) => ({ speciesId: slot.speciesId, moveset: [...slot.moveset], ivs: slot.ivs, level: slot.level })),
+			...fixed.map((slot) => ({
+				speciesId: slot.speciesId,
+				moveset: [...slot.moveset],
+				ivs: slot.ivs,
+				level: slot.level,
+			})),
 			...candidates,
 		];
 		const columns = this.buildColumns(members);

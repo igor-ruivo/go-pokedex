@@ -573,7 +573,7 @@ export const MemberCard = ({
 					<TypeChip key={typeKey(ty)} type={typeKey(ty)} />
 				))}
 			</div>
-			{(buddy || superMega) && (
+			{(buddy ?? superMega) && (
 				<div className='r-tm-buddies'>
 					{buddy && (
 						<button
@@ -699,7 +699,10 @@ export const TeamMemberEditor = ({
 	onNicknameChange,
 	nicknameLabel,
 	buddyTaken = false,
-}: Omit<MemberCardProps, 'onEditIvs' | 'onEditLevel' | 'onNicknameFocus' | 'ivsOptimal' | 'levelOptimal' | 'buddy' | 'superMega'> & {
+}: Omit<
+	MemberCardProps,
+	'onEditIvs' | 'onEditLevel' | 'onNicknameFocus' | 'ivsOptimal' | 'levelOptimal' | 'buddy' | 'superMega'
+> & {
 	cpCap: number;
 	/** Another member of the team is already above level 50 (Best Buddy): only one per team can be. */
 	buddyTaken?: boolean;
@@ -743,7 +746,11 @@ export const TeamMemberEditor = ({
 		flag: 'buddy' | 'superMega'
 	) => {
 		if (maxLevelOf(nextFlags) <= BASE_MAX_LEVEL) {
-			onBuild(index, { ivs: undefined, level: undefined, ...(flag === 'buddy' ? { buddy: false } : { superMega: false }) });
+			onBuild(index, {
+				ivs: undefined,
+				level: undefined,
+				...(flag === 'buddy' ? { buddy: false } : { superMega: false }),
+			});
 		} else if (target) {
 			onBuild(index, {
 				ivs: target.ivs,
@@ -885,7 +892,8 @@ export const SlotPicker = ({
 	const current = team[slot] ? data.gamemaster[team[slot].speciesId] : undefined;
 	const replacing = current ? cleanName(current.speciesName) : undefined;
 	const teamBases = useMemo(
-		() => new Set(team.filter((_, i) => i !== slot).map((s) => speciesFamilyKey(s.speciesId, (x) => data.gamemaster[x]))),
+		() =>
+			new Set(team.filter((_, i) => i !== slot).map((s) => speciesFamilyKey(s.speciesId, (x) => data.gamemaster[x]))),
 		[team, slot, data.gamemaster]
 	);
 

@@ -74,9 +74,7 @@ export const useTeamUpgrades = (
 
 		const scored: Array<ScoreUpgrade> = [];
 		for (const pick of swaps) {
-			const swapped = team.map((slot, i) =>
-				i === pick.slot ? pickToSlot(pick) : slot
-			);
+			const swapped = team.map((slot, i) => (i === pick.slot ? pickToSlot(pick) : slot));
 			const analysis = analyzeTeam(league, ctx, data, swapped);
 			if (!analysis) continue;
 			const parts: ScoreParts = {

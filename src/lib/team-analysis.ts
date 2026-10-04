@@ -1,6 +1,6 @@
 import type { TeamLeague } from '../DTOs/ITeamBuilder';
-import { LEAGUE_CP } from './league-caps';
 import { computeMoveEffectiveness } from '../utils/pokemon-helper';
+import { LEAGUE_CP } from './league-caps';
 import type { RoleScores } from './team-roles';
 import { TYPE_KEYS } from './types';
 
@@ -33,7 +33,7 @@ const byCap = (cap: number, great: number, ultra: number, master: number): numbe
 		? (great * cap) / 1500
 		: cap <= 2500
 			? great + ((ultra - great) * (cap - 1500)) / 1000
-			: ultra + ((master - ultra) * Math.min(1, (cap - 2500) / 7500));
+			: ultra + (master - ultra) * Math.min(1, (cap - 2500) / 7500);
 const capOf = (league: TeamLeague): number => LEAGUE_CP[league] ?? 10000;
 
 /** PvPoke's per-league goal for average team bulk (Defense × HP). */
@@ -317,9 +317,15 @@ export interface WarningInput {
  */
 export const speciesFamilyKey = (
 	speciesId: string,
-	infoOf: (speciesId: string) => { nonShadowSpecies?: string | undefined; baseSpecies?: string | undefined } | undefined
+	infoOf: (
+		speciesId: string
+	) =>
+		| { nonShadowSpecies?: string | undefined; baseSpecies?: string | undefined; isShadow?: boolean | undefined }
+		| undefined
 ): string => {
-	const normal = infoOf(speciesId)?.nonShadowSpecies ?? speciesId;
+	const info = infoOf(speciesId);
+	// A Shadow without its relation recorded (a trimmed-down species list) is still its normal form under the id's suffix.
+	const normal = info?.nonShadowSpecies ?? (info?.isShadow ? speciesId.replace(/_shadow$/, '') : speciesId);
 	return infoOf(normal)?.baseSpecies ?? normal;
 };
 
@@ -466,8 +472,7 @@ export const respectsStatusLimits = (
 	team: ReadonlyArray<TeamSlotDescriptor>,
 	isMegaSpecies: (speciesId: string) => boolean
 ): boolean =>
-	team.filter((slot) => isMegaSpecies(slot.speciesId)).length <= 1 &&
-	team.filter(exceedsNormalLevel).length <= 1;
+	team.filter((slot) => isMegaSpecies(slot.speciesId)).length <= 1 && team.filter(exceedsNormalLevel).length <= 1;
 
 /**
  * A level beyond what the Pokémon reaches without being a Best Buddy: above 50, or above 52 for a Super Max Mega (whose two

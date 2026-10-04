@@ -13,27 +13,27 @@ import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useDismiss } from '../../hooks/useDismiss';
 import { canonicalSlot } from '../../lib/canonical-slot';
 import { cleanName } from '../../lib/format';
+import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import {
 	type CollectionPokemon,
 	removeCollectionPokemon,
 	saveCollectionPokemon,
 	usePokemonCollection,
 } from '../../lib/pokemon-collection';
-import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import {
 	isBuddy,
-	respectsStatusLimits,
 	MAX_MOVES,
-		scoreTier,
+	respectsStatusLimits,
+	scoreTier,
 	slotIdentityKey,
 	type SlotIvs,
+	speciesFamilyKey,
+	standInsOf,
 	teamScore,
 	type TeamSlotDescriptor,
 	threatPart,
 	withMove,
-	speciesFamilyKey,
-	standInsOf,
 } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
@@ -259,7 +259,7 @@ export const PokemonCollection = ({
 			.flatMap(comboSlots)
 			// A stand-in goes first, so that when an identical Pokémon was also saved by hand the stand-in is the one kept
 			// (it carries the disabled crown). `sort` is stable, so nothing else moves.
-			.sort((a, b) => Number(!!(b.formerBuddy || b.formerSuperMega)) - Number(!!(a.formerBuddy || a.formerSuperMega)))
+			.sort((a, b) => Number(!!(b.formerBuddy ?? b.formerSuperMega)) - Number(!!(a.formerBuddy ?? a.formerSuperMega)))
 			// Identical builds (e.g. a saved copy of what a Best Buddy's counterpart already is) are one Pokémon.
 			.filter(
 				(slot, i, all) =>
@@ -687,7 +687,9 @@ export const PokemonCollection = ({
 					slot={0}
 					onSetMember={(_index, speciesId) => {
 						const current = draft;
-						const moveset = (data.rankList[speciesId]?.moveset ?? []).filter((move) => move !== 'none').slice(0, MAX_MOVES);
+						const moveset = (data.rankList[speciesId]?.moveset ?? [])
+							.filter((move) => move !== 'none')
+							.slice(0, MAX_MOVES);
 						setDraft({
 							slot: { speciesId, moveset },
 							...(current?.entryId ? { entryId: current.entryId } : {}),

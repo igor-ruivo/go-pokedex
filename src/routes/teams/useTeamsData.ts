@@ -41,7 +41,8 @@ export const useTeamsData = (league: TeamLeague): TeamsData => {
 	const { rankLists, extraRankLists, pvpFetchCompleted, pvpErrors } = usePvp();
 	const builderQuery = useTeamBuilderData();
 
-	const rankList = (league in STATIC_RANK_INDEX ? rankLists[STATIC_RANK_INDEX[league]] : extraRankLists[league]) ?? EMPTY_RANKS;
+	const rankList =
+		(league in STATIC_RANK_INDEX ? rankLists[STATIC_RANK_INDEX[league]] : extraRankLists[league]) ?? EMPTY_RANKS;
 	const ready = gmDone && pvpFetchCompleted && builderQuery.isSuccess && Object.keys(rankList).length > 0;
 
 	const failed = !!gmErrors || !!pvpErrors || builderQuery.isError;
