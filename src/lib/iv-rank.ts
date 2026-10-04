@@ -1,4 +1,4 @@
-import { computeBestIVs, type IVs, type RankEntry } from '../utils/pokemon-helper';
+import type { IVs, RankEntry } from '../utils/pokemon-helper';
 import { cpAt } from './pvp-sim/cp';
 import type { SlotIvs } from './team-analysis';
 
@@ -50,14 +50,4 @@ export const bestSpread = (
 	if (!top) return undefined;
 	const ivs: SlotIvs = [top.IVs.A, top.IVs.D, top.IVs.S];
 	return { ivs, level: highestLevelUnderCap(base, ivs, cpCap, ceiling) };
-};
-
-/** The best spread (and level) for a base-stat line at a CP cap and level ceiling, computed on the spot. */
-export const bestSpreadAt = (
-	base: Base,
-	cpCap: number,
-	ceiling: number
-): { ivs: SlotIvs; level: number } | undefined => {
-	const rows = Object.values(computeBestIVs(base.atk, base.def, base.hp, cpCap, ceiling)).flat();
-	return bestSpread(rows, competitionRanks(rows), base, cpCap, ceiling);
 };

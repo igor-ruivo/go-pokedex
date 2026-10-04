@@ -1,5 +1,6 @@
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
-import { bestSpreadAt } from '../iv-rank';
+import { highestLevelUnderCap } from '../iv-rank';
+import { bestIvsFor } from '../league-caps';
 import { maxLevelOf, type SlotIvs } from '../team-analysis';
 import { assignRoles, type RoleScores } from '../team-roles';
 import { SimBattle } from './battle';
@@ -216,15 +217,25 @@ export class TeamEvaluator {
 	}
 
 	/**
-	 * The build a suggested Super Max Mega is rated with: the best spread at a level ceiling of 52 (50, plus the two levels of
-	 * Super Max), with the level and so the CP that goes with it. Never a Best Buddy build. `undefined` for any other Pokémon.
+	 * The build a suggested Super Max Mega is rated with: the league's ordinary best spread (the level-50 one dex-server ships),
+	 * taken up to a level ceiling of 52 (50, plus the two levels of Super Max) — the level and so the CP that goes with it. That
+	 * spread needs no table of its own for 52: a Super Max Mega is cap-bound far below level 50 in a capped league (dex-server
+	 * checks this daily, see its super-mega-guard), and in an uncapped one 15/15/15 is best at any ceiling. Never a Best Buddy
+	 * build. `undefined` for any other Pokémon.
 	 */
 	superMegaBuild(speciesId: string): { ivs: SlotIvs; level: number } | undefined {
 		const info = this.speciesInfo.get(speciesId);
 		if (!info?.isSuperMega) return undefined;
 		let build = this.superMegaBuilds.get(speciesId);
 		if (build === undefined) {
-			build = bestSpreadAt(info.baseStats, this.init.cpCap, maxLevelOf({ superMega: true })) ?? null;
+			const spread = bestIvsFor(this.init.builder, speciesId, this.init.cpCap);
+			if (spread) {
+				const ivs: SlotIvs = [spread[1], spread[2], spread[3]];
+				build = {
+					ivs,
+					level: highestLevelUnderCap(info.baseStats, ivs, this.init.cpCap, maxLevelOf({ superMega: true })),
+				};
+			} else build = null;
 			this.superMegaBuilds.set(speciesId, build);
 		}
 		return build ?? undefined;

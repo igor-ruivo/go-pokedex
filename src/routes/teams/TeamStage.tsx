@@ -7,6 +7,7 @@ import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import { SpriteImg } from '../../components/Sprite';
 import { TypeChip } from '../../components/TypeChip';
+import { useBestBuddy } from '../../contexts/best-buddy-context';
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
@@ -577,14 +578,12 @@ export const MemberCard = ({
 					{superMega && (
 						<button
 							type='button'
-							className='r-tm-buddy'
+							className='r-tm-buddy r-tm-buddy--super'
 							aria-pressed={superMega.on}
 							title={superMega.hint}
 							onClick={superMega.onToggle}
 						>
-							<svg viewBox='0 0 24 24' width='18' height='18' aria-hidden='true'>
-								<path d='M13.2 2 5 13.4h5.6L9.8 22 19 9.8h-5.7z' fill='currentColor' />
-							</svg>
+							<img src='/images/mega-logo.png' alt='' aria-hidden='true' width={18} height={18} />
 							{superMega.label}
 						</button>
 					)}
@@ -711,6 +710,12 @@ export const TeamMemberEditor = ({
 	// exactly what the Best Buddy setting makes optimal read as the defaults, not as something the player pinned.
 	const buddyNow = member ? isBuddy(member.slot) : false;
 	const superNow = !!member?.slot.superMega;
+	// The highest level the picker takes: 50 (51 as a Best Buddy); a Pokémon that can be a Super Max Mega goes to 52, and to 53
+	// when the website's own Best Buddy setting is on (or it is a Best Buddy).
+	const { bestBuddy: bestBuddySetting } = useBestBuddy();
+	const levelMax = pokemon?.isSuperMega
+		? maxLevelOf({ superMega: true, buddy: buddyNow || bestBuddySetting })
+		: maxLevelOf({ buddy: buddyNow });
 	const {
 		ivRank,
 		ivsOptimal,
@@ -827,12 +832,21 @@ export const TeamMemberEditor = ({
 					baseStats={pokemon.baseStats}
 					ivs={member.stats.ivs}
 					cpCap={cpCap}
-					buddy={buddyNow}
-					superMega={superNow}
+					maxLevel={levelMax}
+					buddyMaxLevel={maxLevelOf({ buddy: true, superMega: !!pokemon.isSuperMega })}
 					optimal={levelOptimal}
 					bestLevel={resetLevel}
 					onChange={(level) => {
-						onBuild(index, { ivs: member.slot.ivs, level });
+						// A level above 50 on a Pokémon that can be a Super Max Mega is that: it takes the flag (and, past what
+						// that gives, the Best Buddy one) — so the button on the card agrees with the level.
+						const superMegaNow = !!pokemon.isSuperMega && (superNow || (level ?? 0) > BASE_MAX_LEVEL);
+						const needsBuddy = (level ?? 0) > maxLevelOf({ superMega: superMegaNow });
+						onBuild(index, {
+							ivs: member.slot.ivs,
+							level,
+							...(superMegaNow ? { superMega: true } : {}),
+							...(needsBuddy ? { buddy: true } : {}),
+						});
 					}}
 					onClose={() => setEditing(null)}
 				/>

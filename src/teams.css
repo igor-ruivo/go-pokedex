@@ -3306,3 +3306,31 @@
 	width: 18px;
 	height: 18px;
 }
+/* The Super Max Mega toggle, when on: a soft rainbow in the tones of its icon (orange, lime, sky blue, magenta) instead of the
+   accent blue — a gradient hairline around a barely tinted fill — with the page's ordinary text colour, not a coloured one. */
+.rvmp .r-tm-buddy--super[aria-pressed='true'] {
+	--rb-1: #e0903f;
+	--rb-2: #b5cc4e;
+	--rb-3: #5bb8e8;
+	--rb-4: #d03a85;
+	color: var(--text-dim);
+	border-color: transparent;
+	background:
+		linear-gradient(
+				90deg,
+				color-mix(in srgb, var(--rb-1) 6%, transparent),
+				color-mix(in srgb, var(--rb-2) 6%, transparent),
+				color-mix(in srgb, var(--rb-3) 6%, transparent),
+				color-mix(in srgb, var(--rb-4) 6%, transparent)
+			)
+			padding-box,
+		linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+		linear-gradient(
+				90deg,
+				color-mix(in srgb, var(--rb-1) 55%, transparent),
+				color-mix(in srgb, var(--rb-2) 55%, transparent),
+				color-mix(in srgb, var(--rb-3) 55%, transparent),
+				color-mix(in srgb, var(--rb-4) 55%, transparent)
+			)
+			border-box;
+}

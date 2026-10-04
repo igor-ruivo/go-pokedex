@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useDismiss } from '../../hooks/useDismiss';
 import { cpAt } from '../../lib/pvp-sim/cp';
-import { isSlotLevel, maxLevelOf, type SlotIvs } from '../../lib/team-analysis';
+import { isSlotLevel, type SlotIvs } from '../../lib/team-analysis';
 
 /**
  * The level of one team member (1 to 50, in steps of 0.5; up to 51 for a Best Buddy), in a dialog like the Pokémon picker. Left alone, the level is
@@ -18,8 +18,8 @@ export const LevelModal = ({
 	baseStats,
 	ivs,
 	cpCap,
-	buddy = false,
-	superMega = false,
+	maxLevel,
+	buddyMaxLevel,
 	optimal = false,
 	bestLevel,
 	onChange,
@@ -35,10 +35,10 @@ export const LevelModal = ({
 	baseStats: { atk: number; def: number; hp: number };
 	ivs: SlotIvs;
 	cpCap: number;
-	/** A Best Buddy: one more level than a Pokémon reaches otherwise (51; 53 as a Super Max Mega too). */
-	buddy?: boolean;
-	/** A Super Max Mega: two more levels (52; 53 as a Best Buddy too). */
-	superMega?: boolean;
+	/** The highest level that can be typed for this Pokémon. */
+	maxLevel: number;
+	/** The highest it could be if it were also a Best Buddy: a level between the two asks for it (see the message). */
+	buddyMaxLevel: number;
 	/** The level is already the best for this Pokémon's Best Buddy state: there is nothing to reset to (no Reset button). */
 	optimal?: boolean;
 	/** What Reset goes to: a Best Buddy's best level when it is above 50; absent, back to following the CP cap. */
@@ -83,10 +83,9 @@ export const LevelModal = ({
 	const typed = field === '' ? NaN : Number(field);
 	const typedCp = isSlotLevel(typed) ? cpAt(baseStats, ivs, typed) : undefined;
 	const overCap = typedCp !== undefined && typedCp > cpCap;
-	const maxLevel = maxLevelOf({ buddy, superMega });
 	// Past what the Pokémon reaches without it, only a Best Buddy can go (one level further); beyond what even a Best Buddy
 	// reaches it is simply not a level (no message about Best Buddy).
-	const needsBuddy = !buddy && isSlotLevel(typed) && typed > maxLevel && typed <= maxLevelOf({ buddy: true, superMega });
+	const needsBuddy = isSlotLevel(typed) && typed > maxLevel && typed <= buddyMaxLevel;
 	const canApply = isSlotLevel(typed) && typed <= maxLevel && !needsBuddy && !overCap && field !== current && !applying;
 	const apply = (next: number | undefined) => {
 		setApplying({ value: next });
