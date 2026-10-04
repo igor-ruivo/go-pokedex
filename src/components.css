@@ -2226,6 +2226,8 @@
 	z-index: 20;
 	padding: var(--s3) 0 var(--s3);
 	margin-top: 0;
+	/* the list starts below the shadow strip (::after, --s5 high), so its first pixels are not shaded; .r-searchlist does the same */
+	margin-bottom: var(--s5);
 	/* solid; the fade into the page is the ::after below, a fixed length shared with .r-searchlist */
 	background: var(--bg);
 	/* Own compositing layer + stacking context: on iOS Safari, when this sticky
@@ -3053,7 +3055,8 @@
 	/* the extra --s3 on top is pulled back by the negative margin: before it sticks the box is spaced as it always was, and once
 	   stuck it keeps the same distance from the app bar as the Rankings header */
 	padding: calc(var(--s4) + var(--s3)) 0 0;
-	margin: calc(-1 * var(--s3)) 0 var(--s2);
+	/* the bottom margin is the height of the shadow strip under the header (see ::after above): the list starts below it, so its first pixels are not shaded */
+	margin: calc(-1 * var(--s3)) 0 var(--s5);
 	background: var(--bg);
 	/* same compositing guard as .r-rank-head: a stale gradient layer must not paint over controls that reflow */
 	transform: translateZ(0);
