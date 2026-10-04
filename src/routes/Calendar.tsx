@@ -1182,7 +1182,6 @@ const RocketsTab = () => {
 	return (
 		<div>
 			<SearchListBar
-				className='r-searchlist--ranklike'
 				value={query}
 				onChange={setQuery}
 				placeholder={t('calendar:tabs.searchRockets')}

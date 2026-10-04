@@ -2226,13 +2226,26 @@
 	z-index: 20;
 	padding: var(--s3) 0 var(--s3);
 	margin-top: 0;
-	background: linear-gradient(var(--bg) 88%, transparent);
+	/* solid; the fade into the page is the ::after below, a fixed length shared with .r-searchlist */
+	background: var(--bg);
 	/* Own compositing layer + stacking context: on iOS Safari, when this sticky
 	   header changes height after a league switch (the sort button appears /
 	   the chip row reflows), the gradient's stale layer kept painting over the
 	   newly-laid-out controls until the next scroll forced a repaint. */
 	transform: translateZ(0);
 	isolation: isolate;
+}
+/* the shadow under a sticky header: the same fixed length on every list (a share of the header's height made it differ with its height) */
+.rvmp .r-rank-head::after,
+.rvmp .r-searchlist::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 100%;
+	height: var(--s5);
+	background: linear-gradient(var(--bg), transparent);
+	pointer-events: none;
 }
 .rvmp .r-rank-head > * {
 	position: relative;
@@ -3037,9 +3050,11 @@
 	top: 57px;
 	z-index: 20;
 	/* the top padding is the breathing room between the app bar and the search box while it is stuck */
-	padding: var(--s4) 0 var(--s3);
-	margin-bottom: var(--s2);
-	background: linear-gradient(var(--bg) 88%, transparent);
+	/* the extra --s3 on top is pulled back by the negative margin: before it sticks the box is spaced as it always was, and once
+	   stuck it keeps the same distance from the app bar as the Rankings header */
+	padding: calc(var(--s4) + var(--s3)) 0 0;
+	margin: calc(-1 * var(--s3)) 0 var(--s2);
+	background: var(--bg);
 	/* same compositing guard as .r-rank-head: a stale gradient layer must not paint over controls that reflow */
 	transform: translateZ(0);
 	isolation: isolate;
@@ -3050,12 +3065,9 @@
 }
 /* a league picker carried along above the search box: spaced from the top of the screen exactly like the Rankings header
    (its header's padding plus the row's own top margin), and over the rows below for its popovers */
-/* Rockets: the same distance from the top of the screen while stuck as the Rankings header (its padding plus the picker row's margin) */
-.rvmp .r-searchlist.r-searchlist--ranklike {
-	padding-top: calc(var(--s3) + var(--s4));
-}
 .rvmp .r-searchlist:has(> .r-league-row) {
 	padding-top: var(--s3);
+	margin-top: 0;
 }
 .rvmp .r-searchlist > .r-league-row {
 	margin-bottom: var(--s3);
@@ -6855,7 +6867,6 @@
 /* with the applied-filter chips row at the bottom, the chips row pads itself, so the header needs no bottom padding of its own */
 .rvmp .r-rank-head:has(.r-applied-filters) {
 	padding-bottom: 0;
-	background: linear-gradient(var(--bg) 94%, transparent);
 }
 /* Best Buddy crown (level above 50) — the corner opposite the shadow mark of each sprite */
 .rvmp .r-buddy-mark {
