@@ -70,6 +70,8 @@
 			"lures": "Çekici Modül"
 		},
 		"readAnnouncement": "Tüm duyuruyu oku",
+		"copyLink": "Bağlantıyı kopyala",
+		"linkCopied": "Bağlantı kopyalandı",
 		"startEndLine": "Başlangıç {{start}} · Bitiş {{end}}",
 		"startsIn": {
 			"days": "{{count}}g sonra",

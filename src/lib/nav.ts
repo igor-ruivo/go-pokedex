@@ -18,6 +18,8 @@ export const R = {
 	pokemon: (speciesId: string, tab?: string): string =>
 		tab && tab !== 'ranks' ? `/pokemon/${speciesId}/${tab}` : `/pokemon/${speciesId}`,
 	calendar: (tab = 'events'): string => `/calendar/${tab}`,
+	/** One event of the Events tab: opened and scrolled into view when the page loads. */
+	calendarEvent: (eventId: string): string => `/calendar/events?event=${encodeURIComponent(eventId)}`,
 	teams: '/teams',
 	teamsTop: '/teams/top',
 	teamsFavorites: '/teams/favorites',

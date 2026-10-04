@@ -473,13 +473,15 @@
 /* the card's Reset: a quiet link under the CP / level / IVs, for a Pokémon that isn't at its best */
 .rvmp .r-tm-reset {
 	align-self: center;
-	margin: 0 0 var(--s1);
-	padding: 2px 6px;
+	/* just the word and a hair of air above and below it: line-height 1 and 3px of padding make the row 18px tall; the card's 8px gaps above and below are pulled in by 3px each */
+	margin: -3px 0;
+	padding: 3px 6px;
 	border: 0;
 	background: none;
 	color: var(--text-dim);
 	font: inherit;
 	font-size: 12px;
+	line-height: 1;
 	text-decoration: underline;
 	text-underline-offset: 3px;
 	cursor: pointer;
@@ -2514,7 +2516,6 @@
 /* ---- score explanations (ScoreInfo): hover with a mouse, tap on touch ----------------------------------------- */
 .rvmp .r-tm-info {
 	cursor: pointer;
-	border-radius: var(--r-sm);
 }
 .rvmp .r-tm-info:focus-visible {
 	outline: 2px solid var(--accent);
@@ -3416,4 +3417,68 @@
 .rvmp .r-tm-board-score .r-tm-board-metric[data-primary] > b {
 	color: color-mix(in srgb, var(--tier-a), var(--text) var(--ink-mix));
 	font-size: 24px;
+}
+
+/* ---- battle plan: the three steps side by side with a small gap, the play-order arrows floating on the seams ----
+   The arrows take no room of their own (round badges over the gap, like the team cards of Favorites and My Pokémon), and the
+   room they used to take goes to the sides of the trio. */
+.rvmp .r-tm-flow {
+	--seam-gap: var(--s2);
+	position: relative;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	column-gap: var(--seam-gap);
+	row-gap: 0;
+	align-items: stretch;
+	padding-inline: clamp(0px, 5vw, 64px);
+}
+.rvmp .r-tm-flow > .r-tm-step:nth-child(1) {
+	grid-column: 1;
+	grid-row: 1;
+}
+.rvmp .r-tm-flow > .r-tm-step:nth-child(3) {
+	grid-column: 2;
+	grid-row: 1;
+}
+.rvmp .r-tm-flow > .r-tm-step:nth-child(5) {
+	grid-column: 3;
+	grid-row: 1;
+}
+.rvmp .r-tm-flow > .r-tm-flow-arrow {
+	z-index: 5;
+	grid-row: 1;
+	display: grid;
+	place-items: center;
+	align-self: center;
+	justify-self: end;
+	width: 28px;
+	height: 28px;
+	border: 1px solid var(--border-strong);
+	border-radius: 50%;
+	background: var(--surface-2);
+	transform: translateX(calc(50% + var(--seam-gap) / 2));
+	pointer-events: none;
+}
+.rvmp .r-tm-flow > .r-tm-flow-arrow:nth-child(2) {
+	grid-column: 1;
+}
+.rvmp .r-tm-flow > .r-tm-flow-arrow:nth-child(4) {
+	grid-column: 2;
+}
+.rvmp .r-tm-flow-arrow svg {
+	width: 14px;
+	height: 9px;
+	stroke: var(--text-dim);
+	stroke-width: 3;
+	stroke-dasharray: none;
+	animation: none;
+}
+@media (max-width: 719px) {
+	.rvmp .r-tm-flow {
+		--seam-gap: 4px;
+		padding-inline: 0;
+	}
+	.rvmp .r-tm-flow > .r-tm-flow-arrow {
+		width: 24px;
+		height: 24px;
+	}
 }

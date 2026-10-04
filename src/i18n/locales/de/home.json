@@ -4,7 +4,7 @@
 		"title": "Alles, was du beim Spielen brauchst.",
 		"subtitle": "Live-Events, Liga-Rankings, ein Team-Builder, der deine Sammlung kennt, und Speicher aufräumen mit einem Fingertipp. Kostenlos, schnell und in deiner Sprache.",
 		"ctaTeams": "Team bauen",
-		"ctaRegister": "Deine Pokémon",
+		"ctaRegister": "Meine Pokémon",
 		"ctaPvp": "PvP-Rankings",
 		"ctaRaid": "Raid-Angreifer"
 	},
@@ -37,11 +37,11 @@
 	"teams": {
 		"title": "Team-Labor",
 		"headline": "Ein Team-Builder, der deine Sammlung kennt.",
-		"body": "Bewerte jedes Trio wie PvPoke, oder lass die besten Teams aus deinen eigenen Pokémon finden – mit deinen IVs, Leveln und Bestem Freund."
+		"body": "Bewerte jedes Trio, oder lass die besten Teams aus deinen eigenen Pokémon finden – mit deinen IVs, Leveln und Bestem Freund."
 	},
 	"tools": {
 		"title": "Werkzeuge",
-		"searchesPitch": "Räume deinen Speicher in Sekunden auf. Erzeuge Suchbegriffe, die behalten, was zählt, und den Rest auswählen."
+		"searchesPitch": "Räume deinen Speicher in Sekunden auf."
 	},
 	"footer": {
 		"tagline": "Kostenlose, schnelle Werkzeuge für Pokémon-GO-Trainer.",
@@ -51,7 +51,9 @@
 		"about": "Über uns und Danksagungen",
 		"privacy": "Datenschutz",
 		"issues": "Problem melden",
-		"disclaimer": "GO Pokédex ist ein inoffizielles Fanprojekt. Es steht in keiner Verbindung zu Niantic, Nintendo, The Pokémon Company oder Game Freak und wird von ihnen weder unterstützt noch gesponsert. Pokémon und Pokémon GO sind Marken ihrer jeweiligen Inhaber."
+		"disclaimer": "GO Pokédex ist ein inoffizielles Fanprojekt. Es steht in keiner Verbindung zu Niantic, Nintendo, The Pokémon Company oder Game Freak und wird von ihnen weder unterstützt noch gesponsert. Pokémon und Pokémon GO sind Marken ihrer jeweiligen Inhaber.",
+		"rights": "Alle Rechte vorbehalten.",
+		"raidRanks": "Raid-Rankings"
 	},
 	"about": {
 		"title": "Über GO Pokédex",
@@ -66,7 +68,26 @@
 		"privacyTitle": "Datenschutz",
 		"privacyBody": "Es gibt keine Konten. Deine Einstellungen, Sammlung und Lieblingsteams bleiben in deinem Browser und verlassen dein Gerät nie. Wir nutzen Google Analytics, um Besuche anonym zu zählen; dabei können Cookies gesetzt werden. Es gibt keine Werbung.",
 		"disclaimerTitle": "Haftungsausschluss",
-		"madeBy": "Erstellt von Igor Ruivo."
+		"madeBy": "Erstellt von Igor Ruivo.",
+		"rights": "All rights reserved.",
+		"storyTitle": "Die Geschichte",
+		"s1": "Ich bin Igor, Softwareentwickler und ein bisschen besessen von Optimierung.",
+		"s2": "Dieses Projekt begann im Sommer 2023 als Möglichkeit, mir selbst React, CSS und moderne Frontend-Entwicklung beizubringen. Damals stieg ich richtig in Pokémon-GO-PvP ein und entdeckte, wie viel Tiefe in einem scheinbar simplen Handyspiel steckt. IVs, WP-Grenzen, Rankings, Attacken-Sets, Ligen und die ganze seltsame Optimierung drumherum haben mich komplett gepackt.",
+		"s3": "Schnell verließ ich mich auf die hervorragenden Werkzeuge, die die Pokémon-GO-Community bereits gebaut hatte: PvPoke für PvP-Analysen und Rankings, Poké Genie und PVPIVs für IVs, LeekDuck für Spielinformationen, PokéMiners für Spieldaten und weitere. Diese Projekte sind großartig in dem, was sie tun, und dieses Projekt soll sie weder ersetzen noch ihre Arbeit nachbauen. Es baut darauf auf.",
+		"s4": "Ich wollte das Rundum-Begleiter-Erlebnis schaffen, das ich selbst nicht finden konnte: dicht, informationsreich, schnell, mobil gedacht und mit der Liebe zum UX/UI-Detail, die ich selbst gern gestalte. Der größte Unterschied aber: Das Werkzeug sollte um deine eigenen Pokémon kreisen und nicht nur um Pokémon GO als Ganzes.",
+		"yoursTitle": "Deine Pokémon, nicht nur Pokémon",
+		"y1": "Der Team-Builder ist von der hervorragenden Arbeit von PvPoke inspiriert, einschließlich Kampfsimulation und Ranking-Algorithmen, geht die Idee aber weiter, indem er sie mit deiner eigenen Sammlung verbindet. Du kannst eine persönliche Liste interessanter Liga-Pokémon führen, und das Werkzeug berechnet fortlaufend, welche Teamkombinationen aus deinem tatsächlichen Besitz am meisten Sinn ergeben. Teams werden am aktuellen Meta gemessen und mit nützlichen Analysen und Tipps begleitet.",
+		"y2": "So wird deine Sammlung dauerhaft, statt dass du sie jede Saison von Hand neu bewerten musst. Ändern sich Attacken, Buffs, Nerfs, neue Pokémon oder das Meta, kommst du zurück und siehst sofort, welche deiner Pokémon und Teams wichtiger oder unwichtiger geworden sind.",
+		"y3": "Speichere deine Pokémon einmal. Lass das Werkzeug weiter herausfinden, wofür sie gut sind.",
+		"searchTitle": "Suchbegriffe, die wirklich die Arbeit erledigen",
+		"q1": "Ein weiterer großer Teil des Projekts sind automatisierte Pokémon-GO-Suchbegriffe. Mein Lieblingsbeispiel ist die Massenlöschung nicht perfekter IVs. Das Werkzeug erzeugt einen riesigen Suchbegriff, der die gewählten Ligakonfigurationen abdeckt und Entwicklungsreihen, Crypto-Pokémon, Läuterung, Bester Kumpel und die unterschiedlichen optimalen IV-Verteilungen jeder Art berücksichtigt.",
+		"q2": "Das Ergebnis finde ich persönlich revolutionär: Statt Hunderte Pokémon von Hand zu prüfen, kann ich ohne Sorge alle löschen, die für meine gewählten Ligen unmöglich interessant sein können, und nur die wenigen Überlebenden ansehen, die wirklich einen Blick wert sind.",
+		"q3": "Es funktioniert auch in die andere Richtung. Das Werkzeug hilft, potenziell wertvolle Pokémon zu behalten, die aktuell nicht Meta-relevant sind, etwa Top-Kandidaten für Superliga oder Hyperliga, die ich sonst gelöscht hätte, weil ich keine praktische Möglichkeit hatte, jedes Pokémon im Speicher zu prüfen. Es gibt auch Suchen für Tauschkandidaten: Das Werkzeug findet Pokémon, deren IV-Anforderungen gerade deshalb sinnvoll sind, weil ein Tausch mit einem Besten Freund eine Mindest-IV garantiert.",
+		"builtTitle": "Auf der Community aufgebaut",
+		"b1": "Unter all dem verlasse ich mich stark auf das bestehende Pokémon-GO-Datenökosystem. Mein Backend liest den Game Master und die Übersetzungsdaten von PokéMiners und bezieht regelmäßig Informationen aus den offiziellen Pokémon-GO-Kanälen und etablierten Community-Quellen wie LeekDuck. Die PvP-Analyse baut auf der Kampfsimulation von PvPoke auf, statt sie neu zu erfinden. Vieles, was dieses Projekt möglich macht, verdanke ich Menschen, die seit Jahren diese Werkzeuge und Datensätze bauen.",
+		"b2": "Ich versuche im Grunde, eine weitere Schicht darüberzulegen: eine reichere Oberfläche, ein persönlicheres Erlebnis und mehr Automatisierung rund um die Pokémon, die du tatsächlich besitzt. Das Projekt war außerdem mein Spielplatz, um Frontend-Entwicklung zu lernen, immer leistungsfähigere KI-Codierwerkzeuge auszuprobieren und mich viel länger als geplant in UX/UI-Details zu verlieben.",
+		"b3": "Jetzt möchte ich einen Teil dieser Arbeit der Community zurückgeben. Wenn du das Werkzeug nutzt, freue ich mich wirklich über Feedback, Kritik, Ideen, Fehlerberichte oder Vorschläge, was besser werden kann. Das Projekt entwickelt sich weiter, und ich lasse die Community es lieber mitgestalten, als alles in meiner eigenen Blase zu bauen.",
+		"sign": "Igor"
 	},
 	"menu": {
 		"open": "Menü öffnen",
@@ -82,5 +103,9 @@
 	"raid": {
 		"title": "Beste Raid-Angreifer",
 		"subtitle": "Die Top 3 für jeden der 17 Typen."
+	},
+	"social": {
+		"label": "Du findest uns auf",
+		"discord": "Unserem Discord beitreten"
 	}
 }

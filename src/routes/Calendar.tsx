@@ -2,7 +2,7 @@ import type { TFunction } from 'i18next';
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
@@ -15,7 +15,7 @@ import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLiveNow } from '../hooks/useLiveNow';
 import i18n from '../i18n';
-import { everyLanguage, spotlightToPost } from '../lib/calendar-events';
+import { specialToPost, spotlightToPost } from '../lib/calendar-events';
 import {
 	cleanName,
 	dateRange,
@@ -27,7 +27,7 @@ import {
 } from '../lib/format';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
-import { type ILeekduckSpecialRaidBoss, useCalendar } from '../queries/calendar';
+import { useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
@@ -169,38 +169,6 @@ const startsIn = (start: number, now: number): string => {
 	const s = Math.floor(ms / 1000);
 	return i18n.t('calendar:events.startsIn.seconds', { count: s });
 };
-
-/** Leekduck special-boss windows behave like tiny raid-only events. */
-const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
-	id: s.rawUrl,
-	url: everyLanguage(s.rawUrl),
-	title: s.title,
-	subtitle: s.title,
-	startDate: s.date,
-	endDate: s.dateEnd,
-	dateRanges: [{ start: s.date, end: s.dateEnd }],
-	imageUrl: '',
-	wild: [],
-	raids: s.raids,
-	eggs: [],
-	researches: [],
-	incenses: [],
-	lures: [],
-	// `Object.values`, not `Object.keys` — GameLanguage's member *names*
-	// don't all match their runtime string *values* (see spotlightToPost's
-	// own note); harmless here since every value is just `[]` regardless of
-	// which key name it lands on, but keyed consistently with the real
-	// `GameLanguage` values all the same.
-	bonuses: Object.values(GameLanguage).reduce(
-		(acc, key) => {
-			acc[key] = [];
-			return acc;
-		},
-		{} as Record<GameLanguage, Array<string>>
-	),
-	availableLocales: Object.values(GameLanguage),
-	source: 'leekduck',
-});
 
 /* ---------- shared bits ---------- */
 /** Small inline placeholder for a single grid still waiting on relevance
@@ -514,12 +482,23 @@ const EventCard = ({
 		(preferSubtitle ? post.subtitle[gl] || post.title[gl] : post.title[gl] || post.subtitle[gl]) ||
 		t('calendar:events.fallbackTitle');
 	const bonuses = post.bonuses[gl] ?? [];
+	// the link to this very event: the Events tab opens it expanded and scrolls to it
+	const [copied, setCopied] = useState(false);
+	const copyLink = async () => {
+		try {
+			await navigator.clipboard.writeText(`${window.location.origin}${R.calendarEvent(post.id)}`);
+			setCopied(true);
+			window.setTimeout(() => setCopied(false), 1800);
+		} catch {
+			// no clipboard access (an insecure page, a blocked permission): the button simply does nothing
+		}
+	};
 	const spotlightMons = post.wild;
 	// The GO/shiny sprite assets carry a lot of built-in transparent padding
 	// (unlike the official artwork), so the shared sprite rule scales them
 	// up without changing this layout box.
 	return (
-		<div className='r-event' data-open={open}>
+		<div className='r-event' data-open={open} data-event={post.id}>
 			<button type='button' className='r-event-head' onClick={onToggle}>
 				{post.isSpotlight ? (
 					<span className='r-event-spotlight'>
@@ -603,18 +582,32 @@ const EventCard = ({
 					<Group title={t('calendar:events.groups.eggs')} entries={post.eggs} icon='/images/eggs/10km.png' />
 					<Group title={t('calendar:events.groups.incense')} entries={post.incenses} icon='/images/nav/incense.png' />
 					<Group title={t('calendar:events.groups.lures')} entries={post.lures} icon='/images/nav/lure.png' />
-					{(post.url[gl] || post.url[GameLanguage.en]) && (
-						<a
-							className='r-ext-link'
-							href={post.url[gl] || post.url[GameLanguage.en]}
-							target='_blank'
-							rel='noopener noreferrer'
-							onClick={(e) => e.stopPropagation()}
+					<div className='r-event-actions'>
+						<button
+							type='button'
+							className='r-ext-link r-copy-link'
+							data-done={copied ? '' : undefined}
+							onClick={(e) => {
+								e.stopPropagation();
+								void copyLink();
+							}}
 						>
-							{t('calendar:events.readAnnouncement')}
-							<span aria-hidden='true'>↗</span>
-						</a>
-					)}
+							{copied ? t('calendar:events.linkCopied') : t('calendar:events.copyLink')}
+							<span aria-hidden='true'>{copied ? '✓' : '⧉'}</span>
+						</button>
+						{(post.url[gl] || post.url[GameLanguage.en]) && (
+							<a
+								className='r-ext-link'
+								href={post.url[gl] || post.url[GameLanguage.en]}
+								target='_blank'
+								rel='noopener noreferrer'
+								onClick={(e) => e.stopPropagation()}
+							>
+								{t('calendar:events.readAnnouncement')}
+								<span aria-hidden='true'>↗</span>
+							</a>
+						)}
+					</div>
 				</div>
 			)}
 		</div>
@@ -625,9 +618,13 @@ const EventsTab = () => {
 	const { t } = useTranslation(['calendar']);
 	const { posts, season, spotlightHours, postsFetchCompleted, seasonFetchCompleted, spotlightHoursFetchCompleted } =
 		useCalendar();
-	const [openId, setOpenId] = useState<string | null>(null);
+	// An event named in the link (?event=…, from the Home page) starts open, and the page scrolls to it once it is drawn.
+	const [searchParams] = useSearchParams();
+	const linkedId = searchParams.get('event');
+	const [openId, setOpenId] = useState<string | null>(linkedId);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { seenIds, markSeen } = useSeenEvents();
+	const scrolledTo = useRef<string | null>(null);
 
 	const ready = postsFetchCompleted && spotlightHoursFetchCompleted;
 
@@ -667,6 +664,23 @@ const EventsTab = () => {
 		for (const p of list) seen.set(p.title[gl], (seen.get(p.title[gl]) ?? 0) + 1);
 		return new Set([...seen].filter(([, n]) => n > 1).map(([t]) => t));
 	}, [list, gl]);
+
+	// the linked event: opened (and marked seen) as soon as it is in the list, and scrolled into view once, below the app bar
+	useEffect(() => {
+		if (!linkedId || scrolledTo.current === linkedId || !list.some((p) => p.id === linkedId)) return;
+		scrolledTo.current = linkedId;
+		setOpenId(linkedId);
+		markSeen(linkedId);
+		requestAnimationFrame(() => {
+			const card = [...document.querySelectorAll<HTMLElement>('[data-event]')].find(
+				(el) => el.dataset.event === linkedId
+			);
+			card?.scrollIntoView({
+				block: 'start',
+				behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+			});
+		});
+	}, [linkedId, list, markSeen]);
 
 	if (!ready) return <Spinner />;
 	if (list.length === 0) return <p className='r-muted'>{t('calendar:events.noEvents')}</p>;

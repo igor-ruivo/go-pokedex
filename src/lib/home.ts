@@ -112,27 +112,23 @@ export const randomIndexOtherThan = (
 	return index;
 };
 
-/** Raid tiers shown on the Home page, most special first: the higher tiers (5 and Mega), then tier 3. */
-const HOME_RAID_ORDER: ReadonlyArray<(kind?: string) => boolean> = [(k) => k === '5' || k === 'mega', (k) => k === '3'];
-
 /**
- * The raid bosses worth a glance on the Home page: the special tiers (5, Mega) and at most tier 3; no tier 1; and no
- * Shadow raid unless it is a special-tier one. Ordered by tier, special first.
+ * The raid bosses of the Home page, in the order they fill the room: the higher tiers (5, Mega and any special kind) first, Shadow or not, so
+ * they are always there; then tier 3, then tier 1, those two without their Shadow bosses.
  */
+const HOME_RAID_TIERS: ReadonlyArray<{ match: (kind?: string) => boolean; shadow: boolean }> = [
+	{ match: (k) => k !== '3' && k !== '1', shadow: true },
+	{ match: (k) => k === '3', shadow: false },
+	{ match: (k) => k === '1', shadow: false },
+];
+
 export const homeRaidEntries = <T extends Pick<IEntry, 'speciesId' | 'kind'>>(
 	entries: ReadonlyArray<T>,
 	isShadow: (speciesId: string) => boolean
-): Array<T> => {
-	const out: Array<T> = [];
-	HOME_RAID_ORDER.forEach((match, tierIndex) => {
-		for (const e of entries) {
-			if (!match(e.kind)) continue;
-			if (tierIndex > 0 && isShadow(e.speciesId)) continue;
-			out.push(e);
-		}
-	});
-	return out;
-};
+): Array<T> =>
+	HOME_RAID_TIERS.flatMap((tier) =>
+		entries.filter((e) => tier.match(e.kind) && (tier.shadow || !isShadow(e.speciesId)))
+	);
 
 const ROCKET_LEADERS = /giovanni|sierra|cliff|arlo/i;
 
@@ -168,3 +164,26 @@ export const orderedEggEntries = <T extends Pick<IEntry, 'kind'>>(entries: Reado
 		};
 		return rank(a) - rank(b);
 	});
+
+/** "2023–2026": from the year the project started to the current one (never earlier than 2026). */
+export const copyrightYears = (now: Date = new Date()): string => {
+	const year = Math.max(2026, now.getFullYear());
+	return `2023–${year}`;
+};
+
+/**
+ * How many faces a block of `rows` rows with `columns` columns shows, out of `total`, when the last cell is kept for the "+N"
+ * (so a list that does not fit never ends on a face). All of them when they fit; never more than `max` faces.
+ */
+export const facesThatFit = (
+	total: number,
+	columns: number,
+	rows: number,
+	max: number
+): { faces: number; more: number } => {
+	const cells = Math.max(1, columns) * Math.max(1, rows);
+	const capped = Math.min(total, max);
+	if (capped <= cells && total <= max) return { faces: capped, more: 0 };
+	const faces = Math.min(cells - 1, max);
+	return { faces, more: total - faces };
+};

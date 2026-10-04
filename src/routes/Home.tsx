@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { BrandMark } from '../components/BrandMark';
+import { CombatIcon } from '../components/CombatIcon';
 import { RaidIcon } from '../components/RaidIcon';
 import { SpriteImg } from '../components/Sprite';
 import { TeamTabIcon } from '../components/team-tab-icons';
@@ -11,11 +12,12 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IPostEntry } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
-import { spotlightToPost } from '../lib/calendar-events';
+import { nowRaidEntries, spotlightToPost } from '../lib/calendar-events';
 import { dateRange } from '../lib/format';
 import {
 	catchableRocketEntries,
 	eventHighlights,
+	facesThatFit,
 	featuredEvents,
 	type HighlightKind,
 	homeRaidEntries,
@@ -39,27 +41,50 @@ const KIND_ICON: Record<HighlightKind, string> = {
 
 const FEATURED_LIMIT = 5;
 
-/** A wrapping row of round sprites (up to a dozen), the shiny ones marked, and how many more there are. */
+const FACE_SIZE = 34;
+const MIN_FACE_COLUMNS = 3;
+
+/** Two rows at most: as many round sprites as fit the width (never more than nine), the shiny ones marked, and a "+N" in the last cell. */
 const Faces = ({
-	shown,
-	more,
+	all,
 	pokemon,
 	shadow,
 }: {
-	shown: ReadonlyArray<{ speciesId: string; shiny: boolean }>;
-	more: number;
+	all: ReadonlyArray<{ speciesId: string; shiny: boolean }>;
 	pokemon: Record<string, IGamemasterPokemon>;
 	shadow?: boolean | undefined;
-}) => (
-	<span className='h-faces'>
-		{shown.map((e) =>
-			pokemon[e.speciesId] ? (
+}) => {
+	const ref = useRef<HTMLSpanElement>(null);
+	const [columns, setColumns] = useState(5);
+	// how many faces fit across at this width (never fewer than three: on a very narrow card they overlap a little instead)
+	useLayoutEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+		const count = () => {
+			const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+			setColumns(Math.max(MIN_FACE_COLUMNS, Math.floor((el.clientWidth + gap) / (FACE_SIZE + gap))));
+		};
+		count();
+		const observer = new ResizeObserver(count);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, []);
+
+	const known = all.filter((e) => !!pokemon[e.speciesId]);
+	const { faces, more } = facesThatFit(known.length, columns, 2, 9);
+	return (
+		<span
+			className='h-faces'
+			ref={ref}
+			style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, ${FACE_SIZE}px))` }}
+		>
+			{known.slice(0, faces).map((e) => (
 				<PokeAvatar key={e.speciesId} pokemon={pokemon[e.speciesId]} shiny={e.shiny} shadow={shadow} />
-			) : null
-		)}
-		{more > 0 && <i className='h-stack-more'>+{more}</i>}
-	</span>
-);
+			))}
+			{more > 0 && <i className='h-stack-more'>+{more}</i>}
+		</span>
+	);
+};
 
 /** Overlapping avatars of a few species, with how many more there are. */
 const AvatarStack = ({
@@ -123,7 +148,7 @@ const EventCard = ({
 					{live ? t('home:now.live') : dateRange(post.startDate, post.endDate, currentLanguage)}
 				</span>
 				<h3>
-					<Link to={R.calendar('events')} className='h-stretch'>
+					<Link to={R.calendarEvent(post.id)} className='h-stretch'>
 						{title}
 					</Link>
 				</h3>
@@ -173,22 +198,20 @@ const Home = () => {
 		gl,
 	]);
 
+	// the same bosses as the Raids tab's "Now": the rotation plus every event or special window that is on
+	const nowRaids = useMemo(
+		() =>
+			nowRaidEntries({
+				posts: [...calendar.posts, ...calendar.spotlightHours.map(spotlightToPost)],
+				specialBosses: calendar.specialBosses,
+				currentBosses: calendar.currentBosses,
+				language: gl,
+				now,
+			}),
+		[calendar.posts, calendar.spotlightHours, calendar.specialBosses, calendar.currentBosses, gl, now]
+	);
 	const known = (id: string) => !!gamemasterPokemon[id];
-	const FACES = 12;
 	const right = [
-		{
-			to: R.calendar('bosses'),
-			icon: '/images/raids/tier-5.png',
-			title: t('calendar:tabs.bosses'),
-			hint: t('home:right.bosses'),
-			...speciesWithShiny(
-				homeRaidEntries(calendar.currentBosses, (id) => !!gamemasterPokemon[id]?.isShadow),
-				known,
-				FACES
-			),
-			shadow: false,
-			ready: calendar.currentBossesFetchCompleted,
-		},
 		{
 			to: R.calendar('spawns'),
 			icon: '/images/nav/spawns-grass.png',
@@ -197,17 +220,31 @@ const Home = () => {
 			...speciesWithShiny(
 				events.flatMap((e) => e.wild),
 				known,
-				FACES
+				Infinity
 			),
 			shadow: false,
 			ready: calendar.postsFetchCompleted,
+		},
+		{
+			to: R.calendar('bosses'),
+			icon: '/images/raids/tier-5.png',
+			title: t('calendar:tabs.bosses'),
+			hint: t('home:right.bosses'),
+			...speciesWithShiny(
+				homeRaidEntries(nowRaids, (id) => !!gamemasterPokemon[id]?.isShadow),
+				known,
+				Infinity
+			),
+			shadow: false,
+			ready:
+				calendar.currentBossesFetchCompleted && calendar.postsFetchCompleted && calendar.specialBossesFetchCompleted,
 		},
 		{
 			to: R.calendar('rockets'),
 			icon: '/images/NPC/male-grunt.webp',
 			title: t('calendar:tabs.rockets'),
 			hint: t('home:right.rockets'),
-			...speciesWithShiny(catchableRocketEntries(calendar.currentRockets), known, FACES),
+			...speciesWithShiny(catchableRocketEntries(calendar.currentRockets), known, Infinity),
 			shadow: true,
 			ready: calendar.currentRocketsFetchCompleted,
 		},
@@ -216,7 +253,7 @@ const Home = () => {
 			icon: '/images/eggs/10km.png',
 			title: t('calendar:tabs.eggs'),
 			hint: t('home:right.eggs'),
-			...speciesWithShiny(orderedEggEntries(calendar.currentEggs), known, FACES),
+			...speciesWithShiny(orderedEggEntries(calendar.currentEggs), known, Infinity),
 			shadow: false,
 			ready: calendar.currentEggsFetchCompleted,
 		},
@@ -261,7 +298,7 @@ const Home = () => {
 					</Link>
 					<Link to={R.teams} className='h-dock-item'>
 						<span className='h-dock-art'>
-							<img src='/images/nav/rankings.webp' alt='' />
+							<CombatIcon />
 						</span>
 						<span>{t('home:hero.ctaTeams')}</span>
 					</Link>
@@ -280,7 +317,7 @@ const Home = () => {
 								</i>
 							)}
 						</span>
-						<span>{t('common:nav.calendar.label')}</span>
+						<span>{t('calendar:tabs.events')}</span>
 					</Link>
 				</nav>
 			</section>
@@ -330,7 +367,7 @@ const Home = () => {
 							<p>{tile.hint}</p>
 							<span className='h-tile-foot'>
 								{tile.ready ? (
-									<Faces shown={tile.shown} more={tile.more} pokemon={gamemasterPokemon} shadow={tile.shadow} />
+									<Faces all={tile.shown} pokemon={gamemasterPokemon} shadow={tile.shadow} />
 								) : (
 									<Skeleton className='h-skeleton--row' />
 								)}
@@ -339,6 +376,8 @@ const Home = () => {
 					))}
 				</div>
 			</section>
+
+			<TeamLab />
 
 			<section className='h-section' aria-labelledby='h-ranks'>
 				<header className='h-sh'>
@@ -351,8 +390,6 @@ const Home = () => {
 			</section>
 
 			<RaidAttackers />
-
-			<TeamLab />
 
 			<section className='h-section' aria-labelledby='h-tools'>
 				<header className='h-sh'>

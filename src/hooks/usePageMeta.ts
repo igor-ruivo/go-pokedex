@@ -18,11 +18,13 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 	},
 	'/rankings/pokedex': {
 		title: 'Pokédex — GO Pokédex',
-		description: 'A complete Pokémon GO Pokédex — search and analyse Pokémon IVs, stats, PvP rankings and raid counters.',
+		description:
+			'A complete Pokémon GO Pokédex — search and analyse Pokémon IVs, stats, PvP rankings and raid counters.',
 	},
 	'/about': {
 		title: 'About and Credits — GO Pokédex',
-		description: 'What GO Pokédex is, who it is built on, what it stores about you, and the unofficial-fan-project disclaimer.',
+		description:
+			'What GO Pokédex is, who it is built on, what it stores about you, and the unofficial-fan-project disclaimer.',
 	},
 	'/rankings/great': {
 		title: 'Great League Rankings — GO Pokédex',

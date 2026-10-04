@@ -70,6 +70,8 @@
 			"lures": "ルアーモジュール"
 		},
 		"readAnnouncement": "お知らせ全文を読む",
+		"copyLink": "リンクをコピー",
+		"linkCopied": "コピーしました",
 		"startEndLine": "開始 {{start}} · 終了 {{end}}",
 		"startsIn": {
 			"days": "{{count}}日後",

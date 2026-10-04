@@ -293,3 +293,8 @@
 	width: 28px;
 	height: 28px;
 }
+
+.rvmp .r-menu-ico svg:not(.r-menu-home) {
+	width: 26px;
+	height: 26px;
+}

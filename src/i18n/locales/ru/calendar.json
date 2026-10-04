@@ -70,6 +70,8 @@
 			"lures": "Приманки"
 		},
 		"readAnnouncement": "Читать полное объявление",
+		"copyLink": "Копировать ссылку",
+		"linkCopied": "Ссылка скопирована",
 		"startEndLine": "Начало {{start}} · Конец {{end}}",
 		"startsIn": {
 			"days": "через {{count}} дн.",

@@ -4,7 +4,7 @@
 		"title": "Oynarken ihtiyacın olan her şey.",
 		"subtitle": "Canlı etkinlikler, lig sıralamaları, koleksiyonunu tanıyan bir takım oluşturucu ve tek dokunuşla depolama temizliği. Ücretsiz, hızlı ve kendi dilinde.",
 		"ctaTeams": "Takım kur",
-		"ctaRegister": "Pokémonların",
+		"ctaRegister": "Pokémonlarım",
 		"ctaPvp": "PvP Sıralaması",
 		"ctaRaid": "Baskın Saldırganları"
 	},
@@ -37,11 +37,11 @@
 	"teams": {
 		"title": "Takım laboratuvarı",
 		"headline": "Koleksiyonunu tanıyan bir takım oluşturucu.",
-		"body": "Herhangi bir üçlüyü PvPoke gibi puanla ya da gerçekten sahip olduğun Pokémonlar arasından en iyi takımları IV, seviye ve En İyi Arkadaş bilgilerinle bulmasına izin ver."
+		"body": "Herhangi bir üçlüyü puanla ya da gerçekten sahip olduğun Pokémonlar arasından en iyi takımları IV, seviye ve En İyi Arkadaş bilgilerinle bulmasına izin ver."
 	},
 	"tools": {
 		"title": "Araçlar",
-		"searchesPitch": "Depolamanı saniyeler içinde temizle. Önemli olanları tutan, gerisini seçen arama dizeleri oluştur."
+		"searchesPitch": "Depolamanı saniyeler içinde temizle."
 	},
 	"footer": {
 		"tagline": "Pokémon GO antrenörleri için ücretsiz, hızlı araçlar.",
@@ -51,7 +51,9 @@
 		"about": "Hakkında ve emeği geçenler",
 		"privacy": "Gizlilik",
 		"issues": "Sorun bildir",
-		"disclaimer": "GO Pokédex resmî olmayan bir hayran projesidir. Niantic, Nintendo, The Pokémon Company veya Game Freak ile bağlantılı değildir ve onlar tarafından onaylanmamış ya da desteklenmemiştir. Pokémon ve Pokémon GO ilgili sahiplerinin ticari markalarıdır."
+		"disclaimer": "GO Pokédex resmî olmayan bir hayran projesidir. Niantic, Nintendo, The Pokémon Company veya Game Freak ile bağlantılı değildir ve onlar tarafından onaylanmamış ya da desteklenmemiştir. Pokémon ve Pokémon GO ilgili sahiplerinin ticari markalarıdır.",
+		"rights": "Tüm hakları saklıdır.",
+		"raidRanks": "Baskın Sıralaması"
 	},
 	"about": {
 		"title": "GO Pokédex hakkında",
@@ -66,7 +68,26 @@
 		"privacyTitle": "Gizlilik",
 		"privacyBody": "Hesap yoktur. Ayarların, koleksiyonun ve favori takımların tarayıcında kalır ve cihazından asla çıkmaz. Ziyaretleri anonim saymak için Google Analytics kullanıyoruz; çerez ayarlayabilir. Reklam yoktur.",
 		"disclaimerTitle": "Sorumluluk reddi",
-		"madeBy": "Igor Ruivo tarafından yapıldı."
+		"madeBy": "Igor Ruivo tarafından yapıldı.",
+		"rights": "All rights reserved.",
+		"storyTitle": "Hikâye",
+		"s1": "Ben Igor, bir yazılım mühendisiyim ve optimizasyona biraz takıntılıyım.",
+		"s2": "Bu proje 2023 yazında React, CSS ve modern ön yüz geliştirmeyi kendi kendime öğrenmek için başladı. O sıralar Pokémon GO PvP'ye ciddi şekilde giriyor ve basit bir mobil oyun gibi görünenin altında ne kadar derinlik saklandığını keşfediyordum. IV'ler, BP sınırları, sıralamalar, hamle setleri, ligler ve etraflarındaki tuhaf optimizasyon beni tamamen sardı.",
+		"s3": "Kısa sürede Pokémon GO topluluğunun zaten yaptığı harika araçlara güvenir oldum: PvP analizi ve sıralamalar için PvPoke, IV'ler için Poké Genie ve PVPIVs, oyun bilgisi için LeekDuck, oyun verileri için PokéMiners ve diğerleri. Bu projeler yaptıkları işte harika ve bu proje onların yerini almayı ya da işlerini yeniden yapmayı amaçlamıyor. Onların üzerine inşa ediliyor.",
+		"s4": "Kendi başıma bulamadığım hepsi bir arada yardımcı deneyimini yaratmak istedim: yoğun, bilgi dolu, hızlı, mobil odaklı ve tasarlamayı sevdiğim UX/UI ayrıntı titizliğiyle. Ama en büyük fark, aracın yalnızca bütün olarak Pokémon GO'nun değil, senin kendi Pokémonlarının etrafında şekillenmesini istememdi.",
+		"yoursTitle": "Senin Pokémonların, sadece Pokémon değil",
+		"y1": "Takım Oluşturucu, savaş simülasyonu ve sıralama algoritmaları dahil PvPoke'un mükemmel çalışmasından esinlenir, ama fikri kendi koleksiyonunla bağlayarak daha ileri götürür. Ligler için ilginç Pokémonlardan oluşan kişisel bir liste tutabilirsin ve araç, gerçekte sahip olduklarından hangi takım kombinasyonlarının en mantıklı olduğunu sürekli hesaplar. Takımlar güncel metaya karşı sıralanır ve faydalı analiz ve ipuçlarıyla gelir.",
+		"y2": "Bu, koleksiyonunu her sezon elle yeniden değerlendirmek zorunda olduğun bir şey olmaktan çıkarıp kalıcı hâle getirir. Hamleler, güçlendirmeler, zayıflatmalar, yeni Pokémonlar veya meta değiştiğinde geri gelip hangi Pokémon ve takımlarının daha çok ya da daha az önemli olduğunu hemen görebilirsin.",
+		"y3": "Pokémonlarını bir kez kaydet. Araç neye yaradıklarını bulmaya devam etsin.",
+		"searchTitle": "Gerçekten işi yapan arama dizeleri",
+		"q1": "Projenin bir diğer büyük parçası otomatik Pokémon GO arama dizeleridir. En sevdiğim örnek, mükemmel olmayan IV'lerin toplu silinmesi aramasıdır. Araç, seçtiğin lig yapılandırmalarını kapsayan ve evrim hatlarını, Gölge Pokémonları, arındırmayı, En İyi Arkadaş (Best Buddy) durumunu ve her türün farklı en uygun IV dağılımlarını hesaba katan devasa bir arama dizesi üretebilir.",
+		"q2": "Sonuç bana kalırsa dönüştürücü: yüzlerce Pokémonu elle kontrol etmek yerine, seçtiğim ligler için ilginç olması mümkün olmayanları güvenle toplu silebiliyor ve yalnızca bakmaya gerçekten değer az sayıdaki kalanı inceliyorum.",
+		"q3": "Ters yönde de çalışır. Araç, şu anda metada geçerli olmayan ama potansiyel olarak değerli Pokémonları korumaya yardım eder; depodaki her Pokémonu kontrol etmenin pratik bir yolu olmadığı için normalde sileceğim en iyi Süper Lig veya Ultra Lig adayları gibi. Takas adayları için aramalar da var: araç, IV gereksinimleri tam da En İyi Arkadaş takasının asgari bir IV garanti etmesi sayesinde anlamlı olan Pokémonları buluyor.",
+		"builtTitle": "Topluluk üzerine kurulu",
+		"b1": "Bütün bunların altında mevcut Pokémon GO veri ekosistemine çok güveniyorum. Arka uçum, PokéMiners'ın Game Master ve çeviri verilerini ayrıştırır ve Pokémon GO'nun resmî kanallarından ve LeekDuck gibi yerleşik topluluk kaynaklarından düzenli olarak bilgi alır. PvP analizi, yeniden icat etmeye çalışmak yerine PvPoke'un savaş simülasyonu çalışmasının üzerine kuruludur. Bu projeyi mümkün kılan şeylerin çoğu, yıllardır bu araçları ve veri setlerini kuran insanlar sayesindedir.",
+		"b2": "Aslında üzerine bir katman daha eklemeye çalışıyorum: daha zengin bir arayüz, daha kişisel bir deneyim ve gerçekte sahip olduğun Pokémonların etrafında daha fazla otomasyon. Proje aynı zamanda ön yüz geliştirmeyi öğrenmek, giderek daha yetenekli yapay zekâ kodlama araçlarını denemek ve UX/UI ayrıntılarına başta düşündüğümden çok daha uzun süre takılmak için oyun alanım oldu.",
+		"b3": "Şimdi bu emeğin bir kısmını topluluğa geri vermek istiyorum. Aracı kullanıyorsan geri bildirim, eleştiri, fikir, hata bildirimi veya daha iyi olabilecek şeylere dair önerileri gerçekten çok isterim. Proje hâlâ gelişiyor ve her şeyi kendi balonumun içinde kurmaktansa topluluğun şekillendirmesine yardım etmesini tercih ederim.",
+		"sign": "Igor"
 	},
 	"menu": {
 		"open": "Menüyü aç",
@@ -82,5 +103,9 @@
 	"raid": {
 		"title": "En iyi baskın saldırganları",
 		"subtitle": "17 türün her biri için ilk üç."
+	},
+	"social": {
+		"label": "Bizi şurada bul",
+		"discord": "Discord sunucumuza katıl"
 	}
 }

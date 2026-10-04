@@ -70,6 +70,8 @@
 			"lures": "Módulos señuelo"
 		},
 		"readAnnouncement": "Leer el anuncio completo",
+		"copyLink": "Copiar enlace",
+		"linkCopied": "Enlace copiado",
 		"startEndLine": "Empieza {{start}} · Termina {{end}}",
 		"startsIn": {
 			"days": "en {{count}}d",

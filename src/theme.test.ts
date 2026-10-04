@@ -7,7 +7,7 @@ const read = (file: string) => readFileSync(join(__dirname, file), 'utf8');
 const stripComments = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, '');
 
 const theme = stripComments(read('theme.css'));
-const lightStart = theme.indexOf(".rvmp[data-theme='light'] {");
+const lightStart = theme.indexOf(":is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) {");
 const dark = theme.slice(0, lightStart);
 const light = theme.slice(lightStart);
 

@@ -70,6 +70,8 @@
 			"lures": "루어 모듈"
 		},
 		"readAnnouncement": "공지 전문 읽기",
+		"copyLink": "링크 복사",
+		"linkCopied": "링크가 복사됨",
 		"startEndLine": "시작 {{start}} · 종료 {{end}}",
 		"startsIn": {
 			"days": "{{count}}일 후",

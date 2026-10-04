@@ -33,7 +33,7 @@ export const NAV: Array<{
 		label: (t) => t('pokemonDetail:tabs.ranks'),
 		hint: (t) => t('common:nav.leagues.hint'),
 		// Pokédex has no nav slot of its own any more — the logo still links to it, so it lights up nothing here.
-		match: (p) => p.startsWith('/rankings'),
+		match: (p) => p.startsWith('/rankings') && p !== R.pokedex,
 	},
 	{
 		to: R.teams,

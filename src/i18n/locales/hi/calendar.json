@@ -70,6 +70,8 @@
 			"lures": "ल्यूर"
 		},
 		"readAnnouncement": "पूरी घोषणा पढ़ें",
+		"copyLink": "लिंक कॉपी करें",
+		"linkCopied": "लिंक कॉपी हो गया",
 		"startEndLine": "शुरू {{start}} · समाप्त {{end}}",
 		"startsIn": {
 			"days": "{{count}} दिन में",

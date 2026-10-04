@@ -1,6 +1,6 @@
 import { GameLanguage } from '../contexts/language-context';
-import type { IPostEntry } from '../DTOs/INews';
-import type { ILeekduckSpotlightHour } from '../queries/calendar';
+import type { IEntry, IPostEntry } from '../DTOs/INews';
+import type { ILeekduckSpecialRaidBoss, ILeekduckSpotlightHour } from '../queries/calendar';
 
 // LeekDuck (unlike pokemongo.com) has no per-locale URLs — every GameLanguage
 // key just repeats the one English page. Same `Object.values` (not
@@ -59,3 +59,65 @@ export const spotlightToPost = (s: ILeekduckSpotlightHour): IPostEntry => ({
 	source: 'leekduck',
 	isSpotlight: true,
 });
+
+/** Leekduck special-boss windows behave like tiny raid-only events. */
+export const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
+	id: s.rawUrl,
+	url: everyLanguage(s.rawUrl),
+	title: s.title,
+	subtitle: s.title,
+	startDate: s.date,
+	endDate: s.dateEnd,
+	dateRanges: [{ start: s.date, end: s.dateEnd }],
+	imageUrl: '',
+	wild: [],
+	raids: s.raids,
+	eggs: [],
+	researches: [],
+	incenses: [],
+	lures: [],
+	// `Object.values`, not `Object.keys` — GameLanguage's member *names*
+	// don't all match their runtime string *values* (see spotlightToPost's
+	// own note); harmless here since every value is just `[]` regardless of
+	// which key name it lands on, but keyed consistently with the real
+	// `GameLanguage` values all the same.
+	bonuses: Object.values(GameLanguage).reduce(
+		(acc, key) => {
+			acc[key] = [];
+			return acc;
+		},
+		{} as Record<GameLanguage, Array<string>>
+	),
+	availableLocales: Object.values(GameLanguage),
+	source: 'leekduck',
+});
+
+/**
+ * The raid bosses of the Raids tab's "Now" slot: the current rotation's bosses, then the bosses of every event or special
+ * window that is on right now (a boss listed twice is kept once, with the rotation's entry first).
+ */
+export const nowRaidEntries = (input: {
+	posts: ReadonlyArray<IPostEntry>;
+	specialBosses: ReadonlyArray<ILeekduckSpecialRaidBoss>;
+	currentBosses: ReadonlyArray<IEntry>;
+	language: GameLanguage;
+	now: number;
+}): Array<IEntry> => {
+	const raidPosts = [
+		...input.posts.filter((p) => p && (p.raids?.length ?? 0) > 0 && p.availableLocales.includes(input.language)),
+		...input.specialBosses.map(specialToPost),
+	].filter((p) => p.endDate >= input.now);
+
+	const seen = new Set<string>();
+	const out: Array<IEntry> = [];
+	const add = (e: IEntry) => {
+		if (seen.has(e.speciesId)) return;
+		seen.add(e.speciesId);
+		out.push(e);
+	};
+	input.currentBosses.forEach(add);
+	for (const p of raidPosts) {
+		if (input.now >= p.startDate && input.now < p.endDate) p.raids.forEach(add);
+	}
+	return out;
+};

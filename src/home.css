@@ -931,38 +931,6 @@
 	font-size: 11.5px;
 	font-weight: 800;
 }
-/* narrow screens: a league is one row — its badge, its name and its top three as faces */
-@media (max-width: 700px) {
-	.rvmp .h-league {
-		grid-template-columns: minmax(0, 1fr) auto;
-		align-items: center;
-		padding: var(--s3);
-		gap: var(--s3);
-	}
-	.rvmp .h-league-chev {
-		display: none;
-	}
-	.rvmp .h-top {
-		display: flex;
-		padding: 0;
-		border-top: 0;
-		gap: 0;
-	}
-	.rvmp .h-top li + li {
-		margin-left: -10px;
-	}
-	.rvmp .h-top-link {
-		padding: 0;
-	}
-	.rvmp .h-top-link span:last-child,
-	.rvmp .h-coin {
-		display: none;
-	}
-	.rvmp .h-top .h-avatar {
-		width: 36px;
-		height: 36px;
-	}
-}
 
 /* ---- the team lab: one of the best teams, as the battle plan draws it ------------------------------------------ */
 .rvmp .h-chip-ico {
@@ -982,28 +950,10 @@
 	justify-items: center;
 	min-width: 0;
 }
-.rvmp .h-trio {
-	display: flex;
-	align-items: stretch;
-	justify-content: center;
-	gap: 2px;
-	width: 100%;
-}
 .rvmp .h-trio-skeleton {
 	flex: 1;
 	min-height: 170px;
 	border-radius: 20px;
-}
-.rvmp .h-trio-arrow {
-	flex: none;
-	align-self: center;
-	width: 22px;
-	height: 14px;
-	fill: none;
-	stroke: var(--text-faint);
-	stroke-width: 2.4;
-	stroke-linecap: round;
-	stroke-linejoin: round;
 }
 .rvmp .h-trio-card {
 	--role-c: var(--accent);
@@ -1165,10 +1115,13 @@
 
 /* ---- the faces of "in the game right now": a wrapping row, the shiny ones marked ---------------------------------- */
 .rvmp .h-faces {
-	display: flex;
-	flex-wrap: wrap;
+	/* as many columns as the width allows (Faces counts them and shows two rows' worth) */
+	display: grid;
+	justify-content: space-between;
+	min-width: 0;
+	width: 100%;
 	align-items: center;
-	gap: 8px 6px;
+	gap: 18px 6px;
 }
 .rvmp .h-faces .h-avatar {
 	position: relative;
@@ -1372,9 +1325,6 @@
 	backdrop-filter: blur(6px);
 	filter: none;
 }
-.rvmp .h-highlights li > img[src$='spawns-grass.png'] {
-	filter: none;
-}
 
 /* the rotating team is a link, and its edges (a card's outline, the chip's) have room inside the clip */
 .rvmp .h-swap {
@@ -1400,4 +1350,265 @@
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
 	backdrop-filter: none;
+}
+
+.rvmp .h-footer-legal p {
+	margin: 0;
+}
+.rvmp .h-footer-rights {
+	margin-top: var(--s2) !important;
+	color: var(--text-dim);
+	font-weight: 700;
+}
+.rvmp .h-lead {
+	font-size: 17px;
+	color: var(--text);
+}
+.rvmp .h-quote {
+	margin: var(--s4) 0;
+	padding: var(--s3) var(--s4);
+	border-left: 3px solid var(--accent);
+	border-radius: 0 var(--r-sm) var(--r-sm) 0;
+	background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+	color: var(--text);
+	font-family: var(--font-display);
+	font-size: 17px;
+	font-weight: 700;
+	line-height: 1.4;
+}
+.rvmp .h-sign {
+	margin-top: var(--s4);
+	font-family: var(--font-display);
+	font-size: 22px;
+	font-weight: 800;
+	color: var(--text) !important;
+}
+/* the footer shows the brand's name at every width (the top bar hides it on a phone to make room for the search box) */
+.rvmp .h-footer .r-logo b {
+	display: inline;
+}
+
+/* ---- social buttons ---- */
+.rvmp .h-social {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--s2);
+	margin: var(--s4) 0 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-social-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 16px 9px 12px;
+	border-radius: var(--r-pill);
+	background: var(--brand-discord);
+	color: #fff;
+	font-weight: 800;
+	font-size: 14px;
+	transition:
+		transform 0.16s ease,
+		filter 0.16s ease;
+}
+.rvmp .h-social-btn svg {
+	width: 20px;
+	height: 20px;
+}
+@media (hover: hover) {
+	.rvmp .h-social-btn:hover {
+		transform: translateY(-2px);
+		filter: brightness(1.08);
+	}
+}
+.rvmp .h-social-btn[data-soon] {
+	cursor: default;
+	opacity: 0.75;
+}
+
+/* narrow screens: a type is one line — its badge and name, then its top three as faces (no names, no figures) */
+@media (max-width: 700px) {
+	.rvmp .h-raid {
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: var(--s2) var(--s3);
+		padding: var(--s2) var(--s3);
+	}
+	.rvmp .h-raid-metric,
+	.rvmp .h-raid-name,
+	.rvmp .h-raid-link b,
+	.rvmp .h-raid .h-coin {
+		display: none;
+	}
+	.rvmp .h-raid ol {
+		display: flex;
+		padding: 0;
+		border-top: 0;
+		gap: 0;
+	}
+	.rvmp .h-raid ol li + li {
+		margin-left: -8px;
+	}
+	.rvmp .h-raid-link {
+		padding: 0;
+	}
+	.rvmp .h-raid .h-avatar {
+		width: 34px;
+		height: 34px;
+	}
+	.rvmp .h-raids {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* a face keeps its size when its column is narrower than it is: neighbours then overlap a little */
+.rvmp .h-faces > * {
+	justify-self: start;
+}
+
+/* the "+N" of an event card stands clear of the last overlapping face, with a gap of its own */
+.rvmp .h-stack > .h-stack-more {
+	margin-left: 8px;
+}
+
+/* the trio: three cards side by side with only a small gap, at any width. The play-order arrows take no room of their own: each is
+   a small round badge floating on the seam between two cards (the way the team cards of Favorites and My Pokémon do it). */
+.rvmp .h-trio {
+	--seam-gap: 6px;
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	column-gap: var(--seam-gap);
+	width: 100%;
+	min-width: 0;
+}
+.rvmp .h-trio > .h-trio-card:nth-child(1) {
+	grid-column: 1;
+	grid-row: 1;
+}
+.rvmp .h-trio > .h-trio-card:nth-child(3) {
+	grid-column: 2;
+	grid-row: 1;
+}
+.rvmp .h-trio > .h-trio-card:nth-child(5) {
+	grid-column: 3;
+	grid-row: 1;
+}
+.rvmp .h-trio-arrow {
+	z-index: 5;
+	grid-row: 1;
+	align-self: center;
+	justify-self: end;
+	box-sizing: border-box;
+	width: 26px;
+	height: 26px;
+	padding: 7px 6px;
+	border: 1px solid var(--border-strong);
+	border-radius: 50%;
+	background: var(--surface-2);
+	transform: translateX(calc(50% + var(--seam-gap) / 2));
+	fill: none;
+	stroke: var(--text-dim);
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	pointer-events: none;
+}
+.rvmp .h-trio > .h-trio-arrow:nth-child(2) {
+	grid-column: 1;
+}
+.rvmp .h-trio > .h-trio-arrow:nth-child(4) {
+	grid-column: 2;
+}
+.rvmp .h-trio-card {
+	flex: none;
+}
+
+/* narrower screens: the whole block gives up side room, and the cards get tighter */
+@media (max-width: 700px) {
+	.rvmp .h-lab {
+		padding: var(--s4) var(--s3);
+		gap: var(--s4);
+		border-radius: 24px;
+	}
+	.rvmp .h-trio {
+		--seam-gap: 4px;
+	}
+	.rvmp .h-trio-card {
+		padding: var(--s2) 4px;
+		border-radius: 16px;
+	}
+	.rvmp .h-trio-role {
+		padding: 1px 7px;
+		font-size: 10px;
+	}
+}
+
+/* the compact plate, for the league chip under the rotating team */
+.rvmp .h-league-plate[data-small] {
+	width: 26px;
+	height: 26px;
+	border-radius: 9px;
+}
+.rvmp .h-league-plate[data-small] img {
+	width: 18px;
+	height: 18px;
+}
+.rvmp .h-league-plate[data-small] b {
+	font-size: 10px;
+}
+.rvmp .h-featured-chip {
+	padding-left: 5px;
+}
+.rvmp .h-featured-chip .h-league-plate + span {
+	margin-left: 2px;
+}
+
+/* ---- the countdown to the next team ---- */
+.rvmp .h-rotator {
+	display: grid;
+	gap: var(--s3);
+	justify-items: center;
+	min-width: 0;
+}
+.rvmp .h-countdown {
+	position: relative;
+	justify-self: center;
+	width: min(132px, 40%);
+	height: 3px;
+	border-radius: 3px;
+	background: color-mix(in srgb, var(--text-faint) 22%, transparent);
+	overflow: hidden;
+}
+.rvmp .h-countdown i {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: var(--accent);
+	transform-origin: left center;
+	transform: scaleX(1);
+	animation: h-countdown linear both;
+}
+.rvmp .h-countdown[data-held] i {
+	animation-play-state: paused;
+}
+@keyframes h-countdown {
+	to {
+		transform: scaleX(0);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.rvmp .h-countdown i {
+		animation: none;
+		transform: scaleX(1);
+	}
+}
+
+.rvmp .h-footer ul.h-footer-sub {
+	margin-top: 8px;
+	padding-left: var(--s3);
+	border-left: 1px solid var(--border);
+}
+.rvmp .h-footer-sub a {
+	font-size: 13px;
 }

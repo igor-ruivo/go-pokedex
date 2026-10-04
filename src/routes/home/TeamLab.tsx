@@ -10,13 +10,16 @@ import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamRanking } from '../../DTOs/ITeamBuilder';
 import { cleanName } from '../../lib/format';
 import { randomIndexOtherThan } from '../../lib/home';
-import { leagueIcon } from '../../lib/league-visuals';
 import { modeLabel, R } from '../../lib/nav';
 import { encodeTeam, TEAM_ROLES } from '../../lib/team-analysis';
 import { useLeagueDefinitions } from '../../queries/leagues';
 import { usePokemon } from '../../queries/pokemon';
 import { useTeamRanking } from '../../queries/teams';
 import { roleNames } from '../teams/teams-text';
+import { LeaguePlate } from './LeaguePlate';
+
+/** Each league contributes its best fifty teams to the rotation. */
+const SAMPLE_PER_LEAGUE = 50;
 
 /** How long a team stays before the next one swipes in. */
 const ROTATE_MS = 7000;
@@ -36,7 +39,7 @@ const pickTeam = (ranking: TeamRanking | undefined, not?: Pick): Pick | undefine
 	const ids = Object.keys(byLeague).filter((id) => (byLeague[id]?.byScore.length ?? 0) > 0);
 	if (ids.length === 0) return undefined;
 	const league = ids[Math.floor(Math.random() * ids.length)];
-	const list = byLeague[league]?.byScore ?? [];
+	const list = (byLeague[league]?.byScore ?? []).slice(0, SAMPLE_PER_LEAGUE);
 	const index = randomIndexOtherThan(list.length, not && not.league === league ? not.rank - 1 : undefined);
 	return { league, rank: index + 1, team: list[index] };
 };
@@ -60,7 +63,16 @@ const preloadTeam = (pick: Pick, urlOf: (speciesId: string) => string | undefine
 	});
 
 /** One team as the Battle plan draws it: who leads, who is the safe switch, who closes, and the sentence that says so. */
-const TeamView = ({ pick, className }: { pick: Pick; className?: string | undefined }) => {
+const TeamView = ({
+	pick,
+	className,
+	countdown,
+}: {
+	pick: Pick;
+	className?: string | undefined;
+	/** The time left for this team (only the team on show has it). */
+	countdown?: { cycle: number; held: boolean } | undefined;
+}) => {
 	const { t } = useTranslation(['teams', 'home']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
@@ -81,7 +93,6 @@ const TeamView = ({ pick, className }: { pick: Pick; className?: string | undefi
 	}).split(/([012])/);
 
 	const href = `${R.teams}?league=${pick.league}&t=${encodeURIComponent(encodeTeam(pick.team.members))}`;
-	const icon = leagueIcon(pick.league);
 
 	return (
 		<Link to={href} className={className ? `h-featured ${className}` : 'h-featured'}>
@@ -104,6 +115,11 @@ const TeamView = ({ pick, className }: { pick: Pick; className?: string | undefi
 					</Fragment>
 				))}
 			</div>
+			{countdown && (
+				<span className='h-countdown' aria-hidden='true' data-held={countdown.held ? '' : undefined}>
+					<i key={countdown.cycle} style={{ animationDuration: `${ROTATE_MS}ms` }} />
+				</span>
+			)}
 			<p className='h-featured-line'>
 				{sentence.map((part, i) =>
 					i % 2 === 1 ? (
@@ -116,7 +132,7 @@ const TeamView = ({ pick, className }: { pick: Pick; className?: string | undefi
 				)}
 			</p>
 			<span className='h-featured-chip'>
-				{icon && <img src={icon} alt='' />}
+				<LeaguePlate id={pick.league} small />
 				<span>
 					{modeLabel(pick.league, gl, leagues)} · #{pick.rank}
 				</span>
@@ -147,6 +163,8 @@ const FeaturedTeam = () => {
 	const [current, setCurrent] = useState<Pick | undefined>(undefined);
 	const [leaving, setLeaving] = useState<Pick | undefined>(undefined);
 	const [held, setHeld] = useState(false);
+	// restarts the countdown bar with each new team
+	const [cycle, setCycle] = useState(0);
 	const rotated = useRef(false);
 	const currentRef = useRef<Pick | undefined>(undefined);
 	currentRef.current = current;
@@ -156,14 +174,31 @@ const FeaturedTeam = () => {
 		if (!current && ranking.data) setCurrent(pickTeam(ranking.data));
 	}, [ranking.data, current]);
 
+	// What is left of the current team's time. Holding the team (pointer or focus) stops the clock where it is, and letting go
+	// carries on from there — it is not restarted.
+	const remaining = useRef(ROTATE_MS);
+	const startedAt = useRef(0);
 	useEffect(() => {
 		if (!ranking.data || held) return;
 		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		let cancelled = false;
-		const swipe = window.setInterval(() => {
-			if (document.hidden) return;
+		let timer = 0;
+		const schedule = (ms: number) => {
+			startedAt.current = performance.now();
+			timer = window.setTimeout(tick, ms);
+		};
+		const tick = () => {
+			remaining.current = ROTATE_MS;
+			if (document.hidden) {
+				schedule(ROTATE_MS);
+				return;
+			}
 			const next = pickTeam(ranking.data, currentRef.current);
-			if (!next) return;
+			if (!next) {
+				schedule(ROTATE_MS);
+				return;
+			}
+			setCycle((c) => c + 1);
 			// the next team is drawn off screen first: its sprites are in before it moves
 			void preloadTeam(next, urlOf).then(() => {
 				if (cancelled) return;
@@ -173,10 +208,14 @@ const FeaturedTeam = () => {
 				if (!reduced) window.setTimeout(() => setLeaving(undefined), SWIPE_MS);
 				return undefined;
 			});
-		}, ROTATE_MS);
+			schedule(ROTATE_MS);
+		};
+		schedule(remaining.current);
 		return () => {
 			cancelled = true;
-			window.clearInterval(swipe);
+			window.clearTimeout(timer);
+			// held (or unmounted): remember how much of the time is left
+			remaining.current = Math.max(0, remaining.current - (performance.now() - startedAt.current));
 		};
 	}, [ranking.data, held, urlOf]);
 
@@ -191,19 +230,22 @@ const FeaturedTeam = () => {
 	}
 
 	return (
-		<div
-			className='h-swap'
-			onMouseEnter={() => setHeld(true)}
-			onMouseLeave={() => setHeld(false)}
-			onFocus={() => setHeld(true)}
-			onBlur={() => setHeld(false)}
-		>
-			{leaving && <TeamView key={`${leaving.league}-${leaving.rank}`} pick={leaving} className='h-featured--out' />}
-			<TeamView
-				key={`${current.league}-${current.rank}`}
-				pick={current}
-				className={rotated.current ? 'h-featured--in' : undefined}
-			/>
+		<div className='h-rotator'>
+			<div
+				className='h-swap'
+				onMouseEnter={() => setHeld(true)}
+				onMouseLeave={() => setHeld(false)}
+				onFocus={() => setHeld(true)}
+				onBlur={() => setHeld(false)}
+			>
+				{leaving && <TeamView key={`${leaving.league}-${leaving.rank}`} pick={leaving} className='h-featured--out' />}
+				<TeamView
+					key={`${current.league}-${current.rank}`}
+					pick={current}
+					className={rotated.current ? 'h-featured--in' : undefined}
+					countdown={{ cycle, held }}
+				/>
+			</div>
 		</div>
 	);
 };

@@ -70,6 +70,8 @@
 			"lures": "Lure"
 		},
 		"readAnnouncement": "Baca pengumuman lengkap",
+		"copyLink": "Salin tautan",
+		"linkCopied": "Tautan disalin",
 		"startEndLine": "Mulai {{start}} · Selesai {{end}}",
 		"startsIn": {
 			"days": "dalam {{count}}h",

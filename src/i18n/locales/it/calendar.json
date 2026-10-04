@@ -70,6 +70,8 @@
 			"lures": "Moduli Esca"
 		},
 		"readAnnouncement": "Leggi l'annuncio completo",
+		"copyLink": "Copia link",
+		"linkCopied": "Link copiato",
 		"startEndLine": "Inizia {{start}} · Termina {{end}}",
 		"startsIn": {
 			"days": "tra {{count}}g",

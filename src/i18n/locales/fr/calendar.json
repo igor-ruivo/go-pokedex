@@ -70,6 +70,8 @@
 			"lures": "Modules Leurre"
 		},
 		"readAnnouncement": "Lire l'annonce complète",
+		"copyLink": "Copier le lien",
+		"linkCopied": "Lien copié",
 		"startEndLine": "Début {{start}} · Fin {{end}}",
 		"startsIn": {
 			"days": "dans {{count}} j",

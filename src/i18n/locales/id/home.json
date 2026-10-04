@@ -4,7 +4,7 @@
 		"title": "Semua yang kamu butuhkan, saat bermain.",
 		"subtitle": "Event langsung, peringkat liga, pembuat tim yang mengenal koleksimu, dan pembersihan penyimpanan sekali ketuk. Gratis, cepat, dalam bahasamu.",
 		"ctaTeams": "Buat tim",
-		"ctaRegister": "Pokémonmu",
+		"ctaRegister": "Pokémon saya",
 		"ctaPvp": "Peringkat PvP",
 		"ctaRaid": "Penyerang Raid"
 	},
@@ -37,11 +37,11 @@
 	"teams": {
 		"title": "Lab tim",
 		"headline": "Pembuat tim yang mengenal koleksimu.",
-		"body": "Nilai trio mana pun seperti PvPoke, atau biarkan ia mencari tim terbaik dari Pokémon yang benar-benar kamu miliki, lengkap dengan IV, level, dan Best Buddy-mu."
+		"body": "Nilai trio mana pun, atau biarkan ia mencari tim terbaik dari Pokémon yang benar-benar kamu miliki, lengkap dengan IV, level, dan Best Buddy-mu."
 	},
 	"tools": {
 		"title": "Alat",
-		"searchesPitch": "Bersihkan penyimpananmu dalam hitungan detik. Buat string pencarian yang mempertahankan yang penting dan memilih sisanya."
+		"searchesPitch": "Bersihkan penyimpananmu dalam hitungan detik."
 	},
 	"footer": {
 		"tagline": "Alat gratis dan cepat untuk pelatih Pokémon GO.",
@@ -51,7 +51,9 @@
 		"about": "Tentang dan kredit",
 		"privacy": "Privasi",
 		"issues": "Laporkan masalah",
-		"disclaimer": "GO Pokédex adalah proyek penggemar tidak resmi. Tidak berafiliasi, didukung, atau disponsori oleh Niantic, Nintendo, The Pokémon Company, atau Game Freak. Pokémon dan Pokémon GO adalah merek dagang pemiliknya masing-masing."
+		"disclaimer": "GO Pokédex adalah proyek penggemar tidak resmi. Tidak berafiliasi, didukung, atau disponsori oleh Niantic, Nintendo, The Pokémon Company, atau Game Freak. Pokémon dan Pokémon GO adalah merek dagang pemiliknya masing-masing.",
+		"rights": "Hak cipta dilindungi.",
+		"raidRanks": "Peringkat Raid"
 	},
 	"about": {
 		"title": "Tentang GO Pokédex",
@@ -66,7 +68,26 @@
 		"privacyTitle": "Privasi",
 		"privacyBody": "Tidak ada akun. Pengaturan, koleksi, dan tim favoritmu tetap di browser dan tidak pernah meninggalkan perangkatmu. Kami memakai Google Analytics untuk menghitung kunjungan secara anonim; ini dapat menyetel cookie. Tidak ada iklan.",
 		"disclaimerTitle": "Penafian",
-		"madeBy": "Dibuat oleh Igor Ruivo."
+		"madeBy": "Dibuat oleh Igor Ruivo.",
+		"rights": "All rights reserved.",
+		"storyTitle": "Ceritanya",
+		"s1": "Saya Igor, seorang software engineer dan sedikit terobsesi dengan optimasi.",
+		"s2": "Proyek ini dimulai pada musim panas 2023 sebagai cara saya belajar React, CSS, dan pengembangan frontend modern. Saat itu saya mulai serius menekuni PvP Pokémon GO dan menemukan betapa dalamnya game yang awalnya tampak seperti game seluler sederhana. IV, batas CP, peringkat, moveset, liga, dan segala optimasi uniknya benar-benar membuat saya ketagihan.",
+		"s3": "Saya segera bergantung pada alat-alat luar biasa yang sudah dibuat komunitas Pokémon GO: PvPoke untuk analisis dan peringkat PvP, Poké Genie dan PVPIVs untuk IV, LeekDuck untuk informasi game, PokéMiners untuk data game, dan lainnya. Proyek-proyek ini hebat dalam bidangnya, dan proyek ini tidak dimaksudkan untuk menggantikan atau menduplikasi karya mereka. Proyek ini dibangun di atasnya.",
+		"s4": "Saya ingin menciptakan pengalaman pendamping serba ada yang tidak bisa saya temukan: padat, kaya informasi, cepat, berorientasi seluler, dan dengan perhatian detail UX/UI yang saya senang rancang sendiri. Tetapi perbedaan terbesarnya, saya ingin alat ini berpusat pada Pokémon milikmu sendiri, bukan sekadar Pokémon GO secara keseluruhan.",
+		"yoursTitle": "Pokémon milikmu, bukan sekadar Pokémon",
+		"y1": "Pembuat Tim terinspirasi dari karya hebat PvPoke, termasuk simulasi pertarungan dan algoritma peringkatnya, tetapi membawa gagasannya lebih jauh dengan menghubungkannya ke koleksimu sendiri. Kamu bisa menyimpan daftar pribadi Pokémon menarik untuk liga, dan alat ini terus menghitung kombinasi tim mana yang paling masuk akal dari yang benar-benar kamu miliki. Tim diperingkat terhadap meta saat ini dan disertai analisis serta tips yang berguna.",
+		"y2": "Artinya koleksimu menjadi sesuatu yang bertahan, bukan sesuatu yang harus kamu nilai ulang secara manual setiap musim. Saat moveset, buff, nerf, Pokémon baru, atau meta berubah, kamu bisa kembali dan langsung melihat Pokémon dan tim mana yang menjadi lebih atau kurang relevan.",
+		"y3": "Simpan Pokémonmu sekali. Biarkan alat ini terus mencari tahu untuk apa mereka bagus.",
+		"searchTitle": "String pencarian yang benar-benar mengerjakan tugasnya",
+		"q1": "Bagian besar lain dari proyek ini adalah string pencarian Pokémon GO otomatis. Contoh favorit saya adalah pencarian penghapusan massal IV yang tidak sempurna. Alat ini dapat membuat string pencarian yang sangat besar yang mencakup konfigurasi liga yang kamu pilih dan memperhitungkan garis evolusi, Shadow, pemurnian, Best Buddy, serta sebaran IV optimal yang berbeda untuk tiap spesies.",
+		"q2": "Hasilnya menurut saya luar biasa: alih-alih memeriksa ratusan Pokémon secara manual, saya bisa dengan yakin menghapus massal yang mustahil menarik untuk liga pilihan saya dan hanya memeriksa sedikit yang tersisa yang benar-benar layak dilihat.",
+		"q3": "Ini juga bekerja ke arah sebaliknya. Alat ini membantu mempertahankan Pokémon yang berpotensi berharga tetapi saat ini tidak relevan di meta, seperti kandidat peringkat atas Liga Super atau Liga Ultra yang kalau tidak akan saya hapus karena tidak ada cara praktis untuk memeriksa setiap Pokémon di penyimpanan. Ada juga pencarian untuk kandidat tukar, tempat alat ini menemukan Pokémon yang persyaratan IV-nya masuk akal justru karena tukar dengan Best Friend menjamin IV minimum.",
+		"builtTitle": "Dibangun di atas komunitas",
+		"b1": "Di balik semua ini, saya sangat bergantung pada ekosistem data Pokémon GO yang sudah ada. Backend saya mengurai Game Master dan data terjemahan PokéMiners serta secara rutin mengambil informasi dari kanal resmi Pokémon GO dan sumber komunitas mapan seperti LeekDuck. Analisis PvP dibangun di atas karya simulasi pertarungan PvPoke, bukan mencoba menciptakannya ulang. Banyak hal yang memungkinkan proyek ini berkat orang-orang yang sudah bertahun-tahun membangun alat dan dataset ini.",
+		"b2": "Pada dasarnya saya mencoba menambahkan satu lapisan lagi di atasnya: antarmuka yang lebih kaya, pengalaman yang lebih personal, dan lebih banyak otomatisasi seputar Pokémon yang benar-benar kamu miliki. Proyek ini juga menjadi tempat bermain saya untuk belajar pengembangan frontend, mencoba alat pemrograman AI yang makin mumpuni, dan terobsesi pada detail UX/UI jauh lebih lama dari rencana awal.",
+		"b3": "Sekarang saya ingin mengembalikan sebagian karya itu kepada komunitas. Jika kamu memakai alat ini, saya sangat senang menerima masukan, kritik, ide, laporan bug, atau saran tentang hal yang bisa lebih baik. Proyek ini masih berkembang, dan saya lebih suka komunitas ikut membentuknya daripada membangun semuanya di dalam gelembung saya sendiri.",
+		"sign": "Igor"
 	},
 	"menu": {
 		"open": "Buka menu",
@@ -82,5 +103,9 @@
 	"raid": {
 		"title": "Penyerang raid terbaik",
 		"subtitle": "Tiga terbaik untuk tiap dari 17 tipe."
+	},
+	"social": {
+		"label": "Temukan kami di",
+		"discord": "Gabung Discord kami"
 	}
 }

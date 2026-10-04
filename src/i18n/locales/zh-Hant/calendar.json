@@ -70,6 +70,8 @@
 			"lures": "誘餌"
 		},
 		"readAnnouncement": "閱讀完整公告",
+		"copyLink": "複製連結",
+		"linkCopied": "已複製連結",
 		"startEndLine": "開始 {{start}} · 結束 {{end}}",
 		"startsIn": {
 			"days": "{{count}} 天後",

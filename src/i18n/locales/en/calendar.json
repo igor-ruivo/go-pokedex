@@ -70,6 +70,8 @@
 			"lures": "Lures"
 		},
 		"readAnnouncement": "Read the full announcement",
+		"copyLink": "Copy link",
+		"linkCopied": "Link copied",
 		"startEndLine": "Starts {{start}} · Ends {{end}}",
 		"startsIn": {
 			"days": "in {{count}}d",

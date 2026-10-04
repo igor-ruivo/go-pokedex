@@ -117,7 +117,9 @@ export const IconTabBar = ({
 								data-active={active}
 								onClick={() => onSelect(it.id)}
 							>
-								<span className='r-ico-disc'>{typeof it.icon === 'string' ? <img src={it.icon} alt='' aria-hidden='true' /> : it.icon}</span>
+								<span className='r-ico-disc'>
+									{typeof it.icon === 'string' ? <img src={it.icon} alt='' aria-hidden='true' /> : it.icon}
+								</span>
 								<span>{it.label}</span>
 							</button>
 						);

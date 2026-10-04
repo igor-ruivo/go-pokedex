@@ -70,6 +70,8 @@
 			"lures": "ตัวล่อ"
 		},
 		"readAnnouncement": "อ่านประกาศฉบับเต็ม",
+		"copyLink": "คัดลอกลิงก์",
+		"linkCopied": "คัดลอกลิงก์แล้ว",
 		"startEndLine": "เริ่ม {{start}} · สิ้นสุด {{end}}",
 		"startsIn": {
 			"days": "อีก {{count}} วัน",

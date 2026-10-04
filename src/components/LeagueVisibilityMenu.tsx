@@ -14,9 +14,24 @@ import { LeagueVisibilityChecklist } from './LeagueVisibilityChecklist';
  * here or there is the same action either way — always rendered (even with
  * zero active cups right now) so the control stays discoverable.
  */
-export const LeagueVisibilityMenu = ({ lockedId }: { lockedId?: string | null | undefined }) => {
+export const LeagueVisibilityMenu = ({
+	lockedId,
+	open: controlledOpen,
+	onOpenChange,
+}: {
+	lockedId?: string | null | undefined;
+	/** Held by the parent when the menu can be re-mounted while the player is using it (it is drawn at two places in the tree). */
+	open?: boolean | undefined;
+	onOpenChange?: ((open: boolean) => void) | undefined;
+}) => {
 	const { t } = useTranslation(['common']);
-	const [open, setOpen] = useState(false);
+	const [ownOpen, setOwnOpen] = useState(false);
+	const open = controlledOpen ?? ownOpen;
+	const setOpen = (next: boolean | ((current: boolean) => boolean)) => {
+		const value = typeof next === 'function' ? next(open) : next;
+		setOwnOpen(value);
+		onOpenChange?.(value);
+	};
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
 	return (

@@ -54,7 +54,6 @@
 	--radar-b: 0.4;
 	--radar-halo: 0.55;
 	--radar-dot: #eef2f8;
-	--grass-filter: none;
 	--wx-idle: brightness(0) saturate(100%) invert(78%);
 	--wx-on: brightness(0) saturate(100%) invert(100%);
 	--shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.24);
@@ -123,6 +122,9 @@
 	/* a flat grey fill for "off / unknown" marks */
 	--muted-fill: #8b93a0;
 
+	/* brand colours of the social buttons (their logos are theirs, the same in both themes) */
+	--brand-discord: #5865f2;
+
 	/* the dark disc behind the Ghost-type shadow mark */
 	--ghost-disc: #160b2e;
 
@@ -164,7 +166,7 @@
 }
 
 /* ---- light ------------------------------------------------------------------------------------------------------ */
-.rvmp[data-theme='light'] {
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) {
 	color-scheme: light;
 
 	--bg: #f4f6fb;
@@ -196,7 +198,6 @@
 	--radar-b: 0.12;
 	--radar-halo: 0.12;
 	--radar-dot: #ffffff;
-	--grass-filter: saturate(1.5) brightness(0.62) contrast(1.2);
 	--wx-idle: brightness(0) saturate(100%) invert(38%);
 	--wx-on: brightness(0) saturate(100%) invert(8%);
 	--shadow-1:
@@ -252,6 +253,7 @@
 	--medal-bronze-text: #94581f;
 
 	--muted-fill: #98a2b3;
+	--brand-discord: #5865f2;
 
 	--ghost-disc: #e7e0f7;
 

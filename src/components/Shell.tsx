@@ -11,6 +11,7 @@ import { NAV } from '../lib/nav-items';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { AppMenu } from './AppMenu';
 import { BrandMark } from './BrandMark';
+import { CombatIcon } from './CombatIcon';
 import { Footer } from './Footer';
 import { InstallPrompt } from './InstallPrompt';
 import { SearchBox } from './SearchBox';
@@ -64,7 +65,7 @@ const Shell = () => {
 							}
 						>
 							<span className='r-bn-icon' aria-hidden>
-								{n.icon.startsWith('/') ? <img src={n.icon} alt='' /> : n.icon}
+								{n.to === R.teams ? <CombatIcon /> : n.icon.startsWith('/') ? <img src={n.icon} alt='' /> : n.icon}
 								{n.to === R.calendar() && unseenEvents > 0 && (
 									<span className='r-bn-badge' aria-hidden='true'>
 										{unseenEvents > 9 ? '9+' : unseenEvents}

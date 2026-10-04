@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { CombatIcon } from './CombatIcon';
 import { RankMedal } from './RankMedal';
 
 /** The Teams view's own tab icons — used by its tab bar and wherever else the app points at one of those tabs. */
@@ -44,7 +45,7 @@ const Star = ({ size = 18 }: { size?: number }) => (
 export const teamTabIcon = (id: TeamTabId, size = 18): string | ReactNode => {
 	switch (id) {
 		case 'builder':
-			return '/images/nav/rankings.webp';
+			return <CombatIcon />;
 		// a gold medal: the best teams
 		case 'top':
 			return <RankMedal rank={1} size={Math.round(size * 1.22)} />;

@@ -66,12 +66,14 @@ const STATIC_PAGES = [
 	{
 		path: '/rankings/pokedex',
 		title: 'Pokédex — GO Pokédex',
-		description: 'A complete Pokémon GO Pokédex — search and analyse Pokémon IVs, stats, PvP rankings and raid counters.',
+		description:
+			'A complete Pokémon GO Pokédex — search and analyse Pokémon IVs, stats, PvP rankings and raid counters.',
 	},
 	{
 		path: '/about',
 		title: 'About and Credits — GO Pokédex',
-		description: 'What GO Pokédex is, who it is built on, what it stores about you, and the unofficial-fan-project disclaimer.',
+		description:
+			'What GO Pokédex is, who it is built on, what it stores about you, and the unofficial-fan-project disclaimer.',
 	},
 	{
 		path: '/rankings/great',
@@ -110,6 +112,12 @@ const STATIC_PAGES = [
 		description:
 			'The best 3-Pokémon teams for Pokémon GO Great, Ultra and Master League, ranked with their best movesets and top IVs.',
 		image: `${SITE}/images/leagues/master.png`,
+	},
+	{
+		path: '/teams/favorites',
+		title: 'Favorite PvP Teams — GO Pokédex',
+		description: 'Your saved Pokémon GO PvP teams, rated for Great, Ultra and Master League.',
+		image: `${SITE}/images/leagues/great.png`,
 	},
 	{
 		path: '/teams/collection',
@@ -227,6 +235,25 @@ for (const t of RAID_TYPE_KEYS) {
 		image: `${SITE}/images/og/types/${t}.png`,
 	});
 }
+
+// Selectors that appear once a static page has its real content on screen. The first match wins; a page with no entry (or
+// whose data legitimately comes back empty) is saved after the wait times out, which is only a delay, never a failure.
+const READY_SELECTORS = [
+	[/^\/$/, '.h-faces .h-avatar, .h-leagues .h-top-link, .h-raids .h-raid-link'],
+	[/^\/about$/, '.h-prose h2'],
+	[/^\/rankings\/raid\/\w+$/, '.r-rank-row, .r-ctr-row'],
+	[/^\/rankings\/raid$/, '.r-rank-head'],
+	[/^\/rankings\//, '.r-rank-row, .r-pc'],
+	[/^\/teams\/top$/, '.r-tm-board-card'],
+	[/^\/teams\/collection$/, '.r-tm-collection-count, .r-tm-empty, .r-tm-card'],
+	[/^\/teams\/favorites$/, '.r-tm-board-card, .r-tm-empty'],
+	[/^\/teams$/, '.r-tm-card'],
+	[/^\/moves$/, '.r-move-row, .r-mv, main li'],
+	[/^\/types$/, '.r-eff-t, .r-tc-cell'],
+	[/^\/calendar\//, '.r-event, .r-mini, .r-rocket-tier, .r-egglist, .r-muted'],
+	[/^\/search-strings\//, '.r-md-mode-seg, .r-md-compute, button'],
+];
+const readySelector = (routePath) => READY_SELECTORS.find(([re]) => re.test(routePath))?.[1];
 
 // -- tiny static file server, mirroring GitHub Pages (exact file, else 404.html) --
 const TYPES = {
@@ -356,7 +383,15 @@ const applyMeta = (page, { url, title, description, image, jsonLd }) =>
 		{ url, title, description, image: image || LOGO_IMAGE, isCustomImage: Boolean(image), jsonLd: jsonLd ?? [] }
 	);
 
-const savePage = async (routePath, html) => {
+/** Takes the render's own theme out of the markup (the <html> one and the app root's), so the page is not dark for a light visitor until its scripts run. */
+const withoutTheme = (html) =>
+	html
+		.replace(/(<html\b[^>]*?)\sdata-theme="[^"]*"/, '$1')
+		.replace(/(<html\b[^>]*?)\sstyle="color-scheme:[^"]*"/, '$1')
+		.replace(/(<div class="rvmp"[^>]*?)\sdata-theme="[^"]*"/, '$1');
+
+const savePage = async (routePath, rawHtml) => {
+	const html = withoutTheme(rawHtml);
 	const dir = path.join(DIST, routePath === '/' ? '' : routePath);
 	await mkdir(dir, { recursive: true });
 	await writeFile(path.join(dir, 'index.html'), html, 'utf8');
@@ -510,6 +545,8 @@ const main = async () => {
 		task(routePath, () =>
 			withPage(async (page) => {
 				await page.goto(`http://localhost:${PORT}${routePath}`, { waitUntil: 'networkidle', timeout: 30000 });
+				const ready = readySelector(routePath);
+				if (ready) await page.waitForSelector(ready, { timeout: 15000 }).catch(() => undefined);
 				await applyMeta(page, {
 					url: `${SITE}${routePath}`,
 					title,

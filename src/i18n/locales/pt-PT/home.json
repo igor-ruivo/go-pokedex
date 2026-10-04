@@ -4,7 +4,7 @@
 		"title": "Tudo o que precisas, enquanto jogas.",
 		"subtitle": "Eventos em direto, rankings das ligas, um construtor de equipas que conhece a tua coleção e limpeza do armazenamento com um toque. Grátis, rápido e no teu idioma.",
 		"ctaTeams": "Criar uma equipa",
-		"ctaRegister": "Os teus Pokémon",
+		"ctaRegister": "Meus Pokémon",
 		"ctaPvp": "Ranks PvP",
 		"ctaRaid": "Atacantes de Reide"
 	},
@@ -37,11 +37,11 @@
 	"teams": {
 		"title": "Laboratório de equipas",
 		"headline": "Um construtor de equipas que conhece a tua coleção.",
-		"body": "Avalia qualquer trio como o PvPoke, ou deixa-o encontrar as melhores equipas entre os Pokémon que realmente tens, com os teus IV, níveis e Melhor Amigo."
+		"body": "Avalia qualquer trio, ou deixa-o encontrar as melhores equipas entre os Pokémon que realmente tens, com os teus IV, níveis e Melhor Amigo."
 	},
 	"tools": {
 		"title": "Ferramentas",
-		"searchesPitch": "Limpa o armazenamento em segundos. Gera códigos de pesquisa que guardam o que importa e selecionam o resto."
+		"searchesPitch": "Limpa o armazenamento em segundos."
 	},
 	"footer": {
 		"tagline": "Ferramentas gratuitas e rápidas para treinadores de Pokémon GO.",
@@ -51,7 +51,9 @@
 		"about": "Sobre e créditos",
 		"privacy": "Privacidade",
 		"issues": "Reportar um problema",
-		"disclaimer": "O GO Pokédex é um projeto de fãs não oficial. Não é afiliado, aprovado nem patrocinado pela Niantic, Nintendo, The Pokémon Company ou Game Freak. Pokémon e Pokémon GO são marcas dos respetivos proprietários."
+		"disclaimer": "O GO Pokédex é um projeto de fãs não oficial. Não é afiliado, aprovado nem patrocinado pela Niantic, Nintendo, The Pokémon Company ou Game Freak. Pokémon e Pokémon GO são marcas dos respetivos proprietários.",
+		"rights": "Todos os direitos reservados.",
+		"raidRanks": "Ranks de Reide"
 	},
 	"about": {
 		"title": "Sobre o GO Pokédex",
@@ -66,7 +68,26 @@
 		"privacyTitle": "Privacidade",
 		"privacyBody": "Não há contas. As tuas definições, coleção e equipas favoritas ficam no teu navegador e nunca saem do teu dispositivo. Usamos o Google Analytics para contar visitas de forma anónima; pode definir cookies. Não há anúncios.",
 		"disclaimerTitle": "Aviso legal",
-		"madeBy": "Feito por Igor Ruivo."
+		"madeBy": "Feito por Igor Ruivo.",
+		"rights": "Todos os direitos reservados.",
+		"storyTitle": "A história",
+		"s1": "Sou o Igor, engenheiro de software e um bocado obcecado por otimização.",
+		"s2": "Este projeto começou no verão de 2023 como forma de aprender React, CSS e desenvolvimento frontend moderno. Na altura estava a entrar a sério no PvP do Pokémon GO e a descobrir a profundidade escondida num jogo que parecia simples. IVs, limites de PC, rankings, movimentos, ligas e toda a otimização estranha à volta disso prenderam-me por completo.",
+		"s3": "Rapidamente passei a depender das excelentes ferramentas que a comunidade de Pokémon GO já tinha criado: o PvPoke para análise e rankings de PvP, o Poké Genie e o PVPIVs para IVs, o LeekDuck para informação do jogo, o PokéMiners para os dados do jogo, e outros. Estes projetos são fantásticos no que fazem, e este não pretende substituí-los nem recriar o trabalho deles. Constrói por cima.",
+		"s4": "Queria criar a experiência de companheiro tudo-em-um que eu próprio não encontrava: densa, rica em informação, rápida, pensada para o telemóvel e com o cuidado de UX/UI que gosto de desenhar. Mas a maior diferença é que queria a ferramenta centrada nos teus próprios Pokémon, e não apenas no Pokémon GO como um todo.",
+		"yoursTitle": "Os teus Pokémon, não apenas Pokémon",
+		"y1": "O Construtor de Equipas é inspirado no excelente trabalho do PvPoke, incluindo a simulação de combate e os algoritmos de ranking, mas leva a ideia mais longe ao ligá-la à tua coleção. Podes manter uma lista pessoal de Pokémon interessantes para as ligas, e a ferramenta calcula continuamente que combinações de equipas fazem mais sentido com o que realmente tens. As equipas são classificadas face ao meta atual e acompanhadas de análises e dicas úteis.",
+		"y2": "Isto faz da tua coleção algo persistente, em vez de algo que tens de reavaliar à mão a cada temporada. Quando mudam movimentos, melhorias, nerfs, novos Pokémon ou o meta, voltas e vês logo que Pokémon e equipas ficaram mais ou menos relevantes.",
+		"y3": "Guarda os teus Pokémon uma vez. Deixa a ferramenta continuar a descobrir para que servem.",
+		"searchTitle": "Códigos de pesquisa que fazem mesmo o trabalho",
+		"q1": "Outra parte importante do projeto são os códigos de pesquisa automáticos do Pokémon GO. O meu exemplo favorito é a pesquisa de eliminação em massa de IVs não perfeitos. A ferramenta gera um código de pesquisa enorme que cobre as configurações de liga que escolheste e tem em conta linhas evolutivas, sombrio, purificação, Melhor Amigo e os diferentes IVs ótimos de cada espécie.",
+		"q2": "O resultado é, para mim, transformador: em vez de verificar centenas de Pokémon à mão, posso eliminar com confiança os que não podem de todo ser interessantes para as ligas escolhidas e inspecionar apenas os poucos sobreviventes que valem mesmo a pena.",
+		"q3": "Funciona também no sentido inverso. A ferramenta ajuda a preservar Pokémon potencialmente valiosos que não são relevantes no meta atual, como candidatos de topo à Grande ou Ultra Liga que de outra forma teria eliminado por não ter forma prática de verificar todos os Pokémon do armazenamento. Há ainda pesquisas para candidatos a troca, em que a ferramenta identifica Pokémon cujos requisitos de IV fazem sentido precisamente porque uma troca com um Melhor Amigo garante um mínimo de IV.",
+		"builtTitle": "Construído sobre a comunidade",
+		"b1": "Por baixo de tudo isto, dependo muito do ecossistema de dados do Pokémon GO. O meu backend analisa o Game Master e as traduções do PokéMiners e consome regularmente informação dos canais oficiais do Pokémon GO e de fontes da comunidade como o LeekDuck. A análise de PvP assenta no trabalho de simulação de combate do PvPoke, em vez de tentar reinventá-lo. Muito do que torna este projeto possível deve-se a quem já passou anos a construir estas ferramentas e conjuntos de dados.",
+		"b2": "Estou essencialmente a tentar acrescentar mais uma camada: uma interface mais rica, uma experiência mais pessoal e mais automação à volta dos Pokémon que realmente tens. O projeto foi também o meu campo de aprendizagem de frontend, de experimentação com ferramentas de programação com IA cada vez mais capazes e de obsessão com detalhes de UX/UI muito para além do que pretendia.",
+		"b3": "Agora gostava de devolver parte desse trabalho à comunidade. Se usas a ferramenta, gostava mesmo de receber feedback, críticas, ideias, relatos de erros ou sugestões do que pode ficar melhor. O projeto continua a evoluir, e prefiro que a comunidade ajude a moldá-lo a construir tudo dentro da minha própria bolha.",
+		"sign": "Igor"
 	},
 	"menu": {
 		"open": "Abrir menu",
@@ -82,5 +103,9 @@
 	"raid": {
 		"title": "Melhores atacantes de reide",
 		"subtitle": "Os três melhores de cada um dos 17 tipos."
+	},
+	"social": {
+		"label": "Segue-nos em",
+		"discord": "Entra no nosso Discord"
 	}
 }

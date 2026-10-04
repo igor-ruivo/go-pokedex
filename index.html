@@ -29,12 +29,12 @@
 			// The theme before the first paint (no flash of dark for a light device): the saved choice (1 light, 2 dark) or the device.
 			(function () {
 				try {
-					var saved = localStorage.getItem("0");
-					var light = saved === "1" || (saved !== "2" && window.matchMedia("(prefers-color-scheme: light)").matches);
+					var saved = localStorage.getItem('0');
+					var light = saved === '1' || (saved !== '2' && window.matchMedia('(prefers-color-scheme: light)').matches);
 					var root = document.documentElement;
-					root.dataset.theme = light ? "light" : "dark";
-					root.style.colorScheme = light ? "light" : "dark";
-					if (light) document.querySelector('meta[name="theme-color"]').setAttribute("content", "#f4f6fb");
+					root.dataset.theme = light ? 'light' : 'dark';
+					root.style.colorScheme = light ? 'light' : 'dark';
+					if (light) document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f4f6fb');
 				} catch (e) {}
 			})();
 		</script>

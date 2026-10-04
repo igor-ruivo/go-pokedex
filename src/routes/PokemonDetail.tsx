@@ -4,6 +4,7 @@ import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import { CombatIcon } from '../components/CombatIcon';
 import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { IconTabBar } from '../components/IconTabBar';
 import { IvPicker, type IVs } from '../components/IvPicker';
@@ -110,42 +111,6 @@ const IvTableIcon = () => (
 		<rect x='9.8' y='10.8' width='4.4' height='3.4' rx='0.8' fill='#4fa3ff' />
 		<rect x='15.8' y='15.8' width='4.4' height='3.4' rx='0.8' fill='#4fa3ff' />
 		<rect x='3.8' y='15.8' width='4.4' height='3.4' rx='0.8' fill='#4fa3ff' />
-	</svg>
-);
-
-// Same idea for Combat, but in colour (two hues only): a mini stat-radar — grid
-// hexagon, a gradient-filled shape and a dot on each axis.
-const CombatIcon = () => (
-	<svg viewBox='0 0 24 24' fill='none' strokeLinejoin='round' aria-hidden='true'>
-		<defs>
-			<linearGradient id='combat-icon-fill' x1='4' y1='3' x2='20' y2='21' gradientUnits='userSpaceOnUse'>
-				<stop offset='0' stopColor='#4fd1c5' />
-				<stop offset='1' stopColor='#6c8cff' />
-			</linearGradient>
-		</defs>
-		<polygon
-			points='12,2 20.66,7 20.66,17 12,22 3.34,17 3.34,7'
-			stroke='var(--text)'
-			strokeWidth='1.4'
-			opacity='0.55'
-		/>
-		<polygon
-			points='12,4.6 18.4,8.6 16.6,15.6 12,19.6 7.2,14.8 6.6,8.4'
-			fill='url(#combat-icon-fill)'
-			fillOpacity='0.75'
-			stroke='url(#combat-icon-fill)'
-			strokeWidth='1.4'
-		/>
-		{[
-			[12, 4.6],
-			[18.4, 8.6],
-			[16.6, 15.6],
-			[12, 19.6],
-			[7.2, 14.8],
-			[6.6, 8.4],
-		].map(([x, y]) => (
-			<circle key={`${x}-${y}`} cx={x} cy={y} r='1.4' fill='#6c8cff' />
-		))}
 	</svg>
 );
 
@@ -477,6 +442,9 @@ const PokemonDetail = () => {
 	// string keys, same as every JS object always used under the hood even
 	// back when this looked like a numeric index.
 	type Cpos = { p: number; t: number; m: Record<string, number> };
+	// Held here, not in the menu: the heading is drawn at a different place in the tree once the first extra league is shown
+	// (and again when the last is hidden), which remounts the menu — its open state must outlive that.
+	const [leagueMenuOpen, setLeagueMenuOpen] = useState(false);
 	const [carousel, setCarousel] = useState<Record<LeagueId, Cpos>>({});
 	useEffect(() => setCarousel({}), [speciesId]);
 	const cpos = (id: LeagueId): Cpos => carousel[id] ?? { p: 0, t: 0, m: {} };
@@ -878,7 +846,11 @@ const PokemonDetail = () => {
 			<div className='r-board-divider' role='separator'>
 				<span>{t('pokemonDetail:board.extraLeaguesDivider')}</span>
 			</div>
-			<LeagueVisibilityMenu lockedId={isExtraLeagueId(league) ? league : null} />
+			<LeagueVisibilityMenu
+				lockedId={isExtraLeagueId(league) ? league : null}
+				open={leagueMenuOpen}
+				onOpenChange={setLeagueMenuOpen}
+			/>
 		</div>
 	);
 	const boardRows = LEAGUES.map((l) => {

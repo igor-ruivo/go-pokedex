@@ -13,12 +13,15 @@ import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
 import { sentenceCase } from '../lib/format';
 import { R } from '../lib/nav';
 import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
+import { socialLinks } from '../lib/social';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { BrandMark } from './BrandMark';
+import { CombatIcon } from './CombatIcon';
 import { RaidIcon } from './RaidIcon';
 import { TeamTabIcon } from './team-tab-icons';
 
-const ISSUES_URL = 'https://github.com/igor-ruivo/go-pokedex/issues';
+// feedback, bug reports and ideas go to the Discord server
+const FEEDBACK_URL = socialLinks().find((l) => l.id === 'discord')?.url;
 const CLOSE_MS = 220;
 
 /**
@@ -129,7 +132,7 @@ export const AppMenu = () => {
 			key: 'ranks',
 			to: R.rankings('great'),
 			icon: <img src='/images/nav/leagues.png' alt='' />,
-			label: t('pokemonDetail:tabs.ranks'),
+			label: t('home:hero.ctaPvp'),
 			hint: t('common:nav.leagues.hint'),
 			active: onRanks,
 		},
@@ -143,7 +146,7 @@ export const AppMenu = () => {
 		{
 			key: 'teams',
 			to: R.teams,
-			icon: <img src='/images/nav/rankings.webp' alt='' />,
+			icon: <CombatIcon />,
 			label: t('home:hero.ctaTeams'),
 			hint: t('common:nav.teams.hint'),
 			active: pathname.startsWith('/teams') && !onCollection,
@@ -362,7 +365,7 @@ export const AppMenu = () => {
 							<footer className='r-menu-foot'>
 								<Link to={R.about}>{t('home:footer.about')}</Link>
 								<Link to={`${R.about}#privacy`}>{t('home:footer.privacy')}</Link>
-								<a href={ISSUES_URL} target='_blank' rel='noopener noreferrer'>
+								<a href={FEEDBACK_URL} target='_blank' rel='noopener noreferrer'>
 									{t('home:footer.issues')} <span aria-hidden='true'>↗</span>
 								</a>
 							</footer>

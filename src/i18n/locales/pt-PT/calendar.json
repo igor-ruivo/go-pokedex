@@ -70,6 +70,8 @@
 			"lures": "Módulos-Isco"
 		},
 		"readAnnouncement": "Ler o anúncio completo",
+		"copyLink": "Copiar ligação",
+		"linkCopied": "Ligação copiada",
 		"startEndLine": "Começa {{start}} · Termina {{end}}",
 		"startsIn": {
 			"days": "em {{count}}d",

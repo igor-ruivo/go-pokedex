@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { GameLanguage } from '../contexts/language-context';
 import type { IEntry, IPostEntry } from '../DTOs/INews';
+import { nowRaidEntries } from './calendar-events';
 import {
 	catchableRocketEntries,
+	copyrightYears,
 	distinctSpecies,
 	eventHighlights,
+	facesThatFit,
 	featuredEvents,
 	homeRaidEntries,
 	orderedEggEntries,
@@ -178,12 +181,17 @@ describe('homeRaidEntries', () => {
 	const e = (speciesId: string, kind: string) => ({ speciesId, kind, shiny: false });
 	const shadow = (id: string) => id.startsWith('s_');
 
-	it('keeps the special tiers first, then tier 3, and drops tier 1', () => {
-		const list = [e('a', '1'), e('b', '3'), e('c', '5'), e('d', 'mega')];
-		expect(homeRaidEntries(list, shadow).map((x) => x.speciesId)).toEqual(['c', 'd', 'b']);
+	it('counts every kind that is not tier 3 or 1 (Mega, special…) among the higher tiers', () => {
+		const list = [e('a', '1'), e('b', '3'), e('x', 'special'), e('d', 'mega'), e('c', '5')];
+		expect(homeRaidEntries(list, shadow).map((v) => v.speciesId)).toEqual(['x', 'd', 'c', 'b', 'a']);
 	});
 
-	it('never shows a Shadow of tier 3 or 1, but a special-tier Shadow stays', () => {
+	it('puts the higher tiers first, then tier 3, then tier 1', () => {
+		const list = [e('a', '1'), e('b', '3'), e('c', '5'), e('d', 'mega')];
+		expect(homeRaidEntries(list, shadow).map((x) => x.speciesId)).toEqual(['c', 'd', 'b', 'a']);
+	});
+
+	it('never shows a Shadow of tier 3 or 1, but a Shadow of the higher tiers always stays', () => {
 		const list = [e('s_x', '3'), e('s_y', '1'), e('s_z', '5'), e('p', '3')];
 		expect(homeRaidEntries(list, shadow).map((x) => x.speciesId)).toEqual(['s_z', 'p']);
 	});
@@ -213,5 +221,74 @@ describe('orderedEggEntries', () => {
 	it('puts 10 km first, then 12, 7, 5, 2, 1', () => {
 		const list = ['1', '5', '12', '2', '10', '7'].map((kind) => ({ kind }));
 		expect(orderedEggEntries(list).map((x) => x.kind)).toEqual(['10', '12', '7', '5', '2', '1']);
+	});
+});
+
+describe('copyrightYears', () => {
+	it('runs from 2023 to the current year, and never ends before 2026', () => {
+		expect(copyrightYears(new Date('2026-10-04'))).toBe('2023–2026');
+		expect(copyrightYears(new Date('2028-01-01'))).toBe('2023–2028');
+		expect(copyrightYears(new Date('2025-01-01'))).toBe('2023–2026');
+	});
+});
+
+describe('facesThatFit', () => {
+	it('shows everything that fits, with no "+N"', () => {
+		expect(facesThatFit(7, 5, 2, 9)).toEqual({ faces: 7, more: 0 });
+		expect(facesThatFit(9, 5, 2, 9)).toEqual({ faces: 9, more: 0 });
+	});
+
+	it('keeps the last cell for the "+N" when they do not fit', () => {
+		expect(facesThatFit(30, 5, 2, 9)).toEqual({ faces: 9, more: 21 });
+		expect(facesThatFit(12, 4, 2, 9)).toEqual({ faces: 7, more: 5 });
+		expect(facesThatFit(12, 3, 2, 9)).toEqual({ faces: 5, more: 7 });
+		expect(facesThatFit(12, 2, 2, 9)).toEqual({ faces: 3, more: 9 });
+	});
+
+	it('caps at nine faces even when the room is wider, and counts the rest', () => {
+		expect(facesThatFit(10, 8, 2, 9)).toEqual({ faces: 9, more: 1 });
+	});
+
+	it('copes with a width that fits no column at all', () => {
+		expect(facesThatFit(5, 0, 2, 9)).toEqual({ faces: 1, more: 4 });
+	});
+});
+
+describe('nowRaidEntries', () => {
+	const raid = (speciesId: string, kind: string): IEntry => ({ speciesId, kind, shiny: false });
+	const NOW = 1000;
+	const special = (id: string, start: number, end: number, raids: Array<IEntry>) => ({
+		title: everyLanguage(id),
+		date: start,
+		dateEnd: end,
+		raids,
+		rawUrl: id,
+	});
+
+	it('lists the rotation, then the raids of every event that is on now, each boss once', () => {
+		const posts = [
+			post('live', 900, 2000, { raids: [raid('b', '5'), raid('a', '3')] }),
+			post('later', 1500, 2500, { raids: [raid('z', '5')] }),
+			post('ended', 100, 500, { raids: [raid('y', '5')] }),
+		];
+		const result = nowRaidEntries({
+			posts,
+			specialBosses: [],
+			currentBosses: [raid('a', '3'), raid('c', '1')],
+			language: gl,
+			now: NOW,
+		});
+		expect(result.map((e) => e.speciesId)).toEqual(['a', 'c', 'b']);
+	});
+
+	it('includes the bosses of a special window that is on now', () => {
+		const result = nowRaidEntries({
+			posts: [],
+			specialBosses: [special('s1', 900, 2000, [raid('m', 'mega')]), special('s2', 1500, 2000, [raid('n', 'mega')])],
+			currentBosses: [],
+			language: gl,
+			now: NOW,
+		});
+		expect(result.map((e) => e.speciesId)).toEqual(['m']);
 	});
 });

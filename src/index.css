@@ -15,7 +15,7 @@ body {
 html {
 	background: #0b0e14;
 }
-html[data-theme="light"] {
+html[data-theme='light'] {
 	background: #f4f6fb;
 }
 body {

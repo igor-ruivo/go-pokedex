@@ -70,6 +70,8 @@
 			"lures": "Lockmodule"
 		},
 		"readAnnouncement": "Ganze Ankündigung lesen",
+		"copyLink": "Link kopieren",
+		"linkCopied": "Link kopiert",
 		"startEndLine": "Beginnt {{start}} · Endet {{end}}",
 		"startsIn": {
 			"days": "in {{count}} T.",
