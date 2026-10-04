@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 124">
+	<style>
+		.g { stroke-dasharray: 340; animation: draw 2.6s cubic-bezier(0.5, 0, 0.3, 1) infinite; }
+		.ball { transform-box: fill-box; transform-origin: center; animation: ball 2.6s ease-in-out infinite; }
+		@keyframes draw {
+			0% { stroke-dashoffset: 340; }
+			40% { stroke-dashoffset: 0; }
+			78% { stroke-dashoffset: 0; }
+			100% { stroke-dashoffset: -340; }
+		}
+		@keyframes ball {
+			0% { transform: scale(0.55); opacity: 0; }
+			18% { transform: scale(1.06); opacity: 1; }
+			26% { transform: scale(1); }
+			52% { transform: rotate(0); }
+			56% { transform: rotate(-10deg); }
+			60% { transform: rotate(9deg); }
+			64% { transform: rotate(-4deg); }
+			68% { transform: rotate(0); }
+			86% { transform: scale(1); opacity: 1; }
+			100% { transform: scale(0.8); opacity: 0; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			.g { animation: none; stroke-dashoffset: 0; }
+			.ball { animation: none; }
+		}
+	</style>
+	<defs>
+		<linearGradient id="g" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="124">
+			<stop offset="0.5" stop-color="#f4f4f5"/>
+			<stop offset="0.5" stop-color="#ff5b5b"/>
+		</linearGradient>
+		<linearGradient id="b" gradientUnits="userSpaceOnUse" x1="0" y1="12" x2="0" y2="112">
+			<stop offset="0.5" stop-color="#ff5b5b"/>
+			<stop offset="0.5" stop-color="#f4f4f5"/>
+		</linearGradient>
+		<clipPath id="c"><circle cx="150" cy="62" r="45"/></clipPath>
+	</defs>
+	<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+		<path class="g" d="M98 31.8A47 47 0 1 0 109 62L70 62" stroke="#11151c" stroke-width="28"/>
+		<path class="g" d="M98 31.8A47 47 0 1 0 109 62L70 62" stroke="url(#g)" stroke-width="19"/>
+	</g>
+	<g class="ball">
+		<circle cx="150" cy="62" r="50" fill="#11151c"/>
+		<g clip-path="url(#c)">
+			<rect x="100" y="12" width="100" height="100" fill="url(#b)"/>
+			<rect x="100" y="57.5" width="100" height="9" fill="#11151c"/>
+		</g>
+		<circle cx="150" cy="62" r="16" fill="#f4f4f5"/>
+		<circle cx="150" cy="62" r="10.5" fill="#11151c"/>
+		<circle cx="150" cy="62" r="4.5" fill="#f4f4f5" opacity="0.9"/>
+		<path d="M121 44A33 33 0 0 1 142 28" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+	</g>
+</svg>

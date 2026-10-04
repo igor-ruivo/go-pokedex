@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url><loc>https://go-pokedex.com/</loc></url>
+	<url><loc>https://go-pokedex.com/rankings/pokedex</loc></url>
+	<url><loc>https://go-pokedex.com/about</loc></url>
 	<url><loc>https://go-pokedex.com/rankings/great</loc></url>
 	<url><loc>https://go-pokedex.com/rankings/ultra</loc></url>
 	<url><loc>https://go-pokedex.com/rankings/master</loc></url>
 	<url><loc>https://go-pokedex.com/rankings/raid</loc></url>
 	<url><loc>https://go-pokedex.com/teams</loc></url>
 	<url><loc>https://go-pokedex.com/teams/top</loc></url>
+	<url><loc>https://go-pokedex.com/teams/favorites</loc></url>
 	<url><loc>https://go-pokedex.com/teams/collection</loc></url>
 	<url><loc>https://go-pokedex.com/moves</loc></url>
 	<url><loc>https://go-pokedex.com/types</loc></url>
