@@ -4695,6 +4695,16 @@
 	gap: 8px;
 	min-width: 0;
 }
+/* On a wide screen the toggles of a stack sit two to a row (a 2 by 2 for three or four of them) instead of one long column;
+   narrow screens keep the single column. */
+@media (min-width: 720px) {
+	.rvmp .r-md-knob-stack {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-items: start;
+		gap: 8px 14px;
+	}
+}
 /* Fixed-height label slot, laid out the same way on every card regardless of
    whether this particular one has an icon or wraps to two lines — so the
    select below always starts at the same Y across the whole row instead of

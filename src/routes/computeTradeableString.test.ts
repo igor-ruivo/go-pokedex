@@ -925,3 +925,119 @@ describe('computeTradeableString — pt-BR translation, every category toggle at
 		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
 	});
 });
+
+describe('computeTradeableString — an extra league capped at 500 CP (its own tier, never Great’s)', () => {
+	const extra = (floorOk: boolean, patterns: TradeableLeagueData['patterns'] = []): Partial<TradeableSpeciesData> => ({
+		extra: { 'cap-500': leagueData({ floorOk, patterns }) },
+		// Great and Ultra must play no part in it
+		great: leagueData({ floorOk: !floorOk }),
+		ultra: leagueData({ floorOk: !floorOk }),
+	});
+
+	it('admits on the 500 CP floor check, whatever Great League’s says', () => {
+		const floormon = mockPokemon({ speciesId: 'smallcapfloormon', dex: 630 });
+		const nofloormon = mockPokemon({ speciesId: 'smallcapnofloormon', dex: 631 });
+		const gamemasterPokemon = buildGamemaster([floormon, nofloormon]);
+
+		const result = call(gamemasterPokemon, {
+			extraTrade: [{ rankList: { smallcapfloormon: rank(1), smallcapnofloormon: rank(1) }, cutoff: 10, tier: 'cap-500' }],
+			tradeableSpeciesData: {
+				smallcapfloormon: floorEligible(extra(true)),
+				smallcapnofloormon: floorEligible(extra(false)),
+			},
+		});
+
+		expect(result).toContain('630');
+		expect(result).not.toContain('631');
+	});
+
+	it('is never admitted without 500 CP data for the species: the floor can not be assumed', () => {
+		const mon = mockPokemon({ speciesId: 'smallcapnodatamon', dex: 632 });
+		const gamemasterPokemon = buildGamemaster([mon]);
+
+		const result = call(gamemasterPokemon, {
+			extraTrade: [{ rankList: { smallcapnodatamon: rank(1) }, cutoff: 10, tier: 'cap-500' }],
+			tradeableSpeciesData: { smallcapnodatamon: floorEligible() },
+		});
+
+		expect(result).not.toContain('632');
+	});
+
+	it('is not admitted at all with a cutoff of 0: the league is ignored', () => {
+		const mon = mockPokemon({ speciesId: 'smallcapzeromon', dex: 633 });
+		const gamemasterPokemon = buildGamemaster([mon]);
+
+		const result = call(gamemasterPokemon, {
+			extraTrade: [{ rankList: { smallcapzeromon: rank(1) }, cutoff: 0, tier: 'cap-500' }],
+			tradeableSpeciesData: { smallcapzeromon: floorEligible(extra(true)) },
+		});
+
+		expect(result).not.toContain('633');
+	});
+
+	it('carves out the 500 CP tied patterns of the species it admits', () => {
+		const mon = mockPokemon({ speciesId: 'smallcapcarvemon', dex: 634 });
+		const gamemasterPokemon = buildGamemaster([mon]);
+
+		const result = call(gamemasterPokemon, {
+			extraTrade: [{ rankList: { smallcapcarvemon: rank(1) }, cutoff: 10, tier: 'cap-500' }],
+			tradeableSpeciesData: { smallcapcarvemon: floorEligible(extra(true, [{ A: 15, D: 15, S: 14 }])) },
+		});
+
+		expect(result).toContain('634');
+		expect(result).toContain('0-3attack,0-3defense,0-2hp,4hp');
+	});
+});
+
+describe('findTradeableSpeciesData — extra CP caps', () => {
+	const mon = mockPokemon({ speciesId: 'smallcapdatamon', dex: 3, baseStats: { atk: 120, def: 120, hp: 120 } });
+	const lowAttack = mockPokemon({ speciesId: 'smallcaplowattackmon', dex: 4, baseStats: { atk: 250, def: 100, hp: 100 } });
+
+	it('adds a cap-<n> entry per species for each extra cap, built from the 500 CP spreads', () => {
+		const gamemasterPokemon = buildGamemaster([mon, lowAttack]);
+		const data = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon, [500]),
+			extraCaps: [500],
+		});
+
+		for (const id of [mon.speciesId, lowAttack.speciesId]) {
+			expect(data[id].extra?.['cap-500']).toBeDefined();
+			expect(data[id].great).toBeDefined();
+		}
+		// the classic low-Attack shape fails the floor at a CP cap
+		expect(data[lowAttack.speciesId].extra?.['cap-500'].floorOk).toBe(false);
+	});
+
+	it('adds nothing without an extra cap, or for an older dex-server that has none', () => {
+		const gamemasterPokemon = buildGamemaster([mon]);
+		const without = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon, [500]),
+		});
+		expect(without[mon.speciesId].extra).toBeUndefined();
+
+		const older = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			extraCaps: [500],
+		});
+		expect(older[mon.speciesId].extra?.['cap-500']).toEqual({ patterns: [], floorOk: false });
+	});
+
+	it('leaves Great, Ultra and Master as they were', () => {
+		const gamemasterPokemon = buildGamemaster([mon]);
+		const base = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+		});
+		const withExtra = findTradeableSpeciesData({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon, [500]),
+			extraCaps: [500],
+		});
+		expect(withExtra[mon.speciesId].great).toEqual(base[mon.speciesId].great);
+		expect(withExtra[mon.speciesId].ultra).toEqual(base[mon.speciesId].ultra);
+		expect(withExtra[mon.speciesId].master).toEqual(base[mon.speciesId].master);
+	});
+});

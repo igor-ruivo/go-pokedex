@@ -13,7 +13,7 @@ import { SpriteImg } from './Sprite';
 export const CounterRankRow = ({
 	pokemon,
 	rank,
-	moves,
+	moves: rawMoves,
 	moveData,
 	score,
 	scoreLabel,
@@ -34,6 +34,9 @@ export const CounterRankRow = ({
 	onActivate: () => void;
 }) => {
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
+	// A ranking lists `none` for the charged move a Pokémon doesn't use: with a single charged move there is nothing to show
+	// after it, neither a `+` nor the word.
+	const moves = rawMoves.filter((move) => move !== 'none');
 	const renderMove = (move: string, key: string, showSeparator: boolean) => {
 		const moveInfo = moveData[move];
 		return (

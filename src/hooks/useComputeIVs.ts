@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IIvPercents } from '../DTOs/ivs';
+import { useLeagueDefinitions } from '../queries/leagues';
 import { usePokemon } from '../queries/pokemon';
 import { fetchReachablePokemonIncludingSelf } from '../utils/pokemon-helper';
 import type { FamilyMember } from '../workers/compute.worker';
@@ -45,6 +46,12 @@ const useComputeIVs = ({
 }: IUseComputeIVsProps): [Record<string, IIvPercents>, boolean, boolean] => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { maxLevel } = useBestBuddy();
+	// Caps of the cups that are neither Great, Ultra nor uncapped: their IV ranks can't be read from those tiers.
+	const { leagues } = useLeagueDefinitions();
+	const extraCaps = useMemo(
+		() => [...new Set(leagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000))].sort((a, b) => a - b),
+		[leagues]
+	);
 
 	// Walking the family graph is cheap; only the IV ranking is worth offloading.
 	const reachable = useMemo<Array<FamilyMember>>(() => {
@@ -82,6 +89,7 @@ const useComputeIVs = ({
 			defenseIV,
 			hpIV,
 			maxLevel,
+			extraCaps.join(','),
 			reachable.map((m) => m.speciesId).join(','),
 		],
 		queryFn: () =>
@@ -92,6 +100,7 @@ const useComputeIVs = ({
 				defenseIV,
 				hpIV,
 				maxLevel,
+				extraCaps,
 			}),
 		// Keep the last result on screen while a new IV spread recomputes, so
 		// moving a slider updates in place instead of flashing the loader.

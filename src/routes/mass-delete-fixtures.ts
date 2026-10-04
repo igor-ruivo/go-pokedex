@@ -138,7 +138,9 @@ const buildSearchFormIds = (gamemasterPokemon: Record<string, IGamemasterPokemon
  * (see `buildSearchFormIds` above).
  */
 export const buildSpeciesSearchMetadata = (
-	gamemasterPokemon: Record<string, IGamemasterPokemon>
+	gamemasterPokemon: Record<string, IGamemasterPokemon>,
+	/** CP caps beyond Great / Ultra / Master (a Little Cup's 500): each gets a `cap-<n>` entry, like dex-server's. */
+	extraCaps: ReadonlyArray<number> = []
 ): Record<string, ISpeciesSearchMetadata> => {
 	const searchFormIds = buildSearchFormIds(gamemasterPokemon);
 	const result: Record<string, ISpeciesSearchMetadata> = {};
@@ -152,6 +154,7 @@ export const buildSpeciesSearchMetadata = (
 			great: spreadsFor(1500),
 			ultra: spreadsFor(2500),
 			master: spreadsFor(Number.MAX_VALUE),
+			...Object.fromEntries(extraCaps.map((cap) => [`cap-${cap}`, spreadsFor(cap)])),
 		};
 
 		const entry: ISpeciesSearchMetadata = {
@@ -174,6 +177,7 @@ export const buildSpeciesSearchMetadata = (
 				great: purifiedSpreadsFor(1500),
 				ultra: purifiedSpreadsFor(2500),
 				master: purifiedSpreadsFor(Number.MAX_VALUE),
+				...Object.fromEntries(extraCaps.map((cap) => [`cap-${cap}`, purifiedSpreadsFor(cap)])),
 			};
 		}
 

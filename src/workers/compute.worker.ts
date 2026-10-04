@@ -55,6 +55,8 @@ export interface FamilyIvPercentsInput {
 	hpIV: number;
 	/** Level ceiling to rank against — {@link MAX_LEVEL} unless Best Buddy (51) is on. */
 	maxLevel?: number;
+	/** CP caps of rotating / custom cups beyond 1500 / 2500 / uncapped (a Little Cup's 500): each gets its own block. */
+	extraCaps?: Array<number>;
 }
 
 /**
@@ -102,6 +104,7 @@ const familyIvPercents = ({
 	defenseIV,
 	hpIV,
 	maxLevel = MAX_LEVEL,
+	extraCaps = [],
 }: FamilyIvPercentsInput): Record<string, IIvPercents> => {
 	const result: Record<string, IIvPercents> = {};
 
@@ -136,10 +139,18 @@ const familyIvPercents = ({
 		// required.
 		const master = leagueBlock(flatMLResult, rankMLIndex)!;
 
+		const extra: Record<string, ILeagueIvBlock> = {};
+		for (const cap of extraCaps) {
+			const flat = Object.values(computeBestIVs(p.atk, p.def, p.hp, cap, maxLevel)).flat();
+			const block = leagueBlock(flat, flat.findIndex(matches));
+			if (block) extra[`cap-${cap}`] = block;
+		}
+
 		result[p.speciesId] = {
 			...(great && { great }),
 			...(ultra && { ultra }),
 			master,
+			...(extraCaps.length > 0 && { extra }),
 		};
 	}
 
@@ -311,8 +322,16 @@ const requireSpeciesMetadata = (
 /** dex-server precomputes `bestIvSpreads`/`bestIvSpreadsPurified` keyed this
  *  way — every caller here only ever passes one of these three caps (see
  *  `BadIvCarveOutsInput.caps`'s own callers in MassDelete.tsx). */
-const leagueKeyFor = (cap: number): 'great' | 'ultra' | 'master' =>
-	cap === 1500 ? 'great' : cap === 2500 ? 'ultra' : 'master';
+const leagueKeyFor = (cap: number): 'great' | 'ultra' | 'master' | `cap-${number}` =>
+	cap === 1500 ? 'great' : cap === 2500 ? 'ultra' : cap >= 10000 ? 'master' : `cap-${cap}`;
+
+/** The tied-for-rank-1 patterns of one cap and level, from dex-server's metadata. A cap it shipped nothing for (older data,
+ *  before it knew a cup's 500 CP) has none: such a cap protects nothing rather than failing the whole sweep. */
+const patternsFor = (
+	spreads: ISpeciesSearchMetadata['bestIvSpreads'],
+	cap: number,
+	level: number
+): Array<BadIvPattern> => spreads[leagueKeyFor(cap)]?.[levelKeyFor(level)] ?? [];
 /** Same idea for the level axis — every caller passes {@link MAX_LEVEL} (50)
  *  or {@link BEST_BUDDY_LEVEL} (51), never anything else. */
 const levelKeyFor = (level: number): 'level50' | 'level51' => (level === 51 ? 'level51' : 'level50');
@@ -398,9 +417,7 @@ export const findBadIvCarveOuts = ({
 		}
 		// dex-server precomputes exactly this reduction per species — the only
 		// source of it (no on-the-fly fallback).
-		const patterns = requireSpeciesMetadata(speciesSearchMetadata, r.speciesId).bestIvSpreads[leagueKeyFor(cap)][
-			levelKeyFor(level)
-		];
+		const patterns = patternsFor(requireSpeciesMetadata(speciesSearchMetadata, r.speciesId).bestIvSpreads, cap, level);
 		bestCache.set(key, patterns);
 		return patterns;
 	};
@@ -480,7 +497,7 @@ export const findBadIvCarveOuts = ({
 		if (!metadata.bestIvSpreadsPurified) {
 			throw new Error(`speciesSearchMetadata for "${r.speciesId}" is missing bestIvSpreadsPurified.`);
 		}
-		const patterns = metadata.bestIvSpreadsPurified[leagueKeyFor(cap)][levelKeyFor(levelIndex / 2 + 1)];
+		const patterns = patternsFor(metadata.bestIvSpreadsPurified, cap, levelIndex / 2 + 1);
 		purifiedBestCache.set(key, patterns);
 		return patterns;
 	};
@@ -570,6 +587,8 @@ export interface TradeableSpeciesData {
 	great: TradeableLeagueData;
 	ultra: TradeableLeagueData;
 	master: TradeableLeagueData;
+	/** A rotating / custom cup's own CP cap beyond those three (a Little Cup's 500), keyed `cap-<n>`. */
+	extra?: Record<string, TradeableLeagueData>;
 }
 
 export interface TradeableSpeciesDataInput {
@@ -580,6 +599,8 @@ export interface TradeableSpeciesDataInput {
 	 *  `BadIvCarveOutsInput.maxLevel`'s own doc comment; same "never both"
 	 *  rule applies here. Default {@link MAX_LEVEL}. */
 	maxLevel?: number;
+	/** CP caps of the active cups beyond 1500 / 2500 / uncapped: each gets its own `extra` entry per species. */
+	extraCaps?: Array<number>;
 }
 
 /**
@@ -604,6 +625,7 @@ export const findTradeableSpeciesData = ({
 	gamemasterPokemon,
 	speciesSearchMetadata,
 	maxLevel = MAX_LEVEL,
+	extraCaps = [],
 }: TradeableSpeciesDataInput): Record<string, TradeableSpeciesData> => {
 	const candidates = Object.values(gamemasterPokemon).filter((p) => !p.aliasId && !p.isMega && !p.isShadow);
 
@@ -621,9 +643,7 @@ export const findTradeableSpeciesData = ({
 	// dex-server precomputes exactly this per non-Shadow species — the only
 	// source of it (no on-the-fly fallback).
 	const analyze = (p: IGamemasterPokemon, cap: number): TradeableLeagueData =>
-		toLeagueData(
-			requireSpeciesMetadata(speciesSearchMetadata, p.speciesId).bestIvSpreads[leagueKeyFor(cap)][levelKeyFor(maxLevel)]
-		);
+		toLeagueData(patternsFor(requireSpeciesMetadata(speciesSearchMetadata, p.speciesId).bestIvSpreads, cap, maxLevel));
 
 	const result: Record<string, TradeableSpeciesData> = {};
 	for (const p of candidates) {
@@ -631,6 +651,9 @@ export const findTradeableSpeciesData = ({
 			great: analyze(p, 1500),
 			ultra: analyze(p, 2500),
 			master: analyze(p, Number.MAX_VALUE),
+			...(extraCaps.length > 0 && {
+				extra: Object.fromEntries(extraCaps.map((cap) => [leagueKeyFor(cap), analyze(p, cap)])),
+			}),
 		};
 	}
 	return result;

@@ -54,6 +54,12 @@ describe('leagueTitle', () => {
 		});
 	});
 
+	it('names a cup capped at 500 CP by its own name, never as a Great, Ultra or Master League', () => {
+		const { short, full } = leagueTitle(league('little-500', 'little (500 CP)', 500), GameLanguage.en);
+		expect(short.length).toBeGreaterThan(0);
+		expect(`${short} ${full}`).not.toMatch(/great|ultra|master/i);
+	});
+
 	it('titles a Mega cup, whatever the wording', () => {
 		const { short, full } = leagueTitle(league('mega-1500', 'Mega (1500 CP)', 1500), GameLanguage.en);
 		expect(short.length).toBeGreaterThan(0);

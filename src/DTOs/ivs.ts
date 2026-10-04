@@ -28,4 +28,6 @@ export interface IIvPercents {
 	great?: ILeagueIvBlock;
 	ultra?: ILeagueIvBlock;
 	master: ILeagueIvBlock;
+	/** A rotating / custom cup's own CP cap beyond the three tiers (a Little Cup's 500), keyed `cap-<n>`; absent for a species with no legal spread there. */
+	extra?: Partial<Record<string, ILeagueIvBlock>>;
 }

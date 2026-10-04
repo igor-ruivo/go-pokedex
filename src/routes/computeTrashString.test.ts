@@ -288,6 +288,41 @@ describe('computeTrashString — extraTrash (rotating/custom league cutoffs)', (
 		expect(result).not.toContain('162');
 	});
 
+	it('a cutoff of 0 (the default for an additional league) ignores that league entirely, whatever its rank list says', () => {
+		const trademon = mockPokemon({ speciesId: 'trademon', dex: 161 });
+		const safemon = mockPokemon({ speciesId: 'safemon', dex: 162 });
+		const gamemasterPokemon = buildGamemaster([trademon, safemon]);
+		const ranked = { trademon: rank(1), safemon: rank(1) };
+
+		const ignored = computeTrashString(
+			buildArgs(gamemasterPokemon, { rankLists: [{}, {}, {}], extraTrash: [{ rankList: ranked, cutoff: 0 }] })
+		);
+		const absent = computeTrashString(buildArgs(gamemasterPokemon, { rankLists: [{}, {}, {}] }));
+
+		expect(ignored).toBe(absent);
+		// and the same league with a real cutoff does change the string
+		const used = computeTrashString(
+			buildArgs(gamemasterPokemon, { rankLists: [{}, {}, {}], extraTrash: [{ rankList: ranked, cutoff: 10 }] })
+		);
+		expect(used).not.toBe(absent);
+	});
+
+	it('a 500 CP cup is kept by its rank alone, like any other additional league', () => {
+		const smallcapmon = mockPokemon({ speciesId: 'smallcapmon', dex: 163 });
+		const other = mockPokemon({ speciesId: 'othermon', dex: 164 });
+		const gamemasterPokemon = buildGamemaster([smallcapmon, other]);
+
+		const result = computeTrashString(
+			buildArgs(gamemasterPokemon, {
+				rankLists: [{}, {}, {}],
+				extraTrash: [{ rankList: { smallcapmon: rank(3) }, cutoff: 5 }],
+			})
+		);
+
+		expect(result).not.toContain('163');
+		expect(result).toContain('164');
+	});
+
 	it('omitting extraTrash entirely behaves exactly like passing an empty array', () => {
 		const { gamemasterPokemon } = buildEvolutionLineFixture();
 		const withField = computeTrashString(buildArgs(gamemasterPokemon, { rankLists: [{}, {}, {}], extraTrash: [] }));

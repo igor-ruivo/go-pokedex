@@ -8,11 +8,16 @@ export interface IBadIvPattern {
 /** Tied-for-rank-1 (best stat product) raw IV patterns, per league and per
  *  level ceiling — dex-server's replacement for what `findBadIvCarveOuts`/
  *  `findTradeableSpeciesData` used to brute-force per species. */
-export interface IBestIvSpreads {
-	great: { level50: Array<IBadIvPattern>; level51: Array<IBadIvPattern> };
-	ultra: { level50: Array<IBadIvPattern>; level51: Array<IBadIvPattern> };
-	master: { level50: Array<IBadIvPattern>; level51: Array<IBadIvPattern> };
+export interface IPerLevelBadIvPatterns {
+	level50: Array<IBadIvPattern>;
+	level51: Array<IBadIvPattern>;
 }
+
+export type IBestIvSpreads = {
+	great: IPerLevelBadIvPatterns;
+	ultra: IPerLevelBadIvPatterns;
+	master: IPerLevelBadIvPatterns;
+} & Partial<Record<`cap-${number}`, IPerLevelBadIvPatterns>>;
 
 /**
  * Everything dex-server precomputes about one species for the search-string

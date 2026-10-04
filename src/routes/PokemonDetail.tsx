@@ -193,8 +193,10 @@ const renderWithColoredParams = (
 // branch with nothing to fall back to `undefined` for.
 const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number): ILeagueIvBlock | undefined => {
 	if (!ivp) return undefined;
-	if (cpCap <= 1500) return ivp.great;
-	if (cpCap <= 2500) return ivp.ultra;
+	if (cpCap === 1500) return ivp.great;
+	if (cpCap === 2500) return ivp.ultra;
+	// a cup at any other finite cap (a Little Cup's 500) has its own block, never another tier's
+	if (cpCap < 10000) return ivp.extra?.[`cap-${cpCap}`];
 	return ivp.master;
 };
 

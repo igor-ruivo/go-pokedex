@@ -204,6 +204,12 @@ export const leagueTitle = (league: ILeagueDefinition, gl: GameLanguage): { shor
 	// Named cup + its own league-tier suffix (e.g. "Retro Cup Great League").
 	const namedCupTitle = (key: GameTranslatorKeys): { short: string; full: string } | undefined => {
 		const raw = gameTranslator(key, gl);
+		// A cup capped below Great League's 1500 CP (a Little Cup's 500) is not any of the three leagues: its name stands alone.
+		if (league.cpCap < 1500) {
+			if (!raw) return undefined;
+			const name = stripBakedInEdition(raw);
+			return { short: name, full: name };
+		}
 		const tier = tierForCpCap(league.cpCap);
 		const leagueShort = gameTranslator(TIER_SHORT[tier], gl);
 		const leagueFull = gameTranslator(TIER_LONG[tier], gl);

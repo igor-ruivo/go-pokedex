@@ -4,7 +4,7 @@ import { GameLanguage } from '../contexts/language-context';
 import { assertNoEnglishSearchTokenLeak } from '../lib/search-string-test-utils';
 import { __setGameTranslationsForTests } from '../utils/game-translations-store';
 import { gameTranslationsTestFixture } from '../utils/game-translations-test-fixture';
-import { BEST_BUDDY_LEVEL } from '../utils/pokemon-helper';
+import { BEST_BUDDY_LEVEL, computeTiedTop1Patterns } from '../utils/pokemon-helper';
 import { type BadIvCarveOut, findBadIvCarveOuts } from '../workers/compute.worker';
 import {
 	buildBadIvFixture,
@@ -1727,5 +1727,123 @@ describe('computeBadIvString — pt-BR translation, every category toggle at onc
 		);
 
 		assertNoEnglishSearchTokenLeak(result, GameLanguage.ptbr);
+	});
+});
+
+describe('findBadIvCarveOuts — a cup capped at 500 CP (opt-in: “Consider 500 CP cap”)', () => {
+	const ivBucket = (iv: number) => (iv === 15 ? 4 : Math.ceil(iv / 5));
+	const isBlanket = (p: { A: number; D: number; S: number }) => {
+		const [a, d, s] = [ivBucket(p.A), ivBucket(p.D), ivBucket(p.S)];
+		return (a <= 1 && d >= 3 && s >= 3) || (a === 4 && d === 4 && s === 4);
+	};
+	const key = (c: BadIvCarveOut) => `${c.speciesId}|${c.cap}|${c.pattern.A}-${c.pattern.D}-${c.pattern.S}`;
+	const sweep = (caps: Array<number>, extra: Array<number> = [500], overrides: object = {}) => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		return {
+			gamemasterPokemon,
+			metadata: buildSpeciesSearchMetadata(gamemasterPokemon, extra),
+			carveOuts: findBadIvCarveOuts({
+				gamemasterPokemon,
+				speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon, extra),
+				caps,
+				...overrides,
+			}),
+		};
+	};
+
+	it('leaves every Great and Ultra League carve-out exactly as it was (the box off is the old behaviour)', () => {
+		const without = sweep([1500, 2500], []).carveOuts;
+		const withCap = sweep([1500, 2500, 500]).carveOuts;
+		const withCapKeys = new Set(withCap.map(key));
+		expect(without.length).toBeGreaterThan(0);
+		expect(without.every((c) => withCapKeys.has(key(c)))).toBe(true);
+		expect(withCap.filter((c) => c.cap !== 500).map(key).sort()).toEqual(without.map(key).sort());
+	});
+
+	it('adds carve-outs only for the 500 cap, none the default shape or the exact hundo already protects', () => {
+		const added = sweep([500]).carveOuts;
+		expect(added.length).toBeGreaterThan(0);
+		for (const c of added) {
+			expect(c.cap).toBe(500);
+			expect(isBlanket(c.pattern)).toBe(false);
+		}
+	});
+
+	it('takes each pattern from the 500 CP spreads of the species or of one it evolves into, not from Great League’s', () => {
+		const { gamemasterPokemon, carveOuts } = sweep([500]);
+		const tiedAt500 = (id: string) => {
+			const { atk, def, hp } = gamemasterPokemon[id].baseStats;
+			return computeTiedTop1Patterns(atk, def, hp, 500, 50);
+		};
+		// (a Shadow's patterns are raw ones that purify into the best, so only the plain species are compared here)
+		const plain = Object.values(gamemasterPokemon).filter((p) => !p.isShadow && !p.isMega && !p.aliasId);
+		for (const c of carveOuts.filter((x) => !gamemasterPokemon[x.speciesId].isShadow)) {
+			const fromAt500 = plain.some((p) =>
+				tiedAt500(p.speciesId).some((t) => t.A === c.pattern.A && t.D === c.pattern.D && t.S === c.pattern.S)
+			);
+			expect(fromAt500, key(c)).toBe(true);
+		}
+	});
+
+	it('skips a species whose hundo never reaches 90% of 500 CP, like any other cap', () => {
+		const { gamemasterPokemon, carveOuts } = sweep([500]);
+		expect(gamemasterPokemon[buildBadIvFixture().tinymon.speciesId]).toBeDefined();
+		expect(carveOuts.some((c) => c.speciesId === buildBadIvFixture().tinymon.speciesId)).toBe(false);
+	});
+
+	it('protects nothing, and does not fail, when the data has no 500 CP spreads yet (older dex-server output)', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500, 500],
+		});
+		expect(carveOuts.filter((c) => c.cap === 500)).toEqual([]);
+		expect(carveOuts.length).toBe(sweep([1500, 2500], []).carveOuts.length);
+	});
+
+	it('uses the level-51 spreads under Best Buddy, like every other cap', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const at51 = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon, [500]),
+			caps: [500],
+			maxLevel: BEST_BUDDY_LEVEL,
+		});
+		for (const c of at51) expect(c.cap).toBe(500);
+	});
+
+	it('covers a Shadow through its purified spreads at 500 CP, without repeating what its plain form already carries', () => {
+		const { gamemasterPokemon } = buildShadowFamilyFixture();
+		const carveOuts = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon, [500]),
+			caps: [500],
+		});
+		const keys = carveOuts.map(key);
+		expect(new Set(keys).size).toBe(keys.length);
+		for (const c of carveOuts) expect(c.cap).toBe(500);
+	});
+
+	it('keeps the generated string the same with the box off, and longer with it on only by clauses for those species', () => {
+		const { gamemasterPokemon } = buildBadIvFixture();
+		const metadata = buildSpeciesSearchMetadata(gamemasterPokemon, [500]);
+		const build = (carveOuts: Array<BadIvCarveOut>, simplified = false) =>
+			computeBadIvString(gamemasterPokemon, metadata, carveOuts, GameLanguage.en, 1500, DEFAULT_PROTECTION, new Set(), simplified);
+		const off = findBadIvCarveOuts({ gamemasterPokemon, speciesSearchMetadata: metadata, caps: [1500, 2500] });
+		const on = findBadIvCarveOuts({ gamemasterPokemon, speciesSearchMetadata: metadata, caps: [1500, 2500, 500] });
+		const reference = findBadIvCarveOuts({
+			gamemasterPokemon,
+			speciesSearchMetadata: buildSpeciesSearchMetadata(gamemasterPokemon),
+			caps: [1500, 2500],
+		});
+		// off: identical to what it was before 500 CP existed
+		expect(build(off)).toBe(build(reference));
+		// on: only longer, and only for the species that gained a 500 CP carve-out
+		expect(build(on).length).toBeGreaterThan(build(off).length);
+		const gainers = new Set(on.filter((c) => c.cap === 500).map((c) => c.speciesId));
+		expect(gainers.size).toBeGreaterThan(0);
+		// simplified mode: the same species are skipped whole, so it grows by at most one short clause each
+		expect(build(on, true).length).toBeGreaterThanOrEqual(build(off, true).length);
 	});
 });

@@ -23,7 +23,7 @@
 	"badIvWarning": "Bu mod agresif ve mükemmeliyetçidir: amaç, türün meta'da şu anda iyi ya da kötü olmasına bakılmaksızın mükemmel (%100) IV'li olmayan her yakalamayı silmektir — çalıştırmadan önce aşağıdaki kategorileri ve beyaz listeyi kontrol edin.",
 	"helpText": {
 		"meta": "Sadece meta, asla IV'ler değil: aşağıdaki sıralama eşikleri ve CP sınırına göre, hiçbir yerde rekabetçi açıdan önemli olmayan Pokémon'ları siler — Great, Ultra veya Master Ligi'nde ya da baskınlarda değil. Bir tür (veya sonraki evrimlerinden herhangi biri) bunlardan sadece birinde eşiği geçmesi yeterlidir ve geçtiğinde, o yakalamanın kendi IV'lerine bakılmaksızın her yakalaması korunur — bu sekme IV'ler konusunda hiçbir fikir yürütmez. CP sınırınıza eşit veya üzerindeki her şey her zaman tutulur, aşağıdaki kategorilerde ve beyaz listede işaretli her şey de sıralamaya bakılmaksızın öyledir. Master Ligi için mükemmel bir istatistik çarpımı her zaman tutulur.",
-		"badIv": "Sadece IV'ler, asla meta değil: mevcut meta'yı tamamen yok sayar — amaç, türün kendisinin şu anda meta olup olmadığına bakılmaksızın mükemmel 15/15/15 olmayan her şeyi silmektir. Oyunun aramasi sadece IV aralıklarını eşleştirmemize izin verir, tam değerleri değil, bu yüzden bu çizgiyi her zaman tam olarak çizemez — Great Ligi (1500 CP) ve Ultra Ligi (2500 CP) için çoğu tür, buna yaklaşan paylaşılan düşük Saldırı/yüksek dayanıklılık aralığıyla taranır, ve birkaç yüzü, paylaşılan aralık istatistiklerine gerçekten uymadığı için kendi ayrı ayrı doğrulanmış aralığını alır; her iki durumda da, sınırdaki neredeyse mükemmel (ama tam hundo olmayan) birkaç yakalama yanlış negatif olarak sızabilir. Master Ligi'nin CP sınırı yoktur, bu yüzden orada gerçek en iyi her zaman daha yüksek IV'lerdir — bu modun Master Ligi işleyişi tam, yaklaşık değil. Mükemmel bir istatistik çarpımı her ligde her zaman tutulur, aşağıdaki kategorilerde ve beyaz listede işaretli her şey de IV'lere bakılmaksızın öyledir.",
+		"badIv": "Sadece IV'ler, asla meta değil: mevcut meta'yı tamamen yok sayar — amaç, türün kendisinin şu anda meta olup olmadığına bakılmaksızın mükemmel 15/15/15 olmayan her şeyi silmektir. Oyunun aramasi sadece IV aralıklarını eşleştirmemize izin verir, tam değerleri değil, bu yüzden bu çizgiyi her zaman tam olarak çizemez — Great Ligi (1500 CP) ve Ultra Ligi (2500 CP) (ve değerlendiriliyorsa 500 BP kupaları) için çoğu tür, buna yaklaşan paylaşılan düşük Saldırı/yüksek dayanıklılık aralığıyla taranır, ve birkaç yüzü, paylaşılan aralık istatistiklerine gerçekten uymadığı için kendi ayrı ayrı doğrulanmış aralığını alır; her iki durumda da, sınırdaki neredeyse mükemmel (ama tam hundo olmayan) birkaç yakalama yanlış negatif olarak sızabilir. Master Ligi'nin CP sınırı yoktur, bu yüzden orada gerçek en iyi her zaman daha yüksek IV'lerdir — bu modun Master Ligi işleyişi tam, yaklaşık değil. Mükemmel bir istatistik çarpımı her ligde her zaman tutulur, aşağıdaki kategorilerde ve beyaz listede işaretli her şey de IV'lere bakılmaksızın öyledir.",
 		"trade": "Yukarıdaki iki sekmeden farklı, üçüncü ve ayrı bir soru: yakalamalarınızdan hangileri bir takasta elden çıkarmaya değer? Bir En İyi Arkadaş takası her istatistiği her zaman 5'e sabitler. Bu modda, bir türün önerilmesi için aşağıdaki dört eşikten (Great, Ultra, Master veya Baskın) SADECE BİRİNİ geçmesi yeterlidir. Master Ligi ve baskınların CP sınırı yoktur, bu yüzden ilgili herhangi bir tür sadece sıralamayla hak kazanır. Great ve Ultra daha seçicidir: CP sınırları genellikle bir tür için en iyi olası dağılımın çok düşük Saldırı gerektirmesi anlamına gelir, ki bir takasın 5 tabanı bunu asla üretemez — bu yüzden bu iki lig, bir türü sadece kendi en iyi dağılımının bir takasla gerçekten ulaşılabilir olduğu durumda sayar. Her iki durumda da, zaten mükemmel olan — veya hak kazandığı ligde zaten en iyi olası dağılıma eşit olan — bir yakalama asla önerilmez, çünkü onu takas etmek sadece kaybettirebilir, asla iyileştiremez. Aşağıdaki kategoriler, beyaz liste ve CP sınırı önerileri diğer sekmelerle aynı şekilde daraltır."
 	},
 	"readMore": "Devamını oku",
@@ -61,7 +61,8 @@
 		"ariaKeepTopUltra": "Ultra Ligi'nde en üsttekileri tut",
 		"ariaKeepTopMaster": "Master Ligi'nde en üsttekileri tut",
 		"ariaKeepTopExtra": "{{league}}'de en üsttekileri tut",
-		"ariaKeepTopRaid": "En iyi {{raid}} saldırganlarını tut"
+		"ariaKeepTopRaid": "En iyi {{raid}} saldırganlarını tut",
+		"considerSmallCapSpreads": "{{caps}} BP sınırını dikkate al"
 	},
 	"metaKnobsSubtitle": "Lig/{{raid}} başına mevcut en iyi meta Pokémon'ları koru",
 	"extraLeaguesDivider": "Ek ligler",
@@ -69,7 +70,7 @@
 	"tradeKnobsSubtitle": "Önerilmek için bir türün bu dört eşikten sadece BİRİNİ geçmesi yeterlidir — Great ve Ultra ayrıca bir takasın en iyi olası dağılıma gerçekten ulaşabilmesini de gerektirir (yukarıdaki yardım metnine bakın)",
 	"simplifiedTrashTooltip": "Doğruluktan ödün vererek daha kısa bir dize üretir: Master Ligi'nde (sınırsız) istatistik çarpımı eşitliklerini aramayı atlar — sadece tam hundo (genel !4* hariç tutmasıyla her yerde koşulsuz korunan) orada korunmaya devam eder. Great/Ultra/baskın koruması etkilenmez.",
 	"simplifiedBadIvTooltip": "Doğruluktan ödün vererek daha kısa bir dize üretir: bir türün tam olarak en iyi IV dağılımını korumak yerine, bu tür kişiye özel ayrıcalıklardan birine ihtiyaç duyacak herhangi bir tür tamamen atlanır — bir tür bonus beyaz liste girişi gibi. Daha kısa ve basit, ama daha fazla yanlış negatif üretir: Tam mod'un doğru şekilde hedefleyeceği bazı yakalamalar burada hedeflenmeden kalır.",
-	"preserveMegaIvsTooltip": "Ayrıca, saflaştırıldıktan sonra bir Gölge yakalamanın ham IV'leri, evrimleştikten sonra ulaşabileceği bir Mega formu için en iyi (veya en iyiyle eşit) stat çarpımı olacaksa onu da korur — Süper Lig, Ultra Lig ve Master için kontrol edilir. Varsayılan olarak kapalı: yukarıdaki zaten maliyetli saflaştırma kontrolüne ek iş getirir.",
+	"preserveMegaIvsTooltip": "Ayrıca, saflaştırıldıktan sonra bir Gölge yakalamanın ham IV'leri, evrimleştikten sonra ulaşabileceği bir Mega formu için en iyi (veya en iyiyle eşit) stat çarpımı olacaksa onu da korur — Süper Lig, Ultra Lig ve Master (ve değerlendiriliyorsa 500 BP kupaları) için kontrol edilir. Varsayılan olarak kapalı: yukarıdaki zaten maliyetli saflaştırma kontrolüne ek iş getirir.",
 	"tradeOnlyLowIvTooltip": "Önerileri Saldırı, Savunma ve HP'sinin tümü açıkça düşük olan yakalamalarla sınırlar — aksi takdirde, hundo olmayan her şey önerilir.",
 	"toggleOn": "Açık",
 	"toggleOff": "Kapalı",
@@ -171,5 +172,6 @@
 		"excludesList": "{{list}} hariç tutar",
 		"nothingExtra": "ekstra bir şey yok",
 		"onlyClearlyLowIvs": "sadece açıkça düşük IV'ler"
-	}
+	},
+	"considerSmallCapSpreadsTooltip": "BP sınırı {{caps}} olan kupaların (örneğin Küçük Kupa) en iyi IV dağılımlarını da Süper ve Hiper Lig’inkiler gibi korur: o kupalar için ideal bir yakalama silinmek üzere önerilmez. Varsayılan olarak kapalıdır; oluşturulan metin uzar."
 }

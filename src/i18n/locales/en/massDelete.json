@@ -23,7 +23,7 @@
 	"badIvWarning": "This mode is aggressive and perfectionist: the intent is to delete every catch that isn’t a perfect (100%) IV Pokémon, with no regard for whether a species is currently good or bad in the meta — double-check the categories and whitelist below before running it.",
 	"helpText": {
 		"meta": "Meta only, never IVs: deletes any Pokémon that isn’t competitively relevant anywhere — not in Great, Ultra, or Master League, and not in raids — based on the rank cutoffs and CP cap below. A species (or any of its later evolutions) only needs to clear the cutoff in one of those to be spared, and once it does, every catch of it is spared too, regardless of that catch’s own IVs — this tab has no opinion on IVs at all. Anything at or above your CP cap is always kept, and so is everything checked in the categories and whitelist below, regardless of rank.A perfect stat product for Master League is always kept.",
-		"badIv": "IVs only, never meta: ignores the current meta entirely — the goal is to delete anything that isn’t a perfect 15/15/15 regardless of whether the species itself is meta right now. The game’s search only lets us match IV ranges, not exact values, so it can’t always draw that line exactly — for Great League (1500 CP) and Ultra League (2500 CP), most species are swept via a shared low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-verified range instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect (but not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no CP cap, so there the true best really is always higher IVs — this mode’s Master League handling is exact, not an approximation. A perfect stat product is always kept in every league, and so is everything checked in the categories and whitelist below, regardless of IVs.",
+		"badIv": "IVs only, never meta: ignores the current meta entirely — the goal is to delete anything that isn’t a perfect 15/15/15 regardless of whether the species itself is meta right now. The game’s search only lets us match IV ranges, not exact values, so it can’t always draw that line exactly — for Great League (1500 CP) and Ultra League (2500 CP) (and 500 CP cups, when considered), most species are swept via a shared low-Attack/high-bulk range that approximates it, and a few hundred get their own individually-verified range instead, since the shared one doesn’t actually fit their stats; either way, a few near-perfect (but not-quite-hundo) catches right at the boundary can slip through as false negatives. Master League has no CP cap, so there the true best really is always higher IVs — this mode’s Master League handling is exact, not an approximation. A perfect stat product is always kept in every league, and so is everything checked in the categories and whitelist below, regardless of IVs.",
 		"trade": "A third, separate question from the two tabs above: which of your catches are worth handing off in a trade? A Best Friend trade always floors every stat at 5. In this mode, a species just needs to clear ONE of the four cutoffs below (Great, Ultra, Master, or Raid) to be suggested. Master League and raids have no CP cap, so any relevant species qualifies on rank alone. Great and Ultra are pickier: their CP caps often mean the best possible spread for a species needs very low Attack, which a trade’s floor of 5 can never produce — so those two leagues only count a species when its own best spread is actually something a trade could reach. Either way, a catch that’s already perfect — or already tied for the best possible spread in whichever league qualified it — is never suggested, since trading it could only lose it, never improve it. The categories, whitelist, and CP cap below narrow the suggestions further, same as the other tabs."
 	},
 	"readMore": "Read more",
@@ -61,7 +61,8 @@
 		"ariaKeepTopUltra": "Keep top Ultra League",
 		"ariaKeepTopMaster": "Keep top Master League",
 		"ariaKeepTopExtra": "Keep top {{league}}",
-		"ariaKeepTopRaid": "Keep top {{raid}} attackers"
+		"ariaKeepTopRaid": "Keep top {{raid}} attackers",
+		"considerSmallCapSpreads": "Consider {{caps}} CP cap"
 	},
 	"metaKnobsSubtitle": "Preserve top current meta Pokémon per league/{{raid}}",
 	"extraLeaguesDivider": "Additional leagues",
@@ -69,7 +70,7 @@
 	"tradeKnobsSubtitle": "A species only needs to clear ONE of these four cutoffs to be suggested — Great and Ultra also require a trade to actually be able to reach their best possible spread (see the help text above)",
 	"simplifiedTrashTooltip": "Trades accuracy for a shorter string: skips looking for Master League (uncapped) stat-product ties — only the exact hundo (protected everywhere, unconditionally, via the global !4* exclusion) stays protected there. Great/Ultra/raid protection is unaffected.",
 	"simplifiedBadIvTooltip": "Trades accuracy for a shorter string: instead of protecting just a species’ exact best IV spread, any species that would need one of these per-spread carve-outs is skipped entirely — a bit like a bonus whitelist entry. Shorter and simpler, but more false negatives: some catches Complete mode would correctly target stay un-targeted here.",
-	"preserveMegaIvsTooltip": "Also protects a Shadow catch's raw IVs when, once purified, they'd be the top (or tied-for-top) stat product for a Mega form it can reach after evolving — checked for Great League, Ultra League, and Master. Off by default: it's extra work on top of the already-expensive purify check above.",
+	"preserveMegaIvsTooltip": "Also protects a Shadow catch's raw IVs when, once purified, they'd be the top (or tied-for-top) stat product for a Mega form it can reach after evolving — checked for Great League, Ultra League, and Master (plus 500 CP cups, when considered). Off by default: it's extra work on top of the already-expensive purify check above.",
 	"tradeOnlyLowIvTooltip": "Narrows suggestions to catches whose Attack, Defense, and HP are all clearly low — otherwise, anything short of a hundo is suggested.",
 	"toggleOn": "On",
 	"toggleOff": "Off",
@@ -171,5 +172,6 @@
 		"excludesList": "excludes {{list}}",
 		"nothingExtra": "nothing extra",
 		"onlyClearlyLowIvs": "only clearly-low IVs"
-	}
+	},
+	"considerSmallCapSpreadsTooltip": "Also protects the best IV spreads of the cups capped at {{caps}} CP (a Little Cup, say), like Great and Ultra League’s: a catch that is ideal for one of those cups is not suggested for deletion. Off by default; it makes the generated string longer."
 }

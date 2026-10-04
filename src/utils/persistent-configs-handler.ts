@@ -89,6 +89,10 @@ export enum ConfigKeys {
 	/** Non-perfect-IVs tab only — see `findBadIvCarveOuts`'s own
 	 *  `preserveMegaIvs` doc comment. */
 	PreserveMegaIvs,
+	/** Superseded by `ConsiderSmallCapSpreads` (the opposite default); kept so the enum's numeric values stay stable. */
+	IgnoreSmallCapSpreads,
+	/** Non-perfect-IVs tab only — also protect the rank-1 spreads of the cups whose CP cap is below Great League's (500). Off by default. */
+	ConsiderSmallCapSpreads,
 }
 
 // A storage read/write can throw for reasons that have nothing to do with

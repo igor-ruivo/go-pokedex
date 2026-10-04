@@ -119,7 +119,7 @@ const readWhitelist = (): Array<string> => {
  *  since the set of extra leagues is dynamic. Missing/invalid entries (a
  *  cup that's since rotated out, or a freshly-visible one with no saved
  *  value yet) fall back to `DEFAULT_TRASH_EXTRA` per id at read time. */
-const DEFAULT_TRASH_EXTRA = 50;
+const DEFAULT_TRASH_EXTRA = 0;
 const readTrashExtra = (): Record<string, number> => {
 	try {
 		const raw = readPersistentValue(ConfigKeys.TrashExtraLeagues);
@@ -890,8 +890,13 @@ export const computeBadIvString = (
  *  (same principle `leagueSlice` in PokemonDetail.tsx relies on), so no new
  *  per-cup computation is needed. */
 export interface ExtraTradeLeagueCutoff extends ExtraLeagueCutoff {
-	tier: 'great' | 'ultra' | 'master';
+	/** `great` / `ultra` / `master`, or `cap-<n>` for a cup whose cap is none of those (a Little Cup's 500 has its own data). */
+	tier: 'great' | 'ultra' | 'master' | `cap-${number}`;
 }
+
+/** The floor-check / carve-out data of a tier for a species — `undefined` when there is none for that cap. */
+const tierData = (data: TradeableSpeciesData | undefined, tier: ExtraTradeLeagueCutoff['tier']) =>
+	tier === 'great' || tier === 'ultra' || tier === 'master' ? data?.[tier] : data?.extra?.[tier];
 
 export const computeTradeableString = (
 	gamemasterPokemon: Record<string, IGamemasterPokemon>,
@@ -1038,10 +1043,11 @@ export const computeTradeableString = (
 				for (const r of reachablePokemon) {
 					const data = tradeableSpeciesData[r.speciesId];
 					const rank = rankList[r.speciesId]?.rank;
-					const floorOk = tier === 'master' || data?.[tier].floorOk;
+					const leagueData = tierData(data, tier);
+					const floorOk = tier === 'master' || leagueData?.floorOk;
 					if (rank != null && !isBadRank(rank, cutoff) && floorOk) {
 						goodForExtra = true;
-						data?.[tier].patterns.forEach((pattern) => addCarvePattern(p.speciesId, pattern));
+						leagueData?.patterns.forEach((pattern) => addCarvePattern(p.speciesId, pattern));
 					}
 				}
 			}
@@ -1567,8 +1573,28 @@ const MassDeleteContent = ({
 	// league's own floor-check/carve-out data comes from — see
 	// `ExtraTradeLeagueCutoff`'s own doc comment for why the specific cup
 	// never matters here, only its cp cap.
-	const tierForCpCap = (cpCap: number): 'great' | 'ultra' | 'master' =>
-		cpCap <= 1500 ? 'great' : cpCap <= 2500 ? 'ultra' : 'master';
+	const tierForCpCap = (cpCap: number): ExtraTradeLeagueCutoff['tier'] =>
+		cpCap === 1500 ? 'great' : cpCap === 2500 ? 'ultra' : cpCap >= 10000 ? 'master' : `cap-${cpCap}`;
+	// The CP caps of the active cups that are none of Great / Ultra / Master (a Little Cup's 500): their spreads are their own.
+	const extraCaps = useMemo(
+		() =>
+			[...new Set(activeExtraLeagues.map((l) => l.cpCap).filter((cap) => cap !== 1500 && cap !== 2500 && cap < 10000))].sort(
+				(a, b) => a - b
+			),
+		[activeExtraLeagues]
+	);
+	// Non-perfect IVs tab: the rank-1 spreads of those caps are left out by default; ticking the box protects them too.
+	const [considerSmallCapSpreads, setConsiderSmallCapSpreads] = useState(
+		() => readPersistentValue(ConfigKeys.ConsiderSmallCapSpreads) === 'true'
+	);
+	useEffect(
+		() => void writePersistentValue(ConfigKeys.ConsiderSmallCapSpreads, String(considerSmallCapSpreads)),
+		[considerSmallCapSpreads]
+	);
+	const badIvCaps = useMemo(
+		() => [1500, 2500, ...(considerSmallCapSpreads ? extraCaps : [])],
+		[considerSmallCapSpreads, extraCaps]
+	);
 	const extraTrash: Array<ExtraLeagueCutoff> = useMemo(
 		() =>
 			activeExtraLeagues.map((l) => ({
@@ -1950,12 +1976,12 @@ const MassDeleteContent = ({
 	// the other knobs.
 	const { data: badIvCarveOuts } = useQuery({
 		enabled: isCalculatingBadIv,
-		queryKey: ['bad-iv-carveouts', maxLevel, speciesSearchMetadataCount, preserveMegaIvs],
+		queryKey: ['bad-iv-carveouts', maxLevel, speciesSearchMetadataCount, preserveMegaIvs, badIvCaps.join(',')],
 		queryFn: () =>
 			getComputeWorker().findBadIvCarveOuts({
 				gamemasterPokemon,
 				speciesSearchMetadata,
-				caps: [1500, 2500],
+				caps: badIvCaps,
 				// Both Mega-reachability mechanisms tied to the same "Preserve
 				// Megas IVs" checkbox here — unlike the shared `masterCarveOuts`
 				// query below, this one exists only for the bad-IV tab, so it
@@ -2010,7 +2036,7 @@ const MassDeleteContent = ({
 	// silently go stale under it.
 	useEffect(() => {
 		setBadIvResult('');
-	}, [cp, gl, protect, whitelist, simplifiedBadIv, preserveMegaIvs, maxLevel]);
+	}, [cp, gl, protect, whitelist, simplifiedBadIv, preserveMegaIvs, maxLevel, badIvCaps]);
 
 	// ---- "Find Tradeable" mode ----
 	const [isCalculatingTrade, setIsCalculatingTrade] = useState(false);
@@ -2026,8 +2052,9 @@ const MassDeleteContent = ({
 	// for work it structurally never needs.
 	const { data: tradeableSpeciesData } = useQuery({
 		enabled: isCalculatingTrade,
-		queryKey: ['tradeable-species-data', maxLevel, speciesSearchMetadataCount],
-		queryFn: () => getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon, speciesSearchMetadata, maxLevel }),
+		queryKey: ['tradeable-species-data', maxLevel, speciesSearchMetadataCount, extraCaps.join(',')],
+		queryFn: () =>
+			getComputeWorker().findTradeableSpeciesData({ gamemasterPokemon, speciesSearchMetadata, maxLevel, extraCaps }),
 		staleTime: Infinity,
 		gcTime: 30 * 60 * 1000,
 	});
@@ -2165,7 +2192,7 @@ const MassDeleteContent = ({
 	const keepTopSummary = topLeagueSummaries.join(' · ');
 	const tradeTopSummary = topLeagueSummaries.join(' · ');
 	const panelSummary = isBadIv
-		? `${t('massDelete:panelSummary.cpKept', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}${simplifiedBadIv ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`
+		? `${t('massDelete:panelSummary.cpKept', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}${simplifiedBadIv ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''}${preserveMegaIvs ? ` · ${t('massDelete:knobs.preserveMegaIvs')}` : ''}${considerSmallCapSpreads && extraCaps.length > 0 ? ` · ${t('massDelete:knobs.considerSmallCapSpreads', { caps: extraCaps.join(' / ') })}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`
 		: isTrade
 			? `${tradeTopSummary}${tradeOnlyLowIv ? ` · ${t('massDelete:panelSummary.onlyClearlyLowIvs')}` : ''} · ${t('massDelete:panelSummary.cpUnder', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })} · ${t('massDelete:panelSummary.excludesList', { list: protectionSummary || nothingExtra })}`
 			: `${keepTopSummary} · ${t('massDelete:panelSummary.cpKept', { cpValue: cp.toLocaleString(), cp: gameTranslator(GameTranslatorKeys.CPDisplay, gl) })}${simplifiedTrash ? ` · ${t('massDelete:panelSummary.simplifiedModeSuffix')}` : ''} · ${t('massDelete:panelSummary.protectsList', { list: protectionSummary || nothingExtra })}`;
@@ -2189,9 +2216,11 @@ const MassDeleteContent = ({
 		cp !== 2500 ||
 		(mode !== 'badIv' && (trashMaster !== 110 || trashRaid !== 5)) ||
 		((mode === 'meta' || isTrade) && (trashGreat !== 50 || trashUltra !== 50)) ||
+		((mode === 'meta' || isTrade) && activeExtraLeagues.some((l) => (trashExtra[l.id] ?? DEFAULT_TRASH_EXTRA) !== DEFAULT_TRASH_EXTRA)) ||
 		(isTrade && tradeOnlyLowIv) ||
 		(isBadIv && simplifiedBadIv) ||
 		(isBadIv && preserveMegaIvs) ||
+		(isBadIv && considerSmallCapSpreads) ||
 		(mode === 'meta' && simplifiedTrash);
 	const resetPanel = () => {
 		setProtect(DEFAULT_PROTECTION);
@@ -2203,12 +2232,15 @@ const MassDeleteContent = ({
 		if (mode === 'meta' || isTrade) {
 			setTrashGreat(50);
 			setTrashUltra(50);
+			// the additional leagues go back to their default: not used (0)
+			setTrashExtra({});
 		}
 		if (isTrade) setTradeOnlyLowIv(false);
 		if (isBadIv) setSimplifiedBadIv(false);
 		// Default is false/unchecked — see `preserveMegaIvs`'s own doc comment
 		// on its `useState` initializer.
 		if (isBadIv) setPreserveMegaIvs(false);
+		if (isBadIv) setConsiderSmallCapSpreads(false);
 		if (mode === 'meta') setSimplifiedTrash(false);
 	};
 
@@ -2508,6 +2540,22 @@ const MassDeleteContent = ({
 														{preserveMegaIvs ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
 													</button>
 												</div>
+												{extraCaps.length > 0 && (
+													<div className='r-md-knob'>
+														<span>{t('massDelete:knobs.considerSmallCapSpreads', { caps: extraCaps.join(' / ') })}</span>
+														<button
+															type='button'
+															className='r-ctr-toggle'
+															data-on={considerSmallCapSpreads ? '' : undefined}
+															aria-pressed={considerSmallCapSpreads}
+															title={t('massDelete:considerSmallCapSpreadsTooltip', { caps: extraCaps.join(' / ') })}
+															onClick={() => setConsiderSmallCapSpreads((v) => !v)}
+														>
+															<span className='r-ss-box' aria-hidden='true' />
+															{considerSmallCapSpreads ? t('massDelete:toggleOn') : t('massDelete:toggleOff')}
+														</button>
+													</div>
+												)}
 											</div>
 										</div>
 									</>
