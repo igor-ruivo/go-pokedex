@@ -38,7 +38,7 @@
 		"superMegaHint": "Rate this Mega at Super Max level: two more levels, up to 52 (53 with Best Buddy)",
 		"bestBuddy": "Best Buddy",
 		"bestBuddyHint": "Rate this Pokémon as your Best Buddy (level 51)",
-		"levelNeedsBuddy": "Above level 50 is for a Best Buddy: turn on Best Buddy for this Pokémon first.",
+		"levelNeedsBuddy": "Above level {{max}} is for a Best Buddy: turn on Best Buddy for this Pokémon first.",
 		"levelEdit": "Change the level of {{name}}",
 		"notRecommended": "Not PvPoke's recommended move for this league",
 		"chargedMove": "Charged",

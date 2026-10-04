@@ -38,7 +38,7 @@
 		"superMegaHint": "Évaluer ce Méga au niveau Super Max : deux niveaux de plus, jusqu’à 52 (53 avec meilleur copain)",
 		"bestBuddy": "Meilleur copain",
 		"bestBuddyHint": "Évaluer ce Pokémon comme ton meilleur copain (niveau 51)",
-		"levelNeedsBuddy": "Au-dessus du niveau 50, c’est réservé au meilleur copain : active d’abord « Meilleur copain » pour ce Pokémon.",
+		"levelNeedsBuddy": "Au-dessus du niveau {{max}}, c’est réservé au meilleur copain : active d’abord « Meilleur copain » pour ce Pokémon.",
 		"levelEdit": "Modifier le niveau de {{name}}",
 		"notRecommended": "Ce n'est pas l'attaque recommandée par PvPoke pour cette ligue",
 		"chargedMove": "Chargée",

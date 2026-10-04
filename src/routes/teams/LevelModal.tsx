@@ -117,7 +117,7 @@ export const LevelModal = ({
 							inputMode='decimal'
 							maxLength={4}
 							placeholder={`1–${maxLevel}`}
-							data-invalid={isSlotLevel(typed) && !needsBuddy && !overCap ? undefined : ''}
+							data-invalid={isSlotLevel(typed) && typed <= maxLevel && !overCap ? undefined : ''}
 							onFocus={(e) => e.target.select()}
 							// A phone's decimal keypad may offer a comma (or a dot) depending on its language: both mean the decimal point.
 							onChange={(e) =>
@@ -139,7 +139,7 @@ export const LevelModal = ({
 					{overCap
 						? t('teams:builder.ivOverCap', { name, cp: typedCp, cap: cpCap })
 						: needsBuddy
-							? t('teams:builder.levelNeedsBuddy')
+							? t('teams:builder.levelNeedsBuddy', { max: maxLevel })
 							: `${t('teams:builder.cp')} ${typedCp ?? cpAt(baseStats, ivs, level)}`}
 				</p>
 

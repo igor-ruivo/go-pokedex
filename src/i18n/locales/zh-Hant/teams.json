@@ -38,7 +38,7 @@
 		"superMegaHint": "以究極極限等級評分這隻超級進化：多 2 級，最高 52 級（同為最佳夥伴則 53 級）",
 		"bestBuddy": "最佳夥伴",
 		"bestBuddyHint": "將這隻寶可夢視為最佳夥伴（51 級）來評分",
-		"levelNeedsBuddy": "超過 50 級僅限最佳夥伴：請先為這隻寶可夢開啟最佳夥伴。",
+		"levelNeedsBuddy": "超過 {{max}} 級僅限最佳夥伴：請先為這隻寶可夢開啟最佳夥伴。",
 		"levelEdit": "變更{{name}}的等級",
 		"notRecommended": "不是 PvPoke 為此聯盟推薦的招式",
 		"chargedMove": "蓄力",

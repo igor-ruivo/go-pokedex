@@ -38,7 +38,7 @@
 		"superMegaHint": "Evaluar esta Mega a nivel Súper máximo: dos niveles más, hasta 52 (53 con mejor compañero)",
 		"bestBuddy": "Mejor compañero",
 		"bestBuddyHint": "Evaluar este Pokémon como tu mejor compañero (nivel 51)",
-		"levelNeedsBuddy": "Por encima del nivel 50 solo vale para un mejor compañero: activa antes «Mejor compañero» en este Pokémon.",
+		"levelNeedsBuddy": "Por encima del nivel {{max}} solo vale para un mejor compañero: activa antes «Mejor compañero» en este Pokémon.",
 		"levelEdit": "Cambiar el nivel de {{name}}",
 		"notRecommended": "No es el movimiento recomendado por PvPoke para esta liga",
 		"chargedMove": "Cargado",

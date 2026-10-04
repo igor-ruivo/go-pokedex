@@ -38,7 +38,7 @@
 		"superMegaHint": "Avaliar esta Mega ao nível Super Máximo: mais dois níveis, até 52 (53 com Melhor Amigo)",
 		"bestBuddy": "Melhor Amigo",
 		"bestBuddyHint": "Avaliar este Pokémon como o teu Melhor Amigo (nível 51)",
-		"levelNeedsBuddy": "Acima do nível 50 só para o Melhor Amigo: ativa primeiro «Melhor Amigo» neste Pokémon.",
+		"levelNeedsBuddy": "Acima do nível {{max}} só para o Melhor Amigo: ativa primeiro «Melhor Amigo» neste Pokémon.",
 		"levelEdit": "Alterar o nível de {{name}}",
 		"notRecommended": "Não é o movimento recomendado pelo PvPoke para esta liga",
 		"chargedMove": "Carregado",

@@ -38,7 +38,7 @@
 		"superMegaHint": "Diese Mega auf Super-Max-Level bewerten: zwei Level mehr, bis 52 (53 mit Bestem Kumpel)",
 		"bestBuddy": "Bester Kumpel",
 		"bestBuddyHint": "Dieses Pokémon als deinen Besten Kumpel bewerten (Level 51)",
-		"levelNeedsBuddy": "Über Level 50 geht nur für einen Besten Kumpel: aktiviere zuerst „Bester Kumpel“ für dieses Pokémon.",
+		"levelNeedsBuddy": "Über Level {{max}} geht nur für einen Besten Kumpel: aktiviere zuerst „Bester Kumpel“ für dieses Pokémon.",
 		"levelEdit": "Level von {{name}} ändern",
 		"notRecommended": "Nicht die von PvPoke empfohlene Attacke für diese Liga",
 		"chargedMove": "Lade",

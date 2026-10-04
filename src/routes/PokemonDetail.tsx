@@ -26,6 +26,7 @@ import { cleanName, dec1, dexNo, ordinal, rankPerfection, sentenceCase } from '.
 import { leagueColor, leagueIcon, leagueTitle } from '../lib/league-visuals';
 import { R } from '../lib/nav';
 import { fmtRaidMetric, RAID_METRIC_LABEL, raidRankOf } from '../lib/raid-metric';
+import { SUPER_MEGA_BONUS } from '../lib/team-analysis';
 import { accentStyle, typeKey, typeVar } from '../lib/types';
 import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 import { useMoves } from '../queries/moves';
@@ -311,10 +312,12 @@ const PokemonDetail = () => {
 	// misleading placeholder anyway, for the instant between mount and the
 	// first render/layout-effect pass.
 	const [iv, setIv] = useState<IVs>({ atk: 0, def: 0, hp: 0 });
+	// A Super Max Mega goes two levels further than any other Pokémon: 52, or 53 with the website's Best Buddy setting on.
+	const heroMaxLevel = pokemon?.isSuperMega ? maxLevel + SUPER_MEGA_BONUS : maxLevel;
 	const [level, setLevel] = useState(maxLevel);
 	// Best Buddy toggled off mid-session with the picker above the old ceiling —
 	// clamp back down rather than leaving it at an unreachable level.
-	useEffect(() => setLevel((l) => Math.min(l, maxLevel)), [maxLevel]);
+	useEffect(() => setLevel((l) => Math.min(l, heroMaxLevel)), [heroMaxLevel]);
 	// The league lives in `?lg=`, not local state — reloading (or sharing/
 	// bookmarking the URL) lands back on whichever league you were last
 	// looking at, not always Great. Arriving from a league/raid ranking sets
@@ -1018,7 +1021,7 @@ const PokemonDetail = () => {
 						<Stepper
 							value={level}
 							min={1}
-							max={maxLevel}
+							max={heroMaxLevel}
 							step={0.5}
 							onChange={onManualLevelChange}
 							format={(v) => `${t('pokemonDetail:hero.level.prefix')} ${Number.isInteger(v) ? v : v.toFixed(1)}`}

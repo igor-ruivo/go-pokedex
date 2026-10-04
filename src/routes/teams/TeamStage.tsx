@@ -7,7 +7,6 @@ import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir, type SortOption } from '../../components/SortBar';
 import { SpriteImg } from '../../components/Sprite';
 import { TypeChip } from '../../components/TypeChip';
-import { useBestBuddy } from '../../contexts/best-buddy-context';
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
@@ -710,12 +709,9 @@ export const TeamMemberEditor = ({
 	// exactly what the Best Buddy setting makes optimal read as the defaults, not as something the player pinned.
 	const buddyNow = member ? isBuddy(member.slot) : false;
 	const superNow = !!member?.slot.superMega;
-	// The highest level the picker takes: 50 (51 as a Best Buddy); a Pokémon that can be a Super Max Mega goes to 52, and to 53
-	// when the website's own Best Buddy setting is on (or it is a Best Buddy).
-	const { bestBuddy: bestBuddySetting } = useBestBuddy();
-	const levelMax = pokemon?.isSuperMega
-		? maxLevelOf({ superMega: true, buddy: buddyNow || bestBuddySetting })
-		: maxLevelOf({ buddy: buddyNow });
+	// The highest level the picker takes: 50 (51 as a Best Buddy); a Pokémon that can be a Super Max Mega goes to 52 (53 as a Best
+	// Buddy). The website's own Best Buddy setting plays no part in the builder.
+	const levelMax = maxLevelOf({ buddy: buddyNow, superMega: !!pokemon?.isSuperMega });
 	const {
 		ivRank,
 		ivsOptimal,

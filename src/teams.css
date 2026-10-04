@@ -304,9 +304,11 @@
 	line-height: 1;
 	color: var(--text-dim);
 	background: color-mix(in srgb, var(--surface-3) 70%, transparent);
+	border: 1px solid var(--border-strong);
 	transition:
 		color 0.15s ease,
-		background 0.15s ease;
+		background 0.15s ease,
+		border-color 0.15s ease;
 }
 .rvmp .r-tm-confirm {
 	position: absolute;
@@ -365,6 +367,7 @@
 .rvmp .r-tm-remove:hover {
 	color: #fff;
 	background: var(--neg);
+	border-color: var(--neg);
 }
 .rvmp .r-tm-art {
 	position: relative;
