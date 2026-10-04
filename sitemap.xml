@@ -1818,7 +1818,6 @@
 	<url><loc>https://go-pokedex.com/move/SNARL</loc></url>
 	<url><loc>https://go-pokedex.com/move/CRUNCH</loc></url>
 	<url><loc>https://go-pokedex.com/move/FOUL_PLAY</loc></url>
-	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER</loc></url>
 	<url><loc>https://go-pokedex.com/move/TAKE_DOWN</loc></url>
 	<url><loc>https://go-pokedex.com/move/WATERFALL</loc></url>
 	<url><loc>https://go-pokedex.com/move/SURF</loc></url>
@@ -1979,4 +1978,20 @@
 	<url><loc>https://go-pokedex.com/move/FELL_STINGER_PLUS</loc></url>
 	<url><loc>https://go-pokedex.com/move/DARK_PULSE_PLUS</loc></url>
 	<url><loc>https://go-pokedex.com/move/BRAVE_BIRD_PLUS</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_BUG</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_DARK</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_DRAGON</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_ELECTRIC</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_FIGHTING</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_FIRE</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_FLYING</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_GHOST</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_GRASS</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_GROUND</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_ICE</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_POISON</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_PSYCHIC</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_ROCK</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_STEEL</loc></url>
+	<url><loc>https://go-pokedex.com/move/HIDDEN_POWER_WATER</loc></url>
 </urlset>
