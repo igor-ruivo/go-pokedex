@@ -1,6 +1,9 @@
+import './theme.css';
 import './rvmp.css';
 import './components.css';
 import './teams.css';
+import './home.css';
+import './menu.css';
 
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { lazy, Suspense } from 'react';
@@ -16,7 +19,9 @@ import { RelevanceSetsProvider } from './contexts/relevance-context';
 import { SeenEventsProvider } from './contexts/seen-events-context';
 import { ThemeProvider } from './contexts/theme-context';
 import { VisibleLeaguesProvider } from './contexts/visible-leagues-context';
+import About from './routes/About';
 import Calendar from './routes/Calendar';
+import Home from './routes/Home';
 import MassDelete from './routes/MassDelete';
 import MoveDetail from './routes/MoveDetail';
 import Moves from './routes/Moves';
@@ -63,7 +68,8 @@ const App = () => {
 											<BrowserRouter>
 												<Routes>
 													<Route element={<Shell />}>
-														<Route index element={<Rankings />} />
+														<Route index element={<Home />} />
+														<Route path='about' element={<About />} />
 														<Route path='rankings/:league' element={<Rankings />} />
 														<Route path='rankings/:league/:type' element={<Rankings />} />
 														<Route path='pokemon/:speciesId' element={<PokemonDetail />} />

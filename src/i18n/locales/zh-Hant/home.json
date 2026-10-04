@@ -1,0 +1,80 @@
+{
+	"hero": {
+		"eyebrow": "Pokémon GO 好夥伴",
+		"title": "遊玩時需要的一切，都在這裡。",
+		"subtitle": "即時活動、聯盟排名、了解你收藏的隊伍建立器，以及一鍵整理倉庫。免費、快速，還有你的語言。",
+		"ctaTeams": "建立隊伍",
+		"ctaRegister": "你的寶可夢"
+	},
+	"now": {
+		"title": "正在進行",
+		"subtitle": "進行中與即將到來的活動，以及每個活動帶來的內容。",
+		"all": "所有活動",
+		"empty": "目前沒有活動。",
+		"live": "進行中",
+		"more": "+{{count}}",
+		"raids": "團體戰",
+		"wild": "出現",
+		"researches": "研究",
+		"eggs": "蛋"
+	},
+	"right": {
+		"title": "此刻的遊戲內容",
+		"bosses": "今日團體戰陣容",
+		"spawns": "野生與焦點出現",
+		"rockets": "陣容與暗影獎勵",
+		"eggs": "每種蛋會孵出什麼"
+	},
+	"ranks": {
+		"title": "排名",
+		"subtitle": "每個聯盟最強的寶可夢，一目了然。",
+		"pokedex": "所有寶可夢：能力值、CP 與形態",
+		"raid": "依屬性的最佳攻擊手",
+		"top": "前三名"
+	},
+	"teams": {
+		"title": "隊伍實驗室",
+		"headline": "了解你收藏的隊伍建立器。",
+		"body": "像 PvPoke 一樣評分任何三隻組合，或讓它從你真正擁有的寶可夢中，依你的 IV、等級與最佳夥伴找出最強隊伍。"
+	},
+	"tools": {
+		"title": "工具",
+		"searchesPitch": "幾秒鐘整理倉庫。產生搜尋字串，保留重要的，並選取其餘的。"
+	},
+	"footer": {
+		"tagline": "為 Pokémon GO 訓練家打造的免費快速工具。",
+		"explore": "探索",
+		"tools": "工具",
+		"project": "專案",
+		"about": "關於與致謝",
+		"privacy": "隱私",
+		"issues": "回報問題",
+		"disclaimer": "GO Pokédex 是非官方的粉絲專案，與 Niantic、任天堂、The Pokémon Company 或 Game Freak 無關，也未獲其認可或贊助。Pokémon 與 Pokémon GO 為各自所有者的商標。"
+	},
+	"about": {
+		"title": "關於 GO Pokédex",
+		"intro": "GO Pokédex 是 Pokémon GO 玩家的免費好夥伴：即時活動與團體戰、PvP 與團體戰排名、能評分三隻組合並從你自己的收藏找出最強隊伍的隊伍建立器，以及整理倉庫的搜尋字串。它的設計讓你在遊戲中也能快速使用。",
+		"creditsTitle": "致謝",
+		"creditsIntro": "本站建立在 Pokémon GO 社群的成果之上。感謝：",
+		"pvpoke": "PvPoke：提供 PvP 排名，以及我們隊伍評分所依據的對戰引擎。",
+		"leekduck": "LeekDuck：提供活動、團體戰頭目、蛋與火箭隊資料。",
+		"pokeminers": "PokeMiners：提供 game master 資料與圖像。",
+		"official": "Pokémon GO Live：提供官方活動公告。",
+		"pvpivs": "PvP IVs：IV 排名查詢的先驅。",
+		"privacyTitle": "隱私",
+		"privacyBody": "沒有帳號。你的設定、收藏與最愛隊伍都保存在瀏覽器中，不會離開你的裝置。我們使用 Google Analytics 匿名統計訪問量，可能會設定 Cookie。沒有廣告。",
+		"disclaimerTitle": "免責聲明",
+		"madeBy": "由 Igor Ruivo 製作。"
+	},
+	"menu": {
+		"open": "開啟選單",
+		"close": "關閉選單",
+		"pages": "頁面",
+		"preferences": "偏好設定",
+		"home": "首頁",
+		"appearance": "外觀",
+		"themeSystem": "跟隨系統",
+		"themeLight": "淺色",
+		"themeDark": "深色"
+	}
+}

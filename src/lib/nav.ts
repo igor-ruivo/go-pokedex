@@ -6,7 +6,9 @@ import { baseMoveId } from './hidden-power';
 import { leagueColor, leagueTitle } from './league-visuals';
 
 export const R = {
-	pokedex: '/',
+	home: '/',
+	pokedex: '/rankings/pokedex',
+	about: '/about',
 	// `type` is only meaningful for the raid mode — a real, shareable/crawlable
 	// URL per type (e.g. /rankings/raid/fire), separate from the `?type=`
 	// query param the interactive FilterBar keeps using once you're on the

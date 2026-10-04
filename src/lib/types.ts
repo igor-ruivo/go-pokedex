@@ -13,7 +13,7 @@ export const typeVar = (t: PokemonTypes | string): string => `var(--t-${typeKey(
  */
 export const accentStyle = (primaryType: PokemonTypes | undefined): React.CSSProperties => {
 	if (!primaryType) return {};
-	const vars = { '--accent': typeVar(primaryType), '--accent-ink': '#06101d' };
+	const vars = { '--accent': typeVar(primaryType), '--accent-ink': 'var(--on-fill)' };
 	return vars as React.CSSProperties;
 };
 

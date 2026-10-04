@@ -61,7 +61,17 @@ const STATIC_PAGES = [
 		path: '/',
 		title: 'GO Pokédex',
 		description:
-			'A complete Pokémon GO Pokédex — search and analyse Pokémon IVs, stats, PvP rankings and raid counters.',
+			'Live Pokémon GO events and raids, PvP and raid rankings, a team builder that knows your collection, and search strings to clean your storage.',
+	},
+	{
+		path: '/rankings/pokedex',
+		title: 'Pokédex — GO Pokédex',
+		description: 'A complete Pokémon GO Pokédex — search and analyse Pokémon IVs, stats, PvP rankings and raid counters.',
+	},
+	{
+		path: '/about',
+		title: 'About and Credits — GO Pokédex',
+		description: 'What GO Pokédex is, who it is built on, what it stores about you, and the unofficial-fan-project disclaimer.',
 	},
 	{
 		path: '/rankings/great',
@@ -483,9 +493,7 @@ const main = async () => {
 		}
 	};
 
-	// Home doubles as the Pokédex index (R.pokedex === '/'), so a Pokémon's
-	// breadcrumb skips straight to Home > {name} — an intermediate "Pokédex"
-	// crumb would just repeat the home URL. Moves does have its own real
+	// Home is its own page now; the Pokédex lives at /rankings/pokedex. Moves does have its own real
 	// `/moves` page, so that gets a real 3-level trail.
 	const stripSuffix = (title) => title.replace(/ — GO Pokédex$/, '');
 	const jsonLdForStaticPage = (routePath, title) => {

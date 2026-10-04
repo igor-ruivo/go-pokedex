@@ -1,0 +1,908 @@
+/* ===========================================================================
+   Home, About and the site footer. Everything under `.rvmp`, on the shared tokens (dark and light).
+   Prefix `h-`.
+   =========================================================================== */
+
+/* the footer closes the page, so the bottom nav's room is the footer's, not the main area's */
+.rvmp .r-main {
+	padding-bottom: var(--s5);
+}
+
+.rvmp .h-page {
+	width: 100%;
+	max-width: 1120px;
+	margin: 0 auto;
+	padding: 0 var(--s4);
+}
+.rvmp .h-sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+/* a link whose box covers its whole card: the card is one big target while its own avatars stay plain content */
+.rvmp .h-stretch {
+	color: inherit;
+	text-decoration: none;
+}
+.rvmp .h-stretch::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	border-radius: inherit;
+}
+.rvmp .h-stretch:focus-visible {
+	outline: none;
+}
+.rvmp .h-stretch:focus-visible::after {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+/* ---- hero ------------------------------------------------------------------------------------------------- */
+.rvmp .h-hero {
+	position: relative;
+	display: grid;
+	justify-items: center;
+	gap: var(--s4);
+	padding: clamp(36px, 8vw, 84px) 0 clamp(32px, 6vw, 64px);
+	text-align: center;
+	isolation: isolate;
+}
+/* a warm glow of the ball's red behind the logo, dissolving into the page */
+.rvmp .h-hero::before {
+	content: '';
+	position: absolute;
+	inset: 0 calc(50% - 50vw) 0;
+	z-index: -2;
+	background: radial-gradient(55% 62% at 50% 30%, color-mix(in srgb, #ff5b5b 17%, transparent), transparent 72%);
+	pointer-events: none;
+}
+.rvmp .h-lockup {
+	position: relative;
+	display: grid;
+	justify-items: center;
+	gap: var(--s3);
+}
+/* the equator: a hairline across the whole screen, passing behind the logo's ball at its centre */
+.rvmp .h-lockup::before {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	top: calc(var(--mark-h) / 2);
+	left: calc(50% - 50vw);
+	right: calc(50% - 50vw);
+	height: 2px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix(in srgb, #ff5b5b 55%, var(--border-strong)) 22%,
+		color-mix(in srgb, #ff5b5b 55%, var(--border-strong)) 78%,
+		transparent
+	);
+}
+.rvmp .h-hero-mark {
+	--mark-h: clamp(96px, 22vw, 176px);
+	height: var(--mark-h);
+	width: auto;
+	overflow: visible;
+	filter: drop-shadow(0 14px 30px color-mix(in srgb, #ff5b5b 28%, transparent));
+}
+.rvmp .h-lockup {
+	--mark-h: clamp(96px, 22vw, 176px);
+}
+.rvmp .h-lockup-word {
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: clamp(15px, 3vw, 22px);
+	letter-spacing: 0.62em;
+	/* the trailing letter-space would push the word off-centre */
+	margin-right: -0.62em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+.rvmp .h-eyebrow {
+	margin: var(--s3) 0 0;
+	font-size: 12.5px;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .h-eyebrow--quiet {
+	justify-self: start;
+	margin: 0;
+	padding: 4px 12px;
+	border: 1px solid var(--border);
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--surface) 70%, transparent);
+	letter-spacing: 0.04em;
+	color: var(--text-dim);
+}
+.rvmp .h-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--pos, #4ade80);
+	box-shadow: 0 0 0 0 color-mix(in srgb, var(--pos, #4ade80) 60%, transparent);
+	animation: h-pulse 2s ease-out infinite;
+}
+@keyframes h-pulse {
+	70%,
+	100% {
+		box-shadow: 0 0 0 8px transparent;
+	}
+}
+.rvmp .h-hero h1 {
+	max-width: 20ch;
+	margin: 0;
+	font-family: var(--font-display);
+	font-size: clamp(30px, 5.4vw, 54px);
+	line-height: 1.08;
+	letter-spacing: -0.02em;
+}
+.rvmp .h-lede {
+	max-width: 56ch;
+	margin: 0;
+	font-size: clamp(15px, 2.2vw, 18px);
+	line-height: 1.55;
+	color: var(--text-dim);
+}
+/* the three ways in: big icon buttons, the first one (the team builder) the loudest */
+.rvmp .h-dock {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 150px));
+	justify-content: center;
+	width: 100%;
+	gap: var(--s3);
+	margin-top: var(--s3);
+}
+.rvmp .h-dock-item {
+	position: relative;
+	display: grid;
+	justify-items: center;
+	align-content: center;
+	gap: 10px;
+	aspect-ratio: 1;
+	min-width: 0;
+	padding: var(--s3);
+	border: 1px solid var(--border-strong);
+	color: var(--text);
+	font-weight: 800;
+	font-size: clamp(13px, 2.4vw, 16px);
+	text-align: center;
+	line-height: 1.15;
+	transition:
+		transform 0.18s ease,
+		border-color 0.18s ease,
+		box-shadow 0.18s ease;
+	border-radius: 22px;
+	background: var(--surface);
+	box-shadow: inset 0 1px 0 var(--hi-1);
+	border-color: var(--border);
+}
+.rvmp .h-dock-item img {
+	width: clamp(48px, 11vw, 76px);
+	height: clamp(48px, 11vw, 76px);
+	object-fit: contain;
+}
+.rvmp .h-dock-icon {
+	position: relative;
+	display: grid;
+}
+/* our Poké Ball (the logo's O) sits in the ring of the ranking medal */
+.rvmp .h-dock-medal {
+	width: clamp(48px, 11vw, 76px);
+	height: clamp(48px, 11vw, 76px);
+}
+.rvmp .h-dock-medal img {
+	width: 100%;
+	height: 100%;
+}
+.rvmp .h-dock-ball {
+	position: absolute;
+	left: 50%;
+	top: 49.1%;
+	width: 37%;
+	height: 37%;
+	transform: translate(-50%, -50%);
+}
+.rvmp .h-dock-badge {
+	position: absolute;
+	top: -6px;
+	right: -12px;
+	display: grid;
+	place-items: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 6px;
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--neg) 80%, #b91c1c);
+	color: var(--on-fill);
+	font-style: normal;
+	font-size: 12px;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	box-shadow: 0 0 0 3px var(--surface);
+}
+@media (hover: hover) {
+	.rvmp .h-dock-item:hover {
+		transform: translateY(-4px);
+		border-color: var(--accent);
+	}
+}
+
+/* the mark draws itself once, and the ball gives a little wobble now and then */
+@media (prefers-reduced-motion: no-preference) {
+	.rvmp .h-mark--animate .h-mark-g {
+		stroke-dasharray: 340;
+		stroke-dashoffset: 340;
+		animation: h-draw 1.1s 0.15s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+	}
+	.rvmp .h-mark--animate .h-mark-ball {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation:
+			h-pop 0.6s 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) both,
+			h-wobble 7s 3s ease-in-out infinite;
+	}
+}
+@keyframes h-draw {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+@keyframes h-pop {
+	from {
+		transform: scale(0.6);
+		opacity: 0;
+	}
+}
+@keyframes h-wobble {
+	0%,
+	86%,
+	100% {
+		transform: rotate(0);
+	}
+	89% {
+		transform: rotate(-9deg);
+	}
+	92% {
+		transform: rotate(8deg);
+	}
+	95% {
+		transform: rotate(-4deg);
+	}
+}
+
+/* ---- sections ----------------------------------------------------------------------------------------------- */
+.rvmp .h-section {
+	margin-top: clamp(36px, 6vw, 64px);
+}
+.rvmp .h-sh {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--s4);
+	margin-bottom: var(--s4);
+}
+.rvmp .h-sh h2 {
+	margin: 0;
+	font-family: var(--font-display);
+	font-size: clamp(22px, 3.4vw, 30px);
+	letter-spacing: -0.02em;
+	font-weight: 800;
+}
+.rvmp .h-sh p {
+	margin: 4px 0 0;
+	color: var(--text-dim);
+	font-size: 14.5px;
+}
+.rvmp .h-more {
+	flex: none;
+	color: var(--accent);
+	font-weight: 700;
+	font-size: 14px;
+	white-space: nowrap;
+}
+
+/* ---- events: one big card and a bento of the rest --------------------------------------------------------- */
+.rvmp .h-events {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-auto-rows: 188px;
+	gap: var(--s3);
+}
+.rvmp .h-events > :first-child {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+.rvmp .h-event {
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	min-width: 0;
+	overflow: hidden;
+	border: 1px solid var(--border);
+	isolation: isolate;
+	transition:
+		transform 0.25s ease,
+		border-color 0.25s ease,
+		box-shadow 0.25s ease;
+	border-radius: 20px;
+	background: var(--surface);
+}
+.rvmp .h-event-img,
+.rvmp .h-event-fallback {
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.6s ease;
+}
+.rvmp .h-event-fallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4%;
+	padding: 0 8% 38%;
+}
+.rvmp .h-event-fallback img {
+	width: 36%;
+	max-height: 70%;
+	object-fit: contain;
+	filter: drop-shadow(0 8px 14px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
+}
+/* the picture fades into the card's own dark, so the text on it is always readable */
+.rvmp .h-event-scrim {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: linear-gradient(to top, rgb(5 8 14 / 0.88) 0%, rgb(5 8 14 / 0.55) 38%, rgb(5 8 14 / 0) 72%);
+}
+.rvmp .h-event-body {
+	display: grid;
+	gap: 6px;
+	width: 100%;
+	padding: var(--s4);
+	color: #f4f7fb;
+}
+.rvmp .h-event h3 {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.25;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-shadow: 0 1px 8px rgb(var(--shadow-rgb) / calc(0.5 * var(--shadow-k)));
+}
+.rvmp .h-event[data-big] h3 {
+	font-family: var(--font-display);
+	font-size: clamp(20px, 3vw, 28px);
+	-webkit-line-clamp: 3;
+}
+.rvmp .h-event-when {
+	margin: 0;
+	font-size: 12.5px;
+	color: rgb(244 247 251 / 0.78);
+}
+.rvmp .h-pill {
+	justify-self: start;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3px 10px;
+	border-radius: var(--r-pill);
+	background: rgb(255 255 255 / 0.16);
+	backdrop-filter: blur(8px);
+	font-size: 11.5px;
+	font-weight: 800;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+}
+.rvmp .h-pill[data-live] {
+	background: color-mix(in srgb, var(--pos, #4ade80) 30%, rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
+}
+@media (hover: hover) {
+	.rvmp .h-event:hover {
+		transform: translateY(-4px);
+		border-color: var(--border-strong);
+		box-shadow: var(--shadow-2);
+	}
+	.rvmp .h-event:hover .h-event-img,
+	.rvmp .h-event:hover .h-event-fallback {
+		transform: scale(1.05);
+	}
+}
+
+/* what an event brings: a little icon for the kind, then a few round sprites */
+.rvmp .h-highlights {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 14px;
+	margin: 2px 0 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-highlights li {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+.rvmp .h-highlights li > img {
+	width: 20px;
+	height: 20px;
+	object-fit: contain;
+	filter: drop-shadow(0 1px 3px rgb(var(--shadow-rgb) / calc(0.5 * var(--shadow-k))));
+}
+.rvmp .h-event:not([data-big]) .h-highlights li:nth-child(n + 3) {
+	display: none;
+}
+
+/* ---- the round sprite ------------------------------------------------------------------------------------- */
+.rvmp .h-stack {
+	display: inline-flex;
+	align-items: center;
+}
+.rvmp .h-stack > * + * {
+	margin-left: -9px;
+}
+/* same round sprite as the counter and ranking rows (.r-ctr-art), smaller */
+.rvmp .h-avatar {
+	width: 32px;
+	height: 32px;
+}
+.rvmp .h-avatar > img:not(.r-shadow-mark) {
+	width: 86%;
+	height: 86%;
+}
+.rvmp .h-stack-more {
+	display: grid;
+	place-items: center;
+	height: 32px;
+	min-width: 32px;
+	padding: 0 6px;
+	border-radius: 16px;
+	background: rgb(255 255 255 / 0.18);
+	font-style: normal;
+	font-size: 11.5px;
+	font-weight: 800;
+}
+.rvmp .h-avatar-rank {
+	position: absolute;
+	right: -1px;
+	bottom: -1px;
+	display: grid;
+	place-items: center;
+	width: 15px;
+	height: 15px;
+	border-radius: 50%;
+	background: var(--lg, var(--accent));
+	color: var(--on-fill);
+	font-style: normal;
+	font-size: 9.5px;
+	font-weight: 800;
+	text-shadow: 0 1px 2px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k)));
+}
+
+/* ---- tiles ------------------------------------------------------------------------------------------------ */
+.rvmp .h-tiles {
+	display: grid;
+	gap: var(--s3);
+}
+.rvmp .h-tiles--4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.rvmp .h-tiles--3 {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.rvmp .h-tiles--2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.rvmp .h-tiles--tight {
+	margin-top: var(--s3);
+}
+.rvmp .h-tile {
+	position: relative;
+	display: grid;
+	align-content: start;
+	gap: 6px;
+	min-width: 0;
+	padding: var(--s4);
+	border: 1px solid var(--border);
+	transition:
+		transform 0.22s ease,
+		border-color 0.22s ease,
+		box-shadow 0.22s ease;
+	border-radius: 20px;
+	background: var(--surface);
+	box-shadow: inset 0 1px 0 var(--hi-1);
+}
+.rvmp .h-tile h3 {
+	margin: 0;
+	font-size: 17px;
+}
+.rvmp .h-tile p {
+	margin: 0;
+	color: var(--text-dim);
+	font-size: 13.5px;
+	line-height: 1.4;
+}
+.rvmp .h-tile-icon {
+	width: 38px;
+	height: 38px;
+	object-fit: contain;
+	margin-bottom: 4px;
+}
+.rvmp .h-tile-foot {
+	display: flex;
+	align-items: center;
+	min-height: 32px;
+	margin-top: var(--s2);
+}
+@media (hover: hover) {
+	.rvmp .h-tile:hover {
+		transform: translateY(-3px);
+		border-color: var(--border-strong);
+		box-shadow: var(--shadow-2);
+	}
+}
+/* the league tiles carry their league's colour: a wash at the top, the same colour on the rank badges */
+.rvmp .h-tile--league {
+	padding-top: var(--s4);
+	border-top: 2px solid color-mix(in srgb, var(--lg) 75%, transparent);
+	background:
+		radial-gradient(110% 70% at 50% -20%, color-mix(in srgb, var(--lg) 15%, transparent), transparent 70%),
+		var(--surface);
+}
+.rvmp .h-tile-icon--lg {
+	width: 56px;
+	height: 56px;
+}
+.rvmp .h-tile--league h3 {
+	font-family: var(--font-display);
+	font-size: 22px;
+}
+.rvmp .h-top {
+	display: grid;
+	gap: 6px;
+	margin: var(--s2) 0 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-top-link {
+	position: relative;
+	z-index: 3;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 4px 8px 4px 4px;
+	border-radius: var(--r-pill);
+	color: var(--text);
+	font-weight: 700;
+	font-size: 13.5px;
+}
+.rvmp .h-top-link span:last-child {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+@media (hover: hover) {
+	.rvmp .h-top-link:hover {
+		background: color-mix(in srgb, var(--lg, var(--accent)) 16%, transparent);
+	}
+}
+.rvmp .h-top .h-avatar {
+	width: 38px;
+	height: 38px;
+}
+.rvmp .h-tile--row {
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: var(--s3);
+}
+.rvmp .h-tile--row .h-tile-icon {
+	width: 44px;
+	height: 44px;
+	margin: 0;
+}
+.rvmp .h-tile--row[style] {
+	background:
+		radial-gradient(80% 140% at 0% 0%, color-mix(in srgb, var(--lg) 11%, transparent), transparent 70%), var(--surface);
+}
+
+/* ---- the team lab ------------------------------------------------------------------------------------------- */
+.rvmp .h-lab {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+	align-items: center;
+	gap: var(--s5);
+	margin-top: clamp(36px, 6vw, 64px);
+	padding: clamp(24px, 4vw, 48px);
+	border: 1px solid var(--border);
+	overflow: hidden;
+	border-radius: 28px;
+	background:
+		radial-gradient(70% 110% at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 65%),
+		radial-gradient(
+			60% 90% at 0% 100%,
+			color-mix(in srgb, var(--lg-master, #a855f7) 10%, transparent),
+			transparent 70%
+		),
+		var(--surface);
+}
+.rvmp .h-lab-copy {
+	display: grid;
+	gap: var(--s3);
+}
+.rvmp .h-lab h2 {
+	margin: 0;
+	font-family: var(--font-display);
+	font-size: clamp(26px, 4.4vw, 42px);
+	line-height: 1.08;
+	letter-spacing: -0.01em;
+}
+.rvmp .h-lab p {
+	margin: 0;
+	max-width: 52ch;
+	color: var(--text-dim);
+	font-size: 15.5px;
+	line-height: 1.55;
+}
+.rvmp .h-lab-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--s2);
+	margin: var(--s2) 0 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 14px 8px 10px;
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--bg) 40%, var(--surface));
+	color: var(--text);
+	font-weight: 700;
+	font-size: 14px;
+	transition:
+		transform 0.16s ease,
+		border-color 0.16s ease;
+}
+.rvmp .h-chip img {
+	width: 20px;
+	height: 20px;
+	object-fit: contain;
+}
+@media (hover: hover) {
+	.rvmp .h-chip:hover {
+		transform: translateY(-2px);
+		border-color: var(--accent);
+	}
+}
+/* three big sprites, the way a team is shown in the builder: the middle one a little higher */
+.rvmp .h-lab-art {
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 2%;
+	min-height: 180px;
+}
+.rvmp .h-lab-mon {
+	flex: 1 1 0;
+	max-width: 190px;
+	aspect-ratio: 1;
+	padding: 6%;
+	border: 1px solid var(--border);
+	border-radius: 28px;
+	background: color-mix(in srgb, var(--bg) 55%, transparent);
+	backdrop-filter: blur(6px);
+	box-shadow: var(--shadow-2);
+}
+.rvmp .h-lab-mon[data-i='1'] {
+	transform: translateY(-14px);
+}
+.rvmp .h-lab-mon img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+/* ---- loading placeholders ------------------------------------------------------------------------------- */
+.rvmp .h-skeleton {
+	display: block;
+	border-radius: var(--r-lg);
+	background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%);
+	background-size: 220% 100%;
+	animation: h-shimmer 1.4s ease-in-out infinite;
+}
+.rvmp .h-skeleton--big {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+.rvmp .h-skeleton--row {
+	width: 120px;
+	height: 32px;
+	border-radius: 16px;
+}
+.rvmp .h-skeleton--avatar {
+	width: 100%;
+	height: 36px;
+	border-radius: 18px;
+}
+@keyframes h-shimmer {
+	to {
+		background-position: -120% 0;
+	}
+}
+
+/* ---- footer -------------------------------------------------------------------------------------------------- */
+.rvmp .h-footer {
+	margin-top: clamp(40px, 7vw, 80px);
+	padding: var(--s5) var(--s4) calc(112px + env(safe-area-inset-bottom));
+	border-top: 1px solid var(--border);
+	background: color-mix(in srgb, var(--bg-elev) 70%, var(--bg));
+}
+.rvmp .h-footer-inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+	gap: var(--s5);
+	max-width: 1120px;
+	margin: 0 auto;
+}
+.rvmp .h-footer-brand p {
+	margin: var(--s3) 0 0;
+	max-width: 32ch;
+	color: var(--text-dim);
+	font-size: 14px;
+	line-height: 1.5;
+}
+.rvmp .h-footer-cols {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--s4);
+}
+.rvmp .h-footer h4 {
+	margin: 0 0 var(--s3);
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .h-footer ul {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-footer-cols a {
+	color: var(--text-dim);
+	font-size: 14px;
+}
+@media (hover: hover) {
+	.rvmp .h-footer-cols a:hover {
+		color: var(--text);
+	}
+}
+.rvmp .h-footer-legal {
+	max-width: 1120px;
+	margin: var(--s5) auto 0;
+	padding-top: var(--s4);
+	border-top: 1px solid var(--border);
+	color: var(--text-faint);
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+/* ---- about --------------------------------------------------------------------------------------------------- */
+.rvmp .h-prose {
+	max-width: 720px;
+	padding-top: var(--s4);
+}
+.rvmp .h-prose h2 {
+	margin: var(--s5) 0 var(--s2);
+	font-family: var(--font-display);
+	font-size: 22px;
+	scroll-margin-top: 72px;
+}
+.rvmp .h-prose p {
+	margin: 0 0 var(--s3);
+	color: var(--text-dim);
+	line-height: 1.6;
+}
+.rvmp .h-credits {
+	display: grid;
+	gap: var(--s2);
+	margin: 0;
+	padding-left: 1.1em;
+	color: var(--text-dim);
+	line-height: 1.55;
+}
+.rvmp .h-credits a {
+	color: var(--accent);
+	font-weight: 700;
+}
+
+/* ---- narrower screens ------------------------------------------------------------------------------------- */
+@media (max-width: 1000px) {
+	.rvmp .h-events {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.rvmp .h-tiles--4 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.rvmp .h-lab {
+		grid-template-columns: 1fr;
+	}
+	.rvmp .h-lab-art {
+		order: -1;
+		min-height: 0;
+	}
+	.rvmp .h-lab-mon {
+		max-width: 150px;
+	}
+}
+@media (max-width: 700px) {
+	.rvmp .h-tiles--3,
+	.rvmp .h-tiles--2 {
+		grid-template-columns: 1fr;
+	}
+	.rvmp .h-events {
+		grid-template-columns: 1fr;
+		grid-auto-rows: 200px;
+	}
+	.rvmp .h-events > :first-child,
+	.rvmp .h-skeleton--big {
+		grid-column: auto;
+		grid-row: span 2;
+	}
+	.rvmp .h-footer-inner {
+		grid-template-columns: 1fr;
+	}
+	.rvmp .h-footer-cols {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.rvmp .h-sh {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: var(--s2);
+	}
+}
+@media (max-width: 900px) {
+	.rvmp .h-dock {
+		grid-template-columns: repeat(3, minmax(0, 150px));
+	}
+}
+@media (max-width: 700px) {
+	.rvmp .h-dock-item img,
+	.rvmp .h-dock-medal {
+		width: 60px;
+		height: 60px;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.rvmp .h-dot,
+	.rvmp .h-skeleton {
+		animation: none;
+	}
+	.rvmp .h-event,
+	.rvmp .h-tile,
+	.rvmp .h-dock-item,
+	.rvmp .h-chip,
+	.rvmp .h-event-img,
+	.rvmp .h-event-fallback {
+		transition: none;
+	}
+}

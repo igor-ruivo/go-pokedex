@@ -1,0 +1,80 @@
+{
+	"hero": {
+		"eyebrow": "포켓몬 GO 도우미",
+		"title": "플레이하는 동안 필요한 모든 것.",
+		"subtitle": "실시간 이벤트, 리그 랭킹, 내 컬렉션을 아는 팀 빌더, 한 번의 탭으로 보관함 정리. 무료이고 빠르며 내 언어로.",
+		"ctaTeams": "팀 만들기",
+		"ctaRegister": "내 포켓몬"
+	},
+	"now": {
+		"title": "지금 진행 중",
+		"subtitle": "진행 중이거나 예정된 이벤트와 구성.",
+		"all": "모든 이벤트",
+		"empty": "지금은 이벤트가 없습니다.",
+		"live": "진행 중",
+		"more": "+{{count}}",
+		"raids": "레이드",
+		"wild": "출현",
+		"researches": "리서치",
+		"eggs": "알"
+	},
+	"right": {
+		"title": "지금 게임에서는",
+		"bosses": "오늘의 레이드",
+		"spawns": "야생 및 주목 출현",
+		"rockets": "라인업과 섀도 보상",
+		"eggs": "알마다 부화하는 포켓몬"
+	},
+	"ranks": {
+		"title": "랭킹",
+		"subtitle": "모든 리그의 최고 포켓몬을 한눈에.",
+		"pokedex": "모든 포켓몬: 능력치, CP, 폼",
+		"raid": "타입별 최고의 공격수",
+		"top": "상위 3"
+	},
+	"teams": {
+		"title": "팀 연구소",
+		"headline": "내 컬렉션을 아는 팀 빌더.",
+		"body": "PvPoke처럼 아무 3마리나 평가하거나, 실제로 가진 포켓몬 중에서 IV, 레벨, 단짝 포켓몬까지 반영해 최고의 팀을 찾아 보세요."
+	},
+	"tools": {
+		"title": "도구",
+		"searchesPitch": "보관함을 몇 초 만에 정리하세요. 중요한 것은 남기고 나머지를 선택하는 검색 문자열을 만들어 줍니다."
+	},
+	"footer": {
+		"tagline": "포켓몬 GO 트레이너를 위한 무료 고속 도구.",
+		"explore": "둘러보기",
+		"tools": "도구",
+		"project": "프로젝트",
+		"about": "소개 및 크레딧",
+		"privacy": "개인정보",
+		"issues": "문제 신고",
+		"disclaimer": "GO Pokédex는 비공식 팬 프로젝트입니다. Niantic, 닌텐도, 포켓몬 컴퍼니, 게임프리크와 제휴하거나 승인·후원을 받지 않았습니다. 포켓몬과 포켓몬 GO는 각 소유자의 상표입니다."
+	},
+	"about": {
+		"title": "GO Pokédex 소개",
+		"intro": "GO Pokédex는 포켓몬 GO 플레이어를 위한 무료 도우미입니다. 실시간 이벤트와 레이드, PvP 및 레이드 랭킹, 3마리를 평가하고 내 컬렉션에서 최고의 팀을 찾아 주는 팀 빌더, 보관함을 정리하는 검색 문자열을 제공합니다. 게임 도중에도 빠르게 쓸 수 있도록 만들었습니다.",
+		"creditsTitle": "크레딧",
+		"creditsIntro": "이 사이트는 포켓몬 GO 커뮤니티의 노력 위에 서 있습니다. 감사합니다:",
+		"pvpoke": "PvPoke: PvP 랭킹과 팀 평가의 바탕이 되는 배틀 엔진.",
+		"leekduck": "LeekDuck: 이벤트, 레이드 보스, 알, 로켓단 데이터.",
+		"pokeminers": "PokeMiners: 게임 마스터 데이터와 스프라이트.",
+		"official": "Pokémon GO Live: 공식 이벤트 공지.",
+		"pvpivs": "PvP IVs: IV 순위 조회의 선구자.",
+		"privacyTitle": "개인정보",
+		"privacyBody": "계정은 없습니다. 설정, 컬렉션, 즐겨찾는 팀은 브라우저에 저장되며 기기 밖으로 나가지 않습니다. 방문 수를 익명으로 세기 위해 Google 애널리틱스를 사용하며, 쿠키가 설정될 수 있습니다. 광고는 없습니다.",
+		"disclaimerTitle": "면책 조항",
+		"madeBy": "제작: Igor Ruivo"
+	},
+	"menu": {
+		"open": "메뉴 열기",
+		"close": "메뉴 닫기",
+		"pages": "페이지",
+		"preferences": "환경설정",
+		"home": "홈",
+		"appearance": "화면 모드",
+		"themeSystem": "시스템",
+		"themeLight": "라이트",
+		"themeDark": "다크"
+	}
+}

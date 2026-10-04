@@ -1,0 +1,80 @@
+{
+	"hero": {
+		"eyebrow": "Compagno per Pokémon GO",
+		"title": "Tutto ciò che ti serve, mentre giochi.",
+		"subtitle": "Eventi in diretta, classifiche delle leghe, un creatore di squadre che conosce la tua collezione e pulizia dell’archivio con un tocco. Gratis, veloce e nella tua lingua.",
+		"ctaTeams": "Crea una squadra",
+		"ctaRegister": "I tuoi Pokémon"
+	},
+	"now": {
+		"title": "In corso ora",
+		"subtitle": "Eventi in corso e in arrivo, e cosa porta ciascuno.",
+		"all": "Tutti gli eventi",
+		"empty": "Nessun evento al momento.",
+		"live": "In diretta",
+		"more": "+{{count}}",
+		"raids": "Raid",
+		"wild": "Comparse",
+		"researches": "Ricerca",
+		"eggs": "Uova"
+	},
+	"right": {
+		"title": "Nel gioco adesso",
+		"bosses": "I raid di oggi",
+		"spawns": "Comparse selvatiche e in evidenza",
+		"rockets": "Formazioni e ricompense ombra",
+		"eggs": "Cosa si schiude da ogni uovo"
+	},
+	"ranks": {
+		"title": "Classifiche",
+		"subtitle": "I migliori Pokémon di ogni lega, a colpo d’occhio.",
+		"pokedex": "Ogni Pokémon: statistiche, PL e forme",
+		"raid": "Migliori attaccanti per tipo",
+		"top": "Top 3"
+	},
+	"teams": {
+		"title": "Laboratorio squadre",
+		"headline": "Un creatore di squadre che conosce la tua collezione.",
+		"body": "Valuta qualsiasi trio come PvPoke, oppure lascia che trovi le migliori squadre tra i Pokémon che possiedi davvero, con i tuoi IV, livelli e Super Compagno."
+	},
+	"tools": {
+		"title": "Strumenti",
+		"searchesPitch": "Pulisci l’archivio in pochi secondi. Genera stringhe di ricerca che tengono ciò che conta e selezionano il resto."
+	},
+	"footer": {
+		"tagline": "Strumenti gratuiti e veloci per gli allenatori di Pokémon GO.",
+		"explore": "Esplora",
+		"tools": "Strumenti",
+		"project": "Progetto",
+		"about": "Informazioni e crediti",
+		"privacy": "Privacy",
+		"issues": "Segnala un problema",
+		"disclaimer": "GO Pokédex è un progetto di fan non ufficiale. Non è affiliato, approvato né sponsorizzato da Niantic, Nintendo, The Pokémon Company o Game Freak. Pokémon e Pokémon GO sono marchi dei rispettivi proprietari."
+	},
+	"about": {
+		"title": "Informazioni su GO Pokédex",
+		"intro": "GO Pokédex è un compagno gratuito per i giocatori di Pokémon GO: eventi e raid in diretta, classifiche PvP e raid, un creatore di squadre che valuta i trii e trova le migliori squadre nella tua collezione, e stringhe di ricerca che puliscono il tuo archivio. È pensato per essere rapido da usare a metà partita.",
+		"creditsTitle": "Crediti",
+		"creditsIntro": "Questo sito si regge sul lavoro della community di Pokémon GO. Grazie a:",
+		"pvpoke": "PvPoke, per le classifiche PvP e il motore di combattimento su cui si basano le valutazioni delle nostre squadre.",
+		"leekduck": "LeekDuck, per i dati su eventi, boss dei raid, uova e Team GO Rocket.",
+		"pokeminers": "PokeMiners, per i dati del game master e gli sprite.",
+		"official": "Pokémon GO Live, per gli annunci ufficiali degli eventi.",
+		"pvpivs": "PvP IVs, un pioniere delle ricerche di rango IV.",
+		"privacyTitle": "Privacy",
+		"privacyBody": "Non ci sono account. Le tue impostazioni, la collezione e le squadre preferite restano nel tuo browser e non lasciano mai il tuo dispositivo. Usiamo Google Analytics per contare le visite in modo anonimo; può impostare cookie. Non ci sono pubblicità.",
+		"disclaimerTitle": "Avvertenza",
+		"madeBy": "Creato da Igor Ruivo."
+	},
+	"menu": {
+		"open": "Apri il menu",
+		"close": "Chiudi il menu",
+		"pages": "Pagine",
+		"preferences": "Preferenze",
+		"home": "Home",
+		"appearance": "Aspetto",
+		"themeSystem": "Sistema",
+		"themeLight": "Chiaro",
+		"themeDark": "Scuro"
+	}
+}

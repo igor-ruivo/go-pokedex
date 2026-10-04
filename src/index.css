@@ -11,6 +11,13 @@ body {
 	padding: 0;
 }
 
-body {
+/* the page behind the app (overscroll, the gaps at the edges): the theme's own background, same values as --bg in theme.css */
+html {
 	background: #0b0e14;
+}
+html[data-theme="light"] {
+	background: #f4f6fb;
+}
+body {
+	background: transparent;
 }

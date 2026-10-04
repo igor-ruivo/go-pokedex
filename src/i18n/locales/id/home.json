@@ -1,0 +1,80 @@
+{
+	"hero": {
+		"eyebrow": "Pendamping Pokémon GO",
+		"title": "Semua yang kamu butuhkan, saat bermain.",
+		"subtitle": "Event langsung, peringkat liga, pembuat tim yang mengenal koleksimu, dan pembersihan penyimpanan sekali ketuk. Gratis, cepat, dalam bahasamu.",
+		"ctaTeams": "Buat tim",
+		"ctaRegister": "Pokémonmu"
+	},
+	"now": {
+		"title": "Sedang berlangsung",
+		"subtitle": "Event yang sedang dan akan datang, beserta isinya.",
+		"all": "Semua event",
+		"empty": "Belum ada event saat ini.",
+		"live": "Langsung",
+		"more": "+{{count}}",
+		"raids": "Raid",
+		"wild": "Kemunculan",
+		"researches": "Riset",
+		"eggs": "Telur"
+	},
+	"right": {
+		"title": "Di dalam game sekarang",
+		"bosses": "Raid hari ini",
+		"spawns": "Kemunculan liar dan unggulan",
+		"rockets": "Formasi dan hadiah shadow",
+		"eggs": "Apa yang menetas dari tiap telur"
+	},
+	"ranks": {
+		"title": "Peringkat",
+		"subtitle": "Pokémon terbaik untuk setiap liga, sekilas.",
+		"pokedex": "Semua Pokémon: statistik, CP, dan bentuk",
+		"raid": "Penyerang terbaik per tipe",
+		"top": "Top 3"
+	},
+	"teams": {
+		"title": "Lab tim",
+		"headline": "Pembuat tim yang mengenal koleksimu.",
+		"body": "Nilai trio mana pun seperti PvPoke, atau biarkan ia mencari tim terbaik dari Pokémon yang benar-benar kamu miliki, lengkap dengan IV, level, dan Best Buddy-mu."
+	},
+	"tools": {
+		"title": "Alat",
+		"searchesPitch": "Bersihkan penyimpananmu dalam hitungan detik. Buat string pencarian yang mempertahankan yang penting dan memilih sisanya."
+	},
+	"footer": {
+		"tagline": "Alat gratis dan cepat untuk pelatih Pokémon GO.",
+		"explore": "Jelajahi",
+		"tools": "Alat",
+		"project": "Proyek",
+		"about": "Tentang dan kredit",
+		"privacy": "Privasi",
+		"issues": "Laporkan masalah",
+		"disclaimer": "GO Pokédex adalah proyek penggemar tidak resmi. Tidak berafiliasi, didukung, atau disponsori oleh Niantic, Nintendo, The Pokémon Company, atau Game Freak. Pokémon dan Pokémon GO adalah merek dagang pemiliknya masing-masing."
+	},
+	"about": {
+		"title": "Tentang GO Pokédex",
+		"intro": "GO Pokédex adalah pendamping gratis untuk pemain Pokémon GO: event dan raid langsung, peringkat PvP dan raid, pembuat tim yang menilai trio dan menemukan tim terbaik dari koleksimu sendiri, serta string pencarian yang membersihkan penyimpananmu. Dibuat agar cepat dipakai di tengah permainan.",
+		"creditsTitle": "Kredit",
+		"creditsIntro": "Situs ini berdiri di atas karya komunitas Pokémon GO. Terima kasih kepada:",
+		"pvpoke": "PvPoke, untuk peringkat PvP dan mesin pertarungan yang menjadi dasar penilaian tim kami.",
+		"leekduck": "LeekDuck, untuk data event, bos raid, telur, dan Team GO Rocket.",
+		"pokeminers": "PokeMiners, untuk data game master dan sprite.",
+		"official": "Pokémon GO Live, untuk pengumuman event resmi.",
+		"pvpivs": "PvP IVs, perintis pencarian peringkat IV.",
+		"privacyTitle": "Privasi",
+		"privacyBody": "Tidak ada akun. Pengaturan, koleksi, dan tim favoritmu tetap di browser dan tidak pernah meninggalkan perangkatmu. Kami memakai Google Analytics untuk menghitung kunjungan secara anonim; ini dapat menyetel cookie. Tidak ada iklan.",
+		"disclaimerTitle": "Penafian",
+		"madeBy": "Dibuat oleh Igor Ruivo."
+	},
+	"menu": {
+		"open": "Buka menu",
+		"close": "Tutup menu",
+		"pages": "Halaman",
+		"preferences": "Preferensi",
+		"home": "Beranda",
+		"appearance": "Tampilan",
+		"themeSystem": "Sistem",
+		"themeLight": "Terang",
+		"themeDark": "Gelap"
+	}
+}

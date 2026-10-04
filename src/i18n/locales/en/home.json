@@ -1,0 +1,80 @@
+{
+	"hero": {
+		"eyebrow": "Pokémon GO companion",
+		"title": "Everything you need, while you play.",
+		"subtitle": "Live events, league rankings, a team builder that knows your collection and one-tap storage cleanup. Free, fast and in your language.",
+		"ctaTeams": "Build a team",
+		"ctaRegister": "Your Pokémon"
+	},
+	"now": {
+		"title": "Happening now",
+		"subtitle": "Live and upcoming events, and what each one brings.",
+		"all": "All events",
+		"empty": "No events right now.",
+		"live": "Live",
+		"more": "+{{count}}",
+		"raids": "Raids",
+		"wild": "Spawns",
+		"researches": "Research",
+		"eggs": "Eggs"
+	},
+	"right": {
+		"title": "In the game right now",
+		"bosses": "Today's raid lineup",
+		"spawns": "Wild and featured spawns",
+		"rockets": "Line-ups and shadow rewards",
+		"eggs": "What hatches from each egg"
+	},
+	"ranks": {
+		"title": "Rankings",
+		"subtitle": "The best Pokémon for every league, at a glance.",
+		"pokedex": "Every Pokémon: stats, CP and forms",
+		"raid": "Best attackers by type",
+		"top": "Top 3"
+	},
+	"teams": {
+		"title": "Team lab",
+		"headline": "A team builder that knows your collection.",
+		"body": "Rate any trio the way PvPoke does, or let it find the best teams among the Pokémon you actually own, with your IVs, levels and Best Buddy."
+	},
+	"tools": {
+		"title": "Tools",
+		"searchesPitch": "Clean your storage in seconds. Generate search strings that keep what matters and select the rest."
+	},
+	"footer": {
+		"tagline": "Free, fast tools for Pokémon GO trainers.",
+		"explore": "Explore",
+		"tools": "Tools",
+		"project": "Project",
+		"about": "About and credits",
+		"privacy": "Privacy",
+		"issues": "Report an issue",
+		"disclaimer": "GO Pokédex is an unofficial fan project. It is not affiliated with, endorsed or sponsored by Niantic, Nintendo, The Pokémon Company or Game Freak. Pokémon and Pokémon GO are trademarks of their respective owners."
+	},
+	"about": {
+		"title": "About GO Pokédex",
+		"intro": "GO Pokédex is a free companion for Pokémon GO players: live events and raids, PvP and raid rankings, a team builder that rates trios and finds the best teams in your own collection, and search strings that clean your storage. It is built to be quick to use mid-game.",
+		"creditsTitle": "Credits",
+		"creditsIntro": "This site stands on the work of the Pokémon GO community. Thank you to:",
+		"pvpoke": "PvPoke, for the PvP rankings and the battle engine our team ratings are based on.",
+		"leekduck": "LeekDuck, for event, raid boss, egg and Team GO Rocket data.",
+		"pokeminers": "PokeMiners, for the game master data and the sprites.",
+		"official": "Pokémon GO Live, for the official event announcements.",
+		"pvpivs": "PvP IVs, a pioneer of IV rank lookups.",
+		"privacyTitle": "Privacy",
+		"privacyBody": "There are no accounts. Your settings, collection and favorite teams stay in your browser and never leave your device. We use Google Analytics to count visits anonymously; it may set cookies. There are no ads.",
+		"disclaimerTitle": "Disclaimer",
+		"madeBy": "Made by Igor Ruivo."
+	},
+	"menu": {
+		"open": "Open menu",
+		"close": "Close menu",
+		"pages": "Pages",
+		"preferences": "Preferences",
+		"home": "Home",
+		"appearance": "Appearance",
+		"themeSystem": "System",
+		"themeLight": "Light",
+		"themeDark": "Dark"
+	}
+}

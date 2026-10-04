@@ -1,34 +1,11 @@
 /* Teams view — team builder. Scoped under .rvmp, prefix r-tm- */
 
-/* ---- tokens local to the view ------------------------------------------------ */
+/* ---- tokens local to the view (the colours themselves are in theme.css) ------------------------------- */
 .rvmp .r-tm {
 	--tm-good: var(--pos);
 	--tm-bad: var(--neg);
-	--tm-warn: #f5a623;
+	--tm-warn: var(--warn);
 	--tm-panel: color-mix(in srgb, var(--surface) 92%, var(--accent) 3%);
-	--grade-a: #3fd07a;
-	--grade-b: #8fd14f;
-	--grade-c: #f2c53d;
-	--grade-d: #f59e42;
-	--grade-f: #ef5b5b;
-}
-@media (prefers-color-scheme: light) {
-	.rvmp:not([data-theme='dark']) .r-tm {
-		--tm-warn: #c77a08;
-		--grade-a: #16a34a;
-		--grade-b: #5f9a15;
-		--grade-c: #c99a08;
-		--grade-d: #d9720f;
-		--grade-f: #d83a3a;
-	}
-}
-.rvmp[data-theme='light'] .r-tm {
-	--tm-warn: #c77a08;
-	--grade-a: #16a34a;
-	--grade-b: #5f9a15;
-	--grade-c: #c99a08;
-	--grade-d: #d9720f;
-	--grade-f: #d83a3a;
 }
 
 .rvmp .r-tm-intro {
@@ -97,7 +74,7 @@
 	margin-top: var(--s5);
 }
 .rvmp .r-tm-eyebrow {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 11px;
 	font-weight: 600;
 	letter-spacing: 0.1em;
@@ -250,7 +227,7 @@
 	height: 30px;
 	padding: 0 13px 0 6px;
 	border-radius: var(--r-pill);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 12px;
 	letter-spacing: 0.02em;
@@ -266,20 +243,20 @@
 	height: 18px;
 	border-radius: 50%;
 	font-size: 11px;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--role-c, var(--accent));
 }
 .rvmp .r-tm-role[data-role='lead'],
 .rvmp .r-tm-step[data-role='lead'] {
-	--role-c: #58a7ff;
+	--role-c: var(--role-lead);
 }
 .rvmp .r-tm-role[data-role='switch'],
 .rvmp .r-tm-step[data-role='switch'] {
-	--role-c: #f5a623;
+	--role-c: var(--role-switch);
 }
 .rvmp .r-tm-role[data-role='closer'],
 .rvmp .r-tm-step[data-role='closer'] {
-	--role-c: #ef5b8f;
+	--role-c: var(--role-closer);
 }
 @keyframes r-tm-pop {
 	from {
@@ -365,7 +342,7 @@
 	transform: scale(1.06);
 }
 .rvmp .r-tm-remove:hover {
-	color: #fff;
+	color: var(--on-fill);
 	background: var(--neg);
 	border-color: var(--neg);
 }
@@ -384,7 +361,7 @@
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
-	filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.4));
+	filter: drop-shadow(0 8px 10px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k))));
 	animation: r-tm-bob 4.5s ease-in-out infinite;
 }
 .rvmp .r-tm-art > .r-shadow-mark {
@@ -477,7 +454,7 @@
 }
 .rvmp .r-tm-facts dd {
 	margin: 0;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 14px;
 }
@@ -601,9 +578,9 @@
 	width: 64px;
 	padding: 10px 4px;
 	text-align: center;
-	font:
-		600 18px Fredoka,
-		sans-serif;
+	font-family: var(--font-display);
+	font-size: 18px;
+	font-weight: 600;
 	font-variant-numeric: tabular-nums;
 	color: var(--text);
 	background: color-mix(in srgb, var(--surface-2) 80%, transparent);
@@ -678,7 +655,7 @@
 	height: 14px;
 	margin-left: 4px;
 	vertical-align: -2px;
-	color: var(--warn, #f5b942);
+	color: var(--warn);
 }
 .rvmp .r-tm-warn svg {
 	width: 100%;
@@ -868,6 +845,13 @@
 	display: flex;
 	flex: none;
 }
+/* the sort chip sits at the dialog's left edge, so its menu opens to the right of it (anchored to the right edge it ran off-screen) */
+.rvmp .r-tm-picker-tools .r-sort-panel {
+	left: 0;
+	right: auto;
+	width: min(300px, calc(100vw - 2 * var(--s4)));
+	max-width: none;
+}
 .rvmp .r-tm-picker-list {
 	flex: 1;
 	min-height: 0;
@@ -951,7 +935,7 @@
 	display: grid;
 	justify-items: end;
 	gap: 1px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-variant-numeric: tabular-nums;
 }
 .rvmp .r-tm-picker-side .r-search-dex {
@@ -1003,32 +987,32 @@
 .rvmp .r-tm-hero[data-tier='elite'],
 .rvmp .r-tm-mini[data-tier='elite'],
 .rvmp .r-tm-board-card[data-tier='elite'] {
-	--tier-a: #3fd07a;
-	--tier-b: #22d3ee;
+	--tier-a: var(--tier-elite-a);
+	--tier-b: var(--tier-elite-b);
 }
 .rvmp .r-tm-hero[data-tier='strong'],
 .rvmp .r-tm-mini[data-tier='strong'],
 .rvmp .r-tm-board-card[data-tier='strong'] {
-	--tier-a: #58a7ff;
-	--tier-b: #8b7bff;
+	--tier-a: var(--tier-strong-a);
+	--tier-b: var(--tier-strong-b);
 }
 .rvmp .r-tm-hero[data-tier='solid'],
 .rvmp .r-tm-mini[data-tier='solid'],
 .rvmp .r-tm-board-card[data-tier='solid'] {
-	--tier-a: #f2c53d;
-	--tier-b: #f59e42;
+	--tier-a: var(--tier-solid-a);
+	--tier-b: var(--tier-solid-b);
 }
 .rvmp .r-tm-hero[data-tier='shaky'],
 .rvmp .r-tm-mini[data-tier='shaky'],
 .rvmp .r-tm-board-card[data-tier='shaky'] {
-	--tier-a: #f59e42;
-	--tier-b: #ef7a3d;
+	--tier-a: var(--tier-shaky-a);
+	--tier-b: var(--tier-shaky-b);
 }
 .rvmp .r-tm-hero[data-tier='risky'],
 .rvmp .r-tm-mini[data-tier='risky'],
 .rvmp .r-tm-board-card[data-tier='risky'] {
-	--tier-a: #ef5b5b;
-	--tier-b: #d63a7a;
+	--tier-a: var(--tier-risky-a);
+	--tier-b: var(--tier-risky-b);
 }
 @media (min-width: 900px) {
 	.rvmp .r-tm-hero {
@@ -1075,7 +1059,7 @@
 	gap: 2px;
 }
 .rvmp .r-tm-ring-num {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 46px;
 	line-height: 1;
@@ -1111,10 +1095,10 @@
 	display: inline-block;
 	padding: 3px 14px;
 	border-radius: var(--r-pill);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 15px;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: linear-gradient(135deg, var(--tier-a), var(--tier-b));
 }
 .rvmp .r-tm-parts {
@@ -1139,7 +1123,7 @@
 }
 .rvmp .r-tm-part-head b {
 	margin-left: auto;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-variant-numeric: tabular-nums;
 }
 .rvmp .r-tm-bar {
@@ -1218,10 +1202,10 @@
 	width: 24px;
 	height: 24px;
 	border-radius: 50%;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 13px;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--role-c);
 }
 .rvmp .r-tm-step-art {
@@ -1236,7 +1220,7 @@
 /* clicking the sprite opens the picker for that slot */
 .rvmp .r-tm-step-art:hover > img:not(.r-shadow-mark),
 .rvmp .r-tm-step-art:focus-visible > img:not(.r-shadow-mark) {
-	filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.35)) brightness(1.12);
+	filter: drop-shadow(0 6px 8px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k)))) brightness(1.12);
 }
 .rvmp .r-tm-step-art:focus-visible {
 	outline: 2px solid var(--accent);
@@ -1256,10 +1240,10 @@
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
-	filter: drop-shadow(0 6px 8px rgb(0 0 0 / 0.35));
+	filter: drop-shadow(0 6px 8px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
 }
 .rvmp .r-tm-step-name {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 14px;
 }
 .rvmp .r-tm-step-role {
@@ -1278,7 +1262,7 @@
 	margin-top: 4px;
 	padding: 2px 10px;
 	border-radius: var(--r-pill);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 13px;
 	background: color-mix(in srgb, var(--role-c) 18%, transparent);
@@ -1426,7 +1410,7 @@
 	grid-column: 1 / -1;
 }
 .rvmp .r-tm-threat-score > b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 54px;
 	line-height: 1;
@@ -1439,10 +1423,10 @@
 	height: 34px;
 	flex: none;
 	border-radius: 10px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 18px;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--grade-f);
 }
 /* still simulating: neutral tile holding the spinner */
@@ -1485,7 +1469,7 @@
 	font-style: normal;
 	font-size: 9px;
 	font-weight: 800;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--grade-f);
 	opacity: 0.85;
 }
@@ -1522,7 +1506,7 @@
 	top: -18px;
 	padding: 1px 7px;
 	border-radius: var(--r-pill);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 12px;
 	color: var(--bg);
 	background: var(--text);
@@ -1622,7 +1606,7 @@
 	place-items: center;
 	height: 38px;
 	border-radius: var(--r-sm);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 13px;
 	font-variant-numeric: tabular-nums;
@@ -1696,7 +1680,7 @@
 	flex: none;
 }
 .rvmp .r-tm-cover-num b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 44px;
 	line-height: 1;
@@ -1856,7 +1840,7 @@
 	color: var(--text-dim);
 }
 .rvmp .r-tm-facts-list b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 18px;
 	color: var(--text);
 }
@@ -1895,7 +1879,7 @@
 	place-items: center;
 	height: 26px;
 	border-radius: 7px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 12px;
 	font-variant-numeric: tabular-nums;
@@ -1978,7 +1962,7 @@
 	color: var(--text-dim);
 }
 .rvmp .r-tm-totals b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 20px;
 	font-variant-numeric: tabular-nums;
@@ -2055,7 +2039,7 @@
 	border-radius: 50%;
 	font-size: 12px;
 	font-weight: 800;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--text-faint);
 }
 .rvmp .r-tm-warns li[data-severity='high'] .r-tm-warn-ico {
@@ -2304,7 +2288,7 @@
 }
 .rvmp .r-tm-mini-name {
 	max-width: 100%;
-	font-family: Fredoka, 'Nunito Sans', sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 11px;
 	white-space: nowrap;
@@ -2338,7 +2322,7 @@
 	color: var(--text-faint);
 }
 .rvmp .r-tm-mini-stat > b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 18px;
 	line-height: 1.1;
@@ -2666,7 +2650,7 @@
 	flex-direction: row;
 	align-items: center;
 	gap: 6px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 16px;
 	color: var(--text-faint);
@@ -2674,13 +2658,13 @@
 }
 /* the podium: gold, silver and bronze medals for the first three */
 .rvmp .r-tm-board-rank[data-podium='1'] {
-	color: #f2c53d;
+	color: var(--medal-gold-text);
 }
 .rvmp .r-tm-board-rank[data-podium='2'] {
-	color: #c4cdd8;
+	color: var(--medal-silver-text);
 }
 .rvmp .r-tm-board-rank[data-podium='3'] {
-	color: #d99a54;
+	color: var(--medal-bronze-text);
 }
 /* The three Pokémon share one grid: each is five rows (sprite, name, types, score chip, moves) taken from it with
    a subgrid, so a row is as tall as its tallest member and everything lines up across them — a single-type Pokémon
@@ -2776,13 +2760,13 @@
 	max-width: 100%;
 }
 .rvmp .r-tm-board-member[data-role='lead'] {
-	--role-c: #58a7ff;
+	--role-c: var(--role-lead);
 }
 .rvmp .r-tm-board-member[data-role='switch'] {
-	--role-c: #f5a623;
+	--role-c: var(--role-switch);
 }
 .rvmp .r-tm-board-member[data-role='closer'] {
-	--role-c: #ef5b8f;
+	--role-c: var(--role-closer);
 }
 .rvmp .r-tm-board-art {
 	position: relative;
@@ -2794,7 +2778,7 @@
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
-	filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.35));
+	filter: drop-shadow(0 3px 4px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
 }
 .rvmp .r-tm-board-art > .r-shadow-mark {
 	position: absolute;
@@ -2807,7 +2791,7 @@
 .rvmp .r-tm-board-name {
 	max-width: 100%;
 	margin-top: 2px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 15px;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -2836,7 +2820,7 @@
 /* a favorite's IVs under each Pokémon; the accent marks IVs picked in the builder (not the league's best spread) */
 .rvmp .r-tm-board-ivs {
 	margin-top: 4px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 12px;
 	color: var(--text-dim);
@@ -2904,7 +2888,7 @@
 	overflow-wrap: break-word;
 }
 .rvmp .r-tm-board-metric > b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 17px;
 	line-height: 1.15;
@@ -2913,19 +2897,19 @@
 /* each number takes the colour of its tier (the same five as the rest of the Teams view); the metric the list is sorted by
    is the bigger one */
 .rvmp .r-tm-board-metric[data-tier='elite'] {
-	--metric-c: #3fd07a;
+	--metric-c: var(--grade-a);
 }
 .rvmp .r-tm-board-metric[data-tier='strong'] {
-	--metric-c: #58a7ff;
+	--metric-c: var(--role-lead);
 }
 .rvmp .r-tm-board-metric[data-tier='solid'] {
-	--metric-c: #f2c53d;
+	--metric-c: var(--grade-c);
 }
 .rvmp .r-tm-board-metric[data-tier='shaky'] {
-	--metric-c: #f59e42;
+	--metric-c: var(--grade-d);
 }
 .rvmp .r-tm-board-metric[data-tier='risky'] {
-	--metric-c: #ef5b5b;
+	--metric-c: var(--grade-f);
 }
 /* only the number the list is sorted by is painted; the other one stays quiet */
 .rvmp .r-tm-board-metric > b {
@@ -3048,11 +3032,11 @@
 	stroke-linejoin: round;
 }
 .rvmp .r-tm-star-btn:hover {
-	color: #f2c53d;
+	color: var(--gold);
 	transform: scale(1.12);
 }
 .rvmp .r-tm-star-btn[data-on] {
-	color: #f2c53d;
+	color: var(--gold);
 }
 .rvmp .r-tm-star-btn[data-on] svg {
 	fill: currentColor;
@@ -3174,7 +3158,7 @@
 .rvmp .r-mini > .r-tm-collection-cp {
 	max-width: 100%;
 	margin-top: 2%;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: clamp(7px, 10cqi, 9px);
 	font-weight: 700;
 	line-height: 1.1;
@@ -3200,7 +3184,7 @@
 	line-height: 1;
 }
 .rvmp .r-tm-collection-remove:hover {
-	color: #fff;
+	color: var(--on-fill);
 	background: var(--neg);
 }
 .rvmp button.r-mini {
@@ -3367,10 +3351,6 @@
 /* The Super Max Mega toggle, when on: a soft rainbow in the tones of its icon (orange, lime, sky blue, magenta) instead of the
    accent blue — a gradient hairline around a barely tinted fill — with the page's ordinary text colour, not a coloured one. */
 .rvmp .r-tm-buddy--super[aria-pressed='true'] {
-	--rb-1: #e0903f;
-	--rb-2: #b5cc4e;
-	--rb-3: #5bb8e8;
-	--rb-4: #d03a85;
 	color: var(--text-dim);
 	border-color: transparent;
 	background:

@@ -35,7 +35,7 @@
 	flex: none;
 }
 .rvmp .r-topbar .r-crumb {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	color: var(--text-dim);
 	font-size: 15px;
@@ -196,7 +196,7 @@
 	height: 100%;
 	object-fit: contain;
 	pointer-events: none;
-	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.4));
+	filter: drop-shadow(0 2px 3px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k))));
 }
 .rvmp .r-hero-mini-sprite > .r-shadow-mark {
 	position: absolute;
@@ -209,7 +209,7 @@
 .rvmp .r-hero-mini-name {
 	min-width: 0;
 	flex: 1 1 auto;
-	font-family: Fredoka, 'Nunito Sans', sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 14px;
 	white-space: nowrap;
@@ -233,7 +233,7 @@
 	padding: 0 12px;
 	border-radius: var(--r-pill);
 	border: 1px solid transparent;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 11px;
 	letter-spacing: 0.04em;
@@ -274,7 +274,7 @@
 }
 
 .rvmp .r-dexno {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 13px;
 	color: var(--text-faint);
@@ -288,7 +288,7 @@
 	display: flex;
 	align-items: baseline;
 	gap: 6px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	color: var(--accent);
 	line-height: 1;
@@ -336,7 +336,7 @@
 	border-radius: var(--r-pill);
 	background: color-mix(in srgb, var(--surface) 55%, transparent);
 	backdrop-filter: blur(3px);
-	box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+	box-shadow: 0 2px 6px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k)));
 }
 .rvmp .r-sprite-dots i {
 	width: 6px;
@@ -379,7 +379,7 @@
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
-	filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
+	filter: drop-shadow(0 10px 14px rgb(var(--shadow-rgb) / calc(0.45 * var(--shadow-k))));
 	animation: r-bob 5s ease-in-out infinite;
 }
 /* Every Pokémon sprite `<img>` in the app (the hero above, and every plain
@@ -440,7 +440,7 @@
 	font-weight: 700;
 }
 .rvmp .r-stat b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 20px;
 	font-variant-numeric: tabular-nums;
 }
@@ -462,7 +462,7 @@
 	font-weight: 800;
 	font-size: 12.5px;
 	letter-spacing: 0.02em;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--tc);
 	box-shadow: 0 2px 10px color-mix(in srgb, var(--tc) 40%, transparent);
 }
@@ -471,7 +471,7 @@
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
-	background: rgb(0 0 0 / 0.28);
+	background: rgb(var(--shadow-rgb) / calc(0.28 * var(--shadow-k)));
 }
 
 /* ---- segmented control --------------------------------------------------- */
@@ -509,7 +509,7 @@
 }
 .rvmp .r-seg button[data-active='true'] {
 	background: var(--seg-c, var(--accent));
-	color: #0c1017;
+	color: var(--on-fill);
 	box-shadow: 0 2px 14px color-mix(in srgb, var(--seg-c, var(--accent)) 45%, transparent);
 }
 /* subtle league-colour hint on the inactive league buttons */
@@ -658,7 +658,7 @@
 	height: 100%;
 	object-fit: contain;
 	/* same understated drop-shadow the rankings grid's own sprites use */
-	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
+	filter: drop-shadow(0 4px 6px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
 }
 .rvmp .r-reach-chip .r-reach-art > .r-shadow-mark {
 	position: absolute;
@@ -699,7 +699,7 @@
 	color: var(--tc, var(--accent));
 }
 .rvmp .r-reach-chip b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 12px;
 	font-variant-numeric: tabular-nums;
 	color: var(--lg, var(--accent));
@@ -799,11 +799,11 @@
 		color: var(--text);
 		font-size: 15px;
 		line-height: 1;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 	}
 	.rvmp .r-tabs-arrow:hover {
 		background: var(--accent);
-		color: #0c1017;
+		color: var(--on-fill);
 		border-color: transparent;
 	}
 	.rvmp .r-tabs-arrow--left {
@@ -883,7 +883,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--s2);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 13px;
 	letter-spacing: 0.08em;
@@ -936,7 +936,7 @@
 	border-radius: var(--r-xs);
 	background: color-mix(in srgb, var(--accent) 18%, transparent);
 	color: var(--accent);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-variant-numeric: tabular-nums;
 	font-size: 18px;
@@ -1079,7 +1079,7 @@
 	background: radial-gradient(circle at 50% 30%, var(--surface-3), var(--surface-2) 74%);
 	/* neutral contour on inactive rows */
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.05),
+		inset 0 1px 0 var(--hi-1),
 		inset 0 0 0 1px var(--border),
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
@@ -1092,7 +1092,7 @@
 		var(--surface-2) 74%
 	);
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.08),
+		inset 0 1px 0 var(--hi-2),
 		inset 0 0 0 1px color-mix(in srgb, var(--lg) 60%, transparent),
 		0 0 0 1.5px var(--surface),
 		0 0 0 3.5px color-mix(in srgb, var(--lg) 75%, transparent),
@@ -1103,7 +1103,7 @@
 	width: 40px;
 	height: 40px;
 	object-fit: contain;
-	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.45));
+	filter: drop-shadow(0 2px 3px rgb(var(--shadow-rgb) / calc(0.45 * var(--shadow-k))));
 }
 .rvmp .r-board-sprite > .r-shadow-mark {
 	position: absolute;
@@ -1218,7 +1218,7 @@
 	min-width: 0;
 }
 .rvmp .r-board-lg {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 10px;
 	letter-spacing: 0.09em;
@@ -1272,7 +1272,7 @@
 	gap: 2px;
 }
 .rvmp .r-board-rank {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 800;
 	font-size: 19px;
 	line-height: 1;
@@ -1313,7 +1313,7 @@
 	color: var(--text-dim);
 }
 .rvmp .r-iv-head b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 15px;
 	color: var(--text);
 	font-variant-numeric: tabular-nums;
@@ -1426,7 +1426,7 @@
 	font-weight: 700;
 }
 .rvmp .r-readout b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 19px;
 	font-variant-numeric: tabular-nums;
 }
@@ -1511,7 +1511,7 @@
 	text-align: left;
 }
 .rvmp .r-raidtype-head b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 16px;
 	font-variant-numeric: tabular-nums;
 	/* neutral until the row is hovered or selected */
@@ -1631,7 +1631,7 @@
 	font-weight: 800;
 	font-size: 11px;
 	line-height: 1;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--tc, var(--t-normal));
 }
 /* multiplier: no box — same ink as the type name, a centred hairline divider */
@@ -1646,7 +1646,7 @@
 	font-size: 11px;
 	line-height: 1;
 	letter-spacing: 0.02em;
-	color: #0c1017;
+	color: var(--on-fill);
 }
 .rvmp .r-eff-t .r-eff-mult::before {
 	content: '';
@@ -1656,7 +1656,7 @@
 	width: 2px;
 	height: 11px;
 	border-radius: 1px;
-	background: rgb(12 16 23 / 0.5);
+	background: color-mix(in srgb, var(--on-fill) 55%, transparent);
 	transform: translateY(-50%);
 }
 
@@ -1729,7 +1729,7 @@
 }
 .rvmp .r-stepper button:not(:disabled):active {
 	background: var(--accent);
-	color: #0c1017;
+	color: var(--on-fill);
 	box-shadow: none;
 }
 .rvmp .r-muted {
@@ -1769,24 +1769,21 @@
 	justify-content: center;
 	min-height: 60dvh;
 	color: var(--text-dim);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 }
+/* The loading mark: our logo drawing itself, over and over (an SVG image, so it needs no markup of its own and runs on its own) */
 .rvmp .r-spinner {
-	width: 46px;
-	height: 46px;
-	border-radius: 50%;
-	border: 4px solid var(--surface-3);
-	border-top-color: var(--accent);
-	animation: r-spin 0.8s linear infinite;
+	width: 88px;
+	height: 52px;
+	background: url('/images/brand/loading.svg') center / contain no-repeat;
 	margin-bottom: var(--s3);
 }
 /* smaller variant for an inline placeholder standing in for a single chip
    grid (Calendar) — the full-size spinner's own margin-bottom assumes it's
    the only thing on the page, which is far too much space for this. */
 .rvmp .r-spinner--sm {
-	width: 22px;
-	height: 22px;
-	border-width: 3px;
+	width: 38px;
+	height: 23px;
 	margin-bottom: 0;
 }
 .rvmp .r-minigrid-loading {
@@ -1794,11 +1791,6 @@
 	place-items: center;
 	min-height: 64px;
 	margin-bottom: var(--s3);
-}
-@keyframes r-spin {
-	to {
-		transform: rotate(360deg);
-	}
 }
 
 /* ===========================================================================
@@ -1811,7 +1803,8 @@
 	display: flex;
 	align-items: center;
 	gap: var(--s3);
-	padding: var(--s3) var(--s4);
+	/* the bar spans the screen, but its content (logo, search, settings) stays within 1024px, or 90% of a narrower screen */
+	padding: var(--s3) max(var(--s4), calc((100% - min(1024px, 90%)) / 2));
 	background: color-mix(in srgb, var(--bg) 86%, transparent);
 	backdrop-filter: blur(16px);
 	border-bottom: 1px solid var(--border);
@@ -1821,7 +1814,7 @@
 	align-items: center;
 	gap: 8px;
 	flex: none;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 15px;
 }
@@ -1833,26 +1826,10 @@
 		display: none;
 	}
 }
-.rvmp .r-logo-ball {
-	width: 22px;
-	height: 22px;
-	border-radius: 50%;
-	background: linear-gradient(#ff5b5b 0 49%, #f4f4f5 51% 100%);
-	box-shadow:
-		inset 0 0 0 2px #11151c,
-		0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent);
-	position: relative;
-}
-.rvmp .r-logo-ball::after {
-	content: '';
-	position: absolute;
-	inset: 0;
-	margin: auto;
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: #11151c;
-	box-shadow: 0 0 0 2px #f4f4f5;
+.rvmp .r-logo-mark {
+	height: 30px;
+	width: auto;
+	flex: none;
 }
 .rvmp .r-search {
 	position: relative;
@@ -1907,7 +1884,7 @@
 	background: color-mix(in srgb, var(--surface) 96%, transparent);
 	backdrop-filter: blur(16px);
 	border: 1px solid var(--border-strong);
-	box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+	box-shadow: 0 18px 40px rgb(var(--shadow-rgb) / calc(0.45 * var(--shadow-k)));
 }
 .rvmp .r-search-menu button {
 	display: flex;
@@ -1955,7 +1932,7 @@
 }
 .rvmp .r-search-dex {
 	flex: none;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 11px;
 	color: var(--text-faint);
@@ -2072,7 +2049,7 @@
 	place-items: center;
 	border-radius: var(--r-pill);
 	background: color-mix(in srgb, var(--neg) 80%, #b91c1c);
-	color: #0c1017;
+	color: var(--on-fill);
 	font-family: 'Nunito Sans', sans-serif;
 	font-variant-numeric: tabular-nums;
 	font-size: 10.5px;
@@ -2173,7 +2150,7 @@
 	flex: 1 1 auto;
 }
 .rvmp .r-install-copy b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 13.5px;
 }
 .rvmp .r-install-copy span {
@@ -2341,7 +2318,7 @@
 	border-radius: var(--r-pill);
 	font-size: 11px;
 	font-weight: 800;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--accent);
 }
 .rvmp .r-filter-chip {
@@ -2352,7 +2329,7 @@
 	border-radius: var(--r-pill);
 	font-weight: 700;
 	font-size: 12px;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--tc, var(--accent));
 }
 .rvmp .r-filter-chip span {
@@ -2386,7 +2363,7 @@
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: var(--s3);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 12px;
 	letter-spacing: 0.08em;
@@ -2492,7 +2469,7 @@
 	border: 1px solid var(--border-strong);
 	background: var(--surface-3);
 	color: var(--text-dim);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 11px;
 	font-weight: 700;
 	letter-spacing: normal;
@@ -2522,7 +2499,7 @@
 	height: 34px;
 	padding: 0 2px;
 	color: var(--text-dim);
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 14px;
 	font-weight: 700;
 	letter-spacing: 0.04em;
@@ -2582,7 +2559,7 @@
 	top: 4%;
 	left: 6%;
 	z-index: 6;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	color: var(--text-faint);
 	font-variant-numeric: tabular-nums;
 	letter-spacing: 0.02em;
@@ -2600,7 +2577,7 @@
 	width: clamp(5px, 7cqi, 8px);
 	height: clamp(5px, 7cqi, 8px);
 	border-radius: 50%;
-	box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+	box-shadow: 0 0 0 1px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 }
 .rvmp .r-pc-art {
 	position: relative;
@@ -2612,7 +2589,7 @@
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
-	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
+	filter: drop-shadow(0 4px 6px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
 }
 /* shadow adorner — bottom-right corner (the rank-change chevron takes top-right) */
 .rvmp .r-pc > .r-shadow-mark {
@@ -2656,7 +2633,7 @@
 	color: var(--tc, var(--accent));
 }
 .rvmp .r-pc-metric {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: clamp(9px, 14cqi, 12px);
 	color: var(--accent);
@@ -2787,7 +2764,7 @@
 	border-radius: var(--r-pill);
 	font-size: 10.5px;
 	font-weight: 800;
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--tc, var(--t-normal));
 }
 .rvmp .r-move-tag {
@@ -2930,7 +2907,7 @@
 	aspect-ratio: 1;
 	object-fit: contain;
 	/* same understated drop-shadow every other sprite on the site uses */
-	filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.35));
+	filter: drop-shadow(0 4px 6px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
 }
 .rvmp .r-mini > span:not(.r-mini-shiny) {
 	max-width: 100%;
@@ -2958,7 +2935,7 @@
 	padding: 2px;
 	border-radius: 50%;
 	background:
-		radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--t-ghost) 45%, transparent), transparent 72%), #160b2e;
+		radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--t-ghost) 45%, transparent), transparent 72%), var(--ghost-disc);
 	box-shadow:
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--t-ghost) 70%, transparent);
@@ -3026,7 +3003,7 @@
 	width: clamp(5px, 7cqi, 8px);
 	height: clamp(5px, 7cqi, 8px);
 	border-radius: 50%;
-	box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+	box-shadow: 0 0 0 1px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 }
 .rvmp .r-lg-dots i[data-lg='great'] {
 	background: var(--lg-great);
@@ -3145,7 +3122,7 @@
 	object-fit: contain;
 	border-radius: 0;
 	flex: none;
-	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.75)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.65));
+	filter: drop-shadow(0 0 2px rgb(var(--shadow-rgb) / calc(0.75 * var(--shadow-k)))) drop-shadow(0 2px 4px rgb(var(--shadow-rgb) / calc(0.65 * var(--shadow-k))));
 }
 /* 1 — solo, biggest. */
 .rvmp .r-event-head .r-event-spotlight-sprites[data-count='1'] img {
@@ -3242,8 +3219,8 @@
 	border-radius: var(--r-pill);
 }
 .rvmp .r-phase[data-phase='live'] {
-	color: #0c1017;
-	background: #4ade80;
+	color: var(--on-fill);
+	background: var(--pos);
 }
 .rvmp .r-phase[data-phase='soon'] {
 	color: var(--text);
@@ -3254,8 +3231,8 @@
 	background: transparent;
 }
 .rvmp .r-phase[data-phase='season'] {
-	color: #0c1017;
-	background: linear-gradient(120deg, var(--lg-master), #c58bff);
+	color: var(--on-fill);
+	background: linear-gradient(120deg, var(--lg-master), color-mix(in srgb, var(--lg-master) 55%, #fff));
 }
 .rvmp .r-event-body {
 	padding: 0 var(--s3) var(--s3);
@@ -3309,7 +3286,7 @@
 	background: color-mix(in srgb, var(--tc, var(--surface-3)) 22%, var(--surface-2));
 	/* same contour ring as the leaderboard/counters sprites (.r-board-sprite, .r-ctr-art) */
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.05),
+		inset 0 1px 0 var(--hi-1),
 		inset 0 0 0 1px var(--border),
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
@@ -3344,7 +3321,7 @@
 .rvmp .r-grunt:hover .r-grunt-head img.r-grunt-av,
 .rvmp .r-grunt[data-open='true'] .r-grunt-head img.r-grunt-av {
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.08),
+		inset 0 1px 0 var(--hi-2),
 		inset 0 0 0 1px color-mix(in srgb, var(--tc, var(--lg-raid)) 60%, transparent),
 		0 0 0 1.5px var(--surface),
 		0 0 0 3.5px color-mix(in srgb, var(--tc, var(--lg-raid)) 75%, transparent);
@@ -3483,11 +3460,11 @@
 		color: var(--text);
 		font-size: 15px;
 		line-height: 1;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 	}
 	.rvmp .r-datepick-arrow:hover {
 		background: var(--accent);
-		color: #0c1017;
+		color: var(--on-fill);
 		border-color: transparent;
 	}
 	.rvmp .r-datepick-arrow--left {
@@ -3516,7 +3493,7 @@
 	border-color: var(--border-strong);
 }
 .rvmp .r-datepick-chips button[data-active='true'] {
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--accent);
 	border-color: transparent;
 }
@@ -3601,11 +3578,11 @@
 		color: var(--text);
 		font-size: 15px;
 		line-height: 1;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 	}
 	.rvmp .r-lgpick-arrow:hover {
 		background: var(--accent);
-		color: #0c1017;
+		color: var(--on-fill);
 		border-color: transparent;
 	}
 	.rvmp .r-lgpick-arrow--left {
@@ -3819,11 +3796,11 @@
 	width: 30px;
 	height: 30px;
 	object-fit: contain;
-	filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.4));
+	filter: drop-shadow(0 2px 4px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k))));
 }
 .rvmp .r-eggsec-head b {
 	flex: none;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 16px;
 	font-weight: 600;
 }
@@ -4017,7 +3994,7 @@
 	transition: all 0.14s ease;
 }
 .rvmp .r-set-opts button[data-active] {
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--accent);
 	border-color: transparent;
 }
@@ -4129,7 +4106,7 @@
 	border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 .rvmp .r-ivt-found-rank {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 800;
 	font-size: 20px;
 	color: var(--accent);
@@ -4139,14 +4116,14 @@
    the ranked rows below, so "this is genuinely as good as it gets" reads the
    same whether you found it by search or by scrolling. */
 .rvmp .r-ivt-found[data-top] {
-	background: linear-gradient(180deg, color-mix(in srgb, #ffc94d 22%, var(--surface)), var(--surface));
-	border-color: color-mix(in srgb, #ffc94d 55%, var(--border));
+	background: linear-gradient(180deg, color-mix(in srgb, var(--gold-soft) 22%, var(--surface)), var(--surface));
+	border-color: color-mix(in srgb, var(--gold-soft) 55%, var(--border));
 }
 .rvmp .r-ivt-found[data-top] .r-ivt-found-rank {
-	color: #d99a00;
+	color: var(--gold-ink);
 }
 .rvmp .r-ivt-found-iv {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 15px;
 }
@@ -4271,17 +4248,17 @@
    the merely-excellent ones. Composes with `data-match` (own box-shadow
    edge, the row backgrounds blend) rather than fighting it. */
 .rvmp .r-ivt-row[data-top] {
-	background: color-mix(in srgb, #ffc94d 14%, var(--surface));
-	box-shadow: inset 3px 0 0 #ffc94d;
+	background: color-mix(in srgb, var(--gold-soft) 14%, var(--surface));
+	box-shadow: inset 3px 0 0 var(--gold-soft);
 }
 .rvmp .r-ivt-row[data-top][data-match] {
-	background: color-mix(in srgb, #ffc94d 12%, color-mix(in srgb, var(--accent) 18%, var(--surface)));
+	background: color-mix(in srgb, var(--gold-soft) 12%, color-mix(in srgb, var(--accent) 18%, var(--surface)));
 	box-shadow:
 		inset 3px 0 0 var(--accent),
-		inset -3px 0 0 #ffc94d;
+		inset -3px 0 0 var(--gold-soft);
 }
 .rvmp .r-ivt-row[data-top] .r-ivt-rank {
-	color: #d99a00;
+	color: var(--gold-ink);
 	font-weight: 800;
 }
 /* hover: gently light up the row and the column, pop the exact cell */
@@ -4352,10 +4329,10 @@
 	display: block;
 	height: 100%;
 	border-radius: 3px;
-	background: linear-gradient(90deg, #3d7ffb, #5cc6ff);
+	background: linear-gradient(90deg, var(--bar-a), var(--bar-b));
 }
 .rvmp .r-ivt-row[data-match] .r-ivt-bar-fill {
-	background: linear-gradient(90deg, #6aa8ff, #8fe0ff);
+	background: linear-gradient(90deg, var(--bar-a-soft), var(--bar-b-soft));
 }
 .rvmp .r-ivt-cp {
 	font-weight: 700;
@@ -4473,7 +4450,7 @@
 	border-radius: var(--r-sm);
 	background: var(--surface-3);
 	border: 1px solid var(--border-strong);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+	box-shadow: 0 1px 2px rgb(var(--shadow-rgb) / calc(0.18 * var(--shadow-k)));
 }
 .rvmp .r-ss-sprite > img {
 	width: 46px;
@@ -4588,7 +4565,7 @@
 		box-shadow 0.18s ease;
 }
 .rvmp .r-md-mode-seg button[data-active='true'] {
-	color: #0c1017;
+	color: var(--on-fill);
 }
 /* The label text sits in a child `<i>` (`.r-md-knob-full`/`.r-md-knob-short`,
  * one hidden via `display: none` depending on viewport width — see their own
@@ -4608,8 +4585,8 @@
 }
 .rvmp .r-md-warning {
 	margin-bottom: var(--s3);
-	background: color-mix(in srgb, #f5a623 16%, var(--surface));
-	border: 1px solid color-mix(in srgb, #f5a623 48%, var(--border));
+	background: color-mix(in srgb, var(--warn) 16%, var(--surface));
+	border: 1px solid color-mix(in srgb, var(--warn) 48%, var(--border));
 }
 .rvmp .r-md-warning p {
 	font-size: 12.5px;
@@ -4836,7 +4813,7 @@
 	padding: 13px 18px;
 	border-radius: var(--r-md);
 	border: 0;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 15px;
 	font-weight: 700;
 	color: var(--accent-ink, #06101d);
@@ -4873,7 +4850,7 @@
 	color: var(--text-dim);
 }
 .rvmp .r-md-length-hint--warn {
-	color: #f5a623;
+	color: var(--warn);
 	font-weight: 700;
 }
 .rvmp .r-md-copy {
@@ -5093,7 +5070,7 @@
 	display: grid;
 	place-items: center;
 	border-radius: 5px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 700;
 	font-size: 10.5px;
 	color: var(--text-dim);
@@ -5104,16 +5081,16 @@
 		box-shadow 0.12s ease;
 }
 .rvmp .r-tc-cell[data-t='se'] {
-	color: #08130a;
+	color: var(--on-fill);
 	background: var(--t-grass);
 }
 .rvmp .r-tc-cell[data-t='nve'] {
-	color: #180a0a;
+	color: var(--on-fill);
 	background: color-mix(in srgb, var(--t-fire) 78%, var(--surface));
 }
 .rvmp .r-tc-cell[data-t='imm'] {
 	color: var(--text);
-	background: color-mix(in srgb, #8b93a0 58%, var(--surface));
+	background: color-mix(in srgb, var(--muted-fill) 58%, var(--surface));
 }
 .rvmp .r-tc-cell[data-axis] {
 	filter: brightness(1.16);
@@ -5123,7 +5100,7 @@
 	z-index: 3;
 	filter: brightness(1.28);
 	transform: scale(1.16);
-	box-shadow: 0 4px 16px rgb(0 0 0 / 0.5);
+	box-shadow: 0 4px 16px rgb(var(--shadow-rgb) / calc(0.5 * var(--shadow-k)));
 }
 .rvmp .r-tc-legend {
 	display: flex;
@@ -5152,7 +5129,7 @@
 	background: color-mix(in srgb, var(--t-fire) 78%, var(--surface));
 }
 .rvmp .r-tc-legend span[data-t='imm']::before {
-	background: color-mix(in srgb, #8b93a0 58%, var(--surface));
+	background: color-mix(in srgb, var(--muted-fill) 58%, var(--surface));
 }
 .rvmp .r-tc-calc {
 	display: grid;
@@ -5333,7 +5310,7 @@
 	background: var(--surface-2);
 }
 .rvmp .r-sort-dirseg button[data-active] {
-	color: #0c1017;
+	color: var(--on-fill);
 	background: var(--accent);
 }
 /* Menu list: one option per row, checkmark on the current one */
@@ -5516,7 +5493,7 @@
 	gap: 8px;
 }
 .rvmp .r-setmenu-h {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 11px;
 	letter-spacing: 0.08em;
@@ -5730,7 +5707,7 @@
 }
 .rvmp .r-lgfilter-hint {
 	margin: 0;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 12px;
 	letter-spacing: 0.08em;
@@ -5853,7 +5830,7 @@
 .rvmp .r-mstat-arena {
 	display: block;
 	margin-bottom: 10px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 10.5px;
 	font-weight: 700;
 	letter-spacing: 0.06em;
@@ -5875,7 +5852,7 @@
 	text-align: center;
 }
 .rvmp .r-mstat-tile b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 16px;
 	font-weight: 700;
 	color: var(--text);
@@ -5910,7 +5887,7 @@
 	gap: 10px;
 }
 .rvmp .r-usage-lead b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 30px;
 	font-weight: 700;
 	line-height: 1;
@@ -5937,7 +5914,7 @@
 	background: var(--surface-2);
 }
 .rvmp .r-usage-tile b {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-size: 18px;
 	font-weight: 700;
 	color: var(--text);
@@ -6054,7 +6031,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 2px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 800;
 	font-size: 12px;
 	color: var(--text-faint);
@@ -6088,7 +6065,7 @@
 	border-radius: 50%;
 	background: radial-gradient(circle at 50% 30%, var(--surface-3), var(--surface-2) 74%);
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.05),
+		inset 0 1px 0 var(--hi-1),
 		inset 0 0 0 1px var(--border),
 		0 0 0 1.5px var(--surface),
 		0 0 0 3px color-mix(in srgb, var(--border-strong) 75%, transparent);
@@ -6096,7 +6073,7 @@
 }
 .rvmp .r-ctr-row:hover .r-ctr-art {
 	box-shadow:
-		inset 0 1px 0 rgb(255 255 255 / 0.08),
+		inset 0 1px 0 var(--hi-2),
 		inset 0 0 0 1px color-mix(in srgb, var(--tc, var(--lg-raid)) 60%, transparent),
 		0 0 0 1.5px var(--surface),
 		0 0 0 3.5px color-mix(in srgb, var(--tc, var(--lg-raid)) 75%, transparent);
@@ -6105,7 +6082,7 @@
 	width: 40px;
 	height: 40px;
 	object-fit: contain;
-	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.45));
+	filter: drop-shadow(0 2px 3px rgb(var(--shadow-rgb) / calc(0.45 * var(--shadow-k))));
 }
 /* shadow adorner — same placement as the leaderboard's .r-board-sprite */
 .rvmp .r-ctr-art > .r-shadow-mark {
@@ -6117,7 +6094,7 @@
 	z-index: 6;
 }
 .rvmp .r-ctr-name {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: 13.5px;
 	color: var(--text);
@@ -6191,7 +6168,7 @@
 	display: inline-flex;
 	align-items: baseline;
 	gap: 4px;
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 800;
 	font-size: 15px;
 	font-variant-numeric: tabular-nums;
@@ -6689,7 +6666,7 @@
 	color: var(--text-dim);
 }
 .rvmp .r-hex-val {
-	font-family: Fredoka, sans-serif;
+	font-family: var(--font-display);
 	font-weight: 600;
 	font-size: clamp(15px, 4.4vw, 19px);
 	color: var(--text);
@@ -6793,7 +6770,7 @@
 	position: fixed;
 	inset: 0;
 	z-index: 35;
-	background: rgb(6 9 14 / 0.62);
+	background: var(--scrim);
 	backdrop-filter: blur(4px);
 	animation: r-dim-in 0.18s ease both;
 }
@@ -6806,19 +6783,19 @@
 /* ---- rank medals (RankMedal): gold, silver, bronze ---------------------------------------------------- */
 .rvmp .r-medal {
 	flex: none;
-	filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.4));
+	filter: drop-shadow(0 2px 3px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k))));
 }
 .rvmp .r-medal[data-podium='1'] {
-	--medal: #f2c53d;
-	--medal-edge: #b98a12;
+	--medal: var(--medal-gold);
+	--medal-edge: var(--medal-gold-edge);
 }
 .rvmp .r-medal[data-podium='2'] {
-	--medal: #d5dce6;
-	--medal-edge: #8b98a9;
+	--medal: var(--medal-silver);
+	--medal-edge: var(--medal-silver-edge);
 }
 .rvmp .r-medal[data-podium='3'] {
-	--medal: #e0a361;
-	--medal-edge: #a8672a;
+	--medal: var(--medal-bronze);
+	--medal-edge: var(--medal-bronze-edge);
 }
 .rvmp .r-medal-ribbon {
 	fill: var(--medal-edge);
@@ -6888,7 +6865,7 @@
 	background: color-mix(in srgb, var(--surface) 90%, transparent);
 	box-shadow:
 		0 0 0 1px var(--border-strong),
-		0 2px 6px rgb(0 0 0 / 0.4);
+		0 2px 6px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k)));
 }
 /* a mini sprite: the crown takes the top left (the top right belongs to the remove cross); a shadow mark that shares
    the sprite with it steps down underneath */
@@ -6916,5 +6893,5 @@
 	filter: grayscale(1) brightness(0.8) contrast(0.9);
 	box-shadow:
 		0 0 0 1px var(--border-strong),
-		0 2px 5px rgb(0 0 0 / 0.35);
+		0 2px 5px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k)));
 }

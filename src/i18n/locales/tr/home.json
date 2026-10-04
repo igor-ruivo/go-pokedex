@@ -1,0 +1,80 @@
+{
+	"hero": {
+		"eyebrow": "Pokémon GO yardımcısı",
+		"title": "Oynarken ihtiyacın olan her şey.",
+		"subtitle": "Canlı etkinlikler, lig sıralamaları, koleksiyonunu tanıyan bir takım oluşturucu ve tek dokunuşla depolama temizliği. Ücretsiz, hızlı ve kendi dilinde.",
+		"ctaTeams": "Takım kur",
+		"ctaRegister": "Pokémonların"
+	},
+	"now": {
+		"title": "Şu an olanlar",
+		"subtitle": "Süren ve yaklaşan etkinlikler ile getirdikleri.",
+		"all": "Tüm etkinlikler",
+		"empty": "Şu an etkinlik yok.",
+		"live": "Canlı",
+		"more": "+{{count}}",
+		"raids": "Baskınlar",
+		"wild": "Çıkışlar",
+		"researches": "Araştırma",
+		"eggs": "Yumurtalar"
+	},
+	"right": {
+		"title": "Şu an oyunda",
+		"bosses": "Bugünün baskın listesi",
+		"spawns": "Vahşi ve öne çıkan çıkışlar",
+		"rockets": "Kadrolar ve gölge ödülleri",
+		"eggs": "Her yumurtadan ne çıkar"
+	},
+	"ranks": {
+		"title": "Sıralamalar",
+		"subtitle": "Her lig için en iyi Pokémonlar, tek bakışta.",
+		"pokedex": "Tüm Pokémonlar: istatistikler, BP ve formlar",
+		"raid": "Türe göre en iyi saldırganlar",
+		"top": "İlk 3"
+	},
+	"teams": {
+		"title": "Takım laboratuvarı",
+		"headline": "Koleksiyonunu tanıyan bir takım oluşturucu.",
+		"body": "Herhangi bir üçlüyü PvPoke gibi puanla ya da gerçekten sahip olduğun Pokémonlar arasından en iyi takımları IV, seviye ve En İyi Arkadaş bilgilerinle bulmasına izin ver."
+	},
+	"tools": {
+		"title": "Araçlar",
+		"searchesPitch": "Depolamanı saniyeler içinde temizle. Önemli olanları tutan, gerisini seçen arama dizeleri oluştur."
+	},
+	"footer": {
+		"tagline": "Pokémon GO antrenörleri için ücretsiz, hızlı araçlar.",
+		"explore": "Keşfet",
+		"tools": "Araçlar",
+		"project": "Proje",
+		"about": "Hakkında ve emeği geçenler",
+		"privacy": "Gizlilik",
+		"issues": "Sorun bildir",
+		"disclaimer": "GO Pokédex resmî olmayan bir hayran projesidir. Niantic, Nintendo, The Pokémon Company veya Game Freak ile bağlantılı değildir ve onlar tarafından onaylanmamış ya da desteklenmemiştir. Pokémon ve Pokémon GO ilgili sahiplerinin ticari markalarıdır."
+	},
+	"about": {
+		"title": "GO Pokédex hakkında",
+		"intro": "GO Pokédex, Pokémon GO oyuncuları için ücretsiz bir yardımcıdır: canlı etkinlikler ve baskınlar, PvP ve baskın sıralamaları, üçlüleri puanlayan ve kendi koleksiyonundaki en iyi takımları bulan bir takım oluşturucu ve depolamanı temizleyen arama dizeleri. Oyunun ortasında hızlı kullanılması için yapıldı.",
+		"creditsTitle": "Emeği geçenler",
+		"creditsIntro": "Bu site Pokémon GO topluluğunun emeğine dayanır. Teşekkürler:",
+		"pvpoke": "PvPoke, PvP sıralamaları ve takım puanlarımızın dayandığı savaş motoru için.",
+		"leekduck": "LeekDuck, etkinlik, baskın patronu, yumurta ve Team GO Rocket verileri için.",
+		"pokeminers": "PokeMiners, game master verileri ve spritelar için.",
+		"official": "Pokémon GO Live, resmî etkinlik duyuruları için.",
+		"pvpivs": "PvP IVs, IV sıralaması sorgularının öncüsü.",
+		"privacyTitle": "Gizlilik",
+		"privacyBody": "Hesap yoktur. Ayarların, koleksiyonun ve favori takımların tarayıcında kalır ve cihazından asla çıkmaz. Ziyaretleri anonim saymak için Google Analytics kullanıyoruz; çerez ayarlayabilir. Reklam yoktur.",
+		"disclaimerTitle": "Sorumluluk reddi",
+		"madeBy": "Igor Ruivo tarafından yapıldı."
+	},
+	"menu": {
+		"open": "Menüyü aç",
+		"close": "Menüyü kapat",
+		"pages": "Sayfalar",
+		"preferences": "Tercihler",
+		"home": "Ana sayfa",
+		"appearance": "Görünüm",
+		"themeSystem": "Sistem",
+		"themeLight": "Açık",
+		"themeDark": "Koyu"
+	}
+}

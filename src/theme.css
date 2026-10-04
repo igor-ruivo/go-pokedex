@@ -1,0 +1,256 @@
+/* ============================================================================
+   THE colour palette: every colour the app uses is a token defined here, once per theme.
+   Nothing else in the stylesheets writes a colour of its own (the few exceptions are artwork that has one fixed look in
+   both themes: the logo, the sprites, text laid over a photograph).
+
+   Dark is the base (`.rvmp`); light is the same list again under `[data-theme='light']`. `data-theme` is always written
+   on the app root — the player's choice, or the device's when they follow it (see contexts/theme-context.tsx) — so
+   there is a single light block and no `prefers-color-scheme` anywhere else.
+
+   Adding a colour: give it a name below in BOTH blocks, then use `var(--name)`. A new light value is judged on a
+   white-ish page the way the dark one is on a near-black one: not the dark colour inverted, but re-tuned to keep its
+   meaning and enough contrast (text 4.5:1, large text and icons 3:1).
+   ============================================================================ */
+
+/* ---- dark ------------------------------------------------------------------------------------------------------- */
+.rvmp {
+	color-scheme: dark;
+
+	/* surfaces, lightest layer last */
+	--bg: #0b0e14;
+	--bg-elev: #121722;
+	--surface: #161d29;
+	--surface-2: #1e2735;
+	--surface-3: #26303f;
+	--border: color-mix(in srgb, #7f92ad 16%, transparent);
+	--border-strong: color-mix(in srgb, #7f92ad 30%, transparent);
+
+	/* text */
+	--text: #eef2f8;
+	--text-dim: #9fb0c4;
+	--text-faint: #64748b;
+
+	/* brand accent (the Pokémon page overrides it with the Pokémon's own type colour) */
+	--accent: #ff5b5b;
+	--accent-ink: #1c0606;
+	/* text on a coloured fill that is one of the theme's own colours (a type chip, an active segment, a badge) */
+	--on-fill: #0c1017;
+
+	/* light and shadow */
+	--shadow-rgb: 0 0 0;
+	--shadow-k: 1;
+	--shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.24);
+	--shadow-2: 0 8px 30px rgb(0 0 0 / 0.4);
+	--glow:
+		0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
+		0 8px 32px color-mix(in srgb, var(--accent) 26%, transparent);
+	/* the thin lit edge along the top of a raised surface */
+	--hi-1: rgb(255 255 255 / 0.05);
+	--hi-2: rgb(255 255 255 / 0.08);
+	/* what dims the page behind a dialog or a drawer */
+	--scrim: rgb(6 9 14 / 0.62);
+
+	/* type palette — vivid, GO-adjacent */
+	--t-normal: #9099a1;
+	--t-fire: #ff8f43;
+	--t-water: #4d90ff;
+	--t-electric: #ffcf3f;
+	--t-grass: #52c56a;
+	--t-ice: #63d4d1;
+	--t-fighting: #e0524b;
+	--t-poison: #b562d6;
+	--t-ground: #d99a54;
+	--t-flying: #8fa9e8;
+	--t-psychic: #ff6d95;
+	--t-bug: #96c235;
+	--t-rock: #c8b478;
+	--t-ghost: #7a6ac2;
+	--t-dragon: #4f7fe0;
+	--t-dark: #6b6473;
+	--t-steel: #6fb1c9;
+	--t-fairy: #f38ad4;
+
+	/* Pokémon GO league identity colours (hints only — not the page accent) */
+	--lg-great: #3d8bde;
+	--lg-ultra: #e6b422;
+	--lg-master: #9b6bd8;
+	--lg-raid: #f2683c;
+
+	/* IV appraisal (GO style): amber fill, red when a stat is maxed at 15 */
+	--iv-fill: #f5a623;
+	--iv-max: #ff5252;
+
+	/* status */
+	--pos: #4ade80;
+	--neg: #f87171;
+	--warn: #f5a623;
+	--gold: #f2c53d;
+	/* gold as text or as a thin line on a surface */
+	--gold-ink: #d99a00;
+	--gold-soft: #ffc94d;
+
+	/* podium */
+	--medal-gold: #f2c53d;
+	--medal-gold-edge: #b98a12;
+	--medal-silver: #d5dce6;
+	--medal-silver-edge: #8b98a9;
+	--medal-bronze: #e0a361;
+	--medal-bronze-edge: #a8672a;
+
+	/* podium numbers as text */
+	--medal-gold-text: #f2c53d;
+	--medal-silver-text: #c4cdd8;
+	--medal-bronze-text: #d99a54;
+
+	/* a flat grey fill for "off / unknown" marks */
+	--muted-fill: #8b93a0;
+
+	/* the dark disc behind the Ghost-type shadow mark */
+	--ghost-disc: #160b2e;
+
+	/* team letter grades, best to worst */
+	--grade-a: #3fd07a;
+	--grade-b: #8fd14f;
+	--grade-c: #f2c53d;
+	--grade-d: #f59e42;
+	--grade-f: #ef5b5b;
+
+	/* a team member's role in the battle plan */
+	--role-lead: #58a7ff;
+	--role-switch: #f5a623;
+	--role-closer: #ef5b8f;
+
+	/* the two ends of a team-score tier's gradient, top tier first */
+	--tier-elite-a: #3fd07a;
+	--tier-elite-b: #22d3ee;
+	--tier-strong-a: #58a7ff;
+	--tier-strong-b: #8b7bff;
+	--tier-solid-a: #f2c53d;
+	--tier-solid-b: #f59e42;
+	--tier-shaky-a: #f59e42;
+	--tier-shaky-b: #ef7a3d;
+	--tier-risky-a: #ef5b5b;
+	--tier-risky-b: #d63a7a;
+
+	/* the four steps of a rank-change ribbon */
+	--rb-1: #e0903f;
+	--rb-2: #b5cc4e;
+	--rb-3: #5bb8e8;
+	--rb-4: #d03a85;
+
+	/* data bars (progress, simulation) */
+	--bar-a: #3d7ffb;
+	--bar-b: #5cc6ff;
+	--bar-a-soft: #6aa8ff;
+	--bar-b-soft: #8fe0ff;
+}
+
+/* ---- light ------------------------------------------------------------------------------------------------------ */
+.rvmp[data-theme='light'] {
+	color-scheme: light;
+
+	--bg: #f4f6fb;
+	--bg-elev: #ffffff;
+	--surface: #ffffff;
+	--surface-2: #eef1f7;
+	--surface-3: #e1e6f0;
+	--border: color-mix(in srgb, #2b3550 12%, transparent);
+	--border-strong: color-mix(in srgb, #2b3550 26%, transparent);
+
+	--text: #141925;
+	--text-dim: #4a5468;
+	--text-faint: #6d788c;
+
+	--accent: #d9333f;
+	--accent-ink: #ffffff;
+	--on-fill: #ffffff;
+
+	--shadow-rgb: 30 41 59;
+	--shadow-k: 0.45;
+	--shadow-1:
+		0 1px 2px color-mix(in srgb, #1e293b 8%, transparent), 0 2px 8px color-mix(in srgb, #1e293b 6%, transparent);
+	--shadow-2: 0 8px 30px color-mix(in srgb, #1e293b 14%, transparent);
+	--hi-1: rgb(255 255 255 / 0.9);
+	--hi-2: rgb(255 255 255 / 1);
+	--scrim: rgb(20 26 40 / 0.42);
+
+	--t-normal: #6b7280;
+	--t-fire: #e8590c;
+	--t-water: #1c64d1;
+	--t-electric: #b57c00;
+	--t-grass: #1f9d49;
+	--t-ice: #087f8f;
+	--t-fighting: #c4291f;
+	--t-poison: #9333c7;
+	--t-ground: #a8651b;
+	--t-flying: #4a68c9;
+	--t-psychic: #d6165f;
+	--t-bug: #5f8512;
+	--t-rock: #8a7036;
+	--t-ghost: #5b3fae;
+	--t-dragon: #2952c9;
+	--t-dark: #3f3a48;
+	--t-steel: #1f7f9e;
+	--t-fairy: #cf3a97;
+
+	--lg-great: #1a63b8;
+	--lg-ultra: #a87a08;
+	--lg-master: #6f3fc4;
+	--lg-raid: #d1481b;
+
+	--iv-fill: #d1820a;
+	--iv-max: #e0322f;
+
+	--pos: #15803d;
+	--neg: #dc2626;
+	--warn: #b86a04;
+	--gold: #c99a08;
+	--gold-ink: #946c00;
+	--gold-soft: #d9a21b;
+
+	--medal-gold: #e0b020;
+	--medal-gold-edge: #a67c00;
+	--medal-silver: #c3ccd8;
+	--medal-silver-edge: #7d8a9d;
+	--medal-bronze: #d08d4a;
+	--medal-bronze-edge: #94581f;
+
+	--medal-gold-text: #a67c00;
+	--medal-silver-text: #6f7d92;
+	--medal-bronze-text: #94581f;
+
+	--muted-fill: #98a2b3;
+
+	--ghost-disc: #e7e0f7;
+
+	--grade-a: #16a34a;
+	--grade-b: #5f9a15;
+	--grade-c: #c99a08;
+	--grade-d: #d9720f;
+	--grade-f: #d83a3a;
+
+	--role-lead: #2b6fd6;
+	--role-switch: #c77a08;
+	--role-closer: #d63a7a;
+
+	--tier-elite-a: #16a34a;
+	--tier-elite-b: #0e9bb0;
+	--tier-strong-a: #2b6fd6;
+	--tier-strong-b: #6a52e0;
+	--tier-solid-a: #c99a08;
+	--tier-solid-b: #d9720f;
+	--tier-shaky-a: #d9720f;
+	--tier-shaky-b: #d1481b;
+	--tier-risky-a: #d83a3a;
+	--tier-risky-b: #b81f5f;
+
+	--rb-1: #c9741a;
+	--rb-2: #7e9a14;
+	--rb-3: #1f86b8;
+	--rb-4: #b82a6c;
+
+	--bar-a: #2b6fd6;
+	--bar-b: #1f9fd0;
+	--bar-a-soft: #5b8fe0;
+	--bar-b-soft: #5fbde0;
+}

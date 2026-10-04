@@ -1,0 +1,80 @@
+{
+	"hero": {
+		"eyebrow": "Pokémon-GO-Begleiter",
+		"title": "Alles, was du beim Spielen brauchst.",
+		"subtitle": "Live-Events, Liga-Rankings, ein Team-Builder, der deine Sammlung kennt, und Speicher aufräumen mit einem Fingertipp. Kostenlos, schnell und in deiner Sprache.",
+		"ctaTeams": "Team bauen",
+		"ctaRegister": "Deine Pokémon"
+	},
+	"now": {
+		"title": "Gerade aktuell",
+		"subtitle": "Laufende und kommende Events und was sie bringen.",
+		"all": "Alle Events",
+		"empty": "Gerade keine Events.",
+		"live": "Live",
+		"more": "+{{count}}",
+		"raids": "Raids",
+		"wild": "Spawns",
+		"researches": "Forschung",
+		"eggs": "Eier"
+	},
+	"right": {
+		"title": "Gerade im Spiel",
+		"bosses": "Raid-Auswahl von heute",
+		"spawns": "Wilde und besondere Spawns",
+		"rockets": "Aufstellungen und Crypto-Belohnungen",
+		"eggs": "Was aus welchem Ei schlüpft"
+	},
+	"ranks": {
+		"title": "Rankings",
+		"subtitle": "Die besten Pokémon jeder Liga auf einen Blick.",
+		"pokedex": "Jedes Pokémon: Werte, WP und Formen",
+		"raid": "Beste Angreifer nach Typ",
+		"top": "Top 3"
+	},
+	"teams": {
+		"title": "Team-Labor",
+		"headline": "Ein Team-Builder, der deine Sammlung kennt.",
+		"body": "Bewerte jedes Trio wie PvPoke, oder lass die besten Teams aus deinen eigenen Pokémon finden – mit deinen IVs, Leveln und Bestem Freund."
+	},
+	"tools": {
+		"title": "Werkzeuge",
+		"searchesPitch": "Räume deinen Speicher in Sekunden auf. Erzeuge Suchbegriffe, die behalten, was zählt, und den Rest auswählen."
+	},
+	"footer": {
+		"tagline": "Kostenlose, schnelle Werkzeuge für Pokémon-GO-Trainer.",
+		"explore": "Entdecken",
+		"tools": "Werkzeuge",
+		"project": "Projekt",
+		"about": "Über uns und Danksagungen",
+		"privacy": "Datenschutz",
+		"issues": "Problem melden",
+		"disclaimer": "GO Pokédex ist ein inoffizielles Fanprojekt. Es steht in keiner Verbindung zu Niantic, Nintendo, The Pokémon Company oder Game Freak und wird von ihnen weder unterstützt noch gesponsert. Pokémon und Pokémon GO sind Marken ihrer jeweiligen Inhaber."
+	},
+	"about": {
+		"title": "Über GO Pokédex",
+		"intro": "GO Pokédex ist ein kostenloser Begleiter für Pokémon-GO-Spieler: Live-Events und Raids, PvP- und Raid-Rankings, ein Team-Builder, der Trios bewertet und die besten Teams in deiner eigenen Sammlung findet, und Suchbegriffe, die deinen Speicher aufräumen. Er ist darauf ausgelegt, mitten im Spiel schnell bedienbar zu sein.",
+		"creditsTitle": "Danksagungen",
+		"creditsIntro": "Diese Seite baut auf der Arbeit der Pokémon-GO-Community auf. Danke an:",
+		"pvpoke": "PvPoke für die PvP-Rankings und die Kampf-Engine, auf der unsere Team-Bewertungen beruhen.",
+		"leekduck": "LeekDuck für Daten zu Events, Raid-Bossen, Eiern und Team GO Rocket.",
+		"pokeminers": "PokeMiners für die Game-Master-Daten und die Sprites.",
+		"official": "Pokémon GO Live für die offiziellen Event-Ankündigungen.",
+		"pvpivs": "PvP IVs, ein Pionier der IV-Rang-Abfragen.",
+		"privacyTitle": "Datenschutz",
+		"privacyBody": "Es gibt keine Konten. Deine Einstellungen, Sammlung und Lieblingsteams bleiben in deinem Browser und verlassen dein Gerät nie. Wir nutzen Google Analytics, um Besuche anonym zu zählen; dabei können Cookies gesetzt werden. Es gibt keine Werbung.",
+		"disclaimerTitle": "Haftungsausschluss",
+		"madeBy": "Erstellt von Igor Ruivo."
+	},
+	"menu": {
+		"open": "Menü öffnen",
+		"close": "Menü schließen",
+		"pages": "Seiten",
+		"preferences": "Einstellungen",
+		"home": "Startseite",
+		"appearance": "Darstellung",
+		"themeSystem": "System",
+		"themeLight": "Hell",
+		"themeDark": "Dunkel"
+	}
+}

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { ConfigKeys, readPersistentValue, writePersistentValue } from '../utils/persistent-configs-handler';
 
@@ -8,25 +8,21 @@ export enum Theme {
 	Dark,
 }
 
-// Light mode needs more polish before it's user-facing — force dark and
-// ignore any stored/system preference until it's ready. Flip this back on
-// (and re-add the Appearance picker in Settings.tsx / SettingsMenu.tsx) once
-// the light palette has been reworked; nothing else needs to change.
-const LIGHT_MODE_ENABLED = false;
+export type ResolvedTheme = 'light' | 'dark';
 
-/** `data-theme` is only written for an explicit choice — `System` resolves
- *  to `undefined` so the `.rvmp` root carries no attribute at all, leaving
- *  it to the plain `prefers-color-scheme` block in rvmp.css. */
-const DATA_THEME: Partial<Record<Theme, 'light' | 'dark'>> = {
-	[Theme.Light]: 'light',
-	[Theme.Dark]: 'dark',
-};
+/** The page colour behind everything, per theme (mirrors `--bg` in theme.css): the browser's own bars and overscroll use it. */
+export const THEME_COLOR: Record<ResolvedTheme, string> = { dark: '#0b0e14', light: '#f4f6fb' };
+
+const SYSTEM_LIGHT_QUERY = '(prefers-color-scheme: light)';
+
+const systemTheme = (): ResolvedTheme =>
+	typeof window !== 'undefined' && window.matchMedia(SYSTEM_LIGHT_QUERY).matches ? 'light' : 'dark';
 
 interface ThemeContextType {
+	/** What the player chose: follow the device (the default), or light, or dark. */
 	theme: Theme;
-	/** what to put on the `.rvmp` root's `data-theme` attribute — Shell reads
-	 *  this directly, `undefined` meaning "omit the attribute". */
-	dataTheme: 'light' | 'dark' | undefined;
+	/** What is actually showing — `System` resolved against the device. Always written to the root's `data-theme`. */
+	dataTheme: ResolvedTheme;
 	updateTheme: (newTheme: Theme) => void;
 }
 
@@ -40,27 +36,39 @@ export const useTheme = (): ThemeContextType => {
 	return context;
 };
 
+const storedTheme = (): Theme => {
+	const cached = readPersistentValue(ConfigKeys.DefaultTheme);
+	if (cached === null) return Theme.System;
+	const value = Number(cached);
+	return value === Theme.Light || value === Theme.Dark ? value : Theme.System;
+};
+
 export const ThemeProvider = (props: React.PropsWithChildren<object>) => {
-	const getDefaultTheme = useCallback(() => {
-		if (!LIGHT_MODE_ENABLED) return Theme.Dark;
-		const cached = readPersistentValue(ConfigKeys.DefaultTheme);
-		if (!cached) {
-			return Theme.System; // defaults to the device's current setting
-		}
-		return +cached as Theme;
+	const [theme, setTheme] = useState<Theme>(storedTheme);
+	const [system, setSystem] = useState<ResolvedTheme>(systemTheme);
+
+	// While following the device, follow it live (the OS switching at sunset, say).
+	useEffect(() => {
+		const query = window.matchMedia(SYSTEM_LIGHT_QUERY);
+		const onChange = () => setSystem(query.matches ? 'light' : 'dark');
+		query.addEventListener('change', onChange);
+		return () => query.removeEventListener('change', onChange);
 	}, []);
 
-	const [theme, setTheme] = useState(getDefaultTheme());
+	const dataTheme: ResolvedTheme = theme === Theme.Light ? 'light' : theme === Theme.Dark ? 'dark' : system;
+
+	// The page itself (not just the app root) follows too: overscroll, the browser's bars, native controls.
+	useEffect(() => {
+		const root = document.documentElement;
+		root.dataset.theme = dataTheme;
+		root.style.colorScheme = dataTheme;
+		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLOR[dataTheme]);
+	}, [dataTheme]);
 
 	const updateTheme = useCallback((newTheme: Theme) => {
-		if (!LIGHT_MODE_ENABLED) return;
 		writePersistentValue(ConfigKeys.DefaultTheme, JSON.stringify(newTheme));
 		setTheme(newTheme);
 	}, []);
 
-	return (
-		<ThemeContext.Provider value={{ theme, dataTheme: DATA_THEME[theme], updateTheme }}>
-			{props.children}
-		</ThemeContext.Provider>
-	);
+	return <ThemeContext.Provider value={{ theme, dataTheme, updateTheme }}>{props.children}</ThemeContext.Provider>;
 };
