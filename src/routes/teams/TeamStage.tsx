@@ -19,7 +19,6 @@ import { combatMetricNames } from '../../lib/combat-text';
 import { cleanName, ordinal } from '../../lib/format';
 import { type BuffInfo, buffInfo } from '../../lib/moves';
 import {
-	BASE_MAX_LEVEL,
 	isBuddy,
 	maxLevelOf,
 	type SlotIvs,
@@ -27,6 +26,17 @@ import {
 	type TeamRole,
 	type TeamSlotDescriptor,
 } from '../../lib/team-analysis';
+import {
+	isUnrecommendedMove,
+	ivsChange,
+	levelChange,
+	pickerBlock,
+	resetTargets,
+	starterNickname,
+	type StatusFlags,
+	statusToggle,
+	syncedNickname,
+} from '../../lib/team-build';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
@@ -166,7 +176,7 @@ const MoveRow = ({
 				<img src={`/images/types/${info.type}.png`} alt='' width={18} height={18} />
 				<span className='r-tm-move-name'>{name(moveId)}</span>
 				{tag(moveId)}
-				{!recommended.includes(moveId) && <NotRecommendedMark />}
+				{isUnrecommendedMove(moveId, recommended) && <NotRecommendedMark />}
 				<span className='r-tm-move-stat'>{stat(moveId)}</span>
 			</button>
 			{open && (
@@ -349,7 +359,7 @@ const PokemonPicker = ({
 				{rows.slice(0, shown).map(({ r, position }) => {
 					const p = data.gamemaster[r.speciesId];
 					const inTeam = teamBases.has(speciesFamilyKey(r.speciesId, (x) => data.gamemaster[x]));
-					const megaBlocked = !inTeam && megaTaken && p.isMega;
+					const block = pickerBlock({ inTeam, megaTaken, isMega: p.isMega });
 					const score = sortKey === 'overall' ? r.score : r[sortKey];
 					return (
 						<li key={r.speciesId}>
@@ -357,7 +367,7 @@ const PokemonPicker = ({
 								type='button'
 								style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 								// a Pokémon already on the team (shadow or not) can't be picked again
-								disabled={inTeam || megaBlocked}
+								disabled={block !== null}
 								onClick={() => onPick(r.speciesId)}
 							>
 								<RankMedal rank={position} className='r-tm-picker-medal' />
@@ -372,7 +382,7 @@ const PokemonPicker = ({
 											<i key={typeKey(ty)} style={{ background: typeVar(ty) }} />
 										))}
 										{inTeam && <em>{t('teams:picker.inTeam')}</em>}
-										{megaBlocked && <em>{t('teams:picker.megaTaken')}</em>}
+										{block === 'megaTaken' && <em>{t('teams:picker.megaTaken')}</em>}
 									</span>
 								</span>
 								<span className='r-tm-picker-side'>
@@ -677,9 +687,6 @@ export const MemberCard = ({
 	);
 };
 
-/** A trailing "#<rank>" on a nickname — the part that follows the IVs' rank. */
-const RANK_SUFFIX = /\s*#(\d+)$/;
-
 export const TeamMemberEditor = ({
 	index,
 	member,
@@ -740,24 +747,9 @@ export const TeamMemberEditor = ({
 	// A Mega that can be a Super Max Mega can be that too (two more levels, on top of a Best Buddy's one). Turning either on
 	// picks the spread that is best at the new level ceiling, and its level when that is above 50; turning one off goes back
 	// to the best at the lower ceiling, or to the defaults when nothing is left.
-	const flip = (
-		target: typeof buddyBest,
-		nextFlags: { buddy: boolean; superMega: boolean },
-		flag: 'buddy' | 'superMega'
-	) => {
-		if (maxLevelOf(nextFlags) <= BASE_MAX_LEVEL) {
-			onBuild(index, {
-				ivs: undefined,
-				level: undefined,
-				...(flag === 'buddy' ? { buddy: false } : { superMega: false }),
-			});
-		} else if (target) {
-			onBuild(index, {
-				ivs: target.ivs,
-				level: target.level > BASE_MAX_LEVEL ? target.level : undefined,
-				...(flag === 'buddy' ? { buddy: nextFlags.buddy } : { superMega: nextFlags.superMega }),
-			});
-		}
+	const flip = (target: typeof buddyBest, nextFlags: StatusFlags, flag: 'buddy' | 'superMega') => {
+		const change = statusToggle(flag, nextFlags, target);
+		if (change) onBuild(index, change);
 	};
 	const buddy = member
 		? {
@@ -782,20 +774,20 @@ export const TeamMemberEditor = ({
 			: undefined;
 	// "Reset" in the IVs dialog of a Best Buddy / Super Max Mega goes to the spread that is best at its level ceiling, not to
 	// the level-50 default (which, at its level, could be over the CP cap).
-	const resetBest = (buddyNow || superNow) && best ? { ivs: best.ivs } : undefined;
+	const reset = resetTargets({ buddy: buddyNow, superMega: superNow }, best);
+	const resetBest = reset.ivs;
 	// …and the same for the level, in its own dialog: Reset there leaves the IVs alone, and the IVs' Reset leaves the level.
-	const resetLevel = (buddyNow || superNow) && best && best.level > BASE_MAX_LEVEL ? best.level : undefined;
+	const resetLevel = reset.level;
 	// Once the nickname ends in "#<number>", keep that number in step with the IVs as they change.
 	useEffect(() => {
-		if (!onNicknameChange || nickname === undefined || ivRank === undefined) return;
-		const match = RANK_SUFFIX.exec(nickname);
-		if (match && match[1] !== String(ivRank)) onNicknameChange(nickname.replace(RANK_SUFFIX, ` #${ivRank}`));
+		if (!onNicknameChange) return;
+		const synced = syncedNickname(nickname, ivRank);
+		if (synced !== undefined) onNicknameChange(synced);
 	}, [nickname, ivRank, onNicknameChange]);
 	// Starting a nickname: prefill the Pokémon's name and its IV rank.
 	const prefillNickname = () => {
 		if (!onNicknameChange || !pokemon || nickname) return;
-		const name = cleanName(pokemon.speciesName);
-		onNicknameChange((ivRank === undefined ? name : `${name} #${ivRank}`).slice(0, 32));
+		onNicknameChange(starterNickname(cleanName(pokemon.speciesName), ivRank));
 	};
 
 	return (
@@ -835,7 +827,7 @@ export const TeamMemberEditor = ({
 					best={resetBest}
 					optimal={ivsOptimal}
 					onChange={(ivs, keepLevel) => {
-						onBuild(index, { ivs, level: member.slot.level ?? keepLevel });
+						onBuild(index, ivsChange(member.slot, ivs, keepLevel));
 					}}
 					onClose={() => setEditing(null)}
 				/>
@@ -852,18 +844,7 @@ export const TeamMemberEditor = ({
 					buddyMaxLevel={maxLevelOf({ buddy: true, superMega: !!pokemon.isSuperMega })}
 					optimal={levelOptimal}
 					bestLevel={resetLevel}
-					onChange={(level) => {
-						// A level above 50 on a Pokémon that can be a Super Max Mega is that: it takes the flag (and, past what
-						// that gives, the Best Buddy one) — so the button on the card agrees with the level.
-						const superMegaNow = !!pokemon.isSuperMega && (superNow || (level ?? 0) > BASE_MAX_LEVEL);
-						const needsBuddy = (level ?? 0) > maxLevelOf({ superMega: superMegaNow });
-						onBuild(index, {
-							ivs: member.slot.ivs,
-							level,
-							...(superMegaNow ? { superMega: true } : {}),
-							...(needsBuddy ? { buddy: true } : {}),
-						});
-					}}
+					onChange={(level) => onBuild(index, levelChange(level, member.slot.ivs, pokemon, superNow))}
 					onClose={() => setEditing(null)}
 				/>
 			)}

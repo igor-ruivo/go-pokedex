@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDismiss } from '../../hooks/useDismiss';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import { isSlotLevel, type SlotIvs } from '../../lib/team-analysis';
+import { levelInputState, showLevelReset } from '../../lib/team-build';
 
 /**
  * The level of one team member (1 to 50, in steps of 0.5; up to 51 for a Best Buddy), in a dialog like the Pokémon picker. Left alone, the level is
@@ -85,8 +86,8 @@ export const LevelModal = ({
 	const overCap = typedCp !== undefined && typedCp > cpCap;
 	// Past what the Pokémon reaches without it, only a Best Buddy can go (one level further); beyond what even a Best Buddy
 	// reaches it is simply not a level (no message about Best Buddy).
-	const needsBuddy = isSlotLevel(typed) && typed > maxLevel && typed <= buddyMaxLevel;
-	const canApply = isSlotLevel(typed) && typed <= maxLevel && !needsBuddy && !overCap && field !== current && !applying;
+	const { valid, needsBuddy } = levelInputState({ typed, maxLevel, buddyMaxLevel, overCap });
+	const canApply = valid && field !== current && !applying;
 	const apply = (next: number | undefined) => {
 		setApplying({ value: next });
 		onChange(next);
@@ -117,7 +118,7 @@ export const LevelModal = ({
 							inputMode='decimal'
 							maxLength={4}
 							placeholder={`1–${maxLevel}`}
-							data-invalid={isSlotLevel(typed) && typed <= maxLevel && !overCap ? undefined : ''}
+							data-invalid={valid ? undefined : ''}
 							onFocus={(e) => e.target.select()}
 							// A phone's decimal keypad may offer a comma (or a dot) depending on its language: both mean the decimal point.
 							onChange={(e) =>
@@ -144,7 +145,7 @@ export const LevelModal = ({
 				</p>
 
 				<div className='r-tm-ivmodal-actions'>
-					{custom && !optimal && (
+					{showLevelReset({ custom, optimal }) && (
 						<button type='button' className='r-tm-ivedit-reset' disabled={!!applying} onClick={() => apply(bestLevel)}>
 							{t('teams:builder.reset')}
 						</button>

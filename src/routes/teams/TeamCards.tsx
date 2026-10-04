@@ -14,7 +14,6 @@ import { useOptimalBuild } from '../../hooks/useOptimalBuild';
 import { cleanName, ordinal } from '../../lib/format';
 import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import {
-	exceedsNormalLevel,
 	isBuddy,
 	scoreTier,
 	slotIdentityKey,
@@ -23,6 +22,8 @@ import {
 	type TeamSlotDescriptor,
 	threatPart,
 } from '../../lib/team-analysis';
+import { buildHighlight } from '../../lib/team-build';
+import { markStates, type StandInIdentities } from '../../lib/team-marks';
 import { typeKey, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { gameTypeDisplayTranslator } from '../../utils/GameTranslator';
@@ -59,8 +60,12 @@ const MemberBuild = ({
 		cpCap
 	);
 	// The level is only worth stating when it's a deliberate one, not the level the cap gives anyway.
-	const showLevel = member.level !== undefined && !levelOptimal;
-	const custom = (!!member.ivs && !ivsOptimal) || showLevel;
+	const { showLevel, custom } = buildHighlight({
+		ivsPicked: !!member.ivs,
+		ivsOptimal,
+		level: member.level,
+		levelOptimal,
+	});
 	return (
 		<span className='r-tm-board-ivs' data-custom={custom ? '' : undefined} title={title}>
 			{ivs.join('/')}
@@ -68,12 +73,6 @@ const MemberBuild = ({
 		</span>
 	);
 };
-
-/** Identities of the stand-ins of Best Buddies and Super Max Megas, by what each lost (see `standInsOf`). */
-export interface StandIns {
-	buddy: ReadonlySet<string>;
-	superMega: ReadonlySet<string>;
-}
 
 /** One card of the list; `rank` is the team's place in the full ranking (a filtered list keeps the real places). */
 export const TeamCard = ({
@@ -97,7 +96,7 @@ export const TeamCard = ({
 	/** Nickname per build, keyed by `slotIdentityKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
 	/** Identities (`slotIdentityKey`) of the stand-ins a Best Buddy has in these combinations: they get a disabled crown. */
-	standIns?: StandIns;
+	standIns?: StandInIdentities;
 }) => {
 	const { t } = useTranslation(['teams']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
@@ -162,6 +161,7 @@ export const TeamCard = ({
 					if (!p) return null;
 					// Members come in the order they're played: lead, switch, closer.
 					const role = TEAM_ROLES[i];
+					const marks = markStates(member, standIns);
 					// Custom-build cards show the IVs used for rating and flag moves outside the recommended set.
 					const recommended = data.rankList[member.speciesId]?.moveset;
 					const best = bestIvsFor(data.builder, member.speciesId, LEAGUE_CP[league]);
@@ -186,18 +186,8 @@ export const TeamCard = ({
 							>
 								<span className='r-tm-board-art'>
 									{p.isShadow && <ShadowMark />}
-									{/* active only for a member that really is above level 50 (the team's one buddy); a ribbon that changes nothing, and the
-									    stand-in of a buddy, show it disabled */}
-									{exceedsNormalLevel(member) ? (
-										<BuddyMark />
-									) : member.buddy || member.formerBuddy || standIns?.buddy.has(slotIdentityKey(member)) ? (
-										<BuddyMark disabled />
-									) : null}
-									{member.superMega ? (
-										<SuperMegaMark />
-									) : member.formerSuperMega || standIns?.superMega.has(slotIdentityKey(member)) ? (
-										<SuperMegaMark disabled />
-									) : null}
+									{marks.crown && <BuddyMark disabled={marks.crown === 'off'} />}
+									{marks.superMega && <SuperMegaMark disabled={marks.superMega === 'off'} />}
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
 								<b className='r-tm-board-name'>{nicknames?.[slotIdentityKey(member)] ?? cleanName(p.speciesName)}</b>
@@ -304,7 +294,7 @@ export const VirtualTeamCards = ({
 	showBuildDetails?: boolean;
 	/** Nickname per build, keyed by `slotIdentityKey` (species + moves + IVs + level). */
 	nicknames?: Readonly<Record<string, string>>;
-	standIns?: StandIns;
+	standIns?: StandInIdentities;
 }) => {
 	const listRef = useRef<HTMLDivElement>(null);
 	const [scrollMargin, setScrollMargin] = useState(0);

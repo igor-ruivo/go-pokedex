@@ -11,30 +11,26 @@ import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { useDismiss } from '../../hooks/useDismiss';
-import { canonicalSlot } from '../../lib/canonical-slot';
+import { isDuplicateBuild } from '../../lib/canonical-slot';
 import { cleanName } from '../../lib/format';
 import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
-import {
-	type CollectionPokemon,
-	removeCollectionPokemon,
-	saveCollectionPokemon,
-	usePokemonCollection,
-} from '../../lib/pokemon-collection';
+import { removeCollectionPokemon, saveCollectionPokemon, usePokemonCollection } from '../../lib/pokemon-collection';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import {
 	isBuddy,
 	MAX_MOVES,
-	respectsStatusLimits,
 	scoreTier,
 	slotIdentityKey,
 	type SlotIvs,
-	speciesFamilyKey,
-	standInsOf,
 	teamScore,
 	type TeamSlotDescriptor,
 	threatPart,
 	withMove,
 } from '../../lib/team-analysis';
+import { nicknamesByBuild } from '../../lib/team-build';
+import { buildCombinations, buildComboPool, comboSlots } from '../../lib/team-combinations';
+import { chipMarks } from '../../lib/team-marks';
+import { rankingSignature as rankingSignatureOf, readRankedCache, writeRankedCache } from '../../lib/team-rank-cache';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { VirtualTeamCards } from './TeamCards';
@@ -45,121 +41,6 @@ import { type TeamsData, useSimContext, useTeamEvaluations } from './useTeamsDat
 const GRID_GAP = 8;
 const MINI_TILE_MAX_SIZE = 86;
 const AUTO_EVALUATION_LIMIT = 10;
-const RANK_CACHE_VERSION = 3;
-
-const cacheKey = (league: TeamLeague) => `go-pokedex:collection-team-rank:v${RANK_CACHE_VERSION}:${league}`;
-
-const isRankedTeam = (value: unknown): value is RankedTeam => {
-	if (typeof value !== 'object' || value === null) return false;
-	const team = value as Partial<RankedTeam>;
-	return (
-		typeof team.score === 'number' &&
-		typeof team.threatScore === 'number' &&
-		(team.tier === 'elite' ||
-			team.tier === 'strong' ||
-			team.tier === 'solid' ||
-			team.tier === 'shaky' ||
-			team.tier === 'risky') &&
-		Array.isArray(team.members) &&
-		team.members.length === 3 &&
-		team.members.every((member: unknown) => {
-			if (typeof member !== 'object' || member === null) return false;
-			const rankedMember = member as { speciesId?: unknown; moveset?: unknown };
-			return (
-				typeof rankedMember.speciesId === 'string' &&
-				Array.isArray(rankedMember.moveset) &&
-				rankedMember.moveset.every((move: unknown) => typeof move === 'string')
-			);
-		})
-	);
-};
-
-const readRankedCache = (league: TeamLeague, signature: string): Array<RankedTeam> | undefined => {
-	try {
-		const raw = window.sessionStorage.getItem(cacheKey(league));
-		if (!raw) return undefined;
-		const cached: unknown = JSON.parse(raw);
-		if (typeof cached !== 'object' || cached === null) return undefined;
-		const record = cached as { signature?: unknown; teams?: unknown };
-		return record.signature === signature && Array.isArray(record.teams) && record.teams.every(isRankedTeam)
-			? record.teams
-			: undefined;
-	} catch {
-		return undefined;
-	}
-};
-
-const writeRankedCache = (league: TeamLeague, signature: string, teams: ReadonlyArray<RankedTeam>) => {
-	try {
-		window.sessionStorage.setItem(cacheKey(league), JSON.stringify({ signature, teams }));
-	} catch {
-		// Session storage may be unavailable or full; the in-memory ranking still works.
-	}
-};
-
-const hashSignature = (value: string) => {
-	let first = 2166136261;
-	let second = 0x9e3779b9;
-	for (let i = 0; i < value.length; i++) {
-		const code = value.charCodeAt(i);
-		first = Math.imul(first ^ code, 16777619);
-		second = Math.imul(second ^ code, 2246822519);
-	}
-	return `${value.length.toString(36)}-${(first >>> 0).toString(36)}-${(second >>> 0).toString(36)}`;
-};
-
-/**
- * The slots one saved Pokémon takes part in team combinations with. A team can only have one Best Buddy and one Super Max
- * Mega (and one Mega at all), but that must not keep two of them off the same team, so a Best Buddy / Super Max Mega that
- * leans on its status also gets temporary counterparts without it — without the ribbon, without the Super Max Mega status,
- * or without either — each at the level that takes (see `standInsOf`): the combinations then include both "this one is
- * the buddy" and "the other one is". A status on a Pokémon whose level doesn't need it changes nothing about it, so it
- * gets no counterpart (it would be identical): it is itself, and keeps its status, so its mark still shows.
- */
-const comboSlots = (entry: CollectionPokemon): Array<TeamSlotDescriptor> => {
-	const slot: TeamSlotDescriptor = {
-		speciesId: entry.speciesId,
-		moveset: entry.moveset,
-		...(entry.ivs ? { ivs: entry.ivs } : {}),
-		...(entry.level !== undefined ? { level: entry.level } : {}),
-		...(entry.buddy ? { buddy: true as const } : {}),
-		...(entry.superMega ? { superMega: true as const } : {}),
-	};
-	return [slot, ...standInsOf(slot)];
-};
-
-const buildCombinations = (
-	species: ReadonlyArray<TeamSlotDescriptor>,
-	data: TeamsData
-): Array<Array<TeamSlotDescriptor>> => {
-	const familyOf = (id: string) => speciesFamilyKey(id, (x) => data.gamemaster[x]);
-	const teams: Array<Array<TeamSlotDescriptor>> = [];
-	for (let a = 0; a < species.length; a++) {
-		for (let b = a + 1; b < species.length; b++) {
-			const aBase = familyOf(species[a].speciesId);
-			const bBase = familyOf(species[b].speciesId);
-			if (aBase === bBase) continue;
-			for (let c = b + 1; c < species.length; c++) {
-				const cBase = familyOf(species[c].speciesId);
-				if (cBase === aBase || cBase === bBase) continue;
-				const trio = [species[a], species[b], species[c]];
-				// A team has one Mega (so one Super Max Mega) and one Best Buddy at most.
-				if (!respectsStatusLimits(trio, (id) => !!data.gamemaster[id]?.isMega)) continue;
-				if (
-					!trio.every(
-						(slot) =>
-							data.gamemaster[slot.speciesId] &&
-							data.rankList[slot.speciesId] &&
-							slot.moveset.every((id) => id === 'none' || data.builder?.moves[id])
-					)
-				)
-					continue;
-				teams.push(trio);
-			}
-		}
-	}
-	return teams;
-};
 
 export const PokemonCollection = ({
 	league,
@@ -255,59 +136,20 @@ export const PokemonCollection = ({
 		[saved, ctx, data, league]
 	);
 	const combinations = useMemo(() => {
-		const slots: Array<TeamSlotDescriptor> = saved
-			.flatMap(comboSlots)
-			// A stand-in goes first, so that when an identical Pokémon was also saved by hand the stand-in is the one kept
-			// (it carries the disabled crown). `sort` is stable, so nothing else moves.
-			.sort((a, b) => Number(!!(b.formerBuddy ?? b.formerSuperMega)) - Number(!!(a.formerBuddy ?? a.formerSuperMega)))
-			// Identical builds (e.g. a saved copy of what a Best Buddy's counterpart already is) are one Pokémon.
-			.filter(
-				(slot, i, all) =>
-					all.findIndex(
-						(other) =>
-							slotIdentityKey(canonicalSlot(other, league, data)) === slotIdentityKey(canonicalSlot(slot, league, data))
-					) === i
-			)
-			.sort(
-				(a, b) =>
-					(data.rankList[a.speciesId]?.rank ?? Number.MAX_SAFE_INTEGER) -
-					(data.rankList[b.speciesId]?.rank ?? Number.MAX_SAFE_INTEGER)
-			);
+		const slots = buildComboPool(saved, league, data);
 		return buildCombinations(slots, data);
 	}, [saved, data, league]);
-	const rankingSignature = useMemo(() => {
-		const rankedSpecies = Object.entries(data.rankList)
-			.sort(([a], [b]) => a.localeCompare(b))
-			.map(([speciesId, ranking]) => [speciesId, ranking]);
-		const speciesIds = new Set([
-			...Object.keys(data.rankList),
-			...combinations.flatMap((team) => team.map((member) => member.speciesId)),
-		]);
-		const species = [...speciesIds].sort().map((id) => {
-			const pokemon = data.gamemaster[id];
-			return pokemon ? [id, pokemon.dex, pokemon.types, pokemon.baseStats, pokemon.isShadow] : [id, null];
-		});
-		return hashSignature(
-			JSON.stringify({
-				version: RANK_CACHE_VERSION,
+	const rankingSignature = useMemo(
+		() =>
+			rankingSignatureOf({
 				league,
 				combinations,
-				rankedSpecies,
-				species,
-				builder: data.builder
-					? {
-							simulator: data.builder.simulator,
-							moves: data.builder.moves,
-							ivs: data.builder.ivs,
-							cpCap: LEAGUE_CP[league],
-							forms: data.builder.forms,
-							excludedThreats: data.builder.excludedThreats,
-							meta: data.builder.meta[league],
-						}
-					: null,
-			})
-		);
-	}, [league, combinations, data.rankList, data.gamemaster, data.builder]);
+				rankList: data.rankList,
+				gamemaster: data.gamemaster,
+				builder: data.builder,
+			}),
+		[league, combinations, data.rankList, data.gamemaster, data.builder]
+	);
 	const cachedRankedTeams = data.ready ? readRankedCache(league, rankingSignature) : undefined;
 	const evaluationKey = JSON.stringify(combinations);
 	const requiresManualEvaluation = saved.length > AUTO_EVALUATION_LIMIT && combinations.length > 0;
@@ -373,19 +215,8 @@ export const PokemonCollection = ({
 			? a.threatScore - b.threatScore || b.score - a.score
 			: b.score - a.score || a.threatScore - b.threatScore
 	);
-	const nicknames = useMemo(() => {
-		// Keyed by the build (species + moves + IVs + level), not the species: a team member is one specific saved
-		// entry, so with duplicates of a species each card shows the nickname of the entry it was actually built from.
-		const byBuild: Record<string, string> = {};
-		for (const entry of saved) {
-			if (!entry.nickname) continue;
-			// The entry itself, and the variants it takes part in combinations as (see `comboSlots`).
-			for (const key of [slotIdentityKey(entry), ...comboSlots(entry).map(slotIdentityKey)]) {
-				if (!(key in byBuild)) byBuild[key] = entry.nickname;
-			}
-		}
-		return byBuild;
-	}, [saved]);
+	// Keyed by the build (species + moves + IVs + level), not the species: see `nicknamesByBuild`.
+	const nicknames = useMemo(() => nicknamesByBuild(saved, comboSlots), [saved]);
 	// The stand-ins of the Best Buddies and Super Max Megas (see `comboSlots`), by identity, each for what it lost: matched on
 	// the cards rather than carried by them, so they are marked whether the teams were just computed or came from the cache.
 	const standIns = useMemo(() => {
@@ -440,13 +271,7 @@ export const PokemonCollection = ({
 		});
 	};
 	// The draft is an exact replica (species, moves, IVs, level) of another saved Pokémon: it can't be saved.
-	const draftIsDuplicate =
-		!!draft &&
-		saved.some(
-			(entry) =>
-				entry.id !== draft.entryId &&
-				slotIdentityKey(canonicalSlot(entry, league, data)) === slotIdentityKey(canonicalSlot(draft.slot, league, data))
-		);
+	const draftIsDuplicate = !!draft && isDuplicateBuild(draft.slot, saved, draft.entryId, league, data);
 	const saveDraft = () => {
 		if (!draft || draftIsDuplicate) return;
 		const nickname = draft.nickname?.trim().slice(0, 32);
@@ -554,8 +379,8 @@ export const PokemonCollection = ({
 															}
 														>
 															{pokemon.isShadow && <ShadowMark />}
-															{isBuddy(entry) && <BuddyMark />}
-															{entry.superMega && <SuperMegaMark />}
+															{chipMarks(entry).crown && <BuddyMark />}
+															{chipMarks(entry).superMega && <SuperMegaMark />}
 															<SpriteImg pokemon={pokemon} loading='lazy' />
 															<span className='r-tm-collection-name'>
 																{entry.nickname ?? cleanName(pokemon.speciesName)}

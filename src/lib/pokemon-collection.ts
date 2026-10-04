@@ -155,14 +155,16 @@ export const saveCollectionPokemon = (
 		: -1;
 	const existing = replacedIndex < 0 ? undefined : current[replacedIndex];
 	const next = current.filter((_, index) => index !== replacedIndex);
+	// (the nickname is set below, trimmed: a blank one is none)
+	const { nickname: rawNickname, ...rest } = pokemon;
 	const saved: CollectionPokemon = {
-		...pokemon,
+		...rest,
 		id: existing?.id ?? createId(new Set(current.map((entry) => entry.id))),
 		moveset: [...pokemon.moveset],
 		...(pokemon.ivs ? { ivs: [...pokemon.ivs] as SlotIvs } : {}),
 		...(pokemon.buddy ? { buddy: true as const } : {}),
 		...(pokemon.superMega ? { superMega: true as const } : {}),
-		...(pokemon.nickname?.trim() ? { nickname: pokemon.nickname.trim().slice(0, 32) } : {}),
+		...(rawNickname?.trim() ? { nickname: rawNickname.trim().slice(0, 32) } : {}),
 		league,
 		addedAt: existing?.addedAt ?? Date.now(),
 	};

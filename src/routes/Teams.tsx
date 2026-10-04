@@ -7,12 +7,12 @@ import { IconTabBar, type IconTabItem } from '../components/IconTabBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
 import { RankMedal } from '../components/RankMedal';
 import { useLanguage } from '../contexts/language-context';
-import { isStaticLeague } from '../DTOs/ILeagueDefinition';
 import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
 import { LEAGUE_CP } from '../lib/league-caps';
 import { leagueIcon } from '../lib/league-visuals';
 import { modeColor, modeLabel, modeLabelLong, R } from '../lib/nav';
 import { encodeTeam, letterGrade, type ScoreParts, scoreTier, teamScore, threatPart } from '../lib/team-analysis';
+import { resolveTeamLeague } from '../lib/team-league';
 import { useLeagueDefinitions } from '../queries/leagues';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { BattlePlan } from './teams/BattlePlan';
@@ -64,9 +64,7 @@ const Teams = () => {
 	// checked once that file has loaded; until then the page waits (below) instead of flashing Great League.
 	const { leagues, fetchCompleted: leaguesLoaded } = useLeagueDefinitions();
 	const wanted = isTeamLeague(leagueParam) ? leagueParam : rememberedLeague;
-	const leaguePending = !!wanted && !leaguesLoaded && !isStaticLeague(wanted);
-	const league: TeamLeague =
-		wanted && (isStaticLeague(wanted) || leagues.some((l) => l.id === wanted)) ? wanted : 'great';
+	const { league, pending: leaguePending } = resolveTeamLeague(wanted, leagues, leaguesLoaded);
 
 	const data = useTeamsData(league);
 	const ctx = useSimContext(league, data);

@@ -30,6 +30,7 @@ import { registerLeagueCaps } from '../../src/lib/league-caps';
 import { createSimContext } from '../../src/lib/pvp-sim/context';
 import { inPvpokeOrder } from '../../src/lib/pvp-sim/pool-order';
 import { type EvaluatorInit, TeamEvaluator } from '../../src/lib/pvp-sim/team-eval';
+import { byScoreOrder, byThreatOrder, pruneTop, selectCandidates, withRankChanges } from '../../src/lib/team-ranking';
 import { type ScoreParts, scoreTier, type SlotIvs, teamScore, threatPart } from '../../src/lib/team-analysis';
 import { analyzeTeam } from '../../src/routes/teams/useTeamAnalysis';
 
@@ -169,28 +170,6 @@ if (force) {
 	console.log('Recomputing ranking because the overall inputs hash changed; per-input fingerprints are unavailable.');
 }
 
-/** The same three Pokémon with the same moves are the same team, whatever order they were listed in. */
-const teamKey = (team: { members: Array<{ speciesId: string; moveset: Array<string> }> }) =>
-	team.members
-		.map((m) => [m.speciesId, ...m.moveset].join('-'))
-		.sort()
-		.join('|');
-
-/**
- * Places gained (positive) or lost (negative) since the previous ranking, for each team of one list. Teams that
- * weren't in the previous top list, and teams that didn't move, carry no figure.
- */
-const withRankChanges = (list: Array<RankedTeam>, before: Array<RankedTeam> | undefined): Array<RankedTeam> => {
-	if (!before) return list;
-	const position = new Map(before.map((team, i) => [teamKey(team), { index: i, team }] as const));
-	return list.map((team, i) => {
-		const was = position.get(teamKey(team));
-		if (!was) return team;
-		const change = previousIsToday ? was.team.rankChange : was.index - i;
-		return change ? { ...team, rankChange: change } : team;
-	});
-};
-
 interface RankedTeam {
 	/** In the order the Battle plan plays them: lead, switch, closer. */
 	members: Array<{ speciesId: string; moveset: Array<string>; ivs?: SlotIvs; level?: number; superMega?: true }>;
@@ -254,14 +233,11 @@ const rankLeague = ({ league, file, cpCap, candidates: sample }: (typeof LEAGUES
 		};
 	};
 
-	const usable = [...ranking]
-		.sort((a, b) => a.rank - b.rank)
-		.filter((r) => !r.speciesId.includes('_xs') && r.moveset.length > 0 && r.moveset.every((m) => builder.moves[m]));
 	// The best `sample`, plus every Super Max Mega of the league however far down the ranking it is.
-	const candidates = [
-		...usable.slice(0, sample),
-		...usable.slice(sample).filter((r) => evaluator.superMegaBuild(r.speciesId)),
-	].map((r) => r.speciesId);
+	const candidates = selectCandidates(ranking, sample, {
+		moveExists: (m) => !!builder.moves[m],
+		isSuperMega: (id) => !!evaluator.superMegaBuild(id),
+	});
 
 	console.log(`${league}: ${candidates.length} candidates → rating every trio…`);
 	const started = Date.now();
@@ -283,11 +259,9 @@ const rankLeague = ({ league, file, cpCap, candidates: sample }: (typeof LEAGUES
 
 	// Every trio is analysed, but only the best TOP of each list are kept (pruned as they pile up, so 1.3M teams
 	// never sit in memory at once). The result is exactly the top of the full sort.
-	const byScoreOrder = (a: RankedTeam, b: RankedTeam) => b.score - a.score || a.threatScore - b.threatScore;
-	const byThreatOrder = (a: RankedTeam, b: RankedTeam) => a.threatScore - b.threatScore || b.score - a.score;
 	let byScore: Array<RankedTeam> = [];
 	let byThreat: Array<RankedTeam> = [];
-	const prune = (list: Array<RankedTeam>, order: typeof byScoreOrder) => list.sort(order).slice(0, TOP);
+	const prune = (list: Array<RankedTeam>, order: typeof byScoreOrder) => pruneTop(list, order, TOP);
 	let totalTeams = 0;
 	for (const { speciesIds, threatScore } of rated) {
 		const slots = speciesIds.map(slotOf);
@@ -335,8 +309,8 @@ const rankLeague = ({ league, file, cpCap, candidates: sample }: (typeof LEAGUES
 	return {
 		totalTeams,
 		candidates: sample,
-		byScore: withRankChanges(prune(byScore, byScoreOrder), before?.byScore),
-		byThreat: withRankChanges(prune(byThreat, byThreatOrder), before?.byThreat),
+		byScore: withRankChanges(prune(byScore, byScoreOrder), before?.byScore, previousIsToday),
+		byThreat: withRankChanges(prune(byThreat, byThreatOrder), before?.byThreat, previousIsToday),
 	};
 };
 

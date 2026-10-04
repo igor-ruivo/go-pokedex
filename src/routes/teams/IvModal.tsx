@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDismiss } from '../../hooks/useDismiss';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import { isSlotIvs, type SlotIvs } from '../../lib/team-analysis';
+import { showIvReset } from '../../lib/team-build';
 
 /**
  * The IVs of one team member (attack, defense, HP — each 0 to 15), in a dialog like the Pokémon picker. The page is
@@ -146,7 +147,7 @@ export const IvModal = ({
 				)}
 
 				<div className='r-tm-ivmodal-actions'>
-					{(custom || !!best) && !optimal && (
+					{showIvReset({ custom, best, optimal }) && (
 						<button
 							type='button'
 							className='r-tm-ivedit-reset'

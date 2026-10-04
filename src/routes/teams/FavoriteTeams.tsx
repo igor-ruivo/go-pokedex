@@ -170,7 +170,8 @@ export const FavoriteTeams = ({
 					/>
 				)}
 			</SearchListBar>
-			{teams.length > 0 ? (
+			{/* No card until every favorite is rated (as in My Pokémon): a list that fills in and reorders while it works is noise. */}
+			{rated.pending > 0 ? null : teams.length > 0 ? (
 				<TeamCards
 					teams={teams}
 					league={league}
@@ -178,7 +179,7 @@ export const FavoriteTeams = ({
 					primary={effectiveSort === 'threat' ? 'threat' : 'score'}
 					onOpen={onOpen}
 				/>
-			) : rated.pending > 0 ? null : term ? (
+			) : term ? (
 				<p className='r-muted'>{t('teams:top.noMatch')}</p>
 			) : (
 				<p className='r-tm-empty'>{t('teams:favorites.empty')}</p>
