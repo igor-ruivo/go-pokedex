@@ -34,6 +34,8 @@
 		"ivTitle": "IVs of {{name}}",
 		"levelTitle": "Level of {{name}}",
 		"bestBuddyMoveHint": "Make this Pokémon the Best Buddy; the current one goes back to the defaults",
+		"superMega": "{{max}} {{mega}}",
+		"superMegaHint": "Rate this Mega at Super Max level: two more levels, up to 52 (53 with Best Buddy)",
 		"bestBuddy": "Best Buddy",
 		"bestBuddyHint": "Rate this Pokémon as your Best Buddy (level 51)",
 		"levelNeedsBuddy": "Above level 50 is for a Best Buddy: turn on Best Buddy for this Pokémon first.",

@@ -1,4 +1,5 @@
 import type { TeamLeague } from '../DTOs/ITeamBuilder';
+import { LEAGUE_CP } from './league-caps';
 import { computeMoveEffectiveness } from '../utils/pokemon-helper';
 import type { RoleScores } from './team-roles';
 import { TYPE_KEYS } from './types';
@@ -22,8 +23,21 @@ export const letterGrade = (value: number, goal: number): LetterGrade => {
 	return 'F';
 };
 
+/**
+ * A number that grows with the CP cap, known at Great (1500), Ultra (2500) and Master (uncapped, 10000): exact at those,
+ * and read off the line between them for any other cap a cup uses — below Great scaled from zero (so a Little Cup's
+ * 500 gets a third of Great's).
+ */
+const byCap = (cap: number, great: number, ultra: number, master: number): number =>
+	cap <= 1500
+		? (great * cap) / 1500
+		: cap <= 2500
+			? great + ((ultra - great) * (cap - 1500)) / 1000
+			: ultra + ((master - ultra) * Math.min(1, (cap - 2500) / 7500));
+const capOf = (league: TeamLeague): number => LEAGUE_CP[league] ?? 10000;
+
 /** PvPoke's per-league goal for average team bulk (Defense × HP). */
-export const BULK_GOAL: Record<TeamLeague, number> = { great: 22000, ultra: 35000, master: 35000 };
+export const bulkGoal = (league: TeamLeague): number => byCap(capOf(league), 22000, 35000, 35000);
 /** PvPoke's goal for safety (average switch score) and consistency. */
 export const SAFETY_GOAL = 98;
 export const CONSISTENCY_GOAL = 98;
@@ -48,12 +62,12 @@ export const SCORE_ANCHORS = {
 	/** The typing parts are already 0–100 from their own formulas; real teams use only the upper part of that range. */
 	defense: { floor: 55, ceiling: 85 },
 	offense: { floor: 70, ceiling: 94 },
-	/** Average Defense × HP of the three, per league (the stat grows with the CP cap). */
+	/** Average Defense × HP of the three, at the three permanent leagues (the stat grows with the CP cap; see `bulkAnchors`). */
 	bulk: {
 		great: { floor: 12000, ceiling: 20500 },
 		ultra: { floor: 19000, ceiling: 36000 },
 		master: { floor: 26000, ceiling: 45500 },
-	} satisfies Record<TeamLeague, { floor: number; ceiling: number }>,
+	},
 	/** Average PvPoke "switch" score of the three. */
 	safety: { floor: 40, ceiling: 80 },
 	/** Average PvPoke moveset consistency of the three. */
@@ -237,8 +251,19 @@ export const PART_KEYS = Object.keys(SCORE_WEIGHTS) as Array<keyof ScoreParts>;
  */
 export const threatPart = (threatScore: number): number =>
 	stretch(threatScore, SCORE_ANCHORS.threat.worst, SCORE_ANCHORS.threat.best);
-export const bulkPart = (league: TeamLeague, averageBulk: number): number =>
-	stretch(averageBulk, SCORE_ANCHORS.bulk[league].floor, SCORE_ANCHORS.bulk[league].ceiling);
+/** The bulk anchors of any league, from the three permanent ones by CP cap. */
+const bulkAnchors = (league: TeamLeague): { floor: number; ceiling: number } => {
+	const { great, ultra, master } = SCORE_ANCHORS.bulk;
+	const cap = capOf(league);
+	return {
+		floor: byCap(cap, great.floor, ultra.floor, master.floor),
+		ceiling: byCap(cap, great.ceiling, ultra.ceiling, master.ceiling),
+	};
+};
+export const bulkPart = (league: TeamLeague, averageBulk: number): number => {
+	const { floor, ceiling } = bulkAnchors(league);
+	return stretch(averageBulk, floor, ceiling);
+};
 export const safetyPart = (averageSafety: number): number =>
 	stretch(averageSafety, SCORE_ANCHORS.safety.floor, SCORE_ANCHORS.safety.ceiling);
 export const consistencyPart = (averageConsistency: number): number =>
@@ -304,7 +329,7 @@ export const teamWarnings = (input: WarningInput): Array<TeamWarning> => {
 
 	if (input.offense.blindSpots.length > 0) out.push({ kind: 'blindSpot', types: input.offense.blindSpots });
 
-	const goal = BULK_GOAL[input.league];
+	const goal = bulkGoal(input.league);
 	input.bulks.forEach((bulk, member) => {
 		if (bulk / goal < 0.75) out.push({ kind: 'fragile', member });
 	});
@@ -337,6 +362,27 @@ export const teamWarnings = (input: WarningInput): Array<TeamWarning> => {
 /** `[attack, defense, HP]` IVs, each 0–15. */
 export type SlotIvs = [number, number, number];
 
+/** A Pokémon fields a Fast Move and up to three Charged Moves (the Mega Pokémon of a Mega cup have three; the others two). */
+export const MAX_MOVES = 4;
+
+/**
+ * `moveset` with the move at `moveIndex` set to `moveId`. The same Charged Move can't be fielded twice: picking one another
+ * Charged slot already holds drops that slot (a `none` can repeat).
+ */
+export const withMove = (moveset: ReadonlyArray<string>, moveIndex: number, moveId: string): Array<string> => {
+	const next = [...moveset];
+	next[moveIndex] = moveId;
+	if (moveIndex > 0 && moveId !== 'none') {
+		for (let other = next.length - 1; other > 0; other--) {
+			if (other !== moveIndex && next[other] === moveId) {
+				next.splice(other, 1);
+				if (other < moveIndex) moveIndex--;
+			}
+		}
+	}
+	return next;
+};
+
 export interface TeamSlotDescriptor {
 	speciesId: string;
 	/** `[fast, charged 1, charged 2?]` */
@@ -349,7 +395,18 @@ export interface TeamSlotDescriptor {
 	buddy?: true | undefined;
 	/** Only on the stand-in a Best Buddy gets in the team combinations (see `nonBuddyCounterpart`): it had the ribbon. */
 	formerBuddy?: true | undefined;
+	/** A Super Max Mega: a Mega at Super Max level, which gives it two more levels (see `SUPER_MEGA_BONUS`). */
+	superMega?: true | undefined;
 }
+
+/** Highest level without help: 50. A Best Buddy reaches one more, a Super Max Mega two more. */
+export const BASE_MAX_LEVEL = 50;
+export const BUDDY_BONUS = 1;
+export const SUPER_MEGA_BONUS = 2;
+
+/** The highest level a Pokémon can be at: 50, plus 1 as a Best Buddy, plus 2 as a Super Max Mega (53 with both). */
+export const maxLevelOf = (flags: { buddy?: boolean | undefined; superMega?: boolean | undefined }): number =>
+	BASE_MAX_LEVEL + (flags.buddy ? BUDDY_BONUS : 0) + (flags.superMega ? SUPER_MEGA_BONUS : 0);
 
 /**
  * The same Pokémon as it would be without the ribbon: no flag, and one full level lower (two half-level steps) — what
@@ -361,29 +418,41 @@ export const nonBuddyCounterpart = (slot: TeamSlotDescriptor): TeamSlotDescripto
 	moveset: slot.moveset,
 	...(slot.ivs ? { ivs: slot.ivs } : {}),
 	...(slot.level !== undefined ? { level: Math.max(1, slot.level - 1) } : {}),
+	...(slot.superMega ? { superMega: true as const } : {}),
 	formerBuddy: true,
 });
 
-/** A Best Buddy: flagged as one (a level above 50 implies it, for data saved before the flag existed). */
-export const isBuddy = (slot: Pick<TeamSlotDescriptor, 'buddy' | 'level'>): boolean =>
-	slot.buddy === true || (slot.level ?? 0) > 50;
+/**
+ * A level beyond what the Pokémon reaches without being a Best Buddy: above 50, or above 52 for a Super Max Mega (whose two
+ * extra levels are its own). Only a Best Buddy can be there.
+ */
+export const exceedsNormalLevel = (slot: Pick<TeamSlotDescriptor, 'level' | 'superMega'>): boolean =>
+	(slot.level ?? 0) > maxLevelOf({ superMega: slot.superMega === true });
 
+/** A Best Buddy: flagged as one (a level beyond the normal maximum implies it, for data saved before the flag existed). */
+export const isBuddy = (slot: Pick<TeamSlotDescriptor, 'buddy' | 'level' | 'superMega'>): boolean =>
+	slot.buddy === true || exceedsNormalLevel(slot);
+
+/** Levels go up to 53 (50, plus a Best Buddy's 1, plus a Super Max Mega's 2), in steps of 0.5. */
 export const isSlotLevel = (value: unknown): value is number =>
-	typeof value === 'number' && value >= 1 && value <= 51 && Number.isInteger(value * 2);
+	typeof value === 'number' && value >= 1 && value <= 53 && Number.isInteger(value * 2);
 
 export const isSlotIvs = (value: unknown): value is SlotIvs =>
 	Array.isArray(value) && value.length === 3 && value.every((n) => Number.isInteger(n) && n >= 0 && n <= 15);
 
 /**
  * One Pokémon of a team as text: `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH`, plus `@0.15.15` when its IVs were picked and
- * `@L25.5` when its level was, `@B` for a Best Buddy (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with
+ * `@L25.5` when its level was, `@B` for a Best Buddy, `@S` for a Super Max Mega (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with
  * other moves, IVs or level is another key.
  */
-export const slotKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs' | 'level' | 'buddy'>): string =>
+export const slotKey = (
+	slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs' | 'level' | 'buddy' | 'superMega'>
+): string =>
 	[slot.speciesId, ...slot.moveset].join('-') +
 	(slot.ivs ? `@${slot.ivs.join('.')}` : '') +
 	(slot.level !== undefined ? `@L${slot.level}` : '') +
-	(slot.buddy ? '@B' : '');
+	(slot.buddy ? '@B' : '') +
+	(slot.superMega ? '@S' : '');
 
 /**
  * What identifies a team for rating it: like `encodeTeam`, but without the Best Buddy flag. The flag only matters through
@@ -411,9 +480,12 @@ export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescri
 			let ivs: SlotIvs | undefined;
 			let level: number | undefined;
 			let buddy = false;
+			let superMega = false;
 			for (const modifier of modifiers) {
 				if (modifier === 'B') {
 					buddy = true;
+				} else if (modifier === 'S') {
+					superMega = true;
 				} else if (modifier.startsWith('L')) {
 					const n = Number(modifier.slice(1));
 					if (isSlotLevel(n)) level = n;
@@ -422,14 +494,15 @@ export const decodeTeam = (raw: string | null | undefined): Array<TeamSlotDescri
 					if (isSlotIvs(picked)) ivs = picked;
 				}
 			}
-			return { parts: moves.split('-').filter(Boolean), ivs, level, buddy };
+			return { parts: moves.split('-').filter(Boolean), ivs, level, buddy, superMega };
 		})
 		.filter(({ parts }) => parts.length >= 3)
 		.slice(0, 3)
-		.map(({ parts: [speciesId, ...moveset], ivs, level, buddy }) => ({
+		.map(({ parts: [speciesId, ...moveset], ivs, level, buddy, superMega }) => ({
 			speciesId,
-			moveset: moveset.slice(0, 3),
+			moveset: moveset.slice(0, MAX_MOVES),
 			...(ivs ? { ivs } : {}),
 			...(level !== undefined ? { level } : {}),
 			...(buddy ? { buddy: true as const } : {}),
+			...(superMega ? { superMega: true as const } : {}),
 		}));

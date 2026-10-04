@@ -34,6 +34,8 @@
 		"ivTitle": "{{name}}の個体値",
 		"levelTitle": "{{name}}のレベル",
 		"bestBuddyMoveHint": "このポケモンをベストバディにする（今のベストバディは初期値に戻ります）",
+		"superMega": "{{max}}{{mega}}",
+		"superMegaHint": "このメガを超最大レベルで評価：2レベル上がり、最大52（ベストバディなら53）",
 		"bestBuddy": "ベストバディ",
 		"bestBuddyHint": "このポケモンをベストバディ（Lv51）として評価",
 		"levelNeedsBuddy": "レベル50を超えられるのはベストバディだけです。先にこのポケモンのベストバディをオンにしてください。",

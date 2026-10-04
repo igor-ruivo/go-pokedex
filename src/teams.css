@@ -3253,3 +3253,56 @@
 .rvmp .r-shell.r-tm {
 	padding-top: 16px;
 }
+/* The Teams view's league picker: the Custom Cups button is a league chip like the others, right after Master League (the
+   chips take only the room they need, instead of the button being pushed to the far end); on a narrow screen it drops to
+   its own row below the chips. */
+.rvmp .r-tm-leagues .r-lgpick-row {
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	gap: 4px 6px;
+}
+.rvmp .r-tm-leagues .r-lgpick-row > .r-lgpick-scroller {
+	flex: 0 1 auto;
+}
+@media (max-width: 549px) {
+	.rvmp .r-tm-leagues .r-lgpick-row > .r-lgpick-scroller {
+		flex: 1 0 100%;
+	}
+}
+/* phones: the team bar is a full-width strip under the app bar, so the page (title and all) starts 68px down, below it instead
+   of under it (from 900px up it is a floating pill and the page keeps its usual top) */
+@media (max-width: 899px) {
+	.rvmp .r-shell.r-tm:has(.r-tm-mini) {
+		padding-top: 68px;
+	}
+}
+/* The Custom Cups list opens under the button itself, from its left edge (the button sits right after Master League here, so a
+   list hung from its right edge ran off the left of the screen). On a narrower screen it would run off the right instead, so
+   there it opens from the left edge of the picker row. */
+.rvmp .r-tm-leagues .r-lgcups-pop {
+	left: 0;
+	right: auto;
+}
+@media (max-width: 679px) {
+	.rvmp .r-tm-leagues .r-lgpick-row {
+		position: relative;
+	}
+	.rvmp .r-tm-leagues .r-lgcups {
+		position: static;
+	}
+	.rvmp .r-tm-leagues .r-lgcups-pop {
+		width: min(300px, 100%);
+	}
+}
+/* the Best Buddy and Super Max Mega toggles of a member card, side by side */
+.rvmp .r-tm-buddies {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+}
+.rvmp .r-tm-buddy svg {
+	flex: none;
+	width: 18px;
+	height: 18px;
+}

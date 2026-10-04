@@ -1,5 +1,6 @@
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
-import type { SlotIvs } from '../team-analysis';
+import { bestSpreadAt } from '../iv-rank';
+import { maxLevelOf, type SlotIvs } from '../team-analysis';
 import { assignRoles, type RoleScores } from '../team-roles';
 import { SimBattle } from './battle';
 import { createSimContext, type SpeciesInfo } from './context';
@@ -29,6 +30,8 @@ export type { SpeciesInfo } from './context';
 
 export interface EvaluatorInit {
 	league: TeamLeague;
+	/** The league's CP cap (the worker has no registry of them). */
+	cpCap: number;
 	builder: TeamBuilderData;
 	/** Every species the ranking mentions. */
 	species: ReadonlyArray<SpeciesInfo>;
@@ -43,6 +46,8 @@ export interface TeamSlot {
 	ivs?: SlotIvs | undefined;
 	/** Level picked for this member; absent: the highest the CP cap allows. */
 	level?: number | undefined;
+	/** A Super Max Mega (the build above is the best one at its level ceiling). Only set on a suggested Pokémon. */
+	superMega?: true | undefined;
 }
 
 export interface ThreatEntry {
@@ -96,6 +101,10 @@ export interface AlternativePick {
 	threatScore: number;
 	/** Change against the current team's threat score on the same basis (negative = better). */
 	delta: number;
+	/** A Super Max Mega candidate is always considered as one: its best build at that level ceiling. */
+	ivs?: SlotIvs;
+	level?: number;
+	superMega?: true;
 }
 
 export interface TeamCompletion {
@@ -179,6 +188,7 @@ export class TeamEvaluator {
 	private readonly pool: Array<PoolEntry>;
 	private readonly rankingById = new Map<string, RankedEntry>();
 	private readonly metaSet: ReadonlySet<string>;
+	private readonly superMegaBuilds = new Map<string, { ivs: SlotIvs; level: number } | null>();
 
 	constructor(private readonly init: EvaluatorInit) {
 		const { builder, league } = init;
@@ -186,7 +196,7 @@ export class TeamEvaluator {
 		for (const r of init.ranking) this.rankingById.set(r.speciesId, r);
 		this.metaSet = new Set(builder.meta[league]);
 
-		this.ctx = createSimContext(league, builder, (id) => this.speciesInfo.get(id));
+		this.ctx = createSimContext(league, builder, (id) => this.speciesInfo.get(id), init.cpCap);
 
 		this.pool = init.ranking
 			.filter((r) => this.speciesInfo.has(r.speciesId) && !r.speciesId.includes('_xs'))
@@ -203,6 +213,21 @@ export class TeamEvaluator {
 		return r?.lead !== undefined && r.closer !== undefined
 			? { lead: r.lead, switch: r.switch, closer: r.closer }
 			: undefined;
+	}
+
+	/**
+	 * The build a suggested Super Max Mega is rated with: the best spread at a level ceiling of 52 (50, plus the two levels of
+	 * Super Max), with the level and so the CP that goes with it. Never a Best Buddy build. `undefined` for any other Pokémon.
+	 */
+	superMegaBuild(speciesId: string): { ivs: SlotIvs; level: number } | undefined {
+		const info = this.speciesInfo.get(speciesId);
+		if (!info?.isSuperMega) return undefined;
+		let build = this.superMegaBuilds.get(speciesId);
+		if (build === undefined) {
+			build = bestSpreadAt(info.baseStats, this.init.cpCap, maxLevelOf({ superMega: true })) ?? null;
+			this.superMegaBuilds.set(speciesId, build);
+		}
+		return build ?? undefined;
 	}
 
 	/** Species usable as a team member: anything in this league's ranking. */
@@ -477,10 +502,12 @@ export class TeamEvaluator {
 		const currentOrder = fullTeam ? playOrderOf(roleScores) : members.map((_, k) => k);
 
 		const teamBases = new Set(team.map((slot) => slot.speciesId.replace('_shadow', '')));
-		const candidates = [...this.pool]
+		const outsiders = [...this.pool]
 			.filter((p) => !teamBases.has(p.entry.speciesId.replace('_shadow', '')))
-			.sort((a, b) => a.entry.rank - b.entry.rank)
-			.slice(0, candidateCount);
+			.sort((a, b) => a.entry.rank - b.entry.rank);
+		const top = outsiders.slice(0, candidateCount);
+		// Every Super Max Mega of the league is always a candidate, however far down the ranking it is.
+		const candidates = [...top, ...outsiders.slice(candidateCount).filter((p) => this.superMegaBuild(p.entry.speciesId))];
 
 		const scoreTeam = (
 			ratingsOf: (poolIndex: number) => Array<number>,
@@ -512,11 +539,17 @@ export class TeamEvaluator {
 		candidates.forEach((candidate, ci) => {
 			// The candidate needs its own instance when it would face a mirror of itself.
 			const candidateBest = new Array<SimMove | null>(this.pool.length).fill(null);
+			// A Super Max Mega is rated at its best build for level 52, on an instance of its own.
+			const superBuild = this.superMegaBuild(candidate.entry.speciesId);
+			const superPoke = superBuild
+				? this.createPokemon(candidate.entry.speciesId, candidate.entry.moveset, superBuild.ivs, superBuild.level)
+				: undefined;
 			const column = this.pool.map((entry, i) => {
 				const opponent =
-					entry.poke === candidate.poke
+					superPoke ??
+					(entry.poke === candidate.poke
 						? this.createPokemon(candidate.entry.speciesId, candidate.entry.moveset)
-						: candidate.poke;
+						: candidate.poke);
 				const { rating } = this.simulateMatchup(battle, entry.poke, opponent);
 				candidateBest[i] = entry.poke.bestChargedMove;
 				return rating;
@@ -540,6 +573,7 @@ export class TeamEvaluator {
 					moveset: candidate.entry.moveset,
 					threatScore,
 					delta: threatScore - currentScore,
+					...(superBuild ? { ivs: superBuild.ivs, level: superBuild.level, superMega: true as const } : {}),
 				});
 			}
 
@@ -649,10 +683,12 @@ export class TeamEvaluator {
 		candidateIds: ReadonlyArray<string>,
 		onProgress?: (done: number, total: number) => void
 	): Array<RankedTeamThreat> {
-		const members = candidateIds.map((id) => {
+		const members: Array<TeamSlot> = candidateIds.map((id) => {
 			const entry = this.rankingById.get(id);
 			if (!entry) throw new Error(`Unknown candidate: ${id}`);
-			return { speciesId: id, moveset: entry.moveset };
+			// A Super Max Mega is rated at its best build for level 52 (see `superMegaBuild`)
+			const build = this.superMegaBuild(id);
+			return { speciesId: id, moveset: entry.moveset, ...(build ? { ivs: build.ivs, level: build.level } : {}) };
 		});
 		const columns = this.buildColumns(members, onProgress);
 		const base = candidateIds.map((id) => id.replace('_shadow', ''));
@@ -686,14 +722,25 @@ export class TeamEvaluator {
 		if (missing < 1 || missing > 2) return [];
 
 		const fixedBases = new Set(fixed.map((slot) => slot.speciesId.replace('_shadow', '')));
-		const candidates = [...this.pool]
+		const outsiders = [...this.pool]
 			.filter((p) => !fixedBases.has(p.entry.speciesId.replace('_shadow', '')))
-			.sort((a, b) => a.entry.rank - b.entry.rank)
-			.slice(0, options.candidates ?? 50)
-			.map((p) => ({ speciesId: p.entry.speciesId, moveset: p.entry.moveset.filter((m) => m !== 'none') }));
+			.sort((a, b) => a.entry.rank - b.entry.rank);
+		const wanted = options.candidates ?? 50;
+		// Every Super Max Mega of the league is always a candidate too, rated at its best build for level 52.
+		const candidates: Array<TeamSlot> = [
+			...outsiders.slice(0, wanted),
+			...outsiders.slice(wanted).filter((p) => this.superMegaBuild(p.entry.speciesId)),
+		].map((p) => {
+			const build = this.superMegaBuild(p.entry.speciesId);
+			return {
+				speciesId: p.entry.speciesId,
+				moveset: p.entry.moveset.filter((m) => m !== 'none'),
+				...(build ? { ivs: build.ivs, level: build.level, superMega: true as const } : {}),
+			};
+		});
 
-		const members = [
-			...fixed.map((slot) => ({ speciesId: slot.speciesId, moveset: [...slot.moveset] })),
+		const members: Array<TeamSlot> = [
+			...fixed.map((slot) => ({ speciesId: slot.speciesId, moveset: [...slot.moveset], ivs: slot.ivs, level: slot.level })),
 			...candidates,
 		];
 		const columns = this.buildColumns(members);
@@ -705,7 +752,7 @@ export class TeamEvaluator {
 		const finish = (trio: readonly [number, number, number]) => {
 			const { order, threatScore } = this.rateTrio(columns, trio, roles);
 			out.push({
-				members: order.map((k) => ({ speciesId: members[k].speciesId, moveset: members[k].moveset })),
+				members: order.map((k) => members[k]),
 				threatScore,
 			});
 		};

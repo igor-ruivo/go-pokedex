@@ -1,6 +1,6 @@
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { TeamBuilderData, TeamLeague } from '../DTOs/ITeamBuilder';
-import { LEAGUE_CP } from './pvp-sim/context';
+import { bestIvsFor, LEAGUE_CP } from './league-caps';
 import { highestLevelWithinCap } from './pvp-sim/cp';
 import { type SlotIvs, type TeamSlotDescriptor } from './team-analysis';
 
@@ -15,7 +15,7 @@ export const canonicalSlot = (
 	league: TeamLeague,
 	data: { builder: TeamBuilderData | undefined; gamemaster: Readonly<Record<string, IGamemasterPokemon>> }
 ): TeamSlotDescriptor => {
-	const spread = data.builder?.ivs[slot.speciesId]?.[league];
+	const spread = bestIvsFor(data.builder, slot.speciesId, LEAGUE_CP[league]);
 	const defaultIvs: SlotIvs | undefined = spread ? [spread[1], spread[2], spread[3]] : undefined;
 	const ivs = slot.ivs && !defaultIvs?.every((value, i) => value === slot.ivs?.[i]) ? slot.ivs : undefined;
 	const effectiveIvs = ivs ?? defaultIvs;
@@ -31,5 +31,6 @@ export const canonicalSlot = (
 		...(ivs ? { ivs } : {}),
 		...(slot.level !== undefined && !followsCap ? { level: slot.level } : {}),
 		...(slot.buddy ? { buddy: true as const } : {}),
+		...(slot.superMega ? { superMega: true as const } : {}),
 	};
 };

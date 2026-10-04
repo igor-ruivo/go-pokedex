@@ -25,6 +25,8 @@ export interface FavoriteMember {
 	level?: number;
 	/** A Best Buddy (level ceiling 51). */
 	buddy?: true;
+	/** A Super Max Mega (two more levels). */
+	superMega?: true;
 }
 
 export interface FavoriteTeam {
@@ -40,6 +42,7 @@ type Members = ReadonlyArray<{
 	ivs?: SlotIvs | undefined;
 	level?: number | undefined;
 	buddy?: true | undefined;
+	superMega?: true | undefined;
 }>;
 
 /** Puts one member in its canonical form (see `canonicalSlot`), so picks that only restate a default don't make a team another team. */
@@ -152,6 +155,7 @@ export const toggleFavoriteTeam = (league: TeamLeague, members: Members, canon: 
 				...(m.ivs ? { ivs: [...m.ivs] as SlotIvs } : {}),
 				...(m.level !== undefined ? { level: m.level } : {}),
 				...(m.buddy ? { buddy: true as const } : {}),
+				...(m.superMega ? { superMega: true as const } : {}),
 			})),
 			addedAt: Date.now(),
 		},

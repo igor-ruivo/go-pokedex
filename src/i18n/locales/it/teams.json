@@ -34,6 +34,8 @@
 		"ivTitle": "IV di {{name}}",
 		"levelTitle": "Livello di {{name}}",
 		"bestBuddyMoveHint": "Rendi questo Pokémon il compagno migliore; quello attuale torna ai valori predefiniti",
+		"superMega": "{{mega}} {{max}}",
+		"superMegaHint": "Valuta questa Mega al livello Super Max: due livelli in più, fino a 52 (53 con compagno migliore)",
 		"bestBuddy": "Compagno migliore",
 		"bestBuddyHint": "Valuta questo Pokémon come tuo compagno migliore (livello 51)",
 		"levelNeedsBuddy": "Oltre il livello 50 è solo per il compagno migliore: attiva prima «Compagno migliore» per questo Pokémon.",

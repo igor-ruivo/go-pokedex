@@ -1,14 +1,16 @@
-import { isStaticLeague, STATIC_LEAGUE_IDS, type StaticLeagueId } from './ILeagueDefinition';
+import { STATIC_LEAGUE_IDS } from './ILeagueDefinition';
 
 /**
  * Mirrors dex-server's `team-builder.json` (see its `parsers/types/teams.ts`) —
- * PvPoke's own team-builder inputs, for Great / Ultra / Master League only.
+ * PvPoke's own team-builder inputs, for Great / Ultra / Master League and every rotating / custom cup.
  */
 
-/** The Teams view covers the three permanent leagues only. */
-export type TeamLeague = StaticLeagueId;
+/** A league id: `great` / `ultra` / `master`, or a rotating / custom cup's id from `leagues.json`. */
+export type TeamLeague = string;
+/** The three permanent leagues. */
 export const TEAM_LEAGUES = STATIC_LEAGUE_IDS;
-export const isTeamLeague = (v: string | null | undefined): v is TeamLeague => isStaticLeague(v ?? '');
+/** A plausible league id (whether it is still an active league is up to the caller, which knows `leagues.json`). */
+export const isTeamLeague = (v: string | null | undefined): v is TeamLeague => typeof v === 'string' && v.length > 0;
 
 /** A PvP move exactly as PvPoke's simulator sees it. */
 export interface TeamBuilderMove {
@@ -29,7 +31,7 @@ export interface TeamBuilderMove {
 	tags?: Array<string>;
 }
 
-/** `[level, atk IV, def IV, hp IV]` — the rank-1 (best stat product) spread for a league. */
+/** `[level, atk IV, def IV, hp IV]` — the rank-1 (best stat product) spread for a CP cap. */
 export type BestIvs = [number, number, number, number];
 
 export interface FormChange {
@@ -64,11 +66,11 @@ export interface SimulatorStatus {
 export interface TeamBuilderData {
 	simulator: SimulatorStatus;
 	moves: Record<string, TeamBuilderMove>;
-	/** Rank-1 spread per ranked species and league — every Pokémon is rated at its ceiling. */
-	ivs: Record<string, Partial<Record<TeamLeague, BestIvs>>>;
+	/** Rank-1 spread per ranked species and CP cap (see `ivsKeyForCap`) — every Pokémon is rated at its ceiling. */
+	ivs: Record<string, Partial<Record<string, BestIvs>>>;
 	forms: Record<string, TeamBuilderForm>;
 	excludedThreats: Array<string>;
-	meta: Record<TeamLeague, Array<string>>;
+	meta: Record<string, Array<string>>;
 }
 
 export interface RankedTeamMember {
@@ -83,6 +85,8 @@ export interface RankedTeamMember {
 	buddy?: true;
 	/** The stand-in for a Best Buddy without its ribbon (shown with a disabled crown). */
 	formerBuddy?: true;
+	/** A Super Max Mega (two more levels). */
+	superMega?: true;
 }
 
 export interface RankedTeam {
@@ -100,16 +104,21 @@ export interface RankedTeam {
 /** `team-ranking.json` (go-pokedex's `data` branch): every trio of each league's best Pokémon, rated; the top of each list. */
 export interface TeamRanking {
 	generatedAt: string;
-	/** How many of the league's best-ranked Pokémon every trio was drawn from. */
+	/** How many of the league's best-ranked Pokémon every trio was drawn from (every Super Max Mega of the league is added to them). */
 	candidates: number;
-	leagues: Record<
+	/** Only the leagues that were rated are here: a cup that rotated in after the last run has no entry yet. */
+	leagues: Partial<
+		Record<
 		TeamLeague,
 		{
 			totalTeams: number;
+			/** The sample this league used (the same as `candidates` today). */
+			candidates?: number;
 			/** The best teams by Team Score (higher is better). */
 			byScore: Array<RankedTeam>;
 			/** The best teams by threat score alone (lower is better). */
 			byThreat: Array<RankedTeam>;
 		}
+		>
 	>;
 }

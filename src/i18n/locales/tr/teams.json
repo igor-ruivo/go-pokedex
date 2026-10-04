@@ -34,6 +34,8 @@
 		"ivTitle": "{{name}} IV'leri",
 		"levelTitle": "{{name}} seviyesi",
 		"bestBuddyMoveHint": "Bu Pokémon’u En İyi Arkadaş yap; mevcut olan varsayılanlara döner",
+		"superMega": "{{max}} {{mega}}",
+		"superMegaHint": "Bu Mega’yı Süper Maks. seviyede değerlendir: iki seviye daha, 52’ye kadar (En İyi Arkadaş ile 53)",
 		"bestBuddy": "En İyi Arkadaş",
 		"bestBuddyHint": "Bu Pokémon’u En İyi Arkadaşın (seviye 51) olarak değerlendir",
 		"levelNeedsBuddy": "50. seviyenin üstü yalnızca En İyi Arkadaş içindir: önce bu Pokémon için En İyi Arkadaş’ı aç.",

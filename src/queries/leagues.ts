@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { ILeagueDefinition } from '../DTOs/ILeagueDefinition';
 import { isStaticLeague } from '../DTOs/ILeagueDefinition';
+import { registerLeagueCaps } from '../lib/league-caps';
 import { leaguesUrl } from '../utils/Configs';
 import { fetchJson } from '../utils/fetch-json';
 
@@ -25,6 +26,8 @@ export const useLeagueDefinitions = (): { leagues: ReadonlyArray<ILeagueDefiniti
 		staleTime: 30 * 60 * 1000,
 		gcTime: Infinity,
 	});
+	// Anything that only has a league id (the Teams view) looks its CP cap up in this registry.
+	if (data) registerLeagueCaps(data);
 	return { leagues: data ?? EMPTY, fetchCompleted: isSuccess || isError };
 };
 

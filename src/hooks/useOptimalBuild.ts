@@ -1,34 +1,9 @@
 import { useMemo } from 'react';
 
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
-import { competitionRanks, ivRankOf } from '../lib/iv-rank';
-import { cpAt } from '../lib/pvp-sim/cp';
-import type { SlotIvs } from '../lib/team-analysis';
-import { BEST_BUDDY_LEVEL, MAX_LEVEL, type RankEntry } from '../utils/pokemon-helper';
+import { bestSpread, competitionRanks, highestLevelUnderCap, ivRankOf } from '../lib/iv-rank';
+import { maxLevelOf, type SlotIvs } from '../lib/team-analysis';
 import { useBestIvsAtLevel } from './useBestIvs';
-
-/** The rank-1 spread of an IV table (ties: highest Attack, then Defense, then HP) and the highest level it fits at. */
-const bestOf = (
-	rows: ReadonlyArray<RankEntry>,
-	ranks: ReadonlyArray<number>,
-	pokemon: IGamemasterPokemon,
-	cpCap: number,
-	ceiling: number
-): { ivs: SlotIvs; level: number } | undefined => {
-	const top = rows
-		.filter((_, i) => ranks[i] === 1)
-		.sort((a, b) => b.IVs.A - a.IVs.A || b.IVs.D - a.IVs.D || b.IVs.S - a.IVs.S)[0];
-	if (!top) return undefined;
-	const ivs: SlotIvs = [top.IVs.A, top.IVs.D, top.IVs.S];
-	return { ivs, level: highestLevel(pokemon, ivs, cpCap, ceiling) };
-};
-
-const highestLevel = (pokemon: IGamemasterPokemon, ivs: SlotIvs, cpCap: number, ceiling: number) => {
-	for (let level = ceiling; level > 1; level -= 0.5) {
-		if (cpAt(pokemon.baseStats, ivs, level) <= cpCap) return level;
-	}
-	return 1;
-};
 
 /**
  * How a member's IVs and level compare with what is optimal for the member itself: a Best Buddy is
@@ -42,35 +17,51 @@ export const useOptimalBuild = (
 	pokemon: IGamemasterPokemon | undefined,
 	ivs: SlotIvs | undefined,
 	level: number | undefined,
-	isBuddy: boolean,
+	flags: { buddy: boolean; superMega: boolean },
 	cpCap: number
 ): {
 	ivRank: number | undefined;
 	ivsOptimal: boolean;
 	levelOptimal: boolean;
+	/** The rank-1 spread (and its level) at the Pokémon's own level ceiling. */
 	best: { ivs: SlotIvs; level: number } | undefined;
+	/** The best at the ceiling after flipping its Best Buddy state (keeping its Super Max Mega state): what the toggle sets. */
 	buddy: { ivs: SlotIvs; level: number } | undefined;
+	/** Same for its Super Max Mega state (keeping its Best Buddy state). Only for a species that can be one. */
+	superMega: { ivs: SlotIvs; level: number } | undefined;
 } => {
-	const rows50 = useBestIvsAtLevel(pokemon, cpCap, MAX_LEVEL, !!pokemon && !!ivs);
-	const rows51 = useBestIvsAtLevel(pokemon, cpCap, BEST_BUDDY_LEVEL, !!pokemon && !!ivs);
+	const canSuperMega = !!pokemon?.isSuperMega;
+	const enabled = !!pokemon && !!ivs;
+	const ceiling = maxLevelOf(flags);
+	const buddyCeiling = maxLevelOf({ buddy: !flags.buddy, superMega: flags.superMega });
+	const superCeiling = maxLevelOf({ buddy: flags.buddy, superMega: !flags.superMega });
+	const rowsNow = useBestIvsAtLevel(pokemon, cpCap, ceiling, enabled);
+	const rowsBuddy = useBestIvsAtLevel(pokemon, cpCap, buddyCeiling, enabled);
+	const rowsSuper = useBestIvsAtLevel(pokemon, cpCap, superCeiling, enabled && canSuperMega);
 	const ivKey = ivs?.join('.');
 	return useMemo(() => {
 		if (!pokemon || !ivs) {
-			return { ivRank: undefined, ivsOptimal: false, levelOptimal: false, best: undefined, buddy: undefined };
+			return {
+				ivRank: undefined,
+				ivsOptimal: false,
+				levelOptimal: false,
+				best: undefined,
+				buddy: undefined,
+				superMega: undefined,
+			};
 		}
-		const ceiling = isBuddy ? BEST_BUDDY_LEVEL : MAX_LEVEL;
-		const rows = isBuddy ? rows51 : rows50;
-		const ranks = competitionRanks(rows);
-		const ivRank = ivRankOf(rows, ranks, ivs);
-		const best = bestOf(rows, ranks, pokemon, cpCap, ceiling);
-		const buddy = bestOf(rows51, competitionRanks(rows51), pokemon, cpCap, BEST_BUDDY_LEVEL);
+		const ranks = competitionRanks(rowsNow);
+		const ivRank = ivRankOf(rowsNow, ranks, ivs);
 		return {
 			ivRank,
 			ivsOptimal: ivRank === 1,
-			levelOptimal: level === highestLevel(pokemon, ivs, cpCap, ceiling),
-			best,
-			buddy,
+			levelOptimal: level === highestLevelUnderCap(pokemon.baseStats, ivs, cpCap, ceiling),
+			best: bestSpread(rowsNow, ranks, pokemon.baseStats, cpCap, ceiling),
+			buddy: bestSpread(rowsBuddy, competitionRanks(rowsBuddy), pokemon.baseStats, cpCap, buddyCeiling),
+			superMega: canSuperMega
+				? bestSpread(rowsSuper, competitionRanks(rowsSuper), pokemon.baseStats, cpCap, superCeiling)
+				: undefined,
 		};
 		// `ivs` is tracked through `ivKey` so a fresh array with the same numbers doesn't recompute
-	}, [rows50, rows51, pokemon, ivKey, level, isBuddy, cpCap]);
+	}, [rowsNow, rowsBuddy, rowsSuper, pokemon, ivKey, level, ceiling, buddyCeiling, superCeiling, canSuperMega, cpCap]);
 };

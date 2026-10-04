@@ -2,9 +2,18 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
-import { LEAGUE_CP } from '../../lib/pvp-sim/context';
+import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import { cpAt } from '../../lib/pvp-sim/cp';
-import { decodeTeam, encodeTeam, isBuddy, type SlotIvs, type TeamSlotDescriptor } from '../../lib/team-analysis';
+import {
+	decodeTeam,
+	encodeTeam,
+	isBuddy,
+	MAX_MOVES,
+	maxLevelOf,
+	type SlotIvs,
+	type TeamSlotDescriptor,
+	withMove,
+} from '../../lib/team-analysis';
 import { forgetTeam, lastTeamFor, rememberTeam } from './team-memory';
 import type { TeamsData } from './useTeamsData';
 
@@ -34,7 +43,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 		// follows the cap again.
 		const withinCap = (slot: TeamSlotDescriptor) => {
 			if (slot.level === undefined) return true;
-			const spread = builder?.ivs[slot.speciesId]?.[league];
+			const spread = bestIvsFor(builder, slot.speciesId, LEAGUE_CP[league]);
 			const ivs = slot.ivs ?? (spread ? ([spread[1], spread[2], spread[3]] as SlotIvs) : undefined);
 			const base = data.gamemaster[slot.speciesId]?.baseStats;
 			return !ivs || !base || cpAt(base, ivs, slot.level) <= LEAGUE_CP[league];
@@ -59,13 +68,16 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 				// Only one Pokémon per team can be a Best Buddy: later ones are plain Pokémon again (and a level above 50 goes).
 				const buddy = isBuddy(slot) && !buddyTaken;
 				if (buddy) buddyTaken = true;
-				const keepLevel = slot.level !== undefined && withinCap(slot) && (buddy || slot.level <= 50);
+				// Super Max Mega only for a Pokémon that is one; the level may not go past what the two flags allow.
+				const superMega = slot.superMega === true && !!data.gamemaster[slot.speciesId]?.isSuperMega;
+				const keepLevel = slot.level !== undefined && withinCap(slot) && slot.level <= maxLevelOf({ buddy, superMega });
 				return {
 					speciesId: slot.speciesId,
 					moveset: slot.moveset,
 					...(slot.ivs ? { ivs: slot.ivs } : {}),
 					...(keepLevel ? { level: slot.level } : {}),
 					...(buddy ? { buddy: true as const } : {}),
+					...(superMega ? { superMega: true as const } : {}),
 				};
 			});
 	}, [raw, data, league]);
@@ -106,7 +118,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	/** A species' recommended moveset for this league (PvPoke's own pick), as `[fast, charged 1, charged 2?]`. */
 	const recommendedMoveset = useCallback(
 		(speciesId: string): Array<string> =>
-			(data.rankList[speciesId]?.moveset ?? []).filter((m) => m !== 'none').slice(0, 3),
+			(data.rankList[speciesId]?.moveset ?? []).filter((m) => m !== 'none').slice(0, MAX_MOVES),
 		[data.rankList]
 	);
 
@@ -127,14 +139,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 		(index: number, moveIndex: number, moveId: string) => {
 			const next = team.map((slot, i) => {
 				if (i !== index) return slot;
-				const moveset = [...slot.moveset];
-				moveset[moveIndex] = moveId;
-				// The same Charged Move can't be fielded twice: picking one a teammate slot already holds drops that slot.
-				if (moveIndex > 0) {
-					const other = moveIndex === 1 ? 2 : 1;
-					if (moveset[other] === moveId) moveset.splice(other, 1);
-				}
-				return { ...slot, moveset };
+				return { ...slot, moveset: withMove(slot.moveset, moveIndex, moveId) };
 			});
 			write(next);
 		},
@@ -144,7 +149,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	/** A species' best (rank-1) IVs for this league — what a Pokémon without picked IVs is rated with. */
 	const defaultIvs = useCallback(
 		(speciesId: string): SlotIvs | undefined => {
-			const spread = data.builder?.ivs[speciesId]?.[league];
+			const spread = bestIvsFor(data.builder, speciesId, LEAGUE_CP[league]);
 			return spread ? [spread[1], spread[2], spread[3]] : undefined;
 		},
 		[data.builder, league]
@@ -155,13 +160,24 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 	 * spread itself counts as the default; the level then follows the CP cap).
 	 */
 	const setBuild = useCallback(
-		(index: number, build: { ivs: SlotIvs | undefined; level: number | undefined; buddy?: boolean | undefined }) => {
+		(
+			index: number,
+			build: {
+				ivs: SlotIvs | undefined;
+				level: number | undefined;
+				buddy?: boolean | undefined;
+				superMega?: boolean | undefined;
+			}
+		) => {
 			const target = team[index];
 			// Only one Pokémon per team is a Best Buddy: making this one the buddy takes it from the current one, which goes
 			// back to the defaults (the best spread up to level 50, at the level the CP cap allows). A level above 50 needs it too.
 			const buddy = build.buddy ?? (target ? isBuddy(target) : false);
 			const takesBuddy = !!target && buddy && !isBuddy(target);
-			if ((build.level ?? 0) > 50 && !buddy) return;
+			// Super Max Mega: only for a Pokémon that is one. The level can't go past what the two flags allow (50, +1 buddy, +2).
+			const superMega =
+				(build.superMega ?? target?.superMega ?? false) && !!target && !!data.gamemaster[target.speciesId]?.isSuperMega;
+			if ((build.level ?? 0) > maxLevelOf({ buddy, superMega })) return;
 			if (target && build.level !== undefined) {
 				// Refused: the level would put the Pokémon over the league's CP cap with these IVs.
 				const effectiveIvs = build.ivs ?? defaultIvs(target.speciesId);
@@ -180,6 +196,7 @@ export const useTeamState = (data: TeamsData, league: TeamLeague, restore = true
 					...(ivs ? { ivs } : {}),
 					...(build.level !== undefined ? { level: build.level } : {}),
 					...(buddy ? { buddy: true as const } : {}),
+					...(superMega ? { superMega: true as const } : {}),
 				};
 			});
 			write(next);

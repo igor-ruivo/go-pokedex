@@ -73,7 +73,9 @@ export const TopTeams = ({
 		if (key === 'score' || key === 'threat') setSortKey(key);
 	};
 
-	const { totalTeams } = query.data.leagues[league];
+	// A cup that rotated in after the last ranking run has no list yet.
+	if (!ranking) return <p className='r-muted'>{t('teams:top.empty')}</p>;
+	const { totalTeams } = ranking;
 	const date = new Date(query.data.generatedAt).toLocaleDateString();
 
 	return (
@@ -91,7 +93,7 @@ export const TopTeams = ({
 				</button>
 				<p className='r-muted r-tm-note'>{t('teams:top.note', { date, total: totalTeams.toLocaleString() })}</p>
 			</div>
-			{introOpen && <p className='r-tm-board-intro'>{t('teams:top.intro', { candidates: query.data.candidates })}</p>}
+			{introOpen && <p className='r-tm-board-intro'>{t('teams:top.intro', { candidates: ranking.candidates ?? query.data.candidates })}</p>}
 			<details className='r-ctr-help r-tm-board-help'>
 				<summary>{t('teams:top.help.summary')}</summary>
 				<dl>

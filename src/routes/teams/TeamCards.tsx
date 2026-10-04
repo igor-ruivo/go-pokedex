@@ -12,8 +12,9 @@ import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { RankedTeam, TeamLeague } from '../../DTOs/ITeamBuilder';
 import { useOptimalBuild } from '../../hooks/useOptimalBuild';
 import { cleanName, ordinal } from '../../lib/format';
-import { LEAGUE_CP } from '../../lib/pvp-sim/context';
+import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import {
+	exceedsNormalLevel,
 	isBuddy,
 	scoreTier,
 	slotIdentityKey,
@@ -50,7 +51,13 @@ const MemberBuild = ({
 	title: string;
 }) => {
 	// A level that isn't pinned follows the cap, which is optimal by definition.
-	const { ivsOptimal, levelOptimal } = useOptimalBuild(pokemon, ivs, member.level, isBuddy(member), cpCap);
+	const { ivsOptimal, levelOptimal } = useOptimalBuild(
+		pokemon,
+		ivs,
+		member.level,
+		{ buddy: isBuddy(member), superMega: !!member.superMega },
+		cpCap
+	);
 	// The level is only worth stating when it's a deliberate one, not the level the cap gives anyway.
 	const showLevel = member.level !== undefined && !levelOptimal;
 	const custom = (!!member.ivs && !ivsOptimal) || showLevel;
@@ -151,7 +158,7 @@ export const TeamCard = ({
 					const role = TEAM_ROLES[i];
 					// Custom-build cards show the IVs used for rating and flag moves outside the recommended set.
 					const recommended = data.rankList[member.speciesId]?.moveset;
-					const best = data.builder?.ivs[member.speciesId]?.[league];
+					const best = bestIvsFor(data.builder, member.speciesId, LEAGUE_CP[league]);
 					const ivs = member.ivs ?? (best ? [best[1], best[2], best[3]] : undefined);
 					return (
 						<Fragment key={`${member.speciesId}-${i}`}>
@@ -175,7 +182,7 @@ export const TeamCard = ({
 									{p.isShadow && <ShadowMark />}
 									{/* active only for a member that really is above level 50 (the team's one buddy); a ribbon that changes nothing, and the
 									    stand-in of a buddy, show it disabled */}
-									{(member.level ?? 0) > 50 ? (
+									{exceedsNormalLevel(member) ? (
 										<BuddyMark />
 									) : member.buddy || member.formerBuddy || standIns?.has(slotIdentityKey(member)) ? (
 										<BuddyMark disabled />

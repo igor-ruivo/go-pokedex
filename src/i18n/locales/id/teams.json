@@ -34,6 +34,8 @@
 		"ivTitle": "IV {{name}}",
 		"levelTitle": "Level {{name}}",
 		"bestBuddyMoveHint": "Jadikan Pokémon ini Best Buddy; yang sekarang kembali ke bawaan",
+		"superMega": "{{mega}} {{max}}",
+		"superMegaHint": "Nilai Mega ini pada level Super Maks: dua level lebih tinggi, hingga 52 (53 dengan Best Buddy)",
 		"bestBuddy": "Best Buddy",
 		"bestBuddyHint": "Nilai Pokémon ini sebagai Best Buddy (level 51)",
 		"levelNeedsBuddy": "Di atas level 50 hanya untuk Best Buddy: aktifkan dulu Best Buddy untuk Pokémon ini.",

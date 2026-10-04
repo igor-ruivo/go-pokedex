@@ -11,6 +11,8 @@ export interface CollectionPokemon {
 	level?: number;
 	/** A Best Buddy (level ceiling 51). */
 	buddy?: true;
+	/** A Super Max Mega (two more levels). */
+	superMega?: true;
 	nickname?: string;
 	league: TeamLeague;
 	addedAt: number;
@@ -41,7 +43,8 @@ const isEntry = (value: unknown): value is Omit<CollectionPokemon, 'id'> & { id?
 		(entry.nickname === undefined || typeof entry.nickname === 'string') &&
 		(entry.ivs === undefined || isSlotIvs(entry.ivs)) &&
 		(entry.level === undefined || isSlotLevel(entry.level)) &&
-		(entry.buddy === undefined || entry.buddy === true)
+		(entry.buddy === undefined || entry.buddy === true) &&
+		(entry.superMega === undefined || entry.superMega === true)
 	);
 };
 
@@ -158,6 +161,7 @@ export const saveCollectionPokemon = (
 		moveset: [...pokemon.moveset],
 		...(pokemon.ivs ? { ivs: [...pokemon.ivs] as SlotIvs } : {}),
 		...(pokemon.buddy ? { buddy: true as const } : {}),
+		...(pokemon.superMega ? { superMega: true as const } : {}),
 		...(pokemon.nickname?.trim() ? { nickname: pokemon.nickname.trim().slice(0, 32) } : {}),
 		league,
 		addedAt: existing?.addedAt ?? Date.now(),

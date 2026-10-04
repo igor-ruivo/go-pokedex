@@ -19,10 +19,12 @@ import {
 	saveCollectionPokemon,
 	usePokemonCollection,
 } from '../../lib/pokemon-collection';
-import { LEAGUE_CP } from '../../lib/pvp-sim/context';
+import { bestIvsFor, LEAGUE_CP } from '../../lib/league-caps';
 import { cpAt } from '../../lib/pvp-sim/cp';
 import {
+	exceedsNormalLevel,
 	isBuddy,
+	MAX_MOVES,
 	nonBuddyCounterpart,
 	scoreTier,
 	slotIdentityKey,
@@ -30,6 +32,7 @@ import {
 	teamScore,
 	type TeamSlotDescriptor,
 	threatPart,
+	withMove,
 } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
@@ -118,8 +121,9 @@ const comboSlots = (entry: CollectionPokemon): Array<TeamSlotDescriptor> => {
 		...(entry.ivs ? { ivs: entry.ivs } : {}),
 		...(entry.level !== undefined ? { level: entry.level } : {}),
 		...(entry.buddy ? { buddy: true as const } : {}),
+		...(entry.superMega ? { superMega: true as const } : {}),
 	};
-	return (slot.level ?? 0) > 50 ? [slot, nonBuddyCounterpart(slot)] : [slot];
+	return exceedsNormalLevel(slot) ? [slot, nonBuddyCounterpart(slot)] : [slot];
 };
 
 const buildCombinations = (
@@ -136,8 +140,8 @@ const buildCombinations = (
 				const cBase = species[c].speciesId.replace(/_shadow$/, '');
 				if (cBase === aBase || cBase === bBase) continue;
 				const trio = [species[a], species[b], species[c]];
-				// Only one Pokémon per team can be above level 50 (Best Buddy).
-				if (trio.filter((slot) => (slot.level ?? 0) > 50).length > 1) continue;
+				// Only one Pokémon per team can be a Best Buddy at a level beyond the normal maximum.
+				if (trio.filter(exceedsNormalLevel).length > 1) continue;
 				if (
 					!trio.every(
 						(slot) =>
@@ -239,6 +243,7 @@ export const PokemonCollection = ({
 						...(entry.ivs ? { ivs: entry.ivs } : {}),
 						...(entry.level !== undefined ? { level: entry.level } : {}),
 						...(entry.buddy ? { buddy: true as const } : {}),
+						...(entry.superMega ? { superMega: true as const } : {}),
 					};
 					const member = ctx ? analyzeTeam(league, ctx, data, [slot])?.members[0] : undefined;
 					return member ? [[entry.id, member.stats.cp]] : [];
@@ -291,6 +296,7 @@ export const PokemonCollection = ({
 							simulator: data.builder.simulator,
 							moves: data.builder.moves,
 							ivs: data.builder.ivs,
+							cpCap: LEAGUE_CP[league],
 							forms: data.builder.forms,
 							excludedThreats: data.builder.excludedThreats,
 							meta: data.builder.meta[league],
@@ -342,6 +348,7 @@ export const PokemonCollection = ({
 								...(member.ivs ? { ivs: [...member.ivs] as SlotIvs } : {}),
 								...(member.level !== undefined ? { level: member.level } : {}),
 								...(member.buddy ? { buddy: true as const } : {}),
+								...(member.superMega ? { superMega: true as const } : {}),
 								...(member.formerBuddy ? { formerBuddy: true as const } : {}),
 							};
 						}),
@@ -401,20 +408,19 @@ export const PokemonCollection = ({
 		setDraft((current) => (current ? { ...current, slot: next } : current));
 	const setDraftMove = (moveIndex: number, moveId: string) => {
 		if (!draft) return;
-		const moveset = [...draft.slot.moveset];
-		moveset[moveIndex] = moveId;
-		if (moveIndex > 0) {
-			const other = moveIndex === 1 ? 2 : 1;
-			if (moveset[other] === moveId) moveset.splice(other, 1);
-		}
-		updateDraft({ ...draft.slot, moveset });
+		updateDraft({ ...draft.slot, moveset: withMove(draft.slot.moveset, moveIndex, moveId) });
 	};
 	const setDraftBuild = (
 		_index: number,
-		build: { ivs: SlotIvs | undefined; level: number | undefined; buddy?: boolean | undefined }
+		build: {
+			ivs: SlotIvs | undefined;
+			level: number | undefined;
+			buddy?: boolean | undefined;
+			superMega?: boolean | undefined;
+		}
 	) => {
 		if (!draft) return;
-		const spread = data.builder?.ivs[draft.slot.speciesId]?.[league];
+		const spread = bestIvsFor(data.builder, draft.slot.speciesId, LEAGUE_CP[league]);
 		const defaultIvs = spread ? ([spread[1], spread[2], spread[3]] as SlotIvs) : undefined;
 		const effectiveIvs = build.ivs ?? defaultIvs;
 		const base = data.gamemaster[draft.slot.speciesId]?.baseStats;
@@ -427,6 +433,7 @@ export const PokemonCollection = ({
 			...(ivs ? { ivs } : {}),
 			...(build.level !== undefined ? { level: build.level } : {}),
 			...((build.buddy ?? isBuddy(draft.slot)) ? { buddy: true as const } : {}),
+			...((build.superMega ?? draft.slot.superMega) ? { superMega: true as const } : {}),
 		});
 	};
 	// The draft is an exact replica (species, moves, IVs, level) of another saved Pokémon: it can't be saved.
@@ -448,6 +455,7 @@ export const PokemonCollection = ({
 				...(draft.slot.ivs ? { ivs: draft.slot.ivs } : {}),
 				...(draft.slot.level !== undefined ? { level: draft.slot.level } : {}),
 				...(isBuddy(draft.slot) ? { buddy: true as const } : {}),
+				...(draft.slot.superMega ? { superMega: true as const } : {}),
 				...(nickname ? { nickname } : {}),
 			},
 			draft.entryId
@@ -675,7 +683,7 @@ export const PokemonCollection = ({
 					slot={0}
 					onSetMember={(_index, speciesId) => {
 						const current = draft;
-						const moveset = (data.rankList[speciesId]?.moveset ?? []).filter((move) => move !== 'none').slice(0, 3);
+						const moveset = (data.rankList[speciesId]?.moveset ?? []).filter((move) => move !== 'none').slice(0, MAX_MOVES);
 						setDraft({
 							slot: { speciesId, moveset },
 							...(current?.entryId ? { entryId: current.entryId } : {}),

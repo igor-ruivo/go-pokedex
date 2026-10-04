@@ -1,6 +1,6 @@
 name: Team Ranking
 
-# Rates every trio of each league's best Pokémon with this repo's own team rating (its port of PvPoke's simulator)
+# Rates every trio of each league's best Pokémon (its 100 best Pokémon, plus every Super Max Mega, in every league and rotating cup) with this repo's own team rating (its port of PvPoke's simulator)
 # and publishes the top of the list as team-ranking.json on the `data` branch, which the Teams page's "Top teams"
 # tab reads. dex-server (the data source) is only read, never written to; main gets no daily commits.
 # The ranking takes about an hour, so it only runs when its inputs changed (a hash of the dex-server files it reads,

@@ -34,6 +34,8 @@
 		"ivTitle": "IVs de {{name}}",
 		"levelTitle": "Nível de {{name}}",
 		"bestBuddyMoveHint": "Tornar este Pokémon o Melhor Amigo; o atual volta aos valores predefinidos",
+		"superMega": "{{mega}} {{max}}",
+		"superMegaHint": "Avaliar esta Mega ao nível Super Máximo: mais dois níveis, até 52 (53 com Melhor Amigo)",
 		"bestBuddy": "Melhor Amigo",
 		"bestBuddyHint": "Avaliar este Pokémon como o teu Melhor Amigo (nível 51)",
 		"levelNeedsBuddy": "Acima do nível 50 só para o Melhor Amigo: ativa primeiro «Melhor Amigo» neste Pokémon.",

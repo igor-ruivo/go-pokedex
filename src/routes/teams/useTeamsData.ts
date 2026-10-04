@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../DTOs/IRankedPokemon';
 import type { TeamBuilderData, TeamLeague } from '../../DTOs/ITeamBuilder';
+import { LEAGUE_CP } from '../../lib/league-caps';
 import { createSimContext, type SpeciesInfo } from '../../lib/pvp-sim/context';
 import { inPvpokeOrder } from '../../lib/pvp-sim/pool-order';
 import type { AlternativePick, EvaluatorInit, TeamEvaluation, TeamSlot } from '../../lib/pvp-sim/team-eval';
@@ -21,7 +22,8 @@ import { useTeamBuilderData } from '../../queries/teams';
 import { getTeamWorker } from '../../workers/team-client';
 import { analyzeTeam } from './useTeamAnalysis';
 
-const LEAGUE_INDEX: Record<TeamLeague, number> = { great: 0, ultra: 1, master: 2 };
+/** Position of the three permanent leagues in `usePvp().rankLists`; a cup's ranking is in `extraRankLists` under its id. */
+const STATIC_RANK_INDEX: Record<string, number> = { great: 0, ultra: 1, master: 2 };
 
 export interface TeamsData {
 	ready: boolean;
@@ -31,13 +33,15 @@ export interface TeamsData {
 	rankList: Record<string, IRankedPokemon>;
 }
 
+const EMPTY_RANKS: Record<string, IRankedPokemon> = {};
+
 /** Everything the Teams view reads for one league: the game master, that league's ranking and PvPoke's team-builder data. */
 export const useTeamsData = (league: TeamLeague): TeamsData => {
 	const { gamemasterPokemon, fetchCompleted: gmDone, errors: gmErrors } = usePokemon();
-	const { rankLists, pvpFetchCompleted, pvpErrors } = usePvp();
+	const { rankLists, extraRankLists, pvpFetchCompleted, pvpErrors } = usePvp();
 	const builderQuery = useTeamBuilderData();
 
-	const rankList = rankLists[LEAGUE_INDEX[league]];
+	const rankList = (league in STATIC_RANK_INDEX ? rankLists[STATIC_RANK_INDEX[league]] : extraRankLists[league]) ?? EMPTY_RANKS;
 	const ready = gmDone && pvpFetchCompleted && builderQuery.isSuccess && Object.keys(rankList).length > 0;
 
 	const failed = !!gmErrors || !!pvpErrors || builderQuery.isError;
@@ -55,6 +59,7 @@ const speciesInfoOf = (p: IGamemasterPokemon): SpeciesInfo => ({
 	types: p.types.map(String),
 	baseStats: p.baseStats,
 	isShadow: p.isShadow,
+	isSuperMega: p.isSuperMega,
 });
 
 /** Builds the (structured-cloneable) input the simulator worker needs for a league. */
@@ -81,6 +86,7 @@ const buildEvaluatorInit = (
 
 	return {
 		league,
+		cpCap: LEAGUE_CP[league],
 		builder,
 		ranking,
 		species: ranking.map(({ speciesId }) => speciesInfoOf(gamemaster[speciesId])),
@@ -241,7 +247,14 @@ export const completeTeam = async (
 			// Play order, minus the Pokémon that were already there.
 			added: members
 				.filter((m) => !team.some((t) => t.speciesId === m.speciesId))
-				.map((m) => ({ speciesId: m.speciesId, moveset: [...m.moveset] })),
+				.map((m) => ({
+					speciesId: m.speciesId,
+					moveset: [...m.moveset],
+					// a suggested Super Max Mega comes with the build it was rated at
+					...(m.ivs ? { ivs: m.ivs } : {}),
+					...(m.level !== undefined ? { level: m.level } : {}),
+					...(m.superMega ? { superMega: true as const } : {}),
+				})),
 		};
 	}
 	return best ? [...team, ...best.added] : undefined;

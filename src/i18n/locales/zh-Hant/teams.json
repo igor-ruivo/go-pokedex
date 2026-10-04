@@ -34,6 +34,8 @@
 		"ivTitle": "{{name}}的個體值",
 		"levelTitle": "{{name}}的等級",
 		"bestBuddyMoveHint": "將這隻寶可夢設為最佳夥伴；目前的會恢復預設值",
+		"superMega": "{{max}}{{mega}}",
+		"superMegaHint": "以究極極限等級評分這隻超級進化：多 2 級，最高 52 級（同為最佳夥伴則 53 級）",
 		"bestBuddy": "最佳夥伴",
 		"bestBuddyHint": "將這隻寶可夢視為最佳夥伴（51 級）來評分",
 		"levelNeedsBuddy": "超過 50 級僅限最佳夥伴：請先為這隻寶可夢開啟最佳夥伴。",

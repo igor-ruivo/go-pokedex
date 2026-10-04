@@ -2,15 +2,18 @@ import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { IconTabBar, type IconTabItem } from '../components/IconTabBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
 import { RankMedal } from '../components/RankMedal';
 import { useLanguage } from '../contexts/language-context';
+import { isStaticLeague } from '../DTOs/ILeagueDefinition';
 import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
 import { leagueIcon } from '../lib/league-visuals';
 import { modeColor, modeLabel, modeLabelLong, R } from '../lib/nav';
-import { LEAGUE_CP } from '../lib/pvp-sim/context';
+import { LEAGUE_CP } from '../lib/league-caps';
 import { encodeTeam, letterGrade, type ScoreParts, scoreTier, teamScore, threatPart } from '../lib/team-analysis';
+import { useLeagueDefinitions } from '../queries/leagues';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { BattlePlan } from './teams/BattlePlan';
 import { CoveragePanel } from './teams/CoveragePanel';
@@ -29,7 +32,7 @@ import { TypeProfile } from './teams/TypeProfile';
 import { useTeamAnalysis } from './teams/useTeamAnalysis';
 import { completeTeam, useSimContext, useTeamEvaluation, useTeamsData, useTeamSuggestions } from './teams/useTeamsData';
 import { useTeamState } from './teams/useTeamState';
-import { useTeamUpgrades } from './teams/useTeamUpgrades';
+import { pickToSlot, useTeamUpgrades } from './teams/useTeamUpgrades';
 import { Warnings } from './teams/Warnings';
 
 const LEAGUE_ICON_FALLBACK: Record<TeamLeague, string> = {
@@ -57,7 +60,13 @@ const Teams = () => {
 	const leagueParam = params.get('league');
 	// Without a league in the URL, the one visited last in this session (see team-memory.ts).
 	const [rememberedLeague] = useState(lastTeamLeague);
-	const league: TeamLeague = isTeamLeague(leagueParam) ? leagueParam : (rememberedLeague ?? 'great');
+	// The permanent leagues, or a rotating / custom cup that is active right now (`leagues.json`). A cup's id can only be
+	// checked once that file has loaded; until then the page waits (below) instead of flashing Great League.
+	const { leagues, fetchCompleted: leaguesLoaded } = useLeagueDefinitions();
+	const wanted = isTeamLeague(leagueParam) ? leagueParam : rememberedLeague;
+	const leaguePending = !!wanted && !leaguesLoaded && !isStaticLeague(wanted);
+	const league: TeamLeague =
+		wanted && (isStaticLeague(wanted) || leagues.some((l) => l.id === wanted)) ? wanted : 'great';
 
 	const data = useTeamsData(league);
 	const ctx = useSimContext(league, data);
@@ -234,9 +243,21 @@ const Teams = () => {
 		void navigate({ pathname: R.teams, search: `?${next.toString()}` });
 	};
 
-	const leagueLabel = modeLabelLong(league, gl, []);
+	const leagueLabel = modeLabelLong(league, gl, leagues);
 	const accent = modeColor(league);
 	const verified = data.builder?.simulator.verified ?? true;
+
+	// A cup's id from the link or the last visit: wait for the league list to confirm it (and give its CP cap) first.
+	if (leaguePending) {
+		return (
+			<div className='r-shell r-tm'>
+				<div className='r-tm-loading'>
+					<span className='r-spinner' aria-hidden='true' />
+					<p>{t('teams:page.loading')}</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div
@@ -255,6 +276,7 @@ const Teams = () => {
 					activeId={league}
 					onSelect={setLeague}
 					ariaLabel={t('teams:page.leagueAria')}
+					trailing={<CustomLeaguePicker activeId={league} onSelect={setLeague} />}
 				/>
 			</div>
 
@@ -424,7 +446,12 @@ const Teams = () => {
 								loading={!suggestionsQuery.data && !suggestionsQuery.isError}
 								failed={suggestionsQuery.isError}
 								upgrades={upgrades}
-								onApply={(pick) => setMember(pick.slot, pick.speciesId)}
+								onApply={(pick) =>
+									// a Super Max Mega comes with its build for level 52; anyone else just takes the slot with the usual defaults
+									pick.superMega
+										? replaceTeam(team.map((slot, i) => (i === pick.slot ? pickToSlot(pick) : slot)))
+										: setMember(pick.slot, pick.speciesId)
+								}
 							/>
 						</>
 					)}

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../contexts/language-context';
 import type { TeamLeague } from '../../DTOs/ITeamBuilder';
 import { combatMetricNames } from '../../lib/combat-text';
-import { BULK_GOAL, CONSISTENCY_GOAL, letterGrade, SAFETY_GOAL } from '../../lib/team-analysis';
+import { bulkGoal, CONSISTENCY_GOAL, letterGrade, SAFETY_GOAL } from '../../lib/team-analysis';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { gradeNotes } from './teams-text';
@@ -93,7 +93,7 @@ export const StatsPanel = ({
 			key: 'bulk',
 			label: t('teams:score.parts.bulk.name'),
 			value: nf.format(totals.averageBulk),
-			goal: nf.format(BULK_GOAL[league]),
+			goal: nf.format(bulkGoal(league)),
 		},
 		{
 			key: 'safety',

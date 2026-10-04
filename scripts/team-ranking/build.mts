@@ -9,8 +9,9 @@
 // previous published file. On a rank run, the log explains which inputs changed (or whether FORCE=1 / no previous
 // ranking caused it).
 //
-// For each of Great / Ultra / Master League:
-//   - candidates: the CANDIDATES best-ranked species (default 200), each with its ranking's recommended moveset
+// For each of Great / Ultra / Master League, and then for every rotating / custom cup in dex-server's leagues.json:
+//   - candidates: the CANDIDATES best-ranked species (default 100, the same for every league), plus every Super Max Mega
+//     of the league (rated at its best build for level 52, or the lower level its CP cap allows), each with its ranking's recommended moveset
 //     and the rank-1 IVs `team-builder.json` carries — the same inputs the builder rates a team with;
 //   - every trio of them (a Shadow and its normal form never share a team) gets PvPoke's threat score from
 //     `TeamEvaluator.rankTeams` (each candidate simulated once, every trio re-ranked from those columns), then the
@@ -25,14 +26,15 @@ import path from 'path';
 import type { IGamemasterPokemon } from '../../src/DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../src/DTOs/IRankedPokemon';
 import type { TeamBuilderData, TeamLeague } from '../../src/DTOs/ITeamBuilder';
+import { registerLeagueCaps } from '../../src/lib/league-caps';
 import { createSimContext } from '../../src/lib/pvp-sim/context';
 import { inPvpokeOrder } from '../../src/lib/pvp-sim/pool-order';
 import { type EvaluatorInit, TeamEvaluator } from '../../src/lib/pvp-sim/team-eval';
-import { type ScoreParts, scoreTier, teamScore, threatPart } from '../../src/lib/team-analysis';
+import { type ScoreParts, scoreTier, type SlotIvs, teamScore, threatPart } from '../../src/lib/team-analysis';
 import { analyzeTeam } from '../../src/routes/teams/useTeamAnalysis';
 
 const DEX = process.env.DEX_SERVER_DIR ?? path.join(import.meta.dirname, '..', '..', '..', 'dex-server');
-const CANDIDATES = Number(process.env.CANDIDATES ?? 200);
+const CANDIDATES = Number(process.env.CANDIDATES ?? 100);
 // How many teams each published list keeps (every trio is rated; only the best TOP of each list are written out).
 // The page virtualizes the lists and filters them by the Pokémon typed in the search bar.
 const TOP = Number(process.env.TOP_TEAMS ?? 1000);
@@ -41,13 +43,24 @@ const OUT = process.env.OUT ?? path.join(import.meta.dirname, '..', '..', 'team-
 // The previous run's file (the workflow downloads it from the data branch first). Without it there is nothing to compare.
 const PREVIOUS = process.env.PREVIOUS;
 
-const LEAGUES: Array<{ league: TeamLeague; file: string }> = [
-	{ league: 'great', file: 'great-league-pvp.json' },
-	{ league: 'ultra', file: 'ultra-league-pvp.json' },
-	{ league: 'master', file: 'master-league-pvp.json' },
-];
-
 const read = <T,>(file: string): T => JSON.parse(fs.readFileSync(path.join(DEX, 'data', file), 'utf8')) as T;
+interface LeagueFile {
+	leagues: Array<{ id: string; cpCap: number; rankingFile: string }>;
+}
+
+/** Great / Ultra / Master first, then every cup dex-server currently lists — all with the same sample size. */
+const LEAGUES: Array<{ league: TeamLeague; file: string; cpCap: number; candidates: number }> = read<LeagueFile>(
+	'leagues.json'
+).leagues.map(({ id, cpCap, rankingFile }) => ({
+	league: id,
+	file: rankingFile,
+	cpCap,
+	candidates: CANDIDATES,
+}));
+
+// The team analysis looks a league's CP cap up by its id (that is what the page does once `leagues.json` has loaded).
+registerLeagueCaps(LEAGUES.map(({ league, cpCap }) => ({ id: league, cpCap })));
+
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
 const gamemaster = read<Record<string, IGamemasterPokemon>>('game-master.json');
@@ -94,7 +107,7 @@ const inputsFingerprint = (): { hash: string; parts: Record<string, string> } =>
 		hash.update(label + '\0').update(normalized).update('\0');
 	};
 
-	for (const file of ['game-master.json', 'team-builder.json', ...LEAGUES.map((l) => l.file)]) {
+	for (const file of ['game-master.json', 'team-builder.json', 'leagues.json', ...LEAGUES.map((l) => l.file)]) {
 		add(`data/${file}`, fs.readFileSync(path.join(DEX, 'data', file), 'utf8'), `dex-server:data/${file}`);
 	}
 	const settings = JSON.stringify({ CANDIDATES, TOP, SAMPLE_CHECKS });
@@ -180,7 +193,7 @@ const withRankChanges = (list: Array<RankedTeam>, before: Array<RankedTeam> | un
 
 interface RankedTeam {
 	/** In the order the Battle plan plays them: lead, switch, closer. */
-	members: Array<{ speciesId: string; moveset: Array<string> }>;
+	members: Array<{ speciesId: string; moveset: Array<string>; ivs?: SlotIvs; level?: number; superMega?: true }>;
 	score: number;
 	tier: string;
 	threatScore: number;
@@ -189,7 +202,7 @@ interface RankedTeam {
 	parts: Record<keyof ScoreParts, number>;
 }
 
-const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
+const rankLeague = ({ league, file, cpCap, candidates: sample }: (typeof LEAGUES)[number]) => {
 	const rankList = read<Record<string, IRankedPokemon>>(file);
 	const moveset = (id: string) => rankList[id].moveset.filter((m) => m !== 'none');
 
@@ -210,6 +223,7 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 
 	const init: EvaluatorInit = {
 		league,
+		cpCap,
 		builder,
 		ranking,
 		species: ranking.map(({ speciesId }) => {
@@ -221,16 +235,30 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 				types: p.types.map(String),
 				baseStats: p.baseStats,
 				isShadow: p.isShadow,
+				isSuperMega: p.isSuperMega,
 			};
 		}),
 	};
 	const evaluator = new TeamEvaluator(init);
+	// A Super Max Mega is rated (and published) at its best build for level 52 or the CP cap's lower level — computed here
+	// on the spot for the handful of such species, no table from dex-server.
+	const slotOf = (id: string) => {
+		const build = evaluator.superMegaBuild(id);
+		return {
+			speciesId: id,
+			moveset: moveset(id),
+			...(build ? { ivs: build.ivs, level: build.level, superMega: true as const } : {}),
+		};
+	};
 
-	const candidates = [...ranking]
+	const usable = [...ranking]
 		.sort((a, b) => a.rank - b.rank)
-		.filter((r) => !r.speciesId.includes('_xs') && r.moveset.length > 0 && r.moveset.every((m) => builder.moves[m]))
-		.slice(0, CANDIDATES)
-		.map((r) => r.speciesId);
+		.filter((r) => !r.speciesId.includes('_xs') && r.moveset.length > 0 && r.moveset.every((m) => builder.moves[m]));
+	// The best `sample`, plus every Super Max Mega of the league however far down the ranking it is.
+	const candidates = [
+		...usable.slice(0, sample),
+		...usable.slice(sample).filter((r) => evaluator.superMegaBuild(r.speciesId)),
+	].map((r) => r.speciesId);
 
 	console.log(`${league}: ${candidates.length} candidates → rating every trio…`);
 	const started = Date.now();
@@ -241,13 +269,13 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 	const step = Math.max(1, Math.floor(rated.length / SAMPLE_CHECKS));
 	for (let i = 0; i < rated.length; i += step) {
 		const { speciesIds, threatScore } = rated[i];
-		const expected = evaluator.evaluate(speciesIds.map((id) => ({ speciesId: id, moveset: moveset(id) }))).threatScore;
+		const expected = evaluator.evaluate(speciesIds.map(slotOf)).threatScore;
 		if (expected !== threatScore) {
 			throw new Error(`${league}: ${speciesIds.join(' + ')} rates ${threatScore} here but ${expected} through evaluate()`);
 		}
 	}
 
-	const ctx = createSimContext(league, builder, (id) => init.species.find((s) => s.speciesId === id));
+	const ctx = createSimContext(league, builder, (id) => init.species.find((s) => s.speciesId === id), cpCap);
 	const data = { gamemaster, rankList };
 
 	// Every trio is analysed, but only the best TOP of each list are kept (pruned as they pile up, so 1.3M teams
@@ -259,7 +287,7 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 	const prune = (list: Array<RankedTeam>, order: typeof byScoreOrder) => list.sort(order).slice(0, TOP);
 	let totalTeams = 0;
 	for (const { speciesIds, threatScore } of rated) {
-		const slots = speciesIds.map((id) => ({ speciesId: id, moveset: moveset(id) }));
+		const slots = speciesIds.map(slotOf);
 		const analysis = analyzeTeam(league, ctx, data, slots);
 		if (!analysis) continue;
 
@@ -303,6 +331,7 @@ const rankLeague = ({ league, file }: (typeof LEAGUES)[number]) => {
 	const before = previous?.leagues?.[league];
 	return {
 		totalTeams,
+		candidates: sample,
 		byScore: withRankChanges(prune(byScore, byScoreOrder), before?.byScore),
 		byThreat: withRankChanges(prune(byThreat, byThreatOrder), before?.byThreat),
 	};

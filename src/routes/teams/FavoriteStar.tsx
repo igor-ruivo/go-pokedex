@@ -22,6 +22,7 @@ export const FavoriteStar = ({
 		ivs?: SlotIvs | undefined;
 		level?: number | undefined;
 		buddy?: true | undefined;
+		superMega?: true | undefined;
 	}>;
 	className?: string;
 }) => {

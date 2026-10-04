@@ -14,6 +14,7 @@ import path from 'path';
 import type { IGamemasterPokemon } from '../../src/DTOs/IGamemasterPokemon';
 import type { IRankedPokemon } from '../../src/DTOs/IRankedPokemon';
 import type { TeamBuilderData, TeamLeague } from '../../src/DTOs/ITeamBuilder';
+import { LEAGUE_CP } from '../../src/lib/league-caps';
 import { createSimContext } from '../../src/lib/pvp-sim/context';
 import { inPvpokeOrder } from '../../src/lib/pvp-sim/pool-order';
 import { type EvaluatorInit, TeamEvaluator } from '../../src/lib/pvp-sim/team-eval';
@@ -71,6 +72,7 @@ const run = ({ league, file }: (typeof LEAGUES)[number]) => {
 		}));
 	const init: EvaluatorInit = {
 		league,
+		cpCap: LEAGUE_CP[league],
 		builder,
 		ranking,
 		species: ranking.map(({ speciesId }) => {

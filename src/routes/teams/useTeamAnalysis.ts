@@ -8,7 +8,7 @@ import { SimPokemon } from '../../lib/pvp-sim/pokemon';
 import type { SimContext } from '../../lib/pvp-sim/types';
 import {
 	assignRoles,
-	BULK_GOAL,
+	bulkGoal,
 	bulkPart,
 	CONSISTENCY_GOAL,
 	consistencyPart,
@@ -113,7 +113,7 @@ export const analyzeTeam = (
 
 	const grades = {
 		bulk: {
-			grade: letterGrade(totals.averageBulk, BULK_GOAL[league]),
+			grade: letterGrade(totals.averageBulk, bulkGoal(league)),
 			part: bulkPart(league, totals.averageBulk),
 		},
 		safety: {

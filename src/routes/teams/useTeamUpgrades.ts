@@ -32,6 +32,17 @@ export interface TeamUpgrades {
 	byScore: Array<ScoreUpgrade>;
 }
 
+const round1 = (value: number) => Math.round(value * 10) / 10;
+
+/** The slot a pick would put on the team: its ranking's moves, and for a Super Max Mega the build it was rated at. */
+export const pickToSlot = (pick: AlternativePick): TeamSlotDescriptor => ({
+	speciesId: pick.speciesId,
+	moveset: [...pick.moveset],
+	...(pick.ivs ? { ivs: pick.ivs } : {}),
+	...(pick.level !== undefined ? { level: pick.level } : {}),
+	...(pick.superMega ? { superMega: true as const } : {}),
+});
+
 /** Keeps the first (best) pick of each species, for a list already sorted best-first. */
 const bestPerSpecies = <T extends { speciesId: string }>(picks: ReadonlyArray<T>): Array<T> => {
 	const seen = new Set<string>();
@@ -64,7 +75,7 @@ export const useTeamUpgrades = (
 		const scored: Array<ScoreUpgrade> = [];
 		for (const pick of swaps) {
 			const swapped = team.map((slot, i) =>
-				i === pick.slot ? { speciesId: pick.speciesId, moveset: [...pick.moveset] } : slot
+				i === pick.slot ? pickToSlot(pick) : slot
 			);
 			const analysis = analyzeTeam(league, ctx, data, swapped);
 			if (!analysis) continue;
@@ -82,7 +93,10 @@ export const useTeamUpgrades = (
 		scored.sort((a, b) => b.score - a.score);
 		const byScore = bestPerSpecies(scored)
 			.filter((p) => p.scoreDelta >= MIN_SCORE_GAIN)
-			.slice(0, SHOWN);
+			.slice(0, SHOWN)
+			// What is shown is the difference of the two numbers as shown (one decimal each), so "91.7 + 7.7 = 99.4" always
+			// adds up on screen instead of being off by a tenth from rounding each figure on its own.
+			.map((p) => ({ ...p, scoreDelta: round1(round1(p.score) - round1(currentScore)) }));
 
 		return { byThreat, byScore };
 		// `team` itself is tracked through `teamKey`.
