@@ -27,7 +27,9 @@ const MiniGridLoading = () => (
 
 const MoveDetail = () => {
 	const { t } = useTranslation(['moveDetail']);
-	const { moveId = '' } = useParams();
+	const { moveId: routeMoveId = '' } = useParams();
+	// A typed Hidden Power's old link is the Hidden Power page
+	const moveId = baseMoveId(routeMoveId);
 	const { moves: rawMoves, movesFetchCompleted } = useMoves();
 	// Hidden Power is one move here, whichever type a ranking or a Pokémon has it in
 	const moves = useMemo(() => withGenericHiddenPower(rawMoves), [rawMoves]);

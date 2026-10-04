@@ -421,7 +421,23 @@ const main = async () => {
 	const pokemonList = Object.values(gamemaster)
 		.filter((p) => !p.aliasId)
 		.slice(0, limit);
-	const moveList = Object.values(moves).slice(0, limit);
+	// Hidden Power is one page (the app lists its 16 typed moves as the one generic move, see `withGenericHiddenPower`): the typed
+	// ids have no page of their own, so they are not prerendered — the generic one is.
+	const isHiddenPowerVariant = (id) => /^HIDDEN_POWER_[A-Z]+$/.test(id);
+	const variants = Object.values(moves).filter((m) => isHiddenPowerVariant(m.moveId));
+	const moveList = [
+		...Object.values(moves).filter((m) => !isHiddenPowerVariant(m.moveId)),
+		...(variants.length > 0
+			? [
+					{
+						...variants[0],
+						moveId: 'HIDDEN_POWER',
+						type: 'normal',
+						moveName: variants[0].groupName ?? variants[0].moveName,
+					},
+				]
+			: []),
+	].slice(0, limit);
 	console.log(`${pokemonList.length} Pokémon, ${moveList.length} moves.`);
 
 	const server = await startServer();
