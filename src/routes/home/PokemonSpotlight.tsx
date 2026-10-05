@@ -72,10 +72,7 @@ const SpotlightView = ({
 	const { hero, line, raid } = spot;
 
 	return (
-		<article
-			className={className ? `h-spot r-hero ${className}` : 'h-spot r-hero'}
-			style={accentStyle(hero.types[0])}
-		>
+		<article className={className ? `h-spot r-hero ${className}` : 'h-spot r-hero'} style={accentStyle(hero.types[0])}>
 			<div className='h-spot-main'>
 				<div className='h-spot-figure'>
 					<Sprite pokemon={hero} onTap={() => void navigate(R.pokemon(hero.speciesId))} />
@@ -111,23 +108,29 @@ const SpotlightView = ({
 					</div>
 
 					<ul className='h-spot-ranks'>
-						{[spot.pvp].flatMap((best) => (best ? [best] : [])).map(({ league, pokemon, rank }) => (
-							<li key={league} style={{ ['--lg' as string]: modeColor(league) } as CSSProperties}>
-								<Link to={`${R.pokemon(pokemon.speciesId)}?lg=${league}`} className='h-spot-rank'>
-									<LeaguePlate id={league} />
-									<span className='h-spot-rank-text'>
-										<b>{modeLabel(league, gl, leagueDefinitions)}</b>
-										<span>
-											<PokeAvatar pokemon={pokemon} className='h-avatar--sm' />
-											<em>{stageName(pokemon)}</em>
+						{[spot.pvp]
+							.flatMap((best) => (best ? [best] : []))
+							.map(({ league, pokemon, rank }) => (
+								<li key={league} style={{ ['--lg' as string]: modeColor(league) } as CSSProperties}>
+									<Link to={`${R.pokemon(pokemon.speciesId)}?lg=${league}`} className='h-spot-rank'>
+										<LeaguePlate id={league} />
+										<span className='h-spot-rank-text'>
+											<b>{modeLabel(league, gl, leagueDefinitions)}</b>
+											<span>
+												<PokeAvatar pokemon={pokemon} className='h-avatar--sm' />
+												<em>{stageName(pokemon)}</em>
+											</span>
 										</span>
-									</span>
-									<i className='h-spot-place'>#{rank}</i>
-								</Link>
-							</li>
-						))}
+										<i className='h-spot-place'>#{rank}</i>
+									</Link>
+								</li>
+							))}
 						{raid && (
-							<li style={{ ['--lg' as string]: 'var(--lg-raid)', ['--tc' as string]: typeVar(raid.type) } as CSSProperties}>
+							<li
+								style={
+									{ ['--lg' as string]: 'var(--lg-raid)', ['--tc' as string]: typeVar(raid.type) } as CSSProperties
+								}
+							>
 								<Link to={`${R.pokemon(raid.pokemon.speciesId)}?lg=raid`} className='h-spot-rank'>
 									<span className='h-raid-type'>
 										<img src={`/images/types/${raid.type}.png`} alt='' loading='lazy' />
@@ -166,7 +169,9 @@ const SpotlightView = ({
 					return (
 						<li key={slug}>
 							<Link to={R.pokemon(hero.speciesId, slug)} className='h-chip'>
-								<span className='h-chip-ico'>{typeof icon === 'string' ? <img src={icon} alt='' loading='lazy' /> : icon}</span>
+								<span className='h-chip-ico'>
+									{typeof icon === 'string' ? <img src={icon} alt='' loading='lazy' /> : icon}
+								</span>
 								{label}
 							</Link>
 						</li>
@@ -175,7 +180,12 @@ const SpotlightView = ({
 			</ul>
 			{/* the track is always there (empty for the card leaving) so the card never changes height */}
 			<span className='h-countdown' aria-hidden='true' data-held={countdown?.held ? '' : undefined}>
-				{countdown && <i key={countdown.cycle} style={{ animationDuration: `${ROTATE_MS}ms`, animationDelay: `${countdown.delay}ms` }} />}
+				{countdown && (
+					<i
+						key={countdown.cycle}
+						style={{ animationDuration: `${ROTATE_MS}ms`, animationDelay: `${countdown.delay}ms` }}
+					/>
+				)}
 			</span>
 		</article>
 	);

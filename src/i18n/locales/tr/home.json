@@ -28,11 +28,23 @@
 		"eggs": "Her yumurtadan ne çıkar"
 	},
 	"ranks": {
+		"showMore": "{{count}} lig daha göster",
+		"showFewer": "Daha az lig göster",
 		"title": "Sıralamalar",
 		"subtitle": "Her lig için en iyi Pokémonlar, tek bakışta.",
 		"pokedex": "Tüm Pokémonlar: istatistikler, BP ve formlar",
 		"raid": "Türe göre en iyi saldırganlar",
 		"top": "İlk 3"
+	},
+	"days": {
+		"title": "Topluluk Günleri ve Spot Işığı Saatleri",
+		"subtitle": "Bu ay ve gelecek ay: ne zaman oluyorlar ve kim öne çıkıyor.",
+		"community": "Topluluk Günü",
+		"spotlight": "Spot Işığı Saati"
+	},
+	"spotlight": {
+		"title": "Odaktaki Pokémon",
+		"subtitle": "Her Pokémon'un kendi sayfası var: istatistikler, sıralamalar, hareketler, karşı seçimler ve IV tabloları."
 	},
 	"teams": {
 		"title": "Takım laboratuvarı",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Araçlar",
+		"collectionPitch": "Sahip olduğun Pokémon'lar, takım kurmaya hazır.",
 		"searchesPitch": "Depolamanı saniyeler içinde temizle."
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "En iyi baskın saldırganları",
-		"subtitle": "17 türün her biri için ilk üç."
+		"subtitle": "17 türün her biri için en iyi saldırganlar."
 	},
 	"social": {
 		"label": "Bizi şurada bul",

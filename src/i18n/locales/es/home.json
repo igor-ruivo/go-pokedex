@@ -28,11 +28,23 @@
 		"eggs": "Qué sale de cada huevo"
 	},
 	"ranks": {
+		"showMore": "Mostrar {{count}} ligas más",
+		"showFewer": "Mostrar menos ligas",
 		"title": "Rankings",
 		"subtitle": "Los mejores Pokémon de cada liga, de un vistazo.",
 		"pokedex": "Todos los Pokémon: estadísticas, PC y formas",
 		"raid": "Mejores atacantes por tipo",
 		"top": "Top 3"
+	},
+	"days": {
+		"title": "Días de la Comunidad y Horas destacadas",
+		"subtitle": "Este mes y el siguiente: cuándo ocurren y quién es el protagonista.",
+		"community": "Día de la Comunidad",
+		"spotlight": "Hora del Pokémon Destacado"
+	},
+	"spotlight": {
+		"title": "Pokémon en foco",
+		"subtitle": "Cada Pokémon tiene su propia página: estadísticas, rankings, ataques, counters y tablas de IV."
 	},
 	"teams": {
 		"title": "Laboratorio de equipos",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Herramientas",
+		"collectionPitch": "Los Pokémon que tienes, listos para armar equipos.",
 		"searchesPitch": "Limpia tu almacenamiento en segundos."
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "Mejores atacantes de incursión",
-		"subtitle": "Los tres mejores de cada uno de los 17 tipos."
+		"subtitle": "Los mejores atacantes de cada uno de los 17 tipos."
 	},
 	"social": {
 		"label": "Encuéntranos en",

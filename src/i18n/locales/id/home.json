@@ -28,11 +28,23 @@
 		"eggs": "Apa yang menetas dari tiap telur"
 	},
 	"ranks": {
+		"showMore": "Tampilkan {{count}} liga lagi",
+		"showFewer": "Tampilkan lebih sedikit liga",
 		"title": "Peringkat",
 		"subtitle": "Pokémon terbaik untuk setiap liga, sekilas.",
 		"pokedex": "Semua Pokémon: statistik, CP, dan bentuk",
 		"raid": "Penyerang terbaik per tipe",
 		"top": "Top 3"
+	},
+	"days": {
+		"title": "Community Day dan Jam Sorotan",
+		"subtitle": "Bulan ini dan bulan depan: kapan terjadi dan siapa yang ditampilkan.",
+		"community": "Community Day",
+		"spotlight": "Jam Sorotan"
+	},
+	"spotlight": {
+		"title": "Pokémon dalam sorotan",
+		"subtitle": "Setiap Pokémon punya halamannya sendiri: statistik, peringkat, jurus, counter, dan tabel IV."
 	},
 	"teams": {
 		"title": "Lab tim",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Alat",
+		"collectionPitch": "Pokémon yang kamu miliki, siap untuk menyusun tim.",
 		"searchesPitch": "Bersihkan penyimpananmu dalam hitungan detik."
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "Penyerang raid terbaik",
-		"subtitle": "Tiga terbaik untuk tiap dari 17 tipe."
+		"subtitle": "Penyerang terbaik untuk tiap dari 17 tipe."
 	},
 	"social": {
 		"label": "Temukan kami di",

@@ -96,7 +96,12 @@ const TeamView = ({
 			</div>
 			{/* the track is always there (empty for the team leaving) so the card never changes height */}
 			<span className='h-countdown' aria-hidden='true' data-held={countdown?.held ? '' : undefined}>
-				{countdown && <i key={countdown.cycle} style={{ animationDuration: `${ROTATE_MS}ms`, animationDelay: `${countdown.delay}ms` }} />}
+				{countdown && (
+					<i
+						key={countdown.cycle}
+						style={{ animationDuration: `${ROTATE_MS}ms`, animationDelay: `${countdown.delay}ms` }}
+					/>
+				)}
 			</span>
 			<p className='h-featured-line'>
 				{sentence.map((part, i) =>
@@ -141,8 +146,7 @@ const FeaturedTeam = () => {
 	const { current, leaving, held, cycle, barDelay, rotated, holdProps } = useRotator<Pick>({
 		ready: !!ranking.data,
 		pick: (not) => pickTeam(ranking.data, not),
-		preload: (pick) =>
-			preloadImages(pick.team.members.map((m) => urlOf(m.speciesId)).filter((u): u is string => !!u)),
+		preload: (pick) => preloadImages(pick.team.members.map((m) => urlOf(m.speciesId)).filter((u): u is string => !!u)),
 	});
 
 	if (!current) {

@@ -84,7 +84,9 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 				</div>
 				<div className='h-day-body'>
 					<div className='h-day-head'>
-						<span className='h-day-kind'>{t(kind === 'community' ? 'home:days.community' : 'home:days.spotlight')}</span>
+						<span className='h-day-kind'>
+							{t(kind === 'community' ? 'home:days.community' : 'home:days.spotlight')}
+						</span>
 						<span className='h-day-status' data-phase={phase}>
 							{phase === 'live' && <i className='h-dot' aria-hidden='true' />}
 							{status}

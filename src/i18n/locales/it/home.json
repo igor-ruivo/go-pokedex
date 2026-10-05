@@ -28,11 +28,23 @@
 		"eggs": "Cosa si schiude da ogni uovo"
 	},
 	"ranks": {
+		"showMore": "Mostra altre {{count}} leghe",
+		"showFewer": "Mostra meno leghe",
 		"title": "Classifiche",
 		"subtitle": "I migliori Pokémon di ogni lega, a colpo d’occhio.",
 		"pokedex": "Ogni Pokémon: statistiche, PL e forme",
 		"raid": "Migliori attaccanti per tipo",
 		"top": "Top 3"
+	},
+	"days": {
+		"title": "Community Day e Ore del Pokémon in primo piano",
+		"subtitle": "Questo mese e il prossimo: quando si svolgono e chi è protagonista.",
+		"community": "Community Day",
+		"spotlight": "Ora del Pokémon in primo piano"
+	},
+	"spotlight": {
+		"title": "Pokémon in primo piano",
+		"subtitle": "Ogni Pokémon ha la sua pagina: statistiche, classifiche, mosse, counter e tabelle IV."
 	},
 	"teams": {
 		"title": "Laboratorio squadre",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Strumenti",
+		"collectionPitch": "I Pokémon che possiedi, pronti per creare squadre.",
 		"searchesPitch": "Pulisci l’archivio in pochi secondi."
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "Migliori attaccanti per raid",
-		"subtitle": "I primi tre di ciascuno dei 17 tipi."
+		"subtitle": "I migliori attaccanti di ciascuno dei 17 tipi."
 	},
 	"social": {
 		"label": "Trovaci su",

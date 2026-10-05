@@ -28,11 +28,23 @@
 		"eggs": "알마다 부화하는 포켓몬"
 	},
 	"ranks": {
+		"showMore": "리그 {{count}}개 더 보기",
+		"showFewer": "리그 줄이기",
 		"title": "랭킹",
 		"subtitle": "모든 리그의 최고 포켓몬을 한눈에.",
 		"pokedex": "모든 포켓몬: 능력치, CP, 폼",
 		"raid": "타입별 최고의 공격수",
 		"top": "상위 3"
+	},
+	"days": {
+		"title": "커뮤니티 데이와 스포트라이트 아워",
+		"subtitle": "이번 달과 다음 달: 언제 열리고 어떤 포켓몬이 나오는지.",
+		"community": "커뮤니티 데이",
+		"spotlight": "스포트라이트 아워"
+	},
+	"spotlight": {
+		"title": "주목할 포켓몬",
+		"subtitle": "모든 포켓몬에는 전용 페이지가 있습니다: 능력치, 랭킹, 기술, 카운터, IV 표."
 	},
 	"teams": {
 		"title": "팀 연구소",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "도구",
+		"collectionPitch": "보유한 포켓몬으로 바로 팀을 구성하세요.",
 		"searchesPitch": "보관함을 몇 초 만에 정리하세요."
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "최고의 레이드 공격수",
-		"subtitle": "17개 타입별 상위 3."
+		"subtitle": "17개 타입별 최고의 공격수."
 	},
 	"social": {
 		"label": "커뮤니티",

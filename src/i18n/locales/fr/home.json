@@ -28,11 +28,23 @@
 		"eggs": "Ce qui éclot de chaque œuf"
 	},
 	"ranks": {
+		"showMore": "Afficher {{count}} ligues de plus",
+		"showFewer": "Afficher moins de ligues",
 		"title": "Classements",
 		"subtitle": "Les meilleurs Pokémon de chaque ligue, en un coup d’œil.",
 		"pokedex": "Tous les Pokémon : stats, PC et formes",
 		"raid": "Meilleurs attaquants par type",
 		"top": "Top 3"
+	},
+	"days": {
+		"title": "Journées communautaires et Heures du Pokémon vedette",
+		"subtitle": "Ce mois-ci et le suivant : quand elles ont lieu et qui est à l'honneur.",
+		"community": "Journée communautaire",
+		"spotlight": "Heure du Pokémon vedette"
+	},
+	"spotlight": {
+		"title": "Pokémon à l'honneur",
+		"subtitle": "Chaque Pokémon a sa propre page : stats, classements, attaques, counters et tables d'IV."
 	},
 	"teams": {
 		"title": "Labo d’équipes",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Outils",
+		"collectionPitch": "Les Pokémon que vous possédez, prêts à composer des équipes.",
 		"searchesPitch": "Nettoie ton stockage en quelques secondes."
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "Meilleurs attaquants de raid",
-		"subtitle": "Le top 3 de chacun des 17 types."
+		"subtitle": "Les meilleurs attaquants de chacun des 17 types."
 	},
 	"social": {
 		"label": "Retrouve-nous sur",

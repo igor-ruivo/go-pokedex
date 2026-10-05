@@ -64,7 +64,12 @@ const LeagueCard = ({
 								<Link to={R.pokemon(speciesId)} className='h-top-link'>
 									<i className='h-coin'>{i + 1}</i>
 									<PokeAvatar pokemon={pokemon[speciesId]} />
-									<span>{cleanName(pokemon[speciesId].speciesName)}</span>
+									<span className='h-top-name'>{cleanName(pokemon[speciesId].speciesName)}</span>
+									{ranking?.[speciesId] && (
+										<b className='h-top-score'>
+											{ranking[speciesId].score.toFixed(1)} <small>pts</small>
+										</b>
+									)}
 								</Link>
 							</li>
 						))}

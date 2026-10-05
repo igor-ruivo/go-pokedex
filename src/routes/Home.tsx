@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -28,6 +28,7 @@ import { R } from '../lib/nav';
 import { useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
 import { CommunityDays } from './home/CommunityDays';
+import { faceStep, useFaceLayout } from './home/face-layout';
 import { LeagueCards } from './home/LeagueCards';
 import { PokeAvatar } from './home/PokeAvatar';
 import { PokemonSpotlight } from './home/PokemonSpotlight';
@@ -43,22 +44,7 @@ const KIND_ICON: Record<HighlightKind, string> = {
 
 const FEATURED_LIMIT = 5;
 
-const FACE_SIZE = 52;
-/** On a narrow card the faces shrink (never below this) to keep three to a row, rather than overlap. */
-const MIN_FACE_SIZE = 34;
-
-/** The space between two faces of a row (set inline, so the count and the drawing always agree on it). */
-const FACE_GAP = 8;
-
-/** How many faces fit across `width`, and how big they are: `FACE_SIZE` wherever two fit, a little smaller to make three fit. */
-const faceLayout = (width: number, gap: number): { columns: number; size: number } => {
-	const sizeFor = (columns: number) => Math.floor((width - (columns - 1) * gap) / columns);
-	let columns = Math.max(2, Math.floor((width + gap) / (FACE_SIZE + gap)));
-	if (columns === 2 && sizeFor(3) >= MIN_FACE_SIZE) columns = 3;
-	return { columns, size: Math.min(FACE_SIZE, sizeFor(columns)) };
-};
-
-/** Two rows at most: as many round sprites as fit the width (never more than nine), the shiny ones marked, and a "+N" in the last cell. */
+/** One row: as many overlapping round sprites as fit the width (never more than nine), the shiny ones marked, and a "+N" at the end. */
 const Faces = ({
 	all,
 	pokemon,
@@ -68,36 +54,16 @@ const Faces = ({
 	pokemon: Record<string, IGamemasterPokemon>;
 	shadow?: boolean | undefined;
 }) => {
-	const ref = useRef<HTMLSpanElement>(null);
-	const [{ columns, size }, setLayout] = useState({ columns: 4, size: FACE_SIZE });
-	// how many faces fit across at this width, and how big they are
-	useLayoutEffect(() => {
-		const el = ref.current;
-		if (!el) return;
-		const count = () => {
-			// the room the faces really have: the box less its padding (which leaves room for the sparkle and the ring)
-			const style = getComputedStyle(el);
-			const room = el.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
-			const next = faceLayout(room, FACE_GAP);
-			setLayout((prev) => (prev.columns === next.columns && prev.size === next.size ? prev : next));
-		};
-		count();
-		const observer = new ResizeObserver(count);
-		observer.observe(el);
-		return () => observer.disconnect();
-	}, []);
-
+	const [ref, layout] = useFaceLayout<HTMLSpanElement>();
 	const known = all.filter((e) => !!pokemon[e.speciesId]);
-	const { faces, more } = facesThatFit(known.length, columns, 2, 9);
+	const { faces, more } = facesThatFit(known.length, layout.count, 1, 9);
+	// what is shown is spread over the whole width, so the row ends where its parent does
+	const step = faceStep(layout, faces + (more > 0 ? 1 : 0));
 	return (
 		<span
 			className='h-faces'
 			ref={ref}
-			style={{
-					gridTemplateColumns: `repeat(${columns}, ${size}px)`,
-					columnGap: FACE_GAP,
-					['--face' as string]: `${size}px`,
-				}}
+			style={{ ['--face' as string]: `${layout.size}px`, ['--face-step' as string]: `${step}px` }}
 		>
 			{known.slice(0, faces).map((e) => (
 				<PokeAvatar key={e.speciesId} pokemon={pokemon[e.speciesId]} shiny={e.shiny} shadow={shadow} />

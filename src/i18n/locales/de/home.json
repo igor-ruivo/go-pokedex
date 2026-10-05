@@ -28,11 +28,23 @@
 		"eggs": "Was aus welchem Ei schlüpft"
 	},
 	"ranks": {
+		"showMore": "{{count}} weitere Ligen anzeigen",
+		"showFewer": "Weniger Ligen anzeigen",
 		"title": "Rankings",
 		"subtitle": "Die besten Pokémon jeder Liga auf einen Blick.",
 		"pokedex": "Jedes Pokémon: Werte, WP und Formen",
 		"raid": "Beste Angreifer nach Typ",
 		"top": "Top 3"
+	},
+	"days": {
+		"title": "Communitytage und Rampenlicht-Stunden",
+		"subtitle": "Diesen und nächsten Monat: wann sie stattfinden und wer im Mittelpunkt steht.",
+		"community": "Communitytag",
+		"spotlight": "Rampenlicht-Stunde"
+	},
+	"spotlight": {
+		"title": "Pokémon im Fokus",
+		"subtitle": "Jedes Pokémon hat seine eigene Seite: Werte, Rankings, Attacken, Konter und Wertetabellen."
 	},
 	"teams": {
 		"title": "Team-Labor",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Werkzeuge",
+		"collectionPitch": "Die Pokémon, die du besitzt, bereit für den Teambau.",
 		"searchesPitch": "Räume deinen Speicher in Sekunden auf."
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "Beste Raid-Angreifer",
-		"subtitle": "Die Top 3 für jeden der 17 Typen."
+		"subtitle": "Die besten Angreifer jedes der 17 Typen."
 	},
 	"social": {
 		"label": "Du findest uns auf",

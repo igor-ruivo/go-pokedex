@@ -28,11 +28,23 @@
 		"eggs": "每種蛋會孵出什麼"
 	},
 	"ranks": {
+		"showMore": "再顯示 {{count}} 個聯盟",
+		"showFewer": "顯示較少聯盟",
 		"title": "排名",
 		"subtitle": "每個聯盟最強的寶可夢，一目了然。",
 		"pokedex": "所有寶可夢：能力值、CP 與形態",
 		"raid": "依屬性的最佳攻擊手",
 		"top": "前三名"
+	},
+	"days": {
+		"title": "社群日與焦點時刻",
+		"subtitle": "本月與下個月：舉辦時間與登場的寶可夢。",
+		"community": "社群日",
+		"spotlight": "焦點時刻"
+	},
+	"spotlight": {
+		"title": "焦點寶可夢",
+		"subtitle": "每隻寶可夢都有專屬頁面：能力值、排名、招式、剋制對手與 IV 表。"
 	},
 	"teams": {
 		"title": "隊伍實驗室",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "工具",
+		"collectionPitch": "你擁有的寶可夢，隨時可用來組隊。",
 		"searchesPitch": "幾秒鐘整理倉庫。"
 	},
 	"footer": {
@@ -102,7 +115,7 @@
 	},
 	"raid": {
 		"title": "最強團體戰攻擊手",
-		"subtitle": "17 種屬性各自的前三名。"
+		"subtitle": "17 種屬性各自的最強攻擊手。"
 	},
 	"social": {
 		"label": "在這裡找到我們",
