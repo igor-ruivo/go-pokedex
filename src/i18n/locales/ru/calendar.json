@@ -61,6 +61,7 @@
 			"ended": "Завершено"
 		},
 		"bonuses": "Бонусы",
+		"rewards": "Награды",
 		"groups": {
 			"featuredSpawns": "Особые спавны",
 			"featuredRaids": "Особый {{raid}}",
@@ -98,5 +99,8 @@
 		"minutes": "осталось {{count}} мин.",
 		"seconds": "осталось {{count}} сек."
 	},
-	"slotSource": "Из <em>{{event}}</em>"
+	"slotSource": "Из <em>{{event}}</em>",
+	"max": {
+		"empty": "Сейчас нет боссов макс-битв."
+	}
 }

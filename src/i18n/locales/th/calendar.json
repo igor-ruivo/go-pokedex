@@ -61,6 +61,7 @@
 			"ended": "สิ้นสุดแล้ว"
 		},
 		"bonuses": "โบนัส",
+		"rewards": "รางวัล",
 		"groups": {
 			"featuredSpawns": "สปอว์นเด่น",
 			"featuredRaids": "{{raid}}เด่น",
@@ -98,5 +99,8 @@
 		"minutes": "เหลืออีก {{count}} นาที",
 		"seconds": "เหลืออีก {{count}} วินาที"
 	},
-	"slotSource": "จาก <em>{{event}}</em>"
+	"slotSource": "จาก <em>{{event}}</em>",
+	"max": {
+		"empty": "ตอนนี้ไม่มีบอส Max Battle"
+	}
 }

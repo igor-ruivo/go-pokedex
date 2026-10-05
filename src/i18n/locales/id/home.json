@@ -25,7 +25,8 @@
 		"bosses": "Raid hari ini",
 		"spawns": "Kemunculan liar dan unggulan",
 		"rockets": "Formasi dan hadiah shadow",
-		"eggs": "Apa yang menetas dari tiap telur"
+		"eggs": "Apa yang menetas dari tiap telur",
+		"max": "Bos Pertarungan Max, per tingkat"
 	},
 	"ranks": {
 		"showMore": "Tampilkan {{count}} liga lagi",
@@ -75,8 +76,8 @@
 		"creditsIntro": "Situs ini berdiri di atas karya komunitas Pokémon GO. Terima kasih kepada:",
 		"pvpoke": "PvPoke, untuk peringkat PvP dan mesin pertarungan yang menjadi dasar penilaian tim kami.",
 		"leekduck": "LeekDuck, untuk data event, bos raid, telur, dan Team GO Rocket.",
+		"pokebattler": "Pokebattler, untuk bos Pertarungan Max saat ini.",
 		"pokeminers": "PokeMiners, untuk data game master dan sprite.",
-		"official": "Pokémon GO Live, untuk pengumuman event resmi.",
 		"pvpivs": "PvP IVs, perintis pencarian peringkat IV.",
 		"privacyTitle": "Privasi",
 		"privacyBody": "Tidak ada akun. Pengaturan, koleksi, dan tim favoritmu tetap di browser dan tidak pernah meninggalkan perangkatmu. Kami memakai Google Analytics untuk menghitung kunjungan secara anonim; ini dapat menyetel cookie. Tidak ada iklan.",
@@ -86,7 +87,7 @@
 		"storyTitle": "Ceritanya",
 		"s1": "Saya Igor, seorang software engineer dan sedikit terobsesi dengan optimasi.",
 		"s2": "Proyek ini dimulai pada musim panas 2023 sebagai cara saya belajar React, CSS, dan pengembangan frontend modern. Saat itu saya mulai serius menekuni PvP Pokémon GO dan menemukan betapa dalamnya game yang awalnya tampak seperti game seluler sederhana. IV, batas CP, peringkat, moveset, liga, dan segala optimasi uniknya benar-benar membuat saya ketagihan.",
-		"s3": "Saya segera bergantung pada alat-alat luar biasa yang sudah dibuat komunitas Pokémon GO: PvPoke untuk analisis dan peringkat PvP, Poké Genie dan PVPIVs untuk IV, LeekDuck untuk informasi game, PokéMiners untuk data game, dan lainnya. Proyek-proyek ini hebat dalam bidangnya, dan proyek ini tidak dimaksudkan untuk menggantikan atau menduplikasi karya mereka. Proyek ini dibangun di atasnya.",
+		"s3": "Saya segera bergantung pada alat-alat luar biasa yang sudah dibuat komunitas Pokémon GO: PvPoke untuk analisis dan peringkat PvP, Poké Genie dan PVPIVs untuk IV, LeekDuck untuk informasi game, Pokebattler untuk Pertarungan Max, PokéMiners untuk data game, dan lainnya. Proyek-proyek ini hebat dalam bidangnya, dan proyek ini tidak dimaksudkan untuk menggantikan atau menduplikasi karya mereka. Proyek ini dibangun di atasnya.",
 		"s4": "Saya ingin menciptakan pengalaman pendamping serba ada yang tidak bisa saya temukan: padat, kaya informasi, cepat, berorientasi seluler, dan dengan perhatian detail UX/UI yang saya senang rancang sendiri. Tetapi perbedaan terbesarnya, saya ingin alat ini berpusat pada Pokémon milikmu sendiri, bukan sekadar Pokémon GO secara keseluruhan.",
 		"yoursTitle": "Pokémon milikmu, bukan sekadar Pokémon",
 		"y1": "Pembuat Tim terinspirasi dari karya hebat PvPoke, termasuk simulasi pertarungan dan algoritma peringkatnya, tetapi membawa gagasannya lebih jauh dengan menghubungkannya ke koleksimu sendiri. Kamu bisa menyimpan daftar pribadi Pokémon menarik untuk liga, dan alat ini terus menghitung kombinasi tim mana yang paling masuk akal dari yang benar-benar kamu miliki. Tim diperingkat terhadap meta saat ini dan disertai analisis serta tips yang berguna.",
@@ -97,7 +98,7 @@
 		"q2": "Hasilnya menurut saya luar biasa: alih-alih memeriksa ratusan Pokémon secara manual, saya bisa dengan yakin menghapus massal yang mustahil menarik untuk liga pilihan saya dan hanya memeriksa sedikit yang tersisa yang benar-benar layak dilihat.",
 		"q3": "Ini juga bekerja ke arah sebaliknya. Alat ini membantu mempertahankan Pokémon yang berpotensi berharga tetapi saat ini tidak relevan di meta, seperti kandidat peringkat atas Liga Super atau Liga Ultra yang kalau tidak akan saya hapus karena tidak ada cara praktis untuk memeriksa setiap Pokémon di penyimpanan. Ada juga pencarian untuk kandidat tukar, tempat alat ini menemukan Pokémon yang persyaratan IV-nya masuk akal justru karena tukar dengan Best Friend menjamin IV minimum.",
 		"builtTitle": "Dibangun di atas komunitas",
-		"b1": "Di balik semua ini, saya sangat bergantung pada ekosistem data Pokémon GO yang sudah ada. Backend saya mengurai Game Master dan data terjemahan PokéMiners serta secara rutin mengambil informasi dari kanal resmi Pokémon GO dan sumber komunitas mapan seperti LeekDuck. Analisis PvP dibangun di atas karya simulasi pertarungan PvPoke, bukan mencoba menciptakannya ulang. Banyak hal yang memungkinkan proyek ini berkat orang-orang yang sudah bertahun-tahun membangun alat dan dataset ini.",
+		"b1": "Di balik semua ini, saya sangat bergantung pada ekosistem data Pokémon GO yang sudah ada. Backend saya mengurai Game Master dan data terjemahan PokéMiners serta secara rutin mengambil informasi dari kanal resmi Pokémon GO dan sumber komunitas mapan seperti LeekDuck dan Pokebattler. Analisis PvP dibangun di atas karya simulasi pertarungan PvPoke, bukan mencoba menciptakannya ulang. Banyak hal yang memungkinkan proyek ini berkat orang-orang yang sudah bertahun-tahun membangun alat dan dataset ini.",
 		"b2": "Pada dasarnya saya mencoba menambahkan satu lapisan lagi di atasnya: antarmuka yang lebih kaya, pengalaman yang lebih personal, dan lebih banyak otomatisasi seputar Pokémon yang benar-benar kamu miliki. Proyek ini juga menjadi tempat bermain saya untuk belajar pengembangan frontend, mencoba alat pemrograman AI yang makin mumpuni, dan terobsesi pada detail UX/UI jauh lebih lama dari rencana awal.",
 		"b3": "Sekarang saya ingin mengembalikan sebagian karya itu kepada komunitas. Jika kamu memakai alat ini, saya sangat senang menerima masukan, kritik, ide, laporan bug, atau saran tentang hal yang bisa lebih baik. Proyek ini masih berkembang, dan saya lebih suka komunitas ikut membentuknya daripada membangun semuanya di dalam gelembung saya sendiri.",
 		"sign": "Igor"

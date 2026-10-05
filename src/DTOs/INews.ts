@@ -1,10 +1,33 @@
 import type { GameLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from './IGamemasterPokemon';
+import type { IRichBlock } from './IRichText';
+
+/** One tier of a season's major milestone bonuses: what reaching a rank of the season earns. */
+export interface IMilestoneTier {
+	/** The tier as the season page names it ("Tier 1"), in the player's language. */
+	tier: string;
+	/** The rank that earns it ("Rank 25"). */
+	rank: string;
+	/** The two colours the tier's header goes from (bronze, silver, gold…). */
+	colors?: [string, string];
+	/** What the tier gives, with its formatting kept. */
+	blocks: Array<IRichBlock>;
+}
+
+export interface IMilestoneBonuses {
+	title: string;
+	/** The sentence(s) that introduce the tiers (a GO Pass post has one; the season page does not). */
+	intro?: Array<IRichBlock>;
+	tiers: Array<IMilestoneTier>;
+}
 
 export interface IEntry {
 	speciesId: string;
 	shiny: boolean;
+	/** What the entry is: a raid tier, an egg distance… or, for a Max Battle Pokémon, its form ('dynamax' or 'gigantamax'). */
 	kind?: string | undefined;
+	/** The Max Battle tier ('5' for a five-star battle), for the Pokémon of `maxBattles`. */
+	tier?: string | undefined;
 	comment?: Record<GameLanguage, string>;
 }
 
@@ -42,7 +65,21 @@ export interface IPostEntry {
 	researches: Array<IEntry>;
 	incenses: Array<IEntry>;
 	lures: Array<IEntry>;
+	/** The Dynamax / Gigantamax Pokémon the event brings to Max Battles (each entry is the base species). Absent in older data. */
+	maxBattles?: Array<IEntry>;
 	bonuses: Record<GameLanguage, Array<string>>;
+	/**
+	 * The same bonuses with their formatting kept (bullet points, how deep they are, bold, links, the asterisk footnotes). Absent
+	 * in older data: `bonuses` is then all there is.
+	 */
+	bonusBlocks?: Partial<Record<GameLanguage, Array<IRichBlock>>>;
+	/**
+	 * The rewards of an event's GO Pass (the "Featured Pokémon and Rewards" section), with their formatting and without the lines of
+	 * the Pokémon taken from it, per language. Absent when the event has none.
+	 */
+	rewardBlocks?: Partial<Record<GameLanguage, Array<IRichBlock>>>;
+	/** The major milestone bonuses of a season or of an event with a GO Pass, per language. */
+	milestoneBonuses?: Partial<Record<GameLanguage, IMilestoneBonuses>>;
 	// Which locales genuinely have their own pokemongo.com post for this event
 	// (as opposed to `title`/`subtitle`/`url`/`bonuses` above, which fall back
 	// to the English post's content for a locale missing its own — see

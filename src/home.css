@@ -341,29 +341,29 @@
 }
 /* a Spotlight Hour: its featured Pokémon is the round chip of the site's faces, centred on the promo picture's circle (where its
    question mark is) and small enough to sit inside the white disc */
-.rvmp .h-event[data-spotlight] .h-event-fallback {
+.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback {
 	gap: 2%;
 	padding: 0 0 4%;
 }
-.rvmp .h-event[data-spotlight] .h-event-fallback .h-avatar {
+.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback .h-avatar {
 	flex: none;
 	width: 28%;
 	height: auto;
 	aspect-ratio: 1;
 }
-.rvmp .h-event[data-spotlight] .h-event-fallback[data-count='2'] .h-avatar {
+.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback[data-count='2'] .h-avatar {
 	width: 22%;
 }
-.rvmp .h-event[data-spotlight] .h-event-fallback[data-count='3'] .h-avatar {
+.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback[data-count='3'] .h-avatar {
 	width: 18%;
 }
-.rvmp .h-event[data-spotlight] .h-event-fallback .h-avatar-shiny {
+.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback .h-avatar-shiny {
 	top: -6px;
 	right: -6px;
 	width: 22px;
 	height: 22px;
 }
-.rvmp .h-event[data-spotlight] .h-event-fallback .h-avatar > .r-shadow-mark {
+.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback .h-avatar > .r-shadow-mark {
 	width: 24px;
 	height: 24px;
 }
@@ -467,7 +467,7 @@
 	width: 32px;
 	height: 32px;
 }
-.rvmp .h-avatar > img:not(.r-shadow-mark) {
+.rvmp .h-avatar > img:not(.r-shadow-mark):not(.r-avatar-max) {
 	width: 86%;
 	height: 86%;
 }
@@ -488,6 +488,9 @@
 .rvmp .h-tiles {
 	display: grid;
 	gap: var(--s3);
+}
+.rvmp .h-tiles--5 {
+	grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .rvmp .h-tiles--4 {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -534,6 +537,14 @@
 	height: 38px;
 	object-fit: contain;
 	margin-bottom: 4px;
+}
+/* A tile with faces: the faces are pinned to the bottom of the tile, and tiles of a row are as tall as the tallest, so the faces are
+   on the same line in every card however many lines a description takes */
+.rvmp .h-tile:has(> .h-tile-foot) {
+	grid-template-rows: auto auto auto 1fr;
+}
+.rvmp .h-tile:has(> .h-tile-foot) > .h-tile-foot {
+	align-self: end;
 }
 .rvmp .h-tile-foot {
 	display: flex;
@@ -1135,10 +1146,15 @@
 	width: 52px;
 	height: 52px;
 }
-/* an icon drawn as an SVG sits on the same plate as the image ones */
+/* an icon drawn as an SVG sits on the same plate as the image ones; a picture that gets a contour is inside the plate */
 .rvmp span.h-tile-icon {
 	display: grid;
 	place-items: center;
+}
+.rvmp span.h-tile-icon > img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 }
 
 /* ---- the big navigation icons ------------------------------------------------------------------------------- */
@@ -1466,9 +1482,13 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--s2);
-	margin: var(--s4) 0 0;
+	margin: var(--s5) 0 0;
 	padding: 0;
 	list-style: none;
+}
+.rvmp .h-footer .h-social {
+	/* the footer's own list rule (zero margins) is more specific than the one above */
+	margin-top: var(--s5);
 }
 .rvmp .h-social-btn {
 	display: inline-flex;
@@ -2029,13 +2049,15 @@
 }
 .rvmp .h-day-date > span:first-child {
 	justify-self: stretch;
+	text-align: center;
 	min-width: 0;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	padding: 6px 4px 5px;
 	background: var(--kc);
-	color: var(--on-fill);
+	/* the ink made for text on a type colour (dark on the yellow, which white is unreadable on) */
+	color: var(--on-type);
 }
 .rvmp .h-day-date > span:last-child {
 	color: color-mix(in srgb, var(--kc), var(--text) var(--ink-mix));
@@ -2254,4 +2276,62 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-lab {
 }
 .rvmp .h-leagues-toggle svg[data-open] {
 	transform: rotate(180deg);
+}
+
+/* "in the game right now" has five tiles (the Max Battles one is the fifth): three across on a medium screen, two on a narrow one with the last
+   tile across both */
+@media (max-width: 1000px) {
+	.rvmp .h-tiles--5 {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+@media (max-width: 700px) {
+	.rvmp .h-tiles--5 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.rvmp .h-tiles--5 > :last-child {
+		grid-column: 1 / -1;
+	}
+}
+
+/* light mode: the date block and the kind badge of a Community Day or Spotlight Hour read in the plain ink, not in a tint of the
+   (yellow or green) colour of the row, which has little contrast on the pale background */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .h-day-date b,
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .h-day-kind {
+	color: var(--text);
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .h-day-date > span:last-child {
+	color: var(--text-dim);
+}
+
+/* the icons in front of the bonuses of a Community Day or Spotlight Hour row: small, in line with the chip's text */
+.rvmp .h-day-bonuses li {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+.rvmp .h-day-bonuses .r-milestone-icons {
+	min-width: 0;
+	padding: 0;
+}
+.rvmp .h-day-bonuses .r-milestone-icons img {
+	width: 16px;
+	height: 16px;
+}
+.rvmp
+	.h-day-bonuses
+	.r-milestone-icons
+	img:is(
+		[data-icon='candy'],
+		[data-icon='candyXl'],
+		[data-icon='rareCandy'],
+		[data-icon='rareCandyXl'],
+		[data-icon='trade']
+	) {
+	box-sizing: border-box;
+	padding: 1px;
+}
+.rvmp .h-day-bonuses .r-milestone-bullet {
+	width: 13px;
+	height: 13px;
 }

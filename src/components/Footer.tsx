@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { useLanguage } from '../contexts/language-context';
 import { copyrightYears } from '../lib/home';
 import { R } from '../lib/nav';
 import { socialLinks } from '../lib/social';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { BrandMark } from './BrandMark';
 import { SocialLinks } from './SocialLinks';
 
@@ -13,6 +15,7 @@ const FEEDBACK_URL = socialLinks().find((l) => l.id === 'discord')?.url;
 /** The site footer: where to go, who made it, who to thank, and the "unofficial" notice. */
 export const Footer = () => {
 	const { t } = useTranslation(['home', 'common', 'teams', 'calendar', 'pokemonDetail']);
+	const { currentGameLanguage: gl } = useLanguage();
 	return (
 		<footer className='h-footer'>
 			<div className='h-footer-inner'>
@@ -53,6 +56,9 @@ export const Footer = () => {
 							</li>
 							<li>
 								<Link to={R.calendar('bosses')}>{t('calendar:tabs.bosses')}</Link>
+							</li>
+							<li>
+								<Link to={R.calendar('max')}>{gameTranslator(GameTranslatorKeys.MaxBattleDisplay, gl)}</Link>
 							</li>
 							<li>
 								<Link to={R.calendar('rockets')}>{t('calendar:tabs.rockets')}</Link>

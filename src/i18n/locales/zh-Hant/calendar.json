@@ -61,6 +61,7 @@
 			"ended": "已結束"
 		},
 		"bonuses": "加成",
+		"rewards": "獎勵",
 		"groups": {
 			"featuredSpawns": "特色出沒",
 			"featuredRaids": "特色{{raid}}",
@@ -98,5 +99,8 @@
 		"minutes": "剩 {{count}} 分鐘",
 		"seconds": "剩 {{count}} 秒"
 	},
-	"slotSource": "來自<em>{{event}}</em>"
+	"slotSource": "來自<em>{{event}}</em>",
+	"max": {
+		"empty": "目前沒有極巨對戰的頭目。"
+	}
 }

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { AdornedSprite } from '../components/AdornedSprite';
 import { BrandMark } from '../components/BrandMark';
-import { CombatIcon } from '../components/CombatIcon';
+import { CollectionIcon, TeamBuilderIcon } from '../components/NavIcons';
 import { RaidIcon } from '../components/RaidIcon';
 import { TeamTabIcon } from '../components/team-tab-icons';
 import { useLanguage } from '../contexts/language-context';
@@ -12,7 +12,8 @@ import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IPostEntry } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
-import { nowRaidEntries, spotlightToPost } from '../lib/calendar-events';
+import { leekduckPosts, nowRaidEntries, spotlightToPost } from '../lib/calendar-events';
+import { isCommunityDay } from '../lib/community-days';
 import { dateRange } from '../lib/format';
 import {
 	catchableRocketEntries,
@@ -27,6 +28,7 @@ import {
 import { R } from '../lib/nav';
 import { useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
+import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { CommunityDays } from './home/CommunityDays';
 import { faceStep, useFaceLayout } from './home/face-layout';
 import { LeagueCards } from './home/LeagueCards';
@@ -37,6 +39,7 @@ import { TeamLab } from './home/TeamLab';
 
 const KIND_ICON: Record<HighlightKind, string> = {
 	raids: '/images/raids/tier-5.png',
+	maxBattles: '/images/nav/max-battle.webp',
 	wild: '/images/nav/spawns-grass.png',
 	researches: '/images/nav/research.png',
 	eggs: '/images/eggs/10km.png',
@@ -50,7 +53,7 @@ const Faces = ({
 	pokemon,
 	shadow,
 }: {
-	all: ReadonlyArray<{ speciesId: string; shiny: boolean }>;
+	all: ReadonlyArray<{ speciesId: string; shiny: boolean; kind?: string | undefined }>;
 	pokemon: Record<string, IGamemasterPokemon>;
 	shadow?: boolean | undefined;
 }) => {
@@ -66,7 +69,7 @@ const Faces = ({
 			style={{ ['--face' as string]: `${layout.size}px`, ['--face-step' as string]: `${step}px` }}
 		>
 			{known.slice(0, faces).map((e) => (
-				<PokeAvatar key={e.speciesId} pokemon={pokemon[e.speciesId]} shiny={e.shiny} shadow={shadow} />
+				<PokeAvatar key={e.speciesId} pokemon={pokemon[e.speciesId]} shiny={e.shiny} shadow={shadow} maxForm={e.kind} />
 			))}
 			{more > 0 && <i className='h-stack-more'>+{more}</i>}
 		</span>
@@ -79,15 +82,20 @@ const AvatarStack = ({
 	more = 0,
 	pokemon,
 	shiny,
+	forms,
 }: {
 	ids: ReadonlyArray<string>;
 	more?: number;
 	pokemon: Record<string, IGamemasterPokemon>;
 	/** The species that can be shiny (a Shadow one carries its mark by itself). */
 	shiny?: ReadonlySet<string> | undefined;
+	/** The Max form (Dynamax or Gigantamax) of the species that are Max Battle Pokémon. */
+	forms?: ReadonlyMap<string, string | undefined> | undefined;
 }) => (
 	<span className='h-stack'>
-		{ids.map((id) => (pokemon[id] ? <PokeAvatar key={id} pokemon={pokemon[id]} shiny={shiny?.has(id)} /> : null))}
+		{ids.map((id) =>
+			pokemon[id] ? <PokeAvatar key={id} pokemon={pokemon[id]} shiny={shiny?.has(id)} maxForm={forms?.get(id)} /> : null
+		)}
 		{more > 0 && <i className='h-stack-more'>+{more}</i>}
 	</span>
 );
@@ -112,6 +120,8 @@ const EventCard = ({
 		switch (kind) {
 			case 'raids':
 				return t('home:now.raids');
+			case 'maxBattles':
+				return gameTranslator(GameTranslatorKeys.MaxBattleDisplay, gl);
 			case 'wild':
 				return t('home:now.wild');
 			case 'researches':
@@ -123,28 +133,39 @@ const EventCard = ({
 	// With no picture of its own the card shows a few of what it brings, large, on its gradient. A Spotlight Hour has its promo
 	// picture and shows its featured Pokémon on top of it (as the Events view does) instead of listing them below.
 	const spotlight = !!post.isSpotlight;
+	// A Max Monday (a day of Max Battles led by Dynamax Pokémon) does the same: its Pokémon is a chip in the middle of its picture,
+	// with the Dynamax cloud.
+	const maxMonday = !spotlight && post.source === 'leekduck' && (post.maxBattles?.length ?? 0) > 0;
+	// a Community Day is its featured Pokémon: no row of chips to say what it brings
+	const communityDay = isCommunityDay(post);
+	const maxForms = new Map((post.maxBattles ?? []).map((e) => [e.speciesId, e.kind]));
 	const shinyIds = new Set(
-		[...post.wild, ...post.raids, ...post.eggs, ...post.researches].filter((e) => e.shiny).map((e) => e.speciesId)
+		[...post.wild, ...post.raids, ...post.eggs, ...post.researches, ...(post.maxBattles ?? [])]
+			.filter((e) => e.shiny)
+			.map((e) => e.speciesId)
 	);
 	const spriteIds = spotlight
 		? [...new Set(post.wild.map((e) => e.speciesId))].filter((id) => !!pokemon[id]).slice(0, 3)
-		: post.imageUrl
-			? []
-			: highlights.flatMap((h) => h.ids).slice(0, 3);
+		: maxMonday
+			? [...maxForms.keys()].filter((id) => !!pokemon[id]).slice(0, 3)
+			: post.imageUrl
+				? []
+				: highlights.flatMap((h) => h.ids).slice(0, 3);
 	return (
 		<article
 			className='h-event'
 			data-big={big ? '' : undefined}
 			data-live={live ? '' : undefined}
 			data-spotlight={spotlight ? '' : undefined}
+			data-maxday={maxMonday ? '' : undefined}
 		>
 			{post.imageUrl && <img className='h-event-img' src={post.imageUrl} alt='' loading='lazy' />}
 			{spriteIds.length > 0 && (
 				<span className='h-event-fallback' aria-hidden='true' data-count={spriteIds.length}>
 					{spriteIds.map((id) => {
 						if (!pokemon[id]) return null;
-						return spotlight ? (
-							<PokeAvatar key={id} pokemon={pokemon[id]} shiny={shinyIds.has(id)} />
+						return spotlight || maxMonday ? (
+							<PokeAvatar key={id} pokemon={pokemon[id]} shiny={shinyIds.has(id)} maxForm={maxForms.get(id)} />
 						) : (
 							<AdornedSprite key={id} pokemon={pokemon[id]} shiny={shinyIds.has(id)} />
 						);
@@ -163,7 +184,7 @@ const EventCard = ({
 					</Link>
 				</h3>
 				{live && <p className='h-event-when'>{dateRange(post.startDate, post.endDate, currentLanguage)}</p>}
-				{highlights.length > 0 && !spotlight && (
+				{highlights.length > 0 && !spotlight && !maxMonday && !communityDay && (
 					<ul className='h-highlights'>
 						{highlights.map((h) => (
 							<li key={h.kind}>
@@ -173,7 +194,12 @@ const EventCard = ({
 									ids={h.ids}
 									more={h.more}
 									pokemon={pokemon}
-									shiny={new Set(post[h.kind].filter((e) => e.shiny).map((e) => e.speciesId))}
+									shiny={new Set((post[h.kind] ?? []).filter((e) => e.shiny).map((e) => e.speciesId))}
+									forms={
+										h.kind === 'maxBattles'
+											? new Map((post.maxBattles ?? []).map((e) => [e.speciesId, e.kind]))
+											: undefined
+									}
 								/>
 							</li>
 						))}
@@ -200,12 +226,13 @@ const Home = () => {
 		if (!calendar.postsFetchCompleted) return [];
 		const all = [
 			...calendar.posts,
-			...(calendar.spotlightHoursFetchCompleted ? calendar.spotlightHours.map(spotlightToPost) : []),
+			...(calendar.spotlightHoursFetchCompleted ? leekduckPosts(calendar.spotlightHours, calendar.maxMondays) : []),
 		];
 		return featuredEvents(all, now, gl, FEATURED_LIMIT, calendar.season?.id);
 	}, [
 		calendar.posts,
 		calendar.spotlightHours,
+		calendar.maxMondays,
 		calendar.postsFetchCompleted,
 		calendar.spotlightHoursFetchCompleted,
 		calendar.season,
@@ -255,6 +282,20 @@ const Home = () => {
 				calendar.currentBossesFetchCompleted && calendar.postsFetchCompleted && calendar.specialBossesFetchCompleted,
 		},
 		{
+			to: R.calendar('max'),
+			icon: '/images/nav/max-battle.webp',
+			title: gameTranslator(GameTranslatorKeys.MaxBattleDisplay, gl),
+			hint: t('home:right.max'),
+			// the highest tiers first: the faces that fit are the hardest bosses
+			...speciesWithShiny(
+				[...calendar.currentMaxBattles].sort((x, y) => Number(y.tier ?? 0) - Number(x.tier ?? 0)),
+				known,
+				Infinity
+			),
+			shadow: false,
+			ready: calendar.currentMaxBattlesFetchCompleted,
+		},
+		{
 			to: R.calendar('rockets'),
 			icon: '/images/NPC/male-grunt.webp',
 			title: t('calendar:tabs.rockets'),
@@ -295,13 +336,13 @@ const Home = () => {
 					</Link>
 					<Link to={R.teamsCollection} className='h-dock-item'>
 						<span className='h-dock-art'>
-							<TeamTabIcon id='collection' size={64} />
+							<CollectionIcon />
 						</span>
 						<span>{t('home:hero.ctaRegister')}</span>
 					</Link>
 					<Link to={R.rankings('great')} className='h-dock-item'>
 						<span className='h-dock-art'>
-							<img src='/images/nav/leagues.png' alt='' />
+							<img src='/images/nav/rankings.webp' alt='' />
 						</span>
 						<span>{t('home:hero.ctaPvp')}</span>
 					</Link>
@@ -313,7 +354,7 @@ const Home = () => {
 					</Link>
 					<Link to={R.teams} className='h-dock-item'>
 						<span className='h-dock-art'>
-							<CombatIcon />
+							<TeamBuilderIcon />
 						</span>
 						<span>{t('home:hero.ctaTeams')}</span>
 					</Link>
@@ -370,10 +411,12 @@ const Home = () => {
 						<h2 id='h-right'>{t('home:right.title')}</h2>
 					</div>
 				</header>
-				<div className='h-tiles h-tiles--4'>
+				<div className='h-tiles h-tiles--5'>
 					{right.map((tile) => (
 						<div className='h-tile' key={tile.to}>
-							<img className='h-tile-icon' src={tile.icon} alt='' loading='lazy' />
+							<span className='h-tile-icon'>
+								<img src={tile.icon} alt='' loading='lazy' />
+							</span>
 							<h3>
 								<Link to={tile.to} className='h-stretch'>
 									{tile.title}

@@ -1,0 +1,23 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+	<polygon points='32.00,3.00 37.64,16.50 50.64,9.78 46.29,23.75 60.56,26.96 48.25,34.87 57.11,46.50 42.61,44.64 41.92,59.25 32.00,48.50 22.08,59.25 21.39,44.64 6.89,46.50 15.75,34.87 3.44,26.96 17.71,23.75 13.36,9.78 26.36,16.50' fill='none' stroke='#f26b52' stroke-width='2.6' stroke-linejoin='round'/>
+	<g>
+		<clipPath id='a'><circle cx='41' cy='23' r='12.5'/></clipPath>
+		<g clip-path='url(#a)'>
+			<rect x='28.5' y='10.5' width='25' height='12.5' fill='#f26b52'/>
+			<rect x='28.5' y='23' width='25' height='12.5' fill='#8fd3fb'/>
+			<rect x='28.5' y='20.8' width='25' height='4.4' fill='#ffffff'/>
+		</g>
+		<circle cx='41' cy='23' r='4.6' fill='#ffffff'/>
+		<circle cx='41' cy='23' r='2.7' fill='#8fd3fb'/>
+	</g>
+	<g>
+		<clipPath id='b'><circle cx='23' cy='41' r='12.5'/></clipPath>
+		<g clip-path='url(#b)'>
+			<rect x='10.5' y='28.5' width='25' height='12.5' fill='#f26b52'/>
+			<rect x='10.5' y='41' width='25' height='12.5' fill='#8fd3fb'/>
+			<rect x='10.5' y='38.8' width='25' height='4.4' fill='#ffffff'/>
+		</g>
+		<circle cx='23' cy='41' r='4.6' fill='#ffffff'/>
+		<circle cx='23' cy='41' r='2.7' fill='#8fd3fb'/>
+	</g>
+</svg>

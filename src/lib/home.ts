@@ -3,7 +3,7 @@ import type { IEntry, IPostEntry } from '../DTOs/INews';
 import type { IRankedPokemon } from '../DTOs/IRankedPokemon';
 
 /** The kinds of content an event brings, in the order the Home card shows them. */
-export const HIGHLIGHT_KINDS = ['raids', 'wild', 'researches', 'eggs'] as const;
+export const HIGHLIGHT_KINDS = ['raids', 'maxBattles', 'wild', 'researches', 'eggs'] as const;
 export type HighlightKind = (typeof HIGHLIGHT_KINDS)[number];
 
 export interface EventHighlight {
@@ -16,13 +16,15 @@ export interface EventHighlight {
 
 /** What an event brings, as a few species per kind: raids, spawns, research encounters, eggs. Empty kinds are left out. */
 export const eventHighlights = (
-	post: Pick<IPostEntry, HighlightKind>,
+	post: Partial<Pick<IPostEntry, HighlightKind>>,
 	isKnown: (speciesId: string) => boolean,
 	perKind = 3
 ): Array<EventHighlight> => {
 	const out: Array<EventHighlight> = [];
 	for (const kind of HIGHLIGHT_KINDS) {
-		const distinct = [...new Set((post[kind] as ReadonlyArray<IEntry>).map((e) => e.speciesId))].filter(isKnown);
+		const distinct = [...new Set(((post[kind] ?? []) as ReadonlyArray<IEntry>).map((e) => e.speciesId))].filter(
+			isKnown
+		);
 		if (distinct.length === 0) continue;
 		out.push({ kind, ids: distinct.slice(0, perKind), more: Math.max(0, distinct.length - perKind) });
 	}
@@ -70,6 +72,8 @@ export const distinctSpecies = (
 export interface ShinyEntry {
 	speciesId: string;
 	shiny: boolean;
+	/** For a Max Battle Pokémon, its form: `dynamax` or `gigantamax`. */
+	kind?: string;
 }
 
 /**
@@ -77,16 +81,22 @@ export interface ShinyEntry {
  * listed twice is shiny if any of its entries is). `more` is how many were left out.
  */
 export const speciesWithShiny = (
-	entries: ReadonlyArray<Pick<IEntry, 'speciesId' | 'shiny'>>,
+	entries: ReadonlyArray<Pick<IEntry, 'speciesId' | 'shiny' | 'kind'>>,
 	isKnown: (speciesId: string) => boolean,
 	limit: number
 ): { shown: Array<ShinyEntry>; more: number } => {
-	const byId = new Map<string, boolean>();
+	const byId = new Map<string, { shiny: boolean; kind?: string | undefined }>();
 	for (const e of entries) {
 		if (!isKnown(e.speciesId)) continue;
-		byId.set(e.speciesId, (byId.get(e.speciesId) ?? false) || !!e.shiny);
+		const before = byId.get(e.speciesId);
+		// a Max Battle Pokémon keeps its form (Dynamax or Gigantamax), so that it can be drawn as one
+		const maxForm = e.kind === 'dynamax' || e.kind === 'gigantamax' ? e.kind : undefined;
+		byId.set(e.speciesId, {
+			shiny: (before?.shiny ?? false) || !!e.shiny,
+			...((before?.kind ?? maxForm) ? { kind: before?.kind ?? maxForm } : {}),
+		});
 	}
-	const all = [...byId].map(([speciesId, shiny]) => ({ speciesId, shiny }));
+	const all = [...byId].map(([speciesId, { shiny, kind }]) => ({ speciesId, shiny, ...(kind ? { kind } : {}) }));
 	return { shown: all.slice(0, limit), more: Math.max(0, all.length - limit) };
 };
 

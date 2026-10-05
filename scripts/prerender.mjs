@@ -150,6 +150,12 @@ const STATIC_PAGES = [
 		image: `${SITE}/images/og/raids/mega.png`,
 	},
 	{
+		path: '/calendar/max',
+		title: 'Current Max Battles — GO Pokédex',
+		description: 'The Dynamax and Gigantamax Pokémon in Pokémon GO Max Battles right now, by tier.',
+		image: `${SITE}/images/og/nav/calendar.png`,
+	},
+	{
 		path: '/calendar/spawns',
 		title: 'Current Spawns — GO Pokédex',
 		description: 'What’s currently spawning in the wild in Pokémon GO.',

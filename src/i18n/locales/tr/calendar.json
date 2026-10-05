@@ -61,6 +61,7 @@
 			"ended": "Sona Erdi"
 		},
 		"bonuses": "Bonuslar",
+		"rewards": "Ödüller",
 		"groups": {
 			"featuredSpawns": "Öne çıkan ortaya çıkışlar",
 			"featuredRaids": "Öne çıkan {{raid}}",
@@ -98,5 +99,8 @@
 		"minutes": "{{count}}dk kaldı",
 		"seconds": "{{count}}sn kaldı"
 	},
-	"slotSource": "<em>{{event}}</em> etkinliğinden"
+	"slotSource": "<em>{{event}}</em> etkinliğinden",
+	"max": {
+		"empty": "Şu anda Maksi Maç patronu yok."
+	}
 }

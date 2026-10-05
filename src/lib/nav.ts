@@ -134,7 +134,7 @@ export const modeColor = (mode: RankingMode): string => {
 	}
 };
 
-export const CALENDAR_TABS = ['events', 'bosses', 'spawns', 'rockets', 'eggs'] as const;
+export const CALENDAR_TABS = ['events', 'bosses', 'max', 'spawns', 'rockets', 'eggs'] as const;
 export type CalendarTab = (typeof CALENDAR_TABS)[number];
 
 export const MASS_DELETE_TABS = ['non-meta-relevant', 'non-perfect-ivs', 'tradeable'] as const;

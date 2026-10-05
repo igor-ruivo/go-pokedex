@@ -61,6 +61,7 @@
 			"ended": "Terminato"
 		},
 		"bonuses": "Bonus",
+		"rewards": "Ricompense",
 		"groups": {
 			"featuredSpawns": "Spawn in evidenza",
 			"featuredRaids": "{{raid}} in evidenza",
@@ -98,5 +99,8 @@
 		"minutes": "restano {{count}} min",
 		"seconds": "restano {{count}} s"
 	},
-	"slotSource": "Da <em>{{event}}</em>"
+	"slotSource": "Da <em>{{event}}</em>",
+	"max": {
+		"empty": "Nessun boss delle Lotte Dynamax al momento."
+	}
 }

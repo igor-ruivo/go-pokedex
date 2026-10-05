@@ -61,6 +61,7 @@
 			"ended": "Beendet"
 		},
 		"bonuses": "Boni",
+		"rewards": "Belohnungen",
 		"groups": {
 			"featuredSpawns": "Vorgestellte Fundorte",
 			"featuredRaids": "Vorgestellte {{raid}}s",
@@ -98,5 +99,8 @@
 		"minutes": "noch {{count}} Min.",
 		"seconds": "noch {{count}} Sek."
 	},
-	"slotSource": "Aus <em>{{event}}</em>"
+	"slotSource": "Aus <em>{{event}}</em>",
+	"max": {
+		"empty": "Gerade keine Dyna-Kampf-Bosse."
+	}
 }

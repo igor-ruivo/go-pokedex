@@ -919,6 +919,12 @@
 	height: 1px;
 	background: var(--border);
 }
+.rvmp .r-section-h[data-centered]::before {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: var(--border);
+}
 .rvmp .r-section-h-icon {
 	flex: none;
 	width: 18px;
@@ -2943,7 +2949,7 @@
 .rvmp .r-mini:hover {
 	border-color: var(--border-strong);
 }
-.rvmp .r-mini > img:not(.r-shadow-mark):not(.r-buddy-mark) {
+.rvmp .r-mini > img:not(.r-shadow-mark):not(.r-buddy-mark):not(.r-mini-max) {
 	width: 62%;
 	aspect-ratio: 1;
 	object-fit: contain;
@@ -3029,34 +3035,47 @@
 	height: clamp(15px, 17cqi, 19px);
 	filter: drop-shadow(0 1px 1px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k))));
 }
-/* league / raid relevance — vertical dots on the left, same treatment as the
-   rankings type dots (`.r-pc-types`); one per league the mon (or its line) matters for */
+/* league / raid relevance — a few beads on a small tab that hangs from the bottom edge of the card, centred, as if cut out of the
+   edge itself (same border, no bottom side); one bead per league the mon (or its line) matters for, each in the league's colour
+   with a ring a shade away from it and a soft highlight */
 .rvmp .r-lg-dots {
+	/* it floats over the card: the rest of the content stays where it is */
 	position: absolute;
-	left: 6%;
-	bottom: 8%;
-	display: flex;
-	flex-direction: column;
-	gap: 3px;
+	left: 50%;
+	bottom: 0;
 	z-index: 2;
+	pointer-events: none;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 4px;
+	padding: 3px 7px 2px;
+	border: 1px solid var(--border);
+	border-bottom: 0;
+	border-radius: 9px 9px 0 0;
+	background: var(--surface);
+	transform: translateX(-50%);
 }
 .rvmp .r-lg-dots i {
-	width: clamp(5px, 7cqi, 8px);
-	height: clamp(5px, 7cqi, 8px);
+	--lgc: var(--text-faint);
+	box-sizing: border-box;
+	width: clamp(7px, 9cqi, 10px);
+	height: clamp(7px, 9cqi, 10px);
+	border: 1px solid color-mix(in srgb, var(--lgc) 62%, var(--text));
 	border-radius: 50%;
-	box-shadow: 0 0 0 1px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
+	background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--lgc), #fff 48%), var(--lgc) 66%);
 }
 .rvmp .r-lg-dots i[data-lg='great'] {
-	background: var(--lg-great);
+	--lgc: var(--lg-great);
 }
 .rvmp .r-lg-dots i[data-lg='ultra'] {
-	background: var(--lg-ultra);
+	--lgc: var(--lg-ultra);
 }
 .rvmp .r-lg-dots i[data-lg='master'] {
-	background: var(--lg-master);
+	--lgc: var(--lg-master);
 }
 .rvmp .r-lg-dots i[data-lg='raid'] {
-	background: var(--lg-raid);
+	--lgc: var(--lg-raid);
 }
 
 .rvmp .r-eventlist {
@@ -3233,6 +3252,10 @@
 .rvmp .r-event-head span {
 	font-size: 12px;
 	color: var(--text-dim);
+}
+/* the date is a block whether the event is open or not (as when collapsed), so that opening it does not move the text: an inline span takes its height from the line box of the parent's own font size */
+.rvmp .r-event-head > div > span {
+	display: block;
 }
 /* Collapsed rows also clamp the date/time to a single line — otherwise a
    long localized range (e.g. with a wrapping em dash) wraps onto a second
@@ -6157,7 +6180,7 @@
 		0 0 0 1.5px var(--surface),
 		0 0 0 3.5px color-mix(in srgb, var(--tc, var(--lg-raid)) 75%, transparent);
 }
-.rvmp .r-ctr-art > img:not(.r-shadow-mark) {
+.rvmp .r-ctr-art > img:not(.r-shadow-mark):not(.r-avatar-max) {
 	width: 40px;
 	height: 40px;
 	object-fit: contain;
@@ -6992,8 +7015,10 @@
 /* ---- icon plates: a quiet rounded square behind a tab or section icon. The current tab's plate takes the accent. ---- */
 .rvmp .r-ico-disc,
 .rvmp img.r-section-h-icon,
+.rvmp span.r-section-h-icon,
 .rvmp svg.r-section-h-icon,
-.rvmp .r-eggsec-head img {
+.rvmp .r-eggsec-head img,
+.rvmp .r-eggsec-head .r-eggsec-icon {
 	display: grid;
 	place-items: center;
 	flex: none;
@@ -7017,13 +7042,19 @@
 	height: 18px;
 	object-fit: contain;
 }
+.rvmp span.r-section-h-icon {
+	width: 30px;
+	height: 30px;
+}
+/* an svg is its own plate, so the room around its 18px is padding */
 .rvmp img.r-section-h-icon,
 .rvmp svg.r-section-h-icon {
-	width: 28px;
-	height: 28px;
-	padding: 5px;
+	width: 30px;
+	height: 30px;
+	padding: 6px;
 }
-.rvmp .r-eggsec-head img {
+.rvmp .r-eggsec-head img,
+.rvmp .r-eggsec-head .r-eggsec-icon {
 	width: 38px;
 	height: 38px;
 	padding: 6px;
@@ -7173,4 +7204,306 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 }
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-mini-lg img {
 	filter: none;
+}
+
+/* the Dynamax cloud over the picture of a Dynamax Pokémon (where the form's name used to be written) */
+.rvmp .r-mini > .r-mini-max {
+	position: absolute;
+	top: 2%;
+	left: 50%;
+	/* over the picture (a zoomed sprite is 5 and comes first), under the shiny sparkle and the Shadow / Buddy marks (6) */
+	z-index: 5;
+	width: 88%;
+	height: auto;
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+/* ---- a post's formatted text (RichText): bullet points, nested ones indented, footnotes, bold and links ---------------------------- */
+.rvmp .r-rich {
+	display: grid;
+	gap: 6px;
+	margin: 0 0 var(--s3);
+	font-size: 12.5px;
+	color: var(--text-dim);
+	line-height: 1.45;
+}
+.rvmp .r-rich p,
+.rvmp .r-rich ul,
+.rvmp .r-rich ol,
+.rvmp .r-rich h4 {
+	margin: 0;
+}
+.rvmp .r-rich-list {
+	display: grid;
+	gap: 3px;
+	padding-left: 18px;
+}
+.rvmp .r-rich-list li[data-level='1'] {
+	margin-left: 18px;
+}
+.rvmp .r-rich-list li[data-level='2'] {
+	margin-left: 36px;
+}
+.rvmp .r-rich-list li[data-level='3'] {
+	margin-left: 54px;
+}
+.rvmp .r-rich strong {
+	color: var(--text);
+	font-weight: 800;
+}
+.rvmp .r-rich a {
+	color: var(--accent);
+	font-weight: 700;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.rvmp .r-rich-heading {
+	font-size: 13px;
+	font-weight: 800;
+	color: var(--text);
+}
+/* the asterisk remark under the points: smaller and set apart */
+.rvmp .r-rich-note {
+	padding-top: 6px;
+	border-top: 1px solid var(--border);
+	font-size: 11.5px;
+	color: var(--text-faint);
+}
+
+/* ---- the major milestone bonuses: one row per tier, the bonuses with the sparkle of bonuses ----------------------------------------- */
+.rvmp .r-milestones {
+	margin: var(--s4) 0;
+}
+.rvmp .r-milestones-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 var(--s2);
+	font-family: var(--font-display);
+	font-size: 16px;
+	letter-spacing: -0.01em;
+}
+.rvmp .r-milestones-intro {
+	margin-bottom: var(--s3);
+}
+/* one plain card, a row per tier with a hairline between rows: no borders or bars of its own on the rows */
+.rvmp .r-milestones-list {
+	display: grid;
+	margin: 0;
+	padding: 0 var(--s4);
+	list-style: none;
+}
+.rvmp .r-milestone {
+	--mc: var(--accent);
+	display: grid;
+	grid-template-columns: minmax(84px, 110px) minmax(0, 1fr);
+	align-items: start;
+	gap: var(--s3);
+	min-width: 0;
+	padding: var(--s3) 0;
+}
+.rvmp .r-milestone + .r-milestone {
+	border-top: 1px solid var(--border);
+}
+.rvmp .r-milestone-tier {
+	display: grid;
+	justify-items: start;
+	gap: 2px;
+}
+.rvmp .r-milestone-tier b {
+	font-family: var(--font-display);
+	font-size: 15px;
+	line-height: 1.15;
+	color: var(--text);
+}
+/* the rank is plain, quiet text under the tier (no pill) */
+.rvmp .r-milestone-tier span {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text-faint);
+}
+.rvmp .r-milestone .r-rich {
+	margin: 0;
+	font-size: 13px;
+	color: var(--text);
+}
+.rvmp .r-rich-list--icon {
+	display: grid;
+	gap: 8px;
+	padding-left: 0;
+	list-style: none;
+}
+.rvmp .r-rich-list--icon li {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+/* the icons of a bonus: one box of the same size for all, a few icons (the egg, the XP, the Stardust) side by side */
+.rvmp .r-milestone-icons {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	/* one picture (the 18px sparkle too) is centred in the 30px; several start 2px in, where a single 26px one does, instead of overflowing both sides */
+	justify-content: safe center;
+	box-sizing: border-box;
+	padding: 0 2px;
+	gap: 2px;
+	min-width: 30px;
+}
+.rvmp .r-milestone-icons img {
+	width: 26px;
+	height: 26px;
+	object-fit: contain;
+}
+.rvmp .r-milestone-bullet {
+	width: 18px;
+	height: 18px;
+}
+@media (max-width: 520px) {
+	.rvmp .r-milestone {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--s2);
+	}
+	.rvmp .r-milestone-tier {
+		grid-auto-flow: column;
+		justify-content: start;
+		align-items: center;
+		gap: 10px;
+	}
+}
+
+/* the Dynamax cloud over a round chip (PokeAvatar), spilling a little past its edge; under the sparkle and the Shadow mark */
+.rvmp .r-ctr-art > .r-avatar-max {
+	position: absolute;
+	top: -6%;
+	left: 50%;
+	z-index: 5;
+	width: 118%;
+	height: auto;
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+/* the rewards of a GO Pass: a bullet list with an icon of what each gives */
+.rvmp .r-rewards {
+	color: var(--text);
+}
+.rvmp .r-rewards .r-rich-list--icon {
+	gap: 6px;
+}
+
+/* a plain list of bonuses with an icon in front of each */
+.rvmp .r-bonuses--icons {
+	padding-left: 0;
+	list-style: none;
+}
+.rvmp .r-bonuses--icons li {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+/* the icons of a bonus have no plate or shadow behind them; they have a slim contour (below) to read on any background */
+.rvmp .r-milestone-icons {
+	gap: 4px;
+}
+/* the candies and the trade icon are a little smaller than the other pictures: the same box, with room around them */
+.rvmp
+	.r-milestone-icons
+	img:is(
+		[data-icon='candy'],
+		[data-icon='candyXl'],
+		[data-icon='rareCandy'],
+		[data-icon='rareCandyXl'],
+		[data-icon='trade']
+	) {
+	box-sizing: border-box;
+	padding: 2px;
+}
+
+/* "3× Stardust": the two-vial picture, with a single vial floating over it for each one more (the row does not get wider) */
+.rvmp .r-stardust-stack {
+	position: relative;
+	display: inline-block;
+	flex: none;
+	width: 26px;
+	height: 26px;
+}
+.rvmp .r-stardust-stack > img:first-child:not(.r-icon-copy) {
+	display: block;
+	width: 26px;
+	height: 26px;
+}
+.rvmp .r-stardust-stack .r-icon-copy {
+	position: absolute;
+	top: calc(var(--y, 0) * 1px);
+	left: calc(var(--v, 0) * 9px / (var(--n, 2) - 1));
+	z-index: calc(var(--v, 0) + 1);
+	width: 16px;
+	height: 16px;
+	object-fit: contain;
+}
+.rvmp .r-stardust-stack .r-stardust-vial {
+	position: absolute;
+	bottom: -2px;
+	left: calc(12px + var(--v, 0) * 5px);
+	z-index: 1;
+	width: auto;
+	height: 24px;
+}
+
+/* the slim contour of the pictures, in the light theme only (none in the dark one): the icons of bonuses and rewards, the egg, the Stardust, the 5-star raid, the Max Battle symbol and the Team GO Rocket grunts and leaders wherever they are used, the league and cup badges, and the pictures of the bottom navigation bar (not on a picture that is a plate itself: the contour would be of the plate's border; those are wrapped, see below) (last, so that it wins over the plates' own "no filter") */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	.r-milestone-icons
+	img:not(
+		[data-icon='xp'],
+		[data-icon='superIncubator'],
+		[data-icon='maxParticles'],
+		[data-icon='powerSpot'],
+		[data-icon='megaEnergy']
+	),
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src*='/images/eggs/'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src*='/images/bonuses/stardust'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src*='/images/raids/'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src$='/images/nav/max-battle.webp'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src*='/images/NPC/'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src$='/images/bonuses/lure-module.png'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src*='/images/leagues/'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-bn-icon img {
+	filter: drop-shadow(0 0 0.6px var(--text-faint)) drop-shadow(0 0 0.6px var(--text-faint))
+		drop-shadow(0 0 0.6px var(--text-faint));
+}
+
+/* a plate with a picture in it (the egg of a section title): the plate is the box, the picture inside has the contour */
+.rvmp .r-section-h .r-section-h-icon > img {
+	display: block;
+	box-sizing: border-box;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	object-fit: contain;
+}
+.rvmp .r-eggsec-head .r-eggsec-icon > img {
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	object-fit: contain;
 }

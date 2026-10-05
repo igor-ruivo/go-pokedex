@@ -1,19 +1,22 @@
 import type { TFunction } from 'i18next';
-import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
+import { bonusBullet, BonusIcons, DEFAULT_BONUS_ICON } from '../components/BonusBullet';
 import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
+import { RichText } from '../components/RichText';
 import { SearchListBar } from '../components/SearchListBar';
+import { SeasonMilestones } from '../components/SeasonMilestones';
 import { SparkleIcon } from '../components/SparkleIcon';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLiveNow } from '../hooks/useLiveNow';
-import { specialToPost, spotlightToPost } from '../lib/calendar-events';
+import { leekduckPosts, specialToPost, spotlightToPost } from '../lib/calendar-events';
 import { startsIn, timeLeft } from '../lib/event-timing';
 import {
 	cleanName,
@@ -24,6 +27,7 @@ import {
 	nowAsEventTime,
 	sentenceCase,
 } from '../lib/format';
+import { BONUS_ICON_URL, bonusIcons } from '../lib/milestone-icons';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
 import { useCalendar } from '../queries/calendar';
@@ -60,6 +64,7 @@ const BonusesIcon = () => <SparkleIcon className='r-section-h-icon' />;
 const TAB_ICON: Record<CalendarTab, string> = {
 	events: '/images/nav/calendar.png',
 	bosses: '/images/raids/tier-5.png',
+	max: '/images/nav/max-battle.webp',
 	spawns: '/images/nav/spawns-grass.png',
 	rockets: '/images/NPC/male-grunt.webp',
 	eggs: '/images/eggs/10km.png',
@@ -71,10 +76,20 @@ const isActive = (p: { startDate: number; endDate: number }, now: number) => now
  *  reduced down to just what `SlotSource` needs to credit it — never the
  *  post's own title for a LeekDuck-sourced one (a fan site, not an official
  *  source), only the bare domain instead. */
-export type SlotSourcePost = Pick<IPostEntry, 'title' | 'source'>;
+export type SlotSourcePost = Pick<IPostEntry, 'title'> & {
+	/** Where the information comes from: an official post, or a third party's site (LeekDuck, Pokebattler). */
+	source: IPostEntry['source'] | 'pokebattler';
+};
+/** The third parties that are credited by their site rather than by a post: their domain, and where the credit links. */
+const THIRD_PARTY_SOURCES = {
+	leekduck: { label: 'leekduck.com', url: 'https://leekduck.com/' },
+	pokebattler: { label: 'pokebattler.com', url: 'https://www.pokebattler.com/max' },
+} as const;
 export const slotSourceLabel = (post: SlotSourcePost | undefined, gl: GameLanguage): string | undefined => {
 	if (!post) return undefined;
-	return post.source === 'leekduck' ? 'leekduck.com' : post.title[gl];
+	return post.source === 'leekduck' || post.source === 'pokebattler'
+		? THIRD_PARTY_SOURCES[post.source].label
+		: post.title[gl];
 };
 
 /** Merge a list of dated posts into day-range buckets, deduping their entries.
@@ -154,7 +169,16 @@ const MiniGridLoading = () => (
 	</div>
 );
 
-const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<string, number> | undefined }) => {
+const MiniGrid = ({
+	entries,
+	endMap,
+	showForm,
+}: {
+	entries: Array<IEntry>;
+	endMap?: Map<string, number> | undefined;
+	/** A chip shows its Max form: the Dynamax cloud over a Dynamax Pokémon, the Gigantamax artwork for a Gigantamax one (the Max Battle lists). */
+	showForm?: boolean | undefined;
+}) => {
 	// `endMap` values come from the same local-time-encoded event feed
 	// everything else on this page does — see nowAsEventTime()'s doc comment.
 	// Ticking (not a one-off `nowAsEventTime()` read) so the "Xh/Xm/Xs left"
@@ -224,6 +248,7 @@ const MiniGrid = ({ entries, endMap }: { entries: Array<IEntry>; endMap?: Map<st
 						speciesId={e.speciesId}
 						shiny={e.shiny}
 						note={end ? timeLeft(end, now) : undefined}
+						maxForm={showForm ? e.kind : undefined}
 					/>
 				);
 			})}
@@ -247,9 +272,9 @@ const SlotSource = ({ post, gl }: { post: SlotSourcePost | undefined; gl: GameLa
 	// translated text as its child at render time — `jsx-a11y` can't see
 	// that statically, hence the disable right on the `<a>` below.
 	const highlight =
-		post?.source === 'leekduck' ? (
+		post?.source === 'leekduck' || post?.source === 'pokebattler' ? (
 			// eslint-disable-next-line jsx-a11y/anchor-has-content
-			<a href='https://leekduck.com/' target='_blank' rel='noopener noreferrer' />
+			<a href={THIRD_PARTY_SOURCES[post.source].url} target='_blank' rel='noopener noreferrer' />
 		) : (
 			<em />
 		);
@@ -260,6 +285,28 @@ const SlotSource = ({ post, gl }: { post: SlotSourcePost | undefined; gl: GameLa
 	);
 };
 
+/** Pokebattler is where the current Max Battle bosses come from: it is credited like the sites the other tabs name. */
+const POKEBATTLER_SOURCE: SlotSourcePost = {
+	title: {
+		[GameLanguage.en]: '',
+		[GameLanguage.ptbr]: '',
+		[GameLanguage.de]: '',
+		[GameLanguage.es]: '',
+		[GameLanguage.esMx]: '',
+		[GameLanguage.fr]: '',
+		[GameLanguage.hi]: '',
+		[GameLanguage.id]: '',
+		[GameLanguage.it]: '',
+		[GameLanguage.ja]: '',
+		[GameLanguage.ko]: '',
+		[GameLanguage.ru]: '',
+		[GameLanguage.th]: '',
+		[GameLanguage.tr]: '',
+		[GameLanguage.zhHant]: '',
+	},
+	source: 'pokebattler',
+};
+
 const Group = ({
 	title,
 	entries,
@@ -267,32 +314,44 @@ const Group = ({
 	darker,
 	egg,
 	icon,
+	centered,
+	showForm,
 }: {
 	title: string;
 	entries: Array<IEntry>;
 	endMap?: Map<string, number> | undefined;
 	darker?: boolean | undefined;
+	/** Chips say Dynamax / Gigantamax (the Max Battle group of an event). */
+	showForm?: boolean | undefined;
 	/** Raid-egg icon key in /public/images/raids (raid groups only). */
 	egg?: string | undefined;
 	/** Full icon path for a plain (`.r-section-h`) group heading — mutually
 	 *  exclusive with `egg`, which already renders its own bigger icon+title
 	 *  header. */
 	icon?: string | undefined;
+	/** A smaller heading in the middle, between two lines, with no icon (a sub-section of a group). */
+	centered?: boolean | undefined;
 }) =>
 	entries.length ? (
 		<div className='r-group' data-egg={egg ? '' : undefined}>
 			{egg ? (
 				<div className='r-eggsec-head' data-darker={darker ? '' : undefined}>
-					<img src={`/images/raids/${egg}.png`} alt='' loading='lazy' />
+					<span className='r-eggsec-icon'>
+						<img src={`/images/raids/${egg}.png`} alt='' loading='lazy' />
+					</span>
 					<b>{title}</b>
 				</div>
 			) : (
-				<div className='r-section-h' data-darker={darker ? '' : undefined}>
-					{icon && <img className='r-section-h-icon' src={icon} alt='' loading='lazy' />}
+				<div className='r-section-h' data-darker={darker ? '' : undefined} data-centered={centered ? '' : undefined}>
+					{icon && (
+						<span className='r-section-h-icon'>
+							<img src={icon} alt='' loading='lazy' />
+						</span>
+					)}
 					{title}
 				</div>
 			)}
-			<MiniGrid entries={entries} endMap={endMap} />
+			<MiniGrid entries={entries} endMap={endMap} showForm={showForm} />
 		</div>
 	) : null;
 
@@ -454,6 +513,13 @@ const EventCard = ({
 		(preferSubtitle ? post.subtitle[gl] || post.title[gl] : post.title[gl] || post.subtitle[gl]) ||
 		t('calendar:events.fallbackTitle');
 	const bonuses = post.bonuses[gl] ?? [];
+	// the bonuses with their formatting (bullet points, bold, footnotes) when the data has it, the plain lines otherwise
+	const bonusBlocks = post.bonusBlocks?.[gl] ?? [];
+	// the rewards of the event's GO Pass, with their formatting (and the English ones, to know which icon each gets)
+	const rewardBlocks = post.rewardBlocks?.[gl] ?? [];
+	const rewardReference = post.rewardBlocks?.[GameLanguage.en];
+	// the major milestone bonuses of the season, or of an event with a GO Pass
+	const milestones = post.milestoneBonuses?.[gl];
 	// the link to this very event: the Events tab opens it expanded and scrolls to it
 	const [copied, setCopied] = useState(false);
 	const copyLink = async () => {
@@ -465,21 +531,25 @@ const EventCard = ({
 			// no clipboard access (an insecure page, a blocked permission): the button simply does nothing
 		}
 	};
-	const spotlightMons = post.wild;
+	// A Spotlight Hour and a Max Monday (a day of Max Battles led by one Dynamax Pokémon) are shown the same way: their picture
+	// with the featured Pokémon on it.
+	const maxMons = post.maxBattles ?? [];
+	const isFeaturedDay = !!post.isSpotlight || (post.source === 'leekduck' && maxMons.length > 0);
+	const spotlightMons = post.isSpotlight ? post.wild : maxMons;
 	// The GO/shiny sprite assets carry a lot of built-in transparent padding
 	// (unlike the official artwork), so the shared sprite rule scales them
 	// up without changing this layout box.
 	return (
 		<div className='r-event' data-open={open} data-event={post.id}>
 			<button type='button' className='r-event-head' onClick={onToggle}>
-				{post.isSpotlight ? (
+				{isFeaturedDay ? (
 					<span className='r-event-spotlight'>
 						{post.imageUrl && <img className='r-event-spotlight-bg' src={post.imageUrl} alt='' loading='lazy' />}
 						<span className='r-event-spotlight-sprites' data-count={Math.min(spotlightMons.length, 4)}>
 							{spotlightMons.map((e) => {
 								const p = gamemasterPokemon[e.speciesId];
 								// the round chip of the site's faces, small enough to sit inside the white circle of the picture
-								return p ? <PokeAvatar key={e.speciesId} pokemon={p} shiny={e.shiny} /> : null;
+								return p ? <PokeAvatar key={e.speciesId} pokemon={p} shiny={e.shiny} maxForm={e.kind} /> : null;
 							})}
 						</span>
 					</span>
@@ -517,18 +587,62 @@ const EventCard = ({
 							})}
 						</p>
 					)}
-					{bonuses.length > 0 && (
+					{(bonuses.length > 0 || bonusBlocks.length > 0) && (
 						<>
 							<div className='r-section-h'>
 								<BonusesIcon />
 								{t('calendar:events.bonuses')}
 							</div>
-							<ul className='r-bonuses'>
-								{bonuses.filter(Boolean).map((b, i) => (
-									<li key={i}>{b}</li>
-								))}
-							</ul>
+							{bonusBlocks.length > 0 ? (
+								<RichText
+									blocks={bonusBlocks}
+									className='r-bonuses-rich'
+									bullet={bonusBullet(bonusBlocks, post.bonusBlocks?.[GameLanguage.en])}
+									fallbackBullet={DEFAULT_BONUS_ICON}
+								/>
+							) : (
+								<ul
+									className={
+										bonuses.some((b, i) => b && bonusIcons(post.bonuses[GameLanguage.en]?.[i] ?? b).length > 0)
+											? 'r-bonuses r-bonuses--icons'
+											: 'r-bonuses'
+									}
+								>
+									{bonuses.map((b, i) => {
+										if (!b) return null;
+										const english = post.bonuses[GameLanguage.en]?.[i] ?? b;
+										return bonusIcons(english).length > 0 ? (
+											<li key={i}>
+												<BonusIcons englishText={english} />
+												<span>{b}</span>
+											</li>
+										) : (
+											<li key={i}>
+												{DEFAULT_BONUS_ICON}
+												<span>{b}</span>
+											</li>
+										);
+									})}
+								</ul>
+							)}
 						</>
+					)}
+					{rewardBlocks.length > 0 && (
+						<>
+							<div className='r-section-h'>
+								<BonusesIcon />
+								{t('calendar:events.rewards')}
+							</div>
+							<RichText
+								blocks={rewardBlocks}
+								className='r-rewards'
+								bullet={bonusBullet(rewardBlocks, rewardReference)}
+								fallbackBullet={DEFAULT_BONUS_ICON}
+							/>
+						</>
+					)}
+					{milestones && (
+						<SeasonMilestones milestones={milestones} reference={post.milestoneBonuses?.[GameLanguage.en]} />
 					)}
 					<Group
 						title={t('calendar:events.groups.featuredSpawns')}
@@ -543,13 +657,19 @@ const EventCard = ({
 						icon='/images/raids/tier-5.png'
 					/>
 					<Group
+						title={gameTranslator(GameTranslatorKeys.MaxBattleDisplay, gl)}
+						entries={post.maxBattles ?? []}
+						icon='/images/nav/max-battle.webp'
+						showForm
+					/>
+					<Group
 						title={t('calendar:events.groups.researchEncounters')}
 						entries={post.researches}
 						icon='/images/nav/research.png'
 					/>
-					<Group title={t('calendar:events.groups.eggs')} entries={post.eggs} icon='/images/eggs/10km.png' />
+					<EventEggs entries={post.eggs} />
 					<Group title={t('calendar:events.groups.incense')} entries={post.incenses} icon='/images/nav/incense.png' />
-					<Group title={t('calendar:events.groups.lures')} entries={post.lures} icon='/images/nav/lure.png' />
+					<Group title={t('calendar:events.groups.lures')} entries={post.lures} icon={BONUS_ICON_URL.lure} />
 					<div className='r-event-actions'>
 						<button
 							type='button'
@@ -584,8 +704,15 @@ const EventCard = ({
 
 const EventsTab = () => {
 	const { t } = useTranslation(['calendar']);
-	const { posts, season, spotlightHours, postsFetchCompleted, seasonFetchCompleted, spotlightHoursFetchCompleted } =
-		useCalendar();
+	const {
+		posts,
+		season,
+		spotlightHours,
+		maxMondays,
+		postsFetchCompleted,
+		seasonFetchCompleted,
+		spotlightHoursFetchCompleted,
+	} = useCalendar();
 	// An event named in the link (?event=…, from the Home page) starts open, and the page scrolls to it once it is drawn.
 	const [searchParams] = useSearchParams();
 	const linkedId = searchParams.get('event');
@@ -604,7 +731,8 @@ const EventsTab = () => {
 		// Spotlight Hours fold straight into the same Events feed — the
 		// pre-revamp site did the same (a Spotlight Hour is just a very short
 		// event), rather than giving them their own section.
-		const allPosts = ready ? [...posts, ...spotlightHours.map(spotlightToPost)] : [];
+		// Max Mondays are the same kind of LeekDuck event (a day of Max Battles with its Dynamax Pokémon).
+		const allPosts = ready ? [...posts, ...leekduckPosts(spotlightHours, maxMondays)] : [];
 		// Same-day starts (the common case — most events go live at the same
 		// local hour) tie-break by shorter overall duration first, then
 		// alphabetically — never by exact start instant, or two events
@@ -625,7 +753,7 @@ const EventsTab = () => {
 				return a.title[gl].localeCompare(b.title[gl]);
 			});
 		return seasonFetchCompleted && season ? [season, ...events] : events;
-	}, [posts, spotlightHours, ready, season, seasonFetchCompleted, gl]);
+	}, [posts, spotlightHours, maxMondays, ready, season, seasonFetchCompleted, gl]);
 
 	const dupeTitles = useMemo(() => {
 		const seen = new Map<string, number>();
@@ -852,10 +980,9 @@ let lastSpawnsSlot = '';
 
 /* ---------- Spawns ---------- */
 const SpawnsTab = () => {
-	const { t } = useTranslation(['calendar']);
+	const { t } = useTranslation(['calendar', 'home']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
-	const { season, posts, spotlightHours, seasonFetchCompleted, postsFetchCompleted, spotlightHoursFetchCompleted } =
-		useCalendar();
+	const { posts, spotlightHours, postsFetchCompleted, spotlightHoursFetchCompleted } = useCalendar();
 	const { fetchCompleted } = usePokemon();
 	const [sel, setSelRaw] = useState(lastSpawnsSlot);
 	const setSel = (key: string) => {
@@ -863,18 +990,7 @@ const SpawnsTab = () => {
 		setSelRaw(key);
 	};
 
-	// Literal t() calls, not the dynamic BIOMES module-level keys — see
-	// RaidsTab's tierLabels for why (the parity checker needs a static key).
-	const BIOMES: ReadonlyArray<readonly [string, string]> = [
-		['0', t('calendar:biomes.cities')],
-		['1', t('calendar:biomes.forests')],
-		['2', t('calendar:biomes.mountains')],
-		['3', t('calendar:biomes.beaches')],
-		['4', t('calendar:biomes.northernHemisphere')],
-		['5', t('calendar:biomes.southernHemisphere')],
-	];
-
-	if (!seasonFetchCompleted || !postsFetchCompleted || !spotlightHoursFetchCompleted || !fetchCompleted) {
+	if (!postsFetchCompleted || !spotlightHoursFetchCompleted || !fetchCompleted) {
 		return <Spinner />;
 	}
 
@@ -922,15 +1038,13 @@ const SpawnsTab = () => {
 		(p) => p.wild,
 		currentLanguage
 	);
-	const known = new Set(BIOMES.map(([k]) => k));
-	const wild = season?.wild ?? [];
 
 	const slots: Array<{ key: string; label: string }> = [
 		...(nowSpawns.length > 0 ? [{ key: 'now', label: t('calendar:spawns.nowSlot') }] : []),
-		{ key: 'season', label: t('calendar:spawns.seasonSlot') },
 		...eventGroups.map((g) => ({ key: g.label, label: g.label })),
 	];
-	const fallback = nowSpawns.length > 0 ? 'now' : 'season';
+	// the season has no spawns of its own (they come with the events), so there is no slot for it
+	const fallback = nowSpawns.length > 0 ? 'now' : (slots[0]?.key ?? '');
 	const activeKey = slots.some((s) => s.key === sel) ? sel : fallback;
 
 	return (
@@ -942,19 +1056,10 @@ const SpawnsTab = () => {
 					<SlotSource post={nowTopSource} gl={gl} />
 					<MiniGrid entries={nowSpawns} endMap={endMap} />
 				</div>
-			) : activeKey === 'season' ? (
-				wild.length === 0 ? (
-					<p className='r-muted' style={{ marginTop: 'var(--s4)' }}>
-						{t('calendar:spawns.noSeasonalData')}
-					</p>
-				) : (
-					<>
-						{BIOMES.map(([k, label]) => (
-							<Group key={k} title={label} entries={wild.filter((e) => e.kind === k)} />
-						))}
-						<Group title={t('calendar:biomes.allAreas')} entries={wild.filter((e) => !known.has(e.kind ?? ''))} />
-					</>
-				)
+			) : slots.length === 0 ? (
+				<p className='r-muted' style={{ marginTop: 'var(--s4)' }}>
+					{t('home:now.empty')}
+				</p>
 			) : (
 				<div style={{ marginTop: 'var(--s4)' }}>
 					<SlotSource post={eventGroups.find((g) => g.label === activeKey)?.topSource} gl={gl} />
@@ -1191,6 +1296,45 @@ const RocketsTab = () => {
 const eggCommentLabel = (comment: string, t: TFunction): string =>
 	comment.trim().toUpperCase() === 'FROM FRIEND GIFTS' ? t('calendar:eggs.fromFriendGifts') : comment;
 
+/**
+ * The eggs of an event, one section for each egg distance (with that egg's own picture), and, within a distance, the ones the
+ * post says come another way (Adventure Sync rewards, friend gifts) in a section of their own.
+ */
+const EventEggs = ({ entries }: { entries: Array<IEntry> }) => {
+	const { t } = useTranslation(['calendar']);
+	const { currentGameLanguage: gl } = useLanguage();
+	if (entries.length === 0) return null;
+	const title = t('calendar:events.groups.eggs');
+	const known = new Set(EGG_TIERS.map(([k]) => k));
+	const sections: Array<ReactNode> = [];
+	for (const [k, label] of EGG_TIERS) {
+		const all = entries.filter((e) => e.kind === k);
+		if (all.length === 0) continue;
+		const icon = `/images/eggs/${k}km.png`;
+		sections.push(
+			<Group key={k} title={`${title} · ${label}`} entries={all.filter((e) => !e.comment?.[gl])} icon={icon} />
+		);
+		const comments = new Map<string, Array<IEntry>>();
+		for (const e of all) {
+			const c = e.comment?.[gl];
+			if (c) comments.set(c, [...(comments.get(c) ?? []), e]);
+		}
+		for (const [c, list] of comments) {
+			sections.push(<Group key={`${k}-${c}`} title={eggCommentLabel(c, t)} entries={list} centered />);
+		}
+	}
+	// an egg with no distance of its own
+	sections.push(
+		<Group
+			key='other'
+			title={title}
+			entries={entries.filter((e) => !known.has(e.kind ?? ''))}
+			icon='/images/eggs/10km.png'
+		/>
+	);
+	return <>{sections}</>;
+};
+
 const EggsTab = () => {
 	const { t } = useTranslation(['calendar']);
 	const { currentEggs, currentEggsFetchCompleted } = useCalendar();
@@ -1216,7 +1360,9 @@ const EggsTab = () => {
 				return (
 					<section key={k} className='r-eggsec'>
 						<div className='r-eggsec-head'>
-							<img src={`/images/eggs/${k}km.png`} alt='' loading='lazy' />
+							<span className='r-eggsec-icon'>
+								<img src={`/images/eggs/${k}km.png`} alt='' loading='lazy' />
+							</span>
 							<b>{label}</b>
 						</div>
 						{plain.length > 0 && <MiniGrid entries={plain} />}
@@ -1229,6 +1375,37 @@ const EggsTab = () => {
 					</section>
 				);
 			})}
+		</div>
+	);
+};
+
+/** The Max Battle bosses of right now, by tier, each saying whether it is a Dynamax or a Gigantamax Pokémon. */
+const MaxBattlesTab = () => {
+	const { t } = useTranslation(['calendar']);
+	const { currentGameLanguage: gl } = useLanguage();
+	const { currentMaxBattles, currentMaxBattlesFetchCompleted } = useCalendar();
+	const { fetchCompleted } = usePokemon();
+
+	if (!currentMaxBattlesFetchCompleted || !fetchCompleted) return <Spinner />;
+	if (currentMaxBattles.length === 0) return <p className='r-muted'>{t('calendar:max.empty')}</p>;
+
+	// the highest tiers first
+	const tiers = [...new Set(currentMaxBattles.map((e) => e.tier ?? ''))].sort((a, b) => Number(b) - Number(a));
+	return (
+		<div className='r-egglist'>
+			{/* the list of current bosses comes from Pokebattler */}
+			<SlotSource post={POKEBATTLER_SOURCE} gl={gl} />
+			{tiers.map((tier) => (
+				<section key={tier} className='r-eggsec'>
+					<div className='r-eggsec-head'>
+						<span className='r-eggsec-icon'>
+							<img src='/images/nav/max-battle.webp' alt='' loading='lazy' />
+						</span>
+						<b>{tier ? `★ ${tier}` : '★'}</b>
+					</div>
+					<MiniGrid entries={currentMaxBattles.filter((e) => (e.tier ?? '') === tier)} showForm />
+				</section>
+			))}
 		</div>
 	);
 };
@@ -1259,6 +1436,7 @@ const Calendar = () => {
 	const TAB_LABEL: Record<CalendarTab, string> = {
 		events: t('calendar:tabs.events'),
 		bosses: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
+		max: gameTranslator(GameTranslatorKeys.MaxBattleDisplay, gl),
 		spawns: t('calendar:tabs.spawns'),
 		rockets: t('calendar:tabs.rockets'),
 		eggs: t('calendar:tabs.eggs'),
@@ -1277,6 +1455,7 @@ const Calendar = () => {
 			<div style={{ marginTop: 16 }}>
 				{active === 'events' && <EventsTab />}
 				{active === 'bosses' && <RaidsTab />}
+				{active === 'max' && <MaxBattlesTab />}
 				{active === 'spawns' && <SpawnsTab />}
 				{active === 'rockets' && <RocketsTab />}
 				{active === 'eggs' && <EggsTab />}

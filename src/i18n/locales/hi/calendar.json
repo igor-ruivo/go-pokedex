@@ -61,6 +61,7 @@
 			"ended": "समाप्त"
 		},
 		"bonuses": "बोनस",
+		"rewards": "इनाम",
 		"groups": {
 			"featuredSpawns": "फ़ीचर्ड स्पॉन",
 			"featuredRaids": "फ़ीचर्ड {{raid}}",
@@ -98,5 +99,8 @@
 		"minutes": "{{count}} मिनट बचे",
 		"seconds": "{{count}} सेकंड बचे"
 	},
-	"slotSource": "<em>{{event}}</em> से"
+	"slotSource": "<em>{{event}}</em> से",
+	"max": {
+		"empty": "अभी कोई Max Battle बॉस नहीं है।"
+	}
 }

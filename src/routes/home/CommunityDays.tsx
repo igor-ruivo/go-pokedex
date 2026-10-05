@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-import { useLanguage } from '../../contexts/language-context';
+import { BonusIcons } from '../../components/BonusBullet';
+import { GameLanguage, useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useLiveNow } from '../../hooks/useLiveNow';
 import { spotlightToPost } from '../../lib/calendar-events';
@@ -14,10 +15,18 @@ import { useCalendar } from '../../queries/calendar';
 import { usePokemon } from '../../queries/pokemon';
 import { EvolutionChips } from './EvolutionChips';
 
-/** A weekday name that fits the date block: the short form, cut to three letters when even that is long (Sábado, Thursday). */
-const shortWeekday = (name: string): string => {
-	const bare = name.replace(/.$/, '');
-	return bare.length > 4 ? `${bare.slice(0, 3)}.` : bare;
+/**
+ * A weekday name that fits the date block, from the locale's own full name (Intl, so it follows the language): the part before a
+ * hyphen ("quinta-feira" → "quinta"), kept whole up to six letters (Sábado, Monday) and otherwise cut to five with a dot
+ * (Thurs., Donne.). Counted in letters as a reader sees them (grapheme clusters), so a script with combining marks is not cut in
+ * the middle of one.
+ */
+const shortWeekday = (name: string, locale: string): string => {
+	const letters = Array.from(
+		new Intl.Segmenter(locale, { granularity: 'grapheme' }).segment(name.split('-')[0].trim()),
+		(part) => part.segment
+	);
+	return letters.length > 6 ? `${letters.slice(0, 5).join('')}.` : letters.join('');
 };
 
 /** The day, weekday and month an event starts on, read the way the event feed is (its wall clock, not the viewer's zone). */
@@ -27,7 +36,7 @@ const dayParts = (start: number, locale: string) => {
 		new Intl.DateTimeFormat(locale, { ...options, timeZone: 'UTC' }).format(d);
 	return {
 		day: d.getUTCDate(),
-		weekday: shortWeekday(part({ weekday: 'short' })),
+		weekday: shortWeekday(part({ weekday: 'long' }), locale),
 		month: part({ month: 'short' }),
 		monthLong: part({ month: 'long', year: 'numeric' }),
 	};
@@ -100,8 +109,11 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 					<p className='h-day-when'>{dateRange(post.startDate, post.endDate, currentLanguage)}</p>
 					{bonuses.length > 0 && (
 						<ul className='h-day-bonuses'>
-							{bonuses.map((b) => (
-								<li key={b}>{b}</li>
+							{bonuses.map((b, i) => (
+								<li key={b}>
+									<BonusIcons englishText={post.bonuses[GameLanguage.en]?.[i] ?? b} />
+									{b}
+								</li>
 							))}
 						</ul>
 					)}
@@ -134,8 +146,10 @@ export const CommunityDays = () => {
 	const month = new Date(now).getUTCMonth();
 
 	// the window only moves with the month, so a tick of the clock must not rebuild the list
+	const nowRef = useRef(now);
+	nowRef.current = now;
 	const days = useMemo(
-		() => specialDays(posts, spotlightHours.map(spotlightToPost), now),
+		() => specialDays(posts, spotlightHours.map(spotlightToPost), nowRef.current),
 		[posts, spotlightHours, month]
 	);
 	const months = useMemo(() => {

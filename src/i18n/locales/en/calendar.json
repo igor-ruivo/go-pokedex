@@ -61,6 +61,7 @@
 			"ended": "Ended"
 		},
 		"bonuses": "Bonuses",
+		"rewards": "Rewards",
 		"groups": {
 			"featuredSpawns": "Featured spawns",
 			"featuredRaids": "Featured {{raid}}s",
@@ -98,5 +99,8 @@
 		"minutes": "{{count}}m left",
 		"seconds": "{{count}}s left"
 	},
-	"slotSource": "From <em>{{event}}</em>"
+	"slotSource": "From <em>{{event}}</em>",
+	"max": {
+		"empty": "No Max Battle bosses right now."
+	}
 }

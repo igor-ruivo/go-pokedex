@@ -25,7 +25,8 @@
 		"bosses": "Raides de hoje",
 		"spawns": "Aparições selvagens e em destaque",
 		"rockets": "Formações e recompensas sombrias",
-		"eggs": "O que sai de cada ovo"
+		"eggs": "O que sai de cada ovo",
+		"max": "Os chefes das Batalhas Max, por nível"
 	},
 	"ranks": {
 		"showMore": "Mostrar mais {{count}} ligas",
@@ -75,8 +76,8 @@
 		"creditsIntro": "Este site assenta no trabalho da comunidade de Pokémon GO. Obrigado a:",
 		"pvpoke": "PvPoke, pelos rankings de PvP e pelo motor de combate em que se baseiam as avaliações das nossas equipas.",
 		"leekduck": "LeekDuck, pelos dados de eventos, chefes de raide, ovos e da Equipa GO Rocket.",
+		"pokebattler": "Pokebattler, pelos chefes atuais das Batalhas Max.",
 		"pokeminers": "PokeMiners, pelos dados do game master e pelos sprites.",
-		"official": "Pokémon GO Live, pelos anúncios oficiais de eventos.",
 		"pvpivs": "PvP IVs, um pioneiro na consulta de classificação de IV.",
 		"privacyTitle": "Privacidade",
 		"privacyBody": "Não há contas. As tuas definições, coleção e equipas favoritas ficam no teu navegador e nunca saem do teu dispositivo. Usamos o Google Analytics para contar visitas de forma anónima; pode definir cookies. Não há anúncios.",
@@ -86,7 +87,7 @@
 		"storyTitle": "A história",
 		"s1": "Sou o Igor, engenheiro de software e um bocado obcecado por otimização.",
 		"s2": "Este projeto começou no verão de 2023 como forma de aprender React, CSS e desenvolvimento frontend moderno. Na altura estava a entrar a sério no PvP do Pokémon GO e a descobrir a profundidade escondida num jogo que parecia simples. IVs, limites de PC, rankings, movimentos, ligas e toda a otimização estranha à volta disso prenderam-me por completo.",
-		"s3": "Rapidamente passei a depender das excelentes ferramentas que a comunidade de Pokémon GO já tinha criado: o PvPoke para análise e rankings de PvP, o Poké Genie e o PVPIVs para IVs, o LeekDuck para informação do jogo, o PokéMiners para os dados do jogo, e outros. Estes projetos são fantásticos no que fazem, e este não pretende substituí-los nem recriar o trabalho deles. Constrói por cima.",
+		"s3": "Rapidamente passei a depender das excelentes ferramentas que a comunidade de Pokémon GO já tinha criado: o PvPoke para análise e rankings de PvP, o Poké Genie e o PVPIVs para IVs, o LeekDuck para informação do jogo, o Pokebattler para as Batalhas Max, o PokéMiners para os dados do jogo, e outros. Estes projetos são fantásticos no que fazem, e este não pretende substituí-los nem recriar o trabalho deles. Constrói por cima.",
 		"s4": "Queria criar a experiência de companheiro tudo-em-um que eu próprio não encontrava: densa, rica em informação, rápida, pensada para o telemóvel e com o cuidado de UX/UI que gosto de desenhar. Mas a maior diferença é que queria a ferramenta centrada nos teus próprios Pokémon, e não apenas no Pokémon GO como um todo.",
 		"yoursTitle": "Os teus Pokémon, não apenas Pokémon",
 		"y1": "O Construtor de Equipas é inspirado no excelente trabalho do PvPoke, incluindo a simulação de combate e os algoritmos de ranking, mas leva a ideia mais longe ao ligá-la à tua coleção. Podes manter uma lista pessoal de Pokémon interessantes para as ligas, e a ferramenta calcula continuamente que combinações de equipas fazem mais sentido com o que realmente tens. As equipas são classificadas face ao meta atual e acompanhadas de análises e dicas úteis.",
@@ -97,7 +98,7 @@
 		"q2": "O resultado é, para mim, transformador: em vez de verificar centenas de Pokémon à mão, posso eliminar com confiança os que não podem de todo ser interessantes para as ligas escolhidas e inspecionar apenas os poucos sobreviventes que valem mesmo a pena.",
 		"q3": "Funciona também no sentido inverso. A ferramenta ajuda a preservar Pokémon potencialmente valiosos que não são relevantes no meta atual, como candidatos de topo à Grande ou Ultra Liga que de outra forma teria eliminado por não ter forma prática de verificar todos os Pokémon do armazenamento. Há ainda pesquisas para candidatos a troca, em que a ferramenta identifica Pokémon cujos requisitos de IV fazem sentido precisamente porque uma troca com um Melhor Amigo garante um mínimo de IV.",
 		"builtTitle": "Construído sobre a comunidade",
-		"b1": "Por baixo de tudo isto, dependo muito do ecossistema de dados do Pokémon GO. O meu backend analisa o Game Master e as traduções do PokéMiners e consome regularmente informação dos canais oficiais do Pokémon GO e de fontes da comunidade como o LeekDuck. A análise de PvP assenta no trabalho de simulação de combate do PvPoke, em vez de tentar reinventá-lo. Muito do que torna este projeto possível deve-se a quem já passou anos a construir estas ferramentas e conjuntos de dados.",
+		"b1": "Por baixo de tudo isto, dependo muito do ecossistema de dados do Pokémon GO. O meu backend analisa o Game Master e as traduções do PokéMiners e consome regularmente informação dos canais oficiais do Pokémon GO e de fontes da comunidade como o LeekDuck e o Pokebattler. A análise de PvP assenta no trabalho de simulação de combate do PvPoke, em vez de tentar reinventá-lo. Muito do que torna este projeto possível deve-se a quem já passou anos a construir estas ferramentas e conjuntos de dados.",
 		"b2": "Estou essencialmente a tentar acrescentar mais uma camada: uma interface mais rica, uma experiência mais pessoal e mais automação à volta dos Pokémon que realmente tens. O projeto foi também o meu campo de aprendizagem de frontend, de experimentação com ferramentas de programação com IA cada vez mais capazes e de obsessão com detalhes de UX/UI muito para além do que pretendia.",
 		"b3": "Agora gostava de devolver parte desse trabalho à comunidade. Se usas a ferramenta, gostava mesmo de receber feedback, críticas, ideias, relatos de erros ou sugestões do que pode ficar melhor. O projeto continua a evoluir, e prefiro que a comunidade ajude a moldá-lo a construir tudo dentro da minha própria bolha.",
 		"sign": "Igor"

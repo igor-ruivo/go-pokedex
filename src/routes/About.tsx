@@ -7,8 +7,8 @@ import { SocialLinks } from '../components/SocialLinks';
 const CREDITS = [
 	{ name: 'PvPoke', url: 'https://pvpoke.com', text: 'home:about.pvpoke' },
 	{ name: 'LeekDuck', url: 'https://leekduck.com', text: 'home:about.leekduck' },
+	{ name: 'Pokebattler', url: 'https://www.pokebattler.com', text: 'home:about.pokebattler' },
 	{ name: 'PokeMiners', url: 'https://github.com/PokeMiners', text: 'home:about.pokeminers' },
-	{ name: 'Pokémon GO Live', url: 'https://pokemongolive.com', text: 'home:about.official' },
 	{ name: 'PvP IVs', url: 'https://pvpivs.com', text: 'home:about.pvpivs' },
 ] as const;
 

@@ -29,7 +29,7 @@ export const NAV: Array<{
 }> = [
 	{
 		to: R.rankings('great'),
-		icon: '/images/nav/leagues.png',
+		icon: '/images/nav/rankings.webp',
 		label: (t) => t('pokemonDetail:tabs.ranks'),
 		hint: (t) => t('common:nav.leagues.hint'),
 		// Pokédex has no nav slot of its own any more — the logo still links to it, so it lights up nothing here.

@@ -25,7 +25,8 @@
 		"bosses": "Raid-Auswahl von heute",
 		"spawns": "Wilde und besondere Spawns",
 		"rockets": "Aufstellungen und Crypto-Belohnungen",
-		"eggs": "Was aus welchem Ei schlüpft"
+		"eggs": "Was aus welchem Ei schlüpft",
+		"max": "Die Dyna-Kampf-Bosse, nach Stufe"
 	},
 	"ranks": {
 		"showMore": "{{count}} weitere Ligen anzeigen",
@@ -75,8 +76,8 @@
 		"creditsIntro": "Diese Seite baut auf der Arbeit der Pokémon-GO-Community auf. Danke an:",
 		"pvpoke": "PvPoke für die PvP-Rankings und die Kampf-Engine, auf der unsere Team-Bewertungen beruhen.",
 		"leekduck": "LeekDuck für Daten zu Events, Raid-Bossen, Eiern und Team GO Rocket.",
+		"pokebattler": "Pokebattler für die aktuellen Dyna-Kampf-Bosse.",
 		"pokeminers": "PokeMiners für die Game-Master-Daten und die Sprites.",
-		"official": "Pokémon GO Live für die offiziellen Event-Ankündigungen.",
 		"pvpivs": "PvP IVs, ein Pionier der IV-Rang-Abfragen.",
 		"privacyTitle": "Datenschutz",
 		"privacyBody": "Es gibt keine Konten. Deine Einstellungen, Sammlung und Lieblingsteams bleiben in deinem Browser und verlassen dein Gerät nie. Wir nutzen Google Analytics, um Besuche anonym zu zählen; dabei können Cookies gesetzt werden. Es gibt keine Werbung.",
@@ -86,7 +87,7 @@
 		"storyTitle": "Die Geschichte",
 		"s1": "Ich bin Igor, Softwareentwickler und ein bisschen besessen von Optimierung.",
 		"s2": "Dieses Projekt begann im Sommer 2023 als Möglichkeit, mir selbst React, CSS und moderne Frontend-Entwicklung beizubringen. Damals stieg ich richtig in Pokémon-GO-PvP ein und entdeckte, wie viel Tiefe in einem scheinbar simplen Handyspiel steckt. IVs, WP-Grenzen, Rankings, Attacken-Sets, Ligen und die ganze seltsame Optimierung drumherum haben mich komplett gepackt.",
-		"s3": "Schnell verließ ich mich auf die hervorragenden Werkzeuge, die die Pokémon-GO-Community bereits gebaut hatte: PvPoke für PvP-Analysen und Rankings, Poké Genie und PVPIVs für IVs, LeekDuck für Spielinformationen, PokéMiners für Spieldaten und weitere. Diese Projekte sind großartig in dem, was sie tun, und dieses Projekt soll sie weder ersetzen noch ihre Arbeit nachbauen. Es baut darauf auf.",
+		"s3": "Schnell verließ ich mich auf die hervorragenden Werkzeuge, die die Pokémon-GO-Community bereits gebaut hatte: PvPoke für PvP-Analysen und Rankings, Poké Genie und PVPIVs für IVs, LeekDuck für Spielinformationen, Pokebattler für Dyna-Kämpfe, PokéMiners für Spieldaten und weitere. Diese Projekte sind großartig in dem, was sie tun, und dieses Projekt soll sie weder ersetzen noch ihre Arbeit nachbauen. Es baut darauf auf.",
 		"s4": "Ich wollte das Rundum-Begleiter-Erlebnis schaffen, das ich selbst nicht finden konnte: dicht, informationsreich, schnell, mobil gedacht und mit der Liebe zum UX/UI-Detail, die ich selbst gern gestalte. Der größte Unterschied aber: Das Werkzeug sollte um deine eigenen Pokémon kreisen und nicht nur um Pokémon GO als Ganzes.",
 		"yoursTitle": "Deine Pokémon, nicht nur Pokémon",
 		"y1": "Der Team-Builder ist von der hervorragenden Arbeit von PvPoke inspiriert, einschließlich Kampfsimulation und Ranking-Algorithmen, geht die Idee aber weiter, indem er sie mit deiner eigenen Sammlung verbindet. Du kannst eine persönliche Liste interessanter Liga-Pokémon führen, und das Werkzeug berechnet fortlaufend, welche Teamkombinationen aus deinem tatsächlichen Besitz am meisten Sinn ergeben. Teams werden am aktuellen Meta gemessen und mit nützlichen Analysen und Tipps begleitet.",
@@ -97,7 +98,7 @@
 		"q2": "Das Ergebnis finde ich persönlich revolutionär: Statt Hunderte Pokémon von Hand zu prüfen, kann ich ohne Sorge alle löschen, die für meine gewählten Ligen unmöglich interessant sein können, und nur die wenigen Überlebenden ansehen, die wirklich einen Blick wert sind.",
 		"q3": "Es funktioniert auch in die andere Richtung. Das Werkzeug hilft, potenziell wertvolle Pokémon zu behalten, die aktuell nicht Meta-relevant sind, etwa Top-Kandidaten für Superliga oder Hyperliga, die ich sonst gelöscht hätte, weil ich keine praktische Möglichkeit hatte, jedes Pokémon im Speicher zu prüfen. Es gibt auch Suchen für Tauschkandidaten: Das Werkzeug findet Pokémon, deren IV-Anforderungen gerade deshalb sinnvoll sind, weil ein Tausch mit einem Besten Freund eine Mindest-IV garantiert.",
 		"builtTitle": "Auf der Community aufgebaut",
-		"b1": "Unter all dem verlasse ich mich stark auf das bestehende Pokémon-GO-Datenökosystem. Mein Backend liest den Game Master und die Übersetzungsdaten von PokéMiners und bezieht regelmäßig Informationen aus den offiziellen Pokémon-GO-Kanälen und etablierten Community-Quellen wie LeekDuck. Die PvP-Analyse baut auf der Kampfsimulation von PvPoke auf, statt sie neu zu erfinden. Vieles, was dieses Projekt möglich macht, verdanke ich Menschen, die seit Jahren diese Werkzeuge und Datensätze bauen.",
+		"b1": "Unter all dem verlasse ich mich stark auf das bestehende Pokémon-GO-Datenökosystem. Mein Backend liest den Game Master und die Übersetzungsdaten von PokéMiners und bezieht regelmäßig Informationen aus den offiziellen Pokémon-GO-Kanälen und etablierten Community-Quellen wie LeekDuck und Pokebattler. Die PvP-Analyse baut auf der Kampfsimulation von PvPoke auf, statt sie neu zu erfinden. Vieles, was dieses Projekt möglich macht, verdanke ich Menschen, die seit Jahren diese Werkzeuge und Datensätze bauen.",
 		"b2": "Ich versuche im Grunde, eine weitere Schicht darüberzulegen: eine reichere Oberfläche, ein persönlicheres Erlebnis und mehr Automatisierung rund um die Pokémon, die du tatsächlich besitzt. Das Projekt war außerdem mein Spielplatz, um Frontend-Entwicklung zu lernen, immer leistungsfähigere KI-Codierwerkzeuge auszuprobieren und mich viel länger als geplant in UX/UI-Details zu verlieben.",
 		"b3": "Jetzt möchte ich einen Teil dieser Arbeit der Community zurückgeben. Wenn du das Werkzeug nutzt, freue ich mich wirklich über Feedback, Kritik, Ideen, Fehlerberichte oder Vorschläge, was besser werden kann. Das Projekt entwickelt sich weiter, und ich lasse die Community es lieber mitgestalten, als alles in meiner eigenen Blase zu bauen.",
 		"sign": "Igor"

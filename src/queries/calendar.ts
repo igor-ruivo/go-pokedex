@@ -3,11 +3,14 @@ import { useMemo } from 'react';
 
 import type { GameLanguage } from '../contexts/language-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
+import type { IRichBlock } from '../DTOs/IRichText';
 import {
 	currentBossesUrl,
 	currentEggsUrl,
+	currentMaxBattlesUrl,
 	currentRocketsUrl,
 	eventsUrl,
+	maxMondaysUrl,
 	seasonUrl,
 	specialBossesUrl,
 	spotlightHoursUrl,
@@ -25,6 +28,20 @@ export interface ILeekduckSpotlightHour {
 	rawUrl: string;
 }
 
+/** One Max Monday: the Dynamax Pokémon that takes over the Power Spots that Monday (the entries are the base species). */
+export interface ILeekduckMaxMonday {
+	title: Record<GameLanguage, string>;
+	date: number;
+	dateEnd: number;
+	pokemons: Array<IEntry>;
+	/** What a Max Monday brings (its bullet points and the asterisk footnote, from the season post), per locale. Absent in older data. */
+	bonuses?: Partial<Record<GameLanguage, Array<string>>>;
+	/** The same, with its formatting kept (bullet points, bold, the footnote as a note). */
+	bonusBlocks?: Partial<Record<GameLanguage, Array<IRichBlock>>>;
+	imgUrl: string;
+	rawUrl: string;
+}
+
 export interface ILeekduckSpecialRaidBoss {
 	title: Record<GameLanguage, string>;
 	date: number;
@@ -38,6 +55,9 @@ interface CalendarData {
 	season: IPostEntry;
 	specialBosses: Array<ILeekduckSpecialRaidBoss>;
 	spotlightHours: Array<ILeekduckSpotlightHour>;
+	maxMondays: Array<ILeekduckMaxMonday>;
+	/** The Dynamax / Gigantamax bosses of Max Battles right now: each entry's `kind` is its form, its `tier` the Max Battle tier. */
+	currentMaxBattles: Array<IEntry>;
 	currentBosses: Array<IEntry>;
 	currentEggs: Array<IEntry>;
 	currentRockets: Array<IRocketGrunt>;
@@ -46,6 +66,8 @@ interface CalendarData {
 	seasonFetchCompleted: boolean;
 	specialBossesFetchCompleted: boolean;
 	spotlightHoursFetchCompleted: boolean;
+	maxMondaysFetchCompleted: boolean;
+	currentMaxBattlesFetchCompleted: boolean;
 	currentBossesFetchCompleted: boolean;
 	currentEggsFetchCompleted: boolean;
 	currentRocketsFetchCompleted: boolean;
@@ -54,6 +76,8 @@ interface CalendarData {
 	errorLoadingSeason: string;
 	errorLoadingSpecialBosses: string;
 	errorLoadingSpotlightHours: string;
+	errorLoadingMaxMondays: string;
+	errorLoadingCurrentMaxBattles: string;
 	errorLoadingCurrentBosses: string;
 	errorLoadingCurrentEggs: string;
 	errorLoadingCurrentRockets: string;
@@ -75,6 +99,8 @@ export const useCalendar = (): CalendarData => {
 	const season = useQuery(calendarQuery<IPostEntry>('season', seasonUrl));
 	const specialBosses = useQuery(calendarQuery<Array<ILeekduckSpecialRaidBoss>>('special-bosses', specialBossesUrl));
 	const spotlightHours = useQuery(calendarQuery<Array<ILeekduckSpotlightHour>>('spotlight-hours', spotlightHoursUrl));
+	const maxMondays = useQuery(calendarQuery<Array<ILeekduckMaxMonday>>('max-mondays', maxMondaysUrl));
+	const currentMaxBattles = useQuery(calendarQuery<Array<IEntry>>('current-max-battles', currentMaxBattlesUrl));
 	const currentBosses = useQuery(calendarQuery<Array<IEntry>>('current-bosses', currentBossesUrl));
 	const currentEggs = useQuery(calendarQuery<Array<IEntry>>('current-eggs', currentEggsUrl));
 	const currentRockets = useQuery(calendarQuery<Array<IRocketGrunt>>('current-rockets', currentRocketsUrl));
@@ -92,6 +118,8 @@ export const useCalendar = (): CalendarData => {
 			season: season.data!,
 			specialBosses: specialBosses.data ?? EMPTY,
 			spotlightHours: spotlightHours.data ?? EMPTY,
+			maxMondays: maxMondays.data ?? EMPTY,
+			currentMaxBattles: currentMaxBattles.data ?? EMPTY,
 			currentBosses: currentBosses.data ?? EMPTY,
 			currentEggs: currentEggs.data ?? EMPTY,
 			currentRockets: currentRockets.data ?? EMPTY,
@@ -100,6 +128,8 @@ export const useCalendar = (): CalendarData => {
 			seasonFetchCompleted: done(season),
 			specialBossesFetchCompleted: done(specialBosses),
 			spotlightHoursFetchCompleted: done(spotlightHours),
+			maxMondaysFetchCompleted: done(maxMondays),
+			currentMaxBattlesFetchCompleted: done(currentMaxBattles),
 			currentBossesFetchCompleted: done(currentBosses),
 			currentEggsFetchCompleted: done(currentEggs),
 			currentRocketsFetchCompleted: done(currentRockets),
@@ -108,6 +138,8 @@ export const useCalendar = (): CalendarData => {
 			errorLoadingSeason: err(season),
 			errorLoadingSpecialBosses: err(specialBosses),
 			errorLoadingSpotlightHours: err(spotlightHours),
+			errorLoadingMaxMondays: err(maxMondays),
+			errorLoadingCurrentMaxBattles: err(currentMaxBattles),
 			errorLoadingCurrentBosses: err(currentBosses),
 			errorLoadingCurrentEggs: err(currentEggs),
 			errorLoadingCurrentRockets: err(currentRockets),
@@ -125,6 +157,12 @@ export const useCalendar = (): CalendarData => {
 			spotlightHours.data,
 			spotlightHours.status,
 			spotlightHours.error,
+			maxMondays.data,
+			maxMondays.status,
+			maxMondays.error,
+			currentMaxBattles.data,
+			currentMaxBattles.status,
+			currentMaxBattles.error,
 			currentBosses.data,
 			currentBosses.status,
 			currentBosses.error,

@@ -25,7 +25,8 @@
 		"bosses": "I raid di oggi",
 		"spawns": "Comparse selvatiche e in evidenza",
 		"rockets": "Formazioni e ricompense ombra",
-		"eggs": "Cosa si schiude da ogni uovo"
+		"eggs": "Cosa si schiude da ogni uovo",
+		"max": "I boss delle Lotte Dynamax, per livello"
 	},
 	"ranks": {
 		"showMore": "Mostra altre {{count}} leghe",
@@ -75,8 +76,8 @@
 		"creditsIntro": "Questo sito si regge sul lavoro della community di Pokémon GO. Grazie a:",
 		"pvpoke": "PvPoke, per le classifiche PvP e il motore di combattimento su cui si basano le valutazioni delle nostre squadre.",
 		"leekduck": "LeekDuck, per i dati su eventi, boss dei raid, uova e Team GO Rocket.",
+		"pokebattler": "Pokebattler, per i boss attuali delle Lotte Dynamax.",
 		"pokeminers": "PokeMiners, per i dati del game master e gli sprite.",
-		"official": "Pokémon GO Live, per gli annunci ufficiali degli eventi.",
 		"pvpivs": "PvP IVs, un pioniere delle ricerche di rango IV.",
 		"privacyTitle": "Privacy",
 		"privacyBody": "Non ci sono account. Le tue impostazioni, la collezione e le squadre preferite restano nel tuo browser e non lasciano mai il tuo dispositivo. Usiamo Google Analytics per contare le visite in modo anonimo; può impostare cookie. Non ci sono pubblicità.",
@@ -86,7 +87,7 @@
 		"storyTitle": "La storia",
 		"s1": "Sono Igor, ingegnere del software e un po' ossessionato dall'ottimizzazione.",
 		"s2": "Questo progetto è nato nell'estate del 2023 come modo per insegnarmi React, CSS e lo sviluppo frontend moderno. All'epoca mi stavo appassionando seriamente al PvP di Pokémon GO e scoprivo quanta profondità si nascondesse sotto quello che sembrava un semplice gioco per cellulare. IV, limiti di PL, classifiche, mosse, leghe e tutta la strana ottimizzazione intorno mi hanno catturato del tutto.",
-		"s3": "Mi sono presto ritrovato a dipendere dagli ottimi strumenti che la community di Pokémon GO aveva già costruito: PvPoke per l'analisi e le classifiche PvP, Poké Genie e PVPIVs per gli IV, LeekDuck per le informazioni sul gioco, PokéMiners per i dati di gioco e altri. Questi progetti sono fantastici in ciò che fanno, e questo non vuole sostituirli né rifare il loro lavoro. Ci costruisce sopra.",
+		"s3": "Mi sono presto ritrovato a dipendere dagli ottimi strumenti che la community di Pokémon GO aveva già costruito: PvPoke per l'analisi e le classifiche PvP, Poké Genie e PVPIVs per gli IV, LeekDuck per le informazioni sul gioco, Pokebattler per le Lotte Dynamax, PokéMiners per i dati di gioco e altri. Questi progetti sono fantastici in ciò che fanno, e questo non vuole sostituirli né rifare il loro lavoro. Ci costruisce sopra.",
 		"s4": "Volevo creare l'esperienza di compagno tutto in uno che io stesso non riuscivo a trovare: densa, ricca di informazioni, veloce, pensata per il mobile e con la cura dei dettagli UX/UI che mi piace progettare. Ma la differenza più grande è che volevo lo strumento incentrato sui tuoi Pokémon, e non solo su Pokémon GO nel suo insieme.",
 		"yoursTitle": "I tuoi Pokémon, non solo Pokémon",
 		"y1": "Il Creatore di squadre si ispira all'ottimo lavoro di PvPoke, compresi la simulazione di combattimento e gli algoritmi di classifica, ma porta l'idea oltre collegandola alla tua collezione. Puoi tenere un elenco personale di Pokémon interessanti per le leghe, e lo strumento calcola di continuo quali combinazioni di squadra hanno più senso con ciò che possiedi davvero. Le squadre sono classificate rispetto al meta attuale e accompagnate da analisi e consigli utili.",
@@ -97,7 +98,7 @@
 		"q2": "Il risultato per me è trasformativo: invece di controllare a mano centinaia di Pokémon, posso eliminare con fiducia quelli che non possono essere interessanti per le leghe scelte e ispezionare solo i pochi sopravvissuti che meritano davvero un'occhiata.",
 		"q3": "Funziona anche nel senso opposto. Lo strumento aiuta a conservare Pokémon potenzialmente preziosi che al momento non sono rilevanti nel meta, come candidati di vertice per la Lega Super o la Lega Ultra che altrimenti avrei eliminato perché non avevo un modo pratico di controllare ogni Pokémon nell'archivio. Ci sono anche ricerche per i candidati allo scambio, dove lo strumento individua Pokémon i cui requisiti di IV hanno senso proprio perché uno scambio con un Miglior amico garantisce un IV minimo.",
 		"builtTitle": "Costruito sulla community",
-		"b1": "Sotto tutto questo, mi affido molto all'ecosistema di dati di Pokémon GO già esistente. Il mio backend analizza il Game Master e i dati di traduzione di PokéMiners e riceve regolarmente informazioni dai canali ufficiali di Pokémon GO e da fonti consolidate della community come LeekDuck. L'analisi PvP si basa sul lavoro di simulazione di combattimento di PvPoke invece di cercare di reinventarlo. Gran parte di ciò che rende possibile questo progetto è merito di chi ha già passato anni a costruire questi strumenti e questi dataset.",
+		"b1": "Sotto tutto questo, mi affido molto all'ecosistema di dati di Pokémon GO già esistente. Il mio backend analizza il Game Master e i dati di traduzione di PokéMiners e riceve regolarmente informazioni dai canali ufficiali di Pokémon GO e da fonti consolidate della community come LeekDuck e Pokebattler. L'analisi PvP si basa sul lavoro di simulazione di combattimento di PvPoke invece di cercare di reinventarlo. Gran parte di ciò che rende possibile questo progetto è merito di chi ha già passato anni a costruire questi strumenti e questi dataset.",
 		"b2": "In sostanza cerco di aggiungere un altro strato sopra: un'interfaccia più ricca, un'esperienza più personale e più automazione intorno ai Pokémon che possiedi davvero. Il progetto è stato anche il mio terreno di gioco per imparare lo sviluppo frontend, sperimentare strumenti di programmazione con IA sempre più capaci e ossessionarmi sui dettagli UX/UI molto più a lungo di quanto avessi previsto.",
 		"b3": "Ora vorrei restituire parte di questo lavoro alla community. Se usi lo strumento, mi farebbe davvero piacere ricevere feedback, critiche, idee, segnalazioni di bug o suggerimenti su cosa si può migliorare. Il progetto è ancora in evoluzione, e preferisco che sia la community a contribuire a plasmarlo piuttosto che costruire tutto dentro la mia bolla.",
 		"sign": "Igor"

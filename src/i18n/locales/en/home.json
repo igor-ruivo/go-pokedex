@@ -25,7 +25,8 @@
 		"bosses": "Today's raid lineup",
 		"spawns": "Wild and featured spawns",
 		"rockets": "Line-ups and shadow rewards",
-		"eggs": "What hatches from each egg"
+		"eggs": "What hatches from each egg",
+		"max": "The Max Battle bosses, by tier"
 	},
 	"ranks": {
 		"showMore": "Show {{count}} more leagues",
@@ -75,8 +76,8 @@
 		"creditsIntro": "This site stands on the work of the Pokémon GO community. Thank you to:",
 		"pvpoke": "PvPoke, for the PvP rankings and the battle engine our team ratings are based on.",
 		"leekduck": "LeekDuck, for event, raid boss, egg and Team GO Rocket data.",
+		"pokebattler": "Pokebattler, for the current Max Battle bosses.",
 		"pokeminers": "PokeMiners, for the game master data and the sprites.",
-		"official": "Pokémon GO Live, for the official event announcements.",
 		"pvpivs": "PvP IVs, a pioneer of IV rank lookups.",
 		"privacyTitle": "Privacy",
 		"privacyBody": "There are no accounts. Your settings, collection and favorite teams stay in your browser and never leave your device. We use Google Analytics to count visits anonymously; it may set cookies. There are no ads.",
@@ -86,7 +87,7 @@
 		"storyTitle": "The story",
 		"s1": "I'm Igor, a software engineer and a bit of an optimization obsessive.",
 		"s2": "This project started in the summer of 2023 as a way for me to teach myself React, CSS, and modern frontend development. At the time, I was getting seriously into Pokémon GO PvP and discovering how much depth was hidden underneath what initially seemed like a simple mobile game. IVs, CP caps, rankings, movesets, leagues, and all the strange optimization around them completely hooked me.",
-		"s3": "I quickly found myself relying on the excellent tools that the Pokémon GO community had already built: PvPoke for PvP analysis and rankings, Poké Genie and PVPIVs for IVs, LeekDuck for game information, PokéMiners for game data, and others. These projects are fantastic at what they do, and this project isn't meant to replace them or recreate their work. It builds on top of it.",
+		"s3": "I quickly found myself relying on the excellent tools that the Pokémon GO community had already built: PvPoke for PvP analysis and rankings, Poké Genie and PVPIVs for IVs, LeekDuck for game information, Pokebattler for Max Battles, PokéMiners for game data, and others. These projects are fantastic at what they do, and this project isn't meant to replace them or recreate their work. It builds on top of it.",
 		"s4": "What I wanted to create was the all-in-one companion experience that I personally couldn't find: dense, information-rich, fast, mobile-oriented, and with the kind of UX/UI attention to detail that I enjoy designing myself. But the biggest difference is that I wanted the tool to be centred around your own Pokémon, rather than just Pokémon GO as a whole.",
 		"yoursTitle": "Your Pokémon, not just Pokémon",
 		"y1": "The Team Builder is inspired by the excellent work of PvPoke, including its battle simulation and ranking algorithms, but takes the idea further by connecting it to your own collection. You can keep a personal list of interesting league-oriented Pokémon, and the tool can continuously work out which team combinations make the most sense from what you actually own. Teams are ranked against the current meta and accompanied by useful analysis and tips.",
@@ -97,7 +98,7 @@
 		"q2": "The result is something I personally find transformative: instead of manually checking hundreds of Pokémon, I can confidently bulk-delete the ones that cannot possibly be interesting for my selected leagues and only inspect the small number of survivors that are genuinely worth looking at.",
 		"q3": "It also works in the other direction. The tool can help preserve potentially valuable Pokémon that aren't currently meta relevant, such as top-ranked Great or Ultra League candidates that I would otherwise have deleted because I had no practical way of checking every Pokémon in my storage. There are also searches for trade candidates, where the tool picks out Pokémon whose IV requirements make sense specifically because a Best Friend trade guarantees a minimum IV floor.",
 		"builtTitle": "Built on the community",
-		"b1": "Underneath all of this, I rely heavily on the existing Pokémon GO data ecosystem. My backend parses PokéMiners' Game Master and translation data and regularly consumes information from Pokémon GO's official channels and established community sources such as LeekDuck. PvP analysis builds on PvPoke's battle simulation work rather than attempting to reinvent it. A lot of what makes this project possible is thanks to people who have already spent years building these tools and datasets.",
+		"b1": "Underneath all of this, I rely heavily on the existing Pokémon GO data ecosystem. My backend parses PokéMiners' Game Master and translation data and regularly consumes information from Pokémon GO's official channels and established community sources such as LeekDuck and Pokebattler. PvP analysis builds on PvPoke's battle simulation work rather than attempting to reinvent it. A lot of what makes this project possible is thanks to people who have already spent years building these tools and datasets.",
 		"b2": "I'm essentially trying to add another layer on top: a richer interface, a more personal experience, and more automation around the Pokémon you actually own. The project has also been my playground for learning frontend development, experimenting with increasingly capable AI coding tools, and obsessing over UX/UI details for far longer than I originally intended.",
 		"b3": "Now I'd like to give some of that work back to the community. If you use the tool, I'd genuinely love feedback, criticism, ideas, bug reports, or suggestions for things that could be better. The project is still evolving, and I'd rather have the community help shape it than build everything inside my own bubble.",
 		"sign": "Igor"

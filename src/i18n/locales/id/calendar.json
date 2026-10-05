@@ -61,6 +61,7 @@
 			"ended": "Berakhir"
 		},
 		"bonuses": "Bonus",
+		"rewards": "Hadiah",
 		"groups": {
 			"featuredSpawns": "Spawn unggulan",
 			"featuredRaids": "{{raid}} unggulan",
@@ -98,5 +99,8 @@
 		"minutes": "{{count}}m lagi",
 		"seconds": "{{count}}d lagi"
 	},
-	"slotSource": "Dari <em>{{event}}</em>"
+	"slotSource": "Dari <em>{{event}}</em>",
+	"max": {
+		"empty": "Belum ada bos Pertarungan Max saat ini."
+	}
 }

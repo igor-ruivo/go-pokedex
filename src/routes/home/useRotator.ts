@@ -5,15 +5,39 @@ export const ROTATE_MS = 7000;
 /** How long the outgoing item stays mounted, to swipe out. */
 export const SWIPE_MS = 560;
 
-/** Loads (and decodes) images, so that what uses them can swipe in already drawn. Gives up after a moment. */
-export const preloadImages = (urls: ReadonlyArray<string>): Promise<void> =>
+/** An image to have ready: its address, and the one to use instead when that is missing (a sprite the game assets lack). */
+export type Preload = string | { url: string; fallback?: string | undefined };
+
+/** The decoded images already made ready, kept (the most recent ones) so that the browser does not let go of them before they are drawn. */
+const kept = new Map<string, HTMLImageElement>();
+const KEPT_LIMIT = 120;
+
+const load = (url: string): Promise<boolean> => {
+	const held = kept.get(url);
+	if (held) return Promise.resolve(true);
+	const img = new Image();
+	img.src = url;
+	return img.decode().then(
+		() => {
+			kept.set(url, img);
+			if (kept.size > KEPT_LIMIT) kept.delete(kept.keys().next().value!);
+			return true;
+		},
+		() => false
+	);
+};
+
+/**
+ * Loads (and decodes) images, so that what uses them can swipe in already drawn. An image that is not there is replaced by its
+ * fallback, the one the screen would end up showing. Gives up after a moment.
+ */
+export const preloadImages = (items: ReadonlyArray<Preload>): Promise<void> =>
 	new Promise((resolve) => {
 		const timeout = window.setTimeout(resolve, 2500);
 		void Promise.all(
-			urls.map((url) => {
-				const img = new Image();
-				img.src = url;
-				return img.decode().catch(() => undefined);
+			items.map(async (item) => {
+				const { url, fallback } = typeof item === 'string' ? { url: item, fallback: undefined } : item;
+				if (!(await load(url)) && fallback) await load(fallback);
 			})
 		).then(() => {
 			window.clearTimeout(timeout);

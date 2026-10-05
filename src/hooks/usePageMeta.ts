@@ -88,6 +88,11 @@ const STATIC_PAGES: Record<string, { title: string; description: string; image?:
 		description: 'The current Pokémon GO raid boss lineup, by tier.',
 		image: '/images/og/raids/mega.png',
 	},
+	'/calendar/max': {
+		title: 'Current Max Battles — GO Pokédex',
+		description: 'The Dynamax and Gigantamax Pokémon in Pokémon GO Max Battles right now, by tier.',
+		image: '/images/og/nav/calendar.png',
+	},
 	'/calendar/spawns': {
 		title: 'Current Spawns — GO Pokédex',
 		description: 'What’s currently spawning in the wild in Pokémon GO.',

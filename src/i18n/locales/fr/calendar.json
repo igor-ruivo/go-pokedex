@@ -61,6 +61,7 @@
 			"ended": "Terminé"
 		},
 		"bonuses": "Bonus",
+		"rewards": "Récompenses",
 		"groups": {
 			"featuredSpawns": "Apparitions vedettes",
 			"featuredRaids": "{{raid}} en vedette",
@@ -98,5 +99,8 @@
 		"minutes": "encore {{count}} min",
 		"seconds": "encore {{count}} s"
 	},
-	"slotSource": "De <em>{{event}}</em>"
+	"slotSource": "De <em>{{event}}</em>",
+	"max": {
+		"empty": "Aucun boss de Combat Dynamax pour le moment."
+	}
 }

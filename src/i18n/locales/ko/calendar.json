@@ -61,6 +61,7 @@
 			"ended": "종료됨"
 		},
 		"bonuses": "보너스",
+		"rewards": "보상",
 		"groups": {
 			"featuredSpawns": "특별 출현",
 			"featuredRaids": "특별 {{raid}}",
@@ -98,5 +99,8 @@
 		"minutes": "{{count}}분 남음",
 		"seconds": "{{count}}초 남음"
 	},
-	"slotSource": "<em>{{event}}</em>에서"
+	"slotSource": "<em>{{event}}</em>에서",
+	"max": {
+		"empty": "지금은 맥스배틀 보스가 없습니다."
+	}
 }

@@ -16,7 +16,7 @@ import { RAID_METRIC_LABEL, RAID_METRICS } from '../lib/raid-metric';
 import { socialLinks } from '../lib/social';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { BrandMark } from './BrandMark';
-import { CombatIcon } from './CombatIcon';
+import { TeamBuilderIcon } from './NavIcons';
 import { RaidIcon } from './RaidIcon';
 import { TeamTabIcon } from './team-tab-icons';
 
@@ -131,7 +131,7 @@ export const AppMenu = () => {
 		{
 			key: 'ranks',
 			to: R.rankings('great'),
-			icon: <img src='/images/nav/leagues.png' alt='' />,
+			icon: <img src='/images/nav/rankings.webp' alt='' />,
 			label: t('home:hero.ctaPvp'),
 			hint: t('common:nav.leagues.hint'),
 			active: onRanks,
@@ -146,7 +146,7 @@ export const AppMenu = () => {
 		{
 			key: 'teams',
 			to: R.teams,
-			icon: <CombatIcon />,
+			icon: <TeamBuilderIcon />,
 			label: t('home:hero.ctaTeams'),
 			hint: t('common:nav.teams.hint'),
 			active: pathname.startsWith('/teams') && !onCollection,

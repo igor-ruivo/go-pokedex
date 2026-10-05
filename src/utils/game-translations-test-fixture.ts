@@ -71,6 +71,11 @@ export const gameTranslationsTestFixture: GameTranslationsPayload = {
 			[GameLanguage.ptbr]: 'Pode Megaevoluir',
 			[GameLanguage.ja]: 'メガシンカ可能',
 		},
+		maxBattleDisplay: {
+			[GameLanguage.en]: 'Max Battle',
+			[GameLanguage.ptbr]: 'Batalha Max',
+			[GameLanguage.ja]: 'マックスバトル',
+		},
 		dynamaxDisplay: { [GameLanguage.en]: 'Dynamax', [GameLanguage.ptbr]: 'Dinamax', [GameLanguage.ja]: 'ダイマックス' },
 		fusionDisplay: { [GameLanguage.en]: 'Fusion', [GameLanguage.ptbr]: 'Fusão', [GameLanguage.ja]: 'がったい' },
 		gigantamaxDisplay: {

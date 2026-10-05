@@ -61,6 +61,7 @@
 			"ended": "Encerrado"
 		},
 		"bonuses": "Bónus",
+		"rewards": "Recompensas",
 		"groups": {
 			"featuredSpawns": "Spawns em destaque",
 			"featuredRaids": "{{raid}} em destaque",
@@ -98,5 +99,8 @@
 		"minutes": "faltam {{count}}m",
 		"seconds": "faltam {{count}}s"
 	},
-	"slotSource": "De <em>{{event}}</em>"
+	"slotSource": "De <em>{{event}}</em>",
+	"max": {
+		"empty": "Sem chefes de Batalha Max de momento."
+	}
 }

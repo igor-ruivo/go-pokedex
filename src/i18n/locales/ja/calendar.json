@@ -61,6 +61,7 @@
 			"ended": "終了"
 		},
 		"bonuses": "ボーナス",
+		"rewards": "報酬",
 		"groups": {
 			"featuredSpawns": "注目の出現",
 			"featuredRaids": "注目の{{raid}}",
@@ -98,5 +99,8 @@
 		"minutes": "残り{{count}}分",
 		"seconds": "残り{{count}}秒"
 	},
-	"slotSource": "<em>{{event}}</em>より"
+	"slotSource": "<em>{{event}}</em>より",
+	"max": {
+		"empty": "現在のマックスバトルのボスはいません。"
+	}
 }

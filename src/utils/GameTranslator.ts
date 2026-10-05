@@ -95,6 +95,8 @@ export enum GameTranslatorKeys {
 	FantasyCupTitle,
 	HalloweenCupTitle,
 	CatchCupTitle,
+	/** The in-game name of a Max Battle ("Max Battle", "Batalha Max", "マックスバトル"…). */
+	MaxBattleDisplay,
 }
 
 // Every key here is a literal lookup into `game-translations.json` — the
@@ -171,6 +173,7 @@ const TRANSLATION_KEY_NAMES: Record<GameTranslatorKeys, string> = {
 	[GameTranslatorKeys.MythicalDisplay]: 'mythicalDisplay',
 	[GameTranslatorKeys.UltraBeastDisplay]: 'ultraBeastDisplay',
 	[GameTranslatorKeys.DynamaxDisplay]: 'dynamaxDisplay',
+	[GameTranslatorKeys.MaxBattleDisplay]: 'maxBattleDisplay',
 	[GameTranslatorKeys.FusionDisplay]: 'fusionDisplay',
 	[GameTranslatorKeys.GigantamaxDisplay]: 'gigantamaxDisplay',
 	[GameTranslatorKeys.ShinyDisplay]: 'shinyDisplay',

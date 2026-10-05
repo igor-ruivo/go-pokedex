@@ -29,15 +29,18 @@ import { type RankList, usePvp } from '../../queries/pvp';
 import { type DPSEntry, useRaidRanker } from '../../queries/raid-ranker';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../../utils/GameTranslator';
 import { EvolutionChips } from './EvolutionChips';
-import { LeaguePlate } from './LeaguePlate';
+import { homeLeagueIcon, LeaguePlate } from './LeaguePlate';
 import { PokeAvatar } from './PokeAvatar';
-import { preloadImages, ROTATE_MS, useRotator } from './useRotator';
+import { type Preload, preloadImages, ROTATE_MS, useRotator } from './useRotator';
 
 /** The width below which the card stacks (keep in step with the 760px rule of the spotlight in home.css). */
 const NARROW_SCREEN = '(max-width: 760px)';
 
 /** The additional leagues (the cups) are looked at only when the best of Great, Ultra and Master is worse than this place. */
 const CUPS_BELOW_RANK = 100;
+
+/** The tabs of a Pokémon's page that the card has as buttons (their pictures are made ready with the card). */
+const SPOT_TABS = ['ranks', 'combat', 'moves', 'counters', 'iv-table', 'strings'] as const;
 
 /** A line of three evolutions, and where its forms stand in the rankings. */
 interface Spotlight {
@@ -242,8 +245,23 @@ export const PokemonSpotlight = () => {
 		});
 	}, [loaded, narrow, lines, rankLists, extraRankLists, leagues, raidDPS, raidMetric]);
 
-	const urlsOf = useCallback(
-		(spot: Spotlight) => lineMembers(spot.line).map((p) => spriteUrl(p, imageSource)),
+	// Everything the card is made of, so that it swipes in complete: the sprites of the whole line (with the artwork the sprite
+	// falls back to), the badge of its league, the type of its raid ranking and the pictures of the tab buttons.
+	const assetsOf = useCallback(
+		(spot: Spotlight): Array<Preload> => {
+			const assets: Array<Preload> = lineMembers(spot.line).map((p) => ({
+				url: spriteUrl(p, imageSource),
+				fallback: p.imageUrl,
+			}));
+			const badge = spot.pvp && homeLeagueIcon(spot.pvp.league);
+			if (badge) assets.push(badge);
+			if (spot.raid) assets.push(`/images/types/${spot.raid.type}.png`);
+			for (const slug of SPOT_TABS) {
+				const icon = pokemonTabIcon(slug);
+				if (typeof icon === 'string' && icon) assets.push(icon);
+			}
+			return assets;
+		},
 		[imageSource]
 	);
 	const { current, leaving, held, cycle, barDelay, rotated, holdProps } = useRotator<Spotlight>({
@@ -253,7 +271,7 @@ export const PokemonSpotlight = () => {
 			const at = not ? pool.findIndex((s) => s.hero.speciesId === not.hero.speciesId) : -1;
 			return pool[randomIndexOtherThan(pool.length, at < 0 ? undefined : at)];
 		},
-		preload: (spot) => preloadImages(urlsOf(spot)),
+		preload: (spot) => preloadImages(assetsOf(spot)),
 	});
 
 	if (loaded && pool.length === 0) return null;

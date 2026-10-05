@@ -61,6 +61,7 @@
 			"ended": "Finalizado"
 		},
 		"bonuses": "Bonificaciones",
+		"rewards": "Recompensas",
 		"groups": {
 			"featuredSpawns": "Apariciones destacadas",
 			"featuredRaids": "{{raid}} destacada",
@@ -98,5 +99,8 @@
 		"minutes": "quedan {{count}}m",
 		"seconds": "quedan {{count}}s"
 	},
-	"slotSource": "De <em>{{event}}</em>"
+	"slotSource": "De <em>{{event}}</em>",
+	"max": {
+		"empty": "Ahora mismo no hay jefes de Combates Max."
+	}
 }
