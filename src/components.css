@@ -7476,6 +7476,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
 	img:not(.h-tile-icon, .r-section-h-icon)[src$='/images/bonuses/lure-module.png'],
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
+	img:not(.h-tile-icon, .r-section-h-icon)[src$='/images/bonuses/incense-plain.png'],
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp)
 	img:not(.h-tile-icon, .r-section-h-icon)[src*='/images/leagues/'],
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-bn-icon img {
 	filter: drop-shadow(0 0 0.6px var(--text-faint)) drop-shadow(0 0 0.6px var(--text-faint))

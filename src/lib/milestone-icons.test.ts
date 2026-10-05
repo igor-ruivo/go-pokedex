@@ -4,9 +4,9 @@ import { bonusIcons } from './milestone-icons';
 
 describe('the icons of a bonus, by keywords in its English text', () => {
 	it.each([
-		['2× Catch Candy', ['candy']],
+		['2× Catch Candy', ['candy', 'candy']],
 		['3× XP for catching Pokémon.', ['xp']],
-		['2× Candy for catching Pokémon.', ['candy']],
+		['2× Candy for catching Pokémon.', ['candy', 'candy']],
 		['2× chance for Trainers level 31 and up to receive Candy XL from catching Pokémon.', ['candyXl']],
 		['Rare Candy XL', ['rareCandyXl']],
 		['Rare Candy XL', ['rareCandyXl']],

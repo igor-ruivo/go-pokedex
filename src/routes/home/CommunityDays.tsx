@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -143,14 +143,11 @@ export const CommunityDays = () => {
 	const { currentLanguage } = useLanguage();
 	const { posts, spotlightHours, postsFetchCompleted, spotlightHoursFetchCompleted } = useCalendar();
 	const now = useLiveNow();
-	const month = new Date(now).getUTCMonth();
-
-	// the window only moves with the month, so a tick of the clock must not rebuild the list
-	const nowRef = useRef(now);
-	nowRef.current = now;
+	// the window only moves with the month, so the list is built from the first moment of the month, not from the ticking clock
+	const monthStart = Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1);
 	const days = useMemo(
-		() => specialDays(posts, spotlightHours.map(spotlightToPost), nowRef.current),
-		[posts, spotlightHours, month]
+		() => specialDays(posts, spotlightHours.map(spotlightToPost), monthStart),
+		[posts, spotlightHours, monthStart]
 	);
 	const months = useMemo(() => {
 		const groups: Array<{ label: string; days: Array<SpecialDay> }> = [];

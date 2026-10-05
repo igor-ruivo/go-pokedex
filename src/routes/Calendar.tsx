@@ -649,13 +649,7 @@ const EventCard = ({
 						entries={post.wild}
 						icon='/images/nav/spawns-grass.png'
 					/>
-					<Group
-						title={t('calendar:events.groups.featuredRaids', {
-							raid: sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl)),
-						})}
-						entries={post.raids}
-						icon='/images/raids/tier-5.png'
-					/>
+					<RaidTierGroups entries={post.raids} plainHeadings />
 					<Group
 						title={gameTranslator(GameTranslatorKeys.MaxBattleDisplay, gl)}
 						entries={post.maxBattles ?? []}
@@ -668,7 +662,11 @@ const EventCard = ({
 						icon='/images/nav/research.png'
 					/>
 					<EventEggs entries={post.eggs} />
-					<Group title={t('calendar:events.groups.incense')} entries={post.incenses} icon='/images/nav/incense.png' />
+					<Group
+						title={t('calendar:events.groups.incense')}
+						entries={post.incenses}
+						icon='/images/bonuses/incense-plain.png'
+					/>
 					<Group title={t('calendar:events.groups.lures')} entries={post.lures} icon={BONUS_ICON_URL.lure} />
 					<div className='r-event-actions'>
 						<button
@@ -808,6 +806,80 @@ const EventsTab = () => {
 	);
 };
 
+/**
+ * Raid Pokémon by tier, each tier a section with its egg and its name (5★ and Mega, 3★, 1★), the Shadow ones of each tier in a
+ * quieter section of their own, and any other raid after them. The Bosses tab and the raids of an event are laid out the same way.
+ */
+const RaidTierGroups = ({
+	entries,
+	endMap,
+	plainHeadings,
+}: {
+	entries: Array<IEntry>;
+	endMap?: Map<string, number> | undefined;
+	/** Headings like the other sections of an event (a small egg in the heading's plate) instead of the tab's larger ones. */
+	plainHeadings?: boolean | undefined;
+}) => {
+	const { t } = useTranslation(['calendar']);
+	const { currentGameLanguage: gl } = useLanguage();
+	const { gamemasterPokemon } = usePokemon();
+	const shadow = (id: string) => !!gamemasterPokemon[id]?.isShadow;
+
+	// Literal t() calls per tier — not a dynamic template key — so
+	// scripts/check-i18n-parity.mjs can statically verify every one. "raid"
+	// itself always comes from GameTranslator, never website i18n — see
+	// RaidDisplay's other call sites.
+	const raidWord = sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl));
+	const tierLabels: Record<(typeof RAID_TIERS)[number]['key'], { full: string; short: string }> = {
+		higher: {
+			full: t('calendar:raids.tiers.higher.full', { raid: raidWord }),
+			short: t('calendar:raids.tiers.higher.short'),
+		},
+		tier3: {
+			full: t('calendar:raids.tiers.tier3.full', { raid: raidWord }),
+			short: t('calendar:raids.tiers.tier3.short'),
+		},
+		tier1: {
+			full: t('calendar:raids.tiers.tier1.full', { raid: raidWord }),
+			short: t('calendar:raids.tiers.tier1.short'),
+		},
+	};
+	const others = entries.filter((e) => !RAID_TIERS.some((tier) => tier.match(e.kind)));
+	return (
+		<>
+			{RAID_TIERS.map((tier) => (
+				<Group
+					key={tier.key}
+					title={tierLabels[tier.key].full}
+					{...(plainHeadings ? { icon: `/images/raids/${tier.egg}.png` } : { egg: tier.egg })}
+					entries={entries.filter((e) => tier.match(e.kind) && !shadow(e.speciesId))}
+					endMap={endMap}
+				/>
+			))}
+			{RAID_TIERS.map((tier) => (
+				<Group
+					key={`${tier.key}-shadow`}
+					title={t('calendar:raids.shadowPrefix', {
+						tier: tierLabels[tier.key].short,
+						shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
+					})}
+					{...(plainHeadings ? { icon: `/images/raids/${tier.egg}.png` } : { egg: tier.egg })}
+					entries={entries.filter((e) => tier.match(e.kind) && shadow(e.speciesId))}
+					endMap={endMap}
+					darker
+				/>
+			))}
+			{others.length > 0 && (
+				<Group
+					title={t('calendar:raids.otherRaids', { raid: raidWord })}
+					entries={others}
+					icon={plainHeadings ? '/images/raids/tier-5.png' : undefined}
+				/>
+			)}
+		</>
+	);
+};
+
 // Which date/Now chip was last picked on the Raids tab — module-scoped, not
 // component state, so it survives navigating away (e.g. to Settings) and
 // back, which remounts RaidsTab and would otherwise silently reset a plain
@@ -826,7 +898,7 @@ const RaidsTab = () => {
 		specialBossesFetchCompleted,
 		currentBossesFetchCompleted,
 	} = useCalendar();
-	const { gamemasterPokemon, fetchCompleted } = usePokemon();
+	const { fetchCompleted } = usePokemon();
 	const [sel, setSelRaw] = useState(lastRaidsSlot);
 	const setSel = (key: string) => {
 		lastRaidsSlot = key;
@@ -893,28 +965,7 @@ const RaidsTab = () => {
 
 	if (!ready) return <Spinner />;
 
-	const shadow = (id: string) => !!gamemasterPokemon[id]?.isShadow;
 	const upcomingGroups = groupByRange(upcoming, (p) => p.raids, currentLanguage);
-
-	// Literal t() calls per tier — not a dynamic template key — so
-	// scripts/check-i18n-parity.mjs can statically verify every one. "raid"
-	// itself always comes from GameTranslator, never website i18n — see
-	// RaidDisplay's other call sites.
-	const raidWord = sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl));
-	const tierLabels: Record<(typeof RAID_TIERS)[number]['key'], { full: string; short: string }> = {
-		higher: {
-			full: t('calendar:raids.tiers.higher.full', { raid: raidWord }),
-			short: t('calendar:raids.tiers.higher.short'),
-		},
-		tier3: {
-			full: t('calendar:raids.tiers.tier3.full', { raid: raidWord }),
-			short: t('calendar:raids.tiers.tier3.short'),
-		},
-		tier1: {
-			full: t('calendar:raids.tiers.tier1.full', { raid: raidWord }),
-			short: t('calendar:raids.tiers.tier1.short'),
-		},
-	};
 
 	const slots: Array<{
 		key: string;
@@ -940,34 +991,7 @@ const RaidsTab = () => {
 			) : (
 				<>
 					<SlotSource post={activeSlot?.topSource} gl={gl} />
-					{RAID_TIERS.map((tier) => (
-						<Group
-							key={tier.key}
-							title={tierLabels[tier.key].full}
-							egg={tier.egg}
-							entries={activeEntries.filter((e) => tier.match(e.kind) && !shadow(e.speciesId))}
-							endMap={showEnd ? endMap : undefined}
-						/>
-					))}
-					{RAID_TIERS.map((tier) => (
-						<Group
-							key={`${tier.key}-shadow`}
-							title={t('calendar:raids.shadowPrefix', {
-								tier: tierLabels[tier.key].short,
-								shadow: gameTranslator(GameTranslatorKeys.ShadowDisplay, gl),
-							})}
-							egg={tier.egg}
-							entries={activeEntries.filter((e) => tier.match(e.kind) && shadow(e.speciesId))}
-							endMap={showEnd ? endMap : undefined}
-							darker
-						/>
-					))}
-					{activeEntries.filter((e) => !RAID_TIERS.some((tier) => tier.match(e.kind))).length > 0 && (
-						<Group
-							title={t('calendar:raids.otherRaids', { raid: raidWord })}
-							entries={activeEntries.filter((e) => !RAID_TIERS.some((tier) => tier.match(e.kind)))}
-						/>
-					)}
+					<RaidTierGroups entries={activeEntries} endMap={showEnd ? endMap : undefined} />
 				</>
 			)}
 		</>
