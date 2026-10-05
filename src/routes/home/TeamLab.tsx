@@ -115,11 +115,10 @@ const TeamView = ({
 					</Fragment>
 				))}
 			</div>
-			{countdown && (
-				<span className='h-countdown' aria-hidden='true' data-held={countdown.held ? '' : undefined}>
-					<i key={countdown.cycle} style={{ animationDuration: `${ROTATE_MS}ms` }} />
-				</span>
-			)}
+			{/* the track is always there (empty for the team leaving) so the card never changes height */}
+			<span className='h-countdown' aria-hidden='true' data-held={countdown?.held ? '' : undefined}>
+				{countdown && <i key={countdown.cycle} style={{ animationDuration: `${ROTATE_MS}ms` }} />}
+			</span>
 			<p className='h-featured-line'>
 				{sentence.map((part, i) =>
 					i % 2 === 1 ? (
@@ -174,50 +173,55 @@ const FeaturedTeam = () => {
 		if (!current && ranking.data) setCurrent(pickTeam(ranking.data));
 	}, [ranking.data, current]);
 
+	// The next team is chosen and its sprites loaded as soon as the current one lands, so it is ready well before the bar runs out.
+	const upcoming = useRef<{ pick: Pick; ready: Promise<void> } | undefined>(undefined);
+	useEffect(() => {
+		if (!current || !ranking.data) return;
+		const pick = pickTeam(ranking.data, current);
+		upcoming.current = pick && { pick, ready: preloadTeam(pick, urlOf) };
+	}, [current, ranking.data, urlOf]);
+
 	// What is left of the current team's time. Holding the team (pointer or focus) stops the clock where it is, and letting go
-	// carries on from there — it is not restarted.
+	// carries on from there — it is not restarted. The clock (and the bar, which remounts with the team) only start over at the
+	// very moment the next team is brought in, never before.
 	const remaining = useRef(ROTATE_MS);
 	const startedAt = useRef(0);
+	const swapping = useRef(false);
 	useEffect(() => {
-		if (!ranking.data || held) return;
+		if (!ranking.data || held || !current) return;
 		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		let cancelled = false;
 		let timer = 0;
-		const schedule = (ms: number) => {
-			startedAt.current = performance.now();
-			timer = window.setTimeout(tick, ms);
-		};
+		let expired = false;
 		const tick = () => {
-			remaining.current = ROTATE_MS;
-			if (document.hidden) {
-				schedule(ROTATE_MS);
+			const next = upcoming.current;
+			if (document.hidden || !next) {
+				timer = window.setTimeout(tick, 500);
 				return;
 			}
-			const next = pickTeam(ranking.data, currentRef.current);
-			if (!next) {
-				schedule(ROTATE_MS);
-				return;
-			}
-			setCycle((c) => c + 1);
-			// the next team is drawn off screen first: its sprites are in before it moves
-			void preloadTeam(next, urlOf).then(() => {
-				if (cancelled) return;
+			if (swapping.current) return;
+			expired = true;
+			swapping.current = true;
+			remaining.current = 0;
+			// the next team's sprites are already in (or nearly): it swipes in, and the bar starts over, at this very moment
+			void next.ready.then(() => {
+				swapping.current = false;
 				rotated.current = true;
+				remaining.current = ROTATE_MS;
 				setLeaving(reduced ? undefined : currentRef.current);
-				setCurrent(next);
+				setCurrent(next.pick);
+				setCycle((c) => c + 1);
 				if (!reduced) window.setTimeout(() => setLeaving(undefined), SWIPE_MS);
 				return undefined;
 			});
-			schedule(ROTATE_MS);
 		};
-		schedule(remaining.current);
+		startedAt.current = performance.now();
+		timer = window.setTimeout(tick, remaining.current);
 		return () => {
-			cancelled = true;
 			window.clearTimeout(timer);
 			// held (or unmounted): remember how much of the time is left
-			remaining.current = Math.max(0, remaining.current - (performance.now() - startedAt.current));
+			if (!expired) remaining.current = Math.max(0, remaining.current - (performance.now() - startedAt.current));
 		};
-	}, [ranking.data, held, urlOf]);
+	}, [ranking.data, held, current]);
 
 	if (!current) {
 		return (
