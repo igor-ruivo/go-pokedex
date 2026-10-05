@@ -288,3 +288,15 @@
 	--bar-a-soft: #5f9cc4;
 	--bar-b-soft: #84bad6;
 }
+
+/* ---- the round faces on a Spotlight Hour's picture: that picture is always light, so the chip keeps the light theme's look in
+   both themes (these are the light values of the tokens the chip draws with) ----------------------------------------------- */
+.rvmp .h-event[data-spotlight] .h-avatar,
+.rvmp .r-event-spotlight .h-avatar {
+	--surface: #ffffff;
+	--surface-2: #eef1f7;
+	--surface-3: #e1e6f0;
+	--border: color-mix(in srgb, #2b3550 12%, transparent);
+	--border-strong: color-mix(in srgb, #2b3550 26%, transparent);
+	--hi-1: rgb(255 255 255 / 0.9);
+}

@@ -3166,37 +3166,37 @@
 	filter: drop-shadow(0 0 2px rgb(var(--shadow-rgb) / calc(0.75 * var(--shadow-k))))
 		drop-shadow(0 2px 4px rgb(var(--shadow-rgb) / calc(0.65 * var(--shadow-k))));
 }
-/* 1 — solo, biggest. */
-.rvmp .r-event-head .r-event-spotlight-sprites[data-count='1'] img {
-	width: 54px;
-	height: 54px;
+/* The featured Pokémon are the round chips of the site's faces (PokeAvatar), small enough to sit inside the white circle of the
+   picture: 1 — solo, the biggest; 2 and 3 — in a row, a little smaller; 4 — a 2×2 grid. */
+.rvmp .r-event-head .r-event-spotlight-sprites {
+	gap: 3px;
 }
-/* 2 — plain side by side, no overlap. */
-.rvmp .r-event-head .r-event-spotlight-sprites[data-count='2'] {
-	gap: 6px;
+.rvmp .r-event-head .r-event-spotlight-sprites .h-avatar {
+	width: 34px;
+	height: 34px;
 }
-.rvmp .r-event-head .r-event-spotlight-sprites[data-count='2'] img {
-	width: 40px;
-	height: 40px;
-}
-/* 3 — one row, deliberately overlapping (z-index set inline, highest first). */
-.rvmp .r-event-head .r-event-spotlight-sprites[data-count='3'] img {
-	width: 38px;
-	height: 38px;
-	margin-left: -13px;
-}
-.rvmp .r-event-head .r-event-spotlight-sprites[data-count='3'] img:first-child {
-	margin-left: 0;
-}
-/* 4 — a proper 2×2 grid, not a cramped row. */
-.rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 2px;
-}
-.rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] img {
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='2'] .h-avatar {
 	width: 28px;
 	height: 28px;
+}
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='3'] .h-avatar {
+	width: 24px;
+	height: 24px;
+}
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] {
+	display: grid;
+	grid-template-columns: repeat(2, auto);
+	gap: 2px;
+}
+.rvmp .r-event-head .r-event-spotlight-sprites[data-count='4'] .h-avatar {
+	width: 22px;
+	height: 22px;
+}
+.rvmp .r-event-head .r-event-spotlight-sprites .h-avatar-shiny {
+	top: -4px;
+	right: -4px;
+	width: 11px;
+	height: 11px;
 }
 .rvmp .r-event-head > div {
 	flex: 1;
@@ -7089,4 +7089,88 @@
 	color: var(--pos);
 	background: color-mix(in srgb, var(--pos) 12%, transparent);
 	border-color: color-mix(in srgb, var(--pos) 35%, transparent);
+}
+
+/* a sprite with its adorners (AdornedSprite): the sprite fills the box it is given, the Shadow mark sits at its bottom right
+   and the shiny sparkle at its top right */
+.rvmp .r-adorned {
+	position: relative;
+	display: grid;
+	flex: none;
+}
+.rvmp .r-adorned > img:not(.r-adorned-shadow) {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+.rvmp .r-adorned > .r-adorned-shadow {
+	position: absolute;
+	right: -4%;
+	bottom: -2%;
+	z-index: 6;
+	width: 34%;
+	height: 34%;
+	min-width: 12px;
+	min-height: 12px;
+}
+.rvmp .r-adorned > .r-adorned-sparkle {
+	position: absolute;
+	top: -4%;
+	right: -4%;
+	z-index: 7;
+	width: 32%;
+	height: 32%;
+	min-width: 12px;
+	min-height: 12px;
+	filter: drop-shadow(0 1px 1px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
+}
+
+/* ---- dark mode only: the hero of a Pokémon page and its collapsed bar lose the coloured washes and glows: a flat surface, no
+   tinted halo behind the sprite, no glow on the CP figure ----------------------------------------------------------------- */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero {
+	background: var(--surface);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero::after,
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero .r-sprite::before {
+	content: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero .r-cp b {
+	text-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini {
+	background: color-mix(in srgb, var(--bg) 92%, transparent);
+	/* a soft border on every side in the colour of what the bar is showing: the league picked on a Pokémon's page (--mini-c), the
+	   tier of a team (its --accent) */
+	border-color: color-mix(in srgb, var(--mini-c, var(--accent)) 42%, var(--border));
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg img {
+	filter: none;
+}
+
+/* light mode only: the hero's main image has no shadow under it and no tinted halo behind it */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero .r-sprite > img:not(.r-sprite-shadow) {
+	filter: none;
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero .r-sprite::before {
+	content: none;
+}
+
+/* and the tinted wash and the big blurred glow of the hero itself, which is what showed behind the image */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero {
+	background: var(--surface);
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero::after {
+	content: none;
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero .r-cp b {
+	text-shadow: none;
+}
+
+/* light mode: the collapsed hero bar is flat too, with the soft border in the colour of the league (or the tier of a team) */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-mini {
+	background: color-mix(in srgb, var(--bg) 92%, transparent);
+	border-color: color-mix(in srgb, var(--mini-c, var(--accent)) 42%, var(--border));
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-mini-lg img {
+	filter: none;
 }

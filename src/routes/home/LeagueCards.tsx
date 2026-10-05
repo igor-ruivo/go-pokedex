@@ -1,9 +1,10 @@
-import { type CSSProperties, Fragment } from 'react';
+import { type CSSProperties, Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { cleanName } from '../../lib/format';
 import { topRanked } from '../../lib/home';
 import { LEAGUE_CP } from '../../lib/league-caps';
@@ -72,8 +73,17 @@ const LeagueCard = ({
 	);
 };
 
-/** Every PvP league — the three permanent ones and whichever cups are running — each with its top 3. */
+/** The width below which only the three permanent leagues show, the cups behind a toggle. */
+const NARROW_SCREEN = '(max-width: 700px)';
+
+/**
+ * Every PvP league — the three permanent ones and whichever cups are running — each with its top 3. On a narrow screen only
+ * the permanent three are shown until the toggle under them is pressed.
+ */
 export const LeagueCards = () => {
+	const { t } = useTranslation(['home']);
+	const narrow = useMediaQuery(NARROW_SCREEN);
+	const [expanded, setExpanded] = useState(false);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const { leagues } = useLeagueDefinitions();
@@ -87,9 +97,12 @@ export const LeagueCards = () => {
 		.filter((l) => !(['great', 'ultra', 'master'] as ReadonlyArray<string>).includes(l.id))
 		.map((l) => ({ id: l.id, ranking: extraRankLists[l.id] }));
 
+	const collapsed = narrow && !expanded;
+	const shown = collapsed ? permanent : [...permanent, ...cups];
+
 	return (
 		<div className='h-leagues'>
-			{[...permanent, ...cups].map((l, i) => (
+			{shown.map((l, i) => (
 				<Fragment key={l.id}>
 					{i === permanent.length && <hr className='h-leagues-sep' />}
 					<LeagueCard
@@ -101,6 +114,19 @@ export const LeagueCards = () => {
 					/>
 				</Fragment>
 			))}
+			{narrow && cups.length > 0 && (
+				<button
+					type='button'
+					className='h-chip h-leagues-toggle'
+					aria-expanded={expanded}
+					onClick={() => setExpanded((e) => !e)}
+				>
+					{expanded ? t('home:ranks.showFewer') : t('home:ranks.showMore', { count: cups.length })}
+					<svg viewBox='0 0 24 24' aria-hidden='true' data-open={expanded ? '' : undefined}>
+						<path d='M6 9l6 6 6-6' />
+					</svg>
+				</button>
+			)}
 		</div>
 	);
 };

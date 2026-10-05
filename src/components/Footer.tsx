@@ -40,22 +40,25 @@ export const Footer = () => {
 							<li>
 								<Link to={R.teams}>{t('home:hero.ctaTeams')}</Link>
 							</li>
+						</ul>
+					</div>
+					<div>
+						<h4>{t('common:nav.calendar.label')}</h4>
+						<ul>
 							<li>
 								<Link to={R.calendar('events')}>{t('calendar:tabs.events')}</Link>
-								<ul className='h-footer-sub'>
-									<li>
-										<Link to={R.calendar('spawns')}>{t('calendar:tabs.spawns')}</Link>
-									</li>
-									<li>
-										<Link to={R.calendar('bosses')}>{t('calendar:tabs.bosses')}</Link>
-									</li>
-									<li>
-										<Link to={R.calendar('rockets')}>{t('calendar:tabs.rockets')}</Link>
-									</li>
-									<li>
-										<Link to={R.calendar('eggs')}>{t('calendar:tabs.eggs')}</Link>
-									</li>
-								</ul>
+							</li>
+							<li>
+								<Link to={R.calendar('spawns')}>{t('calendar:tabs.spawns')}</Link>
+							</li>
+							<li>
+								<Link to={R.calendar('bosses')}>{t('calendar:tabs.bosses')}</Link>
+							</li>
+							<li>
+								<Link to={R.calendar('rockets')}>{t('calendar:tabs.rockets')}</Link>
+							</li>
+							<li>
+								<Link to={R.calendar('eggs')}>{t('calendar:tabs.eggs')}</Link>
 							</li>
 						</ul>
 					</div>

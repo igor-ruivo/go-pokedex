@@ -152,6 +152,8 @@
 .rvmp .h-dock {
 	display: grid;
 	grid-template-columns: repeat(6, minmax(0, 150px));
+	/* every row is as tall as the tallest button, so when one grows (a longer label wrapping) all of them grow with it */
+	grid-auto-rows: 1fr;
 	justify-content: center;
 	width: 100%;
 	gap: var(--s3);
@@ -329,11 +331,41 @@
 	gap: 4%;
 	padding: 0 8% 38%;
 }
-.rvmp .h-event-fallback img {
+.rvmp .h-event-fallback .r-adorned {
 	width: 36%;
+	aspect-ratio: 1;
 	max-height: 70%;
-	object-fit: contain;
+}
+.rvmp .h-event-fallback .r-adorned > img:not(.r-adorned-shadow) {
 	filter: drop-shadow(0 8px 14px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
+}
+/* a Spotlight Hour: its featured Pokémon is the round chip of the site's faces, centred on the promo picture's circle (where its
+   question mark is) and small enough to sit inside the white disc */
+.rvmp .h-event[data-spotlight] .h-event-fallback {
+	gap: 2%;
+	padding: 0 0 4%;
+}
+.rvmp .h-event[data-spotlight] .h-event-fallback .h-avatar {
+	flex: none;
+	width: 28%;
+	height: auto;
+	aspect-ratio: 1;
+}
+.rvmp .h-event[data-spotlight] .h-event-fallback[data-count='2'] .h-avatar {
+	width: 22%;
+}
+.rvmp .h-event[data-spotlight] .h-event-fallback[data-count='3'] .h-avatar {
+	width: 18%;
+}
+.rvmp .h-event[data-spotlight] .h-event-fallback .h-avatar-shiny {
+	top: -6px;
+	right: -6px;
+	width: 22px;
+	height: 22px;
+}
+.rvmp .h-event[data-spotlight] .h-event-fallback .h-avatar > .r-shadow-mark {
+	width: 24px;
+	height: 24px;
 }
 /* the picture fades into the card's own dark, so the text on it is always readable */
 .rvmp .h-event-scrim {
@@ -472,6 +504,8 @@
 .rvmp .h-tile {
 	position: relative;
 	display: grid;
+	/* the one column is as wide as the tile, never as wide as what is in it (the faces count themselves from this width) */
+	grid-template-columns: minmax(0, 1fr);
 	align-content: start;
 	gap: 6px;
 	min-width: 0;
@@ -504,6 +538,7 @@
 .rvmp .h-tile-foot {
 	display: flex;
 	align-items: center;
+	min-width: 0;
 	min-height: 32px;
 	margin-top: var(--s2);
 }
@@ -668,7 +703,7 @@
 }
 .rvmp .h-footer-cols {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(4, minmax(0, 1fr));
 	gap: var(--s4);
 }
 .rvmp .h-footer h4 {
@@ -1087,6 +1122,11 @@
 	width: 52px;
 	height: 52px;
 }
+/* an icon drawn as an SVG sits on the same plate as the image ones */
+.rvmp span.h-tile-icon {
+	display: grid;
+	place-items: center;
+}
 
 /* ---- the big navigation icons ------------------------------------------------------------------------------- */
 .rvmp .h-dock-art {
@@ -1121,12 +1161,12 @@
 	min-width: 0;
 	width: 100%;
 	align-items: center;
-	gap: 18px 6px;
+	row-gap: 18px;
 }
 .rvmp .h-faces .h-avatar {
 	position: relative;
-	width: 34px;
-	height: 34px;
+	width: var(--face, 52px);
+	height: var(--face, 52px);
 	overflow: visible;
 }
 .rvmp .h-avatar-shiny {
@@ -1139,6 +1179,11 @@
 	filter: drop-shadow(0 1px 1px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
 }
 .rvmp .h-faces .h-stack-more {
+	width: var(--face, 52px);
+	height: var(--face, 52px);
+	min-width: 0;
+	padding: 0;
+	border-radius: 50%;
 	background: var(--surface-3);
 	color: var(--text-dim);
 }
@@ -1269,7 +1314,8 @@
 	min-width: 0;
 	overflow: clip;
 }
-.rvmp .h-swap > .h-featured {
+.rvmp .h-swap > .h-featured,
+.rvmp .h-swap > .h-spot {
 	grid-area: 1 / 1;
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -1335,8 +1381,15 @@
 	text-decoration: none;
 }
 .rvmp .h-faces {
-	gap: 18px 14px;
-	padding-top: 4px;
+	row-gap: 16px;
+	/* the sparkle and the Shadow mark hang a little outside a face, and so does its ring: room for them inside the box */
+	padding: 8px 7px 4px 4px;
+	box-sizing: border-box;
+}
+@media (max-width: 520px) {
+	.rvmp .h-faces {
+		row-gap: 12px;
+	}
 }
 /* the icon of a kind of content on an event card: the same near-white round plate as the faces beside it */
 .rvmp .h-highlights li > img {
@@ -1429,7 +1482,8 @@
 /* narrow screens: a type is one line — its badge and name, then its top three as faces (no names, no figures) */
 @media (max-width: 700px) {
 	.rvmp .h-raid {
-		grid-template-columns: minmax(0, 1fr) auto;
+		/* the faces are gathered in the last 50% of the row, the type has its badge and name in the rest */
+		grid-template-columns: minmax(0, 1fr) 50%;
 		align-items: center;
 		gap: var(--s2) var(--s3);
 		padding: var(--s2) var(--s3);
@@ -1445,16 +1499,28 @@
 		padding: 0;
 		border-top: 0;
 		gap: 0;
+		justify-content: flex-end;
 	}
+	.rvmp .h-raid ol li {
+		display: flex;
+		flex: 1 1 0;
+		justify-content: center;
+		min-width: 0;
+	}
+	/* a little overlap between neighbours, never much */
 	.rvmp .h-raid ol li + li {
 		margin-left: -8px;
 	}
 	.rvmp .h-raid-link {
+		justify-content: center;
+		width: 100%;
+		min-width: 0;
 		padding: 0;
 	}
 	.rvmp .h-raid .h-avatar {
-		width: 34px;
-		height: 34px;
+		width: min(100%, 46px);
+		height: auto;
+		aspect-ratio: 1;
 	}
 	.rvmp .h-raids {
 		grid-template-columns: 1fr;
@@ -1604,11 +1670,567 @@
 	}
 }
 
-.rvmp .h-footer ul.h-footer-sub {
-	margin-top: 8px;
-	padding-left: var(--s3);
-	border-left: 1px solid var(--border);
+/* ---- the Pokémon spotlight: the big sprite and its line, the stats, and where it ranks ---------------------------- */
+.rvmp .h-spot {
+	display: grid;
+	gap: var(--s4);
+	min-width: 0;
+	margin-top: 0;
+	padding: var(--s5);
 }
-.rvmp .h-footer-sub a {
+/* no coloured wash or glow: the card stays a plain surface */
+.rvmp .h-spot.r-hero {
+	background: linear-gradient(180deg, var(--surface-2), var(--surface));
+}
+.rvmp .h-spot.r-hero::after,
+.rvmp .h-spot .r-sprite::before {
+	content: none;
+}
+.rvmp .h-spot .r-type {
+	box-shadow: none;
+}
+.rvmp .h-spot-main {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+	gap: var(--s5);
+	align-items: center;
+}
+.rvmp .h-spot-figure {
+	display: grid;
+	justify-items: center;
+	gap: var(--s4);
+	min-width: 0;
+}
+.rvmp .h-spot .r-sprite {
+	width: clamp(170px, 24vw, 240px);
+}
+.rvmp .h-spot-line {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+}
+.rvmp .h-spot-stage {
+	display: grid;
+	justify-items: center;
+	gap: 4px;
+	width: 88px;
+	padding: 8px 4px;
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	background: var(--surface);
+	color: var(--text-dim);
+	font-size: 12px;
+	font-weight: 700;
+	text-align: center;
+	text-decoration: none;
+}
+.rvmp .h-spot-stage[data-current] {
+	border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+	color: var(--text);
+}
+.rvmp .h-spot-stage .h-avatar {
+	width: 48px;
+	height: 48px;
+}
+.rvmp .h-spot-stage span:not(.h-avatar) {
+	max-width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.rvmp .h-spot-arrow {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	fill: none;
+	stroke: var(--text-faint);
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+/* the Megas sit inline after a divider; on a narrow screen they drop to a row of their own, with no divider */
+.rvmp .h-spot-megas {
+	display: contents;
+}
+.rvmp .h-spot-sep {
+	align-self: stretch;
+	width: 1px;
+	margin: 0 4px;
+	background: var(--border-strong);
+}
+.rvmp .h-spot-info {
+	display: grid;
+	gap: var(--s3);
+	min-width: 0;
+}
+.rvmp .h-spot-name {
+	margin: 2px 0 var(--s2);
+	font-size: clamp(24px, 3.4vw, 34px);
+	letter-spacing: -0.02em;
+}
+.rvmp .h-spot-name a {
+	color: inherit;
+	text-decoration: none;
+}
+.rvmp .h-spot .r-types {
+	justify-content: flex-start;
+}
+.rvmp .h-spot-ranks {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-spot-rank {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 14px 8px 8px;
+	border: 1px solid color-mix(in srgb, var(--lg) 30%, var(--border));
+	border-radius: 18px;
+	background: color-mix(in srgb, var(--lg) 8%, var(--surface));
+	color: inherit;
+	text-decoration: none;
+}
+.rvmp .h-spot-rank .h-league-plate,
+.rvmp .h-spot-rank .h-raid-type {
+	width: 44px;
+	height: 44px;
+}
+.rvmp .h-spot-rank .h-league-plate img {
+	width: 28px;
+	height: 28px;
+}
+.rvmp .h-spot-rank-text {
+	display: grid;
+	flex: 1;
+	gap: 2px;
+	min-width: 0;
+}
+.rvmp .h-spot-rank-text b {
+	font-size: 14px;
+}
+.rvmp .h-spot-rank-text > span {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	color: var(--text-dim);
 	font-size: 13px;
+}
+/* only the text gives way (with an ellipsis): clipping the row itself cut the round sprite */
+.rvmp .h-spot-rank-text > span > em {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-style: normal;
+}
+.rvmp .h-spot-rank-text .h-avatar {
+	flex: none;
+}
+.rvmp .h-spot-place {
+	flex: none;
+	font-family: var(--font-display);
+	font-size: 18px;
+	font-style: normal;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	color: color-mix(in srgb, var(--lg), var(--text) var(--ink-mix));
+}
+.rvmp .h-spot-skeleton {
+	display: block;
+	min-height: 420px;
+	border-radius: var(--r-lg);
+}
+@media (hover: hover) {
+	.rvmp .h-spot-rank:hover {
+		border-color: color-mix(in srgb, var(--lg) 60%, var(--border));
+	}
+	.rvmp .h-spot-stage:hover {
+		border-color: var(--border-strong);
+	}
+}
+@media (max-width: 760px) {
+	.rvmp .h-spot {
+		padding: var(--s4) var(--s3);
+	}
+	.rvmp .h-spot-main {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--s4);
+	}
+	.rvmp .h-spot .r-sprite {
+		width: clamp(140px, 46vw, 200px);
+	}
+	.rvmp .h-spot-stage {
+		width: 76px;
+	}
+	.rvmp .h-spot-megas {
+		display: flex;
+		flex-basis: 100%;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 6px;
+	}
+	.rvmp .h-spot-sep {
+		display: none;
+	}
+}
+
+/* the narrowest screens: the line is three cells in a row and the arrows float on the seams between them (like the trio) */
+@media (max-width: 359px) {
+	.rvmp .h-spot-line[data-linear] {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 6px;
+		width: 100%;
+	}
+	.rvmp .h-spot-line[data-linear] > .h-spot-stage {
+		width: auto;
+		grid-row: 1;
+	}
+	.rvmp .h-spot-line[data-linear] > .h-spot-stage:nth-child(1) {
+		grid-column: 1;
+	}
+	.rvmp .h-spot-line[data-linear] > .h-spot-stage:nth-child(3) {
+		grid-column: 2;
+	}
+	.rvmp .h-spot-line[data-linear] > .h-spot-stage:nth-child(5) {
+		grid-column: 3;
+	}
+	.rvmp .h-spot-line[data-linear] > .h-spot-arrow {
+		z-index: 5;
+		grid-row: 1;
+		align-self: center;
+		justify-self: end;
+		box-sizing: border-box;
+		width: 26px;
+		height: 26px;
+		padding: 7px 6px;
+		border: 1px solid var(--border-strong);
+		border-radius: 50%;
+		background: var(--surface-2);
+		transform: translateX(calc(50% + 3px));
+		stroke: var(--text-dim);
+	}
+	.rvmp .h-spot-line[data-linear] > .h-spot-arrow:nth-child(2) {
+		grid-column: 1;
+	}
+	.rvmp .h-spot-line[data-linear] > .h-spot-arrow:nth-child(4) {
+		grid-column: 2;
+	}
+	.rvmp .h-spot-megas {
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
+}
+
+/* ---- community days and spotlight hours: one row per day, under its month ----------------------------------------- */
+.rvmp .h-days-month + .h-days-month {
+	margin-top: var(--s5);
+}
+.rvmp .h-days-month > h3 {
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	margin: 0 0 var(--s3);
+	font-family: var(--font-display);
+	font-size: 13px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .h-days-month > h3::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: linear-gradient(90deg, var(--border-strong), transparent);
+}
+.rvmp .h-days {
+	display: grid;
+	gap: var(--s3);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-day {
+	--kc: var(--t-grass);
+	position: relative;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	gap: var(--s4);
+	align-items: center;
+	padding: var(--s3) var(--s4) var(--s3) var(--s3);
+	border: 1px solid color-mix(in srgb, var(--kc) 28%, var(--border));
+	border-radius: 22px;
+	background: linear-gradient(90deg, color-mix(in srgb, var(--kc) calc(11% * var(--wash-k)), var(--surface)), var(--surface) 60%);
+	box-shadow: inset 0 1px 0 var(--hi-1);
+}
+.rvmp .h-day[data-kind='spotlight'] {
+	--kc: var(--t-electric);
+}
+.rvmp .h-day[data-phase='live'] {
+	border-color: color-mix(in srgb, var(--kc) 70%, var(--border));
+	box-shadow:
+		inset 0 1px 0 var(--hi-1),
+		0 10px 28px -14px color-mix(in srgb, var(--kc) calc(70% * var(--glow-k)), transparent);
+}
+.rvmp .h-day[data-phase='ended'] {
+	opacity: 0.68;
+}
+.rvmp .h-day-date {
+	align-self: start;
+	display: grid;
+	justify-items: center;
+	align-content: center;
+	width: 68px;
+	padding: 10px 0;
+	border: 1px solid color-mix(in srgb, var(--kc) 40%, var(--border));
+	border-radius: 18px;
+	background: color-mix(in srgb, var(--kc) 16%, var(--surface));
+	line-height: 1;
+}
+.rvmp .h-day-date span {
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-dim);
+}
+/* the weekday is a coloured band across the top of the date, like the header of a calendar page */
+.rvmp .h-day-date {
+	padding: 0 0 9px;
+	overflow: hidden;
+}
+.rvmp .h-day-date > span:first-child {
+	justify-self: stretch;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	padding: 6px 4px 5px;
+	background: var(--kc);
+	color: var(--on-fill);
+}
+.rvmp .h-day-date > span:last-child {
+	color: color-mix(in srgb, var(--kc), var(--text) var(--ink-mix));
+}
+.rvmp .h-day-date b {
+	margin: 8px 0 5px;
+	font-family: var(--font-display);
+	font-size: 30px;
+	color: color-mix(in srgb, var(--kc), var(--text) var(--ink-mix));
+}
+.rvmp .h-day-body {
+	display: grid;
+	gap: 4px;
+	min-width: 0;
+}
+.rvmp .h-day-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+.rvmp .h-day-kind {
+	padding: 2px 10px;
+	border: 1px solid color-mix(in srgb, var(--kc) 40%, var(--border));
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--kc) 18%, var(--surface));
+	color: color-mix(in srgb, var(--kc), var(--text) var(--ink-mix));
+	font-family: var(--font-display);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+.rvmp .h-day-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--text-dim);
+	font-size: 12.5px;
+	font-weight: 800;
+}
+.rvmp .h-day-status[data-phase='live'] {
+	color: color-mix(in srgb, var(--pos, #4ade80), var(--text) var(--ink-mix));
+}
+.rvmp .h-day h3 {
+	margin: 0;
+	font-size: clamp(16px, 2.2vw, 19px);
+	letter-spacing: -0.01em;
+	line-height: 1.25;
+}
+.rvmp .h-day-when {
+	margin: 0;
+	color: var(--text-dim);
+	font-size: 13px;
+}
+.rvmp .h-day-bonuses {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 4px 0 0;
+	padding: 0;
+	list-style: none;
+}
+.rvmp .h-day-bonuses li {
+	padding: 2px 10px;
+	border: 1px solid var(--border);
+	border-radius: var(--r-pill);
+	background: var(--surface-2);
+	color: var(--text-dim);
+	font-size: 12px;
+}
+/* above the stretched link of the title, so that each chip is a link of its own */
+.rvmp .h-day-mons {
+	position: relative;
+	z-index: 3;
+	min-width: 0;
+}
+@media (max-width: 760px) {
+	.rvmp .h-day {
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: var(--s3);
+		padding: var(--s3);
+	}
+	.rvmp .h-day-date {
+		width: 58px;
+	}
+	.rvmp .h-day-date b {
+		font-size: 25px;
+	}
+	.rvmp .h-day-mons {
+		grid-column: 1 / -1;
+	}
+}
+
+/* the tabs of the featured Pokémon's page, under the card */
+.rvmp .h-spot-tabs {
+	justify-content: center;
+	margin: 0;
+}
+.rvmp .h-chip-ico svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* several Megas (Charizard's X and Y): a centered row of their own at any width */
+.rvmp .h-spot-megas[data-stacked] {
+	display: flex;
+	flex-basis: 100%;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+}
+
+/* ---- dark mode only: the league cards go quiet. A flat card, no shadow and no gradient, outlined on every side with the plain border -------------------------------------------------------------------------------------- */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-league {
+	border-color: var(--border);
+	background: var(--surface);
+	box-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-league .h-league-plate {
+	border-color: var(--border-strong);
+	background: var(--surface-2);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-league .h-coin {
+	border-color: var(--border-strong);
+	background: transparent;
+	color: var(--text-dim);
+}
+@media (hover: hover) {
+	html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-league:hover {
+		border-color: var(--border-strong);
+	}
+}
+
+/* dark mode only, the same quiet treatment for the raid attackers, the Community Days and Spotlight Hours and the Pokémon
+   spotlight: flat surfaces, no shadow, no gradient, the plain border on every side -------------------- */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-raid {
+	border-color: var(--border);
+	background: var(--surface);
+	box-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-raid .h-raid-type,
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-spot-rank .h-raid-type,
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-spot-rank .h-league-plate {
+	border-color: var(--border-strong);
+	background: var(--surface-2);
+	box-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-raid .h-coin {
+	border-color: var(--border-strong);
+	background: transparent;
+	color: var(--text-dim);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day {
+	border-color: var(--border);
+	background: var(--surface);
+	box-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day[data-phase='live'] {
+	border-color: var(--border-strong);
+	box-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day-date {
+	border-color: var(--border-strong);
+	background: var(--surface-2);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day-date b {
+	color: var(--text);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day-kind {
+	border-color: var(--border-strong);
+	background: var(--surface-2);
+	color: var(--text-dim);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-spot.r-hero {
+	border-color: var(--border);
+	background: var(--surface);
+	box-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-spot-rank {
+	border-color: var(--border);
+	background: var(--surface-2);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-spot-place {
+	color: var(--text);
+}
+@media (hover: hover) {
+	html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-raid:hover {
+		border-color: var(--border-strong);
+	}
+	html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-spot-rank:hover {
+		border-color: var(--border-strong);
+	}
+}
+
+/* dark mode only: the team lab loses the two coloured washes in its corners */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-lab {
+	background: var(--surface);
+}
+
+/* the toggle that shows or hides the additional leagues on a narrow screen */
+.rvmp .h-leagues-toggle {
+	justify-self: center;
+	grid-column: 1 / -1;
+	cursor: pointer;
+}
+.rvmp .h-leagues-toggle svg {
+	width: 16px;
+	height: 16px;
+	fill: none;
+	stroke: var(--text-dim);
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transition: transform 0.2s ease;
+}
+.rvmp .h-leagues-toggle svg[data-open] {
+	transform: rotate(180deg);
 }

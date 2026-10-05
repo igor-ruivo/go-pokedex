@@ -28,11 +28,23 @@
 		"eggs": "O que sai de cada ovo"
 	},
 	"ranks": {
+		"showMore": "Mostrar mais {{count}} ligas",
+		"showFewer": "Mostrar menos ligas",
 		"title": "Rankings",
 		"subtitle": "Os melhores Pokémon de cada liga, num relance.",
 		"pokedex": "Todos os Pokémon: estatísticas, PC e formas",
 		"raid": "Melhores atacantes por tipo",
 		"top": "Top 3"
+	},
+	"days": {
+		"title": "Dias Comunitários e Horas em Destaque",
+		"subtitle": "Este mês e o próximo: quando acontecem e quem é o destaque.",
+		"community": "Dia Comunitário",
+		"spotlight": "Hora em Destaque"
+	},
+	"spotlight": {
+		"title": "Pokémon em foco",
+		"subtitle": "Cada Pokémon tem a sua página: estatísticas, rankings, ataques, counters e tabelas de IV."
 	},
 	"teams": {
 		"title": "Laboratório de equipas",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Ferramentas",
+		"collectionPitch": "Os Pokémon que tens, prontos para montar equipas.",
 		"searchesPitch": "Limpa o armazenamento em segundos."
 	},
 	"footer": {

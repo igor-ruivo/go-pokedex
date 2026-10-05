@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -17,13 +17,10 @@ import { usePokemon } from '../../queries/pokemon';
 import { useTeamRanking } from '../../queries/teams';
 import { roleNames } from '../teams/teams-text';
 import { LeaguePlate } from './LeaguePlate';
+import { preloadImages, ROTATE_MS, useRotator } from './useRotator';
 
 /** Each league contributes its best fifty teams to the rotation. */
 const SAMPLE_PER_LEAGUE = 50;
-
-/** How long a team stays before the next one swipes in. */
-const ROTATE_MS = 7000;
-const SWIPE_MS = 560;
 
 interface Pick {
 	league: string;
@@ -44,24 +41,6 @@ const pickTeam = (ranking: TeamRanking | undefined, not?: Pick): Pick | undefine
 	return { league, rank: index + 1, team: list[index] };
 };
 
-/** Loads (and decodes) the sprites of a team, so that it can swipe in already drawn. Gives up after a moment. */
-const preloadTeam = (pick: Pick, urlOf: (speciesId: string) => string | undefined): Promise<void> =>
-	new Promise((resolve) => {
-		const urls = pick.team.members.map((m) => urlOf(m.speciesId)).filter((u): u is string => !!u);
-		const timeout = window.setTimeout(resolve, 2500);
-		void Promise.all(
-			urls.map((url) => {
-				const img = new Image();
-				img.src = url;
-				return img.decode().catch(() => undefined);
-			})
-		).then(() => {
-			window.clearTimeout(timeout);
-			resolve();
-			return undefined;
-		});
-	});
-
 /** One team as the Battle plan draws it: who leads, who is the safe switch, who closes, and the sentence that says so. */
 const TeamView = ({
 	pick,
@@ -71,7 +50,7 @@ const TeamView = ({
 	pick: Pick;
 	className?: string | undefined;
 	/** The time left for this team (only the team on show has it). */
-	countdown?: { cycle: number; held: boolean } | undefined;
+	countdown?: { cycle: number; held: boolean; delay: number } | undefined;
 }) => {
 	const { t } = useTranslation(['teams', 'home']);
 	const { currentGameLanguage: gl } = useLanguage();
@@ -117,7 +96,7 @@ const TeamView = ({
 			</div>
 			{/* the track is always there (empty for the team leaving) so the card never changes height */}
 			<span className='h-countdown' aria-hidden='true' data-held={countdown?.held ? '' : undefined}>
-				{countdown && <i key={countdown.cycle} style={{ animationDuration: `${ROTATE_MS}ms` }} />}
+				{countdown && <i key={countdown.cycle} style={{ animationDuration: `${ROTATE_MS}ms`, animationDelay: `${countdown.delay}ms` }} />}
 			</span>
 			<p className='h-featured-line'>
 				{sentence.map((part, i) =>
@@ -159,69 +138,12 @@ const FeaturedTeam = () => {
 		},
 		[gamemasterPokemon, imageSource]
 	);
-	const [current, setCurrent] = useState<Pick | undefined>(undefined);
-	const [leaving, setLeaving] = useState<Pick | undefined>(undefined);
-	const [held, setHeld] = useState(false);
-	// restarts the countdown bar with each new team
-	const [cycle, setCycle] = useState(0);
-	const rotated = useRef(false);
-	const currentRef = useRef<Pick | undefined>(undefined);
-	currentRef.current = current;
-
-	// the first team, as soon as the ranking is in
-	useEffect(() => {
-		if (!current && ranking.data) setCurrent(pickTeam(ranking.data));
-	}, [ranking.data, current]);
-
-	// The next team is chosen and its sprites loaded as soon as the current one lands, so it is ready well before the bar runs out.
-	const upcoming = useRef<{ pick: Pick; ready: Promise<void> } | undefined>(undefined);
-	useEffect(() => {
-		if (!current || !ranking.data) return;
-		const pick = pickTeam(ranking.data, current);
-		upcoming.current = pick && { pick, ready: preloadTeam(pick, urlOf) };
-	}, [current, ranking.data, urlOf]);
-
-	// What is left of the current team's time. Holding the team (pointer or focus) stops the clock where it is, and letting go
-	// carries on from there — it is not restarted. The clock (and the bar, which remounts with the team) only start over at the
-	// very moment the next team is brought in, never before.
-	const remaining = useRef(ROTATE_MS);
-	const startedAt = useRef(0);
-	const swapping = useRef(false);
-	useEffect(() => {
-		if (!ranking.data || held || !current) return;
-		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		let timer = 0;
-		let expired = false;
-		const tick = () => {
-			const next = upcoming.current;
-			if (document.hidden || !next) {
-				timer = window.setTimeout(tick, 500);
-				return;
-			}
-			if (swapping.current) return;
-			expired = true;
-			swapping.current = true;
-			remaining.current = 0;
-			// the next team's sprites are already in (or nearly): it swipes in, and the bar starts over, at this very moment
-			void next.ready.then(() => {
-				swapping.current = false;
-				rotated.current = true;
-				remaining.current = ROTATE_MS;
-				setLeaving(reduced ? undefined : currentRef.current);
-				setCurrent(next.pick);
-				setCycle((c) => c + 1);
-				if (!reduced) window.setTimeout(() => setLeaving(undefined), SWIPE_MS);
-				return undefined;
-			});
-		};
-		startedAt.current = performance.now();
-		timer = window.setTimeout(tick, remaining.current);
-		return () => {
-			window.clearTimeout(timer);
-			// held (or unmounted): remember how much of the time is left
-			if (!expired) remaining.current = Math.max(0, remaining.current - (performance.now() - startedAt.current));
-		};
-	}, [ranking.data, held, current]);
+	const { current, leaving, held, cycle, barDelay, rotated, holdProps } = useRotator<Pick>({
+		ready: !!ranking.data,
+		pick: (not) => pickTeam(ranking.data, not),
+		preload: (pick) =>
+			preloadImages(pick.team.members.map((m) => urlOf(m.speciesId)).filter((u): u is string => !!u)),
+	});
 
 	if (!current) {
 		return (
@@ -235,19 +157,13 @@ const FeaturedTeam = () => {
 
 	return (
 		<div className='h-rotator'>
-			<div
-				className='h-swap'
-				onMouseEnter={() => setHeld(true)}
-				onMouseLeave={() => setHeld(false)}
-				onFocus={() => setHeld(true)}
-				onBlur={() => setHeld(false)}
-			>
+			<div className='h-swap' {...holdProps}>
 				{leaving && <TeamView key={`${leaving.league}-${leaving.rank}`} pick={leaving} className='h-featured--out' />}
 				<TeamView
 					key={`${current.league}-${current.rank}`}
 					pick={current}
-					className={rotated.current ? 'h-featured--in' : undefined}
-					countdown={{ cycle, held }}
+					className={rotated ? 'h-featured--in' : undefined}
+					countdown={{ cycle, held, delay: barDelay }}
 				/>
 			</div>
 		</div>

@@ -2,10 +2,10 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { AdornedSprite } from '../components/AdornedSprite';
 import { BrandMark } from '../components/BrandMark';
 import { CombatIcon } from '../components/CombatIcon';
 import { RaidIcon } from '../components/RaidIcon';
-import { SpriteImg } from '../components/Sprite';
 import { TeamTabIcon } from '../components/team-tab-icons';
 import { useLanguage } from '../contexts/language-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -27,8 +27,10 @@ import {
 import { R } from '../lib/nav';
 import { useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
+import { CommunityDays } from './home/CommunityDays';
 import { LeagueCards } from './home/LeagueCards';
 import { PokeAvatar } from './home/PokeAvatar';
+import { PokemonSpotlight } from './home/PokemonSpotlight';
 import { RaidAttackers } from './home/RaidAttackers';
 import { TeamLab } from './home/TeamLab';
 
@@ -41,8 +43,20 @@ const KIND_ICON: Record<HighlightKind, string> = {
 
 const FEATURED_LIMIT = 5;
 
-const FACE_SIZE = 34;
-const MIN_FACE_COLUMNS = 3;
+const FACE_SIZE = 52;
+/** On a narrow card the faces shrink (never below this) to keep three to a row, rather than overlap. */
+const MIN_FACE_SIZE = 34;
+
+/** The space between two faces of a row (set inline, so the count and the drawing always agree on it). */
+const FACE_GAP = 8;
+
+/** How many faces fit across `width`, and how big they are: `FACE_SIZE` wherever two fit, a little smaller to make three fit. */
+const faceLayout = (width: number, gap: number): { columns: number; size: number } => {
+	const sizeFor = (columns: number) => Math.floor((width - (columns - 1) * gap) / columns);
+	let columns = Math.max(2, Math.floor((width + gap) / (FACE_SIZE + gap)));
+	if (columns === 2 && sizeFor(3) >= MIN_FACE_SIZE) columns = 3;
+	return { columns, size: Math.min(FACE_SIZE, sizeFor(columns)) };
+};
 
 /** Two rows at most: as many round sprites as fit the width (never more than nine), the shiny ones marked, and a "+N" in the last cell. */
 const Faces = ({
@@ -55,14 +69,17 @@ const Faces = ({
 	shadow?: boolean | undefined;
 }) => {
 	const ref = useRef<HTMLSpanElement>(null);
-	const [columns, setColumns] = useState(5);
-	// how many faces fit across at this width (never fewer than three: on a very narrow card they overlap a little instead)
+	const [{ columns, size }, setLayout] = useState({ columns: 4, size: FACE_SIZE });
+	// how many faces fit across at this width, and how big they are
 	useLayoutEffect(() => {
 		const el = ref.current;
 		if (!el) return;
 		const count = () => {
-			const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
-			setColumns(Math.max(MIN_FACE_COLUMNS, Math.floor((el.clientWidth + gap) / (FACE_SIZE + gap))));
+			// the room the faces really have: the box less its padding (which leaves room for the sparkle and the ring)
+			const style = getComputedStyle(el);
+			const room = el.clientWidth - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
+			const next = faceLayout(room, FACE_GAP);
+			setLayout((prev) => (prev.columns === next.columns && prev.size === next.size ? prev : next));
 		};
 		count();
 		const observer = new ResizeObserver(count);
@@ -76,7 +93,11 @@ const Faces = ({
 		<span
 			className='h-faces'
 			ref={ref}
-			style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, ${FACE_SIZE}px))` }}
+			style={{
+					gridTemplateColumns: `repeat(${columns}, ${size}px)`,
+					columnGap: FACE_GAP,
+					['--face' as string]: `${size}px`,
+				}}
 		>
 			{known.slice(0, faces).map((e) => (
 				<PokeAvatar key={e.speciesId} pokemon={pokemon[e.speciesId]} shiny={e.shiny} shadow={shadow} />
@@ -91,13 +112,16 @@ const AvatarStack = ({
 	ids,
 	more = 0,
 	pokemon,
+	shiny,
 }: {
 	ids: ReadonlyArray<string>;
 	more?: number;
 	pokemon: Record<string, IGamemasterPokemon>;
+	/** The species that can be shiny (a Shadow one carries its mark by itself). */
+	shiny?: ReadonlySet<string> | undefined;
 }) => (
 	<span className='h-stack'>
-		{ids.map((id) => (pokemon[id] ? <PokeAvatar key={id} pokemon={pokemon[id]} /> : null))}
+		{ids.map((id) => (pokemon[id] ? <PokeAvatar key={id} pokemon={pokemon[id]} shiny={shiny?.has(id)} /> : null))}
 		{more > 0 && <i className='h-stack-more'>+{more}</i>}
 	</span>
 );
@@ -130,15 +154,35 @@ const EventCard = ({
 				return t('home:now.eggs');
 		}
 	};
-	// With no picture of its own the card shows a few of what it brings, large, on its gradient.
-	const fallbackIds = post.imageUrl ? [] : highlights.flatMap((h) => h.ids).slice(0, 3);
+	// With no picture of its own the card shows a few of what it brings, large, on its gradient. A Spotlight Hour has its promo
+	// picture and shows its featured Pokémon on top of it (as the Events view does) instead of listing them below.
+	const spotlight = !!post.isSpotlight;
+	const shinyIds = new Set(
+		[...post.wild, ...post.raids, ...post.eggs, ...post.researches].filter((e) => e.shiny).map((e) => e.speciesId)
+	);
+	const spriteIds = spotlight
+		? [...new Set(post.wild.map((e) => e.speciesId))].filter((id) => !!pokemon[id]).slice(0, 3)
+		: post.imageUrl
+			? []
+			: highlights.flatMap((h) => h.ids).slice(0, 3);
 	return (
-		<article className='h-event' data-big={big ? '' : undefined} data-live={live ? '' : undefined}>
-			{post.imageUrl ? (
-				<img className='h-event-img' src={post.imageUrl} alt='' loading='lazy' />
-			) : (
-				<span className='h-event-fallback' aria-hidden='true'>
-					{fallbackIds.map((id) => (pokemon[id] ? <SpriteImg key={id} pokemon={pokemon[id]} loading='lazy' /> : null))}
+		<article
+			className='h-event'
+			data-big={big ? '' : undefined}
+			data-live={live ? '' : undefined}
+			data-spotlight={spotlight ? '' : undefined}
+		>
+			{post.imageUrl && <img className='h-event-img' src={post.imageUrl} alt='' loading='lazy' />}
+			{spriteIds.length > 0 && (
+				<span className='h-event-fallback' aria-hidden='true' data-count={spriteIds.length}>
+					{spriteIds.map((id) => {
+						if (!pokemon[id]) return null;
+						return spotlight ? (
+							<PokeAvatar key={id} pokemon={pokemon[id]} shiny={shinyIds.has(id)} />
+						) : (
+							<AdornedSprite key={id} pokemon={pokemon[id]} shiny={shinyIds.has(id)} />
+						);
+					})}
 				</span>
 			)}
 			<span className='h-event-scrim' aria-hidden='true' />
@@ -153,13 +197,18 @@ const EventCard = ({
 					</Link>
 				</h3>
 				{live && <p className='h-event-when'>{dateRange(post.startDate, post.endDate, currentLanguage)}</p>}
-				{highlights.length > 0 && (
+				{highlights.length > 0 && !spotlight && (
 					<ul className='h-highlights'>
 						{highlights.map((h) => (
 							<li key={h.kind}>
 								<img src={KIND_ICON[h.kind]} alt='' title={label(h.kind)} loading='lazy' />
 								<span className='h-sr'>{label(h.kind)}</span>
-								<AvatarStack ids={h.ids} more={h.more} pokemon={pokemon} />
+								<AvatarStack
+									ids={h.ids}
+									more={h.more}
+									pokemon={pokemon}
+									shiny={new Set(post[h.kind].filter((e) => e.shiny).map((e) => e.speciesId))}
+								/>
 							</li>
 						))}
 					</ul>
@@ -377,6 +426,10 @@ const Home = () => {
 				</div>
 			</section>
 
+			<CommunityDays />
+
+			<PokemonSpotlight />
+
 			<TeamLab />
 
 			<section className='h-section' aria-labelledby='h-ranks'>
@@ -397,16 +450,18 @@ const Home = () => {
 						<h2 id='h-tools'>{t('home:tools.title')}</h2>
 					</div>
 				</header>
-				<div className='h-tiles h-tiles--3'>
-					<div className='h-tile h-tile--row h-tile--wide'>
-						<img className='h-tile-icon' src='/images/nav/search-strings.svg' alt='' loading='lazy' />
+				<div className='h-tiles h-tiles--2'>
+					<div className='h-tile h-tile--row'>
+						<span className='h-tile-icon'>
+							<TeamTabIcon id='collection' size={32} />
+						</span>
 						<div>
 							<h3>
-								<Link to={R.searchStrings()} className='h-stretch'>
-									{t('common:nav.searches.label')}
+								<Link to={R.teamsCollection} className='h-stretch'>
+									{t('teams:page.collectionTab')}
 								</Link>
 							</h3>
-							<p>{t('home:tools.searchesPitch')}</p>
+							<p>{t('home:tools.collectionPitch')}</p>
 						</div>
 					</div>
 					<div className='h-tile h-tile--row'>
@@ -429,6 +484,17 @@ const Home = () => {
 								</Link>
 							</h3>
 							<p>{t('common:nav.types.hint')}</p>
+						</div>
+					</div>
+					<div className='h-tile h-tile--row'>
+						<img className='h-tile-icon' src='/images/nav/search-strings.svg' alt='' loading='lazy' />
+						<div>
+							<h3>
+								<Link to={R.searchStrings()} className='h-stretch'>
+									{t('common:nav.searches.label')}
+								</Link>
+							</h3>
+							<p>{t('home:tools.searchesPitch')}</p>
 						</div>
 					</div>
 				</div>

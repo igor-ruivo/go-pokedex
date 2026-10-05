@@ -3482,3 +3482,90 @@
 		height: 24px;
 	}
 }
+
+/* ---- dark mode only: no coloured washes or glows on the team cards, the battle plan steps and the score hero (radar and
+   ranking): flat surfaces with the plain border ------------------------------------------------------------------------- */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-tm-card:not(.r-tm-card--empty) {
+	background: var(--surface);
+	border-color: var(--border);
+	box-shadow: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-tm-card .r-tm-halo {
+	background: none;
+}
+/* the battle plan keeps a soft wash of its role's colour, the way the trio cards of the home page have it */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-tm-step {
+	background: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--role-c) calc(12% * var(--wash-k)), var(--surface)),
+		var(--surface) 75%
+	);
+	border-color: color-mix(in srgb, var(--role-c) 38%, var(--border));
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-tm-hero {
+	background: var(--surface);
+	border-color: var(--border);
+	box-shadow: none;
+}
+/* the score plate of a team card keeps its tier colour, with a little soft glow under it */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-tm-board-score {
+	background: color-mix(in srgb, var(--tier-a) calc(9% * var(--wash-k)), var(--card));
+	border-color: color-mix(in srgb, var(--tier-a) 38%, var(--border));
+	box-shadow: 0 4px 14px -10px color-mix(in srgb, var(--tier-a) calc(18% * var(--glow-k)), transparent);
+}
+
+/* dark mode only: the panels (the battle plan, the coverage tables…) are the plain surface like every other component, not the
+   surface mixed with the page's accent colour, which read as a reddish dark whenever the accent was a warm one */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-tm {
+	--tm-panel: var(--surface);
+}
+
+/* ---- light mode: the same as dark: no coloured washes or glows on the team cards, the battle plan steps, the score hero and the
+   panels. Flat surfaces with the plain border; the steps keep a soft wash of their role colour and the score plate its tier colour
+   with a hint of glow ------------------------------------------------------------------------------------------------------ */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm {
+	--tm-panel: var(--surface);
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-card:not(.r-tm-card--empty) {
+	background: var(--surface);
+	border-color: var(--border);
+	box-shadow: none;
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-card .r-tm-halo {
+	background: none;
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-step {
+	background: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--role-c) calc(12% * var(--wash-k)), var(--surface)),
+		var(--surface) 75%
+	);
+	border-color: color-mix(in srgb, var(--role-c) 38%, var(--border));
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-hero {
+	background: var(--surface);
+	border-color: var(--border);
+	box-shadow: none;
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-board-score {
+	background: color-mix(in srgb, var(--tier-a) calc(9% * var(--wash-k)), var(--card));
+	border-color: color-mix(in srgb, var(--tier-a) 38%, var(--border));
+	box-shadow: 0 4px 14px -10px color-mix(in srgb, var(--tier-a) calc(18% * var(--glow-k)), transparent);
+}
+
+/* light mode: the favorite star reads clearly: a gold star like the one of the tabs, outlined in a darker gold. Off, it is a pale
+   gold; on, the full gold */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn {
+	color: var(--gold-ink);
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn svg {
+	fill: color-mix(in srgb, var(--gold) 35%, transparent);
+	stroke: var(--gold-ink);
+	stroke-width: 1.6;
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn:hover svg {
+	fill: color-mix(in srgb, var(--gold) 70%, transparent);
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn[data-on] svg {
+	fill: var(--gold);
+}

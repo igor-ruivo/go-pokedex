@@ -28,11 +28,23 @@
 		"eggs": "What hatches from each egg"
 	},
 	"ranks": {
+		"showMore": "Show {{count}} more leagues",
+		"showFewer": "Show fewer leagues",
 		"title": "Rankings",
 		"subtitle": "The best Pokémon for every league, at a glance.",
 		"pokedex": "Every Pokémon: stats, CP and forms",
 		"raid": "Best attackers by type",
 		"top": "Top 3"
+	},
+	"days": {
+		"title": "Community Days and Spotlight Hours",
+		"subtitle": "This month and next: when they happen and who is featured.",
+		"community": "Community Day",
+		"spotlight": "Spotlight Hour"
+	},
+	"spotlight": {
+		"title": "Pokémon in focus",
+		"subtitle": "Every Pokémon has its own page: stats, rankings, moves, counters and IV tables."
 	},
 	"teams": {
 		"title": "Team lab",
@@ -41,6 +53,7 @@
 	},
 	"tools": {
 		"title": "Tools",
+		"collectionPitch": "The Pokémon you own, ready to build teams from.",
 		"searchesPitch": "Clean your storage in seconds."
 	},
 	"footer": {

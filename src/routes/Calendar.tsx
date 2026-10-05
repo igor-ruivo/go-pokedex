@@ -8,14 +8,13 @@ import { IconTabBar } from '../components/IconTabBar';
 import { PokeMini } from '../components/PokeMini';
 import { SearchListBar } from '../components/SearchListBar';
 import { SparkleIcon } from '../components/SparkleIcon';
-import { SpriteImg } from '../components/Sprite';
 import { GameLanguage, useLanguage } from '../contexts/language-context';
 import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLiveNow } from '../hooks/useLiveNow';
-import i18n from '../i18n';
 import { specialToPost, spotlightToPost } from '../lib/calendar-events';
+import { startsIn, timeLeft } from '../lib/event-timing';
 import {
 	cleanName,
 	dateRange,
@@ -31,6 +30,7 @@ import { useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../utils/GameTranslator';
+import { PokeAvatar } from './home/PokeAvatar';
 
 /** Raid-egg icon key (/public/images/raids) and tier-matcher per raid tier —
  *  labels are looked up from the `calendar:raids.tiers.<key>` i18n keys at
@@ -140,34 +140,6 @@ const groupByRange = (
 		entries,
 		topSource,
 	}));
-};
-
-const timeLeft = (end: number, now: number): string => {
-	const ms = end - now;
-	if (ms <= 0) return '';
-	const h = Math.floor(ms / 3_600_000);
-	if (h >= 48) return i18n.t('calendar:timeLeft.days', { count: Math.round(h / 24) });
-	if (h >= 1) return i18n.t('calendar:timeLeft.hours', { count: h });
-	const m = Math.floor(ms / 60_000);
-	if (m >= 1) return i18n.t('calendar:timeLeft.minutes', { count: m });
-	const s = Math.floor(ms / 1000);
-	return i18n.t('calendar:timeLeft.seconds', { count: s });
-};
-
-/** Countdown until an event starts — same wall-clock scheme as `timeLeft`,
- *  but for the start boundary and with "in …" / tomorrow / today wording. */
-const startsIn = (start: number, now: number): string => {
-	const ms = start - now;
-	const d = Math.round(ms / 86_400_000);
-	if (d >= 2) return i18n.t('calendar:events.startsIn.days', { count: d });
-	if (d === 1) return i18n.t('calendar:events.startsIn.tomorrow');
-	if (ms <= 0) return i18n.t('calendar:events.startsIn.today');
-	const h = Math.floor(ms / 3_600_000);
-	if (h >= 1) return i18n.t('calendar:events.startsIn.hours', { count: h });
-	const m = Math.floor(ms / 60_000);
-	if (m >= 1) return i18n.t('calendar:events.startsIn.minutes', { count: m });
-	const s = Math.floor(ms / 1000);
-	return i18n.t('calendar:events.startsIn.seconds', { count: s });
 };
 
 /* ---------- shared bits ---------- */
@@ -504,14 +476,10 @@ const EventCard = ({
 					<span className='r-event-spotlight'>
 						{post.imageUrl && <img className='r-event-spotlight-bg' src={post.imageUrl} alt='' loading='lazy' />}
 						<span className='r-event-spotlight-sprites' data-count={Math.min(spotlightMons.length, 4)}>
-							{spotlightMons.map((e, i) => {
+							{spotlightMons.map((e) => {
 								const p = gamemasterPokemon[e.speciesId];
-								if (!p) return null;
-								// Only the 3-in-a-row layout overlaps (see the `data-count='3'`
-								// CSS) — first mon stacked on top, each one after sinking
-								// behind the last.
-								const style = spotlightMons.length === 3 ? { zIndex: spotlightMons.length - i } : undefined;
-								return <SpriteImg key={e.speciesId} pokemon={p} loading='lazy' style={style} />;
+								// the round chip of the site's faces, small enough to sit inside the white circle of the picture
+								return p ? <PokeAvatar key={e.speciesId} pokemon={p} shiny={e.shiny} /> : null;
 							})}
 						</span>
 					</span>
