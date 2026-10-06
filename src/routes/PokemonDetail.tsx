@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
+import { BaseStatBars } from '../components/BaseStatBars';
 import { HScroll } from '../components/HScroll';
 import { IconTabBar } from '../components/IconTabBar';
 import { IvPicker, type IVs } from '../components/IvPicker';
@@ -140,22 +141,6 @@ const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number): ILeagueIvBloc
 	// a cup at any other finite cap (a Little Cup's 500) has its own block, never another tier's
 	if (cpCap < 10000) return ivp.extra?.[`cap-${cpCap}`];
 	return ivp.master;
-};
-
-/** The highest base stat of each kind among all the Pokémon (what the hero's stat bars are measured against), worked out once per game master. */
-const statMaxCache = new WeakMap<object, { atk: number; def: number; hp: number }>();
-const statMaxOf = (gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
-	let max = statMaxCache.get(gamemasterPokemon);
-	if (!max) {
-		max = { atk: 1, def: 1, hp: 1 };
-		for (const p of Object.values(gamemasterPokemon)) {
-			max.atk = Math.max(max.atk, p.baseStats.atk);
-			max.def = Math.max(max.def, p.baseStats.def);
-			max.hp = Math.max(max.hp, p.baseStats.hp);
-		}
-		statMaxCache.set(gamemasterPokemon, max);
-	}
-	return max;
 };
 
 const PokemonDetail = () => {
@@ -785,6 +770,8 @@ const PokemonDetail = () => {
 		return { t: type, e: entry, rank, on: i === raidSelTypeIdx, combos, mIdx, combo: combos[mIdx] };
 	});
 	const raidSelRow = raidRows[raidSelTypeIdx];
+	// the bars of the list of attacker types are measured against its best figure
+	const bestRaidFigure = Math.max(1, ...raidRows.map((r) => r.combo?.[raidMetric] ?? r.e[raidMetric]));
 
 	// Hero sprite carousel — cycle the official / GO / shiny-GO artwork by tapping
 	// (mouse) or swiping left/right (touch). `heroSpriteIdx` can go negative
@@ -798,7 +785,6 @@ const PokemonDetail = () => {
 		] as const
 	).filter((art, i, all) => !!art.url && all.findIndex((other) => other.url === art.url) === i);
 	const heroSprites = heroArt.map((art) => art.url);
-	const statMax = statMaxOf(gamemasterPokemon);
 	const preferredHeroIdx = Math.max(0, heroSprites.indexOf(spriteUrl(pokemon)));
 	const currentHeroIdx = heroSpriteIdx ?? preferredHeroIdx;
 	const heroIdx = heroSprites.length
@@ -1026,22 +1012,6 @@ const PokemonDetail = () => {
 								onSwipeLeft={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
 								onSwipeRight={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) - 1)}
 							/>
-							{/* the Best Buddy switch of a team member, floating over the sprite: quiet when off, tinted when on */}
-							{hasShadow && (
-								<button
-									type='button'
-									className='r-tm-buddy r-hero-shadow'
-									aria-pressed={isShadow}
-									onClick={() => {
-										if (!shadowToggleTarget) return;
-										suppressIvResetRef.current = true;
-										void navigate(`${R.pokemon(shadowToggleTarget, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
-									}}
-								>
-									<img src='/images/shadow.png' alt='' aria-hidden='true' width={18} height={18} />
-									{gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)}
-								</button>
-							)}
 						</div>
 						{heroArt.length > 1 && (
 							<div className='r-art-pills' role='group'>
@@ -1067,6 +1037,22 @@ const PokemonDetail = () => {
 					<div className='r-hero-info'>
 						<div className='r-dexno'>{dexNo(pokemon.dex)}</div>
 						<h1 className='r-name'>{cleanName(pokemon.speciesName)}</h1>
+						{/* the Best Buddy switch of a team member, under the name: quiet when off, tinted when on */}
+						{hasShadow && (
+							<button
+								type='button'
+								className='r-tm-buddy r-hero-shadow'
+								aria-pressed={isShadow}
+								onClick={() => {
+									if (!shadowToggleTarget) return;
+									suppressIvResetRef.current = true;
+									void navigate(`${R.pokemon(shadowToggleTarget, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
+								}}
+							>
+								<img src='/images/shadow.png' alt='' aria-hidden='true' width={18} height={18} />
+								{gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)}
+							</button>
+						)}
 						<div className='r-types r-hero-types'>
 							{pokemon.types.map((ty) => (
 								<span key={String(ty)} className='r-type' style={{ ['--tc' as string]: typeVar(ty) }}>
@@ -1084,26 +1070,7 @@ const PokemonDetail = () => {
 				</div>
 
 				{/* the base stats, each measured against the highest there is among all the Pokémon */}
-				<div className='r-bars'>
-					{(
-						[
-							['atk', t('pokemonDetail:hero.stats.atk')],
-							['def', t('pokemonDetail:hero.stats.def')],
-							['hp', t('pokemonDetail:hero.stats.hp')],
-						] as const
-					).map(([stat, label]) => (
-						<div key={stat} className='r-bar'>
-							<i>{label}</i>
-							<b>{pokemon.baseStats[stat]}</b>
-							<span className='r-bar-track'>
-								<span
-									className='r-bar-fill'
-									style={{ ['--v' as string]: Math.min(1, pokemon.baseStats[stat] / statMax[stat]) }}
-								/>
-							</span>
-						</div>
-					))}
-				</div>
+				<BaseStatBars pokemon={pokemon} />
 
 				{/* its family (every tab shares it: click to open that Pokémon); skipped when it is this one on its own */}
 				{family.length > 1 && (
@@ -1432,7 +1399,10 @@ const PokemonDetail = () => {
 																		? t('pokemonDetail:raid.nextMovesetTitle')
 																		: t('pokemonDetail:raid.selectTypeTitle')
 																}
-																style={{ ['--tc' as string]: `var(--t-${rt})` }}
+																style={{
+																	['--tc' as string]: `var(--t-${rt})`,
+																	['--v' as string]: Math.min(1, (combo?.[raidMetric] ?? e[raidMetric]) / bestRaidFigure),
+																}}
 																onClick={activate}
 																onKeyDown={(ev) => {
 																	if (ev.key === 'Enter' || ev.key === ' ') {
@@ -1441,6 +1411,14 @@ const PokemonDetail = () => {
 																	}
 																}}
 															>
+																<img
+																	className='r-raidtype-ico'
+																	src={`/images/types/${rt}.png`}
+																	alt={gameTypeDisplayTranslator(rt, gl) || rt}
+																	width={36}
+																	height={36}
+																	loading='lazy'
+																/>
 																<span className='r-raidtype-head'>
 																	<span className='r-move-type'>{gameTypeDisplayTranslator(rt, gl) || rt}</span>
 																	<b>{ordinal(rank, currentLanguage)}</b>

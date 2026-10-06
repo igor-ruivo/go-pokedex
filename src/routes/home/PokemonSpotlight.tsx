@@ -2,6 +2,7 @@ import { type CSSProperties, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { BaseStatBars } from '../../components/BaseStatBars';
 import { IconTabBar } from '../../components/IconTabBar';
 import { pokemonTabIcon } from '../../components/pokemon-tab-icons';
 import { Sprite, spriteUrl } from '../../components/Sprite';
@@ -133,25 +134,13 @@ const SpotlightView = ({
 
 				<div className='h-spot-info'>
 					{!narrow && (
-						<div>
-							{dex}
-							{nameHeading}
-							{typeChips}
-						</div>
-					)}
-
-					{!narrow && (
-						<div className='r-stats'>
-							{[
-								{ stat: 'atk', label: t('pokemonDetail:hero.stats.atk') },
-								{ stat: 'def', label: t('pokemonDetail:hero.stats.def') },
-								{ stat: 'hp', label: t('pokemonDetail:hero.stats.hp') },
-							].map(({ stat, label }) => (
-								<div key={stat} className='r-stat'>
-									<i>{label}</i>
-									<b>{hero.baseStats[stat as 'atk' | 'def' | 'hp']}</b>
-								</div>
-							))}
+						<div className='h-spot-head'>
+							<div>
+								{dex}
+								{nameHeading}
+								{typeChips}
+							</div>
+							<BaseStatBars pokemon={hero} />
 						</div>
 					)}
 

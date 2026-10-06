@@ -38,6 +38,7 @@ export const PokeCard = ({
 	onActivate,
 	className,
 	style,
+	dex,
 }: {
 	pokemon: IGamemasterPokemon;
 	displayName?: string | undefined;
@@ -48,6 +49,8 @@ export const PokeCard = ({
 	onActivate?: (() => void) | undefined;
 	className?: string | undefined;
 	style?: React.CSSProperties | undefined;
+	/** The Pokédex look: a plate behind the sprite, a tint of its type, its number as a watermark, its types as icons. */
+	dex?: boolean | undefined;
 }) => {
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { i18n } = useTranslation();
@@ -65,9 +68,13 @@ export const PokeCard = ({
 			)}
 			{pokemon.isShadow && <ShadowMark />}
 			<span className='r-pc-types' aria-hidden='true'>
-				{pokemon.types.map((t) => (
-					<i key={typeKey(t)} style={{ background: typeVar(t) }} />
-				))}
+				{pokemon.types.map((t) =>
+					dex ? (
+						<img key={typeKey(t)} src={`/images/types/${typeKey(t)}.png`} alt='' width={16} height={16} loading='lazy' />
+					) : (
+						<i key={typeKey(t)} style={{ background: typeVar(t) }} />
+					)
+				)}
 			</span>
 			<span className='r-pc-art'>
 				<SpriteImg pokemon={pokemon} loading='lazy' />
@@ -101,7 +108,8 @@ export const PokeCard = ({
 		</>
 	);
 	const props = {
-		'className': className ? `r-pc ${className}` : 'r-pc',
+		'className': ['r-pc', dex && 'r-pc--dex', className].filter(Boolean).join(' '),
+		'data-dex': dex ? pokemon.dex : undefined,
 		'data-shadow': pokemon.isShadow ? '' : undefined,
 		'style': { ...style, ['--tc' as string]: typeVar(pokemon.types[0]) },
 	};

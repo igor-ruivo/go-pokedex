@@ -7870,9 +7870,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	width: max-content;
 	max-width: none;
 	white-space: nowrap;
-	bottom: 4px;
-	left: 50%;
-	transform: translateX(-50%);
+	top: 0;
+	right: -8px;
 	z-index: 7;
 	min-height: 26px;
 	padding: 0 10px 0 6px;
@@ -8554,9 +8553,12 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		position: absolute;
 		right: var(--s4);
 		bottom: var(--s3);
-		flex-direction: column;
-		align-items: flex-end;
-		gap: 3px;
+		/* the effects and their chance fill lines from the right: one effect and its chance on one line, two effects on two (the chance after the last) */
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 3px 6px;
+		max-width: 250px;
 		margin: 0;
 		font-size: 11px;
 	}
@@ -8567,21 +8569,21 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 .rvmp .r-board-pips,
 .rvmp .r-board-typepips,
 .rvmp .r-raidtype-pips {
-	gap: 6px;
+	gap: 5px;
 }
 .rvmp .r-board-pips {
 	bottom: 4px;
 }
 .rvmp .r-board-typepips {
-	min-height: 14px;
+	min-height: 12px;
 	margin-top: 2px;
 }
 .rvmp .r-board-pips i,
 .rvmp .r-board-typepips i,
 .rvmp .r-raidtype-pips i {
 	box-sizing: border-box;
-	width: 9px;
-	height: 9px;
+	width: 7px;
+	height: 7px;
 	border-radius: 50%;
 	border: 1px solid color-mix(in srgb, var(--text-faint) 55%, transparent);
 	background: color-mix(in srgb, var(--text-faint) 14%, transparent);
@@ -8626,5 +8628,425 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp .r-ivt .r-ivt-bar {
 		max-width: none;
 		margin-right: 0;
+	}
+}
+
+/* ---- the Pokédex page ------------------------------------------------------------------------------------------------------------
+   the page column like the others, a soft band behind the title (a faint dot grid and a breath of the site's red, flat in the dark),
+   a bar of generation chips that stays under the app bar, and tiles with more to look at */
+/* the grid stands on a quiet panel of its own: a faint dot grid on a barely tinted ground (flat in the dark); the tiles stay plain */
+.rvmp .r-shell--dex .r-grid-vp {
+	position: relative;
+}
+.rvmp .r-shell--dex .r-grid-vp::before {
+	content: '';
+	position: absolute;
+	inset: -12px 0 -24px;
+	pointer-events: none;
+	border-radius: var(--r-lg);
+	background:
+		radial-gradient(circle, color-mix(in srgb, var(--text) 11%, transparent) 1px, transparent 1.6px) 0 0 / 16px 16px,
+		linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--bg)), color-mix(in srgb, var(--text) 3%, var(--bg)));
+	border: 1px solid var(--border);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-grid-vp::before {
+	background:
+		radial-gradient(circle, color-mix(in srgb, var(--text) 7%, transparent) 1px, transparent 1.6px) 0 0 / 16px 16px,
+		color-mix(in srgb, var(--text) 3%, var(--bg));
+}
+
+.rvmp .r-dex-jump {
+	margin: var(--s2) 0 0;
+	padding: var(--s1) var(--s2);
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--bg) 82%, transparent);
+	backdrop-filter: blur(14px) saturate(1.4);
+	border: 1px solid var(--border);
+}
+.rvmp .r-dex-jump-row {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 6px;
+	overflow-x: auto;
+	scrollbar-width: none;
+	overscroll-behavior-x: contain;
+}
+.rvmp .r-dex-jump-chip {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 38px;
+	padding: 0 14px 0 6px;
+	border-radius: var(--r-pill);
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--text-dim);
+	font: inherit;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	transition:
+		background 0.14s ease,
+		border-color 0.14s ease,
+		color 0.14s ease;
+}
+.rvmp .r-dex-jump-chip img {
+	width: 30px;
+	height: 30px;
+	object-fit: contain;
+}
+.rvmp .r-dex-jump-chip:hover {
+	background: var(--surface-2);
+}
+.rvmp .r-dex-jump-chip[data-active='true'] {
+	color: var(--text);
+	background: var(--surface-2);
+	border-color: color-mix(in srgb, var(--accent) 45%, var(--ctl-border, var(--border)));
+}
+
+.rvmp .r-shell--dex .r-pokedex-region {
+	height: 44px;
+	font-size: 20px;
+	letter-spacing: 0.01em;
+	color: var(--text);
+}
+.rvmp .r-shell--dex .r-pokedex-region i {
+	background: linear-gradient(90deg, var(--border-strong), transparent);
+}
+
+/* the tile */
+.rvmp .r-pc--dex {
+	background: var(--surface);
+	transition:
+		border-color 0.14s ease,
+		transform 0.16s ease;
+}
+.rvmp .r-pc--dex:hover {
+	transform: translateY(-2px);
+}
+/* its number, large and faint, behind the sprite */
+.rvmp .r-pc--dex::after {
+	content: attr(data-dex);
+	position: absolute;
+	right: 4%;
+	bottom: -6%;
+	font-family: var(--font-display);
+	font-weight: 800;
+	font-size: clamp(26px, 40cqi, 44px);
+	line-height: 1;
+	letter-spacing: -0.04em;
+	color: color-mix(in srgb, var(--text) 5%, transparent);
+	pointer-events: none;
+}
+.rvmp .r-pc--dex .r-pc-art > img {
+	position: relative;
+}
+.rvmp .r-pc--dex .r-pc-metric {
+	color: var(--text-dim);
+}
+/* the types as icons, stacked in the top right corner (clear of the name and the figure) */
+.rvmp .r-pc--dex .r-pc-types {
+	left: auto;
+	right: 6%;
+	top: 7%;
+	bottom: auto;
+	gap: 2px;
+}
+.rvmp .r-pc--dex .r-pc-types img {
+	width: clamp(11px, 15cqi, 16px);
+	height: clamp(11px, 15cqi, 16px);
+}
+
+/* ---- the moves in a best reachable row are a note, not the headline: smaller, lighter, in the dim ink (the league and the rank lead) ---- */
+@media (min-width: 900px) {
+	.rvmp .r-board-moves {
+		font-size: 11.5px;
+		font-weight: 600;
+		color: var(--text-dim);
+	}
+	.rvmp .r-board-moves i {
+		opacity: 0.6;
+	}
+	.rvmp .r-board-detail-line {
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--text-faint);
+	}
+	.rvmp .r-board-mv {
+		color: inherit;
+	}
+}
+
+/* ---- the Pokédex, again ---------------------------------------------------------------------------------------------------------
+   the tile: no number plate and no watermark, the sprite larger, the figure quiet; the generations as one strip of equal cells
+   (the first Pokémon of each over its name, a thin bar under the one you are in) instead of a row of pills */
+.rvmp .r-pc--dex::after {
+	content: none;
+}
+.rvmp .r-pc--dex > .r-ctr-rank {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	font-size: clamp(8px, 11cqi, 10px);
+	font-weight: 700;
+	color: var(--text-faint);
+}
+.rvmp .r-pc--dex .r-pc-art {
+	width: 62%;
+	margin-top: 6%;
+}
+.rvmp .r-pc--dex .r-pc-name {
+	margin-top: 4%;
+	font-size: clamp(9px, 13.5cqi, 12px);
+	color: var(--text);
+}
+.rvmp .r-pc--dex .r-pc-metric {
+	font-size: clamp(8.5px, 12cqi, 11px);
+	font-weight: 600;
+	color: var(--text-faint);
+}
+.rvmp .r-pc--dex .r-pc-metric em {
+	font-size: inherit;
+	color: inherit;
+}
+
+.rvmp .r-dex-jump {
+	margin: var(--s2) 0 0;
+	padding: 0;
+	overflow: clip;
+	border-radius: var(--r-md);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	backdrop-filter: none;
+}
+.rvmp .r-dex-jump-row {
+	display: flex;
+	gap: 0;
+}
+.rvmp .r-dex-jump-chip {
+	position: relative;
+	flex: 1 0 74px;
+	display: grid;
+	justify-items: center;
+	align-content: center;
+	gap: 1px;
+	height: auto;
+	padding: 6px 4px 8px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	font-size: 11.5px;
+	font-weight: 700;
+	color: var(--text-dim);
+}
+.rvmp .r-dex-jump-chip + .r-dex-jump-chip::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 22%;
+	bottom: 22%;
+	width: 1px;
+	background: var(--border);
+}
+.rvmp .r-dex-jump-chip img {
+	width: 36px;
+	height: 36px;
+}
+.rvmp .r-dex-jump-chip:hover {
+	background: var(--surface-2);
+}
+.rvmp .r-dex-jump-chip[data-active='true'] {
+	border: 0;
+	background: var(--surface-2);
+	color: var(--text);
+}
+.rvmp .r-dex-jump-chip[data-active='true']::after {
+	content: '';
+	position: absolute;
+	left: 22%;
+	right: 22%;
+	bottom: 0;
+	height: 3px;
+	border-radius: 3px 3px 0 0;
+	background: var(--accent);
+}
+
+/* the types of a Pokédex tile: each icon on a small disc with a border */
+.rvmp .r-pc--dex .r-pc-types {
+	gap: 3px;
+}
+.rvmp .r-pc--dex .r-pc-types img {
+	box-sizing: border-box;
+	width: clamp(15px, 20cqi, 21px);
+	height: clamp(15px, 20cqi, 21px);
+	padding: 2.5px;
+	border-radius: 50%;
+	border: 1px solid var(--border-strong);
+	background: var(--surface-2);
+}
+
+/* a small tile (a phone): the sprite gives up a bit of room so the name and the CP both fit under it */
+@container (max-width: 104px) {
+	.rvmp .r-pc--dex .r-pc-art {
+		width: 52%;
+		margin-top: 0;
+	}
+	.rvmp .r-pc--dex .r-pc-name {
+		margin-top: 2%;
+		line-height: 1.1;
+	}
+}
+
+/* the sticky head of the Pokédex (count, filters, generations) keeps to what it needs */
+.rvmp .r-shell--dex .r-rank-head {
+	padding-top: var(--s1);
+	padding-bottom: var(--s2);
+}
+
+/* the Shadow switch sits under the name; the type chips always stay side by side, shrinking to fit */
+.rvmp .r-hero-info .r-hero-shadow {
+	position: static;
+	transform: none;
+	align-self: flex-start;
+	min-height: 24px;
+	padding: 0 9px 0 5px;
+	font-size: 11px;
+}
+.rvmp .r-hero-info .r-hero-shadow img {
+	width: 15px;
+	height: 15px;
+}
+.rvmp .r-hero-types {
+	flex-wrap: nowrap;
+	max-width: 100%;
+	gap: 4px;
+}
+.rvmp .r-hero-types .r-type {
+	flex: 0 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+@media (max-width: 520px) {
+	.rvmp .r-hero-types .r-type {
+		padding: 3px 7px;
+		font-size: 10.5px;
+		gap: 4px;
+	}
+}
+
+/* the narrowest phones: the art column gives way (its pills wrap), so the name, the chips and the CP keep their room */
+@media (max-width: 380px) {
+	.rvmp .r-hero-v2 .r-hero-main {
+		grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
+	}
+	.rvmp .r-hero-v2 .r-sprite {
+		width: 100%;
+	}
+	.rvmp .r-hero-types .r-type {
+		padding: 3px 7px;
+		font-size: 10px;
+	}
+	.rvmp .r-hero-types .r-type::before {
+		display: none;
+	}
+	.rvmp .r-hero-info .r-name {
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+}
+
+/* more air between the name, the Shadow switch, the types and the CP */
+.rvmp .r-hero-info {
+	gap: 10px;
+}
+.rvmp .r-hero-info .r-hero-cprow {
+	margin-top: 4px;
+}
+
+/* the type discs of a Pokédex tile are never smaller than 19px, on any width */
+.rvmp .r-pc--dex .r-pc-types img {
+	width: clamp(19px, 20cqi, 22px);
+	height: clamp(19px, 20cqi, 22px);
+	min-width: 19px;
+	min-height: 19px;
+	flex: none;
+}
+
+/* ---- the moveset of each attacker type (a Pokémon's Ranks and Moves tabs) ---------------------------------------------------------------
+   on wide screens: the type's disc on the left, its rank, the moves in the middle, and the DPS with a bar (against the best of the list) */
+.rvmp .r-raidtype-ico {
+	display: none;
+}
+@media (min-width: 900px) {
+	.rvmp .r-raidtype {
+		display: grid;
+		grid-template-columns: 38px 64px minmax(0, 1fr) 170px;
+		grid-template-rows: auto auto;
+		column-gap: var(--s4);
+		align-items: center;
+		padding: var(--s3) var(--s4);
+	}
+	.rvmp .r-raidtype-ico {
+		display: block;
+		grid-column: 1;
+		grid-row: 1 / span 2;
+		box-sizing: border-box;
+		width: 38px;
+		height: 38px;
+		padding: 6px;
+		border-radius: 50%;
+		border: 1px solid var(--border-strong);
+		background: color-mix(in srgb, var(--tc) 16%, var(--surface));
+	}
+	.rvmp .r-raidtype-head,
+	.rvmp .r-raidtype-moves {
+		display: contents;
+	}
+	.rvmp .r-raidtype-head .r-move-type {
+		display: none;
+	}
+	.rvmp .r-raidtype-head b {
+		grid-column: 2;
+		grid-row: 1 / span 2;
+		font-size: 20px;
+	}
+	.rvmp .r-raidtype-mv {
+		grid-column: 3;
+		grid-row: 1;
+		align-self: end;
+		font-size: 13px;
+		color: var(--text);
+	}
+	.rvmp .r-raidtype-tag,
+	.rvmp .r-raidtype-pips {
+		grid-column: 3;
+		grid-row: 2;
+		justify-self: start;
+		align-self: start;
+		margin-top: 4px;
+	}
+	.rvmp .r-raidtype-head em {
+		grid-column: 4;
+		grid-row: 1;
+		justify-self: end;
+		align-self: end;
+		font-size: 13px;
+		color: var(--text);
+	}
+	.rvmp .r-raidtype::after {
+		content: '';
+		grid-column: 4;
+		grid-row: 2;
+		align-self: start;
+		margin-top: 6px;
+		height: 5px;
+		border-radius: var(--r-pill);
+		background:
+			linear-gradient(var(--tc), var(--tc)) 0 0 / calc(var(--v, 0) * 100%) 100% no-repeat,
+			color-mix(in srgb, var(--text) 9%, transparent);
 	}
 }

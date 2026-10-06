@@ -850,8 +850,8 @@ const EventsTab = () => {
 						unseen={!seenIds.has(p.id)}
 						open={p.id === openId}
 						onToggle={(card) => {
-							holdAnchor(card);
 							const opening = p.id !== openId;
+							holdAnchor(card, opening);
 							setOpenId(opening ? p.id : null);
 							// Only marking it seen on *open* (not close) — that's the
 							// action that actually means "you looked at this one".
@@ -1368,7 +1368,7 @@ const RocketsTab = () => {
 						g={g}
 						open={openId === g.trainerId}
 						onToggle={(card) => {
-							holdAnchor(card);
+							holdAnchor(card, openId !== g.trainerId);
 							setOpenId((p) => (p === g.trainerId ? null : g.trainerId));
 						}}
 					/>

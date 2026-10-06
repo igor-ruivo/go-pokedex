@@ -11,7 +11,8 @@ import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker'
 import { ListBar } from '../components/ListBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
-import { spriteUrl } from '../components/Sprite';
+import { HScroll } from '../components/HScroll';
+import { SpriteImg, spriteUrl } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
@@ -95,6 +96,20 @@ const POKEDEX_REGIONS: ReadonlyArray<{ name: string; maxDex: number }> = [
 	{ name: 'Paldea', maxDex: 1025 },
 ];
 
+/** The Pokémon each region's chip takes turns to show: its three starters, or (Hisui, which has none of its own) its first three. */
+const REGION_MASCOTS: Readonly<Record<string, ReadonlyArray<number>>> = {
+	kanto: [1, 4, 7],
+	johto: [152, 155, 158],
+	hoenn: [252, 255, 258],
+	sinnoh: [387, 390, 393],
+	unova: [495, 498, 501],
+	kalos: [650, 653, 656],
+	alola: [722, 725, 728],
+	galar: [810, 813, 816],
+	hisui: [899, 900, 901],
+	paldea: [906, 909, 912],
+};
+
 const pokedexRegion = (dex: number) => POKEDEX_REGIONS.find(({ maxDex }) => dex <= maxDex)?.name ?? 'Other';
 
 const GRID_GAP = 8;
@@ -118,7 +133,7 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 		const measure = () => {
 			const w = el.clientWidth;
 			if (!w) return;
-			const cols = Math.min(10, Math.max(4, Math.floor(w / 88)));
+			const cols = Math.min(10, Math.max(4, Math.floor(w / 100)));
 			const cardWidth = (w - (cols - 1) * GRID_GAP) / cols; // tiles are squares
 			setMetrics((prev) => {
 				// `Math.ceil`, not `round`: the CSS grid's `1fr` columns don't divide
@@ -517,6 +532,72 @@ const Rankings = () => {
 	// forever — mixing row heights within one scrolled list, which is the
 	// other half of the uneven-gap bug. Force a full remeasure whenever the
 	// real row height changes.
+	// the regions of the list (when it is in Pokédex order): where each starts, and the Pokémon its chip shows
+	const regionStarts = useMemo(
+		() => gridRows.flatMap((row, index) => (row.kind === 'region' ? [{ key: row.name, index }] : [])),
+		[gridRows]
+	);
+	const regionMascots = useMemo(() => {
+		const out: Record<string, Array<IGamemasterPokemon>> = {};
+		const all = Object.values(gamemasterPokemon);
+		for (const [region, dexes] of Object.entries(REGION_MASCOTS)) {
+			out[`rankings:regions.${region}`] = dexes.flatMap((dex) => {
+				const found = all.find((p) => p.dex === dex && !p.isShadow && !p.isMega && !p.aliasId);
+				return found ? [found] : [];
+			});
+		}
+		return out;
+	}, [gamemasterPokemon]);
+	// The chips take turns showing their three Pokémon, all together: every seven seconds the next three-in-a-row are fetched, and only
+	// when every one of them is in does the whole strip change at once (not for those who asked for less motion).
+	const [mascotTurn, setMascotTurn] = useState(0);
+	useEffect(() => {
+		if (!isPokedex || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const lists = Object.values(regionMascots).filter((list) => list.length > 0);
+		if (lists.length === 0) return;
+		let cancelled = false;
+		let timer = 0;
+		const load = (url: string) =>
+			new Promise<void>((resolve) => {
+				const img = new Image();
+				img.onload = () => resolve();
+				img.onerror = () => resolve();
+				img.src = url;
+			});
+		const wait = (turn: number) => {
+			timer = window.setTimeout(() => {
+				const next = turn + 1;
+				void Promise.all(lists.map((list) => load(spriteUrl(list[next % list.length])))).then(() => {
+					if (cancelled) return;
+					setMascotTurn(next);
+					wait(next);
+				});
+			}, 7000);
+		};
+		wait(mascotTurn);
+		return () => {
+			cancelled = true;
+			window.clearTimeout(timer);
+		};
+		// the turn it starts from is the one on show; later turns are its own
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isPokedex, regionMascots]);
+	// the region whose chip is lit: the last one whose heading has reached the bars that stay on screen (or has gone above them)
+	const items = virt.getVirtualItems();
+	const topRow = virt.range?.startIndex ?? 0;
+	const activeRegionIndex = regionStarts.reduce((found, region) => {
+		const item = items.find((vi) => vi.index === region.index);
+		return region.index <= topRow || (item && item.start - window.scrollY <= 250) ? region.index : found;
+	}, -1);
+	// scroll so the region starts just under the bars that stay on screen (the app bar and this one)
+	const jumpToRegion = (index: number) => {
+		const offset = virt.getOffsetForIndex(index, 'start')?.[0];
+		if (offset == null) return;
+		// the app bar plus the block under it that sticks too (the count, the filters and these chips)
+		const appBar = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--appbar-h')) || 64;
+		const sticky = document.querySelector<HTMLElement>('.r-rank-head')?.offsetHeight ?? 0;
+		window.scrollTo({ top: offset - appBar - sticky - 8, behavior: 'smooth' });
+	};
 	useEffect(() => {
 		virt.measure();
 	}, [rowHeight, virt]);
@@ -652,7 +733,7 @@ const Rankings = () => {
 				: t('rankings:pageTitle.league', { league: modeLabelLong(mode, gl, leagues) });
 
 	return (
-		<div className={isPokedex ? 'r-shell r-shell--wide' : 'r-shell'}>
+		<div className={isPokedex ? 'r-shell r-shell--dex' : 'r-shell'}>
 			<h1 className='r-page-title'>{pageTitle}</h1>
 			<div className='r-rank-head'>
 				{isPokedex ? null : pickerReady ? (
@@ -736,6 +817,28 @@ const Rankings = () => {
 						/>
 					)}
 				</ListBar>
+			{isPokedex && regionStarts.length > 1 && (
+				<nav className='r-dex-jump' aria-label={t('rankings:tabs.pokedexFull')}>
+					<HScroll className='r-dex-jump-row'>
+						{regionStarts.map((region) => {
+							const mascots = regionMascots[region.key] ?? [];
+				const starter = mascots.length ? mascots[mascotTurn % mascots.length] : undefined;
+							return (
+								<button
+									key={region.key}
+									type='button'
+									className='r-dex-jump-chip'
+									data-active={region.index === activeRegionIndex}
+									onClick={() => jumpToRegion(region.index)}
+								>
+									{starter && <SpriteImg pokemon={starter} loading='lazy' ariaHidden />}
+									<span>{t(region.key)}</span>
+								</button>
+							);
+						})}
+					</HScroll>
+				</nav>
+			)}
 				{showResults && isPvpLeagueMode && pvpSort !== 'overall' && hintOpen && (
 					<p className='r-muted r-rank-hint'>
 						<strong>{combatMetricNames(t)[pvpSort]}</strong>
@@ -825,6 +928,7 @@ const Rankings = () => {
 												const animationIndex = (vi.index - (readySprites?.startRow ?? 0)) * cols + cellIndex;
 												return (
 													<PokeCard
+														dex
 														key={row.pokemon.speciesId}
 														pokemon={row.pokemon}
 														metric={row.metric}

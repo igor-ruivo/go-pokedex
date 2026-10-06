@@ -133,6 +133,7 @@ export const RaidTypeCoverage = ({
 		);
 	}
 
+	const bestDps = Math.max(1, ...rows.map((r) => r.combo?.dps ?? r.e.dps));
 	const moveName = (id: string) => moves[id]?.moveName[gl] ?? cleanName(id);
 	const elite = new Set(pokemon.eliteMoves);
 	const legacy = new Set(pokemon.legacyMoves);
@@ -178,6 +179,7 @@ export const RaidTypeCoverage = ({
 			<div className='r-section-h' style={showReadout ? { marginTop: 16 } : undefined}>
 				{t('components:raidTypeCoverage.bestMovesetByType')}
 			</div>
+			{/* the bars in a row are measured against the best DPS of the list */}
 			<div className='r-raidtypes'>
 				{rows.map(({ t: typeKey, e, on, combos, mIdx, combo }, i) => {
 					const activate = () => (on ? cycleCombo(typeKey, combos.length) : selectType(i));
@@ -192,7 +194,10 @@ export const RaidTypeCoverage = ({
 							title={
 								on ? t('components:raidTypeCoverage.tapNextMoveset') : t('components:raidTypeCoverage.tapSelectType')
 							}
-							style={{ ['--tc' as string]: `var(--t-${typeKey})` }}
+							style={{
+								['--tc' as string]: `var(--t-${typeKey})`,
+								['--v' as string]: Math.min(1, (combo?.dps ?? e.dps) / bestDps),
+							}}
 							onClick={activate}
 							onKeyDown={(ev) => {
 								if (ev.key === 'Enter' || ev.key === ' ') {
@@ -201,6 +206,14 @@ export const RaidTypeCoverage = ({
 								}
 							}}
 						>
+							<img
+								className='r-raidtype-ico'
+								src={`/images/types/${typeKey}.png`}
+								alt={gameTypeDisplayTranslator(typeKey, gl) || typeKey}
+								width={36}
+								height={36}
+								loading='lazy'
+							/>
 							<span className='r-raidtype-head'>
 								<span className='r-move-type'>{gameTypeDisplayTranslator(typeKey, gl) || typeKey}</span>
 								<b>{ordinal(raidRankOf(e, raidMetric) ?? 0, currentLanguage)}</b>

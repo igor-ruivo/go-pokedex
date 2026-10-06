@@ -2889,3 +2889,54 @@ html:not([data-theme='light'])
 	right: 0;
 	left: auto;
 }
+
+/* the base stats of the Pokémon in focus: the same bars as the hero of a Pokémon's page, without the divider and the cap on their width */
+.rvmp .h-spot-info .r-bars {
+	max-width: none;
+	margin: 0;
+	padding-top: 0;
+	border-top: 0;
+}
+
+/* the Pokémon in focus: the stats stand one over the other, as in the wide hero of a Pokémon's page */
+.rvmp .h-spot-info .r-bars {
+	grid-template-columns: 1fr;
+	gap: 12px;
+}
+
+/* the stats stand at the right of the number, the name and the types, in a narrower column */
+.rvmp .h-spot-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--s5);
+}
+.rvmp .h-spot-head > div:first-child {
+	min-width: 0;
+}
+.rvmp .h-spot-head .r-bars {
+	flex: 0 1 190px;
+	min-width: 140px;
+	gap: 10px;
+}
+
+/* the three stages of the family line never break into rows (above the phone layout): the column is always as wide as they are, and
+   the info column takes what is left; the Megas are always on a row of their own below them */
+@media (min-width: 761px) {
+	.rvmp .h-spot-main {
+		grid-template-columns: minmax(340px, 5fr) minmax(0, 6fr);
+	}
+	.rvmp .h-spot-line {
+		flex-wrap: wrap;
+	}
+	.rvmp .h-spot-megas {
+		display: flex;
+		flex: 1 0 100%;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 6px;
+	}
+	.rvmp .h-spot-sep {
+		display: none;
+	}
+}
