@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+import hoverMedia from './scripts/postcss-hover-media.mjs';
+
 // No config existed before this — every previous default (root, base '/',
 // outDir 'dist', publicDir 'public', …) is kept as-is; this only adds the
 // PWA plugin on top.
 export default defineConfig({
+	// every `:hover` style applies only where there is a hover (a mouse, a trackpad), never on a touch screen
+	css: { postcss: { plugins: [hoverMedia()] } },
 	plugins: [
 		VitePWA({
 			// public/manifest.json (already linked from index.html) stays the

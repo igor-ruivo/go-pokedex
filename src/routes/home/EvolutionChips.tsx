@@ -38,7 +38,7 @@ export const EvolutionChips = ({
 			role='listitem'
 			className='h-spot-stage'
 			data-current={p === current ? '' : undefined}
-			onMouseEnter={onPreview && (() => onPreview(p))}
+			onMouseEnter={onPreview && (() => window.matchMedia('(hover: hover)').matches && onPreview(p))}
 			onMouseLeave={onPreview && (() => onPreview(undefined))}
 			onFocus={onPreview && (() => onPreview(p))}
 			onBlur={onPreview && (() => onPreview(undefined))}

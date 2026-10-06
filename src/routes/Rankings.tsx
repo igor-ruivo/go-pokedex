@@ -13,7 +13,6 @@ import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { spriteUrl } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
-import { useImageSource } from '../contexts/imageSource-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
@@ -143,7 +142,6 @@ const useGridMetrics = (ref: React.RefObject<HTMLElement | null>) => {
 const Rankings = () => {
 	const { t } = useTranslation(['rankings', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
-	const { imageSource } = useImageSource();
 	const POKEDEX_SORTS = usePokedexSorts(t, gl);
 	const PVP_SORTS = usePvpSorts(t);
 	const { league, type: typeParam } = useParams();
@@ -410,7 +408,6 @@ const Rankings = () => {
 		!fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
 	const [readySprites, setReadySprites] = useState<{
 		rows: ReadonlyArray<PokedexGridRow>;
-		imageSource: ReturnType<typeof useImageSource>['imageSource'];
 		cols: number;
 		rowHeight: number;
 		startRow: number;
@@ -418,7 +415,6 @@ const Rankings = () => {
 	} | null>(null);
 	const initialSpritesReady =
 		readySprites?.rows === gridRows &&
-		readySprites.imageSource === imageSource &&
 		readySprites.cols === cols &&
 		readySprites.rowHeight === rowHeight;
 	useEffect(() => {
@@ -467,7 +463,7 @@ const Rankings = () => {
 			);
 		};
 		const ready = async (pokemon: IGamemasterPokemon): Promise<void> => {
-			const src = spriteUrl(pokemon, imageSource);
+			const src = spriteUrl(pokemon);
 			const loaded = await loadAndDecode(src);
 			if (!loaded && pokemon.imageUrl && pokemon.imageUrl !== src) await loadAndDecode(pokemon.imageUrl);
 		};
@@ -476,7 +472,6 @@ const Rankings = () => {
 			if (!cancelled) {
 				setReadySprites({
 					rows: gridRows,
-					imageSource,
 					cols,
 					rowHeight,
 					startRow: firstVisibleRow,
@@ -487,7 +482,7 @@ const Rankings = () => {
 		return () => {
 			cancelled = true;
 		};
-	}, [gridRows, imageSource, isPokedex, loading, measured, cols, rowHeight]);
+	}, [gridRows, isPokedex, loading, measured, cols, rowHeight]);
 
 	const [scrollMargin, setScrollMargin] = useState(0);
 	useEffect(() => {

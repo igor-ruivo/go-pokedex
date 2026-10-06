@@ -12,7 +12,6 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Shell from './components/Shell';
 import { BestBuddyProvider } from './contexts/best-buddy-context';
-import { ImageSourceProvider } from './contexts/imageSource-context';
 import { LanguageProvider } from './contexts/language-context';
 import { RaidMetricProvider } from './contexts/raid-metric-context';
 import { RelevanceSetsProvider } from './contexts/relevance-context';
@@ -58,7 +57,6 @@ const App = () => {
 			}}
 		>
 			<ThemeProvider>
-				<ImageSourceProvider>
 					<RaidMetricProvider>
 						<RelevanceSetsProvider>
 							<BestBuddyProvider>
@@ -112,7 +110,6 @@ const App = () => {
 							</BestBuddyProvider>
 						</RelevanceSetsProvider>
 					</RaidMetricProvider>
-				</ImageSourceProvider>
 			</ThemeProvider>
 		</PersistQueryClientProvider>
 	);

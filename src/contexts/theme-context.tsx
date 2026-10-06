@@ -62,6 +62,9 @@ export const ThemeProvider = (props: React.PropsWithChildren<object>) => {
 		const root = document.documentElement;
 		root.dataset.theme = dataTheme;
 		root.style.colorScheme = dataTheme;
+		root.style.backgroundColor = THEME_COLOR[dataTheme];
+		// The browser's own bars take their tint from this tag. Safari on an iPhone only reads it as the page loads, so a switch of theme made
+		// in the page shows in the tint of the notch and the status bar from the next load on (nothing the page can do about it).
 		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLOR[dataTheme]);
 	}, [dataTheme]);
 

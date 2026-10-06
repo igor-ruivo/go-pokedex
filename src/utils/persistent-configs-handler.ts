@@ -17,6 +17,7 @@ export enum ConfigKeys {
 	Language,
 	GameLanguage,
 	LastLeague,
+	// no longer used (the sprite source setting is gone), but the keys are numbered: removing one would move every key after it
 	ImageSource,
 	ShowEntries,
 	Shadow,

@@ -105,11 +105,7 @@ const ScrollRow = ({ children, role, ariaLabel }: { children: ReactNode; role: s
 	};
 
 	return (
-		<div
-			className='r-lgpick-scroller'
-			data-fade-left={canScrollLeft || undefined}
-			data-fade-right={canScrollRight || undefined}
-		>
+		<div className='r-lgpick-scroller'>
 			{canScrollLeft && (
 				<button
 					type='button'

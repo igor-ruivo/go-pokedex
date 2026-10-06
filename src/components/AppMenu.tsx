@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useBestBuddy } from '../contexts/best-buddy-context';
-import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import { Theme, useTheme } from '../contexts/theme-context';
+import { useSwipeToClose } from '../hooks/useSwipeToClose';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
 import { sentenceCase } from '../lib/format';
@@ -33,7 +33,6 @@ export const AppMenu = () => {
 	const { t } = useTranslation(['home', 'settings', 'common', 'pokemonDetail', 'teams']);
 	const { pathname } = useLocation();
 	const { currentLanguage, currentGameLanguage: gl, updateCurrentLanguage } = useLanguage();
-	const { imageSource, updateImageSource } = useImageSource();
 	const { raidMetric, updateRaidMetric } = useRaidMetric();
 	const { bestBuddy, updateBestBuddy } = useBestBuddy();
 	const { theme, updateTheme } = useTheme();
@@ -56,6 +55,8 @@ export const AppMenu = () => {
 	};
 	const closeLatest = useRef(close);
 	closeLatest.current = close;
+	// a touch drag to the right takes the drawer away
+	const swipe = useSwipeToClose<HTMLElement>(() => closeLatest.current());
 
 	// Going to a page closes the menu.
 	const lastPath = useRef(pathname);
@@ -82,15 +83,6 @@ export const AppMenu = () => {
 			document.removeEventListener('keydown', onKey);
 		};
 	}, [open]);
-
-	const sprites: Array<[ImageSource, string]> = [
-		[ImageSource.Official, t('settings:spriteOptions.official')],
-		[ImageSource.GO, t('settings:spriteOptions.go')],
-		[
-			ImageSource.Shiny,
-			t('settings:spriteOptions.shiny', { shiny: gameTranslator(GameTranslatorKeys.ShinyDisplay, gl) }),
-		],
-	];
 
 	const onRaid = pathname.startsWith('/rankings/raid');
 	const onRanks = pathname.startsWith('/rankings') && pathname !== R.pokedex && !onRaid;
@@ -208,6 +200,8 @@ export const AppMenu = () => {
 					<div className='r-menu' data-closing={closing ? '' : undefined}>
 						<div className='r-menu-backdrop' onClick={close} aria-hidden='true' />
 						<aside
+							ref={swipe.ref}
+							{...swipe.handlers}
 							id='app-menu'
 							className='r-menu-panel'
 							role='dialog'
@@ -299,21 +293,6 @@ export const AppMenu = () => {
 													aria-checked={v === theme}
 													data-active={v === theme ? '' : undefined}
 													onClick={() => updateTheme(v)}
-												>
-													{label}
-												</button>
-											))}
-										</div>
-									</div>
-									<div className='r-menu-pref'>
-										<span>{t('settings:menu.sprites')}</span>
-										<div className='r-set-opts'>
-											{sprites.map(([v, label]) => (
-												<button
-													key={String(v)}
-													type='button'
-													data-active={v === imageSource ? '' : undefined}
-													onClick={() => updateImageSource(v)}
 												>
 													{label}
 												</button>

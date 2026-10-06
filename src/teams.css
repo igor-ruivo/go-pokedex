@@ -428,8 +428,8 @@
 	text-align: center;
 }
 .rvmp .r-tm-nickname:focus {
-	border-color: var(--accent);
-	outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+	border-color: var(--text-dim);
+	outline: 2px solid color-mix(in srgb, var(--text) 22%, transparent);
 }
 .rvmp .r-tm-types {
 	display: flex;
@@ -598,7 +598,7 @@
 	border-radius: var(--r-sm);
 }
 .rvmp .r-tm-ivedit input:focus-visible {
-	outline: 2px solid var(--accent);
+	outline: 2px solid var(--text-dim);
 	outline-offset: 1px;
 }
 .rvmp .r-tm-ivedit input[data-invalid] {
@@ -3553,19 +3553,21 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-tm {
 	box-shadow: 0 4px 14px -10px color-mix(in srgb, var(--tier-a) calc(18% * var(--glow-k)), transparent);
 }
 
-/* light mode: the favorite star reads clearly: a gold star like the one of the tabs, outlined in a darker gold. Off, it is a pale
-   gold; on, the full gold */
+/* light mode: the favorite star reads clearly. Not a favorite: an outline only, in the quiet ink (no fill, not even a pale one); on the
+   hover the outline takes the gold; a favorite: the full gold, outlined in a darker gold */
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn {
-	color: var(--gold-ink);
+	color: var(--text-faint);
 }
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn svg {
-	fill: color-mix(in srgb, var(--gold) 35%, transparent);
-	stroke: var(--gold-ink);
-	stroke-width: 1.6;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.8;
 }
-:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn:hover svg {
-	fill: color-mix(in srgb, var(--gold) 70%, transparent);
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn:hover {
+	color: var(--gold-ink);
 }
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tm-star-btn[data-on] svg {
 	fill: var(--gold);
+	stroke: var(--gold-ink);
+	stroke-width: 1.2;
 }

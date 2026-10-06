@@ -434,11 +434,7 @@ const DatePicker = ({
 			<span className='r-datepick-ic' aria-hidden='true'>
 				<img src='/images/nav/calendar.png' alt='' />
 			</span>
-			<div
-				className='r-datepick-scroller'
-				data-fade-left={canScrollLeft || undefined}
-				data-fade-right={canScrollRight || undefined}
-			>
+			<div className='r-datepick-scroller'>
 				{canScrollLeft && (
 					<button
 						type='button'

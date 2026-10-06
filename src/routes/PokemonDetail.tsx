@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
+import { HScroll } from '../components/HScroll';
+import { SparkleIcon } from '../components/SparkleIcon';
 import { IconTabBar } from '../components/IconTabBar';
 import { IvPicker, type IVs } from '../components/IvPicker';
 import { LeaguePicker } from '../components/LeaguePicker';
@@ -12,9 +14,7 @@ import { LeagueVisibilityMenu } from '../components/LeagueVisibilityMenu';
 import { pokemonTabIcon } from '../components/pokemon-tab-icons';
 import { ShadowMark } from '../components/ShadowMark';
 import { goSpriteUrl, Sprite, SpriteImg, spriteUrl } from '../components/Sprite';
-import { Stepper } from '../components/Stepper';
 import { useBestBuddy } from '../contexts/best-buddy-context';
-import { useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useVisibleLeagues } from '../contexts/visible-leagues-context';
@@ -140,12 +140,27 @@ const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number): ILeagueIvBloc
 	return ivp.master;
 };
 
+/** The highest base stat of each kind among all the Pokémon (what the hero's stat bars are measured against), worked out once per game master. */
+const statMaxCache = new WeakMap<object, { atk: number; def: number; hp: number }>();
+const statMaxOf = (gamemasterPokemon: Record<string, IGamemasterPokemon>) => {
+	let max = statMaxCache.get(gamemasterPokemon);
+	if (!max) {
+		max = { atk: 1, def: 1, hp: 1 };
+		for (const p of Object.values(gamemasterPokemon)) {
+			max.atk = Math.max(max.atk, p.baseStats.atk);
+			max.def = Math.max(max.def, p.baseStats.def);
+			max.hp = Math.max(max.hp, p.baseStats.hp);
+		}
+		statMaxCache.set(gamemasterPokemon, max);
+	}
+	return max;
+};
+
 const PokemonDetail = () => {
-	const { t } = useTranslation(['pokemonDetail']);
+	const { t } = useTranslation(['pokemonDetail', 'settings', 'components']);
 	const { speciesId = '', tab: tabParam } = useParams();
 	const [searchParams, setSearchParams] = useSearchParams();
 	const navigate = useNavigate();
-	const { imageSource } = useImageSource();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
@@ -308,7 +323,7 @@ const PokemonDetail = () => {
 	// The manual index is keyed to the species + setting it was picked under, so
 	// it's already ignored on the very first render after either changes (no
 	// one-frame flash of a stale index while an effect resets it).
-	const heroKey = `${speciesId}:${imageSource}`;
+	const heroKey = speciesId;
 	const [heroManual, setHeroManual] = useState<{ key: string; idx: number } | null>(null);
 	const heroSpriteIdx = heroManual?.key === heroKey ? heroManual.idx : null;
 	const setHeroSpriteIdx = (update: (i: number | null) => number) =>
@@ -502,10 +517,6 @@ const PokemonDetail = () => {
 	const onManualIvChange = (v: IVs) => {
 		ivTouchedRef.current = true;
 		setIv(v);
-	};
-	const onManualLevelChange = (v: number) => {
-		ivTouchedRef.current = true;
-		setLevel(v);
 	};
 
 	// Switching to a different league always lands on its rank-1 (best reachable)
@@ -760,12 +771,17 @@ const PokemonDetail = () => {
 	// Hero sprite carousel — cycle the official / GO / shiny-GO artwork by tapping
 	// (mouse) or swiping left/right (touch). `heroSpriteIdx` can go negative
 	// (swipe-right/previous), hence the double-mod wrap instead of a plain `%`.
-	const heroSprites = [
-		...new Set(
-			[pokemon.imageUrl, goSpriteUrl(pokemon.goImageUrl), goSpriteUrl(pokemon.shinyGoImageUrl)].filter(Boolean)
-		),
-	];
-	const preferredHeroIdx = Math.max(0, heroSprites.indexOf(spriteUrl(pokemon, imageSource)));
+	// each with what it is; artwork that is the same picture as an earlier one is left out
+	const heroArt = (
+		[
+			{ kind: 'official', url: pokemon.imageUrl },
+			{ kind: 'go', url: goSpriteUrl(pokemon.goImageUrl) },
+			{ kind: 'shiny', url: goSpriteUrl(pokemon.shinyGoImageUrl) },
+		] as const
+	).filter((art, i, all) => !!art.url && all.findIndex((other) => other.url === art.url) === i);
+	const heroSprites = heroArt.map((art) => art.url);
+	const statMax = statMaxOf(gamemasterPokemon);
+	const preferredHeroIdx = Math.max(0, heroSprites.indexOf(spriteUrl(pokemon)));
 	const currentHeroIdx = heroSpriteIdx ?? preferredHeroIdx;
 	const heroIdx = heroSprites.length
 		? ((currentHeroIdx % heroSprites.length) + heroSprites.length) % heroSprites.length
@@ -928,110 +944,130 @@ const PokemonDetail = () => {
 			</div>
 
 			{/* ---- HERO (the only place the primary-type colour leaks) ---- */}
-			<header className='r-hero' ref={heroRef} style={accentStyle(primary)}>
-				<div className='r-hero-top'>
-					<Sprite
-						pokemon={pokemon}
-						src={heroSprites[heroIdx]}
-						onTap={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
-						onSwipeLeft={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
-						onSwipeRight={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) - 1)}
-						hint={{ count: heroSprites.length, active: heroIdx }}
-					/>
-					<div style={{ flex: 1 }}>
-						<div className='r-dexno'>{dexNo(pokemon.dex)}</div>
-						<h1 className='r-name'>{cleanName(pokemon.speciesName)}</h1>
-						<div className='r-cp'>
-							<b>{heroReady ? heroCp.toLocaleString() : '…'}</b>
-							<span>{gameTranslator(GameTranslatorKeys.CPDisplay, gl)}</span>
+				<header className='r-hero r-hero-v2' ref={heroRef} style={accentStyle(primary)} data-type={typeKey(primary)}>
+					{/* the Pokédex number, huge and faint behind everything */}
+					<span className='r-hero-wm' aria-hidden='true'>
+						{pokemon.dex}
+					</span>
+					<div className='r-hero-main'>
+						<div className='r-hero-art'>
+							<div className='r-hero-spritebox'>
+								<Sprite
+									pokemon={pokemon}
+									src={heroSprites[heroIdx]}
+									hideShadowMark
+									onTap={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
+									onSwipeLeft={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) + 1)}
+									onSwipeRight={() => setHeroSpriteIdx((i) => (i ?? preferredHeroIdx) - 1)}
+								/>
+								{/* the Best Buddy switch of a team member, floating over the sprite: quiet when off, tinted when on */}
+								{hasShadow && (
+									<button
+										type='button'
+										className='r-tm-buddy r-hero-shadow'
+										aria-pressed={isShadow}
+										onClick={() => {
+											if (!shadowToggleTarget) return;
+											suppressIvResetRef.current = true;
+											void navigate(`${R.pokemon(shadowToggleTarget, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
+										}}
+									>
+										<img src='/images/shadow.png' alt='' aria-hidden='true' width={18} height={18} />
+										{gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)}
+									</button>
+								)}
+								</div>
+							{heroArt.length > 1 && (
+								<div className='r-art-pills' role='group'>
+									{heroArt.map((art, i) => (
+										<button
+											key={art.kind}
+											type='button'
+											aria-pressed={i === heroIdx}
+											onClick={() => setHeroSpriteIdx(() => i)}
+										>
+											{art.kind === 'shiny' && <SparkleIcon className='r-art-spark' />}
+											{art.kind === 'official'
+												? t('settings:spriteOptions.official')
+												: art.kind === 'go'
+													? 'GO'
+													: gameTranslator(GameTranslatorKeys.ShinyDisplay, gl)}
+										</button>
+									))}
+								</div>
+							)}
 						</div>
-						<div className='r-types' style={{ justifyContent: 'flex-start', marginTop: 10 }}>
-							{pokemon.types.map((t) => (
-								<span key={String(t)} className='r-type' style={{ ['--tc' as string]: typeVar(t) }}>
-									{gameTypeDisplayTranslator(typeKey(t), gl) || String(t)}
+
+						<div className='r-hero-info'>
+							<div className='r-dexno'>{dexNo(pokemon.dex)}</div>
+							<h1 className='r-name'>{cleanName(pokemon.speciesName)}</h1>
+							<div className='r-types r-hero-types'>
+								{pokemon.types.map((ty) => (
+									<span key={String(ty)} className='r-type' style={{ ['--tc' as string]: typeVar(ty) }}>
+										{gameTypeDisplayTranslator(typeKey(ty), gl) || String(ty)}
+									</span>
+								))}
+							</div>
+							<div className='r-hero-cprow'>
+								<div className='r-cp'>
+									<b>{heroReady ? heroCp.toLocaleString() : '…'}</b>
+									<span>{gameTranslator(GameTranslatorKeys.CPDisplay, gl)}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* the base stats, each measured against the highest there is among all the Pokémon */}
+					<div className='r-bars'>
+						{(
+							[
+								['atk', t('pokemonDetail:hero.stats.atk')],
+								['def', t('pokemonDetail:hero.stats.def')],
+								['hp', t('pokemonDetail:hero.stats.hp')],
+							] as const
+						).map(([stat, label]) => (
+							<div key={stat} className='r-bar'>
+								<i>{label}</i>
+								<b>{pokemon.baseStats[stat]}</b>
+								<span className='r-bar-track'>
+									<span
+										className='r-bar-fill'
+										style={{ ['--v' as string]: Math.min(1, pokemon.baseStats[stat] / statMax[stat]) }}
+									/>
 								</span>
-							))}
-						</div>
-					</div>
-				</div>
-
-				<div className='r-stats'>
-					<div className='r-stat'>
-						<i>{t('pokemonDetail:hero.stats.atk')}</i>
-						<b>{pokemon.baseStats.atk}</b>
-					</div>
-					<div className='r-stat'>
-						<i>{t('pokemonDetail:hero.stats.def')}</i>
-						<b>{pokemon.baseStats.def}</b>
-					</div>
-					<div className='r-stat'>
-						<i>{t('pokemonDetail:hero.stats.hp')}</i>
-						<b>{pokemon.baseStats.hp}</b>
-					</div>
-				</div>
-
-				<div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-					{heroReady ? (
-						<Stepper
-							value={level}
-							min={1}
-							max={heroMaxLevel}
-							step={0.5}
-							onChange={onManualLevelChange}
-							format={(v) => `${t('pokemonDetail:hero.level.prefix')} ${Number.isInteger(v) ? v : v.toFixed(1)}`}
-						/>
-					) : (
-						<div className='r-toggle r-stepper' aria-hidden='true'>
-							<span>{t('pokemonDetail:hero.level.loading')}</span>
-						</div>
-					)}
-					{hasShadow && (
-						<button
-							type='button'
-							className='r-toggle r-toggle--shadow'
-							data-on={isShadow}
-							onClick={() => {
-								if (!shadowToggleTarget) return;
-								suppressIvResetRef.current = true;
-								void navigate(`${R.pokemon(shadowToggleTarget, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`);
-							}}
-						>
-							<ShadowMark className='r-toggle-flame' />
-							{gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)}
-						</button>
-					)}
-				</div>
-			</header>
-
-			{/* ---- FAMILY LINE (shared across every tab — click to open that Pokémon) ----
-			    skipped entirely when it's just this one mon on its own — nothing to switch to */}
-			{family.length > 1 && (
-				<>
-					<div className='r-section-h'>
-						{t('pokemonDetail:familyLine.heading', { name: cleanName(pokemon.speciesName) })}
-					</div>
-					<div className='r-reach'>
-						{family.map((m) => (
-							<Link
-								key={m.speciesId}
-								to={`${R.pokemon(m.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`}
-								className='r-reach-chip'
-								data-active={m.speciesId === self}
-								style={{ ['--tc' as string]: typeVar(m.types[0]) }}
-								onClick={() => {
-									suppressIvResetRef.current = true;
-								}}
-							>
-								<span className='r-reach-art'>
-									{m.isShadow && <ShadowMark />}
-									<SpriteImg pokemon={m} loading='lazy' />
-								</span>
-								<span>{cleanName(m.speciesName)}</span>
-							</Link>
+							</div>
 						))}
 					</div>
-				</>
-			)}
+
+					{/* its family (every tab shares it: click to open that Pokémon); skipped when it is this one on its own */}
+					{family.length > 1 && (
+						<nav
+							className='r-hero-family'
+							aria-label={t('pokemonDetail:familyLine.heading', { name: cleanName(pokemon.speciesName) })}
+						>
+							<HScroll className='r-fam'>
+								{family.map((m) => (
+									<Link
+										key={m.speciesId}
+										to={`${R.pokemon(m.speciesId, tabParam)}${lgParam ? `?lg=${lgParam}` : ''}`}
+										className='r-fam-m'
+										data-active={m.speciesId === self}
+										style={{ ['--tc' as string]: typeVar(m.types[0]) }}
+										onClick={() => {
+											suppressIvResetRef.current = true;
+										}}
+									>
+										<span className='r-fam-art'>
+											{m.isShadow && <ShadowMark />}
+											<SpriteImg pokemon={m} loading='lazy' />
+										</span>
+										<span className='r-fam-name'>{cleanName(m.speciesName)}</span>
+									</Link>
+								))}
+							</HScroll>
+						</nav>
+					)}
+				</header>
 
 			{/* ---- LEAGUE + TABS ---- */}
 			<LeaguePicker

@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 
 import { LanguagePicker } from '../components/LanguagePicker';
 import { useBestBuddy } from '../contexts/best-buddy-context';
-import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import { useLanguage } from '../contexts/language-context';
 // Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
@@ -48,7 +47,6 @@ const OptionRow = <T,>({
 const Settings = () => {
 	const { t } = useTranslation(['settings']);
 	const { currentLanguage, updateCurrentLanguage } = useLanguage();
-	const { imageSource, updateImageSource } = useImageSource();
 	const { bestBuddy, updateBestBuddy } = useBestBuddy();
 
 	return (
@@ -68,17 +66,6 @@ const Settings = () => {
 						ariaLabel={t('settings:page.appLanguage.title')}
 					/>
 				</div>
-				<OptionRow<ImageSource>
-					title={t('settings:page.sprites.title')}
-					desc={t('settings:page.sprites.desc')}
-					value={imageSource}
-					onChange={updateImageSource}
-					options={[
-						{ value: ImageSource.Official, label: t('settings:spriteOptions.official') },
-						{ value: ImageSource.GO, label: t('settings:spriteOptions.go') },
-						{ value: ImageSource.Shiny, label: t('settings:spriteOptions.shiny') },
-					]}
-				/>
 				<OptionRow<boolean>
 					title={t('settings:page.bestBuddy.title')}
 					desc={t('settings:page.bestBuddy.desc')}

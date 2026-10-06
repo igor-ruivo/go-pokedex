@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SpriteImg, spriteUrl } from '../../components/Sprite';
 import { TeamTabIcon } from '../../components/team-tab-icons';
-import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
 import type { RankedTeam, TeamRanking } from '../../DTOs/ITeamBuilder';
 import { cleanName } from '../../lib/format';
@@ -135,13 +134,12 @@ const TeamView = ({
 const FeaturedTeam = () => {
 	const ranking = useTeamRanking();
 	const { gamemasterPokemon } = usePokemon();
-	const { imageSource } = useImageSource();
 	const urlOf = useCallback(
 		(speciesId: string) => {
 			const pokemon = gamemasterPokemon[speciesId];
-			return pokemon ? spriteUrl(pokemon, imageSource) : undefined;
+			return pokemon ? spriteUrl(pokemon) : undefined;
 		},
-		[gamemasterPokemon, imageSource]
+		[gamemasterPokemon]
 	);
 	const { current, leaving, held, cycle, barDelay, rotated, holdProps } = useRotator<Pick>({
 		ready: !!ranking.data,

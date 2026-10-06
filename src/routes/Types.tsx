@@ -1,6 +1,7 @@
 import { Fragment, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
+import { HScroll } from '../components/HScroll';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { fmtMult, isDoubleMult, matchupCellText, matchupTier, typeMatchups } from '../lib/effectiveness';
 import { typeVar } from '../lib/types';
@@ -60,7 +61,7 @@ const Types = () => {
 				<Trans i18nKey='types:page.description' components={{ b: <b /> }} />
 			</p>
 
-			<div className='r-tc-scroll'>
+			<HScroll className='r-tc-scroll' arrowTop='64px'>
 				<div className='r-tc-grid' onMouseLeave={() => setHover(null)}>
 					<div className='r-tc-corner' aria-hidden='true' />
 					{ORDER.map((d) => (
@@ -106,7 +107,7 @@ const Types = () => {
 						</Fragment>
 					))}
 				</div>
-			</div>
+			</HScroll>
 
 			<div className='r-tc-legend'>
 				<span data-t='se'>{t('types:legend.superEffective')}</span>

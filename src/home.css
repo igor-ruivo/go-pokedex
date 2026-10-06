@@ -2837,3 +2837,39 @@ html:not([data-theme='light'])
 .rvmp .h-section > .r-typepick .r-typepick-btn {
 	text-decoration: none;
 }
+
+/* Community Day / Spotlight Hour rows on a phone: a smaller title (the link inside it takes its size) and a smaller date range */
+@media (max-width: 760px) {
+	.rvmp .h-day h3 {
+		font-size: 15px;
+	}
+	.rvmp .h-day-when {
+		font-size: 12px;
+	}
+}
+
+/* the weekday in the date block: the longer form where there is room, the locale's own abbreviation on a phone (where the block is too
+   narrow for "SÁBA." and the like, which were cut off with an ellipsis) */
+.rvmp .h-day-wd-long,
+.rvmp .h-day-wd-short {
+	font-style: normal;
+}
+.rvmp .h-day-wd-short {
+	display: none;
+}
+@media (max-width: 760px) {
+	.rvmp .h-day-wd-long {
+		display: none;
+	}
+	.rvmp .h-day-wd-short {
+		display: inline;
+	}
+}
+
+/* on a phone the title (and the lines under it) run a little way behind the Pokémon: its panel overlaps the text column by 26px, with the
+   picture above the text, so the title gets that much more room before it wraps */
+@media (max-width: 760px) {
+	.rvmp .h-day-heroes {
+		margin-left: -26px;
+	}
+}

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { CounterRankRow } from '../../components/CounterRankRow';
+import { HScroll } from '../../components/HScroll';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SortBar, type SortDir } from '../../components/SortBar';
 import { SpriteImg } from '../../components/Sprite';
@@ -535,7 +536,7 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 						<div className='r-ctr-cond'>
 							<span className='r-ctr-cond-l'>{t('pokemonDetail:counters.friendshipField')}</span>
 							<div className='r-ctr-cond-c'>
-								<div className='r-ctr-seg r-ctr-seg--scroll'>
+								<HScroll className='r-ctr-seg r-ctr-seg--scroll'>
 									{FRIENDSHIP.map((f) => (
 										<button
 											key={f.label}
@@ -546,7 +547,7 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 											{f.label}
 										</button>
 									))}
-								</div>
+								</HScroll>
 								{friendship > 1 && (
 									<span className='r-ctr-cond-hint'>
 										{t('pokemonDetail:counters.friendshipHint', { mult: friendship.toFixed(2) })}

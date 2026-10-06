@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
@@ -20,7 +20,11 @@ import { SearchBox } from './SearchBox';
 
 const Shell = () => {
 	const { t } = useTranslation(['common', 'pokemonDetail']);
-	const { currentGameLanguage: gl } = useLanguage();
+	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
+	// the page says which language it is in (screen readers pronounce by it, translators and spell-checkers read it)
+	useEffect(() => {
+		document.documentElement.lang = currentLanguage;
+	}, [currentLanguage]);
 	const { pathname } = useLocation();
 	const { dataTheme } = useTheme();
 	// the bottom bar follows the guidelines of the device it is on (see `data-platform` in components.css)
@@ -96,7 +100,7 @@ const Shell = () => {
 									: undefined
 							}
 						>
-							<span className='r-bn-icon' aria-hidden>
+							<span className='r-bn-icon r-ico-disc' aria-hidden>
 								{n.to === R.teams ? <TeamBuilderIcon /> : n.icon.startsWith('/') ? <img src={n.icon} alt='' /> : n.icon}
 								{n.to === R.calendar() && unseenEvents > 0 && (
 									<span className='r-bn-badge' aria-hidden='true'>

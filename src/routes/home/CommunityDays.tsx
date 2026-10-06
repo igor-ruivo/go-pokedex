@@ -43,6 +43,8 @@ const dayParts = (start: number, locale: string) => {
 	return {
 		day: d.getUTCDate(),
 		weekday: shortWeekday(part({ weekday: 'long' }), locale),
+		// the locale's own abbreviation ("sáb.", "qui.", "Sat", "土"), for the narrowest date block
+		weekdayAbbr: part({ weekday: 'short' }),
 		month: part({ month: 'short' }),
 		monthLong: part({ month: 'long', year: 'numeric' }),
 	};
@@ -83,7 +85,10 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 		<li>
 			<article className='h-day' data-kind={kind} data-phase={phase}>
 				<div className='h-day-date' aria-hidden='true'>
-					<span>{when.weekday}</span>
+					<span>
+						<i className='h-day-wd-long'>{when.weekday}</i>
+						<i className='h-day-wd-short'>{when.weekdayAbbr}</i>
+					</span>
 					<b>{when.day}</b>
 					<span>{when.month}</span>
 				</div>

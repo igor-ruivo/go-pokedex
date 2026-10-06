@@ -140,6 +140,9 @@ const clock = (() => {
 
 let showcases = 0;
 
+/** Whether the device's main input can hover (a mouse, a trackpad), as opposed to a touch screen. */
+const canHover = (): boolean => window.matchMedia('(hover: hover)').matches;
+
 /**
  * The rotation of a Home showcase: its item swipes out to the left and the next one swipes in, on the page's shared clock (see
  * above). The next item is chosen and preloaded as soon as the current one lands, so it is ready well before its time, and
@@ -229,7 +232,10 @@ export const useRotator = <T>({
 		rotated: rotated.current,
 		/** Spread onto the element that holds the showcase. */
 		holdProps: {
-			onMouseEnter: () => clock.hold(`${id}:pointer`, true),
+			// a touch screen has no hover: the mouse events a tap makes up would hold the clock until the next tap elsewhere
+			onMouseEnter: () => {
+				if (canHover()) clock.hold(`${id}:pointer`, true);
+			},
 			onMouseLeave: () => clock.hold(`${id}:pointer`, false),
 			onFocus: () => clock.hold(`${id}:focus`, true),
 			onBlur: () => clock.hold(`${id}:focus`, false),

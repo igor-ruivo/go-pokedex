@@ -387,8 +387,6 @@
 	   sprite. Same z-index the carousel dots already use for the identical
 	   reason (see that rule's own comment). */
 	z-index: 6;
-	/* bob in lockstep with the hero artwork */
-	animation: r-bob 5s ease-in-out infinite;
 }
 .rvmp .r-sprite > img:not(.r-sprite-shadow) {
 	position: relative;
@@ -396,7 +394,6 @@
 	height: 100%;
 	object-fit: contain;
 	filter: drop-shadow(0 10px 14px rgb(var(--shadow-rgb) / calc(0.45 * var(--shadow-k))));
-	animation: r-bob 5s ease-in-out infinite;
 }
 /* Every Pokémon sprite `<img>` in the app (the hero above, and every plain
    list/chip/card sprite via `SpriteImg` — Sprite.tsx) carries this class —
@@ -423,15 +420,6 @@
    Keep `FADE_FALLBACK_MS` (Sprite.tsx) above this. */
 .rvmp .r-sprite > img.r-fade-sprite {
 	transition: opacity 0.45s ease;
-}
-@keyframes r-bob {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(-8px);
-	}
 }
 /* stat row */
 .rvmp .r-stats {
@@ -778,56 +766,33 @@
 .rvmp .r-tabs-strip::-webkit-scrollbar {
 	display: none;
 }
-.rvmp .r-tabs-scroller[data-fade-left]::before,
-.rvmp .r-tabs-scroller[data-fade-right]::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	bottom: 1px;
-	width: 20px;
-	pointer-events: none;
-	z-index: 1;
-}
-.rvmp .r-tabs-scroller[data-fade-left]::before {
-	left: 0;
-	background: linear-gradient(to right, var(--bg), transparent);
-}
-.rvmp .r-tabs-scroller[data-fade-right]::after {
-	right: 0;
-	background: linear-gradient(to left, var(--bg), transparent);
-}
 .rvmp .r-tabs-arrow {
-	display: none;
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--surface-2);
+	border: 1px solid var(--border-strong);
+	color: var(--text);
+	font-size: 15px;
+	line-height: 1;
+	box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 }
-@media (hover: hover) and (pointer: fine) {
-	.rvmp .r-tabs-arrow {
-		display: grid;
-		place-items: center;
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 2;
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		background: var(--surface-2);
-		border: 1px solid var(--border-strong);
-		color: var(--text);
-		font-size: 15px;
-		line-height: 1;
-		box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
-	}
-	.rvmp .r-tabs-arrow:hover {
-		background: var(--accent);
-		color: var(--on-fill);
-		border-color: transparent;
-	}
-	.rvmp .r-tabs-arrow--left {
-		left: -4px;
-	}
-	.rvmp .r-tabs-arrow--right {
-		right: -4px;
-	}
+.rvmp .r-tabs-arrow:hover {
+	background: var(--accent);
+	color: var(--on-fill);
+	border-color: transparent;
+}
+.rvmp .r-tabs-arrow--left {
+	left: -4px;
+}
+.rvmp .r-tabs-arrow--right {
+	right: -4px;
 }
 .rvmp .r-tabs-strip button {
 	position: relative;
@@ -1988,8 +1953,9 @@
 	font-weight: 700;
 	color: color-mix(in srgb, var(--t-ghost), var(--text) var(--ink-mix));
 }
+/* the focus of a field is in the page's own ink, never in the accent: a red border on an input reads as an error */
 .rvmp .r-search:focus-within {
-	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+	border-color: var(--text-dim);
 }
 .rvmp .r-search input {
 	flex: 1;
@@ -3502,62 +3468,34 @@
 .rvmp .r-datepick-chips::-webkit-scrollbar {
 	display: none;
 }
-/* Scroll-shadow affordance: a soft fade at whichever edge still has more
-   chips past the fold, so it reads as scrollable at a glance instead of
-   looking like a hard-clipped list — same idea a horizontally-scrolling tab
-   strip on any polished site uses. */
-.rvmp .r-datepick-scroller[data-fade-left]::before,
-.rvmp .r-datepick-scroller[data-fade-right]::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: 20px;
-	pointer-events: none;
-	z-index: 1;
-}
-.rvmp .r-datepick-scroller[data-fade-left]::before {
-	left: 0;
-	background: linear-gradient(to right, var(--bg), transparent);
-}
-.rvmp .r-datepick-scroller[data-fade-right]::after {
-	right: 0;
-	background: linear-gradient(to left, var(--bg), transparent);
-}
-/* Click-to-scroll chevrons — only where a mouse (not touch) actually needs
-   them: touch already scrolls this row fine via swipe. */
+/* the chevrons that scroll the row, on every device */
 .rvmp .r-datepick-arrow {
-	display: none;
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--surface-2);
+	border: 1px solid var(--border-strong);
+	color: var(--text);
+	font-size: 15px;
+	line-height: 1;
+	box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 }
-@media (hover: hover) and (pointer: fine) {
-	.rvmp .r-datepick-arrow {
-		display: grid;
-		place-items: center;
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 2;
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		background: var(--surface-2);
-		border: 1px solid var(--border-strong);
-		color: var(--text);
-		font-size: 15px;
-		line-height: 1;
-		box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
-	}
-	.rvmp .r-datepick-arrow:hover {
-		background: var(--accent);
-		color: var(--on-fill);
-		border-color: transparent;
-	}
-	.rvmp .r-datepick-arrow--left {
-		left: -4px;
-	}
-	.rvmp .r-datepick-arrow--right {
-		right: -4px;
-	}
+.rvmp .r-datepick-arrow:hover {
+	background: var(--accent);
+	color: var(--on-fill);
+	border-color: transparent;
+}
+.rvmp .r-datepick-arrow--left {
+	left: -4px;
+}
+.rvmp .r-datepick-arrow--right {
+	right: -4px;
 }
 .rvmp .r-datepick-chips button {
 	flex: none;
@@ -3626,56 +3564,33 @@
 .rvmp .r-lgpick-chips::-webkit-scrollbar {
 	display: none;
 }
-.rvmp .r-lgpick-scroller[data-fade-left]::before,
-.rvmp .r-lgpick-scroller[data-fade-right]::after {
-	content: '';
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: 20px;
-	pointer-events: none;
-	z-index: 1;
-}
-.rvmp .r-lgpick-scroller[data-fade-left]::before {
-	left: 0;
-	background: linear-gradient(to right, var(--bg), transparent);
-}
-.rvmp .r-lgpick-scroller[data-fade-right]::after {
-	right: 0;
-	background: linear-gradient(to left, var(--bg), transparent);
-}
 .rvmp .r-lgpick-arrow {
-	display: none;
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--surface-2);
+	border: 1px solid var(--border-strong);
+	color: var(--text);
+	font-size: 15px;
+	line-height: 1;
+	box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
 }
-@media (hover: hover) and (pointer: fine) {
-	.rvmp .r-lgpick-arrow {
-		display: grid;
-		place-items: center;
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 2;
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		background: var(--surface-2);
-		border: 1px solid var(--border-strong);
-		color: var(--text);
-		font-size: 15px;
-		line-height: 1;
-		box-shadow: 0 1px 4px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k)));
-	}
-	.rvmp .r-lgpick-arrow:hover {
-		background: var(--accent);
-		color: var(--on-fill);
-		border-color: transparent;
-	}
-	.rvmp .r-lgpick-arrow--left {
-		left: -4px;
-	}
-	.rvmp .r-lgpick-arrow--right {
-		right: -4px;
-	}
+.rvmp .r-lgpick-arrow:hover {
+	background: var(--accent);
+	color: var(--on-fill);
+	border-color: transparent;
+}
+.rvmp .r-lgpick-arrow--left {
+	left: -4px;
+}
+.rvmp .r-lgpick-arrow--right {
+	right: -4px;
 }
 .rvmp .r-lgpick-chips button {
 	flex: none;
@@ -4151,7 +4066,7 @@
 	border-color: var(--border-strong);
 }
 .rvmp .r-iv-search label:focus-within {
-	border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+	border-color: var(--text-dim);
 }
 .rvmp .r-iv-search label > span {
 	flex: none;
@@ -7614,19 +7529,20 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		color: color-mix(in srgb, var(--accent), var(--text) var(--ink-mix));
 		font-weight: 800;
 	}
-	.rvmp .r-bn-icon {
-		display: grid;
-		place-items: center;
-		width: min(54px, calc(100% - 2px));
-		height: 30px;
-		border-radius: 15px;
-		font-size: 21px;
+	/* every item's icon sits on the site's icon plate (`.r-ico-disc`, as in the tabs), a little larger here; the current one takes the accent */
+	.rvmp .r-bn-icon.r-ico-disc {
+		width: 36px;
+		height: 36px;
+		border-radius: 12px;
+		font-size: 17px; /* the picture is 1.15em: 20px */
 		transition:
 			background 0.2s ease,
+			border-color 0.2s ease,
 			transform 0.14s ease;
 	}
-	.rvmp .r-bottomnav a.is-active .r-bn-icon {
-		background: color-mix(in srgb, var(--accent) 16%, transparent);
+	.rvmp .r-bottomnav a.is-active .r-bn-icon.r-ico-disc {
+		background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+		border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
 	}
 	.rvmp .r-bottomnav a:active .r-bn-icon {
 		transform: scale(0.92);
@@ -7653,8 +7569,10 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp .r-bottomnav a {
 		font-size: 10px;
 	}
-	.rvmp .r-bn-icon {
-		font-size: 19px;
+	.rvmp .r-bn-icon.r-ico-disc {
+		width: 32px;
+		height: 32px;
+		font-size: 15px;
 	}
 }
 /* a tablet or a phone on its side: the bar is a floating pill in the middle (as on a desktop), not a strip across the whole width */
@@ -7686,7 +7604,9 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	   are quiet. At least 44pt each, five tabs at most. */
 	.rvmp[data-platform='ios'] .r-bottomnav {
 		gap: 0;
-		padding: 0 max(0px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(0px, env(safe-area-inset-left));
+		/* the home indicator is a thin line at the very bottom: the labels need only a part of the inset below them, so that the icons are
+		   not left riding high on a bar that is as tall as the tab bar plus the whole indicator area */
+		padding: 0 max(0px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) * 0.4) max(0px, env(safe-area-inset-left));
 		background: color-mix(in srgb, var(--bg) 80%, transparent);
 		backdrop-filter: blur(24px) saturate(1.8);
 		border-top: 0.5px solid var(--border-strong);
@@ -7707,15 +7627,13 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp[data-platform='ios'] .r-bottomnav a.is-active {
 		font-weight: 600;
 	}
-	.rvmp[data-platform='ios'] .r-bn-icon,
-	.rvmp[data-platform='ios'] .r-bottomnav a.is-active .r-bn-icon {
-		width: 28px;
-		height: 28px;
-		border-radius: 0;
-		background: none;
-		font-size: 22px; /* the picture is 1.15em: 25pt */
+	.rvmp[data-platform='ios'] .r-bn-icon.r-ico-disc {
+		width: 32px;
+		height: 32px;
+		border-radius: 11px;
+		font-size: 15px;
 	}
-	.rvmp[data-platform='ios'] .r-bottomnav a:active .r-bn-icon {
+	.rvmp[data-platform='ios'] .r-bottomnav a:active .r-bn-icon.r-ico-disc {
 		transform: none;
 	}
 	/* the pictures cannot take a tint, so they stay at full strength; the current tab is told by its label's colour and weight */
@@ -7749,17 +7667,14 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		color: var(--text);
 		font-weight: 700;
 	}
-	.rvmp[data-platform='android'] .r-bn-icon {
-		width: min(64px, calc(100% - 4px));
-		height: 32px;
-		border-radius: 16px;
-		font-size: 21px; /* the picture is 1.15em: 24dp */
+	.rvmp[data-platform='android'] .r-bn-icon.r-ico-disc {
+		width: 40px;
+		height: 40px;
+		border-radius: 13px;
+		font-size: 18px; /* the picture is 1.15em: 21dp */
 	}
-	.rvmp[data-platform='android'] .r-bottomnav a.is-active .r-bn-icon {
-		background: color-mix(in srgb, var(--accent) 22%, transparent);
-	}
-	.rvmp[data-platform='android'] .r-bottomnav a:active .r-bn-icon {
-		background: color-mix(in srgb, var(--accent) 14%, transparent);
+	.rvmp[data-platform='android'] .r-bottomnav a:active .r-bn-icon.r-ico-disc {
+		background: color-mix(in srgb, var(--accent) 14%, var(--surface));
 		transform: none;
 	}
 }
@@ -7772,12 +7687,12 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 }
 
 /* ---- the top bar, refined ----------------------------------------------------------------------------------------------------------------
-   Everywhere: a focus that can be seen (the search field takes a ring, not only a faint border), a placeholder that reads (the dim ink,
+   Everywhere: a focus that can be seen (the search field takes a ring in the page's ink, not only a faint border), a placeholder that reads (the dim ink,
    not the browser's grey), buttons the finger can hit (the clear button's target is 44px around its 20px mark; the logo and the menu are 44px
    on a touch screen) and no tap delay or grey flash. The search field's text stays at 16px or more: below that iOS zooms the page in. */
 .rvmp .r-search:focus-within {
-	border-color: var(--accent);
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent);
+	border-color: var(--text-dim);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 14%, transparent);
 }
 .rvmp .r-search input::placeholder {
 	color: var(--text-dim);
@@ -7903,4 +7818,374 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 .rvmp[data-platform='ios'] select,
 .rvmp[data-platform='ios'] textarea {
 	font-size: max(16px, 1em);
+}
+
+/* the bottom bar on a desktop (the pill): a smaller plate beside the label, and room enough for the dot to clear the label */
+@media (min-width: 1360px) {
+	.rvmp .r-bottomnav a {
+		gap: 8px;
+		padding: 6px 14px 6px 8px;
+	}
+	.rvmp .r-bn-icon.r-ico-disc {
+		width: 28px;
+		height: 28px;
+		border-radius: 9px;
+		font-size: 14px; /* the picture is 1.15em: 16px */
+	}
+	.rvmp .r-bottomnav a.is-active .r-bn-icon.r-ico-disc {
+		background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+		border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+	}
+}
+
+/* ---- accessibility: headings break their lines evenly, with no short last line ---- */
+.rvmp h1,
+.rvmp h2,
+.rvmp h3 {
+	text-wrap: balance;
+}
+/* the picture in a bottom-bar plate follows the bar's own size (not the tabs' 18px) */
+.rvmp .r-bn-icon.r-ico-disc img,
+.rvmp .r-bn-icon.r-ico-disc svg {
+	width: 1.15em;
+	height: 1.15em;
+}
+
+/* ---- an event's Bonuses and Rewards: the bullet points under a heading are indented from it ---------------------------
+   The heading has its icon at its left; the icons of the bullet points are indented to where the heading's own text starts, so that they do
+   not look like they are on the heading's level. The paragraphs between them (a sentence that introduces a list) are not bullet points and
+   stay where they were. */
+.rvmp .r-event-body {
+	--section-indent: calc(30px + var(--s2));
+}
+.rvmp .r-event-body .r-bonuses,
+.rvmp .r-event-body .r-bonuses-rich > .r-rich-list,
+.rvmp .r-event-body .r-rewards > .r-rich-list {
+	margin-left: var(--section-indent);
+}
+
+/* ---- the round arrows of the rows that scroll sideways ---------------------------------------------------------------------------------
+   No fade at the edges (the arrows say that there is more); the arrows are on a touch screen too, with a 44px target around their 24px
+   mark. `.r-hscroll` is the box that holds a row and its arrows, for the rows that have no component of their own for it. */
+.rvmp .r-tabs-arrow::after,
+.rvmp .r-datepick-arrow::after,
+.rvmp .r-lgpick-arrow::after {
+	content: '';
+	position: absolute;
+	inset: -10px;
+}
+.rvmp .r-hscroll {
+	position: relative;
+	min-width: 0;
+}
+.rvmp .r-hscroll .r-tabs-arrow {
+	top: var(--arrow-top, 50%);
+}
+
+/* light theme only: the gold of the favorites star (a favorite, the tab) and of the first-place medal is a bright, clear gold with a darker gold
+   edge that keeps its shape on a white card (the olive-ish tone it had read as dull) */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-tab-star {
+	stroke: var(--gold-ink);
+	stroke-width: 0.7;
+	stroke-linejoin: round;
+}
+
+/* ---- Pokémon page hero, v2: kept short (phones): art + identity + CP and level, the base stats, the family ------------------ */
+.rvmp .r-hero-v2 {
+	padding: var(--s3) var(--s3) var(--s3);
+}
+/* the Pokédex number, huge and faint behind everything (neutral ink: no coloured glow) */
+.rvmp .r-hero-wm {
+	position: absolute;
+	right: var(--s3);
+	top: -0.12em;
+	font-family: var(--font-display);
+	font-weight: 800;
+	font-size: clamp(90px, 26vw, 170px);
+	line-height: 1;
+	letter-spacing: -0.04em;
+	color: color-mix(in srgb, var(--text) 4%, transparent);
+	pointer-events: none;
+	user-select: none;
+}
+.rvmp .r-hero-main {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: var(--s2) var(--s3);
+	align-items: center;
+}
+.rvmp .r-hero-art {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+.rvmp .r-hero-v2 .r-sprite {
+	width: clamp(100px, 30vw, 170px);
+}
+.rvmp .r-hero-info {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+}
+.rvmp .r-hero-info .r-name {
+	margin: 0;
+	max-width: 100%;
+	overflow-wrap: anywhere;
+}
+.rvmp .r-hero-types {
+	justify-content: flex-start;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+}
+/* the Shadow switch is the Best Buddy one of a team member (.r-tm-buddy), floating over the top left of the sprite */
+.rvmp .r-hero-art {
+	position: relative;
+}
+.rvmp .r-hero-spritebox {
+	position: relative;
+}
+.rvmp .r-hero-art .r-hero-shadow {
+	position: absolute;
+	bottom: 4px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 7;
+	min-height: 26px;
+	padding: 0 10px 0 6px;
+	border: 1px solid var(--ctl-border, var(--border));
+	background: var(--surface);
+}
+.rvmp .r-hero-art .r-hero-shadow[aria-pressed='true'] {
+	border-color: color-mix(in srgb, var(--accent) 55%, var(--ctl-border, var(--border)));
+	background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+.rvmp .r-hero-cprow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 12px;
+}
+/* the CP is the type chip's own colour */
+.rvmp .r-hero-v2 .r-cp b {
+	color: var(--accent);
+	text-shadow: none;
+}
+
+/* the artwork switcher: what is shown, and what a tap or a swipe will show next */
+.rvmp .r-art-pills {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 3px;
+	position: relative;
+	z-index: 6;
+}
+.rvmp .r-art-pills button {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	min-height: 24px;
+	padding: 0 8px;
+	border-radius: var(--r-pill);
+	border: 1px solid var(--ctl-border, var(--border));
+	background: transparent;
+	color: var(--text-dim);
+	font: inherit;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	cursor: pointer;
+}
+.rvmp .r-art-pills button[aria-pressed='true'] {
+	color: var(--text);
+	background: var(--surface-2);
+	border-color: color-mix(in srgb, var(--accent) 55%, var(--ctl-border, var(--border)));
+}
+.rvmp .r-art-spark {
+	width: 12px;
+	height: 12px;
+}
+
+/* base stats: three small columns, label and value on top of a thin bar, under a smooth divider */
+.rvmp .r-bars {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--s4);
+	max-width: 520px;
+	margin: var(--s3) auto 0;
+	padding-top: var(--s3);
+	border-top: 1px solid var(--border);
+}
+.rvmp .r-bar {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: baseline;
+	row-gap: 4px;
+}
+.rvmp .r-bar i {
+	font-style: normal;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--text-faint);
+}
+.rvmp .r-bar b {
+	font-family: var(--font-display);
+	font-size: 16px;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+}
+.rvmp .r-bar-track {
+	grid-column: 1 / -1;
+	height: 5px;
+	border-radius: var(--r-pill);
+	background: color-mix(in srgb, var(--text) 9%, transparent);
+	overflow: hidden;
+}
+.rvmp .r-bar-fill {
+	display: block;
+	height: 100%;
+	width: calc(var(--v) * 100%);
+	border-radius: inherit;
+	background: color-mix(in srgb, var(--accent), var(--text) 28%);
+	transform-origin: left;
+	animation: r-bar-grow 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes r-bar-grow {
+	from {
+		transform: scaleX(0);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.rvmp .r-bar-fill {
+		animation: none;
+	}
+}
+
+/* the family: one row of small pills (sprite + name), the Pokémon you are on tinted */
+.rvmp .r-hero-family {
+	position: relative;
+	margin-top: var(--s3);
+	padding-top: var(--s3);
+	border-top: 1px solid var(--border);
+}
+.rvmp .r-fam {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	scrollbar-width: none;
+	overscroll-behavior-x: contain;
+	align-items: center;
+	justify-content: safe center;
+	gap: 6px;
+	padding: 2px 0;
+}
+.rvmp .r-fam-m {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 3px 12px 3px 4px;
+	border-radius: var(--r-pill);
+	border: 1px solid var(--border);
+	text-decoration: none;
+	transition:
+		background 0.14s ease,
+		border-color 0.14s ease;
+}
+.rvmp .r-fam-m:hover {
+	border-color: var(--border-strong);
+}
+.rvmp .r-fam-m[data-active='true'] {
+	background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+	border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+}
+.rvmp .r-fam-art {
+	position: relative;
+	flex: none;
+	width: 32px;
+	height: 32px;
+}
+.rvmp .r-fam-art img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+.rvmp .r-fam-art img[src*='pogo_assets'] {
+	position: relative;
+	z-index: 5;
+}
+.rvmp .r-fam-art > .r-shadow-mark {
+	position: absolute;
+	right: -3px;
+	bottom: -3px;
+	width: 15px;
+	height: 15px;
+	z-index: 6;
+}
+.rvmp .r-fam-name {
+	font-size: 12.5px;
+	font-weight: 700;
+	color: var(--text-dim);
+	white-space: nowrap;
+}
+.rvmp .r-fam-m[data-active='true'] .r-fam-name {
+	color: color-mix(in srgb, var(--tc, var(--accent)), var(--text) var(--ink-mix));
+}
+
+@media (max-width: 520px) {
+	.rvmp .r-hero-v2 .r-name {
+		font-size: clamp(21px, 6.2vw, 28px);
+	}
+	.rvmp .r-hero-v2 .r-cp b {
+		font-size: clamp(28px, 8.5vw, 36px);
+	}
+}
+@media (min-width: 560px) {
+	/* the art and the identity sit together in the middle rather than the identity stretching to the right edge */
+	.rvmp .r-hero-main {
+		grid-template-columns: auto auto;
+		justify-content: center;
+	}
+}
+@media (min-width: 900px) {
+	.rvmp .r-hero-v2 {
+		padding: var(--s4) var(--s5);
+	}
+	.rvmp .r-hero-main {
+		gap: var(--s5);
+	}
+	.rvmp .r-hero-v2 .r-sprite {
+		width: 170px;
+	}
+	.rvmp .r-hero-v2 .r-name {
+		font-size: 36px;
+	}
+	.rvmp .r-hero-v2 .r-cp b {
+		font-size: 48px;
+	}
+}
+.rvmp .r-hero-art .r-hero-shadow[aria-pressed='true'] {
+	color: color-mix(in srgb, var(--accent), var(--text) var(--ink-mix));
+}
+
+/* light mode: the CP and the stat bars are big or graphic, so they need less darkening than the small text (the full one turned
+   orange into brown); Fire's own pale chip colour is too weak for them, so they get a stronger orange of their own */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-v2 {
+	--hero-ink: color-mix(in srgb, var(--accent), var(--text) 18%);
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-v2[data-type='fire'] {
+	--hero-ink: #ea5a0c;
+}
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-v2 .r-bar-fill {
+	background: var(--hero-ink);
 }

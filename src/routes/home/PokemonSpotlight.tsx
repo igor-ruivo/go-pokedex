@@ -5,7 +5,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IconTabBar } from '../../components/IconTabBar';
 import { pokemonTabIcon } from '../../components/pokemon-tab-icons';
 import { Sprite, spriteUrl } from '../../components/Sprite';
-import { useImageSource } from '../../contexts/imageSource-context';
 import { useLanguage } from '../../contexts/language-context';
 import { useRaidMetric } from '../../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
@@ -255,7 +254,6 @@ export const PokemonSpotlight = () => {
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { raidMetric } = useRaidMetric();
 	const { leagues } = useLeagueDefinitions();
-	const { imageSource } = useImageSource();
 	// on a narrow screen the Megas would take a row of their own: those lines are left out
 	const narrow = useMediaQuery(NARROW_SCREEN);
 	const loaded = fetchCompleted && pvpFetchCompleted && raidDPSFetchCompleted;
@@ -299,7 +297,7 @@ export const PokemonSpotlight = () => {
 	const assetsOf = useCallback(
 		(spot: Spotlight): Array<Preload> => {
 			const assets: Array<Preload> = lineMembers(spot.line).map((p) => ({
-				url: spriteUrl(p, imageSource),
+				url: spriteUrl(p),
 				fallback: p.imageUrl,
 			}));
 			const badge = spot.pvp && homeLeagueIcon(spot.pvp.league);
@@ -311,7 +309,7 @@ export const PokemonSpotlight = () => {
 			}
 			return assets;
 		},
-		[imageSource]
+		[]
 	);
 	const { current, leaving, held, cycle, barDelay, rotated, holdProps } = useRotator<Spotlight>({
 		ready: pool.length > 0,

@@ -45,7 +45,14 @@
 	backdrop-filter: blur(3px);
 	animation: r-menu-fade 0.22s ease both;
 }
+/* touch-action: the browser keeps the up-and-down drags (the drawer scrolls) and leaves the sideways ones to the swipe that closes it. It is
+   set on everything inside too: the allowed gestures of an element are those of every element from it up to the one that scrolls. */
+.rvmp .r-menu-panel,
+.rvmp .r-menu-panel * {
+	touch-action: pan-y;
+}
 .rvmp .r-menu-panel {
+	overscroll-behavior: contain;
 	position: absolute;
 	top: 0;
 	right: 0;

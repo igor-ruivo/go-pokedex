@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { ShadowMark } from '../../components/ShadowMark';
 import { SparkleIcon } from '../../components/SparkleIcon';
 import { SpriteImg, spriteUrl } from '../../components/Sprite';
-import { useImageSource } from '../../contexts/imageSource-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
 import { R } from '../../lib/nav';
@@ -55,7 +54,6 @@ export const DayHeroes = ({
 	rotate: boolean;
 	label: string;
 }) => {
-	const { imageSource } = useImageSource();
 	const rotating = rotate && pokemon.length > 1;
 	const { current, leaving, rotated, holdProps } = useRotator<IGamemasterPokemon>({
 		ready: rotating,
@@ -68,8 +66,8 @@ export const DayHeroes = ({
 			[pokemon]
 		),
 		preload: useCallback(
-			(p: IGamemasterPokemon) => preloadImages([{ url: spriteUrl(p, imageSource), fallback: p.imageUrl }]),
-			[imageSource]
+			(p: IGamemasterPokemon) => preloadImages([{ url: spriteUrl(p), fallback: p.imageUrl }]),
+			[]
 		),
 	});
 

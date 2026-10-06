@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { ImageSource, useImageSource } from '../contexts/imageSource-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import { goBaseUrl } from '../utils/Configs';
 import { ShadowMark } from './ShadowMark';
@@ -15,15 +14,11 @@ const SWIPE_THRESHOLD = 32;
  */
 export const goSpriteUrl = (relativePath: string): string => (relativePath ? goBaseUrl + relativePath : '');
 
-export const spriteUrl = (pokemon: IGamemasterPokemon, source: ImageSource): string => {
-	if (source === ImageSource.Shiny && pokemon.shinyGoImageUrl) {
-		return goSpriteUrl(pokemon.shinyGoImageUrl);
-	}
-	if ((source === ImageSource.Shiny || source === ImageSource.GO) && pokemon.goImageUrl) {
-		return goSpriteUrl(pokemon.goImageUrl);
-	}
-	return pokemon.imageUrl || goSpriteUrl(pokemon.goImageUrl);
-};
+/**
+ * The picture of a Pokémon everywhere on the site: always the official artwork (the Pokémon GO sprite only when there is no official
+ * one). The other artwork — the GO sprite and the shiny GO sprite — is only seen by cycling the hero of a Pokémon's own page.
+ */
+export const spriteUrl = (pokemon: IGamemasterPokemon): string => pokemon.imageUrl || goSpriteUrl(pokemon.goImageUrl);
 
 /**
  * Shared `<img onError>` handler for every sprite `<img>` in the app — used
@@ -146,7 +141,7 @@ const useSequentialFade = (resolved: string) => {
 };
 
 /**
- * Drop-in replacement for a plain `<img src={spriteUrl(pokemon, imageSource)}>`
+ * Drop-in replacement for a plain `<img src={spriteUrl(pokemon)}>`
  * — every mini-chip/family-line-chip/calendar-chip/ranking-card sprite in the
  * app renders through this now, so all of them get the same load-gated
  * fade (see `useSequentialFade` above) when the Sprites setting changes.
@@ -171,8 +166,7 @@ export const SpriteImg = ({
 	src?: string | undefined;
 	ariaHidden?: boolean;
 }) => {
-	const { imageSource } = useImageSource();
-	const resolved = src ?? spriteUrl(pokemon, imageSource);
+	const resolved = src ?? spriteUrl(pokemon);
 	const { displayed, fadeProps } = useSequentialFade(resolved);
 	return (
 		<img
@@ -197,6 +191,7 @@ export const Sprite = ({
 	onSwipeLeft,
 	onSwipeRight,
 	hint,
+	hideShadowMark,
 }: {
 	pokemon: IGamemasterPokemon;
 	alt?: string;
@@ -209,9 +204,10 @@ export const Sprite = ({
 	onSwipeRight?: () => void;
 	/** Carousel position hint dots under the sprite. */
 	hint?: { count: number; active: number };
+	/** Leaves out the shadow flame on a shadow Pokémon (the page has a Shadow switch over the sprite instead). */
+	hideShadowMark?: boolean;
 }) => {
-	const { imageSource } = useImageSource();
-	const resolved = src ?? spriteUrl(pokemon, imageSource);
+	const resolved = src ?? spriteUrl(pokemon);
 	const { displayed, fadeProps } = useSequentialFade(resolved);
 
 	// Touch drag tracking. `touch-action: pan-y` (CSS) hands horizontal drags to
@@ -270,7 +266,7 @@ export const Sprite = ({
 					}
 				: {})}
 		>
-			{pokemon.isShadow && <ShadowMark className='r-shadow-mark r-sprite-shadow' />}
+			{pokemon.isShadow && !hideShadowMark && <ShadowMark className='r-shadow-mark r-sprite-shadow' />}
 			<img
 				src={displayed}
 				alt={alt ?? pokemon.speciesName}

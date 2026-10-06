@@ -86,8 +86,6 @@ export const IconTabBar = ({
 		<div className='r-tabs'>
 			<div
 				className='r-tabs-scroller'
-				data-fade-left={canScrollLeft || undefined}
-				data-fade-right={canScrollRight || undefined}
 			>
 				{canScrollLeft && (
 					<button
