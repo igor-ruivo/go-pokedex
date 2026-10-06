@@ -80,6 +80,8 @@ const isActive = (p: { startDate: number; endDate: number }, now: number) => now
  *  post's own title for a LeekDuck-sourced one (a fan site, not an official
  *  source), only the bare domain instead. */
 export type SlotSourcePost = Pick<IPostEntry, 'title'> & {
+	/** The bosses of a special raid window, which its title (English only) is about. */
+	raids?: IPostEntry['raids'] | undefined;
 	/** Where the information comes from: an official post, or a third party's site (LeekDuck, Pokebattler). */
 	source: IPostEntry['source'] | 'pokebattler';
 };
@@ -90,9 +92,57 @@ const THIRD_PARTY_SOURCES = {
 } as const;
 export const slotSourceLabel = (post: SlotSourcePost | undefined, gl: GameLanguage): string | undefined => {
 	if (!post) return undefined;
-	return post.source === 'leekduck' || post.source === 'pokebattler'
-		? THIRD_PARTY_SOURCES[post.source].label
-		: post.title[gl];
+	// A post with a title of its own (a Spotlight Hour, a special raid boss window) is credited by that name, like any other event; the
+	// third party's site only stands in for one that has none.
+	return post.title[gl] || (post.source === 'leekduck' || post.source === 'pokebattler' ? THIRD_PARTY_SOURCES[post.source].label : undefined);
+};
+
+/**
+ * The title of a special raid window ("Yveltal Raid Hour", "Mega Blastoise in Mega Raids", "Shadow Landorus in Shadow Raids", "Yveltal
+ * in 5-star Raid Battles") in the language shown: the feed only has them in English, but they are always the Pokémon and the kind of
+ * window, so they are put together from the game's own words for it. `undefined` for any other post, and for English.
+ */
+const specialRaidTitle = (
+	post: SlotSourcePost | undefined,
+	gl: GameLanguage,
+	dex: ReturnType<typeof usePokemon>['gamemasterPokemon'],
+	t: TFunction<['calendar']>
+): string | undefined => {
+	if (gl === GameLanguage.en || post?.source !== 'leekduck' || !post.raids?.length) return undefined;
+	const english = post.title.en ?? '';
+	const kind = /Raid Hour$/i.test(english)
+		? 'hour'
+		: /in Mega Raids$/i.test(english)
+			? 'mega'
+			: /in Shadow Raids$/i.test(english)
+				? 'shadow'
+				: /in 5-star Raid Battles$/i.test(english)
+					? 'five'
+					: undefined;
+	if (!kind) return undefined;
+	const raid = sentenceCase(gameTranslator(GameTranslatorKeys.RaidDisplay, gl));
+	const mega = gameTranslator(GameTranslatorKeys.MegaDisplay, gl);
+	const shadow = gameTranslator(GameTranslatorKeys.ShadowDisplay, gl);
+	const names = post.raids
+		.map((r) => dex[r.speciesId])
+		.filter((p): p is NonNullable<typeof p> => !!p)
+		.map((p) => {
+			const name = cleanName(p.speciesName);
+			// the words Mega and Shadow are the game's own in the language shown, and said once: by the kind of window when it is one
+			if (/^Mega /.test(name)) return kind === 'mega' ? name.slice(5) : `${mega} ${name.slice(5)}`;
+			return name;
+		})
+		.join(' + ');
+	if (!names) return undefined;
+	const label =
+		kind === 'hour'
+			? t('calendar:raids.raidHour')
+			: kind === 'mega'
+				? `${mega} ${raid}`
+				: kind === 'shadow'
+					? `${shadow} ${raid}`
+					: `5★ ${raid}`;
+	return `${names} · ${label}`;
 };
 
 /** Merge a list of dated posts into day-range buckets, deduping their entries.
@@ -104,7 +154,7 @@ const groupByRange = (
 	posts: Array<IPostEntry>,
 	pick: (p: IPostEntry) => Array<IEntry>,
 	locale: string
-): Array<{ label: string; entries: Array<IEntry>; topSource: SlotSourcePost | undefined }> => {
+): Array<{ label: string; entries: Array<IEntry>; sources: Array<SlotSourcePost> }> => {
 	const map = new Map<
 		string,
 		{
@@ -112,8 +162,7 @@ const groupByRange = (
 			seen: Set<string>;
 			minStart: number;
 			maxEnd: number;
-			topSource: SlotSourcePost | undefined;
-			topCount: number;
+			sources: Array<SlotSourcePost>;
 		}
 	>();
 	for (const p of posts) {
@@ -125,8 +174,7 @@ const groupByRange = (
 				seen: new Set(),
 				minStart: p.startDate,
 				maxEnd: p.endDate,
-				topSource: undefined,
-				topCount: -1,
+				sources: [],
 			};
 			map.set(label, g);
 		} else {
@@ -134,10 +182,7 @@ const groupByRange = (
 			g.maxEnd = Math.max(g.maxEnd, p.endDate);
 		}
 		const picked = pick(p);
-		if (picked.length > g.topCount) {
-			g.topCount = picked.length;
-			g.topSource = p;
-		}
+		if (picked.length > 0) g.sources.push(p);
 		for (const e of picked) {
 			const k = `${e.speciesId}-${e.kind ?? ''}`;
 			if (g.seen.has(k)) continue;
@@ -151,12 +196,12 @@ const groupByRange = (
 	// upgrade the displayed label to a full start/end time range, same as
 	// Events already show (`dateRange` itself still falls back to day-only
 	// for anything spanning more than one day).
-	return [...map.values()].map(({ entries, minStart, maxEnd, topSource }) => ({
+	return [...map.values()].map(({ entries, minStart, maxEnd, sources }) => ({
 		label: dayRange(minStart, maxEnd, locale).includes('–')
 			? dayRange(minStart, maxEnd, locale)
 			: dateRange(minStart, maxEnd, locale),
 		entries,
-		topSource,
+		sources,
 	}));
 };
 
@@ -264,20 +309,25 @@ const MiniGrid = ({
  *  chip doesn't read as an anonymous pile. Renders nothing without a title
  *  (e.g. "Now" backed only by the baseline current-rotation bosses, with no
  *  active event behind it at all). */
-const SlotSource = ({ post, gl }: { post: SlotSourcePost | undefined; gl: GameLanguage }) => {
-	const label = slotSourceLabel(post, gl);
-	if (!label) return null;
-	// A LeekDuck-sourced credit is never the event's own title (a fan site
-	// isn't an official source — see `slotSourceLabel`) — it links out to the
-	// site itself instead of just naming it, so it's still useful rather than
-	// a dead-end label.
-	// `Trans` clones whichever of these two it picks and injects the
-	// translated text as its child at render time — `jsx-a11y` can't see
+const SlotSource = ({ posts, gl }: { posts: ReadonlyArray<SlotSourcePost>; gl: GameLanguage }) => {
+	const { t } = useTranslation(['calendar']);
+	const { gamemasterPokemon } = usePokemon();
+	// Every event that brings what is listed, joined with a plus sign (the same event once, whatever it brings twice).
+	const labels = posts
+		.map((post) => specialRaidTitle(post, gl, gamemasterPokemon, t) ?? slotSourceLabel(post, gl))
+		.filter((label): label is string => !!label);
+	const unique = [...new Set(labels)];
+	if (unique.length === 0) return null;
+	const label = unique.join(' + ');
+	// A LeekDuck-sourced credit with no title of its own (a fan site isn't an official source — see `slotSourceLabel`) links out to the
+	// site itself instead of just naming it, so it's still useful rather than a dead-end label.
+	// `Trans` clones whichever of these two it picks and injects the translated text as its child at render time — `jsx-a11y` can't see
 	// that statically, hence the disable right on the `<a>` below.
+	const only = posts.length === 1 ? posts[0] : undefined;
 	const highlight =
-		post?.source === 'leekduck' || post?.source === 'pokebattler' ? (
+		only && (only.source === 'leekduck' || only.source === 'pokebattler') && label === slotSourceLabel(only, gl) && !only.title[gl] ? (
 			// eslint-disable-next-line jsx-a11y/anchor-has-content
-			<a href={THIRD_PARTY_SOURCES[post.source].url} target='_blank' rel='noopener noreferrer' />
+			<a href={THIRD_PARTY_SOURCES[only.source].url} target='_blank' rel='noopener noreferrer' />
 		) : (
 			<em />
 		);
@@ -918,14 +968,14 @@ const RaidsTab = () => {
 
 	const ready = postsFetchCompleted && specialBossesFetchCompleted && currentBossesFetchCompleted && fetchCompleted;
 
-	const { current, upcoming, endMap, currentTopSource } = useMemo(() => {
+	const { current, upcoming, endMap, currentSources } = useMemo(() => {
 		const endMap = new Map<string, number>();
 		if (!ready) {
 			return {
 				current: [] as Array<IEntry>,
 				upcoming: [] as Array<IPostEntry>,
 				endMap,
-				currentTopSource: undefined as SlotSourcePost | undefined,
+				currentSources: [] as Array<SlotSourcePost>,
 			};
 		}
 		// `raidPosts` below is the same local-time-encoded event feed as the
@@ -948,17 +998,11 @@ const RaidsTab = () => {
 			seen.add(e.speciesId);
 			current.push(e);
 		}
-		// Whichever single active event contributed the most raid bosses to
-		// "Now" — left `undefined` when nothing active did (Now backed only by
-		// the baseline current-rotation bosses), so its subtitle can skip.
-		let currentTopSource: SlotSourcePost | undefined;
-		let currentTopCount = -1;
+		// Every active event that brings raid bosses to "Now" (none when Now is backed only by the baseline current-rotation bosses).
+		const currentSources: Array<SlotSourcePost> = [];
 		for (const p of raidPosts) {
 			if (!isActive(p, now)) continue;
-			if (p.raids.length > currentTopCount) {
-				currentTopCount = p.raids.length;
-				currentTopSource = p;
-			}
+			if (p.raids.length > 0) currentSources.push(p);
 			for (const r of p.raids) {
 				const prev = endMap.get(r.speciesId);
 				if (prev === undefined || p.endDate < prev) endMap.set(r.speciesId, p.endDate);
@@ -971,7 +1015,7 @@ const RaidsTab = () => {
 		// only windows that have NOT started yet get their own date tab; a live
 		// window's bosses are already merged into "Now" (with their countdown).
 		const upcoming = raidPosts.filter((p) => p.startDate > now).sort((a, b) => a.startDate - b.startDate);
-		return { current, upcoming, endMap, currentTopSource };
+		return { current, upcoming, endMap, currentSources };
 	}, [ready, posts, specialBosses, currentBosses, gl]);
 
 	if (!ready) return <Spinner />;
@@ -982,10 +1026,10 @@ const RaidsTab = () => {
 		key: string;
 		label: string;
 		entries: Array<IEntry>;
-		topSource: SlotSourcePost | undefined;
+		sources: Array<SlotSourcePost>;
 	}> = [
-		{ key: 'current', label: t('calendar:raids.nowSlot'), entries: current, topSource: currentTopSource },
-		...upcomingGroups.map((g) => ({ key: g.label, label: g.label, entries: g.entries, topSource: g.topSource })),
+		{ key: 'current', label: t('calendar:raids.nowSlot'), entries: current, sources: currentSources },
+		...upcomingGroups.map((g) => ({ key: g.label, label: g.label, entries: g.entries, sources: g.sources })),
 	];
 	const activeSlot = slots.find((s) => s.key === sel) ?? slots[0];
 	const activeEntries = activeSlot?.entries ?? [];
@@ -1002,7 +1046,7 @@ const RaidsTab = () => {
 					</p>
 				) : (
 					<>
-						<SlotSource post={activeSlot?.topSource} gl={gl} />
+						<SlotSource posts={activeSlot?.sources ?? []} gl={gl} />
 						<RaidTierGroups entries={activeEntries} endMap={showEnd ? endMap : undefined} />
 					</>
 				)}
@@ -1050,17 +1094,11 @@ const SpawnsTab = () => {
 	const nowSeen = new Set<string>();
 	const nowSpawns: Array<IEntry> = [];
 	const endMap = new Map<string, number>();
-	// Whichever single active event contributed the most spawns to "Now" — see
-	// RaidsTab's own `currentTopSource` note (same idea, `undefined` skips the
-	// subtitle when nothing active backs it).
-	let nowTopSource: SlotSourcePost | undefined;
-	let nowTopCount = -1;
+	// Every active event that brings spawns to "Now" (none when nothing active backs it).
+	const nowSources: Array<SlotSourcePost> = [];
 	for (const p of withWild) {
 		if (!isActive(p, now)) continue;
-		if (p.wild.length > nowTopCount) {
-			nowTopCount = p.wild.length;
-			nowTopSource = p;
-		}
+		if (p.wild.length > 0) nowSources.push(p);
 		for (const e of p.wild) {
 			const prev = endMap.get(e.speciesId);
 			if (prev === undefined || p.endDate < prev) endMap.set(e.speciesId, p.endDate);
@@ -1093,7 +1131,7 @@ const SpawnsTab = () => {
 			<div ref={slotRef}>
 				{activeKey === 'now' ? (
 					<div style={{ marginTop: 'var(--s4)' }}>
-						<SlotSource post={nowTopSource} gl={gl} />
+						<SlotSource posts={nowSources} gl={gl} />
 						<MiniGrid entries={nowSpawns} endMap={endMap} />
 					</div>
 				) : slots.length === 0 ? (
@@ -1102,7 +1140,7 @@ const SpawnsTab = () => {
 					</p>
 				) : (
 					<div style={{ marginTop: 'var(--s4)' }}>
-						<SlotSource post={eventGroups.find((g) => g.label === activeKey)?.topSource} gl={gl} />
+						<SlotSource posts={eventGroups.find((g) => g.label === activeKey)?.sources ?? []} gl={gl} />
 						<MiniGrid entries={eventGroups.find((g) => g.label === activeKey)?.entries ?? []} />
 					</div>
 				)}
@@ -1450,7 +1488,7 @@ const MaxBattlesTab = () => {
 	return (
 		<div className='r-egglist'>
 			{/* the list of current bosses comes from Pokebattler */}
-			<SlotSource post={POKEBATTLER_SOURCE} gl={gl} />
+			<SlotSource posts={[POKEBATTLER_SOURCE]} gl={gl} />
 			{tiers.map((tier) => (
 				<section key={tier} className='r-eggsec'>
 					<div className='r-eggsec-head'>

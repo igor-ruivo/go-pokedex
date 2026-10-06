@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-import { CounterRankRow } from '../components/CounterRankRow';
+import { CounterRankRow, type RowStat } from '../components/CounterRankRow';
 import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { AppliedFilters, FilterBar } from '../components/FilterBar';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
@@ -74,6 +74,7 @@ interface Row {
 	pokemon: IGamemasterPokemon;
 	metric?: CardMetric;
 	moves?: Array<string>;
+	stats?: Array<RowStat>;
 }
 
 type PokedexGridRow =
@@ -297,17 +298,23 @@ const Rankings = () => {
 			// by the search term first and then numbering what's left 1, 2, 3…
 			// gives a search hit its position among just the other search hits,
 			// not its actual rank among every attacker of this type.
-			return Object.values(list)
-				.filter((e) => {
-					const p = gamemasterPokemon[e.speciesId];
-					return p && !p.aliasId;
-				})
+			const entries = Object.values(list).filter((e) => {
+				const p = gamemasterPokemon[e.speciesId];
+				return p && !p.aliasId;
+			});
+			const maxDps = Math.max(1, ...entries.map((e) => e.dps));
+			const maxTdo = Math.max(1, ...entries.map((e) => e.tdo));
+			return entries
 				.sort((a, b) => s * ((a[raidMetric] ?? 0) - (b[raidMetric] ?? 0)))
 				.map((e, i) => ({
 					pokemon: gamemasterPokemon[e.speciesId],
 					// Medals only when the list reads best-first.
 					metric: { rank: i + 1, ...(raidDir === 'desc' ? { podium: true } : {}), [raidMetric]: e[raidMetric] },
 					moves: [e.fastMove, e.chargedMove],
+					stats: [
+						{ label: RAID_METRIC_LABEL.dps, text: fmtRaidMetric(e.dps, 'dps'), fill: e.dps / maxDps },
+						{ label: RAID_METRIC_LABEL.tdo, text: fmtRaidMetric(e.tdo, 'tdo'), fill: e.tdo / maxTdo },
+					],
 				}))
 				.filter((row) => byName(row.pokemon));
 		}
@@ -344,6 +351,11 @@ const Rankings = () => {
 				.map(({ r, p, position }) => ({
 					pokemon: p,
 					moves: r.moveset,
+					stats: COMBAT_METRICS.map((m) => ({
+						label: combatMetricNames(t)[m],
+						text: String(Math.round(r[m])),
+						fill: r[m] / 100,
+					})),
 					metric: {
 						rank: isOverall ? r.rank : position,
 						// Medals only when the list reads best-first: the overall order ascending, or a score descending.
@@ -832,6 +844,7 @@ const Rankings = () => {
 											podium={virtualRow.row.metric?.podium}
 											moveLayout={isPvpLeagueMode ? 'pvp' : 'inline'}
 											moves={virtualRow.row.moves ?? []}
+											stats={virtualRow.row.stats}
 											moveData={moves}
 											score={
 												virtualRow.row.metric?.dps != null

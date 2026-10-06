@@ -877,6 +877,7 @@ const PokemonDetail = () => {
 			/>
 		</div>
 	);
+	const levelPrefix = t('pokemonDetail:hero.level.prefix');
 	const boardRows = LEAGUES.map((l) => {
 		const raidRow = l.id === 'raid';
 		const ready = raidRow ? raidDPSFetchCompleted : pvpFetchCompleted;
@@ -924,7 +925,39 @@ const PokemonDetail = () => {
 		// no IV-rank concept at all (its `rank` above is already the species'
 		// raid-attacker rank), so it's never called for it.
 		const ivSlice = !raidRow ? leagueSlice(ivPercents[member?.speciesId ?? ''], l.cpCap) : undefined;
-		return { l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice };
+		// what fills the middle of the row on a wide screen: the moves the rank is for, and the level and CP of that spread (or the
+		// DPS and TDO, for a raid attacker)
+		const detailEntry = raidRow ? boardData.raid[pIdx]?.types[typeIdx]?.entry : undefined;
+		const detailMoves = raidRow
+			? detailEntry
+				? [detailEntry.fastMove, detailEntry.chargedMove]
+				: []
+			: member
+				? (rankListFor(l.id)[member.speciesId]?.moveset ?? []).filter((m) => m !== 'none')
+				: [];
+		const detailLine = raidRow
+			? detailEntry
+				? `${fmtRaidMetric(detailEntry.dps, 'dps')} ${RAID_METRIC_LABEL.dps} · ${fmtRaidMetric(detailEntry.tdo, 'tdo')} ${RAID_METRIC_LABEL.tdo}`
+				: ''
+			: ivSlice
+				? `${levelPrefix} ${ivSlice.lvl} · ${ivSlice.cp.toLocaleString()} ${gameTranslator(GameTranslatorKeys.CPDisplay, gl)}`
+				: '';
+		return {
+			l,
+			ready,
+			member,
+			rank,
+			metric,
+			bestType,
+			total,
+			pIdx,
+			typeCount,
+			typeIdx,
+			rankChange,
+			ivSlice,
+			detailMoves,
+			detailLine,
+		};
 	});
 
 	return (
@@ -1152,7 +1185,22 @@ const PokemonDetail = () => {
 						<div className='r-board'>
 							{boardRows.map(
 								(
-									{ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice },
+									{
+										l,
+										ready,
+										member,
+										rank,
+										metric,
+										bestType,
+										total,
+										pIdx,
+										typeCount,
+										typeIdx,
+										rankChange,
+										ivSlice,
+										detailMoves,
+										detailLine,
+									},
 									rowIdx
 								) => {
 									const active = shownLeague === l.id;
@@ -1247,6 +1295,27 @@ const PokemonDetail = () => {
 														</Swap>
 													)}
 												</span>
+												{detailMoves.length > 0 && (
+													<Swap className='r-board-detail' k={String(rowTick[l.id] ?? 0)}>
+														<span className='r-board-moves'>
+															{detailMoves.map((mv, mi) => (
+																<Fragment key={`${mv}-${mi}`}>
+																	{mi > 0 && <i>+</i>}
+																	<Link
+																		to={R.move(mv)}
+																		className='r-board-mv'
+																		style={{ ['--tc' as string]: `var(--t-${(moves[mv]?.type ?? '').toLowerCase()})` }}
+																		onClick={(ev) => ev.stopPropagation()}
+																		onKeyDown={(ev) => ev.stopPropagation()}
+																	>
+																		{moveName(mv)}
+																	</Link>
+																</Fragment>
+															))}
+														</span>
+														{detailLine && <span className='r-board-detail-line'>{detailLine}</span>}
+													</Swap>
+												)}
 												<span className='r-board-fig'>
 													<Swap className='r-board-rank' k={String(rowTick[l.id] ?? 0)}>
 														{rank != null ? ordinal(rank, currentLanguage) : '—'}
@@ -1473,11 +1542,8 @@ const PokemonDetail = () => {
 													presets={[
 														[t('pokemonDetail:pvp.presets.zero'), { atk: 0, def: 0, hp: 0 }],
 														[t('pokemonDetail:pvp.presets.hundo'), { atk: 15, def: 15, hp: 15 }],
-														// No "rank 1" preset for an uncapped tier (Master, or a Mega/rotating
-														// cup sharing its uncapped cap) — the always-shown 15/15/15 preset
-														// already IS that spread there, so a second button for the same
-														// thing would be pure redundant clutter.
-														...(pvpCpCap <= 2500 && slice
+														// The "rank 1" preset is always there, in Master League too (where it is the same spread as 15/15/15).
+														...(slice
 															? [
 																	[
 																		t('pokemonDetail:pvp.presets.rank1', { league: activeLeagueMeta.full }),

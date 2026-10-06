@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName, sentenceCase } from '../../lib/format';
 import { R } from '../../lib/nav';
-import { fmtRaidMetric, RAID_METRIC_SORTS, type RaidMetric } from '../../lib/raid-metric';
+import { fmtRaidMetric, RAID_METRIC_LABEL, RAID_METRIC_SORTS, type RaidMetric } from '../../lib/raid-metric';
 import { TYPE_KEYS, typeVar } from '../../lib/types';
 import { useMoves } from '../../queries/moves';
 import { usePokemon } from '../../queries/pokemon';
@@ -292,7 +292,7 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 							<Link
 								key={m.opponent}
 								to={link(m.opponent)}
-								className='r-ctr-row'
+								className='r-ctr-row r-ctr-row--match'
 								style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 							>
 								<span className='r-ctr-rank'>{i + 1}</span>
@@ -301,6 +301,41 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 									<SpriteImg pokemon={p} loading='lazy' />
 								</span>
 								<span className='r-ctr-name'>{cleanName(p.speciesName)}</span>
+								{/* wide screens: the moves that opponent is ranked with, and the matchup as a bar */}
+								<span className='r-ctr-detail'>
+									<span className='r-ctr-detail-moves'>
+										{(activeLeague.rankList[m.opponent]?.moveset ?? [])
+											.filter((mv) => mv !== 'none')
+											.map((mv, mi) => (
+												<Fragment key={mv}>
+													{mi > 0 && <i>+</i>}
+													<span
+														role='link'
+														tabIndex={0}
+														className='r-ctr-detail-move'
+														style={{ ['--tc' as string]: typeVar(moves[mv]?.type ?? '') }}
+														onClick={(ev) => {
+															ev.preventDefault();
+															ev.stopPropagation();
+															void navigate(R.move(mv));
+														}}
+														onKeyDown={(ev) => {
+															if (ev.key === 'Enter') {
+																ev.preventDefault();
+																ev.stopPropagation();
+																void navigate(R.move(mv));
+															}
+														}}
+													>
+														{moves[mv]?.moveName[gl] ?? cleanName(mv)}
+													</span>
+												</Fragment>
+											))}
+									</span>
+									<span className='r-ctr-rating' data-tone={m.rating >= 500 ? 'win' : 'lose'}>
+										<span style={{ ['--v' as string]: Math.min(1, Math.max(0, m.rating / 1000)) }} />
+									</span>
+								</span>
 								<span className='r-ctr-score' data-tone={m.rating >= 500 ? 'win' : 'lose'}>
 									{(m.rating / 10).toFixed(1)}%
 								</span>
@@ -334,6 +369,9 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 		})
 		.sort((a, b) => dirSign * (a[metric] - b[metric]))
 		.slice(0, RAID_TOP);
+	// the bars in the middle of a row are measured against the best of the list
+	const maxDps = Math.max(1, ...list.map((x) => x.dps));
+	const maxTdo = Math.max(1, ...list.map((x) => x.tdo));
 
 	return (
 		<div className='r-movecontent'>
@@ -620,6 +658,10 @@ const CountersTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; a
 								podium
 								moves={[e.fastMove, e.chargedMove]}
 								moveData={moves}
+								stats={[
+									{ label: RAID_METRIC_LABEL.dps, text: fmtRaidMetric(e.dps, 'dps'), fill: e.dps / maxDps },
+									{ label: RAID_METRIC_LABEL.tdo, text: fmtRaidMetric(e.tdo, 'tdo'), fill: e.tdo / maxTdo },
+								]}
 								score={fmtRaidMetric(e[metric], metric)}
 								scoreLabel={RAID_METRIC_SORTS.find((o) => o.key === metric)?.label}
 								onActivate={() => void navigate(link(e.speciesId))}

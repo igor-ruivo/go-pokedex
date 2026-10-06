@@ -2,23 +2,23 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { MoveBuffs, MoveFigures, MoveHead } from '../../components/MoveStatRows';
 import { type RaidRecommendation, RaidTypeCoverage } from '../../components/RaidTypeCoverage';
 import { useLanguage } from '../../contexts/language-context';
 import type { ActiveLeague } from '../../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { cleanName } from '../../lib/format';
 import { baseMoveId, baseMoveIds, withGenericHiddenPower } from '../../lib/hidden-power';
-import { type Arena, buffInfo, fastMoveTurns, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
+import { type Arena, moveDPE, moveDPS, moveEPS } from '../../lib/moves';
 import { R } from '../../lib/nav';
 import { useMoves } from '../../queries/moves';
-import gameTranslator, { GameTranslatorKeys, gameTypeDisplayTranslator } from '../../utils/GameTranslator';
+import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 
 const EPS = 1e-9;
 
 const MoveRow = ({
 	pokemon,
 	moveId,
-	kind,
 	arena,
 	tags,
 	best,
@@ -33,40 +33,13 @@ const MoveRow = ({
 	best?: boolean;
 	recommended?: boolean;
 }) => {
-	const { t } = useTranslation(['pokemonDetail', 'moveDetail']);
+	const { t } = useTranslation(['pokemonDetail']);
 	const { currentGameLanguage } = useLanguage();
 	const { moves: rawMoves } = useMoves();
 	const moves = useMemo(() => withGenericHiddenPower(rawMoves), [rawMoves]);
 	const m = moves[moveId];
 	if (!m) return null;
 	const type = m.type.toLowerCase();
-
-	const pow = arena === 'pve' ? m.pvePower : m.pvpPower;
-	const nrg = arena === 'pve' ? m.pveEnergy : m.pvpEnergy;
-	const cd = arena === 'pve' ? m.pveCooldown : m.pvpCooldown;
-
-	const base: Array<[string, string | number]> = [
-		[t('moveDetail:statLabels.dmg'), pow],
-		[t('moveDetail:statLabels.nrg'), kind === 'fast' ? `+${nrg}` : Math.abs(nrg)],
-		...(arena === 'pve'
-			? ([[t('moveDetail:statLabels.dur'), `${cd}s`]] as Array<[string, string | number]>)
-			: kind === 'fast'
-				? ([[t('moveDetail:statLabels.turns'), fastMoveTurns(m)]] as Array<[string, string | number]>)
-				: []),
-	];
-	// The raw stats above always render in full; only the derived figures
-	// (DPS/EPS for fast, DPE for charged) sit in a shrinkable,
-	// ellipsis-truncating group (`.r-move-derived`) — see MoveStatRows.tsx's
-	// doc for why.
-	const derived: Array<[string, string | number]> =
-		kind === 'fast'
-			? [
-					[t('moveDetail:statLabels.dps'), moveDPS(m, arena, pokemon).toFixed(1)],
-					[t('moveDetail:statLabels.eps'), moveEPS(m, arena).toFixed(1)],
-				]
-			: [[t('moveDetail:statLabels.dpe'), moveDPE(m, arena, pokemon).toFixed(2)]];
-	// stat-stage buffs are a PvP-only mechanic
-	const fx = arena === 'pvp' && kind === 'charged' ? buffInfo(m.buffs, currentGameLanguage) : null;
 
 	return (
 		<Link
@@ -75,48 +48,24 @@ const MoveRow = ({
 			data-best={best ? '' : undefined}
 			style={{ ['--tc' as string]: `var(--t-${type})` }}
 		>
-			<div className='r-move-head'>
-				<span className='r-move-type'>{gameTypeDisplayTranslator(type, currentGameLanguage) || m.type}</span>
-				<b>{m.moveName[currentGameLanguage] ?? cleanName(moveId)}</b>
-				{recommended && <i className='r-move-tag r-move-tag--rec'>{t('pokemonDetail:moves.recommended')}</i>}
-				{tags.map((t) => (
-					<i key={t} className='r-move-tag'>
-						{t}
-					</i>
-				))}
-			</div>
-			<div className='r-move-stats'>
-				<div>
-					<u>{arena === 'pve' ? t('pokemonDetail:moves.pve') : t('pokemonDetail:moves.pvp')}</u>
-					{base.map(([k, v]) => (
-						<span key={k}>
-							{k} <b>{v}</b>
-						</span>
-					))}
-					<span className='r-move-sep' aria-hidden='true' />
-					<span className='r-move-derived'>
-						{derived.map(([k, v], i) => (
-							<span key={k}>
-								{i > 0 ? ' · ' : ''}
-								{k} <b>{v}</b>
-							</span>
+			<MoveHead
+				m={m}
+				moveId={moveId}
+				gl={currentGameLanguage}
+				chips={
+					<>
+						{recommended && <i className='r-move-tag r-move-tag--rec'>{t('pokemonDetail:moves.recommended')}</i>}
+						{tags.map((tag) => (
+							<i key={tag} className='r-move-tag'>
+								{tag}
+							</i>
 						))}
-					</span>
-				</div>
-			</div>
-			{fx && (
-				<p className='r-move-buff'>
-					{fx.badges.map((b, i) => (
-						<span key={i}>
-							{i > 0 && ' · '}
-							{b.label}
-							{b.magnitude > 1 ? ` ×${b.magnitude}` : ''}
-						</span>
-					))}
-					{' — '}
-					{fx.chanceLabel}: {fx.chancePercent}%
-				</p>
-			)}
+					</>
+				}
+			/>
+			<MoveFigures m={m} arenas={[arena]} pokemon={pokemon} />
+			{/* stat-stage buffs are a PvP-only mechanic */}
+			{arena === 'pvp' && <MoveBuffs m={m} gl={currentGameLanguage} />}
 		</Link>
 	);
 };

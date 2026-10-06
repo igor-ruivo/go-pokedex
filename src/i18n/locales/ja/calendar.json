@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "その他の{{raid}}",
+		"raidHour": "レイドアワー",
 		"nothingScheduled": "予定はありません。",
 		"nowSlot": "現在"
 	},

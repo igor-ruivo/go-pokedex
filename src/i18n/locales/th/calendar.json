@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "{{raid}}อื่น ๆ",
+		"raidHour": "ชั่วโมงตีบอส",
 		"nothingScheduled": "ยังไม่มีกำหนดการ",
 		"nowSlot": "ตอนนี้"
 	},

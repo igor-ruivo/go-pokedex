@@ -96,6 +96,10 @@ export interface BuffBadge {
 	 *  suffix when >1, the same locale-agnostic convention Pokémon GO's own
 	 *  strings use elsewhere (e.g. "2× Stardust"). */
 	magnitude: number;
+	/** Whether the stat goes up or down. */
+	dir: 'raise' | 'lower';
+	/** Whether it is good for whoever throws the move: its own stat raised, or the opponent's lowered. */
+	good: boolean;
 }
 
 export interface BuffInfo {
@@ -122,7 +126,12 @@ export const buffInfo = (buffs: BuffsType | undefined, gl: GameLanguage): BuffIn
 		if (!v) continue;
 		const dir: 'raise' | 'lower' = v > 0 ? 'raise' : 'lower';
 		const translatorKey = BUFF_KEY_LOOKUP[who][stat][dir];
-		badges.push({ label: sentenceCase(gameTranslator(translatorKey, gl)), magnitude: Math.abs(v) });
+		badges.push({
+			label: sentenceCase(gameTranslator(translatorKey, gl)),
+			magnitude: Math.abs(v),
+			dir,
+			good: (who === 'own') === (dir === 'raise'),
+		});
 	}
 	if (badges.length === 0) return null;
 

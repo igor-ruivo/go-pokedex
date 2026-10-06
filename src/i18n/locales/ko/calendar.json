@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "다른 {{raid}}",
+		"raidHour": "레이드 아워",
 		"nothingScheduled": "예정된 일정이 없습니다.",
 		"nowSlot": "지금"
 	},

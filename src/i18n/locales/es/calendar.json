@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Otra {{raid}}",
+		"raidHour": "Hora de incursiones",
 		"nothingScheduled": "Nada programado.",
 		"nowSlot": "Ahora"
 	},

@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "其他{{raid}}",
+		"raidHour": "團體戰時間",
 		"nothingScheduled": "目前沒有排定的項目。",
 		"nowSlot": "現在"
 	},

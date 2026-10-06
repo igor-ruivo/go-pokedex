@@ -11,6 +11,17 @@
 .rvmp .r-shell--wide {
 	max-width: 1180px;
 }
+/* the usual page column grows with the screen: 680px up to a tablet, 860px on a laptop, 960px (a bit short of the top bar's 1024px) on a big screen */
+@media (min-width: 900px) {
+	.rvmp .r-shell:not(.r-shell--wide) {
+		max-width: 860px;
+	}
+}
+@media (min-width: 1200px) {
+	.rvmp .r-shell:not(.r-shell--wide) {
+		max-width: 960px;
+	}
+}
 
 .rvmp .r-topbar {
 	position: sticky;
@@ -2804,83 +2815,6 @@
 	padding: 1px 5px;
 	letter-spacing: 0.02em;
 }
-.rvmp .r-move-stats {
-	display: flex;
-	gap: var(--s4);
-	margin-top: var(--s2);
-	flex-wrap: wrap;
-}
-.rvmp .r-move-stats > div {
-	display: flex;
-	align-items: baseline;
-	flex-wrap: wrap;
-	gap: 6px 10px;
-}
-.rvmp .r-move-stats u {
-	text-decoration: none;
-	font-size: 10px;
-	font-weight: 800;
-	letter-spacing: 0.08em;
-	color: var(--text-faint);
-}
-.rvmp .r-move-stats span {
-	font-size: 11px;
-	color: var(--text-dim);
-	font-weight: 600;
-}
-/* each stat keeps its size and stays on one line — only the separator flexes */
-.rvmp .r-move-stats u,
-.rvmp .r-move-stats span:not(.r-move-sep) {
-	flex: none;
-	white-space: nowrap;
-}
-.rvmp .r-move-stats span b {
-	color: var(--text);
-	font-variant-numeric: tabular-nums;
-	font-weight: 800;
-}
-/* divider between the raw stats (DMG / NRG / CD) and the derived ones
-   (DPS / EPS / DPE) — a hairline that grows to push the two groups apart, and
-   collapses to nothing on a card too narrow to spare the room */
-.rvmp .r-move-sep {
-	flex: 1 1 0;
-	min-width: 0;
-	align-self: center;
-	height: 1px;
-	background: var(--border);
-	margin: 0 2px;
-}
-/* Wraps the derived figures (DPS/EPS for a fast move, DPE for a charged one)
-   as a single shrinkable unit — overrides the `flex: none` every other
-   `.r-move-stats` span gets above, since this is the one group allowed to
-   give up width. The raw dmg/nrg/cooldown stats before it never shrink or
-   truncate; on a card too narrow for everything, `.r-move-sep` collapses
-   first and this ends in "…" rather than pushing the row wider or getting
-   silently dropped. */
-.rvmp .r-move-stats span.r-move-derived {
-	display: inline-block;
-	flex: 0 1 auto;
-	min-width: 0;
-	/* The hard backstop: whatever flex-shrink computes, this group can never
-	   claim more than 60% of the row's own width — so on a 320px-wide card
-	   it's capped well below what "DPS 8.0 · EPS 2.1" needs, and the
-	   ellipsis is guaranteed to kick in rather than depending entirely on
-	   flex-shrink math (which some browsers only apply as a last resort for
-	   a content-sized/`auto`-basis item) to save the row from overflowing. */
-	max-width: 60%;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	vertical-align: baseline;
-}
-/* PvP stat-stage effect line on charged moves */
-.rvmp .r-move-buff {
-	margin-top: var(--s2);
-	font-size: 10.5px;
-	font-weight: 700;
-	line-height: 1.35;
-	color: color-mix(in srgb, var(--tc, var(--accent)) 55%, var(--text-dim));
-}
 
 /* ===========================================================================
    Calendar
@@ -3905,28 +3839,6 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-/* on a card (moves list + a Pokémon's Moves tab) the stat line spans the full
-   card width and stays on one row, so the growing `.r-move-sep` can push the
-   derived metrics out to the right */
-.rvmp .r-move--link .r-move-stats > div {
-	width: 100%;
-	min-width: 0;
-	flex-wrap: nowrap;
-	overflow: clip;
-}
-.rvmp .r-move--link .r-move-buff {
-	white-space: nowrap;
-	overflow: clip;
-	text-overflow: ellipsis;
-}
-/* two PvE / PvP stat lines stacked, not wrapped side-by-side */
-.rvmp .r-move-stats--stack {
-	flex-direction: column;
-	gap: 5px 0;
-}
-.rvmp .r-move-stats--stack > div {
-	width: 100%;
 }
 .rvmp .r-readout--wrap {
 	flex-wrap: wrap;
@@ -8244,4 +8156,475 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	border-radius: 50%;
 	background: var(--surface);
 	filter: none;
+}
+
+/* wide page column (laptops and up): the hero's base stats stand in a column of their own beside the art and the name, the family
+   keeps the full width underneath */
+@media (min-width: 900px) {
+	.rvmp .r-hero-v2 {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 250px;
+		column-gap: var(--s6);
+		align-items: center;
+	}
+	.rvmp .r-hero-v2 .r-hero-main {
+		grid-template-columns: auto auto;
+		justify-content: center;
+	}
+	.rvmp .r-hero-v2 .r-bars {
+		grid-template-columns: 1fr;
+		gap: 16px;
+		max-width: none;
+		margin: 0;
+		padding: 0 0 0 var(--s5);
+		border-top: 0;
+		border-left: 1px solid var(--border);
+	}
+	.rvmp .r-hero-v2 .r-hero-family {
+		grid-column: 1 / -1;
+	}
+}
+
+/* ---- wide screens only: the middle of the rows that were mostly empty ------------------------------------------------------
+   the best reachable rows (the moves the rank is for, the level and CP of that spread), and the ranking rows (the role scores of a PvP
+   list, the DPS and TDO of a raid one; the same row is the one of a Pokémon's counters). Under 900px the rows have no room for them. */
+.rvmp .r-board-detail,
+.rvmp .r-ctr-stats {
+	display: none;
+}
+@media (min-width: 900px) {
+	.rvmp .r-board-row {
+		grid-template-columns: 48px minmax(0, 250px) minmax(0, 1fr) auto;
+	}
+	.rvmp .r-board-row > .r-board-fig {
+		grid-column: 4;
+	}
+	.rvmp .r-board-detail {
+		grid-column: 3;
+		display: grid;
+		gap: 3px;
+		min-width: 0;
+		padding-left: var(--s4);
+		border-left: 1px solid var(--border);
+	}
+	.rvmp .r-board-moves {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 2px 6px;
+		font-size: 12.5px;
+		font-weight: 700;
+		color: var(--text);
+	}
+	.rvmp .r-board-moves i {
+		font-style: normal;
+		color: var(--text-faint);
+	}
+	.rvmp .r-board-detail-line {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--text-dim);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.rvmp .r-rank-row {
+		grid-template-columns: 18px 48px minmax(0, 1fr) minmax(0, 380px) 88px;
+	}
+	.rvmp .r-rank-row > .r-ctr-score {
+		justify-self: end;
+		grid-column: 5;
+	}
+	.rvmp .r-ctr-stats {
+		grid-column: 4;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 6px var(--s4);
+		padding-left: var(--s4);
+		border-left: 1px solid var(--border);
+	}
+	.rvmp .r-ctr-stat {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: baseline;
+		row-gap: 3px;
+		min-width: 0;
+	}
+	.rvmp .r-ctr-stat i {
+		font-style: normal;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--text-faint);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.rvmp .r-ctr-stat b {
+		font-family: var(--font-display);
+		font-size: 12.5px;
+		font-variant-numeric: tabular-nums;
+	}
+	.rvmp .r-ctr-stat-bar {
+		grid-column: 1 / -1;
+		height: 4px;
+		border-radius: var(--r-pill);
+		background: color-mix(in srgb, var(--text) 9%, transparent);
+		overflow: hidden;
+	}
+	.rvmp .r-ctr-stat-bar > span {
+		display: block;
+		height: 100%;
+		width: calc(var(--v) * 100%);
+		border-radius: inherit;
+		background: color-mix(in srgb, var(--tc, var(--accent)), var(--text) 18%);
+	}
+
+	/* the IV bars: not as long as the page */
+	.rvmp .r-iv {
+		max-width: 780px;
+		margin-inline: auto;
+	}
+}
+
+/* wide screens: a matchup row (strong or weak against) also shows the moves of the opponent and the matchup as a bar */
+.rvmp .r-ctr-detail {
+	display: none;
+}
+@media (min-width: 900px) {
+	.rvmp .r-ctr-row--match {
+		grid-template-columns: 18px 48px minmax(0, 1fr) minmax(0, 380px) 88px;
+	}
+	.rvmp .r-ctr-row--match > .r-ctr-score {
+		justify-self: end;
+		grid-column: 5;
+	}
+	.rvmp .r-ctr-row--match > .r-ctr-detail {
+		grid-column: 4;
+		display: grid;
+		gap: 6px;
+		padding-left: var(--s4);
+		border-left: 1px solid var(--border);
+		min-width: 0;
+	}
+	.rvmp .r-ctr-detail-moves {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--text-dim);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.rvmp .r-ctr-rating {
+		position: relative;
+		height: 5px;
+		border-radius: var(--r-pill);
+		background: color-mix(in srgb, var(--text) 9%, transparent);
+		overflow: hidden;
+	}
+	.rvmp .r-ctr-rating > span {
+		display: block;
+		height: 100%;
+		width: calc(var(--v) * 100%);
+		border-radius: inherit;
+		background: var(--text-faint);
+	}
+	.rvmp .r-ctr-rating[data-tone='win'] > span {
+		background: color-mix(in srgb, var(--t-grass), var(--text) var(--ink-mix));
+	}
+}
+
+/* the moves named in the middle of a row (the best reachable rows, a matchup row of the Counters tab) are links to the move like every other */
+.rvmp .r-board-mv,
+.rvmp .r-ctr-detail-move {
+	border-radius: 6px;
+	margin: 0 -3px;
+	padding: 0 3px;
+	color: inherit;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background 0.14s ease,
+		color 0.14s ease;
+}
+.rvmp .r-board-mv:hover,
+.rvmp .r-ctr-detail-move:hover {
+	background: color-mix(in srgb, var(--tc, var(--accent)) 24%, transparent);
+	color: color-mix(in srgb, var(--tc, var(--accent)), var(--text) calc(var(--ink-mix) + 30%));
+	text-decoration: underline;
+	text-decoration-thickness: 1.5px;
+	text-underline-offset: 2px;
+}
+.rvmp .r-ctr-detail-moves i {
+	font-style: normal;
+	opacity: 0.6;
+	padding: 0 4px;
+}
+
+/* ---- a move's row (the Moves page, a Pokémon's Moves tab) -------------------------------------------------------------------
+   the head: the type (its picture, shown on wide screens, and its pill), the name, the chips; the figures of each arena in fixed places,
+   so that the same figure sits in the same column on every row; the stat-stage effects as chips */
+.rvmp .r-move-ico {
+	display: none;
+}
+.rvmp .r-move-chips {
+	display: contents;
+}
+.rvmp .r-move-chips .r-move-type {
+	order: -1;
+}
+.rvmp .r-move-stats {
+	display: grid;
+	gap: 5px;
+	margin-top: var(--s2);
+}
+.rvmp .r-mv-arena {
+	display: flex;
+	align-items: baseline;
+	gap: 6px 10px;
+	min-width: 0;
+	overflow: clip;
+}
+.rvmp .r-mv-arena u {
+	flex: none;
+	text-decoration: none;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	color: var(--text-faint);
+}
+.rvmp .r-mv-cell {
+	flex: none;
+	display: inline-flex;
+	align-items: baseline;
+	gap: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--text-dim);
+	white-space: nowrap;
+}
+.rvmp .r-mv-cell i {
+	font-style: normal;
+}
+.rvmp .r-mv-cell b {
+	color: var(--text);
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+}
+/* the first of the derived figures (DPS, or DPE) starts the group at the right */
+.rvmp .r-mv-cell[data-col='main'] {
+	margin-left: auto;
+}
+.rvmp .r-move-buff {
+	display: flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: 4px 6px;
+	margin-top: var(--s2);
+	overflow: clip;
+	font-size: 10.5px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+.rvmp .r-buff {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 1px 8px 1px 6px;
+	border-radius: var(--r-pill);
+	color: color-mix(in srgb, var(--t-fighting), var(--text) var(--ink-mix));
+	background: color-mix(in srgb, var(--t-fighting) 14%, transparent);
+}
+.rvmp .r-buff[data-good] {
+	color: color-mix(in srgb, var(--t-grass), var(--text) var(--ink-mix));
+	background: color-mix(in srgb, var(--t-grass) 14%, transparent);
+}
+.rvmp .r-buff i {
+	font-style: normal;
+	font-size: 8px;
+}
+.rvmp .r-buff-chance {
+	margin-left: 2px;
+	color: var(--text-dim);
+}
+.rvmp .r-buff-chance b {
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 900px) {
+	/* the row: the move on the left (its type's disc, the name, the chips), its figures on the right in two lines, PvE over PvP, every
+	   figure in a column of its own so it lines up from row to row */
+	.rvmp .r-move--link {
+		display: grid;
+		grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
+		column-gap: var(--s4);
+		align-items: center;
+		padding: var(--s3) var(--s4);
+	}
+	.rvmp .r-move--link .r-move-head {
+		grid-column: 1;
+		grid-row: 1 / span 2;
+		display: grid;
+		grid-template-columns: 34px minmax(0, 1fr);
+		column-gap: var(--s3);
+		row-gap: 3px;
+		align-items: center;
+	}
+	.rvmp .r-move-ico {
+		display: block;
+		grid-row: 1 / span 2;
+		box-sizing: border-box;
+		width: 34px;
+		height: 34px;
+		padding: 5px;
+		border-radius: 50%;
+		border: 1px solid var(--border-strong);
+		background: color-mix(in srgb, var(--tc, var(--accent)) 16%, var(--surface));
+	}
+	.rvmp .r-move--link .r-move-head b {
+		grid-column: 2;
+		max-width: none;
+		font-size: 15.5px;
+		line-height: 1.2;
+		white-space: normal;
+	}
+	.rvmp .r-move-chips {
+		grid-column: 2;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+	/* the type is the disc: its name is the disc's label, no pill for it */
+	.rvmp .r-move-chips .r-move-type {
+		display: none;
+	}
+	.rvmp .r-move-chips .r-move-tag {
+		padding: 1px 7px;
+		font-size: 10px;
+	}
+
+	.rvmp .r-move--link .r-move-stats {
+		grid-column: 2;
+		gap: 6px;
+		margin-top: 0;
+		padding-left: var(--s4);
+		border-left: 1px solid var(--border);
+	}
+	.rvmp .r-mv-arena {
+		display: grid;
+		grid-template-columns: 34px 86px 86px 92px 92px 92px;
+		align-items: baseline;
+		gap: 0 var(--s2);
+	}
+	.rvmp .r-mv-arena u {
+		margin: 0;
+	}
+	.rvmp .r-mv-cell {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 5px;
+		margin-left: 0;
+		font-size: 11.5px;
+	}
+	.rvmp .r-mv-cell b {
+		font-size: 13.5px;
+	}
+	.rvmp .r-mv-cell[data-col='dmg'] {
+		grid-column: 2;
+	}
+	.rvmp .r-mv-cell[data-col='nrg'] {
+		grid-column: 3;
+	}
+	.rvmp .r-mv-cell[data-col='dur'] {
+		grid-column: 4;
+	}
+	.rvmp .r-mv-cell[data-col='main'] {
+		grid-column: 5;
+		margin-left: 0;
+	}
+	.rvmp .r-mv-cell[data-col='eps'] {
+		grid-column: 6;
+	}
+	/* the stat-stage effects float at the lower right end of the row (where a charged move has no EPS), so they never make it taller */
+	.rvmp .r-move--link {
+		position: relative;
+	}
+	.rvmp .r-move--link .r-move-buff {
+		position: absolute;
+		right: var(--s4);
+		bottom: var(--s3);
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 3px;
+		margin: 0;
+		font-size: 11px;
+	}
+}
+
+/* ---- the dots that switch between the reachables (the best reachable rows, the attacker types of the raid row, a type's movesets) ----
+   bigger than they were, on every width, with a smooth border; no coloured glow */
+.rvmp .r-board-pips,
+.rvmp .r-board-typepips,
+.rvmp .r-raidtype-pips {
+	gap: 6px;
+}
+.rvmp .r-board-pips {
+	bottom: 4px;
+}
+.rvmp .r-board-typepips {
+	min-height: 14px;
+	margin-top: 2px;
+}
+.rvmp .r-board-pips i,
+.rvmp .r-board-typepips i,
+.rvmp .r-raidtype-pips i {
+	box-sizing: border-box;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	border: 1px solid color-mix(in srgb, var(--text-faint) 55%, transparent);
+	background: color-mix(in srgb, var(--text-faint) 14%, transparent);
+	box-shadow: none;
+}
+.rvmp .r-board-pips i[data-on='true'],
+.rvmp .r-board-typepips i[data-on='true'] {
+	border-color: color-mix(in srgb, var(--lg), var(--text) 25%);
+	background: var(--lg);
+	box-shadow: none;
+}
+.rvmp .r-raidtype-pips i[data-on='true'] {
+	border-color: color-mix(in srgb, var(--tc, var(--accent)), var(--text) 25%);
+	background: var(--tc, var(--accent));
+	box-shadow: none;
+}
+
+/* the tier of a milestone (its name and its rank) has the room to stay on one line */
+@media (min-width: 521px) {
+	.rvmp .r-milestone {
+		grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+	}
+}
+
+/* wide page column: the IV table spends the room on bigger columns, and the percentage bar takes what is left (no cap) */
+@media (min-width: 900px) {
+	.rvmp .r-ivt .r-ivt-head,
+	.rvmp .r-ivt .r-ivt-row {
+		grid-template-columns: 52px 108px 200px 62px 1fr 76px 52px;
+		gap: 14px;
+		padding: 0 var(--s3);
+	}
+	.rvmp .r-ivt .r-ivt-head {
+		font-size: 11px;
+	}
+	.rvmp .r-ivt .r-ivt-row {
+		font-size: 14.5px;
+	}
+	.rvmp .r-ivt .r-ivt-stats {
+		font-size: 13px;
+	}
+	.rvmp .r-ivt .r-ivt-bar {
+		max-width: none;
+		margin-right: 0;
+	}
 }

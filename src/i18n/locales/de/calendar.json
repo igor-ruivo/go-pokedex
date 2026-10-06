@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Weitere {{raid}}s",
+		"raidHour": "Raid-Stunde",
 		"nothingScheduled": "Nichts geplant.",
 		"nowSlot": "Jetzt"
 	},

@@ -10,6 +10,13 @@ import { RankMedal } from './RankMedal';
 import { ShadowMark } from './ShadowMark';
 import { SpriteImg } from './Sprite';
 
+/** One figure shown in the middle of a row on a wide screen: its name, its text, and how full its bar is (0 to 1). */
+export interface RowStat {
+	label: string;
+	text: string;
+	fill: number;
+}
+
 export const CounterRankRow = ({
 	pokemon,
 	rank,
@@ -20,6 +27,7 @@ export const CounterRankRow = ({
 	rankChange,
 	podium = false,
 	moveLayout = 'inline',
+	stats,
 	onActivate,
 }: {
 	pokemon: IGamemasterPokemon;
@@ -31,6 +39,8 @@ export const CounterRankRow = ({
 	rankChange?: number | undefined;
 	podium?: boolean | undefined;
 	moveLayout?: 'inline' | 'pvp' | undefined;
+	/** What fills the middle of the row on a wide screen (hidden on a narrow one, where the row has no room for it). */
+	stats?: ReadonlyArray<RowStat> | undefined;
 	onActivate: () => void;
 }) => {
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
@@ -100,6 +110,19 @@ export const CounterRankRow = ({
 						</span>
 					))}
 			</div>
+			{stats && stats.length > 0 && (
+				<div className='r-ctr-stats' aria-hidden='true'>
+					{stats.map((stat) => (
+						<span key={stat.label} className='r-ctr-stat'>
+							<i>{stat.label}</i>
+							<b>{stat.text}</b>
+							<span className='r-ctr-stat-bar'>
+								<span style={{ ['--v' as string]: Math.min(1, Math.max(0, stat.fill)) }} />
+							</span>
+						</span>
+					))}
+				</div>
+			)}
 			{score != null && scoreLabel != null && (
 				<span className='r-ctr-score'>
 					{score}

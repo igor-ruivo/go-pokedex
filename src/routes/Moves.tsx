@@ -5,17 +5,16 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { AppliedFilters, FilterBar } from '../components/FilterBar';
 import { ListBar } from '../components/ListBar';
-import { MoveStatRows } from '../components/MoveStatRows';
+import { MoveHead, MoveStatRows } from '../components/MoveStatRows';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useLanguage } from '../contexts/language-context';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { usePlayOnChange } from '../hooks/usePlayOnChange';
-import { cleanName } from '../lib/format';
 import { withGenericHiddenPower } from '../lib/hidden-power';
 import { type Arena, hasBuff, moveDPE, moveDPS, moveEPS } from '../lib/moves';
 import { R } from '../lib/nav';
 import { TYPE_KEYS } from '../lib/types';
 import { useMoves } from '../queries/moves';
-import { gameTypeDisplayTranslator } from '../utils/GameTranslator';
 
 // PvE / PvP are split out so it's unambiguous which stat a sort acts on.
 const useMoveSorts = (t: (key: string) => string): ReadonlyArray<SortOption> => [
@@ -139,13 +138,24 @@ const Moves = () => {
 	const listRef = useRef<HTMLDivElement>(null);
 	usePlayOnChange(listRef, kind, true);
 	const [scrollMargin, setScrollMargin] = useState(0);
+	// The list's offset follows anything above it that changes height (the filters wrapping differently as the page column grows or
+	// shrinks), not just the list's own length.
 	useEffect(() => {
-		setScrollMargin(listRef.current?.offsetTop ?? 0);
+		const el = listRef.current;
+		if (!el) return;
+		const measure = () => setScrollMargin(el.offsetTop);
+		measure();
+		const ro = new ResizeObserver(measure);
+		ro.observe(el);
+		if (el.parentElement) ro.observe(el.parentElement);
+		return () => ro.disconnect();
 	}, [list.length]);
 
+	// On a wide screen the stat-stage effects of a charged move float over the row instead of adding a line to it, so every row is the same height.
+	const wide = useMediaQuery('(min-width: 900px)');
 	const rowHeight = (i: number) => {
 		const m = list[i];
-		return m && !m.isFast && hasBuff(m.buffs) ? ROW_BUFF : ROW_PLAIN;
+		return !wide && m && !m.isFast && hasBuff(m.buffs) ? ROW_BUFF : ROW_PLAIN;
 	};
 	const virt = useWindowVirtualizer({
 		count: list.length,
@@ -160,7 +170,7 @@ const Moves = () => {
 	// same, so force a fresh pass whenever the ordering (the list ref) changes.
 	useEffect(() => {
 		virt.measure();
-	}, [list, virt]);
+	}, [list, virt, wide]);
 
 	if (!movesFetchCompleted) {
 		return (
@@ -226,14 +236,12 @@ const Moves = () => {
 									className='r-move r-move--link'
 									style={{ ['--tc' as string]: `var(--t-${typeKey})` }}
 								>
-									<div className='r-move-head'>
-										<span className='r-move-type'>{gameTypeDisplayTranslator(typeKey, gl) || m.type}</span>
-										<b>{m.moveName[gl] ?? cleanName(m.moveId)}</b>
-										{/* Short form — the full "Fast/Charged Attack" GameTranslator
-										    headers run long enough in some locales to blow out this tag's
-										    width and break the row's layout. */}
-										<i className='r-move-tag'>{m.isFast ? t('moves:page.kind.fast') : t('moves:page.kind.charged')}</i>
-									</div>
+									<MoveHead
+										m={m}
+										moveId={m.moveId}
+										gl={gl}
+										chips={<i className='r-move-tag'>{m.isFast ? t('moves:page.kind.fast') : t('moves:page.kind.charged')}</i>}
+									/>
 									<MoveStatRows m={m} gl={gl} />
 								</Link>
 							</div>

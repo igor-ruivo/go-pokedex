@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Diğer {{raid}}lar",
+		"raidHour": "Akın Saati",
 		"nothingScheduled": "Planlanmış bir şey yok.",
 		"nowSlot": "Şimdi"
 	},

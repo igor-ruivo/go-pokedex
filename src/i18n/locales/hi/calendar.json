@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "अन्य {{raid}}",
+		"raidHour": "रेड आवर",
 		"nothingScheduled": "कुछ भी शेड्यूल नहीं है।",
 		"nowSlot": "अभी"
 	},

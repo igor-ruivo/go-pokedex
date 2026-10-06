@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "Другие {{raid}}ы",
+		"raidHour": "Час рейдов",
 		"nothingScheduled": "Ничего не запланировано.",
 		"nowSlot": "Сейчас"
 	},

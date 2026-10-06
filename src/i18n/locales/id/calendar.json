@@ -37,6 +37,7 @@
 		},
 		"shadowPrefix": "{{shadow}} · {{tier}}",
 		"otherRaids": "{{raid}} lainnya",
+		"raidHour": "Jam Raid",
 		"nothingScheduled": "Belum ada jadwal.",
 		"nowSlot": "Sekarang"
 	},
