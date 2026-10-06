@@ -26,6 +26,8 @@ export const NAV: Array<{
 	shortLabel?: (t: TFunction) => string;
 	hint: (t: TFunction, gl: GameLanguage) => string;
 	match: (p: string) => boolean;
+	// Left out of the bar on a phone (it holds five at most there, the platforms' own limit); a wider bar has the room for it.
+	wideOnly?: boolean;
 }> = [
 	{
 		to: R.rankings('great'),
@@ -56,6 +58,7 @@ export const NAV: Array<{
 		label: (t) => t('common:nav.moves.label'),
 		hint: (t) => t('common:nav.moves.hint'),
 		match: (p) => p.startsWith('/move'),
+		wideOnly: true,
 	},
 	{
 		to: R.types,

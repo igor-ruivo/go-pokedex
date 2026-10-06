@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Início"
 	},
 	"nav": {
+		"mainAriaLabel": "Navegação principal",
 		"leagues": { "hint": "Classificações da Liga Great, Ultra e Master" },
 		"teams": { "label": "Equipas", "hint": "Avalia uma equipa de 3 para a Liga Super, Ultra e Mestre" },
 		"calendar": { "label": "Calendário", "hint": "Eventos, {{raid}}s, spawns e ovos" },

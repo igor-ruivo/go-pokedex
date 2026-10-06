@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Startseite"
 	},
 	"nav": {
+		"mainAriaLabel": "Hauptnavigation",
 		"leagues": { "hint": "Ranglisten für Superliga, Hyperliga und Meisterliga" },
 		"teams": { "label": "Teams", "hint": "Bewerte dein 3er-Team für Super-, Hyper- und Meisterliga" },
 		"calendar": { "label": "Kalender", "hint": "Events, {{raid}}s, Fundorte und Eier" },

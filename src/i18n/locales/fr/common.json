@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Accueil"
 	},
 	"nav": {
+		"mainAriaLabel": "Navigation principale",
 		"leagues": { "hint": "Classements Ligue Super, Hyper et Master" },
 		"teams": { "label": "Équipes", "hint": "Évalue une équipe de 3 pour la Ligue Super, Hyper et Master" },
 		"calendar": { "label": "Calendrier", "hint": "Événements, {{raid}}s, apparitions et œufs" },

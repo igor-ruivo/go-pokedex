@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Home"
 	},
 	"nav": {
+		"mainAriaLabel": "Main navigation",
 		"leagues": { "hint": "Great, Ultra and Master League rankings" },
 		"teams": { "label": "Teams", "hint": "Rate a team of 3 for Great, Ultra and Master League" },
 		"calendar": { "label": "Calendar", "hint": "Events, {{raid}}s, spawns and eggs" },

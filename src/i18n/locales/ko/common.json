@@ -4,6 +4,7 @@
 		"homeAriaLabel": "홈"
 	},
 	"nav": {
+		"mainAriaLabel": "기본 탐색",
 		"leagues": { "hint": "슈퍼·하이퍼·마스터 리그 랭킹" },
 		"teams": { "label": "팀", "hint": "슈퍼·하이퍼·마스터 리그용 3마리 팀 평가" },
 		"calendar": { "label": "캘린더", "hint": "이벤트·{{raid}}·출현·알" },

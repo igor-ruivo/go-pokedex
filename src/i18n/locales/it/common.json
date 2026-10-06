@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Home"
 	},
 	"nav": {
+		"mainAriaLabel": "Navigazione principale",
 		"leagues": { "hint": "Classifiche di Lega Super, Ultra e Master" },
 		"teams": { "label": "Squadre", "hint": "Valuta una squadra di 3 per Lega Super, Ultra e Master" },
 		"calendar": { "label": "Calendario", "hint": "Eventi, {{raid}}, spawn e uova" },

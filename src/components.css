@@ -2165,7 +2165,7 @@
 	position: fixed;
 	left: var(--s3);
 	right: var(--s3);
-	bottom: calc(64px + env(safe-area-inset-bottom));
+	bottom: calc(80px + env(safe-area-inset-bottom));
 	z-index: 29; /* just under .r-bottomnav (30) */
 	display: flex;
 	align-items: center;
@@ -7563,4 +7563,330 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) img[src*='pogo_assets'] {
 	filter: drop-shadow(0 0 0.6px var(--text-faint)) drop-shadow(0 0 0.6px var(--text-faint))
 		drop-shadow(0 0 0.6px var(--text-faint)) !important;
+}
+
+/* ---- the bottom navigation bar, refined -----------------------------------------------------------------------------------------------
+   Sizes: every item is at least 56px tall and about 50px wide on the narrowest phone (the platform guides ask 44pt / 48dp), with a 24px
+   icon (the guides' 24–25) and an 11px label that is always there (an icon alone is not enough). Colour: the idle label is the dim ink
+   (the faint one is 4:1 on the bar, under the 4.5:1 that small text needs), and the current one is marked by a pill behind its icon and
+   a bolder label, not by colour alone. Touch: no 300 ms delay, no sticky hover, a press that answers, a visible keyboard focus ring, and
+   room for the notch and the home indicator on every side. */
+@media (max-width: 1359px) {
+	.rvmp .r-bottomnav {
+		gap: 2px;
+		padding: 6px max(8px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom))
+			max(8px, env(safe-area-inset-left));
+	}
+	.rvmp .r-bottomnav a {
+		min-width: 0;
+		min-height: 56px;
+		align-content: center;
+		gap: 2px;
+		padding: 5px 2px 4px;
+		border: 0;
+		border-radius: 16px;
+		background: none;
+		color: var(--text-dim);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.01em;
+		line-height: 1.15;
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+	}
+	/* the old border-and-fill hover is for a pointer only (a tap would leave it stuck) */
+	.rvmp .r-bottomnav a:not(.is-active):hover {
+		border-color: transparent;
+		background: none;
+		color: var(--text-dim);
+	}
+	@media (hover: hover) {
+		.rvmp .r-bottomnav a:not(.is-active):hover {
+			background: var(--surface-2);
+			color: var(--text);
+		}
+	}
+	.rvmp .r-bottomnav a:active {
+		background: var(--surface-2);
+	}
+	.rvmp .r-bottomnav a.is-active {
+		background: none;
+		color: color-mix(in srgb, var(--accent), var(--text) var(--ink-mix));
+		font-weight: 800;
+	}
+	.rvmp .r-bn-icon {
+		display: grid;
+		place-items: center;
+		width: min(54px, calc(100% - 2px));
+		height: 30px;
+		border-radius: 15px;
+		font-size: 21px;
+		transition:
+			background 0.2s ease,
+			transform 0.14s ease;
+	}
+	.rvmp .r-bottomnav a.is-active .r-bn-icon {
+		background: color-mix(in srgb, var(--accent) 16%, transparent);
+	}
+	.rvmp .r-bottomnav a:active .r-bn-icon {
+		transform: scale(0.92);
+	}
+	.rvmp .r-bn-label {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	/* the dot sits on the icon itself, not on the corner of its pill */
+	.rvmp .r-bn-badge {
+		top: -3px;
+		right: auto;
+		left: calc(50% + 6px);
+	}
+}
+/* keyboard focus is shown on the bar too (it was hidden, which left a keyboard user without a place) */
+.rvmp nav.r-bottomnav a:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: -2px;
+}
+@media (max-width: 359px) {
+	.rvmp .r-bottomnav a {
+		font-size: 10px;
+	}
+	.rvmp .r-bn-icon {
+		font-size: 19px;
+	}
+}
+/* a tablet or a phone on its side: the bar is a floating pill in the middle (as on a desktop), not a strip across the whole width */
+@media (min-width: 600px) and (max-width: 1359px) {
+	.rvmp .r-bottomnav {
+		left: 50%;
+		right: auto;
+		bottom: calc(12px + env(safe-area-inset-bottom));
+		width: min(640px, calc(100vw - 32px));
+		padding: 6px;
+		border: 1px solid var(--border);
+		border-radius: 28px;
+		box-shadow: var(--shadow-2);
+		transform: translateX(-50%);
+	}
+}
+/* the desktop pill on a touch screen (a big tablet): the same 44px a finger needs */
+@media (min-width: 1360px) and (pointer: coarse) {
+	.rvmp .r-bottomnav a {
+		min-height: 44px;
+	}
+}
+
+/* ---- the bottom bar by kind of phone (`data-platform` on .rvmp, see `detectPlatform`) -----------------------------------------------
+   Each follows its own platform's guideline; a phone-sized window on any other device keeps the common bar above. */
+@media (max-width: 599px) {
+	/* iOS — the Human Interface Guidelines' tab bar: 49pt tall above the home indicator, a 25pt icon over a 10pt label, a translucent
+	   blurred bar with a hairline on top, no pill or fill: the current tab is the one in the tint colour (icon and label), the others
+	   are quiet. At least 44pt each, five tabs at most. */
+	.rvmp[data-platform='ios'] .r-bottomnav {
+		gap: 0;
+		padding: 0 max(0px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(0px, env(safe-area-inset-left));
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
+		backdrop-filter: blur(24px) saturate(1.8);
+		border-top: 0.5px solid var(--border-strong);
+	}
+	.rvmp[data-platform='ios'] .r-bottomnav a {
+		min-height: 49px;
+		gap: 2px;
+		padding: 6px 0 3px;
+		border-radius: 0;
+		font-size: 10px;
+		font-weight: 500;
+		letter-spacing: 0.01em;
+	}
+	.rvmp[data-platform='ios'] .r-bottomnav a:active {
+		background: none;
+		opacity: 0.6;
+	}
+	.rvmp[data-platform='ios'] .r-bottomnav a.is-active {
+		font-weight: 600;
+	}
+	.rvmp[data-platform='ios'] .r-bn-icon,
+	.rvmp[data-platform='ios'] .r-bottomnav a.is-active .r-bn-icon {
+		width: 28px;
+		height: 28px;
+		border-radius: 0;
+		background: none;
+		font-size: 22px; /* the picture is 1.15em: 25pt */
+	}
+	.rvmp[data-platform='ios'] .r-bottomnav a:active .r-bn-icon {
+		transform: none;
+	}
+	/* the pictures cannot take a tint, so they stay at full strength; the current tab is told by its label's colour and weight */
+	.rvmp[data-platform='ios'] .r-main {
+		padding-bottom: calc(49px + env(safe-area-inset-bottom) + 28px);
+	}
+	.rvmp[data-platform='ios'] .r-install {
+		bottom: calc(49px + env(safe-area-inset-bottom) + 12px);
+	}
+
+	/* Android — Material 3's navigation bar: 80dp tall, a 24dp icon in a 64×32 indicator that holds the current destination, a 12sp
+	   medium label (bold on the current one) under it, a flat surface with no border, state layers instead of a hover, 48dp targets. */
+	.rvmp[data-platform='android'] .r-bottomnav {
+		gap: 0;
+		padding: 12px max(8px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom))
+			max(8px, env(safe-area-inset-left));
+		background: var(--surface);
+		backdrop-filter: none;
+		border-top: 0;
+		box-shadow: 0 -1px 0 var(--border);
+	}
+	.rvmp[data-platform='android'] .r-bottomnav a {
+		min-height: 52px;
+		align-content: start;
+		gap: 4px;
+		padding: 0;
+		border-radius: 16px;
+		font-size: 12px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		line-height: 16px;
+	}
+	.rvmp[data-platform='android'] .r-bottomnav a:active {
+		background: none;
+	}
+	.rvmp[data-platform='android'] .r-bottomnav a.is-active {
+		color: var(--text);
+		font-weight: 700;
+	}
+	.rvmp[data-platform='android'] .r-bn-icon {
+		width: min(64px, calc(100% - 4px));
+		height: 32px;
+		border-radius: 16px;
+		font-size: 21px; /* the picture is 1.15em: 24dp */
+	}
+	.rvmp[data-platform='android'] .r-bottomnav a.is-active .r-bn-icon {
+		background: color-mix(in srgb, var(--accent) 22%, transparent);
+	}
+	.rvmp[data-platform='android'] .r-bottomnav a:active .r-bn-icon {
+		background: color-mix(in srgb, var(--accent) 14%, transparent);
+		transform: none;
+	}
+	.rvmp[data-platform='android'] .r-main {
+		padding-bottom: calc(80px + env(safe-area-inset-bottom) + 28px);
+	}
+	.rvmp[data-platform='android'] .r-install {
+		bottom: calc(80px + env(safe-area-inset-bottom) + 12px);
+	}
+}
+
+/* an item that only a wider bar has room for (Moves): not on a phone */
+@media (max-width: 599px) {
+	.rvmp .r-bottomnav a.r-bn-wide {
+		display: none;
+	}
+}
+
+/* ---- the top bar, refined ----------------------------------------------------------------------------------------------------------------
+   Everywhere: a focus that can be seen (the search field takes a ring, not only a faint border), a placeholder that reads (the dim ink,
+   not the browser's grey), buttons the finger can hit (the clear button's target is 44px around its 20px mark; the logo and the menu are 44px
+   on a touch screen) and no tap delay or grey flash. The search field's text stays at 16px or more: below that iOS zooms the page in. */
+.rvmp .r-search:focus-within {
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.rvmp .r-search input::placeholder {
+	color: var(--text-dim);
+	opacity: 1;
+}
+.rvmp .r-search-clear {
+	position: relative;
+}
+.rvmp .r-search-clear::after {
+	content: '';
+	position: absolute;
+	inset: -12px;
+}
+.rvmp .r-appbar a,
+.rvmp .r-appbar button {
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+.rvmp .r-icon-btn:active,
+.rvmp .r-search-clear:active {
+	transform: scale(0.94);
+}
+@media (pointer: coarse) {
+	.rvmp .r-appbar .r-icon-btn {
+		width: 44px;
+		height: 44px;
+	}
+	.rvmp .r-logo {
+		min-width: 44px;
+		min-height: 44px;
+	}
+}
+
+/* ...and on a phone, by kind (see the bottom bar's note on `data-platform`) */
+@media (max-width: 599px) {
+	/* iOS — the Human Interface Guidelines' navigation bar and search field: a 44pt bar that is translucent and blurred with a hairline under
+	   it, borderless 44pt buttons, and a 36pt search field with 10pt corners filled with a quiet grey (no outline), its text at 17pt. */
+	.rvmp[data-platform='ios'] .r-appbar {
+		gap: 8px;
+		min-height: 44px;
+		padding: 4px max(16px, env(safe-area-inset-right)) 4px max(16px, env(safe-area-inset-left));
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
+		backdrop-filter: blur(24px) saturate(1.8);
+		border-bottom: 0.5px solid var(--border-strong);
+	}
+	.rvmp[data-platform='ios'] .r-search {
+		gap: 6px;
+		min-height: 36px;
+		padding: 0 10px;
+		border: 1px solid transparent;
+		border-radius: 10px;
+		background: color-mix(in srgb, var(--text) 8%, transparent);
+		font-size: 17px;
+	}
+	.rvmp[data-platform='ios'] .r-search-icon {
+		width: 17px;
+		height: 17px;
+	}
+	.rvmp[data-platform='ios'] .r-appbar .r-icon-btn {
+		width: 44px;
+		height: 44px;
+		border: 0;
+		background: none;
+	}
+
+	/* Android — Material 3's top app bar and search bar: a 64dp flat bar with a line under it, a 48dp-tall pill search bar on the
+	   surface tint with no outline, a 24dp icon, 16sp text, and 48dp round icon buttons without a frame. */
+	.rvmp[data-platform='android'] .r-appbar {
+		gap: 8px;
+		min-height: 64px;
+		padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+		background: var(--surface);
+		backdrop-filter: none;
+		border-bottom: 0;
+		box-shadow: 0 1px 0 var(--border);
+	}
+	.rvmp[data-platform='android'] .r-search {
+		gap: 12px;
+		min-height: 48px;
+		padding: 0 16px;
+		border: 1px solid transparent;
+		border-radius: 28px;
+		background: var(--surface-2);
+		font-size: 16px;
+	}
+	.rvmp[data-platform='android'] .r-search-icon {
+		width: 24px;
+		height: 24px;
+	}
+	.rvmp[data-platform='android'] .r-appbar .r-icon-btn {
+		width: 48px;
+		height: 48px;
+		border: 0;
+		background: none;
+	}
+	.rvmp[data-platform='android'] .r-logo {
+		min-width: 48px;
+		min-height: 48px;
+	}
 }

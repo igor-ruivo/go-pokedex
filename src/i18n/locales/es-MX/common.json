@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Inicio"
 	},
 	"nav": {
+		"mainAriaLabel": "Navegación principal",
 		"leagues": { "hint": "Rankings de Liga Súper, Ultra y Máster" },
 		"teams": { "label": "Equipos", "hint": "Califica un equipo de 3 para Liga Súper, Ultra y Master" },
 		"calendar": { "label": "Calendario", "hint": "Eventos, {{raid}}, apariciones y huevos" },

@@ -4,6 +4,7 @@
 		"homeAriaLabel": "首頁"
 	},
 	"nav": {
+		"mainAriaLabel": "主要導覽",
 		"leagues": { "hint": "超級、高級與大師聯盟排名" },
 		"teams": { "label": "隊伍", "hint": "為超級、高級與大師聯盟評估 3 隻隊伍" },
 		"calendar": { "label": "行事曆", "hint": "活動、{{raid}}、野生出沒與蛋" },

@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Ana sayfa"
 	},
 	"nav": {
+		"mainAriaLabel": "Ana gezinme",
 		"leagues": { "hint": "Great, Ultra ve Master Lig sıralamaları" },
 		"teams": { "label": "Takımlar", "hint": "Süper, Ultra ve Master Ligi için 3'lü takımını değerlendir" },
 		"calendar": { "label": "Takvim", "hint": "Etkinlikler, {{raid}}lar, ortaya çıkışlar ve yumurtalar" },

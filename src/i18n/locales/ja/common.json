@@ -4,6 +4,7 @@
 		"homeAriaLabel": "ホーム"
 	},
 	"nav": {
+		"mainAriaLabel": "メインナビゲーション",
 		"leagues": { "hint": "スーパー・ハイパー・マスターリーグのランキング" },
 		"teams": { "label": "チーム", "hint": "スーパー・ハイパー・マスターリーグ向けの3匹チームを評価" },
 		"calendar": { "label": "カレンダー", "hint": "イベント・{{raid}}・出現・タマゴ" },

@@ -173,7 +173,7 @@ export const SearchBox = () => {
 	const showMenu = open && q.trim().length > 0 && results.length > 0;
 
 	return (
-		<div className='r-search' ref={rootRef}>
+		<div className='r-search' ref={rootRef} role='search'>
 			<svg className='r-search-icon' viewBox='0 0 24 24' aria-hidden='true'>
 				<circle cx='11' cy='11' r='7' />
 				<line x1='21' y1='21' x2='16.2' y2='16.2' />
@@ -212,6 +212,10 @@ export const SearchBox = () => {
 				aria-expanded={showMenu}
 				aria-controls='r-search-list'
 				autoComplete='off'
+				// names of Pokémon and moves: no spelling underline, no autocorrect, no capital letter forced on the first one
+				spellCheck={false}
+				autoCorrect='off'
+				autoCapitalize='off'
 			/>
 			{q && (
 				<button

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
@@ -8,6 +9,7 @@ import { useScrollToTopOnNavigate } from '../hooks/useScrollToTopOnNavigate';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { R } from '../lib/nav';
 import { NAV } from '../lib/nav-items';
+import { detectPlatform } from '../lib/platform';
 import { useGameTranslationsData } from '../utils/game-translations-store';
 import { AppMenu } from './AppMenu';
 import { BrandMark } from './BrandMark';
@@ -21,6 +23,8 @@ const Shell = () => {
 	const { currentGameLanguage: gl } = useLanguage();
 	const { pathname } = useLocation();
 	const { dataTheme } = useTheme();
+	// the bottom bar follows the guidelines of the device it is on (see `data-platform` in components.css)
+	const platform = useMemo(() => detectPlatform(), []);
 	usePageMeta();
 	useScrollToTopOnNavigate();
 	const unseenEvents = useUnseenEventsCount();
@@ -31,7 +35,7 @@ const Shell = () => {
 	useGameTranslationsData();
 
 	return (
-		<div className='rvmp' data-theme={dataTheme}>
+		<div className='rvmp' data-theme={dataTheme} data-platform={platform}>
 			<header className='r-appbar'>
 				<Link to={R.home} className='r-logo' aria-label={t('common:app.homeAriaLabel')}>
 					<BrandMark className='r-logo-mark' />
@@ -47,7 +51,7 @@ const Shell = () => {
 
 			<Footer />
 
-			<nav className='r-bottomnav'>
+			<nav className='r-bottomnav' aria-label={t('common:nav.mainAriaLabel')}>
 				{NAV.map((n) => {
 					const label = n.label(t);
 					const shortLabel = n.shortLabel?.(t) ?? label;
@@ -56,7 +60,7 @@ const Shell = () => {
 						<NavLink
 							key={n.to}
 							to={n.to}
-							className={n.match(pathname) ? 'is-active' : ''}
+							className={[n.match(pathname) ? 'is-active' : '', n.wideOnly ? 'r-bn-wide' : ''].filter(Boolean).join(' ')}
 							title={hint}
 							aria-label={
 								n.to === R.calendar() && unseenEvents > 0

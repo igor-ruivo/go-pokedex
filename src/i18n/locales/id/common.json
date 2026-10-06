@@ -4,6 +4,7 @@
 		"homeAriaLabel": "Beranda"
 	},
 	"nav": {
+		"mainAriaLabel": "Navigasi utama",
 		"leagues": { "hint": "Peringkat Great, Ultra, dan Master League" },
 		"teams": { "label": "Tim", "hint": "Nilai tim berisi 3 untuk Liga Super, Ultra, dan Master" },
 		"calendar": { "label": "Kalender", "hint": "Event, {{raid}}, spawn, dan telur" },
