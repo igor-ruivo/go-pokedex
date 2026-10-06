@@ -951,7 +951,9 @@ const PokemonDetail = () => {
 	// While the IVs of the league being cycled (or picked) are still being worked out, its row keeps showing what it showed (the Pokémon
 	// and its rank and percentile together): the new Pokémon, its rank and its percentile all come in at once, never one before the other.
 	const holdActiveRow = !settled && !!slice?.perfect;
-	const boardRows = computedBoardRows.map((row) => (holdActiveRow && row.l.id === league ? ((heldRowsRef.current[row.l.id] as typeof row | undefined) ?? row) : row));
+	const boardRows = computedBoardRows.map((row) =>
+		holdActiveRow && row.l.id === league ? ((heldRowsRef.current[row.l.id] as typeof row | undefined) ?? row) : row
+	);
 	if (settled) for (const row of computedBoardRows) heldRowsRef.current[row.l.id] = row;
 
 	return (
