@@ -300,6 +300,8 @@ const PokemonDetail = () => {
 	const lowerRef = useRef<HTMLDivElement>(null);
 	// the league the board marks as picked: it follows the picked one only once that league's numbers are in (see `shownLeague`)
 	const settledLeagueRef = useRef(league);
+	// the rows of the board as they were when last settled (see `heldRowsRef` below)
+	const heldRowsRef = useRef<Record<string, unknown>>({});
 	usePlayOnChange(panelRef, tab === 'Ranks' ? tab : league);
 	usePlayOnChange(lowerRef, league);
 	usePlayOnChange(panelRef, tab, true);
@@ -864,7 +866,7 @@ const PokemonDetail = () => {
 		</div>
 	);
 	const levelPrefix = t('pokemonDetail:hero.level.prefix');
-	const boardRows = LEAGUES.map((l) => {
+	const computedBoardRows = LEAGUES.map((l) => {
 		const raidRow = l.id === 'raid';
 		const ready = raidRow ? raidDPSFetchCompleted : pvpFetchCompleted;
 		const { p, t } = cpos(l.id);
@@ -945,6 +947,12 @@ const PokemonDetail = () => {
 			detailLine,
 		};
 	});
+
+	// While the IVs of the league being cycled (or picked) are still being worked out, its row keeps showing what it showed (the Pokémon
+	// and its rank and percentile together): the new Pokémon, its rank and its percentile all come in at once, never one before the other.
+	const holdActiveRow = !settled && !!slice?.perfect;
+	const boardRows = computedBoardRows.map((row) => (holdActiveRow && row.l.id === league ? ((heldRowsRef.current[row.l.id] as typeof row | undefined) ?? row) : row));
+	if (settled) for (const row of computedBoardRows) heldRowsRef.current[row.l.id] = row;
 
 	return (
 		<div className='r-shell'>
