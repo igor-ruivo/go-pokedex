@@ -70,7 +70,14 @@ export const PokeCard = ({
 			<span className='r-pc-types' aria-hidden='true'>
 				{pokemon.types.map((t) =>
 					dex ? (
-						<img key={typeKey(t)} src={`/images/types/${typeKey(t)}.png`} alt='' width={16} height={16} loading='lazy' />
+						<img
+							key={typeKey(t)}
+							src={`/images/types/${typeKey(t)}.png`}
+							alt=''
+							width={16}
+							height={16}
+							loading='lazy'
+						/>
 					) : (
 						<i key={typeKey(t)} style={{ background: typeVar(t) }} />
 					)

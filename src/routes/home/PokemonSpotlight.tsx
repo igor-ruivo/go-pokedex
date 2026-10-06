@@ -243,8 +243,6 @@ export const PokemonSpotlight = () => {
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { raidMetric } = useRaidMetric();
 	const { leagues } = useLeagueDefinitions();
-	// on a narrow screen the Megas would take a row of their own: those lines are left out
-	const narrow = useMediaQuery(NARROW_SCREEN);
 	const loaded = fetchCompleted && pvpFetchCompleted && raidDPSFetchCompleted;
 
 	const lines = useMemo(() => evolutionLines(gamemasterPokemon), [gamemasterPokemon]);
@@ -268,7 +266,8 @@ export const PokemonSpotlight = () => {
 			return best;
 		};
 		return lines.flatMap((line): Array<Spotlight> => {
-			if (narrow && line.megas.length > 0) return [];
+			// a line with a Mega, or with more than three stages, does not fit the card's family row: it is left out
+			if (line.megas.length > 0 || line.stages.length > 3) return [];
 			const members = lineMembers(line);
 			// the cups only count when the permanent leagues have little to offer
 			let pvp = bestIn(main, members);
@@ -279,7 +278,7 @@ export const PokemonSpotlight = () => {
 			const raid = bestRaidAttacker(members, raidDPS, (entry) => raidRankOf(entry, raidMetric));
 			return pvp || raid ? [{ line, hero: line.stages[0], pvp, raid }] : [];
 		});
-	}, [loaded, narrow, lines, rankLists, extraRankLists, leagues, raidDPS, raidMetric]);
+	}, [loaded, lines, rankLists, extraRankLists, leagues, raidDPS, raidMetric]);
 
 	// Everything the card is made of, so that it swipes in complete: the sprites of the whole line (with the artwork the sprite
 	// falls back to), the badge of its league, the type of its raid ranking and the pictures of the tab buttons.

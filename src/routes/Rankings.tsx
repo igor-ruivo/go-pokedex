@@ -7,11 +7,11 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { CounterRankRow, type RowStat } from '../components/CounterRankRow';
 import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { AppliedFilters, FilterBar } from '../components/FilterBar';
+import { HScroll } from '../components/HScroll';
 import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker';
 import { ListBar } from '../components/ListBar';
 import { type CardMetric, PokeCard } from '../components/PokeCard';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
-import { HScroll } from '../components/HScroll';
 import { SpriteImg, spriteUrl } from '../components/Sprite';
 import { useBestBuddy } from '../contexts/best-buddy-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
@@ -345,6 +345,7 @@ const Rankings = () => {
 					: mode === 'master'
 						? rankLists[2]
 						: (extraRankLists[mode] ?? {});
+		const combatNames = combatMetricNames(t);
 		const ps = pvpDir === 'asc' ? 1 : -1;
 		const isOverall = pvpSort === 'overall' && pvpDir === 'asc';
 		return (
@@ -367,7 +368,7 @@ const Rankings = () => {
 					pokemon: p,
 					moves: r.moveset,
 					stats: COMBAT_METRICS.map((m) => ({
-						label: combatMetricNames(t)[m],
+						label: combatNames[m],
 						text: String(Math.round(r[m])),
 						fill: r[m] / 100,
 					})),
@@ -384,6 +385,7 @@ const Rankings = () => {
 		);
 	}, [
 		mode,
+		t,
 		q,
 		typeCsv,
 		sortKey,
@@ -568,9 +570,10 @@ const Rankings = () => {
 			timer = window.setTimeout(() => {
 				const next = turn + 1;
 				void Promise.all(lists.map((list) => load(spriteUrl(list[next % list.length])))).then(() => {
-					if (cancelled) return;
+					if (cancelled) return undefined;
 					setMascotTurn(next);
 					wait(next);
+					return undefined;
 				});
 			}, 7000);
 		};
@@ -817,28 +820,28 @@ const Rankings = () => {
 						/>
 					)}
 				</ListBar>
-			{isPokedex && regionStarts.length > 1 && (
-				<nav className='r-dex-jump' aria-label={t('rankings:tabs.pokedexFull')}>
-					<HScroll className='r-dex-jump-row'>
-						{regionStarts.map((region) => {
-							const mascots = regionMascots[region.key] ?? [];
-				const starter = mascots.length ? mascots[mascotTurn % mascots.length] : undefined;
-							return (
-								<button
-									key={region.key}
-									type='button'
-									className='r-dex-jump-chip'
-									data-active={region.index === activeRegionIndex}
-									onClick={() => jumpToRegion(region.index)}
-								>
-									{starter && <SpriteImg pokemon={starter} loading='lazy' ariaHidden />}
-									<span>{t(region.key)}</span>
-								</button>
-							);
-						})}
-					</HScroll>
-				</nav>
-			)}
+				{isPokedex && regionStarts.length > 1 && (
+					<nav className='r-dex-jump' aria-label={t('rankings:tabs.pokedexFull')}>
+						<HScroll className='r-dex-jump-row'>
+							{regionStarts.map((region) => {
+								const mascots = regionMascots[region.key] ?? [];
+								const starter = mascots.length ? mascots[mascotTurn % mascots.length] : undefined;
+								return (
+									<button
+										key={region.key}
+										type='button'
+										className='r-dex-jump-chip'
+										data-active={region.index === activeRegionIndex}
+										onClick={() => jumpToRegion(region.index)}
+									>
+										{starter && <SpriteImg pokemon={starter} loading='lazy' ariaHidden />}
+										<span>{t(region.key)}</span>
+									</button>
+								);
+							})}
+						</HScroll>
+					</nav>
+				)}
 				{showResults && isPvpLeagueMode && pvpSort !== 'overall' && hintOpen && (
 					<p className='r-muted r-rank-hint'>
 						<strong>{combatMetricNames(t)[pvpSort]}</strong>

@@ -3590,9 +3590,10 @@
 @media (min-width: 680px) {
 	.rvmp .r-lgpick:has(> .r-lgpick-scroller + .r-lgpick-row) {
 		display: grid;
-		grid-template-columns: minmax(0, max-content) auto auto minmax(0, 1fr);
+		grid-template-columns: minmax(0, max-content) auto auto auto;
 		column-gap: var(--s2);
 		align-items: center;
+		justify-content: center;
 	}
 	.rvmp .r-lgpick > .r-lgpick-scroller + .r-lgpick-row {
 		display: contents;
@@ -3611,7 +3612,12 @@
 	}
 	.rvmp .r-lgpick > .r-lgpick-row > :not(.r-lgpick-scroller):not(.r-lgpick-dot--row) {
 		grid-area: 1 / 4;
-		justify-self: end;
+		/* right next to the Raid chip, not at the far end of the row */
+		justify-self: start;
+	}
+	.rvmp .r-lgpick > .r-lgpick-row .r-lgcups-pop {
+		left: 0;
+		right: auto;
 	}
 }
 .rvmp .r-lgpick-badge {
@@ -4376,9 +4382,8 @@
 	display: grid;
 	place-items: center;
 	border-radius: var(--r-sm);
-	background: var(--surface-3);
+	background: var(--surface-2);
 	border: 1px solid var(--border-strong);
-	box-shadow: 0 1px 2px rgb(var(--shadow-rgb) / calc(0.18 * var(--shadow-k)));
 }
 .rvmp .r-ss-sprite > img {
 	width: 46px;
@@ -8646,7 +8651,11 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	border-radius: var(--r-lg);
 	background:
 		radial-gradient(circle, color-mix(in srgb, var(--text) 11%, transparent) 1px, transparent 1.6px) 0 0 / 16px 16px,
-		linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--bg)), color-mix(in srgb, var(--text) 3%, var(--bg)));
+		linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--accent) 6%, var(--bg)),
+			color-mix(in srgb, var(--text) 3%, var(--bg))
+		);
 	border: 1px solid var(--border);
 }
 html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-grid-vp::before {
@@ -9049,4 +9058,26 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 			linear-gradient(var(--tc), var(--tc)) 0 0 / calc(var(--v, 0) * 100%) 100% no-repeat,
 			color-mix(in srgb, var(--text) 9%, transparent);
 	}
+}
+
+/* things that cycle or open on repeated clicks must not select their text when clicked quickly (a double or triple click) */
+.rvmp .r-board-row,
+.rvmp .r-raidtype,
+.rvmp .r-sprite[data-tappable],
+.rvmp .r-board-sprite,
+.rvmp .r-event-head,
+.rvmp .r-grunt-head,
+.rvmp .r-art-pills button,
+.rvmp .r-hero-shadow,
+.rvmp .r-dex-jump-chip,
+.rvmp .r-stepper,
+.rvmp .r-iv-track {
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+/* the Shadow switch (on): its text is the type chip's colour, darkened enough to read on its tint (pale types like Rock and Ground) */
+.rvmp .r-hero-info .r-hero-shadow[aria-pressed='true'],
+.rvmp .r-hero-shadow[aria-pressed='true'] {
+	color: color-mix(in srgb, var(--accent), var(--text) 60%);
 }

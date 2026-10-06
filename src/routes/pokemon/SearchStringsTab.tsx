@@ -527,7 +527,7 @@ const ClipIcon = () => (
 const NameLabel = ({ p }: { p: IGamemasterPokemon }) => {
 	const { currentGameLanguage: gl } = useLanguage();
 	return (
-		<span style={{ color: typeVar(p.types[0]), fontWeight: 600 }}>
+		<span style={{ color: `color-mix(in srgb, ${typeVar(p.types[0])}, var(--text) var(--ink-mix))`, fontWeight: 600 }}>
 			{(p.isShadow ? `${gameTranslator(GameTranslatorKeys.ShadowDisplay, gl)} ` : '') + cleanName(p.speciesName)}
 		</span>
 	);
@@ -542,7 +542,9 @@ const NameLabel = ({ p }: { p: IGamemasterPokemon }) => {
  *  color value (`var(--lg-great)`, or a rotating cup's own hex), not a var
  *  name to wrap. */
 const LeagueLabel = ({ leagueName, colorVar }: { leagueName: string; colorVar: string }) => (
-	<span style={{ color: colorVar, fontWeight: 600 }}>{leagueName}</span>
+	<span style={{ color: `color-mix(in srgb, ${colorVar}, var(--text) var(--ink-mix))`, fontWeight: 600 }}>
+		{leagueName}
+	</span>
 );
 
 /** Legacy sentence construction — the wording matters, it tells the user what they're matching.

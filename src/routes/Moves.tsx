@@ -240,7 +240,11 @@ const Moves = () => {
 										m={m}
 										moveId={m.moveId}
 										gl={gl}
-										chips={<i className='r-move-tag'>{m.isFast ? t('moves:page.kind.fast') : t('moves:page.kind.charged')}</i>}
+										chips={
+											<i className='r-move-tag'>
+												{m.isFast ? t('moves:page.kind.fast') : t('moves:page.kind.charged')}
+											</i>
+										}
 									/>
 									<MoveStatRows m={m} gl={gl} />
 								</Link>

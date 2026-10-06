@@ -4,8 +4,8 @@ import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { BaseStatBars } from '../components/BaseStatBars';
+import { CustomLeaguePicker } from '../components/CustomLeaguePicker';
 import { HScroll } from '../components/HScroll';
 import { IconTabBar } from '../components/IconTabBar';
 import { IvPicker, type IVs } from '../components/IvPicker';
@@ -997,10 +997,6 @@ const PokemonDetail = () => {
 
 			{/* ---- HERO (the only place the primary-type colour leaks) ---- */}
 			<header className='r-hero r-hero-v2' ref={heroRef} style={accentStyle(primary)} data-type={typeKey(primary)}>
-				{/* the Pokédex number, huge and faint behind everything */}
-				<span className='r-hero-wm' aria-hidden='true'>
-					{pokemon.dex}
-				</span>
 				<div className='r-hero-main'>
 					<div className='r-hero-art'>
 						<div className='r-hero-spritebox'>
@@ -1401,7 +1397,10 @@ const PokemonDetail = () => {
 																}
 																style={{
 																	['--tc' as string]: `var(--t-${rt})`,
-																	['--v' as string]: Math.min(1, (combo?.[raidMetric] ?? e[raidMetric]) / bestRaidFigure),
+																	['--v' as string]: Math.min(
+																		1,
+																		(combo?.[raidMetric] ?? e[raidMetric]) / bestRaidFigure
+																	),
 																}}
 																onClick={activate}
 																onKeyDown={(ev) => {

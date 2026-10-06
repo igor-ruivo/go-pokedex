@@ -94,7 +94,10 @@ export const slotSourceLabel = (post: SlotSourcePost | undefined, gl: GameLangua
 	if (!post) return undefined;
 	// A post with a title of its own (a Spotlight Hour, a special raid boss window) is credited by that name, like any other event; the
 	// third party's site only stands in for one that has none.
-	return post.title[gl] || (post.source === 'leekduck' || post.source === 'pokebattler' ? THIRD_PARTY_SOURCES[post.source].label : undefined);
+	return (
+		post.title[gl] ||
+		(post.source === 'leekduck' || post.source === 'pokebattler' ? THIRD_PARTY_SOURCES[post.source].label : undefined)
+	);
 };
 
 /**
@@ -129,7 +132,7 @@ const specialRaidTitle = (
 		.map((p) => {
 			const name = cleanName(p.speciesName);
 			// the words Mega and Shadow are the game's own in the language shown, and said once: by the kind of window when it is one
-			if (/^Mega /.test(name)) return kind === 'mega' ? name.slice(5) : `${mega} ${name.slice(5)}`;
+			if (name.startsWith('Mega ')) return kind === 'mega' ? name.slice(5) : `${mega} ${name.slice(5)}`;
 			return name;
 		})
 		.join(' + ');
@@ -325,7 +328,10 @@ const SlotSource = ({ posts, gl }: { posts: ReadonlyArray<SlotSourcePost>; gl: G
 	// that statically, hence the disable right on the `<a>` below.
 	const only = posts.length === 1 ? posts[0] : undefined;
 	const highlight =
-		only && (only.source === 'leekduck' || only.source === 'pokebattler') && label === slotSourceLabel(only, gl) && !only.title[gl] ? (
+		only &&
+		(only.source === 'leekduck' || only.source === 'pokebattler') &&
+		label === slotSourceLabel(only, gl) &&
+		!only.title[gl] ? (
 			// eslint-disable-next-line jsx-a11y/anchor-has-content
 			<a href={THIRD_PARTY_SOURCES[only.source].url} target='_blank' rel='noopener noreferrer' />
 		) : (

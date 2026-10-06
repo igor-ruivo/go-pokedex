@@ -37,7 +37,10 @@ export const BaseStatBars = ({ pokemon }: { pokemon: IGamemasterPokemon }) => {
 					<i>{label}</i>
 					<b>{pokemon.baseStats[stat]}</b>
 					<span className='r-bar-track'>
-						<span className='r-bar-fill' style={{ ['--v' as string]: Math.min(1, pokemon.baseStats[stat] / max[stat]) }} />
+						<span
+							className='r-bar-fill'
+							style={{ ['--v' as string]: Math.min(1, pokemon.baseStats[stat] / max[stat]) }}
+						/>
 					</span>
 				</div>
 			))}

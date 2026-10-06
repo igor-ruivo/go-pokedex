@@ -2940,3 +2940,19 @@ html:not([data-theme='light'])
 		display: none;
 	}
 }
+
+/* the stats stand behind a thin vertical line, like the wide hero of a Pokémon's page */
+.rvmp .h-spot-head .r-bars {
+	padding-left: var(--s5);
+	border-left: 1px solid var(--border);
+}
+.rvmp .h-spot-head .r-bars {
+	flex-basis: 220px;
+}
+
+/* the sparkle of a shiny-able Pokémon on a Community Day / Spotlight Hour row floats over the top right of its picture */
+.rvmp .h-day-hero > .h-day-shiny {
+	top: 20%;
+	right: 20%;
+	z-index: 6;
+}

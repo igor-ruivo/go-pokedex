@@ -46,7 +46,15 @@ export const MoveHead = ({
  * fast move, its DPS and EPS, for a charged one its DPE. Each figure has a fixed place (`data-col`), so the same figure lines up on
  * every row, whichever move it is and whichever it lacks.
  */
-const Arena = ({ m, arena, pokemon }: { m: IGameMasterMove; arena: Arena; pokemon?: IGamemasterPokemon | undefined }) => {
+const Arena = ({
+	m,
+	arena,
+	pokemon,
+}: {
+	m: IGameMasterMove;
+	arena: Arena;
+	pokemon?: IGamemasterPokemon | undefined;
+}) => {
 	const { t } = useTranslation(['moveDetail', 'pokemonDetail']);
 	const fast = m.isFast;
 	const pow = arena === 'pve' ? m.pvePower : m.pvpPower;
