@@ -7525,3 +7525,33 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	box-sizing: border-box;
 	border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
 }
+
+/* The collapsed hero bar on a phone (the Pokémon's, and a team's): not a full-width rectangle with a coloured outline, but a card
+   floating under the app bar — inset from the screen's edges, rounded, with a neutral border and a soft shadow that read the same in
+   the light and the dark theme. What it shows keeps its colour in a small tab on its lower edge (the Pokémon's type, the league's
+   or the team's tier) instead of in the border. (Desktop keeps its own pill, above.) */
+@media (max-width: 899px) {
+	.rvmp .r-hero-mini,
+	html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini,
+	:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-mini {
+		left: var(--s3);
+		right: var(--s3);
+		margin-top: 6px; /* the bar's `top` is the app bar's height (set by script) */
+		border-radius: 20px;
+		border-color: var(--border);
+		background: color-mix(in srgb, var(--surface) 94%, transparent);
+		box-shadow: var(--shadow-2);
+	}
+	.rvmp .r-hero-mini::after {
+		content: '';
+		position: absolute;
+		bottom: -1px;
+		left: 50%;
+		width: 44px;
+		height: 3px;
+		border-radius: 3px 3px 0 0;
+		background: var(--mini-c, var(--accent));
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+}
