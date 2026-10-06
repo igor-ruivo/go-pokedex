@@ -32,6 +32,7 @@ const IvTableTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; ac
 	const rows = useBestIvs(pokemon, isPvp ? activeLeague.cpCap : 1500, isPvp);
 
 	const [fields, setFields] = useState<IvFields>(['', '', '']);
+	const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 	const [hover, setHover] = useState<{ r: number; c: number } | null>(null);
 
 	const triplet = useMemo<[number, number, number] | null>(() => {
@@ -60,6 +61,8 @@ const IvTableTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; ac
 			next[idx] = digits.slice(0, 2);
 			return next;
 		});
+		// Two digits (or a zero) can't be extended into a valid IV: on to the next stat. The focus moves, the page does not scroll.
+		if (digits.length === 2 || digits === '0') inputRefs.current[idx + 1]?.focus({ preventScroll: true });
 	};
 
 	const matchIdx = useMemo(() => {
@@ -129,6 +132,9 @@ const IvTableTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; ac
 					<label key={label}>
 						<span>{label}</span>
 						<input
+							ref={(el) => {
+								inputRefs.current[i] = el;
+							}}
 							value={fields[i] ?? ''}
 							onChange={(e) => setField(i, e.target.value)}
 							inputMode='numeric'

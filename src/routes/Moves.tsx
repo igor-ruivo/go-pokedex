@@ -8,6 +8,7 @@ import { ListBar } from '../components/ListBar';
 import { MoveStatRows } from '../components/MoveStatRows';
 import { SortBar, type SortDir, type SortOption } from '../components/SortBar';
 import { useLanguage } from '../contexts/language-context';
+import { usePlayOnChange } from '../hooks/usePlayOnChange';
 import { cleanName } from '../lib/format';
 import { withGenericHiddenPower } from '../lib/hidden-power';
 import { type Arena, hasBuff, moveDPE, moveDPS, moveEPS } from '../lib/moves';
@@ -136,6 +137,7 @@ const Moves = () => {
 	}, [moves, kind, typeCsv, gl, sortKey, sortDir, q]);
 
 	const listRef = useRef<HTMLDivElement>(null);
+	usePlayOnChange(listRef, kind, true);
 	const [scrollMargin, setScrollMargin] = useState(0);
 	useEffect(() => {
 		setScrollMargin(listRef.current?.offsetTop ?? 0);

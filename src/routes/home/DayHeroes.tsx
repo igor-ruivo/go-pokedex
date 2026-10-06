@@ -65,10 +65,7 @@ export const DayHeroes = ({
 			},
 			[pokemon]
 		),
-		preload: useCallback(
-			(p: IGamemasterPokemon) => preloadImages([{ url: spriteUrl(p), fallback: p.imageUrl }]),
-			[]
-		),
+		preload: useCallback((p: IGamemasterPokemon) => preloadImages([{ url: spriteUrl(p), fallback: p.imageUrl }]), []),
 	});
 
 	if (rotating) {

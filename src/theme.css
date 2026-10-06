@@ -70,6 +70,7 @@
 	/* type palette — vivid, GO-adjacent */
 	--t-normal: #9099a1;
 	--t-fire: #ff8f43;
+	--t-fire-ink: #ff8f43;
 	--t-water: #4d90ff;
 	--t-electric: #ffcf3f;
 	--t-grass: #52c56a;
@@ -209,6 +210,7 @@
 
 	--t-normal: #b9c0ca;
 	--t-fire: #ffab75;
+	--t-fire-ink: #ea5a0c;
 	--t-water: #86b8ff;
 	--t-electric: #ffdf70;
 	--t-grass: #86dc99;

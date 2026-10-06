@@ -2997,9 +2997,8 @@
 	top: 5%;
 	right: 6%;
 	z-index: 6;
-	width: clamp(15px, 17cqi, 19px);
-	height: clamp(15px, 17cqi, 19px);
-	filter: drop-shadow(0 1px 1px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k))));
+	width: clamp(19px, 21cqi, 23px);
+	height: clamp(19px, 21cqi, 23px);
 }
 /* league / raid relevance — a few beads on a small tab that hangs from the bottom edge of the card, centred, as if cut out of the
    edge itself (same border, no bottom side); one bead per league the mon (or its line) matters for, each in the league's colour
@@ -3178,10 +3177,10 @@
 	height: 22px;
 }
 .rvmp .r-event-head .r-event-spotlight-sprites .h-avatar-shiny {
-	top: -4px;
-	right: -4px;
-	width: 11px;
-	height: 11px;
+	top: -5px;
+	right: -5px;
+	width: 15px;
+	height: 15px;
 }
 .rvmp .r-event-head > div {
 	flex: 1;
@@ -7064,11 +7063,10 @@
 	top: -4%;
 	right: -4%;
 	z-index: 7;
-	width: 32%;
-	height: 32%;
-	min-width: 12px;
-	min-height: 12px;
-	filter: drop-shadow(0 1px 1px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
+	width: 36%;
+	height: 36%;
+	min-width: 16px;
+	min-height: 16px;
 }
 
 /* ---- dark mode only: the hero of a Pokémon page and its collapsed bar lose the coloured washes and glows: a flat surface, no
@@ -7606,7 +7604,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		gap: 0;
 		/* the home indicator is a thin line at the very bottom: the labels need only a part of the inset below them, so that the icons are
 		   not left riding high on a bar that is as tall as the tab bar plus the whole indicator area */
-		padding: 0 max(0px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) * 0.4) max(0px, env(safe-area-inset-left));
+		padding: 0 max(0px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) * 0.4)
+			max(0px, env(safe-area-inset-left));
 		background: color-mix(in srgb, var(--bg) 80%, transparent);
 		backdrop-filter: blur(24px) saturate(1.8);
 		border-top: 0.5px solid var(--border-strong);
@@ -7733,7 +7732,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp[data-platform='ios'] .r-appbar {
 		gap: 8px;
 		min-height: 44px;
-		padding: calc(4px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 4px max(16px, env(safe-area-inset-left));
+		padding: calc(4px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 4px
+			max(16px, env(safe-area-inset-left));
 		background: color-mix(in srgb, var(--bg) 80%, transparent);
 		backdrop-filter: blur(24px) saturate(1.8);
 		border-bottom: 0.5px solid var(--border-strong);
@@ -7763,7 +7763,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp[data-platform='android'] .r-appbar {
 		gap: 8px;
 		min-height: 64px;
-		padding: calc(8px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+		padding: calc(8px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 8px
+			max(12px, env(safe-area-inset-left));
 		background: var(--surface);
 		backdrop-filter: none;
 		border-bottom: 0;
@@ -7814,7 +7815,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 }
 /* Pinch-zoom is allowed again (it was switched off, which WCAG 1.4.4 does not allow), so iOS's habit of zooming in on a field whose text
    is under 16px has to be answered by the fields: none of them is below that on an iPhone or an iPad. */
-.rvmp[data-platform='ios'] input:not([type='checkbox'], [type='radio'], [type='range'], [type='button'], [type='submit']),
+.rvmp[data-platform='ios']
+	input:not([type='checkbox'], [type='radio'], [type='range'], [type='button'], [type='submit']),
 .rvmp[data-platform='ios'] select,
 .rvmp[data-platform='ios'] textarea {
 	font-size: max(16px, 1em);
@@ -8184,8 +8186,58 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	--hero-ink: color-mix(in srgb, var(--accent), var(--text) 18%);
 }
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-v2[data-type='fire'] {
-	--hero-ink: #ea5a0c;
+	--hero-ink: var(--t-fire-ink);
 }
 :is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) .r-hero-v2 .r-bar-fill {
 	background: var(--hero-ink);
+}
+
+/* quick entrances: the family pills (one after the other) when the family changes (the Shadow switch, another Pokémon), and the CP
+   when the league (or the Pokémon) does */
+@keyframes r-pop-in {
+	from {
+		opacity: 0;
+		transform: translateY(6px) scale(0.96);
+	}
+}
+.rvmp .r-fam-m {
+	animation: r-pop-in 0.24s ease-out both;
+	animation-delay: calc(var(--i, 0) * 50ms);
+}
+@keyframes r-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+.rvmp .r-hero-v2 .r-cp b {
+	animation: r-fade-in 0.24s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+	.rvmp .r-fam-m,
+	.rvmp .r-hero-v2 .r-cp b {
+		animation: none;
+	}
+}
+
+/* an event's details come in with a short fade and rise when it is expanded */
+.rvmp .r-event-body {
+	animation: r-pop-in 0.24s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+	.rvmp .r-event-body {
+		animation: none;
+	}
+}
+
+/* ---- the shiny sparkle laid over a picture (the mini chips, the faces, the cards): always on a round plate with a border and the
+   surface colour behind it, so the gold keeps its contrast over any sprite or background ---------------------------------------- */
+.rvmp svg.r-mini-shiny,
+.rvmp svg.r-adorned-sparkle,
+.rvmp svg.h-avatar-shiny {
+	box-sizing: border-box;
+	padding: 2px;
+	border: 1px solid var(--border-strong);
+	border-radius: 50%;
+	background: var(--surface);
+	filter: none;
 }

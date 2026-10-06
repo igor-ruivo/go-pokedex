@@ -16,6 +16,7 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import { type GameLanguage, useLanguage } from '../contexts/language-context';
 import { useRaidMetric } from '../contexts/raid-metric-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { usePlayOnChange } from '../hooks/usePlayOnChange';
 import { COMBAT_METRICS, type CombatMetric, isCombatMetric } from '../lib/combat';
 import { combatMetricDescriptions, combatMetricNames } from '../lib/combat-text';
 import { cleanName, sentenceCase } from '../lib/format';
@@ -414,9 +415,7 @@ const Rankings = () => {
 		rowCount: number;
 	} | null>(null);
 	const initialSpritesReady =
-		readySprites?.rows === gridRows &&
-		readySprites.cols === cols &&
-		readySprites.rowHeight === rowHeight;
+		readySprites?.rows === gridRows && readySprites.cols === cols && readySprites.rowHeight === rowHeight;
 	useEffect(() => {
 		if (!isPokedex || !measured || loading || gridRows.length === 0) return;
 		const grid = gridRef.current;
@@ -560,6 +559,8 @@ const Rankings = () => {
 	// the "huge overlapping tiles" flash on first load. The initial visible
 	// sprite decode is also gated before the grid is revealed.
 	const showResults = !loading && (!isPokedex || (measured && (rows.length === 0 || initialSpritesReady)));
+	// a new league (or its list arriving) fades in
+	usePlayOnChange(gridRef, `${mode}|${showResults}`);
 
 	const pickerItems: Array<LeaguePickerItem> = useMemo(
 		() => [

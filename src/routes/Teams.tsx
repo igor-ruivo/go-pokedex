@@ -8,6 +8,7 @@ import { LeaguePicker, type LeaguePickerItem } from '../components/LeaguePicker'
 import { teamTabIcon } from '../components/team-tab-icons';
 import { useLanguage } from '../contexts/language-context';
 import { isTeamLeague, type RankedTeam, TEAM_LEAGUES, type TeamLeague } from '../DTOs/ITeamBuilder';
+import { usePlayOnChange } from '../hooks/usePlayOnChange';
 import { LEAGUE_CP } from '../lib/league-caps';
 import { leagueIcon } from '../lib/league-visuals';
 import { modeColor, modeLabel, modeLabelLong, R } from '../lib/nav';
@@ -97,6 +98,8 @@ const Teams = () => {
 	// "Suggestion" on a team of one or two: work out the best teammates and put them in the empty slots.
 	const [suggesting, setSuggesting] = useState(false);
 	const teamKeyRef = useRef('');
+	const panelRef = useRef<HTMLDivElement>(null);
+	usePlayOnChange(panelRef, tab, true);
 	teamKeyRef.current = encodeTeam(team);
 	const suggestTeammates = async () => {
 		if (suggesting || !ctx || team.length < 1 || team.length > 2) return;
@@ -239,191 +242,193 @@ const Teams = () => {
 
 			<IconTabBar items={tabItems} activeId={tab} onSelect={goToTab} ariaLabel={t('teams:page.tabsAria')} />
 
-			{/* Best teams and Favorites carry the picker along with their search header; elsewhere (and until they load) it sits here. */}
-			{!(data.ready && (tab === 'top' || tab === 'favorites')) && leagueRow}
+			<div ref={panelRef}>
+				{/* Best teams and Favorites carry the picker along with their search header; elsewhere (and until they load) it sits here. */}
+				{!(data.ready && (tab === 'top' || tab === 'favorites')) && leagueRow}
 
-			{data.failed && <p className='r-muted'>{t('teams:page.loadFailed')}</p>}
-			{!data.failed && !data.ready && (
-				<div className='r-tm-loading'>
-					<span className='r-spinner' aria-hidden='true' />
-					<p>{t('teams:page.loading')}</p>
-				</div>
-			)}
+				{data.failed && <p className='r-muted'>{t('teams:page.loadFailed')}</p>}
+				{!data.failed && !data.ready && (
+					<div className='r-tm-loading'>
+						<span className='r-spinner' aria-hidden='true' />
+						<p>{t('teams:page.loading')}</p>
+					</div>
+				)}
 
-			{data.ready && tab === 'top' && (
-				<TopTeams league={league} data={data} leagueRow={leagueRow} onOpen={openFromTop} />
-			)}
+				{data.ready && tab === 'top' && (
+					<TopTeams league={league} data={data} leagueRow={leagueRow} onOpen={openFromTop} />
+				)}
 
-			{data.ready && tab === 'favorites' && (
-				<FavoriteTeams league={league} data={data} leagueRow={leagueRow} onOpen={openFromTop} />
-			)}
+				{data.ready && tab === 'favorites' && (
+					<FavoriteTeams league={league} data={data} leagueRow={leagueRow} onOpen={openFromTop} />
+				)}
 
-			{data.ready && tab === 'collection' && (
-				<PokemonCollection key={league} league={league} leagueLabel={leagueLabel} data={data} onOpen={openFromTop} />
-			)}
+				{data.ready && tab === 'collection' && (
+					<PokemonCollection key={league} league={league} leagueLabel={leagueLabel} data={data} onOpen={openFromTop} />
+				)}
 
-			{data.ready && tab === 'builder' && restoring && (
-				<div className='r-tm-loading'>
-					<span className='r-spinner' aria-hidden='true' />
-					<p>{t('teams:page.loading')}</p>
-				</div>
-			)}
+				{data.ready && tab === 'builder' && restoring && (
+					<div className='r-tm-loading'>
+						<span className='r-spinner' aria-hidden='true' />
+						<p>{t('teams:page.loading')}</p>
+					</div>
+				)}
 
-			{data.ready && tab === 'builder' && !restoring && (
-				<>
-					<p className='r-tm-intro'>{t('teams:builder.intro', { league: leagueLabel })}</p>
+				{data.ready && tab === 'builder' && !restoring && (
+					<>
+						<p className='r-tm-intro'>{t('teams:builder.intro', { league: leagueLabel })}</p>
 
-					{!verified && (
-						<p className='r-tm-banner' role='status'>
-							{t('teams:builder.unverified')}
-						</p>
-					)}
+						{!verified && (
+							<p className='r-tm-banner' role='status'>
+								{t('teams:builder.unverified')}
+							</p>
+						)}
 
-					<TeamStage
-						data={data}
-						team={team}
-						members={analysis?.members ?? []}
-						roleOf={(i) => {
-							const roles = analysis?.roles;
-							if (!roles) return undefined;
-							return (['lead', 'switch', 'closer'] as const).find((r) => roles.order[r] === i);
-						}}
-						onChangePokemon={setPickerFor}
-						onMove={setMove}
-						onBuild={setBuild}
-						cpCap={LEAGUE_CP[league]}
-						onRemove={removeMember}
-						onSuggest={() => void suggestTeammates()}
-						suggesting={suggesting}
-					/>
-					{pickerFor !== null && (
-						<SlotPicker
-							leagueLabel={leagueLabel}
+						<TeamStage
 							data={data}
 							team={team}
-							slot={pickerFor}
-							onSetMember={setMember}
-							onClose={() => setPickerFor(null)}
-						/>
-					)}
-
-					{analysis && parts && full && (
-						<TeamMini
-							members={analysis.members}
-							score={score}
-							tier={tier}
-							threatScore={evaluation?.threatScore}
-							grades={{
-								coverage: evaluation ? letterGrade(1200 - evaluation.threatScore, 680) : undefined,
-								bulk: analysis.grades.bulk.grade,
-								safety: analysis.grades.safety.grade,
-								consistency: analysis.grades.consistency.grade,
+							members={analysis?.members ?? []}
+							roleOf={(i) => {
+								const roles = analysis?.roles;
+								if (!roles) return undefined;
+								return (['lead', 'switch', 'closer'] as const).find((r) => roles.order[r] === i);
 							}}
-							loading={simulating || stale}
 							onChangePokemon={setPickerFor}
+							onMove={setMove}
+							onBuild={setBuild}
+							cpCap={LEAGUE_CP[league]}
+							onRemove={removeMember}
+							onSuggest={() => void suggestTeammates()}
+							suggesting={suggesting}
 						/>
-					)}
+						{pickerFor !== null && (
+							<SlotPicker
+								leagueLabel={leagueLabel}
+								data={data}
+								team={team}
+								slot={pickerFor}
+								onSetMember={setMember}
+								onClose={() => setPickerFor(null)}
+							/>
+						)}
 
-					{full && (
-						<div className='r-tm-actions'>
-							<FavoriteStar league={league} members={team} data={data} />
-							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => void copyLink()}>
-								{copied ? t('teams:builder.copied') : t('teams:builder.copyLink')}
-							</button>
-							<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => replaceTeam([])}>
-								{t('teams:builder.clear')}
-							</button>
-							<button type='button' className='r-tm-btn r-tm-btn--ghost' disabled={!modified} onClick={reset}>
-								{t('teams:builder.reset')}
-							</button>
-						</div>
-					)}
-
-					{team.length === 0 && <p className='r-tm-empty'>{t('teams:builder.emptyHint')}</p>}
-					{team.length > 0 && team.length < 3 && (
-						<p className='r-tm-empty'>{t('teams:builder.addMore', { n: 3 - team.length })}</p>
-					)}
-					{unreachable && team.length === 3 && <p className='r-tm-empty'>{t('teams:builder.scoresHidden')}</p>}
-
-					{analysis && parts && full && (
-						<>
-							<ScoreHero
+						{analysis && parts && full && (
+							<TeamMini
+								members={analysis.members}
 								score={score}
 								tier={tier}
-								parts={parts}
-								simulating={simulating}
-								stale={stale}
-								accent={accent}
+								threatScore={evaluation?.threatScore}
+								grades={{
+									coverage: evaluation ? letterGrade(1200 - evaluation.threatScore, 680) : undefined,
+									bulk: analysis.grades.bulk.grade,
+									safety: analysis.grades.safety.grade,
+									consistency: analysis.grades.consistency.grade,
+								}}
+								loading={simulating || stale}
+								onChangePokemon={setPickerFor}
 							/>
+						)}
 
-							<h2 className='r-section-h'>{t('teams:plan.heading')}</h2>
-							<BattlePlan members={analysis.members} roles={analysis.roles} onChangePokemon={setPickerFor} />
+						{full && (
+							<div className='r-tm-actions'>
+								<FavoriteStar league={league} members={team} data={data} />
+								<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => void copyLink()}>
+									{copied ? t('teams:builder.copied') : t('teams:builder.copyLink')}
+								</button>
+								<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => replaceTeam([])}>
+									{t('teams:builder.clear')}
+								</button>
+								<button type='button' className='r-tm-btn r-tm-btn--ghost' disabled={!modified} onClick={reset}>
+									{t('teams:builder.reset')}
+								</button>
+							</div>
+						)}
 
-							<h2 className='r-section-h'>{t('teams:threat.heading')}</h2>
-							<div className='r-tm-duo'>
-								<ThreatPanel
-									evaluation={evaluation}
-									members={analysis.members}
-									gamemaster={data.gamemaster}
+						{team.length === 0 && <p className='r-tm-empty'>{t('teams:builder.emptyHint')}</p>}
+						{team.length > 0 && team.length < 3 && (
+							<p className='r-tm-empty'>{t('teams:builder.addMore', { n: 3 - team.length })}</p>
+						)}
+						{unreachable && team.length === 3 && <p className='r-tm-empty'>{t('teams:builder.scoresHidden')}</p>}
+
+						{analysis && parts && full && (
+							<>
+								<ScoreHero
+									score={score}
+									tier={tier}
+									parts={parts}
+									simulating={simulating}
 									stale={stale}
-									loading={simulating}
-									onChangePokemon={setPickerFor}
+									accent={accent}
 								/>
-								{evaluation ? (
-									<CoveragePanel
+
+								<h2 className='r-section-h'>{t('teams:plan.heading')}</h2>
+								<BattlePlan members={analysis.members} roles={analysis.roles} onChangePokemon={setPickerFor} />
+
+								<h2 className='r-section-h'>{t('teams:threat.heading')}</h2>
+								<div className='r-tm-duo'>
+									<ThreatPanel
 										evaluation={evaluation}
 										members={analysis.members}
 										gamemaster={data.gamemaster}
 										stale={stale}
+										loading={simulating}
 										onChangePokemon={setPickerFor}
 									/>
-								) : (
-									<div className='r-tm-panel r-tm-loading'>
-										<span className='r-spinner' aria-hidden='true' />
-									</div>
-								)}
-							</div>
-						</>
-					)}
+									{evaluation ? (
+										<CoveragePanel
+											evaluation={evaluation}
+											members={analysis.members}
+											gamemaster={data.gamemaster}
+											stale={stale}
+											onChangePokemon={setPickerFor}
+										/>
+									) : (
+										<div className='r-tm-panel r-tm-loading'>
+											<span className='r-spinner' aria-hidden='true' />
+										</div>
+									)}
+								</div>
+							</>
+						)}
 
-					{analysis && full && (
-						<>
-							<h2 className='r-section-h'>{t('teams:typing.heading')}</h2>
-							<TypeProfile
-								members={analysis.members}
-								defense={analysis.defense}
-								offense={analysis.offense}
-								onChangePokemon={setPickerFor}
-							/>
+						{analysis && full && (
+							<>
+								<h2 className='r-section-h'>{t('teams:typing.heading')}</h2>
+								<TypeProfile
+									members={analysis.members}
+									defense={analysis.defense}
+									offense={analysis.offense}
+									onChangePokemon={setPickerFor}
+								/>
 
-							<h2 className='r-section-h'>{t('teams:stats.heading')}</h2>
-							<StatsPanel league={league} analysis={analysis} threatScore={evaluation?.threatScore} />
+								<h2 className='r-section-h'>{t('teams:stats.heading')}</h2>
+								<StatsPanel league={league} analysis={analysis} threatScore={evaluation?.threatScore} />
 
-							<h2 className='r-section-h'>{t('teams:warnings.heading')}</h2>
-							<Warnings warnings={analysis.warnings} members={analysis.members} />
-						</>
-					)}
+								<h2 className='r-section-h'>{t('teams:warnings.heading')}</h2>
+								<Warnings warnings={analysis.warnings} members={analysis.members} />
+							</>
+						)}
 
-					{analysis && full && (
-						<>
-							<h2 className='r-section-h'>{t('teams:suggest.heading')}</h2>
-							<Suggestions
-								members={analysis.members}
-								gamemaster={data.gamemaster}
-								loading={!suggestionsQuery.data && !suggestionsQuery.isError}
-								failed={suggestionsQuery.isError}
-								upgrades={upgrades}
-								onApply={(pick) =>
-									// a Super Max Mega comes with its build for level 52; anyone else just takes the slot with the usual defaults
-									pick.superMega
-										? replaceTeam(team.map((slot, i) => (i === pick.slot ? pickToSlot(pick) : slot)))
-										: setMember(pick.slot, pick.speciesId)
-								}
-							/>
-						</>
-					)}
-				</>
-			)}
+						{analysis && full && (
+							<>
+								<h2 className='r-section-h'>{t('teams:suggest.heading')}</h2>
+								<Suggestions
+									members={analysis.members}
+									gamemaster={data.gamemaster}
+									loading={!suggestionsQuery.data && !suggestionsQuery.isError}
+									failed={suggestionsQuery.isError}
+									upgrades={upgrades}
+									onApply={(pick) =>
+										// a Super Max Mega comes with its build for level 52; anyone else just takes the slot with the usual defaults
+										pick.superMega
+											? replaceTeam(team.map((slot, i) => (i === pick.slot ? pickToSlot(pick) : slot)))
+											: setMember(pick.slot, pick.speciesId)
+									}
+								/>
+							</>
+						)}
+					</>
+				)}
+			</div>
 		</div>
 	);
 };

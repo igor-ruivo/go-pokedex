@@ -57,59 +57,59 @@ const App = () => {
 			}}
 		>
 			<ThemeProvider>
-					<RaidMetricProvider>
-						<RelevanceSetsProvider>
-							<BestBuddyProvider>
-								<VisibleLeaguesProvider>
-									<LanguageProvider>
-										<SeenEventsProvider>
-											<BrowserRouter>
-												<Routes>
-													<Route element={<Shell />}>
-														<Route index element={<Home />} />
-														<Route path='about' element={<About />} />
-														<Route path='rankings/:league' element={<Rankings />} />
-														<Route path='rankings/:league/:type' element={<Rankings />} />
-														<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
-														<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
-														<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
-														<Route path='calendar/:tab' element={<Calendar />} />
-														<Route
-															path='teams/*'
-															element={
-																<Suspense
-																	fallback={
-																		<div className='r-tm-loading'>
-																			<span className='r-spinner' aria-hidden='true' />
-																		</div>
-																	}
-																>
-																	<Teams />
-																</Suspense>
-															}
-														/>
-														<Route path='moves' element={<Moves />} />
-														<Route path='move/:moveId' element={<MoveDetail />} />
-														<Route path='types' element={<Types />} />
-														<Route
-															path='search-strings'
-															element={<Navigate to='/search-strings/non-meta-relevant' replace />}
-														/>
-														<Route path='search-strings/:tab' element={<MassDelete />} />
-														{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
-														<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
-														<Route path='tools' element={<Placeholder title={t('common:placeholder.toolsTitle')} />} />
-														<Route path='settings' element={<Settings />} />
-														<Route path='*' element={<Navigate to='/' replace />} />
-													</Route>
-												</Routes>
-											</BrowserRouter>
-										</SeenEventsProvider>
-									</LanguageProvider>
-								</VisibleLeaguesProvider>
-							</BestBuddyProvider>
-						</RelevanceSetsProvider>
-					</RaidMetricProvider>
+				<RaidMetricProvider>
+					<RelevanceSetsProvider>
+						<BestBuddyProvider>
+							<VisibleLeaguesProvider>
+								<LanguageProvider>
+									<SeenEventsProvider>
+										<BrowserRouter>
+											<Routes>
+												<Route element={<Shell />}>
+													<Route index element={<Home />} />
+													<Route path='about' element={<About />} />
+													<Route path='rankings/:league' element={<Rankings />} />
+													<Route path='rankings/:league/:type' element={<Rankings />} />
+													<Route path='pokemon/:speciesId' element={<PokemonDetail />} />
+													<Route path='pokemon/:speciesId/:tab' element={<PokemonDetail />} />
+													<Route path='calendar' element={<Navigate to='/calendar/events' replace />} />
+													<Route path='calendar/:tab' element={<Calendar />} />
+													<Route
+														path='teams/*'
+														element={
+															<Suspense
+																fallback={
+																	<div className='r-tm-loading'>
+																		<span className='r-spinner' aria-hidden='true' />
+																	</div>
+																}
+															>
+																<Teams />
+															</Suspense>
+														}
+													/>
+													<Route path='moves' element={<Moves />} />
+													<Route path='move/:moveId' element={<MoveDetail />} />
+													<Route path='types' element={<Types />} />
+													<Route
+														path='search-strings'
+														element={<Navigate to='/search-strings/non-meta-relevant' replace />}
+													/>
+													<Route path='search-strings/:tab' element={<MassDelete />} />
+													{/* Old URLs, kept working for anyone with a bookmark or shared link. */}
+													<Route path='trash' element={<Navigate to='/search-strings/non-meta-relevant' replace />} />
+													<Route path='tools' element={<Placeholder title={t('common:placeholder.toolsTitle')} />} />
+													<Route path='settings' element={<Settings />} />
+													<Route path='*' element={<Navigate to='/' replace />} />
+												</Route>
+											</Routes>
+										</BrowserRouter>
+									</SeenEventsProvider>
+								</LanguageProvider>
+							</VisibleLeaguesProvider>
+						</BestBuddyProvider>
+					</RelevanceSetsProvider>
+				</RaidMetricProvider>
 			</ThemeProvider>
 		</PersistQueryClientProvider>
 	);

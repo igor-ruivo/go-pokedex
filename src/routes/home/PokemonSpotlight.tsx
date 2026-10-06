@@ -294,23 +294,20 @@ export const PokemonSpotlight = () => {
 
 	// Everything the card is made of, so that it swipes in complete: the sprites of the whole line (with the artwork the sprite
 	// falls back to), the badge of its league, the type of its raid ranking and the pictures of the tab buttons.
-	const assetsOf = useCallback(
-		(spot: Spotlight): Array<Preload> => {
-			const assets: Array<Preload> = lineMembers(spot.line).map((p) => ({
-				url: spriteUrl(p),
-				fallback: p.imageUrl,
-			}));
-			const badge = spot.pvp && homeLeagueIcon(spot.pvp.league);
-			if (badge) assets.push(badge);
-			if (spot.raid) assets.push(`/images/types/${spot.raid.type}.png`);
-			for (const slug of SPOT_TABS) {
-				const icon = pokemonTabIcon(slug);
-				if (typeof icon === 'string' && icon) assets.push(icon);
-			}
-			return assets;
-		},
-		[]
-	);
+	const assetsOf = useCallback((spot: Spotlight): Array<Preload> => {
+		const assets: Array<Preload> = lineMembers(spot.line).map((p) => ({
+			url: spriteUrl(p),
+			fallback: p.imageUrl,
+		}));
+		const badge = spot.pvp && homeLeagueIcon(spot.pvp.league);
+		if (badge) assets.push(badge);
+		if (spot.raid) assets.push(`/images/types/${spot.raid.type}.png`);
+		for (const slug of SPOT_TABS) {
+			const icon = pokemonTabIcon(slug);
+			if (typeof icon === 'string' && icon) assets.push(icon);
+		}
+		return assets;
+	}, []);
 	const { current, leaving, held, cycle, barDelay, rotated, holdProps } = useRotator<Spotlight>({
 		ready: pool.length > 0,
 		pick: (not) => {

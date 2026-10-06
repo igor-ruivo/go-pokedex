@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -53,7 +53,7 @@ export const HScroll = ({
 	};
 
 	return (
-		<div className='r-hscroll' style={arrowTop ? ({ ['--arrow-top' as string]: arrowTop } as CSSProperties) : undefined}>
+		<div className='r-hscroll' style={arrowTop ? { ['--arrow-top' as string]: arrowTop } : undefined}>
 			{edges.left && (
 				<button
 					type='button'

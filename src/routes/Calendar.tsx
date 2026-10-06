@@ -16,6 +16,7 @@ import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLiveNow } from '../hooks/useLiveNow';
+import { usePlayOnChange } from '../hooks/usePlayOnChange';
 import { useScrollAnchor } from '../hooks/useScrollAnchor';
 import { leekduckPosts, specialToPost, spotlightToPost } from '../lib/calendar-events';
 import { startsIn, timeLeft } from '../lib/event-timing';
@@ -502,6 +503,8 @@ const EventCard = ({
 	const { t } = useTranslation(['calendar']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
+	const cardRef = useRef<HTMLDivElement>(null);
+	usePlayOnChange(cardRef, open);
 	// Ticking so a same-day "in Xh/Xm/Xs" countdown (see `startsIn`) counts
 	// down live and flips this card straight to "Live" the instant it starts,
 	// instead of sitting on a static "today" until some unrelated re-render.
@@ -538,7 +541,7 @@ const EventCard = ({
 	// (unlike the official artwork), so the shared sprite rule scales them
 	// up without changing this layout box.
 	return (
-		<div className='r-event' data-open={open} data-event={post.id}>
+		<div className='r-event' ref={cardRef} data-open={open} data-event={post.id}>
 			<button
 				type='button'
 				className='r-event-head'
@@ -909,6 +912,8 @@ const RaidsTab = () => {
 		lastRaidsSlot = key;
 		setSelRaw(key);
 	};
+	const slotRef = useRef<HTMLDivElement>(null);
+	usePlayOnChange(slotRef, sel, true);
 
 	const ready = postsFetchCompleted && specialBossesFetchCompleted && currentBossesFetchCompleted && fetchCompleted;
 
@@ -989,16 +994,18 @@ const RaidsTab = () => {
 		<>
 			<DatePicker slots={slots} active={activeSlot?.key ?? 'current'} onPick={setSel} />
 
-			{activeEntries.length === 0 ? (
-				<p className='r-muted' style={{ marginTop: 'var(--s4)' }}>
-					{t('calendar:raids.nothingScheduled')}
-				</p>
-			) : (
-				<>
-					<SlotSource post={activeSlot?.topSource} gl={gl} />
-					<RaidTierGroups entries={activeEntries} endMap={showEnd ? endMap : undefined} />
-				</>
-			)}
+			<div ref={slotRef}>
+				{activeEntries.length === 0 ? (
+					<p className='r-muted' style={{ marginTop: 'var(--s4)' }}>
+						{t('calendar:raids.nothingScheduled')}
+					</p>
+				) : (
+					<>
+						<SlotSource post={activeSlot?.topSource} gl={gl} />
+						<RaidTierGroups entries={activeEntries} endMap={showEnd ? endMap : undefined} />
+					</>
+				)}
+			</div>
 		</>
 	);
 };
@@ -1018,6 +1025,8 @@ const SpawnsTab = () => {
 		lastSpawnsSlot = key;
 		setSelRaw(key);
 	};
+	const slotRef = useRef<HTMLDivElement>(null);
+	usePlayOnChange(slotRef, sel, true);
 
 	if (!postsFetchCompleted || !spotlightHoursFetchCompleted || !fetchCompleted) {
 		return <Spinner />;
@@ -1080,21 +1089,23 @@ const SpawnsTab = () => {
 		<>
 			<DatePicker slots={slots} active={activeKey} onPick={setSel} />
 
-			{activeKey === 'now' ? (
-				<div style={{ marginTop: 'var(--s4)' }}>
-					<SlotSource post={nowTopSource} gl={gl} />
-					<MiniGrid entries={nowSpawns} endMap={endMap} />
-				</div>
-			) : slots.length === 0 ? (
-				<p className='r-muted' style={{ marginTop: 'var(--s4)' }}>
-					{t('home:now.empty')}
-				</p>
-			) : (
-				<div style={{ marginTop: 'var(--s4)' }}>
-					<SlotSource post={eventGroups.find((g) => g.label === activeKey)?.topSource} gl={gl} />
-					<MiniGrid entries={eventGroups.find((g) => g.label === activeKey)?.entries ?? []} />
-				</div>
-			)}
+			<div ref={slotRef}>
+				{activeKey === 'now' ? (
+					<div style={{ marginTop: 'var(--s4)' }}>
+						<SlotSource post={nowTopSource} gl={gl} />
+						<MiniGrid entries={nowSpawns} endMap={endMap} />
+					</div>
+				) : slots.length === 0 ? (
+					<p className='r-muted' style={{ marginTop: 'var(--s4)' }}>
+						{t('home:now.empty')}
+					</p>
+				) : (
+					<div style={{ marginTop: 'var(--s4)' }}>
+						<SlotSource post={eventGroups.find((g) => g.label === activeKey)?.topSource} gl={gl} />
+						<MiniGrid entries={eventGroups.find((g) => g.label === activeKey)?.entries ?? []} />
+					</div>
+				)}
+			</div>
 		</>
 	);
 };
@@ -1171,6 +1182,8 @@ const RocketGrunt = ({
 	const { t } = useTranslation(['calendar']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
+	const cardRef = useRef<HTMLDivElement>(null);
+	usePlayOnChange(cardRef, open);
 	const sets = useRelevanceSets();
 	const typeKey = g.type?.toLowerCase();
 	const avatar = typeKey ? `/images/types/${typeKey}.png` : npcAvatar(g.trainerId);
@@ -1201,6 +1214,7 @@ const RocketGrunt = ({
 
 	return (
 		<div
+			ref={cardRef}
 			className='r-event r-grunt'
 			data-open={open}
 			role='button'
@@ -1469,6 +1483,8 @@ const Calendar = () => {
 	const active: CalendarTab = (CALENDAR_TABS as ReadonlyArray<string>).includes(tab ?? '')
 		? (tab as CalendarTab)
 		: 'events';
+	const panelRef = useRef<HTMLDivElement>(null);
+	usePlayOnChange(panelRef, active, true);
 
 	// Literal t() calls, not a Record built from a dynamic key — see
 	// RaidsTab's tierLabels for why. "bosses" is the Raids tab — its label
@@ -1493,7 +1509,7 @@ const Calendar = () => {
 				ariaLabel={t('calendar:tabs.ariaLabel')}
 			/>
 
-			<div style={{ marginTop: 16 }}>
+			<div ref={panelRef} style={{ marginTop: 16 }}>
 				{active === 'events' && <EventsTab />}
 				{active === 'bosses' && <RaidsTab />}
 				{active === 'max' && <MaxBattlesTab />}

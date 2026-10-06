@@ -43,7 +43,10 @@ const Shell = () => {
 			// the top bar's bottom edge, and how far the bottom bar's top edge is from the bottom of the screen (its own height, its gap from
 			// the edge and the home indicator)
 			root.style.setProperty('--appbar-h', `${Math.round(appbar.getBoundingClientRect().height)}px`);
-			root.style.setProperty('--bottomnav-reach', `${Math.round(window.innerHeight - nav.getBoundingClientRect().top)}px`);
+			root.style.setProperty(
+				'--bottomnav-reach',
+				`${Math.round(window.innerHeight - nav.getBoundingClientRect().top)}px`
+			);
 		};
 		measure();
 		const observer = new ResizeObserver(measure);
@@ -92,7 +95,9 @@ const Shell = () => {
 						<NavLink
 							key={n.to}
 							to={n.to}
-							className={[n.match(pathname) ? 'is-active' : '', n.wideOnly ? 'r-bn-wide' : ''].filter(Boolean).join(' ')}
+							className={[n.match(pathname) ? 'is-active' : '', n.wideOnly ? 'r-bn-wide' : '']
+								.filter(Boolean)
+								.join(' ')}
 							title={hint}
 							aria-label={
 								n.to === R.calendar() && unseenEvents > 0

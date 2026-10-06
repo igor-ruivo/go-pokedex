@@ -84,9 +84,7 @@ export const IconTabBar = ({
 
 	return (
 		<div className='r-tabs'>
-			<div
-				className='r-tabs-scroller'
-			>
+			<div className='r-tabs-scroller'>
 				{canScrollLeft && (
 					<button
 						type='button'

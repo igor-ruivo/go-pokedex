@@ -1279,9 +1279,8 @@
 	top: -5px;
 	right: -5px;
 	z-index: 7;
-	width: 15px;
-	height: 15px;
-	filter: drop-shadow(0 1px 1px rgb(var(--shadow-rgb) / calc(0.35 * var(--shadow-k))));
+	width: 20px;
+	height: 20px;
 }
 .rvmp .h-faces .h-stack-more {
 	/* the "+N" is the last of the row and lies over all the faces (and their sparkles and Shadow marks) */
@@ -1347,11 +1346,12 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-/* "+N": the other Pokémon the card has, at the side of the sprite */
+/* "+N": the other Pokémon the card has, floating over the right side of the sprite (halfway down, clear of the shadow mark below it) */
 .rvmp .h-tile-more {
 	position: absolute;
-	right: 78px;
-	bottom: 8px;
+	right: 6px;
+	top: 50%;
+	transform: translateY(-50%);
 	z-index: 2;
 	box-sizing: border-box;
 	min-width: 26px;
@@ -2314,9 +2314,14 @@
 	top: 12px;
 	right: 16%;
 	z-index: 2;
-	width: 20px;
-	height: 20px;
-	filter: drop-shadow(0 1px 2px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k))));
+	box-sizing: border-box;
+	width: 26px;
+	height: 26px;
+	padding: 4px;
+	/* on a plate with a border, so the gold keeps its contrast over any picture */
+	border: 1px solid var(--border-strong);
+	border-radius: 50%;
+	background: var(--surface);
 }
 @media (max-width: 760px) {
 	.rvmp .h-day {
@@ -2364,8 +2369,9 @@
 	.rvmp .h-day-shiny {
 		top: 8px;
 		right: 12%;
-		width: 17px;
-		height: 17px;
+		width: 22px;
+		height: 22px;
+		padding: 3px;
 	}
 }
 
@@ -2768,10 +2774,9 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day-heroes::be
 	width: 20px;
 	height: 20px;
 }
-/* with several pictures the "+N" sits on the corner of the last one */
+/* with several pictures the "+N" sits over the last one */
 .rvmp .h-tile-hero-row ~ .h-tile-more {
-	right: 12px;
-	bottom: 6px;
+	right: 10px;
 }
 
 /* a row with room for one Pokémon at a time (a phone): they take turns in the same place, the next swiping in as the one on show
