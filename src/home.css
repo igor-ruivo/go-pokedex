@@ -12,7 +12,7 @@
 	width: 100%;
 	max-width: 1120px;
 	margin: 0 auto;
-	padding: 0 var(--s4);
+	padding: 0 max(var(--s4), env(safe-area-inset-right)) 0 max(var(--s4), env(safe-area-inset-left));
 }
 .rvmp .h-sr {
 	position: absolute;
@@ -704,7 +704,8 @@
 /* ---- footer -------------------------------------------------------------------------------------------------- */
 .rvmp .h-footer {
 	margin-top: clamp(40px, 7vw, 80px);
-	padding: var(--s5) var(--s4) calc(112px + env(safe-area-inset-bottom));
+	padding: var(--s5) max(var(--s4), env(safe-area-inset-right)) calc(112px + env(safe-area-inset-bottom))
+		max(var(--s4), env(safe-area-inset-left));
 	border-top: 1px solid var(--border);
 	background: color-mix(in srgb, var(--bg-elev) 70%, var(--bg));
 }

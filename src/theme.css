@@ -33,7 +33,7 @@
 	/* text */
 	--text: #eef2f8;
 	--text-dim: #9fb0c4;
-	--text-faint: #64748b;
+	--text-faint: #8190a5;
 
 	/* brand accent (the Pokémon page overrides it with the Pokémon's own type colour) */
 	--accent: #ff5b5b;
@@ -182,7 +182,7 @@
 
 	--text: #141925;
 	--text-dim: #4a5468;
-	--text-faint: #6d788c;
+	--text-faint: #5f6b80;
 
 	--accent: #d9333f;
 	--accent-ink: #ffffff;

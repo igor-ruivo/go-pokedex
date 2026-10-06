@@ -7830,7 +7830,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp[data-platform='ios'] .r-appbar {
 		gap: 8px;
 		min-height: 44px;
-		padding: 4px max(16px, env(safe-area-inset-right)) 4px max(16px, env(safe-area-inset-left));
+		padding: calc(4px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 4px max(16px, env(safe-area-inset-left));
 		background: color-mix(in srgb, var(--bg) 80%, transparent);
 		backdrop-filter: blur(24px) saturate(1.8);
 		border-bottom: 0.5px solid var(--border-strong);
@@ -7860,7 +7860,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp[data-platform='android'] .r-appbar {
 		gap: 8px;
 		min-height: 64px;
-		padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+		padding: calc(8px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
 		background: var(--surface);
 		backdrop-filter: none;
 		border-bottom: 0;
@@ -7889,4 +7889,30 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		min-width: 48px;
 		min-height: 48px;
 	}
+}
+
+/* ---- full-screen layout and zoom ------------------------------------------------------------------------------------------------------
+   The page now extends under the status bar, the notch and the home indicator (`viewport-fit=cover`), so what has to stay clear of them
+   does: the top bar (its top), the page's sides in landscape, the menu. The bottom bars already kept clear of the home indicator. */
+.rvmp .r-appbar {
+	padding-top: calc(var(--s3) + env(safe-area-inset-top));
+	padding-left: max(var(--s4), calc((100% - min(1024px, 90%)) / 2), env(safe-area-inset-left));
+	padding-right: max(var(--s4), calc((100% - min(1024px, 90%)) / 2), env(safe-area-inset-right));
+}
+.rvmp .r-shell {
+	padding-left: max(var(--s4), env(safe-area-inset-left));
+	padding-right: max(var(--s4), env(safe-area-inset-right));
+}
+.rvmp .r-menu-panel .r-menu-head {
+	padding-top: calc(var(--s3) + env(safe-area-inset-top));
+}
+.rvmp .r-menu-panel {
+	padding-right: env(safe-area-inset-right);
+}
+/* Pinch-zoom is allowed again (it was switched off, which WCAG 1.4.4 does not allow), so iOS's habit of zooming in on a field whose text
+   is under 16px has to be answered by the fields: none of them is below that on an iPhone or an iPad. */
+.rvmp[data-platform='ios'] input:not([type='checkbox'], [type='radio'], [type='range'], [type='button'], [type='submit']),
+.rvmp[data-platform='ios'] select,
+.rvmp[data-platform='ios'] textarea {
+	font-size: max(16px, 1em);
 }
