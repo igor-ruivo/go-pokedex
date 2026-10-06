@@ -22,11 +22,11 @@
 	},
 	"right": {
 		"title": "Gerade im Spiel",
-		"bosses": "Raid-Auswahl von heute",
-		"spawns": "Wilde und besondere Spawns",
-		"rockets": "Aufstellungen und Crypto-Belohnungen",
-		"eggs": "Was aus welchem Ei schlüpft",
-		"max": "Die Dyna-Kampf-Bosse, nach Stufe"
+		"bosses": "Heutige Raids",
+		"spawns": "Wild & besondere",
+		"rockets": "Crypto-Belohnungen",
+		"eggs": "Was schlüpft",
+		"max": "Bosse nach Stufe"
 	},
 	"ranks": {
 		"showMore": "{{count}} weitere Ligen anzeigen",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "Beste Raid-Angreifer",
-		"subtitle": "Die besten Angreifer jedes der 17 Typen."
+		"subtitle": "Die besten Angreifer jedes der 17 Typen.",
+		"pickSubtitle": "Wähle einen Typ für seine besten Angreifer."
 	},
 	"social": {
 		"label": "Du findest uns auf",

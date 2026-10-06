@@ -444,14 +444,24 @@
 	align-items: center;
 	gap: 6px;
 }
-.rvmp .h-highlights li > img {
+/* the sparkle that stands for bonuses, rewards and milestones is drawn on the same plate as the pictures */
+.rvmp .h-highlights li > .h-kind {
+	display: grid;
+	place-items: center;
+}
+.rvmp .h-highlights li > .h-kind > svg,
+.rvmp .h-highlights li > .h-kind > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+.rvmp .h-highlights li > img,
+.rvmp .h-highlights li > .h-kind {
 	width: 20px;
 	height: 20px;
 	object-fit: contain;
 	filter: drop-shadow(0 1px 3px rgb(var(--shadow-rgb) / calc(0.5 * var(--shadow-k))));
-}
-.rvmp .h-event:not([data-big]) .h-highlights li:nth-child(n + 3) {
-	display: none;
 }
 
 /* ---- the round sprite ------------------------------------------------------------------------------------- */
@@ -903,8 +913,65 @@
 }
 .rvmp .h-league-name h3 {
 	margin: 0;
+	overflow: hidden;
 	font-size: 19px;
 	letter-spacing: -0.02em;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* The league's best Pokémon on a slanted panel at the end of the header, in the same cut as the day rows' bands. The panel is as tall
+   as the header (the padding, the badge and the gap), so its foot is the line above the top three; the picture is bigger than it, and
+   what hangs past the foot or the card's top is cropped, like a bust. */
+.rvmp .h-league {
+	overflow: clip;
+}
+.rvmp .h-league[data-hero] .h-league-name {
+	max-width: 58%;
+}
+.rvmp .h-league[data-hero] .h-league-chev {
+	display: none;
+}
+.rvmp .h-league-hero {
+	--hero-h: calc(var(--s4) + 52px + var(--s3));
+	--hero-w: 40%;
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 0;
+	width: calc(var(--hero-w) + 24px);
+	height: var(--hero-h);
+	overflow: hidden;
+	pointer-events: none;
+}
+.rvmp .h-league-hero::before {
+	content: '';
+	position: absolute;
+	inset: 0 -28px 0 24px;
+	border-left: 3px solid var(--lg);
+	background: linear-gradient(
+		160deg,
+		color-mix(in srgb, var(--lg) calc(20% * var(--wash-k) + 5%), var(--surface)),
+		color-mix(in srgb, var(--lg) calc(6% * var(--wash-k) + 2%), var(--surface))
+	);
+	transform: skewX(-16deg);
+}
+.rvmp .h-league-hero > img:not(.r-shadow-mark) {
+	position: absolute;
+	right: 10px;
+	bottom: calc(var(--hero-h) * -0.325);
+	width: auto;
+	height: calc(var(--hero-h) * 1.475);
+	object-fit: contain;
+	filter: drop-shadow(0 6px 8px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k))));
+}
+/* a Shadow Pokémon keeps its flame: at the foot of the panel, inside what the crop leaves visible */
+.rvmp .h-league-hero > .r-shadow-mark {
+	position: absolute;
+	right: 8px;
+	bottom: 6px;
+	z-index: 2;
+	width: 26px;
+	height: 26px;
 }
 .rvmp .h-league-name p {
 	margin: 2px 0 0;
@@ -1233,6 +1300,74 @@
 	align-items: flex-start;
 }
 
+/* "in the game right now": each card shows one Pokémon, big, on the slanted panel of the league and raid-type cards (see .h-league-hero),
+   beside the icon plate. The panel ends just under the plate; what the card has besides it is the "+N" at the foot. */
+.rvmp .h-tile--hero {
+	overflow: clip;
+	border-color: color-mix(in srgb, var(--lg) 30%, var(--border));
+	background: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--lg) calc(8% * var(--wash-k)), var(--surface)),
+		var(--surface) 60%
+	);
+}
+/* here the panel is the whole header: no slanted edge, a gradient from the card's left to the sprite at its right */
+.rvmp .h-tile--hero .h-league-hero {
+	--hero-h: 72px;
+	left: 0;
+	width: auto;
+}
+.rvmp .h-tile--hero .h-league-hero::before {
+	inset: 0;
+	border-left: 0;
+	background: linear-gradient(
+		90deg,
+		transparent 25%,
+		color-mix(in srgb, var(--lg) calc(22% * var(--wash-k) + 5%), var(--surface))
+	);
+	transform: none;
+}
+/* a smooth line closes the header, fading out at both ends, so the band doesn't end in a hard cut over the title */
+.rvmp .h-tile--hero .h-league-hero::after {
+	content: '';
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, var(--border-strong) 22%, var(--border-strong) 78%, transparent);
+}
+.rvmp .h-tile--hero .h-tile-foot {
+	min-height: 0;
+}
+/* the explanation is one short line, cut with an ellipsis if a language still needs more room */
+.rvmp .h-tile--hero p {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* "+N": the other Pokémon the card has, at the side of the sprite */
+.rvmp .h-tile-more {
+	position: absolute;
+	right: 78px;
+	bottom: 8px;
+	z-index: 2;
+	box-sizing: border-box;
+	min-width: 26px;
+	height: 22px;
+	padding: 0 8px;
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r-pill);
+	background: var(--surface);
+	color: var(--text-dim);
+	font-size: 11.5px;
+	font-style: normal;
+	font-weight: 800;
+	line-height: 20px;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+
 /* ---- best raid attackers: one small card per type ---------------------------------------------------------------- */
 .rvmp .h-raids {
 	display: grid;
@@ -1281,6 +1416,41 @@
 	min-width: 0;
 	font-size: 16px;
 	letter-spacing: -0.01em;
+}
+/* with the type's best attacker on the slanted panel at the end of the header (the same piece as the league cards'), the header keeps to
+   the room left of it, and the metric's name moves under the type's, like a league's CP */
+.rvmp .h-raid {
+	overflow: clip;
+}
+.rvmp .h-raid .h-league-hero {
+	--hero-h: calc(var(--s3) + 40px + var(--s2));
+	--hero-w: 36%;
+}
+.rvmp .h-raid .h-league-hero > .r-shadow-mark {
+	right: 6px;
+	bottom: 4px;
+	width: 20px;
+	height: 20px;
+}
+.rvmp .h-raid[data-hero] header {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	column-gap: 10px;
+	justify-self: start;
+	width: 60%;
+}
+.rvmp .h-raid[data-hero] .h-raid-type {
+	grid-row: 1 / span 2;
+}
+.rvmp .h-raid[data-hero] h3 {
+	align-self: end;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.rvmp .h-raid[data-hero] .h-raid-metric {
+	align-self: start;
+	margin: 0;
 }
 .rvmp .h-raid-metric {
 	margin-left: auto;
@@ -1404,7 +1574,8 @@
 }
 
 /* what an event brings: the kind's icon is on a glass plate like the faces beside it (the card is a photograph) */
-.rvmp .h-highlights li > img {
+.rvmp .h-highlights li > img,
+.rvmp .h-highlights li > .h-kind {
 	box-sizing: border-box;
 	width: 32px;
 	height: 32px;
@@ -1430,7 +1601,8 @@
 	box-sizing: border-box;
 }
 /* the icon of a kind of content on an event card: the same near-white round plate as the faces beside it */
-.rvmp .h-highlights li > img {
+.rvmp .h-highlights li > img,
+.rvmp .h-highlights li > .h-kind {
 	padding: 6px;
 	border: 0;
 	border-radius: 50%;
@@ -1519,51 +1691,6 @@
 .rvmp .h-social-btn[data-soon] {
 	cursor: default;
 	opacity: 0.75;
-}
-
-/* narrow screens: a type is one line — its badge and name, then its best attackers as faces (no names, no figures): as many as fit the
-   last 40% of the row, overlapping a little and spread to its edges (the count and the size come from RaidAttackers) */
-@media (max-width: 700px) {
-	.rvmp .h-raid {
-		grid-template-columns: minmax(0, 1fr) 40%;
-		align-items: center;
-		gap: var(--s2) var(--s3);
-		padding: var(--s2) var(--s3);
-	}
-	.rvmp .h-raid-metric,
-	.rvmp .h-raid-name,
-	.rvmp .h-raid-link b,
-	.rvmp .h-raid .h-coin {
-		display: none;
-	}
-	.rvmp .h-raid ol {
-		display: flex;
-		justify-content: flex-end;
-		min-width: 0;
-		padding: 0;
-		border-top: 0;
-		gap: 0;
-	}
-	.rvmp .h-raid ol li {
-		flex: none;
-	}
-	.rvmp .h-raid ol li + li {
-		margin-left: calc(var(--face-step, 34px) - var(--face, 42px));
-	}
-	.rvmp .h-raid-link {
-		padding: 0;
-	}
-	.rvmp .h-raid .h-avatar,
-	.rvmp .h-raid ol li > .h-skeleton {
-		width: var(--face, 42px);
-		height: var(--face, 42px);
-	}
-	.rvmp .h-raid ol li > .h-skeleton {
-		border-radius: 50%;
-	}
-	.rvmp .h-raids {
-		grid-template-columns: 1fr;
-	}
 }
 
 /* a face keeps its size when its column is narrower than it is: neighbours then overlap a little */
@@ -1691,7 +1818,8 @@
 	border-radius: inherit;
 	background: var(--accent);
 	transform-origin: left center;
-	transform: scaleX(1);
+	/* fills up as the time passes (empty when a card arrives, full when it leaves) */
+	transform: scaleX(0);
 	animation: h-countdown linear both;
 }
 .rvmp .h-countdown[data-held] i {
@@ -1699,7 +1827,7 @@
 }
 @keyframes h-countdown {
 	to {
-		transform: scaleX(0);
+		transform: scaleX(1);
 	}
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1743,6 +1871,11 @@
 }
 .rvmp .h-spot .r-sprite {
 	width: clamp(170px, 24vw, 240px);
+}
+/* hovering a member of the line swaps the big sprite: a quick cut, not the hero's slow cross-fade (which would trail the pointer);
+   the line's pictures are preloaded with the card, so the new one is there at once */
+.rvmp .h-spot .r-sprite > img.r-fade-sprite {
+	transition: opacity 0.12s ease;
 }
 .rvmp .h-spot-line {
 	display: flex;
@@ -2170,135 +2303,11 @@
 	z-index: 3;
 	min-width: 0;
 }
-/* ---- wide screens: the end of the row is cut on a diagonal and the Pokémon are drawn big on it, one slanted band each ----
-   The band's fill is a skewed pseudo-element (the sprite and the name stay upright), so every band's left edge leans the same way
-   and the seams between the stages are parallel diagonals. The row clips what reaches past its rounded corners. */
+/* ---- Community Days and Spotlight Hours rows clip what reaches past their rounded corners ---- */
 .rvmp .h-day {
 	overflow: clip;
 }
-.rvmp .h-day-show {
-	display: flex;
-	align-self: stretch;
-	box-sizing: border-box;
-	width: min(calc(var(--n, 1) * 124px + 64px), 46vw);
-	min-height: 118px;
-	/* out to the card's edge on the top, the right and the bottom */
-	margin: calc(-1 * var(--s3)) calc(-1 * var(--s4)) calc(-1 * var(--s3)) 0;
-}
-.rvmp .h-day-slat {
-	position: relative;
-	flex: 1 1 0;
-	min-width: 0;
-	color: var(--text);
-	text-decoration: none;
-}
-.rvmp .h-day-slat[data-current] {
-	flex-grow: 2.1;
-}
-/* the others are only what it can evolve into: narrower, smaller, and quieter */
-.rvmp .h-day-show:has([data-current]) .h-day-slat:not([data-current]) {
-	flex-grow: 0.8;
-}
-.rvmp .h-day-slat::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	/* reaches under the next band (and past the card's edge for the last one) so the slant never opens a gap on the right */
-	right: -28px;
-	z-index: 0;
-	pointer-events: none;
-	border-left: 1px solid color-mix(in srgb, var(--kc) 45%, var(--border));
-	background: linear-gradient(
-		160deg,
-		color-mix(in srgb, var(--kc) calc(15% * var(--wash-k) + 4%), var(--surface)),
-		color-mix(in srgb, var(--kc) calc(5% * var(--wash-k) + 2%), var(--surface))
-	);
-	transform: skewX(-16deg);
-	transition: background 0.2s ease;
-}
-/* the first band is the cut itself: a stronger edge in the day's colour */
-.rvmp .h-day-slat:first-child::before {
-	border-left: 3px solid var(--kc);
-}
-/* the one the day is about is a shade stronger */
-.rvmp .h-day-slat[data-current]::before {
-	background: linear-gradient(
-		160deg,
-		color-mix(in srgb, var(--kc) calc(30% * var(--wash-k) + 6%), var(--surface)),
-		color-mix(in srgb, var(--kc) calc(9% * var(--wash-k) + 3%), var(--surface))
-	);
-}
-.rvmp .h-day-art {
-	position: absolute;
-	inset: 0 0 24px;
-	z-index: 1;
-}
-.rvmp .h-day-art > img:not(.r-shadow-mark) {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	margin: 0 auto;
-	height: 92%;
-	width: auto;
-	max-width: 125%;
-	object-fit: contain;
-	filter: drop-shadow(0 6px 8px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k))));
-	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
-}
-/* zoomed: the featured one is bigger than its band is tall, so the card's edge crops it a little */
-.rvmp .h-day-slat[data-current] .h-day-art > img:not(.r-shadow-mark) {
-	height: 126%;
-	bottom: -10%;
-}
-/* a pool of light behind it, like a spotlight on the one that can be caught */
-.rvmp .h-day-slat[data-current] .h-day-art::before {
-	content: '';
-	position: absolute;
-	inset: -10% -8% -4%;
-	background: radial-gradient(
-		closest-side at 50% 58%,
-		color-mix(in srgb, var(--kc) calc(36% * var(--wash-k) + 8%), transparent),
-		transparent 100%
-	);
-}
-.rvmp .h-day-show:has([data-current]) .h-day-slat:not([data-current]) .h-day-art {
-	opacity: 0.78;
-	filter: saturate(0.72);
-	transition:
-		opacity 0.2s ease,
-		filter 0.2s ease;
-}
-.rvmp .h-day-show:has([data-current]) .h-day-slat:not([data-current]) .h-day-art > img:not(.r-shadow-mark) {
-	height: 72%;
-}
-.rvmp .h-day-show:has([data-current]) .h-day-slat:not([data-current]) .h-day-shiny {
-	width: 15px;
-	height: 15px;
-}
-/* an evolution step: a small coin on the seam, pointing on to the next form */
-.rvmp .h-day-step {
-	position: absolute;
-	top: 50%;
-	left: 0;
-	z-index: 3;
-	box-sizing: border-box;
-	width: 22px;
-	height: 22px;
-	padding: 5px 4px;
-	border: 1px solid var(--border-strong);
-	border-radius: 50%;
-	background: var(--surface-2);
-	transform: translate(-50%, -50%);
-	fill: none;
-	stroke: var(--text-dim);
-	stroke-width: 3;
-	stroke-linecap: round;
-	stroke-linejoin: round;
-	pointer-events: none;
-}
+/* the sparkle of a shiny-able Pokémon, on the pictures at the end of a row */
 .rvmp .h-day-shiny {
 	position: absolute;
 	top: 12px;
@@ -2307,56 +2316,6 @@
 	width: 20px;
 	height: 20px;
 	filter: drop-shadow(0 1px 2px rgb(var(--shadow-rgb) / calc(0.4 * var(--shadow-k))));
-}
-.rvmp .h-day-slat-name {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 6px;
-	z-index: 2;
-	padding: 0 8px;
-	overflow: hidden;
-	text-align: center;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: 11.5px;
-	font-weight: 800;
-	letter-spacing: 0.01em;
-	color: color-mix(in srgb, var(--kc), var(--text) var(--ink-mix));
-}
-/* the name of the catchable one is a pill in the day's colour; the others' stay plain text */
-.rvmp .h-day-slat[data-current] .h-day-slat-name {
-	left: 50%;
-	right: auto;
-	max-width: calc(100% - 12px);
-	padding: 2px 11px;
-	border-radius: var(--r-pill);
-	background: var(--kc);
-	color: var(--on-type);
-	font-size: 12.5px;
-	transform: translateX(-50%);
-	box-shadow: 0 3px 8px -3px color-mix(in srgb, var(--kc) 70%, transparent);
-}
-.rvmp .h-day-show:has([data-current]) .h-day-slat:not([data-current]) .h-day-slat-name {
-	font-size: 10.5px;
-	font-weight: 700;
-	color: var(--text-dim);
-}
-@media (hover: hover) {
-	.rvmp .h-day-slat:hover::before {
-		background: linear-gradient(
-			160deg,
-			color-mix(in srgb, var(--kc) calc(34% * var(--wash-k) + 8%), var(--surface)),
-			color-mix(in srgb, var(--kc) calc(12% * var(--wash-k) + 4%), var(--surface))
-		);
-	}
-	.rvmp .h-day-slat:hover .h-day-art > img:not(.r-shadow-mark) {
-		transform: translateY(-4px) scale(1.05);
-	}
-	.rvmp .h-day-show:has([data-current]) .h-day-slat:not([data-current]):hover .h-day-art {
-		opacity: 1;
-		filter: none;
-	}
 }
 @media (max-width: 760px) {
 	.rvmp .h-day {
@@ -2400,31 +2359,6 @@
 		grid-column: 1 / -1;
 		grid-row: 4;
 		margin-top: var(--s2);
-	}
-	/* the diagonal end narrows to the catchable Pokémon alone, as tall as the head and no more: the bonuses run under it */
-	.rvmp .h-day-show {
-		grid-column: 3;
-		grid-row: 1 / span 3;
-		width: min(calc(var(--n, 1) * 76px + 28px), 38vw);
-		min-height: 96px;
-		margin: calc(-1 * var(--s3)) calc(-1 * var(--s3)) 0 0;
-	}
-	/* with no bonuses the head is the whole card: the end bleeds to the bottom edge too */
-	.rvmp .h-day:not(:has(.h-day-bonuses)) .h-day-show {
-		margin-bottom: calc(-1 * var(--s3));
-	}
-	/* otherwise it ends in a hairline, a clean foot for the bands */
-	.rvmp .h-day:has(.h-day-bonuses) .h-day-slat::before {
-		border-bottom: 1px solid color-mix(in srgb, var(--kc) 30%, var(--border));
-	}
-	.rvmp .h-day-slat[data-current] .h-day-art > img:not(.r-shadow-mark) {
-		height: 112%;
-		bottom: -6%;
-	}
-	.rvmp .h-day-slat-name,
-	.rvmp .h-day-slat[data-current] .h-day-slat-name {
-		font-size: 11px;
-		padding-inline: 8px;
 	}
 	.rvmp .h-day-shiny {
 		top: 8px;
@@ -2472,6 +2406,23 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-league .h-coin
 	html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-league:hover {
 		border-color: var(--border-strong);
 	}
+}
+
+/* dark mode only: the sprite panels of the league, raid-type and "in the game right now" headers have no tinted fill, and the icon plate of
+   the latter keeps its border but has no fill and no shadow */
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-league-hero::before {
+	background: var(--surface-2);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-tile--hero {
+	border-color: var(--border);
+	background: var(--surface);
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-tile--hero .h-league-hero::before {
+	background: none;
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-tile--hero .h-tile-icon {
+	background: none;
+	box-shadow: none;
 }
 
 /* dark mode only, the same quiet treatment for the raid attackers, the Community Days and Spotlight Hours and the Pokémon
@@ -2616,4 +2567,272 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-lab {
 .rvmp .h-day-bonuses .r-milestone-bullet {
 	width: 13px;
 	height: 13px;
+}
+
+/* a Spotlight Hour's bonus chip: the bonus's own picture(s) on a plate that is as wide as they need (the two candies of a 2× Catch Candy) */
+.rvmp .h-highlights li > .h-kind--bonus {
+	width: auto;
+	min-width: 32px;
+	height: 32px;
+	padding: 0 6px;
+	border-radius: 16px;
+}
+.rvmp .h-kind--bonus .r-milestone-icons {
+	min-width: 0;
+	padding: 0;
+}
+/* sized to the chip, and the calendar's own smaller candies and trade icon (padding in .r-milestone-icons img:is(...)) are honoured */
+.rvmp .h-kind--bonus .r-milestone-icons > img {
+	width: 20px;
+	height: 20px;
+}
+.rvmp .h-kind--bonus .r-stardust-stack,
+.rvmp .h-kind--bonus .r-stardust-stack > img:first-child:not(.r-icon-copy) {
+	width: 22px;
+	height: 22px;
+}
+.rvmp .h-kind--bonus .r-stardust-stack .r-icon-copy {
+	width: 14px;
+	height: 14px;
+}
+.rvmp .h-kind--bonus .r-stardust-stack .r-stardust-vial {
+	height: 20px;
+}
+
+/* the kinds of content a card brings are adorners in its top-right corner, out of the flow: the title keeps its place at the foot of the
+   card whatever the number of chips (they wrap to a second row on a small one) */
+.rvmp .h-event .h-highlights {
+	position: absolute;
+	top: var(--s3);
+	right: var(--s3);
+	z-index: 3;
+	justify-content: flex-end;
+	max-width: calc(100% - 2 * var(--s3));
+	margin: 0;
+	gap: 6px;
+	pointer-events: none;
+}
+
+/* ---- Community Days and Spotlight Hours: the Pokémon the day is about, big at the end of the row on a smooth tinted background -------
+   The same piece as the header of the "in the game right now" cards: no slanted edge, a gradient from the row's own background to the
+   day's tint, and the pictures as busts (the row's edges crop them). All the Pokémon take the same room. */
+.rvmp .h-day-heroes {
+	/* the pictures keep clear of the card's edge, more the wider the screen (the tint still runs out to it) */
+	--pad: clamp(12px, 3.5vw, 60px);
+	position: relative;
+	z-index: 3;
+	display: flex;
+	align-self: stretch;
+	box-sizing: border-box;
+	width: min(calc(var(--n, 1) * 104px + 40px + var(--pad)), 48vw);
+	padding-right: var(--pad);
+	min-height: 118px;
+	/* out to the card's edge on the top, the right and the bottom */
+	margin: calc(-1 * var(--s3)) calc(-1 * var(--s4)) calc(-1 * var(--s3)) 0;
+	/* above the title's stretched link, but only its pictures take clicks */
+	pointer-events: none;
+}
+.rvmp .h-day-heroes::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix(in srgb, var(--kc) calc(22% * var(--wash-k) + 5%), var(--surface))
+	);
+}
+.rvmp .h-day-hero {
+	position: relative;
+	flex: 1 1 0;
+	min-width: 0;
+	color: inherit;
+	pointer-events: auto;
+}
+.rvmp .h-day-hero > img:not(.r-shadow-mark) {
+	position: absolute;
+	right: 0;
+	bottom: -14%;
+	left: 0;
+	height: 112%;
+	width: auto;
+	max-width: 125%;
+	margin: 0 auto;
+	object-fit: contain;
+	filter: drop-shadow(0 6px 8px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k))));
+	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.rvmp .h-day-hero > .r-shadow-mark {
+	position: absolute;
+	right: 12%;
+	bottom: 14px;
+	z-index: 2;
+	width: 24px;
+	height: 24px;
+}
+.rvmp .h-day-more {
+	position: absolute;
+	right: calc(14px + var(--pad));
+	bottom: 12px;
+	z-index: 4;
+	box-sizing: border-box;
+	min-width: 26px;
+	height: 22px;
+	padding: 0 8px;
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r-pill);
+	background: var(--surface);
+	color: var(--text-dim);
+	font-size: 11.5px;
+	font-style: normal;
+	font-weight: 800;
+	line-height: 20px;
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) {
+	.rvmp .h-day-hero:hover > img:not(.r-shadow-mark) {
+		transform: translateY(-4px) scale(1.05);
+	}
+}
+html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day-heroes::before {
+	background: none;
+}
+@media (max-width: 760px) {
+	/* the end narrows to what a phone has room for, as tall as the head and no more: the bonuses run under it */
+	.rvmp .h-day-heroes {
+		--pad: 0px;
+		grid-column: 3;
+		grid-row: 1 / span 3;
+		width: min(calc(var(--n, 1) * 72px + 28px), 40vw);
+		min-height: 96px;
+		margin: calc(-1 * var(--s3)) calc(-1 * var(--s3)) 0 0;
+	}
+	/* with no bonuses the head is the whole card: the end bleeds to the bottom edge too */
+	.rvmp .h-day:not(:has(.h-day-bonuses)) .h-day-heroes {
+		margin-bottom: calc(-1 * var(--s3));
+	}
+	/* otherwise the busts end at the foot of the head, on a smooth line that runs the whole width of the card and closes it (the one
+	   the other cards' headers have), with the bonuses under it */
+	.rvmp .h-day:has(.h-day-bonuses) .h-day-heroes {
+		margin-bottom: -4px; /* down to the line: the grid's row gap */
+		overflow: hidden;
+	}
+	.rvmp .h-day-bonuses {
+		position: relative;
+		margin-top: 0;
+		padding-top: var(--s2);
+	}
+	.rvmp .h-day-bonuses::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: calc(-1 * var(--s3));
+		left: calc(-1 * var(--s3));
+		height: 1px;
+		background: linear-gradient(90deg, transparent, var(--border-strong) 22%, var(--border-strong) 78%, transparent);
+	}
+}
+
+/* a card with room for several (the stretched Eggs one): their pictures in a row at the end of the header, all of the same size */
+.rvmp .h-tile-hero-row {
+	position: absolute;
+	top: 0;
+	right: 10px;
+	bottom: 0;
+	display: flex;
+}
+.rvmp .h-tile-hero-slot {
+	position: relative;
+	width: calc(var(--hero-h) * 0.95);
+}
+.rvmp .h-tile-hero-slot > img:not(.r-shadow-mark) {
+	position: absolute;
+	right: 0;
+	bottom: calc(var(--hero-h) * -0.325);
+	left: 0;
+	height: calc(var(--hero-h) * 1.475);
+	width: auto;
+	max-width: 140%;
+	margin: 0 auto;
+	object-fit: contain;
+	filter: drop-shadow(0 6px 8px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k))));
+}
+.rvmp .h-tile-hero-slot > .r-shadow-mark {
+	position: absolute;
+	right: 8px;
+	bottom: 6px;
+	z-index: 2;
+	width: 20px;
+	height: 20px;
+}
+/* with several pictures the "+N" sits on the corner of the last one */
+.rvmp .h-tile-hero-row ~ .h-tile-more {
+	right: 12px;
+	bottom: 6px;
+}
+
+/* a row with room for one Pokémon at a time (a phone): they take turns in the same place, the next swiping in as the one on show
+   swipes out (the animations of the rotating cards) */
+.rvmp .h-day-heroes[data-rotating] {
+	display: grid;
+}
+.rvmp .h-day-heroes[data-rotating] > .h-day-hero {
+	grid-area: 1 / 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+	.rvmp .h-day-hero--in {
+		will-change: transform, opacity;
+		animation: h-swipe-in 0.5s cubic-bezier(0.22, 0.8, 0.3, 1) 0.06s both;
+	}
+	.rvmp .h-day-hero--out {
+		pointer-events: none;
+		will-change: transform, opacity;
+		animation: h-swipe-out 0.4s cubic-bezier(0.4, 0, 0.7, 0.2) both;
+	}
+}
+
+/* the league and raid-type cards take the same header as the "in the game right now" ones: no slanted edge, a smooth tint running along
+   the whole header up to the sprite, and a smooth line closing it (it replaces the plain one above the list) */
+.rvmp :is(.h-league, .h-raid)[data-hero] .h-league-hero {
+	left: 0;
+	width: auto;
+}
+.rvmp :is(.h-league, .h-raid)[data-hero] .h-league-hero::before {
+	inset: 0;
+	border-left: 0;
+	background: linear-gradient(
+		90deg,
+		transparent 25%,
+		color-mix(in srgb, var(--lg) calc(22% * var(--wash-k) + 5%), var(--surface))
+	);
+	transform: none;
+}
+.rvmp :is(.h-league, .h-raid)[data-hero] .h-league-hero::after {
+	content: '';
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, var(--border-strong) 22%, var(--border-strong) 78%, transparent);
+}
+.rvmp .h-league[data-hero] .h-top,
+.rvmp .h-raid[data-hero] ol {
+	border-top-color: transparent;
+}
+html:not([data-theme='light'])
+	.rvmp:not([data-theme='light'])
+	:is(.h-league, .h-raid)[data-hero]
+	.h-league-hero::before {
+	background: none;
+}
+
+/* the raid type picker of the Rankings page (.r-typepick) is used as it is on a narrow screen; here it only sits right under its heading */
+.rvmp .h-section > .r-typepick {
+	margin-top: 0;
+}
+.rvmp .h-section > .r-typepick .r-typepick-btn {
+	text-decoration: none;
 }

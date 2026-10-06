@@ -22,11 +22,11 @@
 	},
 	"right": {
 		"title": "In the game right now",
-		"bosses": "Today's raid lineup",
-		"spawns": "Wild and featured spawns",
-		"rockets": "Line-ups and shadow rewards",
-		"eggs": "What hatches from each egg",
-		"max": "The Max Battle bosses, by tier"
+		"bosses": "Today's raids",
+		"spawns": "Wild & featured",
+		"rockets": "Shadow rewards",
+		"eggs": "What hatches",
+		"max": "Bosses by tier"
 	},
 	"ranks": {
 		"showMore": "Show {{count}} more leagues",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "Best raid attackers",
-		"subtitle": "The best attackers of each of the 17 types."
+		"subtitle": "The best attackers of each of the 17 types.",
+		"pickSubtitle": "Pick a type to see its best attackers."
 	},
 	"social": {
 		"label": "Find us on",

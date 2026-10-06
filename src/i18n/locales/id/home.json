@@ -23,10 +23,10 @@
 	"right": {
 		"title": "Di dalam game sekarang",
 		"bosses": "Raid hari ini",
-		"spawns": "Kemunculan liar dan unggulan",
-		"rockets": "Formasi dan hadiah shadow",
-		"eggs": "Apa yang menetas dari tiap telur",
-		"max": "Bos Pertarungan Max, per tingkat"
+		"spawns": "Liar dan unggulan",
+		"rockets": "Hadiah shadow",
+		"eggs": "Isi telur",
+		"max": "Bos per tingkat"
 	},
 	"ranks": {
 		"showMore": "Tampilkan {{count}} liga lagi",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "Penyerang raid terbaik",
-		"subtitle": "Penyerang terbaik untuk tiap dari 17 tipe."
+		"subtitle": "Penyerang terbaik untuk tiap dari 17 tipe.",
+		"pickSubtitle": "Pilih tipe untuk melihat penyerang terbaiknya."
 	},
 	"social": {
 		"label": "Temukan kami di",

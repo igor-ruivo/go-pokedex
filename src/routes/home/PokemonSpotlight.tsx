@@ -1,4 +1,4 @@
-import { type CSSProperties, useCallback, useMemo } from 'react';
+import { type CSSProperties, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -75,6 +75,9 @@ const SpotlightView = ({
 	const navigate = useNavigate();
 	const { hero, line, raid } = spot;
 	const narrow = useMediaQuery(NARROW_SCREEN);
+	// the member of the line the pointer is on: the big sprite shows it while it is
+	const [preview, setPreview] = useState<IGamemasterPokemon | undefined>();
+	const shown = (narrow ? undefined : preview) ?? hero;
 	const dex = <div className='r-dexno'>{dexNo(hero.dex)}</div>;
 	const nameHeading = (
 		<h3 className='h-spot-name'>
@@ -106,11 +109,11 @@ const SpotlightView = ({
 					{narrow ? (
 						// on a phone the types float at the right of the sprite
 						<div className='h-spot-art'>
-							<Sprite pokemon={hero} onTap={() => void navigate(R.pokemon(hero.speciesId))} />
+							<Sprite pokemon={shown} onTap={() => void navigate(R.pokemon(shown.speciesId))} />
 							{typeChips}
 						</div>
 					) : (
-						<Sprite pokemon={hero} onTap={() => void navigate(R.pokemon(hero.speciesId))} />
+						<Sprite pokemon={shown} onTap={() => void navigate(R.pokemon(shown.speciesId))} />
 					)}
 					{/* on a phone the dex number (left of the name) and the name go under the sprite, before the family line */}
 					{narrow && (
@@ -121,7 +124,12 @@ const SpotlightView = ({
 							</div>
 						</div>
 					)}
-					<EvolutionChips members={[...line.stages, ...line.megas]} current={hero} label={stageName(hero)} />
+					<EvolutionChips
+						members={[...line.stages, ...line.megas]}
+						current={hero}
+						label={stageName(hero)}
+						onPreview={narrow ? undefined : setPreview}
+					/>
 				</div>
 
 				<div className='h-spot-info'>

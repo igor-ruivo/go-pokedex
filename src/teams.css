@@ -912,19 +912,12 @@
 }
 .rvmp .r-tm-picker-list button:not(:disabled):hover,
 .rvmp .r-tm-picker-list button:not(:disabled):focus-visible {
-	background: color-mix(in srgb, var(--accent) 16%, var(--surface-2));
+	background: var(--surface-2);
 }
 /* already on the team: shown, but really disabled — no hover, not clickable */
 .rvmp .r-tm-picker-list button:disabled {
 	cursor: not-allowed;
 	opacity: 0.5;
-}
-.rvmp .r-tm-picker-list button .r-search-name {
-	transition: color 0.14s ease;
-}
-.rvmp .r-tm-picker-list button:not(:disabled):hover .r-search-name,
-.rvmp .r-tm-picker-list button:not(:disabled):focus-visible .r-search-name {
-	color: color-mix(in srgb, var(--tc, var(--accent)), var(--text) var(--ink-mix));
 }
 .rvmp .r-tm-picker-info {
 	flex: 1;
@@ -940,9 +933,12 @@
 	color: var(--text-dim);
 }
 .rvmp .r-tm-picker-meta i {
+	box-sizing: border-box;
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
+	/* a smooth outline in the ink colour, so a pale type (Electric, Normal, Ice…) keeps its edge on the row */
+	border: 1px solid color-mix(in srgb, var(--text) 28%, transparent);
 }
 .rvmp .r-tm-picker-meta em {
 	font-style: normal;

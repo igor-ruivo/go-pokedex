@@ -4,20 +4,22 @@ import { Link } from 'react-router-dom';
 
 import { BonusIcons } from '../../components/BonusBullet';
 import { GameLanguage, useLanguage } from '../../contexts/language-context';
-import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useLiveNow } from '../../hooks/useLiveNow';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { spotlightToPost } from '../../lib/calendar-events';
-import { baseForm, reachableLine, type SpecialDay, specialDays } from '../../lib/community-days';
+import { type SpecialDay, specialDays } from '../../lib/community-days';
 import { startsIn, timeLeft } from '../../lib/event-timing';
 import { cleanName, dateRange, eventPhase } from '../../lib/format';
 import { R } from '../../lib/nav';
 import { useCalendar } from '../../queries/calendar';
 import { usePokemon } from '../../queries/pokemon';
-import { DayShowcase } from './DayShowcase';
+import { DayHeroes } from './DayHeroes';
 
-/** Below this width the diagonal end shows only the Pokémon that can be caught, not the line they evolve along (keep in step with the 760px rule of `.h-day` in home.css). */
+/** How many of the Pokémon a day is about its row shows side by side, by width (the rest are a "+N"): a medium screen and a wide one. On a phone (keep in step with the 760px rule of `.h-day` in home.css) they take turns instead. */
 const NARROW_SCREEN = '(max-width: 760px)';
+const WIDE_SCREEN = '(min-width: 1000px)';
+const MID_HEROES = 3;
+const WIDE_HEROES = 4;
 
 /**
  * A weekday name that fits the date block, from the locale's own full name (Intl, so it follows the language): the part before a
@@ -51,32 +53,21 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
 	const narrow = useMediaQuery(NARROW_SCREEN);
+	const wide = useMediaQuery(WIDE_SCREEN);
 	const { kind, post } = day;
 	const phase = eventPhase(post.startDate, post.endDate, now);
 	const when = dayParts(post.startDate, currentLanguage);
 
-	// The featured species the game master knows: a single one comes with the line it can evolve along, several are shown by their first stage.
+	// The species the day is about (the ones that can be caught) that the game master knows, and the ones of them that can be shiny.
 	const featured = useMemo(() => {
 		const known = new Map<string, boolean>();
 		for (const e of post.wild) {
 			if (gamemasterPokemon[e.speciesId]) known.set(e.speciesId, (known.get(e.speciesId) ?? false) || !!e.shiny);
 		}
-		const species = [...known.keys()].map((id) => gamemasterPokemon[id]);
-		if (species.length === 1) {
-			const [only] = species;
-			const members = reachableLine(only, gamemasterPokemon);
-			// when the featured one can be shiny, so can everything it evolves into
-			return { species, members, shiny: new Set(known.get(only.speciesId) ? members.map((m) => m.speciesId) : []) };
-		}
-		// several featured: just the first stage of each, once
-		const bases = new Map<string, IGamemasterPokemon>();
-		const shiny = new Set<string>();
-		for (const p of species) {
-			const base = baseForm(p, gamemasterPokemon);
-			bases.set(base.speciesId, base);
-			if (known.get(p.speciesId)) shiny.add(base.speciesId);
-		}
-		return { species, members: [...bases.values()], shiny };
+		return {
+			species: [...known.keys()].map((id) => gamemasterPokemon[id]),
+			shiny: new Set([...known].filter(([, canBeShiny]) => canBeShiny).map(([id]) => id)),
+		};
 	}, [post.wild, gamemasterPokemon]);
 
 	const status =
@@ -123,12 +114,12 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 						</ul>
 					)}
 				</div>
-				{featured.members.length > 0 && (
-					<DayShowcase
-						// a phone has room for the catchable ones only, not the line they can evolve along
-						members={narrow ? featured.species : featured.members}
-						current={featured.species.length === 1 ? featured.species[0] : undefined}
+				{featured.species.length > 0 && (
+					<DayHeroes
+						pokemon={featured.species}
 						shiny={featured.shiny}
+						max={wide ? WIDE_HEROES : MID_HEROES}
+						rotate={narrow}
 						label={featured.species.map((p) => cleanName(p.speciesName)).join(', ')}
 					/>
 				)}

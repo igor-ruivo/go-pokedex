@@ -23,10 +23,10 @@
 	"right": {
 		"title": "No jogo agora",
 		"bosses": "Raides de hoje",
-		"spawns": "Aparições selvagens e em destaque",
-		"rockets": "Formações e recompensas sombrias",
-		"eggs": "O que sai de cada ovo",
-		"max": "Os chefes das Batalhas Max, por nível"
+		"spawns": "Selvagens e em destaque",
+		"rockets": "Recompensas sombrias",
+		"eggs": "O que sai do ovo",
+		"max": "Chefes por nível"
 	},
 	"ranks": {
 		"showMore": "Mostrar mais {{count}} ligas",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "Melhores atacantes de reide",
-		"subtitle": "Os melhores atacantes de cada um dos 17 tipos."
+		"subtitle": "Os melhores atacantes de cada um dos 17 tipos.",
+		"pickSubtitle": "Escolhe um tipo para ver os melhores atacantes."
 	},
 	"social": {
 		"label": "Segue-nos em",

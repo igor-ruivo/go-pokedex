@@ -22,11 +22,11 @@
 	},
 	"right": {
 		"title": "Nel gioco adesso",
-		"bosses": "I raid di oggi",
-		"spawns": "Comparse selvatiche e in evidenza",
-		"rockets": "Formazioni e ricompense ombra",
-		"eggs": "Cosa si schiude da ogni uovo",
-		"max": "I boss delle Lotte Dynamax, per livello"
+		"bosses": "Raid di oggi",
+		"spawns": "Selvatici e in evidenza",
+		"rockets": "Ricompense ombra",
+		"eggs": "Cosa si schiude",
+		"max": "Boss per livello"
 	},
 	"ranks": {
 		"showMore": "Mostra altre {{count}} leghe",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "Migliori attaccanti per raid",
-		"subtitle": "I migliori attaccanti di ciascuno dei 17 tipi."
+		"subtitle": "I migliori attaccanti di ciascuno dei 17 tipi.",
+		"pickSubtitle": "Scegli un tipo per vedere i suoi migliori attaccanti."
 	},
 	"social": {
 		"label": "Trovaci su",

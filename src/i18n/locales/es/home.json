@@ -23,10 +23,10 @@
 	"right": {
 		"title": "Ahora en el juego",
 		"bosses": "Incursiones de hoy",
-		"spawns": "Apariciones salvajes y destacadas",
-		"rockets": "Alineaciones y recompensas oscuras",
-		"eggs": "Qué sale de cada huevo",
-		"max": "Los jefes de los Combates Max, por nivel"
+		"spawns": "Salvajes y destacadas",
+		"rockets": "Recompensas oscuras",
+		"eggs": "Qué sale del huevo",
+		"max": "Jefes por nivel"
 	},
 	"ranks": {
 		"showMore": "Mostrar {{count}} ligas más",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "Mejores atacantes de incursión",
-		"subtitle": "Los mejores atacantes de cada uno de los 17 tipos."
+		"subtitle": "Los mejores atacantes de cada uno de los 17 tipos.",
+		"pickSubtitle": "Elige un tipo para ver sus mejores atacantes."
 	},
 	"social": {
 		"label": "Encuéntranos en",

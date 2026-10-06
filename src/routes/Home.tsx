@@ -1,104 +1,78 @@
-import { useMemo } from 'react';
+import { type CSSProperties, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { AdornedSprite } from '../components/AdornedSprite';
+import { BonusIcons } from '../components/BonusBullet';
 import { BrandMark } from '../components/BrandMark';
 import { CollectionIcon, TeamBuilderIcon } from '../components/NavIcons';
 import { RaidIcon } from '../components/RaidIcon';
+import { SparkleIcon } from '../components/SparkleIcon';
 import { TeamTabIcon } from '../components/team-tab-icons';
-import { useLanguage } from '../contexts/language-context';
+import { GameLanguage, useLanguage } from '../contexts/language-context';
+import { useRelevanceSets } from '../contexts/relevance-context';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { IPostEntry } from '../DTOs/INews';
 import { useLiveNow } from '../hooks/useLiveNow';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { leekduckPosts, nowRaidEntries, spotlightToPost } from '../lib/calendar-events';
-import { isCommunityDay } from '../lib/community-days';
+import { isCommunityDay, isRaidHour } from '../lib/community-days';
 import { dateRange } from '../lib/format';
 import {
-	catchableRocketEntries,
+	type ContentKind,
+	eggHeroes,
+	eventContentKinds,
 	eventHighlights,
-	facesThatFit,
 	featuredEvents,
-	type HighlightKind,
+	type HeroPick,
 	homeRaidEntries,
-	orderedEggEntries,
-	speciesWithShiny,
+	maxBattleHero,
+	type RaidEggKind,
+	raidEggKind,
+	raidHero,
+	rocketHero,
+	spawnHero,
 } from '../lib/home';
+import { gigantamaxOf } from '../lib/max-forms';
+import { bonusIcons } from '../lib/milestone-icons';
 import { R } from '../lib/nav';
+import { sortByCalendarRelevance } from '../lib/relevance';
 import { useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
 import gameTranslator, { GameTranslatorKeys } from '../utils/GameTranslator';
 import { CommunityDays } from './home/CommunityDays';
-import { faceStep, useFaceLayout } from './home/face-layout';
 import { LeagueCards } from './home/LeagueCards';
 import { PokeAvatar } from './home/PokeAvatar';
 import { PokemonSpotlight } from './home/PokemonSpotlight';
 import { RaidAttackers } from './home/RaidAttackers';
 import { TeamLab } from './home/TeamLab';
+import { TileHero } from './home/TileHero';
 
-const KIND_ICON: Record<HighlightKind, string> = {
+/** The egg that stands for the raids of an event, by the highest tier it has (see `raidEggKind`). */
+const RAID_EGG_ICON: Record<RaidEggKind, string> = {
+	'5': '/images/raids/tier-5.png',
+	'mega': '/images/raids/mega.png',
+	'3': '/images/raids/tier-3.png',
+	'1': '/images/raids/tier-1.png',
+};
+
+const KIND_ICON: Record<ContentKind, string> = {
 	raids: '/images/raids/tier-5.png',
 	maxBattles: '/images/nav/max-battle.webp',
 	wild: '/images/nav/spawns-grass.png',
 	researches: '/images/nav/research.png',
 	eggs: '/images/eggs/10km.png',
+	incenses: '/images/bonuses/incense-plain.png',
+	lures: '/images/bonuses/lure-module.png',
 };
 
 const FEATURED_LIMIT = 5;
 
-/** One row: as many overlapping round sprites as fit the width (never more than nine), the shiny ones marked, and a "+N" at the end. */
-const Faces = ({
-	all,
-	pokemon,
-	shadow,
-}: {
-	all: ReadonlyArray<{ speciesId: string; shiny: boolean; kind?: string | undefined }>;
-	pokemon: Record<string, IGamemasterPokemon>;
-	shadow?: boolean | undefined;
-}) => {
-	const [ref, layout] = useFaceLayout<HTMLSpanElement>();
-	const known = all.filter((e) => !!pokemon[e.speciesId]);
-	const { faces, more } = facesThatFit(known.length, layout.count, 1, 9);
-	// what is shown is spread over the whole width, so the row ends where its parent does
-	const step = faceStep(layout, faces + (more > 0 ? 1 : 0));
-	return (
-		<span
-			className='h-faces'
-			ref={ref}
-			style={{ ['--face' as string]: `${layout.size}px`, ['--face-step' as string]: `${step}px` }}
-		>
-			{known.slice(0, faces).map((e) => (
-				<PokeAvatar key={e.speciesId} pokemon={pokemon[e.speciesId]} shiny={e.shiny} shadow={shadow} maxForm={e.kind} />
-			))}
-			{more > 0 && <i className='h-stack-more'>+{more}</i>}
-		</span>
-	);
-};
-
-/** Overlapping avatars of a few species, with how many more there are. */
-const AvatarStack = ({
-	ids,
-	more = 0,
-	pokemon,
-	shiny,
-	forms,
-}: {
-	ids: ReadonlyArray<string>;
-	more?: number;
-	pokemon: Record<string, IGamemasterPokemon>;
-	/** The species that can be shiny (a Shadow one carries its mark by itself). */
-	shiny?: ReadonlySet<string> | undefined;
-	/** The Max form (Dynamax or Gigantamax) of the species that are Max Battle Pokémon. */
-	forms?: ReadonlyMap<string, string | undefined> | undefined;
-}) => (
-	<span className='h-stack'>
-		{ids.map((id) =>
-			pokemon[id] ? <PokeAvatar key={id} pokemon={pokemon[id]} shiny={shiny?.has(id)} maxForm={forms?.get(id)} /> : null
-		)}
-		{more > 0 && <i className='h-stack-more'>+{more}</i>}
-	</span>
-);
+/** Below this width the Eggs card (the last of the five) is stretched across both columns (keep in step with `.h-tiles--5` in home.css). */
+const STRETCHED_TILE = '(max-width: 700px)';
+/** How many egg Pokémon it shows then. */
+const STRETCHED_EGGS = 3;
 
 const EventCard = ({
 	post,
@@ -116,7 +90,19 @@ const EventCard = ({
 	const live = post.startDate <= now;
 	const title = post.title[gl] || post.subtitle[gl] || t('calendar:events.fallbackTitle');
 	const highlights = eventHighlights(post, (id) => !!pokemon[id], big ? 4 : 3);
-	const label = (kind: HighlightKind) => {
+	// A Spotlight Hour is about its one bonus: the chip is that bonus's own picture (the two candies of a 2× Catch Candy…), when it has one.
+	const spotlightBonuses = post.isSpotlight
+		? (post.bonuses[GameLanguage.en] ?? [])
+				.map((english, i) => ({ english, text: post.bonuses[gl]?.[i] || english }))
+				.filter((b) => bonusIcons(b.english).length > 0)
+				.slice(0, 2)
+		: [];
+	// bonuses, rewards and milestones are one chip: the same logo stands for all three
+	const hasBonuses =
+		(post.bonuses[gl] ?? []).some(Boolean) ||
+		(post.rewardBlocks?.[gl]?.length ?? 0) > 0 ||
+		!!post.milestoneBonuses?.[gl];
+	const label = (kind: ContentKind) => {
 		switch (kind) {
 			case 'raids':
 				return t('home:now.raids');
@@ -126,6 +112,10 @@ const EventCard = ({
 				return t('home:now.wild');
 			case 'researches':
 				return t('home:now.researches');
+			case 'incenses':
+				return t('calendar:events.groups.incense');
+			case 'lures':
+				return t('calendar:events.groups.lures');
 			default:
 				return t('home:now.eggs');
 		}
@@ -136,8 +126,14 @@ const EventCard = ({
 	// A Max Monday (a day of Max Battles led by Dynamax Pokémon) does the same: its Pokémon is a chip in the middle of its picture,
 	// with the Dynamax cloud.
 	const maxMonday = !spotlight && post.source === 'leekduck' && (post.maxBattles?.length ?? 0) > 0;
-	// a Community Day is its featured Pokémon: no row of chips to say what it brings
-	const communityDay = isCommunityDay(post);
+	// The chip that only says what the kind of event already is is left out: spawns on a Spotlight Hour or a Community Day, the Max
+	// Battle symbol on a Max Monday, the raid egg on a Raid Hour.
+	const obvious = new Set<ContentKind>([
+		...(post.isSpotlight || isCommunityDay(post) ? (['wild'] as const) : []),
+		...(maxMonday ? (['maxBattles'] as const) : []),
+		...(isRaidHour(post) ? (['raids'] as const) : []),
+	]);
+	const kinds = eventContentKinds(post).filter((kind) => !obvious.has(kind));
 	const maxForms = new Map((post.maxBattles ?? []).map((e) => [e.speciesId, e.kind]));
 	const shinyIds = new Set(
 		[...post.wild, ...post.raids, ...post.eggs, ...post.researches, ...(post.maxBattles ?? [])]
@@ -184,23 +180,35 @@ const EventCard = ({
 					</Link>
 				</h3>
 				{live && <p className='h-event-when'>{dateRange(post.startDate, post.endDate, currentLanguage)}</p>}
-				{highlights.length > 0 && !spotlight && !maxMonday && !communityDay && (
+				{(hasBonuses || kinds.length > 0) && (
 					<ul className='h-highlights'>
-						{highlights.map((h) => (
-							<li key={h.kind}>
-								<img src={KIND_ICON[h.kind]} alt='' title={label(h.kind)} loading='lazy' />
-								<span className='h-sr'>{label(h.kind)}</span>
-								<AvatarStack
-									ids={h.ids}
-									more={h.more}
-									pokemon={pokemon}
-									shiny={new Set((post[h.kind] ?? []).filter((e) => e.shiny).map((e) => e.speciesId))}
-									forms={
-										h.kind === 'maxBattles'
-											? new Map((post.maxBattles ?? []).map((e) => [e.speciesId, e.kind]))
-											: undefined
-									}
-								/>
+						{spotlightBonuses.map((b) => (
+							<li key={b.english}>
+								<span className='h-kind h-kind--bonus' title={b.text}>
+									<BonusIcons englishText={b.english} />
+								</span>
+								<span className='h-sr'>{b.text}</span>
+							</li>
+						))}
+						{hasBonuses && spotlightBonuses.length === 0 && (
+							<li>
+								<span className='h-kind' title={t('calendar:events.bonuses')}>
+									<SparkleIcon />
+								</span>
+								<span className='h-sr'>{t('calendar:events.bonuses')}</span>
+							</li>
+						)}
+						{kinds.map((kind) => (
+							<li key={kind}>
+								{/* the plate is the box and the picture inside it carries the light theme's contour (eggs, raids, the Max Battle symbol…) */}
+								<span className='h-kind' title={label(kind)}>
+									<img
+										src={kind === 'raids' ? RAID_EGG_ICON[raidEggKind(post.raids)] : KIND_ICON[kind]}
+										alt=''
+										loading='lazy'
+									/>
+								</span>
+								<span className='h-sr'>{label(kind)}</span>
 							</li>
 						))}
 					</ul>
@@ -253,17 +261,72 @@ const Home = () => {
 		[calendar.posts, calendar.spotlightHours, calendar.specialBosses, calendar.currentBosses, gl, now]
 	);
 	const known = (id: string) => !!gamemasterPokemon[id];
-	const right = [
+	const sets = useRelevanceSets();
+	const byRelevance = <T extends { speciesId: string }>(list: ReadonlyArray<T>): Array<T> =>
+		sortByCalendarRelevance(list, (e) => e.speciesId, gamemasterPokemon, sets);
+
+	// One Pokémon per card, and how many more the card has behind it. The sorts walk evolution families, so they are redone only when
+	// what they sort changes (the clock ticks every second, and `nowRaids` is a new array each time).
+	const raidKey = nowRaids.map((e) => `${e.speciesId}:${e.kind}`).join();
+	const raids = useMemo(
+		() => {
+			const entries = homeRaidEntries(nowRaids, (id) => !!gamemasterPokemon[id]?.isShadow);
+			return {
+				hero: raidHero(entries, known, byRelevance, (id) => !!gamemasterPokemon[id]?.isShadow),
+				count: new Set(entries.filter((e) => known(e.speciesId)).map((e) => e.speciesId)).size,
+			};
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[raidKey, gamemasterPokemon, sets]
+	);
+	// The Eggs card is the last of the five, and on a narrow screen it is stretched across both columns: it then has the room for
+	// more than one egg Pokémon (the next ones in the same ranking order).
+	const eggsStretched = useMediaQuery(STRETCHED_TILE);
+	const eggsShown = eggsStretched ? STRETCHED_EGGS : 1;
+	const eggs = useMemo(
+		() => ({
+			heroes: eggHeroes(calendar.currentEggs, known, byRelevance, eggsShown),
+			count: new Set(calendar.currentEggs.filter((e) => known(e.speciesId)).map((e) => e.speciesId)).size,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[calendar.currentEggs, gamemasterPokemon, sets, eggsShown]
+	);
+	const spawnIds = new Set(
+		events
+			.flatMap((e) => e.wild)
+			.filter((e) => known(e.speciesId))
+			.map((e) => e.speciesId)
+	);
+	const maxIds = new Set(calendar.currentMaxBattles.filter((e) => known(e.speciesId)).map((e) => e.speciesId));
+	const rocketIds = new Set(
+		calendar.currentRockets
+			.flatMap((g) => [g.tier1, g.tier2, g.tier3].filter((_, i) => g.catchableTiers.includes(i)).flat())
+			.filter(known)
+	);
+
+	const right: Array<{
+		to: string;
+		icon: string;
+		title: string;
+		hint: string;
+		/** The colour the card takes on (its header, the edge of its panel). */
+		tint: string;
+		hero: HeroPick | undefined;
+		/** More Pokémon beside the first, when the card has the room (the same size, in ranking order). */
+		extra?: Array<HeroPick>;
+		/** How many more Pokémon the card has than the one it shows. */
+		more: number;
+		shadow: boolean;
+		ready: boolean;
+	}> = [
 		{
 			to: R.calendar('spawns'),
 			icon: '/images/nav/spawns-grass.png',
 			title: t('calendar:tabs.spawns'),
 			hint: t('home:right.spawns'),
-			...speciesWithShiny(
-				events.flatMap((e) => e.wild),
-				known,
-				Infinity
-			),
+			tint: 'var(--t-grass)',
+			hero: spawnHero(events, now, known),
+			more: Math.max(0, spawnIds.size - 1),
 			shadow: false,
 			ready: calendar.postsFetchCompleted,
 		},
@@ -272,11 +335,9 @@ const Home = () => {
 			icon: '/images/raids/tier-5.png',
 			title: t('calendar:tabs.bosses'),
 			hint: t('home:right.bosses'),
-			...speciesWithShiny(
-				homeRaidEntries(nowRaids, (id) => !!gamemasterPokemon[id]?.isShadow),
-				known,
-				Infinity
-			),
+			tint: 'var(--lg-raid)',
+			hero: raids.hero,
+			more: Math.max(0, raids.count - 1),
 			shadow: false,
 			ready:
 				calendar.currentBossesFetchCompleted && calendar.postsFetchCompleted && calendar.specialBossesFetchCompleted,
@@ -286,21 +347,20 @@ const Home = () => {
 			icon: '/images/nav/max-battle.webp',
 			title: gameTranslator(GameTranslatorKeys.MaxBattleDisplay, gl),
 			hint: t('home:right.max'),
-			// the highest tiers first: the faces that fit are the hardest bosses
-			...speciesWithShiny(
-				[...calendar.currentMaxBattles].sort((x, y) => Number(y.tier ?? 0) - Number(x.tier ?? 0)),
-				known,
-				Infinity
-			),
+			tint: 'var(--t-fighting)',
+			hero: maxBattleHero(calendar.currentMaxBattles, known),
+			more: Math.max(0, maxIds.size - 1),
 			shadow: false,
 			ready: calendar.currentMaxBattlesFetchCompleted,
 		},
 		{
 			to: R.calendar('rockets'),
-			icon: '/images/NPC/male-grunt.webp',
+			icon: '/images/NPC/giovanni.webp',
 			title: t('calendar:tabs.rockets'),
 			hint: t('home:right.rockets'),
-			...speciesWithShiny(catchableRocketEntries(calendar.currentRockets), known, Infinity),
+			tint: 'var(--t-dark)',
+			hero: rocketHero(calendar.currentRockets, known),
+			more: Math.max(0, rocketIds.size - 1),
 			shadow: true,
 			ready: calendar.currentRocketsFetchCompleted,
 		},
@@ -309,11 +369,22 @@ const Home = () => {
 			icon: '/images/eggs/10km.png',
 			title: t('calendar:tabs.eggs'),
 			hint: t('home:right.eggs'),
-			...speciesWithShiny(orderedEggEntries(calendar.currentEggs), known, Infinity),
+			tint: 'var(--t-psychic)',
+			hero: eggs.heroes[0],
+			extra: eggs.heroes.slice(1),
+			more: Math.max(0, eggs.count - eggs.heroes.length),
 			shadow: false,
 			ready: calendar.currentEggsFetchCompleted,
 		},
 	];
+	// A Gigantamax Pokémon is drawn with its own artwork.
+	const heroPokemon = (pick: HeroPick): IGamemasterPokemon | undefined => {
+		const base = gamemasterPokemon[pick.speciesId];
+		if (!base) return undefined;
+		return pick.kind === 'gigantamax'
+			? gigantamaxOf(base, gamemasterPokemon, gameTranslator(GameTranslatorKeys.GigantamaxDisplay, gl))
+			: base;
+	};
 
 	return (
 		<div className='h-page'>
@@ -412,26 +483,46 @@ const Home = () => {
 					</div>
 				</header>
 				<div className='h-tiles h-tiles--5'>
-					{right.map((tile) => (
-						<div className='h-tile' key={tile.to}>
-							<span className='h-tile-icon'>
-								<img src={tile.icon} alt='' loading='lazy' />
-							</span>
-							<h3>
-								<Link to={tile.to} className='h-stretch'>
-									{tile.title}
-								</Link>
-							</h3>
-							<p>{tile.hint}</p>
-							<span className='h-tile-foot'>
-								{tile.ready ? (
-									<Faces all={tile.shown} pokemon={gamemasterPokemon} shadow={tile.shadow} />
-								) : (
-									<Skeleton className='h-skeleton--row' />
+					{right.map((tile) => {
+						const hero = tile.ready && tile.hero ? heroPokemon(tile.hero) : undefined;
+						const extras = tile.ready
+							? (tile.extra ?? []).flatMap((pick) => {
+									const pokemon = heroPokemon(pick);
+									return pokemon ? [{ pokemon, shiny: pick.shiny }] : [];
+								})
+							: [];
+						return (
+							<div
+								className='h-tile h-tile--hero'
+								key={tile.to}
+								style={{ ['--lg' as string]: tile.tint } as CSSProperties}
+							>
+								{hero && tile.hero && (
+									<TileHero
+										pokemon={hero}
+										shiny={tile.hero.shiny}
+										shadow={tile.shadow}
+										more={tile.more}
+										extras={extras}
+									/>
 								)}
-							</span>
-						</div>
-					))}
+								<span className='h-tile-icon'>
+									<img src={tile.icon} alt='' loading='lazy' />
+								</span>
+								<h3>
+									<Link to={tile.to} className='h-stretch'>
+										{tile.title}
+									</Link>
+								</h3>
+								<p>{tile.hint}</p>
+								{!tile.ready && (
+									<span className='h-tile-foot'>
+										<Skeleton className='h-skeleton--row' />
+									</span>
+								)}
+							</div>
+						);
+					})}
 				</div>
 			</section>
 

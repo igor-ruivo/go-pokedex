@@ -22,11 +22,11 @@
 	},
 	"right": {
 		"title": "Şu an oyunda",
-		"bosses": "Bugünün baskın listesi",
-		"spawns": "Vahşi ve öne çıkan çıkışlar",
-		"rockets": "Kadrolar ve gölge ödülleri",
-		"eggs": "Her yumurtadan ne çıkar",
-		"max": "Maksi Maç patronları, seviyeye göre"
+		"bosses": "Bugünün baskınları",
+		"spawns": "Vahşi ve öne çıkan",
+		"rockets": "Gölge ödülleri",
+		"eggs": "Yumurtadan ne çıkar",
+		"max": "Seviyeye göre patron"
 	},
 	"ranks": {
 		"showMore": "{{count}} lig daha göster",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "En iyi baskın saldırganları",
-		"subtitle": "17 türün her biri için en iyi saldırganlar."
+		"subtitle": "17 türün her biri için en iyi saldırganlar.",
+		"pickSubtitle": "En iyi saldırganlarını görmek için bir tür seç."
 	},
 	"social": {
 		"label": "Bizi şurada bul",

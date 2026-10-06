@@ -2,6 +2,8 @@ import { type CSSProperties, Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { ShadowMark } from '../../components/ShadowMark';
+import { SpriteImg } from '../../components/Sprite';
 import { useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
@@ -33,7 +35,18 @@ const LeagueCard = ({
 	const { t } = useTranslation(['teams', 'home']);
 	const top = topRanked(ranking ?? {}, 3).filter((speciesId) => !!pokemon[speciesId]);
 	return (
-		<article className='h-league' style={{ ['--lg' as string]: modeColor(id) } as CSSProperties}>
+		<article
+			className='h-league'
+			data-hero={top.length > 0 ? '' : undefined}
+			style={{ ['--lg' as string]: modeColor(id) } as CSSProperties}
+		>
+			{/* the league's best Pokémon, big on a slanted panel at the end of the header (the list below names it) */}
+			{top.length > 0 && (
+				<span className='h-league-hero' aria-hidden='true'>
+					<SpriteImg pokemon={pokemon[top[0]]} loading='lazy' />
+					{pokemon[top[0]].isShadow && <ShadowMark />}
+				</span>
+			)}
 			<header>
 				<LeaguePlate id={id} />
 				<div className='h-league-name'>

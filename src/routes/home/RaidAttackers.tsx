@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { ShadowMark } from '../../components/ShadowMark';
+import { SpriteImg } from '../../components/Sprite';
 import { useLanguage } from '../../contexts/language-context';
 import { useRaidMetric } from '../../contexts/raid-metric-context';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
@@ -13,25 +15,12 @@ import { RAID_TYPE_KEYS, typeVar } from '../../lib/types';
 import { usePokemon } from '../../queries/pokemon';
 import { useRaidRanker } from '../../queries/raid-ranker';
 import { gameTypeDisplayTranslator } from '../../utils/GameTranslator';
-import { type FaceOptions, faceStep, useFaceLayout } from './face-layout';
 import { PokeAvatar } from './PokeAvatar';
 
-/** The width below which a type is one line: its badge and name, then as many of its best attackers as fit as overlapping faces. */
+/** The width below which the cards are replaced by a type picker. */
 const NARROW_SCREEN = '(max-width: 700px)';
-/** Wider than that, a type lists its three best attackers with their names and figures. */
+/** A type's card lists its three best attackers, with their names and figures. */
 const LISTED = 3;
-/** The most faces a type ever shows in its line. */
-const MAX_FACES = 8;
-/** Smaller faces than the rest of the page's, so that a line stays slim; they shrink a little to fit more. */
-const RAID_FACES: FaceOptions = {
-	maxSize: 42,
-	targets: [
-		{ cells: 6, minSize: 30 },
-		{ cells: 5, minSize: 32 },
-		{ cells: 4, minSize: 34 },
-		{ cells: 3, minSize: 34 },
-	],
-};
 
 /** One small card for an attacking type: its icon on the type's colour, and its best raid attackers. */
 const RaidTypeCard = ({ type }: { type: string }) => {
@@ -39,18 +28,24 @@ const RaidTypeCard = ({ type }: { type: string }) => {
 	const { gamemasterPokemon } = usePokemon();
 	const { raidMetric } = useRaidMetric();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
-	const narrow = useMediaQuery(NARROW_SCREEN);
-	const [ref, layout] = useFaceLayout<HTMLOListElement>(RAID_FACES);
 
-	const ranked = topAttackers(raidDPS[type] ?? {}, (e) => raidRankOf(e, raidMetric), MAX_FACES).filter(
+	const top = topAttackers(raidDPS[type] ?? {}, (e) => raidRankOf(e, raidMetric), LISTED).filter(
 		(e) => !!gamemasterPokemon[e.speciesId]
 	);
-	// a line shows as many as fit its room (no "+N"), a list shows three
-	const top = narrow ? ranked.slice(0, layout.count) : ranked.slice(0, LISTED);
-	const step = faceStep(layout, top.length);
 
 	return (
-		<article className='h-raid' style={{ ['--tc' as string]: typeVar(type) } as CSSProperties}>
+		<article
+			className='h-raid'
+			data-hero={top.length > 0 ? '' : undefined}
+			style={{ ['--tc' as string]: typeVar(type), ['--lg' as string]: typeVar(type) } as CSSProperties}
+		>
+			{/* the type's best attacker, big on a slanted panel at the end of the header (the list below names it) */}
+			{top.length > 0 && (
+				<span className='h-league-hero' aria-hidden='true'>
+					<SpriteImg pokemon={gamemasterPokemon[top[0].speciesId]} loading='lazy' />
+					{gamemasterPokemon[top[0].speciesId].isShadow && <ShadowMark />}
+				</span>
+			)}
 			<header>
 				<span className='h-raid-type'>
 					<img src={`/images/types/${type}.png`} alt='' loading='lazy' />
@@ -62,7 +57,7 @@ const RaidTypeCard = ({ type }: { type: string }) => {
 				</h3>
 				<span className='h-raid-metric'>{RAID_METRIC_LABEL[raidMetric]}</span>
 			</header>
-			<ol ref={ref} style={{ ['--face' as string]: `${layout.size}px`, ['--face-step' as string]: `${step}px` }}>
+			<ol>
 				{top.length === 0
 					? [0, 1, 2].map((i) => (
 							<li key={i}>
@@ -84,22 +79,51 @@ const RaidTypeCard = ({ type }: { type: string }) => {
 	);
 };
 
-/** One small card per attacking type — its icon on the type's colour, and its best raid attackers. */
+/**
+ * On a narrow screen the cards give way to a picker: every attacking type as a tile, each one the way to that type's raid ranking.
+ * It is the Rankings page's own type picker (`r-typepick`), as it is there.
+ */
+const RaidTypePicker = () => {
+	const { t } = useTranslation(['home']);
+	const { currentGameLanguage: gl } = useLanguage();
+	return (
+		<nav className='r-typepick' aria-label={t('home:raid.title')}>
+			{RAID_TYPE_KEYS.map((type) => (
+				<Link
+					key={type}
+					to={R.rankings('raid', type)}
+					className='r-typepick-btn'
+					style={{ ['--tc' as string]: typeVar(type) } as CSSProperties}
+				>
+					<img src={`/images/types/${type}.png`} alt='' width={32} height={32} loading='lazy' />
+					<span>{gameTypeDisplayTranslator(type, gl) || type}</span>
+				</Link>
+			))}
+		</nav>
+	);
+};
+
+/** One small card per attacking type — its icon on the type's colour, and its best raid attackers — or, on a narrow screen, a type picker. */
 export const RaidAttackers = () => {
 	const { t } = useTranslation(['home']);
+	const narrow = useMediaQuery(NARROW_SCREEN);
 	return (
 		<section className='h-section' aria-labelledby='h-raid'>
 			<header className='h-sh'>
 				<div>
 					<h2 id='h-raid'>{t('home:raid.title')}</h2>
-					<p>{t('home:raid.subtitle')}</p>
+					<p>{narrow ? t('home:raid.pickSubtitle') : t('home:raid.subtitle')}</p>
 				</div>
 			</header>
-			<div className='h-raids'>
-				{RAID_TYPE_KEYS.map((type) => (
-					<RaidTypeCard key={type} type={type} />
-				))}
-			</div>
+			{narrow ? (
+				<RaidTypePicker />
+			) : (
+				<div className='h-raids'>
+					{RAID_TYPE_KEYS.map((type) => (
+						<RaidTypeCard key={type} type={type} />
+					))}
+				</div>
+			)}
 		</section>
 	);
 };

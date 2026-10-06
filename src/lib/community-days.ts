@@ -61,3 +61,6 @@ export const baseForm = (pokemon: IGamemasterPokemon, dex: Record<string, IGamem
 		current = parent;
 	}
 };
+
+/** Whether an event post is a Raid Hour (its English title says so). */
+export const isRaidHour = (post: Pick<IPostEntry, 'title'>): boolean => /raid hour/i.test(post.title.en ?? '');

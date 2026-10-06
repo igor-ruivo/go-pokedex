@@ -26,7 +26,7 @@ import {
 	threatPart,
 	withMove,
 } from '../../lib/team-analysis';
-import { nicknamesByBuild, type BuildChange } from '../../lib/team-build';
+import { type BuildChange, nicknamesByBuild } from '../../lib/team-build';
 import { buildCombinations, buildComboPool, comboSlots } from '../../lib/team-combinations';
 import { chipMarks } from '../../lib/team-marks';
 import { rankingSignature as rankingSignatureOf, readRankedCache, writeRankedCache } from '../../lib/team-rank-cache';

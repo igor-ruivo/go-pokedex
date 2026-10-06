@@ -197,3 +197,125 @@ export const facesThatFit = (
 	const faces = Math.min(cells - 1, max);
 	return { faces, more: total - faces };
 };
+
+/**
+ * The one Pokémon each "in the game right now" card shows big. `speciesId` is what the game master is asked for, `shiny` marks the
+ * sparkle, `kind` carries a Max Battle Pokémon's form (`dynamax` / `gigantamax`).
+ */
+export interface HeroPick {
+	speciesId: string;
+	shiny: boolean;
+	kind?: string | undefined;
+}
+
+const heroOf = (e: Pick<IEntry, 'speciesId' | 'shiny' | 'kind'>): HeroPick => ({
+	speciesId: e.speciesId,
+	shiny: !!e.shiny,
+	...(e.kind ? { kind: e.kind } : {}),
+});
+
+/**
+ * The spawn the Spawns card shows: the first species of the most recent event that has spawns — an event that is on right now
+ * (the one that started last) comes before any that is only coming (the one that starts first).
+ */
+export const spawnHero = (
+	events: ReadonlyArray<Pick<IPostEntry, 'startDate' | 'wild'>>,
+	now: number,
+	isKnown: (speciesId: string) => boolean
+): HeroPick | undefined => {
+	const withSpawns = events.filter((e) => e.wild.some((w) => isKnown(w.speciesId)));
+	const live = withSpawns.filter((e) => e.startDate <= now).sort((a, b) => b.startDate - a.startDate);
+	const coming = withSpawns.filter((e) => e.startDate > now).sort((a, b) => a.startDate - b.startDate);
+	const entry = (live[0] ?? coming[0])?.wild.find((w) => isKnown(w.speciesId));
+	return entry && heroOf(entry);
+};
+
+/**
+ * The raid boss the Raids card shows: the best (in the calendar's own order, `sort`) of the special tiers that are not Megas — the
+ * five-star bosses and any other special kind; or else a Mega; or else whoever comes first. Within each of those a Shadow boss is
+ * given no priority: it is chosen only when the group has nothing else.
+ */
+export const raidHero = <T extends Pick<IEntry, 'speciesId' | 'shiny' | 'kind'>>(
+	entries: ReadonlyArray<T>,
+	isKnown: (speciesId: string) => boolean,
+	sort: (list: ReadonlyArray<T>) => Array<T>,
+	isShadow: (speciesId: string) => boolean = () => false
+): HeroPick | undefined => {
+	const usable = entries.filter((e) => isKnown(e.speciesId));
+	const best = (group: ReadonlyArray<T>): T | undefined => {
+		const plain = group.filter((e) => !isShadow(e.speciesId));
+		return sort(plain.length > 0 ? plain : group)[0];
+	};
+	const special = usable.filter((e) => e.kind !== 'mega' && e.kind !== '3' && e.kind !== '1');
+	const pick = best(special) ?? best(usable.filter((e) => e.kind === 'mega')) ?? usable[0];
+	return pick && heroOf(pick);
+};
+
+/** The Max Battle Pokémon the Max Battle card shows: a Gigantamax one, or else the one of the highest tier. */
+export const maxBattleHero = <T extends Pick<IEntry, 'speciesId' | 'shiny' | 'kind' | 'tier'>>(
+	entries: ReadonlyArray<T>,
+	isKnown: (speciesId: string) => boolean
+): HeroPick | undefined => {
+	const usable = entries.filter((e) => isKnown(e.speciesId));
+	const pick =
+		usable.find((e) => e.kind === 'gigantamax') ??
+		[...usable].sort((a, b) => Number(b.tier ?? 0) - Number(a.tier ?? 0))[0];
+	return pick && heroOf(pick);
+};
+
+/** The Shadow Pokémon the Rockets card shows: the one Giovanni lets you catch, or else the first catchable of the line-ups. */
+export const rocketHero = (
+	grunts: Parameters<typeof catchableRocketEntries>[0],
+	isKnown: (speciesId: string) => boolean
+): HeroPick | undefined => {
+	const giovanni = grunts.filter((g) => /giovanni/i.test(g.trainerId));
+	const entry =
+		catchableRocketEntries(giovanni).find((e) => isKnown(e.speciesId)) ??
+		catchableRocketEntries(grunts).find((e) => isKnown(e.speciesId));
+	return entry && heroOf(entry);
+};
+
+/**
+ * The egg Pokémon the Eggs card shows, `count` of them (one, or more when its card is stretched wide): the best of the 10 km ones in the
+ * calendar's own order (`sort`), then the next best of those, and when there are not enough of them the best of the other distances; or
+ * else, with no 10 km egg at all, the first of the usual egg order. Each species once.
+ */
+export const eggHeroes = <T extends Pick<IEntry, 'speciesId' | 'shiny' | 'kind'>>(
+	entries: ReadonlyArray<T>,
+	isKnown: (speciesId: string) => boolean,
+	sort: (list: ReadonlyArray<T>) => Array<T>,
+	count: number
+): Array<HeroPick> => {
+	const usable = entries.filter((e) => isKnown(e.speciesId));
+	const ten = usable.filter((e) => e.kind === '10');
+	const rest = usable.filter((e) => e.kind !== '10');
+	const ordered = ten.length > 0 ? [...sort(ten), ...sort(rest)] : orderedEggEntries(usable);
+	const seen = new Set<string>();
+	const picks: Array<HeroPick> = [];
+	for (const e of ordered) {
+		if (picks.length >= count) break;
+		if (seen.has(e.speciesId)) continue;
+		seen.add(e.speciesId);
+		picks.push(heroOf(e));
+	}
+	return picks;
+};
+
+/** Every kind of content an event can bring (the Pokémon of `HIGHLIGHT_KINDS`, and the incenses and lures too). */
+export const CONTENT_KINDS = [...HIGHLIGHT_KINDS, 'incenses', 'lures'] as const;
+export type ContentKind = (typeof CONTENT_KINDS)[number];
+
+/** The kinds of content an event brings, in the card's order: the ones it has at least one entry of. */
+export const eventContentKinds = (post: Partial<Pick<IPostEntry, ContentKind>>): Array<ContentKind> =>
+	CONTENT_KINDS.filter((kind) => ((post[kind] ?? []) as ReadonlyArray<IEntry>).length > 0);
+
+/** The raid tiers an event's egg icon can stand for, the one that outranks the others first: legendary, Mega, tier 3, tier 1. */
+export const RAID_EGG_PRIORITY = ['5', 'mega', '3', '1'] as const;
+export type RaidEggKind = (typeof RAID_EGG_PRIORITY)[number];
+
+/**
+ * The raid egg that stands for everything an event's raids bring: the highest tier it has (a legendary and a tier 1: the legendary;
+ * a Mega and a tier 1: the Mega; only tier 3: tier 3). Any other kind of boss (a primal, an elite…) counts as the top tier.
+ */
+export const raidEggKind = (raids: ReadonlyArray<Pick<IEntry, 'kind'>>): RaidEggKind =>
+	RAID_EGG_PRIORITY.find((tier) => raids.some((e) => e.kind === tier)) ?? '5';

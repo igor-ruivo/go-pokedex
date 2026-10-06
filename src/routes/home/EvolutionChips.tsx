@@ -16,6 +16,7 @@ export const EvolutionChips = ({
 	current,
 	shiny,
 	label,
+	onPreview,
 }: {
 	members: ReadonlyArray<IGamemasterPokemon>;
 	/** The member to mark (the one the card is about). */
@@ -23,6 +24,8 @@ export const EvolutionChips = ({
 	/** The species that can be shiny. */
 	shiny?: ReadonlySet<string> | undefined;
 	label: string;
+	/** Told which member the pointer (or the keyboard focus) is on, and `undefined` when it leaves: the card can show it big meanwhile. */
+	onPreview?: ((member: IGamemasterPokemon | undefined) => void) | undefined;
 }) => {
 	const plain = members.filter((m) => !m.isMega);
 	const megas = members.filter((m) => m.isMega);
@@ -35,6 +38,10 @@ export const EvolutionChips = ({
 			role='listitem'
 			className='h-spot-stage'
 			data-current={p === current ? '' : undefined}
+			onMouseEnter={onPreview && (() => onPreview(p))}
+			onMouseLeave={onPreview && (() => onPreview(undefined))}
+			onFocus={onPreview && (() => onPreview(p))}
+			onBlur={onPreview && (() => onPreview(undefined))}
 		>
 			<PokeAvatar pokemon={p} shiny={shiny?.has(p.speciesId)} />
 			<span>{cleanName(p.speciesName)}</span>

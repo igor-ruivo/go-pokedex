@@ -22,11 +22,11 @@
 	},
 	"right": {
 		"title": "Dans le jeu en ce moment",
-		"bosses": "Les raids du jour",
-		"spawns": "Apparitions sauvages et à l’honneur",
-		"rockets": "Équipes et récompenses obscures",
-		"eggs": "Ce qui éclot de chaque œuf",
-		"max": "Les boss des Combats Dynamax, par niveau"
+		"bosses": "Raids du jour",
+		"spawns": "Sauvages et à l’honneur",
+		"rockets": "Récompenses obscures",
+		"eggs": "Ce qui éclot",
+		"max": "Boss par niveau"
 	},
 	"ranks": {
 		"showMore": "Afficher {{count}} ligues de plus",
@@ -116,7 +116,8 @@
 	},
 	"raid": {
 		"title": "Meilleurs attaquants de raid",
-		"subtitle": "Les meilleurs attaquants de chacun des 17 types."
+		"subtitle": "Les meilleurs attaquants de chacun des 17 types.",
+		"pickSubtitle": "Choisissez un type pour voir ses meilleurs attaquants."
 	},
 	"social": {
 		"label": "Retrouve-nous sur",
