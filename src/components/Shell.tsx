@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
@@ -25,6 +25,34 @@ const Shell = () => {
 	const { dataTheme } = useTheme();
 	// the bottom bar follows the guidelines of the device it is on (see `data-platform` in components.css)
 	const platform = useMemo(() => detectPlatform(), []);
+	// The real size of the two bars, for everything that sticks under the top one or stays clear of the bottom one: they differ by device (the
+	// notch and the home indicator, the platform's own bar) and by turning the phone, so no component assumes a number of its own.
+	const rootRef = useRef<HTMLDivElement>(null);
+	const appbarRef = useRef<HTMLElement>(null);
+	const navRef = useRef<HTMLElement>(null);
+	useLayoutEffect(() => {
+		const root = rootRef.current;
+		const appbar = appbarRef.current;
+		const nav = navRef.current;
+		if (!root || !appbar || !nav) return;
+		const measure = () => {
+			// the top bar's bottom edge, and how far the bottom bar's top edge is from the bottom of the screen (its own height, its gap from
+			// the edge and the home indicator)
+			root.style.setProperty('--appbar-h', `${Math.round(appbar.getBoundingClientRect().height)}px`);
+			root.style.setProperty('--bottomnav-reach', `${Math.round(window.innerHeight - nav.getBoundingClientRect().top)}px`);
+		};
+		measure();
+		const observer = new ResizeObserver(measure);
+		observer.observe(appbar);
+		observer.observe(nav);
+		window.addEventListener('resize', measure);
+		window.addEventListener('orientationchange', measure);
+		return () => {
+			observer.disconnect();
+			window.removeEventListener('resize', measure);
+			window.removeEventListener('orientationchange', measure);
+		};
+	}, [platform]);
 	usePageMeta();
 	useScrollToTopOnNavigate();
 	const unseenEvents = useUnseenEventsCount();
@@ -35,8 +63,8 @@ const Shell = () => {
 	useGameTranslationsData();
 
 	return (
-		<div className='rvmp' data-theme={dataTheme} data-platform={platform}>
-			<header className='r-appbar'>
+		<div className='rvmp' data-theme={dataTheme} data-platform={platform} ref={rootRef}>
+			<header className='r-appbar' ref={appbarRef}>
 				<Link to={R.home} className='r-logo' aria-label={t('common:app.homeAriaLabel')}>
 					<BrandMark className='r-logo-mark' />
 					<b>Pokédex</b>
@@ -51,7 +79,7 @@ const Shell = () => {
 
 			<Footer />
 
-			<nav className='r-bottomnav' aria-label={t('common:nav.mainAriaLabel')}>
+			<nav className='r-bottomnav' aria-label={t('common:nav.mainAriaLabel')} ref={navRef}>
 				{NAV.map((n) => {
 					const label = n.label(t);
 					const shortLabel = n.shortLabel?.(t) ?? label;

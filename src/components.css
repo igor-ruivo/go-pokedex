@@ -2015,7 +2015,7 @@
 
 .rvmp .r-main {
 	min-height: 60dvh;
-	padding-bottom: calc(94px + env(safe-area-inset-bottom));
+	padding-bottom: calc(var(--bottomnav-reach, 94px) + var(--s5));
 }
 
 .rvmp .r-bottomnav {
@@ -2155,7 +2155,7 @@
 		font-size: 13px;
 	}
 	.rvmp .r-main {
-		padding-bottom: 96px;
+		padding-bottom: calc(var(--bottomnav-reach, 96px) + var(--s5));
 	}
 }
 
@@ -2165,7 +2165,7 @@
 	position: fixed;
 	left: var(--s3);
 	right: var(--s3);
-	bottom: calc(80px + env(safe-area-inset-bottom));
+	bottom: calc(var(--bottomnav-reach, 80px) + 12px);
 	z-index: 29; /* just under .r-bottomnav (30) */
 	display: flex;
 	align-items: center;
@@ -2246,7 +2246,7 @@
    =========================================================================== */
 .rvmp .r-rank-head {
 	position: sticky;
-	top: 57px;
+	top: calc(var(--appbar-h, 58px) - 1px);
 	z-index: 20;
 	padding: var(--s3) 0 var(--s3);
 	margin-top: 0;
@@ -3086,7 +3086,7 @@
    while the list scrolls, like the Rankings header — fading into the page below it. */
 .rvmp .r-searchlist {
 	position: sticky;
-	top: 57px;
+	top: calc(var(--appbar-h, 58px) - 1px);
 	z-index: 20;
 	/* the top padding is the breathing room between the app bar and the search box while it is stuck */
 	/* the extra --s3 on top is pulled back by the negative margin: before it sticks the box is spaced as it always was, and once
@@ -7097,7 +7097,7 @@
 
 /* an event opened from a link scrolls to just below the app bar */
 .rvmp .r-event {
-	scroll-margin-top: 72px;
+	scroll-margin-top: calc(var(--appbar-h, 57px) + 15px);
 }
 
 /* the actions at the foot of an event: copy its link, read the announcement */
@@ -7719,12 +7719,6 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		transform: none;
 	}
 	/* the pictures cannot take a tint, so they stay at full strength; the current tab is told by its label's colour and weight */
-	.rvmp[data-platform='ios'] .r-main {
-		padding-bottom: calc(49px + env(safe-area-inset-bottom) + 28px);
-	}
-	.rvmp[data-platform='ios'] .r-install {
-		bottom: calc(49px + env(safe-area-inset-bottom) + 12px);
-	}
 
 	/* Android — Material 3's navigation bar: 80dp tall, a 24dp icon in a 64×32 indicator that holds the current destination, a 12sp
 	   medium label (bold on the current one) under it, a flat surface with no border, state layers instead of a hover, 48dp targets. */
@@ -7767,12 +7761,6 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp[data-platform='android'] .r-bottomnav a:active .r-bn-icon {
 		background: color-mix(in srgb, var(--accent) 14%, transparent);
 		transform: none;
-	}
-	.rvmp[data-platform='android'] .r-main {
-		padding-bottom: calc(80px + env(safe-area-inset-bottom) + 28px);
-	}
-	.rvmp[data-platform='android'] .r-install {
-		bottom: calc(80px + env(safe-area-inset-bottom) + 12px);
 	}
 }
 
