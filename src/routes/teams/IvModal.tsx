@@ -13,7 +13,6 @@ import { isSlotIvs, type SlotIvs } from '../../lib/team-analysis';
 export const IvModal = ({
 	name,
 	value,
-	level,
 	onChange,
 	onClose,
 }: {
@@ -21,10 +20,8 @@ export const IvModal = ({
 	name: string;
 	/** The IVs the member is rated with now. */
 	value: SlotIvs;
-	/** The level the member is rated at now, whether it was picked or follows the CP cap: typed IVs pin it. */
-	level: number;
-	/** The new IVs. `keepLevel`: typed IVs pin the level the member has now. */
-	onChange: (ivs: SlotIvs, keepLevel: number) => void;
+	/** The new IVs. The parent decides the level: a picked one is kept, an untouched one follows the CP cap. */
+	onChange: (ivs: SlotIvs) => void;
 	onClose: () => void;
 }) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
@@ -45,11 +42,11 @@ export const IvModal = ({
 		},
 		{ dim: false }
 	);
-	const firstRef = useRef<HTMLInputElement>(null);
+	const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
 	useEffect(() => {
-		firstRef.current?.focus();
-		firstRef.current?.select();
+		inputRefs.current[0]?.focus();
+		inputRefs.current[0]?.select();
 	}, []);
 
 	const current = value.join('.');
@@ -70,7 +67,7 @@ export const IvModal = ({
 	const apply = () => {
 		if (!isSlotIvs(typedIvs)) return;
 		setApplying(typedIvs);
-		onChange(typedIvs, level);
+		onChange(typedIvs);
 	};
 
 	return (
@@ -94,7 +91,9 @@ export const IvModal = ({
 						<label key={label}>
 							<span>{label}</span>
 							<input
-								ref={i === 0 ? firstRef : undefined}
+								ref={(el) => {
+									inputRefs.current[i] = el;
+								}}
 								value={fields[i]}
 								inputMode='numeric'
 								pattern='[0-9]*'
@@ -104,6 +103,8 @@ export const IvModal = ({
 								onChange={(e) => {
 									const digits = e.target.value.replace(/\D/g, '').slice(0, 2);
 									setFields((prev) => prev.map((old, k) => (k === i ? digits : old)));
+									// Two digits (or a zero) can't be extended into a valid IV: on to the next stat.
+									if (digits.length === 2 || digits === '0') inputRefs.current[i + 1]?.focus();
 								}}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter' && canApply) apply();

@@ -1019,6 +1019,8 @@
 	flex: 1 1 0;
 	min-width: 0;
 	display: grid;
+	/* a fixed-to-the-card column, so a long name is cut by its ellipsis instead of widening the card */
+	grid-template-columns: minmax(0, 1fr);
 	justify-items: center;
 	align-content: start;
 	gap: 6px;
@@ -1075,11 +1077,11 @@
 	height: 26px;
 }
 .rvmp .h-trio-card b {
+	min-width: 0;
 	max-width: 100%;
 	overflow: hidden;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 	text-align: center;
 	line-height: 1.2;
 	font-size: 14px;
@@ -1915,6 +1917,39 @@
 	}
 	.rvmp .h-spot-sep {
 		display: none;
+	}
+	/* the name and the types under the sprite, centred, before the family line */
+	.rvmp .h-spot-title {
+		display: grid;
+		justify-items: center;
+		gap: 6px;
+		text-align: center;
+	}
+	.rvmp .h-spot-heading {
+		display: flex;
+		align-items: baseline;
+		justify-content: center;
+		gap: 8px;
+	}
+	.rvmp .h-spot-title .h-spot-name {
+		margin: 0;
+		font-size: 24px;
+	}
+	/* the sprite's box spans the card, and the types stack at its right, a little below the top, like tags pinned to the picture */
+	.rvmp .h-spot-art {
+		position: relative;
+		display: grid;
+		justify-items: center;
+		width: 100%;
+	}
+	.rvmp .h-spot-art .r-types {
+		position: absolute;
+		top: var(--s3);
+		right: 0;
+		z-index: 2;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 6px;
 	}
 }
 

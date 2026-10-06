@@ -142,7 +142,7 @@
 	/* Lifts the cards (and their open move menus) above the panels that follow: each card has its own
 	   stacking context (its entrance animation), so a menu's own z-index alone can't beat a later sibling. */
 	position: relative;
-	z-index: 5;
+	z-index: 22; /* above the later panels (the sticky .r-searchlist is 20), under the fixed bars (25, 30) */
 	display: grid;
 	gap: var(--s3);
 	grid-template-columns: 1fr;
@@ -3163,7 +3163,7 @@
 }
 .rvmp .r-tm-collection-editor {
 	position: relative;
-	z-index: 5;
+	z-index: 22; /* above the sticky .r-searchlist (20) and the grid's entries (7) below it, so an open move menu isn't cut */
 	width: 100%;
 	margin: 0 0 var(--s4);
 }

@@ -236,9 +236,9 @@ describe('resetting', () => {
 		expect(next[0]).toEqual(slot('venusaur_mega', { level: 52, superMega: true }));
 	});
 
-	it('IVs: a typed spread pins the level the member is shown at, or keeps the pinned one', () => {
-		expect(ivsChange({}, [1, 2, 3], 48)).toEqual({ ivs: [1, 2, 3], level: 48 });
-		expect(ivsChange({ level: 40 }, [1, 2, 3], 48)).toEqual({ ivs: [1, 2, 3], level: 40 });
+	it('IVs: a typed spread leaves an untouched level following the cap, and keeps a picked one', () => {
+		expect(ivsChange({}, [1, 2, 3])).toEqual({ ivs: [1, 2, 3], level: undefined });
+		expect(ivsChange({ level: 40 }, [1, 2, 3])).toEqual({ ivs: [1, 2, 3], level: 40 });
 	});
 
 	it('level: puts the level back and leaves the IVs alone', () => {

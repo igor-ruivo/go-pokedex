@@ -22,12 +22,12 @@ import {
 	isBuddy,
 	MAX_MOVES,
 	maxLevelOf,
-	type SlotIvs,
 	speciesFamilyKey,
 	type TeamRole,
 	type TeamSlotDescriptor,
 } from '../../lib/team-analysis';
 import {
+	type BuildChange,
 	isUnrecommendedMove,
 	ivsChange,
 	levelChange,
@@ -698,6 +698,11 @@ export const MemberCard = ({
 							// the current move stays listed even when it isn't in the usual pool (a Mega cup's own moves)
 							...new Set([
 								...(moveset[slot] && moveset[slot] !== 'none' && validMove(moveset[slot]) ? [moveset[slot]] : []),
+								// replacing a move also lists the ones in the other Charged slots: picking one swaps the two.
+								// Filling an empty slot doesn't, since there is nothing to swap with.
+								...(moveset[slot] && moveset[slot] !== 'none'
+									? moveset.slice(1).filter((id, k) => k + 1 !== slot && id !== 'none' && validMove(id))
+									: []),
 								...chargedPool.filter((id) => !moveset.slice(1).includes(id)),
 							]),
 							...(slot >= 2 ? ['none'] : []),
@@ -740,15 +745,7 @@ export const TeamMemberEditor = ({
 	cpCap: number;
 	/** Another member of the team is already above level 50 (Best Buddy): only one per team can be. */
 	buddyTaken?: boolean;
-	onBuild: (
-		index: number,
-		build: {
-			ivs: SlotIvs | undefined;
-			level: number | undefined;
-			buddy?: boolean | undefined;
-			superMega?: boolean | undefined;
-		}
-	) => boolean | void;
+	onBuild: (index: number, build: BuildChange) => boolean | void;
 }) => {
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
@@ -852,8 +849,7 @@ export const TeamMemberEditor = ({
 				<IvModal
 					name={cleanName(pokemon.speciesName)}
 					value={member.stats.ivs}
-					level={member.stats.level}
-					onChange={(ivs, keepLevel) => onBuild(index, ivsChange(member.slot, ivs, keepLevel))}
+					onChange={(ivs) => onBuild(index, ivsChange(member.slot, ivs))}
 					onClose={() => setEditing(null)}
 				/>
 			)}
@@ -934,15 +930,7 @@ export const TeamStage = ({
 	roleOf: (index: number) => TeamRole | undefined;
 	onChangePokemon: (index: number) => void;
 	onMove: (index: number, moveIndex: number, moveId: string) => void;
-	onBuild: (
-		index: number,
-		build: {
-			ivs: SlotIvs | undefined;
-			level: number | undefined;
-			buddy?: boolean | undefined;
-			superMega?: boolean | undefined;
-		}
-	) => boolean | void;
+	onBuild: (index: number, build: BuildChange) => boolean | void;
 	/** The league's CP cap, to tell when a picked level puts a Pokémon over it. */
 	cpCap: number;
 	onRemove: (index: number) => void;

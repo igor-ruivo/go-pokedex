@@ -26,7 +26,7 @@ import {
 	threatPart,
 	withMove,
 } from '../../lib/team-analysis';
-import { nicknamesByBuild } from '../../lib/team-build';
+import { nicknamesByBuild, type BuildChange } from '../../lib/team-build';
 import { buildCombinations, buildComboPool, comboSlots } from '../../lib/team-combinations';
 import { chipMarks } from '../../lib/team-marks';
 import { rankingSignature as rankingSignatureOf, readRankedCache, writeRankedCache } from '../../lib/team-rank-cache';
@@ -243,22 +243,14 @@ export const PokemonCollection = ({
 		if (!draft) return;
 		updateDraft({ ...draft.slot, moveset: withMove(draft.slot.moveset, moveIndex, moveId) });
 	};
-	const setDraftBuild = (
-		_index: number,
-		build: {
-			ivs: SlotIvs | undefined;
-			level: number | undefined;
-			buddy?: boolean | undefined;
-			superMega?: boolean | undefined;
-		}
-	): boolean => {
+	const setDraftBuild = (_index: number, build: BuildChange): boolean => {
 		if (!draft) return false;
 		const spread = bestIvsFor(data.builder, draft.slot.speciesId, LEAGUE_CP[league]);
 		const defaultIvs = spread ? ([spread[1], spread[2], spread[3]] as SlotIvs) : undefined;
 		const ivs = build.ivs && !defaultIvs?.every((value, index) => value === build.ivs?.[index]) ? build.ivs : undefined;
 		updateDraft({
 			speciesId: draft.slot.speciesId,
-			moveset: [...draft.slot.moveset],
+			moveset: [...(build.moveset ?? draft.slot.moveset)],
 			...(ivs ? { ivs } : {}),
 			...(build.level !== undefined ? { level: build.level } : {}),
 			...((build.buddy ?? isBuddy(draft.slot)) ? { buddy: true as const } : {}),

@@ -73,14 +73,13 @@ export const levelChange = (
 	return { ivs, level, ...(superMegaNow ? { superMega: true } : {}), ...(needsBuddy ? { buddy: true } : {}) };
 };
 
-/** Typed IVs pin the level the member has now (or the one it is shown at); resetting them leaves the level as it is. */
-export const ivsChange = (
-	slot: Pick<TeamSlotDescriptor, 'level'>,
-	ivs: SlotIvs | undefined,
-	keepLevel?: number
-): BuildChange => ({
+/**
+ * New IVs keep a level the player picked; a level that was never touched (no `level` on the slot) stays unset, so it follows
+ * the league's CP cap and lands on the perfect level for the new IVs.
+ */
+export const ivsChange = (slot: Pick<TeamSlotDescriptor, 'level'>, ivs: SlotIvs | undefined): BuildChange => ({
 	ivs,
-	level: slot.level ?? keepLevel,
+	level: slot.level,
 });
 
 /**

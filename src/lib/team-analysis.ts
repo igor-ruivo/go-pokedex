@@ -388,10 +388,20 @@ export const MAX_MOVES = 4;
 
 /**
  * `moveset` with the move at `moveIndex` set to `moveId`. The same Charged Move can't be fielded twice: picking one another
- * Charged slot already holds drops that slot (a `none` can repeat).
+ * Charged slot already holds swaps the two when the slot being set has a move of its own, and otherwise (an empty slot) drops
+ * the other slot (a `none` can repeat).
  */
 export const withMove = (moveset: ReadonlyArray<string>, moveIndex: number, moveId: string): Array<string> => {
 	const next = [...moveset];
+	const previous = next[moveIndex];
+	if (moveIndex > 0 && moveId !== 'none' && previous && previous !== 'none') {
+		const other = next.findIndex((id, k) => k > 0 && k !== moveIndex && id === moveId);
+		if (other > 0) {
+			next[other] = previous;
+			next[moveIndex] = moveId;
+			return next;
+		}
+	}
 	next[moveIndex] = moveId;
 	if (moveIndex > 0 && moveId !== 'none') {
 		for (let other = next.length - 1; other > 0; other--) {

@@ -2,6 +2,7 @@ import { type CSSProperties, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { IconTabBar } from '../../components/IconTabBar';
 import { pokemonTabIcon } from '../../components/pokemon-tab-icons';
 import { Sprite, spriteUrl } from '../../components/Sprite';
 import { useImageSource } from '../../contexts/imageSource-context';
@@ -73,42 +74,79 @@ const SpotlightView = ({
 	const { raidMetric } = useRaidMetric();
 	const navigate = useNavigate();
 	const { hero, line, raid } = spot;
+	const narrow = useMediaQuery(NARROW_SCREEN);
+	const dex = <div className='r-dexno'>{dexNo(hero.dex)}</div>;
+	const nameHeading = (
+		<h3 className='h-spot-name'>
+			<Link to={R.pokemon(hero.speciesId)}>{stageName(hero)}</Link>
+		</h3>
+	);
+	const typeChips = (
+		<div className='r-types'>
+			{hero.types.map((type) => (
+				<span key={String(type)} className='r-type' style={{ ['--tc' as string]: typeVar(type) }}>
+					{gameTypeDisplayTranslator(typeKey(type), gl) || String(type)}
+				</span>
+			))}
+		</div>
+	);
+	const tabs = [
+		{ slug: 'ranks', label: t('pokemonDetail:tabs.ranks') },
+		{ slug: 'combat', label: t('pokemonDetail:tabs.combat') },
+		{ slug: 'moves', label: t('pokemonDetail:tabs.moves') },
+		{ slug: 'counters', label: t('pokemonDetail:tabs.counters') },
+		{ slug: 'iv-table', label: t('pokemonDetail:tabs.ivTable') },
+		{ slug: 'strings', label: t('pokemonDetail:tabs.strings') },
+	];
 
 	return (
 		<article className={className ? `h-spot r-hero ${className}` : 'h-spot r-hero'} style={accentStyle(hero.types[0])}>
 			<div className='h-spot-main'>
 				<div className='h-spot-figure'>
-					<Sprite pokemon={hero} onTap={() => void navigate(R.pokemon(hero.speciesId))} />
+					{narrow ? (
+						// on a phone the types float at the right of the sprite
+						<div className='h-spot-art'>
+							<Sprite pokemon={hero} onTap={() => void navigate(R.pokemon(hero.speciesId))} />
+							{typeChips}
+						</div>
+					) : (
+						<Sprite pokemon={hero} onTap={() => void navigate(R.pokemon(hero.speciesId))} />
+					)}
+					{/* on a phone the dex number (left of the name) and the name go under the sprite, before the family line */}
+					{narrow && (
+						<div className='h-spot-title'>
+							<div className='h-spot-heading'>
+								{dex}
+								{nameHeading}
+							</div>
+						</div>
+					)}
 					<EvolutionChips members={[...line.stages, ...line.megas]} current={hero} label={stageName(hero)} />
 				</div>
 
 				<div className='h-spot-info'>
-					<div>
-						<div className='r-dexno'>{dexNo(hero.dex)}</div>
-						<h3 className='h-spot-name'>
-							<Link to={R.pokemon(hero.speciesId)}>{stageName(hero)}</Link>
-						</h3>
-						<div className='r-types'>
-							{hero.types.map((type) => (
-								<span key={String(type)} className='r-type' style={{ ['--tc' as string]: typeVar(type) }}>
-									{gameTypeDisplayTranslator(typeKey(type), gl) || String(type)}
-								</span>
+					{!narrow && (
+						<div>
+							{dex}
+							{nameHeading}
+							{typeChips}
+						</div>
+					)}
+
+					{!narrow && (
+						<div className='r-stats'>
+							{[
+								{ stat: 'atk', label: t('pokemonDetail:hero.stats.atk') },
+								{ stat: 'def', label: t('pokemonDetail:hero.stats.def') },
+								{ stat: 'hp', label: t('pokemonDetail:hero.stats.hp') },
+							].map(({ stat, label }) => (
+								<div key={stat} className='r-stat'>
+									<i>{label}</i>
+									<b>{hero.baseStats[stat as 'atk' | 'def' | 'hp']}</b>
+								</div>
 							))}
 						</div>
-					</div>
-
-					<div className='r-stats'>
-						{[
-							{ stat: 'atk', label: t('pokemonDetail:hero.stats.atk') },
-							{ stat: 'def', label: t('pokemonDetail:hero.stats.def') },
-							{ stat: 'hp', label: t('pokemonDetail:hero.stats.hp') },
-						].map(({ stat, label }) => (
-							<div key={stat} className='r-stat'>
-								<i>{label}</i>
-								<b>{hero.baseStats[stat as 'atk' | 'def' | 'hp']}</b>
-							</div>
-						))}
-					</div>
+					)}
 
 					<ul className='h-spot-ranks'>
 						{[spot.pvp]
@@ -158,29 +196,32 @@ const SpotlightView = ({
 					</ul>
 				</div>
 			</div>
-			{/* the tabs of its page, as buttons */}
-			<ul className='h-lab-links h-spot-tabs'>
-				{[
-					{ slug: 'ranks', label: t('pokemonDetail:tabs.ranks') },
-					{ slug: 'combat', label: t('pokemonDetail:tabs.combat') },
-					{ slug: 'moves', label: t('pokemonDetail:tabs.moves') },
-					{ slug: 'counters', label: t('pokemonDetail:tabs.counters') },
-					{ slug: 'iv-table', label: t('pokemonDetail:tabs.ivTable') },
-					{ slug: 'strings', label: t('pokemonDetail:tabs.strings') },
-				].map(({ slug, label }) => {
-					const icon = pokemonTabIcon(slug);
-					return (
-						<li key={slug}>
-							<Link to={R.pokemon(hero.speciesId, slug)} className='h-chip'>
-								<span className='h-chip-ico'>
-									{typeof icon === 'string' ? <img src={icon} alt='' loading='lazy' /> : icon}
-								</span>
-								{label}
-							</Link>
-						</li>
-					);
-				})}
-			</ul>
+			{/* the tabs of its page: on a phone the same swipeable icon-over-label strip the Pokémon page has (none is current),
+			    otherwise buttons */}
+			{narrow ? (
+				<IconTabBar
+					items={tabs.map(({ slug, label }) => ({ id: slug, label, icon: pokemonTabIcon(slug) }))}
+					activeId=''
+					onSelect={(slug) => void navigate(R.pokemon(hero.speciesId, slug))}
+					ariaLabel={stageName(hero)}
+				/>
+			) : (
+				<ul className='h-lab-links h-spot-tabs'>
+					{tabs.map(({ slug, label }) => {
+						const icon = pokemonTabIcon(slug);
+						return (
+							<li key={slug}>
+								<Link to={R.pokemon(hero.speciesId, slug)} className='h-chip'>
+									<span className='h-chip-ico'>
+										{typeof icon === 'string' ? <img src={icon} alt='' loading='lazy' /> : icon}
+									</span>
+									{label}
+								</Link>
+							</li>
+						);
+					})}
+				</ul>
+			)}
 			{/* the track is always there (empty for the card leaving) so the card never changes height */}
 			<span className='h-countdown' aria-hidden='true' data-held={countdown?.held ? '' : undefined}>
 				{countdown && (
