@@ -103,8 +103,8 @@ export const IvModal = ({
 								onChange={(e) => {
 									const digits = e.target.value.replace(/\D/g, '').slice(0, 2);
 									setFields((prev) => prev.map((old, k) => (k === i ? digits : old)));
-									// Two digits (or a zero) can't be extended into a valid IV: on to the next stat.
-									if (digits.length === 2 || digits === '0') inputRefs.current[i + 1]?.focus();
+									// Two digits (or a zero) can't be extended into a valid IV: on to the next stat — the focus moves, the page does not scroll.
+									if (digits.length === 2 || digits === '0') inputRefs.current[i + 1]?.focus({ preventScroll: true });
 								}}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter' && canApply) apply();

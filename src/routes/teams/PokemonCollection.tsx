@@ -73,6 +73,9 @@ export const PokemonCollection = ({
 	const [search, setSearch] = useState('');
 	const [sortKey, setSortKey] = useState<'score' | 'threat'>('score');
 	const [requestedEvaluationKey, setRequestedEvaluationKey] = useState<string | null>(null);
+	// Between pressing Compute and the evaluation starting: the progress bar is drawn at once, and the (heavy) work of setting every
+	// team's evaluation up begins only once the page has painted it, so that it does not appear after the wait.
+	const [startingEvaluation, setStartingEvaluation] = useState(false);
 	const [gridSize, setGridSize] = useState({ cols: 4, rowHeight: 96, measured: false });
 	const [scrollMargin, setScrollMargin] = useState(0);
 	const gridRef = useRef<HTMLDivElement>(null);
@@ -301,7 +304,16 @@ export const PokemonCollection = ({
 	};
 	const allReady = computedRankingReady || cachedRankedTeams !== undefined;
 	// Still working out the teams (or waiting to be asked to): the count isn't known yet, so it doesn't read as 0.
-	const teamsComputing = pending || (saved.length >= 3 && !allReady);
+	const teamsComputing = pending || startingEvaluation || (saved.length >= 3 && !allReady);
+	const startEvaluation = () => {
+		setStartingEvaluation(true);
+		requestAnimationFrame(() =>
+			window.setTimeout(() => {
+				setRequestedEvaluationKey(evaluationKey);
+				setStartingEvaluation(false);
+			}, 0)
+		);
+	};
 
 	return (
 		<div className='r-tm-collection'>
@@ -452,8 +464,8 @@ export const PokemonCollection = ({
 				{requiresManualEvaluation && (
 					<div className='r-tm-collection-manual'>
 						<p className='r-muted'>{t('teams:collection.manualNotice')}</p>
-						{!evaluationRequested && cachedRankedTeams === undefined && (
-							<button type='button' className='r-tm-btn' onClick={() => setRequestedEvaluationKey(evaluationKey)}>
+						{!evaluationRequested && !startingEvaluation && cachedRankedTeams === undefined && (
+							<button type='button' className='r-tm-btn' onClick={startEvaluation}>
 								{t('teams:collection.computeTeams')}
 							</button>
 						)}
@@ -480,7 +492,7 @@ export const PokemonCollection = ({
 				) : allReady ? (
 					<p className='r-muted'>{t('teams:collection.noCombinations')}</p>
 				) : null}
-				{saved.length >= 3 && pending && combinations.length > 0 && (
+				{saved.length >= 3 && (pending || startingEvaluation) && combinations.length > 0 && (
 					<div className='r-tm-loading' role='status' aria-live='polite'>
 						<span className='r-spinner' aria-hidden='true' />
 						<p>{t('teams:threat.simulating')}</p>

@@ -62,6 +62,18 @@ export const SearchBox = () => {
 		setSuggestionQuery(urlQuery);
 	}, [params, onGrid]);
 
+	// The box is in the app bar, so it outlives the views: a term typed in one is not carried to another (the Pokédex, the rankings, the
+	// moves, a team…). Moving within a view (the rankings' tabs, from one Pokémon's page to another's) keeps it.
+	const section = pathname.split('/')[1] ?? '';
+	const lastSection = useRef(section);
+	useEffect(() => {
+		if (lastSection.current === section) return;
+		lastSection.current = section;
+		setQ('');
+		setSuggestionQuery('');
+		setOpen(false);
+	}, [section]);
+
 	useEffect(() => {
 		const id = window.setTimeout(() => setSuggestionQuery(q), SUGGESTION_DEBOUNCE_MS);
 		return () => window.clearTimeout(id);
