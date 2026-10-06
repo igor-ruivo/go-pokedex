@@ -7555,3 +7555,12 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		pointer-events: none;
 	}
 }
+
+/* light theme only: every Pokémon picture that is not the official artwork — the Pokémon GO sprites, normal and shiny (they come from
+   `pogo_assets`) — has the slim contour of the icons above, in place of whatever shadow or other filter its place gave it. The 1.35×
+   scale those sprites get (see `img.r-fade-sprite[src*='pogo_assets']`) is left as it is. `!important`: this is on every sprite of the
+   site, whatever the component draws it in (and however specific that component's own rule for it is). */
+:is(.rvmp[data-theme='light'], html[data-theme='light'] .rvmp) img[src*='pogo_assets'] {
+	filter: drop-shadow(0 0 0.6px var(--text-faint)) drop-shadow(0 0 0.6px var(--text-faint))
+		drop-shadow(0 0 0.6px var(--text-faint)) !important;
+}
