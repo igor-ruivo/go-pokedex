@@ -2878,3 +2878,14 @@ html:not([data-theme='light'])
 		margin-left: -26px;
 	}
 }
+
+/* on the "in the game right now" cards the shiny sparkle sits on the top right corner of the Pokémon's picture (not over its head) */
+.rvmp .h-tile-hero > .h-day-shiny {
+	top: 2px;
+	right: 8px;
+}
+.rvmp .h-tile-hero-slot > .h-day-shiny {
+	top: 2px;
+	right: 0;
+	left: auto;
+}

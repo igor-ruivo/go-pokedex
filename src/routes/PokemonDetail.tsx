@@ -313,6 +313,8 @@ const PokemonDetail = () => {
 	);
 	const panelRef = useRef<HTMLDivElement>(null);
 	const lowerRef = useRef<HTMLDivElement>(null);
+	// the league the board marks as picked: it follows the picked one only once that league's numbers are in (see `shownLeague`)
+	const settledLeagueRef = useRef(league);
 	usePlayOnChange(panelRef, tab === 'Ranks' ? tab : league);
 	usePlayOnChange(lowerRef, league);
 	usePlayOnChange(panelRef, tab, true);
@@ -844,6 +846,21 @@ const PokemonDetail = () => {
 	// place; only the initial snap-to-rank-1 settling should ever show "…".
 	const readoutReady = isRaid || (ivTouchedRef.current ? !!slice : !!slice?.perfect && !ivStale && pvpFetchCompleted);
 
+	// A league just picked is only painted as the picked row once its rank and IVs have settled on the best spread (#1, 100%): until then
+	// the row picked before keeps the mark, so the border and the numbers change together instead of the border running ahead of them.
+	// (Ready alone is not enough: for one render after the league changes the numbers of the league before are still on screen, so the
+	// IVs shown must also be that league's best spread.)
+	const ivsAreBest =
+		isRaid ||
+		ivTouchedRef.current ||
+		(!!slice?.perfect &&
+			iv.atk === purifiedIv(slice.perfect.A) &&
+			iv.def === purifiedIv(slice.perfect.D) &&
+			iv.hp === purifiedIv(slice.perfect.S));
+	const settled = readoutReady && ivsAreBest;
+	if (settled) settledLeagueRef.current = league;
+	const shownLeague = settled ? league : settledLeagueRef.current;
+
 	// Each leaderboard row = the currently-carouseled "best reachable" for that league.
 	// The "Additional leagues" rule, with the visibility filter button on its right. Always rendered
 	// (even with none visible, the default) so the button never disappears; the divider is the `flex: 1`
@@ -1138,7 +1155,7 @@ const PokemonDetail = () => {
 									{ l, ready, member, rank, metric, bestType, total, pIdx, typeCount, typeIdx, rankChange, ivSlice },
 									rowIdx
 								) => {
-									const active = league === l.id;
+									const active = shownLeague === l.id;
 									return (
 										<Fragment key={l.id}>
 											{/* Great/Ultra/Master/Raid are always present and always first (see
