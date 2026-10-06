@@ -6,6 +6,7 @@ import { BonusIcons } from '../../components/BonusBullet';
 import { GameLanguage, useLanguage } from '../../contexts/language-context';
 import type { IGamemasterPokemon } from '../../DTOs/IGamemasterPokemon';
 import { useLiveNow } from '../../hooks/useLiveNow';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { spotlightToPost } from '../../lib/calendar-events';
 import { baseForm, reachableLine, type SpecialDay, specialDays } from '../../lib/community-days';
 import { startsIn, timeLeft } from '../../lib/event-timing';
@@ -13,7 +14,10 @@ import { cleanName, dateRange, eventPhase } from '../../lib/format';
 import { R } from '../../lib/nav';
 import { useCalendar } from '../../queries/calendar';
 import { usePokemon } from '../../queries/pokemon';
-import { EvolutionChips } from './EvolutionChips';
+import { DayShowcase } from './DayShowcase';
+
+/** Below this width the diagonal end shows only the Pokémon that can be caught, not the line they evolve along (keep in step with the 760px rule of `.h-day` in home.css). */
+const NARROW_SCREEN = '(max-width: 760px)';
 
 /**
  * A weekday name that fits the date block, from the locale's own full name (Intl, so it follows the language): the part before a
@@ -46,6 +50,7 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 	const { t } = useTranslation(['home', 'calendar']);
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
+	const narrow = useMediaQuery(NARROW_SCREEN);
 	const { kind, post } = day;
 	const phase = eventPhase(post.startDate, post.endDate, now);
 	const when = dayParts(post.startDate, currentLanguage);
@@ -119,14 +124,13 @@ const DayRow = ({ day, now }: { day: SpecialDay; now: number }) => {
 					)}
 				</div>
 				{featured.members.length > 0 && (
-					<div className='h-day-mons'>
-						<EvolutionChips
-							members={featured.members}
-							current={featured.species.length === 1 ? featured.species[0] : undefined}
-							shiny={featured.shiny}
-							label={featured.species.map((p) => cleanName(p.speciesName)).join(', ')}
-						/>
-					</div>
+					<DayShowcase
+						// a phone has room for the catchable ones only, not the line they can evolve along
+						members={narrow ? featured.species : featured.members}
+						current={featured.species.length === 1 ? featured.species[0] : undefined}
+						shiny={featured.shiny}
+						label={featured.species.map((p) => cleanName(p.speciesName)).join(', ')}
+					/>
 				)}
 			</article>
 		</li>
