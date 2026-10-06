@@ -7662,7 +7662,6 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		border: 1px solid transparent;
 		border-radius: 10px;
 		background: color-mix(in srgb, var(--text) 8%, transparent);
-		font-size: 17px;
 	}
 	.rvmp[data-platform='ios'] .r-search-icon {
 		width: 17px;
@@ -7694,7 +7693,6 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		border: 1px solid transparent;
 		border-radius: 28px;
 		background: var(--surface-2);
-		font-size: 16px;
 	}
 	.rvmp[data-platform='android'] .r-search-icon {
 		width: 24px;
@@ -7730,15 +7728,6 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 .rvmp .r-menu-panel {
 	padding-right: env(safe-area-inset-right);
 }
-/* Pinch-zoom is allowed again (it was switched off, which WCAG 1.4.4 does not allow), so iOS's habit of zooming in on a field whose text
-   is under 16px has to be answered by the fields: none of them is below that on an iPhone or an iPad. */
-.rvmp[data-platform='ios']
-	input:not([type='checkbox'], [type='radio'], [type='range'], [type='button'], [type='submit']),
-.rvmp[data-platform='ios'] select,
-.rvmp[data-platform='ios'] textarea {
-	font-size: max(16px, 1em);
-}
-
 /* the bottom bar on a desktop (the pill): a smaller plate beside the label, and room enough for the dot to clear the label */
 @media (min-width: 1360px) {
 	.rvmp .r-bottomnav a {
@@ -9080,4 +9069,24 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 .rvmp .r-hero-info .r-hero-shadow[aria-pressed='true'],
 .rvmp .r-hero-shadow[aria-pressed='true'] {
 	color: color-mix(in srgb, var(--accent), var(--text) 60%);
+}
+
+/* the output of the Mass Delete page: the reveal button spans the page's column */
+.rvmp .r-md-reveal {
+	width: 100%;
+	margin-top: var(--s3);
+}
+
+.rvmp .r-md-reveal:disabled {
+	cursor: default;
+	opacity: 0.75;
+}
+.rvmp .r-md-reveal:disabled .r-ss-chev {
+	visibility: hidden;
+}
+/* a string can be tens of thousands of characters: the open box scrolls inside itself */
+.rvmp .r-md-reveal + .r-ss-raw {
+	max-height: 110px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }

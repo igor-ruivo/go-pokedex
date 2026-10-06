@@ -1832,7 +1832,7 @@ const MassDeleteContent = ({
 		[wlOpen]
 	);
 
-	const outRef = useRef<HTMLTextAreaElement>(null);
+	const [outOpen, setOutOpen] = useState(false);
 
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashGreat, String(trashGreat)), [trashGreat]);
 	useEffect(() => void writePersistentValue(ConfigKeys.TrashUltra, String(trashUltra)), [trashUltra]);
@@ -2134,7 +2134,6 @@ const MassDeleteContent = ({
 	const copy = () => {
 		if (!activeResult) return;
 		void navigator.clipboard?.writeText(activeResult);
-		outRef.current?.select();
 		setCopied(true);
 		window.setTimeout(() => setCopied(false), 1400);
 	};
@@ -2862,14 +2861,34 @@ const MassDeleteContent = ({
 						{activeCalculating ? t('massDelete:computing') : t('massDelete:compute')}
 					</button>
 
-					<textarea
-						ref={outRef}
-						className='r-md-out'
-						readOnly
-						value={activeCalculating ? t('massDelete:computingMessage') : activeResult}
-						placeholder={isTrade ? t('massDelete:outputPlaceholderTrade') : t('massDelete:outputPlaceholderMeta')}
-						onClick={copy}
-					/>
+					{/* the string behind a button that opens it, like the Strings tab of a Pokémon: nothing here takes the keyboard (or the zoom of a phone) */}
+					<button
+						type='button'
+						className='r-ss-reveal r-md-reveal'
+						data-on={outOpen ? '' : undefined}
+						aria-expanded={outOpen && !!activeResult}
+						disabled={!activeResult || activeCalculating}
+						onClick={() => {
+							// opening it copies the string at once
+							if (!outOpen) copy();
+							setOutOpen((o) => !o);
+						}}
+					>
+						<span className='r-ss-preview'>
+							{activeCalculating
+								? t('massDelete:computingMessage')
+								: activeResult.slice(0, 240) ||
+									(isTrade ? t('massDelete:outputPlaceholderTrade') : t('massDelete:outputPlaceholderMeta'))}
+						</span>
+						<span className='r-ss-chev' aria-hidden='true'>
+							⌄
+						</span>
+					</button>
+					{outOpen && !!activeResult && !activeCalculating && (
+						<button type='button' className='r-ss-raw' onClick={copy} title={t('massDelete:copySearchString')}>
+							{activeResult}
+						</button>
+					)}
 					{activeResult && !activeCalculating && (
 						<p className={`r-md-length-hint${activeResult.length > 5000 ? ' r-md-length-hint--warn' : ''}`}>
 							{t('massDelete:characterCount', {
