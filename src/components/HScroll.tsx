@@ -1,6 +1,8 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { scrollOneStep } from '../lib/scroll-step';
+
 /**
  * A row that scrolls sideways, with the round arrows every such row of the site has at the edge that still has more behind it (on a
  * phone too): `className` is the scrolling element's own class, whatever it styles. The arrows scroll it by most of its width. They
@@ -49,7 +51,7 @@ export const HScroll = ({
 
 	const scrollByPage = (direction: 1 | -1) => {
 		const el = ref.current;
-		el?.scrollBy({ left: direction * (el.clientWidth * 0.8), behavior: 'smooth' });
+		if (el) scrollOneStep(el, direction);
 	};
 
 	return (

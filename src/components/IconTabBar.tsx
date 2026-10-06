@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { scrollOneStep } from '../lib/scroll-step';
+
 export interface IconTabItem {
 	id: string;
 	label: string;
@@ -79,7 +81,7 @@ export const IconTabBar = ({
 
 	const scrollByPage = (dir: 1 | -1) => {
 		const el = stripRef.current;
-		el?.scrollBy({ left: dir * (el.clientWidth * 0.8), behavior: 'smooth' });
+		if (el) scrollOneStep(el, dir);
 	};
 
 	return (

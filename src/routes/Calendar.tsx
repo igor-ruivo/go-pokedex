@@ -32,6 +32,7 @@ import {
 import { BONUS_ICON_URL, bonusIcons } from '../lib/milestone-icons';
 import { CALENDAR_TABS, type CalendarTab, R } from '../lib/nav';
 import { sortByCalendarRelevance, useRelevanceSets } from '../lib/relevance';
+import { scrollOneStep } from '../lib/scroll-step';
 import { useCalendar } from '../queries/calendar';
 import { usePokemon } from '../queries/pokemon';
 import { useGameTranslationsData } from '../utils/game-translations-store';
@@ -427,7 +428,7 @@ const DatePicker = ({
 
 	const scrollByPage = (dir: 1 | -1) => {
 		const el = chipsRef.current;
-		el?.scrollBy({ left: dir * (el.clientWidth * 0.8), behavior: 'smooth' });
+		if (el) scrollOneStep(el, dir);
 	};
 
 	return (

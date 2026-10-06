@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { scrollOneStep } from '../lib/scroll-step';
+
 export interface LeaguePickerItem {
 	id: string;
 	label: string;
@@ -101,7 +103,7 @@ const ScrollRow = ({ children, role, ariaLabel }: { children: ReactNode; role: s
 
 	const scrollByPage = (dir: 1 | -1) => {
 		const el = chipsRef.current;
-		el?.scrollBy({ left: dir * (el.clientWidth * 0.8), behavior: 'smooth' });
+		if (el) scrollOneStep(el, dir);
 	};
 
 	return (

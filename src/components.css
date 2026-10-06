@@ -7954,6 +7954,10 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 }
 .rvmp .r-hero-art .r-hero-shadow {
 	position: absolute;
+	/* as wide as its word needs (a long one in another language would otherwise wrap inside the half of the art that is left of its anchor) */
+	width: max-content;
+	max-width: none;
+	white-space: nowrap;
 	bottom: 4px;
 	left: 50%;
 	transform: translateX(-50%);
