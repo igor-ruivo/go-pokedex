@@ -29,7 +29,12 @@ import {
 import { type BuildChange, nicknamesByBuild } from '../../lib/team-build';
 import { buildCombinations, buildComboPool, comboSlots } from '../../lib/team-combinations';
 import { chipMarks } from '../../lib/team-marks';
-import { rankingSignature as rankingSignatureOf, readRankedCache, writeRankedCache } from '../../lib/team-rank-cache';
+import {
+	canonicalCombinations,
+	rankingSignature as rankingSignatureOf,
+	readRankedCache,
+	writeRankedCache,
+} from '../../lib/team-rank-cache';
 import { typeVar } from '../../lib/types';
 import gameTranslator, { GameTranslatorKeys } from '../../utils/GameTranslator';
 import { VirtualTeamCards } from './TeamCards';
@@ -150,7 +155,8 @@ export const PokemonCollection = ({
 		[league, combinations, data.rankList, data.gamemaster, data.builder]
 	);
 	const cachedRankedTeams = data.ready ? readRankedCache(league, rankingSignature) : undefined;
-	const evaluationKey = JSON.stringify(combinations);
+	// what the manual evaluation was asked for: the combinations, the Charged Moves in a fixed order (rearranging them is no change)
+	const evaluationKey = useMemo(() => JSON.stringify(canonicalCombinations(combinations)), [combinations]);
 	const requiresManualEvaluation = saved.length > AUTO_EVALUATION_LIMIT && combinations.length > 0;
 	const evaluationRequested =
 		cachedRankedTeams === undefined && (!requiresManualEvaluation || requestedEvaluationKey === evaluationKey);
@@ -305,6 +311,8 @@ export const PokemonCollection = ({
 			{draft && draftMember && (
 				<div className='r-tm-collection-editor'>
 					<TeamMemberEditor
+						// each Pokémon opened is a card of its own: one opened again later starts untouched
+						key={draft.entryId ?? 'new'}
 						index={0}
 						member={draftMember}
 						pokemon={data.gamemaster[draft.slot.speciesId]}

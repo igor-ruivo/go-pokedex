@@ -16,6 +16,7 @@ import { useSeenEvents } from '../contexts/seen-events-context';
 import type { IEntry, IPostEntry, IRocketGrunt } from '../DTOs/INews';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useLiveNow } from '../hooks/useLiveNow';
+import { useScrollAnchor } from '../hooks/useScrollAnchor';
 import { leekduckPosts, specialToPost, spotlightToPost } from '../lib/calendar-events';
 import { startsIn, timeLeft } from '../lib/event-timing';
 import {
@@ -494,7 +495,8 @@ const EventCard = ({
 }: {
 	post: IPostEntry;
 	open: boolean;
-	onToggle: () => void;
+	/** Told which card it is, to keep it where it is on the page while the open one changes (see `useScrollAnchor`). */
+	onToggle: (card: HTMLElement | null) => void;
 	preferSubtitle: boolean;
 	isSeason: boolean;
 	/** Never expanded on this device — see the Calendar nav badge, same idea
@@ -541,7 +543,11 @@ const EventCard = ({
 	// up without changing this layout box.
 	return (
 		<div className='r-event' data-open={open} data-event={post.id}>
-			<button type='button' className='r-event-head' onClick={onToggle}>
+			<button
+				type='button'
+				className='r-event-head'
+				onClick={(e) => onToggle(e.currentTarget.closest<HTMLElement>('[data-event]'))}
+			>
 				{isFeaturedDay ? (
 					<span className='r-event-spotlight'>
 						{post.imageUrl && <img className='r-event-spotlight-bg' src={post.imageUrl} alt='' loading='lazy' />}
@@ -718,6 +724,8 @@ const EventsTab = () => {
 	const { currentGameLanguage: gl } = useLanguage();
 	const { seenIds, markSeen } = useSeenEvents();
 	const scrolledTo = useRef<string | null>(null);
+	// opening an event closes the one that was open, which can be above it: the one just opened is kept where it was on the screen
+	const holdAnchor = useScrollAnchor(openId);
 
 	const ready = postsFetchCompleted && spotlightHoursFetchCompleted;
 
@@ -791,7 +799,8 @@ const EventsTab = () => {
 						isSeason={p.id === seasonId}
 						unseen={!seenIds.has(p.id)}
 						open={p.id === openId}
-						onToggle={() => {
+						onToggle={(card) => {
+							holdAnchor(card);
 							const opening = p.id !== openId;
 							setOpenId(opening ? p.id : null);
 							// Only marking it seen on *open* (not close) — that's the
@@ -1154,7 +1163,15 @@ const rocketGruntTitle = (g: IRocketGrunt, gl: GameLanguage): string => {
 			: gameTranslator(GameTranslatorKeys.GruntDisplay, gl);
 };
 
-const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; onToggle: () => void }) => {
+const RocketGrunt = ({
+	g,
+	open,
+	onToggle,
+}: {
+	g: IRocketGrunt;
+	open: boolean;
+	onToggle: (card: HTMLElement) => void;
+}) => {
 	const { t } = useTranslation(['calendar']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const { gamemasterPokemon } = usePokemon();
@@ -1183,7 +1200,7 @@ const RocketGrunt = ({ g, open, onToggle }: { g: IRocketGrunt; open: boolean; on
 	// toggle from anywhere on the card, but never when a Pokémon link was clicked
 	const toggle = (e: ReactMouseEvent | ReactKeyboardEvent) => {
 		if ((e.target as HTMLElement).closest('a')) return;
-		onToggle();
+		onToggle(e.currentTarget as HTMLElement);
 	};
 
 	return (
@@ -1267,6 +1284,7 @@ const RocketsTab = () => {
 	const { currentRockets, currentRocketsFetchCompleted } = useCalendar();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const [openId, setOpenId] = useState<string | null>(null);
+	const holdAnchor = useScrollAnchor(openId);
 	const [query, setQuery] = useState('');
 	const searchQuery = useDebouncedValue(query.trim().toLowerCase(), 220);
 	const filteredRockets = useMemo(() => {
@@ -1300,7 +1318,10 @@ const RocketsTab = () => {
 						key={g.trainerId}
 						g={g}
 						open={openId === g.trainerId}
-						onToggle={() => setOpenId((p) => (p === g.trainerId ? null : g.trainerId))}
+						onToggle={(card) => {
+							holdAnchor(card);
+							setOpenId((p) => (p === g.trainerId ? null : g.trainerId));
+						}}
 					/>
 				))}
 			</div>

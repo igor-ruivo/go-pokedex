@@ -503,6 +503,16 @@ export const isSlotIvs = (value: unknown): value is SlotIvs =>
 	Array.isArray(value) && value.length === 3 && value.every((n) => Number.isInteger(n) && n >= 0 && n <= 15);
 
 /**
+ * A moveset in its canonical order, for telling whether two are the same: the Fast Move first, then the Charged Moves in
+ * alphabetical order, without the `none`s. The order of the Charged Moves is only how the player arranged them (the battle
+ * reads them the same either way), and an empty slot is not a move: neither makes another Pokémon.
+ */
+export const canonicalMoveset = (moveset: ReadonlyArray<string>): Array<string> => {
+	const [fast, ...charged] = moveset;
+	return fast === undefined ? [] : [fast, ...charged.filter((move) => move !== 'none').sort()];
+};
+
+/**
  * One Pokémon of a team as text: `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH`, plus `@0.15.15` when its IVs were picked and
  * `@L25.5` when its level was, `@B` for a Best Buddy, `@S` for a Super Max Mega (species and move ids never contain a dash, an `@` or a dot). The same Pokémon with
  * other moves, IVs or level is another key.
@@ -527,9 +537,12 @@ export const evaluationKey = (team: ReadonlyArray<TeamSlotDescriptor>): string =
  * What makes a Pokémon the same one: `slotKey` without the Best Buddy flag. The flag only matters through the IVs and the
  * level it sets, which are in the key — so a Best Buddy turned on or off on its own is still the same Pokémon (and the same
  * team, the same favorite, the same saved entry…). `slotKey` itself keeps the flag, so it survives in a link.
+ * The Charged Moves are in their canonical order (see `canonicalMoveset`), so arranging them differently is still the same one:
+ * nothing keyed by it — the saved Pokémon, the ratings, the favorites, the nicknames — starts over. (`slotKey` keeps the order
+ * the player gave, so a link shows the moves as they were arranged.)
  */
 export const slotIdentityKey = (slot: Pick<TeamSlotDescriptor, 'speciesId' | 'moveset' | 'ivs' | 'level'>): string =>
-	slotKey({ speciesId: slot.speciesId, moveset: slot.moveset, ivs: slot.ivs, level: slot.level });
+	slotKey({ speciesId: slot.speciesId, moveset: canonicalMoveset(slot.moveset), ivs: slot.ivs, level: slot.level });
 
 /** `azumarill-BUBBLE-ICE_BEAM-PLAY_ROUGH@0.15.15,medicham-COUNTER-…` — see `slotKey`. */
 export const encodeTeam = (team: ReadonlyArray<TeamSlotDescriptor>): string => team.map(slotKey).join(',');

@@ -238,6 +238,15 @@ describe('rankingSignature — what a cached ranking depends on', () => {
 		expect(sign()).toBe(sign());
 	});
 
+	it('does not change when only the order of the Charged Moves does (nor an empty slot)', () => {
+		const withMoves = (m: Array<string>) =>
+			sign({ combinations: [[slot('azumarill', { moveset: m }), slot('medicham'), slot('registeel')]] });
+		expect(withMoves(['A', 'C', 'B'])).toBe(withMoves(['A', 'B', 'C']));
+		expect(withMoves(['A', 'B', 'none'])).toBe(withMoves(['A', 'B']));
+		// the Fast Move is not a Charged Move: swapping it with one is another build
+		expect(withMoves(['B', 'A', 'C'])).not.toBe(withMoves(['A', 'B', 'C']));
+	});
+
 	it('changes with the league, even for the same Pokémon', () => {
 		expect(sign({ league: 'ultra' })).not.toBe(sign());
 	});

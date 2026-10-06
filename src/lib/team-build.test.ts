@@ -91,6 +91,61 @@ describe('statusToggle — the Best Buddy and Super Max Mega buttons', () => {
 	it('does nothing while the best spread is not known yet', () => {
 		expect(statusToggle('buddy', { buddy: true, superMega: false }, undefined)).toBeUndefined();
 	});
+
+	describe('once the IVs or the level were touched (kept)', () => {
+		const touched = { ivs: [1, 2, 3] as SlotIvs, level: 40 };
+
+		it('turns a status on without resetting anything, even before the best spread is known', () => {
+			expect(statusToggle('buddy', { buddy: true, superMega: false }, target, touched)).toEqual({
+				ivs: [1, 2, 3],
+				level: 40,
+				buddy: true,
+			});
+			expect(statusToggle('superMega', { buddy: false, superMega: true }, undefined, touched)).toEqual({
+				ivs: [1, 2, 3],
+				level: 40,
+				superMega: true,
+			});
+		});
+
+		it('turns a status off keeping the IVs and a level that is still allowed', () => {
+			expect(statusToggle('buddy', { buddy: false, superMega: false }, target, touched)).toEqual({
+				ivs: [1, 2, 3],
+				level: 40,
+				buddy: false,
+			});
+			expect(statusToggle('buddy', { buddy: false, superMega: true }, target, { ivs: [1, 2, 3], level: 52 })).toEqual({
+				ivs: [1, 2, 3],
+				level: 52,
+				buddy: false,
+			});
+		});
+
+		it('brings a level above the new ceiling down to it', () => {
+			expect(statusToggle('buddy', { buddy: false, superMega: false }, target, { ivs: [1, 2, 3], level: 51 })).toEqual({
+				ivs: [1, 2, 3],
+				level: 50,
+				buddy: false,
+			});
+			expect(
+				statusToggle('superMega', { buddy: true, superMega: false }, target, { ivs: undefined, level: 53 })
+			).toEqual({
+				ivs: undefined,
+				level: 51,
+				superMega: false,
+			});
+		});
+
+		it('keeps a level that follows the CP cap (none picked) as it is', () => {
+			expect(
+				statusToggle('buddy', { buddy: false, superMega: false }, target, { ivs: [1, 2, 3], level: undefined })
+			).toEqual({
+				ivs: [1, 2, 3],
+				level: undefined,
+				buddy: false,
+			});
+		});
+	});
 });
 
 describe('applyBuild — the team after a build change', () => {

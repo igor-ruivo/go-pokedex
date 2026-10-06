@@ -586,6 +586,11 @@ export const MemberCard = ({
 					className='r-tm-nickname'
 					value={nickname ?? ''}
 					maxLength={32}
+					// a nickname is not a word to be checked: no red squiggle, no autocorrect, no suggestions
+					spellCheck={false}
+					autoComplete='off'
+					autoCorrect='off'
+					autoCapitalize='off'
 					aria-label={nicknameLabel}
 					placeholder={nicknameLabel}
 					onFocus={onNicknameFocus}
@@ -750,6 +755,13 @@ export const TeamMemberEditor = ({
 	const { t } = useTranslation(['teams', 'pokemonDetail']);
 	const { currentGameLanguage: gl } = useLanguage();
 	const [editing, setEditing] = useState<'ivs' | 'level' | null>(null);
+	// Whether the player has typed this card's IVs or level: once he has, it stays so for as long as the card shows this Pokémon —
+	// putting the values back to the best by hand does not undo it. Another Pokémon in the card (or the card shown anew) starts untouched.
+	const [touched, setTouched] = useState(false);
+	const shownSpecies = member?.slot.speciesId;
+	useEffect(() => {
+		setTouched(false);
+	}, [shownSpecies]);
 
 	// A nickname can carry the rank of the member's IVs ("Azumarill #12"). Ties share a rank (1, 1, 3, …), so this
 	// is the competition rank in the league's IV table, the same one the Pokémon page shows. Picked IVs / level that are
@@ -770,9 +782,15 @@ export const TeamMemberEditor = ({
 	// Any Pokémon can be made a Best Buddy (even one that gains nothing from it in this league); only one per team can be.
 	// A Mega that can be a Super Max Mega can be that too (two more levels, on top of a Best Buddy's one). Turning either on
 	// picks the spread that is best at the new level ceiling, and its level when that is above 50; turning one off goes back
-	// to the best at the lower ceiling, or to the defaults when nothing is left.
+	// to the best at the lower ceiling, or to the defaults when nothing is left — but only while the player has not touched the
+	// IVs or the level of this card. Once he has, they are left alone (a level above the new ceiling goes down to it).
 	const flip = (target: typeof buddyBest, nextFlags: StatusFlags, flag: 'buddy' | 'superMega') => {
-		const change = statusToggle(flag, nextFlags, target);
+		const change = statusToggle(
+			flag,
+			nextFlags,
+			target,
+			touched && member ? { ivs: member.slot.ivs, level: member.slot.level } : undefined
+		);
 		if (change) onBuild(index, change);
 	};
 	const buddy = member
@@ -803,7 +821,11 @@ export const TeamMemberEditor = ({
 		.slice(0, MAX_MOVES);
 	const movesOptimal = !member || movesAreRecommended(member.slot.moveset, bestMoves);
 	const resetAll = showReset({ ivsOptimal, levelOptimal, movesOptimal })
-		? () => onBuild(index, resetChange({ buddy: buddyNow, superMega: superNow }, best, bestMoves))
+		? () => {
+				// the card's Reset is the way back to the start: the Pokémon is untouched again
+				setTouched(false);
+				onBuild(index, resetChange({ buddy: buddyNow, superMega: superNow }, best, bestMoves));
+			}
 		: undefined;
 	// Once the nickname ends in "#<number>", keep that number in step with the IVs as they change.
 	useEffect(() => {
@@ -849,7 +871,10 @@ export const TeamMemberEditor = ({
 				<IvModal
 					name={cleanName(pokemon.speciesName)}
 					value={member.stats.ivs}
-					onChange={(ivs) => onBuild(index, ivsChange(member.slot, ivs))}
+					onChange={(ivs) => {
+						setTouched(true);
+						onBuild(index, ivsChange(member.slot, ivs));
+					}}
 					onClose={() => setEditing(null)}
 				/>
 			)}
@@ -861,7 +886,10 @@ export const TeamMemberEditor = ({
 					ivs={member.stats.ivs}
 					maxLevel={levelMax}
 					buddyMaxLevel={maxLevelOf({ buddy: true, superMega: !!pokemon.isSuperMega })}
-					onChange={(level) => onBuild(index, levelChange(level, member.slot.ivs, pokemon, superNow))}
+					onChange={(level) => {
+						setTouched(true);
+						onBuild(index, levelChange(level, member.slot.ivs, pokemon, superNow));
+					}}
 					onClose={() => setEditing(null)}
 				/>
 			)}

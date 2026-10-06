@@ -2751,6 +2751,14 @@
 .rvmp .r-tm-board-member[data-link]:nth-child(4) {
 	grid-column: 2;
 }
+/* on a phone a Pokémon's name fills its column, so the badge would sit on top of its edges: it moves down to the row of the types,
+   where the chips leave room at the sides */
+@media (max-width: 719px) {
+	.rvmp .r-tm-board-member[data-link] {
+		grid-row: 3;
+		margin-top: 0;
+	}
+}
 .rvmp .r-tm-board-arrow-placeholder {
 	display: none;
 }
@@ -2992,17 +3000,13 @@
 		background: var(--surface);
 		border: 1px solid var(--border);
 	}
-	/* the Pokémon: a tighter frame and a narrower arrow, and a long name wraps instead of being cut short */
+	/* the Pokémon: a tighter frame and a narrower arrow */
 	.rvmp .r-tm-board-member {
 		padding: var(--s2) 4px;
 	}
+	/* a name stays on one line, cut with an ellipsis (as it is at any width) */
 	.rvmp .r-tm-board-name {
-		white-space: normal;
-		text-wrap: balance;
-		overflow-wrap: anywhere;
-	}
-	.rvmp .r-tm-board-name {
-		font-size: 13.5px;
+		font-size: 12.5px;
 	}
 	/* an unrated card (no score): the star on its own line, the Pokémon under it */
 	.rvmp .r-tm-board-card[data-unrated] {

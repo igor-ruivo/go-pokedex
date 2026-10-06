@@ -40,12 +40,24 @@ export interface SpreadAndLevel {
  * level ceiling (`target`), with its level when that is above 50; turning one off goes back to the best at the lower
  * ceiling, or to the defaults when no status is left. The other status is left as it is. `undefined`: nothing to apply
  * (the best spread isn't known yet).
+ * `kept`: the player has already touched this Pokémon's IVs or level (they are not the best for the status it has now), so
+ * nothing is reset to the best: the IVs and the level stay as they are, only the status changes — except a level above the
+ * new ceiling (a status was turned off), which goes down to the new ceiling.
  */
 export const statusToggle = (
 	flag: 'buddy' | 'superMega',
 	nextFlags: StatusFlags,
-	target: SpreadAndLevel | undefined
+	target: SpreadAndLevel | undefined,
+	kept?: { ivs: SlotIvs | undefined; level: number | undefined }
 ): BuildChange | undefined => {
+	if (kept) {
+		const ceiling = maxLevelOf(nextFlags);
+		return {
+			ivs: kept.ivs,
+			level: kept.level !== undefined && kept.level > ceiling ? ceiling : kept.level,
+			...(flag === 'buddy' ? { buddy: nextFlags.buddy } : { superMega: nextFlags.superMega }),
+		};
+	}
 	if (maxLevelOf(nextFlags) <= BASE_MAX_LEVEL) {
 		return { ivs: undefined, level: undefined, ...(flag === 'buddy' ? { buddy: false } : { superMega: false }) };
 	}

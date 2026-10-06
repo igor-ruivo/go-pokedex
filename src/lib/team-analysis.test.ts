@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	assignRoles,
 	bulkPart,
+	canonicalMoveset,
 	decodeTeam,
 	defenseProfile,
 	encodeTeam,
@@ -11,6 +12,7 @@ import {
 	SCORE_WEIGHTS,
 	scoreTier,
 	sharedTypes,
+	slotIdentityKey,
 	teamScore,
 	threatPart,
 } from './team-analysis';
@@ -125,5 +127,33 @@ describe('team links', () => {
 	it('ignores malformed entries and caps at three Pokémon', () => {
 		expect(decodeTeam('a-B,broken,c-D-E,f-G-H,i-J-K,l-M-N')).toHaveLength(3);
 		expect(decodeTeam(null)).toEqual([]);
+	});
+});
+
+describe('canonicalMoveset / slotIdentityKey — the order of the Charged Moves is not part of who a Pokémon is', () => {
+	it('keeps the Fast Move first and puts the Charged Moves in alphabetical order, without empty slots', () => {
+		expect(canonicalMoveset(['COUNTER', 'POWER_UP_PUNCH', 'ICE_PUNCH'])).toEqual([
+			'COUNTER',
+			'ICE_PUNCH',
+			'POWER_UP_PUNCH',
+		]);
+		expect(canonicalMoveset(['COUNTER', 'ICE_PUNCH', 'none'])).toEqual(['COUNTER', 'ICE_PUNCH']);
+		expect(canonicalMoveset([])).toEqual([]);
+	});
+
+	it('is the same Pokémon with its Charged Moves arranged the other way, and another with another Fast Move', () => {
+		const slot = (moveset: Array<string>) => ({ speciesId: 'medicham', moveset });
+		expect(slotIdentityKey(slot(['COUNTER', 'POWER_UP_PUNCH', 'ICE_PUNCH']))).toBe(
+			slotIdentityKey(slot(['COUNTER', 'ICE_PUNCH', 'POWER_UP_PUNCH']))
+		);
+		expect(slotIdentityKey(slot(['COUNTER', 'ICE_PUNCH']))).not.toBe(
+			slotIdentityKey(slot(['PSYCHO_CUT', 'ICE_PUNCH']))
+		);
+	});
+
+	it('leaves the key a link is made of in the order the player gave', () => {
+		expect(encodeTeam([{ speciesId: 'medicham', moveset: ['COUNTER', 'POWER_UP_PUNCH', 'ICE_PUNCH'] }])).toBe(
+			'medicham-COUNTER-POWER_UP_PUNCH-ICE_PUNCH'
+		);
 	});
 });

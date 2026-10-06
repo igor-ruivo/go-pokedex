@@ -1,7 +1,7 @@
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
 import type { RankedTeam, TeamBuilderData, TeamLeague } from '../DTOs/ITeamBuilder';
 import { LEAGUE_CP } from './league-caps';
-import type { TeamSlotDescriptor } from './team-analysis';
+import { canonicalMoveset, type TeamSlotDescriptor } from './team-analysis';
 
 /**
  * The ranking of the teams made from a player's saved Pokémon is worked out in the browser (a simulation per team), so it is
@@ -79,6 +79,15 @@ export const hashSignature = (value: string): string => {
 };
 
 /**
+ * The combinations as what they are rated on: every member with its Charged Moves in their canonical order, so that arranging them
+ * differently is not a change (a ranking is neither recomputed nor asked for again because of it).
+ */
+export const canonicalCombinations = (
+	combinations: ReadonlyArray<ReadonlyArray<TeamSlotDescriptor>>
+): Array<Array<TeamSlotDescriptor>> =>
+	combinations.map((team) => team.map((member) => ({ ...member, moveset: canonicalMoveset(member.moveset) })));
+
+/**
  * The fingerprint a ranking is cached under: the league and its CP cap, the combinations being ranked (every member's build
  * and marks), the league's ranking, the base data of every species involved, and the parts of PvPoke's team-builder data the
  * simulation reads (its simulator state, moves, best IVs, forms, excluded threats and the league's meta).
@@ -113,7 +122,7 @@ export const rankingSignature = (input: {
 		JSON.stringify({
 			version: RANK_CACHE_VERSION,
 			league,
-			combinations,
+			combinations: canonicalCombinations(combinations),
 			rankedSpecies,
 			species,
 			builder: builder

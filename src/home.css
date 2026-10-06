@@ -958,9 +958,9 @@
 .rvmp .h-league-hero > img:not(.r-shadow-mark) {
 	position: absolute;
 	right: 10px;
-	bottom: calc(var(--hero-h) * -0.325);
+	bottom: calc(var(--hero-h) * -0.1);
 	width: auto;
-	height: calc(var(--hero-h) * 1.475);
+	height: calc(var(--hero-h) * 1.02);
 	object-fit: contain;
 	filter: drop-shadow(0 6px 8px rgb(var(--shadow-rgb) / calc(0.3 * var(--shadow-k))));
 }
@@ -2653,9 +2653,9 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-lab {
 .rvmp .h-day-hero > img:not(.r-shadow-mark) {
 	position: absolute;
 	right: 0;
-	bottom: -14%;
+	bottom: -6%;
 	left: 0;
-	height: 112%;
+	height: 80%;
 	width: auto;
 	max-width: 125%;
 	margin: 0 auto;
@@ -2750,9 +2750,9 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-day-heroes::be
 .rvmp .h-tile-hero-slot > img:not(.r-shadow-mark) {
 	position: absolute;
 	right: 0;
-	bottom: calc(var(--hero-h) * -0.325);
+	bottom: calc(var(--hero-h) * -0.1);
 	left: 0;
-	height: calc(var(--hero-h) * 1.475);
+	height: calc(var(--hero-h) * 1.02);
 	width: auto;
 	max-width: 140%;
 	margin: 0 auto;
