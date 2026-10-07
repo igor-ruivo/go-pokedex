@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 408 408" fill="none">
+	<defs>
+		<mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="408" height="408">
+			<rect width="408" height="408" fill="#fff" />
+			<circle cx="295" cy="125" r="108" fill="#000" />
+			<circle cx="100" cy="288" r="108" fill="#000" />
+		</mask>
+		<clipPath id="a"><circle cx="295" cy="125" r="93" /></clipPath>
+		<clipPath id="b"><circle cx="100" cy="288" r="93" /></clipPath>
+	</defs>
+	<!-- the burst: whole, inside the frame, with a gap around each ball -->
+	<path
+		mask="url(#m)"
+		d="M204 14 L238 108 L330 70 L292 160 L394 204 L296 238 L338 330 L246 292 L204 394 L170 300 L78 338 L116 248 L14 204 L112 170 L70 78 L162 116 Z"
+		stroke="#F46F55"
+		stroke-width="15"
+		stroke-linejoin="round"
+		stroke-linecap="round"
+	/>
+	<g clip-path="url(#a)">
+		<rect x="190" y="20" width="210" height="106" fill="#F46F55" />
+		<rect x="190" y="132" width="210" height="100" fill="#8FD3FE" />
+	</g>
+	<circle cx="295" cy="125" r="42" fill="#fff" />
+	<circle cx="295" cy="125" r="27" fill="#8FD3FE" />
+	<g clip-path="url(#b)">
+		<rect x="0" y="190" width="210" height="104" fill="#F46F55" />
+		<rect x="0" y="300" width="210" height="100" fill="#8FD3FE" />
+	</g>
+	<circle cx="100" cy="288" r="42" fill="#fff" />
+	<circle cx="100" cy="288" r="27" fill="#8FD3FE" />
+</svg>
