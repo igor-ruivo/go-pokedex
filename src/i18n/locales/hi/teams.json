@@ -48,7 +48,8 @@
 		"recommended": "PvPoke का सुझाया मूव",
 		"overCapReason": "CP {{cp}} इस लीग की {{cap}} CP सीमा से ऊपर है।",
 		"overCapTitle": "लीग की CP सीमा से ऊपर",
-		"scoresHidden": "हर पोकेमॉन के लीग की CP सीमा के भीतर आते ही स्कोर वापस आ जाएंगे।"
+		"scoresHidden": "हर पोकेमॉन के लीग की CP सीमा के भीतर आते ही स्कोर वापस आ जाएंगे।",
+		"invalid": "अमान्य"
 	},
 	"picker": {
 		"title": "पोकेमॉन चुनें",

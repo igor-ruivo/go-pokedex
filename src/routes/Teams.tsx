@@ -311,8 +311,9 @@ const Teams = () => {
 							/>
 						)}
 
-						{analysis && parts && full && (
+						{analysis && team.length === 3 && (parts || unreachable) && (
 							<TeamMini
+								invalid={unreachable}
 								members={analysis.members}
 								score={score}
 								tier={tier}

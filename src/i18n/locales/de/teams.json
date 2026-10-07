@@ -48,7 +48,8 @@
 		"recommended": "Von PvPoke empfohlene Attacke",
 		"overCapReason": "WP {{cp}} liegen über der WP-Grenze von {{cap}} dieser Liga.",
 		"overCapTitle": "Über der WP-Grenze der Liga",
-		"scoresHidden": "Die Wertungen kommen zurück, sobald jedes Pokémon innerhalb der WP-Grenze der Liga liegt."
+		"scoresHidden": "Die Wertungen kommen zurück, sobald jedes Pokémon innerhalb der WP-Grenze der Liga liegt.",
+		"invalid": "Ungültig"
 	},
 	"picker": {
 		"title": "Pokémon wählen",

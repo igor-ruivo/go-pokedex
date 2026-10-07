@@ -26,6 +26,7 @@ export const TeamMini = ({
 	threatScore,
 	grades,
 	loading,
+	invalid = false,
 	onChangePokemon,
 }: {
 	members: ReadonlyArray<AnalyzedMember>;
@@ -35,6 +36,8 @@ export const TeamMini = ({
 	grades: MiniGrades;
 	/** The simulated part is being (re)computed. */
 	loading: boolean;
+	/** A Pokémon is over the league's CP cap: no scores, an "Invalid" mark in their place. */
+	invalid?: boolean;
 	onChangePokemon: (slot: number) => void;
 }) => {
 	const { t } = useTranslation(['teams']);
@@ -114,6 +117,12 @@ export const TeamMini = ({
 				})}
 			</div>
 
+			{invalid ? (
+				// a build over the league's CP cap isn't rated: the bar stays, with this where the scores would be
+				<div className='r-tm-mini-invalid' title={t('teams:builder.scoresHidden')}>
+					<span>{t('teams:builder.invalid')}</span>
+				</div>
+			) : (
 			<div className='r-tm-mini-stats'>
 				<ScoreInfo kind='threat' className='r-tm-mini-stat r-tm-mini-threat'>
 					<span>{t('teams:threat.shortLabel')}</span>
@@ -143,6 +152,7 @@ export const TeamMini = ({
 					)}
 				</ScoreInfo>
 			</div>
+			)}
 		</div>
 	);
 };

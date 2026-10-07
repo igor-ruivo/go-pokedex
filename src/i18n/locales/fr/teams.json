@@ -48,7 +48,8 @@
 		"recommended": "Attaque recommandée par PvPoke",
 		"overCapReason": "Les {{cp}} PC dépassent le plafond de {{cap}} PC de cette ligue.",
 		"overCapTitle": "Au-dessus du plafond de PC de la ligue",
-		"scoresHidden": "Les scores reviennent dès que chaque Pokémon est sous le plafond de PC de la ligue."
+		"scoresHidden": "Les scores reviennent dès que chaque Pokémon est sous le plafond de PC de la ligue.",
+		"invalid": "Invalide"
 	},
 	"picker": {
 		"title": "Choisir un Pokémon",

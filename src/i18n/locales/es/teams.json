@@ -48,7 +48,8 @@
 		"recommended": "Movimiento recomendado por PvPoke",
 		"overCapReason": "Los PC {{cp}} superan el tope de {{cap}} PC de esta liga.",
 		"overCapTitle": "Por encima del tope de PC de la liga",
-		"scoresHidden": "Las puntuaciones vuelven cuando todos los Pokémon estén dentro del tope de PC de la liga."
+		"scoresHidden": "Las puntuaciones vuelven cuando todos los Pokémon estén dentro del tope de PC de la liga.",
+		"invalid": "Inválido"
 	},
 	"picker": {
 		"title": "Elige un Pokémon",

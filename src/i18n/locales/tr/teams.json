@@ -48,7 +48,8 @@
 		"recommended": "PvPoke'un önerdiği hareket",
 		"overCapReason": "{{cp}} BP, bu ligin {{cap}} BP sınırını aşıyor.",
 		"overCapTitle": "Ligin BP sınırının üstünde",
-		"scoresHidden": "Her Pokémon ligin BP sınırı içine girince puanlar geri gelir."
+		"scoresHidden": "Her Pokémon ligin BP sınırı içine girince puanlar geri gelir.",
+		"invalid": "Geçersiz"
 	},
 	"picker": {
 		"title": "Pokémon seç",

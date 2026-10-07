@@ -48,7 +48,8 @@
 		"recommended": "PvPoke's recommended move",
 		"overCapReason": "CP {{cp}} is over this league's {{cap}} CP cap.",
 		"overCapTitle": "Over the league's CP cap",
-		"scoresHidden": "Scores come back once every Pokémon is within the league's CP cap."
+		"scoresHidden": "Scores come back once every Pokémon is within the league's CP cap.",
+		"invalid": "Invalid"
 	},
 	"picker": {
 		"title": "Choose a Pokémon",

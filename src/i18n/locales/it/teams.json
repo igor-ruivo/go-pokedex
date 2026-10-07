@@ -48,7 +48,8 @@
 		"recommended": "Mossa consigliata da PvPoke",
 		"overCapReason": "I PL {{cp}} superano il limite di {{cap}} PL di questa lega.",
 		"overCapTitle": "Oltre il limite di PL della lega",
-		"scoresHidden": "I punteggi tornano appena ogni Pokémon rientra nel limite di PL della lega."
+		"scoresHidden": "I punteggi tornano appena ogni Pokémon rientra nel limite di PL della lega.",
+		"invalid": "Non valido"
 	},
 	"picker": {
 		"title": "Scegli un Pokémon",

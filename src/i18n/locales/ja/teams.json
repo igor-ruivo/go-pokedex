@@ -48,7 +48,8 @@
 		"recommended": "PvPokeおすすめのわざ",
 		"overCapReason": "CP{{cp}}はこのリーグのCP上限{{cap}}を超えています。",
 		"overCapTitle": "リーグのCP上限を超えています",
-		"scoresHidden": "すべてのポケモンがリーグのCP上限内に収まると、スコアが表示されます。"
+		"scoresHidden": "すべてのポケモンがリーグのCP上限内に収まると、スコアが表示されます。",
+		"invalid": "無効"
 	},
 	"picker": {
 		"title": "ポケモンを選ぶ",

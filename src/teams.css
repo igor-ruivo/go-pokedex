@@ -2369,6 +2369,27 @@
 	background-clip: text;
 	color: transparent;
 }
+/* a build over the CP cap: a red "Invalid" tag where the scores would be */
+.rvmp .r-tm-mini-invalid {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	padding-left: var(--s4);
+	border-left: 1px solid var(--border);
+}
+.rvmp .r-tm-mini-invalid > span {
+	padding: 4px 10px;
+	border-radius: 999px;
+	border: 1px solid color-mix(in srgb, var(--neg) 55%, var(--border));
+	background: color-mix(in srgb, var(--neg) 14%, transparent);
+	color: var(--neg);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
 .rvmp .r-tm-mini-grades {
 	gap: 4px;
 	margin: 0;

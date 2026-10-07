@@ -48,7 +48,8 @@
 		"recommended": "PvPoke 推薦招式",
 		"overCapReason": "CP {{cp}} 超過了這個聯盟 {{cap}} 的 CP 上限。",
 		"overCapTitle": "超過聯盟的 CP 上限",
-		"scoresHidden": "當每隻寶可夢都在聯盟的 CP 上限內時，分數就會回來。"
+		"scoresHidden": "當每隻寶可夢都在聯盟的 CP 上限內時，分數就會回來。",
+		"invalid": "無效"
 	},
 	"picker": {
 		"title": "選擇寶可夢",
