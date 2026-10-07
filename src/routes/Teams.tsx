@@ -69,7 +69,7 @@ const Teams = () => {
 
 	const data = useTeamsData(league);
 	const ctx = useSimContext(league, data);
-	const { team, setMember, setMove, setBuild, removeMember, replaceTeam, recommendedMoveset, restoring } = useTeamState(
+	const { team, setMember, setMove, setBuild, removeMember, replaceTeam, restoring } = useTeamState(
 		data,
 		league,
 		tab === 'builder'
@@ -154,17 +154,6 @@ const Teams = () => {
 		next.set('league', id);
 		setParams(next, { replace: true });
 	};
-
-	/** Puts every Pokémon back on PvPoke's recommended moveset for this league. */
-	/** Puts every Pokémon back on PvPoke's recommended moveset, the league's best IVs and the level the CP cap allows. */
-	const reset = () =>
-		replaceTeam(team.map((slot) => ({ speciesId: slot.speciesId, moveset: recommendedMoveset(slot.speciesId) })));
-	// Anything to reset: picked IVs, or a moveset other than the recommended one (the Charged Moves in either order).
-	const modified = team.some((slot) => {
-		const recommended = recommendedMoveset(slot.speciesId);
-		const sameCharged = [...slot.moveset.slice(1)].sort().join() === [...recommended.slice(1)].sort().join();
-		return !!slot.ivs || slot.level !== undefined || slot.moveset[0] !== recommended[0] || !sameCharged;
-	});
 
 	const copyLink = async () => {
 		await navigator.clipboard?.writeText(window.location.href);
@@ -337,9 +326,6 @@ const Teams = () => {
 								</button>
 								<button type='button' className='r-tm-btn r-tm-btn--ghost' onClick={() => replaceTeam([])}>
 									{t('teams:builder.clear')}
-								</button>
-								<button type='button' className='r-tm-btn r-tm-btn--ghost' disabled={!modified} onClick={reset}>
-									{t('teams:builder.reset')}
 								</button>
 							</div>
 						)}
