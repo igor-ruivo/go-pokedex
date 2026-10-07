@@ -123,35 +123,35 @@ export const TeamMini = ({
 					<span>{t('teams:builder.invalid')}</span>
 				</div>
 			) : (
-			<div className='r-tm-mini-stats'>
-				<ScoreInfo kind='threat' className='r-tm-mini-stat r-tm-mini-threat'>
-					<span>{t('teams:threat.shortLabel')}</span>
-					{loading || threatScore === undefined ? (
-						<span className='r-spinner r-spinner--sm' aria-hidden='true' />
-					) : (
-						<b>{threatScore}</b>
-					)}
-				</ScoreInfo>
+				<div className='r-tm-mini-stats'>
+					<ScoreInfo kind='threat' className='r-tm-mini-stat r-tm-mini-threat'>
+						<span>{t('teams:threat.shortLabel')}</span>
+						{loading || threatScore === undefined ? (
+							<span className='r-spinner r-spinner--sm' aria-hidden='true' />
+						) : (
+							<b>{threatScore}</b>
+						)}
+					</ScoreInfo>
 
-				<ul className='r-tm-mini-grades' aria-label={t('teams:grades.heading')}>
-					{report.map(({ key, label, grade }) => (
-						<li key={key} data-key={key} title={grade && !loading ? `${label}: ${grade}` : label}>
-							<span className='r-tm-grade' data-grade={loading ? undefined : grade}>
-								{loading || !grade ? <span className='r-spinner r-spinner--sm' aria-hidden='true' /> : grade}
-							</span>
-						</li>
-					))}
-				</ul>
+					<ul className='r-tm-mini-grades' aria-label={t('teams:grades.heading')}>
+						{report.map(({ key, label, grade }) => (
+							<li key={key} data-key={key} title={grade && !loading ? `${label}: ${grade}` : label}>
+								<span className='r-tm-grade' data-grade={loading ? undefined : grade}>
+									{loading || !grade ? <span className='r-spinner r-spinner--sm' aria-hidden='true' /> : grade}
+								</span>
+							</li>
+						))}
+					</ul>
 
-				<ScoreInfo kind='team' className='r-tm-mini-stat r-tm-mini-score'>
-					<span>{t('teams:score.heading')}</span>
-					{loading || score === undefined ? (
-						<span className='r-spinner r-spinner--sm' aria-hidden='true' />
-					) : (
-						<b>{score.toFixed(1)}</b>
-					)}
-				</ScoreInfo>
-			</div>
+					<ScoreInfo kind='team' className='r-tm-mini-stat r-tm-mini-score'>
+						<span>{t('teams:score.heading')}</span>
+						{loading || score === undefined ? (
+							<span className='r-spinner r-spinner--sm' aria-hidden='true' />
+						) : (
+							<b>{score.toFixed(1)}</b>
+						)}
+					</ScoreInfo>
+				</div>
 			)}
 		</div>
 	);

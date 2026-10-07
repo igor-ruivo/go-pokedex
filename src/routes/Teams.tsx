@@ -300,7 +300,7 @@ const Teams = () => {
 							/>
 						)}
 
-						{analysis && team.length === 3 && (parts || unreachable) && (
+						{analysis && team.length === 3 && (parts ?? unreachable) && (
 							<TeamMini
 								invalid={unreachable}
 								members={analysis.members}
