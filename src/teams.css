@@ -3363,9 +3363,10 @@
 .rvmp .r-tm-leagues .r-lgpick-row > .r-lgpick-scroller {
 	flex: 0 1 auto;
 }
-@media (max-width: 549px) {
-	.rvmp .r-tm-leagues .r-lgpick-row > .r-lgpick-scroller {
-		flex: 1 0 100%;
+/* on a small screen both rows are centred, the button right next to the Raid chip */
+@media (max-width: 679px) {
+	.rvmp .r-tm-leagues .r-lgpick-row {
+		justify-content: center;
 	}
 }
 /* phones: the team bar is a full-width strip under the app bar, so the page (title and all) starts 68px down, below it instead

@@ -3620,6 +3620,20 @@
 		right: auto;
 	}
 }
+/* Below that, the picker is two rows, both centred: the leagues, then Raid with the custom-cups button right next to it (not
+   pushed to the far end of the row). */
+@media (max-width: 679px) {
+	.rvmp .r-lgpick > .r-lgpick-scroller {
+		text-align: center;
+	}
+	.rvmp .r-lgpick-row {
+		justify-content: center;
+	}
+	.rvmp .r-lgpick-row > .r-lgpick-scroller {
+		flex: 0 1 auto;
+		text-align: center;
+	}
+}
 .rvmp .r-lgpick-badge {
 	display: grid;
 	place-items: center;
@@ -8638,7 +8652,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 .rvmp .r-shell--dex .r-grid-vp::before {
 	content: '';
 	position: absolute;
-	inset: -12px 0 -24px;
+	/* wider than the grid, so the tiles at the ends of a row have room before the panel's edge (the column count is measured off the grid) */
+	inset: -12px -8px -24px;
 	pointer-events: none;
 	border-radius: var(--r-lg);
 	background:
@@ -8816,7 +8831,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 .rvmp .r-dex-jump {
 	margin: var(--s2) 0 0;
 	padding: 0;
-	overflow: clip;
+	/* not clipped: the scroll arrows (r-tabs-arrow) sit half outside the bar and must not be cut; the row inside rounds its own corners */
+	overflow: visible;
 	border-radius: var(--r-md);
 	background: var(--surface);
 	border: 1px solid var(--border);
@@ -8825,6 +8841,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 .rvmp .r-dex-jump-row {
 	display: flex;
 	gap: 0;
+	border-radius: calc(var(--r-md) - 1px);
 }
 .rvmp .r-dex-jump-chip {
 	position: relative;
