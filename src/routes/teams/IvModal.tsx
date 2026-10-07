@@ -63,7 +63,7 @@ export const IvModal = ({
 
 	const text = fields.join('.');
 	const typedIvs = text.split('.').map((field) => (field === '' ? NaN : Number(field)));
-	const canApply = isSlotIvs(typedIvs) && text !== current && !applying;
+	const canApply = isSlotIvs(typedIvs) && !applying;
 	const apply = () => {
 		if (!isSlotIvs(typedIvs)) return;
 		setApplying(typedIvs);

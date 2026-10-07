@@ -74,7 +74,7 @@ export const LevelModal = ({
 	// Past what the Pokémon reaches without it, only a Best Buddy can go (one level further); beyond what even a Best Buddy
 	// reaches it is simply not a level (no message about Best Buddy).
 	const { valid, needsBuddy } = levelInputState({ typed, maxLevel, buddyMaxLevel });
-	const canApply = valid && field !== current && applying === null;
+	const canApply = valid && applying === null;
 	const apply = () => {
 		if (!valid) return;
 		setApplying(typed);
