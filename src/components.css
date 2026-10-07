@@ -4831,21 +4831,26 @@
 	position: relative;
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	padding: 4px 10px 4px 4px;
+	gap: 4px;
+	height: 34px;
+	padding: 0 10px 0 2px;
 	border-radius: var(--r-pill);
-	background: var(--surface-2);
-	border: 1px solid var(--border);
 	font-size: 12px;
 	font-weight: 700;
 	color: var(--text);
+	/* the design of the coverage panel's holes chips (.r-tm-holes), in green: it is kept, not a gap */
+	background: color-mix(in srgb, var(--pos) 12%, var(--surface-2));
+	border: 1px solid color-mix(in srgb, var(--pos) 30%, transparent);
 	transition:
 		border-color 0.14s ease,
 		background 0.14s ease;
 }
 .rvmp .r-md-wl-chip:not(:disabled):hover {
-	border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-	background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+	border-color: color-mix(in srgb, var(--pos) 55%, transparent);
+	background: color-mix(in srgb, var(--pos) 20%, var(--surface-2));
+}
+.rvmp .r-md-wl-chip:not(:disabled):hover .r-md-wl-name {
+	color: color-mix(in srgb, var(--tc), var(--text) var(--ink-mix));
 }
 .rvmp .r-md-wl-chip:not(:disabled) {
 	cursor: pointer;
@@ -4869,27 +4874,25 @@
 .rvmp .r-md-wl-sprite {
 	position: relative;
 	flex: none;
-	width: 24px;
-	height: 24px;
+	width: 30px;
+	height: 30px;
 	display: grid;
-	place-items: center;
-	border-radius: 50%;
-	background: var(--surface-3);
 }
 .rvmp .r-md-wl-sprite > img {
-	width: 20px;
-	height: 20px;
+	width: 30px;
+	height: 30px;
 	object-fit: contain;
 }
 .rvmp .r-md-wl-sprite > .r-shadow-mark {
 	position: absolute;
-	right: -3px;
-	bottom: -3px;
-	width: 12px;
-	height: 12px;
+	right: -2px;
+	bottom: -2px;
+	width: 14px;
+	height: 14px;
 }
 .rvmp .r-md-wl-name {
 	white-space: nowrap;
+	transition: color 0.12s ease;
 }
 .rvmp .r-md-wl-x {
 	font-size: 13px;

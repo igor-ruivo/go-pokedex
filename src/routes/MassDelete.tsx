@@ -1324,6 +1324,7 @@ const WhitelistChip = memo(function WhitelistChip({
 		<button
 			type='button'
 			className='r-md-wl-chip'
+			style={{ ['--tc' as string]: typeVar(p.types[0]) }}
 			data-locked={locked ? '' : undefined}
 			disabled={locked}
 			title={locked ? t('massDelete:whitelist.removeLockedTitle', { reason }) : t('massDelete:whitelist.remove')}
