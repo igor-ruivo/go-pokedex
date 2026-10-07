@@ -2571,6 +2571,23 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .h-lab {
 	box-sizing: border-box;
 	padding: 1px;
 }
+/* a stack (a count of the same candy, or the Stardust with its vials) takes the room of one 16px icon here, not the 26px it has elsewhere */
+.rvmp .h-day-bonuses .r-stardust-stack,
+.rvmp .h-day-bonuses .r-stardust-stack > img:first-child:not(.r-icon-copy) {
+	width: 16px;
+	height: 16px;
+}
+.rvmp .h-day-bonuses .r-stardust-stack .r-icon-copy {
+	top: calc(var(--y, 0) * 0.6px);
+	left: calc(var(--v, 0) * 6px / (var(--n, 2) - 1));
+	width: 10px;
+	height: 10px;
+}
+.rvmp .h-day-bonuses .r-stardust-stack .r-stardust-vial {
+	bottom: -1px;
+	left: calc(7px + var(--v, 0) * 3px);
+	height: 15px;
+}
 .rvmp .h-day-bonuses .r-milestone-bullet {
 	width: 13px;
 	height: 13px;
