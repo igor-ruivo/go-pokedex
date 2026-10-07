@@ -4,6 +4,10 @@ import { type PointerEvent as ReactPointerEvent, useRef } from 'react';
 const CLOSE_FRACTION = 0.3;
 const CLOSE_SPEED = 0.5;
 const SETTLE_MS = 180;
+/** A swipe starts only after this much sideways travel, and only if that is at least `SIDEWAYS_RATIO`× the vertical travel; more than `SCROLL_SLOP` px of vertical (or leftward) travel first hands the gesture to scrolling. */
+const START_DISTANCE = 14;
+const SIDEWAYS_RATIO = 3;
+const SCROLL_SLOP = 10;
 
 /**
  * Swipe a drawer that opens from the right edge to the right to close it. Only a touch drag counts, and only one that starts out
@@ -17,7 +21,7 @@ export const useSwipeToClose = <T extends HTMLElement>(onClose: () => void) => {
 
 	const backdrop = () => ref.current?.parentElement?.querySelector<HTMLElement>('.r-menu-backdrop') ?? null;
 
-	const finish = (event: ReactPointerEvent<T>) => {
+	const finish = (event: ReactPointerEvent<T>, cancelled = false) => {
 		const state = drag.current;
 		const panel = ref.current;
 		drag.current = null;
@@ -25,7 +29,7 @@ export const useSwipeToClose = <T extends HTMLElement>(onClose: () => void) => {
 		const moved = Math.max(0, event.clientX - state.x);
 		const speed = moved / Math.max(1, performance.now() - state.at);
 		const shade = backdrop();
-		const closing = moved > panel.offsetWidth * CLOSE_FRACTION || speed > CLOSE_SPEED;
+		const closing = !cancelled && (moved > panel.offsetWidth * CLOSE_FRACTION || speed > CLOSE_SPEED);
 		panel.style.transition = `transform ${SETTLE_MS}ms ease`;
 		panel.style.transform = closing ? 'translateX(100%)' : 'translateX(0)';
 		if (shade) {
@@ -47,8 +51,13 @@ export const useSwipeToClose = <T extends HTMLElement>(onClose: () => void) => {
 			const dx = event.clientX - state.x;
 			const dy = event.clientY - state.y;
 			if (!state.active) {
-				if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-				if (dx <= 0 || dx < Math.abs(dy) * 1.5) {
+				// scrolling wins: any real vertical movement (or a drag to the left) before the swipe has clearly started ends it
+				if (dy < -SCROLL_SLOP || dy > SCROLL_SLOP || dx < -SCROLL_SLOP) {
+					drag.current = null;
+					return;
+				}
+				if (dx < START_DISTANCE) return;
+				if (dx < Math.abs(dy) * SIDEWAYS_RATIO) {
 					drag.current = null;
 					return;
 				}
@@ -68,8 +77,9 @@ export const useSwipeToClose = <T extends HTMLElement>(onClose: () => void) => {
 			const shade = backdrop();
 			if (shade) shade.style.opacity = String(1 - Math.min(1, moved / panel.offsetWidth));
 		},
-		onPointerUp: finish,
-		onPointerCancel: finish,
+		onPointerUp: (event: ReactPointerEvent<T>) => finish(event),
+		// the browser took the gesture (it is a scroll after all): never close on it, just settle back
+		onPointerCancel: (event: ReactPointerEvent<T>) => finish(event, true),
 	};
 
 	return { ref, handlers };

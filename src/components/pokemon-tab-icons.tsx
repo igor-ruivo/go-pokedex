@@ -5,7 +5,7 @@ import { CombatIcon } from './CombatIcon';
 const TAB_ICON: Partial<Record<string, string>> = {
 	ranks: '/images/nav/rankings.webp',
 	moves: '/images/nav/moves.png',
-	counters: '/images/nav/counters.png',
+	counters: '/images/nav/counters.svg',
 	strings: '/images/nav/search-strings.svg',
 };
 // No dedicated image asset for this one — a small table glyph instead, in two
