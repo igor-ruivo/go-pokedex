@@ -11,6 +11,7 @@ import {
 	currentRocketsUrl,
 	eventsUrl,
 	maxMondaysUrl,
+	raidHoursUrl,
 	seasonUrl,
 	specialBossesUrl,
 	spotlightHoursUrl,
@@ -42,6 +43,15 @@ export interface ILeekduckMaxMonday {
 	rawUrl: string;
 }
 
+export interface ILeekduckRaidHour {
+	title: Record<GameLanguage, string>;
+	date: number;
+	dateEnd: number;
+	raids: Array<IEntry>;
+	imgUrl: string;
+	rawUrl: string;
+}
+
 export interface ILeekduckSpecialRaidBoss {
 	title: Record<GameLanguage, string>;
 	date: number;
@@ -56,6 +66,7 @@ interface CalendarData {
 	specialBosses: Array<ILeekduckSpecialRaidBoss>;
 	spotlightHours: Array<ILeekduckSpotlightHour>;
 	maxMondays: Array<ILeekduckMaxMonday>;
+	raidHours: Array<ILeekduckRaidHour>;
 	/** The Dynamax / Gigantamax bosses of Max Battles right now: each entry's `kind` is its form, its `tier` the Max Battle tier. */
 	currentMaxBattles: Array<IEntry>;
 	currentBosses: Array<IEntry>;
@@ -67,6 +78,7 @@ interface CalendarData {
 	specialBossesFetchCompleted: boolean;
 	spotlightHoursFetchCompleted: boolean;
 	maxMondaysFetchCompleted: boolean;
+	raidHoursFetchCompleted: boolean;
 	currentMaxBattlesFetchCompleted: boolean;
 	currentBossesFetchCompleted: boolean;
 	currentEggsFetchCompleted: boolean;
@@ -77,6 +89,7 @@ interface CalendarData {
 	errorLoadingSpecialBosses: string;
 	errorLoadingSpotlightHours: string;
 	errorLoadingMaxMondays: string;
+	errorLoadingRaidHours: string;
 	errorLoadingCurrentMaxBattles: string;
 	errorLoadingCurrentBosses: string;
 	errorLoadingCurrentEggs: string;
@@ -100,6 +113,7 @@ export const useCalendar = (): CalendarData => {
 	const specialBosses = useQuery(calendarQuery<Array<ILeekduckSpecialRaidBoss>>('special-bosses', specialBossesUrl));
 	const spotlightHours = useQuery(calendarQuery<Array<ILeekduckSpotlightHour>>('spotlight-hours', spotlightHoursUrl));
 	const maxMondays = useQuery(calendarQuery<Array<ILeekduckMaxMonday>>('max-mondays', maxMondaysUrl));
+	const raidHours = useQuery(calendarQuery<Array<ILeekduckRaidHour>>('raid-hours', raidHoursUrl));
 	const currentMaxBattles = useQuery(calendarQuery<Array<IEntry>>('current-max-battles', currentMaxBattlesUrl));
 	const currentBosses = useQuery(calendarQuery<Array<IEntry>>('current-bosses', currentBossesUrl));
 	const currentEggs = useQuery(calendarQuery<Array<IEntry>>('current-eggs', currentEggsUrl));
@@ -119,6 +133,7 @@ export const useCalendar = (): CalendarData => {
 			specialBosses: specialBosses.data ?? EMPTY,
 			spotlightHours: spotlightHours.data ?? EMPTY,
 			maxMondays: maxMondays.data ?? EMPTY,
+			raidHours: raidHours.data ?? EMPTY,
 			currentMaxBattles: currentMaxBattles.data ?? EMPTY,
 			currentBosses: currentBosses.data ?? EMPTY,
 			currentEggs: currentEggs.data ?? EMPTY,
@@ -129,6 +144,7 @@ export const useCalendar = (): CalendarData => {
 			specialBossesFetchCompleted: done(specialBosses),
 			spotlightHoursFetchCompleted: done(spotlightHours),
 			maxMondaysFetchCompleted: done(maxMondays),
+			raidHoursFetchCompleted: done(raidHours),
 			currentMaxBattlesFetchCompleted: done(currentMaxBattles),
 			currentBossesFetchCompleted: done(currentBosses),
 			currentEggsFetchCompleted: done(currentEggs),
@@ -139,6 +155,7 @@ export const useCalendar = (): CalendarData => {
 			errorLoadingSpecialBosses: err(specialBosses),
 			errorLoadingSpotlightHours: err(spotlightHours),
 			errorLoadingMaxMondays: err(maxMondays),
+			errorLoadingRaidHours: err(raidHours),
 			errorLoadingCurrentMaxBattles: err(currentMaxBattles),
 			errorLoadingCurrentBosses: err(currentBosses),
 			errorLoadingCurrentEggs: err(currentEggs),
@@ -160,6 +177,9 @@ export const useCalendar = (): CalendarData => {
 			maxMondays.data,
 			maxMondays.status,
 			maxMondays.error,
+			raidHours.data,
+			raidHours.status,
+			raidHours.error,
 			currentMaxBattles.data,
 			currentMaxBattles.status,
 			currentMaxBattles.error,

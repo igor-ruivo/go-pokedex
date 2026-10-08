@@ -28,6 +28,8 @@ export const specialBossesUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/leekduck-special-raid-bosses.json';
 export const spotlightHoursUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/spotlight-hours.json';
+export const raidHoursUrl =
+	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/raid-hours.json';
 export const maxMondaysUrl =
 	'https://raw.githubusercontent.com/igor-ruivo/dex-server/refs/heads/main/data/max-mondays.json';
 export const currentMaxBattlesUrl =

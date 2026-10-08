@@ -14,23 +14,6 @@ export interface EventHighlight {
 	more: number;
 }
 
-/** What an event brings, as a few species per kind: raids, spawns, research encounters, eggs. Empty kinds are left out. */
-export const eventHighlights = (
-	post: Partial<Pick<IPostEntry, HighlightKind>>,
-	isKnown: (speciesId: string) => boolean,
-	perKind = 3
-): Array<EventHighlight> => {
-	const out: Array<EventHighlight> = [];
-	for (const kind of HIGHLIGHT_KINDS) {
-		const distinct = [...new Set(((post[kind] ?? []) as ReadonlyArray<IEntry>).map((e) => e.speciesId))].filter(
-			isKnown
-		);
-		if (distinct.length === 0) continue;
-		out.push({ kind, ids: distinct.slice(0, perKind), more: Math.max(0, distinct.length - perKind) });
-	}
-	return out;
-};
-
 /**
  * The events the Home page features: the ones that have not ended, in the player's language, the live ones first (those ending
  * soonest first) and then the coming ones in order of their start. A season-long post is left out, it is not news; one with a
@@ -40,7 +23,6 @@ export const featuredEvents = (
 	posts: ReadonlyArray<IPostEntry>,
 	now: number,
 	gl: GameLanguage,
-	limit: number,
 	skipId?: string
 ): Array<IPostEntry> => {
 	const usable = posts.filter(
@@ -51,7 +33,7 @@ export const featuredEvents = (
 	const coming = usable
 		.filter((p) => p.startDate > now)
 		.sort((a, b) => a.startDate - b.startDate || Number(!!b.imageUrl) - Number(!!a.imageUrl));
-	return [...live, ...coming].slice(0, limit);
+	return [...live, ...coming];
 };
 
 /** The `count` best-ranked species of a league's ranking (rank 1 first). */
@@ -126,19 +108,21 @@ export const randomIndexOtherThan = (
  * The raid bosses of the Home page, in the order they fill the room: the higher tiers (5, Mega and any special kind) first, Shadow or not, so
  * they are always there; then tier 3, then tier 1, those two without their Shadow bosses.
  */
-const HOME_RAID_TIERS: ReadonlyArray<{ match: (kind?: string) => boolean; shadow: boolean }> = [
-	{ match: (k) => k !== '3' && k !== '1', shadow: true },
-	{ match: (k) => k === '3', shadow: false },
-	{ match: (k) => k === '1', shadow: false },
+const HOME_RAID_TIERS: ReadonlyArray<{ match: (kind?: string) => boolean }> = [
+	{ match: (k) => k !== '3' && k !== '1' },
+	{ match: (k) => k === '3' },
+	{ match: (k) => k === '1' },
 ];
 
-export const homeRaidEntries = <T extends Pick<IEntry, 'speciesId' | 'kind'>>(
-	entries: ReadonlyArray<T>,
-	isShadow: (speciesId: string) => boolean
-): Array<T> =>
-	HOME_RAID_TIERS.flatMap((tier) =>
-		entries.filter((e) => tier.match(e.kind) && (tier.shadow || !isShadow(e.speciesId)))
-	);
+export const homeRaidEntries = <T extends Pick<IEntry, 'speciesId' | 'kind'>>(entries: ReadonlyArray<T>): Array<T> =>
+	HOME_RAID_TIERS.flatMap((tier) => {
+		const matching = entries.filter((e) => tier.match(e.kind));
+
+		return [
+			...matching.filter((e) => !e.speciesId.includes('_shadow')),
+			...matching.filter((e) => e.speciesId.includes('_shadow')),
+		];
+	});
 
 const ROCKET_LEADERS = /giovanni|sierra|cliff|arlo/i;
 

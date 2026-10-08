@@ -146,8 +146,8 @@ export const CommunityDays = () => {
 	// the window only moves with the month, so the list is built from the first moment of the month, not from the ticking clock
 	const monthStart = Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1);
 	const days = useMemo(
-		() => specialDays(posts, spotlightHours.map(spotlightToPost), monthStart),
-		[posts, spotlightHours, monthStart]
+		() => specialDays(posts, spotlightHours.map(spotlightToPost), monthStart, now),
+		[posts, spotlightHours, monthStart, now]
 	);
 	const months = useMemo(() => {
 		const groups: Array<{ label: string; days: Array<SpecialDay> }> = [];

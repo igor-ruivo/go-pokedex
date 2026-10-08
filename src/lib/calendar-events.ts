@@ -1,7 +1,12 @@
 import { GameLanguage } from '../contexts/language-context';
 import type { IEntry, IPostEntry } from '../DTOs/INews';
 import type { IRichBlock } from '../DTOs/IRichText';
-import type { ILeekduckMaxMonday, ILeekduckSpecialRaidBoss, ILeekduckSpotlightHour } from '../queries/calendar';
+import type {
+	ILeekduckMaxMonday,
+	ILeekduckRaidHour,
+	ILeekduckSpecialRaidBoss,
+	ILeekduckSpotlightHour,
+} from '../queries/calendar';
 
 // LeekDuck (unlike pokemongo.com) has no per-locale URLs — every GameLanguage
 // key just repeats the one English page. Same `Object.values` (not
@@ -100,14 +105,25 @@ export const maxMondayToPost = (m: ILeekduckMaxMonday): IPostEntry => ({
 	source: 'leekduck',
 });
 
+export const RaidHourToPost = (s: ILeekduckRaidHour): IPostEntry => ({
+	...specialToPost(s),
+	imageUrl: s.imgUrl,
+	isRaidHour: true,
+});
+
 /** Everything LeekDuck adds to the Events feed as posts of its own: the Spotlight Hours and the Max Mondays. */
 export const leekduckPosts = (
 	spotlightHours: ReadonlyArray<ILeekduckSpotlightHour>,
-	maxMondays: ReadonlyArray<ILeekduckMaxMonday>
-): Array<IPostEntry> => [...spotlightHours.map(spotlightToPost), ...maxMondays.map(maxMondayToPost)];
+	maxMondays: ReadonlyArray<ILeekduckMaxMonday>,
+	raidHours: ReadonlyArray<ILeekduckRaidHour>
+): Array<IPostEntry> => [
+	...spotlightHours.map(spotlightToPost),
+	...maxMondays.map(maxMondayToPost),
+	...raidHours.map(RaidHourToPost),
+];
 
 /** Leekduck special-boss windows behave like tiny raid-only events. */
-export const specialToPost = (s: ILeekduckSpecialRaidBoss): IPostEntry => ({
+export const specialToPost = (s: ILeekduckSpecialRaidBoss | ILeekduckRaidHour): IPostEntry => ({
 	id: s.rawUrl,
 	url: everyLanguage(s.rawUrl),
 	title: s.title,

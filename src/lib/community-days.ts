@@ -23,22 +23,24 @@ const monthStart = (time: number, offset: number): number => {
 };
 
 /**
- * The Community Days and Spotlight Hours of this month and the next, in the order they start. Ones that are over are kept:
+ * The Community Days and Spotlight Hours of this month and the next, in the order they start. Ones that are over are not kept:
  * the months are what is shown, not what is still to come.
  */
 export const specialDays = (
 	events: ReadonlyArray<IPostEntry>,
 	spotlights: ReadonlyArray<IPostEntry>,
+	monthStartNow: number,
 	now: number
 ): Array<SpecialDay> => {
-	const from = monthStart(now, 0);
-	const to = monthStart(now, 2);
+	const from = monthStart(monthStartNow, 0);
+	const to = monthStart(monthStartNow, 2);
 	const days: Array<SpecialDay> = [
 		...events.filter(isCommunityDay).map((post): SpecialDay => ({ kind: 'community', post })),
 		...spotlights.map((post): SpecialDay => ({ kind: 'spotlight', post })),
 	];
 	return days
 		.filter(({ post }) => post.startDate >= from && post.startDate < to)
+		.filter(({ post }) => post.endDate > now)
 		.sort((a, b) => a.post.startDate - b.post.startDate || a.post.endDate - b.post.endDate);
 };
 

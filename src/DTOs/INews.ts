@@ -96,6 +96,7 @@ export interface IPostEntry {
 	source: 'pokemongo' | 'leekduck';
 	isRelevant?: boolean;
 	isSpotlight?: boolean;
+	isRaidHour?: boolean;
 }
 
 export interface IRaidEntry {

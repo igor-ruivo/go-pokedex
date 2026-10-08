@@ -589,11 +589,11 @@ const EventCard = ({
 			// no clipboard access (an insecure page, a blocked permission): the button simply does nothing
 		}
 	};
-	// A Spotlight Hour and a Max Monday (a day of Max Battles led by one Dynamax Pokémon) are shown the same way: their picture
+	// A Spotlight Hour, a Max Monday (a day of Max Battles led by one Dynamax Pokémon) and Raid Hours are shown the same way: their picture
 	// with the featured Pokémon on it.
 	const maxMons = post.maxBattles ?? [];
-	const isFeaturedDay = !!post.isSpotlight || (post.source === 'leekduck' && maxMons.length > 0);
-	const spotlightMons = post.isSpotlight ? post.wild : maxMons;
+	const isFeaturedDay = !!post.isSpotlight || !!post.isRaidHour || (post.source === 'leekduck' && maxMons.length > 0);
+	const spotlightMons = post.isSpotlight ? post.wild : post.isRaidHour ? post.raids : maxMons;
 	// The GO/shiny sprite assets carry a lot of built-in transparent padding
 	// (unlike the official artwork), so the shared sprite rule scales them
 	// up without changing this layout box.
@@ -769,9 +769,12 @@ const EventsTab = () => {
 		season,
 		spotlightHours,
 		maxMondays,
+		raidHours,
 		postsFetchCompleted,
 		seasonFetchCompleted,
 		spotlightHoursFetchCompleted,
+		maxMondaysFetchCompleted,
+		raidHoursFetchCompleted,
 	} = useCalendar();
 	// An event named in the link (?event=…, from the Home page) starts open, and the page scrolls to it once it is drawn.
 	const [searchParams] = useSearchParams();
@@ -783,7 +786,8 @@ const EventsTab = () => {
 	// opening an event closes the one that was open, which can be above it: the one just opened is kept where it was on the screen
 	const holdAnchor = useScrollAnchor(openId);
 
-	const ready = postsFetchCompleted && spotlightHoursFetchCompleted;
+	const ready =
+		postsFetchCompleted && spotlightHoursFetchCompleted && maxMondaysFetchCompleted && raidHoursFetchCompleted;
 
 	const list = useMemo(() => {
 		// Not a raw `Date.now()` — see nowAsEventTime()'s own doc comment.
@@ -794,7 +798,8 @@ const EventsTab = () => {
 		// pre-revamp site did the same (a Spotlight Hour is just a very short
 		// event), rather than giving them their own section.
 		// Max Mondays are the same kind of LeekDuck event (a day of Max Battles with its Dynamax Pokémon).
-		const allPosts = ready ? [...posts, ...leekduckPosts(spotlightHours, maxMondays)] : [];
+		// Same for Raid Hours.
+		const allPosts = ready ? [...posts, ...leekduckPosts(spotlightHours, maxMondays, raidHours)] : [];
 		// Same-day starts (the common case — most events go live at the same
 		// local hour) tie-break by shorter overall duration first, then
 		// alphabetically — never by exact start instant, or two events
@@ -815,7 +820,7 @@ const EventsTab = () => {
 				return a.title[gl].localeCompare(b.title[gl]);
 			});
 		return seasonFetchCompleted && season ? [season, ...events] : events;
-	}, [posts, spotlightHours, maxMondays, ready, season, seasonFetchCompleted, gl]);
+	}, [posts, spotlightHours, maxMondays, raidHours, ready, season, seasonFetchCompleted, gl]);
 
 	const dupeTitles = useMemo(() => {
 		const seen = new Map<string, number>();

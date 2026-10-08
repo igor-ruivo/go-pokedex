@@ -17,13 +17,12 @@ import { useLiveNow } from '../hooks/useLiveNow';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
 import { leekduckPosts, nowRaidEntries, spotlightToPost } from '../lib/calendar-events';
-import { isCommunityDay, isRaidHour } from '../lib/community-days';
+import { isCommunityDay } from '../lib/community-days';
 import { dateRange } from '../lib/format';
 import {
 	type ContentKind,
 	eggHeroes,
 	eventContentKinds,
-	eventHighlights,
 	featuredEvents,
 	type HeroPick,
 	homeRaidEntries,
@@ -89,7 +88,6 @@ const EventCard = ({
 	const { currentGameLanguage: gl, currentLanguage } = useLanguage();
 	const live = post.startDate <= now;
 	const title = post.title[gl] || post.subtitle[gl] || t('calendar:events.fallbackTitle');
-	const highlights = eventHighlights(post, (id) => !!pokemon[id], big ? 4 : 3);
 	// A Spotlight Hour is about its one bonus: the chip is that bonus's own picture (the two candies of a 2× Catch Candy…), when it has one.
 	const spotlightBonuses = post.isSpotlight
 		? (post.bonuses[GameLanguage.en] ?? [])
@@ -126,12 +124,13 @@ const EventCard = ({
 	// A Max Monday (a day of Max Battles led by Dynamax Pokémon) does the same: its Pokémon is a chip in the middle of its picture,
 	// with the Dynamax cloud.
 	const maxMonday = !spotlight && post.source === 'leekduck' && (post.maxBattles?.length ?? 0) > 0;
+	const raidHour = !!post.isRaidHour;
 	// The chip that only says what the kind of event already is is left out: spawns on a Spotlight Hour or a Community Day, the Max
 	// Battle symbol on a Max Monday, the raid egg on a Raid Hour.
 	const obvious = new Set<ContentKind>([
 		...(post.isSpotlight || isCommunityDay(post) ? (['wild'] as const) : []),
 		...(maxMonday ? (['maxBattles'] as const) : []),
-		...(isRaidHour(post) ? (['raids'] as const) : []),
+		...(raidHour ? (['raids'] as const) : []),
 	]);
 	const kinds = eventContentKinds(post).filter((kind) => !obvious.has(kind));
 	const maxForms = new Map((post.maxBattles ?? []).map((e) => [e.speciesId, e.kind]));
@@ -144,9 +143,9 @@ const EventCard = ({
 		? [...new Set(post.wild.map((e) => e.speciesId))].filter((id) => !!pokemon[id]).slice(0, 3)
 		: maxMonday
 			? [...maxForms.keys()].filter((id) => !!pokemon[id]).slice(0, 3)
-			: post.imageUrl
-				? []
-				: highlights.flatMap((h) => h.ids).slice(0, 3);
+			: raidHour
+				? [...new Set(post.raids.map((e) => e.speciesId))].filter((id) => !!pokemon[id]).slice(0, 3)
+				: [];
 	return (
 		<article
 			className='h-event'
@@ -154,13 +153,14 @@ const EventCard = ({
 			data-live={live ? '' : undefined}
 			data-spotlight={spotlight ? '' : undefined}
 			data-maxday={maxMonday ? '' : undefined}
+			data-raidhour={raidHour ? '' : undefined}
 		>
 			{post.imageUrl && <img className='h-event-img' src={post.imageUrl} alt='' loading='lazy' />}
 			{spriteIds.length > 0 && (
 				<span className='h-event-fallback' aria-hidden='true' data-count={spriteIds.length}>
 					{spriteIds.map((id) => {
 						if (!pokemon[id]) return null;
-						return spotlight || maxMonday ? (
+						return spotlight || maxMonday || raidHour ? (
 							<PokeAvatar key={id} pokemon={pokemon[id]} shiny={shinyIds.has(id)} maxForm={maxForms.get(id)} />
 						) : (
 							<AdornedSprite key={id} pokemon={pokemon[id]} shiny={shinyIds.has(id)} />
@@ -231,19 +231,25 @@ const Home = () => {
 	const calendar = useCalendar();
 
 	const events = useMemo(() => {
-		if (!calendar.postsFetchCompleted) return [];
+		if (!calendar.postsFetchCompleted || !calendar.seasonFetchCompleted) return [];
 		const all = [
 			...calendar.posts,
-			...(calendar.spotlightHoursFetchCompleted ? leekduckPosts(calendar.spotlightHours, calendar.maxMondays) : []),
+			...(calendar.spotlightHoursFetchCompleted && calendar.maxMondaysFetchCompleted && calendar.raidHoursFetchCompleted
+				? leekduckPosts(calendar.spotlightHours, calendar.maxMondays, calendar.raidHours)
+				: []),
 		];
-		return featuredEvents(all, now, gl, FEATURED_LIMIT, calendar.season?.id);
+		return featuredEvents(all, now, gl, calendar.season?.id);
 	}, [
 		calendar.posts,
 		calendar.spotlightHours,
 		calendar.maxMondays,
+		calendar.raidHours,
 		calendar.postsFetchCompleted,
 		calendar.spotlightHoursFetchCompleted,
+		calendar.maxMondaysFetchCompleted,
+		calendar.raidHoursFetchCompleted,
 		calendar.season,
+		calendar.seasonFetchCompleted,
 		now,
 		gl,
 	]);
@@ -270,7 +276,7 @@ const Home = () => {
 	const raidKey = nowRaids.map((e) => `${e.speciesId}:${e.kind}`).join();
 	const raids = useMemo(
 		() => {
-			const entries = homeRaidEntries(nowRaids, (id) => !!gamemasterPokemon[id]?.isShadow);
+			const entries = homeRaidEntries(nowRaids);
 			return {
 				hero: raidHero(entries, known, byRelevance, (id) => !!gamemasterPokemon[id]?.isShadow),
 				count: new Set(entries.filter((e) => known(e.speciesId)).map((e) => e.speciesId)).size,
@@ -293,6 +299,7 @@ const Home = () => {
 	);
 	const spawnIds = new Set(
 		events
+			.filter((e) => e.startDate <= now && e.endDate >= now)
 			.flatMap((e) => e.wild)
 			.filter((e) => known(e.speciesId))
 			.map((e) => e.speciesId)
@@ -319,17 +326,21 @@ const Home = () => {
 		shadow: boolean;
 		ready: boolean;
 	}> = [
-		{
-			to: R.calendar('spawns'),
-			icon: '/images/nav/spawns-grass.png',
-			title: t('calendar:tabs.spawns'),
-			hint: t('home:right.spawns'),
-			tint: 'var(--t-grass)',
-			hero: spawnHero(events, now, known),
-			more: Math.max(0, spawnIds.size - 1),
-			shadow: false,
-			ready: calendar.postsFetchCompleted,
-		},
+		...(spawnIds.size > 0
+			? [
+					{
+						to: R.calendar('spawns'),
+						icon: '/images/nav/spawns-grass.png',
+						title: t('calendar:tabs.spawns'),
+						hint: t('home:right.spawns'),
+						tint: 'var(--t-grass)',
+						hero: spawnHero(events, now, known),
+						more: Math.max(0, spawnIds.size - 1),
+						shadow: false,
+						ready: calendar.postsFetchCompleted,
+					},
+				]
+			: []),
 		{
 			to: R.calendar('bosses'),
 			icon: '/images/raids/tier-5.png',
@@ -469,7 +480,7 @@ const Home = () => {
 					<p className='r-muted'>{t('home:now.empty')}</p>
 				) : (
 					<div className='h-events'>
-						{events.map((post, i) => (
+						{events.slice(0, FEATURED_LIMIT).map((post, i) => (
 							<EventCard key={post.id} post={post} big={i === 0} pokemon={gamemasterPokemon} now={now} />
 						))}
 					</div>
@@ -482,7 +493,7 @@ const Home = () => {
 						<h2 id='h-right'>{t('home:right.title')}</h2>
 					</div>
 				</header>
-				<div className='h-tiles h-tiles--5'>
+				<div className={`h-tiles h-tiles--${spawnIds.size > 0 ? 5 : 4}`}>
 					{right.map((tile) => {
 						const hero = tile.ready && tile.hero ? heroPokemon(tile.hero) : undefined;
 						const extras = tile.ready

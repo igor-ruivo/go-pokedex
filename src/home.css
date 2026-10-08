@@ -341,29 +341,29 @@
 }
 /* a Spotlight Hour: its featured Pokémon is the round chip of the site's faces, centred on the promo picture's circle (where its
    question mark is) and small enough to sit inside the white disc */
-.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback {
+.rvmp .h-event:is([data-spotlight], [data-maxday], [data-raidhour]) .h-event-fallback {
 	gap: 2%;
 	padding: 0 0 4%;
 }
-.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback .h-avatar {
+.rvmp .h-event:is([data-spotlight], [data-maxday], [data-raidhour]) .h-event-fallback .h-avatar {
 	flex: none;
 	width: 28%;
 	height: auto;
 	aspect-ratio: 1;
 }
-.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback[data-count='2'] .h-avatar {
+.rvmp .h-event:is([data-spotlight], [data-maxday], [data-raidhour]) .h-event-fallback[data-count='2'] .h-avatar {
 	width: 22%;
 }
-.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback[data-count='3'] .h-avatar {
+.rvmp .h-event:is([data-spotlight], [data-maxday], [data-raidhour]) .h-event-fallback[data-count='3'] .h-avatar {
 	width: 18%;
 }
-.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback .h-avatar-shiny {
+.rvmp .h-event:is([data-spotlight], [data-maxday], [data-raidhour]) .h-event-fallback .h-avatar-shiny {
 	top: -6px;
 	right: -6px;
 	width: 22px;
 	height: 22px;
 }
-.rvmp .h-event:is([data-spotlight], [data-maxday]) .h-event-fallback .h-avatar > .r-shadow-mark {
+.rvmp .h-event:is([data-spotlight], [data-maxday], [data-raidhour]) .h-event-fallback .h-avatar > .r-shadow-mark {
 	width: 24px;
 	height: 24px;
 }

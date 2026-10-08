@@ -21,17 +21,21 @@ export const useUnseenEventsCount = (): number => {
 		season,
 		spotlightHours,
 		maxMondays,
+		raidHours,
 		postsFetchCompleted,
 		seasonFetchCompleted,
 		spotlightHoursFetchCompleted,
+		maxMondaysFetchCompleted,
+		raidHoursFetchCompleted,
 	} = useCalendar();
 	const { seenIds } = useSeenEvents();
 	const { currentGameLanguage: gl } = useLanguage();
 
 	return useMemo(() => {
-		if (!postsFetchCompleted || !spotlightHoursFetchCompleted) return 0;
+		if (!postsFetchCompleted || !spotlightHoursFetchCompleted || !maxMondaysFetchCompleted || !raidHoursFetchCompleted)
+			return 0;
 		const now = nowAsEventTime();
-		const events = [...posts, ...leekduckPosts(spotlightHours, maxMondays)].filter(
+		const events = [...posts, ...leekduckPosts(spotlightHours, maxMondays, raidHours)].filter(
 			(p) => p && p.endDate >= now && p.availableLocales.includes(gl)
 		);
 		const all = seasonFetchCompleted && season ? [season, ...events] : events;
@@ -40,8 +44,11 @@ export const useUnseenEventsCount = (): number => {
 		posts,
 		spotlightHours,
 		maxMondays,
+		raidHours,
 		postsFetchCompleted,
 		spotlightHoursFetchCompleted,
+		maxMondaysFetchCompleted,
+		raidHoursFetchCompleted,
 		seasonFetchCompleted,
 		season,
 		seenIds,

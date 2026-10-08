@@ -294,7 +294,11 @@
 /* ---- the round faces on a Spotlight Hour's picture: that picture is always light, so the chip keeps the light theme's look in
    both themes (these are the light values of the tokens the chip draws with) ----------------------------------------------- */
 .rvmp .h-event[data-spotlight] .h-avatar,
-.rvmp .r-event-spotlight .h-avatar {
+.rvmp .r-event-spotlight .h-avatar,
+.rvmp .h-event[data-maxday] .h-avatar,
+.rvmp .r-event-maxday .h-avatar,
+.rvmp .h-event[data-raidhour] .h-avatar,
+.rvmp .r-event-raidhour .h-avatar {
 	--surface: #ffffff;
 	--surface-2: #eef1f7;
 	--surface-3: #e1e6f0;
