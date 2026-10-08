@@ -5495,6 +5495,7 @@
 .rvmp .r-lgcups {
 	position: relative;
 	flex: none;
+	margin-left: -2px;
 }
 .rvmp .r-lgcups-btn {
 	display: flex;
@@ -9002,7 +9003,8 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 @media (min-width: 900px) {
 	.rvmp .r-raidtype {
 		display: grid;
-		grid-template-columns: 38px 64px minmax(0, 1fr) 170px;
+		grid-template-columns: 38px 64px minmax(0, 1fr) 38px 170px;
+		position: relative;
 		grid-template-rows: auto auto;
 		column-gap: var(--s4);
 		align-items: center;
@@ -9039,16 +9041,27 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 		font-size: 13px;
 		color: var(--text);
 	}
-	.rvmp .r-raidtype-tag,
-	.rvmp .r-raidtype-pips {
+	.rvmp .r-raidtype-tag {
+		position: absolute;
 		grid-column: 3;
 		grid-row: 2;
 		justify-self: start;
 		align-self: start;
 		margin-top: 4px;
 	}
+	.rvmp .r-raidtype-pips {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		margin: 0;
+		z-index: 1;
+		pointer-events: none;
+	}
 	.rvmp .r-raidtype-head em {
-		grid-column: 4;
+		grid-column: 5;
 		grid-row: 1;
 		justify-self: end;
 		align-self: end;
@@ -9057,7 +9070,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-shell--dex .r-
 	}
 	.rvmp .r-raidtype::after {
 		content: '';
-		grid-column: 4;
+		grid-column: 5;
 		grid-row: 2;
 		align-self: start;
 		margin-top: 6px;

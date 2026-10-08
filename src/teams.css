@@ -3389,6 +3389,7 @@
 	}
 	.rvmp .r-tm-leagues .r-lgcups {
 		position: static;
+		margin-left: 0;
 	}
 	.rvmp .r-tm-leagues .r-lgcups-pop {
 		width: min(300px, 100%);
