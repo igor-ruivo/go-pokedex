@@ -5,10 +5,8 @@ import { useDismiss } from '../../hooks/useDismiss';
 import { isSlotIvs, type SlotIvs } from '../../lib/team-analysis';
 
 /**
- * The IVs of one team member (attack, defense, HP — each 0 to 15), in a dialog like the Pokémon picker. The page is not
- * dimmed behind it. Edits stay local until Apply is pressed, and nothing about the league is checked while typing: IVs that
- * put the Pokémon over the CP cap are applied like any other, and the card shows its CP in red. The modal stays open until
- * the parent reflects the changed value. Putting the IVs (and level) back to the best is the card's own Reset.
+ * The IVs of one team member (attack, defense, HP, each 0 to 15).
+ * Edits stay local until Apply is pressed.
  */
 export const IvModal = ({
 	name,
@@ -16,11 +14,8 @@ export const IvModal = ({
 	onChange,
 	onClose,
 }: {
-	/** The Pokémon's name, for the title. */
 	name: string;
-	/** The IVs the member is rated with now. */
 	value: SlotIvs;
-	/** The new IVs. The parent decides the level: a picked one is kept, an untouched one follows the CP cap. */
 	onChange: (ivs: SlotIvs) => void;
 	onClose: () => void;
 }) => {
@@ -31,10 +26,12 @@ export const IvModal = ({
 		t('pokemonDetail:hero.stats.def'),
 		t('pokemonDetail:hero.stats.hp'),
 	];
+
 	const [fields, setFields] = useState(() => value.map(String));
 	const [applying, setApplying] = useState<SlotIvs | null>(null);
 	const closeRef = useRef(onClose);
 	closeRef.current = onClose;
+
 	const rootRef = useDismiss<HTMLDivElement>(
 		true,
 		() => {
@@ -42,7 +39,9 @@ export const IvModal = ({
 		},
 		{ dim: false }
 	);
+
 	const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+	const pendingZeroAdvance = useRef<number | null>(null);
 
 	useEffect(() => {
 		inputRefs.current[0]?.focus();
@@ -61,13 +60,17 @@ export const IvModal = ({
 		}
 	}, [applying, current]);
 
-	const text = fields.join('.');
-	const typedIvs = text.split('.').map((field) => (field === '' ? NaN : Number(field)));
+	const typedIvs = fields.map((field) => (field === '' ? NaN : Number(field)));
 	const canApply = isSlotIvs(typedIvs) && !applying;
+
 	const apply = () => {
 		if (!isSlotIvs(typedIvs)) return;
 		setApplying(typedIvs);
 		onChange(typedIvs);
+	};
+
+	const updateField = (index: number, digits: string) => {
+		setFields((prev) => prev.map((old, k) => (k === index ? digits : old)));
 	};
 
 	return (
@@ -100,11 +103,33 @@ export const IvModal = ({
 								maxLength={2}
 								placeholder='0–15'
 								onFocus={(e) => e.target.select()}
+								onBeforeInput={(e) => {
+									const nativeEvent = e.nativeEvent;
+
+									if (nativeEvent.data !== '0' || i >= 2) return;
+
+									const input = e.currentTarget;
+									const start = input.selectionStart ?? input.value.length;
+									const end = input.selectionEnd ?? start;
+									const nextValue = input.value.slice(0, start) + '0' + input.value.slice(end);
+
+									if (nextValue.length > 2) return;
+
+									e.preventDefault();
+									pendingZeroAdvance.current = i;
+									updateField(i, nextValue);
+
+									requestAnimationFrame(() => {
+										inputRefs.current[i + 1]?.focus({ preventScroll: true });
+									});
+								}}
 								onChange={(e) => {
-									const digits = e.target.value.replace(/\D/g, '').slice(0, 2);
-									setFields((prev) => prev.map((old, k) => (k === i ? digits : old)));
-									// Two digits (or a zero) can't be extended into a valid IV: on to the next stat — the focus moves, the page does not scroll.
-									if (digits.length === 2 || digits === '0') inputRefs.current[i + 1]?.focus({ preventScroll: true });
+									const digits = e.currentTarget.value.replace(/\D/g, '').slice(0, 2);
+									updateField(i, digits);
+
+									if (digits.length === 2 && i < 2) {
+										inputRefs.current[i + 1]?.focus({ preventScroll: true });
+									}
 								}}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter' && canApply) apply();
