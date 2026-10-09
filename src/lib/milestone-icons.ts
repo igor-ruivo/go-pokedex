@@ -30,7 +30,8 @@ export type BonusIconKey =
 	| 'remoteRaidPass'
 	| 'powerSpot'
 	| 'maxBattle'
-	| 'megaEnergy';
+	| 'megaEnergy'
+	| 'ultraBall';
 
 export const BONUS_ICON_URL: Record<BonusIconKey, string> = {
 	candy: '/images/bonuses/candy.png',
@@ -62,6 +63,7 @@ export const BONUS_ICON_URL: Record<BonusIconKey, string> = {
 	powerSpot: '/images/bonuses/power-spot.png',
 	maxBattle: '/images/nav/max-battle.webp',
 	megaEnergy: '/images/bonuses/mega-energy.png',
+	ultraBall: '/images/bonuses/ultra-ball.png',
 };
 
 /**
@@ -93,6 +95,7 @@ const RULES: ReadonlyArray<readonly [BonusIconKey, (text: string) => boolean]> =
 	['egg', (t) => /\beggs?\b/i.test(t.replace(/lucky eggs?/gi, '')) || /hatch/i.test(t)],
 	['xp', (t) => /\bxp\b/i.test(t)],
 	['stardust', (t) => /stardust/i.test(t)],
+	['ultraBall', (t) => /ultra ball/i.test(t)],
 ];
 
 /** The plain text of a block. */
