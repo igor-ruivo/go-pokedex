@@ -382,7 +382,7 @@ const Home = () => {
 			hint: t('home:right.eggs'),
 			tint: 'var(--t-psychic)',
 			hero: eggs.heroes[0],
-			extra: eggs.heroes.slice(1),
+			extra: spawnIds.size > 0 ? eggs.heroes.slice(1) : [],
 			more: Math.max(0, eggs.count - eggs.heroes.length),
 			shadow: false,
 			ready: calendar.currentEggsFetchCompleted,

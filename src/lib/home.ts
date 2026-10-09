@@ -273,7 +273,9 @@ export const eggHeroes = <T extends Pick<IEntry, 'speciesId' | 'shiny' | 'kind'>
 	const usable = entries.filter((e) => isKnown(e.speciesId));
 	const ten = usable.filter((e) => e.kind === '10');
 	const rest = usable.filter((e) => e.kind !== '10');
-	const ordered = ten.length > 0 ? [...sort(ten), ...sort(rest)] : orderedEggEntries(usable);
+	const ordered = (ten.length > 0 ? [...sort(ten), ...sort(rest)] : orderedEggEntries(usable)).sort(
+		(a, b) => Number(a.speciesId === 'dratini') - Number(b.speciesId === 'dratini')
+	); // dratini's sprite is too much to the right...
 	const seen = new Set<string>();
 	const picks: Array<HeroPick> = [];
 	for (const e of ordered) {
