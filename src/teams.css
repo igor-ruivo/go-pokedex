@@ -426,10 +426,20 @@
 	font: inherit;
 	font-size: 12px;
 	text-align: center;
+	box-sizing: border-box;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	outline: none;
 }
 .rvmp .r-tm-nickname:focus {
 	border-color: var(--text-dim);
 	outline: 2px solid color-mix(in srgb, var(--text) 22%, transparent);
+}
+.rvmp .r-tm-nickname:empty::before {
+	content: attr(data-placeholder);
+	color: var(--text-dim);
+	pointer-events: none;
 }
 .rvmp .r-tm-types {
 	display: flex;
