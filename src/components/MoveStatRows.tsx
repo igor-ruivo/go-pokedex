@@ -71,10 +71,10 @@ const Arena = ({
 				: []),
 		...(fast
 			? [
-					{ col: 'main', label: t('moveDetail:statLabels.dps'), value: moveDPS(m, arena, pokemon).toFixed(1) },
+					{ col: 'dps', label: t('moveDetail:statLabels.dps'), value: moveDPS(m, arena, pokemon).toFixed(1) },
 					{ col: 'eps', label: t('moveDetail:statLabels.eps'), value: moveEPS(m, arena).toFixed(1) },
 				]
-			: [{ col: 'main', label: t('moveDetail:statLabels.dpe'), value: moveDPE(m, arena, pokemon).toFixed(2) }]),
+			: [{ col: 'dpe', label: t('moveDetail:statLabels.dpe'), value: moveDPE(m, arena, pokemon).toFixed(2) }]),
 	];
 	return (
 		<div className='r-mv-arena' data-arena={arena}>
@@ -110,7 +110,7 @@ export const MoveFigures = ({
 /** The stat-stage effects of a charged move (PvP only) as small chips, and the chance it has to happen. */
 export const MoveBuffs = ({ m, gl }: { m: IGameMasterMove; gl: GameLanguage }) => {
 	const fx = m.isFast ? null : buffInfo(m.buffs, gl);
-	if (!fx) return null;
+	if (!fx || fx.badges.some((b) => !b.label)) return null;
 	return (
 		<p className='r-move-buff'>
 			{fx.badges.map((b) => (

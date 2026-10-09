@@ -8445,6 +8445,9 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	border-radius: var(--r-pill);
 	color: color-mix(in srgb, var(--t-fighting), var(--text) var(--ink-mix));
 	background: color-mix(in srgb, var(--t-fighting) 14%, transparent);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .rvmp .r-buff[data-good] {
 	color: color-mix(in srgb, var(--t-grass), var(--text) var(--ink-mix));
@@ -8457,6 +8460,11 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 .rvmp .r-buff-chance {
 	margin-left: 2px;
 	color: var(--text-dim);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	direction: rtl;
+	text-align: left;
 }
 .rvmp .r-buff-chance b {
 	color: var(--text);
@@ -8469,6 +8477,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	.rvmp .r-move--link {
 		display: grid;
 		grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
+		grid-template-rows: repeat(2, 1fr);
 		column-gap: var(--s4);
 		align-items: center;
 		padding: var(--s3) var(--s4);
@@ -8516,6 +8525,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	}
 
 	.rvmp .r-move--link .r-move-stats {
+		grid-row: 1;
 		grid-column: 2;
 		gap: 6px;
 		margin-top: 0;
@@ -8524,7 +8534,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	}
 	.rvmp .r-mv-arena {
 		display: grid;
-		grid-template-columns: 34px 86px 86px 92px 92px 92px;
+		grid-template-columns: 34px 1fr 1fr 1fr 1fr 1fr;
 		align-items: baseline;
 		gap: 0 var(--s2);
 	}
@@ -8554,23 +8564,26 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		grid-column: 5;
 		margin-left: 0;
 	}
+	.rvmp .r-mv-cell[data-col='dps'] {
+		justify-self: flex-end;
+	}
 	.rvmp .r-mv-cell[data-col='eps'] {
 		grid-column: 6;
+		justify-self: flex-end;
+	}
+	.rvmp .r-mv-cell[data-col='dpe'] {
+		grid-column: 6;
+		justify-self: flex-end;
 	}
 	/* the stat-stage effects float at the lower right end of the row (where a charged move has no EPS), so they never make it taller */
 	.rvmp .r-move--link {
 		position: relative;
 	}
 	.rvmp .r-move--link .r-move-buff {
-		position: absolute;
-		right: var(--s4);
-		bottom: var(--s3);
-		/* the effects and their chance fill lines from the right: one effect and its chance on one line, two effects on two (the chance after the last) */
-		flex-wrap: wrap;
-		justify-content: flex-end;
+		grid-row: 2;
 		align-items: center;
+		justify-content: flex-end;
 		gap: 3px 6px;
-		max-width: 250px;
 		margin: 0;
 		font-size: 11px;
 	}
