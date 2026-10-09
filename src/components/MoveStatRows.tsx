@@ -78,13 +78,23 @@ const Arena = ({
 	];
 	return (
 		<div className='r-mv-arena' data-arena={arena}>
-			<u>{arena === 'pve' ? t('pokemonDetail:moves.pve') : t('pokemonDetail:moves.pvp')}</u>
-			{cells.map((cell) => (
-				<span key={cell.col} className='r-mv-cell' data-col={cell.col}>
-					<i>{cell.label}</i>
-					<b>{cell.value}</b>
-				</span>
-			))}
+			<div className='r-mv-arena r-mv-left-container'>
+				<u>{arena === 'pve' ? t('pokemonDetail:moves.pve') : t('pokemonDetail:moves.pvp')}</u>
+				{cells.filter(c => !['DPS', 'EPS', 'DPE'].includes(c.label)).map((cell) => (
+					<span key={cell.col} className='r-mv-cell' data-col={cell.col}>
+						<i>{cell.label}</i>
+						<b>{cell.value}</b>
+					</span>
+				))}
+			</div>
+			<div className='r-mv-arena r-mv-right-container'>
+				{cells.filter(c => ['DPS', 'EPS', 'DPE'].includes(c.label)).map((cell) => (
+					<span key={cell.col} className='r-mv-cell' data-col={cell.col}>
+						<i>{cell.label}</i>
+						<b>{cell.value}</b>
+					</span>
+				))}
+			</div>
 		</div>
 	);
 };

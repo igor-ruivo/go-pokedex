@@ -8395,6 +8395,7 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 	gap: 6px 10px;
 	min-width: 0;
 	overflow: clip;
+	justify-content: space-between;
 }
 .rvmp .r-mv-arena u {
 	flex: none;
@@ -8531,12 +8532,6 @@ html:not([data-theme='light']) .rvmp:not([data-theme='light']) .r-hero-mini-lg i
 		margin-top: 0;
 		padding-left: var(--s4);
 		border-left: 1px solid var(--border);
-	}
-	.rvmp .r-mv-arena {
-		display: grid;
-		grid-template-columns: 34px 1fr 1fr 1fr 1fr 1fr;
-		align-items: baseline;
-		gap: 0 var(--s2);
 	}
 	.rvmp .r-mv-arena u {
 		margin: 0;
