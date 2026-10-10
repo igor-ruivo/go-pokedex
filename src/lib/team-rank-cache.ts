@@ -22,8 +22,7 @@ export const MAX_TOTAL_CHARS = 1_200_000;
 const KEY_PREFIX = 'go-pokedex:collection-team-rank:';
 
 /** Where one league's ranking is kept. Leagues never share an entry. */
-export const rankCacheKey = (league: TeamLeague): string =>
-	`${KEY_PREFIX}v${RANK_CACHE_VERSION}:${league}`;
+export const rankCacheKey = (league: TeamLeague): string => `${KEY_PREFIX}v${RANK_CACHE_VERSION}:${league}`;
 
 /** A team as it was stored: shaped like one, so a corrupted or hand-edited entry is not taken for a ranking. */
 export const isRankedTeam = (value: unknown): value is RankedTeam => {

@@ -282,5 +282,17 @@ export const usePageMeta = () => {
 		upsert('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
 		upsert('meta[property="og:image"]', { property: 'og:image', content: resolvedImage });
 		upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: resolvedImage });
-	}, [pathname, speciesId, moveId, typeParam, tabParam, queryType, queryKind, gamemasterPokemon, moves, pokemonReady, movesFetchCompleted]);
+	}, [
+		pathname,
+		speciesId,
+		moveId,
+		typeParam,
+		tabParam,
+		queryType,
+		queryKind,
+		gamemasterPokemon,
+		moves,
+		pokemonReady,
+		movesFetchCompleted,
+	]);
 };

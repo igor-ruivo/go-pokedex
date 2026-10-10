@@ -144,7 +144,7 @@ const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number): ILeagueIvBloc
 	return ivp.master;
 };
 
-const NO_POSITIONS = {};
+const NO_POSITIONS: Record<string, never> = {};
 
 const PokemonDetail = () => {
 	const { t } = useTranslation(['pokemonDetail', 'settings', 'components']);
@@ -440,15 +440,16 @@ const PokemonDetail = () => {
 		league,
 		positions: {},
 	});
-	const carousel = carouselState.league === league ? carouselState.positions : NO_POSITIONS;
-	const setCarousel = (update: Record<LeagueId, Cpos> | ((current: Record<LeagueId, Cpos>) => Record<LeagueId, Cpos>)) =>
+	const carousel: Record<LeagueId, Cpos> = carouselState.league === league ? carouselState.positions : NO_POSITIONS;
+	const setCarousel = (
+		update: Record<LeagueId, Cpos> | ((current: Record<LeagueId, Cpos>) => Record<LeagueId, Cpos>)
+	) =>
 		setCarouselState((state) => {
-			const current = state.league === league ? state.positions : NO_POSITIONS;
+			const current: Record<LeagueId, Cpos> = state.league === league ? state.positions : NO_POSITIONS;
 			return { league, positions: typeof update === 'function' ? update(current) : update };
 		});
-	// forget what the league left behind, so coming back to it starts from its best reachable
-	useEffect(() => setCarouselState({ league, positions: {} }), [league]);
-	useEffect(() => setCarouselState({ league, positions: {} }), [speciesId]);
+	// forget what the league (or the species) left behind, so coming back to it starts from its best reachable
+	useEffect(() => setCarouselState({ league, positions: {} }), [league, speciesId]);
 	// what plays the board's entrance: a row cycled by the user (its own count); the IVs picked play only the IV rank of every row; picking a league plays nothing
 	const [rowTick, setRowTick] = useState<Record<string, number>>({});
 	const [pickTick, setPickTick] = useState(0);
@@ -977,24 +978,22 @@ const PokemonDetail = () => {
 
 	// One row of the leaderboard. A function of its own so the rows before and after the "Additional leagues" heading come from the
 	// same code while the heading itself sits at one fixed place in the tree (see its use below).
-	const renderBoardRow = (
-		{
-			l,
-			ready,
-			member,
-			rank,
-			metric,
-			bestType,
-			total,
-			pIdx,
-			typeCount,
-			typeIdx,
-			rankChange,
-			ivSlice,
-			detailMoves,
-			detailLine,
-		}: (typeof boardRows)[number]
-	) => {
+	const renderBoardRow = ({
+		l,
+		ready,
+		member,
+		rank,
+		metric,
+		bestType,
+		total,
+		pIdx,
+		typeCount,
+		typeIdx,
+		rankChange,
+		ivSlice,
+		detailMoves,
+		detailLine,
+	}: (typeof boardRows)[number]) => {
 		const active = shownLeague === l.id;
 		return (
 			<Fragment key={l.id}>
@@ -1044,10 +1043,7 @@ const PokemonDetail = () => {
 									}
 								}}
 							>
-								<img
-									src={`/images/types/${bestType}.png`}
-									alt={gameTypeDisplayTranslator(bestType, gl) || bestType}
-								/>
+								<img src={`/images/types/${bestType}.png`} alt={gameTypeDisplayTranslator(bestType, gl) || bestType} />
 							</span>
 						)}
 					</span>
@@ -1079,7 +1075,10 @@ const PokemonDetail = () => {
 								</span>
 							)
 						) : (
-							<Swap className='r-board-ivrank' k={`${pickTick}|${rowTick[l.id] ?? 0}|${ivSlice ? `${ivSlice.rank}` : ''}`}>
+							<Swap
+								className='r-board-ivrank'
+								k={`${pickTick}|${rowTick[l.id] ?? 0}|${ivSlice ? `${ivSlice.rank}` : ''}`}
+							>
 								{ivSlice
 									? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%`
 									: !ready || ivLoading

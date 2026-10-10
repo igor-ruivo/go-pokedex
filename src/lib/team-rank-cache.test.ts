@@ -187,11 +187,11 @@ describe('the room the cache leaves the collection', () => {
 		store.set(rankCacheKey('ultra'), 'u'.repeat(chunk));
 		store.set(rankCacheKey('master'), 'm'.repeat(chunk - 50));
 		store.set('unrelated', 'z'.repeat(MAX_TOTAL_CHARS));
-		writeRankedCache('great', 'sig', big(300));
+		writeRankedCache('great', 'sig', [team()]);
 		expect(store.has(rankCacheKey('ultra'))).toBe(false);
 		expect(store.has(rankCacheKey('master'))).toBe(true);
 		expect(store.has('unrelated')).toBe(true);
-		expect(readRankedCache('great', 'sig')).toBeDefined();
+		expect(readRankedCache('great', 'sig')).toEqual([team()]);
 	});
 });
 
