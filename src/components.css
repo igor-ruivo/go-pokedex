@@ -5691,6 +5691,7 @@
 	   rather than reaching the page behind it) is what actually gives the
 	   "scroll always keeps working somewhere" behavior that was wanted. */
 	touch-action: pan-y;
+	overflow-anchor: none;
 }
 .rvmp .r-lgcheck-row {
 	display: flex;
@@ -5704,22 +5705,23 @@
 	font-weight: 600;
 	color: var(--text);
 	cursor: pointer;
+	/* a button (see LeagueVisibilityChecklist.tsx): reset to a plain row, and never selectable - a press-and-hold on a row's text
+	   selects nothing, whatever sits next to it */
+	width: 100%;
+	text-align: left;
+	background: none;
+	border: 0;
+	font-family: inherit;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
+	touch-action: manipulation;
 }
 .rvmp .r-lgcheck-row:hover {
 	background: var(--surface-2);
 }
-/* Same custom checkbox look as `.r-ss-toggle`'s `.r-ss-box` (Search Strings'
-   own toggles) — visually hide the real, still-keyboard-operable checkbox
-   and drive the fake box off its `:checked` state instead. */
-.rvmp .r-lgcheck-row .r-lgcheck-input {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	clip: rect(0 0 0 0);
-	white-space: nowrap;
-}
-.rvmp .r-lgcheck-row:has(.r-lgcheck-input:focus-visible) .r-ss-box {
+/* Same custom checkbox look as `.r-ss-toggle`'s `.r-ss-box` (Search Strings' own toggles), driven by the row's `data-on`. */
+.rvmp .r-lgcheck-row:focus-visible .r-ss-box {
 	outline: 2px solid var(--accent);
 	outline-offset: 2px;
 }
@@ -5727,7 +5729,7 @@
 	flex: 0 0 18px;
 	max-width: 18px;
 }
-.rvmp .r-lgcheck-row .r-lgcheck-input:checked ~ .r-ss-box {
+.rvmp .r-lgcheck-row[data-on] .r-ss-box {
 	background: var(--accent);
 	border-color: var(--accent);
 	box-shadow: inset 0 0 0 3px var(--surface);
@@ -6503,7 +6505,7 @@
 	opacity: 0.6;
 }
 .rvmp .r-ctr-toggle:disabled[data-on] .r-ss-box,
-.rvmp .r-lgcheck-row[data-locked] .r-lgcheck-input:checked ~ .r-ss-box {
+.rvmp .r-lgcheck-row[data-locked] .r-ss-box {
 	background: var(--text-faint);
 	border-color: var(--text-faint);
 	box-shadow: inset 0 0 0 3px var(--surface);

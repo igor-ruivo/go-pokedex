@@ -166,6 +166,7 @@ const PokemonDetail = () => {
 		isExtraLeagueVisible: isExtraLeagueTicked,
 		setExtraLeagueVisible,
 	} = useVisibleLeagues();
+	const [leagueMenuOpen, setLeagueMenuOpen] = useState(false);
 
 	// This species' own ranked entry, for whichever league is active — the
 	// static three read `rankLists` (positional), any rotating/custom cup
@@ -431,9 +432,6 @@ const PokemonDetail = () => {
 	// string keys, same as every JS object always used under the hood even
 	// back when this looked like a numeric index.
 	type Cpos = { p: number; t: number; m: Record<string, number> };
-	// Held here, not in the menu: the heading is drawn at a different place in the tree once the first extra league is shown
-	// (and again when the last is hidden), which remounts the menu — its open state must outlive that.
-	const [leagueMenuOpen, setLeagueMenuOpen] = useState(false);
 	// The positions belong to the league they were made in: the moment another league is the picked one they are gone, in the very
 	// render that shows it. (Clearing them in the click handler instead can commit a render before `?lg=` has changed: the league
 	// still shown would then jump to its best reachable, and everything computed from it - the IV spread and the ranks - with it,
@@ -977,6 +975,168 @@ const PokemonDetail = () => {
 	);
 	if (settled) for (const row of computedBoardRows) heldRowsRef.current[row.l.id] = row;
 
+	// One row of the leaderboard. A function of its own so the rows before and after the "Additional leagues" heading come from the
+	// same code while the heading itself sits at one fixed place in the tree (see its use below).
+	const renderBoardRow = (
+		{
+			l,
+			ready,
+			member,
+			rank,
+			metric,
+			bestType,
+			total,
+			pIdx,
+			typeCount,
+			typeIdx,
+			rankChange,
+			ivSlice,
+			detailMoves,
+			detailLine,
+		}: (typeof boardRows)[number]
+	) => {
+		const active = shownLeague === l.id;
+		return (
+			<Fragment key={l.id}>
+				{/* Great/Ultra/Master/Raid are always present and always first (see
+			    `LEAGUES`' own construction) — this marks where the player's own
+			    add-on (rotating/custom cup) leagues start, so the two
+			    groups read as visually distinct rather than one undifferentiated
+			    list that happens to grow. */}
+				{/* PvP leagues end and Raids begin — a plain, unlabeled rule (Raid is
+			    a different kind of ranking, not another league). */}
+				{l.id === 'raid' && <div className='r-board-divider' data-plain='' role='separator' />}
+				<div
+					className='r-board-row'
+					role='button'
+					tabIndex={0}
+					aria-pressed={active}
+					data-active={active}
+					style={{ ['--lg' as string]: l.cssVar }}
+					onClick={() => cycleRow(l.id)}
+					onKeyDown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							cycleRow(l.id);
+						}
+					}}
+				>
+					{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events --
+				   touch-only convenience wrapper enlarging `.r-board-type`'s tap target; that
+				   button (and the row itself) already carry full keyboard support, so this
+				   isn't a new independent interactive element to make focusable. */}
+					<span className='r-board-sprite' onClick={bestType ? (e) => spriteClick(e, l.id) : undefined}>
+						{member?.isShadow && <ShadowMark />}
+						{member && <SpriteImg pokemon={member} loading='lazy' />}
+						{bestType && (
+							<span
+								className='r-board-type'
+								role='button'
+								tabIndex={0}
+								title={t('pokemonDetail:board.nextTypeTitle', {
+									type: gameTypeDisplayTranslator(bestType, gl) || bestType,
+								})}
+								onClick={(e) => cycleType(e, l.id)}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										cycleType(e as unknown as ReactMouseEvent, l.id);
+									}
+								}}
+							>
+								<img
+									src={`/images/types/${bestType}.png`}
+									alt={gameTypeDisplayTranslator(bestType, gl) || bestType}
+								/>
+							</span>
+						)}
+					</span>
+					<span className='r-board-id'>
+						<span className='r-board-lg'>
+							{l.full}
+							{bestType &&
+								` · ${t('pokemonDetail:board.attackersSuffix', {
+									type: gameTypeDisplayTranslator(bestType, gl) || bestType,
+								})}`}
+						</span>
+						<Swap className='r-board-name' k={String(rowTick[l.id] ?? 0)}>
+							{member
+								? cleanName(member.speciesName)
+								: ready
+									? t('pokemonDetail:board.notRanked')
+									: t('pokemonDetail:board.loading')}
+						</Swap>
+						{/* Raid has no IV-rank concept at all (its `rank` above is
+				    already the raid-attacker rank, not an IV percentile), so it
+				    never generates one here — the type-carousel pips (which
+				    league rows have no equivalent of) take this slot instead. */}
+						{l.id === 'raid' ? (
+							typeCount > 1 && (
+								<span className='r-board-typepips' aria-hidden='true'>
+									{Array.from({ length: typeCount }, (_, i) => (
+										<i key={i} data-on={i === typeIdx} />
+									))}
+								</span>
+							)
+						) : (
+							<Swap className='r-board-ivrank' k={`${pickTick}|${rowTick[l.id] ?? 0}|${ivSlice ? `${ivSlice.rank}` : ''}`}>
+								{ivSlice
+									? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%`
+									: !ready || ivLoading
+										? '…'
+										: '—'}
+							</Swap>
+						)}
+					</span>
+					{detailMoves.length > 0 && (
+						<Swap className='r-board-detail' k={String(rowTick[l.id] ?? 0)}>
+							<span className='r-board-moves'>
+								{detailMoves.map((mv, mi) => (
+									<Fragment key={`${mv}-${mi}`}>
+										{mi > 0 && <i>+</i>}
+										<Link
+											to={R.move(mv)}
+											className='r-board-mv'
+											style={{ ['--tc' as string]: `var(--t-${(moves[mv]?.type ?? '').toLowerCase()})` }}
+											onClick={(ev) => ev.stopPropagation()}
+											onKeyDown={(ev) => ev.stopPropagation()}
+										>
+											{moveName(mv)}
+										</Link>
+									</Fragment>
+								))}
+							</span>
+							{detailLine && <span className='r-board-detail-line'>{detailLine}</span>}
+						</Swap>
+					)}
+					<span className='r-board-fig'>
+						<Swap className='r-board-rank' k={String(rowTick[l.id] ?? 0)}>
+							{rank != null ? ordinal(rank, currentLanguage) : '—'}
+							{l.id !== 'raid' && rankChange !== 0 && (
+								<span className='r-delta' data-dir={rankChange > 0 ? 'up' : 'down'}>
+									{rankChange > 0 ? '▲' : '▼'}
+									{Math.abs(rankChange)}
+								</span>
+							)}
+						</Swap>
+						{metric && (
+							<Swap className='r-board-metric' k={String(rowTick[l.id] ?? 0)}>
+								{metric}
+							</Swap>
+						)}
+					</span>
+					{total > 1 && (
+						<span className='r-board-pips' aria-hidden='true'>
+							{Array.from({ length: total }, (_, i) => (
+								<i key={i} data-on={i === pIdx} />
+							))}
+						</span>
+					)}
+				</div>
+			</Fragment>
+		);
+	};
+
 	return (
 		<div className='r-shell'>
 			{/* ---- collapsed hero: sits under the app bar (search stays put) — the sprite
@@ -1182,177 +1342,14 @@ const PokemonDetail = () => {
 						{/* ---- LEADERBOARD — best reachable per league; click active row to cycle ---- */}
 						<div className='r-section-h'>{t('pokemonDetail:board.sectionHeading')}</div>
 						<div className='r-board'>
-							{boardRows.map(
-								(
-									{
-										l,
-										ready,
-										member,
-										rank,
-										metric,
-										bestType,
-										total,
-										pIdx,
-										typeCount,
-										typeIdx,
-										rankChange,
-										ivSlice,
-										detailMoves,
-										detailLine,
-									},
-									rowIdx
-								) => {
-									const active = shownLeague === l.id;
-									return (
-										<Fragment key={l.id}>
-											{/* Great/Ultra/Master/Raid are always present and always first (see
-										    `LEAGUES`' own construction) — this marks where the player's own
-										    add-on (rotating/custom cup) leagues start, so the two
-										    groups read as visually distinct rather than one undifferentiated
-										    list that happens to grow. */}
-											{/* PvP leagues end and Raids begin — a plain, unlabeled rule (Raid is
-										    a different kind of ranking, not another league). */}
-											{l.id === 'raid' && <div className='r-board-divider' data-plain='' role='separator' />}
-											{rowIdx === STATIC_LEAGUE_COUNT && extraLeaguesHead}
-											<div
-												className='r-board-row'
-												role='button'
-												tabIndex={0}
-												aria-pressed={active}
-												data-active={active}
-												style={{ ['--lg' as string]: l.cssVar }}
-												onClick={() => cycleRow(l.id)}
-												onKeyDown={(e) => {
-													if (e.key === 'Enter' || e.key === ' ') {
-														e.preventDefault();
-														cycleRow(l.id);
-													}
-												}}
-											>
-												{/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events --
-											   touch-only convenience wrapper enlarging `.r-board-type`'s tap target; that
-											   button (and the row itself) already carry full keyboard support, so this
-											   isn't a new independent interactive element to make focusable. */}
-												<span className='r-board-sprite' onClick={bestType ? (e) => spriteClick(e, l.id) : undefined}>
-													{member?.isShadow && <ShadowMark />}
-													{member && <SpriteImg pokemon={member} loading='lazy' />}
-													{bestType && (
-														<span
-															className='r-board-type'
-															role='button'
-															tabIndex={0}
-															title={t('pokemonDetail:board.nextTypeTitle', {
-																type: gameTypeDisplayTranslator(bestType, gl) || bestType,
-															})}
-															onClick={(e) => cycleType(e, l.id)}
-															onKeyDown={(e) => {
-																if (e.key === 'Enter' || e.key === ' ') {
-																	e.preventDefault();
-																	cycleType(e as unknown as ReactMouseEvent, l.id);
-																}
-															}}
-														>
-															<img
-																src={`/images/types/${bestType}.png`}
-																alt={gameTypeDisplayTranslator(bestType, gl) || bestType}
-															/>
-														</span>
-													)}
-												</span>
-												<span className='r-board-id'>
-													<span className='r-board-lg'>
-														{l.full}
-														{bestType &&
-															` · ${t('pokemonDetail:board.attackersSuffix', {
-																type: gameTypeDisplayTranslator(bestType, gl) || bestType,
-															})}`}
-													</span>
-													<Swap className='r-board-name' k={String(rowTick[l.id] ?? 0)}>
-														{member
-															? cleanName(member.speciesName)
-															: ready
-																? t('pokemonDetail:board.notRanked')
-																: t('pokemonDetail:board.loading')}
-													</Swap>
-													{/* Raid has no IV-rank concept at all (its `rank` above is
-											    already the raid-attacker rank, not an IV percentile), so it
-											    never generates one here — the type-carousel pips (which
-											    league rows have no equivalent of) take this slot instead. */}
-													{l.id === 'raid' ? (
-														typeCount > 1 && (
-															<span className='r-board-typepips' aria-hidden='true'>
-																{Array.from({ length: typeCount }, (_, i) => (
-																	<i key={i} data-on={i === typeIdx} />
-																))}
-															</span>
-														)
-													) : (
-														<Swap className='r-board-ivrank' k={`${pickTick}|${rowTick[l.id] ?? 0}|${ivSlice ? `${ivSlice.rank}` : ''}`}>
-															{ivSlice
-																? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%`
-																: !ready || ivLoading
-																	? '…'
-																	: '—'}
-														</Swap>
-													)}
-												</span>
-												{detailMoves.length > 0 && (
-													<Swap className='r-board-detail' k={String(rowTick[l.id] ?? 0)}>
-														<span className='r-board-moves'>
-															{detailMoves.map((mv, mi) => (
-																<Fragment key={`${mv}-${mi}`}>
-																	{mi > 0 && <i>+</i>}
-																	<Link
-																		to={R.move(mv)}
-																		className='r-board-mv'
-																		style={{ ['--tc' as string]: `var(--t-${(moves[mv]?.type ?? '').toLowerCase()})` }}
-																		onClick={(ev) => ev.stopPropagation()}
-																		onKeyDown={(ev) => ev.stopPropagation()}
-																	>
-																		{moveName(mv)}
-																	</Link>
-																</Fragment>
-															))}
-														</span>
-														{detailLine && <span className='r-board-detail-line'>{detailLine}</span>}
-													</Swap>
-												)}
-												<span className='r-board-fig'>
-													<Swap className='r-board-rank' k={String(rowTick[l.id] ?? 0)}>
-														{rank != null ? ordinal(rank, currentLanguage) : '—'}
-														{l.id !== 'raid' && rankChange !== 0 && (
-															<span className='r-delta' data-dir={rankChange > 0 ? 'up' : 'down'}>
-																{rankChange > 0 ? '▲' : '▼'}
-																{Math.abs(rankChange)}
-															</span>
-														)}
-													</Swap>
-													{metric && (
-														<Swap className='r-board-metric' k={String(rowTick[l.id] ?? 0)}>
-															{metric}
-														</Swap>
-													)}
-												</span>
-												{total > 1 && (
-													<span className='r-board-pips' aria-hidden='true'>
-														{Array.from({ length: total }, (_, i) => (
-															<i key={i} data-on={i === pIdx} />
-														))}
-													</span>
-												)}
-											</div>
-										</Fragment>
-									);
-								}
-							)}
-							{/* No add-on league visible (the default): the heading still renders, so the
-						    visibility button stays reachable. */}
+							{boardRows.slice(0, STATIC_LEAGUE_COUNT).map(renderBoardRow)}
+							{/* The "Additional leagues" heading is one element at one place whatever cups are ticked: it used to hang off the first cup's row
+							    (and, with none ticked, sit at the end), so ticking a cup remounted the menu while its list was being tapped. */}
+							{extraLeaguesHead}
 							{boardRows.length <= STATIC_LEAGUE_COUNT && (
-								<>
-									{extraLeaguesHead}
-									<p className='r-muted r-board-extra-empty'>{t('pokemonDetail:board.noExtraLeagues')}</p>
-								</>
+								<p className='r-muted r-board-extra-empty'>{t('pokemonDetail:board.noExtraLeagues')}</p>
 							)}
+							{boardRows.slice(STATIC_LEAGUE_COUNT).map(renderBoardRow)}
 						</div>
 
 						<div ref={lowerRef}>
