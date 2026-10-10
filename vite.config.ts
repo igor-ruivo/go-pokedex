@@ -7,6 +7,18 @@ import hoverMedia from './scripts/postcss-hover-media.mjs';
 // outDir 'dist', publicDir 'public', …) is kept as-is; this only adds the
 // PWA plugin on top.
 export default defineConfig({
+	build: {
+		rollupOptions: {
+			output: {
+				// The entry script and stylesheet keep one name across builds. The pages saved by scripts/prerender.mjs (for
+				// crawlers, refreshed rarely) point at them, so they always start the current app; everything else is hashed.
+				entryFileNames: 'assets/app.js',
+				chunkFileNames: 'assets/[name]-[hash].js',
+				assetFileNames: (asset) =>
+					(asset.names ?? []).includes('index.css') ? 'assets/app.css' : 'assets/[name]-[hash][extname]',
+			},
+		},
+	},
 	// every `:hover` style applies only where there is a hover (a mouse, a trackpad), never on a touch screen
 	css: { postcss: { plugins: [hoverMedia()] } },
 	plugins: [

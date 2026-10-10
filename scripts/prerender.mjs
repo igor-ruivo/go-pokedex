@@ -1,9 +1,11 @@
-// Prerenders every Pokémon and move page to real static HTML at deploy time
-// (see package.json's `deploy` script — this deliberately does NOT run as
-// part of `build`, which CI uses on every push/PR: it's slow (a few minutes)
-// and depends on fetching external data, neither of which CI should pay for).
+// Saves every Pokémon and move page as real static HTML, for crawlers and link-preview bots (run by `deploy:snapshots`,
+// every so often — a normal `deploy` neither runs it nor touches the saved pages; they point at the stable `assets/app.js`
+// and `app.css`, so they always start the current app, which is also all a person ever sees of them: index.html hides
+// the saved markup until the app has rendered. See package.json's `deploy` script. This deliberately does NOT run as part of
+// `build`, which CI uses on every push/PR: it is slow (a few minutes) and depends on fetching external data, neither of which
+// CI should pay for.
 //
-// `--static-only` (the `deploy:lite` script) renders only the fixed pages (home, rankings, teams, calendar…) and the
+// `--static-only` (the `deploy:snapshots:static` script) renders only the fixed pages (home, rankings, teams, calendar…) and the
 // sitemap, and leaves every /pokemon/<id> and /move/<id> page alone — those are ~1,900 of the ~1,930 pages and nearly
 // all of the time.
 //
@@ -392,6 +394,9 @@ const applyMeta = (page, { url, title, description, image, jsonLd }) =>
 /** Takes the render's own theme out of the markup (the <html> one and the app root's), so the page is not dark for a light visitor until its scripts run. */
 const withoutTheme = (html) =>
 	html
+		.replace(/(<html\b[^>]*?)\sdata-booting=""/, '$1')
+		// the chunks of this build are hashed and change with every deploy; the saved page only needs the (stable) entry
+		.replace(/<link\b[^>]*\brel="modulepreload"[^>]*>\s*/g, '')
 		.replace(/(<html\b[^>]*?)\sdata-theme="[^"]*"/, '$1')
 		.replace(/(<html\b[^>]*?)\sstyle="color-scheme:[^"]*"/, '$1')
 		.replace(/(<div class="rvmp"[^>]*?)\sdata-theme="[^"]*"/, '$1');

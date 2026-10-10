@@ -93,6 +93,23 @@
             user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
         -->
 		<link rel="manifest" href="/manifest.json" />
+		<style>
+			/* The saved pages (scripts/prerender.mjs) are for crawlers: whoever runs scripts sees the app's own render, never them. */
+			html[data-booting] #root {
+				visibility: hidden;
+			}
+		</style>
+		<script>
+			// Only with scripts on, so a crawler that reads the HTML without running them still gets the content.
+			// The app lifts it after its first render (src/index.tsx); the timeout is a safety net if its scripts never load.
+			(function () {
+				var root = document.documentElement;
+				root.setAttribute('data-booting', '');
+				setTimeout(function () {
+					root.removeAttribute('data-booting');
+				}, 8000);
+			})();
+		</script>
 		<title>GO Pokédex</title>
 	</head>
 	<body>
