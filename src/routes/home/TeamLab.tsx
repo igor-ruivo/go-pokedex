@@ -133,7 +133,9 @@ const TeamView = ({
  */
 const FeaturedTeam = () => {
 	const ranking = useTeamRanking();
-	const { gamemasterPokemon } = usePokemon();
+	const { gamemasterPokemon, fetchCompleted: pokemonFetchCompleted } = usePokemon();
+	// a team draws its Pokémon and names its league (a cup only by its definition), so none is picked before both are in
+	const { fetchCompleted: leaguesFetchCompleted } = useLeagueDefinitions();
 	const urlOf = useCallback(
 		(speciesId: string) => {
 			const pokemon = gamemasterPokemon[speciesId];
@@ -142,7 +144,7 @@ const FeaturedTeam = () => {
 		[gamemasterPokemon]
 	);
 	const { current, leaving, held, cycle, barDelay, rotated, holdProps } = useRotator<Pick>({
-		ready: !!ranking.data,
+		ready: !!ranking.data && pokemonFetchCompleted && leaguesFetchCompleted,
 		pick: (not) => pickTeam(ranking.data, not),
 		preload: (pick) => preloadImages(pick.team.members.map((m) => urlOf(m.speciesId)).filter((u): u is string => !!u)),
 	});

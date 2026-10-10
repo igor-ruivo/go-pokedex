@@ -242,8 +242,9 @@ export const PokemonSpotlight = () => {
 	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
 	const { raidMetric } = useRaidMetric();
-	const { leagues } = useLeagueDefinitions();
-	const loaded = fetchCompleted && pvpFetchCompleted && raidDPSFetchCompleted;
+	const { leagues, fetchCompleted: leaguesFetchCompleted } = useLeagueDefinitions();
+	// the cups count towards a line's best league, so the pool is not built before their definitions are in
+	const loaded = fetchCompleted && pvpFetchCompleted && raidDPSFetchCompleted && leaguesFetchCompleted;
 
 	const lines = useMemo(() => evolutionLines(gamemasterPokemon), [gamemasterPokemon]);
 

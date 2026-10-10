@@ -21,7 +21,7 @@ interface CustomLeaguePickerProps {
 export const CustomLeaguePicker = ({ activeId, onSelect }: CustomLeaguePickerProps) => {
 	const { t } = useTranslation(['common']);
 	const { currentGameLanguage: gl } = useLanguage();
-	const { leagues } = useLeagueDefinitions();
+	const { leagues, fetchCompleted } = useLeagueDefinitions();
 	const [open, setOpen] = useState(false);
 	const rootRef = useDismiss<HTMLDivElement>(open, () => setOpen(false));
 
@@ -78,7 +78,11 @@ export const CustomLeaguePicker = ({ activeId, onSelect }: CustomLeaguePickerPro
 
 			{open && (
 				<div className='r-lgcups-pop' role='listbox' aria-label={t('common:customLeagues.ariaLabel')}>
-					{cups.length === 0 ? (
+					{!fetchCompleted ? (
+						<div className='r-lgcups-empty'>
+							<span className='r-spinner r-spinner--sm' aria-hidden='true' />
+						</div>
+					) : cups.length === 0 ? (
 						<p className='r-lgcups-empty'>{t('common:customLeagues.empty')}</p>
 					) : (
 						cups.map((l) => {

@@ -142,6 +142,8 @@ export const CommunityDays = () => {
 	const { t } = useTranslation(['home']);
 	const { currentLanguage } = useLanguage();
 	const { posts, spotlightHours, postsFetchCompleted, spotlightHoursFetchCompleted } = useCalendar();
+	// the rows draw the species a day features, so none appear before the species data is in
+	const { fetchCompleted: pokemonFetchCompleted } = usePokemon();
 	const now = useLiveNow();
 	// the window only moves with the month, so the list is built from the first moment of the month, not from the ticking clock
 	const monthStart = Date.UTC(new Date(now).getUTCFullYear(), new Date(now).getUTCMonth(), 1);
@@ -160,7 +162,7 @@ export const CommunityDays = () => {
 		return groups;
 	}, [days, currentLanguage]);
 
-	if (!postsFetchCompleted || !spotlightHoursFetchCompleted || days.length === 0) return null;
+	if (!postsFetchCompleted || !spotlightHoursFetchCompleted || !pokemonFetchCompleted || days.length === 0) return null;
 
 	return (
 		<section className='h-section' aria-labelledby='h-days'>

@@ -162,7 +162,7 @@ const Rankings = () => {
 	const POKEDEX_SORTS = usePokedexSorts(t, gl);
 	const PVP_SORTS = usePvpSorts(t);
 	const { league, type: typeParam } = useParams();
-	const { leagues } = useLeagueDefinitions();
+	const { leagues, fetchCompleted: leaguesFetchCompleted } = useLeagueDefinitions();
 	const mode: RankingMode = league && isKnownRankingMode(league, leagues) ? league : 'pokedex';
 	const navigate = useNavigate();
 	const [params, setParams] = useSearchParams();
@@ -212,7 +212,7 @@ const Rankings = () => {
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
 	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
-	const { moves } = useMoves();
+	const { moves, movesFetchCompleted } = useMoves();
 	const isPvpLeagueMode = mode !== 'pokedex' && mode !== 'raid';
 	// `pickerItems` below reads `gameTranslator()` inside a `useMemo` — per
 	// `useGameTranslationsData`'s own doc comment, that memo needs the
@@ -434,8 +434,15 @@ const Rankings = () => {
 		return grouped;
 	}, [cols, isPokedex, rows, sortKey]);
 	const rowCount = gridRows.length;
+	// a rotating cup in the URL is only a known mode once the league definitions are in; until then `mode` fell back to the Pokédex
+	const cupPending = !!league && !isKnownRankingMode(league, []) && !leaguesFetchCompleted;
 	const loading =
-		!fetchCompleted || (mode === 'raid' && !raidDPSFetchCompleted) || (isPvpLeagueMode && !pvpFetchCompleted);
+		cupPending ||
+		!fetchCompleted ||
+		(mode === 'raid' && !raidDPSFetchCompleted) ||
+		(isPvpLeagueMode && !pvpFetchCompleted) ||
+		// the rows of a league or raid ranking name their moves
+		(!isPokedex && !movesFetchCompleted);
 	const [readySprites, setReadySprites] = useState<{
 		rows: ReadonlyArray<PokedexGridRow>;
 		cols: number;

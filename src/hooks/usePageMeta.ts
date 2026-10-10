@@ -206,10 +206,14 @@ export const usePageMeta = () => {
 	const [searchParams] = useSearchParams();
 	const queryType = searchParams.get('type');
 	const queryKind = searchParams.get('kind');
-	const { gamemasterPokemon } = usePokemon();
-	const { moves } = useMoves();
+	const { gamemasterPokemon, fetchCompleted: pokemonReady } = usePokemon();
+	const { moves, movesFetchCompleted } = useMoves();
 
 	useEffect(() => {
+		// A Pokémon's or move's own title is only known once its data is in: until then the tags stay as they were (the prerendered
+		// ones), not reset to the generic site title for the moment it takes the data to arrive.
+		if (speciesId && pathname.startsWith('/pokemon/') && !pokemonReady) return;
+		if (moveId && pathname.startsWith('/move/') && !movesFetchCompleted) return;
 		const origin = window.location.origin;
 		let title = 'GO Pokédex';
 		let description =
@@ -278,5 +282,5 @@ export const usePageMeta = () => {
 		upsert('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
 		upsert('meta[property="og:image"]', { property: 'og:image', content: resolvedImage });
 		upsert('meta[name="twitter:image"]', { name: 'twitter:image', content: resolvedImage });
-	}, [pathname, speciesId, moveId, typeParam, tabParam, queryType, queryKind, gamemasterPokemon, moves]);
+	}, [pathname, speciesId, moveId, typeParam, tabParam, queryType, queryKind, gamemasterPokemon, moves, pokemonReady, movesFetchCompleted]);
 };

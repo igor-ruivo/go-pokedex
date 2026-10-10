@@ -1366,6 +1366,8 @@ const MassDelete = () => {
 	const { movesFetchCompleted } = useMoves();
 	const { rankLists, extraRankLists, pvpFetchCompleted } = usePvp();
 	const { raidDPS, raidDPSFetchCompleted } = useRaidRanker();
+	// the cups' own caps and cut-offs go into the strings, so they are not built before the definitions are in
+	const { fetchCompleted: leaguesFetchCompleted } = useLeagueDefinitions();
 
 	// This page depends on five separate dex-server feeds (gamemaster, moves,
 	// PvP rankings, raid DPS, species-search-metadata) — three of them
@@ -1396,7 +1398,8 @@ const MassDelete = () => {
 		speciesSearchMetadataFetchCompleted &&
 		movesFetchCompleted &&
 		pvpFetchCompleted &&
-		raidDPSFetchCompleted;
+		raidDPSFetchCompleted &&
+		leaguesFetchCompleted;
 
 	// Splitting `ready` off into its own gate component (see above) only helps
 	// while a same-session visit is genuinely still WAITING on one of the five

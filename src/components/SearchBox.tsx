@@ -35,7 +35,7 @@ export const SearchBox = () => {
 	const { pathname } = useLocation();
 	const [params, setParams] = useSearchParams();
 	const { gamemasterPokemon, fetchCompleted } = usePokemon();
-	const { moves } = useMoves();
+	const { moves, movesFetchCompleted } = useMoves();
 	const { currentGameLanguage: gl } = useLanguage();
 
 	const [q, setQ] = useState(params.get('q') ?? '');
@@ -109,7 +109,8 @@ export const SearchBox = () => {
 
 	const { results, splitAt } = useMemo<{ results: Array<Hit>; splitAt: number }>(() => {
 		const term = suggestionQuery.trim().toLowerCase();
-		if (!term) return { results: [], splitAt: 0 };
+		// both lists or none: Pokémon first and the moves popping in below them a moment later would reshuffle the dropdown
+		if (!term || !fetchCompleted || !movesFetchCompleted) return { results: [], splitAt: 0 };
 		const rank = (label: string) => {
 			const name = label.toLowerCase();
 			return name.startsWith(term) ? 0 : name.includes(term) ? 1 : -1;
@@ -138,7 +139,7 @@ export const SearchBox = () => {
 		const pkHits = pk.slice(0, MAX_PER_GROUP).map((x): Hit => ({ kind: 'pokemon', p: x.p }));
 		const mvHits = mv.slice(0, MAX_PER_GROUP).map((x): Hit => ({ kind: 'move', m: x.m }));
 		return { results: [...pkHits, ...mvHits], splitAt: pkHits.length && mvHits.length ? pkHits.length : 0 };
-	}, [suggestionQuery, allPokemon, allMoves, gl]);
+	}, [suggestionQuery, allPokemon, allMoves, gl, fetchCompleted, movesFetchCompleted]);
 
 	useEffect(() => setActive(0), [suggestionQuery]);
 

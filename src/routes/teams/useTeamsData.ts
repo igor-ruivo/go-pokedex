@@ -16,6 +16,7 @@ import {
 	type TeamSlotDescriptor,
 	threatPart,
 } from '../../lib/team-analysis';
+import { useMoves } from '../../queries/moves';
 import { usePokemon } from '../../queries/pokemon';
 import { usePvp } from '../../queries/pvp';
 import { useTeamBuilderData } from '../../queries/teams';
@@ -39,11 +40,14 @@ const EMPTY_RANKS: Record<string, IRankedPokemon> = {};
 export const useTeamsData = (league: TeamLeague): TeamsData => {
 	const { gamemasterPokemon, fetchCompleted: gmDone, errors: gmErrors } = usePokemon();
 	const { rankLists, extraRankLists, pvpFetchCompleted, pvpErrors } = usePvp();
+	const { movesFetchCompleted } = useMoves();
 	const builderQuery = useTeamBuilderData();
 
 	const rankList =
 		(league in STATIC_RANK_INDEX ? rankLists[STATIC_RANK_INDEX[league]] : extraRankLists[league]) ?? EMPTY_RANKS;
-	const ready = gmDone && pvpFetchCompleted && builderQuery.isSuccess && Object.keys(rankList).length > 0;
+	// the moves are read for their names and figures on every card, so a team is not drawn with raw move ids first
+	const ready =
+		gmDone && pvpFetchCompleted && movesFetchCompleted && builderQuery.isSuccess && Object.keys(rankList).length > 0;
 
 	const failed = !!gmErrors || !!pvpErrors || builderQuery.isError;
 

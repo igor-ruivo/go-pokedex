@@ -776,6 +776,8 @@ const EventsTab = () => {
 		maxMondaysFetchCompleted,
 		raidHoursFetchCompleted,
 	} = useCalendar();
+	// the cards name and draw the Pokémon an event features, so they wait for the species data too
+	const { fetchCompleted: pokemonFetchCompleted } = usePokemon();
 	// An event named in the link (?event=…, from the Home page) starts open, and the page scrolls to it once it is drawn.
 	const [searchParams] = useSearchParams();
 	const linkedId = searchParams.get('event');
@@ -787,7 +789,11 @@ const EventsTab = () => {
 	const holdAnchor = useScrollAnchor(openId);
 
 	const ready =
-		postsFetchCompleted && spotlightHoursFetchCompleted && maxMondaysFetchCompleted && raidHoursFetchCompleted;
+		postsFetchCompleted &&
+		spotlightHoursFetchCompleted &&
+		maxMondaysFetchCompleted &&
+		raidHoursFetchCompleted &&
+		pokemonFetchCompleted;
 
 	const list = useMemo(() => {
 		// Not a raw `Date.now()` — see nowAsEventTime()'s own doc comment.

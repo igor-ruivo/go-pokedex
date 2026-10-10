@@ -16,10 +16,18 @@ import { extraLeagues, useLeagueDefinitions } from '../queries/leagues';
 export const LeagueVisibilityChecklist = ({ lockedId }: { lockedId?: string | null | undefined }) => {
 	const { t } = useTranslation(['common']);
 	const { currentGameLanguage: gl } = useLanguage();
-	const { leagues } = useLeagueDefinitions();
+	const { leagues, fetchCompleted } = useLeagueDefinitions();
 	const { visibleExtraLeagueIds, toggleExtraLeague } = useVisibleLeagues();
 
 	const cups = extraLeagues(leagues);
+	// "no cups" is a statement about the definitions, so it waits for them
+	if (!fetchCompleted) {
+		return (
+			<div className='r-lgcheck-empty'>
+				<span className='r-spinner r-spinner--sm' aria-hidden='true' />
+			</div>
+		);
+	}
 	if (cups.length === 0) {
 		return <p className='r-lgcheck-empty'>{t('common:leagueFilter.empty')}</p>;
 	}
