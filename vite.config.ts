@@ -35,6 +35,11 @@ export default defineConfig({
 				// worker (and its fresh precache) automatically, no user
 				// interaction needed.
 				cleanupOutdatedCaches: true,
+				// No SPA navigation fallback: the precached index.html is the *prerendered home page*
+				// (scripts/prerender.mjs overwrites it), so serving it for /calendar/events etc. flashed
+				// the home page on reload until React mounted. Navigations go to the network instead,
+				// which already has a prerendered file per page (or 404.html's redirect for the rest).
+				navigateFallback: null,
 			},
 		}),
 	],
