@@ -157,7 +157,11 @@ export const PokemonCollection = ({
 			}),
 		[league, combinations, data.rankList, data.gamemaster, data.builder]
 	);
-	const cachedRankedTeams = data.ready ? readRankedCache(league, rankingSignature) : undefined;
+	// read once per fingerprint (a parse of up to ~600 KB), not on every render
+	const cachedRankedTeams = useMemo(
+		() => (data.ready ? readRankedCache(league, rankingSignature) : undefined),
+		[data.ready, league, rankingSignature]
+	);
 	// what the manual evaluation was asked for: the combinations, the Charged Moves in a fixed order (rearranging them is no change)
 	const evaluationKey = useMemo(() => JSON.stringify(canonicalCombinations(combinations)), [combinations]);
 	const requiresManualEvaluation = saved.length > AUTO_EVALUATION_LIMIT && combinations.length > 0;
