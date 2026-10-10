@@ -1290,7 +1290,7 @@ const PokemonDetail = () => {
 														<Swap className='r-board-ivrank' k={`${pickTick}|${rowTick[l.id] ?? 0}|${ivSlice ? `${ivSlice.rank}` : ''}`}>
 															{ivSlice
 																? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%`
-																: ivLoading
+																: !ready || ivLoading
 																	? '…'
 																	: '—'}
 														</Swap>
