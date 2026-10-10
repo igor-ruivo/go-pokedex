@@ -1,4 +1,4 @@
-import { type ReactNode, type RefObject, useEffect } from 'react';
+import type { ReactNode, RefObject } from 'react';
 
 import { PokemonSearchInput } from './PokemonSearchInput';
 
@@ -29,10 +29,6 @@ export const PokemonPickerModal = ({
 	tools?: ReactNode;
 	children: ReactNode;
 }) => {
-	useEffect(() => {
-		inputRef?.current?.focus();
-	}, [inputRef]);
-
 	return (
 		<div className='r-tm-picker-backdrop'>
 			<div className='r-tm-picker' role='dialog' aria-modal='true' aria-label={title} ref={dialogRef}>
