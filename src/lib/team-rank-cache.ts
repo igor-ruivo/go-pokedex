@@ -5,15 +5,25 @@ import { canonicalMoveset, type TeamSlotDescriptor } from './team-analysis';
 
 /**
  * The ranking of the teams made from a player's saved Pokémon is worked out in the browser (a simulation per team), so it is
- * kept in the session's storage — one entry per league — along with the fingerprint of everything it was computed from
- * (the saved Pokémon and their stand-ins, the league's ranking, the species, PvPoke's data). Coming back to the page with the
- * same fingerprint shows the teams straight away; any change in the inputs, or in the format (`RANK_CACHE_VERSION`), is a miss.
+ * kept in local storage (never the session's) — one entry per league — along with the fingerprint of everything it was computed
+ * from (the saved Pokémon and their stand-ins, the league's ranking, the species, PvPoke's data). Coming back to the page with
+ * the same fingerprint shows the teams straight away; any change in the inputs, or in the format (`RANK_CACHE_VERSION`), is a miss.
+ *
+ * Local storage is shared with the "My Pokémon" collection itself and holds ~5 MB per origin, so the cache is only ever a guest
+ * in it: an entry over `MAX_ENTRY_CHARS`, or one that would take the cache past `MAX_TOTAL_CHARS`, is not kept (other leagues'
+ * entries are dropped first — they are only a cache), so it can never crowd out the collection.
  */
 export const RANK_CACHE_VERSION = 3;
 
+/** The most characters one league's entry may take. */
+export const MAX_ENTRY_CHARS = 600_000;
+/** The most characters every league's entry together may take. */
+export const MAX_TOTAL_CHARS = 1_200_000;
+const KEY_PREFIX = 'go-pokedex:collection-team-rank:';
+
 /** Where one league's ranking is kept. Leagues never share an entry. */
 export const rankCacheKey = (league: TeamLeague): string =>
-	`go-pokedex:collection-team-rank:v${RANK_CACHE_VERSION}:${league}`;
+	`${KEY_PREFIX}v${RANK_CACHE_VERSION}:${league}`;
 
 /** A team as it was stored: shaped like one, so a corrupted or hand-edited entry is not taken for a ranking. */
 export const isRankedTeam = (value: unknown): value is RankedTeam => {
@@ -44,7 +54,7 @@ export const isRankedTeam = (value: unknown): value is RankedTeam => {
 /** The ranking kept for `league`, if it was computed from exactly `signature`; otherwise `undefined`. */
 export const readRankedCache = (league: TeamLeague, signature: string): Array<RankedTeam> | undefined => {
 	try {
-		const raw = window.sessionStorage.getItem(rankCacheKey(league));
+		const raw = window.localStorage.getItem(rankCacheKey(league));
 		if (!raw) return undefined;
 		const cached: unknown = JSON.parse(raw);
 		if (typeof cached !== 'object' || cached === null) return undefined;
@@ -57,12 +67,42 @@ export const readRankedCache = (league: TeamLeague, signature: string): Array<Ra
 	}
 };
 
-/** Keeps the ranking of `league`, replacing what it had. Storage that is unavailable or full only means no cache. */
+/** Every key of the cache in `storage` (any league, any format version) other than `keep`. */
+const otherCacheKeys = (storage: Storage, keep: string): Array<string> => {
+	const keys: Array<string> = [];
+	for (let i = 0; i < storage.length; i++) {
+		const key = storage.key(i);
+		if (key !== null && key !== keep && key.startsWith(KEY_PREFIX)) keys.push(key);
+	}
+	return keys;
+};
+
+/**
+ * Keeps the ranking of `league`, replacing what it had. Storage that is unavailable or full, or a ranking too big to be a
+ * guest in it (see `MAX_ENTRY_CHARS`), only means no cache — and then what the league had is dropped too, never left stale.
+ */
 export const writeRankedCache = (league: TeamLeague, signature: string, teams: ReadonlyArray<RankedTeam>): void => {
 	try {
-		window.sessionStorage.setItem(rankCacheKey(league), JSON.stringify({ signature, teams }));
+		const storage = window.localStorage;
+		const key = rankCacheKey(league);
+		const payload = JSON.stringify({ signature, teams });
+		if (payload.length > MAX_ENTRY_CHARS) {
+			storage.removeItem(key);
+			return;
+		}
+		// make room: other leagues' (and older versions') entries go, largest first, until this one fits the total
+		const others = otherCacheKeys(storage, key)
+			.map((other) => ({ other, size: storage.getItem(other)?.length ?? 0 }))
+			.sort((x, y) => y.size - x.size);
+		let total = payload.length + others.reduce((sum, { size }) => sum + size, 0);
+		for (const { other, size } of others) {
+			if (total <= MAX_TOTAL_CHARS) break;
+			storage.removeItem(other);
+			total -= size;
+		}
+		storage.setItem(key, payload);
 	} catch {
-		// Session storage may be unavailable or full; the in-memory ranking still works.
+		// Local storage may be unavailable or full; the in-memory ranking still works.
 	}
 };
 
