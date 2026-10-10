@@ -41,7 +41,6 @@ export const IvModal = ({
 	);
 
 	const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-	const pendingZeroAdvance = useRef<number | null>(null);
 
 	useEffect(() => {
 		inputRefs.current[0]?.focus();
@@ -103,33 +102,13 @@ export const IvModal = ({
 								maxLength={2}
 								placeholder='0–15'
 								onFocus={(e) => e.target.select()}
-								onBeforeInput={(e) => {
-									const nativeEvent = e.nativeEvent;
-
-									if (nativeEvent.data !== '0' || i >= 2) return;
-
-									const input = e.currentTarget;
-									const start = input.selectionStart ?? input.value.length;
-									const end = input.selectionEnd ?? start;
-									const nextValue = input.value.slice(0, start) + '0' + input.value.slice(end);
-
-									if (nextValue.length > 2) return;
-
-									e.preventDefault();
-									pendingZeroAdvance.current = i;
-									updateField(i, nextValue);
-
-									requestAnimationFrame(() => {
-										inputRefs.current[i + 1]?.focus({ preventScroll: true });
-									});
-								}}
-								onChange={(e) => {
+								onChange={(e) => updateField(i, e.currentTarget.value.replace(/\D/g, '').slice(0, 2))}
+								// Two digits (or a zero) can't be extended into a valid IV: on to the next stat — the focus moves, the page does not
+								// scroll. Read on `input`, not `change`: typing a 0 over a selected 0 leaves the value as it was, and React raises no
+								// change for that.
+								onInput={(e) => {
 									const digits = e.currentTarget.value.replace(/\D/g, '').slice(0, 2);
-									updateField(i, digits);
-
-									if (digits.length === 2 && i < 2) {
-										inputRefs.current[i + 1]?.focus({ preventScroll: true });
-									}
+									if (digits.length === 2 || digits === '0') inputRefs.current[i + 1]?.focus({ preventScroll: true });
 								}}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter' && canApply) apply();

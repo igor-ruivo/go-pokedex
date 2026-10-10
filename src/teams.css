@@ -3401,13 +3401,14 @@
 	left: 0;
 	right: auto;
 }
+.rvmp .r-tm-leagues .r-lgcups {
+	position: static;
+	margin-left: 0;
+}
+
 @media (max-width: 679px) {
 	.rvmp .r-tm-leagues .r-lgpick-row {
 		position: relative;
-	}
-	.rvmp .r-tm-leagues .r-lgcups {
-		position: static;
-		margin-left: 0;
 	}
 	.rvmp .r-tm-leagues .r-lgcups-pop {
 		width: min(300px, 100%);

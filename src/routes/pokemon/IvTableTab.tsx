@@ -61,7 +61,12 @@ const IvTableTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; ac
 			next[idx] = digits.slice(0, 2);
 			return next;
 		});
-		// Two digits (or a zero) can't be extended into a valid IV: on to the next stat. The focus moves, the page does not scroll.
+	};
+
+	// Two digits (or a zero) can't be extended into a valid IV: on to the next stat. The focus moves, the page does not scroll.
+	// Read on `input`, not `change`: typing a 0 over a selected 0 leaves the value as it was, and React raises no change for that.
+	const advanceFrom = (idx: number, raw: string) => {
+		const digits = raw.replace(/\D/g, '');
 		if (digits.length === 2 || digits === '0') inputRefs.current[idx + 1]?.focus({ preventScroll: true });
 	};
 
@@ -137,6 +142,7 @@ const IvTableTab = ({ pokemon, activeLeague }: { pokemon: IGamemasterPokemon; ac
 							}}
 							value={fields[i] ?? ''}
 							onChange={(e) => setField(i, e.target.value)}
+							onInput={(e) => advanceFrom(i, e.currentTarget.value)}
 							inputMode='numeric'
 							pattern='[0-9]*'
 							maxLength={2}

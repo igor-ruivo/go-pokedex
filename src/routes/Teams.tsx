@@ -49,11 +49,13 @@ const Teams = () => {
 	const navigate = useNavigate();
 	// Views of the same page: the builder, ranked teams, favorites, and the user's league collection.
 	const { pathname } = useLocation();
-	const tab: 'builder' | 'top' | 'favorites' | 'collection' = pathname.endsWith('/top')
+	// (the host serves the prerendered pages with a trailing slash: /teams/collection/)
+	const route = pathname.replace(/\/+$/, '');
+	const tab: 'builder' | 'top' | 'favorites' | 'collection' = route.endsWith('/top')
 		? 'top'
-		: pathname.endsWith('/favorites')
+		: route.endsWith('/favorites')
 			? 'favorites'
-			: pathname.endsWith('/collection')
+			: route.endsWith('/collection')
 				? 'collection'
 				: 'builder';
 	const gameTranslations = useGameTranslationsData();
