@@ -22,6 +22,7 @@ import { useRaidMetric } from '../contexts/raid-metric-context';
 import { useVisibleLeagues } from '../contexts/visible-leagues-context';
 import type { ActiveLeague } from '../DTOs/IActiveLeague';
 import type { IGamemasterPokemon } from '../DTOs/IGamemasterPokemon';
+import { isStaticLeague } from '../DTOs/ILeagueDefinition';
 import type { IIvPercents, ILeagueIvBlock } from '../DTOs/ivs';
 import { useBestIvs } from '../hooks/useBestIvs';
 import useComputeIVs from '../hooks/useComputeIVs';
@@ -157,7 +158,7 @@ const PokemonDetail = () => {
 	// setting Rankings' raid tab and the Counters tab use.
 	const { raidMetric } = useRaidMetric();
 	const { maxLevel, maxLevelIndex } = useBestBuddy();
-	const { leagues } = useLeagueDefinitions();
+	const { leagues, fetchCompleted: leaguesFetchCompleted } = useLeagueDefinitions();
 	const {
 		isExtraLeagueVisibleDeferred: isExtraLeagueVisible,
 		isExtraLeagueVisible: isExtraLeagueTicked,
@@ -328,7 +329,7 @@ const PokemonDetail = () => {
 
 	// IV percents for the whole reachable family — the "Your IVs" card shows whichever
 	// member the league carousel is on (best reachable by default, not the URL mon).
-	const [ivPercents, , ivStale] = useComputeIVs({
+	const [ivPercents, ivLoading, ivStale] = useComputeIVs({
 		pokemon: pokemon as never,
 		attackIV: iv.atk,
 		defenseIV: iv.def,
@@ -722,7 +723,10 @@ const PokemonDetail = () => {
 		rankList: isRaid ? {} : rankListFor(league),
 	};
 
-	if (!fetchCompleted) {
+	// A rotating cup in `?lg=` only exists once the league definitions land; until then `league` above fell back to Great, which
+	// would paint the wrong league's heading, numbers and moves for a moment before the cup replaces it.
+	const cupPending = !!lgParam && lgParam !== 'raid' && !isStaticLeague(lgParam) && !leaguesFetchCompleted;
+	if (!fetchCompleted || cupPending) {
 		return (
 			<div className='r-loading'>
 				<div className='r-spinner' />
@@ -951,8 +955,10 @@ const PokemonDetail = () => {
 	// While the IVs of the league being cycled (or picked) are still being worked out, its row keeps showing what it showed (the Pokémon
 	// and its rank and percentile together): the new Pokémon, its rank and its percentile all come in at once, never one before the other.
 	const holdActiveRow = !settled && !!slice?.perfect;
+	// Every row, not just the active one: each row's IV rank and percentage is for the spread on screen, and while the worker is
+	// still ranking the new league's best spread the other rows would show the previous spread's numbers for a moment.
 	const boardRows = computedBoardRows.map((row) =>
-		holdActiveRow && row.l.id === league ? ((heldRowsRef.current[row.l.id] as typeof row | undefined) ?? row) : row
+		holdActiveRow ? ((heldRowsRef.current[row.l.id] as typeof row | undefined) ?? row) : row
 	);
 	if (settled) for (const row of computedBoardRows) heldRowsRef.current[row.l.id] = row;
 
@@ -1137,7 +1143,12 @@ const PokemonDetail = () => {
 			/>
 
 			<div ref={panelRef}>
-				{tab === 'Moves' ? (
+				{!isRaid && !pvpFetchCompleted && (tab === 'Moves' || tab === 'Combat') ? (
+					// the rankings are what these tabs read (the recommended moveset, the rank): until they land, "unranked" would be a lie
+					<div className='r-loading' style={{ minHeight: '30dvh' }}>
+						<div className='r-spinner' />
+					</div>
+				) : tab === 'Moves' ? (
 					<MovesTab pokemon={pokemon} activeLeague={activeLeague} />
 				) : tab === 'IV Table' ? (
 					<IvTableTab pokemon={pokemon} activeLeague={activeLeague} />
@@ -1264,7 +1275,9 @@ const PokemonDetail = () => {
 														<Swap className='r-board-ivrank' k={`${pickTick}|${rowTick[l.id] ?? 0}`}>
 															{ivSlice
 																? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%`
-																: '—'}
+																: ivLoading
+																	? '…'
+																	: '—'}
 														</Swap>
 													)}
 												</span>
