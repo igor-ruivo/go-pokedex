@@ -144,6 +144,8 @@ const leagueSlice = (ivp: IIvPercents | undefined, cpCap: number): ILeagueIvBloc
 	return ivp.master;
 };
 
+const NO_POSITIONS = {};
+
 const PokemonDetail = () => {
 	const { t } = useTranslation(['pokemonDetail', 'settings', 'components']);
 	const { speciesId = '', tab: tabParam } = useParams();
@@ -432,8 +434,23 @@ const PokemonDetail = () => {
 	// Held here, not in the menu: the heading is drawn at a different place in the tree once the first extra league is shown
 	// (and again when the last is hidden), which remounts the menu — its open state must outlive that.
 	const [leagueMenuOpen, setLeagueMenuOpen] = useState(false);
-	const [carousel, setCarousel] = useState<Record<LeagueId, Cpos>>({});
-	useEffect(() => setCarousel({}), [speciesId]);
+	// The positions belong to the league they were made in: the moment another league is the picked one they are gone, in the very
+	// render that shows it. (Clearing them in the click handler instead can commit a render before `?lg=` has changed: the league
+	// still shown would then jump to its best reachable, and everything computed from it - the IV spread and the ranks - with it,
+	// only to be recomputed a moment later for the league that was actually picked.)
+	const [carouselState, setCarouselState] = useState<{ league: LeagueId; positions: Record<LeagueId, Cpos> }>({
+		league,
+		positions: {},
+	});
+	const carousel = carouselState.league === league ? carouselState.positions : NO_POSITIONS;
+	const setCarousel = (update: Record<LeagueId, Cpos> | ((current: Record<LeagueId, Cpos>) => Record<LeagueId, Cpos>)) =>
+		setCarouselState((state) => {
+			const current = state.league === league ? state.positions : NO_POSITIONS;
+			return { league, positions: typeof update === 'function' ? update(current) : update };
+		});
+	// forget what the league left behind, so coming back to it starts from its best reachable
+	useEffect(() => setCarouselState({ league, positions: {} }), [league]);
+	useEffect(() => setCarouselState({ league, positions: {} }), [speciesId]);
 	// what plays the board's entrance: a row cycled by the user (its own count); the IVs picked play only the IV rank of every row; picking a league plays nothing
 	const [rowTick, setRowTick] = useState<Record<string, number>>({});
 	const [pickTick, setPickTick] = useState(0);
@@ -527,7 +544,6 @@ const PokemonDetail = () => {
 	// stale carries over regardless of which control (leaderboard row, or the
 	// league tabs below) you use to switch.
 	const selectLeague = (id: LeagueId) => {
-		setCarousel({});
 		setLeague(id);
 	};
 	const cycleRow = (id: LeagueId) => {
@@ -552,7 +568,6 @@ const PokemonDetail = () => {
 		e.stopPropagation();
 		if (id !== 'raid') return;
 		if (league !== 'raid') {
-			setCarousel({});
 			setLeague('raid');
 			return;
 		}
@@ -1272,7 +1287,7 @@ const PokemonDetail = () => {
 															</span>
 														)
 													) : (
-														<Swap className='r-board-ivrank' k={`${pickTick}|${rowTick[l.id] ?? 0}`}>
+														<Swap className='r-board-ivrank' k={`${pickTick}|${rowTick[l.id] ?? 0}|${ivSlice ? `${ivSlice.rank}` : ''}`}>
 															{ivSlice
 																? `#${ivSlice.rank.toLocaleString()} · ${dec1(rankPerfection(ivSlice.rank))}%`
 																: ivLoading
