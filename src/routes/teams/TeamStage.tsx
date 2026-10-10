@@ -477,42 +477,6 @@ export const MemberCard = ({
 	const moveTable = data.builder!.moves;
 	// A tap on a disabled Confirm has no hover to rely on: show the reason for a moment.
 	const [reasonShown, setReasonShown] = useState(false);
-	const nicknameRef = useRef<HTMLDivElement>(null);
-	const nicknameFirstFocus = useRef(true);
-	const lastValidNickname = useRef(nickname ?? '');
-	const nicknameCaretBeforeInput = useRef<number | null>(null);
-
-	useEffect(() => {
-		const element = nicknameRef.current;
-		if (!element || element.textContent === (nickname ?? '')) return;
-
-		const selection = window.getSelection();
-		const active = document.activeElement === element;
-		let offset: number | undefined;
-
-		if (active && selection?.rangeCount && element.contains(selection.anchorNode)) {
-			const range = selection.getRangeAt(0);
-			range.setStart(element, 0);
-			range.setEnd(selection.anchorNode!, selection.anchorOffset);
-			offset = range.toString().length;
-		}
-
-		element.textContent = nickname ?? '';
-
-		if (offset !== undefined) {
-			const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-			const node = walker.nextNode();
-
-			if (node) {
-				const range = document.createRange();
-				range.setStart(node, Math.min(offset, node.textContent?.length ?? 0));
-				range.collapse(true);
-				selection!.removeAllRanges();
-				selection!.addRange(range);
-			}
-		}
-	}, [nickname]);
-
 	useEffect(() => {
 		if (!reasonShown) return;
 		const id = window.setTimeout(() => setReasonShown(false), 3000);
@@ -618,84 +582,19 @@ export const MemberCard = ({
 				</button>
 			</h3>
 			{onNicknameChange && (
-				<div
-					ref={nicknameRef}
+				<input
 					className='r-tm-nickname'
-					contentEditable='plaintext-only'
-					role='textbox'
-					aria-label={nicknameLabel}
-					data-placeholder={nicknameLabel}
+					value={nickname ?? ''}
+					maxLength={32}
+					// a nickname is not a word to be checked: no red squiggle, no autocorrect, no suggestions
 					spellCheck={false}
-					onFocus={() => {
-						onNicknameFocus?.();
-
-						if (!nicknameFirstFocus.current) return;
-						nicknameFirstFocus.current = false;
-
-						requestAnimationFrame(() => {
-							const element = nicknameRef.current;
-							if (!element) return;
-
-							const selection = window.getSelection();
-							const range = document.createRange();
-
-							range.selectNodeContents(element);
-							range.collapse(false);
-
-							selection?.removeAllRanges();
-							selection?.addRange(range);
-						});
-					}}
-					onBeforeInput={(event) => {
-						const inputEvent = event.nativeEvent;
-						const element = event.currentTarget;
-						const selection = window.getSelection();
-
-						if (!selection?.rangeCount) return;
-
-						const range = selection.getRangeAt(0);
-						if (!element.contains(range.startContainer) || !element.contains(range.endContainer)) return;
-
-						const caretRange = range.cloneRange();
-						caretRange.selectNodeContents(element);
-						caretRange.setEnd(range.startContainer, range.startOffset);
-						nicknameCaretBeforeInput.current = caretRange.toString().length;
-
-						if (!inputEvent.inputType?.startsWith('insert')) return;
-
-						const length = element.textContent?.length ?? 0;
-						const selectedLength = range.toString().length;
-						const insertedLength = inputEvent.data?.length ?? 0;
-
-						if (length - selectedLength >= 32 && insertedLength > 0) {
-							event.preventDefault();
-						}
-					}}
-					onInput={(event) => {
-						const element = event.currentTarget;
-						const value = element.textContent ?? '';
-
-						if (value.length > 32) {
-							const selection = window.getSelection();
-							const offset = nicknameCaretBeforeInput.current ?? 0;
-
-							element.textContent = lastValidNickname.current;
-
-							const textNode = element.firstChild;
-							if (textNode) {
-								const range = document.createRange();
-								range.setStart(textNode, Math.min(offset, textNode.textContent?.length ?? 0));
-								range.collapse(true);
-								selection?.removeAllRanges();
-								selection?.addRange(range);
-							}
-
-							return;
-						}
-
-						lastValidNickname.current = value;
-						onNicknameChange(value);
-					}}
+					autoComplete='off'
+					autoCorrect='off'
+					autoCapitalize='off'
+					aria-label={nicknameLabel}
+					placeholder={nicknameLabel}
+					onFocus={onNicknameFocus}
+					onChange={(event) => onNicknameChange(event.target.value)}
 				/>
 			)}
 			<div className='r-tm-types'>

@@ -426,20 +426,28 @@
 	font: inherit;
 	font-size: 12px;
 	text-align: center;
-	box-sizing: border-box;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	outline: none;
 }
 .rvmp .r-tm-nickname:focus {
 	border-color: var(--text-dim);
 	outline: 2px solid color-mix(in srgb, var(--text) 22%, transparent);
 }
-.rvmp .r-tm-nickname:empty::before {
-	content: attr(data-placeholder);
-	color: var(--text-dim);
-	pointer-events: none;
+/* iOS zooms the page in when a field with a font smaller than 16px takes focus. The field is set at 16px, everything in it
+   (type, padding, border, corners, width) is made 1/0.75 larger, and the whole is scaled back by 0.75: it looks exactly like the 12px
+   one and takes the same room (its box is pulled back by the difference below), but its font is 16px as far as iOS can tell.
+   The height is pinned (12px x the line height 1.45 + 10px padding + 2px border = 29.4px, over 0.75) so that difference is exact. */
+@supports (-webkit-touch-callout: none) {
+	.rvmp .r-tm-nickname {
+		box-sizing: border-box;
+		font-size: 16px;
+		width: min(133.334%, 320px);
+		height: 39.2px;
+		padding: 6.667px 10.667px;
+		border-width: 1.334px;
+		border-radius: calc(var(--r-sm) / 0.75);
+		transform: scale(0.75);
+		transform-origin: top center;
+		margin-bottom: -9.8px;
+	}
 }
 .rvmp .r-tm-types {
 	display: flex;
