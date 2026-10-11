@@ -5,7 +5,7 @@ import './teams.css';
 import './home.css';
 import './menu.css';
 
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
@@ -29,13 +29,7 @@ import PokemonDetail from './routes/PokemonDetail';
 import Rankings from './routes/Rankings';
 import Settings from './routes/Settings';
 import Types from './routes/Types';
-import {
-	DAY_IN_MS,
-	QUERY_CACHE_BUSTER,
-	queryClient,
-	queryDehydrateOptions,
-	queryPersister,
-} from './utils/query-client';
+import { queryClient } from './utils/query-client';
 
 // The Teams view carries its own battle-simulator glue and a lot of chart code; nothing else
 // needs it, so it loads on first visit instead of weighing down every page.
@@ -47,15 +41,7 @@ const Teams = lazy(() => import('./routes/Teams'));
 const App = () => {
 	const { t } = useTranslation(['common']);
 	return (
-		<PersistQueryClientProvider
-			client={queryClient}
-			persistOptions={{
-				persister: queryPersister,
-				maxAge: DAY_IN_MS,
-				buster: QUERY_CACHE_BUSTER,
-				dehydrateOptions: queryDehydrateOptions,
-			}}
-		>
+		<QueryClientProvider client={queryClient}>
 			<ThemeProvider>
 				<RaidMetricProvider>
 					<RelevanceSetsProvider>
@@ -111,7 +97,7 @@ const App = () => {
 					</RelevanceSetsProvider>
 				</RaidMetricProvider>
 			</ThemeProvider>
-		</PersistQueryClientProvider>
+		</QueryClientProvider>
 	);
 };
 

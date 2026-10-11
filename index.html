@@ -27,6 +27,7 @@
 		<meta name="theme-color" content="#0b0e14" />
 		<script>
 			// The theme before the first paint (no flash of dark for a light device): the saved choice (1 light, 2 dark) or the device.
+			// Read from localStorage, not IndexedDB (which is async): the theme is the one setting also mirrored there (persistent-configs-handler).
 			(function () {
 				try {
 					var saved = localStorage.getItem('0');

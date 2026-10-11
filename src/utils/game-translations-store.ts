@@ -1,6 +1,8 @@
 import { useSyncExternalStore } from 'react';
 
 import { gameTranslationsUrl } from './Configs';
+import { dexSnapshotId, pinToSnapshot } from './dex-snapshot';
+import { CACHE_MAX_AGE_MS, readCache, writeCache } from './persistent-cache';
 
 export interface GameTypeTranslations {
 	search: Partial<Record<string, string>>;
@@ -18,7 +20,7 @@ export interface GameTranslationsPayload {
 // functions), which can't `await` a query or call a hook. This is fetched
 // once, at app startup (`Shell.tsx` calls `useGameTranslationsData()` once,
 // high enough in the tree that every route re-renders under it), and never
-// refetched for the lifetime of the tab.
+// refetched for the lifetime of the tab. A copy of it is kept in IndexedDB.
 let cache: GameTranslationsPayload | null = null;
 let fetchStarted = false;
 const listeners = new Set<() => void>();
@@ -29,31 +31,59 @@ function notify(): void {
 	});
 }
 
+const CACHE_KEY = 'game-translations';
+
+/** The copy kept in IndexedDB, if it is of the page's dex-server snapshot (see dex-snapshot.ts) — a copy of any other is no use. */
+async function readCachedTranslations(): Promise<GameTranslationsPayload | undefined> {
+	const snapshot = dexSnapshotId();
+	if (snapshot === undefined) {
+		return undefined;
+	}
+	const entry = await readCache<{ snapshot: string; data: GameTranslationsPayload }>('translations', CACHE_KEY);
+	if (!entry || entry.value.snapshot !== snapshot || Date.now() - entry.savedAt > CACHE_MAX_AGE_MS.translations) {
+		return undefined;
+	}
+	return entry.value.data;
+}
+
+async function fetchTranslations(): Promise<GameTranslationsPayload> {
+	const response = await fetch(pinToSnapshot(gameTranslationsUrl));
+	if (!response.ok) {
+		throw new Error(`Network response was not ok for ${gameTranslationsUrl} (HTTP ${response.status})`);
+	}
+	return (await response.json()) as GameTranslationsPayload;
+}
+
 function startLoad(): void {
 	if (fetchStarted) {
 		return;
 	}
 	fetchStarted = true;
 
-	fetch(gameTranslationsUrl)
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error(`Network response was not ok for ${gameTranslationsUrl} (HTTP ${response.status})`);
-			}
-			return response.json() as Promise<GameTranslationsPayload>;
-		})
-		.then((data) => {
+	void (async () => {
+		const cached = await readCachedTranslations();
+		if (cached) {
+			// a file of the page's snapshot is the same for as long as the page lives: no need to fetch it again
+			cache = cached;
+			notify();
+			return;
+		}
+		try {
+			const data = await fetchTranslations();
 			cache = data;
 			notify();
-			return undefined;
-		})
-		.catch((error: unknown) => {
-			// Left `cache` at `null` — `gameTranslator()`/`gameTypeTranslator()`
+			const snapshot = dexSnapshotId();
+			if (snapshot !== undefined) {
+				void writeCache('translations', CACHE_KEY, { snapshot, data });
+			}
+		} catch (error: unknown) {
+			// Left `cache` as it was (`null`) — `gameTranslator()`/`gameTypeTranslator()`
 			// already treat "not loaded yet" as "show nothing" (see their own doc
 			// comments), which is also the right behavior for "never going to
 			// load this session" — there's nothing more specific to fall back to.
 			console.error('[game-translations-store] failed to load game-translations.json', error);
-		});
+		}
+	})();
 }
 
 function subscribe(listener: () => void): () => void {

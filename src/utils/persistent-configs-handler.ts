@@ -1,3 +1,5 @@
+import { idbEntries, idbSet } from './idb-store';
+
 // important: changing these will invalidate the consumer's browser cache.
 export enum ConfigKeys {
 	DefaultTheme,
@@ -97,10 +99,7 @@ export enum ConfigKeys {
 }
 
 // A storage read/write can throw for reasons that have nothing to do with
-// this app's own logic being wrong — the origin's quota is full (the actual
-// incident this guards: the persisted query cache alone once grew past 5MB,
-// and the very next unrelated write, marking an event seen, threw
-// QuotaExceededError uncaught and took the whole page down with it), Safari
+// this app's own logic being wrong — the origin's quota is full, Safari
 // private-mode blocks storage entirely, a browser extension interferes, etc.
 // None of what's stored here is essential — every caller already has a
 // sensible in-memory default — so failing silently and carrying on beats
@@ -113,26 +112,42 @@ const safeStorageOp = <T>(op: () => T, fallback: T): T => {
 	}
 };
 
+// Persistent settings live in IndexedDB, one record per setting (`cfg:<key>`, so two tabs changing different settings never
+// overwrite each other), but are read synchronously by dozens of `useState` initializers. So they are all loaded into this map once,
+// before the app renders (`hydrateConfigs`), and every write goes to the map first and through to IndexedDB after.
+const CONFIG_PREFIX = 'cfg:';
+const persistentValues = new Map<string, string>();
+
+// The page needs the theme before its first paint (index.html's inline script, which can't wait for IndexedDB), so the theme
+// is also kept in localStorage — the one setting that is.
+const MIRRORED_IN_LOCAL_STORAGE = new Set<string>([ConfigKeys.DefaultTheme.toString()]);
+
 export const readSessionValue = (key: ConfigKeys) => {
 	return safeStorageOp(() => sessionStorage.getItem(key.toString()), null);
 };
 
-export const readPersistentValue = (key: ConfigKeys) => {
-	return safeStorageOp(() => localStorage.getItem(key.toString()), null);
-};
+export const readPersistentValue = (key: ConfigKeys) => persistentValues.get(key.toString()) ?? null;
 
 export const writeSessionValue = (key: ConfigKeys, value: string) => {
 	safeStorageOp(() => sessionStorage.setItem(key.toString(), value), undefined);
 };
 
 export const writePersistentValue = (key: ConfigKeys, value: string) => {
-	safeStorageOp(() => localStorage.setItem(key.toString(), value), undefined);
+	const name = key.toString();
+	if (MIRRORED_IN_LOCAL_STORAGE.has(name)) safeStorageOp(() => localStorage.setItem(name, value), undefined);
+	// effects write the current value on every mount; only an actual change is worth a write
+	if (persistentValues.get(name) === value) return;
+	persistentValues.set(name, value);
+	void idbSet(CONFIG_PREFIX + name, value).catch(() => undefined);
 };
 
-export const writePersistentCostumKeyValue = (customKey: string, value: string) => {
-	safeStorageOp(() => localStorage.setItem(customKey, value), undefined);
-};
-
-export const readPersistentCostumKeyValue = (customKey: string) => {
-	return safeStorageOp(() => localStorage.getItem(customKey), null);
+/** Loads every saved setting. Awaited at startup, before anything that reads a setting runs. */
+export const hydrateConfigs = async (): Promise<void> => {
+	try {
+		for (const [key, value] of await idbEntries<unknown>(CONFIG_PREFIX)) {
+			if (typeof value === 'string') persistentValues.set(key.slice(CONFIG_PREFIX.length), value);
+		}
+	} catch {
+		// unreadable — every setting starts at its default
+	}
 };

@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@tanstack/query-sync-storage-persister':
-        specifier: ^5.102.8
-        version: 5.102.8
       '@tanstack/react-query':
         specifier: ^5.102.8
         version: 5.102.8(react@19.1.0)
@@ -1565,9 +1562,6 @@ packages:
 
   '@tanstack/query-persist-client-core@5.102.8':
     resolution: {integrity: sha512-t3v4/D6ejo/BrPzM5gm/AT3c4CWPCxFa+0cIjAeHAeanGPG6rCjFS1hZnPZH/rf55qe3qYYgx5U6iBZMY1PQjA==}
-
-  '@tanstack/query-sync-storage-persister@5.102.8':
-    resolution: {integrity: sha512-UvIpYl6jipKJHfITAieQaXMvVPoJh2IkQkWDYZNRPycoGbNYdqB+UdRVoXkZagB3EdeKnlC7sA61grsEC87Wfw==}
 
   '@tanstack/react-query-persist-client@5.102.8':
     resolution: {integrity: sha512-WOZReC+m9klekPtG7eeZ3txJeMA9lg2R0RytSG3yXcZgJItQAVIyoobJdbdIQtlpgcU2tSzsOEBtJacs2vlCOA==}
@@ -5307,11 +5301,6 @@ snapshots:
   '@tanstack/query-persist-client-core@5.102.8':
     dependencies:
       '@tanstack/query-core': 5.102.8
-
-  '@tanstack/query-sync-storage-persister@5.102.8':
-    dependencies:
-      '@tanstack/query-core': 5.102.8
-      '@tanstack/query-persist-client-core': 5.102.8
 
   '@tanstack/react-query-persist-client@5.102.8(@tanstack/react-query@5.102.8(react@19.1.0))(react@19.1.0)':
     dependencies:

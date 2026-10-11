@@ -15,15 +15,13 @@ const EMPTY: ReadonlyArray<ILeagueDefinition> = [];
 /**
  * Every PvP league dex-server currently mirrors from PvPoke's own dropdown —
  * great/ultra/master always first (guaranteed server-side order), followed
- * by whatever rotating/custom cup is presently active. Small, near-static
- * payload — long `staleTime` since a new cup rotating in only matters on the
- * next visit, not mid-session.
+ * by whatever rotating/custom cup is presently active. Small payload; like every dex-server file
+ * it is read from the page's snapshot (see `dex-snapshot.ts`), so a new cup rotating in shows on the next load.
  */
 export const useLeagueDefinitions = (): { leagues: ReadonlyArray<ILeagueDefinition>; fetchCompleted: boolean } => {
 	const { data, isSuccess, isError } = useQuery({
 		queryKey: ['leagues'],
 		queryFn: async () => (await fetchJson<LeaguesFile>(leaguesUrl)).leagues,
-		staleTime: 30 * 60 * 1000,
 		gcTime: Infinity,
 	});
 	// Anything that only has a league id (the Teams view) looks its CP cap up in this registry.

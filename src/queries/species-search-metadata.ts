@@ -30,14 +30,8 @@ export const speciesSearchMetadataQueryKey = ['species-search-metadata'] as cons
  * component doesn't crash on `undefined` while it's still deciding whether
  * to show a loading state.
  *
- * Deliberately NOT added to `PERSISTED_QUERY_KEY_PREFIXES` (query-client.ts)
- * — this is a multi-MB payload most sessions never even touch (it only
- * matters for the Search Strings tab and Mass Delete), so it stays
- * in-memory-only for the session and simply re-fetches from the network on
- * reload, the same way the (also multi-MB) PvP/raid-DPS queries already do.
- * No `staleTime`/`gcTime` override here either — the `QueryClient` defaults
- * (`query-client.ts`) already give it a full day of freshness and a week of
- * in-memory retention, same as every other unpersisted reference dataset.
+ * Persisted in IndexedDB like the other dex-server feeds (see `query-client.ts`): the `QueryClient` defaults give it its
+ * freshness and in-memory retention.
  */
 export const useSpeciesSearchMetadata = (): SpeciesSearchMetadataData => {
 	const { data, isSuccess, isError, error } = useQuery({

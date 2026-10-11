@@ -1,4 +1,5 @@
 import { getComputeWorker } from '../workers/compute-client';
+import { pinToSnapshot } from './dex-snapshot';
 
 /**
  * Fetches a URL and parses it as JSON, throwing on a non-2xx response so that
@@ -6,7 +7,7 @@ import { getComputeWorker } from '../workers/compute-client';
  * (via the queryFn context) and cancels the request when the observer unmounts.
  */
 export async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
-	const response = await fetch(url, signal ? { signal } : undefined);
+	const response = await fetch(pinToSnapshot(url), signal ? { signal } : undefined);
 	if (!response.ok) {
 		throw new Error(`Network response was not ok for ${url} (HTTP ${response.status})`);
 	}
@@ -27,5 +28,5 @@ export async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T
  * is harmless — unlike a per-keystroke query, there's nothing to cancel for.
  */
 export async function fetchJsonInWorker<T>(url: string): Promise<T> {
-	return (await getComputeWorker().fetchJson(url)) as T;
+	return (await getComputeWorker().fetchJson(pinToSnapshot(url))) as T;
 }

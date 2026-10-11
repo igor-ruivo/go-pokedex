@@ -157,16 +157,30 @@ export const PokemonCollection = ({
 			}),
 		[league, combinations, data.rankList, data.gamemaster, data.builder]
 	);
-	// read once per fingerprint (a parse of up to ~600 KB), not on every render
-	const cachedRankedTeams = useMemo(
-		() => (data.ready ? readRankedCache(league, rankingSignature) : undefined),
-		[data.ready, league, rankingSignature]
-	);
+	// Looked up once per fingerprint, not on every render. The lookup is asynchronous (IndexedDB), and until it answers nothing
+	// is computed: a hit would make that work wasted.
+	const lookupKey = data.ready ? `${league}|${rankingSignature}` : undefined;
+	const [lookup, setLookup] = useState<{ key: string; teams: Array<RankedTeam> | undefined }>();
+	useEffect(() => {
+		if (lookupKey === undefined) return;
+		let current = true;
+		void readRankedCache(league, rankingSignature).then((teams) => {
+			if (current) setLookup({ key: lookupKey, teams });
+			return undefined;
+		});
+		return () => {
+			current = false;
+		};
+	}, [lookupKey, league, rankingSignature]);
+	const lookedUp = lookupKey === undefined || lookup?.key === lookupKey;
+	const cachedRankedTeams = lookupKey !== undefined && lookup?.key === lookupKey ? lookup.teams : undefined;
 	// what the manual evaluation was asked for: the combinations, the Charged Moves in a fixed order (rearranging them is no change)
 	const evaluationKey = useMemo(() => JSON.stringify(canonicalCombinations(combinations)), [combinations]);
 	const requiresManualEvaluation = saved.length > AUTO_EVALUATION_LIMIT && combinations.length > 0;
 	const evaluationRequested =
-		cachedRankedTeams === undefined && (!requiresManualEvaluation || requestedEvaluationKey === evaluationKey);
+		lookedUp &&
+		cachedRankedTeams === undefined &&
+		(!requiresManualEvaluation || requestedEvaluationKey === evaluationKey);
 	const evaluations = useTeamEvaluations(league, data, evaluationRequested ? combinations : []);
 	const evaluationScores = evaluations.map((result) => result.data?.threatScore ?? null);
 	const evaluationScoresKey = JSON.stringify(evaluationScores);
@@ -219,7 +233,7 @@ export const PokemonCollection = ({
 			.sort((a, b) => b.score - a.score || a.threatScore - b.threatScore);
 	}, [cachedRankedTeams, combinations, computedRankingReady, ctx, data, evaluationScoresKey, league]);
 	useEffect(() => {
-		if (computedRankingReady) writeRankedCache(league, rankingSignature, rankedTeams);
+		if (computedRankingReady) void writeRankedCache(league, rankingSignature, rankedTeams);
 	}, [computedRankingReady, league, rankingSignature, rankedTeams]);
 	const term = useDebouncedValue(search.trim().toLowerCase(), 220);
 	const orderedTeams = [...rankedTeams].sort((a, b) =>
@@ -468,7 +482,7 @@ export const PokemonCollection = ({
 				{requiresManualEvaluation && (
 					<div className='r-tm-collection-manual'>
 						<p className='r-muted'>{t('teams:collection.manualNotice')}</p>
-						{!evaluationRequested && !startingEvaluation && cachedRankedTeams === undefined && (
+						{lookedUp && !evaluationRequested && !startingEvaluation && cachedRankedTeams === undefined && (
 							<button type='button' className='r-tm-btn' onClick={startEvaluation}>
 								{t('teams:collection.computeTeams')}
 							</button>

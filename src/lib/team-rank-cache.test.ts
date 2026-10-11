@@ -1,12 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { RankedTeam, TeamBuilderData } from '../DTOs/ITeamBuilder';
+import { __memoryEntriesForTests, idbSet } from '../utils/idb-store';
 import type { TeamSlotDescriptor } from './team-analysis';
 import {
 	hashSignature,
 	isRankedTeam,
-	MAX_ENTRY_CHARS,
-	MAX_TOTAL_CHARS,
 	RANK_CACHE_VERSION,
 	rankCacheKey,
 	rankingSignature,
@@ -14,29 +13,15 @@ import {
 	writeRankedCache,
 } from './team-rank-cache';
 
-/** A fake localStorage, with a switch to make it refuse writes like a full or blocked one. */
-const fakeStorage = () => {
-	const store = new Map<string, string>();
-	const session = {
-		failWrites: false,
-		failReads: false,
-		getItem: (key: string) => {
-			if (session.failReads) throw new Error('blocked');
-			return store.get(key) ?? null;
-		},
-		setItem: (key: string, value: string) => {
-			if (session.failWrites) throw new Error('quota');
-			store.set(key, value);
-		},
-		removeItem: (key: string) => void store.delete(key),
-		key: (index: number) => [...store.keys()][index] ?? null,
-		get length() {
-			return store.size;
-		},
-	};
-	vi.stubGlobal('window', { localStorage: session });
-	return { store, session };
-};
+/** The raw entry the cache keeps for a league (in the in-memory stand-in for IndexedDB), if any. */
+const storedEntry = (league: Parameters<typeof rankCacheKey>[0]) =>
+	__memoryEntriesForTests().get(`cache:rank:${rankCacheKey(league)}`) as
+		| { savedAt: number; value: unknown }
+		| undefined;
+
+/** Plants `value` where the cache keeps `league`'s ranking, as a hand-edited or corrupted entry would be. */
+const plant = (league: Parameters<typeof rankCacheKey>[0], value: unknown, version = RANK_CACHE_VERSION) =>
+	idbSet(`cache:rank:v${version}:${league}`, { savedAt: Date.now(), value });
 
 const moveset = ['A', 'B', 'C'];
 const team = (extra: Partial<RankedTeam> = {}): RankedTeam => ({
@@ -53,145 +38,105 @@ const team = (extra: Partial<RankedTeam> = {}): RankedTeam => ({
 
 describe('rankCacheKey', () => {
 	it('keeps one entry per league, under a versioned key', () => {
-		expect(rankCacheKey('great')).toBe(`go-pokedex:collection-team-rank:v${RANK_CACHE_VERSION}:great`);
+		expect(rankCacheKey('great')).toBe(`v${RANK_CACHE_VERSION}:great`);
 		expect(rankCacheKey('ultra')).not.toBe(rankCacheKey('great'));
-		expect(rankCacheKey('mega-1500')).toBe(`go-pokedex:collection-team-rank:v${RANK_CACHE_VERSION}:mega-1500`);
+		expect(rankCacheKey('mega-1500')).toBe(`v${RANK_CACHE_VERSION}:mega-1500`);
 	});
 
 	it('is the format version that makes an old entry unreachable', () => {
-		expect(rankCacheKey('great')).toContain(`:v${RANK_CACHE_VERSION}:`);
+		expect(rankCacheKey('great')).toContain(`v${RANK_CACHE_VERSION}:`);
 	});
 });
 
-describe('the ranking kept in local storage', () => {
-	beforeEach(() => void fakeStorage());
-	afterEach(() => vi.unstubAllGlobals());
+describe('the ranking kept in IndexedDB', () => {
+	beforeEach(() => {
+		__memoryEntriesForTests().clear();
+	});
 
-	it('gives back what was written, with every member’s build and marks', () => {
+	it('gives back what was written, with every member’s build and marks', async () => {
 		const teams = [team(), team({ score: 70, tier: 'solid', threatScore: 600 })];
-		writeRankedCache('great', 'sig', teams);
-		const read = readRankedCache('great', 'sig');
+		await writeRankedCache('great', 'sig', teams);
+		const read = await readRankedCache('great', 'sig');
 		expect(read).toEqual(teams);
 		expect(read![0].members[1]).toMatchObject({ ivs: [0, 15, 15], level: 51, buddy: true });
 		expect(read![0].members[2]).toMatchObject({ level: 53, buddy: true, superMega: true, formerSuperMega: true });
 	});
 
-	it('keeps the order of the teams', () => {
+	it('keeps the order of the teams', async () => {
 		const teams = [team({ score: 90 }), team({ score: 80 }), team({ score: 70 })];
-		writeRankedCache('great', 'sig', teams);
-		expect(readRankedCache('great', 'sig')!.map((t) => t.score)).toEqual([90, 80, 70]);
+		await writeRankedCache('great', 'sig', teams);
+		expect((await readRankedCache('great', 'sig'))!.map((t) => t.score)).toEqual([90, 80, 70]);
 	});
 
-	it('keeps each league apart', () => {
-		writeRankedCache('great', 'sig-great', [team({ score: 11 })]);
-		writeRankedCache('ultra', 'sig-ultra', [team({ score: 22 })]);
-		writeRankedCache('mega-1500', 'sig-mega', [team({ score: 33 })]);
-		expect(readRankedCache('great', 'sig-great')![0].score).toBe(11);
-		expect(readRankedCache('ultra', 'sig-ultra')![0].score).toBe(22);
-		expect(readRankedCache('mega-1500', 'sig-mega')![0].score).toBe(33);
+	it('keeps each league apart', async () => {
+		await writeRankedCache('great', 'sig-great', [team({ score: 11 })]);
+		await writeRankedCache('ultra', 'sig-ultra', [team({ score: 22 })]);
+		await writeRankedCache('mega-1500', 'sig-mega', [team({ score: 33 })]);
+		expect((await readRankedCache('great', 'sig-great'))![0].score).toBe(11);
+		expect((await readRankedCache('ultra', 'sig-ultra'))![0].score).toBe(22);
+		expect((await readRankedCache('mega-1500', 'sig-mega'))![0].score).toBe(33);
 		// a league does not read another’s entry, even with its signature
-		expect(readRankedCache('great', 'sig-ultra')).toBeUndefined();
-		expect(readRankedCache('master', 'sig-great')).toBeUndefined();
+		expect(await readRankedCache('great', 'sig-ultra')).toBeUndefined();
+		expect(await readRankedCache('master', 'sig-great')).toBeUndefined();
 	});
 
-	it('is a miss when the signature differs: the inputs changed', () => {
-		writeRankedCache('great', 'old', [team()]);
-		expect(readRankedCache('great', 'new')).toBeUndefined();
+	it('is a miss when the signature differs: the inputs changed', async () => {
+		await writeRankedCache('great', 'old', [team()]);
+		expect(await readRankedCache('great', 'new')).toBeUndefined();
 	});
 
-	it('replaces what the league had', () => {
-		writeRankedCache('great', 'one', [team({ score: 1 })]);
-		writeRankedCache('great', 'two', [team({ score: 2 })]);
-		expect(readRankedCache('great', 'one')).toBeUndefined();
-		expect(readRankedCache('great', 'two')![0].score).toBe(2);
+	it('replaces what the league had', async () => {
+		await writeRankedCache('great', 'one', [team({ score: 1 })]);
+		await writeRankedCache('great', 'two', [team({ score: 2 })]);
+		expect(await readRankedCache('great', 'one')).toBeUndefined();
+		expect((await readRankedCache('great', 'two'))![0].score).toBe(2);
 	});
 
-	it('is a miss with nothing stored', () => {
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
+	it('is a miss with nothing stored', async () => {
+		expect(await readRankedCache('great', 'sig')).toBeUndefined();
 	});
 
-	it('can keep an empty ranking: a collection with no possible team is not recomputed either', () => {
-		writeRankedCache('great', 'sig', []);
-		expect(readRankedCache('great', 'sig')).toEqual([]);
+	it('can keep an empty ranking: a collection with no possible team is not recomputed either', async () => {
+		await writeRankedCache('great', 'sig', []);
+		expect(await readRankedCache('great', 'sig')).toEqual([]);
 	});
 
-	it('is a miss for an entry that is not JSON, not an object, or has no teams', () => {
-		const { store } = fakeStorage();
-		store.set(rankCacheKey('great'), '{not json');
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
-		store.set(rankCacheKey('great'), '"text"');
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
-		store.set(rankCacheKey('great'), 'null');
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
-		store.set(rankCacheKey('great'), JSON.stringify({ signature: 'sig' }));
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
-		store.set(rankCacheKey('great'), JSON.stringify({ signature: 'sig', teams: 'nope' }));
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
+	it('is a miss for an entry that is not an object, or has no teams', async () => {
+		await plant('great', '"text"');
+		expect(await readRankedCache('great', 'sig')).toBeUndefined();
+		await plant('great', null);
+		expect(await readRankedCache('great', 'sig')).toBeUndefined();
+		await plant('great', { signature: 'sig' });
+		expect(await readRankedCache('great', 'sig')).toBeUndefined();
+		await plant('great', { signature: 'sig', teams: 'nope' });
+		expect(await readRankedCache('great', 'sig')).toBeUndefined();
 	});
 
-	it('is a miss when any stored team is not a team: it never half-loads', () => {
-		const { store } = fakeStorage();
-		store.set(rankCacheKey('great'), JSON.stringify({ signature: 'sig', teams: [team(), { score: 'high' }] }));
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
+	it('is a miss when any stored team is not a team: it never half-loads', async () => {
+		await plant('great', { signature: 'sig', teams: [team(), { score: 'high' }] });
+		expect(await readRankedCache('great', 'sig')).toBeUndefined();
 	});
 
-	it('is a miss from an older format version, which is stored under another key', () => {
-		const { store } = fakeStorage();
-		store.set(
-			`go-pokedex:collection-team-rank:v${RANK_CACHE_VERSION - 1}:great`,
-			JSON.stringify({ signature: 'sig', teams: [team()] })
-		);
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
+	it('is a miss from an older format version, which is stored under another key', async () => {
+		await plant('great', { signature: 'sig', teams: [team()] }, RANK_CACHE_VERSION - 1);
+		expect(await readRankedCache('great', 'sig')).toBeUndefined();
 	});
 
-	it('does not break when storage refuses reads or writes', () => {
-		const { session } = fakeStorage();
-		session.failWrites = true;
-		expect(() => writeRankedCache('great', 'sig', [team()])).not.toThrow();
-		session.failWrites = false;
-		writeRankedCache('great', 'sig', [team()]);
-		session.failReads = true;
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
+	it('stores under the league’s key, with the signature next to the teams and the date it was saved', async () => {
+		await writeRankedCache('great', 'sig', [team()]);
+		expect(storedEntry('great')).toEqual({
+			savedAt: expect.any(Number) as number,
+			value: { signature: 'sig', teams: [team()] },
+		});
 	});
 
-	it('does not break when there is no localStorage at all', () => {
-		vi.stubGlobal('window', {});
-		expect(() => writeRankedCache('great', 'sig', [team()])).not.toThrow();
-		expect(readRankedCache('great', 'sig')).toBeUndefined();
-	});
-
-	it('stores under the league’s key, as JSON with the signature next to the teams', () => {
-		const { store } = fakeStorage();
-		writeRankedCache('great', 'sig', [team()]);
-		expect(JSON.parse(store.get(rankCacheKey('great'))!)).toEqual({ signature: 'sig', teams: [team()] });
-		expect([...store.keys()]).toEqual([rankCacheKey('great')]);
-	});
-});
-
-describe('the room the cache leaves the collection', () => {
-	beforeEach(() => void fakeStorage());
-	afterEach(() => vi.unstubAllGlobals());
-
-	const big = (chars: number) => [team({ members: [{ speciesId: 'x'.repeat(chars), moveset }] as never })];
-
-	it('keeps nothing over the entry limit, and drops the stale entry the league had', () => {
-		writeRankedCache('great', 'old', [team()]);
-		writeRankedCache('great', 'new', big(MAX_ENTRY_CHARS));
-		expect(readRankedCache('great', 'old')).toBeUndefined();
-		expect(readRankedCache('great', 'new')).toBeUndefined();
-	});
-
-	it('drops other leagues’ entries, largest first, to stay within the total', () => {
-		const { store } = fakeStorage();
-		const chunk = MAX_TOTAL_CHARS / 2 - 100;
-		store.set(rankCacheKey('ultra'), 'u'.repeat(chunk));
-		store.set(rankCacheKey('master'), 'm'.repeat(chunk - 50));
-		store.set('unrelated', 'z'.repeat(MAX_TOTAL_CHARS));
-		writeRankedCache('great', 'sig', [team()]);
-		expect(store.has(rankCacheKey('ultra'))).toBe(false);
-		expect(store.has(rankCacheKey('master'))).toBe(true);
-		expect(store.has('unrelated')).toBe(true);
-		expect(readRankedCache('great', 'sig')).toEqual([team()]);
+	it('keeps no more than one entry per league, whatever its size', async () => {
+		const big = [team({ members: [{ speciesId: 'x'.repeat(2_000_000), moveset }] as never })];
+		await writeRankedCache('great', 'big', big);
+		await writeRankedCache('great', 'small', [team()]);
+		expect([...__memoryEntriesForTests().keys()].filter((key) => key.startsWith('cache:rank:'))).toHaveLength(1);
+		expect(await readRankedCache('great', 'big')).toBeUndefined();
+		expect(await readRankedCache('great', 'small')).toEqual([team()]);
 	});
 });
 
@@ -338,12 +283,11 @@ describe('rankingSignature — what a cached ranking depends on', () => {
 		expect(sign({ rankList: reversed })).toBe(sign());
 	});
 
-	it('is a fingerprint a ranking can be cached under: written and read back with it', () => {
-		fakeStorage();
+	it('is a fingerprint a ranking can be cached under: written and read back with it', async () => {
+		__memoryEntriesForTests().clear();
 		const signature = sign();
-		writeRankedCache('great', signature, [team()]);
-		expect(readRankedCache('great', signature)).toEqual([team()]);
-		expect(readRankedCache('great', sign({ league: 'ultra' }))).toBeUndefined();
-		vi.unstubAllGlobals();
+		await writeRankedCache('great', signature, [team()]);
+		expect(await readRankedCache('great', signature)).toEqual([team()]);
+		expect(await readRankedCache('great', sign({ league: 'ultra' }))).toBeUndefined();
 	});
 });

@@ -2,23 +2,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { CollectionPokemon } from './pokemon-collection';
 
-const KEY = 'go-pokedex:team-pokemon-collection';
+const KEY = 'user:team-pokemon-collection';
 
-/** A fresh copy of the module (its collection is module state) over a fake localStorage. */
+/** A fresh copy of the module (its collection is module state) over the in-memory stand-in for IndexedDB, holding `stored`. */
 const freshCollection = async (stored?: Array<Partial<CollectionPokemon>>) => {
-	const storage = new Map<string, string>();
-	if (stored) storage.set(KEY, JSON.stringify(stored));
-	vi.stubGlobal('window', {
-		localStorage: {
-			getItem: (key: string) => storage.get(key) ?? null,
-			setItem: (key: string, value: string) => void storage.set(key, value),
-		},
-		addEventListener: () => undefined,
-		removeEventListener: () => undefined,
-	});
 	vi.resetModules();
+	const store = await import('../utils/idb-store');
+	if (stored) await store.idbSet(KEY, stored);
 	const lib = await import('./pokemon-collection');
-	const read = () => JSON.parse(storage.get(KEY) ?? '[]') as Array<CollectionPokemon>;
+	await lib.hydrateCollection();
+	const read = () => (store.__memoryEntriesForTests().get(KEY) ?? []) as Array<CollectionPokemon>;
 	return { ...lib, read };
 };
 
@@ -32,7 +25,6 @@ describe('the Pokémon collection', () => {
 	});
 	afterEach(() => {
 		vi.useRealTimers();
-		vi.unstubAllGlobals();
 	});
 
 	it('saves a Pokémon with an id and a date, and persists it', async () => {
@@ -198,7 +190,6 @@ describe('the Pokémon collection', () => {
 				{ id: 'e', ...azumarill, league: 'great', addedAt: 1, buddy: false },
 			] as unknown as Array<Partial<CollectionPokemon>>;
 			const { saveCollectionPokemon, read } = await freshCollection(stored);
-			// loading happens on first use: a save brings the stored entries in
 			saveCollectionPokemon('great', { speciesId: 'medicham', moveset });
 			const entries = read();
 			expect(entries.map((e) => e.id).slice(0, 1)).toEqual(['a']);

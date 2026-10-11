@@ -1,10 +1,11 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
+import { idbGet, idbNotifyOtherTabs, idbSet, idbWatch, requestPersistentStorage } from '../utils/idb-store';
 import { isSlotIvs, isSlotLevel, slotIdentityKey, type SlotIvs } from './team-analysis';
 
 /**
- * Favorite teams, kept in localStorage. A favorite is stored as the species ids and the move ids of its three
+ * Favorite teams, kept in IndexedDB (read once at startup — see `hydrateFavorites`). A favorite is stored as the species ids and the move ids of its three
  * Pokémon (moves by id, not name, so they survive translation changes), the IVs and level picked for any of them, the league
  * it was saved for, and when. Species, moves, picked IVs and picked level are all part of a team's identity — the same Pokémon
  * with other moves, IVs or level is another team — while the order they are listed in is not. Scores are never
@@ -13,7 +14,7 @@ import { isSlotIvs, isSlotLevel, slotIdentityKey, type SlotIvs } from './team-an
  * Every storage access is guarded: storage can be missing or blocked (private windows, blocked site data), and
  * the page has to work the same without it (favorites then just last for the page's lifetime).
  */
-const KEY = 'go-pokedex:favorite-teams';
+const KEY = 'user:favorite-teams';
 
 export interface FavoriteMember {
 	speciesId: string;
@@ -68,60 +69,55 @@ const isMember = (value: unknown): value is FavoriteMember =>
 	((value as FavoriteMember).ivs === undefined || isSlotIvs((value as FavoriteMember).ivs)) &&
 	((value as FavoriteMember).level === undefined || isSlotLevel((value as FavoriteMember).level));
 
-const parse = (raw: string | null): Array<FavoriteTeam> => {
-	if (!raw) return [];
-	try {
-		const parsed: unknown = JSON.parse(raw);
-		if (!Array.isArray(parsed)) return [];
-		return parsed.flatMap((entry: unknown): Array<FavoriteTeam> => {
-			if (typeof entry !== 'object' || entry === null) return [];
-			const { league, members, addedAt } = entry as Partial<FavoriteTeam>;
-			if (!isTeamLeague(league) || !Array.isArray(members) || members.length !== 3 || !members.every(isMember))
-				return [];
-			return [{ league, members, addedAt: typeof addedAt === 'number' ? addedAt : 0 }];
-		});
-	} catch {
-		return [];
-	}
+const parse = (stored: unknown): Array<FavoriteTeam> => {
+	if (!Array.isArray(stored)) return [];
+	return stored.flatMap((entry: unknown): Array<FavoriteTeam> => {
+		if (typeof entry !== 'object' || entry === null) return [];
+		const { league, members, addedAt } = entry as Partial<FavoriteTeam>;
+		if (!isTeamLeague(league) || !Array.isArray(members) || members.length !== 3 || !members.every(isMember)) return [];
+		return [{ league, members, addedAt: typeof addedAt === 'number' ? addedAt : 0 }];
+	});
 };
 
-let favorites: Array<FavoriteTeam> | undefined;
+let favorites: Array<FavoriteTeam> = [];
 const listeners = new Set<() => void>();
 
-const load = (): Array<FavoriteTeam> => {
-	if (favorites === undefined) {
-		try {
-			favorites = parse(window.localStorage.getItem(KEY));
-		} catch {
-			favorites = [];
-		}
-	}
-	return favorites;
-};
+const load = (): Array<FavoriteTeam> => favorites;
 
 const commit = (next: Array<FavoriteTeam>) => {
 	favorites = next;
-	try {
-		window.localStorage.setItem(KEY, JSON.stringify(next));
-	} catch {
-		// storage unavailable — the favorites last for this page only
-	}
+	void idbSet(KEY, next)
+		.then(() => idbNotifyOtherTabs(KEY))
+		.catch(() => {
+			// storage unavailable — the favorites last for this page only
+		});
+	requestPersistentStorage();
 	listeners.forEach((listener) => listener());
+};
+
+let watching = false;
+
+/** Loads the favorites. Awaited at startup, before anything renders. */
+export const hydrateFavorites = async (): Promise<void> => {
+	favorites = parse(await idbGet<unknown>(KEY).catch(() => undefined));
+	if (!watching) {
+		watching = true;
+		// Another tab changing the favorites.
+		idbWatch(KEY, () => {
+			void idbGet<unknown>(KEY)
+				.then((changed) => {
+					favorites = parse(changed);
+					listeners.forEach((listener) => listener());
+					return undefined;
+				})
+				.catch(() => undefined);
+		});
+	}
 };
 
 const subscribe = (listener: () => void) => {
 	listeners.add(listener);
-	// Another tab changing the favorites.
-	const onStorage = (event: StorageEvent) => {
-		if (event.key !== KEY) return;
-		favorites = parse(event.newValue);
-		listener();
-	};
-	window.addEventListener('storage', onStorage);
-	return () => {
-		listeners.delete(listener);
-		window.removeEventListener('storage', onStorage);
-	};
+	return () => void listeners.delete(listener);
 };
 
 /** All favorites (every league), oldest first. Re-renders when one is added or removed, here or in another tab. */

@@ -17,7 +17,6 @@ import {
 	spotlightHoursUrl,
 } from '../utils/Configs';
 import { fetchJson } from '../utils/fetch-json';
-import { HOUR_IN_MS } from '../utils/query-client';
 
 export interface ILeekduckSpotlightHour {
 	title: Record<GameLanguage, string>;
@@ -98,12 +97,9 @@ interface CalendarData {
 
 const EMPTY: Array<never> = [];
 
-// Calendar data (events, current bosses, ...) is scraped hourly, so keep it fresher
-// than the once-a-day game-master data.
 const calendarQuery = <T>(key: string, url: string) => ({
 	queryKey: ['calendar', key] as const,
 	queryFn: ({ signal }: { signal: AbortSignal }) => fetchJson<T>(url, signal),
-	staleTime: HOUR_IN_MS,
 });
 
 /** Everything behind the /calendar routes: events, season, raids, eggs, rocket line-ups. */

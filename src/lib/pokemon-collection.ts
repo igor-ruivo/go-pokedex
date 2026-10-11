@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 import { isTeamLeague, type TeamLeague } from '../DTOs/ITeamBuilder';
+import { idbGet, idbNotifyOtherTabs, idbSet, idbWatch, requestPersistentStorage } from '../utils/idb-store';
 import { isSlotIvs, isSlotLevel, slotIdentityKey, type SlotIvs } from './team-analysis';
 
 export interface CollectionPokemon {
@@ -25,9 +26,11 @@ export interface CollectionPokemon {
 export const collectionBuildKey = (entry: Pick<CollectionPokemon, 'speciesId' | 'moveset' | 'ivs' | 'level'>): string =>
 	slotIdentityKey(entry);
 
-const KEY = 'go-pokedex:team-pokemon-collection';
+const KEY = 'user:team-pokemon-collection';
 const listeners = new Set<() => void>();
-let collection: Array<CollectionPokemon> | undefined;
+// Read from IndexedDB once, before the app renders (`hydrateCollection`, called at startup); from then on this copy is the
+// one everything reads, and every change is written through to IndexedDB.
+let collection: Array<CollectionPokemon> = [];
 let idCounter = 0;
 
 const isEntry = (value: unknown): value is Omit<CollectionPokemon, 'id'> & { id?: string } => {
@@ -59,82 +62,70 @@ const createId = (used: ReadonlySet<string>) => {
 	return id;
 };
 
-const parse = (raw: string | null): Array<CollectionPokemon> => {
-	if (!raw) return [];
-	try {
-		const parsed: unknown = JSON.parse(raw);
-		if (!Array.isArray(parsed)) return [];
-		const entries = parsed.filter(isEntry);
-		const used = new Set<string>();
-		return entries.map((entry) => {
-			const id = typeof entry.id === 'string' && !used.has(entry.id) ? entry.id : createId(used);
-			used.add(id);
-			return { ...entry, id };
+const parse = (stored: unknown): Array<CollectionPokemon> => {
+	if (!Array.isArray(stored)) return [];
+	const used = new Set<string>();
+	return stored.filter(isEntry).map((entry) => {
+		const id = typeof entry.id === 'string' && !used.has(entry.id) ? entry.id : createId(used);
+		used.add(id);
+		return { ...entry, id };
+	});
+};
+
+const needsIdMigration = (stored: unknown) => {
+	if (!Array.isArray(stored)) return false;
+	const used = new Set<string>();
+	for (const value of stored) {
+		if (!isEntry(value)) continue;
+		if (typeof value.id !== 'string' || used.has(value.id)) return true;
+		used.add(value.id);
+	}
+	return false;
+};
+
+const load = (): Array<CollectionPokemon> => collection;
+
+const persist = (next: Array<CollectionPokemon>) => {
+	void idbSet(KEY, next)
+		.then(() => idbNotifyOtherTabs(KEY))
+		.catch(() => {
+			// Keep the collection available for the lifetime of this page if storage is blocked.
 		});
-	} catch {
-		return [];
-	}
-};
-
-const needsIdMigration = (raw: string | null) => {
-	if (!raw) return false;
-	try {
-		const parsed: unknown = JSON.parse(raw);
-		if (!Array.isArray(parsed)) return false;
-		const used = new Set<string>();
-		for (const value of parsed) {
-			if (!isEntry(value)) continue;
-			if (typeof value.id !== 'string' || used.has(value.id)) return true;
-			used.add(value.id);
-		}
-		return false;
-	} catch {
-		return false;
-	}
-};
-
-const load = (): Array<CollectionPokemon> => {
-	if (collection === undefined) {
-		let raw: string | null = null;
-		try {
-			raw = window.localStorage.getItem(KEY);
-			collection = parse(raw);
-		} catch {
-			collection = [];
-		}
-		if (needsIdMigration(raw)) {
-			try {
-				window.localStorage.setItem(KEY, JSON.stringify(collection));
-			} catch {
-				// Keep generated IDs available for the lifetime of this page if storage is blocked.
-			}
-		}
-	}
-	return collection;
 };
 
 const commit = (next: Array<CollectionPokemon>) => {
 	collection = next;
-	try {
-		window.localStorage.setItem(KEY, JSON.stringify(next));
-	} catch {
-		// Keep the collection available for the lifetime of this page if storage is blocked.
-	}
+	persist(next);
+	requestPersistentStorage();
 	listeners.forEach((listener) => listener());
+};
+
+let watching = false;
+
+/** Loads the saved collection. Awaited at startup, before anything renders. */
+export const hydrateCollection = async (): Promise<void> => {
+	const stored = await idbGet<unknown>(KEY).catch(() => undefined);
+	collection = parse(stored);
+	// Keep the generated ids, so the same entry has the same id from now on.
+	if (needsIdMigration(stored)) persist(collection);
+	if (!watching) {
+		watching = true;
+		// Another tab changing the collection.
+		idbWatch(KEY, () => {
+			void idbGet<unknown>(KEY)
+				.then((changed) => {
+					collection = parse(changed);
+					listeners.forEach((listener) => listener());
+					return undefined;
+				})
+				.catch(() => undefined);
+		});
+	}
 };
 
 const subscribe = (listener: () => void) => {
 	listeners.add(listener);
-	const onStorage = (event: StorageEvent) => {
-		if (event.key !== KEY) return;
-		collection = parse(event.newValue);
-		listener();
-	};
-	window.addEventListener('storage', onStorage);
-	return () => {
-		listeners.delete(listener);
-		window.removeEventListener('storage', onStorage);
-	};
+	return () => void listeners.delete(listener);
 };
 
 export const usePokemonCollection = (): ReadonlyArray<CollectionPokemon> =>
