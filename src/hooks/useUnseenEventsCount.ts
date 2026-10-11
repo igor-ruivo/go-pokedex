@@ -14,8 +14,10 @@ import { useCalendar } from '../queries/calendar';
  * folded in via the same `spotlightToPost` — same `nowAsEventTime`-based
  * cutoff), so the badge count always matches what you'd actually see if you
  * opened it.
+ *
+ * `ready` is false until the feeds this is worked out from have loaded (the count is 0 until then, which is not an answer).
  */
-export const useUnseenEventsCount = (): number => {
+export const useUnseenEvents = (): { count: number; ready: boolean } => {
 	const {
 		posts,
 		season,
@@ -33,13 +35,13 @@ export const useUnseenEventsCount = (): number => {
 
 	return useMemo(() => {
 		if (!postsFetchCompleted || !spotlightHoursFetchCompleted || !maxMondaysFetchCompleted || !raidHoursFetchCompleted)
-			return 0;
+			return { count: 0, ready: false };
 		const now = nowAsEventTime();
 		const events = [...posts, ...leekduckPosts(spotlightHours, maxMondays, raidHours)].filter(
 			(p) => p && p.endDate >= now && p.availableLocales.includes(gl)
 		);
 		const all = seasonFetchCompleted && season ? [season, ...events] : events;
-		return all.filter((p) => !seenIds.has(p.id)).length;
+		return { count: all.filter((p) => !seenIds.has(p.id)).length, ready: true };
 	}, [
 		posts,
 		spotlightHours,
@@ -55,3 +57,5 @@ export const useUnseenEventsCount = (): number => {
 		gl,
 	]);
 };
+
+export const useUnseenEventsCount = (): number => useUnseenEvents().count;

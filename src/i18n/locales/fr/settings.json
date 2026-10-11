@@ -29,6 +29,11 @@
 			"title": "Prendre en compte le Meilleur Ami",
 			"desc": "Considérer le niveau 51 comme atteignable — le tableau des IV, les chaînes de suppression/recherche, les PC max, le sélecteur de niveau, les meilleurs IV/percentile, les calculs de raid et les DPS/TDO évaluent alors jusqu'au niveau 51 au lieu de 50."
 		},
+		"appBadge": {
+			"title": "Pastille sur l’icône de l’app",
+			"desc": "Affiche sur l’icône de l’app le nombre d’événements du calendrier non lus. Mise à jour à chaque ouverture de l’app.",
+			"refused": "Les notifications sont bloquées pour cette app. Autorise-les dans les réglages de l’appareil pour utiliser la pastille."
+		},
 		"footer": "Les préférences sont enregistrées sur cet appareil."
 	},
 	"spriteOptions": {

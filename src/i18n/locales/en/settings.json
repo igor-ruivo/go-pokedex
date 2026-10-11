@@ -29,6 +29,11 @@
 			"title": "Account for Best Buddy",
 			"desc": "Treat level 51 as reachable — the IV table, trash/search strings, max CP, level picker, best IVs/percentile, raid counters and DPS/TDO all evaluate up to level 51 instead of 50."
 		},
+		"appBadge": {
+			"title": "App icon badge",
+			"desc": "Show the number of unread calendar events on the app icon. It updates whenever the app is opened.",
+			"refused": "Notifications are blocked for this app. Allow them in your device settings to use the badge."
+		},
 		"footer": "Preferences are stored on this device."
 	},
 	"spriteOptions": {

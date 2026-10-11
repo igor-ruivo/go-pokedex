@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LanguagePicker } from '../components/LanguagePicker';
@@ -5,6 +6,7 @@ import { useBestBuddy } from '../contexts/best-buddy-context';
 import { useLanguage } from '../contexts/language-context';
 // Appearance (light/dark) picker is temporarily disabled — see theme-context.tsx.
 import { SUPPORTED_LOCALE_NAMES, SUPPORTED_LOCALES } from '../i18n';
+import { isAppBadgeSupported, setAppBadgeEnabled, useAppBadgeEnabled } from '../lib/app-badge';
 
 type Option<T> = { value: T; label: string; hint?: string };
 
@@ -48,6 +50,9 @@ const Settings = () => {
 	const { t } = useTranslation(['settings']);
 	const { currentLanguage, updateCurrentLanguage } = useLanguage();
 	const { bestBuddy, updateBestBuddy } = useBestBuddy();
+	const appBadge = useAppBadgeEnabled();
+	// turning the badge on can be refused (the notification permission iOS asks for first)
+	const [badgeRefused, setBadgeRefused] = useState(false);
 
 	return (
 		<div className='r-shell'>
@@ -76,6 +81,23 @@ const Settings = () => {
 						{ value: true, label: t('settings:toggle.on') },
 					]}
 				/>
+				{isAppBadgeSupported() && (
+					<OptionRow<boolean>
+						title={t('settings:page.appBadge.title')}
+						desc={badgeRefused ? t('settings:page.appBadge.refused') : t('settings:page.appBadge.desc')}
+						value={appBadge}
+						onChange={(next) => {
+							void setAppBadgeEnabled(next).then((done) => {
+								setBadgeRefused(!done);
+								return undefined;
+							});
+						}}
+						options={[
+							{ value: false, label: t('settings:toggle.off') },
+							{ value: true, label: t('settings:toggle.on') },
+						]}
+					/>
+				)}
 			</div>
 
 			<p className='r-muted' style={{ marginTop: 16, fontSize: 12 }}>

@@ -6,7 +6,8 @@ import { useLanguage } from '../contexts/language-context';
 import { useTheme } from '../contexts/theme-context';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useScrollToTopOnNavigate } from '../hooks/useScrollToTopOnNavigate';
-import { useUnseenEventsCount } from '../hooks/useUnseenEventsCount';
+import { useUnseenEvents } from '../hooks/useUnseenEventsCount';
+import { useSyncAppBadge } from '../lib/app-badge';
 import { R } from '../lib/nav';
 import { NAV } from '../lib/nav-items';
 import { detectPlatform } from '../lib/platform';
@@ -62,7 +63,9 @@ const Shell = () => {
 	}, [platform]);
 	usePageMeta();
 	useScrollToTopOnNavigate();
-	const unseenEvents = useUnseenEventsCount();
+	const { count: unseenEvents, ready: unseenReady } = useUnseenEvents();
+	// the same number on the app's icon, where the device has one (see lib/app-badge.ts)
+	useSyncAppBadge(unseenReady ? unseenEvents : undefined);
 	// Kicks off the one-time game-translations fetch and re-renders this whole
 	// subtree (every route, via <Outlet/> below) once it resolves — see
 	// `useGameTranslationsData`'s own doc comment for why this lives here and

@@ -29,6 +29,11 @@
 			"title": "En İyi Dost'u hesaba kat",
 			"desc": "Seviye 51'i ulaşılabilir kabul et — IV tablosu, çöp/arama dizeleri, maksimum CP, seviye seçici, en iyi IV'ler/yüzdelik dilim, baskın sayaçları ve DPS/TDO hesaplamalarının tümü seviye 50 yerine 51'e kadar değerlendirilir."
 		},
+		"appBadge": {
+			"title": "Uygulama simgesi rozeti",
+			"desc": "Okunmamış takvim etkinliklerinin sayısını uygulama simgesinde gösterir. Uygulama her açıldığında güncellenir.",
+			"refused": "Bu uygulama için bildirimler engelli. Rozeti kullanmak için cihaz ayarlarından izin ver."
+		},
 		"footer": "Tercihler bu cihazda saklanır."
 	},
 	"spriteOptions": {
